@@ -100,37 +100,41 @@
         text-decoration: underline;
     }
 
+        
         /* SOCIAL STRIP */
         .social-strip {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            background: #111;
-            padding: 10px;
             justify-content: center;
-            border-bottom: 2px solid #333;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0 30px 0;
+            padding: 10px 0;
+            border-top: 1px dashed rgba(108, 94, 181, 0.5);
+            border-bottom: 1px dashed rgba(108, 94, 181, 0.5);
         }
-        .social-strip .social-link-item {
-            color: #fff;
+        .social-link-item {
+            color: var(--c64-light-blue);
+            font-size: 1.2rem;
             text-decoration: none;
-            font-family: 'VT323', monospace;
-            font-size: 1.1rem;
-            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 10px;
             border-radius: 4px;
-            background: #222;
-            border: 1px solid #444;
-            transition: 0.2s;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
         }
-        .social-strip .social-link-item:hover {
-            background: #444;
-            border-color: #888;
+        .social-link-item:hover {
+            color: #fff;
+            background: rgba(108, 94, 181, 0.2);
+            border-color: var(--c64-light-blue);
+            text-decoration: none;
+            transform: translateY(-2px);
+            text-shadow: 0 0 5px var(--c64-light-blue);
         }
-        .social-strip i {
-            margin-right: 6px;
-            font-size: 1.2em;
-        }
+        .social-link-item i { font-size: 1.3rem; }
 
-    </style>
+</style>
 </head>
 
 <body>
@@ -190,7 +194,7 @@
     <div id="status" class="status"></div>
 </div>
 
-<a href="index.html" class="home-link">← Back to Home</a>
+<a href="/ccgamer_website_new/index.html" class="home-link">← Back to Home</a>
 
 <script>
 document.getElementById("contactForm").addEventListener("submit", async function (e) {

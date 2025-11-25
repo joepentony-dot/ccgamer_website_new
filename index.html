@@ -257,88 +257,51 @@
         ::-webkit-scrollbar-thumb { background: var(--c64-light-blue); border: 1px solid #fff; }
 
     
+        
         /* SOCIAL STRIP */
         .social-strip {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            background: #111;
-            padding: 10px;
             justify-content: center;
-            border-bottom: 2px solid #333;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0 30px 0;
+            padding: 10px 0;
+            border-top: 1px dashed rgba(108, 94, 181, 0.5);
+            border-bottom: 1px dashed rgba(108, 94, 181, 0.5);
         }
-        .social-strip .social-link-item {
-            color: #fff;
+        .social-link-item {
+            color: var(--c64-light-blue);
+            font-size: 1.2rem;
             text-decoration: none;
-            font-family: 'VT323', monospace;
-            font-size: 1.1rem;
-            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 10px;
             border-radius: 4px;
-            background: #222;
-            border: 1px solid #444;
-            transition: 0.2s;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
         }
-        .social-strip .social-link-item:hover {
-            background: #444;
-            border-color: #888;
+        .social-link-item:hover {
+            color: #fff;
+            background: rgba(108, 94, 181, 0.2);
+            border-color: var(--c64-light-blue);
+            text-decoration: none;
+            transform: translateY(-2px);
+            text-shadow: 0 0 5px var(--c64-light-blue);
         }
-        .social-strip i {
-            margin-right: 6px;
-            font-size: 1.2em;
-        }
+        .social-link-item i { font-size: 1.3rem; }
 
-    </style>
+</style>
 </head>
 <body>
-    <!-- SOCIAL STRIP -->
-    <div class="social-strip">
-        <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" class="social-link-item play-sound">
-            <i class="fa-brands fa-youtube"></i> YOUTUBE
-        </a>
-        <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank" class="social-link-item play-sound">
-            <i class="fa-brands fa-patreon"></i> PATREON
-        </a>
-        <a href="https://facebook.com/cheekycommodoregamer" target="_blank" class="social-link-item play-sound">
-            <i class="fa-brands fa-facebook"></i> FACEBOOK
-        </a>
-        <a href="https://twitter.com/CheekyC64Gamer" target="_blank" class="social-link-item play-sound">
-            <i class="fa-brands fa-x-twitter"></i> TWITTER
-        </a>
-        <a href="https://discord.gg/83Xw9ktAn4" target="_blank" class="social-link-item play-sound">
-            <i class="fa-brands fa-discord"></i> DISCORD
-        </a>
-        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" class="social-link-item play-sound">
-            <i class="fa-brands fa-paypal"></i> DONATE
-        </a>
-    </div>
-
-
-    <canvas id="starfield"></canvas>
-    <div class="crt-overlay"></div>
-
-    <div id="start-screen" onclick="startSystem()">
-        <div class="commodore-header" style="border:none; margin-bottom: 20px;">
-             <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png" alt="Logo" style="max-width: 150px; image-rendering: pixelated;">
-        </div>
-        <div class="power-text">CLICK TO POWER ON</div>
-    </div>
-
-    <div id="loading-screen">
-        <button id="skip-btn" onclick="skipLoading()">[ ESC ] SKIP LOAD</button>
-        <div class="raster-bars" id="rasterBars"></div>
-        <div class="loading-text-wrapper">
-            <span id="loading-terminal"></span><span class="cursor loading-cursor" id="loading-cursor"></span>
-        </div>
-    </div>
-
-    <div class="container" id="main-container">
+<div class="container" id="main-container">
         <div class="commodore-header">
             <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png" alt="Cheeky Commodore Gamer Logo - Retro Gaming Hub" style="max-width: 150px; image-rendering: pixelated; margin-bottom: 10px;">
             <h3>**** COMMODORE 64 BASIC V2 ****</h3>
             <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
             <div class="nav-bar">
-                <a href="games/index.html" class="nav-link play-sound">GENRES</a>
-                <a href="games/complete-index.html" class="nav-link play-sound">INDEX</a>
+                <a href="/ccgamer_website_new/games/index.html" class="nav-link play-sound">GENRES</a>
+                <a href="/ccgamer_website_new/games/complete-index.html" class="nav-link play-sound">INDEX</a>
                 <a href="/resources/quiz.html" class="nav-link play-sound">QUIZ</a>
                 <a href="/retro-events.html" class="nav-link play-sound">EVENTS</a>
                 <a href="/about.html" class="nav-link play-sound">ABOUT</a>
@@ -371,10 +334,10 @@
         <h2>QUICK ACCESS: BROWSE GAME SECTIONS</h2>
 
         <div class="btn-grid">
-            <a href="games/index.html" class="btn-retro play-sound btn-emphasise">
+            <a href="/ccgamer_website_new/games/index.html" class="btn-retro play-sound btn-emphasise">
                 <i class="fa-solid fa-folder-open"></i> BROWSE GENRES
             </a>
-            <a href="games/complete-index.html" class="btn-retro play-sound">
+            <a href="/ccgamer_website_new/games/complete-index.html" class="btn-retro play-sound">
                 <i class="fa-solid fa-sort-alpha-down"></i> FULL INDEX
             </a>
             <a href="/resources/quiz.html" class="btn-retro play-sound">
@@ -405,7 +368,17 @@
         <div class="marquee-content">
             *** WELCOME TO CHEEKY COMMODORE GAMER *** UPDATED DAILY WITH NEW C64 & AMIGA TITLES *** CHECK OUT THE NEW QUIZ SECTION *** DON'T FORGET TO SUBSCRIBE ON YOUTUBE *** PRESS PLAY ON TAPE ***
         </div>
-    </div>
+    
+        <div class="social-strip">
+            <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" class="social-link-item play-sound"><i class="fa-brands fa-youtube"></i> YOUTUBE</a>
+            <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank" class="social-link-item play-sound"><i class="fa-brands fa-patreon"></i> PATREON</a>
+            <a href="https://facebook.com/cheekycommodoregamer" target="_blank" class="social-link-item play-sound"><i class="fa-brands fa-facebook"></i> FACEBOOK</a>
+            <a href="https://twitter.com/CheekyC64Gamer" target="_blank" class="social-link-item play-sound"><i class="fa-brands fa-x-twitter"></i> TWITTER</a>
+            <a href="https://discord.gg/83Xw9ktAn4" target="_blank" class="social-link-item play-sound"><i class="fa-brands fa-discord"></i> DISCORD</a>
+            <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" class="social-link-item play-sound"><i class="fa-brands fa-paypal"></i> PAYPAL</a>
+        </div>
+
+        </div>
 
     <script>
         // ==========================================

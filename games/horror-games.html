@@ -142,75 +142,67 @@
             }
         }
     
+        
         /* SOCIAL STRIP */
         .social-strip {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            background: #111;
-            padding: 10px;
             justify-content: center;
-            border-bottom: 2px solid #333;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0 30px 0;
+            padding: 10px 0;
+            border-top: 1px dashed rgba(108, 94, 181, 0.5);
+            border-bottom: 1px dashed rgba(108, 94, 181, 0.5);
         }
-        .social-strip .social-link-item {
-            color: #fff;
+        .social-link-item {
+            color: var(--c64-light-blue);
+            font-size: 1.2rem;
             text-decoration: none;
-            font-family: 'VT323', monospace;
-            font-size: 1.1rem;
-            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 10px;
             border-radius: 4px;
-            background: #222;
-            border: 1px solid #444;
-            transition: 0.2s;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
         }
-        .social-strip .social-link-item:hover {
-            background: #444;
-            border-color: #888;
+        .social-link-item:hover {
+            color: #fff;
+            background: rgba(108, 94, 181, 0.2);
+            border-color: var(--c64-light-blue);
+            text-decoration: none;
+            transform: translateY(-2px);
+            text-shadow: 0 0 5px var(--c64-light-blue);
         }
-        .social-strip i {
-            margin-right: 6px;
-            font-size: 1.2em;
-        }
+        .social-link-item i { font-size: 1.3rem; }
 
-    </style>
+</style>
 </head>
 <body>
-    <!-- SOCIAL STRIP -->
-    <div class="social-strip">
-        <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" class="social-link-item play-sound">
-            <i class="fa-brands fa-youtube"></i> YOUTUBE
-        </a>
-        <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank" class="social-link-item play-sound">
-            <i class="fa-brands fa-patreon"></i> PATREON
-        </a>
-        <a href="https://facebook.com/cheekycommodoregamer" target="_blank" class="social-link-item play-sound">
-            <i class="fa-brands fa-facebook"></i> FACEBOOK
-        </a>
-        <a href="https://twitter.com/CheekyC64Gamer" target="_blank" class="social-link-item play-sound">
-            <i class="fa-brands fa-x-twitter"></i> TWITTER
-        </a>
-        <a href="https://discord.gg/83Xw9ktAn4" target="_blank" class="social-link-item play-sound">
-            <i class="fa-brands fa-discord"></i> DISCORD
-        </a>
-        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" class="social-link-item play-sound">
-            <i class="fa-brands fa-paypal"></i> DONATE
-        </a>
-    </div>
-
-    <div class="container">
+<div class="container">
         <div class="header">
             <h1>HORROR GAMES</h1>
             <p>SELECT A GAME BELOW TO VIEW VIDEO, INFO, MANUALS AND MORE.</p>
             <div class="nav-bar">
-                <a href="/">HOME</a> · 
-                <a href="../games/index.html">ALL GENRES</a>
+                <a href="/ccgamer_website_new/index.html">HOME</a> · 
+                <a href="/ccgamer_website_new/games/index.html">ALL GENRES</a>
             </div>
         </div>
         <div id="games-list">
             <div class="loading-msg">LOADING GAMES...</div>
         </div>
-    </div>
-    <script src="../js/load-games.js"></script>
+    
+        <div class="social-strip">
+            <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" class="social-link-item play-sound"><i class="fa-brands fa-youtube"></i> YOUTUBE</a>
+            <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank" class="social-link-item play-sound"><i class="fa-brands fa-patreon"></i> PATREON</a>
+            <a href="https://facebook.com/cheekycommodoregamer" target="_blank" class="social-link-item play-sound"><i class="fa-brands fa-facebook"></i> FACEBOOK</a>
+            <a href="https://twitter.com/CheekyC64Gamer" target="_blank" class="social-link-item play-sound"><i class="fa-brands fa-x-twitter"></i> TWITTER</a>
+            <a href="https://discord.gg/83Xw9ktAn4" target="_blank" class="social-link-item play-sound"><i class="fa-brands fa-discord"></i> DISCORD</a>
+            <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" class="social-link-item play-sound"><i class="fa-brands fa-paypal"></i> PAYPAL</a>
+        </div>
+
+        </div>
+    <script src="/ccgamer_website_new/js/load-games.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             loadGames("HORROR");
