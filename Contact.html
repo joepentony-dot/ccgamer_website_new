@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Contact – Cheeky Commodore Gamer</title>
+
+<!-- Retro Font -->
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        margin: 0;
+        font-family: 'Press Start 2P', monospace;
+        background: #000;
+        color: #00f000;
+        padding: 20px;
+        text-align: center;
+    }
+
+    h1 {
+        font-size: 22px;
+        margin-bottom: 10px;
+        color: #00ff6e;
+        text-shadow: 0 0 6px #00ff6e;
+    }
+
+    p {
+        font-size: 13px;
+        max-width: 700px;
+        margin: 0 auto 20px;
+        line-height: 1.6;
+    }
+
+    .contact-box {
+        background: rgba(0, 255, 90, 0.1);
+        border: 2px solid #00ff6e;
+        padding: 20px;
+        max-width: 700px;
+        margin: 0 auto;
+        border-radius: 8px;
+        box-shadow: 0 0 12px #00ff6e;
+    }
+
+    label {
+        font-size: 13px;
+        display: block;
+        margin: 12px 0 4px;
+        text-align: left;
+    }
+
+    input, select, textarea {
+        width: 100%;
+        background: #000;
+        border: 2px solid #00ff6e;
+        padding: 10px;
+        color: #00ff6e;
+        border-radius: 4px;
+        font-family: inherit;
+        font-size: 13px;
+    }
+
+    textarea {
+        height: 140px;
+        resize: vertical;
+    }
+
+    button {
+        margin-top: 20px;
+        background: #00ff6e;
+        border: none;
+        padding: 12px 25px;
+        font-size: 14px;
+        font-family: inherit;
+        cursor: pointer;
+        color: #000;
+        border-radius: 4px;
+        text-transform: uppercase;
+        box-shadow: 0 0 8px #00ff6e;
+    }
+
+    button:hover {
+        background: #00d85c;
+    }
+
+    .status {
+        margin-top: 20px;
+        font-size: 14px;
+    }
+
+    a.home-link {
+        display: inline-block;
+        margin-top: 30px;
+        color: #00ff9d;
+        text-decoration: none;
+        font-size: 12px;
+    }
+
+    a.home-link:hover {
+        text-decoration: underline;
+    }
+
+        /* SOCIAL STRIP */
+        .social-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: #111;
+            padding: 10px;
+            justify-content: center;
+            border-bottom: 2px solid #333;
+        }
+        .social-strip .social-link-item {
+            color: #fff;
+            text-decoration: none;
+            font-family: 'VT323', monospace;
+            font-size: 1.1rem;
+            padding: 6px 12px;
+            border-radius: 4px;
+            background: #222;
+            border: 1px solid #444;
+            transition: 0.2s;
+        }
+        .social-strip .social-link-item:hover {
+            background: #444;
+            border-color: #888;
+        }
+        .social-strip i {
+            margin-right: 6px;
+            font-size: 1.2em;
+        }
+
+    </style>
+</head>
+
+<body>
+    <!-- SOCIAL STRIP -->
+    <div class="social-strip">
+        <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" class="social-link-item play-sound">
+            <i class="fa-brands fa-youtube"></i> YOUTUBE
+        </a>
+        <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank" class="social-link-item play-sound">
+            <i class="fa-brands fa-patreon"></i> PATREON
+        </a>
+        <a href="https://facebook.com/cheekycommodoregamer" target="_blank" class="social-link-item play-sound">
+            <i class="fa-brands fa-facebook"></i> FACEBOOK
+        </a>
+        <a href="https://twitter.com/CheekyC64Gamer" target="_blank" class="social-link-item play-sound">
+            <i class="fa-brands fa-x-twitter"></i> TWITTER
+        </a>
+        <a href="https://discord.gg/83Xw9ktAn4" target="_blank" class="social-link-item play-sound">
+            <i class="fa-brands fa-discord"></i> DISCORD
+        </a>
+        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" class="social-link-item play-sound">
+            <i class="fa-brands fa-paypal"></i> DONATE
+        </a>
+    </div>
+
+
+<h1>Contact The Cheeky Commodore Gamer</h1>
+
+<p>
+    Got a question, suggestion, retro gaming memory, or looking to report a bug with the quiz or site?
+    Pop your message below and I’ll get back to you as soon as I can.
+</p>
+
+<div class="contact-box">
+    <form id="contactForm">
+        <label>Your Name</label>
+        <input type="text" name="name" required>
+
+        <label>Your Email</label>
+        <input type="email" name="email" required>
+
+        <label>Topic</label>
+        <select name="topics">
+            <option value="General">General</option>
+            <option value="Quiz Issue">Quiz Issue</option>
+            <option value="Site Bug">Site Bug</option>
+            <option value="Retro Gaming Chat">Retro Gaming Chat</option>
+            <option value="Other">Other</option>
+        </select>
+
+        <label>Your Message</label>
+        <textarea name="message" required></textarea>
+
+        <button type="submit">Send Message</button>
+    </form>
+
+    <div id="status" class="status"></div>
+</div>
+
+<a href="index.html" class="home-link">← Back to Home</a>
+
+<script>
+document.getElementById("contactForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const status = document.getElementById("status");
+    status.textContent = "Sending...";
+
+    const formData = new FormData(e.target);
+    const payload = Object.fromEntries(formData.entries());
+    payload.action = "sendEmail";
+
+    try {
+        const res = await fetch(
+            "https://script.google.com/macros/s/AKfycbwhkSGA6HcSvCljqBA91JmQVsVVUPU5LCEO1HlifB_Cjwc0DTFCK3m6hG5ZFDSgVHw9/exec",
+            {
+                method: "POST",
+                mode: "no-cors",
+                body: JSON.stringify(payload)
+            }
+        );
+
+        status.textContent = "Message sent successfully!";
+        e.target.reset();
+    } catch (err) {
+        status.textContent = "Error sending message. Please try again.";
+    }
+});
+</script>
+
+</body>
+</html>
