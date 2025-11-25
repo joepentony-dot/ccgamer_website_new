@@ -1,6 +1,6 @@
 // Auto-generated loader for Cheeky Commodore Gamer pages
 const CCG_SHEET_ID = "1kUniGNCLsTv4LaoVmcbflhi9Nnky5rCFumzKLI0IA44";
-const CCG_SHEET_URL = `https://docs.google.com/spreadsheets/d/${CCG_SHEET_ID}/gviz/tq?tqx=out:json`;
+const CCG_SHEET_URL = `https://docs.google.com/spreadsheets/d/${CCG_SHEET_ID}/gviz/tq?tqx=out:json&gid=1584452405`;
 
 // Parse Google Sheets GViz JSON into a plain array of rows
 async function ccgFetchGames() {
