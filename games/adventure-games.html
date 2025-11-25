@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ADVENTURE GAMES | Cheeky Commodore Gamer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ADVENTURE GAMES from the Cheeky Commodore Gamer C64 & Amiga database. Browse gameplay videos, manuals, and more.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --c64-blue: #352879;
+            --c64-light-blue: #6c5eb5;
+            --c64-text: #b8c76f;
+            --c64-red: #880000;
+            --c64-green: #55cc55;
+            --c64-cyan: #00ffff;
+            --c64-yellow: #feff6c;
+            --c64-purple: #cc44cc;
+            --c64-white: #ffffff;
+            --c64-black: #000000;
+        }
+        * { box-sizing: border-box; }
+        body {
+            background-color: var(--c64-blue);
+            color: var(--c64-text);
+            font-family: 'VT323', monospace;
+            margin: 0;
+            padding: 10px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            text-transform: uppercase;
+        }
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            border: 4px solid var(--c64-light-blue);
+            background-color: rgba(53, 40, 121, 0.95);
+            padding: 15px;
+            margin-top: 10px;
+            margin-bottom: 40px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px dashed var(--c64-light-blue);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .header h1 {
+            color: #fff;
+            margin: 0 0 5px 0;
+            font-size: 2rem;
+        }
+        .header p {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+        .nav-bar {
+            margin-top: 10px;
+            font-size: 1.1rem;
+        }
+        .nav-bar a {
+            color: var(--c64-text);
+            text-decoration: none;
+            margin: 0 5px;
+        }
+        .nav-bar a:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .game-card {
+            background: #000;
+            border: 2px solid var(--c64-light-blue);
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .game-thumb {
+            width: 100%;
+            max-width: 180px;
+            height: 120px;
+            background: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+        .game-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            image-rendering: pixelated;
+        }
+        .thumb-placeholder {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .game-title {
+            color: #fff;
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+        }
+        .game-links a {
+            margin: 0 4px;
+            color: var(--c64-cyan);
+            font-size: 1.1rem;
+        }
+        .game-links a:hover {
+            color: #fff;
+        }
+        .no-links {
+            font-size: 0.9rem;
+            color: #777;
+        }
+        .loading-msg {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2rem;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px 5px;
+                border-width: 2px;
+            }
+            .header h1 {
+                font-size: 1.6rem;
+            }
+            .game-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ADVENTURE GAMES</h1>
+            <p>SELECT A GAME BELOW TO VIEW VIDEO, INFO, MANUALS AND MORE.</p>
+            <div class="nav-bar">
+                <a href="/">HOME</a> · 
+                <a href="../games/index.html">ALL GENRES</a>
+            </div>
+        </div>
+        <div id="games-list">
+            <div class="loading-msg">LOADING GAMES...</div>
+        </div>
+    </div>
+    <script src="../js/load-games.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadGames("ADVENTURE");
+        });
+    </script>
+</body>
+</html>

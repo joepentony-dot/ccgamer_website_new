@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Retro Quiz – Cheeky Commodore Gamer | C64 &amp; Amiga Trivia</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Test your knowledge of Commodore 64 and Amiga games with the Cheeky Commodore Gamer Retro Quiz – complete with monthly leaderboard.">
+  <link rel="icon" href="b4fc71f7e9332b636e55d66468a65075.jpg">
+
+  <link href="https://fonts.googleapis.com/css?family=Oswald:400,600,700|Open+Sans:400,600,700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #05060b;
+      --bg-alt: #111320;
+      --accent: #00e0ff;
+      --accent-soft: rgba(0, 224, 255, 0.14);
+      --accent-2: #ffcc00;
+      --text: #f5f5f5;
+      --muted: #aaa;
+      --border: #272a3a;
+      --danger: #ff4d4d;
+      --good: #55dd66;
+      --shadow-soft: 0 0 32px rgba(0, 0, 0, 0.6);
+      --radius: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #1d2035 0, #05060b 55%);
+      color: var(--text);
+      font-family: "Open Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .site-wrapper {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 16px 16px 32px;
+    }
+
+    header.site-header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .logo-block {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-text-main {
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 1.6rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .logo-text-sub {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    /* Top message / intro */
+    .top-message {
+      background: rgba(5, 6, 11, 0.9);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      font-size: 0.95rem;
+      color: var(--muted);
+      box-shadow: var(--shadow-soft);
+      margin-bottom: 18px;
+    }
+
+    .top-message span.highlight {
+      color: var(--accent-2);
+      font-weight: 600;
+    }
+
+    /* Navigation */
+    nav.main-nav {
+      background: rgba(10, 12, 24, 0.96);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-soft);
+      margin-bottom: 20px;
+    }
+
+    .nav-inner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 12px;
+      font-size: 0.95rem;
+    }
+
+    .nav-brand {
+      font-family: "Oswald", sans-serif;
+      font-weight: 600;
+      margin-right: 12px;
+      padding-right: 12px;
+      border-right: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-brand span.dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px rgba(0, 224, 255, 0.8);
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-item {
+      position: relative;
+    }
+
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 10px;
+      border-radius: 20px;
+      color: var(--text);
+      text-decoration: none;
+      border: 1px solid transparent;
+    }
+
+    .nav-link:hover,
+    .nav-item.active > .nav-link {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      text-decoration: none;
+    }
+
+    .nav-item.has-dropdown > .nav-link::after {
+      content: "▾";
+      font-size: 0.7rem;
+      opacity: 0.8;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      left: 0;
+      top: calc(100% + 4px);
+      min-width: 210px;
+      background: #090b15;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-soft);
+      list-style: none;
+      padding: 6px 0;
+      margin: 0;
+      display: none;
+      z-index: 10;
+    }
+
+    .dropdown-menu li a {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      color: var(--text);
+      white-space: nowrap;
+      text-decoration: none;
+    }
+
+    .dropdown-menu li a:hover {
+      background: rgba(255, 255, 255, 0.04);
+      text-decoration: none;
+    }
+
+    .dropdown-menu li span.badge-danger {
+      color: var(--danger);
+      font-size: 0.8rem;
+      margin-left: 6px;
+    }
+
+    .nav-item.has-dropdown:hover > .dropdown-menu {
+      display: block;
+    }
+
+    /* Layout */
+    main.page-main {
+      display: grid;
+      grid-template-columns: minmax(0, 2.1fr) minmax(280px, 1.2fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 860px) {
+      main.page-main {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      header.site-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav-brand {
+        border-right: none;
+        padding-right: 0;
+        margin-right: 0;
+        margin-bottom: 4px;
+      }
+    }
+
+    .card {
+      background: rgba(7, 9, 18, 0.96);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 16px 16px 14px;
+      box-shadow: var(--shadow-soft);
+      margin-bottom: 12px;
+    }
+
+    .card h1,
+    .card h2 {
+      margin: 0 0 8px;
+      font-family: "Oswald", sans-serif;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .card h1 {
+      font-size: 1.4rem;
+    }
+
+    .card h2 {
+      font-size: 1.1rem;
+    }
+
+    .card p {
+      margin: 0 0 10px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .small-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    /* Quiz Controls */
+    .quiz-header-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .quiz-header-row label {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    select.quiz-select {
+      min-width: 230px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #05060b;
+      color: var(--text);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #05060b;
+      border-color: var(--accent);
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.08);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--muted);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: 0.8rem;
+    }
+
+    .btn-block {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .btn[disabled] {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    /* Quiz area */
+    .quiz-status-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .quiz-status-bar span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .quiz-status-bar strong {
+      color: var(--accent-2);
+      font-weight: 600;
+    }
+
+    .question-card {
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 12px 12px 10px;
+      background: rgba(5, 6, 15, 0.9);
+      margin-top: 6px;
+    }
+
+    .question-game {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .question-text {
+      font-size: 1.0rem;
+      margin-bottom: 10px;
+    }
+
+    .question-media {
+      margin-bottom: 10px;
+    }
+
+    .question-media img {
+      max-width: 100%;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    @media (min-width: 640px) {
+      .options-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .option-btn {
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #101321;
+      color: var(--text);
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .option-btn span.index {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .option-btn.correct {
+      background: rgba(85, 221, 102, 0.18);
+      border-color: var(--good);
+    }
+
+    .option-btn.incorrect {
+      background: rgba(255, 77, 77, 0.15);
+      border-color: var(--danger);
+    }
+
+    .option-btn.disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    .quiz-footer-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .quiz-summary {
+      font-size: 0.9rem;
+      margin-top: 10px;
+      color: var(--muted);
+    }
+
+    .quiz-summary strong {
+      color: var(--accent-2);
+    }
+
+    .quiz-summary-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .quiz-summary-form input[type="text"] {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #05060b;
+      color: var(--text);
+      font-size: 0.9rem;
+      outline: none;
+      min-width: 150px;
+    }
+
+    .quiz-message {
+      font-size: 0.85rem;
+      margin-top: 6px;
+      color: var(--muted);
+    }
+
+    .quiz-message.success {
+      color: var(--good);
+    }
+
+    .quiz-message.error {
+      color: var(--danger);
+    }
+
+    /* Leaderboard */
+    .leaderboard-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .leaderboard-tab {
+      flex: 1;
+      text-align: center;
+      padding: 6px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      font-size: 0.8rem;
+      cursor: pointer;
+      background: transparent;
+      color: var(--muted);
+    }
+
+    .leaderboard-tab.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .leaderboard-select-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+    }
+
+    .leaderboard-select-row select {
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #05060b;
+      color: var(--text);
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .leaderboard-table-wrapper {
+      max-height: 320px;
+      overflow: auto;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #05060b;
+    }
+
+    table.leaderboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    table.leaderboard-table thead {
+      background: #101321;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    table.leaderboard-table th,
+    table.leaderboard-table td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #191b27;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    table.leaderboard-table th {
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    table.leaderboard-table tbody tr:nth-child(2n) {
+      background: rgba(255, 255, 255, 0.01);
+    }
+
+    table.leaderboard-table tbody tr:hover {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .lb-empty {
+      font-size: 0.85rem;
+      color: var(--muted);
+      padding-top: 4px;
+    }
+
+    footer.site-footer {
+      padding: 14px 16px 18px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+      background: radial-gradient(circle at top, #171827 0, #05060b 60%);
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="site-wrapper">
+
+    <header class="site-header">
+      <div class="logo-block">
+        <div>
+          <div class="logo-text-main">Cheeky Commodore Gamer</div>
+          <div class="logo-text-sub">Retro C64 &amp; Amiga – Retro Quiz</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="top-message">
+      Test your knowledge of classic <span class="highlight">Commodore 64</span> and
+      <span class="highlight">Amiga</span> games with the Retro Quiz! Pick a quiz set,
+      answer as many questions as you can, then add your name to the monthly leaderboard.
+    </div>
+
+    <!-- Navigation (same as Home, Retro Quiz marked active) -->
+    <nav class="main-nav" aria-label="Main navigation">
+      <div class="nav-inner">
+        <div class="nav-brand">
+          <span class="dot"></span>
+          <span>Menu</span>
+        </div>
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a class="nav-link" href="Home.html">Home</a>
+          </li>
+
+          <li class="nav-item has-dropdown">
+            <a class="nav-link" href="Games.html">
+              <span>Games</span><span>🎮</span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="Top Picks.html">Top Picks</a></li>
+              <li><a href="C64 Cartridge Games.html">C64 Cartridge Games</a></li>
+              <li>
+                <a href="Bpjs Indexed Games.html">
+                  Bpjs Indexed Games<span class="badge-danger">⛔</span>
+                </a>
+              </li>
+              <li><a href="Action Adventure.html">Action Adventure</a></li>
+              <li><a href="Adventure Games.html">Adventure Games</a></li>
+              <li><a href="Arcade Games.html">Arcade Games️</a></li>
+              <li><a href="Fighting Games.html">Fighting Games</a></li>
+              <li><a href="Casino Games.html">Casino Games</a></li>
+              <li><a href="Horror Games.html">Horror Games</a></li>
+              <li><a href="Licensed Games.html">Licensed Games</a></li>
+              <li><a href="Platform Games.html">Platform Games‍♂️</a></li>
+              <li><a href="Puzzle Games.html">Puzzle Games</a></li>
+              <li><a href="Quiz Games.html">Quiz Games❓</a></li>
+              <li><a href="Racing Games.html">Racing Games️</a></li>
+              <li><a href="RPG Games.html">RPG Games️</a></li>
+              <li><a href="Shooting Games.html">Shooting Games</a></li>
+              <li><a href="Sports Games.html">Sports Games⚽</a></li>
+              <li><a href="Strategy Games.html">Strategy Games♟️</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item active">
+            <a class="nav-link" href="Retro Quiz.html">Retro Quiz</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="Retro Events.html">Retro Events</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="Emulator Guide.html">Emulator Guide️</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="Games Index.html">Games Index</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="About.html">About</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="Interactive Guide.html">Interactive Guide</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="Contact.html">Contact</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main page layout -->
+    <main class="page-main">
+
+      <!-- Left: Quiz -->
+      <section>
+        <div class="card">
+          <h1>Retro Quiz</h1>
+          <p>
+            Choose a <strong>quiz set</strong> from the dropdown, hit
+            <strong>Start Quiz</strong>, and see how many questions you can get right.
+            When you finish, add your name to the <strong>monthly leaderboard</strong>.
+          </p>
+
+          <div class="quiz-header-row">
+            <label for="quiz-set-select">Quiz Set:</label>
+            <select id="quiz-set-select" class="quiz-select">
+              <option value="">Loading quiz sets…</option>
+            </select>
+
+            <button id="start-quiz-btn" class="btn btn-primary">
+              ▶ Start Quiz
+            </button>
+
+            <button id="reset-quiz-btn" class="btn btn-ghost btn-sm" disabled>
+              ↺ Reset
+            </button>
+          </div>
+
+          <div class="quiz-status-bar">
+            <span>Set: <strong id="current-set-name">None selected</strong></span>
+            <span>Question: <strong id="question-counter">0 / 0</strong></span>
+            <span>Score: <strong id="score-counter">0</strong></span>
+            <span>Percent: <strong id="percent-counter">0%</strong></span>
+          </div>
+
+          <div id="quiz-area">
+            <div class="question-card" id="question-card" style="display:none;">
+              <div class="question-game" id="question-game-label"></div>
+              <div class="question-text" id="question-text"></div>
+              <div class="question-media" id="question-media"></div>
+              <div class="options-grid" id="options-grid"></div>
+
+              <div class="quiz-footer-row">
+                <span id="question-feedback"></span>
+                <button id="next-question-btn" class="btn btn-primary btn-sm" disabled>
+                  Next Question ▶
+                </button>
+              </div>
+            </div>
+
+            <div id="quiz-placeholder" class="quiz-summary">
+              Pick a quiz set and hit <strong>Start Quiz</strong> to begin.
+            </div>
+          </div>
+
+          <div id="quiz-summary-block" class="quiz-summary" style="display:none;">
+            <div id="quiz-summary-text"></div>
+
+            <form id="quiz-save-form" class="quiz-summary-form">
+              <label for="player-name">Your name for the leaderboard:</label>
+              <input type="text" id="player-name" maxlength="40" placeholder="Enter name or nickname">
+              <button type="submit" class="btn btn-primary btn-sm">
+                Save Score
+              </button>
+            </form>
+
+            <div id="quiz-save-message" class="quiz-message"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right: Leaderboard -->
+      <aside>
+        <div class="card">
+          <div class="small-label">Leaderboard</div>
+          <h2>Monthly Top Scores</h2>
+
+          <div class="leaderboard-tabs">
+            <button id="lb-tab-current" class="leaderboard-tab active">Current Set</button>
+            <button id="lb-tab-all" class="leaderboard-tab">All Sets</button>
+          </div>
+
+          <div class="leaderboard-select-row">
+            <span id="lb-current-set-label">Showing scores for: <strong>All sets</strong></span>
+          </div>
+
+          <div class="leaderboard-table-wrapper">
+            <table class="leaderboard-table" id="leaderboard-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Set</th>
+                  <th>Score</th>
+                  <th>%</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-body">
+                <tr><td colspan="5">Loading leaderboard…</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div id="leaderboard-empty" class="lb-empty" style="display:none;">
+            No scores yet this month for this view – be the first to play!
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="small-label">Overall totals</div>
+          <h2>Players by total quiz score</h2>
+
+          <div class="leaderboard-table-wrapper">
+            <table class="leaderboard-table" id="overall-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Total Score</th>
+                </tr>
+              </thead>
+              <tbody id="overall-body">
+                <tr><td colspan="3">Loading totals…</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div id="overall-empty" class="lb-empty" style="display:none;">
+            No overall totals yet – play a quiz and save your score.
+          </div>
+        </div>
+      </aside>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    © Cheeky Commodore Gamer - 2025 · Retro Quiz &amp; Leaderboard powered by Google Sheets &amp; Apps Script
+  </footer>
+
+  <!-- Backend helper -->
+  <script src="js/ccg-api.js"></script>
+  <script>
+    (function () {
+      let quizSets = [];
+      let currentSetId = "";
+      let currentSetName = "";
+      let questions = [];
+      let currentIndex = 0;
+      let score = 0;
+      let startTime = null;
+
+      const setSelect        = document.getElementById("quiz-set-select");
+      const startBtn         = document.getElementById("start-quiz-btn");
+      const resetBtn         = document.getElementById("reset-quiz-btn");
+      const currentSetNameEl = document.getElementById("current-set-name");
+      const qCounterEl       = document.getElementById("question-counter");
+      const scoreCounterEl   = document.getElementById("score-counter");
+      const percentCounterEl = document.getElementById("percent-counter");
+
+      const questionCard     = document.getElementById("question-card");
+      const quizPlaceholder  = document.getElementById("quiz-placeholder");
+      const questionGameEl   = document.getElementById("question-game-label");
+      const questionTextEl   = document.getElementById("question-text");
+      const questionMediaEl  = document.getElementById("question-media");
+      const optionsGridEl    = document.getElementById("options-grid");
+      const questionFeedback = document.getElementById("question-feedback");
+      const nextQuestionBtn  = document.getElementById("next-question-btn");
+
+      const summaryBlock     = document.getElementById("quiz-summary-block");
+      const summaryTextEl    = document.getElementById("quiz-summary-text");
+      const saveForm         = document.getElementById("quiz-save-form");
+      const playerNameInput  = document.getElementById("player-name");
+      const saveMessageEl    = document.getElementById("quiz-save-message");
+
+      const lbBody           = document.getElementById("leaderboard-body");
+      const lbEmpty          = document.getElementById("leaderboard-empty");
+      const lbTabCurrent     = document.getElementById("lb-tab-current");
+      const lbTabAll         = document.getElementById("lb-tab-all");
+      const lbCurrentLabel   = document.getElementById("lb-current-set-label");
+
+      const overallBody      = document.getElementById("overall-body");
+      const overallEmpty     = document.getElementById("overall-empty");
+
+      let leaderboardSetMode = "all"; // "all" or "current"
+
+      function safePercent(score, total) {
+        if (!total) return 0;
+        return Math.round((score / total) * 100);
+      }
+
+      function updateStatusBar() {
+        const totalQ = questions.length || 0;
+        const qNumber = totalQ > 0 ? (currentIndex + 1) : 0;
+        qCounterEl.textContent = qNumber + " / " + totalQ;
+        scoreCounterEl.textContent = String(score);
+        percentCounterEl.textContent = safePercent(score, totalQ) + "%";
+        currentSetNameEl.textContent = currentSetName || "None selected";
+      }
+
+      function clearQuestionUI() {
+        questionTextEl.textContent = "";
+        questionGameEl.textContent = "";
+        questionMediaEl.innerHTML = "";
+        optionsGridEl.innerHTML = "";
+        questionFeedback.textContent = "";
+        nextQuestionBtn.disabled = true;
+      }
+
+      function renderQuestion() {
+        if (!questions.length || currentIndex < 0 || currentIndex >= questions.length) {
+          endQuiz();
+          return;
+        }
+
+        const q = questions[currentIndex];
+        clearQuestionUI();
+
+        questionCard.style.display = "block";
+        quizPlaceholder.style.display = "none";
+
+        if (q.gameName) {
+          questionGameEl.textContent = q.gameName;
+        } else {
+          questionGameEl.textContent = "";
+        }
+
+        questionTextEl.textContent = q.question || "";
+
+        if (q.imageUrl) {
+          const img = document.createElement("img");
+          img.src = q.imageUrl;
+          img.alt = "Question image";
+          questionMediaEl.innerHTML = "";
+          questionMediaEl.appendChild(img);
+        } else {
+          questionMediaEl.innerHTML = "";
+        }
+
+        // Audio if provided – optional
+        if (q.audioUrl) {
+          const audio = document.createElement("audio");
+          audio.controls = true;
+          audio.src = q.audioUrl;
+          questionMediaEl.appendChild(audio);
+        }
+
+        const correctIndex = Number(q.answer) || 0;
+
+        (q.options || []).forEach((opt, idx) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "option-btn";
+          btn.dataset.index = String(idx);
+
+          const idxSpan = document.createElement("span");
+          idxSpan.className = "index";
+          idxSpan.textContent = String(idx + 1);
+
+          const textSpan = document.createElement("span");
+          textSpan.textContent = opt || "";
+
+          btn.appendChild(idxSpan);
+          btn.appendChild(textSpan);
+
+          btn.addEventListener("click", () => {
+            handleAnswer(idx, correctIndex);
+          });
+
+          optionsGridEl.appendChild(btn);
+        });
+
+        questionFeedback.textContent = "";
+        nextQuestionBtn.disabled = true;
+        updateStatusBar();
+      }
+
+      function handleAnswer(chosenIndex, correctIndex) {
+        const buttons = Array.from(optionsGridEl.querySelectorAll(".option-btn"));
+        buttons.forEach(btn => {
+          btn.classList.add("disabled");
+          const idx = Number(btn.dataset.index);
+          if (idx === correctIndex) {
+            btn.classList.add("correct");
+          }
+        });
+
+        const chosenBtn = buttons.find(b => Number(b.dataset.index) === chosenIndex);
+        if (chosenBtn && chosenIndex !== correctIndex) {
+          chosenBtn.classList.add("incorrect");
+        }
+
+        if (chosenIndex === correctIndex) {
+          score += 1;
+          questionFeedback.textContent = "Correct!";
+          questionFeedback.style.color = "var(--good)";
+        } else {
+          questionFeedback.textContent = "Incorrect.";
+          questionFeedback.style.color = "var(--danger)";
+        }
+
+        nextQuestionBtn.disabled = false;
+        updateStatusBar();
+      }
+
+      function endQuiz() {
+        clearQuestionUI();
+        questionCard.style.display = "none";
+
+        const totalQ = questions.length || 0;
+        const pct = safePercent(score, totalQ);
+
+        const durationMs = startTime ? (Date.now() - startTime) : 0;
+        const seconds = Math.round(durationMs / 1000);
+
+        summaryBlock.style.display = "block";
+        summaryTextEl.innerHTML =
+          "You scored <strong>" + score + " / " + totalQ +
+          "</strong> (" + pct + "%) in about " + seconds + " seconds.";
+
+        saveMessageEl.textContent = "";
+        saveMessageEl.className = "quiz-message";
+
+        resetBtn.disabled = false;
+        startBtn.disabled = false;
+        updateStatusBar();
+      }
+
+      function resetQuiz() {
+        questions = [];
+        currentIndex = 0;
+        score = 0;
+        startTime = null;
+        clearQuestionUI();
+        questionCard.style.display = "none";
+        quizPlaceholder.style.display = "block";
+        summaryBlock.style.display = "none";
+        saveMessageEl.textContent = "";
+        saveMessageEl.className = "quiz-message";
+        updateStatusBar();
+      }
+
+      async function loadQuizSets() {
+        try {
+          const sets = await fetchQuizSets();
+          quizSets = sets || [];
+
+          setSelect.innerHTML = "";
+          if (!quizSets.length) {
+            const opt = document.createElement("option");
+            opt.value = "";
+            opt.textContent = "No quiz sets configured";
+            setSelect.appendChild(opt);
+            startBtn.disabled = true;
+            return;
+          }
+
+          const defaultOpt = document.createElement("option");
+          defaultOpt.value = "";
+          defaultOpt.textContent = "Select a quiz set…";
+          setSelect.appendChild(defaultOpt);
+
+          quizSets.forEach(set => {
+            const opt = document.createElement("option");
+            opt.value = set.id;
+            opt.textContent =
+              (set.icon || "❓") + " " + set.name +
+              (set.questionCount ? " (" + set.questionCount + ")" : "");
+            setSelect.appendChild(opt);
+          });
+
+          startBtn.disabled = false;
+        } catch (err) {
+          console.error(err);
+          setSelect.innerHTML = "";
+          const opt = document.createElement("option");
+          opt.value = "";
+          opt.textContent = "Error loading quiz sets";
+          setSelect.appendChild(opt);
+          startBtn.disabled = true;
+        }
+      }
+
+      async function startQuiz() {
+        const setId = setSelect.value.trim();
+        if (!setId) {
+          alert("Please select a quiz set first.");
+          return;
+        }
+
+        const setObj = quizSets.find(s => s.id === setId);
+        currentSetId = setId;
+        currentSetName = setObj ? setObj.name : setId;
+
+        summaryBlock.style.display = "none";
+        saveMessageEl.textContent = "";
+        saveMessageEl.className = "quiz-message";
+
+        startBtn.disabled = true;
+        resetBtn.disabled = true;
+        questionCard.style.display = "none";
+        quizPlaceholder.textContent = "Loading questions…";
+
+        try {
+          const result = await fetchQuizData(setId);
+          if (result.error || !result.questions || !result.questions.length) {
+            quizPlaceholder.textContent = "No questions found for this set.";
+            questions = [];
+            currentIndex = 0;
+            score = 0;
+            updateStatusBar();
+            startBtn.disabled = false;
+            return;
+          }
+
+          questions = result.questions;
+          currentIndex = 0;
+          score = 0;
+          startTime = Date.now();
+
+          quizPlaceholder.style.display = "none";
+          questionCard.style.display = "block";
+          renderQuestion();
+          resetBtn.disabled = false;
+
+          // Update leaderboard view to current set
+          leaderboardSetMode = "current";
+          updateLeaderboardTabUI();
+          await loadLeaderboard();
+        } catch (err) {
+          console.error(err);
+          quizPlaceholder.textContent = "Error loading questions.";
+          questions = [];
+          currentIndex = 0;
+          score = 0;
+          updateStatusBar();
+        } finally {
+          startBtn.disabled = false;
+        }
+      }
+
+      async function handleSaveScore(evt) {
+        evt.preventDefault();
+        if (!questions.length) {
+          saveMessageEl.textContent = "No quiz results to save.";
+          saveMessageEl.className = "quiz-message error";
+          return;
+        }
+
+        const name = (playerNameInput.value || "").trim();
+        if (!name) {
+          saveMessageEl.textContent = "Please enter a name or nickname.";
+          saveMessageEl.className = "quiz-message error";
+          return;
+        }
+
+        const totalQ = questions.length || 0;
+        const pct = safePercent(score, totalQ);
+        const durationMs = startTime ? (Date.now() - startTime) : 0;
+
+        saveMessageEl.textContent = "Saving score…";
+        saveMessageEl.className = "quiz-message";
+
+        try {
+          const res = await saveScore(
+            currentSetId,
+            name,
+            score,
+            totalQ,
+            durationMs,
+            pct
+          );
+          if (res && res.success) {
+            saveMessageEl.textContent = "Score saved! Check the leaderboard on the right.";
+            saveMessageEl.className = "quiz-message success";
+            playerNameInput.value = "";
+            // Refresh leaderboard for the current set
+            await loadLeaderboard();
+            await loadOverallTotals();
+          } else {
+            saveMessageEl.textContent = "Could not save score. Please try again later.";
+            saveMessageEl.className = "quiz-message error";
+          }
+        } catch (err) {
+          console.error(err);
+          saveMessageEl.textContent = "Network error saving score.";
+          saveMessageEl.className = "quiz-message error";
+        }
+      }
+
+      async function loadLeaderboard() {
+        try {
+          let setIdForLB = "true";
+          if (leaderboardSetMode === "current" && currentSetId) {
+            setIdForLB = currentSetId;
+            lbCurrentLabel.innerHTML = "Showing scores for: <strong>" + (currentSetName || currentSetId) + "</strong>";
+          } else if (leaderboardSetMode === "all") {
+            setIdForLB = "true";
+            lbCurrentLabel.innerHTML = "Showing scores for: <strong>All sets</strong>";
+          }
+
+          lbBody.innerHTML = "<tr><td colspan=\"5\">Loading leaderboard…</td></tr>";
+          lbEmpty.style.display = "none";
+
+          const data = await fetchLeaderboard(setIdForLB);
+          const entries = (data && data.entries) ? data.entries : [];
+
+          if (!entries.length) {
+            lbBody.innerHTML = "";
+            lbEmpty.style.display = "block";
+            return;
+          }
+
+          lbBody.innerHTML = "";
+          lbEmpty.style.display = "none";
+
+          entries.forEach((e, idx) => {
+            const tr = document.createElement("tr");
+            const total = e.total || 0;
+            const pct = safePercent(e.score || 0, total);
+
+            tr.innerHTML = `
+              <td>${idx + 1}</td>
+              <td>${e.name || ""}</td>
+              <td>${e.set || ""}</td>
+              <td>${(e.score || 0)}/${total}</td>
+              <td>${pct}%</td>
+            `;
+            lbBody.appendChild(tr);
+          });
+        } catch (err) {
+          console.error(err);
+          lbBody.innerHTML = "<tr><td colspan=\"5\">Error loading leaderboard.</td></tr>";
+          lbEmpty.style.display = "none";
+        }
+      }
+
+      async function loadOverallTotals() {
+        try {
+          overallBody.innerHTML = "<tr><td colspan=\"3\">Loading totals…</td></tr>";
+          overallEmpty.style.display = "none";
+
+          const res = await fetchOverallTotals();
+          const players = (res && res.players) ? res.players : [];
+
+          if (!players.length) {
+            overallBody.innerHTML = "";
+            overallEmpty.style.display = "block";
+            return;
+          }
+
+          overallBody.innerHTML = "";
+          overallEmpty.style.display = "none";
+
+          players.forEach((p, idx) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${idx + 1}</td>
+              <td>${p.name || ""}</td>
+              <td>${p.totalScore || 0}</td>
+            `;
+            overallBody.appendChild(tr);
+          });
+        } catch (err) {
+          console.error(err);
+          overallBody.innerHTML = "<tr><td colspan=\"3\">Error loading totals.</td></tr>";
+          overallEmpty.style.display = "none";
+        }
+      }
+
+      function updateLeaderboardTabUI() {
+        if (leaderboardSetMode === "current") {
+          lbTabCurrent.classList.add("active");
+          lbTabAll.classList.remove("active");
+        } else {
+          lbTabCurrent.classList.remove("active");
+          lbTabAll.classList.add("active");
+        }
+      }
+
+      function attachEvents() {
+        startBtn.addEventListener("click", () => {
+          startQuiz();
+          if (typeof trackGameStart === "function") {
+            trackGameStart();
+          }
+        });
+
+        resetBtn.addEventListener("click", resetQuiz);
+
+        nextQuestionBtn.addEventListener("click", () => {
+          if (!questions.length) return;
+          currentIndex += 1;
+          if (currentIndex >= questions.length) {
+            endQuiz();
+          } else {
+            renderQuestion();
+          }
+        });
+
+        saveForm.addEventListener("submit", handleSaveScore);
+
+        lbTabCurrent.addEventListener("click", async () => {
+          leaderboardSetMode = "current";
+          updateLeaderboardTabUI();
+          await loadLeaderboard();
+        });
+
+        lbTabAll.addEventListener("click", async () => {
+          leaderboardSetMode = "all";
+          updateLeaderboardTabUI();
+          await loadLeaderboard();
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        attachEvents();
+        updateStatusBar();
+
+        try {
+          if (typeof trackVisitor === "function") {
+            trackVisitor();
+          }
+        } catch (err) {
+          console.warn("trackVisitor failed:", err);
+        }
+
+        await loadQuizSets();
+        await loadLeaderboard();
+        await loadOverallTotals();
+      });
+    })();
+  </script>
+</body>
+</html>
