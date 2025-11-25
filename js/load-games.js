@@ -1,4 +1,4 @@
-// Auto-generated loader for Cheeky Commodore Gamer genre pages
+// Auto-generated loader for Cheeky Commodore Gamer genre & special category pages
 const CCG_SHEET_ID = "1kUniGNCLsTv4LaoVmcbflhi9Nnky5rCFumzKLI0IA44";
 const CCG_SHEET_URL = `https://docs.google.com/spreadsheets/d/${CCG_SHEET_ID}/gviz/tq?tqx=out:json`;
 
@@ -17,7 +17,7 @@ function ccgNormalise(str) {
     return (str || "").toString().trim().toUpperCase();
 }
 
-// Load games for a specific genre (matches Column D exactly, case-insensitive)
+// Load games for a specific genre or special category (matches Column D exactly, case-insensitive)
 async function loadGames(genreName) {
     const container = document.getElementById("games-list");
     if (!container) return;
@@ -47,7 +47,7 @@ async function loadGames(genreName) {
         }
 
         if (!games.length) {
-            container.innerHTML = '<div class="loading-msg">NO GAMES FOUND FOR THIS GENRE YET.</div>';
+            container.innerHTML = '<div class="loading-msg">NO GAMES FOUND FOR THIS CATEGORY YET.</div>';
             return;
         }
 
