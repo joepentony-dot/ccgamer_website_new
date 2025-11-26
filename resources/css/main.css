@@ -1,19 +1,34 @@
 /* ============================================================
-   PHASE C – PART 6 : CRT Curvature + Phosphor Glow Package
+   PHASE C – PART 6 : CRT Curvature + Phosphor + Full CRT FX
    ============================================================ */
 
-/* === GLOBAL CRT PERSPECTIVE === */
+/* === 1. GLOBAL CRT 3D PERSPECTIVE === */
 body.site-ready {
     perspective: 1200px;
 }
 
-/* === CURVED SCREEN WRAPPER === */
-.crt-curved {
-    transform: rotateX(1deg) rotateY(-1deg);
+/* === 2. CURVED SCREEN WRAPPER === */
+.crt-curved,
+.monitor-screen,
+#loading-screen,
+#start-screen {
+    transform: rotateX(1deg) rotateY(-1deg) scale(1.0005);
     transform-style: preserve-3d;
 }
 
-/* === SCANLINE + PHOSPHOR BLEND === */
+/* ============================================================
+   3. CRT OVERLAY: SCANLINES + GLASS EFFECT + CHROMATIC BLEED
+   ============================================================ */
+
+.crt-overlay {
+    pointer-events: none;
+    mix-blend-mode: screen;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+}
+
+/* Scanlines */
 .crt-overlay::before {
     content: "";
     position: absolute;
@@ -21,15 +36,32 @@ body.site-ready {
     pointer-events: none;
     background: repeating-linear-gradient(
         to bottom,
-        rgba(255,255,255,0.05) 0px,
-        rgba(255,255,255,0.05) 1px,
-        rgba(0,0,0,0) 2px
+        rgba(0,0,0,0.17) 0px,
+        rgba(0,0,0,0.17) 2px,
+        rgba(0,0,0,0.0) 4px
     );
-    mix-blend-mode: overlay;
-    opacity: 0.4;
+    opacity: 0.45;
+    mix-blend-mode: multiply;
 }
 
-/* === PHOSPHOR GLOW FOR LIGHT TEXT === */
+/* Glass reflection curve */
+.crt-overlay::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+        circle at 50% 15%,
+        rgba(255,255,255,0.15),
+        rgba(255,255,255,0.03) 40%,
+        rgba(255,255,255,0) 75%
+    );
+    opacity: 0.22;
+}
+
+/* ============================================================
+   4. PHOSPHOR GLOW (for Bright Text & Headers)
+   ============================================================ */
 .phosphor,
 h1, h2, h3 {
     text-shadow:
@@ -39,7 +71,30 @@ h1, h2, h3 {
 }
 
 /* ============================================================
-   AMIGA MODE (Soft Bloom, Pastel, Gentle Brightening)
+   5. CHROMATIC ABERRATION (Retro Colour Bleed)
+   ============================================================ */
+h1, h2, h3, p, .nav-link, .btn-retro, .power-text, #loading-terminal {
+    text-shadow:
+        1px 0px rgba(0,150,255,0.25),
+        -1px 0px rgba(255,0,150,0.25);
+}
+
+/* ============================================================
+   6. NOISE GRAIN (Very Subtle — Classic CRT Static)
+   ============================================================ */
+body.site-ready::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAEklEQVR42mNgYGBoYGBg+A8AAQUBAQCeuSwAAAAASUVORK5CYII=");
+    opacity: 0.08;
+    mix-blend-mode: overlay;
+    z-index: 998;
+}
+
+/* ============================================================
+   7. AMIGA MODE (Soft Bloom, Pastel Highlights)
    ============================================================ */
 body[data-theme="amiga"] .game-thumb {
     filter: contrast(105%) brightness(108%) saturate(105%);
@@ -52,7 +107,7 @@ body[data-theme="amiga"] .game-thumb:hover {
 }
 
 /* ============================================================
-   C64 MODE (Green Tint, Higher Contrast, Retro Glow)
+   8. C64 MODE (Green Tint, High Contrast, Retro Glow)
    ============================================================ */
 body[data-theme="c64"] .game-thumb {
     filter: hue-rotate(100deg) brightness(110%) contrast(105%);
@@ -65,8 +120,16 @@ body[data-theme="c64"] .game-thumb:hover {
 }
 
 /* ============================================================
-   UNIVERSAL THUMBNAIL POLISH (Safe for all themes)
+   9. UNIVERSAL THUMBNAIL POLISH (Safe for All Themes)
    ============================================================ */
 .game-thumb {
     border-radius: 6px;
+    image-rendering: pixelated;
+}
+
+/* ============================================================
+   10. SUBTLE BLOOM FOR ALL UI ELEMENTS
+   ============================================================ */
+* {
+    filter: drop-shadow(0 0 0.4px rgba(255,255,255,0.08));
 }
