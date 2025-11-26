@@ -3,59 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BPjS-Indexed Games | Cheeky Commodore Gamer</title>
+    <title>BPJS Indexed Games | Cheeky Commodore Gamer</title>
 
-    <link rel="stylesheet" href="../css/engine.css">
-    <script defer src="../js/engine.js"></script>
+    <link rel="stylesheet" href="../../css/engine.css">
+    <script defer src="../../js/engine.js"></script>
+    <script defer src="../../js/load-games.js"></script>
 
-    <meta name="description" content="A historical look at BPjS/BPjM indexed titles on the Commodore 64 and Amiga – preserved for reference.">
+    <meta name="description" content="The BPJS Indexed Games section — titles historically restricted or indexed in Germany.">
 </head>
+
 <body>
 
-    <canvas id="starfield"></canvas>
-    <div class="crt-overlay"></div>
+<canvas id="starfield"></canvas>
+<div class="crt-overlay"></div>
 
-    <div class="container">
+<div class="container">
+    <div class="commodore-header">
+        <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
+             alt="Cheeky Commodore Gamer Logo"
+             style="max-width:150px; image-rendering:pixelated; margin-bottom:10px;">
+        
+        <h3>**** COMMODORE 64 BASIC V2 ****</h3>
+        <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
 
-        <div class="commodore-header">
-            <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
-                 alt="Cheeky Commodore Gamer Logo"
-                 style="max-width:150px; image-rendering:pixelated; margin-bottom:10px;">
-
-            <h3>**** COMMODORE 64 BASIC V2 ****</h3>
-            <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
-
-            <div class="nav-bar">
-                <a href="index.html" class="nav-link play-sound">GENRES</a>
-                <a href="complete-index.html" class="nav-link play-sound">INDEX</a>
-                <a href="../resources/quiz.html" class="nav-link play-sound">QUIZ</a>
-                <a href="../retro-events.html" class="nav-link play-sound">EVENTS</a>
-                <a href="../about.html" class="nav-link play-sound">ABOUT</a>
-                <a href="../contact.html" class="nav-link play-sound">CONTACT</a>
-            </div>
+        <div class="nav-bar">
+            <a href="../index.html" class="nav-link play-sound">GENRES</a>
+            <a href="index.html" class="nav-link play-sound btn-emphasise">SPECIALS</a>
+            <a href="../complete-index.html" class="nav-link play-sound">INDEX</a>
+            <a href="../../resources/quiz.html" class="nav-link play-sound">QUIZ</a>
+            <a href="../../retro-events.html" class="nav-link play-sound">EVENTS</a>
+            <a href="../../about.html" class="nav-link play-sound">ABOUT</a>
+            <a href="../../contact.html" class="nav-link play-sound">CONTACT</a>
         </div>
-
-        <main>
-
-            <section class="page-intro">
-                <h1>BPjS-Indexed Games</h1>
-            <p>
-                A preservation-focused list of games that appeared on the German BPjS/BPjM indexing lists –
-                presented here for historical context.
-            </p>
-            </section>
-
-            <section id="genre-grid"
-                     class="games-grid"
-                     data-genre="bpjs-indexed">
-            </section>
-
-        </main>
-
     </div>
 
-    <script>
-        window.CCG_GENRE = "bpjs-indexed";
-    </script>
+    <main>
+
+        <section class="page-intro">
+            <h1>BPJS Indexed Games</h1>
+            <p>Titles that appeared on Germany’s BPJS / BPjM indexed list during the C64 & Amiga years.</p>
+        </section>
+
+        <section id="special-grid" class="games-grid" data-collection="bpjs"></section>
+
+    </main>
+</div>
+
+<script>
+    window.CCG_COLLECTION = "bpjs";
+</script>
+
 </body>
 </html>
