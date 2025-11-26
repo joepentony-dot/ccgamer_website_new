@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Fighting Games | Cheeky Commodore Gamer</title>
-<link rel="stylesheet" href="../css/engine.css">
-<script defer src="../js/engine.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fighting Games | Cheeky Commodore Gamer</title>
+
+    <link rel="stylesheet" href="../../css/engine.css">
+    <script defer src="../../js/engine.js"></script>
+
+    <meta name="description" content="One-on-one brawlers and martial arts games for the Commodore 64 and Amiga.">
 </head>
 <body>
 
@@ -14,51 +18,45 @@
 <div class="container">
 
     <div class="commodore-header">
+
         <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
-             style="max-width:140px; image-rendering:pixelated;">
+             alt="Cheeky Commodore Gamer Logo"
+             style="max-width:150px; image-rendering:pixelated; margin-bottom:10px;">
+
         <h3>**** COMMODORE 64 BASIC V2 ****</h3>
         <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
 
         <div class="nav-bar">
-            <a href="../index.html" class="nav-link play-sound">HOME</a>
-            <a href="index.html" class="nav-link play-sound">GENRES</a>
-            <a href="collections/index.html" class="nav-link play-sound">SPECIALS</a>
-            <a href="complete-index.html" class="nav-link play-sound">INDEX</a>
-            <a href="../resources/quiz.html" class="nav-link play-sound">QUIZ</a>
-            <a href="../retro-events.html" class="nav-link play-sound">EVENTS</a>
-            <a href="../about.html" class="nav-link play-sound">ABOUT</a>
-            <a href="../contact.html" class="nav-link play-sound">CONTACT</a>
+            <a href="../index.html" class="nav-link play-sound">GENRES</a>
+            <a href="../collections/index.html" class="nav-link play-sound">SPECIALS</a>
+            <a href="../complete-index.html" class="nav-link play-sound">INDEX</a>
+            <a href="../../resources/quiz.html" class="nav-link play-sound">QUIZ</a>
+            <a href="../../retro-events.html" class="nav-link play-sound">EVENTS</a>
+            <a href="../../about.html" class="nav-link play-sound">ABOUT</a>
+            <a href="../../contact.html" class="nav-link play-sound">CONTACT</a>
         </div>
+
     </div>
 
-    <h1>Fighting Games</h1>
-    <p style="text-align:center;">
-        Arena brawlers, martial arts classics and one-on-one showdowns from the 8-bit & 16-bit era.
-    </p>
+    <main>
 
-    <div class="search-wrapper">
-        <input type="text" class="search-input" id="genreSearch" placeholder="SEARCH THIS GENRE...">
-        <div class="search-results" id="genreResults"></div>
-    </div>
+        <section class="page-intro">
+            <h1>Fighting Games</h1>
+            <p>
+                Martial arts, ring bouts and playground-settlers – these are the C64 and Amiga fighting
+                games where timing and combos matter more than button mashing. Well… usually.
+            </p>
+        </section>
 
-    <ul class="game-list" id="gameList"></ul>
+        <section id="genre-grid" class="games-grid" data-genre="fighting"></section>
 
-    <div id="socialMount"></div>
+    </main>
+
 </div>
 
 <script>
-fetch("../games.json")
-.then(r => r.json())
-.then(games => {
-    const filtered = games.filter(g => g.genre === "Fighting");
-    document.getElementById("gameList").innerHTML =
-        filtered.map(g => `<li><a href="${g.link}" target="_blank">${g.title}</a></li>`).join("");
-
-    ccgSearchInit("genreSearch", "genreResults", filtered);
-    document.getElementById("socialMount").innerHTML = ccgSocialBar();
-});
+    window.CCG_GENRE = "fighting";
 </script>
 
 </body>
 </html>
-
