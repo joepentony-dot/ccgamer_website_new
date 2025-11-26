@@ -5,59 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Racing Games | Cheeky Commodore Gamer</title>
 
-    <link rel="stylesheet" href="../css/engine.css">
-    <script defer src="../js/engine.js"></script>
+    <link rel="stylesheet" href="../../css/engine.css">
+    <script defer src="../../js/engine.js"></script>
+    <script defer src="../../js/load-games.js"></script>
 
-    <meta name="description" content="Top-down racers, into-the-screen speedfests and more – racing games for the Commodore 64 and Amiga.">
+    <meta name="description" content="High-speed racers, time trials and burning rubber across the Commodore 64 and Amiga.">
 </head>
+
 <body>
 
-    <canvas id="starfield"></canvas>
-    <div class="crt-overlay"></div>
+<canvas id="starfield"></canvas>
+<div class="crt-overlay"></div>
 
-    <div class="container">
+<div class="container">
 
-        <div class="commodore-header">
-            <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
-                 alt="Cheeky Commodore Gamer Logo"
-                 style="max-width:150px; image-rendering:pixelated; margin-bottom:10px;">
+    <div class="commodore-header">
+        <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
+             alt="Cheeky Commodore Gamer Logo"
+             style="max-width:150px; image-rendering:pixelated; margin-bottom:10px;">
 
-            <h3>**** COMMODORE 64 BASIC V2 ****</h3>
-            <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
+        <h3>**** COMMODORE 64 BASIC V2 ****</h3>
+        <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
 
-            <div class="nav-bar">
-                <a href="index.html" class="nav-link play-sound">GENRES</a>
-                <a href="collections/index.html" class="nav-link play-sound">SPECIALS</a>
-                <a href="complete-index.html" class="nav-link play-sound">INDEX</a>
-                <a href="../resources/quiz.html" class="nav-link play-sound">QUIZ</a>
-                <a href="../retro-events.html" class="nav-link play-sound">EVENTS</a>
-                <a href="../about.html" class="nav-link play-sound">ABOUT</a>
-                <a href="../contact.html" class="nav-link play-sound">CONTACT</a>
-            </div>
+        <div class="nav-bar">
+            <a href="../index.html" class="nav-link play-sound">GENRES</a>
+            <a href="../collections/index.html" class="nav-link play-sound">SPECIALS</a>
+            <a href="../complete-index.html" class="nav-link play-sound">INDEX</a>
+            <a href="../../resources/quiz.html" class="nav-link play-sound">QUIZ</a>
+            <a href="../../retro-events.html" class="nav-link play-sound">EVENTS</a>
+            <a href="../../about.html" class="nav-link play-sound">ABOUT</a>
+            <a href="../../contact.html" class="nav-link play-sound">CONTACT</a>
         </div>
-
-        <main>
-
-            <section class="page-intro">
-                <h1>Racing Games</h1>
-                <p>
-                    Grids, gear changes and slightly alarming cornering – this page covers the C64 and Amiga
-                    racing titles featured on the channel.
-                </p>
-            </section>
-
-            <section id="genre-grid"
-                     class="games-grid"
-                     data-genre="racing">
-            </section>
-
-        </main>
-
     </div>
 
-    <script>
-        window.CCG_GENRE = "racing";
-    </script>
+    <main>
+
+        <section class="page-intro">
+            <h1>Racing Games</h1>
+            <p>From top-down racers to 3D speed demons — classic high-octane retro racing titles.</p>
+        </section>
+
+        <section id="genre-grid" class="games-grid" data-genre="racing"></section>
+
+    </main>
+
+</div>
+
+<script>
+    window.CCG_GENRE = "racing";
+</script>
+
 </body>
 </html>
-
