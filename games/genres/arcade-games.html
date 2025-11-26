@@ -7,9 +7,11 @@
 
     <link rel="stylesheet" href="../../css/engine.css">
     <script defer src="../../js/engine.js"></script>
+    <script defer src="../../js/load-games.js"></script>
 
-    <meta name="description" content="Fast-paced arcade-style games on the Commodore 64 and Amiga – pure joystick action and high-score chasing.">
+    <meta name="description" content="Arcade classics and action-packed coin-op style games for the Commodore 64 and Amiga.">
 </head>
+
 <body>
 
 <canvas id="starfield"></canvas>
@@ -18,11 +20,9 @@
 <div class="container">
 
     <div class="commodore-header">
-
         <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
              alt="Cheeky Commodore Gamer Logo"
              style="max-width:150px; image-rendering:pixelated; margin-bottom:10px;">
-
         <h3>**** COMMODORE 64 BASIC V2 ****</h3>
         <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
 
@@ -35,21 +35,15 @@
             <a href="../../about.html" class="nav-link play-sound">ABOUT</a>
             <a href="../../contact.html" class="nav-link play-sound">CONTACT</a>
         </div>
-
     </div>
 
     <main>
-
         <section class="page-intro">
             <h1>Arcade Games</h1>
-            <p>
-                Quick-fire, coin-op inspired action – this section is all about the arcade-style C64 and
-                Amiga games that feel right at home in a smoky cab with a sticky joystick.
-            </p>
+            <p>Fast, fierce and straight to the action — classic arcade gameplay from the C64 & Amiga.</p>
         </section>
 
         <section id="genre-grid" class="games-grid" data-genre="arcade"></section>
-
     </main>
 
 </div>
@@ -60,72 +54,3 @@
 
 </body>
 </html>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Arcade Games | Cheeky Commodore Gamer</title>
-<link rel="stylesheet" href="../css/engine.css">
-<script defer src="../js/engine.js"></script>
-</head>
-<body>
-
-<canvas id="starfield"></canvas>
-<div class="crt-overlay"></div>
-
-<div class="container">
-
-    <div class="commodore-header">
-        <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png" style="max-width:140px; image-rendering:pixelated;">
-        <h3>**** COMMODORE 64 BASIC V2 ****</h3>
-        <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
-
-        <div class="nav-bar">
-            <a href="../index.html" class="nav-link play-sound">HOME</a>
-            <a href="collections/index.html" class="nav-link play-sound">SPECIALS</a>
-            <a href="index.html" class="nav-link play-sound">GENRES</a>
-            <a href="complete-index.html" class="nav-link play-sound">INDEX</a>
-            <a href="../resources/quiz.html" class="nav-link play-sound">QUIZ</a>
-            <a href="../retro-events.html" class="nav-link play-sound">EVENTS</a>
-            <a href="../about.html" class="nav-link play-sound">ABOUT</a>
-            <a href="../contact.html" class="nav-link play-sound">CONTACT</a>
-        </div>
-    </div>
-
-    <h1>Arcade Games</h1>
-    <p style="text-align:center;">
-        Fast-paced action titles inspired by the golden arcade cabinets of the 80s.
-    </p>
-
-    <div class="search-wrapper">
-        <input type="text" class="search-input" id="genreSearch" placeholder="SEARCH THIS GENRE...">
-        <div class="search-results" id="genreResults"></div>
-    </div>
-
-    <ul class="game-list" id="gameList"></ul>
-
-    <div id="socialMount"></div>
-
-</div>
-
-<script>
-fetch("../games.json")
-.then(r => r.json())
-.then(games => {
-    const list = document.getElementById("gameList");
-    const filtered = games.filter(g => g.genre === "Arcade");
-
-    list.innerHTML = filtered
-        .map(g => `<li><a href="${g.link}" target="_blank">${g.title}</a></li>`)
-        .join("");
-
-    ccgSearchInit("genreSearch", "genreResults", filtered);
-    document.getElementById("socialMount").innerHTML = ccgSocialBar();
-});
-</script>
-
-</body>
-</html>
-
-
