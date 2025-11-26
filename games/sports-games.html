@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sports Games | Cheeky Commodore Gamer</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+  
+body {
+  margin: 0;
+  padding: 20px;
+  background: #120026;
+  color: #ffffff;
+  font-family: "Open Sans", Arial, sans-serif;
+}
+
+.ccg-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: #160033;
+  border: 3px solid #ffd54a;
+  padding: 24px 24px 32px;
+  box-shadow: 0 0 24px rgba(0,0,0,0.8);
+}
+
+.ccg-title {
+  font-family: "Press Start 2P", system-ui, sans-serif;
+  font-size: 20px;
+  text-align: center;
+  margin: 0 0 10px;
+  text-transform: uppercase;
+}
+
+.ccg-subtitle {
+  text-align: center;
+  font-size: 14px;
+  margin: 0 0 14px;
+}
+
+.ccg-divider {
+  border-top: 2px dashed #ffd54a;
+  margin: 14px 0 10px;
+}
+
+.ccg-breadcrumb {
+  text-align: center;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+
+.ccg-breadcrumb a {
+  color: #ffd54a;
+  text-decoration: none;
+}
+
+.ccg-breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+#game-search {
+  width: 100%;
+  padding: 8px 10px;
+  margin: 4px 0 18px;
+  border: 2px solid #ffd54a;
+  background: #000;
+  color: #fff;
+  font-size: 14px;
+}
+
+.game-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.game-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.18);
+}
+
+.game-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.game-meta {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.game-links a {
+  font-size: 12px;
+  margin-left: 8px;
+  color: #ffd54a;
+  text-decoration: none;
+}
+
+.game-links a:hover {
+  text-decoration: underline;
+}
+
+.error {
+  color: #ffb3b3;
+  text-align: center;
+  margin-top: 20px;
+}
+
+  </style>
+</head>
+<body>
+  <div class="ccg-page" data-ccg-genre="Sports Games">
+    <h1 class="ccg-title">SPORTS GAMES</h1>
+    <p class="ccg-subtitle">Select a game below to watch the video, grab links and info, and relive some classic sports games.</p>
+    <div class="ccg-divider"></div>
+    <div class="ccg-breadcrumb">
+      <a href="../index.html">Home</a> • <a href="../full-game-index.html">All Games</a>
+    </div>
+    <div id="games-container">Loading games…</div>
+  </div>
+  <script src="../js/load-games.js"></script>
+</body>
+</html>
