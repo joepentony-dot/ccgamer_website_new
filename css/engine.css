@@ -1,3 +1,277 @@
+/* ================================
+   CHEEKY COMMODORE GAMER – ENGINE CSS
+   Global UI • CRT • Starfield • Layout
+   ================================ */
 
-/* Minimal engine.css placeholder */
-body { font-family: 'VT323', monospace; background:#000; color:#b8c76f; }
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
+
+/* -------------------------------
+   COLOUR PALETTE — C64
+-------------------------------- */
+:root {
+    --c64-blue: #352879;
+    --c64-light-blue: #6c5eb5;
+    --c64-text: #b8c76f;
+    --c64-red: #880000;
+    --c64-green: #55cc55;
+    --c64-cyan: #00ffff;
+    --c64-yellow: #feff6c;
+    --c64-purple: #cc44cc;
+    --c64-white: #ffffff;
+    --c64-black: #000000;
+    --c64-orange: #d55e00; 
+    --c64-brown: #664400;
+}
+
+/* -------------------------------
+   GLOBAL BASE UI SETTINGS
+-------------------------------- */
+body {
+    font-family: 'VT323', monospace;
+    background-color: var(--c64-blue);
+    color: var(--c64-text);
+    margin: 0;
+    padding: 10px;
+    text-transform: uppercase;
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--c64-blue); }
+::-webkit-scrollbar-thumb { background: var(--c64-light-blue); border: 1px solid #fff; }
+
+/* -------------------------------
+   STARFIELD BACKGROUND
+-------------------------------- */
+#starfield {
+    position: fixed;
+    top: 0; 
+    left: 0; 
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    opacity: 0.3;
+}
+
+/* -------------------------------
+   CRT OVERLAY
+-------------------------------- */
+.crt-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: 
+        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%),
+        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+    z-index: 999;
+}
+
+/* -------------------------------
+   CONTAINER (ALL PAGES)
+-------------------------------- */
+.container {
+    width: 95%;
+    max-width: 1000px;
+    margin: auto;
+    background: rgba(53, 40, 121, 0.9);
+    border: 4px solid var(--c64-light-blue);
+    padding: 15px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.5);
+    margin-top: 20px;
+    margin-bottom: 50px;
+}
+
+/* -------------------------------
+   HEADER & NAVIGATION
+-------------------------------- */
+.commodore-header {
+    text-align: center;
+    border-bottom: 2px dashed var(--c64-light-blue);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.nav-bar {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.nav-link {
+    color: var(--c64-text);
+    font-size: 1.3rem;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.nav-link:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+/* -------------------------------
+   HEADERS
+-------------------------------- */
+h1 {
+    text-align: center;
+    color: #fff;
+    font-size: 2rem;
+    text-shadow: 0 0 4px #000;
+}
+
+h2 {
+    text-align: center;
+    color: var(--c64-cyan);
+    font-size: 1.6rem;
+    margin-top: 30px;
+    text-shadow: 0 0 5px var(--c64-cyan);
+}
+
+/* -------------------------------
+   RETRO BUTTONS (used everywhere)
+-------------------------------- */
+.btn-retro {
+    background: var(--c64-light-blue);
+    color: #fff;
+    border: 2px solid #fff;
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: 0.1s;
+    text-transform: uppercase;
+    width: 100%;
+}
+
+.btn-retro:hover {
+    background: #fff;
+    color: var(--c64-blue);
+}
+
+.btn-retro:active {
+    transform: translateY(2px);
+}
+
+.btn-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+/* -------------------------------
+   SEARCH COMPONENT (global version)
+-------------------------------- */
+.search-wrapper {
+    margin: 25px auto;
+    position: relative;
+    width: 100%;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.4rem;
+    background: #000;
+    color: var(--c64-text);
+    border: 2px solid var(--c64-light-blue);
+    outline: none;
+}
+
+.search-input:focus {
+    border-color: #fff;
+}
+
+.search-results {
+    display: none;
+    position: absolute;
+    background: #000;
+    width: 100%;
+    border: 2px solid var(--c64-light-blue);
+    border-top: none;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 20;
+}
+
+.search-results.active {
+    display: block;
+}
+
+.result-item {
+    padding: 10px;
+    font-size: 1.2rem;
+    color: #fff;
+    border-bottom: 1px dashed #444;
+    cursor: pointer;
+}
+
+.result-item:hover {
+    background: var(--c64-light-blue);
+}
+
+/* -------------------------------
+   GAME LISTS / INDEX PAGES
+-------------------------------- */
+.game-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.game-list li {
+    padding: 8px;
+    color: #fff;
+    border-bottom: 1px dashed #333;
+}
+
+.game-list a {
+    color: var(--c64-cyan);
+    text-decoration: none;
+}
+
+.game-list a:hover {
+    text-decoration: underline;
+}
+
+/* -------------------------------
+   FOOTER / SOCIAL LINKS
+-------------------------------- */
+.social-bar {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 20px;
+}
+
+.social-bar a {
+    color: var(--c64-cyan);
+    font-size: 1.8rem;
+    text-decoration: none;
+}
+
+.social-bar a:hover {
+    color: #fff;
+}
+
+/* -------------------------------
+   MOBILE FIXES
+-------------------------------- */
+@media(max-width: 600px) {
+    .container {
+        padding: 10px;
+    }
+    .nav-link {
+        font-size: 1.1rem;
+    }
+    h1 { font-size: 1.6rem; }
+}
