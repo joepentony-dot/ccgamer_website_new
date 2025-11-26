@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cartridge Games | Cheeky Commodore Gamer</title>
+
+    <link rel="stylesheet" href="../css/engine.css">
+    <script defer src="../js/engine.js"></script>
+
+    <meta name="description" content="Cartridge releases and instant-load titles for the Commodore 64 – fast-and-ready games from the Cheeky Commodore Gamer archive.">
+</head>
+<body>
+
+    <canvas id="starfield"></canvas>
+    <div class="crt-overlay"></div>
+
+    <div class="container">
+
+        <div class="commodore-header">
+            <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
+                 alt="Cheeky Commodore Gamer Logo"
+                 style="max-width:150px; image-rendering:pixelated; margin-bottom:10px;">
+
+            <h3>**** COMMODORE 64 BASIC V2 ****</h3>
+            <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
+
+            <div class="nav-bar">
+                <a href="index.html" class="nav-link play-sound">GENRES</a>
+                <a href="complete-index.html" class="nav-link play-sound">INDEX</a>
+                <a href="../resources/quiz.html" class="nav-link play-sound">QUIZ</a>
+                <a href="../retro-events.html" class="nav-link play-sound">EVENTS</a>
+                <a href="../about.html" class="nav-link play-sound">ABOUT</a>
+                <a href="../contact.html" class="nav-link play-sound">CONTACT</a>
+            </div>
+        </div>
+
+        <main>
+
+            <section class="page-intro">
+                <h1>Cartridge Games</h1>
+                <p>
+                    No tape loading noises here – this page is dedicated to cartridge-based releases and
+                    instant-load showpieces.
+                </p>
+            </section>
+
+            <section id="genre-grid"
+                     class="games-grid"
+                     data-genre="cartridge">
+            </section>
+
+        </main>
+
+    </div>
+
+    <script>
+        window.CCG_GENRE = "cartridge";
+    </script>
+</body>
+</html>
