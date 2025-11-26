@@ -15,7 +15,9 @@
     <link rel="preload" as="audio" href="resources/audio/c64_raster_whoosh.mp3">
     <link rel="preload" as="audio" href="resources/audio/c64_speech_stayawhile.mp3">
 
-    <script defer src="js/engine.js"></script>
+    <!-- IMPORTANT: no 'defer' so ccgSearchInit & ccgSocialBar exist
+         before the inline boot script at the bottom runs -->
+    <script src="js/engine.js"></script>
 
     <style>
         /* PAGE-SPECIFIC OVERRIDES ONLY (very minimal) */
