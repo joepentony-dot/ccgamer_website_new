@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Fighting Games – Cheeky Commodore Gamer</title>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <link href="https://db.onlinewebfonts.com/c/05eb10077a913e99089a693039e6273e?family=Amiga+Topaz" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../engine.css">
+</head>
+<body class="c64-mode" data-ccg-title="FIGHTING GAMES" data-genre="Fighting Games">
+  <canvas id="starfield"></canvas>
+  <div class="crt-overlay"></div>
+  <div id="power-overlay" class="power-switch-overlay"></div>
+
+  <div id="secret-modal" class="secret-modal">
+    <div class="secret-content">
+      <h2 style="margin-bottom:10px;">SYSTEM COMMANDS</h2>
+      <p>TAP TO ACTIVATE OR OPEN CONSOLE:</p>
+      <ul class="secret-list">
+        <li onclick="cheats.sys64738()">SYS64738</li>
+        <li onclick="cheats.pressplay()">PRESS PLAY</li>
+        <li onclick="cheats.zxspectrum()">ZXSPECTRUM</li>
+        <li onclick="cheats.konamicode()">KONAMI CODE</li>
+        <li onclick="cheats.cheeky()">CHEEKY</li>
+      </ul>
+      <button class="btn-retro" style="margin-top:10px;" onclick="openCommandConsole()">ENTER CODES</button>
+      <button class="btn-retro" style="margin-top:10px;" onclick="closeSecret()">CLOSE</button>
+    </div>
+  </div>
+
+  <div id="command-console">
+    <div class="console-row">
+      <input type="text" id="console-input" placeholder="TYPE CODE..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <button class="console-btn btn-execute" onclick="submitConsole()">EXECUTE</button>
+      <button class="console-btn btn-cancel" onclick="closeCommandConsole()">X</button>
+    </div>
+  </div>
+
+  <div class="mode-switch" onclick="toggleMode()">
+    <i class="fa-solid fa-desktop mode-icon c64-icon" title="C64 Mode"></i>
+    <span class="mode-label">C64 MODE</span>
+    <i class="fa-solid fa-computer mode-icon amiga-icon" title="Amiga Mode"></i>
+  </div>
+
+  <div class="container">
+    <div class="amiga-title-bar">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="title-gadgets">
+          <div class="gadget close-gadget"></div>
+          <div class="gadget"></div>
+        </div>
+        <span>Cheeky Commodore Gamer - Workbench 1.3</span>
+      </div>
+    </div>
+
+    <div class="commodore-header">
+      <h3 id="system-text">**** COMMODORE 64 BASIC V2 ****</h3>
+      <p id="ram-text">64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
+      <div class="nav-bar">
+        <a href="../index.html" class="nav-link">HOME</a>
+        <a href="../games/index.html" class="nav-link">GENRES</a>
+        <a href="../full-game-index.html" class="nav-link">INDEX</a>
+        <a href="../Retro Quiz.html" class="nav-link">QUIZ</a>
+        <a href="../Retro Events.html" class="nav-link">EVENTS</a>
+        <a href="../Emulator Guide.html" class="nav-link">EMULATOR</a>
+        <a href="../Interactive Guide.html" class="nav-link">INTERACTIVE</a>
+        <a href="../About.html" class="nav-link">ABOUT</a>
+        <a href="../Contact.html" class="nav-link">CONTACT</a>
+        <a class="nav-link" onclick="openSecret()">?[HELP]</a>
+      </div>
+    </div>
+
+    <div style="text-align:center;">
+      <h1 id="typewriter-text"></h1>
+    </div>
+
+    
+<h2 class="section-title"><i class="fa-solid fa-gamepad"></i> Fighting Games</h2>
+<p>Games for the <strong>Fighting Games</strong> category will appear below, driven from the shared games.json file.</p>
+<div id="games-container"></div>
+
+
+    <h2 class="section-title"><i class="fa-solid fa-users"></i> COMMUNITY LINKS</h2>
+    <div class="social-strip">
+      <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" class="social-link-item"><i class="fa-brands fa-youtube"></i>YOUTUBE</a>
+      <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank" class="social-link-item"><i class="fa-brands fa-patreon"></i>PATREON</a>
+      <a href="https://facebook.com/cheekycommodoregamer" target="_blank" class="social-link-item"><i class="fa-brands fa-facebook"></i>FACEBOOK</a>
+      <a href="https://twitter.com/CheekyC64Gamer" target="_blank" class="social-link-item"><i class="fa-brands fa-x-twitter"></i>TWITTER</a>
+      <a href="https://discord.gg/83Xw9ktAn4" target="_blank" class="social-link-item"><i class="fa-brands fa-discord"></i>DISCORD</a>
+      <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" class="social-link-item"><i class="fa-brands fa-paypal"></i>PAYPAL</a>
+    </div>
+  </div>
+
+  <script src="../js/engine.js"></script>
+  <script src="../js/load-games.js"></script>
+</body>
+</html>
