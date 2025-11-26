@@ -53,4 +53,10 @@ fetch("../games.json")
     document.getElementById("gameList").innerHTML =
         filtered.map(g => `<li><a href="${g.link}" target="_blank">${g.title}</a></li>`).join("");
 
-    ccgSearchIn
+    ccgSearchInit("genreSearch", "genreResults", filtered);
+    document.getElementById("socialMount").innerHTML = ccgSocialBar();
+});
+</script>
+
+</body>
+</html>
