@@ -1,0 +1,72 @@
+/* ============================================================
+   PHASE C – PART 6 : CRT Curvature + Phosphor Glow Package
+   ============================================================ */
+
+/* === GLOBAL CRT PERSPECTIVE === */
+body.site-ready {
+    perspective: 1200px;
+}
+
+/* === CURVED SCREEN WRAPPER === */
+.crt-curved {
+    transform: rotateX(1deg) rotateY(-1deg);
+    transform-style: preserve-3d;
+}
+
+/* === SCANLINE + PHOSPHOR BLEND === */
+.crt-overlay::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.05) 0px,
+        rgba(255,255,255,0.05) 1px,
+        rgba(0,0,0,0) 2px
+    );
+    mix-blend-mode: overlay;
+    opacity: 0.4;
+}
+
+/* === PHOSPHOR GLOW FOR LIGHT TEXT === */
+.phosphor,
+h1, h2, h3 {
+    text-shadow:
+        0 0 4px rgba(0,255,120,0.35),
+        0 0 8px rgba(0,255,120,0.20),
+        0 0 12px rgba(0,255,120,0.15);
+}
+
+/* ============================================================
+   AMIGA MODE (Soft Bloom, Pastel, Gentle Brightening)
+   ============================================================ */
+body[data-theme="amiga"] .game-thumb {
+    filter: contrast(105%) brightness(108%) saturate(105%);
+    transition: filter 0.2s ease, transform 0.15s ease;
+}
+
+body[data-theme="amiga"] .game-thumb:hover {
+    filter: contrast(120%) brightness(120%) saturate(115%);
+    transform: scale(1.03);
+}
+
+/* ============================================================
+   C64 MODE (Green Tint, Higher Contrast, Retro Glow)
+   ============================================================ */
+body[data-theme="c64"] .game-thumb {
+    filter: hue-rotate(100deg) brightness(110%) contrast(105%);
+    transition: filter 0.2s ease, transform 0.15s ease;
+}
+
+body[data-theme="c64"] .game-thumb:hover {
+    filter: hue-rotate(100deg) brightness(125%) contrast(115%);
+    transform: scale(1.03);
+}
+
+/* ============================================================
+   UNIVERSAL THUMBNAIL POLISH (Safe for all themes)
+   ============================================================ */
+.game-thumb {
+    border-radius: 6px;
+}
