@@ -5,52 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arcade Games | Cheeky Commodore Gamer</title>
 
+    <!-- Engine + Phase C CSS -->
     <link rel="stylesheet" href="../../css/engine.css">
-    <script defer src="../../js/engine.js"></script>
-    <script defer src="../../js/load-games.js"></script>
+    <link rel="stylesheet" href="../../resources/css/main.css">
 
-    <meta name="description" content="Arcade classics and action-packed coin-op style games for the Commodore 64 and Amiga.">
+    <script defer src="../../js/engine.js"></script>
 </head>
 
 <body>
 
-<canvas id="starfield"></canvas>
-<div class="crt-overlay"></div>
+    <canvas id="starfield"></canvas>
+    <div class="crt-overlay"></div>
 
-<div class="container">
+    <div class="container">
 
-    <div class="commodore-header">
-        <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
-             alt="Cheeky Commodore Gamer Logo"
-             style="max-width:150px; image-rendering:pixelated; margin-bottom:10px;">
-        <h3>**** COMMODORE 64 BASIC V2 ****</h3>
-        <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
-
-        <div class="nav-bar">
-            <a href="../index.html" class="nav-link play-sound">GENRES</a>
-            <a href="../collections/index.html" class="nav-link play-sound">SPECIALS</a>
-            <a href="../complete-index.html" class="nav-link play-sound">INDEX</a>
-            <a href="../../resources/quiz.html" class="nav-link play-sound">QUIZ</a>
-            <a href="../../retro-events.html" class="nav-link play-sound">EVENTS</a>
-            <a href="../../about.html" class="nav-link play-sound">ABOUT</a>
-            <a href="../../contact.html" class="nav-link play-sound">CONTACT</a>
+        <div class="commodore-header" style="margin-bottom:20px;">
+            <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
+                 alt="Logo"
+                 style="max-width:150px; image-rendering:pixelated;">
+            <h3>**** ARCADE GAMES ****</h3>
         </div>
+
+        <h1>ARCADE</h1>
+        <div id="gameList"></div>
+
+        <h2>NAVIGATION</h2>
+        <div class="btn-grid">
+            <a href="index.html" class="btn-retro">BACK TO GENRES</a>
+            <a href="../../index.html" class="btn-retro">HOME</a>
+        </div>
+
     </div>
-
-    <main>
-        <section class="page-intro">
-            <h1>Arcade Games</h1>
-            <p>Fast, fierce and straight to the action — classic arcade gameplay from the C64 & Amiga.</p>
-        </section>
-
-        <section id="genre-grid" class="games-grid" data-genre="arcade"></section>
-    </main>
-
-</div>
-
-<script>
-    window.CCG_GENRE = "arcade";
-</script>
 
 </body>
 </html>
