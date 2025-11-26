@@ -3,55 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cartridge Games | Cheeky Commodore Gamer</title>
+    <title>C64 Cartridge Games | Cheeky Commodore Gamer</title>
 
+    <!-- Engine + Phase C CSS -->
     <link rel="stylesheet" href="../../css/engine.css">
-    <script defer src="../../js/engine.js"></script>
-    <script defer src="../../js/load-games.js"></script>
+    <link rel="stylesheet" href="../../resources/css/main.css">
 
-    <meta name="description" content="Commodore 64 games released on cartridge format. Fast loading, instant action!">
+    <script defer src="../../js/engine.js"></script>
 </head>
 
 <body>
 
-<canvas id="starfield"></canvas>
-<div class="crt-overlay"></div>
+    <canvas id="starfield"></canvas>
+    <div class="crt-overlay"></div>
 
-<div class="container">
-    <div class="commodore-header">
-        <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
-             alt="Cheeky Commodore Gamer Logo"
-             style="max-width:150px; image-rendering:pixelated; margin-bottom:10px;">
-        
-        <h3>**** COMMODORE 64 BASIC V2 ****</h3>
-        <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
+    <div class="container">
 
-        <div class="nav-bar">
-            <a href="../index.html" class="nav-link play-sound">GENRES</a>
-            <a href="index.html" class="nav-link play-sound btn-emphasise">SPECIALS</a>
-            <a href="../complete-index.html" class="nav-link play-sound">INDEX</a>
-            <a href="../../resources/quiz.html" class="nav-link play-sound">QUIZ</a>
-            <a href="../../retro-events.html" class="nav-link play-sound">EVENTS</a>
-            <a href="../../about.html" class="nav-link play-sound">ABOUT</a>
-            <a href="../../contact.html" class="nav-link play-sound">CONTACT</a>
+        <div class="commodore-header" style="margin-bottom:20px;">
+            <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
+                 alt="CCG Logo"
+                 style="max-width:150px; image-rendering:pixelated;">
+            <h3>**** C64 CARTRIDGE GAMES ****</h3>
         </div>
+
+        <h1>C64 CARTRIDGE GAMES</h1>
+        <p>A selection of games originally distributed on Commodore 64 cartridges.</p>
+
+        <h2>NAVIGATION</h2>
+        <div class="btn-grid">
+            <a href="index.html" class="btn-retro">BACK TO COLLECTIONS</a>
+            <a href="../index.html" class="btn-retro">BROWSE GENRES</a>
+            <a href="../complete-index.html" class="btn-retro">FULL INDEX</a>
+            <a href="../../index.html" class="btn-retro">HOME</a>
+        </div>
+
     </div>
-
-    <main>
-
-        <section class="page-intro">
-            <h1>Cartridge Games</h1>
-            <p>Instant-loading, plug-and-play C64 classics released on physical cartridges.</p>
-        </section>
-
-        <section id="special-grid" class="games-grid" data-collection="cartridge"></section>
-
-    </main>
-</div>
-
-<script>
-    window.CCG_COLLECTION = "cartridge";
-</script>
 
 </body>
 </html>
