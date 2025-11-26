@@ -7,8 +7,11 @@
 
     <link rel="stylesheet" href="../css/engine.css">
     <script defer src="../js/engine.js"></script>
+    <script defer src="../js/load-games.js"></script>
 
-    <meta name="description" content="Browse all Commodore 64 and Amiga game genres on the Cheeky Commodore Gamer website.">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
 <body>
@@ -19,11 +22,9 @@
 <div class="container">
 
     <div class="commodore-header">
-
         <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
-             alt="Cheeky Commodore Gamer Logo"
              style="max-width:150px; image-rendering:pixelated; margin-bottom:10px;">
-
+        
         <h3>**** COMMODORE 64 BASIC V2 ****</h3>
         <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
 
@@ -36,86 +37,121 @@
             <a href="../about.html" class="nav-link play-sound">ABOUT</a>
             <a href="../contact.html" class="nav-link play-sound">CONTACT</a>
         </div>
-
     </div>
 
     <main>
 
-        <section class="page-intro" style="text-align:center;">
+        <section class="page-intro" style="margin-bottom:30px;">
             <h1>Browse Genres</h1>
-            <p>
-                Choose from the full range of Commodore 64 & Amiga genres below.
-                From high-action arcade titles to rich RPG adventures, simply pick your favourite category.
-            </p>
+            <p>Select a game category below to explore every Commodore 64 & Amiga title in that genre.</p>
         </section>
 
-        <section class="btn-grid">
-
-            <a href="genres/action-adventure.html" class="btn-retro play-sound">
-                <i class="fa-solid fa-dungeon"></i> ACTION ADVENTURE
-            </a>
-
-            <a href="genres/adventure-games.html" class="btn-retro play-sound">
-                <i class="fa-solid fa-map"></i> ADVENTURE
-            </a>
-
-            <a href="genres/arcade-games.html" class="btn-retro play-sound">
-                <i class="fa-solid fa-bolt"></i> ARCADE
-            </a>
-
-            <a href="genres/casino-games.html" class="btn-retro play-sound">
-                <i class="fa-solid fa-coins"></i> CASINO
-            </a>
-
-            <a href="genres/fighting-games.html" class="btn-retro play-sound">
-                <i class="fa-solid fa-hand-fist"></i> FIGHTING
-            </a>
-
-            <a href="genres/horror-games.html" class="btn-retro play-sound">
-                <i class="fa-solid fa-ghost"></i> HORROR
-            </a>
-
-            <a href="genres/platform-games.html" class="btn-retro play-sound">
-                <i class="fa-solid fa-stairs"></i> PLATFORM
-            </a>
-
-            <a href="genres/puzzle-games.html" class="btn-retro play-sound">
-                <i class="fa-solid fa-brain"></i> PUZZLE
-            </a>
-
-            <a href="genres/quiz-games.html" class="btn-retro play-sound">
-                <i class="fa-solid fa-question"></i> QUIZ
-            </a>
-
-            <a href="genres/racing-games.html" class="btn-retro play-sound">
-                <i class="fa-solid fa-flag-checkered"></i> RACING
-            </a>
-
-            <a href="genres/rpg-games.html" class="btn-retro play-sound">
-                <i class="fa-solid fa-hat-wizard"></i> RPG
-            </a>
-
-            <a href="genres/shooting-games.html" class="btn-retro play-sound">
-                <i class="fa-solid fa-crosshairs"></i> SHOOTING
-            </a>
-
-            <a href="genres/sports-games.html" class="btn-retro play-sound">
-                <i class="fa-solid fa-futbol"></i> SPORTS
-            </a>
-
-            <a href="genres/strategy-games.html" class="btn-retro play-sound">
-                <i class="fa-solid fa-chess-knight"></i> STRATEGY
-            </a>
-
-            <a href="genres/miscellaneous.html" class="btn-retro play-sound">
-                <i class="fa-solid fa-shuffle"></i> MISCELLANEOUS
-            </a>
-
-        </section>
+        <!-- ========= GENRE GRID ========== -->
+        <section id="genreCards" class="genre-grid"></section>
 
     </main>
 
 </div>
+
+<script>
+// ============================================
+// GENRE DEFINITIONS (cards data)
+// ============================================
+const CCG_GENRE_CARDS = [
+    { key: "arcade", label: "Arcade Games", icon: "fa-gamepad", desc: "Action-packed arcade classics." },
+    { key: "action-adventure", label: "Action Adventure Games", icon: "fa-person-running", desc: "Exploration mixed with action." },
+    { key: "adventure", label: "Adventure Games", icon: "fa-compass", desc: "Story-driven interactive journeys." },
+    { key: "shooting", label: "Shooting Games", icon: "fa-bullseye", desc: "Shooters and blasting mayhem." },
+    { key: "racing", label: "Racing Games", icon: "fa-car-side", desc: "High-speed retro racing." },
+    { key: "rpg", label: "Role Playing Games", icon: "fa-hat-wizard", desc: "Stats, quests, and fantasy worlds." },
+    { key: "strategy", label: "Strategy Games", icon: "fa-chess-board", desc: "Tactical thinking and planning." },
+    { key: "casino", label: "Casino Games", icon: "fa-dice", desc: "Cards, slots, and numbers." },
+    { key: "quiz", label: "Quiz Games", icon: "fa-question", desc: "Trivia and brain teasers." },
+    { key: "puzzle", label: "Puzzle Games", icon: "fa-puzzle-piece", desc: "Logic and pattern matching." },
+    { key: "horror", label: "Horror Games", icon: "fa-ghost", desc: "Spooky retro chills." },
+    { key: "platform", label: "Platform Games", icon: "fa-stairs", desc: "Jumping and climbing action." },
+    { key: "sports", label: "Sports Games", icon: "fa-football", desc: "Sports from A to Z." },
+    { key: "fighting", label: "Fighting Games", icon: "fa-hand-fist", desc: "One-on-one and brawlers." },
+    { key: "misc", label: "Miscellaneous", icon: "fa-shapes", desc: "Oddities and uncategorised titles." }
+];
+
+// ============================================
+// BUILD THE GENRE PAGE
+// ============================================
+document.addEventListener("DOMContentLoaded", async () => {
+
+    const container = document.getElementById("genreCards");
+    const games = await ccgFetchGames();
+
+    container.innerHTML = "";
+
+    CCG_GENRE_CARDS.forEach(genre => {
+
+        const count = games.filter(g => g.genres.includes(genre.key)).length;
+
+        const card = document.createElement("a");
+        card.className = "genre-card play-sound";
+        card.href = `genres/${genre.key}-games.html`;
+
+        card.innerHTML = `
+            <div class="genre-icon">
+                <i class="fa-solid ${genre.icon}"></i>
+            </div>
+            <h3>${genre.label}</h3>
+            <p class="genre-desc">${genre.desc}</p>
+            <p class="genre-count">${count} Games</p>
+        `;
+
+        container.appendChild(card);
+    });
+});
+
+</script>
+
+<style>
+/* ======== GENRE GRID STYLING ======== */
+
+.genre-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 25px;
+    margin-bottom: 60px;
+}
+
+.genre-card {
+    background: rgba(0,0,0,0.6);
+    border: 2px solid var(--c64-light-blue);
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    color: var(--c64-light-blue);
+    text-decoration: none;
+    box-shadow: 0 0 10px rgba(0,255,255,0.15);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.genre-card:hover {
+    transform: scale(1.045);
+    box-shadow: 0 0 18px rgba(0,255,255,0.4);
+}
+
+.genre-icon {
+    font-size: 3rem;
+    color: var(--c64-light-blue);
+    margin-bottom: 10px;
+}
+
+.genre-desc {
+    color: var(--c64-light-blue);
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+}
+
+.genre-count {
+    font-size: 0.85rem;
+    opacity: 0.85;
+}
+</style>
 
 </body>
 </html>
