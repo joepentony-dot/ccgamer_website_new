@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Casino Games | Cheeky Commodore Gamer</title>
-<link rel="stylesheet" href="../css/engine.css">
-<script defer src="../js/engine.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casino Games | Cheeky Commodore Gamer</title>
+
+    <link rel="stylesheet" href="../../css/engine.css">
+    <script defer src="../../js/engine.js"></script>
+    <script defer src="../../js/load-games.js"></script>
+
+    <meta name="description" content="Card games, slot machines, gambling simulators and casino-inspired titles for the C64 and Amiga.">
 </head>
+
 <body>
 
 <canvas id="starfield"></canvas>
@@ -15,50 +21,36 @@
 
     <div class="commodore-header">
         <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
-             style="max-width:140px; image-rendering:pixelated;">
+             alt="Cheeky Commodore Gamer Logo"
+             style="max-width:150px; image-rendering:pixelated; margin-bottom:10px;">
         <h3>**** COMMODORE 64 BASIC V2 ****</h3>
         <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
 
         <div class="nav-bar">
-            <a href="../index.html" class="nav-link play-sound">HOME</a>
-            <a href="index.html" class="nav-link play-sound">GENRES</a>
-            <a href="collections/index.html" class="nav-link play-sound">SPECIALS</a>
-            <a href="complete-index.html" class="nav-link play-sound">INDEX</a>
-            <a href="../resources/quiz.html" class="nav-link play-sound">QUIZ</a>
-            <a href="../retro-events.html" class="nav-link play-sound">EVENTS</a>
-            <a href="../about.html" class="nav-link play-sound">ABOUT</a>
-            <a href="../contact.html" class="nav-link play-sound">CONTACT</a>
+            <a href="../index.html" class="nav-link play-sound">GENRES</a>
+            <a href="../collections/index.html" class="nav-link play-sound">SPECIALS</a>
+            <a href="../complete-index.html" class="nav-link play-sound">INDEX</a>
+            <a href="../../resources/quiz.html" class="nav-link play-sound">QUIZ</a>
+            <a href="../../retro-events.html" class="nav-link play-sound">EVENTS</a>
+            <a href="../../about.html" class="nav-link play-sound">ABOUT</a>
+            <a href="../../contact.html" class="nav-link play-sound">CONTACT</a>
         </div>
     </div>
 
-    <h1>Casino Games</h1>
-    <p style="text-align:center;">
-        Poker, blackjack, fruit machines and more — C64 and Amiga takes on classic casino thrills.
-    </p>
+    <main>
+        <section class="page-intro">
+            <h1>Casino Games</h1>
+            <p>Blackjack, fruit machines, poker and other casino favourites recreated on 8-bit and 16-bit hardware.</p>
+        </section>
 
-    <div class="search-wrapper">
-        <input type="text" class="search-input" id="genreSearch" placeholder="SEARCH THIS GENRE...">
-        <div class="search-results" id="genreResults"></div>
-    </div>
+        <section id="genre-grid" class="games-grid" data-genre="casino"></section>
+    </main>
 
-    <ul class="game-list" id="gameList"></ul>
-
-    <div id="socialMount"></div>
 </div>
 
 <script>
-fetch("../games.json")
-.then(r => r.json())
-.then(games => {
-    const filtered = games.filter(g => g.genre === "Casino");
-    document.getElementById("gameList").innerHTML =
-        filtered.map(g => `<li><a href="${g.link}" target="_blank">${g.title}</a></li>`).join("");
-
-    ccgSearchInit("genreSearch", "genreResults", filtered);
-    document.getElementById("socialMount").innerHTML = ccgSocialBar();
-});
+    window.CCG_GENRE = "casino";
 </script>
 
 </body>
 </html>
-
