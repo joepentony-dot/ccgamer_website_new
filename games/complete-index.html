@@ -1,1 +1,114 @@
-<!DOCTYPE html><html><body>Complete Index placeholder</body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Game Index | Cheeky Commodore Gamer</title>
+
+    <link rel="stylesheet" href="../css/engine.css">
+    <script defer src="../js/engine.js"></script>
+    <script defer src="../js/load-games.js"></script>
+
+    <meta name="description" content="Complete alphabetical index of all Commodore 64 & Amiga games in the Cheeky Commodore Gamer database.">
+</head>
+
+<body>
+
+<canvas id="starfield"></canvas>
+<div class="crt-overlay"></div>
+
+<div class="container">
+
+    <!-- CRT / C64 Header -->
+    <div class="commodore-header">
+
+        <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
+             alt="Cheeky Commodore Gamer Logo"
+             style="max-width:150px; image-rendering:pixelated; margin-bottom:10px;">
+
+        <h3>**** COMMODORE 64 BASIC V2 ****</h3>
+        <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
+
+        <!-- Navigation -->
+        <div class="nav-bar">
+            <a href="index.html" class="nav-link play-sound">GENRES</a>
+            <a href="collections/index.html" class="nav-link play-sound">SPECIALS</a>
+            <a href="complete-index.html" class="nav-link play-sound btn-emphasise">INDEX</a>
+            <a href="../resources/quiz.html" class="nav-link play-sound">QUIZ</a>
+            <a href="../retro-events.html" class="nav-link play-sound">EVENTS</a>
+            <a href="../about.html" class="nav-link play-sound">ABOUT</a>
+            <a href="../contact.html" class="nav-link play-sound">CONTACT</a>
+        </div>
+
+    </div>
+
+    <!-- PAGE INTRO -->
+    <main>
+
+        <section class="page-intro" style="text-align:center;">
+            <h1>Complete Game Index</h1>
+            <p>
+                An A–Z archive of every Commodore 64 & Amiga game in the database. Use the search bar or scroll to explore the full list.
+            </p>
+        </section>
+
+        <!-- SEARCH BAR -->
+        <h2>SEARCH ALL TITLES</h2>
+        <div class="search-wrapper">
+            <input type="text"
+                   id="globalSearch"
+                   class="search-input"
+                   placeholder="SEARCH THE FULL INDEX...">
+            <div id="globalSearchResults" class="search-results"></div>
+        </div>
+
+        <!-- A–Z GAME LIST -->
+        <section id="fullIndexList" class="full-index-list">
+            <p style="text-align:center; color:var(--c64-light-blue); margin-top:40px;">
+                LOADING FULL INDEX...
+            </p>
+        </section>
+
+    </main>
+
+</div>
+
+<!-- INITIALISE GLOBAL SEARCH & INDEX -->
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const games = await ccgFetchGames(); // loaded from games.json
+        renderFullIndex(games);
+        ccgSearchInit("globalSearch", "globalSearchResults", games);
+    } catch (err) {
+        console.error("Error loading full index:", err);
+        document.getElementById("fullIndexList").innerHTML =
+            "<p style='color:red; text-align:center;'>ERROR LOADING GAME DATA</p>";
+    }
+});
+
+/* renderFullIndex — Build A–Z list */
+function renderFullIndex(games) {
+    const container = document.getElementById("fullIndexList");
+    container.innerHTML = "";
+
+    const sorted = games.sort((a, b) => a.title.localeCompare(b.title));
+
+    sorted.forEach(g => {
+        const item = document.createElement("div");
+        item.className = "index-item";
+
+        item.innerHTML = `
+            <a href="game-pages/${g.slug}.html" class="index-link play-sound">
+                <span class="index-title">${g.title}</span>
+                <span class="index-system">${g.system}</span>
+            </a>
+        `;
+
+        container.appendChild(item);
+    });
+}
+</script>
+
+</body>
+</html>
