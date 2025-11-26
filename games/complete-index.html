@@ -5,91 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Complete Game Index | Cheeky Commodore Gamer</title>
 
+    <!-- Engine + Phase C CSS -->
     <link rel="stylesheet" href="../css/engine.css">
-    <script defer src="../js/engine.js"></script>
-    <script defer src="../js/complete-index.js"></script>
+    <link rel="stylesheet" href="../resources/css/main.css">
 
-    <meta name="description" content="Full searchable and sortable index of all Commodore 64 & Amiga games on Cheeky Commodore Gamer. Browse by system, genre, title and more.">
+    <script defer src="../js/engine.js"></script>
 </head>
 
 <body>
 
-<canvas id="starfield"></canvas>
-<div class="crt-overlay"></div>
+    <canvas id="starfield"></canvas>
+    <div class="crt-overlay"></div>
+    
+    <div class="container">
 
-<div class="container">
-
-    <div class="commodore-header">
-        <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
-             style="max-width:150px; image-rendering:pixelated; margin-bottom:10px;">
-        
-        <h3>**** COMMODORE 64 BASIC V2 ****</h3>
-        <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
-
-        <div class="nav-bar">
-            <a href="index.html" class="nav-link play-sound">GENRES</a>
-            <a href="collections/index.html" class="nav-link play-sound">SPECIALS</a>
-            <a href="complete-index.html" class="nav-link play-sound btn-emphasise">INDEX</a>
-            <a href="../resources/quiz.html" class="nav-link play-sound">QUIZ</a>
-            <a href="../retro-events.html" class="nav-link play-sound">EVENTS</a>
-            <a href="../about.html" class="nav-link play-sound">ABOUT</a>
-            <a href="../contact.html" class="nav-link play-sound">CONTACT</a>
+        <div class="commodore-header" style="margin-bottom:20px;">
+            <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
+                 alt="Logo"
+                 style="max-width:150px; image-rendering:pixelated;">
+            <h3>**** COMPLETE GAME INDEX ****</h3>
         </div>
+
+        <h1>FULL GAME INDEX</h1>
+        <p>The complete searchable list of Commodore 64 and Amiga titles.</p>
+
+        <div class="search-wrapper">
+            <input type="text"
+                   class="search-input"
+                   id="indexSearch"
+                   placeholder="SEARCH TITLES...">
+            <div class="search-results" id="indexSearchResults"></div>
+        </div>
+
+        <div id="fullIndexList"></div>
+
+        <h2>NAVIGATION</h2>
+        <div class="btn-grid">
+            <a href="index.html" class="btn-retro">BACK TO GAME MENU</a>
+            <a href="../index.html" class="btn-retro">HOME</a>
+        </div>
+
     </div>
 
-    <main>
-
-        <section class="page-intro" style="margin-bottom: 30px;">
-            <h1>Complete Game Index</h1>
-            <p>Browse the entire Commodore 64 & Amiga game database. Search, filter, sort — your command line to retro gaming.</p>
-        </section>
-
-        <!-- ===== SEARCH + SORT + VIEW MODE ===== -->
-        <div class="index-controls">
-
-            <!-- SEARCH -->
-            <div class="search-wrapper">
-                <input type="text"
-                       id="indexSearch"
-                       class="search-input"
-                       placeholder="SEARCH ALL GAMES...">
-            </div>
-
-            <!-- SORT -->
-            <select id="sortSelect" class="retro-select">
-                <option value="title-asc">Title (A → Z)</option>
-                <option value="title-desc">Title (Z → A)</option>
-                <option value="system">System (C64 → Amiga)</option>
-            </select>
-
-            <!-- VIEW SWITCH -->
-            <div class="view-switch">
-                <button id="gridBtn" class="view-btn active">GRID</button>
-                <button id="listBtn" class="view-btn">LIST</button>
-            </div>
-
-        </div>
-
-        <!-- ===== GRID VIEW ===== -->
-        <section id="gridView" class="games-grid"></section>
-
-        <!-- ===== LIST VIEW ===== -->
-        <section id="listView" class="list-view" style="display:none;">
-            <table class="list-table">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>System</th>
-                        <th>Genres</th>
-                    </tr>
-                </thead>
-                <tbody id="listBody"></tbody>
-            </table>
-        </section>
-
-    </main>
-
-</div>
+    <script>
+        // Initialise search once engine.js loads
+        document.addEventListener("DOMContentLoaded", () => {
+            if (typeof ccgFetchGames === "function") {
+                ccgFetchGames().then(games => {
+                    ccgSearchInit("indexSearch", "indexSearchResults", games);
+                });
+            }
+        });
+    </script>
 
 </body>
 </html>
