@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPG Games | Cheeky Commodore Gamer</title>
+    <title>Role Playing Games | Cheeky Commodore Gamer</title>
 
     <link rel="stylesheet" href="../../css/engine.css">
     <script defer src="../../js/engine.js"></script>
+    <script defer src="../../js/load-games.js"></script>
 
-    <meta name="description" content="Role-playing adventures for the Commodore 64 and Amiga – questing, stats and exploration.">
+    <meta name="description" content="Role-playing adventures across the C64 and Amiga – quests, characters, stats and deep fantasy worlds.">
 </head>
+
 <body>
 
 <canvas id="starfield"></canvas>
@@ -19,7 +21,9 @@
 
     <div class="commodore-header">
         <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
-             alt="Logo" style="max-width:150px; image-rendering:pixelated; margin-bottom:10px;">
+             alt="Cheeky Commodore Gamer Logo"
+             style="max-width:150px; image-rendering:pixelated; margin-bottom:10px;">
+
         <h3>**** COMMODORE 64 BASIC V2 ****</h3>
         <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
 
@@ -35,20 +39,21 @@
     </div>
 
     <main>
+
         <section class="page-intro">
-            <h1>RPG Games</h1>
-            <p>
-                Fantasy quests, sci-fi epics and dungeon crawls – this genre highlights the role-playing
-                adventures that defined C64 and Amiga escapism.
-            </p>
+            <h1>Role Playing Games</h1>
+            <p>Deep quests, character progression and fantasy adventures brought to life on the C64 and Amiga.</p>
         </section>
 
         <section id="genre-grid" class="games-grid" data-genre="rpg"></section>
+
     </main>
 
 </div>
 
-<script>window.CCG_GENRE = "rpg";</script>
+<script>
+    window.CCG_GENRE = "rpg";
+</script>
 
 </body>
 </html>
