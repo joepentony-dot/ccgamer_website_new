@@ -1,196 +1,605 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Browse Game Genres | Cheeky Commodore Gamer</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Browse Commodore 64 and Amiga games by genre in the Cheeky Commodore Gamer database.">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-<style>
-:root {
-    --c64-blue: #352879;
-    --c64-light-blue: #6c5eb5;
-    --c64-text: #b8c76f;
-    --c64-red: #880000;
-    --c64-green: #55cc55;
-    --c64-cyan: #00ffff;
-}
-*{box-sizing:border-box;}
-body{
-    background:#352879;
-    color:#b8c76f;
-    font-family:'VT323',monospace;
-    text-transform:uppercase;
-    margin:0;
-    padding:10px;
-    display:flex;
-    justify-content:center;
-}
-.container{
-    max-width:900px;
-    width:100%;
-    border:4px solid #6c5eb5;
-    padding:20px;
-    background:rgba(53,40,121,0.95);
-    box-shadow:0 0 20px rgba(0,0,0,0.5);
-    margin-top:10px;
-    margin-bottom:40px;
-}
-h1{
-    text-align:center;
-    color:#fff;
-    margin-top:0;
-}
-h2{
-    text-align:center;
-    color:#fff;
-    margin-top:25px;
-    margin-bottom:10px;
-    font-size:1.4rem;
-}
-p{
-    text-align:center;
-    font-size:1.1rem;
-}
-.grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:15px;
-    margin-top:20px;
-}
-.btn{
-    background:#6c5eb5;
-    color:#fff;
-    border:2px solid #fff;
-    padding:12px;
-    text-align:center;
-    font-size:1.2rem;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    gap:8px;
-    cursor:pointer;
-    text-decoration:none;
-}
-.btn:hover{
-    background:#fff;
-    color:#352879;
-}
-.icon{
-    width:22px;
-    text-align:center;
-}
-.nav-bar{
-    text-align:center;
-    margin-bottom:10px;
-}
-.nav-bar a{
-    color:var(--c64-text);
-    text-decoration:none;
-    margin:0 5px;
-}
-.nav-bar a:hover{
-    color:#fff;
-    text-decoration:underline;
-}
-hr{
-    border:0;
-    border-top:2px dashed #6c5eb5;
-    margin:25px 0 10px 0;
-}
-@media(max-width:600px){
-    .container{padding:10px 5px;border-width:2px;}
-    .btn{font-size:1.1rem;}
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheeky Commodore Gamer – Browse Game Genres</title>
 
-        /* SOCIAL STRIP */
-        .social-strip {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            background: #111;
-            padding: 10px;
-            justify-content: center;
-            border-bottom: 2px solid #333;
+    <meta name="description" content="Browse Commodore 64 and Amiga games by genre. Action, adventure, sports, racing, horror, shooters and more – all from Cheeky Commodore Gamer.">
+
+    <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games">
+
+    <meta property="og:title" content="Cheeky Commodore Gamer – Games by Genre">
+    <meta property="og:description" content="Explore C64 and Amiga games by genre. From action and arcade through to strategy and RPG.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/games">
+
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --c64-blue: #352879;
+            --c64-light-blue: #6c5eb5;
+            --c64-text: #b8c76f;
+            --c64-red: #880000;
+            --c64-green: #55cc55;
+            --c64-cyan: #00ffff;
+            --c64-yellow: #feff6c;
+            --c64-purple: #cc44cc;
+            --c64-white: #ffffff;
+            --c64-black: #000000;
         }
-        .social-strip .social-link-item {
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--c64-blue);
+            color: var(--c64-text);
+            font-family: 'VT323', monospace;
+            margin: 0;
+            padding: 10px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            text-transform: uppercase;
+            overflow-x: hidden;
+        }
+
+        /* CRT scanline overlay */
+        .crt-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background:
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0,0,0,0.35) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            border: 4px solid var(--c64-light-blue);
+            background-color: rgba(53, 40, 121, 0.95);
+            padding: 15px;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.6);
+            margin-top: 10px;
+            margin-bottom: 30px;
+            margin-left: auto;
+            margin-right: auto;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #fff;
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: normal;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: var(--c64-cyan);
+            margin: 20px 0 10px 0;
+            text-align: center;
+            font-weight: normal;
+            text-shadow: 0 0 5px var(--c64-cyan);
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        a {
             color: #fff;
             text-decoration: none;
-            font-family: 'VT323', monospace;
-            font-size: 1.1rem;
-            padding: 6px 12px;
-            border-radius: 4px;
-            background: #222;
-            border: 1px solid #444;
-            transition: 0.2s;
-        }
-        .social-strip .social-link-item:hover {
-            background: #444;
-            border-color: #888;
-        }
-        .social-strip i {
-            margin-right: 6px;
-            font-size: 1.2em;
         }
 
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .commodore-header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px dashed var(--c64-light-blue);
+            padding-bottom: 10px;
+        }
+
+        .commodore-header img {
+            max-width: 150px;
+            image-rendering: pixelated;
+            margin-bottom: 10px;
+        }
+
+        .commodore-header h3 {
+            margin: 0 0 8px 0;
+            font-size: 1.2rem;
+        }
+
+        .commodore-header p {
+            margin: 0 0 10px 0;
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 10px;
+            border-top: 2px solid var(--c64-light-blue);
+            padding-top: 10px;
+        }
+
+        .nav-link {
+            font-size: 1.1rem;
+            color: var(--c64-text);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+        .intro-text {
+            margin-bottom: 10px;
+        }
+
+        /* Genre grid */
+        .genre-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .genre-card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid var(--c64-light-blue);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 90px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.7);
+            transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+        }
+
+        .genre-card:hover {
+            background: rgba(0, 0, 0, 0.7);
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.7);
+        }
+
+        .genre-title {
+            font-size: 1.4rem;
+            color: #fff;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .genre-title i {
+            font-size: 1.2rem;
+            color: var(--c64-cyan);
+        }
+
+        .genre-desc {
+            font-size: 1.05rem;
+            color: var(--c64-text);
+        }
+
+        .badge-new {
+            display: inline-block;
+            font-size: 0.9rem;
+            padding: 1px 6px;
+            border: 1px solid var(--c64-yellow);
+            color: var(--c64-yellow);
+            margin-left: 6px;
+        }
+
+        .helper-links {
+            margin-top: 25px;
+            border-top: 1px dashed var(--c64-light-blue);
+            padding-top: 15px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .helper-links a {
+            margin: 0 8px;
+            color: var(--c64-cyan);
+        }
+
+        .helper-links a:hover {
+            color: #fff;
+        }
+
+        /* Social strip */
+        .social-strip-wrapper {
+            border-top: 1px dashed rgba(108, 94, 181, 0.6);
+            margin-top: 25px;
+            padding-top: 12px;
+        }
+
+        .social-heading {
+            font-size: 1.2rem;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .social-strip {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .social-link-item {
+            color: var(--c64-light-blue);
+            font-size: 1.1rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .social-link-item i {
+            font-size: 1.2rem;
+        }
+
+        .social-link-item:hover {
+            color: #fff;
+            background: rgba(0, 0, 0, 0.4);
+            border-color: var(--c64-light-blue);
+            text-decoration: none;
+            transform: translateY(-1px);
+            text-shadow: 0 0 4px var(--c64-light-blue);
+        }
+
+        .blink {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 0;
+            }
+            .container {
+                padding: 10px 5px;
+                margin-top: 5px;
+                width: 100%;
+                border-width: 2px;
+            }
+            .nav-bar {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 5px;
+                justify-items: center;
+            }
+            .nav-link {
+                font-size: 1rem;
+            }
+            .genre-card {
+                min-height: 80px;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- SOCIAL STRIP -->
-    <div class="social-strip">
-        <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" class="social-link-item play-sound">
-            <i class="fa-brands fa-youtube"></i> YOUTUBE
-        </a>
-        <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank" class="social-link-item play-sound">
-            <i class="fa-brands fa-patreon"></i> PATREON
-        </a>
-        <a href="https://facebook.com/cheekycommodoregamer" target="_blank" class="social-link-item play-sound">
-            <i class="fa-brands fa-facebook"></i> FACEBOOK
-        </a>
-        <a href="https://twitter.com/CheekyC64Gamer" target="_blank" class="social-link-item play-sound">
-            <i class="fa-brands fa-x-twitter"></i> TWITTER
-        </a>
-        <a href="https://discord.gg/83Xw9ktAn4" target="_blank" class="social-link-item play-sound">
-            <i class="fa-brands fa-discord"></i> DISCORD
-        </a>
-        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" class="social-link-item play-sound">
-            <i class="fa-brands fa-paypal"></i> DONATE
-        </a>
+
+    <div class="crt-overlay"></div>
+
+    <div class="container">
+        <div class="commodore-header">
+            <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
+                 alt="Cheeky Commodore Gamer Logo - Retro Gaming Hub">
+            <h3>**** COMMODORE 64 BASIC V2 ****</h3>
+            <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
+
+            <div class="nav-bar">
+                <a href="/ccgamer_website_new/index.html" class="nav-link play-sound">HOME</a>
+                <a href="/ccgamer_website_new/games/index.html" class="nav-link play-sound">GENRES</a>
+                <a href="/ccgamer_website_new/games/complete-index.html" class="nav-link play-sound">FULL INDEX</a>
+                <a href="/ccgamer_website_new/Retro%20Quiz.html" class="nav-link play-sound">QUIZ</a>
+                <a href="/ccgamer_website_new/Retro%20Events.html" class="nav-link play-sound">EVENTS</a>
+                <a href="/ccgamer_website_new/About.html" class="nav-link play-sound">ABOUT</a>
+                <a href="/ccgamer_website_new/Contact.html" class="nav-link play-sound">CONTACT</a>
+            </div>
+        </div>
+
+        <h1>BROWSE GAME GENRES</h1>
+        <p class="intro-text">
+            Pick a category below to dive into hand-picked <strong>Commodore 64</strong> and <strong>Amiga</strong> games.
+            New titles are added regularly, so keep checking back.
+        </p>
+
+        <h2>SELECT A CATEGORY</h2>
+
+        <div class="genre-grid">
+            <!-- ACTION & ADVENTURE -->
+            <a href="/ccgamer_website_new/games/action-adventure-games.html" class="genre-card play-sound">
+                <div class="genre-title">
+                    <i class="fa-solid fa-dragon"></i>
+                    ACTION &amp; ADVENTURE
+                </div>
+                <div class="genre-desc">
+                    Cinematic romps, dungeon crawls and story-driven quests.
+                </div>
+            </a>
+
+            <!-- ADVENTURE / TEXT / POINT & CLICK -->
+            <a href="/ccgamer_website_new/games/adventure-games.html" class="genre-card play-sound">
+                <div class="genre-title">
+                    <i class="fa-solid fa-scroll"></i>
+                    ADVENTURE / TEXT
+                </div>
+                <div class="genre-desc">
+                    Classic text adventures and point-and-click escapades.
+                </div>
+            </a>
+
+            <!-- ARCADE -->
+            <a href="/ccgamer_website_new/games/arcade-games.html" class="genre-card play-sound">
+                <div class="genre-title">
+                    <i class="fa-solid fa-gamepad"></i>
+                    ARCADE
+                </div>
+                <div class="genre-desc">
+                    Quick-fire coin-op style action – instant one-more-go material.
+                </div>
+            </a>
+
+            <!-- FIGHTING -->
+            <a href="/ccgamer_website_new/games/fighting-games.html" class="genre-card play-sound">
+                <div class="genre-title">
+                    <i class="fa-solid fa-hand-fist"></i>
+                    FIGHTING
+                </div>
+                <div class="genre-desc">
+                    One-on-one scraps, brawlers and anything with a crunchy punch.
+                </div>
+            </a>
+
+            <!-- SHOOTERS -->
+            <a href="/ccgamer_website_new/games/shooting-games.html" class="genre-card play-sound">
+                <div class="genre-title">
+                    <i class="fa-solid fa-space-shuttle"></i>
+                    SHOOT 'EM UP
+                </div>
+                <div class="genre-desc">
+                    Horizontal, vertical and into-the-screen blasting sessions.
+                </div>
+            </a>
+
+            <!-- RACING -->
+            <a href="/ccgamer_website_new/games/racing-games.html" class="genre-card play-sound">
+                <div class="genre-title">
+                    <i class="fa-solid fa-flag-checkered"></i>
+                    RACING
+                </div>
+                <div class="genre-desc">
+                    Burn rubber, skid round hairpins and chase lap records.
+                </div>
+            </a>
+
+            <!-- SPORTS -->
+            <a href="/ccgamer_website_new/games/sports-games.html" class="genre-card play-sound">
+                <div class="genre-title">
+                    <i class="fa-solid fa-futbol"></i>
+                    SPORTS
+                </div>
+                <div class="genre-desc">
+                    Football, tennis, golf, Olympics and everything in between.
+                </div>
+            </a>
+
+            <!-- PLATFORM -->
+            <a href="/ccgamer_website_new/games/platform-games.html" class="genre-card play-sound">
+                <div class="genre-title">
+                    <i class="fa-solid fa-person-running"></i>
+                    PLATFORM
+                </div>
+                <div class="genre-desc">
+                    Leaps of faith, ladders, lifts and perilous pits aplenty.
+                </div>
+            </a>
+
+            <!-- PUZZLE -->
+            <a href="/ccgamer_website_new/games/puzzle-games.html" class="genre-card play-sound">
+                <div class="genre-title">
+                    <i class="fa-solid fa-puzzle-piece"></i>
+                    PUZZLE
+                </div>
+                <div class="genre-desc">
+                    Brain-teasers, falling blocks and head-scratching conundrums.
+                </div>
+            </a>
+
+            <!-- QUIZ -->
+            <a href="/ccgamer_website_new/games/quiz-games.html" class="genre-card play-sound">
+                <div class="genre-title">
+                    <i class="fa-solid fa-circle-question"></i>
+                    QUIZ &amp; TRIVIA
+                </div>
+                <div class="genre-desc">
+                    Put your knowledge to the test with retro quiz oddities.
+                </div>
+            </a>
+
+            <!-- RPG -->
+            <a href="/ccgamer_website_new/games/rpg-games.html" class="genre-card play-sound">
+                <div class="genre-title">
+                    <i class="fa-solid fa-wand-sparkles"></i>
+                    RPG
+                </div>
+                <div class="genre-desc">
+                    Party building, levelling up and epic quests across strange lands.
+                </div>
+            </a>
+
+            <!-- STRATEGY -->
+            <a href="/ccgamer_website_new/games/strategy-games.html" class="genre-card play-sound">
+                <div class="genre-title">
+                    <i class="fa-solid fa-chess-board"></i>
+                    STRATEGY
+                </div>
+                <div class="genre-desc">
+                    Tactical battles, management sims and long-term planning.
+                </div>
+            </a>
+
+            <!-- HORROR -->
+            <a href="/ccgamer_website_new/games/horror-games.html" class="genre-card play-sound">
+                <div class="genre-title">
+                    <i class="fa-solid fa-ghost"></i>
+                    HORROR
+                </div>
+                <div class="genre-desc">
+                    Creepy crawlers, haunted mansions and late-night frights.
+                </div>
+            </a>
+
+            <!-- CASINO -->
+            <a href="/ccgamer_website_new/games/casino-games.html" class="genre-card play-sound">
+                <div class="genre-title">
+                    <i class="fa-solid fa-dice"></i>
+                    CASINO &amp; CARD
+                </div>
+                <div class="genre-desc">
+                    Slots, roulette, card sharks and virtual fruit machines.
+                </div>
+            </a>
+
+            <!-- LICENSED -->
+            <a href="/ccgamer_website_new/games/licensed-games.html" class="genre-card play-sound">
+                <div class="genre-title">
+                    <i class="fa-solid fa-film"></i>
+                    LICENSED
+                </div>
+                <div class="genre-desc">
+                    Games based on films, TV, comics and other big-name brands.
+                </div>
+            </a>
+
+            <!-- SPECIAL / BPJS / ODDITIES -->
+            <a href="/ccgamer_website_new/games/special-categories.html" class="genre-card play-sound">
+                <div class="genre-title">
+                    <i class="fa-solid fa-skull-crossbones"></i>
+                    SPECIAL CATEGORIES
+                </div>
+                <div class="genre-desc">
+                    Banned lists, curiosities and extra-weird entries.
+                </div>
+            </a>
+
+            <!-- CARTRIDGE -->
+            <a href="/ccgamer_website_new/games/cartridge-games.html" class="genre-card play-sound">
+                <div class="genre-title">
+                    <i class="fa-solid fa-memory"></i>
+                    CARTRIDGE GAMES
+                </div>
+                <div class="genre-desc">
+                    Plug-in carts and instant-load favourites from the 8-bit days.
+                </div>
+            </a>
+
+            <!-- BPJS LIST DIRECT -->
+            <a href="/ccgamer_website_new/games/bpjs-games.html" class="genre-card play-sound">
+                <div class="genre-title">
+                    <i class="fa-solid fa-ban"></i>
+                    BPJS / INDEXED GAMES
+                </div>
+                <div class="genre-desc">
+                    Controversial titles that ended up on various watch-lists.
+                </div>
+            </a>
+        </div>
+
+        <div class="helper-links">
+            Prefer searching by title? Jump to the
+            <a href="/ccgamer_website_new/games/complete-index.html" class="play-sound">A–Z FULL INDEX</a>
+            or return to the
+            <a href="/ccgamer_website_new/index.html" class="play-sound">MAIN MENU</a>.
+        </div>
+
+        <div class="social-strip-wrapper">
+            <div class="social-heading">FOLLOW &amp; SUPPORT <span class="blink">▶</span></div>
+            <div class="social-strip">
+                <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" class="social-link-item play-sound">
+                    <i class="fa-brands fa-youtube"></i> YOUTUBE
+                </a>
+                <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank" class="social-link-item play-sound">
+                    <i class="fa-brands fa-patreon"></i> PATREON
+                </a>
+                <a href="https://facebook.com/cheekycommodoregamer" target="_blank" class="social-link-item play-sound">
+                    <i class="fa-brands fa-facebook"></i> FACEBOOK
+                </a>
+                <a href="https://twitter.com/CheekyC64Gamer" target="_blank" class="social-link-item play-sound">
+                    <i class="fa-brands fa-x-twitter"></i> TWITTER
+                </a>
+                <a href="https://discord.gg/83Xw9ktAn4" target="_blank" class="social-link-item play-sound">
+                    <i class="fa-brands fa-discord"></i> DISCORD
+                </a>
+                <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" class="social-link-item play-sound">
+                    <i class="fa-brands fa-paypal"></i> PAYPAL
+                </a>
+            </div>
+        </div>
     </div>
 
-<div class="container">
-    <div class="nav-bar">
-        <a href="/">HOME</a>
-    </div>
-    <h1>BROWSE GAME GENRES</h1>
-    <p>CHOOSE A GENRE TO SEE ALL RELATED C64 & AMIGA TITLES.</p>
-    <div class="grid">
-        <a class="btn" href="games/action-adventure-games.html"><i class="fa-solid fa-swords icon"></i> ACTION ADVENTURE GAMES</a>
-        <a class="btn" href="games/adventure-games.html"><i class="fa-solid fa-compass icon"></i> ADVENTURE GAMES</a>
-        <a class="btn" href="games/arcade-games.html"><i class="fa-solid fa-gamepad icon"></i> ARCADE GAMES</a>
-        <a class="btn" href="games/casino-games.html"><i class="fa-solid fa-dice icon"></i> CASINO GAMES</a>
-        <a class="btn" href="games/fighting-games.html"><i class="fa-solid fa-hand-fist icon"></i> FIGHTING GAMES</a>
-        <a class="btn" href="games/horror-games.html"><i class="fa-solid fa-ghost icon"></i> HORROR GAMES</a>
-        <a class="btn" href="games/platform-games.html"><i class="fa-solid fa-shoe-prints icon"></i> PLATFORM GAMES</a>
-        <a class="btn" href="games/puzzle-games.html"><i class="fa-solid fa-puzzle-piece icon"></i> PUZZLE GAMES</a>
-        <a class="btn" href="games/quiz-games.html"><i class="fa-solid fa-circle-question icon"></i> QUIZ GAMES</a>
-        <a class="btn" href="games/racing-games.html"><i class="fa-solid fa-flag-checkered icon"></i> RACING GAMES</a>
-        <a class="btn" href="games/rpg-games.html"><i class="fa-solid fa-hat-wizard icon"></i> ROLE PLAYING GAMES</a>
-        <a class="btn" href="games/shooting-games.html"><i class="fa-solid fa-bullseye icon"></i> SHOOTING GAMES</a>
-        <a class="btn" href="games/sports-games.html"><i class="fa-solid fa-football icon"></i> SPORTS GAMES</a>
-        <a class="btn" href="games/strategy-games.html"><i class="fa-solid fa-chess-knight icon"></i> STRATEGY GAMES</a>
-    </div>
+    <script>
+        // Tiny click "beep" for links with .play-sound
+        function playClickSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const o = ctx.createOscillator();
+                const g = ctx.createGain();
+                o.connect(g);
+                g.connect(ctx.destination);
+                o.type = 'square';
+                o.frequency.setValueAtTime(150, ctx.currentTime);
+                o.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.1);
+                g.gain.setValueAtTime(0.12, ctx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+                o.start();
+                o.stop(ctx.currentTime + 0.12);
+            } catch (e) {
+                // fail silently on older browsers
+            }
+        }
 
-    <hr>
-
-    <h2>SPECIAL CATEGORIES</h2>
-    <p>THESE LISTS ARE DRIVEN BY THE SAME MASTER DATABASE BUT AREN'T STANDARD GENRES.</p>
-    <div class="grid">
-        <a class="btn" href="games/bpjs-games.html"><i class="fa-solid fa-database icon"></i> BPJS INDEXED GAMES</a>
-        <a class="btn" href="games/licensed-games.html"><i class="fa-solid fa-certificate icon"></i> LICENSED GAMES</a>
-        <a class="btn" href="games/cartridge-games.html"><i class="fa-solid fa-memory icon"></i> CARTRIDGE GAMES</a>
-    </div>
-</div>
+        document.querySelectorAll('.play-sound').forEach(el => {
+            el.addEventListener('click', playClickSound);
+        });
+    </script>
 </body>
 </html>
