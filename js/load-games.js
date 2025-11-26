@@ -1,13 +1,15 @@
 
 async function ccgFetchGames() {
-  const response = await fetch('/data/games.json');
+  // JSON is stored at /data/games.json relative to the site root.
+  // From /games/*.html we need to go up one level.
+  const response = await fetch('../data/games.json');
   if (!response.ok) {
     throw new Error('Failed to load games.json');
   }
   return await response.json();
 }
 
-// Utility: render list into a container
+// Utility: render a list of games into a container
 function ccgRenderGames(list, container) {
   container.innerHTML = '';
 
@@ -23,14 +25,19 @@ function ccgRenderGames(list, container) {
     const li = document.createElement('li');
     li.className = 'game-item';
 
-    const title = document.createElement('h3');
-    title.textContent = game.title;
-    li.appendChild(title);
+    const left = document.createElement('div');
 
-    const meta = document.createElement('p');
+    const title = document.createElement('div');
+    title.className = 'game-title';
+    title.textContent = game.title || '';
+    left.appendChild(title);
+
+    const meta = document.createElement('div');
     meta.className = 'game-meta';
     meta.textContent = (game.genres || []).join(' • ');
-    li.appendChild(meta);
+    left.appendChild(meta);
+
+    li.appendChild(left);
 
     const links = document.createElement('div');
     links.className = 'game-links';
@@ -40,7 +47,7 @@ function ccgRenderGames(list, container) {
       yt.href = 'https://www.youtube.com/watch?v=' + game.videoId;
       yt.target = '_blank';
       yt.rel = 'noopener noreferrer';
-      yt.textContent = 'Watch on YouTube';
+      yt.textContent = 'Watch';
       links.appendChild(yt);
     }
 
@@ -53,6 +60,24 @@ function ccgRenderGames(list, container) {
       links.appendChild(lemon);
     }
 
+    if (game.pdfUrl) {
+      const pdf = document.createElement('a');
+      pdf.href = game.pdfUrl;
+      pdf.target = '_blank';
+      pdf.rel = 'noopener noreferrer';
+      pdf.textContent = 'Info';
+      links.appendChild(pdf);
+    }
+
+    if (game.diskLinks) {
+      const disk = document.createElement('a');
+      disk.href = game.diskLinks;
+      disk.target = '_blank';
+      disk.rel = 'noopener noreferrer';
+      disk.textContent = 'Download';
+      links.appendChild(disk);
+    }
+
     li.appendChild(links);
     ul.appendChild(li);
   });
@@ -60,7 +85,7 @@ function ccgRenderGames(list, container) {
   container.appendChild(ul);
 }
 
-// Hook for A–Z index page
+// A–Z index page (search + full list)
 async function ccgInitIndexPage() {
   try {
     const games = await ccgFetchGames();
@@ -68,11 +93,11 @@ async function ccgInitIndexPage() {
     const searchInput = document.querySelector('#game-search');
 
     let current = games.slice().sort((a, b) =>
-      (a.sortTitle || a.title).localeCompare(b.sortTitle || b.title)
+      (a.sortTitle || a.title || '').localeCompare(b.sortTitle || b.title || '')
     );
 
     function applyFilter() {
-      const term = (searchInput.value || '').toLowerCase();
+      const term = (searchInput && searchInput.value || '').toLowerCase();
       const filtered = current.filter(g =>
         (g.title || '').toLowerCase().includes(term) ||
         (g.sortTitle || '').toLowerCase().includes(term)
@@ -94,7 +119,7 @@ async function ccgInitIndexPage() {
   }
 }
 
-// Hook for genre pages
+// Genre-specific page
 async function ccgInitGenrePage(genreName) {
   try {
     const games = await ccgFetchGames();
@@ -102,7 +127,7 @@ async function ccgInitGenrePage(genreName) {
     const filtered = games.filter(g =>
       (g.genres || []).some(gen => gen.toLowerCase() === genreName.toLowerCase())
     ).sort((a, b) =>
-      (a.sortTitle || a.title).localeCompare(b.sortTitle || b.title)
+      (a.sortTitle || a.title || '').localeCompare(b.sortTitle || b.title || '')
     );
     ccgRenderGames(filtered, container);
   } catch (err) {
