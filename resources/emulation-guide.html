@@ -1,1 +1,80 @@
-<!DOCTYPE html><html><body>Emulation Guide placeholder</body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emulation Guide | Cheeky Commodore Gamer</title>
+
+    <!-- Engine + Phase C CSS -->
+    <link rel="stylesheet" href="../css/engine.css">
+    <link rel="stylesheet" href="css/main.css">
+
+    <script defer src="../js/engine.js"></script>
+
+    <style>
+        .content-box {
+            padding: 20px;
+            border: 2px solid var(--c64-light-blue);
+            border-radius: 8px;
+            background: rgba(0,0,0,0.6);
+            margin-top: 20px;
+        }
+        h2 {
+            color: var(--c64-light-blue);
+        }
+        p {
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="starfield"></canvas>
+    <div class="crt-overlay"></div>
+
+    <div class="container">
+        
+        <div class="commodore-header">
+            <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
+                 alt="Emulation Logo"
+                 style="max-width:150px; image-rendering:pixelated;">
+            <h3>**** EMULATION GUIDE ****</h3>
+        </div>
+
+        <div class="content-box">
+
+            <h2>Getting Started</h2>
+            <p>This guide explains how to emulate the Commodore 64 and Amiga using recommended emulators.</p>
+
+            <h2>Commodore 64 (VICE)</h2>
+            <p>
+                Download VICE from the official build archives.<br>
+                Load a `.d64`, `.t64`, or `.prg` file to begin.
+            </p>
+
+            <h2>Amiga (WinUAE / FS-UAE)</h2>
+            <p>
+                Use Kickstart ROMs and ADF disk images.<br>
+                Configure CPU, Chip RAM, and audio for best results.
+            </p>
+
+            <h2>Troubleshooting</h2>
+            <p>
+                If games run too fast, enable “Exact Cycle Emulation”.<br>
+                If audio crackles, reduce latency settings.
+            </p>
+
+        </div>
+
+        <!-- NAVIGATION -->
+        <h2>NAVIGATION</h2>
+        <div class="btn-grid">
+            <a href="../index.html" class="btn-retro">HOME</a>
+            <a href="../games/index.html" class="btn-retro">BROWSE GAMES</a>
+        </div>
+
+    </div>
+
+</body>
+</html>
