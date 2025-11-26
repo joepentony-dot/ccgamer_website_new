@@ -5,57 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Top Picks | Cheeky Commodore Gamer</title>
 
-    <link rel="stylesheet" href="../css/engine.css">
-    <script defer src="../js/engine.js"></script>
+    <link rel="stylesheet" href="../../css/engine.css">
+    <script defer src="../../js/engine.js"></script>
+    <script defer src="../../js/load-games.js"></script>
 
-    <meta name="description" content="Cheeky Commodore Gamer’s personal top-pick Commodore 64 and Amiga titles – the games that really stood out.">
+    <meta name="description" content="Hand-picked favourites, community-loved titles and all-time classics from the C64 & Amiga.">
 </head>
+
 <body>
 
-    <canvas id="starfield"></canvas>
-    <div class="crt-overlay"></div>
+<canvas id="starfield"></canvas>
+<div class="crt-overlay"></div>
 
-    <div class="container">
+<div class="container">
+    <div class="commodore-header">
+        <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
+             alt="Cheeky Commodore Gamer Logo"
+             style="max-width:150px; image-rendering:pixelated; margin-bottom:10px;">
+        
+        <h3>**** COMMODORE 64 BASIC V2 ****</h3>
+        <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
 
-        <div class="commodore-header">
-            <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
-                 alt="Cheeky Commodore Gamer Logo"
-                 style="max-width:150px; image-rendering:pixelated; margin-bottom:10px;">
-
-            <h3>**** COMMODORE 64 BASIC V2 ****</h3>
-            <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
-
-            <div class="nav-bar">
-                <a href="index.html" class="nav-link play-sound">GENRES</a>
-                <a href="complete-index.html" class="nav-link play-sound">INDEX</a>
-                <a href="../resources/quiz.html" class="nav-link play-sound">QUIZ</a>
-                <a href="../retro-events.html" class="nav-link play-sound">EVENTS</a>
-                <a href="../about.html" class="nav-link play-sound">ABOUT</a>
-                <a href="../contact.html" class="nav-link play-sound">CONTACT</a>
-            </div>
+        <div class="nav-bar">
+            <a href="../index.html" class="nav-link play-sound">GENRES</a>
+            <a href="index.html" class="nav-link play-sound btn-emphasise">SPECIALS</a>
+            <a href="../complete-index.html" class="nav-link play-sound">INDEX</a>
+            <a href="../../resources/quiz.html" class="nav-link play-sound">QUIZ</a>
+            <a href="../../retro-events.html" class="nav-link play-sound">EVENTS</a>
+            <a href="../../about.html" class="nav-link play-sound">ABOUT</a>
+            <a href="../../contact.html" class="nav-link play-sound">CONTACT</a>
         </div>
-
-        <main>
-
-            <section class="page-intro">
-                <h1>Top Picks</h1>
-                <p>
-                    The cream of the C64 and Amiga crop – games that earned a big thumbs up and still get
-                    regular re-loads today.
-                </p>
-            </section>
-
-            <section id="genre-grid"
-                     class="games-grid"
-                     data-genre="top-picks">
-            </section>
-
-        </main>
-
     </div>
 
-    <script>
-        window.CCG_GENRE = "top-picks";
-    </script>
+    <main>
+
+        <section class="page-intro">
+            <h1>Top Picks</h1>
+            <p>The best of the best. Curated favourites and games that defined an era.</p>
+        </section>
+
+        <section id="special-grid" class="games-grid" data-collection="top-picks"></section>
+
+    </main>
+</div>
+
+<script>
+    window.CCG_COLLECTION = "top-picks";
+</script>
+
 </body>
 </html>
