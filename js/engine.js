@@ -1,131 +1,145 @@
-/* ===============================================
-   CHEEKY COMMODORE GAMER – ENGINE JS
-   Starfield • CRT • Navigation • Shared Logic
-   =============================================== */
+// =========================================================
+//  C64 / Amiga Boot Sequence Engine (Phase C - Part 3)
+// =========================================================
 
-// ------------------------------
-// STARFIELD BACKGROUND
-// ------------------------------
-const starCanvas = document.getElementById("starfield");
-if (starCanvas) {
-    const ctx = starCanvas.getContext("2d");
-    let stars = [];
-
-    function resizeStarCanvas() {
-        starCanvas.width = window.innerWidth;
-        starCanvas.height = window.innerHeight;
-        createStars();
-    }
-
-    function createStars() {
-        stars = [];
-        for (let i = 0; i < 100; i++) {
-            stars.push({
-                x: Math.random() * starCanvas.width,
-                y: Math.random() * starCanvas.height,
-                size: Math.random() * 2,
-                speed: Math.random() * 3 + 0.5
-            });
-        }
-    }
-
-    function animateStars() {
-        ctx.clearRect(0, 0, starCanvas.width, starCanvas.height);
-        ctx.fillStyle = "#fff";
-        stars.forEach(s => {
-            ctx.fillRect(s.x, s.y, s.size, s.size);
-            s.y += s.speed;
-            if (s.y > starCanvas.height) s.y = 0;
-        });
-        requestAnimationFrame(animateStars);
-    }
-
-    window.addEventListener("resize", resizeStarCanvas);
-    resizeStarCanvas();
-    animateStars();
-}
-
-// ------------------------------
-// RETRO CLICK SOUND
-// ------------------------------
-function playClickSound() {
-    try {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        const ctx = new AudioCtx();
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-
-        o.connect(g);
-        g.connect(ctx.destination);
-        o.type = "square";
-        o.frequency.value = 140;
-        g.gain.value = 0.08;
-
-        o.start();
-        o.stop(ctx.currentTime + 0.12);
-    } catch (e) {}
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll(".play-sound")
-        .forEach(el => el.addEventListener("click", playClickSound));
+window.addEventListener("DOMContentLoaded", () => {
+    ccgInitBoot();
 });
 
-// ------------------------------
-// SEARCH BOX LOGIC (shared)
-// ------------------------------
-window.ccgSearchInit = function(searchInputId, resultsBoxId, dataSource) {
+// GLOBAL STATE
+let ccgBootFinished = false;
+let ccgCurrentTheme = "c64"; // default fallback
+let ccgAudioEnabled = true;
 
-    const input = document.getElementById(searchInputId);
-    const results = document.getElementById(resultsBoxId);
+// ---------------------------------------------------------
+// MAIN BOOT SEQUENCE
+// ---------------------------------------------------------
 
-    if (!input || !results || !dataSource) return;
+async function ccgInitBoot() {
+    try {
+        await ccgLoadSavedTheme();
+        await ccgBootIntro();
+        ccgEnableSite();
+    } catch (err) {
+        console.error("Boot Error:", err);
+        ccgEnableSite(); // continue anyway
+    }
+}
 
-    input.addEventListener("input", () => {
-        const q = input.value.toLowerCase().trim();
-        results.innerHTML = "";
+// ---------------------------------------------------------
+// LOAD SAVED THEME
+// ---------------------------------------------------------
 
-        if (q.length < 2) {
-            results.classList.remove("active");
-            return;
+async function ccgLoadSavedTheme() {
+    const saved = localStorage.getItem("ccgTheme");
+    if (saved) ccgCurrentTheme = saved;
+    document.body.setAttribute("data-theme", ccgCurrentTheme);
+}
+
+// ---------------------------------------------------------
+// BOOT INTRO LOGIC
+// ---------------------------------------------------------
+
+async function ccgBootIntro() {
+    if (ccgBootFinished) return;
+
+    const bootContainer = document.querySelector(".boot-sequence");
+    const bootText = document.querySelector(".boot-text");
+    const bootLogo = document.querySelector(".boot-logo");
+    const raster = document.querySelector(".raster-bars");
+    const crt = document.querySelector(".crt-overlay");
+
+    if (!bootContainer) {
+        console.warn("No .boot-sequence found, skipping boot.");
+        return;
+    }
+
+    bootContainer.style.display = "block";
+    crt.style.opacity = 0;
+
+    // Play boot audio
+    if (ccgAudioEnabled) {
+        try {
+            const audio = new Audio("resources/audio/c64_boot.mp3");
+            audio.volume = 0.9;
+            await audio.play();
+        } catch (err) {
+            console.warn("Boot audio blocked:", err);
         }
+    }
 
-        const matches = dataSource
-            .filter(g => g.title.toLowerCase().includes(q))
-            .slice(0, 12);
+    // STAGE 1 – C64 Text + Flash
+    bootText.innerHTML = "**** COMMODORE 64 BASIC V2 ****<br>64K RAM SYSTEM  38911 BASIC BYTES FREE";
+    await ccgWait(1500);
 
-        if (!matches.length) {
-            results.innerHTML = `<div class="result-item">NO MATCHES FOUND</div>`;
-        } else {
-            results.innerHTML = matches.map(m => `
-                <div class="result-item play-sound" onclick="window.open('https://www.youtube.com/watch?v=${m.video}', '_blank')">
-                    ${m.title} <span style="color:var(--c64-light-blue)">[${m.system}]</span>
-                </div>
-            `).join("");
+    // STAGE 2 – Raster Bars
+    raster.classList.add("active");
+    await ccgWait(1800);
+
+    // STAGE 3 – Flash White
+    bootContainer.classList.add("flash");
+    await ccgWait(500);
+    bootContainer.classList.remove("flash");
+
+    // STAGE 4 – Amiga Blue Screen
+    bootText.innerHTML = "";
+    bootLogo.classList.add("amiga");
+    bootLogo.style.opacity = 1;
+
+    await ccgWait(900);
+
+    // STAGE 5 – Fade into site + apply scanlines
+    raster.classList.remove("active");
+    crt.style.opacity = 1;
+    bootContainer.style.opacity = 0;
+
+    await ccgWait(600);
+
+    bootContainer.style.display = "none";
+    ccgBootFinished = true;
+}
+
+// ---------------------------------------------------------
+// ENABLE FULL SITE
+// ---------------------------------------------------------
+
+function ccgEnableSite() {
+    document.body.classList.add("site-ready");
+
+    const powerButton = document.querySelector(".ccg-power");
+    if (powerButton) {
+        powerButton.addEventListener("click", ccgToggleTheme);
+    }
+
+    // Keyboard skip boot
+    document.addEventListener("keydown", (e) => {
+        if (!ccgBootFinished) {
+            const bootContainer = document.querySelector(".boot-sequence");
+            const raster = document.querySelector(".raster-bars");
+            const crt = document.querySelector(".crt-overlay");
+
+            raster?.classList.remove("active");
+            bootContainer?.setAttribute("style", "display:none;");
+            crt.style.opacity = 1;
+            ccgBootFinished = true;
         }
-
-        results.classList.add("active");
     });
+}
 
-    document.addEventListener("click", e => {
-        if (!e.target.closest(".search-wrapper")) {
-            results.classList.remove("active");
-        }
-    });
-};
+// ---------------------------------------------------------
+// THEME SWITCHER (C64 / AMIGA)
+// ---------------------------------------------------------
 
-// ------------------------------
-// SOCIAL ICONS (used by every page)
-// ------------------------------
-window.ccgSocialBar = function() {
-    return `
-        <div class="social-bar">
-            <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank"><i class="fab fa-youtube"></i></a>
-            <a href="https://www.patreon.com/CheekyCommodoreGamer" target="_blank"><i class="fab fa-patreon"></i></a>
-            <a href="https://twitter.com/CheekyC64Gamer" target="_blank"><i class="fab fa-twitter"></i></a>
-            <a href="https://facebook.com/CheekyCommodoreGamer" target="_blank"><i class="fab fa-facebook"></i></a>
-            <a href="https://discord.gg/cheekycommodoregamer" target="_blank"><i class="fab fa-discord"></i></a>
-            <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank"><i class="fa-solid fa-hand-holding-dollar"></i></a>
-        </div>
-    `;
-};
+function ccgToggleTheme() {
+    ccgCurrentTheme = ccgCurrentTheme === "c64" ? "amiga" : "c64";
+    localStorage.setItem("ccgTheme", ccgCurrentTheme);
+    document.body.setAttribute("data-theme", ccgCurrentTheme);
+}
+
+// ---------------------------------------------------------
+// HELPER: WAIT
+// ---------------------------------------------------------
+
+function ccgWait(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
