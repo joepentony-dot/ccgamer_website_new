@@ -1,135 +1,54 @@
 /* ============================================================
-   PHASE C – PART 6 : CRT Curvature + Phosphor + Full CRT FX
+   PHASE C – PART 4 : CRT Boot Flicker + Warmup Glow
    ============================================================ */
 
-/* === 1. GLOBAL CRT 3D PERSPECTIVE === */
-body.site-ready {
-    perspective: 1200px;
+/* === 1. POWER-ON FLICKER (during boot only) === */
+body.booting .crt-overlay {
+    animation: crtFlicker 0.85s ease-out forwards;
 }
 
-/* === 2. CURVED SCREEN WRAPPER === */
-.crt-curved,
-.monitor-screen,
-#loading-screen,
-#start-screen {
-    transform: rotateX(1deg) rotateY(-1deg) scale(1.0005);
-    transform-style: preserve-3d;
+@keyframes crtFlicker {
+    0%   { opacity: 0; }
+    15%  { opacity: 0.6; }
+    25%  { opacity: 0.1; }
+    40%  { opacity: 0.5; }
+    60%  { opacity: 0.2; }
+    100% { opacity: 0.35; }
 }
 
-/* ============================================================
-   3. CRT OVERLAY: SCANLINES + GLASS EFFECT + CHROMATIC BLEED
-   ============================================================ */
-
-.crt-overlay {
-    pointer-events: none;
-    mix-blend-mode: screen;
-    position: fixed;
-    inset: 0;
-    z-index: 999;
+/* === 2. WARM-UP PHOSPHOR GLOW === */
+body.booting .crt-overlay::after {
+    animation: crtWarmup 1.4s ease-out forwards;
 }
 
-/* Scanlines */
-.crt-overlay::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: repeating-linear-gradient(
-        to bottom,
-        rgba(0,0,0,0.17) 0px,
-        rgba(0,0,0,0.17) 2px,
-        rgba(0,0,0,0.0) 4px
-    );
-    opacity: 0.45;
-    mix-blend-mode: multiply;
+@keyframes crtWarmup {
+    0%   { opacity: 0; }
+    50%  { opacity: 0.05; }
+    100% { opacity: 0.22; }
 }
 
-/* Glass reflection curve */
-.crt-overlay::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: radial-gradient(
-        circle at 50% 15%,
-        rgba(255,255,255,0.15),
-        rgba(255,255,255,0.03) 40%,
-        rgba(255,255,255,0) 75%
-    );
-    opacity: 0.22;
+/* === 3. RANDOM SCANLINE JITTER BURSTS === */
+body.booting .crt-overlay::before {
+    animation: scanJitter 1.6s linear forwards;
 }
 
-/* ============================================================
-   4. PHOSPHOR GLOW (for Bright Text & Headers)
-   ============================================================ */
-.phosphor,
-h1, h2, h3 {
-    text-shadow:
-        0 0 4px rgba(0,255,120,0.35),
-        0 0 8px rgba(0,255,120,0.20),
-        0 0 12px rgba(0,255,120,0.15);
+@keyframes scanJitter {
+    0% { background-position-y: 0; }
+    20% { background-position-y: -2px; }
+    40% { background-position-y: 1px; }
+    55% { background-position-y: -1px; }
+    75% { background-position-y: 0.5px; }
+    100% { background-position-y: 0; }
 }
 
-/* ============================================================
-   5. CHROMATIC ABERRATION (Retro Colour Bleed)
-   ============================================================ */
-h1, h2, h3, p, .nav-link, .btn-retro, .power-text, #loading-terminal {
-    text-shadow:
-        1px 0px rgba(0,150,255,0.25),
-        -1px 0px rgba(255,0,150,0.25);
+/* === 4. FAINT OVERALL BRIGHTNESS PULSE (very subtle) === */
+body.booting {
+    animation: crtGlowPulse 0.9s ease-out;
 }
 
-/* ============================================================
-   6. NOISE GRAIN (Very Subtle — Classic CRT Static)
-   ============================================================ */
-body.site-ready::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAEklEQVR42mNgYGBoYGBg+A8AAQUBAQCeuSwAAAAASUVORK5CYII=");
-    opacity: 0.08;
-    mix-blend-mode: overlay;
-    z-index: 998;
-}
-
-/* ============================================================
-   7. AMIGA MODE (Soft Bloom, Pastel Highlights)
-   ============================================================ */
-body[data-theme="amiga"] .game-thumb {
-    filter: contrast(105%) brightness(108%) saturate(105%);
-    transition: filter 0.2s ease, transform 0.15s ease;
-}
-
-body[data-theme="amiga"] .game-thumb:hover {
-    filter: contrast(120%) brightness(120%) saturate(115%);
-    transform: scale(1.03);
-}
-
-/* ============================================================
-   8. C64 MODE (Green Tint, High Contrast, Retro Glow)
-   ============================================================ */
-body[data-theme="c64"] .game-thumb {
-    filter: hue-rotate(100deg) brightness(110%) contrast(105%);
-    transition: filter 0.2s ease, transform 0.15s ease;
-}
-
-body[data-theme="c64"] .game-thumb:hover {
-    filter: hue-rotate(100deg) brightness(125%) contrast(115%);
-    transform: scale(1.03);
-}
-
-/* ============================================================
-   9. UNIVERSAL THUMBNAIL POLISH (Safe for All Themes)
-   ============================================================ */
-.game-thumb {
-    border-radius: 6px;
-    image-rendering: pixelated;
-}
-
-/* ============================================================
-   10. SUBTLE BLOOM FOR ALL UI ELEMENTS
-   ============================================================ */
-* {
-    filter: drop-shadow(0 0 0.4px rgba(255,255,255,0.08));
+@keyframes crtGlowPulse {
+    0%   { filter: brightness(0.8); }
+    30%  { filter: brightness(1.1); }
+    60%  { filter: brightness(0.95); }
+    100% { filter: brightness(1); }
 }
