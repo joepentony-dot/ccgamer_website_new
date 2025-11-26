@@ -1,45 +1,62 @@
-<!-- File: games/horror-games.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Horror Games – Cheeky Commodore Gamer</title>
-    <meta name="description" content="Browse Commodore 64 and Amiga horror games from the Cheeky Commodore Gamer archive – spooky adventures, monsters, chills and thrills.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horror Games | Cheeky Commodore Gamer</title>
 
-    <!-- ✅ COPY the same CSS <link> tags from games/index.html and paste them here -->
-    <!-- Example (DO NOT USE THIS PATH IF YOURS IS DIFFERENT):
-    <link rel="stylesheet" href="../resources/css/ccg-styles.css">
-    -->
+    <link rel="stylesheet" href="../css/engine.css">
+    <script defer src="../js/engine.js"></script>
+
+    <meta name="description" content="Creepy caverns, haunted mansions and lurking monsters – explore Commodore 64 and Amiga horror games from the Cheeky Commodore Gamer archive.">
 </head>
 <body>
-    <!-- ✅ COPY the same header + navigation markup from games/index.html and paste it here -->
 
-    <main class="ccg-main">
-        <section class="ccg-genre-hero">
-            <h1>Horror Games</h1>
-            <p>
-                Shadows, haunted mansions, creepy caverns and things that really shouldn’t move on an 8-bit screen…
-                this is the Cheeky Commodore Gamer horror collection for C64 and Amiga.
-            </p>
-        </section>
+    <canvas id="starfield"></canvas>
+    <div class="crt-overlay"></div>
 
-        <section id="ccg-genre-grid"
-                 class="ccg-games-grid"
-                 data-genre="horror">
-            <!-- Your load-games.js should populate this grid with horror titles based on data-genre / CCG_GENRE. -->
-        </section>
-    </main>
+    <div class="container">
 
-    <!-- ✅ COPY the same footer markup from games/index.html and paste it here -->
+        <div class="commodore-header">
+            <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
+                 alt="Cheeky Commodore Gamer Logo"
+                 style="max-width:150px; image-rendering:pixelated; margin-bottom:10px;">
+
+            <h3>**** COMMODORE 64 BASIC V2 ****</h3>
+            <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
+
+            <div class="nav-bar">
+                <a href="index.html" class="nav-link play-sound">GENRES</a>
+                <a href="complete-index.html" class="nav-link play-sound">INDEX</a>
+                <a href="../resources/quiz.html" class="nav-link play-sound">QUIZ</a>
+                <a href="../retro-events.html" class="nav-link play-sound">EVENTS</a>
+                <a href="../about.html" class="nav-link play-sound">ABOUT</a>
+                <a href="../contact.html" class="nav-link play-sound">CONTACT</a>
+            </div>
+        </div>
+
+        <main>
+
+            <section class="page-intro">
+                <h1>Horror Games</h1>
+                <p>
+                    Shadows, haunted mansions and things that really shouldn’t be moving on an 8-bit screen –
+                    this collection highlights the spookier side of the Commodore 64 and Amiga.
+                </p>
+            </section>
+
+            <section id="genre-grid"
+                     class="games-grid"
+                     data-genre="horror">
+                <!-- Future: cards for horror games will go here -->
+            </section>
+
+        </main>
+
+    </div>
 
     <script>
-        // Used by your JS to know which genre to show
         window.CCG_GENRE = "horror";
     </script>
-
-    <!-- ✅ COPY the same JS <script> tags from games/index.html and paste them here -->
-    <!-- Example (DO NOT USE THIS PATH IF YOURS IS DIFFERENT):
-    <script src="../resources/js/load-games.js" defer></script>
-    -->
 </body>
 </html>
