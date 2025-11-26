@@ -1,1 +1,66 @@
-<!DOCTYPE html><html><body>Quiz placeholder</body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Quiz | Cheeky Commodore Gamer</title>
+
+    <!-- Engine + Phase C CSS -->
+    <link rel="stylesheet" href="../css/engine.css">
+    <link rel="stylesheet" href="css/main.css">
+
+    <script defer src="../js/engine.js"></script>
+
+    <style>
+        .quiz-container {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border: 2px solid var(--c64-light-blue);
+            margin-top: 20px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="starfield"></canvas>
+    <div class="crt-overlay"></div>
+
+    <div class="container">
+
+        <!-- HEADER -->
+        <div class="commodore-header">
+            <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
+                 alt="Quiz Logo"
+                 style="max-width:150px; image-rendering:pixelated;">
+            <h3>**** RETRO QUIZ ****</h3>
+            <p>Test your Commodore 64 & Amiga knowledge!</p>
+        </div>
+
+        <!-- QUIZ MOUNT POINT -->
+        <div class="quiz-container">
+            <div id="quizMount">
+                <p style="color:var(--c64-light-blue);">Loading quiz engine…</p>
+            </div>
+        </div>
+
+        <!-- NAVIGATION -->
+        <h2>NAVIGATION</h2>
+        <div class="btn-grid">
+            <a href="../index.html" class="btn-retro">HOME</a>
+            <a href="../games/index.html" class="btn-retro">BROWSE GAMES</a>
+        </div>
+
+    </div>
+
+    <!-- QUIZ LOGIC (YOU WILL ADD YOUR QUIZ JS LATER) -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("quizMount").innerHTML =
+                "<p style='color:#fff;'>Your quiz script will mount here.</p>";
+        });
+    </script>
+
+</body>
+</html>
