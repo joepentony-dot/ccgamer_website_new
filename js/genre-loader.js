@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     const path = window.location.pathname;
-    const fileName = path.substring(path.lastIndexOf("/") + 1); // e.g. "action-adventure.html"
-    const slug = fileName.replace(/\.html$/i, "");              // e.g. "action-adventure"
+    const fileName = path.substring(path.lastIndexOf("/") + 1); // e.g. "arcade-games.html"
+    const slug = fileName.replace(/\.html$/i, "");              // e.g. "arcade-games"
 
     const genreName = slugToGenreName(slug);
 
@@ -9,20 +9,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const headingEl = document.getElementById("genre-name");
     if (headingEl) headingEl.textContent = genreName;
 
-    if (document.title.indexOf("Cheeky Commodore Gamer") !== -1) {
+    if (document.title.includes("Cheeky Commodore Gamer")) {
         document.title = `Cheeky Commodore Gamer | ${genreName}`;
     }
 
     const countEl = document.getElementById("genre-count");
-    if (countEl) {
-        countEl.textContent = "Loading games…";
-    }
+    if (countEl) countEl.textContent = "Loading games…";
 
     loadGamesForGenre(genreName);
 });
 
 /**
- * Convert a filename slug into the JSON genre name.
+ * Convert filename slug → JSON genre name.
  *
  * Examples:
  *  "action-adventure"     -> "Action Adventure Games"
@@ -31,22 +29,23 @@ document.addEventListener("DOMContentLoaded", () => {
  *  "miscellaneous"        -> "Miscellaneous"
  */
 function slugToGenreName(slug) {
-    // Special cases (no "Games" suffix etc)
+    // Special-case genres that do NOT end with "Games"
     const specials = {
-        "miscellaneous": "Miscellaneous"
+        "miscellaneous": "Miscellaneous",
+        "quiz-games": "Quiz Games" // already correct
     };
 
     if (specials[slug]) {
         return specials[slug];
     }
 
-    // Generic conversion: "action-adventure" -> "Action Adventure"
+    // Convert "action-adventure" → "Action Adventure"
     let name = slug
         .replace(/-/g, " ")
         .replace(/\b\w/g, c => c.toUpperCase());
 
-    // If it doesn't already end with "Games", add it.
-    if (!/Games$/i.test(name)) {
+    // Ensure it ends with "Games"
+    if (!name.endsWith("Games")) {
         name += " Games";
     }
 
@@ -61,41 +60,36 @@ async function loadGamesForGenre(genreName) {
     if (!gridEl) return;
 
     try {
-        const res = await fetch("../../games.json", { cache: "no-store" });
+        // CORRECT PATH for your repo:
+        // /games/genres/page.html → ../games.json
+        const res = await fetch("../games.json", { cache: "no-store" });
+
         if (!res.ok) {
             throw new Error(`HTTP ${res.status}`);
         }
 
         const games = await res.json();
 
-        // Filter using case-insensitive match on genres array
-        const matches = games.filter(game => {
-            if (!game || !Array.isArray(game.genres)) return false;
-            return game.genres.some(
-                g => typeof g === "string" && g.toLowerCase() === genreName.toLowerCase()
-            );
-        });
+        // Case-insensitive matching
+        const matches = games.filter(game =>
+            Array.isArray(game.genres) &&
+            game.genres.some(g => g.toLowerCase() === genreName.toLowerCase())
+        );
 
-        // Render
         renderGames(matches, gridEl);
 
         if (matches.length === 0) {
             if (noGamesEl) noGamesEl.classList.remove("hidden");
-            if (countEl) {
-                countEl.textContent = "0 games found.";
-            }
+            if (countEl) countEl.textContent = "0 games found.";
         } else {
             if (noGamesEl) noGamesEl.classList.add("hidden");
-            if (countEl) {
-                const label = matches.length === 1 ? "game" : "games";
-                countEl.textContent = `${matches.length} ${label} found in this genre.`;
-            }
+            const label = matches.length === 1 ? "game" : "games";
+            if (countEl) countEl.textContent = `${matches.length} ${label} found in this genre.`;
         }
+
     } catch (err) {
         console.error("Error loading games:", err);
-        if (countEl) {
-            countEl.textContent = "Error loading games.";
-        }
+        if (countEl) countEl.textContent = "Error loading games.";
         if (noGamesEl) {
             noGamesEl.textContent = "ERROR LOADING GAME DATA.";
             noGamesEl.classList.remove("hidden");
@@ -126,10 +120,12 @@ function renderGames(games, container) {
                 <img src="${thumb}" alt="${escapeHtml(game.title || "C64 / Amiga game")}" loading="lazy">
                 <div class="play-badge">▶</div>
             </a>
+
             <div class="game-meta">
                 <h2 class="game-title">${escapeHtml(game.title || "Untitled Game")}</h2>
                 <p class="system-tag">${escapeHtml(systemLabel)}</p>
                 <p class="genre-tags">${escapeHtml(genreTags)}</p>
+
                 <div class="card-footer">
                     <a class="watch-btn" href="${youtubeUrl}" target="_blank" rel="noopener">
                         Watch on YouTube
