@@ -1,33 +1,26 @@
 /* ============================================================
-   CHEEKY COMMODORE GAMER — engine.js
-   Complete, stable version
+   CHEEKY COMMODORE GAMER — ENGINE.JS (FULL FILE)
    Handles:
-   - Boot overlay
-   - Raster bars
-   - Audio intro ("Stay a while… stay FOREVER!")
-   - Fade transitions
+   - Boot overlay creation
+   - Fixed raster bars (scaled correctly)
+   - “Stay a While… Stay FOREVER!” audio
+   - Smooth fade-out
    ============================================================ */
 
-/* ---------------------------------------
-   1. CONFIGURATION
-   --------------------------------------- */
-
 const BOOT_DURATION = 4200;   // ms until fade-out
-const AUDIO_DELAY   = 700;    // ms after load to play sound
-const RASTER_SPEED  = 18;     // lower = faster movement
+const AUDIO_DELAY   = 700;    // ms before voice plays
 
 /* ---------------------------------------
-   2. Boot Overlay HTML Injection
+   1. Inject Boot Overlay
    --------------------------------------- */
-
 function createBootOverlay() {
     const overlay = document.createElement("div");
     overlay.id = "ccg-boot-overlay";
     overlay.innerHTML = `
         <div class="ccg-boot-center">
             <div class="ccg-boot-text">
-                <span>*** COMMODORE 64 SYSTEM BOOT ***</span><br>
-                <span>READY.</span>
+                *** COMMODORE 64 SYSTEM BOOT ***<br>
+                READY.
             </div>
             <canvas id="ccg-raster-bars"></canvas>
         </div>
@@ -36,34 +29,34 @@ function createBootOverlay() {
 }
 
 /* ---------------------------------------
-   3. Raster Bars Effect (Canvas)
+   2. Start Raster Bars (Fixed Proportions)
    --------------------------------------- */
-
 function startRasterBars() {
     const canvas = document.getElementById("ccg-raster-bars");
     if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
-    canvas.width  = window.innerWidth * 0.6;
-    canvas.height = 120;
 
+    // FIXED pixel size for correct C64 look
+    canvas.width  = 540;
+    canvas.height = 90;
+
+    // C64-inspired colour bars
     const bars = [
-        "#ff0040",
-        "#ff8000",
-        "#ffff00",
-        "#00ff00",
-        "#00ffff",
-        "#0080ff",
-        "#8000ff",
-        "#ff00ff"
+        "#00e0ff",  // cyan
+        "#0099ff",  // blue
+        "#7640ff",  // purple
+        "#ff40ff",  // magenta
+        "#ff8040",  // orange
+        "#ffe000",  // yellow
+        "#40ff40"   // green
     ];
 
+    const barHeight = canvas.height / bars.length;
     let offset = 0;
 
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        const barHeight = canvas.height / bars.length;
 
         for (let i = 0; i < bars.length; i++) {
             ctx.fillStyle = bars[(i + offset) % bars.length];
@@ -73,52 +66,43 @@ function startRasterBars() {
         offset = (offset + 1) % bars.length;
     }
 
-    return setInterval(draw, RASTER_SPEED);
+    return setInterval(draw, 60); // smooth, classic speed
 }
 
 /* ---------------------------------------
-   4. Play Classic C64 Sample
+   3. Audio: “Stay a While… Stay FOREVER!”
    --------------------------------------- */
-
 function playIntroAudio() {
-    const audio = new Audio("../../resources/audio/stay_a_while.mp3");
-
+    const audio = new Audio("resources/audio/stay_a_while.mp3");
     audio.volume = 0.65;
-
     audio.play().catch(() => {
-        console.warn("Autoplay blocked — user gesture required.");
+        console.warn("Autoplay blocked by browser.");
     });
 }
 
 /* ---------------------------------------
-   5. Fade Out Boot Overlay
+   4. Fade Out Boot Screen
    --------------------------------------- */
-
 function fadeOutBootOverlay() {
     const overlay = document.getElementById("ccg-boot-overlay");
     if (!overlay) return;
 
-    overlay.style.opacity = "0";
-    overlay.style.transition = "opacity 1.2s ease";
+    overlay.classList.add("fade-out");
 
     setTimeout(() => overlay.remove(), 1600);
 }
 
 /* ---------------------------------------
-   6. Initialise Boot Sequence
+   5. Initialise Boot Sequence
    --------------------------------------- */
-
 document.addEventListener("DOMContentLoaded", () => {
     createBootOverlay();
-
     const rasterInterval = startRasterBars();
 
-    // Audio playback (slightly delayed)
-    setTimeout(() => {
-        playIntroAudio();
-    }, AUDIO_DELAY);
+    // Play voice line
+    setTimeout(playIntroAudio, AUDIO_DELAY);
 
-    // End boot sequence
+    // Then fade everything out
     setTimeout(() => {
         fadeOutBootOverlay();
         clearInterval(rasterInterval);
