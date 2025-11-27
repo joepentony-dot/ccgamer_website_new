@@ -2,51 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Platform Games | Cheeky Commodore Gamer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Games | Cheeky Commodore Gamer</title>
+    <meta name="description" content="Browse all Platform Games from the Cheeky Commodore Gamer C64 and Amiga library.">
+
     <link rel="stylesheet" href="../../css/engine.css">
     <link rel="stylesheet" href="../../resources/main.css">
-    <style>/* same styling */</style>
-    <script defer src="../../js/load-games.js"></script>
-</head>
-<body>
-<div class="ccg-shell">
-    <header class="ccg-header">
-        <h1>Platform Games</h1>
-        <nav class="ccg-nav">
-            <a href="../../index.html">Home</a>
-            <a href="../index.html">Game Browser</a>
-            <a href="../complete-index.html">Full Index</a>
-        </nav>
-    </header>
-    <div id="games-container" class="games-grid"></div>
-</div>
 
-<script>
-async function loadGenre() {
-    const games = await ccgFetchGames();
-    const filtered = games.filter(g =>
-        Array.isArray(g.genres) &&
-        g.genres.some(gn => gn.toLowerCase() === "platform games")
-    );
-    const c = document.getElementById("games-container");
-    if (!filtered.length) return c.innerHTML = "<p>No games found in this genre.</p>";
-    filtered.forEach(g => {
-        c.innerHTML += `
-        <div class="game-card">
-            <img src="${g.thumbUrl}" class="game-thumb">
-            <div class="game-title">${g.title}</div>
-            <div class="game-meta">${g.system ? "System: "+g.system : ""}</div>
-            <div class="game-links">
-                ${g.videoId?`<a href="https://www.youtube.com/watch?v=${g.videoId}" target="_blank">Watch Video</a><br>`:""}
-                ${g.lemonUrl?`<a href="${g.lemonUrl}" target="_blank">Lemon64</a><br>`:""}
-                ${g.pdfUrl?`<a href="${g.pdfUrl}" target="_blank">Manual</a><br>`:""}
-                ${g.diskUrl?`<a href="${g.diskUrl}" target="_blank">Disk Download</a>`:""}
-            </div>
-        </div>`;
-    });
-}
-document.addEventListener("DOMContentLoaded", loadGenre);
-</script>
-</body>
-</html>
+    <script defer src="../../js/engine.js"></script>
+    <script defer src="../../js/genre-loader.js"></script>
+</head>
+<body class="ccg-body">
+    <div id="start-screen">
+        <div class="boot-window">
+            <pre id="boot-log"></pre>
+            <div id="press-space">PRESS SPACE TO CONTINUE</div>
+        </div>
+    </div>
+    <div class="crt">
+        <div class="scanlines"></div>
+        <div class="screen">
+            <header class="ccg-header">
+                <div class="logo-area">
+                    <span class="logo-main">CHEEKY</span>
+                    <span class="logo-sub">COMMODORE GAMER</span>
+                </div>
+                <nav class="ccg-nav">
+                    <a href="../../index.html" class="nav-link">Main Menu</a>
+                    <a href="../index.html" class="nav-link">Game Browser</a>
+                    <a href="../complete-index.html" class="nav-link">Full Index</a>
+                    <a href="../../quiz/quiz.html" class="nav-link">Retro Quiz</a>
+                    <a href="../../about.html" class="nav-link">About</a>
+                    <a href="../../contact.html" class="nav-link">Contact</a>
+                </nav>
+            </header>
+            <main class="ccg-main games-layout">
+                <section class="filters-panel">
+                    <h1>Platform Games</h1>
+                    <p>All titles tagged as <strong>Platform Games</strong> in the master database.</p>
+                    <div class="filters">
+                        <label>
+                            Search:
+                            <input type="text" id="filter-search" placeholder="Filter titles in this genre…">
+                        </label>
+                        <l
