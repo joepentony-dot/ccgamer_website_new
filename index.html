@@ -2,435 +2,91 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Cheeky Commodore Gamer | C64 & Amiga Retro Gaming Database</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheeky Commodore Gamer | Main Menu</title>
 
-    <meta name="description" content="Search the massive index of Commodore 64 and Amiga games. Watch videos, browse genres, take the quiz and relive the golden age of home computing.">
+    <meta name="description" content="Dive into the world of retro gaming evolved! Explore the biggest Commodore 64 & Amiga index, watch videos, read manuals, take quizzes and experience full CRT nostalgia.">
+
     <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/">
 
-    <meta property="og:title" content="Cheeky Commodore Gamer | C64 & Amiga Retro Gaming Hub">
-    <meta property="og:description" content="Search the full C64 & Amiga game database, browse genres, take the quiz and discover hidden gems.">
-    <meta property="og:type" content="website">
-
-    <link rel="stylesheet" href="css/engine.css">
+    <!-- Existing CRT + Retro CSS -->
     <link rel="stylesheet" href="resources/css/main.css">
-    <script defer src="js/engine.js"></script>
+    <link rel="stylesheet" href="css/engine.css">
 
     <style>
-        body.home-page {
-            background:#000;
-            color:#a8d6ff;
-            font-family:"VT323", monospace;
+        /* Ensure raster canvas sits behind everything */
+        #raster-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            display: block;
         }
 
-        body.home-page .crt-overlay {
-            opacity:0.18;
+        /* Cursor visibility fix */
+        html, body {
+            cursor: auto !important;
         }
 
-        .ccg-home-wrapper {
-            max-width:1100px;
-            margin:40px auto 80px auto;
-            padding:0 16px;
+        /* Simple page wrapper alignment */
+        .main-menu {
+            text-align: center;
+            margin-top: 120px;
+            z-index: 10;
+            position: relative;
         }
 
-        .ccg-basic-header {
-            display:flex;
-            align-items:flex-start;
-            gap:16px;
-            margin-bottom:30px;
+        .main-menu a {
+            display: block;
+            font-size: 1.6rem;
+            margin: 12px 0;
+            color: #7ec8ff;
+            text-shadow: 0 0 8px #0af;
+            text-decoration: none;
         }
 
-        .ccg-basic-logo {
-            width:96px;
-            height:96px;
-            border-radius:6px;
-            overflow:hidden;
+        .main-menu a:hover {
+            color: #c9ecff;
+            text-shadow: 0 0 14px #0af;
         }
 
-        .ccg-basic-logo img {
-            width:100%;
-            height:100%;
-            object-fit:contain;
-        }
-
-        .ccg-basic-lines {
-            font-size:20px;
-            line-height:1.3em;
-            color:#7db7ff;
-            white-space:pre;
-        }
-
-        .ccg-basic-nav {
-            margin-top:10px;
-            font-size:20px;
-        }
-
-        .ccg-basic-nav a {
-            text-decoration:none;
-            color:#4fb3ff;
-            margin-right:18px;
-            letter-spacing:0.08em;
-            position:relative;
-            padding-bottom:2px;
-            transition:0.18s;
-        }
-
-        .ccg-basic-nav a::after {
-            content:"";
-            position:absolute;
-            left:0;
-            bottom:0;
-            width:0;
-            height:1px;
-            background:#4ff;
-            transition:width 0.18s ease;
-        }
-
-        .ccg-basic-nav a:hover {
-            color:#cfffff;
-            text-shadow:0 0 6px rgba(0,255,255,0.9);
-        }
-
-        .ccg-basic-nav a:hover::after {
-            width:100%;
-        }
-
-        .ccg-title-block {
-            text-align:center;
-            margin:40px 0 10px 0;
-        }
-
-        .ccg-main-title {
-            font-size:34px;
-            letter-spacing:0.12em;
-            color:#cff4ff;
-        }
-
-        .ccg-main-ready {
-            margin-top:6px;
-            font-size:18px;
-            color:#9bd3ff;
-        }
-
-        .ccg-command-section {
-            margin-top:50px;
-            font-size:22px;
-        }
-
-        .ccg-command-input-row {
-            display:flex;
-            align-items:center;
-            gap:10px;
-            margin:8px 0 6px 0;
-        }
-
-        .ccg-command-input {
-            flex:1;
-            background:#000;
-            border:1px solid #4fb3ff;
-            color:#dff7ff;
-            font-family:"VT323", monospace;
-            font-size:20px;
-            padding:4px 6px;
-            outline:none;
-        }
-
-        .ccg-command-input::placeholder {
-            color:#4779aa;
-        }
-
-        .ccg-command-helper {
-            font-size:16px;
-            color:#6fb9ff;
-            margin-bottom:18px;
-        }
-
-        .ccg-init-row {
-            display:flex;
-            align-items:center;
-            gap:10px;
-            font-size:18px;
-            margin-top:10px;
-            margin-bottom:6px;
-        }
-
-        .ccg-init-label {
-            min-width:120px;
-        }
-
-        .ccg-init-bar {
-            flex:1;
-            height:8px;
-            border:1px solid #4fb3ff;
-            background:linear-gradient(90deg,#4fb3ff 0%,#4fb3ff 40%,transparent 40%,transparent 100%);
-            box-shadow:0 0 8px rgba(0,255,255,0.5);
-        }
-
-        .ccg-game-moment-frame {
-            margin-top:18px;
-            border:2px solid #4fb3ff;
-            border-radius:10px;
-            padding:30px;
-            text-align:center;
-            max-width:640px;
-            margin-left:auto;
-            margin-right:auto;
-            box-shadow:0 0 18px rgba(0,255,255,0.25);
-        }
-
-        .ccg-game-moment-label {
-            font-size:16px;
-            letter-spacing:0.2em;
-            color:#8ed6ff;
-            margin-bottom:8px;
-        }
-
-        .ccg-moment-content {
-            margin-top:20px;
-            text-align:center;
-        }
-
-        .ccg-moment-thumb {
-            width:100%;
-            max-width:500px;
-            aspect-ratio:16/9;
-            object-fit:cover;
-            border:2px solid #4fb3ff;
-            border-radius:6px;
-            margin:0 auto 14px auto;
-            display:block;
-            box-shadow:0 0 12px rgba(0,255,255,0.3);
-        }
-
-        .ccg-moment-title {
-            font-size:24px;
-            color:#c8f6ff;
-            margin-bottom:14px;
-            letter-spacing:0.12em;
-        }
-
-        .ccg-moment-buttons {
-            margin-top:10px;
-            display:flex;
-            justify-content:center;
-            gap:16px;
-        }
-
-        .ccg-moment-btn {
-            background:#003b4d;
-            border:2px solid #4fb3ff;
-            padding:8px 18px;
-            font-size:18px;
-            color:#cff9ff;
-            border-radius:4px;
-            cursor:pointer;
-            text-decoration:none;
-            transition:0.2s;
-        }
-
-        .ccg-moment-btn:hover {
-            background:#005c75;
-            color:#fff;
-            box-shadow:0 0 12px rgba(0,255,255,0.6);
-        }
-
-        .ccg-search-results {
-            margin-top:20px;
-            border:2px solid #4fb3ff;
-            border-radius:8px;
-            padding:16px;
-            background:rgba(0,30,50,0.4);
-            box-shadow:0 0 14px rgba(0,255,255,0.3);
-        }
-
-        .ccg-search-item {
-            margin-bottom:20px;
-            padding-bottom:10px;
-            border-bottom:1px dashed #377aa8;
-        }
-
-        .ccg-search-title {
-            font-size:22px;
-            color:#c8f6ff;
-            margin-bottom:8px;
-        }
-
-        .ccg-search-thumb {
-            width:100%;
-            max-width:420px;
-            aspect-ratio:16/9;
-            object-fit:cover;
-            border:2px solid #4fb3ff;
-            border-radius:6px;
-            margin-bottom:12px;
-        }
-
-        .ccg-search-buttons {
-            display:flex;
-            gap:14px;
-            margin-top:8px;
-        }
-
-        .ccg-search-btn {
-            background:#003b4d;
-            border:2px solid #4fb3ff;
-            padding:6px 14px;
-            font-size:16px;
-            color:#cff9ff;
-            text-decoration:none;
-            border-radius:4px;
-            transition:0.2s;
-        }
-
-        .ccg-search-btn:hover {
-            background:#005c75;
-            color:#fff;
-            box-shadow:0 0 10px rgba(0,255,255,0.6);
+        /* Title */
+        .site-title {
+            font-size: 2.8rem;
+            text-shadow: 0 0 12px #0af;
+            margin-bottom: 20px;
+            color: #9ed0ff;
         }
     </style>
 </head>
 
-<body class="ccg-body home-page">
-    <div class="crt-overlay"></div>
+<body>
 
-    <div class="ccg-home-wrapper">
-        <header class="ccg-basic-header">
-            <div class="ccg-basic-logo">
-                <img src="resources/img/ccg-logo.png" alt="Cheeky Commodore Gamer Logo">
-            </div>
+<!-- ⭐ RASTER CANVAS (Phase 2 Step 2) -->
+<canvas id="raster-canvas"></canvas>
 
-            <div>
-                <div class="ccg-basic-lines">
-**** COMMODORE 64 BASIC V2 ****
- 64K RAM SYSTEM 38911 BASIC BYTES FREE
-                </div>
+<!-- Optional boot sequence wrapper (can customise later) -->
+<div class="main-menu">
 
-                <nav class="ccg-basic-nav">
-                    <a href="games/index.html">GENRES</a>
-                    <a href="games/index.html#collections">SPECIALS</a>
-                    <a href="full-game-index.html">INDEX</a>
-                    <a href="quiz.html">QUIZ</a>
-                    <a href="events.html">EVENTS</a>
-                    <a href="about.html">ABOUT</a>
-                    <a href="contact.html">CONTACT</a>
-                </nav>
-            </div>
-        </header>
+    <div class="site-title">CHEEKY COMMODORE GAMER</div>
 
-        <section class="ccg-title-block">
-            <h1 class="ccg-main-title">
-                COMMODORE 64 & AMIGA: THE ULTIMATE RETRO GAMING DATABASE
-            </h1>
-            <div class="ccg-main-ready">READY.</div>
-        </section>
+    <a href="games/index.html">Full Game Index</a>
+    <a href="quiz/index.html">Retro Quiz</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
 
-        <section class="ccg-command-section">
-            <div class="ccg-command-label">COMMAND LINE: SEARCH C64 AND AMIGA TITLES</div>
+</div>
 
-            <div class="ccg-command-input-row">
-                <span>&gt;</span>
-                <input type="text" class="ccg-command-input" placeholder="type a game title…">
-            </div>
+<!-- ⭐ SID INTRO AUDIO (Phase 2 Step 2) -->
+<audio
+    id="sid-intro"
+    src="resources/audio/stay_a_while.mp3"
+    preload="auto">
+</audio>
 
-            <div class="ccg-command-helper">
-                (Search is live – start typing!)
-            </div>
+<!-- Engine script restored & cleaned -->
+<script src="js/engine.js" defer></script>
 
-            <div class="ccg-init-row">
-                <div class="ccg-init-label">INITIALISING...</div>
-                <div class="ccg-init-bar"></div>
-            </div>
-
-            <div class="ccg-game-moment-title">GAME OF THE MOMENT</div>
-        </section>
-
-        <section class="ccg-game-moment-frame">
-            <div class="ccg-game-moment-label">SIGNAL STATUS</div>
-
-            <div id="game-moment-content" class="ccg-moment-content">
-                <div class="ccg-game-moment-loading">LOADING SIGNAL...</div>
-            </div>
-        </section>
-
-        <div id="ccg-search-results" class="ccg-search-results"></div>
-    </div>
-
-    <script>
-        let ccgAllGames = [];
-
-        async function ccgLoadGames() {
-            if (ccgAllGames.length) return ccgAllGames;
-
-            try {
-                const res = await fetch("games/games.json");
-                const data = await res.json();
-                ccgAllGames = data.games || data;
-            } catch (e) {
-                console.error(e);
-            }
-
-            return ccgAllGames;
-        }
-
-        function ccgSearch(query, games) {
-            const q = query.toLowerCase();
-            return games.filter(g => g.title.toLowerCase().includes(q));
-        }
-
-        function ccgDisplaySearchResults(results) {
-            const target = document.getElementById("ccg-search-results");
-            if (!results.length) {
-                target.innerHTML = "<div>No matches found.</div>";
-                return;
-            }
-
-            target.innerHTML = results.map(game => `
-                <div class="ccg-search-item">
-                    <div class="ccg-search-title">${game.title}</div>
-                    <img src="${game.thumbnail}" class="ccg-search-thumb" alt="${game.title}">
-                    <div class="ccg-search-buttons">
-                        <a class="ccg-search-btn" href="${game.video}" target="_blank">WATCH</a>
-                        <a class="ccg-search-btn" href="${game.page}">DETAILS</a>
-                    </div>
-                </div>
-            `).join("");
-        }
-
-        async function loadGameOfTheMoment() {
-            const box = document.getElementById("game-moment-content");
-            const games = await ccgLoadGames();
-            if (!games.length) {
-                box.innerHTML = "<div>Error loading game.</div>";
-                return;
-            }
-
-            const game = games[Math.floor(Math.random() * games.length)];
-
-            box.innerHTML = `
-                <img src="${game.thumbnail}" class="ccg-moment-thumb" alt="${game.title}">
-                <div class="ccg-moment-title">${game.title}</div>
-                <div class="ccg-moment-buttons">
-                    <a class="ccg-moment-btn" href="${game.video}" target="_blank">WATCH VIDEO</a>
-                    <a class="ccg-moment-btn" href="${game.page}">VIEW DETAILS</a>
-                </div>
-            `;
-        }
-
-        document.addEventListener("DOMContentLoaded", async () => {
-            const games = await ccgLoadGames();
-            loadGameOfTheMoment();
-
-            const input = document.querySelector(".ccg-command-input");
-            input.addEventListener("input", () => {
-                const q = input.value.trim();
-                if (q.length < 2) {
-                    document.getElementById("ccg-search-results").innerHTML = "";
-                    return;
-                }
-                const results = ccgSearch(q, games);
-                ccgDisplaySearchResults(results);
-            });
-        });
-    </script>
 </body>
 </html>
