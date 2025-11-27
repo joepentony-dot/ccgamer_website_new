@@ -2,42 +2,49 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>C64 Cartridge Games | Cheeky Commodore Gamer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Browse original Commodore 64 cartridge-based titles.">
 
-    <!-- Engine + Phase C CSS -->
     <link rel="stylesheet" href="../../css/engine.css">
     <link rel="stylesheet" href="../../resources/css/main.css">
 
     <script defer src="../../js/engine.js"></script>
+    <script defer src="../../js/load-games.js"></script>
 </head>
 
-<body>
-
-    <canvas id="starfield"></canvas>
+<body class="ccg-body collection-page" data-collection="C64 Cartridge">
     <div class="crt-overlay"></div>
 
-    <div class="container">
-
-        <div class="commodore-header" style="margin-bottom:20px;">
-            <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
-                 alt="CCG Logo"
-                 style="max-width:150px; image-rendering:pixelated;">
-            <h3>**** C64 CARTRIDGE GAMES ****</h3>
+    <header class="ccg-header">
+        <div class="ccg-header-inner">
+            <h1 class="ccg-logo-text">C64 Cartridge Games</h1>
+            <nav class="ccg-nav">
+                <a href="../../index.html">Home</a>
+                <a href="../index.html">Game Index</a>
+                <a href="../../full-game-index.html">Full Game List</a>
+            </nav>
         </div>
+    </header>
 
-        <h1>C64 CARTRIDGE GAMES</h1>
-        <p>A selection of games originally distributed on Commodore 64 cartridges.</p>
+    <main class="ccg-main">
+        <section class="ccg-genre-intro">
+            <p>Instant-loading, blisteringly quick, and often packed with charm: the original C64 cartridge releases.</p>
 
-        <h2>NAVIGATION</h2>
-        <div class="btn-grid">
-            <a href="index.html" class="btn-retro">BACK TO COLLECTIONS</a>
-            <a href="../index.html" class="btn-retro">BROWSE GENRES</a>
-            <a href="../complete-index.html" class="btn-retro">FULL INDEX</a>
-            <a href="../../index.html" class="btn-retro">HOME</a>
-        </div>
+            <button class="ccg-back-button" onclick="location.href='../index.html'">
+                &larr; Back to Game Index
+            </button>
+        </section>
 
-    </div>
+        <section class="ccg-games-section">
+            <h2>Titles in this Collection</h2>
+            <div id="genre-status" class="ccg-status">Loading games…</div>
+            <div id="genre-games-list" class="ccg-games-grid"></div>
+        </section>
+    </main>
 
+    <footer class="ccg-footer">
+        <p>&copy; Cheeky Commodore Gamer</p>
+    </footer>
 </body>
 </html>
