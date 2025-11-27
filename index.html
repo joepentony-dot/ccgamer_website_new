@@ -2,508 +2,315 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>Cheeky Commodore Gamer | C64 & Amiga Retro Gaming Database</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheeky Commodore Gamer | Main Menu</title>
+    <meta name="description" content="Search the massive index of Commodore 64 and Amiga games. Watch videos, browse genres, take the retro quiz and relive the golden age of home computing.">
+    <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/">
 
-    <!-- ENGINE + GLOBAL CRT CSS -->
+    <!-- Open Graph (optional, safe to keep) -->
+    <meta property="og:title" content="Cheeky Commodore Gamer | C64 & Amiga Retro Gaming Hub">
+    <meta property="og:description" content="Search the full C64 & Amiga game database, browse genres, take the quiz and discover hidden gems.">
+    <meta property="og:type" content="website">
+
+    <!-- Core styles -->
     <link rel="stylesheet" href="css/engine.css">
     <link rel="stylesheet" href="resources/css/main.css">
 
-    <!-- PRELOAD AUDIO (C64 SPEECH ONLY) -->
-    <link rel="preload" as="audio" href="resources/audio/c64_speech_stayawhile.mp3">
+    <!-- Boot / engine scripts -->
+    <script defer src="js/engine.js"></script>
 
-    <!-- ENGINE.JS WITHOUT DEFER (must load before inline boot JS) -->
-    <script src="js/engine.js?v=4"></script>
-
+    <!-- HOME-PAGE-SPECIFIC STYLES (C64 BASIC LOOK) -->
     <style>
-        /* PAGE-SPECIFIC ONLY (kept minimal) */
-
-        /* FULLSCREEN START SCREEN */
-        #start-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+        body.home-page {
             background: #000;
-            z-index: 6000;
-            display: flex; flex-direction: column;
-            justify-content: flex-start; align-items: center;
-            padding-top: 5vh;
-            cursor: pointer;
-        }
-        .power-text {
-            color: var(--c64-text);
-            font-size: 2.4rem;
-            animation: blinkText 1s steps(1) infinite;
-            margin-top: 20px;
-            text-align: center;
+            color: #a8d6ff;
+            font-family: "VT323", monospace;
         }
 
-        /* LOADING SCREEN */
-        #loading-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--c64-blue);
-            z-index: 5500;
-            display: none;
-            flex-direction: column;
-            justify-content: flex-start;
-            padding: 40px;
-            font-size: 1.5rem;
-            color: var(--c64-light-blue);
-        }
-        #loading-terminal {
-            white-space: pre-line;
-            font-size: 1.5rem;
-            position: relative;
-            z-index: 5503;
+        /* Slightly lighter scanlines on the home page only */
+        body.home-page .crt-overlay {
+            opacity: 0.18;
         }
 
-        /* ESC / SKIP BUTTON */
-        #skip-btn {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            background: var(--c64-red);
-            color: #fff;
-            border: 2px solid #fff;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-family: 'VT323', monospace;
-            font-size: 1.4rem;
-            text-transform: uppercase;
-            box-shadow: 4px 4px 0px #000;
-            z-index: 5504;
-        }
-        #skip-btn:hover {
-            background: #fff;
-            color: var(--c64-red);
+        .ccg-home-wrapper {
+            max-width: 1100px;
+            margin: 40px auto 80px auto;
+            padding: 0 16px;
         }
 
-        /* RASTER BARS (visual only, no sound) */
-        .raster-bars {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 5501;
-            background: linear-gradient(to bottom,
-                var(--c64-black) 0%, var(--c64-black) 10%,
-                var(--c64-white) 10%, var(--c64-white) 20%,
-                var(--c64-red) 20%, var(--c64-red) 30%,
-                var(--c64-cyan) 30%, var(--c64-cyan) 40%,
-                var(--c64-purple) 40%, var(--c64-purple) 50%,
-                var(--c64-green) 50%, var(--c64-green) 60%,
-                var(--c64-blue) 60%, var(--c64-blue) 70%,
-                var(--c64-yellow) 70%, var(--c64-yellow) 80%,
-                var(--c64-orange) 80%, var(--c64-orange) 90%,
-                var(--c64-brown) 90%, var(--c64-brown) 100%
-            );
-            background-size: 100% 400px;
-            animation: rasterScroll 2.5s linear infinite;
-            opacity: 0.9;
-            filter: blur(4px);
-            display: none;
-            pointer-events: none;
-        }
-        @keyframes rasterScroll {
-            0% { background-position: 0 0; }
-            100% { background-position: 0 400px; }
+        /* Top BASIC-style header block */
+        .ccg-basic-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 30px;
         }
 
-        /* MONITOR WRAPPER + SPOTLIGHT VIDEO */
-        .monitor-wrapper {
-            background: #000;
-            border: 4px solid #444;
-            border-radius: 10px;
-            padding: 10px;
-            max-width: 600px;
-            margin: 20px auto;
-            box-shadow: 0 0 15px rgba(0,255,255,0.2);
-        }
-        .monitor-screen {
-            position: relative;
-            width: 100%;
-            padding-bottom: 56.25%; /* 16:9 */
-            background: #000;
+        .ccg-basic-logo {
+            width: 96px;
+            height: 96px;
+            border-radius: 6px;
             overflow: hidden;
         }
-        .monitor-screen iframe {
+
+        .ccg-basic-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .ccg-basic-lines {
+            font-size: 20px;
+            line-height: 1.3em;
+            color: #7db7ff;
+            white-space: pre;
+        }
+
+        /* BASIC-style nav just under the header text */
+        .ccg-basic-nav {
+            margin-top: 10px;
+            font-size: 20px;
+        }
+
+        .ccg-basic-nav a {
+            text-decoration: none;
+            color: #4fb3ff;
+            margin-right: 18px;
+            letter-spacing: 0.08em;
+            position: relative;
+            padding-bottom: 2px;
+            transition: color 0.18s ease, text-shadow 0.18s ease;
+        }
+
+        .ccg-basic-nav a::after {
+            content: "";
             position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            border: 0;
+            left: 0;
+            bottom: 0;
+            width: 0;
+            height: 1px;
+            background: #4ff;
+            transition: width 0.18s ease;
         }
-        .monitor-label {
+
+        .ccg-basic-nav a:hover {
+            color: #cfffff;
+            text-shadow: 0 0 6px rgba(0, 255, 255, 0.9);
+        }
+
+        .ccg-basic-nav a:hover::after {
+            width: 100%;
+        }
+
+        /* Main title centre */
+        .ccg-title-block {
             text-align: center;
-            color: #888;
-            margin-top: 5px;
-            font-size: 0.9rem;
+            margin: 40px 0 10px 0;
         }
 
-        /* SMALL TWEAK: MAIN CONTAINER TOP MARGIN */
-        .container {
-            margin-top: 20px;
+        .ccg-main-title {
+            font-size: 34px;
+            letter-spacing: 0.12em;
+            color: #cff4ff;
         }
 
-        /* SAFER MOBILE TWEAKS FOR LOADING */
-        @media (max-width: 600px) {
-            #loading-screen {
-                padding: 20px;
-                font-size: 1.2rem;
+        .ccg-main-ready {
+            margin-top: 6px;
+            font-size: 18px;
+            color: #9bd3ff;
+        }
+
+        /* Command line area */
+        .ccg-command-section {
+            margin-top: 50px;
+            font-size: 22px;
+        }
+
+        .ccg-command-label {
+            margin-bottom: 6px;
+        }
+
+        .ccg-command-input-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0 6px 0;
+        }
+
+        .ccg-command-prompt {
+            font-size: 22px;
+        }
+
+        .ccg-command-input {
+            flex: 1;
+            background: #000;
+            border: 1px solid #4fb3ff;
+            color: #dff7ff;
+            font-family: "VT323", monospace;
+            font-size: 20px;
+            padding: 4px 6px;
+            outline: none;
+        }
+
+        .ccg-command-input::placeholder {
+            color: #4779aa;
+        }
+
+        .ccg-command-helper {
+            font-size: 16px;
+            color: #6fb9ff;
+            margin-bottom: 18px;
+        }
+
+        /* Initialising bar */
+        .ccg-init-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            margin-top: 10px;
+            margin-bottom: 6px;
+        }
+
+        .ccg-init-label {
+            min-width: 120px;
+        }
+
+        .ccg-init-bar {
+            flex: 1;
+            height: 8px;
+            border: 1px solid #4fb3ff;
+            background: linear-gradient(90deg, #4fb3ff 0%, #4fb3ff 40%, transparent 40%, transparent 100%);
+            box-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+        }
+
+        /* Game of the Moment */
+        .ccg-game-moment-title {
+            margin-top: 26px;
+            font-size: 22px;
+        }
+
+        .ccg-game-moment-frame {
+            margin-top: 18px;
+            border: 2px solid #4fb3ff;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            max-width: 640px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 0 18px rgba(0, 255, 255, 0.25);
+        }
+
+        .ccg-game-moment-label {
+            font-size: 16px;
+            letter-spacing: 0.2em;
+            color: #8ed6ff;
+            margin-bottom: 8px;
+        }
+
+        .ccg-game-moment-loading {
+            margin-top: 40px;
+            font-size: 18px;
+            letter-spacing: 0.2em;
+            color: #cbefff;
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 800px) {
+            .ccg-basic-header {
+                flex-direction: column;
             }
-            #skip-btn {
-                top: 8px;
-                right: 10px;
-                font-size: 1.2rem;
-                padding: 8px 12px;
+
+            .ccg-basic-logo {
+                width: 80px;
+                height: 80px;
+            }
+
+            .ccg-main-title {
+                font-size: 26px;
+            }
+
+            .ccg-game-moment-frame {
+                padding: 20px;
             }
         }
     </style>
 </head>
-
-<body>
-
-    <canvas id="starfield"></canvas>
+<body class="ccg-body home-page">
+    <!-- CRT overlay (global, lighter on this page via CSS above) -->
     <div class="crt-overlay"></div>
 
-    <!-- ============================
-         START SCREEN (CLICK TO BOOT)
-         ============================ -->
-    <div id="start-screen" onclick="startSystem()">
-        <div class="commodore-header" style="border:none; margin-bottom:20px;">
-            <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
-                 alt="Logo"
-                 style="max-width:150px; image-rendering:pixelated;">
-        </div>
-        <div class="power-text">CLICK TO POWER ON</div>
-    </div>
-
-    <!-- ============================
-         LOADING SCREEN
-         ============================ -->
-    <div id="loading-screen">
-        <button id="skip-btn" onclick="skipLoading()">[ ESC ] SKIP LOAD</button>
-        <div class="raster-bars" id="rasterBars"></div>
-        <div id="loading-terminal"></div>
-    </div>
-
-    <!-- ============================
-         MAIN CONTENT CONTAINER
-         ============================ -->
-    <div class="container" id="main-container" style="display:none;">
-        
-        <div class="commodore-header">
-            <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
-                 alt="Cheeky Commodore Gamer Logo"
-                 style="max-width:150px; image-rendering:pixelated; margin-bottom:10px;">
-
-            <h3>**** COMMODORE 64 BASIC V2 ****</h3>
-            <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
-
-            <!-- MAIN NAVIGATION -->
-            <div class="nav-bar">
-                <a href="games/index.html" class="nav-link play-sound">GENRES</a>
-                <a href="games/collections/index.html" class="nav-link play-sound">SPECIALS</a>
-                <a href="games/complete-index.html" class="nav-link play-sound">INDEX</a>
-                <a href="resources/quiz.html" class="nav-link play-sound">QUIZ</a>
-                <a href="retro-events.html" class="nav-link play-sound">EVENTS</a>
-                <a href="about.html" class="nav-link play-sound">ABOUT</a>
-                <a href="contact.html" class="nav-link play-sound">CONTACT</a>
+    <div class="ccg-home-wrapper">
+        <!-- BASIC-style header with optional logo -->
+        <header class="ccg-basic-header">
+            <div class="ccg-basic-logo">
+                <!-- If you have a logo image, update the src below -->
+                <!-- Example path, change if needed -->
+                <img src="resources/img/ccg-logo.png" alt="Cheeky Commodore Gamer Logo">
             </div>
-        </div>
 
-        <!-- ============================
-             TYPEWRITER HEADER
-             ============================ -->
-        <div style="text-align:center; margin-bottom:30px; min-height:80px;">
-            <h1 id="typewriter-text"></h1>
-            <p style="color:var(--c64-light-blue);">
-                READY.<span class="cursor"></span>
-            </p>
-        </div>
-
-        <!-- ============================
-             SEARCH
-             ============================ -->
-        <h2>COMMAND LINE: SEARCH C64 AND AMIGA TITLES</h2>
-
-        <div class="search-wrapper">
-            <input type="text"
-                   class="search-input"
-                   id="homeSearch"
-                   placeholder="INITIALISING..."
-                   disabled>
-            <div class="search-results" id="homeSearchResults"></div>
-        </div>
-
-        <!-- ============================
-             SPOTLIGHT VIDEO
-             ============================ -->
-        <h2 style="color:#fff; text-shadow:none;">GAME OF THE MOMENT</h2>
-
-        <div class="monitor-wrapper">
-            <div class="monitor-screen" id="spotlightVideo">
-                <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:#fff;"
-                     class="blink">
-                     LOADING SIGNAL...
+            <div>
+                <div class="ccg-basic-lines">
+**** COMMODORE 64 BASIC V2 ****
+ 64K RAM SYSTEM 38911 BASIC BYTES FREE
                 </div>
+
+                <nav class="ccg-basic-nav">
+                    <a href="games/index.html">GENRES</a>
+                    <a href="games/index.html#collections">SPECIALS</a>
+                    <a href="full-game-index.html">INDEX</a>
+                    <a href="quiz.html">QUIZ</a>
+                    <a href="events.html">EVENTS</a>
+                    <a href="about.html">ABOUT</a>
+                    <a href="contact.html">CONTACT</a>
+                </nav>
             </div>
-            <div class="monitor-label">COMMODORE 1702 COLOR MONITOR</div>
-        </div>
+        </header>
 
-        <!-- ============================
-             QUICK NAVIGATION
-             ============================ -->
-        <h2>QUICK ACCESS</h2>
+        <!-- Centre title -->
+        <section class="ccg-title-block">
+            <h1 class="ccg-main-title">
+                COMMODORE 64 &amp; AMIGA: THE ULTIMATE RETRO GAMING DATABASE
+            </h1>
+            <div class="ccg-main-ready">READY.</div>
+        </section>
 
-        <div class="btn-grid">
-            <a href="games/index.html" class="btn-retro play-sound btn-emphasise">
-                <i class="fa-solid fa-folder-open"></i> BROWSE GENRES
-            </a>
-            <a href="games/complete-index.html" class="btn-retro play-sound">
-                <i class="fa-solid fa-sort-alpha-down"></i> FULL INDEX
-            </a>
-            <a href="resources/quiz.html" class="btn-retro play-sound">
-                <i class="fa-solid fa-brain"></i> RETRO QUIZ
-            </a>
-        </div>
+        <!-- Command line search (visual only for now) -->
+        <section class="ccg-command-section">
+            <div class="ccg-command-label">
+                COMMAND LINE: SEARCH C64 AND AMIGA TITLES
+            </div>
 
-        <!-- ============================
-             SUPPORT & SOCIALS (OLD STYLE)
-             ============================ -->
-        <h2>SUPPORT & SOCIALS</h2>
+            <div class="ccg-command-input-row">
+                <span class="ccg-command-prompt">&gt;</span>
+                <input
+                    type="text"
+                    class="ccg-command-input"
+                    placeholder="type a game title and press Enter (coming soon)">
+            </div>
 
-        <div class="btn-grid">
-            <a href="https://www.youtube.com/@CheekyCommodoreGamer?sub_confirmation=1"
-               target="_blank"
-               class="btn-retro play-sound"
-               style="border-color: var(--c64-red);">
-                <i class="fa-brands fa-youtube"></i> SUBSCRIBE
-            </a>
-            <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"
-               target="_blank"
-               class="btn-retro play-sound"
-               style="border-color: var(--c64-green);">
-                <i class="fa-solid fa-hand-holding-dollar"></i> DONATE
-            </a>
-        </div>
+            <div class="ccg-command-helper">
+                (Search functionality coming soon – for now, use the Game Index or Genres pages.)
+            </div>
 
-    </div> <!-- END container -->
+            <div class="ccg-init-row">
+                <div class="ccg-init-label">INITIALISING...</div>
+                <div class="ccg-init-bar"></div>
+            </div>
 
-    <!-- ============================
-         C64 BOOT LOGIC + AUDIO
-         ============================ -->
-    <script>
-        let allGames = [];
-        let bootAbort = false;
+            <div class="ccg-game-moment-title">
+                GAME OF THE MOMENT
+            </div>
+        </section>
 
-        const API_KEY = "AIzaSyABtgqVHmOrfzw2DLE-3ta3OmlaQ0ad_t8";
-        const C64_LIST = "PL_TYjnCNYSex7dxxCMMuOsjzcXE1VNiR9";
-        const AMIGA_LIST = "PL_TYjnCNYSezw55SVAMN2_UhdH3gCca1n";
-
-        /* ==========================================
-           AUDIO – ONLY "ANOTHER VISITOR..." SPEECH
-           ========================================== */
-        const ccgAudio = (function () {
-            const speech = new Audio("resources/audio/c64_speech_stayawhile.mp3");
-            speech.volume = 1.0;
-
-            function safePlay(aud) {
-                if (!aud) return;
-                aud.currentTime = 0;
-                aud.play().catch(() => {});
-            }
-
-            return {
-                playSpeech() { safePlay(speech); }
-            };
-        })();
-
-        /* ==========================================
-           START SYSTEM
-           ========================================== */
-        function startSystem() {
-            document.body.classList.add("booting"); // enable CRT flicker
-
-            document.getElementById("start-screen").style.display = "none";
-            document.getElementById("loading-screen").style.display = "flex";
-
-            bootAbort = false;
-
-            runBootSequence();
-            loadGameData();
-        }
-
-        function skipLoading() {
-            bootAbort = true;
-            document.body.classList.remove("booting");
-
-            document.getElementById("loading-screen").style.display = "none";
-            document.getElementById("main-container").style.display = "block";
-
-            const titleEl = document.getElementById("typewriter-text");
-            if (titleEl) {
-                titleEl.innerText = "COMMODORE 64 & AMIGA: THE ULTIMATE RETRO GAMING DATABASE";
-            }
-        }
-
-        /* ==========================================
-           BOOT SEQUENCE
-           ========================================== */
-        async function runBootSequence() {
-            const t = document.getElementById("loading-terminal");
-            const rasterBars = document.getElementById("rasterBars");
-            if (!t || !rasterBars) return;
-
-            t.innerText = "";
-            rasterBars.style.display = "none";
-
-            await type('LOAD ""\n');
-            if (bootAbort) return;
-            await delay(500);
-            if (bootAbort) return;
-
-            await type("PRESS PLAY ON TAPE\n");
-            if (bootAbort) return;
-            await delay(1200);
-            if (bootAbort) return;
-
-            await type("OK\n\n");
-            if (bootAbort) return;
-            await delay(300);
-            if (bootAbort) return;
-
-            await type("SEARCHING...\n");
-            if (bootAbort) return;
-            await delay(700);
-            if (bootAbort) return;
-
-            await type("FOUND CCG SYSTEM\n");
-            if (bootAbort) return;
-            await delay(700);
-            if (bootAbort) return;
-
-            await type("LOADING...\n");
-            if (bootAbort) return;
-
-            // RASTER BARS ON DURING "LOADING"
-            rasterBars.style.display = "block";
-            await delay(2500);
-            if (bootAbort) {
-                rasterBars.style.display = "none";
-                return;
-            }
-
-            await type('\n"STAY A WHILE... STAY FOREVER!"\n');
-            ccgAudio.playSpeech();
-            await delay(2000);
-            if (bootAbort) {
-                rasterBars.style.display = "none";
-                return;
-            }
-
-            // END OF BOOT: stop flicker + raster, reveal UI
-            rasterBars.style.display = "none";
-            document.body.classList.remove("booting");
-
-            document.getElementById("loading-screen").style.display = "none";
-            document.getElementById("main-container").style.display = "block";
-
-            typeHeading();
-        }
-
-        /* ==========================================
-           GAME DATA + SEARCH + SPOTLIGHT
-           ========================================== */
-        async function loadGameData() {
-            try {
-                const [c64, amiga] = await Promise.all([
-                    fetchList(C64_LIST, "C64"),
-                    fetchList(AMIGA_LIST, "AMIGA")
-                ]);
-
-                allGames = [...c64, ...amiga];
-
-                // Initialise search using global helper from engine.js
-                ccgSearchInit("homeSearch", "homeSearchResults", allGames);
-
-                const input = document.getElementById("homeSearch");
-                if (input) {
-                    input.disabled = false;
-                    input.placeholder = "SEARCH TITLES...";
-                }
-
-                // Spotlight video
-                if (allGames.length) {
-                    const g = allGames[Math.floor(Math.random() * allGames.length)];
-                    const spot = document.getElementById("spotlightVideo");
-                    if (spot) {
-                        spot.innerHTML = `
-                            <iframe src="https://www.youtube.com/embed/${g.video}?autoplay=1&mute=1"
-                                    title="${g.title}"
-                                    allow="autoplay"
-                                    frameborder="0"
-                                    allowfullscreen></iframe>`;
-                    }
-                }
-            } catch (err) {
-                console.error("LOAD ERROR:", err);
-            }
-        }
-
-        async function fetchList(playlistId, system) {
-            let out = [];
-            let next = "";
-
-            do {
-                const r = await fetch(
-                    `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&pageToken=${next}&playlistId=${playlistId}&key=${API_KEY}`
-                );
-                const j = await r.json();
-
-                if (j.items) {
-                    out.push(...j.items.map(x => ({
-                        title: x.snippet.title
-                            .replace(/^(the|a|an|c64:|amiga:)\s+/i, "")
-                            .trim(),
-                        system,
-                        video: x.snippet.resourceId.videoId
-                    })));
-                }
-
-                next = j.nextPageToken || "";
-            } while (next);
-
-            return out;
-        }
-
-        /* ==========================================
-           TYPEWRITER HELPERS
-           ========================================== */
-        async function type(text) {
-            const el = document.getElementById("loading-terminal");
-            if (!el) return;
-            for (let c of text) {
-                if (bootAbort) return;
-                el.innerHTML += c;
-                await delay(20);
-            }
-        }
-
-        async function typeHeading() {
-            const txt = "COMMODORE 64 & AMIGA: THE ULTIMATE RETRO GAMING DATABASE";
-            const el = document.getElementById("typewriter-text");
-            if (!el) return;
-
-            el.innerHTML = "";
-            for (let c of txt) {
-                if (bootAbort) return;
-                el.innerHTML += c;
-                await delay(40);
-            }
-        }
-
-        function delay(ms) {
-            return new Promise(res => setTimeout(res, ms));
-        }
-    </script>
-
+        <!-- Game of the Moment frame -->
+        <section class="ccg-game-moment-frame">
+            <div class="ccg-game-moment-label">SIGNAL STATUS</div>
+            <div class="ccg-game-moment-loading">
+                LOADING SIGNAL...
+            </div>
+        </section>
+    </div>
 </body>
 </html>
