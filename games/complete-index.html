@@ -4,65 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Complete Game Index | Cheeky Commodore Gamer</title>
-    <meta name="description" content="Alphabetical index of all Commodore 64 and Amiga games in the Cheeky Commodore Gamer library.">
-
-    <link rel="stylesheet" href="../css/engine.css">
-    <link rel="stylesheet" href="../resources/main.css">
-
-    <script defer src="../js/engine.js"></script>
-    <script defer src="../js/complete-index.js"></script>
-    <script defer src="../js/accordion-index.js"></script>
 </head>
-<body class="ccg-body">
-    <div id="start-screen">
-        <div class="boot-window">
-            <pre id="boot-log"></pre>
-            <div id="press-space">PRESS SPACE TO CONTINUE</div>
-        </div>
-    </div>
+<body>
+    <header>
+        <h1>Complete Game Index</h1>
+        <p>Full list of all Commodore 64 & Amiga games available on Cheeky Commodore Gamer.</p>
+    </header>
 
-    <div class="crt">
-        <div class="scanlines"></div>
-        <div class="screen">
-            <header class="ccg-header">
-                <div class="logo-area">
-                    <span class="logo-main">CHEEKY</span>
-                    <span class="logo-sub">COMMODORE GAMER</span>
-                </div>
-                <nav class="ccg-nav">
-                    <a href="../index.html" class="nav-link">Main Menu</a>
-                    <a href="index.html" class="nav-link">Game Browser</a>
-                    <a href="complete-index.html" class="nav-link active">Full Index</a>
-                    <a href="../quiz/quiz.html" class="nav-link">Retro Quiz</a>
-                    <a href="../about.html" class="nav-link">About</a>
-                    <a href="../contact.html" class="nav-link">Contact</a>
-                </nav>
-            </header>
+    <nav>
+        <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="index.html">Browse Games</a></li>
+            <li><a href="complete-index.html">Complete Game Index</a></li>
+        </ul>
+    </nav>
 
-            <main class="ccg-main">
-                <section class="text-panel">
-                    <h1>Complete Game Index</h1>
-                    <p>
-                        Generated from <code>games/games.json</code>. Click a title to open its dedicated
-                        game page.
-                    </p>
-                </section>
+    <main>
+        <section>
+            <h2>All Games</h2>
+            <p>The complete game list will appear here when connected to the data system.</p>
 
-                <section class="index-panel">
-                    <div id="index-accordion">
-                        <!-- complete-index.js / accordion-index.js build A–Z sections here -->
-                    </div>
-                    <p id="index-status" class="games-status"></p>
-                </section>
-            </main>
+            <!-- Placeholder for dynamic game list -->
+            <div id="game-list">
+                <!-- JavaScript will populate this section later -->
+            </div>
+        </section>
+    </main>
 
-            <footer class="ccg-footer">
-                <p>
-                    <a href="index.html">Back to Game Browser</a> •
-                    <a href="../index.html">Return to Main Menu</a>
-                </p>
-            </footer>
-        </div>
-    </div>
+    <footer>
+        <p>&copy; Cheeky Commodore Gamer</p>
+    </footer>
 </body>
 </html>
