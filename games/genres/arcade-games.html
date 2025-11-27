@@ -2,47 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Arcade Games | Cheeky Commodore Gamer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Browse arcade-style games from the Cheeky Commodore Gamer C64 & Amiga database.">
-
-    <link rel="stylesheet" href="../../css/engine.css">
-    <link rel="stylesheet" href="../../resources/css/main.css">
+    <title>Arcade Games</title>
 
     <script defer src="../../js/engine.js"></script>
-    <script defer src="../../js/load-games.js"></script>
+    <script defer src="../load-genre.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            loadGenrePage("Arcade Games");
+        });
+    </script>
 </head>
-<body class="ccg-body genre-page" data-genre="Arcade Games">
-    <div class="crt-overlay"></div>
-
-    <header class="ccg-header">
-        <div class="ccg-header-inner">
-            <h1 class="ccg-logo-text">Arcade Games</h1>
-            <nav class="ccg-nav">
-                <a href="../../index.html">Home</a>
-                <a href="../index.html">Game Index</a>
-                <a href="../../full-game-index.html">Full Game List</a>
-            </nav>
-        </div>
-    </header>
-
-    <main class="ccg-main">
-        <section class="ccg-genre-intro">
-            <p>Fast, frantic and score-chasing – the Arcade games section has your joystick twitching already.</p>
-            <button class="ccg-back-button" onclick="location.href='../index.html'">
-                &larr; Back to Game Index
-            </button>
-        </section>
-
-        <section class="ccg-games-section">
-            <h2>Games in this genre</h2>
-            <div id="genre-status" class="ccg-status">Loading games…</div>
-            <div id="genre-games-list" class="ccg-games-grid"></div>
-        </section>
-    </main>
-
-    <footer class="ccg-footer">
-        <p>&copy; Cheeky Commodore Gamer</p>
-    </footer>
+<body>
+    <h1>Arcade Games</h1>
+    <div id="genre-list">Loading…</div>
 </body>
 </html>
