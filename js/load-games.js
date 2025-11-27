@@ -1,12 +1,11 @@
 /* ==========================================================
    CHEEKY COMMODORE GAMER — load-games.js
-   Full safe replacement file
+   Full safe replacement
    Handles:
-   - Loading games.json
+   - Loading games/games.json
    - Filtering by genre or collection
    - Building clickable thumbnail cards
    - Status messages
-   - Robust error handling
    ========================================================== */
 
 /* --------------------------
@@ -15,14 +14,16 @@
 
 async function ccgFetchGames() {
     try {
-        const response = await fetch("../../games.json");
+        // NOTE: this file lives in /js/, pages that use it live in /games/genres/ and /games/collections/
+        // games.json is at /games/games.json → relative path from those pages is "../games.json"
+        const response = await fetch("../games.json");
 
         if (!response.ok) {
             throw new Error("HTTP " + response.status);
         }
 
         const data = await response.json();
-        return data.games || data; // supports both structures
+        return data.games || data; // supports both { games: [...] } and plain [...]
     } catch (err) {
         console.error("Error loading games:", err);
         return null;
@@ -70,8 +71,6 @@ async function loadGames() {
         return;
     }
 
-    /* Determine if this page is a GENRE or COLLECTION page */
-
     const body = document.body;
 
     let filterType = null;
@@ -87,39 +86,28 @@ async function loadGames() {
         filterValue = body.dataset.collection.trim();
     }
 
-    /* --------------------------
-       Filter logic
-       -------------------------- */
-
     let filtered = [];
 
     if (filterType === "genre") {
         filtered = allGames.filter(g => g.genre && g.genre.trim() === filterValue);
-    }
-    else if (filterType === "collection") {
+    } else if (filterType === "collection") {
         filtered = allGames.filter(g =>
             g.collection &&
             g.collection.toLowerCase().includes(filterValue.toLowerCase())
         );
-    }
-    else {
+    } else {
         statusEl.textContent = "No filter applied.";
         return;
     }
-
-    /* --------------------------
-       After filtering
-       -------------------------- */
 
     if (filtered.length === 0) {
         statusEl.textContent = "No games found in this category.";
         return;
     }
 
-    statusEl.textContent = ""; // clear loading message
-    listEl.innerHTML = ""; // clear old entries
+    statusEl.textContent = "";
+    listEl.innerHTML = "";
 
-    /* Create cards */
     filtered.forEach(game => {
         const card = createGameCard(game);
         listEl.appendChild(card);
