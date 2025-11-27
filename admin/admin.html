@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CCG Admin – Game Manager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    body {
+      background: #02040a;
+      color: #e9f5ff;
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .admin-shell {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 16px 48px;
+    }
+
+    h1 {
+      font-family: "VT323", monospace;
+      font-size: 36px;
+      color: #39f3ff;
+      text-shadow: 0 0 8px rgba(57, 243, 255, 0.7);
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-family: "VT323", monospace;
+      color: #a3e4ff;
+      font-size: 18px;
+      margin-bottom: 24px;
+    }
+
+    .status {
+      font-family: "VT323", monospace;
+      font-size: 16px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(57, 243, 255, 0.3);
+    }
+
+    .status.ok {
+      border-color: rgba(111, 255, 189, 0.7);
+      color: #caffdd;
+    }
+
+    .status.error {
+      border-color: rgba(255, 118, 118, 0.7);
+      color: #ffd4d4;
+    }
+
+    .flex-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    .panel {
+      flex: 1 1 320px;
+      background: radial-gradient(circle at top left,
+                rgba(57, 243, 255, 0.12),
+                rgba(0, 0, 0, 0.9));
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid rgba(57, 243, 255, 0.2);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.8);
+    }
+
+    .panel h2 {
+      font-family: "VT323", monospace;
+      font-size: 24px;
+      margin: 0 0 10px;
+      color: #f8f9ff;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      margin-top: 10px;
+      margin-bottom: 4px;
+      color: #c9e7ff;
+      font-family: "VT323", monospace;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(57, 243, 255, 0.35);
+      background: rgba(0, 0, 0, 0.7);
+      color: #e9f5ff;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 12px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(57, 243, 255, 0.8);
+      background: rgba(0, 0, 0, 0.8);
+      color: #39f3ff;
+      font-family: "VT323", monospace;
+      font-size: 16px;
+      cursor: pointer;
+      transition:
+        background 0.15s ease,
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        border-color 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      border-color: #39f3ff;
+      background: rgba(57, 243, 255, 0.12);
+      box-shadow: 0 0 12px rgba(57, 243, 255, 0.4);
+    }
+
+    .games-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .games-table th,
+    .games-table td {
+      padding: 6px 8px;
+      border-bottom: 1px solid rgba(57, 243, 255, 0.1);
+    }
+
+    .games-table th {
+      font-family: "VT323", monospace;
+      color: #a8eeff;
+      text-align: left;
+    }
+
+    .games-table tbody tr:nth-child(even) {
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    .games-table tbody tr:hover {
+      background: rgba(57, 243, 255, 0.07);
+    }
+
+  </style>
+</head>
+<body>
+  <div class="admin-shell">
+    <h1>CCG Admin – Game Manager</h1>
+    <div class="subtitle">
+      Google login protected — only <strong>joepentony@gmail.com</strong> can edit the database.
+    </div>
+
+    <div id="status" class="status">
+      Initialising…
+    </div>
+
+    <div class="flex-row">
+
+      <!-- Add Game Panel -->
+      <div class="panel">
+        <h2>Add New Game</h2>
+        <form id="add-form">
+          <label>Title *</label>
+          <input id="title" required>
+
+          <label>Slug (optional)</label>
+          <input id="slug" placeholder="auto-generated if blank">
+
+          <label>System</label>
+          <select id="system">
+            <option value="">(none)</option>
+            <option value="c64">C64</option>
+            <option value="amiga">Amiga</option>
+          </select>
+
+          <label>Genres (comma-separated)</label>
+          <input id="genres" placeholder="Arcade Games, Shooting Games">
+
+          <label>YouTube Video ID</label>
+          <input id="video" placeholder="oi-AwIG7MYg">
+
+          <label>Thumbnail URL</label>
+          <input id="thumb" placeholder="https://raw.githubusercontent.com/...">
+
+          <button type="submit">Add Game</button>
+        </form>
+      </div>
+
+      <!-- Games List Panel -->
+      <div class="panel">
+        <h2>Games (Preview)</h2>
+        <div id="games-list">Loading…</div>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbz1hGdwwxlMfGAU2_KB4Svi6bDKz4Uq7B7Gw7ITb7MvvboHF6-3d5i4x_2RLAf2VEIDxA/exec";
+
+function setStatus(msg, type) {
+  const el = document.getElementById("status");
+  el.textContent = msg;
+  el.className = "status " + (type || "");
+}
+
+function escapeHtml(s) {
+  if (!s) return "";
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+async function apiCall(payload) {
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include", // Google login cookie
+    body: JSON.stringify(payload)
+  });
+  return res.json();
+}
+
+async function loadGames() {
+  setStatus("Loading games…","");
+  const data = await apiCall({ mode: "list" });
+
+  if (!data.ok) {
+    setStatus("Error: " + data.error, "error");
+    return;
+  }
+
+  const games = data.games || [];
+
+  let html = `
+    <table class="games-table">
+      <thead>
+        <tr>
+          <th>Row</th>
+          <th>Title</th>
+          <th>Slug</th>
+          <th>System</th>
+          <th>Genres</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  for (const g of games) {
+    html += `
+      <tr>
+        <td>${g.row}</td>
+        <td>${escapeHtml(g.title)}</td>
+        <td>${escapeHtml(g.slug)}</td>
+        <td>${escapeHtml(g.system)}</td>
+        <td>${escapeHtml(g.genres)}</td>
+      </tr>
+    `;
+  }
+
+  html += `</tbody></table>`;
+
+  document.getElementById("games-list").innerHTML = html;
+  setStatus(`Loaded ${games.length} game(s).`,"ok");
+}
+
+document.getElementById("add-form").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+
+  const title = document.getElementById("title").value.trim();
+  let slug = document.getElementById("slug").value.trim();
+  const system = document.getElementById("system").value.trim();
+  const genres = document.getElementById("genres").value.trim();
+  const video = document.getElementById("video").value.trim();
+  const thumb = document.getElementById("thumb").value.trim();
+
+  if (!title) {
+    setStatus("Title is required.","error");
+    return;
+  }
+
+  if (!slug) {
+    slug = title.toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,"");
+  }
+
+  setStatus("Adding game…","");
+
+  const data = await apiCall({
+    mode: "add",
+    title,
+    slug,
+    system,
+    genres,
+    video,
+    thumb
+  });
+
+  if (!data.ok) {
+    setStatus("Error: " + data.error,"error");
+    return;
+  }
+
+  setStatus(`Game "${title}" added.`,"ok");
+  e.target.reset();
+  loadGames();
+});
+
+loadGames();
+</script>
+</body>
+</html>
