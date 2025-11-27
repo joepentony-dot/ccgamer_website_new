@@ -5,22 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheeky Commodore Gamer | Main Menu</title>
 
-    <!-- Existing engine CSS -->
+    <!-- ENGINE + GLOBAL CRT CSS -->
     <link rel="stylesheet" href="css/engine.css">
-    <!-- Global CRT / Phase C stylesheet -->
     <link rel="stylesheet" href="resources/css/main.css">
 
-    <!-- Phase C – preload C64 audio -->
-    <link rel="preload" as="audio" href="resources/audio/crt_hum_loop.mp3">
+    <!-- PRELOAD AUDIO (C64 ONLY) -->
     <link rel="preload" as="audio" href="resources/audio/c64_raster_whoosh.mp3">
     <link rel="preload" as="audio" href="resources/audio/c64_speech_stayawhile.mp3">
 
-    <!-- IMPORTANT: no 'defer' so ccgSearchInit & ccgSocialBar exist
-         before the inline boot script at the bottom runs -->
-    <script src="js/engine.js?v=2"></script>
+    <!-- ENGINE.JS WITHOUT DEFER (must load first) -->
+    <script src="js/engine.js?v=3"></script>
 
     <style>
-        /* PAGE-SPECIFIC OVERRIDES ONLY (very minimal) */
+        /* PAGE-SPECIFIC ONLY */
         #start-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -34,7 +31,7 @@
         .power-text {
             color: var(--c64-text);
             font-size: 2.4rem;
-            animation: blink 1s infinite;
+            animation: blinkText 1s steps(1) infinite;
             margin-top: 20px;
         }
         #loading-screen {
@@ -65,27 +62,6 @@
             font-size: 1.4rem;
         }
         #skip-btn:hover { background: #fff; color: var(--c64-red); }
-
-        .monitor-wrapper {
-            background: #000;
-            border: 4px solid #444;
-            border-radius: 10px;
-            padding: 10px;
-            max-width: 600px;
-            margin: 20px auto;
-            box-shadow: 0 0 15px rgba(0,255,255,0.2);
-        }
-        .monitor-screen {
-            position: relative;
-            width: 100%;
-            padding-bottom: 56.25%;
-            background: #000;
-        }
-        .monitor-label {
-            text-align: center;
-            color: #888;
-            margin-top: 5px;
-        }
     </style>
 </head>
 
@@ -115,7 +91,7 @@
     </div>
 
     <!-- ============================
-         MAIN CONTENT CONTAINER
+         MAIN CONTENT
          ============================ -->
     <div class="container" id="main-container" style="display:none;">
         
@@ -127,7 +103,7 @@
             <h3>**** COMMODORE 64 BASIC V2 ****</h3>
             <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
 
-            <!-- MAIN NAVIGATION -->
+            <!-- NAV -->
             <div class="nav-bar">
                 <a href="games/index.html" class="nav-link play-sound">GENRES</a>
                 <a href="games/collections/index.html" class="nav-link play-sound">SPECIALS</a>
@@ -139,9 +115,7 @@
             </div>
         </div>
 
-        <!-- ============================
-             TYPEWRITER HEADER
-             ============================ -->
+        <!-- TYPEWRITER -->
         <div style="text-align:center; margin-bottom:30px; min-height:80px;">
             <h1 id="typewriter-text"></h1>
             <p style="color:var(--c64-light-blue);">
@@ -149,11 +123,8 @@
             </p>
         </div>
 
-        <!-- ============================
-             SEARCH
-             ============================ -->
+        <!-- SEARCH -->
         <h2>COMMAND LINE: SEARCH C64 AND AMIGA TITLES</h2>
-
         <div class="search-wrapper">
             <input type="text"
                    class="search-input"
@@ -163,11 +134,8 @@
             <div class="search-results" id="homeSearchResults"></div>
         </div>
 
-        <!-- ============================
-             SPOTLIGHT VIDEO
-             ============================ -->
+        <!-- SPOTLIGHT -->
         <h2 style="color:#fff; text-shadow:none;">GAME OF THE MOMENT</h2>
-
         <div class="monitor-wrapper">
             <div class="monitor-screen" id="spotlightVideo">
                 <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color:#fff;"
@@ -178,11 +146,8 @@
             <div class="monitor-label">COMMODORE 1702 COLOR MONITOR</div>
         </div>
 
-        <!-- ============================
-             QUICK NAVIGATION
-             ============================ -->
+        <!-- QUICK ACCESS -->
         <h2>QUICK ACCESS</h2>
-
         <div class="btn-grid">
             <a href="games/index.html" class="btn-retro play-sound btn-emphasise">
                 <i class="fa-solid fa-folder-open"></i> BROWSE GENRES
@@ -195,17 +160,14 @@
             </a>
         </div>
 
-        <!-- ============================
-             SOCIAL ICONS
-             ============================ -->
+        <!-- SOCIALS -->
         <h2>SUPPORT & SOCIALS</h2>
-
         <div id="socialMount"></div>
 
-    </div> <!-- END container -->
+    </div> <!-- end container -->
 
     <!-- ============================
-         BOOT LOGIC + AUDIO
+         C64 BOOT JS
          ============================ -->
     <script>
         let allGames = [];
@@ -215,51 +177,34 @@
         const C64_LIST = "PL_TYjnCNYSex7dxxCMMuOsjzcXE1VNiR9";
         const AMIGA_LIST = "PL_TYjnCNYSezw55SVAMN2_UhdH3gCca1n";
 
-        /* ==========================================
-           PHASE C – PURE C64 BOOT AUDIO ENGINE
-           Uses:
-             - crt_hum_loop.mp3
-             - c64_raster_whoosh.mp3
-             - c64_speech_stayawhile.mp3
-           ========================================== */
+        /* AUDIO (no hum!) */
         const ccgAudio = (function () {
-            const hum = new Audio("resources/audio/crt_hum_loop.mp3");
             const raster = new Audio("resources/audio/c64_raster_whoosh.mp3");
             const speech = new Audio("resources/audio/c64_speech_stayawhile.mp3");
 
-            hum.loop = true;
-            hum.volume = 0.35;
-            raster.volume = 0.5;
-            speech.volume = 0.9;
+            raster.volume = 0.7;
+            speech.volume = 1.0;
 
             function safePlay(aud) {
                 if (!aud) return;
                 aud.currentTime = 0;
-                aud.play().catch(() => {});
+                aud.play().catch(()=>{});
             }
 
             return {
-                playHum() { safePlay(hum); },
-                stopHum() { hum.pause(); hum.currentTime = 0; },
-                playRaster() { safePlay(raster); },
-                playSpeech() { safePlay(speech); },
-                stopAll() {
-                    hum.pause(); hum.currentTime = 0;
-                    raster.pause(); raster.currentTime = 0;
-                    speech.pause(); speech.currentTime = 0;
-                }
+                playRaster(){ safePlay(raster); },
+                playSpeech(){ safePlay(speech); }
             };
         })();
 
+        /* START SYSTEM */
         function startSystem() {
-            // Hide start screen, show loading screen
+            document.body.classList.add("booting");
+
             document.getElementById("start-screen").style.display = "none";
             document.getElementById("loading-screen").style.display = "flex";
 
             bootAbort = false;
-
-            // Start CRT hum immediately on user click
-            ccgAudio.playHum();
 
             runBootSequence();
             loadGameData();
@@ -267,76 +212,56 @@
 
         function skipLoading() {
             bootAbort = true;
+            document.body.classList.remove("booting");
 
-            // Stop all boot audio
-            ccgAudio.stopAll();
-
-            // Skip straight to main container
             document.getElementById("loading-screen").style.display = "none";
             document.getElementById("main-container").style.display = "block";
-            document.getElementById("typewriter-text").innerText =
-                "COMMODORE 64 & AMIGA: THE ULTIMATE RETRO GAMING DATABASE";
+
+            document.getElementById("typewriter-text")
+                .innerText = "COMMODORE 64 & AMIGA: THE ULTIMATE RETRO GAMING DATABASE";
         }
 
+        /* BOOT SEQUENCE */
         async function runBootSequence() {
             const t = document.getElementById("loading-terminal");
-            if (bootAbort) return;
-
             t.innerText = "";
 
-            await type('LOAD ""\n');
-            if (bootAbort) return;
+            await type('LOAD ""\n');                     if (bootAbort) return;
             await delay(500);
-            if (bootAbort) return;
 
-            await type("PRESS PLAY ON TAPE\n");
-            if (bootAbort) return;
+            await type("PRESS PLAY ON TAPE\n");          if (bootAbort) return;
             await delay(1200);
-            if (bootAbort) return;
 
-            await type("OK\n\n");
-            if (bootAbort) return;
+            await type("OK\n\n");                        if (bootAbort) return;
+            await delay(300);
 
-            await type("SEARCHING...\n");
-            if (bootAbort) return;
+            await type("SEARCHING...\n");                if (bootAbort) return;
 
-            // First raster whoosh as it finds the system
             ccgAudio.playRaster();
-            await delay(800);
-            if (bootAbort) return;
+            await delay(700);                            if (bootAbort) return;
 
-            await type("FOUND CCG SYSTEM\n");
-            if (bootAbort) return;
-            await delay(800);
-            if (bootAbort) return;
+            await type("FOUND CCG SYSTEM\n");            if (bootAbort) return;
+            await delay(700);
 
-            await type("LOADING...\n");
-            if (bootAbort) return;
+            await type("LOADING...\n");                  if (bootAbort) return;
 
-            // Second raster whoosh as loading kicks in
             ccgAudio.playRaster();
-            await delay(1200);
-            if (bootAbort) return;
+            await delay(1100);                           if (bootAbort) return;
 
-            // Iconic line – visual + audio
             await type('\n"STAY A WHILE... STAY FOREVER!"\n');
-            if (bootAbort) return;
-
             ccgAudio.playSpeech();
-            await delay(2000);
-            if (bootAbort) return;
+            await delay(2000);                           if (bootAbort) return;
 
-            // End of boot: stop hum, reveal UI
-            ccgAudio.stopAll();
+            document.body.classList.remove("booting");
 
-            if (!bootAbort) {
-                document.getElementById("loading-screen").style.display = "none";
-                document.getElementById("main-container").style.display = "block";
-                document.getElementById("socialMount").innerHTML = ccgSocialBar();
-                typeHeading();
-            }
+            document.getElementById("loading-screen").style.display = "none";
+            document.getElementById("main-container").style.display = "block";
+
+            document.getElementById("socialMount").innerHTML = ccgSocialBar();
+            typeHeading();
         }
 
+        /* GAME DATA */
         async function loadGameData() {
             try {
                 const [c64, amiga] = await Promise.all([
@@ -345,22 +270,22 @@
                 ]);
 
                 allGames = [...c64, ...amiga];
-                ccgSearchInit("homeSearch", "homeSearchResults", allGames);
-                document.getElementById("homeSearch").disabled = false;
-                document.getElementById("homeSearch").placeholder = "SEARCH TITLES...";
+
+                ccgSearchInit("homeSearch","homeSearchResults",allGames);
+                const input = document.getElementById("homeSearch");
+                input.disabled = false;
+                input.placeholder = "SEARCH TITLES...";
 
                 if (allGames.length) {
-                    const g = allGames[Math.floor(Math.random() * allGames.length)];
-                    document.getElementById("spotlightVideo").innerHTML =
-                        `<iframe src="https://www.youtube.com/embed/${g.video}?autoplay=1&mute=1"
-                                 title="${g.title}"
-                                 allow="autoplay"
-                                 frameborder="0"
-                                 allowfullscreen></iframe>`;
+                    const g = allGames[Math.floor(Math.random()*allGames.length)];
+                    document.getElementById("spotlightVideo").innerHTML = `
+                        <iframe src="https://www.youtube.com/embed/${g.video}?autoplay=1&mute=1"
+                                allow="autoplay"
+                                frameborder="0"
+                                allowfullscreen></iframe>`;
                 }
-            } catch (err) {
-                console.error("LOAD ERROR:", err);
-            }
+
+            } catch(e){ console.error("LOAD ERROR:",e); }
         }
 
         async function fetchList(playlistId, system) {
@@ -368,49 +293,41 @@
             let next = "";
 
             do {
-                const r = await fetch(
-                    `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&pageToken=${next}&playlistId=${playlistId}&key=${API_KEY}`
-                );
+                const r = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&pageToken=${next}&playlistId=${playlistId}&key=${API_KEY}`);
                 const j = await r.json();
 
                 if (j.items) {
                     out.push(...j.items.map(x => ({
-                        title: x.snippet.title
-                            .replace(/^(the|a|an|c64:|amiga:)\s+/i, "")
-                            .trim(),
+                        title: x.snippet.title.replace(/^(the|a|an|c64:|amiga:)\s+/i, "").trim(),
                         system,
                         video: x.snippet.resourceId.videoId
                     })));
                 }
-
                 next = j.nextPageToken || "";
             } while (next);
 
             return out;
         }
 
-        async function type(text) {
-            const el = document.getElementById("loading-terminal");
-            for (let c of text) {
+        async function type(text){
+            const el=document.getElementById("loading-terminal");
+            for (let c of text){
                 if (bootAbort) return;
-                el.innerHTML += c;
+                el.innerHTML+=c;
                 await delay(20);
             }
         }
 
         async function typeHeading() {
-            const txt = "COMMODORE 64 & AMIGA: THE ULTIMATE RETRO GAMING DATABASE";
-            const el = document.getElementById("typewriter-text");
-
+            const txt="COMMODORE 64 & AMIGA: THE ULTIMATE RETRO GAMING DATABASE";
+            const el=document.getElementById("typewriter-text");
             for (let c of txt) {
-                el.innerHTML += c;
+                el.innerHTML+=c;
                 await delay(40);
             }
         }
 
-        function delay(ms) {
-            return new Promise(res => setTimeout(res, ms));
-        }
+        function delay(ms){ return new Promise(res=>setTimeout(res,ms)); }
     </script>
 
 </body>
