@@ -2,182 +2,296 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>Cheeky Commodore Gamer | Game Browser</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Full Game Index | CCG</title>
 
-    <!-- Core styles -->
-    <link rel="stylesheet" href="../resources/css/main.css">
+    <!-- From /games/ we go up one level to reach shared CSS -->
     <link rel="stylesheet" href="../css/engine.css">
+    <link rel="stylesheet" href="../resources/main.css">
 
     <style>
-        /* Raster canvas handling */
-        #raster-canvas {
-            position: fixed;
-            inset: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
+        body {
+            margin: 0;
+            background: #000;
+            color: #f4f4f4;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
 
-        html, body {
-            cursor: auto !important;
+        .ccg-shell {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 16px;
+            box-sizing: border-box;
         }
 
-        /* Page wrapper */
-        .page-wrapper {
-            position: relative;
-            z-index: 10;
-            padding: 20px;
-        }
-
-        /* Accordion structure */
-        .accordion-section {
-            border: 1px solid #0af;
-            margin: 15px 0;
-            border-radius: 6px;
-            background: rgba(0,0,0,0.6);
-        }
-
-        .accordion-header {
-            padding: 12px 16px;
-            font-size: 1.3rem;
-            cursor: pointer;
-            background: #001f33;
-            border-bottom: 1px solid #0af;
-            color: #7ec8ff;
-            text-shadow: 0 0 8px #0af;
+        header.ccg-header {
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            padding: 12px 0 16px 0;
+            border-bottom: 2px solid #333;
         }
 
-        .accordion-header:hover {
-            background: #003f66;
-            color: #b7e3ff;
-        }
-
-        .accordion-header::before {
-            content: "▶";
-            margin-right: 10px;
-            color: #0af;
-            text-shadow: 0 0 6px #0af;
-            transition: transform 0.3s;
-        }
-
-        .accordion-header.open::before {
-            transform: rotate(90deg);
-        }
-
-        .accordion-content {
-            max-height: 0;
-            overflow: hidden;
-            opacity: 0;
-            transition: max-height 0.35s ease-out, opacity 0.35s ease-out;
-        }
-
-        .accordion-content.open {
-            max-height: 2000px;
-            opacity: 1;
-        }
-
-        /* Game grid */
-        .game-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 15px;
-        }
-
-        .game-card {
-            background: rgba(0,0,0,0.4);
-            padding: 6px;
-            border: 2px solid #0af;
-            border-radius: 6px;
-            text-align: center;
-        }
-
-        .game-card img {
-            width: 100%;
-            border-radius: 4px;
-            border: 2px solid #044;
-            transition: 0.2s;
-        }
-
-        .game-card img:hover {
-            transform: scale(1.06);
-            border-color: #0ff;
-            box-shadow: 0 0 12px #0ff;
-        }
-
-        .category-group {
-            margin-top: 25px;
-            padding: 12px;
-            background: rgba(0,20,40,0.5);
-            border: 2px solid #0af;
-            border-radius: 6px;
-        }
-
-        h2.category-title {
+        .ccg-title-block h1 {
+            margin: 0;
             font-size: 1.6rem;
-            margin-bottom: 10px;
-            color: #9ed0ff;
-            text-shadow: 0 0 12px #0af;
         }
 
-        /* Back to top button */
-        #backToTop {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            background: #001f33;
-            color: #7ec8ff;
-            padding: 10px 20px;
-            border: 2px solid #0af;
+        .ccg-title-block p {
+            margin: 4px 0 0 0;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        nav.ccg-nav {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        nav.ccg-nav a {
+            color: #7fd0ff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid transparent;
+        }
+
+        nav.ccg-nav a:hover {
+            border-color: #7fd0ff;
+            background: #07111f;
+        }
+
+        main.ccg-main {
+            padding: 18px 0 32px 0;
+        }
+
+        .ccg-intro {
+            margin-bottom: 18px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .genre-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .genre-card {
+            border: 1px solid #333;
             border-radius: 6px;
-            cursor: pointer;
-            font-size: 1rem;
-            display: none;
-            z-index: 99;
-            box-shadow: 0 0 12px #0af;
+            background: #050915;
+            padding: 10px 12px;
+            box-sizing: border-box;
         }
 
-        #backToTop:hover {
-            color: #c9ecff;
-            background: #003f66;
+        .genre-card h2 {
+            margin: 0 0 6px 0;
+            font-size: 1.05rem;
+        }
+
+        .genre-card p {
+            margin: 0 0 8px 0;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .genre-card a {
+            display: inline-block;
+            margin-top: 4px;
+            padding: 6px 10px;
+            font-size: 0.85rem;
+            border-radius: 4px;
+            text-decoration: none;
+            border: 1px solid #7fd0ff;
+            color: #000;
+            background: #7fd0ff;
+        }
+
+        .genre-card a:hover {
+            filter: brightness(1.05);
+        }
+
+        footer.ccg-footer {
+            border-top: 1px solid #333;
+            padding: 10px 0 20px 0;
+            font-size: 0.8rem;
+            opacity: 0.75;
+        }
+
+        footer.ccg-footer a {
+            color: #7fd0ff;
+            text-decoration: none;
+        }
+
+        footer.ccg-footer a:hover {
+            text-decoration: underline;
         }
     </style>
-</head>
 
+    <!-- If engine.js is doing global stuff, it will still run, but this page doesn't depend on it -->
+    <script defer src="../js/engine.js"></script>
+</head>
 <body>
 
-<!-- Raster -->
-<canvas id="raster-canvas"></canvas>
+<div class="ccg-shell">
 
-<div class="page-wrapper">
+    <header class="ccg-header">
+        <div class="ccg-title-block">
+            <h1>Game Browser</h1>
+            <p>Browse C64 &amp; Amiga games by genre, special collection, or curated picks.</p>
+        </div>
+        <nav class="ccg-nav">
+            <a href="../index.html">Home</a>
+            <a href="index.html">Game Browser</a>
+            <a href="complete-index.html">Full Game Index</a>
+            <a href="../quiz/quiz.html">Retro Quiz</a>
+            <a href="../quiz/quiz-leaderboard.html">Leaderboard</a>
+        </nav>
+    </header>
 
-    <h1 style="text-align:center; margin-bottom:30px; text-shadow:0 0 10px #0af; color:#9ed0ff;">
-        Full Game Index
-    </h1>
+    <main class="ccg-main">
+        <section class="ccg-intro">
+            From here you can jump into individual genre pages or special collections.
+            Each page will list games pulled from your master database (JSON/Sheet), with
+            links out to videos, manuals, downloads and more. Visual styling comes later –
+            this pass is all about making sure every link and page actually works.
+        </section>
 
-    <div class="category-group">
-        <h2 class="category-title">BY GENRE</h2>
-        <div id="accordion-genre"></div>
-    </div>
+        <section class="genre-grid">
 
-    <div class="category-group">
-        <h2 class="category-title">SPECIAL LISTS</h2>
-        <div id="accordion-special"></div>
-    </div>
+            <!-- Action / Adventure style genres -->
+            <article class="genre-card">
+                <h2>Action Adventure Games</h2>
+                <p>Mixed action and exploration – sprawling quests, story-driven games and hybrid titles.</p>
+                <a href="genres/action-adventure-games.html">Open Action Adventure</a>
+            </article>
+
+            <article class="genre-card">
+                <h2>Adventure Games</h2>
+                <p>Text and graphic adventures, point &amp; click, and story-led puzzlers.</p>
+                <a href="genres/adventure-games.html">Open Adventure</a>
+            </article>
+
+            <article class="genre-card">
+                <h2>Arcade Games</h2>
+                <p>Quick-fire arcade-style action, high-score chasing and classic coin-op conversions.</p>
+                <a href="genres/arcade-games.html">Open Arcade</a>
+            </article>
+
+            <!-- Special collections -->
+            <article class="genre-card">
+                <h2>BPjS Indexed Games</h2>
+                <p>Games tied to the German BPjS indexing history – preserved for reference.</p>
+                <a href="genres/bpjs-indexed-games.html">Open BPjS Collection</a>
+            </article>
+
+            <article class="genre-card">
+                <h2>C64 Cartridge Games</h2>
+                <p>Titles released on cartridge – instant load classics and rarities.</p>
+                <a href="genres/c64-cartridge.html">Open Cartridge List</a>
+            </article>
+
+            <article class="genre-card">
+                <h2>Top Picks</h2>
+                <p>Cheeky Commodore Gamer’s curated favourites across C64 and Amiga.</p>
+                <a href="genres/top-picks.html">Open Top Picks</a>
+            </article>
+
+            <!-- Other genres -->
+            <article class="genre-card">
+                <h2>Casino Games</h2>
+                <p>Card, fruit machine and gambling-inspired titles.</p>
+                <a href="genres/casino-games.html">Open Casino</a>
+            </article>
+
+            <article class="genre-card">
+                <h2>Fighting Games</h2>
+                <p>Beat ’em ups, one-on-one fighters and martial arts action.</p>
+                <a href="genres/fighting-games.html">Open Fighting</a>
+            </article>
+
+            <article class="genre-card">
+                <h2>Horror Games</h2>
+                <p>Spooky, scary and creepy adventures and action games.</p>
+                <a href="genres/horror-games.html">Open Horror</a>
+            </article>
+
+            <article class="genre-card">
+                <h2>Licensed Games</h2>
+                <p>Film, TV, comic and celebrity tie-ins from the C64 &amp; Amiga era.</p>
+                <a href="genres/licensed-games.html">Open Licensed</a>
+            </article>
+
+            <article class="genre-card">
+                <h2>Miscellaneous</h2>
+                <p>Oddities, uncategorised gems and everything that doesn’t fit neatly elsewhere.</p>
+                <a href="genres/miscellaneous.html">Open Miscellaneous</a>
+            </article>
+
+            <article class="genre-card">
+                <h2>Platform Games</h2>
+                <p>Jumpers, climbers and leapers – from single-screen to scrolling platformers.</p>
+                <a href="genres/platform-games.html">Open Platformers</a>
+            </article>
+
+            <article class="genre-card">
+                <h2>Puzzle Games</h2>
+                <p>Brain-teasers, block shufflers, logic games and mind-bending challenges.</p>
+                <a href="genres/puzzle-games.html">Open Puzzles</a>
+            </article>
+
+            <article class="genre-card">
+                <h2>Quiz Games</h2>
+                <p>Trivia, TV-style quiz formats and question-based games.</p>
+                <a href="genres/quiz-games.html">Open Quiz Games</a>
+            </article>
+
+            <article class="genre-card">
+                <h2>Racing Games</h2>
+                <p>On-road, off-road, futuristic and arcade racing titles.</p>
+                <a href="genres/racing-games.html">Open Racing</a>
+            </article>
+
+            <article class="genre-card">
+                <h2>Role-Playing Games</h2>
+                <p>RPGs, dungeon crawlers and long-form character-driven adventures.</p>
+                <a href="genres/role-playing-games.html">Open RPGs</a>
+            </article>
+
+            <article class="genre-card">
+                <h2>Shooting Games</h2>
+                <p>Shoot-’em-ups, run-and-gun, and blaster-heavy arcade action.</p>
+                <a href="genres/shooting-games.html">Open Shooting</a>
+            </article>
+
+            <article class="genre-card">
+                <h2>Sports Games</h2>
+                <p>Football, athletics, racing, and competitive sporting titles.</p>
+                <a href="genres/sports-games.html">Open Sports</a>
+            </article>
+
+            <article class="genre-card">
+                <h2>Strategy Games</h2>
+                <p>Turn-based and real-time strategy, tactics and management sims.</p>
+                <a href="genres/strategy-games.html">Open Strategy</a>
+            </article>
+
+        </section>
+    </main>
+
+    <footer class="ccg-footer">
+        <div>© <span id="ccg-year"></span> Cheeky Commodore Gamer – Game Browser.</div>
+        <div><a href="../index.html">Back to Main Menu</a></div>
+    </footer>
 
 </div>
 
-<!-- Back to top -->
-<div id="backToTop">▲ Back to Top</div>
-
-<!-- SID audio support (played only on first visit) -->
-<audio id="sid-intro" src="../resources/audio/stay_a_while.mp3" preload="auto"></audio>
-
-<!-- Scripts -->
-<script src="../js/engine.js" defer></script>
-<script src="../js/accordion-index.js" defer></script>
+<script>
+    document.getElementById('ccg-year').textContent = new Date().getFullYear();
+</script>
 
 </body>
 </html>
