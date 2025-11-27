@@ -8,19 +8,14 @@
     <meta name="description" content="Search the massive index of Commodore 64 and Amiga games. Watch videos, browse genres, take the quiz and relive the golden age of home computing.">
     <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/">
 
-    <!-- Open Graph -->
     <meta property="og:title" content="Cheeky Commodore Gamer | C64 & Amiga Retro Gaming Hub">
     <meta property="og:description" content="Search the full C64 & Amiga game database, browse genres, take the quiz and discover hidden gems.">
     <meta property="og:type" content="website">
 
-    <!-- Global CRT theme + boot engine -->
     <link rel="stylesheet" href="css/engine.css">
     <link rel="stylesheet" href="resources/css/main.css">
     <script defer src="js/engine.js"></script>
 
-    <!-- ===========================
-         HOMEPAGE — C64 BASIC STYLE
-         =========================== -->
     <style>
         body.home-page {
             background:#000;
@@ -28,7 +23,6 @@
             font-family:"VT323", monospace;
         }
 
-        /* lighter scanlines on homepage only */
         body.home-page .crt-overlay {
             opacity:0.18;
         }
@@ -39,7 +33,6 @@
             padding:0 16px;
         }
 
-        /* BASIC header block */
         .ccg-basic-header {
             display:flex;
             align-items:flex-start;
@@ -102,7 +95,6 @@
             width:100%;
         }
 
-        /* Title centre */
         .ccg-title-block {
             text-align:center;
             margin:40px 0 10px 0;
@@ -120,7 +112,6 @@
             color:#9bd3ff;
         }
 
-        /* Command line */
         .ccg-command-section {
             margin-top:50px;
             font-size:22px;
@@ -154,7 +145,6 @@
             margin-bottom:18px;
         }
 
-        /* INITIALISING bar */
         .ccg-init-row {
             display:flex;
             align-items:center;
@@ -176,7 +166,6 @@
             box-shadow:0 0 8px rgba(0,255,255,0.5);
         }
 
-        /* GAME OF THE MOMENT BOX */
         .ccg-game-moment-frame {
             margin-top:18px;
             border:2px solid #4fb3ff;
@@ -196,7 +185,6 @@
             margin-bottom:8px;
         }
 
-        /* GAME OF THE MOMENT CONTENT */
         .ccg-moment-content {
             margin-top:20px;
             text-align:center;
@@ -246,7 +234,6 @@
             box-shadow:0 0 12px rgba(0,255,255,0.6);
         }
 
-        /* SEARCH RESULTS */
         .ccg-search-results {
             margin-top:20px;
             border:2px solid #4fb3ff;
@@ -307,8 +294,6 @@
     <div class="crt-overlay"></div>
 
     <div class="ccg-home-wrapper">
-
-        <!-- BASIC HEADER -->
         <header class="ccg-basic-header">
             <div class="ccg-basic-logo">
                 <img src="resources/img/ccg-logo.png" alt="Cheeky Commodore Gamer Logo">
@@ -332,7 +317,6 @@
             </div>
         </header>
 
-        <!-- TITLE -->
         <section class="ccg-title-block">
             <h1 class="ccg-main-title">
                 COMMODORE 64 & AMIGA: THE ULTIMATE RETRO GAMING DATABASE
@@ -340,7 +324,6 @@
             <div class="ccg-main-ready">READY.</div>
         </section>
 
-        <!-- COMMAND LINE -->
         <section class="ccg-command-section">
             <div class="ccg-command-label">COMMAND LINE: SEARCH C64 AND AMIGA TITLES</div>
 
@@ -353,7 +336,6 @@
                 (Search is live – start typing!)
             </div>
 
-            <!-- INITIALISING -->
             <div class="ccg-init-row">
                 <div class="ccg-init-label">INITIALISING...</div>
                 <div class="ccg-init-bar"></div>
@@ -362,7 +344,6 @@
             <div class="ccg-game-moment-title">GAME OF THE MOMENT</div>
         </section>
 
-        <!-- GAME OF THE MOMENT -->
         <section class="ccg-game-moment-frame">
             <div class="ccg-game-moment-label">SIGNAL STATUS</div>
 
@@ -371,14 +352,9 @@
             </div>
         </section>
 
-        <!-- SEARCH RESULTS -->
         <div id="ccg-search-results" class="ccg-search-results"></div>
-
     </div>
 
-    <!-- ===========================
-         GAME OF THE MOMENT + SEARCH
-         =========================== -->
     <script>
         let ccgAllGames = [];
 
@@ -386,7 +362,7 @@
             if (ccgAllGames.length) return ccgAllGames;
 
             try {
-                const res = await fetch("games.json");
+                const res = await fetch("games/games.json");
                 const data = await res.json();
                 ccgAllGames = data.games || data;
             } catch (e) {
@@ -422,7 +398,6 @@
 
         async function loadGameOfTheMoment() {
             const box = document.getElementById("game-moment-content");
-
             const games = await ccgLoadGames();
             if (!games.length) {
                 box.innerHTML = "<div>Error loading game.</div>";
@@ -432,7 +407,7 @@
             const game = games[Math.floor(Math.random() * games.length)];
 
             box.innerHTML = `
-                <img src="${game.thumbnail}" class="ccg-moment-thumb">
+                <img src="${game.thumbnail}" class="ccg-moment-thumb" alt="${game.title}">
                 <div class="ccg-moment-title">${game.title}</div>
                 <div class="ccg-moment-buttons">
                     <a class="ccg-moment-btn" href="${game.video}" target="_blank">WATCH VIDEO</a>
@@ -457,6 +432,5 @@
             });
         });
     </script>
-
 </body>
 </html>
