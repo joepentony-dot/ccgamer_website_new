@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CCG Retro Quiz | Commodore 64 / Amiga Knowledge Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Hook into your existing styles (adjust paths if needed) -->
+    <link rel="stylesheet" href="css/engine.css">
+    <link rel="stylesheet" href="resources/main.css">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+        }
+
+        .quiz-shell {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 12px;
+            box-sizing: border-box;
+        }
+
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .quiz-header h1 {
+            margin: 0;
+            font-size: 1.6rem;
+        }
+
+        .quiz-header p {
+            margin: 4px 0 0 0;
+            font-size: 0.9rem;
+        }
+
+        .quiz-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr 260px;
+            gap: 10px;
+        }
+
+        @media (max-width: 900px) {
+            .quiz-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            border: 2px solid #4af;
+            padding: 8px;
+            box-sizing: border-box;
+            min-height: 140px;
+        }
+
+        .panel-title {
+            font-weight: bold;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        /* Left panel: quiz set list */
+
+        #quiz-set-list {
+            list-style: none;
+            padding: 0;
+            margin: 4px 0 8px 0;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+        #quiz-set-list li {
+            padding: 4px 6px;
+            margin-bottom: 3px;
+            cursor: pointer;
+            border: 1px solid #4af;
+            font-size: 0.85rem;
+        }
+
+        #quiz-set-list li.selected {
+            background: #004;
+        }
+
+        #start-quiz-btn {
+            width: 100%;
+            padding: 6px;
+            margin-top: 4px;
+            cursor: pointer;
+        }
+
+        #set-details {
+            margin-top: 6px;
+            font-size: 0.8rem;
+            line-height: 1.2;
+        }
+
+        #quiz-status {
+            margin-top: 6px;
+            font-size: 0.8rem;
+            min-height: 1.2em;
+        }
+
+        /* Centre: question area */
+
+        #question-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin-bottom: 4px;
+        }
+
+        #question-text {
+            min-height: 60px;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        #question-media {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        #question-image {
+            max-width: 100%;
+            border: 1px solid #4af;
+        }
+
+        #question-audio {
+            width: 100%;
+        }
+
+        .answers {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        .answer-btn {
+            padding: 6px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.9rem;
+            border: 1px solid #4af;
+            background: #002;
+        }
+
+        .answer-btn.correct {
+            background: #062;
+        }
+
+        .answer-btn.incorrect {
+            background: #600;
+        }
+
+        .answer-btn:disabled {
+            opacity: 0.6;
+            cursor: default;
+        }
+
+        #question-hint {
+            margin-top: 6px;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        /* Right panel: player / score */
+
+        #player-name {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 4px;
+        }
+
+        #score-box {
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        #timer-box {
+            font-size: 0.8rem;
+            margin-top: 2px;
+        }
+
+        #save-score-btn {
+            width: 100%;
+            padding: 6px;
+            margin-top: 8px;
+            cursor: pointer;
+        }
+
+        #save-status {
+            margin-top: 6px;
+            font-size: 0.8rem;
+        }
+
+        .mini-help {
+            margin-top: 8px;
+            font-size: 0.78rem;
+            opacity: 0.8;
+        }
+
+        a.quiz-link {
+            color: #8df;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="quiz-shell crt">
+    <header class="quiz-header">
+        <h1>CCG RETRO QUIZ</h1>
+        <p>COMMODORE 64 / AMIGA KNOWLEDGE TEST</p>
+    </header>
+
+    <div class="quiz-layout">
+        <!-- LEFT PANEL: QUIZ SETS -->
+        <aside class="panel">
+            <div class="panel-title">QUIZ SETS</div>
+            <ul id="quiz-set-list"></ul>
+            <button id="start-quiz-btn">START QUIZ</button>
+            <div id="set-details"></div>
+            <div id="quiz-status"></div>
+        </aside>
+
+        <!-- CENTRE PANEL: QUESTIONS -->
+        <main class="panel">
+            <div class="panel-title">QUIZ PANEL</div>
+
+            <div id="question-header">
+                <div id="question-counter">SELECT A QUIZ SET ON THE LEFT, THEN PRESS “START QUIZ”.</div>
+                <div id="question-set-name"></div>
+            </div>
+
+            <div id="question-text">QUESTIONS WILL APPEAR HERE IN TRUE C64 STYLE.</div>
+
+            <div id="question-media">
+                <img id="question-image" alt="Question artwork" style="display:none;">
+                <audio id="question-audio" controls style="display:none;"></audio>
+            </div>
+
+            <div class="answers">
+                <button class="answer-btn" data-index="0"></button>
+                <button class="answer-btn" data-index="1"></button>
+                <button class="answer-btn" data-index="2"></button>
+                <button class="answer-btn" data-index="3"></button>
+            </div>
+
+            <div id="question-hint"></div>
+        </main>
+
+        <!-- RIGHT PANEL: PLAYER / SCORE -->
+        <aside class="panel">
+            <div class="panel-title">PLAYER / SCORE</div>
+
+            <label for="player-name" style="font-size:0.8rem;">PLAYER NAME</label>
+            <input id="player-name" type="text" placeholder="Enter your name…" />
+
+            <div id="score-box">
+                SCORE: <span id="score-value">0</span> / <span id="score-total">0</span>
+            </div>
+            <div id="timer-box">
+                TIME: <span id="timer-value">0</span> sec
+            </div>
+
+            <button id="save-score-btn" disabled>SUBMIT SCORE</button>
+            <div id="save-status"></div>
+
+            <div class="mini-help">
+                USE ARROW KEYS (OR MOUSE) TO NAVIGATE.<br>
+                HIGH SCORES: SEE <a class="quiz-link" href="quiz-leaderboard.html">QUIZ LEADERBOARD</a>.
+            </div>
+        </aside>
+    </div>
+</div>
+
+<script>
+/* ============================================================
+   CCG RETRO QUIZ – FRONTEND ENGINE
+   Wired to your Apps Script backend
+   ============================================================ */
+
+const CCG_QUIZ_API = "https://script.google.com/macros/s/AKfycbwhkSGA6HcSvCljqBA91JmQVsVVUPU5LCEO1HlifB_Cjwc0DTFCK3m6hG5ZFDSgVHw9/exec";
+
+let quizSets = [];
+let currentSetId = null;
+let currentSetName = "";
+let questions = [];
+let currentIndex = 0;
+let score = 0;
+let quizActive = false;
+let quizStartTime = 0;
+let timerInterval = null;
+
+const elSetList        = document.getElementById("quiz-set-list");
+const elStartBtn       = document.getElementById("start-quiz-btn");
+const elSetDetails     = document.getElementById("set-details");
+const elQuizStatus     = document.getElementById("quiz-status");
+const elQuestionCounter= document.getElementById("question-counter");
+const elQuestionSet    = document.getElementById("question-set-name");
+const elQuestionText   = document.getElementById("question-text");
+const elQuestionImage  = document.getElementById("question-image");
+const elQuestionAudio  = document.getElementById("question-audio");
+const elHint           = document.getElementById("question-hint");
+const elAnswerButtons  = Array.from(document.querySelectorAll(".answer-btn"));
+const elPlayerName     = document.getElementById("player-name");
+const elScoreValue     = document.getElementById("score-value");
+const elScoreTotal     = document.getElementById("score-total");
+const elTimerValue     = document.getElementById("timer-value");
+const elSaveScoreBtn   = document.getElementById("save-score-btn");
+const elSaveStatus     = document.getElementById("save-status");
+
+// ---------- API helpers ----------
+
+async function apiGetQuizSets() {
+    const url = CCG_QUIZ_API + "?action=getQuizSets";
+    const resp = await fetch(url);
+    return resp.json();
+}
+
+async function apiGetQuestions(setId) {
+    const url = CCG_QUIZ_API + "?action=getQuestions&setId=" + encodeURIComponent(setId);
+    const resp = await fetch(url);
+    return resp.json();
+}
+
+async function apiSaveScore(name, score, total, setId, timeTakenMs) {
+    const body = {
+        action: "saveScore",
+        name,
+        score,
+        total,
+        setId,
+        timeTakenMs
+    };
+    const resp = await fetch(CCG_QUIZ_API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+    });
+    return resp.json();
+}
+
+// ---------- UI helpers ----------
+
+function setStatus(msg) {
+    elQuizStatus.textContent = msg || "";
+}
+
+function setSaveStatus(msg) {
+    elSaveStatus.textContent = msg || "";
+}
+
+function updateScoreUI() {
+    elScoreValue.textContent = score;
+    elScoreTotal.textContent = questions.length;
+}
+
+function resetTimer() {
+    clearInterval(timerInterval);
+    elTimerValue.textContent = "0";
+}
+
+function startTimer() {
+    resetTimer();
+    quizStartTime = Date.now();
+    timerInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - quizStartTime) / 1000);
+        elTimerValue.textContent = elapsed;
+    }, 1000);
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+}
+
+// Fisher–Yates shuffle
+function shuffle(array) {
+    const a = array.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+// ---------- Quiz flow ----------
+
+async function loadQuizSets() {
+    setStatus("LOADING QUIZ SETS…");
+    try {
+        const data = await apiGetQuizSets();
+        if (!data.ok) {
+            setStatus("ERROR LOADING QUIZ SETS.");
+            return;
+        }
+        quizSets = data.sets || [];
+        renderQuizSets();
+        if (quizSets.length === 0) {
+            setStatus("NO QUIZ SETS FOUND.");
+        } else {
+            setStatus("QUIZ SETS LOADED.");
+        }
+    } catch (err) {
+        console.error(err);
+        setStatus("ERROR: COULD NOT LOAD QUIZ SETS.");
+    }
+}
+
+function renderQuizSets() {
+    elSetList.innerHTML = "";
+    quizSets.forEach(set => {
+        const li = document.createElement("li");
+        li.textContent = set.name || set.id;
+        li.dataset.setId = set.id;
+        li.addEventListener("click", () => selectSet(set.id));
+        elSetList.appendChild(li);
+    });
+}
+
+function selectSet(setId) {
+    currentSetId = setId;
+    const set = quizSets.find(s => s.id === setId);
+    currentSetName = set ? (set.name || set.id) : setId;
+
+    Array.from(elSetList.children).forEach(li => {
+        li.classList.toggle("selected", li.dataset.setId === setId);
+    });
+
+    elSetDetails.innerHTML = set
+        ? `<div><strong>${set.name}</strong></div>
+           <div>${set.description || ""}</div>
+           <div>Difficulty: ${set.difficulty || "N/A"}</div>
+           <div>Questions: ${set.questionCount || "?"}</div>`
+        : "";
+
+    setStatus("SET SELECTED – PRESS “START QUIZ”.");
+}
+
+async function startQuiz() {
+    if (!currentSetId) {
+        setStatus("PLEASE SELECT A QUIZ SET FIRST.");
+        return;
+    }
+    setStatus("LOADING QUESTIONS…");
+    quizActive = false;
+    stopTimer();
+    resetTimer();
+    score = 0;
+    updateScoreUI();
+    elSaveScoreBtn.disabled = true;
+    setSaveStatus("");
+
+    try {
+        const data = await apiGetQuestions(currentSetId);
+        if (!data.ok) {
+            setStatus("ERROR LOADING QUESTIONS.");
+            return;
+        }
+        questions = shuffle(data.questions || []);
+        if (questions.length === 0) {
+            setStatus("NO QUESTIONS FOUND FOR THIS SET.");
+            return;
+        }
+        quizActive = true;
+        currentIndex = 0;
+        elScoreTotal.textContent = questions.length;
+        startTimer();
+        showQuestion();
+        setStatus("QUIZ STARTED – GOOD LUCK!");
+    } catch (err) {
+        console.error(err);
+        setStatus("ERROR: COULD NOT LOAD QUESTIONS.");
+    }
+}
+
+function showQuestion() {
+    if (!quizActive) return;
+
+    if (currentIndex >= questions.length) {
+        endQuiz();
+        return;
+    }
+
+    const q = questions[currentIndex];
+
+    elQuestionCounter.textContent = `QUESTION ${currentIndex + 1} / ${questions.length}`;
+    elQuestionSet.textContent = currentSetName;
+    elQuestionText.textContent = q.text || "";
+
+    // Media
+    if (q.imageUrl) {
+        elQuestionImage.src = q.imageUrl;
+        elQuestionImage.style.display = "block";
+    } else {
+        elQuestionImage.style.display = "none";
+    }
+
+    if (q.audioUrl) {
+        elQuestionAudio.src = q.audioUrl;
+        elQuestionAudio.style.display = "block";
+    } else {
+        elQuestionAudio.pause();
+        elQuestionAudio.removeAttribute("src");
+        elQuestionAudio.style.display = "none";
+    }
+
+    // Answers
+    elAnswerButtons.forEach((btn, idx) => {
+        btn.textContent = q.options && q.options[idx] ? q.options[idx] : "";
+        btn.disabled = false;
+        btn.classList.remove("correct", "incorrect");
+    });
+
+    // Hint
+    elHint.textContent = q.hint ? `HINT: ${q.hint}` : "";
+}
+
+function handleAnswerClick(evt) {
+    if (!quizActive) return;
+    const btn = evt.currentTarget;
+    const idx = Number(btn.dataset.index);
+    const q = questions[currentIndex];
+
+    // Guard for missing options
+    if (!q || typeof q.correctIndex !== "number") return;
+
+    elAnswerButtons.forEach(b => b.disabled = true);
+
+    if (idx === q.correctIndex) {
+        score++;
+        btn.classList.add("correct");
+        setStatus("CORRECT!");
+    } else {
+        btn.classList.add("incorrect");
+        setStatus("INCORRECT!");
+        // highlight correct
+        const correctBtn = elAnswerButtons[q.correctIndex];
+        if (correctBtn) correctBtn.classList.add("correct");
+    }
+
+    updateScoreUI();
+
+    setTimeout(() => {
+        currentIndex++;
+        showQuestion();
+    }, 800);
+}
+
+function endQuiz() {
+    quizActive = false;
+    stopTimer();
+    const timeTakenMs = Date.now() - quizStartTime;
+    const secs = Math.floor(timeTakenMs / 1000);
+
+    setStatus(`QUIZ COMPLETE. FINAL SCORE: ${score} / ${questions.length} IN ${secs} SECONDS.`);
+    elSaveScoreBtn.disabled = false;
+}
+
+// ---------- Save score ----------
+
+async function saveScoreHandler() {
+    if (questions.length === 0) {
+        setSaveStatus("NO QUIZ RUN YET.");
+        return;
+    }
+
+    const name = (elPlayerName.value || "").trim() || "Anonymous";
+    const total = questions.length;
+    const timeTakenMs = (quizStartTime && !quizActive)
+        ? Date.now() - quizStartTime
+        : 0;
+
+    setSaveStatus("SAVING SCORE…");
+
+    try {
+        const data = await apiSaveScore(name, score, total, currentSetId || "", timeTakenMs);
+        if (!data.ok) {
+            setSaveStatus("ERROR SAVING SCORE.");
+            return;
+        }
+        const monthLabel = data.monthLabel || "this month";
+        setSaveStatus(`SCORE SAVED TO MONTHLY LEADERBOARD (${monthLabel}).`);
+        elSaveScoreBtn.disabled = true;
+    } catch (err) {
+        console.error(err);
+        setSaveStatus("ERROR: COULD NOT SAVE SCORE.");
+    }
+}
+
+// ---------- Wire events & init ----------
+
+elStartBtn.addEventListener("click", startQuiz);
+elAnswerButtons.forEach(btn => btn.addEventListener("click", handleAnswerClick));
+elSaveScoreBtn.addEventListener("click", saveScoreHandler);
+
+// Basic keyboard navigation: 1–4 keys for answers
+document.addEventListener("keydown", (e) => {
+    if (!quizActive) return;
+    if (["1","2","3","4"].includes(e.key)) {
+        const idx = Number(e.key) - 1;
+        const btn = elAnswerButtons[idx];
+        if (btn && !btn.disabled) {
+            btn.click();
+        }
+    }
+});
+
+// INITIAL LOAD
+loadQuizSets();
+</script>
+</body>
+</html>
