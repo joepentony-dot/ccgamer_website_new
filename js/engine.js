@@ -1,5 +1,5 @@
 /* ============================================================
-   CHEEKY COMMODORE GAMER — ENGINE.JS (FULL FILE)
+   CHEEKY COMMODORE GAMER — ENGINE.JS (FULL FILE, UPDATED AUDIO)
    Handles:
    - Boot overlay creation
    - Fixed raster bars (scaled correctly)
@@ -73,7 +73,7 @@ function startRasterBars() {
    3. Audio: “Stay a While… Stay FOREVER!”
    --------------------------------------- */
 function playIntroAudio() {
-    const audio = new Audio("resources/audio/stay_a_while.mp3");
+    const audio = new Audio("resources/audio/c64_speech_stayawhile.mp3");
     audio.volume = 0.65;
     audio.play().catch(() => {
         console.warn("Autoplay blocked by browser.");
