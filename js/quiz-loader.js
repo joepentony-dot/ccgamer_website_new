@@ -1,7 +1,7 @@
 // js/quiz-loader.js
 // Corrected to match your Apps Script backend format EXACTLY
 
-const QUIZ_API_BASE = "https://script.google.com/macros/s/AKfycbz1hGdwwxlMfGAU2_KB4Svi6bDKz4Uq7B7Gw7ITb7MvvboHF6-3d5i4x_2RLAf2VEIDxA/exec";
+const QUIZ_API_BASE = "https://script.google.com/macros/s/AKfycbwhkSGA6HcSvCljqBA91JmQVsVVUPU5LCEO1HlifB_Cjwc0DTFCK3m6hG5ZFDSgVHw9/exec";
 
 async function quizApiGet(params = {}) {
     const url = new URL(QUIZ_API_BASE);
