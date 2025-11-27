@@ -1,9 +1,11 @@
 /* ============================================================
-   CHEEKY COMMODORE GAMER — ENGINE CSS
-   Boot Overlay + Raster Bars + Startup Sequence
+   CHEEKY COMMODORE GAMER — ENGINE CSS (FULL FILE)
+   Handles:
+   - Boot overlay
+   - C64 raster bars (fixed proportions)
+   - Boot text styling
    ============================================================ */
 
-/* Boot overlay covers entire screen */
 #ccg-boot-overlay {
     position: fixed;
     top: 0;
@@ -11,45 +13,52 @@
     width: 100%;
     height: 100%;
     background: #000;
-    z-index: 999999; /* above everything */
+    z-index: 999999;
     display: flex;
     justify-content: center;
     align-items: center;
     opacity: 1;
 }
 
-/* Inner boot window container */
+/* Center block */
 .ccg-boot-center {
+    width: 100%;
     text-align: center;
-    color: #0ff;
     font-family: 'VT323', monospace;
 }
 
-/* Boot text block */
+/* Boot text */
 .ccg-boot-text {
-    font-size: 26px;
-    margin-bottom: 22px;
-    text-shadow: 0 0 8px rgba(0,255,255,0.7);
-    line-height: 1.35em;
+    margin-bottom: 16px;
+    font-size: 28px;
+    color: #0ff;
+    text-shadow:
+        0 0 6px #0ff,
+        0 0 14px rgba(0,255,255,0.6);
 }
 
-/* Raster bars canvas */
+/* FIXED RASTER BARS — Centered, clean, C64 proportions */
 #ccg-raster-bars {
-    width: 680px;
-    height: 120px;
+    width: 540px;          /* fixed width */
+    height: 90px;          /* proper C64 ratio */
+    margin: 0 auto;
+    display: block;
     border: 2px solid #0ff;
-    box-shadow: 0 0 14px rgba(0,255,255,0.5);
+    box-shadow:
+        0 0 12px rgba(0,255,255,0.7),
+        0 0 22px rgba(0,255,255,0.4),
+        inset 0 0 12px rgba(0,255,255,0.4);
 }
 
-/* Responsive: Make raster bars smaller on phones */
+/* Responsive raster bars */
 @media (max-width: 700px) {
     #ccg-raster-bars {
         width: 90vw;
-        height: 100px;
+        height: calc(90vw * 0.16); /* preserves 540:90 ratio */
     }
 }
 
-/* On fade-out, transition opacity smoothly */
+/* Fade-out class added by engine.js */
 #ccg-boot-overlay.fade-out {
     opacity: 0;
     transition: opacity 1.2s ease;
