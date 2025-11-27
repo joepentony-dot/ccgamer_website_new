@@ -1,20 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Puzzle Games | CCG</title>
-
-    <link rel="stylesheet" href="../../resources/css/main.css">
-    <link rel="stylesheet" href="../../css/engine.css">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Puzzle Games | CCG</title>
+<link rel="stylesheet" href="../../resources/css/main.css">
+<link rel="stylesheet" href="../../css/engine.css">
+<style>
+#raster-canvas{position:fixed;inset:0;width:100vw;height:100vh;z-index:-1}
+html,body{cursor:auto!important}
+.page-wrapper{position:relative;z-index:10;padding:20px}
+</style>
 </head>
 <body>
-
+<canvas id="raster-canvas"></canvas>
 <div class="page-wrapper">
-    <h1>Puzzle Games</h1>
-    <div id="genre-list"></div>
+<h1 style="text-align:center;color:#9ed0ff;text-shadow:0 0 10px #0af;">Puzzle Games</h1>
+<div id="genre-container"></div>
 </div>
-
+<audio id="sid-intro" src="../../resources/audio/stay_a_while.mp3" preload="auto"></audio>
+<script src="../../js/engine.js" defer></script>
 <script src="../../js/genre-loader.js" defer></script>
-</body>
-</html>
+<script>loadGenre("puzzle-games");</script>
+</body></html>
