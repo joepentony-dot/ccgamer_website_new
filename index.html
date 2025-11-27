@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <title>Cheeky Commodore Gamer | C64 & Amiga Retro Gaming Database</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Search the massive index of Commodore 64 and Amiga games. Watch videos, browse genres, take the retro quiz and relive the golden age of home computing.">
+    <meta name="description" content="Search the massive index of Commodore 64 and Amiga games. Watch videos, browse genres, take the quiz and relive the golden age of home computing.">
     <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/">
 
-    <!-- Open Graph (optional, safe to keep) -->
+    <!-- Open Graph -->
     <meta property="og:title" content="Cheeky Commodore Gamer | C64 & Amiga Retro Gaming Hub">
     <meta property="og:description" content="Search the full C64 & Amiga game database, browse genres, take the quiz and discover hidden gems.">
     <meta property="og:type" content="website">
@@ -16,10 +16,10 @@
     <link rel="stylesheet" href="css/engine.css">
     <link rel="stylesheet" href="resources/css/main.css">
 
-    <!-- Boot / engine scripts -->
+    <!-- Boot engine script -->
     <script defer src="js/engine.js"></script>
 
-    <!-- HOME-PAGE-SPECIFIC STYLES (C64 BASIC LOOK) -->
+    <!-- HOME PAGE CUSTOM STYLES -->
     <style>
         body.home-page {
             background: #000;
@@ -27,7 +27,7 @@
             font-family: "VT323", monospace;
         }
 
-        /* Slightly lighter scanlines on the home page only */
+        /* Slightly lighter scanlines (homepage only) */
         body.home-page .crt-overlay {
             opacity: 0.18;
         }
@@ -38,7 +38,7 @@
             padding: 0 16px;
         }
 
-        /* Top BASIC-style header block */
+        /* BASIC header block */
         .ccg-basic-header {
             display: flex;
             align-items: flex-start;
@@ -66,7 +66,7 @@
             white-space: pre;
         }
 
-        /* BASIC-style nav just under the header text */
+        /* BASIC-style nav */
         .ccg-basic-nav {
             margin-top: 10px;
             font-size: 20px;
@@ -102,7 +102,7 @@
             width: 100%;
         }
 
-        /* Main title centre */
+        /* Main title */
         .ccg-title-block {
             text-align: center;
             margin: 40px 0 10px 0;
@@ -120,7 +120,7 @@
             color: #9bd3ff;
         }
 
-        /* Command line area */
+        /* Command-line */
         .ccg-command-section {
             margin-top: 50px;
             font-size: 22px;
@@ -209,11 +209,58 @@
             margin-bottom: 8px;
         }
 
-        .ccg-game-moment-loading {
-            margin-top: 40px;
+        /* ==========================================
+            GAME OF THE MOMENT – NEW STYLES
+           ========================================== */
+
+        .ccg-moment-content {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .ccg-moment-thumb {
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            border: 2px solid #4fb3ff;
+            border-radius: 6px;
+            margin: 0 auto 14px auto;
+            display: block;
+            box-shadow: 0 0 12px rgba(0,255,255,0.3);
+        }
+
+        .ccg-moment-title {
+            font-size: 24px;
+            color: #c8f6ff;
+            margin-bottom: 14px;
+            letter-spacing: 0.12em;
+        }
+
+        .ccg-moment-buttons {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .ccg-moment-btn {
+            background: #003b4d;
+            border: 2px solid #4fb3ff;
+            padding: 8px 18px;
             font-size: 18px;
-            letter-spacing: 0.2em;
-            color: #cbefff;
+            color: #cff9ff;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: 0.2s;
+        }
+
+        .ccg-moment-btn:hover {
+            background: #005c75;
+            color: #fff;
+            box-shadow: 0 0 12px rgba(0,255,255,0.6);
         }
 
         /* Responsive tweaks */
@@ -238,15 +285,13 @@
     </style>
 </head>
 <body class="ccg-body home-page">
-    <!-- CRT overlay (global, lighter on this page via CSS above) -->
     <div class="crt-overlay"></div>
 
     <div class="ccg-home-wrapper">
-        <!-- BASIC-style header with optional logo -->
+
+        <!-- BASIC-style header -->
         <header class="ccg-basic-header">
             <div class="ccg-basic-logo">
-                <!-- If you have a logo image, update the src below -->
-                <!-- Example path, change if needed -->
                 <img src="resources/img/ccg-logo.png" alt="Cheeky Commodore Gamer Logo">
             </div>
 
@@ -268,15 +313,15 @@
             </div>
         </header>
 
-        <!-- Centre title -->
+        <!-- Title -->
         <section class="ccg-title-block">
             <h1 class="ccg-main-title">
-                COMMODORE 64 &amp; AMIGA: THE ULTIMATE RETRO GAMING DATABASE
+                COMMODORE 64 & AMIGA: THE ULTIMATE RETRO GAMING DATABASE
             </h1>
             <div class="ccg-main-ready">READY.</div>
         </section>
 
-        <!-- Command line search (visual only for now) -->
+        <!-- Command line -->
         <section class="ccg-command-section">
             <div class="ccg-command-label">
                 COMMAND LINE: SEARCH C64 AND AMIGA TITLES
@@ -291,7 +336,7 @@
             </div>
 
             <div class="ccg-command-helper">
-                (Search functionality coming soon – for now, use the Game Index or Genres pages.)
+                (Search will be enabled soon — for now, use the Index or Genres.)
             </div>
 
             <div class="ccg-init-row">
@@ -304,13 +349,59 @@
             </div>
         </section>
 
-        <!-- Game of the Moment frame -->
-        <section class="ccg-game-moment-frame">
+        <!-- GAME OF THE MOMENT PANEL -->
+        <section class="ccg-game-moment-frame" id="game-moment">
             <div class="ccg-game-moment-label">SIGNAL STATUS</div>
-            <div class="ccg-game-moment-loading">
-                LOADING SIGNAL...
+
+            <div class="ccg-moment-content" id="game-moment-content">
+                <div class="ccg-game-moment-loading">
+                    LOADING SIGNAL...
+                </div>
             </div>
         </section>
+
     </div>
+
+    <!-- =======================================================
+         GAME OF THE MOMENT SCRIPT
+         ======================================================= -->
+    <script>
+    async function loadGameOfTheMoment() {
+        const container = document.getElementById("game-moment-content");
+        if (!container) return;
+
+        try {
+            const res = await fetch("games.json");
+            if (!res.ok) throw new Error("Could not load games.json");
+
+            const data = await res.json();
+            const games = data.games || data;
+
+            if (!games || games.length === 0) {
+                container.innerHTML = "<div>No games found.</div>";
+                return;
+            }
+
+            // pick random game
+            const game = games[Math.floor(Math.random() * games.length)];
+
+            container.innerHTML = `
+                <img src="${game.thumbnail}" class="ccg-moment-thumb" alt="${game.title}">
+                <div class="ccg-moment-title">${game.title}</div>
+
+                <div class="ccg-moment-buttons">
+                    <a class="ccg-moment-btn" href="${game.video}" target="_blank">WATCH VIDEO</a>
+                    <a class="ccg-moment-btn" href="${game.page}">VIEW DETAILS</a>
+                </div>
+            `;
+        } catch (err) {
+            console.error(err);
+            container.innerHTML = "<div>Error loading game.</div>";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadGameOfTheMoment);
+    </script>
+
 </body>
 </html>
