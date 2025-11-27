@@ -3,38 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Special Collections</title>
+    <title>Top Picks | Cheeky Commodore Gamer</title>
+    <meta name="description" content="Cheeky Commodore Gamer's Big Thumbs Up top picks for C64 and Amiga.">
 
-    <!-- Boot logic (auto-disabled for this folder) -->
+    <link rel="stylesheet" href="../../css/engine.css">
+    <link rel="stylesheet" href="../../resources/main.css">
+
     <script defer src="../../js/engine.js"></script>
-
-    <!-- Universal genre loader -->
-    <script defer src="../load-genre.js"></script>
-
-    <style>
-        /* Minimal layout just for readability */
-        body {
-            font-family: Arial, sans-serif;
-            padding: 1rem;
-        }
-        a {
-            display: block;
-            margin-bottom: 0.75rem;
-            font-size: 1.2rem;
-        }
-    </style>
+    <script defer src="../../js/genre-loader.js"></script>
 </head>
-<body>
-
-    <h1>Special Collections</h1>
-
-    <!-- LINKS GENERATED FROM KNOWN COLLECTIONS -->
-    <div id="collections">
-        <a href="bpjs-indexed-games.html">BPJS Games</a>
-        <a href="c64-cartridge.html">Cartridge Games</a>
-        <a href="licensed-games.html">Licensed Games</a>
-        <a href="top-picks.html">Top Picks</a>
+<body class="ccg-body">
+    <div id="start-screen">
+        <div class="boot-window">
+            <pre id="boot-log"></pre>
+            <div id="press-space">PRESS SPACE TO CONTINUE</div>
+        </div>
     </div>
 
+    <div class="crt">
+        <div class="scanlines"></div>
+        <div class="screen">
+            <header class="ccg-header">
+                <div class="logo-area">
+                    <span class="logo-main">CHEEKY</span>
+                    <span class="logo-sub">COMMODORE GAMER</span>
+                </div>
+                <nav class="ccg-nav">
+                    <a href="../../index.html" class="nav-link">Main Menu</a>
+                    <a href="../index.html" class="nav-link">Game Browser</a>
+                    <a href="../complete-index.html" class="nav-link">Full Index</a>
+                    <a href="../../quiz/quiz.html" class="nav-link">Retro Quiz</a>
+                    <a href="../../about.html" class="nav-link">About</a>
+                    <a href="../../contact.html" class="nav-link">Contact</a>
+                </nav>
+            </header>
+
+            <main class="ccg-main games-layout">
+                <section class="filters-panel">
+                    <h1>Top Picks – Big Thumbs Up</h1>
+                    <p>Handpicked favourites that earn the full CCG seal of approval.</p>
+                    <div class="filters">
+                        <label>
+                            Search:
+                            <input type="text" id="filter-search" placeholder="Filter titles in this collection…">
+                        </label>
+                        <label>
+                            System:
+                            <select id="filter-system">
+                                <option value="">All</option>
+                                <option value="C64">C64</option>
+                                <option value="Amiga">Amiga</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="filters-actions">
+                        <button id="reset-filters">Reset Filters</button>
+                        <span id="games-count">Loading games…</span>
+                    </div>
+                </section>
+
+                <section class="games-list-panel">
+                    <div id="games-list" class="games-list" data-collection="Top Picks">
+                        <!-- genre-loader.js -->
+                    </div>
+                    <div id="games-status" class="games-status"></div>
+                </section>
+            </main>
+
+            <footer class="ccg-footer">
+                <p>
+                    <a href="index.html">Back to Collections</a> •
+                    <a href="../../index.html">Return to Main Menu</a>
+                </p>
+            </footer>
+        </div>
+    </div>
 </body>
 </html>
