@@ -5,9 +5,9 @@
     <title>CCG Retro Quiz | Commodore 64 / Amiga Knowledge Test</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Hook into your existing styles (adjust paths if needed) -->
-    <link rel="stylesheet" href="css/engine.css">
-    <link rel="stylesheet" href="resources/main.css">
+    <!-- IMPORTANT: quiz/ is a subfolder, so we go up one level for CSS -->
+    <link rel="stylesheet" href="../css/engine.css">
+    <link rel="stylesheet" href="../resources/main.css">
 
     <style>
         body {
@@ -80,6 +80,17 @@
             cursor: pointer;
             border: 1px solid #4af;
             font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            gap: 4px;
+        }
+
+        #quiz-set-list li .set-name {
+            flex: 1;
+        }
+
+        #quiz-set-list li .set-icon {
+            margin-left: 4px;
         }
 
         #quiz-set-list li.selected {
@@ -418,8 +429,19 @@ function renderQuizSets() {
     elSetList.innerHTML = "";
     quizSets.forEach(set => {
         const li = document.createElement("li");
-        li.textContent = set.name || set.id;
         li.dataset.setId = set.id;
+
+        const nameSpan = document.createElement("span");
+        nameSpan.className = "set-name";
+        nameSpan.textContent = set.name || set.id;
+
+        const iconSpan = document.createElement("span");
+        iconSpan.className = "set-icon";
+        iconSpan.textContent = set.icon || "";
+
+        li.appendChild(nameSpan);
+        li.appendChild(iconSpan);
+
         li.addEventListener("click", () => selectSet(set.id));
         elSetList.appendChild(li);
     });
@@ -434,12 +456,14 @@ function selectSet(setId) {
         li.classList.toggle("selected", li.dataset.setId === setId);
     });
 
-    elSetDetails.innerHTML = set
-        ? `<div><strong>${set.name}</strong></div>
-           <div>${set.description || ""}</div>
-           <div>Difficulty: ${set.difficulty || "N/A"}</div>
-           <div>Questions: ${set.questionCount || "?"}</div>`
-        : "";
+    if (set) {
+        const icon = set.icon ? set.icon + " " : "";
+        elSetDetails.innerHTML =
+            `<div><strong>${icon}${set.name}</strong></div>` +
+            `<div>Questions: ${set.questionCount || "?"}</div>`;
+    } else {
+        elSetDetails.innerHTML = "";
+    }
 
     setStatus("SET SELECTED – PRESS “START QUIZ”.");
 }
@@ -519,7 +543,7 @@ function showQuestion() {
         btn.classList.remove("correct", "incorrect");
     });
 
-    // Hint
+    // Hint (unused for now)
     elHint.textContent = q.hint ? `HINT: ${q.hint}` : "";
 }
 
@@ -529,7 +553,6 @@ function handleAnswerClick(evt) {
     const idx = Number(btn.dataset.index);
     const q = questions[currentIndex];
 
-    // Guard for missing options
     if (!q || typeof q.correctIndex !== "number") return;
 
     elAnswerButtons.forEach(b => b.disabled = true);
@@ -541,7 +564,6 @@ function handleAnswerClick(evt) {
     } else {
         btn.classList.add("incorrect");
         setStatus("INCORRECT!");
-        // highlight correct
         const correctBtn = elAnswerButtons[q.correctIndex];
         if (correctBtn) correctBtn.classList.add("correct");
     }
