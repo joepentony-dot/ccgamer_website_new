@@ -1,83 +1,137 @@
-// js/engine.js
-// Minimal, safe engine script: raster bars + SID intro + cursor fix
+// ==========================================
+// CHEEKY COMMODORE GAMER - ENGINE JS (V1)
+// Boot screen, theme toggle, small helpers
+// ==========================================
 
-document.addEventListener("DOMContentLoaded", () => {
-    try {
-        restoreCursor();
-        initRasterBars();
-        initSidIntro();
-    } catch (e) {
-        console.error("Engine init error:", e);
-    }
-});
-
-// Ensure the cursor is visible (override any old CSS that hid it)
-function restoreCursor() {
-    document.body.style.cursor = "auto";
-}
-
-// =======================
-//  RASTER BAR BACKGROUND
-// =======================
-function initRasterBars() {
-    const canvas = document.getElementById("raster-canvas");
-    if (!canvas) return; // no raster canvas on this page
-
-    const ctx = canvas.getContext("2d");
-    let width, height, time = 0;
-
-    function resize() {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
+(function () {
+    function byId(id) {
+        return document.getElementById(id);
     }
 
-    resize();
-    window.addEventListener("resize", resize);
+    // -------------------------------
+    // Theme toggle (C64 / Amiga)
+    // -------------------------------
+    function initThemeToggle() {
+        const root = document.documentElement;
+        const btn = byId("theme-toggle");
+        if (!btn) return;
 
-    function draw() {
-        if (!width || !height) return;
+        const STORAGE_KEY = "ccg-theme";
 
-        const barHeight = 8;
-        const speed = 0.03;
-
-        ctx.clearRect(0, 0, width, height);
-
-        for (let y = 0; y < height; y += barHeight) {
-            const phase = (y / height) * Math.PI * 2 + time * speed;
-            const intensity = Math.floor(128 + 127 * Math.sin(phase));
-            const r = 0;
-            const g = intensity;
-            const b = 255;
-
-            ctx.fillStyle = `rgb(${r},${g},${b})`;
-            ctx.fillRect(0, y, width, barHeight);
+        function applyTheme(theme) {
+            const t = theme === "amiga" ? "amiga" : "c64";
+            root.setAttribute("data-theme", t);
+            btn.textContent = t === "c64" ? "C64 MODE" : "AMIGA MODE";
         }
 
-        time++;
-        requestAnimationFrame(draw);
+        const saved = localStorage.getItem(STORAGE_KEY) || "c64";
+        applyTheme(saved);
+
+        btn.addEventListener("click", () => {
+            const current = root.getAttribute("data-theme") || "c64";
+            const next = current === "c64" ? "amiga" : "c64";
+            applyTheme(next);
+            localStorage.setItem(STORAGE_KEY, next);
+        });
     }
 
-    requestAnimationFrame(draw);
-}
+    // -------------------------------
+    // Boot screen / raster intro
+    // -------------------------------
+    function initBootScreen() {
+        const startScreen = byId("start-screen");
+        const bootLog = byId("boot-log");
+        const pressSpace = byId("press-space");
+        if (!startScreen || !bootLog || !pressSpace) return;
 
-// =======================
-//   SID INTRO AUDIO
-// =======================
-function initSidIntro() {
-    const audio = document.getElementById("sid-intro");
-    if (!audio) return;
+        const audio = byId("boot-audio"); // optional audio element
 
-    // Only play once per browser session
-    if (sessionStorage.getItem("ccg_sid_played") === "1") return;
+        const lines = [
+            " *** COMMODORE 64 BASIC V2 ***",
+            " 64K RAM SYSTEM  38911 BASIC BYTES FREE",
+            "",
+            "READY.",
+            "",
+            "LOAD \"CHEEKY COMMODORE GAMER\",8,1",
+            "SEARCHING FOR CHEEKY COMMODORE GAMER",
+            "LOADING",
+            "READY.",
+            "",
+            "RUN",
+            ""
+        ];
 
-    // Try to play; if the browser blocks it, we just fail silently
-    audio.volume = 0.7;
-    audio.play()
-        .then(() => {
-            sessionStorage.setItem("ccg_sid_played", "1");
-        })
-        .catch(() => {
-            // Autoplay blocked – no drama, user can trigger manually if needed
-            console.warn("SID intro autoplay blocked by browser.");
-        });
-}
+        let lineIndex = 0;
+
+        function appendLine() {
+            if (lineIndex >= lines.length) {
+                pressSpace.classList.add("visible");
+                return;
+            }
+            bootLog.textContent += lines[lineIndex] + "\n";
+            lineIndex++;
+            setTimeout(appendLine, 280);
+        }
+
+        function finishBoot() {
+            if (!startScreen.classList.contains("active")) return;
+            startScreen.classList.remove("active");
+            startScreen.style.opacity = "0";
+            setTimeout(() => {
+                startScreen.style.display = "none";
+            }, 350);
+
+            if (audio && typeof audio.play === "function") {
+                audio.volume = 0.85;
+                audio.play().catch(() => {
+                    // Autoplay might be blocked; ignore
+                });
+            }
+        }
+
+        // Mark active so we don't double-run
+        startScreen.classList.add("active");
+        bootLog.textContent = "";
+        pressSpace.classList.remove("visible");
+
+        setTimeout(appendLine, 300);
+
+        function keyHandler(ev) {
+            if (ev.key === " " || ev.key === "Enter" || ev.key === "Escape") {
+                ev.preventDefault();
+                finishBoot();
+            }
+        }
+
+        function clickHandler() {
+            finishBoot();
+        }
+
+        document.addEventListener("keydown", keyHandler);
+        startScreen.addEventListener("click", clickHandler);
+    }
+
+    // -------------------------------
+    // Cursor / other tiny fixes
+    // -------------------------------
+    function initCursorFix() {
+        // You mentioned the cursor "disappearing in centre".
+        // Here we force default on body for safety.
+        document.body.style.cursor = "default";
+    }
+
+    // -------------------------------
+    // DOM Ready
+    // -------------------------------
+    function init() {
+        initThemeToggle();
+        initBootScreen();
+        initCursorFix();
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+    } else {
+        init();
+    }
+})();
