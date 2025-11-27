@@ -1,187 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Complete Game Index | Cheeky Commodore Gamer</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Game Index | Cheeky Commodore Gamer</title>
+    <meta name="description" content="Alphabetical index of all Commodore 64 and Amiga games in the Cheeky Commodore Gamer library.">
 
-<link rel="stylesheet" href="../css/engine.css">
-<link rel="stylesheet" href="../resources/main.css">
+    <link rel="stylesheet" href="../css/engine.css">
+    <link rel="stylesheet" href="../resources/main.css">
 
-<style>
-    body{
-        margin:0;
-        background:#000;
-        color:#e0e0e0;
-        font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-    }
-
-    .ccg-shell{
-        max-width:1100px;
-        margin:0 auto;
-        padding:20px;
-    }
-
-    header.ccg-header{
-        border-bottom:2px solid #333;
-        padding-bottom:15px;
-        margin-bottom:20px;
-    }
-
-    .ccg-header h1{
-        margin:0;
-        font-size:1.8rem;
-    }
-
-    nav.ccg-nav{
-        margin-top:12px;
-        display:flex;
-        gap:14px;
-        flex-wrap:wrap;
-    }
-
-    nav.ccg-nav a{
-        color:#7fd0ff;
-        text-decoration:none;
-        padding:4px 8px;
-        border-radius:4px;
-    }
-    nav.ccg-nav a:hover{
-        background:#07111f;
-        border:1px solid #7fd0ff;
-    }
-
-    /* Search Bar */
-    #search-box{
-        width:100%;
-        padding:10px;
-        font-size:1rem;
-        border-radius:6px;
-        border:1px solid #333;
-        background:#0a0a0a;
-        color:#fff;
-        margin-bottom:18px;
-    }
-
-    /* Game List */
-    .game-card{
-        background:#050915;
-        border:1px solid #333;
-        border-radius:6px;
-        padding:12px;
-        margin-bottom:12px;
-        display:flex;
-        align-items:center;
-        gap:14px;
-    }
-
-    .game-thumb{
-        width:100px;
-        height:auto;
-        border-radius:4px;
-        flex-shrink:0;
-    }
-
-    .game-info{
-        flex-grow:1;
-    }
-
-    .game-title{
-        font-size:1.1rem;
-        margin-bottom:4px;
-    }
-
-    .game-meta{
-        opacity:.8;
-        font-size:.85rem;
-        margin-bottom:6px;
-    }
-
-    .game-links a{
-        color:#7fd0ff;
-        font-size:.85rem;
-        margin-right:10px;
-    }
-</style>
-
-<script defer src="../js/load-games.js"></script>
+    <script defer src="../js/engine.js"></script>
+    <script defer src="../js/complete-index.js"></script>
+    <script defer src="../js/accordion-index.js"></script>
 </head>
+<body class="ccg-body">
+    <div id="start-screen">
+        <div class="boot-window">
+            <pre id="boot-log"></pre>
+            <div id="press-space">PRESS SPACE TO CONTINUE</div>
+        </div>
+    </div>
 
-<body>
-<div class="ccg-shell">
-
-<header class="ccg-header">
-    <h1>Full Game Index</h1>
-
-    <nav class="ccg-nav">
-        <a href="../index.html">Home</a>
-        <a href="index.html">Game Browser</a>
-        <a href="../quiz/quiz.html">Retro Quiz</a>
-    </nav>
-</header>
-
-<!-- Search Input -->
-<input type="text" id="search-box" placeholder="Search all games…">
-
-<!-- Game Results -->
-<div id="game-list"></div>
-
-</div>
-
-<script>
-let ALL_GAMES = [];
-
-/* Render the list */
-function renderGameList(list){
-    const container = document.getElementById("game-list");
-    container.innerHTML = "";
-
-    if(!list.length){
-        container.innerHTML = "<p>No games found.</p>";
-        return;
-    }
-
-    list.forEach(g => {
-        container.innerHTML += `
-        <div class="game-card">
-            <img src="${g.thumbUrl}" class="game-thumb">
-
-            <div class="game-info">
-                <div class="game-title">${g.title}</div>
-                <div class="game-meta">
-                    ${g.system ? "System: " + g.system : ""}
+    <div class="crt">
+        <div class="scanlines"></div>
+        <div class="screen">
+            <header class="ccg-header">
+                <div class="logo-area">
+                    <span class="logo-main">CHEEKY</span>
+                    <span class="logo-sub">COMMODORE GAMER</span>
                 </div>
+                <nav class="ccg-nav">
+                    <a href="../index.html" class="nav-link">Main Menu</a>
+                    <a href="index.html" class="nav-link">Game Browser</a>
+                    <a href="complete-index.html" class="nav-link active">Full Index</a>
+                    <a href="../quiz/quiz.html" class="nav-link">Retro Quiz</a>
+                    <a href="../about.html" class="nav-link">About</a>
+                    <a href="../contact.html" class="nav-link">Contact</a>
+                </nav>
+            </header>
 
-                <div class="game-links">
-                    ${g.videoId ? `<a href="https://www.youtube.com/watch?v=${g.videoId}" target="_blank">Video</a>` : ""}
-                    ${g.lemonUrl ? `<a href="${g.lemonUrl}" target="_blank">Lemon64</a>` : ""}
-                    ${g.pdfUrl ? `<a href="${g.pdfUrl}" target="_blank">Manual</a>` : ""}
-                    ${g.diskUrl ? `<a href="${g.diskUrl}" target="_blank">Disk</a>` : ""}
-                </div>
-            </div>
-        </div>`;
-    });
-}
+            <main class="ccg-main">
+                <section class="text-panel">
+                    <h1>Complete Game Index</h1>
+                    <p>
+                        Generated from <code>games/games.json</code>. Click a title to open its dedicated
+                        game page.
+                    </p>
+                </section>
 
-/* Live Search */
-function setupSearch(){
-    document.getElementById("search-box").addEventListener("input", e => {
-        const q = e.target.value.toLowerCase();
-        const filtered = ALL_GAMES.filter(g =>
-            g.title.toLowerCase().includes(q) ||
-            (g.slug && g.slug.toLowerCase().includes(q))
-        );
-        renderGameList(filtered);
-    });
-}
+                <section class="index-panel">
+                    <div id="index-accordion">
+                        <!-- complete-index.js / accordion-index.js build A–Z sections here -->
+                    </div>
+                    <p id="index-status" class="games-status"></p>
+                </section>
+            </main>
 
-/* Load all games */
-document.addEventListener("DOMContentLoaded", async () => {
-    ALL_GAMES = await ccgFetchGames();
-    renderGameList(ALL_GAMES);
-    setupSearch();
-});
-</script>
-
+            <footer class="ccg-footer">
+                <p>
+                    <a href="index.html">Back to Game Browser</a> •
+                    <a href="../index.html">Return to Main Menu</a>
+                </p>
+            </footer>
+        </div>
+    </div>
 </body>
 </html>
