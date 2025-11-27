@@ -1,24 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Racing Games | CCG</title>
-<link rel="stylesheet" href="../../resources/css/main.css">
+<meta charset="UTF-8">
+<title>Racing Games | Cheeky Commodore Gamer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="../../css/engine.css">
-<style>
-#raster-canvas{position:fixed;inset:0;width:100vw;height:100vh;z-index:-1}
-html,body{cursor:auto!important}
-.page-wrapper{position:relative;z-index:10;padding:20px}
-</style>
+<link rel="stylesheet" href="../../resources/main.css">
+<style>/* same structure */</style>
+<script defer src="../../js/load-games.js"></script>
 </head>
 <body>
-<canvas id="raster-canvas"></canvas>
-<div class="page-wrapper">
-<h1 style="text-align:center;color:#9ed0ff;text-shadow:0 0 10px #0af;">Racing Games</h1>
-<div id="genre-container"></div>
+
+<div class="ccg-shell">
+<header class="ccg-header">
+<h1>Racing Games</h1>
+<nav class="ccg-nav">
+<a href="../../index.html">Home</a>
+<a href="../index.html">Game Browser</a>
+<a href="../complete-index.html">Full Index</a>
+</nav>
+</header>
+
+<div id="games-container" class="games-grid"></div>
 </div>
-<audio id="sid-intro" src="../../resources/audio/stay_a_while.mp3" preload="auto"></audio>
-<script src="../../js/engine.js" defer></script>
-<script src="../../js/genre-loader.js" defer></script>
-<script>loadGenre("racing-games");</script>
-</body></html>
+
+<script>
+async function loadGenre(){
+  const games=await ccgFetchGames();
+  const filtered=games.filter(g=>Array.isArray(g.genres)&&g.genres.some(gn=>gn.toLowerCase()==="racing games"));
+  const c=document.getElementById("games-container");
+  if(!filtered.length){c.innerHTML="<p>No games found in this genre.</p>";return;}
+  filtered.forEach(g=>{
+    c.innerHTML+=`
+    <div class="game-card">
+      <img src="${g.thumbUrl}" class="game-thumb">
+      <div class="game-title">${g.title}</div>
+      <div class="game-meta">${g.system?`System: ${g.system}`:""}</div>
+      <div class="game-links">
+        ${g.videoId?`<a href="https://www.youtube.com/watch?v=${g.videoId}" target="_blank">Watch Video</a><br>`:""}
+        ${g.lemonUrl?`<a href="${g.lemonUrl}" target="_blank">Lemon64</a><br>`:""}
+        ${g.pdfUrl?`<a href="${g.pdfUrl}" target="_blank">Manual</a><br>`:""}
+        ${g.diskUrl?`<a href="${g.diskUrl}" target="_blank">Disk Download</a>`:""}
+      </div>
+    </div>`;
+  });
+}
+document.addEventListener("DOMContentLoaded",loadGenre);
+</script>
+
+</body>
+</html>
