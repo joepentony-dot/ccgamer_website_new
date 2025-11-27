@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CCG Retro Quiz Leaderboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="css/engine.css">
+    <link rel="stylesheet" href="resources/main.css">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+        }
+
+        .leaderboard-shell {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 12px;
+            box-sizing: border-box;
+        }
+
+        .lb-header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .lb-header h1 {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        .lb-header p {
+            margin: 4px 0 0 0;
+            font-size: 0.9rem;
+        }
+
+        .lb-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .lb-tab-btn {
+            flex: 1;
+            padding: 6px;
+            cursor: pointer;
+            border: 1px solid #4af;
+            background: #002;
+            font-size: 0.85rem;
+        }
+
+        .lb-tab-btn.active {
+            background: #004;
+        }
+
+        .lb-panel {
+            border: 2px solid #4af;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        #lb-status {
+            font-size: 0.8rem;
+            margin-bottom: 4px;
+        }
+
+        #lb-month-label {
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+        }
+
+        table.lb-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        table.lb-table th,
+        table.lb-table td {
+            border: 1px solid #4af;
+            padding: 4px;
+            text-align: left;
+        }
+
+        table.lb-table th {
+            background: #002;
+        }
+
+        .lb-foot {
+            margin-top: 8px;
+            font-size: 0.8rem;
+        }
+
+        a.quiz-link {
+            color: #8df;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="leaderboard-shell crt">
+    <header class="lb-header">
+        <h1>CCG RETRO QUIZ – LEADERBOARD</h1>
+        <p>MONTHLY &amp; ALL-TIME HIGH SCORES</p>
+    </header>
+
+    <div class="lb-tabs">
+        <button id="btn-monthly" class="lb-tab-btn active">MONTHLY</button>
+        <button id="btn-alltime" class="lb-tab-btn">ALL-TIME</button>
+    </div>
+
+    <section class="lb-panel">
+        <div id="lb-status">LOADING…</div>
+        <div id="lb-month-label"></div>
+
+        <table class="lb-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Player</th>
+                    <th>Score</th>
+                    <th>Total</th>
+                    <th>Set</th>
+                    <th>When</th>
+                </tr>
+            </thead>
+            <tbody id="lb-body">
+            </tbody>
+        </table>
+
+        <div class="lb-foot">
+            PLAY THE QUIZ: <a class="quiz-link" href="quiz.html">RETURN TO QUIZ</a>
+        </div>
+    </section>
+</div>
+
+<script>
+const CCG_QUIZ_API = "https://script.google.com/macros/s/AKfycbwhkSGA6HcSvCljqBA91JmQVsVVUPU5LCEO1HlifB_Cjwc0DTFCK3m6hG5ZFDSgVHw9/exec";
+
+const elStatus      = document.getElementById("lb-status");
+const elMonthLabel  = document.getElementById("lb-month-label");
+const elBody        = document.getElementById("lb-body");
+const btnMonthly    = document.getElementById("btn-monthly");
+const btnAllTime    = document.getElementById("btn-alltime");
+
+async function apiGetLeaderboard(type) {
+    const url = CCG_QUIZ_API + "?action=getLeaderboard&type=" + encodeURIComponent(type);
+    const resp = await fetch(url);
+    return resp.json();
+}
+
+function setStatus(msg) {
+    elStatus.textContent = msg || "";
+}
+
+function renderLeaderboard(data) {
+    elBody.innerHTML = "";
+    const entries = data.entries || [];
+    elMonthLabel.textContent = data.monthLabel ? `PERIOD: ${data.monthLabel}` : "";
+
+    if (entries.length === 0) {
+        setStatus("NO SCORES RECORDED YET.");
+        return;
+    }
+
+    setStatus(`TOTAL ENTRIES: ${entries.length}`);
+
+    entries.forEach((row, idx) => {
+        const tr = document.createElement("tr");
+
+        const when = row.timestamp
+            ? new Date(row.timestamp).toLocaleString("en-GB")
+            : "";
+
+        tr.innerHTML = `
+            <td>${idx + 1}</td>
+            <td>${row.name || "Anonymous"}</td>
+            <td>${row.score}</td>
+            <td>${row.total}</td>
+            <td>${row.setId || ""}</td>
+            <td>${when}</td>
+        `;
+        elBody.appendChild(tr);
+    });
+}
+
+async function loadLeaderboard(type) {
+    setStatus("LOADING " + (type === "alltime" ? "ALL-TIME" : "MONTHLY") + " LEADERBOARD…");
+    try {
+        const data = await apiGetLeaderboard(type);
+        if (!data.ok) {
+            setStatus("ERROR LOADING LEADERBOARD.");
+            return;
+        }
+        renderLeaderboard(data);
+    } catch (err) {
+        console.error(err);
+        setStatus("ERROR: COULD NOT LOAD LEADERBOARD.");
+    }
+}
+
+btnMonthly.addEventListener("click", () => {
+    btnMonthly.classList.add("active");
+    btnAllTime.classList.remove("active");
+    loadLeaderboard("monthly");
+});
+
+btnAllTime.addEventListener("click", () => {
+    btnAllTime.classList.add("active");
+    btnMonthly.classList.remove("active");
+    loadLeaderboard("alltime");
+});
+
+// Initial load = monthly
+loadLeaderboard("monthly");
+</script>
+</body>
+</html>
