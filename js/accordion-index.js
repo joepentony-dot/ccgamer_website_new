@@ -1,83 +1,39 @@
-async function fetchGames() {
-    const res = await fetch("../games.json");
-    return await res.json();
-}
+// ================================
+// CCG - SIMPLE ACCORDION HANDLER
+// ================================
 
-function createAccordionSection(title, games) {
-    const id = title.toLowerCase().replace(/\s+/g, "-");
+(function () {
+    function initAccordion() {
+        const headers = document.querySelectorAll(".accordion-header");
+        if (!headers.length) return;
 
-    return `
-        <div class="accordion-section">
-            <div class="accordion-header" data-target="${id}">
-                ${title}
-            </div>
-            <div class="accordion-content" id="${id}">
-                <div class="game-grid">
-                    ${games.map(g => `
-                        <div class="game-card">
-                            <a href="game.html?id=${g.id}">
-                                <img src="${g.thumbnail}" alt="${g.title}">
-                            </a>
-                            <div>${g.title}</div>
-                        </div>
-                    `).join("")}
-                </div>
-            </div>
-        </div>
-    `;
-}
+        headers.forEach(header => {
+            header.addEventListener("click", () => {
+                const body = header.nextElementSibling;
+                if (!body) return;
 
-async function buildAccordion() {
-    const games = await fetchGames();
+                const isOpen = body.classList.contains("open");
 
-    // ================
-    // Build GENRE list
-    // ================
-    const genreGroups = {};
+                // Close all others
+                document.querySelectorAll(".accordion-body.open").forEach(b => {
+                    b.classList.remove("open");
+                    b.style.maxHeight = null;
+                });
 
-    games.forEach(g => {
-        const genre = g.genre || "Miscellaneous";
-        if (!genreGroups[genre]) genreGroups[genre] = [];
-        genreGroups[genre].push(g);
-    });
-
-    const genreContainer = document.getElementById("accordion-genre");
-    genreContainer.innerHTML = Object.keys(genreGroups)
-        .sort()
-        .map(genre => createAccordionSection(genre, genreGroups[genre]))
-        .join("");
-
-    // =====================
-    // Build SPECIAL lists
-    // =====================
-    const specialContainer = document.getElementById("accordion-special");
-
-    const specials = {
-        "C64 Cartridge Games": games.filter(g => g.special === "cartridge"),
-        "BPjS Indexed Games": games.filter(g => g.special === "bpjs"),
-        "Top Picks": games.filter(g => g.special === "top"),
-        "Licensed Games": games.filter(g => g.special === "licensed"),
-    };
-
-    specialContainer.innerHTML = Object.entries(specials)
-        .filter(([name, list]) => list.length > 0)
-        .map(([name, list]) => createAccordionSection(name, list))
-        .join("");
-
-    // ============================
-    // Enable accordion behaviour
-    // ============================
-    document.querySelectorAll(".accordion-header").forEach(header => {
-        header.addEventListener("click", () => {
-            const target = document.getElementById(header.dataset.target);
-            const visible = target.style.display === "block";
-
-            document.querySelectorAll(".accordion-content")
-                .forEach(div => div.style.display = "none");
-
-            if (!visible) target.style.display = "block";
+                if (!isOpen) {
+                    body.classList.add("open");
+                    body.style.maxHeight = body.scrollHeight + "px";
+                } else {
+                    body.classList.remove("open");
+                    body.style.maxHeight = null;
+                }
+            });
         });
-    });
-}
+    }
 
-buildAccordion();
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initAccordion);
+    } else {
+        initAccordion();
+    }
+})();
