@@ -3,48 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Special Collections | Cheeky Commodore Gamer</title>
+    <title>Special Collections</title>
 
-    <!-- Engine + Phase C CSS -->
-    <link rel="stylesheet" href="../../css/engine.css">
-    <link rel="stylesheet" href="../../resources/css/main.css">
-
+    <!-- Boot logic (auto-disabled for this folder) -->
     <script defer src="../../js/engine.js"></script>
-</head>
 
+    <!-- Universal genre loader -->
+    <script defer src="../load-genre.js"></script>
+
+    <style>
+        /* Minimal layout just for readability */
+        body {
+            font-family: Arial, sans-serif;
+            padding: 1rem;
+        }
+        a {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
 <body>
 
-    <canvas id="starfield"></canvas>
-    <div class="crt-overlay"></div>
+    <h1>Special Collections</h1>
 
-    <div class="container">
-
-        <div class="commodore-header" style="margin-bottom:20px;">
-            <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
-                 alt="CCG Logo"
-                 style="max-width:150px; image-rendering:pixelated;">
-            <h3>**** SPECIAL COLLECTIONS ****</h3>
-        </div>
-
-        <h1>SPECIAL COLLECTIONS</h1>
-        <p>Curated lists of hand-picked C64 and Amiga content.</p>
-
-        <h2>AVAILABLE COLLECTIONS</h2>
-
-        <div class="btn-grid">
-            <a href="bpjs-indexed-games.html" class="btn-retro">BPJS-INDEXED GAMES</a>
-            <a href="c64-cartridge.html" class="btn-retro">C64 CARTRIDGE GAMES</a>
-            <a href="licensed-games.html" class="btn-retro">LICENSED GAMES</a>
-            <a href="top-picks.html" class="btn-retro">TOP PICKS</a>
-        </div>
-
-        <h2>NAVIGATION</h2>
-        <div class="btn-grid">
-            <a href="../../index.html" class="btn-retro">HOME</a>
-            <a href="../index.html" class="btn-retro">BACK TO GENRES</a>
-            <a href="../complete-index.html" class="btn-retro">FULL INDEX</a>
-        </div>
-
+    <!-- LINKS GENERATED FROM KNOWN COLLECTIONS -->
+    <div id="collections">
+        <a href="bpjs-indexed-games.html">BPJS Games</a>
+        <a href="c64-cartridge.html">Cartridge Games</a>
+        <a href="licensed-games.html">Licensed Games</a>
+        <a href="top-picks.html">Top Picks</a>
     </div>
 
 </body>
