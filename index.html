@@ -4,31 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheeky Commodore Gamer | Main Menu</title>
-    <meta name="description" content="Dive into the world of retro gaming evolved! Browse Commodore 64 & Amiga games, watch videos, and take the CCG Retro Quiz.">
+    <meta name="description" content="Dive into the world of retro gaming evolved! Browse Commodore 64 & Amiga games, watch videos and take the CCG Retro Quiz.">
 
     <link rel="canonical" href="https://joepentony-dot.github.io/ccgamer_website_new/">
 
+    <!-- Core styles -->
     <link rel="stylesheet" href="css/engine.css">
     <link rel="stylesheet" href="resources/main.css">
 
+    <!-- Core engine JS -->
     <script defer src="js/engine.js"></script>
 </head>
 <body class="ccg-body">
-    <div id="start-screen">
+    <!-- BOOT / START SCREEN -->
+    <div id="start-screen" class="start-screen">
         <div class="boot-window">
             <pre id="boot-log"></pre>
-            <div id="press-space">PRESS SPACE TO CONTINUE</div>
+            <div id="press-space">PRESS SPACE (OR CLICK) TO CONTINUE</div>
         </div>
     </div>
 
+    <!-- Optional boot audio (provide your own MP3 here) -->
+    <audio id="boot-audio" src="resources/audio/stay-a-while.mp3" preload="auto"></audio>
+
     <div class="crt">
-        <div class="scanlines"></div>
         <div class="screen">
+            <!-- Raster bars overlay -->
+            <div class="raster-bars">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+
             <header class="ccg-header">
                 <div class="logo-area">
                     <span class="logo-main">CHEEKY</span>
                     <span class="logo-sub">COMMODORE GAMER</span>
                 </div>
+
                 <nav class="ccg-nav">
                     <a href="index.html" class="nav-link active">Main Menu</a>
                     <a href="games/index.html" class="nav-link">Game Browser</a>
@@ -36,6 +50,7 @@
                     <a href="quiz/quiz.html" class="nav-link">Retro Quiz</a>
                     <a href="about.html" class="nav-link">About</a>
                     <a href="contact.html" class="nav-link">Contact</a>
+                    <button id="theme-toggle" class="theme-toggle" type="button">C64 MODE</button>
                 </nav>
             </header>
 
@@ -43,36 +58,44 @@
                 <section class="hero">
                     <h1>COMMODORE 64 &amp; AMIGA RETRO HUB</h1>
                     <p>
-                        Fire up the virtual 1541, grab your joystick and dive into hundreds of curated
-                        Commodore 64 and Amiga titles – with videos, manuals, downloads and the legendary
-                        CCG Retro Quiz. 😇🕹️👌
+                        From big thumbs up bangers to obscure disk-only delights, this is your
+                        central index for all Cheeky Commodore Gamer content – curated C64 &amp; Amiga
+                        games, YouTube videos, downloads, manuals and the CCG Retro Quiz. 😇🕹️👌
                     </p>
                 </section>
 
                 <section class="menu-grid">
                     <a href="games/index.html" class="menu-card">
                         <h2>🎮 Game Browser</h2>
-                        <p>Filter and browse the full CCG library of C64 &amp; Amiga games.</p>
+                        <p>Filter and browse the full library of Commodore 64 &amp; Amiga titles.</p>
                     </a>
                     <a href="games/complete-index.html" class="menu-card">
                         <h2>📜 Complete Index</h2>
-                        <p>Alphabetical list of every game in the master database.</p>
+                        <p>Alphabetical master list powered by your games.json database.</p>
                     </a>
                     <a href="games/collections/top-picks.html" class="menu-card">
-                        <h2>👍 Big Thumbs Up Picks</h2>
-                        <p>Essential favourites and underrated gems.</p>
+                        <h2>👍 Top Picks</h2>
+                        <p>Cheeky’s Big Thumbs Up recommendations and essential classics.</p>
+                    </a>
+                    <a href="games/collections/licensed-games.html" class="menu-card">
+                        <h2>🎬 Licensed Games</h2>
+                        <p>Film, TV and comic tie-ins across C64 and Amiga.</p>
+                    </a>
+                    <a href="games/collections/c64-cartridge.html" class="menu-card">
+                        <h2>💾 C64 Cartridge</h2>
+                        <p>Instant-load Commodore 64 cartridge titles.</p>
+                    </a>
+                    <a href="games/collections/bpjs-indexed-games.html" class="menu-card">
+                        <h2>⚠️ BPjS Indexed</h2>
+                        <p>Historically indexed titles – handled with care and context.</p>
                     </a>
                     <a href="quiz/quiz.html" class="menu-card">
-                        <h2>🧠 CCG Retro Quiz</h2>
-                        <p>Test your Commodore knowledge with multiple themed sets.</p>
+                        <h2>🧠 Retro Quiz</h2>
+                        <p>Test your knowledge with themed C64 &amp; Amiga quiz sets.</p>
                     </a>
-                    <a href="about.html" class="menu-card">
-                        <h2>ℹ️ About</h2>
-                        <p>What this site is, how it works, and who’s behind it.</p>
-                    </a>
-                    <a href="contact.html" class="menu-card">
-                        <h2>📮 Contact / Links</h2>
-                        <p>Discord, Patreon, YouTube and more.</p>
+                    <a href="quiz/quiz-leaderboard.html" class="menu-card">
+                        <h2>🏆 Leaderboard</h2>
+                        <p>See who’s ruling the monthly CCG Retro Quiz scoreboard.</p>
                     </a>
                 </section>
 
@@ -80,21 +103,24 @@
                     <h2>SITE STATUS</h2>
                     <ul>
                         <li>Game data: <code>games/games.json</code></li>
-                        <li>Quiz backend: Google Apps Script (monthly leaderboard)</li>
-                        <li>Display mode: C64 CRT + raster overlay</li>
+                        <li>Game browser / genres / collections wired to new JS loaders</li>
+                        <li>Quiz powered by Google Apps Script backend (monthly resets)</li>
+                        <li>Theme: <strong>C64</strong> / <strong>Amiga</strong> toggle via header button</li>
                     </ul>
                 </section>
             </main>
 
             <footer class="ccg-footer">
                 <p>&copy; <span id="year"></span> Cheeky Commodore Gamer. Stay a while… stay forever.</p>
+                <p>😇🕹️👌</p>
             </footer>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const y = document.getElementById('year');
+        // Simple year stamp
+        document.addEventListener("DOMContentLoaded", function () {
+            var y = document.getElementById("year");
             if (y) y.textContent = new Date().getFullYear();
         });
     </script>
