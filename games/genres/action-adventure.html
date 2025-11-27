@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Action Adventure Games | Cheeky Commodore Gamer</title>
 
-    <!-- Engine + Phase C CSS -->
+    <!-- Phase C global UI -->
     <link rel="stylesheet" href="../../css/engine.css">
     <link rel="stylesheet" href="../../resources/css/main.css">
 
-    <script defer src="../../js/engine.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 
 <body>
@@ -18,24 +19,89 @@
     <div class="crt-overlay"></div>
 
     <div class="container">
-        
-        <div class="commodore-header" style="margin-bottom:20px;">
+
+        <!-- HEADER -->
+        <div class="commodore-header">
             <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
-                 alt="Logo"
-                 style="max-width:150px; image-rendering:pixelated;">
-            <h3>**** ACTION ADVENTURE GAMES ****</h3>
+                 alt="Cheeky Commodore Gamer Logo"
+                 style="max-width:150px; image-rendering:pixelated; margin-bottom:10px;">
+
+            <h3>**** COMMODORE 64 BASIC V2 ****</h3>
+            <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
+
+            <div class="nav-bar">
+                <a href="../../index.html" class="nav-link play-sound">MAIN MENU</a>
+                <a href="../index.html" class="nav-link play-sound">GENRES</a>
+                <a href="../collections/index.html" class="nav-link play-sound">SPECIALS</a>
+                <a href="../complete-index.html" class="nav-link play-sound">INDEX</a>
+                <a href="../../resources/quiz.html" class="nav-link play-sound">QUIZ</a>
+                <a href="../../retro-events.html" class="nav-link play-sound">EVENTS</a>
+                <a href="../../about.html" class="nav-link play-sound">ABOUT</a>
+                <a href="../../contact.html" class="nav-link play-sound">CONTACT</a>
+            </div>
         </div>
 
-        <h1>ACTION ADVENTURE</h1>
-        <div id="gameList"></div>
-
-        <h2>NAVIGATION</h2>
-        <div class="btn-grid">
-            <a href="index.html" class="btn-retro">BACK TO GENRES</a>
-            <a href="../../index.html" class="btn-retro">HOME</a>
+        <!-- TITLE -->
+        <h1>Action Adventure Games</h1>
+        <div class="page-intro">
+            <p>Cinematic quests, perilous dungeons, epic exploration and bold heroes. All action adventure titles from the full CCG library appear below.</p>
         </div>
 
-    </div>
+        <h2>GAME LIST</h2>
+
+        <!-- GRID -->
+        <div class="games-grid" id="gamesGrid">
+            <!-- Populated by JS -->
+        </div>
+
+        <!-- BACK BUTTON -->
+        <div class="btn-grid" style="margin-top:20px;">
+            <a href="../index.html" class="btn-retro play-sound">
+                <i class="fa-solid fa-arrow-left"></i> BACK TO GENRES
+            </a>
+        </div>
+
+    </div> <!-- end container -->
+
+    <!-- SCRIPT -->
+    <script src="../../js/engine.js"></script>
+
+    <script>
+        // Load JSON list
+        fetch("../games.json") 
+            .then(r => r.json())
+            .then(data => {
+                const grid = document.getElementById("gamesGrid");
+
+                const filtered = data.filter(g =>
+                    g.genre &&
+                    g.genre.toLowerCase().includes("action") &&
+                    g.genre.toLowerCase().includes("adventure")
+                );
+
+                if (!filtered.length) {
+                    grid.innerHTML = `<p style="text-align:center;">NO GAMES FOUND IN THIS GENRE.</p>`;
+                    return;
+                }
+
+                grid.innerHTML = filtered.map(g => `
+                    <a class="game-card play-sound" href="../${g.file}" >
+                        <div class="game-thumb">
+                            <img src="${g.thumbnail}" alt="${g.title}">
+                        </div>
+                        <div class="game-info">
+                            <h3>${g.title}</h3>
+                            <p class="game-system">${g.system}</p>
+                            <p class="game-genres">${g.genre}</p>
+                        </div>
+                    </a>
+                `).join("");
+            })
+            .catch(() => {
+                document.getElementById("gamesGrid").innerHTML =
+                    `<p style="text-align:center;">ERROR LOADING GAME DATA.</p>`;
+            });
+    </script>
 
 </body>
 </html>
