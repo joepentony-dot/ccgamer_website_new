@@ -2,49 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Licensed Games | Cheeky Commodore Gamer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="C64 and Amiga games based on films, TV shows, toys and famous brands.">
-
-    <link rel="stylesheet" href="../../css/engine.css">
-    <link rel="stylesheet" href="../../resources/css/main.css">
+    <title>Licensed Games</title>
 
     <script defer src="../../js/engine.js"></script>
-    <script defer src="../../js/load-games.js"></script>
+    <script defer src="../load-genre.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            loadGenrePage("Licensed Games");
+        });
+    </script>
 </head>
-
-<body class="ccg-body collection-page" data-collection="Licensed Games">
-    <div class="crt-overlay"></div>
-
-    <header class="ccg-header">
-        <div class="ccg-header-inner">
-            <h1 class="ccg-logo-text">Licensed Games</h1>
-            <nav class="ccg-nav">
-                <a href="../../index.html">Home</a>
-                <a href="../index.html">Game Index</a>
-                <a href="../../full-game-index.html">Full Game List</a>
-            </nav>
-        </div>
-    </header>
-
-    <main class="ccg-main">
-        <section class="ccg-genre-intro">
-            <p>Movie tie-ins, TV adaptations and officially endorsed classics — all the licensed titles in one place.</p>
-
-            <button class="ccg-back-button" onclick="location.href='../index.html'">
-                &larr; Back to Game Index
-            </button>
-        </section>
-
-        <section class="ccg-games-section">
-            <h2>Titles in this Collection</h2>
-            <div id="genre-status" class="ccg-status">Loading games…</div>
-            <div id="genre-games-list" class="ccg-games-grid"></div>
-        </section>
-    </main>
-
-    <footer class="ccg-footer">
-        <p>&copy; Cheeky Commodore Gamer</p>
-    </footer>
+<body>
+    <h1>Licensed Games</h1>
+    <div id="genre-list">Loading…</div>
 </body>
 </html>
