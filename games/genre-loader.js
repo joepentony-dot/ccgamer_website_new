@@ -1,34 +1,47 @@
-// =========================================
-// UNIVERSAL GENRE LOADER FOR ALL GENRE PAGES
-// =========================================
+// Detect genre name directly from <h1>
+function detectGenre() {
+    const header = document.querySelector("h1");
+    if (!header) return "";
+    return header.textContent.trim(); // use full genre name
+}
 
-async function loadGenrePage(targetGenre) {
-    const container = document.getElementById("genre-list");
-
+// Load all games and filter by genre
+async function loadGenreGames() {
     try {
-        const response = await fetch("../games.json");
-        const data = await response.json();
+        const response = await fetch('../../games.json');
+        const games = await response.json();
 
-        // Filter where ANY item in genres[] matches the target
-        const filtered = data.filter(game =>
-            Array.isArray(game.genres) &&
-            game.genres.includes(targetGenre)
+        const genreName = detectGenre();
+        const container = document.getElementById('game-list');
+
+        if (!genreName || !container) return;
+
+        const filtered = games.filter(game =>
+            game.genres.some(g => g.toLowerCase() === genreName.toLowerCase())
         );
 
         if (filtered.length === 0) {
-            container.textContent = "No games found in this genre.";
+            container.innerHTML = `<p>No games found in ${genreName}.</p>`;
             return;
         }
 
         container.innerHTML = "";
-        filtered.forEach(game => {
-            const div = document.createElement("div");
-            div.textContent = game.title;
-            container.appendChild(div);
-        });
 
-    } catch (err) {
-        console.error("Genre load failed:", err);
-        container.textContent = "Error loading genre.";
+        filtered
+            .sort((a, b) => a.sortTitle.localeCompare(b.sortTitle))
+            .forEach(game => {
+                const item = document.createElement('div');
+                item.innerHTML = `
+                    <p><a href="../game.html?game=${game.gameid}">${game.title}</a></p>
+                `;
+                container.appendChild(item);
+            });
+
+    } catch (error) {
+        console.error("Error loading genre games:", error);
+        const container = document.getElementById('game-list');
+        if (container) container.innerHTML = "<p>Error loading genre data.</p>";
     }
 }
+
+document.addEventListener('DOMContentLoaded', loadGenreGames);
