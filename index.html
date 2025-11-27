@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Cheeky Commodore Gamer | C64 & Amiga Retro Gaming Database</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <meta name="description" content="Search the massive index of Commodore 64 and Amiga games. Watch videos, browse genres, take the quiz and relive the golden age of home computing.">
     <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/">
 
@@ -12,284 +13,302 @@
     <meta property="og:description" content="Search the full C64 & Amiga game database, browse genres, take the quiz and discover hidden gems.">
     <meta property="og:type" content="website">
 
-    <!-- Core styles -->
+    <!-- Global CRT theme + boot engine -->
     <link rel="stylesheet" href="css/engine.css">
     <link rel="stylesheet" href="resources/css/main.css">
-
-    <!-- Boot engine script -->
     <script defer src="js/engine.js"></script>
 
-    <!-- HOME PAGE CUSTOM STYLES -->
+    <!-- ===========================
+         HOMEPAGE — C64 BASIC STYLE
+         =========================== -->
     <style>
         body.home-page {
-            background: #000;
-            color: #a8d6ff;
-            font-family: "VT323", monospace;
+            background:#000;
+            color:#a8d6ff;
+            font-family:"VT323", monospace;
         }
 
-        /* Slightly lighter scanlines (homepage only) */
+        /* lighter scanlines on homepage only */
         body.home-page .crt-overlay {
-            opacity: 0.18;
+            opacity:0.18;
         }
 
         .ccg-home-wrapper {
-            max-width: 1100px;
-            margin: 40px auto 80px auto;
-            padding: 0 16px;
+            max-width:1100px;
+            margin:40px auto 80px auto;
+            padding:0 16px;
         }
 
         /* BASIC header block */
         .ccg-basic-header {
-            display: flex;
-            align-items: flex-start;
-            gap: 16px;
-            margin-bottom: 30px;
+            display:flex;
+            align-items:flex-start;
+            gap:16px;
+            margin-bottom:30px;
         }
 
         .ccg-basic-logo {
-            width: 96px;
-            height: 96px;
-            border-radius: 6px;
-            overflow: hidden;
+            width:96px;
+            height:96px;
+            border-radius:6px;
+            overflow:hidden;
         }
 
         .ccg-basic-logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
+            width:100%;
+            height:100%;
+            object-fit:contain;
         }
 
         .ccg-basic-lines {
-            font-size: 20px;
-            line-height: 1.3em;
-            color: #7db7ff;
-            white-space: pre;
+            font-size:20px;
+            line-height:1.3em;
+            color:#7db7ff;
+            white-space:pre;
         }
 
-        /* BASIC-style nav */
         .ccg-basic-nav {
-            margin-top: 10px;
-            font-size: 20px;
+            margin-top:10px;
+            font-size:20px;
         }
 
         .ccg-basic-nav a {
-            text-decoration: none;
-            color: #4fb3ff;
-            margin-right: 18px;
-            letter-spacing: 0.08em;
-            position: relative;
-            padding-bottom: 2px;
-            transition: color 0.18s ease, text-shadow 0.18s ease;
+            text-decoration:none;
+            color:#4fb3ff;
+            margin-right:18px;
+            letter-spacing:0.08em;
+            position:relative;
+            padding-bottom:2px;
+            transition:0.18s;
         }
 
         .ccg-basic-nav a::after {
-            content: "";
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            width: 0;
-            height: 1px;
-            background: #4ff;
-            transition: width 0.18s ease;
+            content:"";
+            position:absolute;
+            left:0;
+            bottom:0;
+            width:0;
+            height:1px;
+            background:#4ff;
+            transition:width 0.18s ease;
         }
 
         .ccg-basic-nav a:hover {
-            color: #cfffff;
-            text-shadow: 0 0 6px rgba(0, 255, 255, 0.9);
+            color:#cfffff;
+            text-shadow:0 0 6px rgba(0,255,255,0.9);
         }
 
         .ccg-basic-nav a:hover::after {
-            width: 100%;
+            width:100%;
         }
 
-        /* Main title */
+        /* Title centre */
         .ccg-title-block {
-            text-align: center;
-            margin: 40px 0 10px 0;
+            text-align:center;
+            margin:40px 0 10px 0;
         }
 
         .ccg-main-title {
-            font-size: 34px;
-            letter-spacing: 0.12em;
-            color: #cff4ff;
+            font-size:34px;
+            letter-spacing:0.12em;
+            color:#cff4ff;
         }
 
         .ccg-main-ready {
-            margin-top: 6px;
-            font-size: 18px;
-            color: #9bd3ff;
+            margin-top:6px;
+            font-size:18px;
+            color:#9bd3ff;
         }
 
-        /* Command-line */
+        /* Command line */
         .ccg-command-section {
-            margin-top: 50px;
-            font-size: 22px;
-        }
-
-        .ccg-command-label {
-            margin-bottom: 6px;
+            margin-top:50px;
+            font-size:22px;
         }
 
         .ccg-command-input-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 8px 0 6px 0;
-        }
-
-        .ccg-command-prompt {
-            font-size: 22px;
+            display:flex;
+            align-items:center;
+            gap:10px;
+            margin:8px 0 6px 0;
         }
 
         .ccg-command-input {
-            flex: 1;
-            background: #000;
-            border: 1px solid #4fb3ff;
-            color: #dff7ff;
-            font-family: "VT323", monospace;
-            font-size: 20px;
-            padding: 4px 6px;
-            outline: none;
+            flex:1;
+            background:#000;
+            border:1px solid #4fb3ff;
+            color:#dff7ff;
+            font-family:"VT323", monospace;
+            font-size:20px;
+            padding:4px 6px;
+            outline:none;
         }
 
         .ccg-command-input::placeholder {
-            color: #4779aa;
+            color:#4779aa;
         }
 
         .ccg-command-helper {
-            font-size: 16px;
-            color: #6fb9ff;
-            margin-bottom: 18px;
+            font-size:16px;
+            color:#6fb9ff;
+            margin-bottom:18px;
         }
 
-        /* Initialising bar */
+        /* INITIALISING bar */
         .ccg-init-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 18px;
-            margin-top: 10px;
-            margin-bottom: 6px;
+            display:flex;
+            align-items:center;
+            gap:10px;
+            font-size:18px;
+            margin-top:10px;
+            margin-bottom:6px;
         }
 
         .ccg-init-label {
-            min-width: 120px;
+            min-width:120px;
         }
 
         .ccg-init-bar {
-            flex: 1;
-            height: 8px;
-            border: 1px solid #4fb3ff;
-            background: linear-gradient(90deg, #4fb3ff 0%, #4fb3ff 40%, transparent 40%, transparent 100%);
-            box-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+            flex:1;
+            height:8px;
+            border:1px solid #4fb3ff;
+            background:linear-gradient(90deg,#4fb3ff 0%,#4fb3ff 40%,transparent 40%,transparent 100%);
+            box-shadow:0 0 8px rgba(0,255,255,0.5);
         }
 
-        /* Game of the Moment */
-        .ccg-game-moment-title {
-            margin-top: 26px;
-            font-size: 22px;
-        }
-
+        /* GAME OF THE MOMENT BOX */
         .ccg-game-moment-frame {
-            margin-top: 18px;
-            border: 2px solid #4fb3ff;
-            border-radius: 10px;
-            padding: 30px;
-            text-align: center;
-            max-width: 640px;
-            margin-left: auto;
-            margin-right: auto;
-            box-shadow: 0 0 18px rgba(0, 255, 255, 0.25);
+            margin-top:18px;
+            border:2px solid #4fb3ff;
+            border-radius:10px;
+            padding:30px;
+            text-align:center;
+            max-width:640px;
+            margin-left:auto;
+            margin-right:auto;
+            box-shadow:0 0 18px rgba(0,255,255,0.25);
         }
 
         .ccg-game-moment-label {
-            font-size: 16px;
-            letter-spacing: 0.2em;
-            color: #8ed6ff;
-            margin-bottom: 8px;
+            font-size:16px;
+            letter-spacing:0.2em;
+            color:#8ed6ff;
+            margin-bottom:8px;
         }
 
-        /* ==========================================
-            GAME OF THE MOMENT – NEW STYLES
-           ========================================== */
-
+        /* GAME OF THE MOMENT CONTENT */
         .ccg-moment-content {
-            margin-top: 20px;
-            text-align: center;
+            margin-top:20px;
+            text-align:center;
         }
 
         .ccg-moment-thumb {
-            width: 100%;
-            max-width: 500px;
-            aspect-ratio: 16 / 9;
-            object-fit: cover;
-            border: 2px solid #4fb3ff;
-            border-radius: 6px;
-            margin: 0 auto 14px auto;
-            display: block;
-            box-shadow: 0 0 12px rgba(0,255,255,0.3);
+            width:100%;
+            max-width:500px;
+            aspect-ratio:16/9;
+            object-fit:cover;
+            border:2px solid #4fb3ff;
+            border-radius:6px;
+            margin:0 auto 14px auto;
+            display:block;
+            box-shadow:0 0 12px rgba(0,255,255,0.3);
         }
 
         .ccg-moment-title {
-            font-size: 24px;
-            color: #c8f6ff;
-            margin-bottom: 14px;
-            letter-spacing: 0.12em;
+            font-size:24px;
+            color:#c8f6ff;
+            margin-bottom:14px;
+            letter-spacing:0.12em;
         }
 
         .ccg-moment-buttons {
-            margin-top: 10px;
-            display: flex;
-            justify-content: center;
-            gap: 16px;
+            margin-top:10px;
+            display:flex;
+            justify-content:center;
+            gap:16px;
         }
 
         .ccg-moment-btn {
-            background: #003b4d;
-            border: 2px solid #4fb3ff;
-            padding: 8px 18px;
-            font-size: 18px;
-            color: #cff9ff;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: 0.2s;
+            background:#003b4d;
+            border:2px solid #4fb3ff;
+            padding:8px 18px;
+            font-size:18px;
+            color:#cff9ff;
+            border-radius:4px;
+            cursor:pointer;
+            text-decoration:none;
+            transition:0.2s;
         }
 
         .ccg-moment-btn:hover {
-            background: #005c75;
-            color: #fff;
-            box-shadow: 0 0 12px rgba(0,255,255,0.6);
+            background:#005c75;
+            color:#fff;
+            box-shadow:0 0 12px rgba(0,255,255,0.6);
         }
 
-        /* Responsive tweaks */
-        @media (max-width: 800px) {
-            .ccg-basic-header {
-                flex-direction: column;
-            }
+        /* SEARCH RESULTS */
+        .ccg-search-results {
+            margin-top:20px;
+            border:2px solid #4fb3ff;
+            border-radius:8px;
+            padding:16px;
+            background:rgba(0,30,50,0.4);
+            box-shadow:0 0 14px rgba(0,255,255,0.3);
+        }
 
-            .ccg-basic-logo {
-                width: 80px;
-                height: 80px;
-            }
+        .ccg-search-item {
+            margin-bottom:20px;
+            padding-bottom:10px;
+            border-bottom:1px dashed #377aa8;
+        }
 
-            .ccg-main-title {
-                font-size: 26px;
-            }
+        .ccg-search-title {
+            font-size:22px;
+            color:#c8f6ff;
+            margin-bottom:8px;
+        }
 
-            .ccg-game-moment-frame {
-                padding: 20px;
-            }
+        .ccg-search-thumb {
+            width:100%;
+            max-width:420px;
+            aspect-ratio:16/9;
+            object-fit:cover;
+            border:2px solid #4fb3ff;
+            border-radius:6px;
+            margin-bottom:12px;
+        }
+
+        .ccg-search-buttons {
+            display:flex;
+            gap:14px;
+            margin-top:8px;
+        }
+
+        .ccg-search-btn {
+            background:#003b4d;
+            border:2px solid #4fb3ff;
+            padding:6px 14px;
+            font-size:16px;
+            color:#cff9ff;
+            text-decoration:none;
+            border-radius:4px;
+            transition:0.2s;
+        }
+
+        .ccg-search-btn:hover {
+            background:#005c75;
+            color:#fff;
+            box-shadow:0 0 10px rgba(0,255,255,0.6);
         }
     </style>
 </head>
+
 <body class="ccg-body home-page">
     <div class="crt-overlay"></div>
 
     <div class="ccg-home-wrapper">
 
-        <!-- BASIC-style header -->
+        <!-- BASIC HEADER -->
         <header class="ccg-basic-header">
             <div class="ccg-basic-logo">
                 <img src="resources/img/ccg-logo.png" alt="Cheeky Commodore Gamer Logo">
@@ -313,7 +332,7 @@
             </div>
         </header>
 
-        <!-- Title -->
+        <!-- TITLE -->
         <section class="ccg-title-block">
             <h1 class="ccg-main-title">
                 COMMODORE 64 & AMIGA: THE ULTIMATE RETRO GAMING DATABASE
@@ -321,86 +340,122 @@
             <div class="ccg-main-ready">READY.</div>
         </section>
 
-        <!-- Command line -->
+        <!-- COMMAND LINE -->
         <section class="ccg-command-section">
-            <div class="ccg-command-label">
-                COMMAND LINE: SEARCH C64 AND AMIGA TITLES
-            </div>
+            <div class="ccg-command-label">COMMAND LINE: SEARCH C64 AND AMIGA TITLES</div>
 
             <div class="ccg-command-input-row">
-                <span class="ccg-command-prompt">&gt;</span>
-                <input
-                    type="text"
-                    class="ccg-command-input"
-                    placeholder="type a game title and press Enter (coming soon)">
+                <span>&gt;</span>
+                <input type="text" class="ccg-command-input" placeholder="type a game title…">
             </div>
 
             <div class="ccg-command-helper">
-                (Search will be enabled soon — for now, use the Index or Genres.)
+                (Search is live – start typing!)
             </div>
 
+            <!-- INITIALISING -->
             <div class="ccg-init-row">
                 <div class="ccg-init-label">INITIALISING...</div>
                 <div class="ccg-init-bar"></div>
             </div>
 
-            <div class="ccg-game-moment-title">
-                GAME OF THE MOMENT
-            </div>
+            <div class="ccg-game-moment-title">GAME OF THE MOMENT</div>
         </section>
 
-        <!-- GAME OF THE MOMENT PANEL -->
-        <section class="ccg-game-moment-frame" id="game-moment">
+        <!-- GAME OF THE MOMENT -->
+        <section class="ccg-game-moment-frame">
             <div class="ccg-game-moment-label">SIGNAL STATUS</div>
 
-            <div class="ccg-moment-content" id="game-moment-content">
-                <div class="ccg-game-moment-loading">
-                    LOADING SIGNAL...
-                </div>
+            <div id="game-moment-content" class="ccg-moment-content">
+                <div class="ccg-game-moment-loading">LOADING SIGNAL...</div>
             </div>
         </section>
+
+        <!-- SEARCH RESULTS -->
+        <div id="ccg-search-results" class="ccg-search-results"></div>
 
     </div>
 
-    <!-- =======================================================
-         GAME OF THE MOMENT SCRIPT
-         ======================================================= -->
+    <!-- ===========================
+         GAME OF THE MOMENT + SEARCH
+         =========================== -->
     <script>
-    async function loadGameOfTheMoment() {
-        const container = document.getElementById("game-moment-content");
-        if (!container) return;
+        let ccgAllGames = [];
 
-        try {
-            const res = await fetch("games.json");
-            if (!res.ok) throw new Error("Could not load games.json");
+        async function ccgLoadGames() {
+            if (ccgAllGames.length) return ccgAllGames;
 
-            const data = await res.json();
-            const games = data.games || data;
+            try {
+                const res = await fetch("games.json");
+                const data = await res.json();
+                ccgAllGames = data.games || data;
+            } catch (e) {
+                console.error(e);
+            }
 
-            if (!games || games.length === 0) {
-                container.innerHTML = "<div>No games found.</div>";
+            return ccgAllGames;
+        }
+
+        function ccgSearch(query, games) {
+            const q = query.toLowerCase();
+            return games.filter(g => g.title.toLowerCase().includes(q));
+        }
+
+        function ccgDisplaySearchResults(results) {
+            const target = document.getElementById("ccg-search-results");
+            if (!results.length) {
+                target.innerHTML = "<div>No matches found.</div>";
                 return;
             }
 
-            // pick random game
+            target.innerHTML = results.map(game => `
+                <div class="ccg-search-item">
+                    <div class="ccg-search-title">${game.title}</div>
+                    <img src="${game.thumbnail}" class="ccg-search-thumb" alt="${game.title}">
+                    <div class="ccg-search-buttons">
+                        <a class="ccg-search-btn" href="${game.video}" target="_blank">WATCH</a>
+                        <a class="ccg-search-btn" href="${game.page}">DETAILS</a>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        async function loadGameOfTheMoment() {
+            const box = document.getElementById("game-moment-content");
+
+            const games = await ccgLoadGames();
+            if (!games.length) {
+                box.innerHTML = "<div>Error loading game.</div>";
+                return;
+            }
+
             const game = games[Math.floor(Math.random() * games.length)];
 
-            container.innerHTML = `
-                <img src="${game.thumbnail}" class="ccg-moment-thumb" alt="${game.title}">
+            box.innerHTML = `
+                <img src="${game.thumbnail}" class="ccg-moment-thumb">
                 <div class="ccg-moment-title">${game.title}</div>
-
                 <div class="ccg-moment-buttons">
                     <a class="ccg-moment-btn" href="${game.video}" target="_blank">WATCH VIDEO</a>
                     <a class="ccg-moment-btn" href="${game.page}">VIEW DETAILS</a>
                 </div>
             `;
-        } catch (err) {
-            console.error(err);
-            container.innerHTML = "<div>Error loading game.</div>";
         }
-    }
 
-    document.addEventListener("DOMContentLoaded", loadGameOfTheMoment);
+        document.addEventListener("DOMContentLoaded", async () => {
+            const games = await ccgLoadGames();
+            loadGameOfTheMoment();
+
+            const input = document.querySelector(".ccg-command-input");
+            input.addEventListener("input", () => {
+                const q = input.value.trim();
+                if (q.length < 2) {
+                    document.getElementById("ccg-search-results").innerHTML = "";
+                    return;
+                }
+                const results = ccgSearch(q, games);
+                ccgDisplaySearchResults(results);
+            });
+        });
     </script>
 
 </body>
