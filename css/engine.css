@@ -1,35 +1,244 @@
 /* =========================================
-   MOBILE FIXES — READABILITY + FULL WIDTH
-   ========================================= */
+   BASE RETRO VARIABLES
+========================================= */
+
+:root {
+    --ccg-bg: #000;
+    --ccg-fg: #e6e6e6;
+    --ccg-accent: #29b6f6;
+    --ccg-border: rgba(255, 255, 255, 0.15);
+    --ccg-font-body: 'VT323', monospace;
+    --ccg-font-heading: 'VT323', monospace;
+}
+
+/* =========================================
+   GLOBAL RESET
+========================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    background: var(--ccg-bg);
+    color: var(--ccg-fg);
+    font-family: var(--ccg-font-body);
+    font-size: 20px;
+}
+
+/* =========================================
+   CRT FRAME & SCREEN
+========================================= */
+
+.crt {
+    padding: 48px;
+    width: 100%;
+}
+
+.screen {
+    background: #000;
+    border: 2px solid var(--ccg-border);
+    padding-bottom: 10px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.6);
+    max-width: 1400px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+/* Scanline effect */
+.screen::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.03) 0px,
+        rgba(255,255,255,0.03) 1px,
+        transparent 2px,
+        transparent 3px
+    );
+}
+
+/* =========================================
+   HEADER
+========================================= */
+
+.ccg-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+    padding: 6px 18px 6px;
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--ccg-border);
+}
+
+.logo-main {
+    display: block;
+    font-size: 1.3rem;
+    letter-spacing: 0.20em;
+}
+
+.logo-sub {
+    display: block;
+    margin-top: -4px;
+    font-size: 0.9rem;
+    opacity: 0.9;
+    letter-spacing: 0.15em;
+}
+
+/* =========================================
+   NAVIGATION
+========================================= */
+
+.ccg-nav {
+    margin-left: auto;
+    display: flex;
+    gap: 16px;
+}
+
+.nav-link {
+    color: var(--ccg-fg);
+    text-decoration: none;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+}
+
+.nav-link:hover {
+    color: var(--ccg-accent);
+}
+
+.nav-link.active {
+    color: var(--ccg-accent);
+    text-shadow: 0 0 4px var(--ccg-accent);
+}
+
+/* Theme toggle */
+.theme-toggle {
+    background: transparent;
+    border: 1px solid var(--ccg-border);
+    color: var(--ccg-fg);
+    padding: 6px 10px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+
+/* =========================================
+   SOCIAL STRIP
+========================================= */
+
+.social-strip a:hover {
+    color: var(--ccg-accent) !important;
+}
+
+/* =========================================
+   MAIN CONTENT
+========================================= */
+
+.ccg-main {
+    padding: 20px;
+}
+
+/* =========================================
+   FOOTER
+========================================= */
+
+.ccg-footer {
+    margin-top: 40px;
+    padding: 10px;
+    font-size: 0.85rem;
+    text-align: center;
+    opacity: 0.8;
+}
+
+/* =========================================
+   C64 BOOT SCREEN
+========================================= */
+
+#start-screen {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: #3c5bd9; /* TRUE C64 BLUE */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 6000;
+    animation: boot-fadein 0.6s ease-out forwards;
+}
+
+@keyframes boot-fadein {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.boot-container {
+    width: 90%;
+    max-width: 700px;
+    padding: 20px;
+    color: #e0e0c0; /* C64 PETSCII TEXT */
+    font-family: "C64ProMono", monospace;
+    font-size: 20px;
+    line-height: 1.35;
+    white-space: pre;
+    text-shadow: 0 0 4px rgba(0,0,0,0.6);
+    position: relative;
+}
+
+/* Scanlines over boot screen */
+#start-screen::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.15) 0px,
+        rgba(0,0,0,0.15) 1px,
+        transparent 2px,
+        transparent 3px
+    );
+}
+
+/* Flicker */
+@keyframes c64flicker {
+    0% { opacity: 1; }
+    50% { opacity: 0.94; }
+    100% { opacity: 1; }
+}
+#start-screen { animation: c64flicker 0.12s infinite; }
+
+/* =========================================
+   MOBILE FIXES — LARGER TEXT + FULL WIDTH
+========================================= */
 
 @media (max-width: 700px) {
 
-    /* Make the CRT fill the whole device width */
     .crt {
         padding: 0;
     }
 
-    /* Let the screen area expand fully */
     .screen {
-        max-width: 100% !important;
         width: 100% !important;
-        border-radius: 0; /* optional: removes rounded CRT corners on mobile */
+        max-width: 100% !important;
+        border-radius: 0;
     }
 
-    /* Global font scaling */
     body.ccg-body {
-        font-size: 22px; /* much more readable */
+        font-size: 22px;
         line-height: 1.55;
     }
 
-    /* Headings larger so they don’t look compressed */
     .logo-main,
-    .logo-sub,
-    h1, h2, h3 {
+    .logo-sub {
         font-size: 1.2rem !important;
     }
 
-    /* Navigation links larger & easier to tap */
     .ccg-nav .nav-link {
         font-size: 1rem !important;
         padding: 10px 6px;
@@ -37,38 +246,19 @@
 
     .theme-toggle {
         font-size: 1rem !important;
-        padding: 8px 12px;
     }
 
-    /* Main content padding wider */
     .ccg-main {
         padding: 16px;
     }
 
-    /* Social strip becomes readable */
     .social-strip {
-        display: flex;
-        flex-wrap: wrap;
         gap: 10px;
         font-size: 1rem !important;
         padding: 10px 16px 0 !important;
+        flex-wrap: wrap;
     }
 
-    /* Game cards scale properly */
-    .games-list {
-        grid-template-columns: 1fr 1fr; /* two columns on mobile */
-        gap: 12px;
-    }
-
-    .game-card h2 {
-        font-size: 1.1rem !important;
-    }
-
-    .game-meta {
-        font-size: 1rem !important;
-    }
-
-    /* Filter sidebar becomes full width on top */
     .games-layout {
         display: block;
     }
@@ -77,15 +267,13 @@
         margin-bottom: 12px;
     }
 
-    /* Inputs readable */
+    .games-list {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
     input, select {
         font-size: 1.1rem !important;
         padding: 6px 8px;
-    }
-
-    /* Status text legible */
-    .games-status,
-    #games-count {
-        font-size: 1rem !important;
     }
 }
