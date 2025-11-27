@@ -4,45 +4,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheeky Commodore Gamer | Main Menu</title>
-    <meta name="description" content="Dive into the world of retro gaming evolved! Browse Commodore 64 & Amiga games, watch videos and take the CCG Retro Quiz.">
+    <meta name="description" content="Enter the world of retro gaming evolved! Browse Commodore 64 and Amiga games, take quizzes, and explore the Cheeky Commodore Gamer universe.">
 
-    <link rel="canonical" href="https://joepentony-dot.github.io/ccgamer_website_new/">
-
-    <!-- Core styles -->
+    <!-- CSS -->
     <link rel="stylesheet" href="css/engine.css">
     <link rel="stylesheet" href="resources/main.css">
 
-    <!-- Core engine JS -->
+    <!-- JS -->
     <script defer src="js/engine.js"></script>
+
+    <!-- Favicon -->
+    <link rel="icon" href="resources/CCG_FAVICON.png">
 </head>
+
 <body class="ccg-body">
-    <!-- BOOT / START SCREEN -->
-    <div id="start-screen" class="start-screen">
-        <div class="boot-window">
-            <pre id="boot-log"></pre>
-            <div id="press-space">PRESS SPACE (OR CLICK) TO CONTINUE</div>
+
+    <!-- ==========================================================
+         C64 BOOT SCREEN
+    ============================================================= -->
+    <div id="start-screen">
+        <div class="boot-container">
+<pre class="boot-text">
+ **** COMMODORE 64 BASIC V2 ****
+
+ 64K RAM SYSTEM  38911 BASIC BYTES FREE
+
+ READY.
+
+ ANOTHER VISITOR...
+
+ STAY AWHILE.
+
+ STAY FOREVER!
+</pre>
         </div>
     </div>
 
-    <!-- Optional boot audio (provide your own MP3 here) -->
-    <audio id="boot-audio" src="resources/audio/stay-a-while.mp3" preload="auto"></audio>
-
+    <!-- ==========================================================
+         CRT FRAME
+    ============================================================= -->
     <div class="crt">
         <div class="screen">
-            <!-- Raster bars overlay -->
-            <div class="raster-bars">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-            </div>
 
-            <header class="ccg-header">
-                <div class="logo-area">
+            <!-- ==================================================
+                 HEADER WITH NEON STRIP + FLOATING LOGO
+            ===================================================== -->
+            <header class="ccg-header" style="
+                background-image: url('resources/C64 NEON.png');
+                background-size: cover;
+                background-position: center;
+                height: 50px;
+                display: flex;
+                align-items: flex-end;
+                padding-bottom: 6px;
+                position: relative;
+            ">
+
+                <!-- Floating mascot -->
+                <img src="resources/CCGAMER LOGO.png" alt="CCG Logo"
+                    style="
+                        position: absolute;
+                        top: -22px;
+                        left: 18px;
+                        height: 46px;
+                        filter: drop-shadow(0 0 6px rgba(41,182,246,0.9));
+                        pointer-events: none;
+                    ">
+
+                <!-- Text Logo -->
+                <div class="logo-area" style="margin-left: 70px;">
                     <span class="logo-main">CHEEKY</span>
                     <span class="logo-sub">COMMODORE GAMER</span>
                 </div>
 
+                <!-- Navigation -->
                 <nav class="ccg-nav">
                     <a href="index.html" class="nav-link active">Main Menu</a>
                     <a href="games/index.html" class="nav-link">Game Browser</a>
@@ -52,77 +87,58 @@
                     <a href="contact.html" class="nav-link">Contact</a>
                     <button id="theme-toggle" class="theme-toggle" type="button">C64 MODE</button>
                 </nav>
+
             </header>
 
+            <!-- ==================================================
+                 SOCIAL STRIP
+            ===================================================== -->
+            <div class="social-strip"
+                style="
+                    display: flex;
+                    gap: 12px;
+                    padding: 8px 18px 0;
+                    font-size: 0.75rem;
+                    text-transform: uppercase;
+                ">
+                <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" style="color: var(--ccg-fg); text-decoration: none;">YouTube</a>
+                <a href="https://www.youtube.com/@CheekyCommodoreGamer?sub_confirmation=1" target="_blank" style="color: #ff4444; text-decoration: none;">Subscribe</a>
+                <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank" style="color: var(--ccg-fg); text-decoration: none;">Patreon</a>
+                <a href="https://discord.gg/83Xw9ktAn4" target="_blank" style="color: var(--ccg-fg); text-decoration: none;">Discord</a>
+                <a href="https://twitter.com/CheekyC64Gamer" target="_blank" style="color: var(--ccg-fg); text-decoration: none;">Twitter</a>
+                <a href="https://facebook.com/cheekycommodoregamer" target="_blank" style="color: var(--ccg-fg); text-decoration: none;">Facebook</a>
+                <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" style="color: var(--ccg-fg); text-decoration: none;">PayPal</a>
+            </div>
+
+            <!-- ==================================================
+                 MAIN MENU CONTENT
+            ===================================================== -->
             <main class="ccg-main">
-                <section class="hero">
-                    <h1>COMMODORE 64 &amp; AMIGA RETRO HUB</h1>
-                    <p>
-                        From big thumbs up bangers to obscure disk-only delights, this is your
-                        central index for all Cheeky Commodore Gamer content – curated C64 &amp; Amiga
-                        games, YouTube videos, downloads, manuals and the CCG Retro Quiz. 😇🕹️👌
-                    </p>
-                </section>
 
-                <section class="menu-grid">
-                    <a href="games/index.html" class="menu-card">
-                        <h2>🎮 Game Browser</h2>
-                        <p>Filter and browse the full library of Commodore 64 &amp; Amiga titles.</p>
-                    </a>
-                    <a href="games/complete-index.html" class="menu-card">
-                        <h2>📜 Complete Index</h2>
-                        <p>Alphabetical master list powered by your games.json database.</p>
-                    </a>
-                    <a href="games/collections/top-picks.html" class="menu-card">
-                        <h2>👍 Top Picks</h2>
-                        <p>Cheeky’s Big Thumbs Up recommendations and essential classics.</p>
-                    </a>
-                    <a href="games/collections/licensed-games.html" class="menu-card">
-                        <h2>🎬 Licensed Games</h2>
-                        <p>Film, TV and comic tie-ins across C64 and Amiga.</p>
-                    </a>
-                    <a href="games/collections/c64-cartridge.html" class="menu-card">
-                        <h2>💾 C64 Cartridge</h2>
-                        <p>Instant-load Commodore 64 cartridge titles.</p>
-                    </a>
-                    <a href="games/collections/bpjs-indexed-games.html" class="menu-card">
-                        <h2>⚠️ BPjS Indexed</h2>
-                        <p>Historically indexed titles – handled with care and context.</p>
-                    </a>
-                    <a href="quiz/quiz.html" class="menu-card">
-                        <h2>🧠 Retro Quiz</h2>
-                        <p>Test your knowledge with themed C64 &amp; Amiga quiz sets.</p>
-                    </a>
-                    <a href="quiz/quiz-leaderboard.html" class="menu-card">
-                        <h2>🏆 Leaderboard</h2>
-                        <p>See who’s ruling the monthly CCG Retro Quiz scoreboard.</p>
-                    </a>
-                </section>
+                <h1 style="font-family: var(--ccg-font-heading);">Welcome to Cheeky Commodore Gamer</h1>
+                <p>Explore the world of Commodore 64 & Amiga games, quizzes, collections, manuals, game music and more. Built for retro fans worldwide!</p>
 
-                <section class="status-panel">
-                    <h2>SITE STATUS</h2>
-                    <ul>
-                        <li>Game data: <code>games/games.json</code></li>
-                        <li>Game browser / genres / collections wired to new JS loaders</li>
-                        <li>Quiz powered by Google Apps Script backend (monthly resets)</li>
-                        <li>Theme: <strong>C64</strong> / <strong>Amiga</strong> toggle via header button</li>
-                    </ul>
-                </section>
+                <!-- You can expand this later with cards, buttons, sections -->
             </main>
 
+            <!-- ==================================================
+                 FOOTER
+            ===================================================== -->
             <footer class="ccg-footer">
-                <p>&copy; <span id="year"></span> Cheeky Commodore Gamer. Stay a while… stay forever.</p>
+                <p>&copy; <span id="year"></span> Cheeky Commodore Gamer.</p>
                 <p>😇🕹️👌</p>
             </footer>
+
         </div>
     </div>
 
     <script>
-        // Simple year stamp
-        document.addEventListener("DOMContentLoaded", function () {
-            var y = document.getElementById("year");
+        /* Auto-update footer year */
+        document.addEventListener("DOMContentLoaded", () => {
+            const y = document.getElementById("year");
             if (y) y.textContent = new Date().getFullYear();
         });
     </script>
+
 </body>
 </html>
