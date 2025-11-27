@@ -1,141 +1,170 @@
-// =====================================================
-// COMPLETE INDEX ENGINE — GRID + LIST MODE
-// Cheeky Commodore Gamer
-// =====================================================
+// ================================
+// CCG - COMPLETE INDEX BUILDER
+// ================================
 
-document.addEventListener("DOMContentLoaded", async () => {
+(function () {
+    const container = document.getElementById("index-accordion");
+    if (!container) return; // Not on complete-index.html
 
-    const gridEl = document.getElementById("gridView");
-    const listEl = document.getElementById("listBody");
+    const statusEl = document.getElementById("index-status");
 
-    const searchEl = document.getElementById("indexSearch");
-    const sortEl = document.getElementById("sortSelect");
-
-    const gridBtn = document.getElementById("gridBtn");
-    const listBtn = document.getElementById("listBtn");
-
-    let games = [];
-    let filtered = [];
-
-    // Load games
-    try {
-        games = await ccgFetchGames();
-        filtered = [...games];
-        renderGrid();
-        renderList();
-    } catch (e) {
-        console.error("Error loading complete index:", e);
-        gridEl.innerHTML = "<p style='color:red;'>ERROR LOADING GAME DATA</p>";
-        return;
+    function escapeHtml(str) {
+        if (!str) return "";
+        return String(str)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
     }
 
-    // ================================
-    // SEARCH
-    // ================================
-    searchEl.addEventListener("input", () => {
-        applyFilters();
-    });
-
-    // ================================
-    // SORT
-    // ================================
-    sortEl.addEventListener("change", () => {
-        applyFilters();
-    });
-
-    // ================================
-    // VIEW SWITCH
-    // ================================
-    gridBtn.addEventListener("click", () => {
-        gridBtn.classList.add("active");
-        listBtn.classList.remove("active");
-        document.getElementById("gridView").style.display = "grid";
-        document.getElementById("listView").style.display = "none";
-    });
-
-    listBtn.addEventListener("click", () => {
-        listBtn.classList.add("active");
-        gridBtn.classList.remove("active");
-        document.getElementById("gridView").style.display = "none";
-        document.getElementById("listView").style.display = "block";
-    });
-
-    // ================================
-    // APPLY FILTERS (search + sort)
-    // ================================
-    function applyFilters() {
-        const q = searchEl.value.trim().toLowerCase();
-
-        filtered = games.filter(g =>
-            g.title.toLowerCase().includes(q) ||
-            (g.genreLabels.join(", ").toLowerCase().includes(q)) ||
-            (g.system.toLowerCase().includes(q))
-        );
-
-        sortFiltered();
-        renderGrid();
-        renderList();
+    function getGamesBasePath() {
+        const path = window.location.pathname;
+        const marker = "/games/";
+        const idx = path.indexOf(marker);
+        if (idx !== -1) {
+            return path.slice(0, idx + marker.length);
+        }
+        return "games/";
     }
 
-    // ================================
-    // SORT LOGIC
-    // ================================
-    function sortFiltered() {
-        const mode = sortEl.value;
-
-        if (mode === "title-asc") {
-            filtered.sort((a, b) => a.title.localeCompare(b.title));
-        }
-        else if (mode === "title-desc") {
-            filtered.sort((a, b) => b.title.localeCompare(a.title));
-        }
-        else if (mode === "system") {
-            filtered.sort((a, b) => a.system.localeCompare(b.system));
-        }
+    function getGamesJsonUrl() {
+        return getGamesBasePath() + "games.json";
     }
 
-    // ================================
-    // GRID RENDERER
-    // ================================
-    function renderGrid() {
-        gridEl.innerHTML = "";
+    function fetchGamesJson() {
+        if (window.__CCG_GAMES_CACHE__) {
+            return Promise.resolve(window.__CCG_GAMES_CACHE__);
+        }
+        const url = getGamesJsonUrl();
+        return fetch(url)
+            .then(res => {
+                if (!res.ok) throw new Error("HTTP " + res.status + " " + url);
+                return res.json();
+            })
+            .then(json => {
+                if (!Array.isArray(json)) throw new Error("games.json is not an array");
+                window.__CCG_GAMES_CACHE__ = json;
+                return json;
+            });
+    }
 
-        filtered.forEach(g => {
-            const card = document.createElement("div");
-            card.className = "game-card";
+    function createSection(letter, games) {
+        const basePath = getGamesBasePath();
+        const section = document.createElement("section");
+        section.className = "index-section";
 
-            card.innerHTML = `
-                <div class="game-thumb">
-                    ${g.thumb ? `<img src="${g.thumb}" loading="lazy">` : ""}
-                </div>
-                <div class="game-info">
-                    <h3>${g.title}</h3>
-                    <p class="game-system">[${g.system.toUpperCase()}]</p>
-                    <p class="game-genres">${g.genreLabels.join(" · ")}</p>
-                </div>
-            `;
+        const headerBtn = document.createElement("button");
+        headerBtn.className = "accordion-header";
+        headerBtn.type = "button";
+        headerBtn.textContent = letter + " (" + games.length + ")";
 
-            gridEl.appendChild(card);
+        const body = document.createElement("div");
+        body.className = "accordion-body";
+
+        const table = document.createElement("table");
+        table.className = "index-table-inner";
+
+        const thead = document.createElement("thead");
+        thead.innerHTML = `
+            <tr>
+                <th>Title</th>
+                <th>System</th>
+                <th>Genres</th>
+                <th>Video</th>
+            </tr>
+        `;
+        table.appendChild(thead);
+
+        const tbody = document.createElement("tbody");
+
+        games.forEach(game => {
+            const tr = document.createElement("tr");
+
+            const titleCell = document.createElement("td");
+            const detailUrl = basePath + "game.html?id=" + encodeURIComponent(game.slug);
+            titleCell.innerHTML = `<a href="${detailUrl}">${escapeHtml(game.title || "")}</a>`;
+
+            const systemCell = document.createElement("td");
+            systemCell.textContent = game.system || "";
+
+            const genresCell = document.createElement("td");
+            genresCell.textContent = Array.isArray(game.genres)
+                ? game.genres.join(", ")
+                : "";
+
+            const videoCell = document.createElement("td");
+            if (game.videoId) {
+                const link = document.createElement("a");
+                link.href = "https://www.youtube.com/watch?v=" + encodeURIComponent(game.videoId);
+                link.target = "_blank";
+                link.rel = "noopener";
+                link.textContent = "Watch";
+                videoCell.appendChild(link);
+            } else {
+                videoCell.textContent = "";
+            }
+
+            tr.appendChild(titleCell);
+            tr.appendChild(systemCell);
+            tr.appendChild(genresCell);
+            tr.appendChild(videoCell);
+            tbody.appendChild(tr);
         });
+
+        table.appendChild(tbody);
+        body.appendChild(table);
+        section.appendChild(headerBtn);
+        section.appendChild(body);
+
+        return section;
     }
 
-    // ================================
-    // LIST RENDERER
-    // ================================
-    function renderList() {
-        listEl.innerHTML = "";
+    if (statusEl) statusEl.textContent = "Loading complete index…";
 
-        filtered.forEach(g => {
-            const row = document.createElement("tr");
+    fetchGamesJson()
+        .then(games => {
+            if (!games.length) {
+                if (statusEl) statusEl.textContent = "No games found.";
+                return;
+            }
 
-            row.innerHTML = `
-                <td>${g.title}</td>
-                <td>${g.system.toUpperCase()}</td>
-                <td>${g.genreLabels.join(", ")}</td>
-            `;
+            // Sort A–Z by title
+            games.sort((a, b) =>
+                (a.title || "").localeCompare(b.title || "", "en", { sensitivity: "base" })
+            );
 
-            listEl.appendChild(row);
+            // Group by first letter
+            const groups = new Map();
+            games.forEach(game => {
+                const first = (game.title || "").charAt(0).toUpperCase();
+                const key = /[A-Z]/.test(first) ? first : "#";
+                if (!groups.has(key)) groups.set(key, []);
+                groups.get(key).push(game);
+            });
+
+            const letters = Array.from(groups.keys()).sort((a, b) => {
+                if (a === "#") return 1;
+                if (b === "#") return -1;
+                return a.localeCompare(b);
+            });
+
+            container.innerHTML = "";
+
+            letters.forEach(letter => {
+                const section = createSection(letter, groups.get(letter));
+                container.appendChild(section);
+            });
+
+            if (statusEl) {
+                statusEl.textContent =
+                    "Indexed " + games.length + " games across " + letters.length + " sections.";
+            }
+
+            // Let accordion-index.js wire up the toggles
+        })
+        .catch(err => {
+            console.error("Error building complete index:", err);
+            if (statusEl) statusEl.textContent = "Error loading complete index.";
         });
-    }
-
-});
+})();
