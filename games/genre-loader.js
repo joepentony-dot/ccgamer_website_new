@@ -1,11 +1,20 @@
-// Detect genre name directly from <h1>
+// Clean genre names (remove weird spacing)
+function normalize(str) {
+    return str
+        .toLowerCase()
+        .replace(/\s+/g, " ")        // collapse spaces
+        .replace(/\u00A0/g, " ")     // remove non-breaking spaces
+        .trim();
+}
+
+// Detect genre name from <h1>
 function detectGenre() {
     const header = document.querySelector("h1");
     if (!header) return "";
-    return header.textContent.trim(); // use full genre name
+    return normalize(header.textContent);
 }
 
-// Load all games and filter by genre
+// Load games and filter by genre
 async function loadGenreGames() {
     try {
         const response = await fetch('../../games.json');
@@ -17,7 +26,7 @@ async function loadGenreGames() {
         if (!genreName || !container) return;
 
         const filtered = games.filter(game =>
-            game.genres.some(g => g.toLowerCase() === genreName.toLowerCase())
+            game.genres.some(g => normalize(g) === genreName)
         );
 
         if (filtered.length === 0) {
