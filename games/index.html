@@ -5,10 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Full Game Index | CCG</title>
 
+    <!-- Core styles already used across the site -->
     <link rel="stylesheet" href="../resources/css/main.css">
     <link rel="stylesheet" href="../css/engine.css">
 
     <style>
+        /* ============================
+           ACCORDION BASE STYLING
+        ============================ */
         .accordion-section {
             border: 1px solid #0af;
             margin: 15px 0;
@@ -24,16 +28,49 @@
             border-bottom: 1px solid #0af;
             color: #7ec8ff !important;
             text-shadow: 0 0 8px #0af;
+            display: flex;
+            align-items: center;
         }
 
+        /* Hover glow */
+        .accordion-header:hover {
+            background: #003f66;
+            color: #b7e3ff;
+            text-shadow: 0 0 12px #0af;
+        }
+
+        /* Arrow icons */
+        .accordion-header::before {
+            content: "▶";
+            margin-right: 10px;
+            color: #0af;
+            text-shadow: 0 0 6px #0af;
+            transition: transform 0.3s;
+        }
+
+        .accordion-header.open::before {
+            transform: rotate(90deg);
+        }
+
+        /* Accordion slide animation */
         .accordion-content {
-            display: none;
-            padding: 15px;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.35s ease-out, opacity 0.35s ease-out;
         }
 
+        .accordion-content.open {
+            max-height: 2000px;
+            opacity: 1;
+        }
+
+        /* ============================
+           GAME GRID STYLING
+        ============================ */
         .game-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px,1fr));
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             gap: 15px;
         }
 
@@ -49,8 +86,19 @@
             width: 100%;
             border-radius: 4px;
             border: 2px solid #044;
+            transition: 0.2s;
         }
 
+        /* Thumbnail hover pulse */
+        .game-card img:hover {
+            transform: scale(1.06);
+            border-color: #0ff;
+            box-shadow: 0 0 12px #0ff;
+        }
+
+        /* ============================
+           CATEGORY BLOCKS
+        ============================ */
         .category-group {
             margin-top: 25px;
             padding: 12px;
@@ -65,16 +113,71 @@
             color: #9ed0ff;
             text-shadow: 0 0 12px #0af;
         }
-    </style>
 
-    <script defer src="../js/accordion-index.js"></script>
+        /* ============================
+           CRT SCANLINE OVERLAY
+        ============================ */
+        body::after {
+            content: "";
+            pointer-events: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: repeating-linear-gradient(
+                rgba(255,255,255,0.02),
+                rgba(255,255,255,0.02) 2px,
+                rgba(0,0,0,0.08) 4px
+            );
+            z-index: 9999;
+        }
+
+        /* CRT wobble effect */
+        .page-wrapper {
+            animation: crt-wobble 4s infinite alternate ease-in-out;
+        }
+
+        @keyframes crt-wobble {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.003); }
+            100% { transform: scale(1); }
+        }
+
+        /* ============================
+           BACK TO TOP BUTTON
+        ============================ */
+        #backToTop {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: #001f33;
+            color: #7ec8ff;
+            padding: 10px 20px;
+            border: 2px solid #0af;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            box-shadow: 0 0 12px #0af;
+            display: none;
+            z-index: 99999;
+        }
+
+        #backToTop:hover {
+            color: #c9ecff;
+            text-shadow: 0 0 10px #0af;
+            background: #003f66;
+        }
+    </style>
 </head>
 
 <body>
 
 <div class="page-wrapper">
 
-    <h1 style="text-align:center;margin-bottom:30px;text-shadow:0 0 10px #0af;">
+    <h1 style="
+        text-align:center;
+        margin-bottom:30px;
+        text-shadow:0 0 10px #0af;
+        ">
         Full Game Index
     </h1>
 
@@ -83,22 +186,24 @@
     <!-- ========================= -->
     <div class="category-group">
         <h2 class="category-title">BY GENRE</h2>
-
         <div id="accordion-genre"></div>
     </div>
 
-    <!-- ================================ -->
-    <!--       GROUP: SPECIAL LISTS       -->
-    <!-- ================================ -->
+    <!-- ========================= -->
+    <!--     GROUP: SPECIAL LISTS -->
+    <!-- ========================= -->
     <div class="category-group">
         <h2 class="category-title">SPECIAL LISTS</h2>
-
-        <div id="accordion-special">
-            <!-- Will be injected dynamically -->
-        </div>
+        <div id="accordion-special"></div>
     </div>
 
 </div>
+
+<!-- Back to top button -->
+<div id="backToTop">▲ Back to Top</div>
+
+<!-- JS powering the accordion -->
+<script src="../js/accordion-index.js" defer></script>
 
 </body>
 </html>
