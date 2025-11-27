@@ -4,141 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheeky Commodore Gamer | Main Menu</title>
-    <meta name="description" content="Enter the world of retro gaming evolved! Browse Commodore 64 and Amiga games, take quizzes, and explore the Cheeky Commodore Gamer universe.">
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="css/engine.css">
-    <link rel="stylesheet" href="resources/main.css">
-
-    <!-- JS -->
-    <script defer src="js/engine.js"></script>
-
-    <!-- Favicon -->
-    <link rel="icon" href="resources/CCG_FAVICON.png">
+    <meta name="description" content="Cheeky Commodore Gamer – hub for Commodore 64 and Amiga game lists, quizzes and collections.">
 </head>
+<body>
+    <header>
+        <h1>Cheeky Commodore Gamer</h1>
+        <p>Commodore 64 & Amiga Retro Gaming Hub</p>
+    </header>
 
-<body class="ccg-body">
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="games/index.html">Browse Games</a></li>
+            <li><a href="games/complete-index.html">Complete Game Index</a></li>
+            <li><a href="quiz/quiz.html">Retro Quiz</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </nav>
 
-    <!-- ==========================================================
-         C64 BOOT SCREEN
-    ============================================================= -->
-    <div id="start-screen">
-        <div class="boot-container">
-<pre class="boot-text">
- **** COMMODORE 64 BASIC V2 ****
+    <main>
+        <section>
+            <h2>Welcome</h2>
+            <p>
+                This is the functional main menu for the Cheeky Commodore Gamer site.
+                Styling, CRT effects, raster bars and sounds will be added later – for now,
+                the priority is that all links and pages work correctly.
+            </p>
+        </section>
 
- 64K RAM SYSTEM  38911 BASIC BYTES FREE
+        <section>
+            <h2>Key Sections</h2>
+            <ul>
+                <li><strong>Browse Games</strong> – links to the main games hub (genres / collections).</li>
+                <li><strong>Complete Game Index</strong> – full searchable / scrollable list of all games (to be wired up).</li>
+                <li><strong>Retro Quiz</strong> – C64 / Amiga knowledge quiz front-end (to be wired up).</li>
+                <li><strong>About</strong> – information about the channel and site.</li>
+                <li><strong>Contact</strong> – ways to get in touch.</li>
+            </ul>
+        </section>
+    </main>
 
- READY.
-
- ANOTHER VISITOR...
-
- STAY AWHILE.
-
- STAY FOREVER!
-</pre>
-        </div>
-    </div>
-
-    <!-- ==========================================================
-         CRT FRAME
-    ============================================================= -->
-    <div class="crt">
-        <div class="screen">
-
-            <!-- ==================================================
-                 HEADER WITH NEON STRIP + FLOATING LOGO
-            ===================================================== -->
-            <header class="ccg-header" style="
-                background-image: url('resources/C64 NEON.png');
-                background-size: cover;
-                background-position: center;
-                height: 50px;
-                display: flex;
-                align-items: flex-end;
-                padding-bottom: 6px;
-                position: relative;
-            ">
-
-                <!-- Floating mascot -->
-                <img src="resources/CCGAMER LOGO.png" alt="CCG Logo"
-                    style="
-                        position: absolute;
-                        top: -22px;
-                        left: 18px;
-                        height: 46px;
-                        filter: drop-shadow(0 0 6px rgba(41,182,246,0.9));
-                        pointer-events: none;
-                    ">
-
-                <!-- Text Logo -->
-                <div class="logo-area" style="margin-left: 70px;">
-                    <span class="logo-main">CHEEKY</span>
-                    <span class="logo-sub">COMMODORE GAMER</span>
-                </div>
-
-                <!-- Navigation -->
-                <nav class="ccg-nav">
-                    <a href="index.html" class="nav-link active">Main Menu</a>
-                    <a href="games/index.html" class="nav-link">Game Browser</a>
-                    <a href="games/complete-index.html" class="nav-link">Full Index</a>
-                    <a href="quiz/quiz.html" class="nav-link">Retro Quiz</a>
-                    <a href="about.html" class="nav-link">About</a>
-                    <a href="contact.html" class="nav-link">Contact</a>
-                    <button id="theme-toggle" class="theme-toggle" type="button">C64 MODE</button>
-                </nav>
-
-            </header>
-
-            <!-- ==================================================
-                 SOCIAL STRIP
-            ===================================================== -->
-            <div class="social-strip"
-                style="
-                    display: flex;
-                    gap: 12px;
-                    padding: 8px 18px 0;
-                    font-size: 0.75rem;
-                    text-transform: uppercase;
-                ">
-                <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" style="color: var(--ccg-fg); text-decoration: none;">YouTube</a>
-                <a href="https://www.youtube.com/@CheekyCommodoreGamer?sub_confirmation=1" target="_blank" style="color: #ff4444; text-decoration: none;">Subscribe</a>
-                <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank" style="color: var(--ccg-fg); text-decoration: none;">Patreon</a>
-                <a href="https://discord.gg/83Xw9ktAn4" target="_blank" style="color: var(--ccg-fg); text-decoration: none;">Discord</a>
-                <a href="https://twitter.com/CheekyC64Gamer" target="_blank" style="color: var(--ccg-fg); text-decoration: none;">Twitter</a>
-                <a href="https://facebook.com/cheekycommodoregamer" target="_blank" style="color: var(--ccg-fg); text-decoration: none;">Facebook</a>
-                <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" style="color: var(--ccg-fg); text-decoration: none;">PayPal</a>
-            </div>
-
-            <!-- ==================================================
-                 MAIN MENU CONTENT
-            ===================================================== -->
-            <main class="ccg-main">
-
-                <h1 style="font-family: var(--ccg-font-heading);">Welcome to Cheeky Commodore Gamer</h1>
-                <p>Explore the world of Commodore 64 & Amiga games, quizzes, collections, manuals, game music and more. Built for retro fans worldwide!</p>
-
-                <!-- You can expand this later with cards, buttons, sections -->
-            </main>
-
-            <!-- ==================================================
-                 FOOTER
-            ===================================================== -->
-            <footer class="ccg-footer">
-                <p>&copy; <span id="year"></span> Cheeky Commodore Gamer.</p>
-                <p>😇🕹️👌</p>
-            </footer>
-
-        </div>
-    </div>
-
-    <script>
-        /* Auto-update footer year */
-        document.addEventListener("DOMContentLoaded", () => {
-            const y = document.getElementById("year");
-            if (y) y.textContent = new Date().getFullYear();
-        });
-    </script>
-
+    <footer>
+        <p>&copy; Cheeky Commodore Gamer</p>
+    </footer>
 </body>
 </html>
