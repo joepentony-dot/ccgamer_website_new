@@ -2,49 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>BPjS Indexed Games | Cheeky Commodore Gamer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Games indexed by the BPjS. A historical list of restricted or controversial titles on the C64 & Amiga.">
-
-    <link rel="stylesheet" href="../../css/engine.css">
-    <link rel="stylesheet" href="../../resources/css/main.css">
+    <title>BPJS Games</title>
 
     <script defer src="../../js/engine.js"></script>
-    <script defer src="../../js/load-games.js"></script>
+    <script defer src="../load-genre.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            loadGenrePage("BPJS Games");
+        });
+    </script>
 </head>
-
-<body class="ccg-body collection-page" data-collection="BPjS Indexed Games">
-    <div class="crt-overlay"></div>
-
-    <header class="ccg-header">
-        <div class="ccg-header-inner">
-            <h1 class="ccg-logo-text">BPjS Indexed Games</h1>
-            <nav class="ccg-nav">
-                <a href="../../index.html">Home</a>
-                <a href="../index.html">Game Index</a>
-                <a href="../../full-game-index.html">Full Game List</a>
-            </nav>
-        </div>
-    </header>
-
-    <main class="ccg-main">
-        <section class="ccg-genre-intro">
-            <p>A curated list of games that were historically indexed by the German BPjS for restricted distribution.</p>
-
-            <button class="ccg-back-button" onclick="location.href='../index.html'">
-                &larr; Back to Game Index
-            </button>
-        </section>
-
-        <section class="ccg-games-section">
-            <h2>Titles in this Collection</h2>
-            <div id="genre-status" class="ccg-status">Loading games…</div>
-            <div id="genre-games-list" class="ccg-games-grid"></div>
-        </section>
-    </main>
-
-    <footer class="ccg-footer">
-        <p>&copy; Cheeky Commodore Gamer</p>
-    </footer>
+<body>
+    <h1>BPJS Indexed Games</h1>
+    <div id="genre-list">Loading…</div>
 </body>
 </html>
