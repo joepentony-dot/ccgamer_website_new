@@ -2,67 +2,74 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Game Index | Cheeky Commodore Gamer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Browse game genres from the Cheeky Commodore Gamer C64 & Amiga database.">
+    <title>Game Genres</title>
 
-    <link rel="stylesheet" href="../css/engine.css">
-    <link rel="stylesheet" href="../resources/css/main.css">
-
+    <!-- Boot logic (auto-disabled for this folder) -->
     <script defer src="../js/engine.js"></script>
+    <script defer src="load-genre.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 1rem;
+        }
+        h1 {
+            margin-bottom: 1rem;
+        }
+        .genre-item {
+            margin-bottom: 0.75rem;
+            font-size: 1.2rem;
+        }
+    </style>
+
+    <script>
+        async function buildGenreIndex() {
+            const list = document.getElementById("genre-list");
+
+            try {
+                // Load full games JSON
+                const response = await fetch("games.json");
+                const data = await response.json();
+
+                // Collect ALL genres from ALL games
+                const allGenres = new Set();
+
+                data.forEach(game => {
+                    if (Array.isArray(game.genres)) {
+                        game.genres.forEach(g => allGenres.add(g));
+                    }
+                });
+
+                // Convert to sorted array
+                const sortedGenres = Array.from(allGenres).sort();
+
+                // Generate link slugs from genre names
+                sortedGenres.forEach(genre => {
+                    const slug = genre.toLowerCase()
+                        .replace(/[^a-z0-9]+/g, "-")
+                        .replace(/-+$/,"");
+
+                    // Create entry
+                    const div = document.createElement("div");
+                    div.className = "genre-item";
+
+                    div.innerHTML = `<a href="genres/${slug}.html">${genre}</a>`;
+                    list.appendChild(div);
+                });
+
+            } catch (err) {
+                console.error("Failed to build genre index:", err);
+                list.textContent = "Error loading genre list.";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", buildGenreIndex);
+    </script>
 </head>
-<body class="ccg-body">
-    <div class="crt-overlay"></div>
 
-    <header class="ccg-header">
-        <div class="ccg-header-inner">
-            <h1 class="ccg-logo-text">Game Genres</h1>
-            <nav class="ccg-nav">
-                <a href="../index.html">Home</a>
-                <a href="index.html" class="active">Genres</a>
-                <a href="../full-game-index.html">Full Game List</a>
-            </nav>
-        </div>
-    </header>
-
-    <main class="ccg-main">
-        <section class="ccg-genre-list-section">
-            <h2>Select a Genre</h2>
-            <ul class="ccg-genre-list">
-
-                <!-- PATCHED GENRE LINKS -->
-                <li><a href="genres/action-adventure-games.html">Action Adventure Games</a></li>
-                <li><a href="genres/adventure-games.html">Adventure Games</a></li>
-                <li><a href="genres/arcade-games.html">Arcade Games</a></li>
-                <li><a href="genres/casino-games.html">Casino Games</a></li>
-                <li><a href="genres/fighting-games.html">Fighting Games</a></li>
-                <li><a href="genres/horror-games.html">Horror Games</a></li>
-                <li><a href="genres/misc-games.html">Miscellaneous Games</a></li>
-                <li><a href="genres/platform-games.html">Platform Games</a></li>
-                <li><a href="genres/puzzle-games.html">Puzzle Games</a></li>
-                <li><a href="genres/quiz-games.html">Quiz Games</a></li>
-                <li><a href="genres/racing-games.html">Racing Games</a></li>
-                <li><a href="genres/rpg-games.html">RPG Games</a></li>
-                <li><a href="genres/shooting-games.html">Shooting Games</a></li>
-                <li><a href="genres/sports-games.html">Sports Games</a></li>
-                <li><a href="genres/strategy-games.html">Strategy Games</a></li>
-
-            </ul>
-        </section>
-
-        <section class="ccg-collection-links">
-            <h2>Special Collections</h2>
-            <ul class="ccg-genre-list">
-                <li><a href="collections/bpjs-indexed-games.html">BPjS Indexed Games</a></li>
-                <li><a href="collections/c64-cartridge.html">C64 Cartridge Games</a></li>
-                <li><a href="collections/licensed-games.html">Licensed Games</a></li>
-                <li><a href="collections/top-picks.html">Top Picks</a></li>
-            </ul>
-        </section>
-    </main>
-
-    <footer class="ccg-footer">
-        <p>&copy; Cheeky Commodore Gamer</p>
-    </footer>
+<body>
+    <h1>All Game Genres</h1>
+    <div id="genre-list">Loading…</div>
 </body>
 </html>
