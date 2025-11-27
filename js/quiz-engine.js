@@ -1,5 +1,5 @@
 // js/quiz-engine.js
-// Handles front-end quiz logic in C64 style
+// C64-style quiz frontend, wired to your Apps Script backend
 
 let quizSets = [];
 let currentSet = null;
@@ -25,13 +25,16 @@ function logMessage(msg) {
     log.scrollTop = log.scrollHeight;
 }
 
+// ============================
+// LOAD & RENDER QUIZ SETS
+// ============================
 async function fetchAndRenderQuizSets() {
     const listEl = $("quiz-set-list");
     listEl.innerHTML = "<p>LOADING QUIZ SETS...</p>";
 
     try {
-        const data = await loadQuizSets();
-        quizSets = Array.isArray(data) ? data : (data.sets || []);
+        const sets = await loadQuizSets();
+        quizSets = sets;
 
         if (!quizSets.length) {
             listEl.innerHTML = "<p>NO QUIZ SETS AVAILABLE.</p>";
@@ -41,8 +44,11 @@ async function fetchAndRenderQuizSets() {
         listEl.innerHTML = "";
         quizSets.forEach(set => {
             const btn = document.createElement("button");
-            btn.textContent = set.name || ("Set " + set.id);
+            const icon = set.icon || "❓";
+            const name = set.name || ("Set " + set.id);
+            btn.textContent = `${icon}  ${name}`;
             btn.dataset.setId = set.id;
+
             btn.addEventListener("click", () => selectQuizSet(set, btn));
             listEl.appendChild(btn);
         });
@@ -59,21 +65,28 @@ async function fetchAndRenderQuizSets() {
 function selectQuizSet(set, btn) {
     currentSet = set;
 
-    // Mark button active
+    // Highlight active set
     document.querySelectorAll("#quiz-set-list button").forEach(b => {
         b.classList.toggle("active", b === btn);
     });
 
     $("start-quiz-btn").disabled = false;
-    $("quiz-meta").textContent = `READY: ${set.name || set.id} (${set.questionCount || "?"} QUESTIONS)`;
+    $("quiz-meta").textContent =
+        `READY: ${set.name || set.id} (${set.questionCount || "?"} QUESTIONS)`;
     logMessage("READY: " + (set.name || set.id));
 }
 
+// ============================
+// UI INITIALISATION
+// ============================
 function initQuizUI() {
     $("start-quiz-btn").addEventListener("click", startQuiz);
     $("next-question-btn").addEventListener("click", nextQuestion);
 }
 
+// ============================
+// QUIZ FLOW
+// ============================
 async function startQuiz() {
     if (!currentSet) return;
 
@@ -83,9 +96,14 @@ async function startQuiz() {
         $("quiz-live").style.display = "block";
         $("quiz-status").textContent = "LOADING QUESTIONS...";
 
-        await trackQuizEvent("trackQuizStart", { setId: currentSet.id });
+        // Optional tracking – mapped to your existing action
+        try {
+            await trackQuizEvent("trackGameStart", { set: currentSet.id });
+        } catch (_) {}
 
         const data = await loadQuizQuestions(currentSet.id);
+
+        // loader already returns data.questions || []
         questions = Array.isArray(data) ? data : (data.questions || []);
         currentIndex = 0;
         score = 0;
@@ -93,6 +111,7 @@ async function startQuiz() {
         if (!questions.length) {
             $("quiz-status").textContent = "NO QUESTIONS RETURNED.";
             logMessage("NO QUESTIONS FOUND FOR THIS SET.");
+            $("start-quiz-btn").disabled = false;
             return;
         }
 
@@ -109,39 +128,48 @@ async function startQuiz() {
 
 function showCurrentQuestion() {
     answered = false;
+
     const q = questions[currentIndex];
     if (!q) {
         finishQuiz();
         return;
     }
 
+    // Backend fields: question, options[], answer (0–3), imageUrl, audioUrl, gameName
     $("quiz-question").textContent = q.question || "MISSING QUESTION TEXT";
-    $("quiz-status").textContent = `QUESTION ${currentIndex + 1} OF ${questions.length} | SCORE: ${score}`;
+
+    // Options
+    const opts = Array.isArray(q.options)
+        ? q.options.filter(Boolean)
+        : [q.option1, q.option2, q.option3, q.option4].filter(Boolean);
+
+    const correctIndex = (typeof q.answer === "number") ? q.answer : 0;
 
     const answersEl = $("quiz-answers");
     answersEl.innerHTML = "";
 
-    // Expecting q.options in an array; fallback if different field
-    const opts = q.options || [q.option1, q.option2, q.option3, q.option4].filter(Boolean);
-    const correctIndex = typeof q.correctIndex === "number" ? q.correctIndex : (q.correct || 0);
-
     opts.forEach((text, idx) => {
         const btn = document.createElement("button");
         btn.textContent = `${idx + 1}. ${text}`;
-        btn.addEventListener("click", () => handleAnswer(idx, correctIndex, btn));
+        btn.addEventListener("click", () => handleAnswer(idx, correctIndex));
         answersEl.appendChild(btn);
     });
 
+    $("quiz-status").textContent =
+        `QUESTION ${currentIndex + 1} OF ${questions.length} | SCORE: ${score}`;
+
     $("next-question-btn").style.display = "none";
+
+    // (Optional) We can later add image/audio display using q.imageUrl / q.audioUrl
 }
 
-function handleAnswer(selectedIdx, correctIdx, btn) {
+function handleAnswer(selectedIdx, correctIdx) {
     if (answered) return;
     answered = true;
 
-    const answersButtons = $("quiz-answers").querySelectorAll("button");
+    const buttons = $("quiz-answers").querySelectorAll("button");
 
-    answersButtons.forEach((b, idx) => {
+    buttons.forEach((b, idx) => {
         if (idx === correctIdx) {
             b.classList.add("correct");
         } else if (idx === selectedIdx) {
@@ -152,25 +180,14 @@ function handleAnswer(selectedIdx, correctIdx, btn) {
 
     playQuizBeep();
 
-    const q = questions[currentIndex];
-
     if (selectedIdx === correctIdx) {
         score++;
         $("quiz-status").textContent = `CORRECT! SCORE: ${score}`;
         logMessage(`Q${currentIndex + 1}: CORRECT`);
-        trackQuizEvent("trackQuestionAnswered", {
-            setId: currentSet.id,
-            qIndex: currentIndex,
-            correct: true
-        });
+        // Optional: per-question tracking could be added later
     } else {
         $("quiz-status").textContent = `INCORRECT. SCORE: ${score}`;
         logMessage(`Q${currentIndex + 1}: INCORRECT`);
-        trackQuizEvent("trackQuestionAnswered", {
-            setId: currentSet.id,
-            qIndex: currentIndex,
-            correct: false
-        });
     }
 
     $("next-question-btn").style.display = "inline-block";
@@ -186,20 +203,21 @@ function nextQuestion() {
 }
 
 async function finishQuiz() {
-    $("quiz-status").textContent = `QUIZ COMPLETE. FINAL SCORE: ${score}/${questions.length}`;
+    $("quiz-status").textContent =
+        `QUIZ COMPLETE. FINAL SCORE: ${score}/${questions.length}`;
     logMessage(`QUIZ COMPLETE. FINAL SCORE: ${score}/${questions.length}`);
 
     $("next-question-btn").style.display = "none";
     $("start-quiz-btn").disabled = false;
 
-    // If you want to prompt for name:
     const name = prompt("ENTER YOUR NAME FOR THE HIGH SCORE TABLE:", "PLAYER 1");
     if (name) {
         try {
             await saveQuizScore({
                 name,
                 score,
-                setId: currentSet.id
+                setId: currentSet.id,
+                total: questions.length
             });
             logMessage("SCORE SUBMITTED FOR " + name);
         } catch (e) {
@@ -209,6 +227,9 @@ async function finishQuiz() {
     }
 }
 
+// ============================
+// AUDIO
+// ============================
 function playQuizBeep() {
     const beep = $("quiz-beep");
     if (!beep) return;
@@ -216,6 +237,6 @@ function playQuizBeep() {
         beep.currentTime = 0;
         beep.play();
     } catch (e) {
-        // ignore
+        // ignore autoplay issues
     }
 }
