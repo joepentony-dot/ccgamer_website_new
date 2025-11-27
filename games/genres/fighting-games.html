@@ -2,66 +2,75 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fighting Games | Cheeky Commodore Gamer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fighting Games | Cheeky Commodore Gamer</title>
+    <meta name="description" content="Browse all Fighting Games from the Cheeky Commodore Gamer C64 and Amiga library.">
+
     <link rel="stylesheet" href="../../css/engine.css">
     <link rel="stylesheet" href="../../resources/main.css">
-    <style>
-        body{margin:0;background:#000;color:#f4f4f4;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-        .ccg-shell{max-width:1100px;margin:0 auto;padding:16px}
-        header.ccg-header{border-bottom:2px solid #333;padding:10px 0 16px 0}
-        .ccg-header h1{margin:0;font-size:1.6rem}
-        nav.ccg-nav{margin-top:10px;display:flex;gap:12px;flex-wrap:wrap}
-        nav.ccg-nav a{color:#7fd0ff;text-decoration:none;padding:4px 8px;border-radius:4px}
-        nav.ccg-nav a:hover{background:#07111f;border:1px solid #7fd0ff}
-        .games-grid{margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
-        .game-card{background:#050915;border:1px solid #333;border-radius:6px;padding:10px}
-        .game-thumb{width:100%;border-radius:4px}
-        .game-title{margin:10px 0 4px 0;font-size:1rem}
-        .game-meta{font-size:.85rem;opacity:.8}
-        .game-links a{display:inline-block;margin-top:6px;color:#7fd0ff;font-size:.85rem}
-    </style>
-    <script defer src="../../js/load-games.js"></script>
+
+    <script defer src="../../js/engine.js"></script>
+    <script defer src="../../js/genre-loader.js"></script>
 </head>
-<body>
-<div class="ccg-shell">
-    <header class="ccg-header">
-        <h1>Fighting Games</h1>
-        <nav class="ccg-nav">
-            <a href="../../index.html">Home</a>
-            <a href="../index.html">Game Browser</a>
-            <a href="../complete-index.html">Full Index</a>
-        </nav>
-    </header>
-
-    <div id="games-container" class="games-grid"></div>
-</div>
-
-<script>
-async function loadGenre() {
-    const games = await ccgFetchGames();
-    const filtered = games.filter(g =>
-        Array.isArray(g.genres) &&
-        g.genres.some(gn => gn.toLowerCase() === "fighting games")
-    );
-    const c = document.getElementById("games-container");
-    if (!filtered.length) return c.innerHTML = "<p>No games found in this genre.</p>";
-    filtered.forEach(g => {
-        c.innerHTML += `
-        <div class="game-card">
-            <img src="${g.thumbUrl}" class="game-thumb">
-            <div class="game-title">${g.title}</div>
-            <div class="game-meta">${g.system ? "System: "+g.system : ""}</div>
-            <div class="game-links">
-                ${g.videoId?`<a href="https://www.youtube.com/watch?v=${g.videoId}" target="_blank">Watch Video</a><br>`:""}
-                ${g.lemonUrl?`<a href="${g.lemonUrl}" target="_blank">Lemon64</a><br>`:""}
-                ${g.pdfUrl?`<a href="${g.pdfUrl}" target="_blank">Manual</a><br>`:""}
-                ${g.diskUrl?`<a href="${g.diskUrl}" target="_blank">Disk Download</a>`:""}
-            </div>
-        </div>`;
-    });
-}
-document.addEventListener("DOMContentLoaded", loadGenre);
-</script>
+<body class="ccg-body">
+    <div id="start-screen">
+        <div class="boot-window">
+            <pre id="boot-log"></pre>
+            <div id="press-space">PRESS SPACE TO CONTINUE</div>
+        </div>
+    </div>
+    <div class="crt">
+        <div class="scanlines"></div>
+        <div class="screen">
+            <header class="ccg-header">
+                <div class="logo-area">
+                    <span class="logo-main">CHEEKY</span>
+                    <span class="logo-sub">COMMODORE GAMER</span>
+                </div>
+                <nav class="ccg-nav">
+                    <a href="../../index.html" class="nav-link">Main Menu</a>
+                    <a href="../index.html" class="nav-link">Game Browser</a>
+                    <a href="../complete-index.html" class="nav-link">Full Index</a>
+                    <a href="../../quiz/quiz.html" class="nav-link">Retro Quiz</a>
+                    <a href="../../about.html" class="nav-link">About</a>
+                    <a href="../../contact.html" class="nav-link">Contact</a>
+                </nav>
+            </header>
+            <main class="ccg-main games-layout">
+                <section class="filters-panel">
+                    <h1>Fighting Games</h1>
+                    <p>All titles tagged as <strong>Fighting Games</strong> in the master database.</p>
+                    <div class="filters">
+                        <label>
+                            Search:
+                            <input type="text" id="filter-search" placeholder="Filter titles in this genre…">
+                        </label>
+                        <label>
+                            System:
+                            <select id="filter-system">
+                                <option value="">All</option>
+                                <option value="C64">C64</option>
+                                <option value="Amiga">Amiga</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="filters-actions">
+                        <button id="reset-filters">Reset Filters</button>
+                        <span id="games-count">Loading games…</span>
+                    </div>
+                </section>
+                <section class="games-list-panel">
+                    <div id="games-list" class="games-list" data-genre="Fighting Games"></div>
+                    <div id="games-status" class="games-status"></div>
+                </section>
+            </main>
+            <footer class="ccg-footer">
+                <p>
+                    <a href="../index.html">Back to Game Browser</a> •
+                    <a href="../../index.html">Return to Main Menu</a>
+                </p>
+            </footer>
+        </div>
+    </div>
 </body>
 </html>
