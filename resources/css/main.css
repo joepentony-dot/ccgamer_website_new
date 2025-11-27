@@ -1,316 +1,198 @@
-/* ================================================
-   CHEEKY COMMODORE GAMER — PREMIUM CARD LAYOUT
-   (Option B – Polished, Neon, Retro-Futuristic)
-   ================================================ */
+/* =========================================
+   CHEEKY COMMODORE GAMER — MAIN CSS
+   Complete safe version for full replacement
+   ========================================= */
 
-/* Core container */
-main.ccg-main {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 80px 16px 40px;
-    position: relative;
-    z-index: 5; /* ensures above raster bars */
+/* Global reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* ===========================
-     TITLE + SOCIAL BAR
-   =========================== */
-
-.genre-header {
-    text-align: center;
-    margin-bottom: 24px;
-}
-
-.genre-title {
-    font-family: "VT323", monospace;
-    font-size: 46px;
-    letter-spacing: 2px;
-    color: #39f3ff;
-    text-shadow: 
-        0 0 8px rgba(57, 243, 255, 0.8),
-        0 0 18px rgba(57, 243, 255, 0.6);
-    margin-bottom: 4px;
-}
-
-.genre-count {
-    font-family: "VT323", monospace;
-    font-size: 20px;
-    color: #a8eeff;
-    opacity: 0.85;
-}
-
-/* Social bar */
-.social-bar {
-    margin: 24px auto 8px;
-    display: flex;
-    justify-content: center;
-    gap: 22px;
-    flex-wrap: wrap;
-    font-family: "VT323", monospace;
-    font-size: 20px;
-}
-
-.social-bar a {
-    text-decoration: none;
-    padding: 7px 16px;
-    border-radius: 999px;
-    border: 1px solid rgba(57, 243, 255, 0.45);
-    background: rgba(0, 0, 0, 0.45);
-    color: #39f3ff;
-    box-shadow: 
-        0 0 6px rgba(57, 243, 255, 0.35),
-        inset 0 0 5px rgba(57, 243, 255, 0.2);
-    transition:
-        transform 0.15s ease,
-        box-shadow 0.15s ease,
-        background 0.15s ease,
-        border-color 0.15s ease;
-}
-
-.social-bar a:hover,
-.social-bar a:focus-visible {
-    outline: none;
-    background: rgba(57, 243, 255, 0.12);
-    border-color: rgba(57, 243, 255, 0.85);
-    transform: translateY(-1px) scale(1.05);
-    box-shadow:
-        0 0 14px rgba(57, 243, 255, 0.6),
-        inset 0 0 8px rgba(57, 243, 255, 0.4);
-}
-
-/* ===========================
-      GAMES GRID STYLING
-   =========================== */
-
-.games-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 22px;
-    margin-top: 32px;
-}
-
-/* ===========================
-        GAME CARD (Option B)
-   =========================== */
-
-.game-card {
-    position: relative;
-    overflow: hidden;
-    border-radius: 18px;
-
-    background: radial-gradient(circle at top left,
-            rgba(57, 243, 255, 0.18),
-            rgba(0, 0, 0, 0.9));
-
-    border: 1px solid rgba(57, 243, 255, 0.25);
-
-    box-shadow:
-        0 0 12px rgba(0, 0, 0, 0.7),
-        0 0 0 1px rgba(57, 243, 255, 0.15);
-
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-
-    transition:
-        transform 0.18s ease,
-        box-shadow 0.18s ease,
-        background 0.18s ease,
-        border-color 0.18s ease;
-}
-
-.game-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(57, 243, 255, 0.5);
-
-    box-shadow:
-        0 0 18px rgba(0, 0, 0, 0.8),
-        0 0 0 1px rgba(57, 243, 255, 0.4);
-
-    background: radial-gradient(circle at top left,
-            rgba(57, 243, 255, 0.3),
-            rgba(0, 0, 0, 0.95));
-}
-
-/* ===========================
-      THUMBNAIL + PLAY BADGE
-   =========================== */
-
-.thumb-wrapper {
-    position: relative;
-    border-radius: 14px;
-    overflow: hidden;
-    aspect-ratio: 16 / 9;
-    display: block;
-    cursor: pointer;
-}
-
-.thumb-wrapper img {
+html, body {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-
-    transform: scale(1.01);
-    filter: saturate(1.1) contrast(1.04);
-
-    transition:
-        transform 0.22s ease,
-        filter 0.22s ease;
+    background: #000;
+    color: #d0f0ff;
+    font-family: 'VT323', monospace;
 }
 
-.game-card:hover .thumb-wrapper img {
-    transform: scale(1.05);
-    filter: saturate(1.2) contrast(1.10);
+/* =========================================
+   CRT OVERLAY (Scanlines + Subtle Glow)
+   ========================================= */
+
+.crt-overlay {
+    pointer-events: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.03),
+            rgba(255,255,255,0.03) 1px,
+            rgba(0,0,0,0.03) 3px,
+            rgba(0,0,0,0.03) 4px
+        );
+    z-index: 9999;
+    mix-blend-mode: overlay;
+    opacity: 0.25;
 }
 
-/* Subtle vignette on hover */
-.thumb-wrapper::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(
-        circle at center,
-        rgba(0, 0, 0, 0) 40%,
-        rgba(0, 0, 0, 0.6) 100%
-    );
-    opacity: 0;
-    transition: opacity 0.2s ease;
+/* =========================================
+   HEADER + NAVIGATION BAR
+   ========================================= */
+
+.ccg-header {
+    width: 100%;
+    background: #00121f;
+    border-bottom: 2px solid #0ff;
+    padding: 20px 0;
+    box-shadow: 0 0 12px rgba(0,255,255,0.3);
 }
 
-.game-card:hover .thumb-wrapper::after {
-    opacity: 1;
-}
-
-/* Play badge */
-.play-badge {
-    position: absolute;
-    inset: 0;
-
-    font-size: 40px;
-    color: #ffffff;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    text-shadow:
-        0 0 8px rgba(0, 0, 0, 0.8),
-        0 0 18px rgba(0, 0, 0, 0.7);
-
-    opacity: 0;
-    transition: opacity 0.22s ease;
-}
-
-.game-card:hover .play-badge {
-    opacity: 1;
-}
-
-/* ===========================
-        CARD TEXT
-   =========================== */
-
-.game-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding: 4px 2px;
-    font-family: "VT323", monospace;
-}
-
-.game-title {
-    font-size: 22px;
-    color: #f8faff;
-    letter-spacing: 1px;
-    text-shadow: 0 0 6px rgba(0, 0, 0, 0.7);
-}
-
-.system-tag {
-    font-size: 14px;
-    color: #ffd966;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
-
-.genre-tags {
-    font-size: 15px;
-    color: #a3e4ff;
-    opacity: 0.9;
-}
-
-/* ===========================
-        WATCH BUTTON
-   =========================== */
-
-.card-footer {
-    margin-top: 6px;
-    display: flex;
-    justify-content: flex-end;
-}
-
-.watch-btn {
-    font-family: "VT323", monospace;
-    font-size: 17px;
-    text-decoration: none;
-
-    padding: 6px 12px;
-    border-radius: 999px;
-
-    border: 1px solid rgba(57, 243, 255, 0.8);
-    background: rgba(0, 0, 0, 0.7);
-
-    color: #39f3ff;
-
-    transition:
-        background 0.18s ease,
-        transform 0.18s ease,
-        box-shadow 0.18s ease,
-        border-color 0.18s ease;
-}
-
-.watch-btn:hover,
-.watch-btn:focus-visible {
-    outline: none;
-    transform: translateY(-2px);
-
-    background: rgba(57, 243, 255, 0.12);
-    border-color: rgba(57, 243, 255, 1);
-
-    box-shadow:
-        0 0 12px rgba(57, 243, 255, 0.5);
-}
-
-/* ===========================
-         NO GAMES MESSAGE
-   =========================== */
-
-.no-games {
-    margin-top: 40px;
+.ccg-header-inner {
+    max-width: 1100px;
+    margin: auto;
     text-align: center;
-
-    font-family: "VT323", monospace;
-    font-size: 26px;
-
-    color: #ff7676;
-    text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
 }
 
-.hidden {
-    display: none !important;
+.ccg-logo-text {
+    font-size: 42px;
+    color: #0ff;
+    text-shadow: 0 0 6px #0ff;
+    margin-bottom: 12px;
 }
 
-/* ===========================
-         MOBILE TWEAKS
-   =========================== */
+.ccg-nav a {
+    color: #d0f0ff;
+    text-decoration: none;
+    margin: 0 12px;
+    font-size: 20px;
+    transition: 0.2s;
+}
 
-@media (max-width: 640px) {
-    main.ccg-main {
-        padding-top: 70px;
-    }
-    .genre-title {
-        font-size: 32px;
-    }
-    .games-grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    }
+.ccg-nav a:hover {
+    color: #0ff;
+    text-shadow: 0 0 8px #0ff;
+}
+
+/* =========================================
+   MAIN PAGE LAYOUT
+   ========================================= */
+
+.ccg-main {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 0 18px;
+}
+
+.ccg-genre-intro {
+    margin-bottom: 30px;
+    font-size: 22px;
+    color: #b8eaff;
+}
+
+/* Back button */
+.ccg-back-button {
+    background: #003b4d;
+    border: 2px solid #0ff;
+    padding: 10px 16px;
+    font-size: 20px;
+    color: #0ff;
+    cursor: pointer;
+    margin-top: 18px;
+    border-radius: 4px;
+    transition: 0.2s;
+}
+
+.ccg-back-button:hover {
+    background: #005c75;
+    box-shadow: 0 0 12px #0ff;
+}
+
+/* =========================================
+   STATUS TEXT
+   ========================================= */
+
+.ccg-status {
+    font-size: 20px;
+    color: #9de0ff;
+    margin-bottom: 20px;
+}
+
+/* =========================================
+   GAME GRID (GLOBAL) — with 16:9 thumbnails
+   ========================================= */
+
+.ccg-games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 24px;
+    padding: 10px;
+}
+
+/* Thumbnail card container (16:9 enforced) */
+.ccg-game-card {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    overflow: hidden;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 2px solid #003f4f;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+/* Hover effect */
+.ccg-game-card:hover {
+    transform: scale(1.03);
+    border-color: #0ff;
+    box-shadow: 0 0 12px rgba(0,255,255,0.6);
+}
+
+/* The thumbnail image — fill card without stretching */
+.ccg-game-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;     /* KEY FIX */
+    object-position: center;
+    display: block;
+}
+
+/* Clickable play-style icon */
+.ccg-game-card::after {
+    content: "▶";
+    position: absolute;
+    bottom: 6px;
+    right: 10px;
+    font-size: 22px;
+    color: rgba(255,255,255,0.85);
+    text-shadow: 0 0 6px rgba(0,0,0,0.9);
+    opacity: 0.65;
+    pointer-events: none;
+}
+
+.ccg-game-card:hover::after {
+    opacity: 1;
+}
+
+/* =========================================
+   FOOTER
+   ========================================= */
+
+.ccg-footer {
+    text-align: center;
+    padding: 30px 0;
+    opacity: 0.6;
+    font-size: 18px;
+}
+
+.ccg-footer:hover {
+    opacity: 1;
+    color: #0ff;
 }
