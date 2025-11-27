@@ -3,19 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Miscellaneous Games</title>
+    <title>Miscellaneous</title>
 
+    <!-- Boot logic (auto-disabled for genre pages via engine.js) -->
     <script defer src="../../js/engine.js"></script>
+    <!-- Universal genre loader -->
     <script defer src="../load-genre.js"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            loadGenrePage("Miscellaneous");  // REAL JSON VALUE
+            // EXACT value from games.json
+            loadGenrePage("Miscellaneous");
         });
     </script>
 </head>
 <body>
-    <h1>Miscellaneous Games</h1>
+    <h1>Miscellaneous</h1>
     <div id="genre-list">Loading…</div>
 </body>
 </html>
