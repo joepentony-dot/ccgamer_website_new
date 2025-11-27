@@ -3,46 +3,285 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Categories | Cheeky Commodore Gamer</title>
+    <title>Cheeky Commodore Gamer | Browse Genres</title>
 
-    <!-- Engine + Phase C CSS -->
+    <!-- Global engine + CRT styles -->
     <link rel="stylesheet" href="../css/engine.css">
     <link rel="stylesheet" href="../resources/css/main.css">
 
-    <script defer src="../js/engine.js"></script>
+    <!-- Font Awesome (already pulled in by engine.css, but harmless if duplicated by CDN cache) -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 </head>
 
 <body>
 
+    <!-- Starfield + CRT overlay (driven by engine.css + engine.js stub) -->
     <canvas id="starfield"></canvas>
     <div class="crt-overlay"></div>
 
     <div class="container">
 
-        <div class="commodore-header" style="margin-bottom:20px;">
+        <!-- ============================
+             HEADER + MAIN NAV
+             ============================ -->
+        <div class="commodore-header">
             <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
                  alt="Cheeky Commodore Gamer Logo"
-                 style="max-width:150px; image-rendering:pixelated;">
-            <h3>**** GAME CATEGORIES ****</h3>
+                 style="max-width:150px; image-rendering:pixelated; margin-bottom:10px;">
+
+            <h3>**** COMMODORE 64 BASIC V2 ****</h3>
+            <p>64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
+
+            <div class="nav-bar">
+                <!-- NOTE: these links are relative to /games/index.html -->
+                <a href="../index.html" class="nav-link play-sound">MAIN MENU</a>
+                <a href="index.html" class="nav-link play-sound btn-emphasise">GENRES</a>
+                <a href="collections/index.html" class="nav-link play-sound">SPECIALS</a>
+                <a href="complete-index.html" class="nav-link play-sound">INDEX</a>
+                <a href="../resources/quiz.html" class="nav-link play-sound">QUIZ</a>
+                <a href="../retro-events.html" class="nav-link play-sound">EVENTS</a>
+                <a href="../about.html" class="nav-link play-sound">ABOUT</a>
+                <a href="../contact.html" class="nav-link play-sound">CONTACT</a>
+            </div>
         </div>
 
-        <h1>GAME CATEGORIES</h1>
-
-        <p>Select a section below:</p>
-
-        <h2>MAIN GROUPS</h2>
-        <div class="btn-grid">
-            <a href="genres/index.html" class="btn-retro">GENRES</a>
-            <a href="collections/index.html" class="btn-retro">SPECIAL COLLECTIONS</a>
-            <a href="complete-index.html" class="btn-retro">FULL INDEX</a>
+        <!-- ============================
+             PAGE TITLE + INTRO
+             ============================ -->
+        <h1>BROWSE GAME GENRES</h1>
+        <div class="page-intro">
+            <p>
+                Dive into curated sections of the full Cheeky Commodore Gamer library.
+                Pick a genre, hit play, and lose a few hours to 8-bit and 16-bit greatness.
+            </p>
         </div>
 
-        <h2>NAVIGATION</h2>
-        <div class="btn-grid">
-            <a href="../index.html" class="btn-retro">HOME</a>
+        <!-- ============================
+             BACK TO MAIN MENU BUTTON
+             ============================ -->
+        <div class="btn-grid" style="margin-top:20px; margin-bottom:10px;">
+            <a href="../index.html" class="btn-retro play-sound">
+                <i class="fa-solid fa-arrow-left"></i>
+                BACK TO MAIN MENU
+            </a>
         </div>
 
-    </div>
+        <!-- ============================
+             GENRE GRID (PHASE C CARDS)
+             ============================ -->
+        <h2>CHOOSE YOUR ADVENTURE</h2>
+
+        <div class="genre-grid">
+
+            <!-- ACTION ADVENTURE -->
+            <a href="genres/action-adventure.html" class="genre-card play-sound">
+                <div class="genre-icon">
+                    <i class="fa-solid fa-dragon"></i>
+                </div>
+                <h3>Action Adventure</h3>
+                <p class="genre-desc">
+                    Cinematic quests, perilous dungeons and swashbuckling epics.
+                    If it has exploration, story and a touch of chaos, it lives here.
+                </p>
+                <div class="genre-count">VIEW ACTION ADVENTURE GAMES</div>
+            </a>
+
+            <!-- ADVENTURE / TEXT / GRAPHIC -->
+            <a href="genres/adventure-games.html" class="genre-card play-sound">
+                <div class="genre-icon">
+                    <i class="fa-solid fa-scroll"></i>
+                </div>
+                <h3>Adventure &amp; Text</h3>
+                <p class="genre-desc">
+                    Typing commands, mapping on paper and shouting at parsers.
+                    Classic text adventures and graphic adventures await.
+                </p>
+                <div class="genre-count">VIEW ADVENTURE GAMES</div>
+            </a>
+
+            <!-- ARCADE / COIN-OP STYLE -->
+            <a href="genres/arcade-games.html" class="genre-card play-sound">
+                <div class="genre-icon">
+                    <i class="fa-solid fa-gamepad"></i>
+                </div>
+                <h3>Arcade</h3>
+                <p class="genre-desc">
+                    Pure coin-op energy: shoot-’em-ups, quick-fire action and
+                    high-score chasing madness straight from the halls.
+                </p>
+                <div class="genre-count">VIEW ARCADE GAMES</div>
+            </a>
+
+            <!-- CASINO / CARDS / FRUITS -->
+            <a href="genres/casino-games.html" class="genre-card play-sound">
+                <div class="genre-icon">
+                    <i class="fa-solid fa-coins"></i>
+                </div>
+                <h3>Casino &amp; Cards</h3>
+                <p class="genre-desc">
+                    Fruit machines, card tables and virtual betting.
+                    All the risk, none of the actual bankruptcy.
+                </p>
+                <div class="genre-count">VIEW CASINO GAMES</div>
+            </a>
+
+            <!-- FIGHTING / BEAT-'EM-UPS -->
+            <a href="genres/fighting-games.html" class="genre-card play-sound">
+                <div class="genre-icon">
+                    <i class="fa-solid fa-hand-fist"></i>
+                </div>
+                <h3>Fighting</h3>
+                <p class="genre-desc">
+                    One-on-one duels and side-scrolling brawls. Joystick-wobbling,
+                    palm-mashing and friendly arguments guaranteed.
+                </p>
+                <div class="genre-count">VIEW FIGHTING GAMES</div>
+            </a>
+
+            <!-- HORROR -->
+            <a href="genres/horror-games.html" class="genre-card play-sound">
+                <div class="genre-icon">
+                    <i class="fa-solid fa-ghost"></i>
+                </div>
+                <h3>Horror</h3>
+                <p class="genre-desc">
+                    Creepy mansions, haunted labs and things that should not be
+                    lurking in 8-bit shadows. Best played with the lights off.
+                </p>
+                <div class="genre-count">VIEW HORROR GAMES</div>
+            </a>
+
+            <!-- MISCELLANEOUS / ODDITIES -->
+            <a href="genres/miscellaneous.html" class="genre-card play-sound">
+                <div class="genre-icon">
+                    <i class="fa-solid fa-shuffle"></i>
+                </div>
+                <h3>Miscellaneous</h3>
+                <p class="genre-desc">
+                    The misfits, oddballs and “what even is this?” titles.
+                    Too weird for a box, so they get a shelf of their own.
+                </p>
+                <div class="genre-count">VIEW MISCELLANEOUS GAMES</div>
+            </a>
+
+            <!-- PLATFORM -->
+            <a href="genres/platform-games.html" class="genre-card play-sound">
+                <div class="genre-icon">
+                    <i class="fa-solid fa-person-running"></i>
+                </div>
+                <h3>Platform</h3>
+                <p class="genre-desc">
+                    Perfect jumps, nasty pits and hair-trigger timing.
+                    From ladders to moving platforms, it’s all here.
+                </p>
+                <div class="genre-count">VIEW PLATFORM GAMES</div>
+            </a>
+
+            <!-- PUZZLE -->
+            <a href="genres/puzzle-games.html" class="genre-card play-sound">
+                <div class="genre-icon">
+                    <i class="fa-solid fa-puzzle-piece"></i>
+                </div>
+                <h3>Puzzle</h3>
+                <p class="genre-desc">
+                    Brain-twisters, block shufflers and logic traps.
+                    Ideal for when you want your C64 to gently roast your brain.
+                </p>
+                <div class="genre-count">VIEW PUZZLE GAMES</div>
+            </a>
+
+            <!-- QUIZ / TRIVIA -->
+            <a href="genres/quiz-games.html" class="genre-card play-sound">
+                <div class="genre-icon">
+                    <i class="fa-solid fa-question"></i>
+                </div>
+                <h3>Quiz &amp; Trivia</h3>
+                <p class="genre-desc">
+                    Test your knowledge, annoy your mates and pretend
+                    you always knew the answer. Honest.
+                </p>
+                <div class="genre-count">VIEW QUIZ GAMES</div>
+            </a>
+
+            <!-- RACING -->
+            <a href="genres/racing-games.html" class="genre-card play-sound">
+                <div class="genre-icon">
+                    <i class="fa-solid fa-flag-checkered"></i>
+                </div>
+                <h3>Racing</h3>
+                <p class="genre-desc">
+                    Hairpin bends, dodgy brakes and glorious roadside scenery.
+                    From top-down to into-the-screen speed fests.
+                </p>
+                <div class="genre-count">VIEW RACING GAMES</div>
+            </a>
+
+            <!-- RPG -->
+            <a href="genres/rpg-games.html" class="genre-card play-sound">
+                <div class="genre-icon">
+                    <i class="fa-solid fa-hat-wizard"></i>
+                </div>
+                <h3>RPG</h3>
+                <p class="genre-desc">
+                    Party building, stat crunching and saving the world
+                    one dungeon at a time. Snacks recommended.
+                </p>
+                <div class="genre-count">VIEW RPG GAMES</div>
+            </a>
+
+            <!-- SHOOTING / SHOOT-EM-UPS -->
+            <a href="genres/shooting-games.html" class="genre-card play-sound">
+                <div class="genre-icon">
+                    <i class="fa-solid fa-bullseye"></i>
+                </div>
+                <h3>Shooting</h3>
+                <p class="genre-desc">
+                    Lasers, bullets and enemy waves for days.
+                    Horizontal, vertical and everything in between.
+                </p>
+                <div class="genre-count">VIEW SHOOTING GAMES</div>
+            </a>
+
+            <!-- SPORTS -->
+            <a href="genres/sports-games.html" class="genre-card play-sound">
+                <div class="genre-icon">
+                    <i class="fa-solid fa-futbol"></i>
+                </div>
+                <h3>Sports</h3>
+                <p class="genre-desc">
+                    Footie, athletics, track-and-field button bashing and more.
+                    All the sweat, none of the gym membership.
+                </p>
+                <div class="genre-count">VIEW SPORTS GAMES</div>
+            </a>
+
+            <!-- STRATEGY -->
+            <a href="genres/strategy-games.html" class="genre-card play-sound">
+                <div class="genre-icon">
+                    <i class="fa-solid fa-chess-board"></i>
+                </div>
+                <h3>Strategy</h3>
+                <p class="genre-desc">
+                    Think first, move second, hope it works third.
+                    War games, simulations and tactical brain burners.
+                </p>
+                <div class="genre-count">VIEW STRATEGY GAMES</div>
+            </a>
+
+        </div> <!-- end genre-grid -->
+
+        <!-- LITTLE NUDGE -->
+        <div class="page-intro" style="margin-top:10px;">
+            <p>
+                Tip: use the <strong>INDEX</strong> link above if you’d rather
+                browse everything alphabetically instead.
+            </p>
+        </div>
+
+    </div> <!-- end container -->
+
+    <!-- Blank safe engine.js is already included via ../js/engine.js -->
+    <script src="../js/engine.js"></script>
 
 </body>
 </html>
