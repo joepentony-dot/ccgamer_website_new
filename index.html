@@ -2,91 +2,248 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheeky Commodore Gamer | Main Menu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="description" content="Dive into the world of retro gaming evolved! Explore the biggest Commodore 64 & Amiga index, watch videos, read manuals, take quizzes and experience full CRT nostalgia.">
-
-    <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/">
-
-    <!-- Existing CRT + Retro CSS -->
-    <link rel="stylesheet" href="resources/css/main.css">
+    <!-- Core site styles (Phase C – functional first, polish later) -->
     <link rel="stylesheet" href="css/engine.css">
+    <link rel="stylesheet" href="resources/main.css">
 
     <style>
-        /* Ensure raster canvas sits behind everything */
-        #raster-canvas {
-            position: fixed;
-            inset: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-            display: block;
+        /* Minimal functional layout; visual polish comes later */
+
+        body {
+            margin: 0;
+            background: #000;
+            color: #f4f4f4;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
 
-        /* Cursor visibility fix */
-        html, body {
-            cursor: auto !important;
+        .ccg-shell {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 16px;
+            box-sizing: border-box;
         }
 
-        /* Simple page wrapper alignment */
-        .main-menu {
-            text-align: center;
-            margin-top: 120px;
-            z-index: 10;
-            position: relative;
+        header.ccg-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0 16px 0;
+            border-bottom: 2px solid #444;
         }
 
-        .main-menu a {
-            display: block;
-            font-size: 1.6rem;
-            margin: 12px 0;
-            color: #7ec8ff;
-            text-shadow: 0 0 8px #0af;
+        .ccg-title-block h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .ccg-title-block p {
+            margin: 4px 0 0 0;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        nav.ccg-nav {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        nav.ccg-nav a {
+            color: #7fd0ff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid transparent;
+        }
+
+        nav.ccg-nav a:hover {
+            border-color: #7fd0ff;
+            background: #07111f;
+        }
+
+        main.ccg-main {
+            display: grid;
+            grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+            gap: 18px;
+            padding: 18px 0 32px 0;
+        }
+
+        @media (max-width: 900px) {
+            main.ccg-main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .ccg-panel {
+            border: 1px solid #444;
+            padding: 14px;
+            border-radius: 6px;
+            background: #050915;
+        }
+
+        .ccg-panel h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.2rem;
+        }
+
+        .ccg-panel p {
+            margin: 0 0 10px 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .ccg-cta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .ccg-button {
+            display: inline-block;
+            padding: 10px 14px;
+            font-size: 0.95rem;
+            border-radius: 4px;
+            border: 1px solid #7fd0ff;
+            color: #000;
+            background: #7fd0ff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .ccg-button.secondary {
+            background: transparent;
+            color: #7fd0ff;
+        }
+
+        .ccg-button:hover {
+            filter: brightness(1.05);
+        }
+
+        .ccg-quick-links ul {
+            margin: 0;
+            padding-left: 18px;
+            font-size: 0.9rem;
+        }
+
+        .ccg-quick-links li {
+            margin: 4px 0;
+        }
+
+        .ccg-quick-links a {
+            color: #a5dcff;
             text-decoration: none;
         }
 
-        .main-menu a:hover {
-            color: #c9ecff;
-            text-shadow: 0 0 14px #0af;
+        .ccg-quick-links a:hover {
+            text-decoration: underline;
         }
 
-        /* Title */
-        .site-title {
-            font-size: 2.8rem;
-            text-shadow: 0 0 12px #0af;
-            margin-bottom: 20px;
-            color: #9ed0ff;
+        footer.ccg-footer {
+            border-top: 1px solid #333;
+            padding: 10px 0 20px 0;
+            font-size: 0.8rem;
+            opacity: 0.75;
+        }
+
+        footer.ccg-footer a {
+            color: #7fd0ff;
+            text-decoration: none;
+        }
+
+        footer.ccg-footer a:hover {
+            text-decoration: underline;
         }
     </style>
-</head>
 
+    <!-- You can re-enable/extend engine.js later for boot / raster / sound -->
+    <script defer src="js/engine.js"></script>
+</head>
 <body>
 
-<!-- ⭐ RASTER CANVAS (Phase 2 Step 2) -->
-<canvas id="raster-canvas"></canvas>
+<div class="ccg-shell">
 
-<!-- Optional boot sequence wrapper (can customise later) -->
-<div class="main-menu">
+    <header class="ccg-header">
+        <div class="ccg-title-block">
+            <h1>Cheeky Commodore Gamer</h1>
+            <p>Commodore 64 &amp; Amiga hub – games, videos, quiz, manuals &amp; more.</p>
+        </div>
+        <nav class="ccg-nav">
+            <a href="index.html">Home</a>
+            <a href="games/index.html">Game Browser</a>
+            <a href="games/complete-index.html">Full Game Index</a>
+            <a href="quiz/quiz.html">Retro Quiz</a>
+            <a href="quiz/quiz-leaderboard.html">Leaderboard</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
 
-    <div class="site-title">CHEEKY COMMODORE GAMER</div>
+    <main class="ccg-main">
+        <!-- LEFT: Main intro & CTAs -->
+        <section class="ccg-panel">
+            <h2>Welcome to the CCG Main Menu</h2>
+            <p>
+                This is the central hub for everything Cheeky Commodore Gamer:
+                browse the full index of C64 &amp; Amiga games, jump into genre lists,
+                or test your knowledge in the CCG Retro Quiz.
+            </p>
 
-    <a href="games/index.html">Full Game Index</a>
-    <a href="quiz/index.html">Retro Quiz</a>
-    <a href="about.html">About</a>
-    <a href="contact.html">Contact</a>
+            <div class="ccg-cta-row">
+                <a href="games/index.html" class="ccg-button">
+                    Browse Games
+                </a>
+                <a href="quiz/quiz.html" class="ccg-button secondary">
+                    Take the Retro Quiz
+                </a>
+            </div>
+
+            <p style="margin-top:14px;">
+                Once all functionality is solid, this page will get the full
+                CRT / raster / boot sequence treatment to match your original
+                Google Sites look – this version is focused on keeping
+                navigation simple and everything working correctly.
+            </p>
+        </section>
+
+        <!-- RIGHT: Quick links & status -->
+        <aside class="ccg-panel ccg-quick-links">
+            <h2>Quick Links</h2>
+            <ul>
+                <li><a href="games/complete-index.html">Complete C64 &amp; Amiga Index</a></li>
+                <li><a href="games/index.html">Browse by Genre / Collection</a></li>
+                <li><a href="quiz/quiz.html">CCG Retro Quiz – Play Now</a></li>
+                <li><a href="quiz/quiz-leaderboard.html">Quiz Monthly Leaderboard</a></li>
+                <li><a href="about.html">About Cheeky Commodore Gamer</a></li>
+                <li><a href="contact.html">Contact &amp; Links</a></li>
+            </ul>
+
+            <h2 style="margin-top:16px;">What’s happening now?</h2>
+            <p>
+                • Backend wiring: game lists, JSON, and quiz API are being finalised.<br>
+                • Visual polish (CRT, raster bars, sound, starfields) will be layered on once
+                  everything is functionally solid.
+            </p>
+        </aside>
+    </main>
+
+    <footer class="ccg-footer">
+        <div>© <span id="ccg-year"></span> Cheeky Commodore Gamer – C64 &amp; Amiga forever.</div>
+        <div>
+            Main hub: <a href="https://joepentony-dot.github.io/ccgamer_website_new/">GitHub Pages version</a>
+        </div>
+    </footer>
 
 </div>
 
-<!-- ⭐ SID INTRO AUDIO (Phase 2 Step 2) -->
-<audio
-    id="sid-intro"
-    src="resources/audio/stay_a_while.mp3"
-    preload="auto">
-</audio>
-
-<!-- Engine script restored & cleaned -->
-<script src="js/engine.js" defer></script>
+<script>
+    // Simple year helper
+    document.getElementById('ccg-year').textContent = new Date().getFullYear();
+</script>
 
 </body>
 </html>
