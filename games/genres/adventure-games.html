@@ -5,104 +5,33 @@
     <title>Adventure Games | Cheeky Commodore Gamer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- From /games/genres/ we go up two levels to reach shared CSS & JS -->
+    <!-- From /games/genres/ we go up two levels -->
     <link rel="stylesheet" href="../../css/engine.css">
     <link rel="stylesheet" href="../../resources/main.css">
 
     <style>
-        /* FUNCTIONAL FIRST — POLISH LATER */
-
         body {
             margin: 0;
             background: #000;
             color: #f4f4f4;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
-
-        .ccg-shell {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 16px;
-        }
-
-        header.ccg-header {
-            border-bottom: 2px solid #333;
-            padding: 10px 0 16px 0;
-        }
-
-        .ccg-header h1 {
-            margin: 0;
-            font-size: 1.6rem;
-        }
-
-        nav.ccg-nav {
-            margin-top: 10px;
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        nav.ccg-nav a {
-            color: #7fd0ff;
-            text-decoration: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-
-        nav.ccg-nav a:hover {
-            background: #07111f;
-            border: 1px solid #7fd0ff;
-        }
-
-        h2 {
-            margin-top: 18px;
-            font-size: 1.3rem;
-        }
-
-        .games-grid {
-            margin-top: 16px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 14px;
-        }
-
-        .game-card {
-            background: #050915;
-            border: 1px solid #333;
-            border-radius: 6px;
-            padding: 10px;
-        }
-
-        .game-thumb {
-            width: 100%;
-            height: auto;
-            border-radius: 4px;
-        }
-
-        .game-title {
-            font-size: 1rem;
-            margin: 10px 0 4px 0;
-        }
-
-        .game-meta {
-            font-size: 0.85rem;
-            opacity: 0.8;
-        }
-
-        .game-links a {
-            display: inline-block;
-            margin-top: 6px;
-            font-size: 0.85rem;
-            color: #7fd0ff;
-            text-decoration: none;
-        }
-
-        .game-links a:hover {
-            text-decoration: underline;
-        }
+        .ccg-shell { max-width: 1100px; margin: 0 auto; padding: 16px; }
+        header.ccg-header { border-bottom: 2px solid #333; padding: 10px 0 16px 0; }
+        .ccg-header h1 { margin: 0; font-size: 1.6rem; }
+        nav.ccg-nav { margin-top: 10px; display: flex; gap: 12px; flex-wrap: wrap; }
+        nav.ccg-nav a { color: #7fd0ff; text-decoration: none; padding: 4px 8px; border-radius: 4px; }
+        nav.ccg-nav a:hover { background: #07111f; border: 1px solid #7fd0ff; }
+        h2 { margin-top: 18px; font-size: 1.3rem; }
+        .games-grid { margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+        .game-card { background: #050915; border: 1px solid #333; border-radius: 6px; padding: 10px; }
+        .game-thumb { width: 100%; height: auto; border-radius: 4px; }
+        .game-title { font-size: 1rem; margin: 10px 0 4px 0; }
+        .game-meta { font-size: 0.85rem; opacity: 0.8; }
+        .game-links a { display: inline-block; margin-top: 6px; font-size: 0.85rem; color: #7fd0ff; text-decoration: none; }
+        .game-links a:hover { text-decoration: underline; }
     </style>
 
-    <!-- Game loader -->
     <script defer src="../../js/load-games.js"></script>
 </head>
 <body>
@@ -120,9 +49,7 @@
 
     <h2>Games in This Genre</h2>
 
-    <div id="games-container" class="games-grid">
-        <!-- Populated dynamically -->
-    </div>
+    <div id="games-container" class="games-grid"></div>
 
 </div>
 
@@ -133,12 +60,13 @@
 
 async function loadAdventureGames() {
     try {
-        const games = await ccgFetchGames();  // from load-games.js
+        const games = await ccgFetchGames();  // loaded from load-games.js
 
-        // Filter for the correct genre
+        // CORRECT FILTER FOR YOUR JSON:
         const filtered = games.filter(g =>
-            g.genre &&
-            g.genre.toLowerCase().includes("adventure")
+            g.genres &&
+            Array.isArray(g.genres) &&
+            g.genres.some(gn => gn.toLowerCase() === "adventure games")
         );
 
         const container = document.getElementById("games-container");
@@ -154,18 +82,17 @@ async function loadAdventureGames() {
             card.className = "game-card";
 
             card.innerHTML = `
-                <img src="${game.thumbnail}" class="game-thumb" alt="${game.title}">
+                <img src="${game.thumbUrl}" class="game-thumb" alt="${game.title}">
                 <div class="game-title">${game.title}</div>
                 <div class="game-meta">
-                    ${game.year ? "Year: " + game.year : ""}
-                    ${game.publisher ? "<br>Publisher: " + game.publisher : ""}
-                    ${game.composer ? "<br>Composer: " + game.composer : ""}
+                    ${game.system ? "System: " + game.system : ""}
+                    ${game.year ? "<br>Year: " + game.year : ""}
                 </div>
                 <div class="game-links">
-                    ${game.video ? `<a href="${game.video}" target="_blank">Watch Video</a><br>` : ""}
-                    ${game.lemon ? `<a href="${game.lemon}" target="_blank">Lemon64</a><br>` : ""}
-                    ${game.manual ? `<a href="${game.manual}" target="_blank">Manual (PDF)</a><br>` : ""}
-                    ${game.disk ? `<a href="${game.disk}" target="_blank">Download Disk</a><br>` : ""}
+                    ${game.videoId ? `<a href="https://www.youtube.com/watch?v=${game.videoId}" target="_blank">Watch Video</a><br>` : ""}
+                    ${game.lemonUrl ? `<a href="${game.lemonUrl}" target="_blank">Lemon64</a><br>` : ""}
+                    ${game.pdfUrl ? `<a href="${game.pdfUrl}" target="_blank">Manual (PDF)</a><br>` : ""}
+                    ${game.diskUrl ? `<a href="${game.diskUrl}" target="_blank">Download Disk</a><br>` : ""}
                 </div>
             `;
 
