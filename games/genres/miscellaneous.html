@@ -3,22 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Miscellaneous</title>
+    <title>Miscellaneous Games | CCG</title>
 
-    <!-- Boot logic (auto-disabled for genre pages via engine.js) -->
-    <script defer src="../../js/engine.js"></script>
-    <!-- Universal genre loader -->
-    <script defer src="../load-genre.js"></script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            // EXACT value from games.json
-            loadGenrePage("Miscellaneous");
-        });
-    </script>
+    <link rel="stylesheet" href="../../resources/css/main.css">
+    <link rel="stylesheet" href="../../css/engine.css">
 </head>
 <body>
-    <h1>Miscellaneous</h1>
-    <div id="genre-list">Loading…</div>
+
+<div class="page-wrapper">
+    <h1>Miscellaneous Games</h1>
+    <div id="genre-list"></div>
+</div>
+
+<script src="../../js/genre-loader.js" defer></script>
 </body>
 </html>
