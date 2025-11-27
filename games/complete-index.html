@@ -2,59 +2,193 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Complete Game Index | Cheeky Commodore Gamer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Engine + Phase C CSS -->
-    <link rel="stylesheet" href="../css/engine.css">
+    <!-- Global theme -->
     <link rel="stylesheet" href="../resources/css/main.css">
+    <link rel="stylesheet" href="../css/engine.css">
 
-    <script defer src="../js/engine.js"></script>
+    <style>
+        body {
+            background: #000;
+            font-family: "VT323", monospace;
+            color: #b1e7ff;
+        }
+
+        .crt-overlay { opacity: 0.22; }
+
+        .ccg-wrapper {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 16px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 36px;
+            letter-spacing: 0.1em;
+            color: #cfffff;
+            margin-bottom: 20px;
+            text-shadow: 0 0 12px rgba(0,255,255,0.5);
+        }
+
+        .ccg-back-btn {
+            display: inline-block;
+            margin-bottom: 18px;
+            padding: 8px 16px;
+            border: 2px solid #3fc8ff;
+            border-radius: 6px;
+            color: #cfffff;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .ccg-back-btn:hover {
+            background: #004d66;
+            box-shadow: 0 0 12px rgba(0,255,255,0.6);
+        }
+
+        /* Search box */
+        .ccg-searchbox {
+            text-align: center;
+            margin: 20px 0 30px 0;
+        }
+
+        .ccg-searchbox input {
+            width: 100%;
+            max-width: 420px;
+            padding: 8px 12px;
+            font-size: 20px;
+            border: 2px solid #4fb3ff;
+            border-radius: 6px;
+            background: #000;
+            color: #d5faff;
+            outline: none;
+        }
+
+        /* Game grid */
+        .ccg-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 22px;
+            margin-top: 20px;
+        }
+
+        .ccg-card {
+            background: rgba(0, 30, 50, 0.5);
+            border: 2px solid #3fc8ff;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.25s;
+            box-shadow: 0 0 14px rgba(0,255,255,0.15);
+        }
+
+        .ccg-card:hover {
+            background: rgba(0, 60, 80, 0.7);
+            box-shadow: 0 0 18px rgba(0,255,255,0.35);
+        }
+
+        .ccg-thumb {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 2px solid #4fb3ff;
+            margin-bottom: 10px;
+        }
+
+        .ccg-title {
+            color: #cfffff;
+            font-size: 20px;
+            text-align: center;
+            letter-spacing: 0.05em;
+        }
+
+        .ccg-status {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 20px;
+            color: #7ddaff;
+        }
+    </style>
+
 </head>
-
 <body>
-
-    <canvas id="starfield"></canvas>
     <div class="crt-overlay"></div>
-    
-    <div class="container">
 
-        <div class="commodore-header" style="margin-bottom:20px;">
-            <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
-                 alt="Logo"
-                 style="max-width:150px; image-rendering:pixelated;">
-            <h3>**** COMPLETE GAME INDEX ****</h3>
+    <div class="ccg-wrapper">
+
+        <a href="../index.html" class="ccg-back-btn">← BACK TO MAIN MENU</a>
+        <h1>COMPLETE INDEX</h1>
+
+        <div class="ccg-searchbox">
+            <input id="ccg-index-search" type="text" placeholder="Search all titles...">
         </div>
 
-        <h1>FULL GAME INDEX</h1>
-        <p>The complete searchable list of Commodore 64 and Amiga titles.</p>
+        <div id="ccg-status" class="ccg-status">Loading full index…</div>
 
-        <div class="search-wrapper">
-            <input type="text"
-                   class="search-input"
-                   id="indexSearch"
-                   placeholder="SEARCH TITLES...">
-            <div class="search-results" id="indexSearchResults"></div>
-        </div>
-
-        <div id="fullIndexList"></div>
-
-        <h2>NAVIGATION</h2>
-        <div class="btn-grid">
-            <a href="index.html" class="btn-retro">BACK TO GAME MENU</a>
-            <a href="../index.html" class="btn-retro">HOME</a>
-        </div>
+        <div id="ccg-grid" class="ccg-grid"></div>
 
     </div>
 
     <script>
-        // Initialise search once engine.js loads
-        document.addEventListener("DOMContentLoaded", () => {
-            if (typeof ccgFetchGames === "function") {
-                ccgFetchGames().then(games => {
-                    ccgSearchInit("indexSearch", "indexSearchResults", games);
-                });
+        let ccgAllGames = [];
+
+        async function loadFullIndex() {
+            const status = document.getElementById("ccg-status");
+            const grid = document.getElementById("ccg-grid");
+
+            try {
+                // Correct path: we are inside /games/, so json is one folder above
+                const res = await fetch("../games.json");
+                if (!res.ok) throw new Error("HTTP error " + res.status);
+
+                const data = await res.json();
+                ccgAllGames = data.games || data;
+
+                if (!ccgAllGames.length) {
+                    status.textContent = "No games found.";
+                    return;
+                }
+
+                status.textContent = "";
+                renderGames(ccgAllGames);
+
+            } catch (err) {
+                console.error(err);
+                status.textContent = "Error loading game data.";
             }
+        }
+
+        function renderGames(list) {
+            const grid = document.getElementById("ccg-grid");
+            grid.innerHTML = "";
+
+            list.forEach(game => {
+                const card = document.createElement("div");
+                card.className = "ccg-card";
+                card.onclick = () => location.href = game.page;
+
+                card.innerHTML = `
+                    <img src="${game.thumbnail}" class="ccg-thumb" alt="${game.title}">
+                    <div class="ccg-title">${game.title}</div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        function searchIndex() {
+            const value = document.getElementById("ccg-index-search").value.trim().toLowerCase();
+            const filtered = ccgAllGames.filter(g => g.title.toLowerCase().includes(value));
+            renderGames(filtered);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadFullIndex();
+            document.getElementById("ccg-index-search").addEventListener("input", searchIndex);
         });
     </script>
 
