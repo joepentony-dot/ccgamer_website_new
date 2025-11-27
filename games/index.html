@@ -4,30 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Browser | Cheeky Commodore Gamer</title>
-    <meta name="description" content="Browse the full C64 & Amiga game library with filters and quick access to videos and downloads.">
+    <meta name="description" content="Browse the complete library of Commodore 64 & Amiga games featured on Cheeky Commodore Gamer.">
 
+    <!-- Global styles -->
     <link rel="stylesheet" href="../css/engine.css">
     <link rel="stylesheet" href="../resources/main.css">
 
-    <script defer src="../js/engine.js"></script>
+    <!-- JS loader for games -->
     <script defer src="../js/load-games.js"></script>
+    <script defer src="../js/engine.js"></script>
+
+    <!-- Favicon -->
+    <link rel="icon" href="../resources/CCG_FAVICON.png">
 </head>
+
 <body class="ccg-body">
-    <div id="start-screen">
-        <div class="boot-window">
-            <pre id="boot-log"></pre>
-            <div id="press-space">PRESS SPACE TO CONTINUE</div>
-        </div>
-    </div>
 
     <div class="crt">
-        <div class="scanlines"></div>
         <div class="screen">
-            <header class="ccg-header">
-                <div class="logo-area">
+
+            <!-- ====================================== -->
+            <!--          HEADER (NO BOOT HERE)          -->
+            <!-- ====================================== -->
+
+            <header class="ccg-header" style="
+                background-image: url('../resources/C64 NEON.png');
+                background-size: cover;
+                background-position: center;
+                height: 50px;
+                display: flex;
+                align-items: flex-end;
+                padding-bottom: 6px;
+                position: relative;
+            ">
+
+                <!-- Mascot logo hovering above strip -->
+                <img src="../resources/CCGAMER LOGO.png" alt="CCG Logo"
+                    style="
+                        position: absolute;
+                        top: -22px;
+                        left: 18px;
+                        height: 46px;
+                        filter: drop-shadow(0 0 6px rgba(41,182,246,0.9));
+                        pointer-events: none;
+                    ">
+
+                <!-- Text logo -->
+                <div class="logo-area" style="margin-left: 70px;">
                     <span class="logo-main">CHEEKY</span>
                     <span class="logo-sub">COMMODORE GAMER</span>
                 </div>
+
+                <!-- Navigation -->
                 <nav class="ccg-nav">
                     <a href="../index.html" class="nav-link">Main Menu</a>
                     <a href="index.html" class="nav-link active">Game Browser</a>
@@ -35,58 +63,114 @@
                     <a href="../quiz/quiz.html" class="nav-link">Retro Quiz</a>
                     <a href="../about.html" class="nav-link">About</a>
                     <a href="../contact.html" class="nav-link">Contact</a>
+                    <button id="theme-toggle" class="theme-toggle" type="button">C64 MODE</button>
                 </nav>
+
             </header>
 
-            <main class="ccg-main games-layout">
-                <section class="filters-panel">
-                    <h1>Game Browser</h1>
+            <!-- ====================================== -->
+            <!--          SOCIAL STRIP (FUNCTIONAL)      -->
+            <!-- ====================================== -->
 
-                    <div class="filters">
-                        <label>
-                            Search title:
-                            <input type="text" id="filter-search" placeholder="Type a game title…">
-                        </label>
+            <div class="social-strip"
+                style="
+                    display: flex;
+                    gap: 12px;
+                    padding: 8px 18px 0;
+                    font-size: 0.75rem;
+                    text-transform: uppercase;
+                ">
+                <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" style="color: var(--ccg-fg); text-decoration: none;">YouTube</a>
+                <a href="https://www.youtube.com/@CheekyCommodoreGamer?sub_confirmation=1" target="_blank" style="color: #ff4444; text-decoration: none;">Subscribe</a>
+                <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank" style="color: var(--ccg-fg); text-decoration: none;">Patreon</a>
+                <a href="https://discord.gg/83Xw9ktAn4" target="_blank" style="color: var(--ccg-fg); text-decoration: none;">Discord</a>
+                <a href="https://twitter.com/CheekyC64Gamer" target="_blank" style="color: var(--ccg-fg); text-decoration: none;">Twitter</a>
+                <a href="https://facebook.com/cheekycommodoregamer" target="_blank" style="color: var(--ccg-fg); text-decoration: none;">Facebook</a>
+                <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" style="color: var(--ccg-fg); text-decoration: none;">PayPal</a>
+            </div>
 
-                        <label>
-                            System:
-                            <select id="filter-system">
-                                <option value="">All</option>
-                                <option value="C64">C64</option>
-                                <option value="Amiga">Amiga</option>
-                            </select>
-                        </label>
+            <!-- ====================================== -->
+            <!--               MAIN CONTENT              -->
+            <!-- ====================================== -->
 
-                        <label>
-                            Genre:
-                            <select id="filter-genre">
-                                <option value="">All</option>
-                                <!-- Optionally populated via JS -->
-                            </select>
-                        </label>
-                    </div>
+            <main class="ccg-main">
 
-                    <div class="filters-actions">
-                        <button id="reset-filters">Reset Filters</button>
-                        <span id="games-count">Loading games…</span>
-                    </div>
-                </section>
+                <div class="games-layout">
 
-                <section class="games-list-panel">
-                    <div id="games-list" class="games-list">
-                        <!-- load-games.js injects cards here using games/games.json -->
-                    </div>
-                    <div id="games-status" class="games-status"></div>
-                </section>
+                    <!-- FILTER SIDEBAR -->
+                    <aside class="filters-panel">
+                        <h1>Filter Games</h1>
+
+                        <p>Search and narrow down the entire C64 & Amiga catalogue.</p>
+
+                        <div class="filters">
+                            <label>
+                                Search
+                                <input id="filter-search" type="text" placeholder="Search games…">
+                            </label>
+
+                            <label>
+                                System
+                                <select id="filter-system">
+                                    <option value="">All Systems</option>
+                                    <option value="C64">Commodore 64</option>
+                                    <option value="Amiga">Amiga</option>
+                                </select>
+                            </label>
+
+                            <label>
+                                Genre
+                                <select id="filter-genre">
+                                    <option value="">All Genres</option>
+                                </select>
+                            </label>
+
+                            <div class="filters-actions">
+                                <button id="reset-filters">Reset</button>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <!-- GAME LIST PANEL -->
+                    <section class="games-list-panel">
+                        <h1 style="
+                            font-family: var(--ccg-font-heading);
+                            font-size: 0.9rem;
+                            letter-spacing: 0.18em;
+                            text-transform: uppercase;
+                            margin-bottom: 10px;
+                            color: var(--ccg-accent);
+                        ">Game Browser</h1>
+
+                        <div id="games-count" class="games-status">Loading games…</div>
+
+                        <div id="games-list" class="games-list"></div>
+
+                        <div id="games-status" class="games-status"></div>
+                    </section>
+
+                </div>
             </main>
 
+            <!-- ====================================== -->
+            <!--                FOOTER                   -->
+            <!-- ====================================== -->
+
             <footer class="ccg-footer">
-                <p>
-                    Data from <code>games/games.json</code> •
-                    <a href="complete-index.html">View complete index</a>
-                </p>
+                <p>&copy; <span id="year"></span> Cheeky Commodore Gamer.</p>
+                <p>😇🕹️👌</p>
             </footer>
+
         </div>
     </div>
+
+    <script>
+        // Year auto-update
+        document.addEventListener("DOMContentLoaded", function () {
+            const y = document.getElementById("year");
+            if (y) y.textContent = new Date().getFullYear();
+        });
+    </script>
+
 </body>
 </html>
