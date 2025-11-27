@@ -4,50 +4,75 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About | Cheeky Commodore Gamer</title>
+    <meta name="description" content="Learn about the Cheeky Commodore Gamer project and how this C64 & Amiga site is powered.">
 
-    <!-- Existing engine CSS -->
     <link rel="stylesheet" href="css/engine.css">
-    <!-- NEW global CRT / Phase C stylesheet -->
-    <link rel="stylesheet" href="resources/css/main.css">
+    <link rel="stylesheet" href="resources/main.css">
 
     <script defer src="js/engine.js"></script>
 </head>
-
-<body>
-
-    <canvas id="starfield"></canvas>
-    <div class="crt-overlay"></div>
-
-    <div class="container">
-
-        <div class="commodore-header" style="margin-bottom:20px;">
-            <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
-                 alt="CCG Logo"
-                 style="max-width:150px; image-rendering:pixelated;">
-            <h3>**** ABOUT THIS PROJECT ****</h3>
+<body class="ccg-body">
+    <div id="start-screen">
+        <div class="boot-window">
+            <pre id="boot-log"></pre>
+            <div id="press-space">PRESS SPACE TO CONTINUE</div>
         </div>
-
-        <h1>ABOUT CHEEKY COMMODORE GAMER</h1>
-        <p>
-            This website is an evolving retro archive dedicated to the mighty
-            Commodore 64 and Commodore Amiga platforms — a place to explore games,
-            watch videos, take quizzes, and celebrate two of the greatest home
-            computer systems ever made.
-        </p>
-
-        <p>
-            More information will be added here soon. Stay tuned, Retro Warriors! 😇🕹️👌
-        </p>
-
-        <h2>NAVIGATION</h2>
-        <div class="btn-grid">
-            <a href="index.html" class="btn-retro">HOME</a>
-            <a href="games/index.html" class="btn-retro">GENRES</a>
-            <a href="games/complete-index.html" class="btn-retro">FULL INDEX</a>
-            <a href="resources/quiz.html" class="btn-retro">QUIZ</a>
-        </div>
-
     </div>
 
+    <div class="crt">
+        <div class="scanlines"></div>
+        <div class="screen">
+            <header class="ccg-header">
+                <div class="logo-area">
+                    <span class="logo-main">CHEEKY</span>
+                    <span class="logo-sub">COMMODORE GAMER</span>
+                </div>
+                <nav class="ccg-nav">
+                    <a href="index.html" class="nav-link">Main Menu</a>
+                    <a href="games/index.html" class="nav-link">Game Browser</a>
+                    <a href="games/complete-index.html" class="nav-link">Full Index</a>
+                    <a href="quiz/quiz.html" class="nav-link">Retro Quiz</a>
+                    <a href="about.html" class="nav-link active">About</a>
+                    <a href="contact.html" class="nav-link">Contact</a>
+                </nav>
+            </header>
+
+            <main class="ccg-main">
+                <section class="text-panel">
+                    <h1>About Cheeky Commodore Gamer</h1>
+                    <p>
+                        This site is the central hub for all things <strong>Commodore 64</strong> and
+                        <strong>Amiga</strong> from the Cheeky Commodore Gamer channel – longplays, first-look
+                        videos, deep dives, and the infamous CCG Retro Quiz.
+                    </p>
+                    <p>
+                        The game database is driven from a master Google Sheet and exported into
+                        <code>games/games.json</code>, which powers the game browser, genre pages and complete index.
+                    </p>
+                </section>
+
+                <section class="text-panel">
+                    <h2>What you can do here</h2>
+                    <ul>
+                        <li>Browse a curated library of C64 &amp; Amiga games</li>
+                        <li>Jump straight to YouTube videos for each game</li>
+                        <li>Grab manuals and disk images where legally possible</li>
+                        <li>Test your knowledge with SID-filled quiz sets</li>
+                    </ul>
+                </section>
+            </main>
+
+            <footer class="ccg-footer">
+                <p>&copy; <span id="year"></span> Cheeky Commodore Gamer.</p>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const y = document.getElementById('year');
+            if (y) y.textContent = new Date().getFullYear();
+        });
+    </script>
 </body>
 </html>
