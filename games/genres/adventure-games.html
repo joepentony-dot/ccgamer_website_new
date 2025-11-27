@@ -6,40 +6,12 @@
     <title>Adventure Games</title>
 
     <script defer src="../../js/engine.js"></script>
+    <script defer src="../load-genre.js"></script>
 
-    <script defer>
-        async function loadAdventureGames() {
-            const container = document.getElementById("genre-list");
-
-            try {
-                const response = await fetch("../games.json");
-                const data = await response.json();
-
-                // FIX: genres array includes "Adventure Games"
-                const filtered = data.filter(g => 
-                    Array.isArray(g.genres) &&
-                    g.genres.includes("Adventure Games")
-                );
-
-                if (filtered.length === 0) {
-                    container.textContent = "No games found in this genre.";
-                    return;
-                }
-
-                container.innerHTML = "";
-                filtered.forEach(game => {
-                    const div = document.createElement("div");
-                    div.textContent = `${game.title}`;
-                    container.appendChild(div);
-                });
-
-            } catch (err) {
-                container.textContent = "Error loading genre.";
-                console.error(err);
-            }
-        }
-
-        window.addEventListener("DOMContentLoaded", loadAdventureGames);
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            loadGenrePage("Adventure Games");
+        });
     </script>
 </head>
 <body>
