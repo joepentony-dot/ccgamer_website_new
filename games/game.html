@@ -4,80 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Details | Cheeky Commodore Gamer</title>
-    <meta name="description" content="Detailed view of a Commodore 64 or Amiga game from the Cheeky Commodore Gamer library.">
-
-    <link rel="stylesheet" href="../css/engine.css">
-    <link rel="stylesheet" href="../resources/main.css">
-
-    <script defer src="../js/engine.js"></script>
-    <script defer src="../js/load-single-game.js"></script>
 </head>
-<body class="ccg-body">
-    <div id="start-screen">
-        <div class="boot-window">
-            <pre id="boot-log"></pre>
-            <div id="press-space">PRESS SPACE TO CONTINUE</div>
-        </div>
-    </div>
+<body>
+    <header>
+        <h1 id="game-title">Game Title</h1>
+        <p>Details and information about the selected game.</p>
+    </header>
 
-    <div class="crt">
-        <div class="scanlines"></div>
-        <div class="screen">
-            <header class="ccg-header">
-                <div class="logo-area">
-                    <span class="logo-main">CHEEKY</span>
-                    <span class="logo-sub">COMMODORE GAMER</span>
-                </div>
-                <nav class="ccg-nav">
-                    <a href="../index.html" class="nav-link">Main Menu</a>
-                    <a href="index.html" class="nav-link">Game Browser</a>
-                    <a href="complete-index.html" class="nav-link">Full Index</a>
-                    <a href="../quiz/quiz.html" class="nav-link">Retro Quiz</a>
-                    <a href="../about.html" class="nav-link">About</a>
-                    <a href="../contact.html" class="nav-link">Contact</a>
-                </nav>
-            </header>
+    <nav>
+        <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="index.html">Browse Games</a></li>
+            <li><a href="complete-index.html">Complete Game Index</a></li>
+        </ul>
+    </nav>
 
-            <main class="ccg-main game-detail-layout">
-                <section class="game-detail" id="game-detail">
-                    <h1 id="game-title">Loading game…</h1>
+    <main>
+        <section>
+            <h2>Game Information</h2>
 
-                    <div class="game-meta">
-                        <div class="game-thumb">
-                            <img id="game-thumbnail" src="" alt="" loading="lazy">
-                        </div>
-                        <div class="game-info">
-                            <p><strong>System:</strong> <span id="game-system"></span></p>
-                            <p><strong>Year:</strong> <span id="game-year"></span></p>
-                            <p><strong>Genre:</strong> <span id="game-genre"></span></p>
-                            <p><strong>Developer:</strong> <span id="game-developer"></span></p>
-                            <p><strong>Publisher:</strong> <span id="game-publisher"></span></p>
-                        </div>
-                    </div>
+            <!-- Placeholder for dynamic content -->
+            <div id="game-details">
+                <p>Game information will be loaded here once the data system is connected.</p>
+            </div>
+        </section>
+    </main>
 
-                    <div class="game-links">
-                        <a id="game-video-link" href="#" target="_blank" rel="noopener" class="btn-primary">▶ Watch Video</a>
-                        <a id="game-disk-link" href="#" target="_blank" rel="noopener" class="btn-secondary">💾 Download</a>
-                        <a id="game-manual-link" href="#" target="_blank" rel="noopener" class="btn-secondary">📄 Manual</a>
-                        <a id="game-lemon-link" href="#" target="_blank" rel="noopener" class="btn-secondary">🍋 Lemon page</a>
-                    </div>
+    <footer>
+        <p>&copy; Cheeky Commodore Gamer</p>
+    </footer>
 
-                    <section class="game-notes">
-                        <h2>Notes</h2>
-                        <p id="game-notes">Extra trivia, comments and notes will appear here.</p>
-                    </section>
-                </section>
-
-                <p id="game-status" class="games-status"></p>
-            </main>
-
-            <footer class="ccg-footer">
-                <p>
-                    <a href="index.html">Back to Game Browser</a> •
-                    <a href="../index.html">Return to Main Menu</a>
-                </p>
-            </footer>
-        </div>
-    </div>
+    <!-- Future script will populate the page dynamically -->
+    <!-- <script src="../js/game-loader.js"></script> -->
 </body>
 </html>
