@@ -1,238 +1,130 @@
-// ============================================
-// Cheeky Commodore Gamer - Game Loader
-// Reads games.json and powers genres + specials
-// ============================================
+/* ==========================================================
+   CHEEKY COMMODORE GAMER — load-games.js
+   Full safe replacement file
+   Handles:
+   - Loading games.json
+   - Filtering by genre or collection
+   - Building clickable thumbnail cards
+   - Status messages
+   - Robust error handling
+   ========================================================== */
 
-// Map spreadsheet labels (Column D) to internal keys
-const CCG_GENRE_MAP = {
-  "Arcade Games": "arcade",
-  "Action Adventure Games": "action-adventure",
-  "Adventure Games": "adventure",
-  "Shooting Games": "shooting",
-  "Racing Games": "racing",
-  "Role Playing Games": "rpg",
-  "Strategy Games": "strategy",
-  "Casino Games": "casino",
-  "Quiz Games": "quiz",
-  "Puzzle Games": "puzzle",
-  "Horror Games": "horror",
-  "Platform Games": "platform",
-  "Sports Games": "sports",
-  "Fighting Games": "fighting",
-  "Miscellaneous": "misc",
+/* --------------------------
+   1. Fetch the full games list
+   -------------------------- */
 
-  // Specials (also stored in the same Column D)
-  "BPJS Games": "bpjs",
-  "Licensed Games": "licensed",
-  "Top Picks": "top-picks",
-  "Cartridge Games": "cartridge"
-};
-
-// Keys that are treated as "special collections"
-const CCG_SPECIAL_KEYS = new Set(["bpjs", "licensed", "top-picks", "cartridge"]);
-
-// --------------------------------------------
-// Resolve the correct path to games.json
-// --------------------------------------------
-function ccgGetGamesJsonPath() {
-  const p = window.location.pathname;
-
-  // /games/genres/* or /games/collections/*
-  if (p.includes("/games/genres/") || p.includes("/games/collections/")) {
-    return "../games.json";
-  }
-
-  // Any /games/*.html (index, complete-index, etc.)
-  if (p.includes("/games/")) {
-    return "games.json";
-  }
-
-  // Root pages (e.g. /index.html)
-  return "games/games.json";
-}
-
-// --------------------------------------------
-// Fetch and normalise games data
-// --------------------------------------------
 async function ccgFetchGames() {
-  if (window.CCG_GAMES_CACHE) {
-    return window.CCG_GAMES_CACHE;
-  }
+    try {
+        const response = await fetch("../../games.json");
 
-  const url = ccgGetGamesJsonPath();
-  const res = await fetch(url);
+        if (!response.ok) {
+            throw new Error("HTTP " + response.status);
+        }
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch games.json from " + url);
-  }
+        const data = await response.json();
+        return data.games || data; // supports both structures
+    } catch (err) {
+        console.error("Error loading games:", err);
+        return null;
+    }
+}
 
-  const raw = await res.json();
-  const list = Array.isArray(raw) ? raw : [];
+/* --------------------------
+   2. Card builder (16:9 thumbnails)
+   -------------------------- */
 
-  const normalised = list.map(entry => {
-    const game = { ...entry };
+function createGameCard(game) {
+    const card = document.createElement("div");
+    card.className = "ccg-game-card";
+    card.onclick = () => location.href = game.page;
 
-    // Original labels from Column D (already split by CSV -> JSON)
-    const labels = Array.isArray(game.genres)
-      ? game.genres.filter(Boolean)
-      : [];
+    const img = document.createElement("img");
+    img.className = "ccg-game-thumb";
+    img.src = game.thumbnail;
+    img.alt = game.title;
+    img.loading = "lazy";
 
-    const genreKeys = [];
-    const specials = [];
+    card.appendChild(img);
+    return card;
+}
 
-    labels.forEach(label => {
-      const trimmed = String(label).trim();
-      const key = CCG_GENRE_MAP[trimmed];
-      if (!key) return;
+/* --------------------------
+   3. Main loader
+   -------------------------- */
 
-      if (CCG_SPECIAL_KEYS.has(key)) {
-        if (!specials.includes(key)) specials.push(key);
-      } else {
-        if (!genreKeys.includes(key)) genreKeys.push(key);
-      }
+async function loadGames() {
+    const statusEl = document.getElementById("genre-status");
+    const listEl = document.getElementById("genre-games-list");
+
+    if (!statusEl || !listEl) {
+        console.warn("Not a genre/collection page — loadGames aborted.");
+        return;
+    }
+
+    statusEl.textContent = "Loading games…";
+
+    const allGames = await ccgFetchGames();
+
+    if (!allGames) {
+        statusEl.textContent = "Error loading game data.";
+        return;
+    }
+
+    /* Determine if this page is a GENRE or COLLECTION page */
+
+    const body = document.body;
+
+    let filterType = null;
+    let filterValue = null;
+
+    if (body.dataset.genre) {
+        filterType = "genre";
+        filterValue = body.dataset.genre.trim();
+    }
+
+    if (body.dataset.collection) {
+        filterType = "collection";
+        filterValue = body.dataset.collection.trim();
+    }
+
+    /* --------------------------
+       Filter logic
+       -------------------------- */
+
+    let filtered = [];
+
+    if (filterType === "genre") {
+        filtered = allGames.filter(g => g.genre && g.genre.trim() === filterValue);
+    }
+    else if (filterType === "collection") {
+        filtered = allGames.filter(g =>
+            g.collection &&
+            g.collection.toLowerCase().includes(filterValue.toLowerCase())
+        );
+    }
+    else {
+        statusEl.textContent = "No filter applied.";
+        return;
+    }
+
+    /* --------------------------
+       After filtering
+       -------------------------- */
+
+    if (filtered.length === 0) {
+        statusEl.textContent = "No games found in this category.";
+        return;
+    }
+
+    statusEl.textContent = ""; // clear loading message
+    listEl.innerHTML = ""; // clear old entries
+
+    /* Create cards */
+    filtered.forEach(game => {
+        const card = createGameCard(game);
+        listEl.appendChild(card);
     });
-
-    // Store original labels for display
-    game.genreLabels = labels;
-
-    // Internal keys used for filtering
-    game.genres = genreKeys;
-    game.specials = specials;
-
-    // Normalise system to lowercase (c64 / amiga)
-    if (game.system) {
-      game.system = String(game.system).trim().toLowerCase();
-    } else {
-      game.system = "";
-    }
-
-    // Ensure slug is a lowercase string
-    if (game.slug) {
-      game.slug = String(game.slug).trim().toLowerCase();
-    }
-
-    return game;
-  });
-
-  window.CCG_GAMES_CACHE = normalised;
-  return normalised;
 }
 
-// --------------------------------------------
-// Render a grid of game cards into a container
-// --------------------------------------------
-function ccgRenderGameGrid(container, games) {
-  if (!container) return;
-
-  if (!games || !games.length) {
-    container.innerHTML = `
-      <p style="text-align:center; color:var(--c64-light-blue); margin-top:20px;">
-        NO GAMES FOUND FOR THIS CATEGORY.
-      </p>
-    `;
-    return;
-  }
-
-  container.innerHTML = "";
-
-  games.forEach(g => {
-    const linkUrl =
-      g.lemon ||
-      (g.video ? `https://www.youtube.com/watch?v=${g.video}` : "#");
-
-    const card = document.createElement("a");
-    card.className = "game-card play-sound";
-    card.href = linkUrl;
-    card.target = linkUrl === "#" ? "_self" : "_blank";
-    card.rel = linkUrl === "#" ? "" : "noopener";
-
-    const systemLabel = g.system ? g.system.toUpperCase() : "";
-    const genresText = (g.genreLabels || []).join(" · ");
-
-    card.innerHTML = `
-      <div class="game-thumb">
-        ${
-          g.thumb
-            ? `<img src="${g.thumb}" alt="${escapeHtml(g.title || "")} thumbnail" loading="lazy">`
-            : ""
-        }
-      </div>
-      <div class="game-info">
-        <h3>${escapeHtml(g.title || "")}</h3>
-        ${
-          systemLabel
-            ? `<p class="game-system">[${systemLabel}]</p>`
-            : ""
-        }
-        ${
-          genresText
-            ? `<p class="game-genres">${escapeHtml(genresText)}</p>`
-            : ""
-        }
-      </div>
-    `;
-
-    container.appendChild(card);
-  });
-}
-
-// Simple HTML escape for safety
-function escapeHtml(str) {
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-
-// --------------------------------------------
-// Auto-init on pages that need grids
-// --------------------------------------------
-document.addEventListener("DOMContentLoaded", async () => {
-  const genreGrid = document.getElementById("genre-grid");
-  const specialGrid = document.getElementById("special-grid");
-
-  // If the page doesn't have any game grids, do nothing
-  if (!genreGrid && !specialGrid) {
-    return;
-  }
-
-  try {
-    const games = await ccgFetchGames();
-
-    // Genre pages
-    if (genreGrid) {
-      const key = (genreGrid.dataset.genre || "").toLowerCase();
-      const filtered = games.filter(g =>
-        (g.genres || []).includes(key)
-      );
-      ccgRenderGameGrid(genreGrid, filtered);
-    }
-
-    // Specials pages (BPJS, Licensed, Cartridge, Top Picks)
-    if (specialGrid) {
-      const collKey = (
-        window.CCG_COLLECTION ||
-        specialGrid.dataset.collection ||
-        ""
-      ).toLowerCase();
-
-      const filtered = games.filter(g =>
-        (g.specials || []).includes(collKey)
-      );
-      ccgRenderGameGrid(specialGrid, filtered);
-    }
-
-  } catch (err) {
-    console.error("Error initialising game grids:", err);
-
-    if (genreGrid) {
-      genreGrid.innerHTML =
-        "<p style='color:red; text-align:center;'>ERROR LOADING GAME DATA</p>";
-    }
-    if (specialGrid) {
-      specialGrid.innerHTML =
-        "<p style='color:red; text-align:center;'>ERROR LOADING GAME DATA</p>";
-    }
-  }
-});
+/* Auto-run when page loads */
+document.addEventListener("DOMContentLoaded", loadGames);
