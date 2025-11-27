@@ -3,73 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Genres</title>
+    <title>Full Game Index | CCG</title>
 
-    <!-- Boot logic (auto-disabled for this folder) -->
-    <script defer src="../js/engine.js"></script>
-    <script defer src="load-genre.js"></script>
+    <link rel="stylesheet" href="../resources/css/main.css">
+    <link rel="stylesheet" href="../css/engine.css">
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 1rem;
+        .accordion-section {
+            border: 1px solid #0af;
+            margin: 15px 0;
+            border-radius: 6px;
+            background: rgba(0,0,0,0.6);
         }
-        h1 {
-            margin-bottom: 1rem;
+
+        .accordion-header {
+            padding: 12px 16px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            background: #001f33;
+            border-bottom: 1px solid #0af;
+            color: #7ec8ff !important;
+            text-shadow: 0 0 8px #0af;
         }
-        .genre-item {
-            margin-bottom: 0.75rem;
-            font-size: 1.2rem;
+
+        .accordion-content {
+            display: none;
+            padding: 15px;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px,1fr));
+            gap: 15px;
+        }
+
+        .game-card {
+            background: rgba(0,0,0,0.4);
+            padding: 6px;
+            border: 2px solid #0af;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .game-card img {
+            width: 100%;
+            border-radius: 4px;
+            border: 2px solid #044;
+        }
+
+        .category-group {
+            margin-top: 25px;
+            padding: 12px;
+            background: rgba(0,20,40,0.5);
+            border: 2px solid #0af;
+            border-radius: 6px;
+        }
+
+        h2.category-title {
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+            color: #9ed0ff;
+            text-shadow: 0 0 12px #0af;
         }
     </style>
 
-    <script>
-        async function buildGenreIndex() {
-            const list = document.getElementById("genre-list");
-
-            try {
-                // Load full games JSON
-                const response = await fetch("games.json");
-                const data = await response.json();
-
-                // Collect ALL genres from ALL games
-                const allGenres = new Set();
-
-                data.forEach(game => {
-                    if (Array.isArray(game.genres)) {
-                        game.genres.forEach(g => allGenres.add(g));
-                    }
-                });
-
-                // Convert to sorted array
-                const sortedGenres = Array.from(allGenres).sort();
-
-                // Generate link slugs from genre names
-                sortedGenres.forEach(genre => {
-                    const slug = genre.toLowerCase()
-                        .replace(/[^a-z0-9]+/g, "-")
-                        .replace(/-+$/,"");
-
-                    // Create entry
-                    const div = document.createElement("div");
-                    div.className = "genre-item";
-
-                    div.innerHTML = `<a href="genres/${slug}.html">${genre}</a>`;
-                    list.appendChild(div);
-                });
-
-            } catch (err) {
-                console.error("Failed to build genre index:", err);
-                list.textContent = "Error loading genre list.";
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", buildGenreIndex);
-    </script>
+    <script defer src="../js/accordion-index.js"></script>
 </head>
 
 <body>
-    <h1>All Game Genres</h1>
-    <div id="genre-list">Loading…</div>
+
+<div class="page-wrapper">
+
+    <h1 style="text-align:center;margin-bottom:30px;text-shadow:0 0 10px #0af;">
+        Full Game Index
+    </h1>
+
+    <!-- ========================= -->
+    <!--       GROUP: BY GENRE     -->
+    <!-- ========================= -->
+    <div class="category-group">
+        <h2 class="category-title">BY GENRE</h2>
+
+        <div id="accordion-genre"></div>
+    </div>
+
+    <!-- ================================ -->
+    <!--       GROUP: SPECIAL LISTS       -->
+    <!-- ================================ -->
+    <div class="category-group">
+        <h2 class="category-title">SPECIAL LISTS</h2>
+
+        <div id="accordion-special">
+            <!-- Will be injected dynamically -->
+        </div>
+    </div>
+
+</div>
+
 </body>
 </html>
