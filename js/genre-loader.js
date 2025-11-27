@@ -1,8 +1,6 @@
-// ===============================
-// CCG Genre Loader (Clean Version)
-// Detects genre name from filename
-// Loads games.json and filters by genre
-// ===============================
+// ============================================
+// CCG Genre Loader (Normalised Matching)
+// ============================================
 
 // Convert "arcade-games" → "Arcade Games"
 function formatGenreName(slug) {
@@ -11,27 +9,37 @@ function formatGenreName(slug) {
         .replace(/\b\w/g, c => c.toUpperCase());
 }
 
-// Detect genre from the filename of the current page
+// Detect genre from filename
 function detectGenreFromFilename() {
     const path = window.location.pathname;
     const filename = path.split("/").pop().replace(".html", "");
     return formatGenreName(filename);
 }
 
-// Load all games and filter by the detected genre
+// Normalise genres (standard names)
+function normalise(name) {
+    return name.toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+// Load and filter games
 async function loadGenreGames() {
     const genreName = detectGenreFromFilename();
+    const normGenre = normalise(genreName);
+
     const container = document.getElementById("genre-results");
     const title = document.getElementById("genre-title");
 
-    // Update page <h1>
+    // Update page title
     if (title) title.textContent = genreName;
 
     try {
         const response = await fetch("../../games.json");
         const games = await response.json();
 
-        const filtered = games.filter(g => g.genre === genreName);
+        const filtered = games.filter(game => {
+            if (!game.genre) return false;
+            return normalise(game.genre) === normGenre;
+        });
 
         if (filtered.length === 0) {
             container.innerHTML = `<p>No games found in ${genreName}.</p>`;
