@@ -1,87 +1,126 @@
 /* ============================================================
-   SAFE ENGINE.JS — STABILISER VERSION
-   ------------------------------------------------------------
-   This file intentionally contains **NO boot logic**,
-   **NO theme logic**, **NO search logic**, **NO social logic**,
-   and **NO audio logic**.
-
-   Its only purpose: prevent JavaScript errors from crashing the
-   homepage while we continue building Phase D.
-
-   Once Phase D is complete, we will reintroduce the proper
-   boot engine cleanly and safely.
+   CHEEKY COMMODORE GAMER — engine.js
+   Complete, stable version
+   Handles:
+   - Boot overlay
+   - Raster bars
+   - Audio intro ("Stay a while… stay FOREVER!")
+   - Fade transitions
    ============================================================ */
 
-(function () {
-    "use strict";
+/* ---------------------------------------
+   1. CONFIGURATION
+   --------------------------------------- */
 
-    // --- Minimal starfield so background still looks alive ---
-    function initStarfield() {
-        const canvas = document.getElementById("starfield");
-        if (!canvas || !canvas.getContext) return;
+const BOOT_DURATION = 4200;   // ms until fade-out
+const AUDIO_DELAY   = 700;    // ms after load to play sound
+const RASTER_SPEED  = 18;     // lower = faster movement
 
-        const ctx = canvas.getContext("2d");
-        let stars = [];
-        let width = window.innerWidth;
-        let height = window.innerHeight;
+/* ---------------------------------------
+   2. Boot Overlay HTML Injection
+   --------------------------------------- */
 
-        function resize() {
-            width = window.innerWidth;
-            height = window.innerHeight;
-            canvas.width = width;
-            canvas.height = height;
+function createBootOverlay() {
+    const overlay = document.createElement("div");
+    overlay.id = "ccg-boot-overlay";
+    overlay.innerHTML = `
+        <div class="ccg-boot-center">
+            <div class="ccg-boot-text">
+                <span>*** COMMODORE 64 SYSTEM BOOT ***</span><br>
+                <span>READY.</span>
+            </div>
+            <canvas id="ccg-raster-bars"></canvas>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+}
 
-            stars = [];
-            for (let i = 0; i < 90; i++) {
-                stars.push({
-                    x: Math.random() * width,
-                    y: Math.random() * height,
-                    size: Math.random() * 2,
-                    speed: 0.3 + Math.random() * 0.6
-                });
-            }
+/* ---------------------------------------
+   3. Raster Bars Effect (Canvas)
+   --------------------------------------- */
+
+function startRasterBars() {
+    const canvas = document.getElementById("ccg-raster-bars");
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    canvas.width  = window.innerWidth * 0.6;
+    canvas.height = 120;
+
+    const bars = [
+        "#ff0040",
+        "#ff8000",
+        "#ffff00",
+        "#00ff00",
+        "#00ffff",
+        "#0080ff",
+        "#8000ff",
+        "#ff00ff"
+    ];
+
+    let offset = 0;
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const barHeight = canvas.height / bars.length;
+
+        for (let i = 0; i < bars.length; i++) {
+            ctx.fillStyle = bars[(i + offset) % bars.length];
+            ctx.fillRect(0, i * barHeight, canvas.width, barHeight);
         }
 
-        function update() {
-            ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = "#fff";
-
-            for (let s of stars) {
-                s.y += s.speed;
-                if (s.y > height) {
-                    s.y = 0;
-                    s.x = Math.random() * width;
-                }
-                ctx.globalAlpha = 0.4;
-                ctx.fillRect(s.x, s.y, s.size, s.size);
-            }
-
-            ctx.globalAlpha = 1;
-            requestAnimationFrame(update);
-        }
-
-        window.addEventListener("resize", resize);
-        resize();
-        update();
+        offset = (offset + 1) % bars.length;
     }
 
-    // --- No sounds, no click events, no theme switching ---
-    function initPlaceholders() {
-        window.ccgSearchInit = function(){};
-        window.ccgSocialBar  = function(){ return ""; };
-    }
+    return setInterval(draw, RASTER_SPEED);
+}
 
-    function onReady(fn) {
-        if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", fn);
-        } else {
-            fn();
-        }
-    }
+/* ---------------------------------------
+   4. Play Classic C64 Sample
+   --------------------------------------- */
 
-    onReady(() => {
-        initStarfield();
-        initPlaceholders();
+function playIntroAudio() {
+    const audio = new Audio("../../resources/audio/stay_a_while.mp3");
+
+    audio.volume = 0.65;
+
+    audio.play().catch(() => {
+        console.warn("Autoplay blocked — user gesture required.");
     });
+}
 
-})();
+/* ---------------------------------------
+   5. Fade Out Boot Overlay
+   --------------------------------------- */
+
+function fadeOutBootOverlay() {
+    const overlay = document.getElementById("ccg-boot-overlay");
+    if (!overlay) return;
+
+    overlay.style.opacity = "0";
+    overlay.style.transition = "opacity 1.2s ease";
+
+    setTimeout(() => overlay.remove(), 1600);
+}
+
+/* ---------------------------------------
+   6. Initialise Boot Sequence
+   --------------------------------------- */
+
+document.addEventListener("DOMContentLoaded", () => {
+    createBootOverlay();
+
+    const rasterInterval = startRasterBars();
+
+    // Audio playback (slightly delayed)
+    setTimeout(() => {
+        playIntroAudio();
+    }, AUDIO_DELAY);
+
+    // End boot sequence
+    setTimeout(() => {
+        fadeOutBootOverlay();
+        clearInterval(rasterInterval);
+    }, BOOT_DURATION);
+});
