@@ -1,5 +1,5 @@
 // =====================================================
-// CCG Single Game Loader
+// CCG Single Game Loader (Correct Version for your JSON)
 // Loads one game based on URL parameter ?id=xxx
 // =====================================================
 
@@ -21,7 +21,8 @@ async function loadGame() {
         const response = await fetch("games.json");
         const games = await response.json();
 
-        const game = games.find(g => String(g.id) === String(gameID));
+        // IMPORTANT: your JSON uses "gameid", not "id"
+        const game = games.find(g => String(g.gameid) === String(gameID));
 
         if (!game) {
             container.innerHTML = "<p>Game not found.</p>";
@@ -29,24 +30,35 @@ async function loadGame() {
         }
 
         // Build the display
-        let html = `
-            <h1>${game.title}</h1>
-            <p><strong>Year:</strong> ${game.year || "Unknown"}</p>
-            <p><strong>Publisher:</strong> ${game.publisher || "Unknown"}</p>
-            <p><strong>Developer:</strong> ${game.developer || "Unknown"}</p>
-        `;
+        let html = `<h1>${game.title}</h1>`;
 
-        // Thumbnail image (if exists)
+        // System (C64 / AMIGA)
+        if (game.system) {
+            html += `<p><strong>System:</strong> ${game.system}</p>`;
+        }
+
+        // Optional (only show if the field exists)
+        if (game.year) {
+            html += `<p><strong>Year:</strong> ${game.year}</p>`;
+        }
+        if (game.publisher) {
+            html += `<p><strong>Publisher:</strong> ${game.publisher}</p>`;
+        }
+        if (game.developer) {
+            html += `<p><strong>Developer:</strong> ${game.developer}</p>`;
+        }
+
+        // Thumbnail (if added later)
         if (game.thumbnail) {
             html += `
                 <div>
-                    <img src="${game.thumbnail}" alt="${game.title} thumbnail" style="max-width:300px;">
+                    <img src="${game.thumbnail}" alt="${game.title}" style="max-width:300px;">
                 </div>
             `;
         }
 
         // Genres
-        if (Array.isArray(game.genres)) {
+        if (Array.isArray(game.genres) && game.genres.length > 0) {
             html += `<p><strong>Genres:</strong> `;
             html += game.genres
                 .map(g => `<a href="genres/${g.toLowerCase().replace(/ /g, "-")}.html">${g}</a>`)
@@ -55,33 +67,42 @@ async function loadGame() {
         }
 
         // Links
-        html += `<h2>Links</h2><ul>`;
+        let hasLinks = false;
+        let linksHtml = `<h2>Links</h2><ul>`;
 
-        if (game.lemon64) {
-            html += `<li><a href="${game.lemon64}" target="_blank">Lemon64 Page</a></li>`;
+        // YOUR JSON USES THESE NAMES:
+        if (game.lemonLink) {
+            hasLinks = true;
+            linksHtml += `<li><a href="${game.lemonLink}" target="_blank">Lemon Page</a></li>`;
         }
 
-        if (game.disk) {
-            html += `<li><a href="${game.disk}" download>Download Disk Image</a></li>`;
+        if (game.diskLink) {
+            hasLinks = true;
+            linksHtml += `<li><a href="${game.diskLink}" target="_blank">Download Disk Image</a></li>`;
         }
 
-        if (game.pdf) {
-            html += `<li><a href="${game.pdf}" target="_blank">Manual</a></li>`;
+        // Prefer explicit videoLink, fallback to YouTube with videoId
+        if (game.videoLink) {
+            hasLinks = true;
+            linksHtml += `<li><a href="${game.videoLink}" target="_blank">YouTube Video</a></li>`;
+        } else if (game.videoId) {
+            hasLinks = true;
+            linksHtml += `<li><a href="https://www.youtube.com/watch?v=${game.videoId}" target="_blank">YouTube Video</a></li>`;
         }
 
-        if (game.video) {
-            html += `<li><a href="${game.video}" target="_blank">YouTube Video</a></li>`;
+        linksHtml += "</ul>";
+
+        if (hasLinks) {
+            html += linksHtml;
         }
 
-        html += `</ul>`;
-
-        // Back link
+        // Back
         html += `<p><a href="javascript:history.back()">← Back</a></p>`;
 
         container.innerHTML = html;
 
-    } catch (err) {
-        console.error("Error loading game:", err);
+    } catch (error) {
+        console.error("Error loading game:", error);
         container.innerHTML = "<p>Error loading game data.</p>";
     }
 }
