@@ -6,9 +6,6 @@
     <title>Cheeky Commodore Gamer | Main Menu</title>
     <meta name="description" content="Cheeky Commodore Gamer – hub for Commodore 64 and Amiga game lists, quizzes and collections.">
 
-    <!-- Optional: your global CRT / site CSS if you have it -->
-    <!-- <link rel="stylesheet" href="resources/css/main.css"> -->
-
     <style>
         /* BASIC PAGE RESET */
         * {
@@ -265,7 +262,7 @@
                     <span class="sub">Genres, Collections &amp; C64 goodness</span>
                 </a>
 
-                <a href="games/complete-index.html" class="menu-button">
+                <a href="/complete-index.html" class="menu-button">
                     <span class="label">Complete Game Index</span>
                     <span class="sub">A–Z list of every title</span>
                 </a>
@@ -275,12 +272,12 @@
                     <span class="sub">Test your C64 &amp; Amiga knowledge</span>
                 </a>
 
-                <a href="about.html" class="menu-button">
+                <a href="/about.html" class="menu-button">
                     <span class="label">About</span>
                     <span class="sub">What this is all about</span>
                 </a>
 
-                <a href="contact.html" class="menu-button">
+                <a href="/contact.html" class="menu-button">
                     <span class="label">Contact</span>
                     <span class="sub">Say hello, share memories</span>
                 </a>
@@ -327,7 +324,6 @@
 
     function typeNextChar() {
         if (lineIndex >= bootLines.length) {
-            // Finished all lines – show PRESS FIRE
             pressFireEl.classList.remove("hidden");
             enableStart();
             return;
@@ -337,13 +333,11 @@
 
         if (charIndex <= fullLine.length) {
             currentLine = fullLine.substring(0, charIndex);
-            // Build the full text by combining all previous lines + current
             const previousLines = bootLines.slice(0, lineIndex).join("\n");
             bootTextEl.textContent = previousLines + (lineIndex > 0 ? "\n" : "") + currentLine;
             charIndex++;
-            setTimeout(typeNextChar, 25); // typing speed
+            setTimeout(typeNextChar, 25);
         } else {
-            // Move to next line
             lineIndex++;
             charIndex = 0;
             setTimeout(typeNextChar, 120);
@@ -352,17 +346,14 @@
 
     function enableStart() {
         function startSequence() {
-            // Remove listeners so it only triggers once
             window.removeEventListener("keydown", startSequence);
             window.removeEventListener("click", startSequence);
 
-            // Play audio (if allowed)
             if (audioEl) {
                 audioEl.currentTime = 0;
                 audioEl.play().catch(() => {});
             }
 
-            // Fade out boot, fade in menu
             bootScreenEl.classList.add("hidden");
             menuScreenEl.classList.add("visible");
         }
@@ -371,7 +362,6 @@
         window.addEventListener("click", startSequence);
     }
 
-    // Start typing once DOM is ready
     document.addEventListener("DOMContentLoaded", () => {
         typeNextChar();
     });
