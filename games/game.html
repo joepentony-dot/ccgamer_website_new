@@ -5,362 +5,436 @@
     <title>Cheeky Commodore Gamer | Game Details</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Global styles (adjust paths if needed) -->
-    <link rel="stylesheet" href="../css/engine.css">
-    <link rel="stylesheet" href="../resources/main.css">
+    <!-- You can hook your global styles back in later if you like -->
+    <!-- <link rel="stylesheet" href="../css/engine.css"> -->
+    <!-- <link rel="stylesheet" href="../resources/main.css"> -->
 
     <style>
-        /* Page-specific tweaks only */
-        body {
-            background-color: #000;
-            color: #cceeff;
-            font-family: "VT323", system-ui, monospace;
+        :root {
+            --bg: #05060a;
+            --panel: #10131d;
+            --panel-soft: #151a25;
+            --accent: #39f;
+            --accent-soft: rgba(0, 153, 255, 0.2);
+            --text-main: #e6f1ff;
+            --text-soft: #a4b3d6;
+            --danger: #ff4b4b;
+            --radius-lg: 16px;
         }
 
-        .ccg-wrapper {
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #07101f 0, #02040a 55%, #000 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        .page {
             max-width: 1100px;
             margin: 0 auto;
-            padding: 1.5rem;
+            padding: 16px 16px 32px;
         }
 
-        header.ccg-header {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 1rem;
-            border-bottom: 1px solid #224;
-            padding-bottom: 0.5rem;
-        }
-
-        header.ccg-header h1 {
-            font-size: 2rem;
-            margin: 0;
-        }
-
-        .ccg-system-tag {
-            font-size: 0.9rem;
-            padding: 0.1rem 0.5rem;
-            border: 1px solid #44aaff;
-            border-radius: 4px;
-            margin-left: 0.5rem;
-        }
-
-        nav.ccg-nav a {
-            margin-left: 0.75rem;
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.95rem;
             text-decoration: none;
-            color: #99ddff;
+            color: var(--text-soft);
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(10, 14, 26, 0.8);
+            border: 1px solid rgba(57, 153, 255, 0.3);
+            margin-bottom: 12px;
+        }
+        .back-link:hover {
+            border-color: var(--accent);
+            color: var(--accent);
         }
 
-        nav.ccg-nav a:hover {
-            text-decoration: underline;
+        h1 {
+            margin: 0 0 12px;
+            font-size: clamp(1.6rem, 2.4vw, 2rem);
+            letter-spacing: 0.03em;
         }
 
-        .ccg-layout {
+        .subtitle {
+            margin: 0 0 20px;
+            font-size: 0.95rem;
+            color: var(--text-soft);
+        }
+
+        .game-layout {
             display: grid;
-            grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr);
-            gap: 1.5rem;
-            margin-top: 1rem;
+            grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+            gap: 24px;
         }
 
-        @media (max-width: 900px) {
-            .ccg-layout {
-                grid-template-columns: 1fr;
+        @media (max-width: 800px) {
+            .game-layout {
+                grid-template-columns: minmax(0, 1fr);
             }
         }
 
-        .ccg-meta,
-        .ccg-description,
-        .ccg-links,
-        .ccg-video {
-            background: rgba(0, 0, 32, 0.75);
-            border: 1px solid #224;
-            padding: 1rem;
-            border-radius: 6px;
+        .panel {
+            background: linear-gradient(135deg, #090d18, #050711);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(102, 153, 255, 0.6);
+            box-shadow:
+                0 0 0 1px rgba(0, 51, 102, 0.5),
+                0 18px 40px rgba(0, 0, 0, 0.7);
+            padding: 16px;
         }
 
-        .ccg-meta h2,
-        .ccg-description h2,
-        .ccg-links h2,
-        .ccg-video h2 {
-            font-size: 1.2rem;
-            margin-top: 0;
-            color: #ffea99;
+        .thumb-wrapper {
+            position: relative;
+            border-radius: 14px;
+            overflow: hidden;
+            background: radial-gradient(circle at top, #111a33, #05070f);
+            border: 1px solid rgba(84, 147, 255, 0.7);
         }
 
-        .ccg-genre-badges {
+        #game-thumb {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .thumb-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .play-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15), rgba(0,0,0,0.85));
+            font-size: 2rem;
+            text-indent: 4px;
+            box-shadow: 0 0 18px rgba(0, 255, 204, 0.55);
+        }
+
+        .button-group {
+            margin-top: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .ccg-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 9px 12px;
+            border-radius: 999px;
+            background: radial-gradient(circle at top, #1b315a, #09111f);
+            border: 1px solid rgba(102, 153, 255, 0.7);
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.92rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+        .ccg-button span.icon {
+            font-size: 1.05rem;
+        }
+        .ccg-button:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 16px rgba(0, 153, 255, 0.45);
+        }
+
+        .ccg-button.secondary {
+            background: radial-gradient(circle at top, #13202f, #070911);
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 8px 18px;
+            margin-bottom: 16px;
+        }
+
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .meta-row span.label {
+            color: var(--text-soft);
+        }
+        .meta-row span.value {
+            text-align: right;
+        }
+
+        .tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.4rem;
-            margin: 0.4rem 0 0.6rem;
+            gap: 8px;
+            margin-bottom: 12px;
         }
 
-        .ccg-genre-badges span {
-            font-size: 0.85rem;
-            padding: 0.1rem 0.5rem;
-            border-radius: 4px;
-            border: 1px solid #335;
-            background: rgba(0, 0, 64, 0.85);
+        .tag {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 3px 8px;
+            border-radius: 999px;
+            border: 1px solid rgba(102, 153, 255, 0.6);
+            background: rgba(16, 30, 68, 0.75);
+            color: var(--text-soft);
         }
 
-        .ccg-short-description {
-            font-weight: bold;
-            margin-bottom: 0.5rem;
+        .description {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-soft);
+            white-space: pre-wrap;
         }
 
-        .ccg-full-description p {
-            margin-top: 0.4rem;
-            line-height: 1.35;
-        }
-
-        .ccg-links ul {
-            list-style: none;
-            padding-left: 0;
-            margin: 0;
-        }
-
-        .ccg-links li {
-            margin-bottom: 0.4rem;
-        }
-
-        .ccg-links a {
-            color: #a5fffc;
-            text-decoration: none;
-        }
-
-        .ccg-links a:hover {
-            text-decoration: underline;
-        }
-
-        .ccg-video iframe {
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            border: none;
-        }
-
-        .ccg-fallback {
-            margin-top: 1rem;
-            padding: 0.75rem;
-            background: rgba(64, 0, 0, 0.7);
-            border-radius: 4px;
-            border: 1px solid #633;
-            color: #ffc4c4;
+        .error-box {
+            border-radius: var(--radius-lg);
+            padding: 14px 16px;
+            background: rgba(68, 18, 18, 0.85);
+            border: 1px solid rgba(255, 75, 75, 0.8);
+            color: #ffdede;
+            margin-top: 12px;
             font-size: 0.95rem;
         }
 
-        .ccg-back-link {
-            margin-top: 1rem;
-            display: inline-block;
-            color: #99ddff;
-            text-decoration: none;
-        }
-
-        .ccg-back-link:hover {
-            text-decoration: underline;
+        .id-hint {
+            margin-top: 4px;
+            font-size: 0.8rem;
+            color: var(--text-soft);
         }
     </style>
 </head>
 <body>
-<div class="ccg-wrapper">
-    <header class="ccg-header">
-        <div>
-            <h1 id="game-title">
-                Loading…
-                <span id="game-system" class="ccg-system-tag"></span>
-            </h1>
-        </div>
-        <nav class="ccg-nav">
-            <a href="../index.html">Main Menu</a>
-            <a href="../complete-index.html">Complete Index</a>
-            <a href="../games/index.html">Game Browser</a>
-            <a href="../collections/top-picks.html">Top Picks</a>
-            <a href="../quiz/quiz.html">Quiz</a>
-            <a href="../about.html">About</a>
-            <a href="../contact.html">Contact</a>
-        </nav>
-    </header>
+<div class="page">
+    <a href="complete-index.html" class="back-link">← Back to full game index</a>
 
-    <main id="game-content">
-        <div id="game-error" class="ccg-fallback" style="display:none;">
-            Sorry, this game could not be found. Double-check the link or return to the main index.
-        </div>
+    <h1 id="game-title">Loading game…</h1>
+    <p class="subtitle" id="game-subtitle">Please wait while we spin up the 1541 drive.</p>
 
-        <div class="ccg-layout" id="game-layout" style="display:none;">
-            <section class="ccg-description">
-                <h2>Game Overview</h2>
-                <div id="genre-badges" class="ccg-genre-badges"></div>
-                <div id="short-description" class="ccg-short-description"></div>
-                <div id="full-description" class="ccg-full-description"></div>
-            </section>
+    <div id="error-container"></div>
 
-            <section>
-                <div class="ccg-meta">
-                    <h2>Details</h2>
-                    <p><strong>System:</strong> <span id="meta-system"></span></p>
-                    <p><strong>Sort Title:</strong> <span id="meta-sortTitle"></span></p>
-                    <!-- Future: year, developer, composer can be wired in here when added to games.json -->
+    <div class="game-layout" id="game-layout" style="display:none;">
+        <!-- LEFT COLUMN -->
+        <div class="panel">
+            <div class="thumb-wrapper" id="thumb-wrapper">
+                <img id="game-thumb" alt="Game thumbnail">
+                <div class="thumb-overlay">
+                    <div class="play-icon">▶</div>
                 </div>
+            </div>
 
-                <div class="ccg-links" id="link-block">
-                    <h2>Links & Downloads</h2>
-                    <ul id="link-list"></ul>
-                </div>
-
-                <div class="ccg-video" id="video-block" style="margin-top:1rem; display:none;">
-                    <h2>Longplay / Preview</h2>
-                    <iframe id="video-frame"
-                            src=""
-                            allowfullscreen
-                            loading="lazy">
-                    </iframe>
-                </div>
-            </section>
+            <div class="button-group">
+                <a id="btn-video" class="ccg-button" href="#" target="_blank" rel="noopener">
+                    <span class="icon">▶</span>
+                    <span>Watch gameplay video</span>
+                </a>
+                <a id="btn-disk" class="ccg-button secondary" href="#" target="_blank" rel="noopener">
+                    <span class="icon">💾</span>
+                    <span>Download game (disk)</span>
+                </a>
+                <a id="btn-pdf" class="ccg-button secondary" href="#" target="_blank" rel="noopener">
+                    <span class="icon">📄</span>
+                    <span>View manual / docs</span>
+                </a>
+                <a id="btn-lemon" class="ccg-button secondary" href="#" target="_blank" rel="noopener">
+                    <span class="icon">🍋</span>
+                    <span>Open Lemon64 entry</span>
+                </a>
+            </div>
         </div>
 
-        <a href="../complete-index.html" class="ccg-back-link">⟵ Back to Complete Index</a>
-    </main>
+        <!-- RIGHT COLUMN -->
+        <div class="panel">
+            <div class="meta-grid">
+                <div class="meta-row" id="row-year">
+                    <span class="label">Year</span>
+                    <span class="value" id="meta-year"></span>
+                </div>
+                <div class="meta-row" id="row-publisher">
+                    <span class="label">Publisher</span>
+                    <span class="value" id="meta-publisher"></span>
+                </div>
+                <div class="meta-row" id="row-developer">
+                    <span class="label">Developer</span>
+                    <span class="value" id="meta-developer"></span>
+                </div>
+                <div class="meta-row" id="row-composer">
+                    <span class="label">Music</span>
+                    <span class="value" id="meta-composer"></span>
+                </div>
+            </div>
+
+            <div class="tags" id="tag-row" style="display:none;">
+                <span class="tag" id="tag-genre"></span>
+                <span class="tag" id="tag-system"></span>
+            </div>
+
+            <div class="description" id="game-description">
+                <!-- Fallback text if no description in JSON -->
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-(function () {
-    const params = new URLSearchParams(window.location.search);
-    const gameId = params.get("id");
-
-    const errorBox = document.getElementById("game-error");
-    const layout = document.getElementById("game-layout");
-
-    if (!gameId) {
-        errorBox.style.display = "block";
-        errorBox.textContent = "No game ID supplied in the URL.";
-        return;
+    function getGameId(game) {
+        return game.id || game.gameid || game.slug || game.title;
     }
 
-    // If game.html is inside /games/ and games.json is also in /games/
-    fetch("games.json")
-        .then(res => {
-            if (!res.ok) {
-                throw new Error("Could not load games.json");
+    function setTextOrHide(rowId, targetId, value) {
+        const row = document.getElementById(rowId);
+        const target = document.getElementById(targetId);
+        if (!row || !target) return;
+
+        if (value && String(value).trim() !== "") {
+            target.textContent = value;
+            row.style.display = "flex";
+        } else {
+            row.style.display = "none";
+        }
+    }
+
+    function setLinkOrHide(btnId, url) {
+        const btn = document.getElementById(btnId);
+        if (!btn) return;
+
+        if (url && String(url).trim() !== "") {
+            btn.href = url;
+            btn.style.display = "inline-flex";
+        } else {
+            btn.style.display = "none";
+        }
+    }
+
+    async function loadGamePage() {
+        const params = new URLSearchParams(window.location.search);
+        const idParam = params.get("id");
+
+        const errorContainer = document.getElementById("error-container");
+        const layout = document.getElementById("game-layout");
+        const titleEl = document.getElementById("game-title");
+        const subtitleEl = document.getElementById("game-subtitle");
+
+        if (!idParam) {
+            titleEl.textContent = "No game selected";
+            subtitleEl.textContent = "";
+            errorContainer.innerHTML = '<div class="error-box">No game ID was supplied in the URL.</div>';
+            return;
+        }
+
+        try {
+            const response = await fetch("games.json");
+            if (!response.ok) {
+                throw new Error("Failed to load games.json (" + response.status + ")");
             }
-            return res.json();
-        })
-        .then(games => {
-            const game = games.find(g => g.gameid === gameId);
+
+            const games = await response.json();
+            const idDecoded = decodeURIComponent(idParam);
+
+            const game = games.find(g => String(getGameId(g)) === idParam || String(getGameId(g)) === idDecoded);
+
             if (!game) {
-                errorBox.style.display = "block";
+                titleEl.textContent = "Game not found";
+                subtitleEl.textContent = "";
+                errorContainer.innerHTML =
+                    '<div class="error-box">I couldn\u2019t find a game with ID: <strong>' +
+                    idParam +
+                    '</strong>.</div>';
                 return;
             }
 
+            // Found game – populate UI
             layout.style.display = "grid";
-            populateGamePage(game);
-        })
-        .catch(err => {
+            errorContainer.innerHTML = "";
+
+            titleEl.textContent = game.title || "Untitled game";
+            subtitleEl.textContent = (game.subtitle || game.tagline || "")
+                || "Loaded from the CCG Master Database. Enjoy the nostalgia.";
+
+            // Thumbnail
+            const thumb = document.getElementById("game-thumb");
+            if (game.thumbnail) {
+                // JSON should store thumbnail path relative to repo root, e.g. "resources/images/thumbnails/foo.jpg"
+                thumb.src = "../" + game.thumbnail;
+                thumb.alt = game.title ? (game.title + " thumbnail") : "Game thumbnail";
+            } else {
+                thumb.style.display = "none";
+                document.getElementById("thumb-wrapper").style.minHeight = "180px";
+            }
+
+            // Meta
+            setTextOrHide("row-year", "meta-year", game.year);
+            setTextOrHide("row-publisher", "meta-publisher", game.publisher || game.label);
+            setTextOrHide("row-developer", "meta-developer", game.developer || game.developers);
+            setTextOrHide("row-composer", "meta-composer", game.composer || game.music);
+
+            // Tags
+            const tagRow = document.getElementById("tag-row");
+            const tagGenre = document.getElementById("tag-genre");
+            const tagSystem = document.getElementById("tag-system");
+
+            const genre =
+                (Array.isArray(game.genres) ? game.genres.join(", ") : game.genre) || "";
+            const system = game.system || game.machine || "Commodore 64";
+
+            if (genre || system) {
+                tagRow.style.display = "flex";
+                tagGenre.textContent = genre || "Miscellaneous";
+                tagSystem.textContent = system;
+            } else {
+                tagRow.style.display = "none";
+            }
+
+            // Description
+            const descEl = document.getElementById("game-description");
+            const desc = game.description || game.summary || "";
+            if (desc && String(desc).trim() !== "") {
+                descEl.textContent = desc;
+            } else {
+                descEl.textContent =
+                    "Description coming soon. This entry is already wired up in the CCG Master Database, " +
+                    "but the long-form write-up hasn\u2019t been pasted in yet.";
+            }
+
+            // Links/buttons
+            setLinkOrHide("btn-video", game.video || game.youtube || game.youtubeUrl);
+            setLinkOrHide("btn-disk", game.disk || game.disklink || game.download);
+            setLinkOrHide("btn-pdf", game.pdflink || game.pdf || game.manual);
+            setLinkOrHide("btn-lemon", game.lemon || game.lemon64 || game.lemon64Url);
+
+        } catch (err) {
             console.error(err);
-            errorBox.style.display = "block";
-            errorBox.textContent = "Error loading game data. Please try again later.";
-        });
-
-    function populateGamePage(game) {
-        // Title & system
-        const titleEl = document.getElementById("game-title");
-        const systemEl = document.getElementById("game-system");
-        const metaSystemEl = document.getElementById("meta-system");
-        const metaSortTitleEl = document.getElementById("meta-sortTitle");
-
-        titleEl.childNodes[0].nodeValue = game.title + " ";
-        systemEl.textContent = game.system || "C64";
-
-        metaSystemEl.textContent = game.system || "C64";
-        metaSortTitleEl.textContent = game.sortTitle || game.title;
-
-        // Genres
-        const badges = document.getElementById("genre-badges");
-        badges.innerHTML = "";
-        if (Array.isArray(game.genres)) {
-            game.genres.forEach(g => {
-                const span = document.createElement("span");
-                span.textContent = g;
-                badges.appendChild(span);
-            });
-        }
-
-        // Descriptions (with fallback)
-        const shortEl = document.getElementById("short-description");
-        const fullEl = document.getElementById("full-description");
-
-        if (game.shortDescription) {
-            shortEl.textContent = game.shortDescription;
-        } else {
-            shortEl.textContent = "Description coming soon – this title is queued up on the Cheeky Commodore Gamer workbench.";
-        }
-
-        if (game.fullDescription) {
-            fullEl.innerHTML = "";
-            const paragraphs = game.fullDescription.split(/\n{2,}/);
-            paragraphs.forEach(text => {
-                const p = document.createElement("p");
-                p.textContent = text;
-                fullEl.appendChild(p);
-            });
-        } else {
-            fullEl.innerHTML = "<p>This one is on the description backlog. It will be given the full retro treatment in a future update.</p>";
-        }
-
-        // Links
-        const linkList = document.getElementById("link-list");
-        linkList.innerHTML = "";
-
-        // Lemon64 (may contain multiple links separated by commas)
-        if (game.lemonLink) {
-            const lemonParts = game.lemonLink.split(",").map(s => s.trim()).filter(Boolean);
-            lemonParts.forEach((url, index) => {
-                const li = document.createElement("li");
-                const a = document.createElement("a");
-                a.href = url;
-                a.target = "_blank";
-                a.rel = "noopener noreferrer";
-                a.textContent = lemonParts.length > 1
-                    ? "Lemon64 entry " + (index + 1)
-                    : "Lemon64 entry";
-                li.appendChild(a);
-                linkList.appendChild(li);
-            });
-        }
-
-        // Disk links (also may be comma separated)
-        if (game.diskLink) {
-            const diskParts = game.diskLink.split(",").map(s => s.trim()).filter(Boolean);
-            diskParts.forEach((url, index) => {
-                const li = document.createElement("li");
-                const a = document.createElement("a");
-                a.href = url;
-                a.target = "_blank";
-                a.rel = "noopener noreferrer";
-                a.textContent = diskParts.length > 1
-                    ? "Game download " + (index + 1)
-                    : "Game download";
-                li.appendChild(a);
-                linkList.appendChild(li);
-            });
-        }
-
-        if (!linkList.children.length) {
-            const li = document.createElement("li");
-            li.textContent = "No external links available yet.";
-            linkList.appendChild(li);
-        }
-
-        // Video
-        const videoBlock = document.getElementById("video-block");
-        const frame = document.getElementById("video-frame");
-
-        if (game.videoId) {
-            videoBlock.style.display = "block";
-            frame.src = "https://www.youtube.com/embed/" + encodeURIComponent(game.videoId);
-        } else {
-            videoBlock.style.display = "none";
+            titleEl.textContent = "Error loading game";
+            subtitleEl.textContent = "";
+            errorContainer.innerHTML =
+                '<div class="error-box">' +
+                'There was a problem loading <code>games.json</code>.<br>' +
+                'Error: ' + (err.message || err) +
+                '</div>';
         }
     }
-})();
+
+    document.addEventListener("DOMContentLoaded", loadGamePage);
 </script>
 </body>
 </html>
