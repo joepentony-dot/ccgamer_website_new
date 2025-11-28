@@ -1,10 +1,10 @@
-// Correct path to your games.json file based on your GitHub structure
 async function loadCompleteIndex() {
-    const response = await fetch('/games/games.json');  // Fetch from the correct location
+    // Correct path to the games.json file based on your file structure
+    const response = await fetch('games/games.json');  // Correct relative path
     const games = await response.json();  // Convert the JSON data
 
     const container = document.getElementById('complete-results');
-    container.innerHTML = '';  // Clear the loading message
+    container.innerHTML = '';  // Clear the "loading" message
 
     // Loop through each game and create a card with title and thumbnail
     games.forEach(game => {
