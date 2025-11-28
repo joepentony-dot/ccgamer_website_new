@@ -3,80 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Licensed Games | Cheeky Commodore Gamer</title>
-    <meta name="description" content="Film, TV and comic tie-in games from the CCG library.">
+    <title>Licensed Games | CCG</title>
 
     <link rel="stylesheet" href="../../css/engine.css">
     <link rel="stylesheet" href="../../resources/main.css">
 
-    <script defer src="../../js/engine.js"></script>
-    <script defer src="../../js/genre-loader.js"></script>
+    <style>
+        body { background:#000; color:#b8e4ff; font-family:"VT323", monospace; padding:20px; }
+        .container { max-width:1100px; margin:auto; }
+        h1 { font-size:50px; color:#6fc3ff; margin-bottom:10px; }
+        .game-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:22px; margin-top:25px; }
+        .game { background:#031c2d; border:2px solid #6fc3ff; border-radius:6px; padding:12px; text-align:center; }
+        .game img { width:100%; border-radius:6px; border:2px solid #6fc3ff; margin-bottom:10px; }
+        .game a { color:#a0d8ff; font-size:22px; display:block; margin-bottom:6px; text-decoration:none; }
+        .meta { color:#85c6ff; font-size:20px; }
+        .back-button { display:inline-block; padding:12px 20px; background:#073763; border:2px solid #6fc3ff;
+                       color:#b8e4ff; font-size:24px; border-radius:6px; margin-top:35px; text-decoration:none; }
+    </style>
 </head>
-<body class="ccg-body">
-    <div id="start-screen">
-        <div class="boot-window">
-            <pre id="boot-log"></pre>
-            <div id="press-space">PRESS SPACE TO CONTINUE</div>
-        </div>
-    </div>
 
-    <div class="crt">
-        <div class="scanlines"></div>
-        <div class="screen">
-            <header class="ccg-header">
-                <div class="logo-area">
-                    <span class="logo-main">CHEEKY</span>
-                    <span class="logo-sub">COMMODORE GAMER</span>
-                </div>
-                <nav class="ccg-nav">
-                    <a href="../../index.html" class="nav-link">Main Menu</a>
-                    <a href="../index.html" class="nav-link">Game Browser</a>
-                    <a href="../complete-index.html" class="nav-link">Full Index</a>
-                    <a href="../../quiz/quiz.html" class="nav-link">Retro Quiz</a>
-                    <a href="../../about.html" class="nav-link">About</a>
-                    <a href="../../contact.html" class="nav-link">Contact</a>
-                </nav>
-            </header>
+<body>
+<div class="container">
+    <h1>Licensed Games</h1>
+    <p>Games based on movies, TV, comics, official characters, and commercial brands.</p>
 
-            <main class="ccg-main games-layout">
-                <section class="filters-panel">
-                    <h1>Licensed Games</h1>
-                    <p>Film, TV, comic and brand tie-ins from the CCG collection.</p>
-                    <div class="filters">
-                        <label>
-                            Search:
-                            <input type="text" id="filter-search" placeholder="Filter titles in this collection…">
-                        </label>
-                        <label>
-                            System:
-                            <select id="filter-system">
-                                <option value="">All</option>
-                                <option value="C64">C64</option>
-                                <option value="Amiga">Amiga</option>
-                            </select>
-                        </label>
-                    </div>
-                    <div class="filters-actions">
-                        <button id="reset-filters">Reset Filters</button>
-                        <span id="games-count">Loading games…</span>
-                    </div>
-                </section>
+    <div id="results" class="game-list"></div>
 
-                <section class="games-list-panel">
-                    <div id="games-list" class="games-list" data-collection="Licensed Games">
-                        <!-- genre-loader.js -->
-                    </div>
-                    <div id="games-status" class="games-status"></div>
-                </section>
-            </main>
+    <a href="../index.html" class="back-button">⬅ Back to Game Menu</a>
+</div>
 
-            <footer class="ccg-footer">
-                <p>
-                    <a href="index.html">Back to Collections</a> •
-                    <a href="../../index.html">Return to Main Menu</a>
-                </p>
-            </footer>
-        </div>
-    </div>
+<script>
+const TAG = "Licensed Games";
+
+async function loadCollection() {
+    const container = document.getElementById("results");
+
+    try {
+        const response = await fetch("../games.json");
+        const games = await response.json();
+
+        const filtered = games
+            .filter(g => Array.isArray(g.genre) && g.genre.includes(TAG))
+            .sort((a,b) => a.title.localeCompare(b.title));
+
+        if (!filtered.length) {
+            container.innerHTML = "<p>No licensed games found.</p>";
+            return;
+        }
+
+        container.innerHTML = filtered.map(g => `
+            <div class="game">
+                <a href="../game.html?id=${g.id}">
+                    <img src="../../${g.thumbnail}" alt="${g.title}">
+                </a>
+                <a href="../game.html?id=${g.id}">${g.title}</a>
+                <div class="meta">${g.year ?? ""}</div>
+            </div>
+        `).join("");
+
+    } catch {
+        container.innerHTML = "<p>Error loading collection.</p>";
+    }
+}
+
+loadCollection();
+</script>
 </body>
 </html>
