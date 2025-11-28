@@ -1,43 +1,89 @@
-function getGameId() {
+// =====================================================
+// CCG Single Game Loader
+// Loads one game based on URL parameter ?id=xxx
+// =====================================================
+
+function getGameID() {
     const params = new URLSearchParams(window.location.search);
-    return params.get("game");
+    return params.get("id");
 }
 
-async function loadGameDetails() {
+async function loadGame() {
+    const gameID = getGameID();
+    const container = document.getElementById("game-container");
+
+    if (!gameID) {
+        container.innerHTML = "<p>Game ID missing.</p>";
+        return;
+    }
+
     try {
-        const response = await fetch('../games.json');
+        const response = await fetch("games.json");
         const games = await response.json();
 
-        const id = getGameId();
-        const game = games.find(g => g.gameid === id);
-
-        const title = document.getElementById("game-title");
-        const container = document.getElementById("game-details");
+        const game = games.find(g => String(g.id) === String(gameID));
 
         if (!game) {
-            title.textContent = "Game Not Found";
-            container.innerHTML = "<p>This game does not exist in the database.</p>";
+            container.innerHTML = "<p>Game not found.</p>";
             return;
         }
 
-        title.textContent = game.title;
-
-        container.innerHTML = `
-            <p><strong>System:</strong> ${game.system}</p>
-            <p><strong>Genres:</strong> ${game.genres.join(', ')}</p>
-            <p><strong>YouTube:</strong> ${
-                game.videoId ? `<a href="https://www.youtube.com/watch?v=${game.videoId}" target="_blank">Watch Video</a>` : "No video available"
-            }</p>
-            <p><strong>Lemon Link:</strong> ${
-                game.lemonLink ? `<a href="${game.lemonLink}" target="_blank">Lemon64</a>` : "None"
-            }</p>
-            <p><strong>Download:</strong> ${
-                game.diskLink ? `<a href="${game.diskLink}" target="_blank">Disk Image</a>` : "None"
-            }</p>
+        // Build the display
+        let html = `
+            <h1>${game.title}</h1>
+            <p><strong>Year:</strong> ${game.year || "Unknown"}</p>
+            <p><strong>Publisher:</strong> ${game.publisher || "Unknown"}</p>
+            <p><strong>Developer:</strong> ${game.developer || "Unknown"}</p>
         `;
-    } catch (error) {
-        console.error("Error loading game:", error);
+
+        // Thumbnail image (if exists)
+        if (game.thumbnail) {
+            html += `
+                <div>
+                    <img src="${game.thumbnail}" alt="${game.title} thumbnail" style="max-width:300px;">
+                </div>
+            `;
+        }
+
+        // Genres
+        if (Array.isArray(game.genres)) {
+            html += `<p><strong>Genres:</strong> `;
+            html += game.genres
+                .map(g => `<a href="genres/${g.toLowerCase().replace(/ /g, "-")}.html">${g}</a>`)
+                .join(", ");
+            html += `</p>`;
+        }
+
+        // Links
+        html += `<h2>Links</h2><ul>`;
+
+        if (game.lemon64) {
+            html += `<li><a href="${game.lemon64}" target="_blank">Lemon64 Page</a></li>`;
+        }
+
+        if (game.disk) {
+            html += `<li><a href="${game.disk}" download>Download Disk Image</a></li>`;
+        }
+
+        if (game.pdf) {
+            html += `<li><a href="${game.pdf}" target="_blank">Manual</a></li>`;
+        }
+
+        if (game.video) {
+            html += `<li><a href="${game.video}" target="_blank">YouTube Video</a></li>`;
+        }
+
+        html += `</ul>`;
+
+        // Back link
+        html += `<p><a href="javascript:history.back()">← Back</a></p>`;
+
+        container.innerHTML = html;
+
+    } catch (err) {
+        console.error("Error loading game:", err);
+        container.innerHTML = "<p>Error loading game data.</p>";
     }
 }
 
-document.addEventListener('DOMContentLoaded', loadGameDetails);
+document.addEventListener("DOMContentLoaded", loadGame);
