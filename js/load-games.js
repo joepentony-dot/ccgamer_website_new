@@ -1,6 +1,6 @@
 async function loadCompleteIndex() {
     // Correct path to the games.json file based on your file structure
-    const response = await fetch('games/games.json');  // Correct relative path
+    const response = await fetch('games/games.json');
     const games = await response.json();  // Convert the JSON data
 
     const container = document.getElementById('complete-results');
