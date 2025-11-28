@@ -1,105 +1,239 @@
-// =====================================================
-// CCG Single Game Loader (Correct Version for your JSON)
-// Loads one game based on URL parameter ?id=xxx
-// =====================================================
+/* ================================================================
+   CHEEKY COMMODORE GAMER - SINGLE GAME LOADER (Retro Deluxe)
+   ---------------------------------------------------------------
+   Loads one game from games.json based on ?id= in the URL and
+   populates game.html with all available data.
+   ================================================================ */
 
-function getGameID() {
+function getGameIdFromUrl() {
     const params = new URLSearchParams(window.location.search);
     return params.get("id");
 }
 
-async function loadGame() {
-    const gameID = getGameID();
-    const container = document.getElementById("game-container");
+function normaliseGameRecord(game) {
+    // Map thumblink → thumbnail if needed
+    if (game.thumblink && !game.thumbnail) {
+        game.thumbnail = game.thumblink;
+    }
 
-    if (!gameID) {
-        container.innerHTML = "<p>Game ID missing.</p>";
+    // Build a video URL from videoid if not already present
+    if (game.videoid && !game.video) {
+        game.video = "https://www.youtube.com/watch?v=" + game.videoid;
+    }
+
+    return game;
+}
+
+async function loadSingleGame() {
+    const id = getGameIdFromUrl();
+
+    const titleEl       = document.getElementById("game-title");
+    const sublineEl     = document.getElementById("game-subline");
+    const thumbImg      = document.getElementById("game-thumbnail");
+    const thumbLabel    = document.getElementById("thumb-label");
+    const thumbOpenLink = document.getElementById("thumb-open-link");
+    const videoShell    = document.getElementById("video-shell");
+    const videoFrame    = document.getElementById("game-video");
+    const metaYear      = document.getElementById("meta-year");
+    const metaDev       = document.getElementById("meta-developer");
+    const metaId        = document.getElementById("meta-id");
+    const genresRow     = document.getElementById("genres-row");
+    const btnDisk       = document.getElementById("btn-disk");
+    const btnManual     = document.getElementById("btn-manual");
+    const btnLemon      = document.getElementById("btn-lemon");
+    const btnYouTube    = document.getElementById("btn-youtube");
+    const bottomId      = document.getElementById("bottom-id");
+    const errorBox      = document.getElementById("error-box");
+
+    if (!id) {
+        titleEl.textContent = "Game not specified";
+        sublineEl.textContent = "No ID was provided in the URL.";
+        errorBox.style.display = "block";
+        errorBox.textContent = "Missing ?id= parameter. Please access this page via the site’s links.";
         return;
     }
 
     try {
-        const response = await fetch("../games.json"); 
-        const games = await response.json();
+        // game.html is inside /games/, so games.json is in the same folder
+        const response = await fetch("games.json");
+        if (!response.ok) {
+            throw new Error("Failed to load games.json (" + response.status + ")");
+        }
 
-        // YOUR JSON USES gameid, not id
-        const game = games.find(g => String(g.gameid) === String(gameID));
+        const games = await response.json();
+        const game = games.map(normaliseGameRecord).find(g => String(g.id) === String(id));
 
         if (!game) {
-            container.innerHTML = "<p>Game not found.</p>";
+            titleEl.textContent = "Game not found";
+            sublineEl.textContent = "ID: " + id;
+            errorBox.style.display = "block";
+            errorBox.textContent = "No game with this ID exists in games.json.";
             return;
         }
 
-        // Build the display
-        let html = `<h1>${game.title}</h1>`;
+        // Title and subline
+        titleEl.textContent = game.title || "Untitled Game";
 
-        // System (C64 / AMIGA)
-        if (game.system) {
-            html += `<p><strong>System:</strong> ${game.system}</p>`;
+        const metaBits = [];
+        if (game.year) metaBits.push(game.year);
+        if (game.developer) metaBits.push(game.developer);
+        sublineEl.textContent = metaBits.join(" · ") || "";
+
+        // Meta pills
+        if (game.year) {
+            metaYear.style.display = "inline-flex";
+            metaYear.textContent = "Year: " + game.year;
+        } else {
+            metaYear.style.display = "none";
         }
 
-        // Optional metadata if you add it later
-        if (game.year) html += `<p><strong>Year:</strong> ${game.year}</p>`;
-        if (game.publisher) html += `<p><strong>Publisher:</strong> ${game.publisher}</p>`;
-        if (game.developer) html += `<p><strong>Developer:</strong> ${game.developer}</p>`;
+        if (game.developer) {
+            metaDev.style.display = "inline-flex";
+            metaDev.textContent = "Developer: " + game.developer;
+        } else {
+            metaDev.style.display = "none";
+        }
 
-        // Thumbnail (future ready)
+        metaId.style.display = "inline-flex";
+        metaId.textContent = "ID: " + game.id;
+
+        if (bottomId) {
+            bottomId.textContent = "Game ID: " + game.id;
+        }
+
+        // Thumbnail
         if (game.thumbnail) {
-            html += `
-                <div>
-                    <img src="${game.thumbnail}" alt="${game.title}" style="max-width:300px;">
-                </div>
-            `;
+            thumbImg.src = game.thumbnail;
+            thumbImg.alt = (game.title || "Game") + " thumbnail";
+            thumbLabel.textContent = "Box / Title Screen Artwork";
+            thumbOpenLink.href = game.thumbnail;
+        } else {
+            thumbImg.alt = "No thumbnail available";
+            thumbLabel.textContent = "No thumbnail available";
+            thumbOpenLink.classList.add("disabled");
         }
 
         // Genres
-        if (Array.isArray(game.genres) && game.genres.length > 0) {
-            html += `<p><strong>Genres:</strong> `;
-            html += game.genres
-                .map(g => `<a href="genres/${g.toLowerCase().replace(/ /g, "-")}.html">${g}</a>`)
-                .join(", ");
-            html += `</p>`;
+        genresRow.innerHTML = "";
+        let genres = [];
+
+        if (Array.isArray(game.genre)) {
+            genres = game.genre;
+        } else if (typeof game.genre === "string" && game.genre.trim() !== "") {
+            genres = [game.genre];
         }
 
-        // Links
-        let hasLinks = false;
-        let linksHtml = `<h2>Links</h2><ul>`;
-
-        if (game.lemonLink) {
-            hasLinks = true;
-            linksHtml += `<li><a href="${game.lemonLink}" target="_blank">Lemon Page</a></li>`;
+        if (genres.length > 0) {
+            genres.forEach(gName => {
+                const chip = document.createElement("span");
+                chip.className = "genre-chip";
+                chip.textContent = gName;
+                genresRow.appendChild(chip);
+            });
         }
 
-        if (game.diskLink) {
-            hasLinks = true;
-            linksHtml += `<li><a href="${game.diskLink}" target="_blank">Download Disk Image</a></li>`;
+        // Buttons helper
+        function wireButton(button, url, labelWhenMissing) {
+            if (url && typeof url === "string" && url.trim() !== "") {
+                button.href = url;
+                button.classList.remove("disabled");
+            } else {
+                button.href = "#";
+                button.classList.add("disabled");
+                if (labelWhenMissing) {
+                    button.title = labelWhenMissing;
+                }
+            }
         }
 
-        if (game.pdfLink) {
-            hasLinks = true;
-            linksHtml += `<li><a href="${game.pdfLink}" target="_blank">Manual (PDF)</a></li>`;
+        // Disk / download
+        wireButton(btnDisk, game.disklink, "No disk/download link available for this entry.");
+
+        // Manual / PDF
+        wireButton(btnManual, game.pdflink, "No manual / PDF link for this entry.");
+
+        // Lemon
+        wireButton(btnLemon, game.lemonlink, "No Lemon64 link for this entry.");
+
+        // Video / YouTube
+        let youtubeUrl = game.video || "";
+        if (!youtubeUrl && game.videoid) {
+            youtubeUrl = "https://www.youtube.com/watch?v=" + game.videoid;
+        }
+        if (youtubeUrl) {
+            wireButton(btnYouTube, youtubeUrl, "");
+            // Embedded video
+            if (videoShell && videoFrame) {
+                videoShell.style.display = "block";
+                // Use embed URL for iframe
+                const urlObj = new URL(youtubeUrl);
+                const vidId = urlObj.searchParams.get("v") || game.videoid;
+                if (vidId) {
+                    videoFrame.src = "https://www.youtube.com/embed/" + vidId;
+                } else {
+                    videoShell.style.display = "none";
+                }
+            }
+        } else {
+            btnYouTube.classList.add("disabled");
+            if (videoShell) videoShell.style.display = "none";
         }
 
-        if (game.videoLink) {
-            hasLinks = true;
-            linksHtml += `<li><a href="${game.videoLink}" target="_blank">YouTube Video</a></li>`;
-        } else if (game.videoId) {
-            hasLinks = true;
-            linksHtml += `<li><a href="https://www.youtube.com/watch?v=${game.videoId}" target="_blank">YouTube Video</a></li>`;
+    } catch (err) {
+        console.error(err);
+        if (errorBox) {
+            errorBox.style.display = "block";
+            errorBox.textContent = "Error loading game data. Please check the console or try again later.";
         }
-
-        linksHtml += `</ul>`;
-
-        if (hasLinks) html += linksHtml;
-
-        // Back button
-        html += `<p><a href="javascript:history.back()">← Back</a></p>`;
-
-        container.innerHTML = html;
-
-    } catch (error) {
-        console.error("Error loading game:", error);
-        container.innerHTML = "<p>Error loading game data.</p>";
     }
 }
 
-document.addEventListener("DOMContentLoaded", loadGame);
+/* ================================================================
+   C64 / Amiga mode toggle
+   --------------------------------------------------------------- */
+
+function setupModeToggle() {
+    const buttons = document.querySelectorAll(".mode-toggle button");
+    const body = document.body;
+
+    function setMode(mode) {
+        if (mode === "amiga") {
+            body.classList.remove("mode-c64");
+            body.classList.add("mode-amiga");
+        } else {
+            body.classList.remove("mode-amiga");
+            body.classList.add("mode-c64");
+        }
+
+        buttons.forEach(btn => {
+            if (btn.getAttribute("data-mode") === mode) {
+                btn.classList.add("active");
+            } else {
+                btn.classList.remove("active");
+            }
+        });
+    }
+
+    buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            const mode = btn.getAttribute("data-mode");
+            setMode(mode);
+        });
+    });
+
+    // Default mode
+    setMode("c64");
+}
+
+/* ================================================================
+   (Optional future step)
+   Easter egg hooks could be added here later, e.g. listening for
+   certain key sequences like "PACMAN" or "LEMMINGS" and toggling
+   small animations or overlays. Keeping it out for now so we stay
+   on target with core functionality.
+   ================================================================ */
+
+document.addEventListener("DOMContentLoaded", () => {
+    setupModeToggle();
+    loadSingleGame();
+});
