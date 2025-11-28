@@ -4,369 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheeky Commodore Gamer | Main Menu</title>
-    <meta name="description" content="Cheeky Commodore Gamer – hub for Commodore 64 and Amiga game lists, quizzes and collections.">
 
-    <style>
-        /* BASIC PAGE RESET */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        html, body {
-            height: 100%;
-            background: #000;
-            color: #b8e4ff;
-            font-family: "VT323", monospace, system-ui;
-        }
-
-        /* ==============
-           CRT OVERLAY
-           ============== */
-        .crt-overlay {
-            pointer-events: none;
-            position: fixed;
-            inset: 0;
-            mix-blend-mode: screen;
-            opacity: 0.22;
-            background: radial-gradient(circle at 50% 20%, rgba(255,255,255,0.12), transparent 55%);
-            z-index: 5000;
-        }
-        .scanlines {
-            pointer-events: none;
-            position: fixed;
-            inset: 0;
-            background-image: linear-gradient(rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.8) 50%);
-            background-size: 100% 2px;
-            opacity: 0.3;
-            z-index: 4999;
-        }
-        .crt-flicker {
-            animation: crt-flicker 0.12s infinite alternate;
-        }
-
-        @keyframes crt-flicker {
-            from { opacity: 0.96; }
-            to   { opacity: 1; }
-        }
-
-        /* ==============
-           BOOT SCREEN
-           ============== */
-        #boot-screen {
-            position: fixed;
-            inset: 0;
-            background: #000020;
-            color: #a0b8ff;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 16px;
-            z-index: 4000;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
-        }
-        #boot-screen.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
-
-        .boot-inner {
-            width: 100%;
-            max-width: 900px;
-            border: 3px solid #3f48cc;
-            padding: 16px;
-            background: #000040;
-            box-shadow: 0 0 30px rgba(0, 200, 255, 0.3);
-            position: relative;
-        }
-
-        #boot-text {
-            white-space: pre-wrap;
-            font-size: 18px;
-            line-height: 1.4;
-            color: #c0c8ff;
-            min-height: 260px;
-        }
-
-        .press-fire {
-            margin-top: 18px;
-            text-align: left;
-            font-size: 20px;
-            color: #ffffff;
-        }
-        .press-fire.hidden {
-            display: none;
-        }
-        .press-fire span.blink {
-            animation: blink 0.8s steps(2, start) infinite;
-        }
-
-        @keyframes blink {
-            0%   { opacity: 1; }
-            50%  { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
-        /* Simple raster bar stack under the text area */
-        .rasterbars {
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: -40px;
-            height: 40px;
-            background: linear-gradient(
-                to bottom,
-                #ff0040,
-                #ff8000,
-                #ffff00,
-                #40ff40,
-                #40c0ff,
-                #8040ff,
-                #ff40ff
-            );
-            filter: blur(1px);
-            opacity: 0.85;
-            animation: scrollbars 2.8s linear infinite;
-        }
-
-        @keyframes scrollbars {
-            0%   { transform: translateY(0); }
-            50%  { transform: translateY(-8px); }
-            100% { transform: translateY(0); }
-        }
-
-        /* ==============
-           MAIN MENU SCREEN
-           ============== */
-        #menu-screen {
-            position: relative;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 26px 16px 40px;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
-        }
-        #menu-screen.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .menu-wrapper {
-            width: 100%;
-            max-width: 900px;
-            text-align: center;
-        }
-
-        header.menu-header h1 {
-            font-size: 42px;
-            color: #6fc3ff;
-            text-shadow: 0 0 8px rgba(0, 200, 255, 0.9);
-            margin-bottom: 4px;
-        }
-        header.menu-header p {
-            font-size: 22px;
-            color: #9bd3ff;
-            margin-bottom: 24px;
-        }
-
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-            gap: 18px;
-            margin-top: 10px;
-        }
-
-        .menu-button {
-            display: block;
-            padding: 14px 12px;
-            border-radius: 10px;
-            border: 2px solid #3fc0ff;
-            background: radial-gradient(circle at 20% 0%, #073763, #020b20);
-            color: #b8e4ff;
-            font-size: 22px;
-            text-decoration: none;
-            box-shadow: 0 0 14px rgba(0, 160, 255, 0.5);
-            transition: transform 0.08s ease, box-shadow 0.08s ease, border-color 0.08s ease;
-        }
-        .menu-button span.label {
-            display: block;
-            font-size: 20px;
-        }
-        .menu-button span.sub {
-            display: block;
-            margin-top: 4px;
-            font-size: 14px;
-            color: #9bd3ff;
-        }
-        .menu-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 22px rgba(0, 200, 255, 0.8);
-            border-color: #9ad8ff;
-        }
-
-        footer {
-            margin-top: 30px;
-            font-size: 14px;
-            color: #7fb3ff;
-            text-align: center;
-        }
-
-        @media (max-width: 600px) {
-            header.menu-header h1 {
-                font-size: 32px;
-            }
-            header.menu-header p {
-                font-size: 18px;
-            }
-            .menu-button {
-                font-size: 20px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="css/engine.css">
+    <link rel="stylesheet" href="resources/css/main.css">
 </head>
-<body class="crt-flicker">
+<body class="crt-body">
+    <div class="crt-wrapper">
+        <div class="crt-overlay"></div>
 
-<!-- CRT effects -->
-<div class="crt-overlay"></div>
-<div class="scanlines"></div>
+        <!-- Header -->
+        <header class="site-header">
+            <div class="site-header-inner">
+                <a href="index.html" class="site-logo-link">
+                    <span class="site-logo-text">CHEEKY</span>
+                    <span class="site-logo-sub">COMMODORE GAMER</span>
+                </a>
+                <div class="site-header-meta">
+                    <span class="system-badge">C64 / Amiga Archive</span>
+                </div>
+            </div>
 
-<!-- ======== BOOT SCREEN ======== -->
-<div id="boot-screen">
-    <div class="boot-inner">
-        <pre id="boot-text"></pre>
-        <div class="press-fire hidden" id="press-fire">
-            <span class="blink">PRESS FIRE TO START</span>
-            <br>
-            <small>(Press any key or click)</small>
-        </div>
-        <div class="rasterbars"></div>
-    </div>
-</div>
-
-<!-- ======== MAIN MENU ======== -->
-<div id="menu-screen">
-    <div class="menu-wrapper">
-        <header class="menu-header">
-            <h1>Cheeky Commodore Gamer</h1>
-            <p>Commodore 64 &amp; Amiga Retro Gaming Hub</p>
+            <!-- Navigation Bar -->
+            <nav class="top-nav">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <a href="https://joepentony-dot.github.io/ccgamer_website_new/complete-index.html" class="nav-link">Complete Index</a> <!-- Fixed link -->
+            </nav>
         </header>
 
-        <section>
-            <div class="menu-grid">
-                <a href="games/index.html" class="menu-button">
-                    <span class="label">Browse Games</span>
-                    <span class="sub">Genres, Collections &amp; C64 goodness</span>
-                </a>
+        <!-- Main Content -->
+        <main class="page-main">
+            <section class="panel panel-primary">
+                <header class="panel-header">
+                    <h2>Welcome to Cheeky Commodore Gamer!</h2>
+                    <p>Explore the best of retro gaming.</p>
+                </header>
+            </section>
+        </main>
 
-                <a href="/complete-index.html" class="menu-button">
-                    <span class="label">Complete Game Index</span>
-                    <span class="sub">A–Z list of every title</span>
-                </a>
-
-                <a href="quiz/quiz.html" class="menu-button">
-                    <span class="label">Retro Quiz</span>
-                    <span class="sub">Test your C64 &amp; Amiga knowledge</span>
-                </a>
-
-                <a href="/about.html" class="menu-button">
-                    <span class="label">About</span>
-                    <span class="sub">What this is all about</span>
-                </a>
-
-                <a href="/contact.html" class="menu-button">
-                    <span class="label">Contact</span>
-                    <span class="sub">Say hello, share memories</span>
-                </a>
-            </div>
-        </section>
-
-        <footer>
-            &copy; Cheeky Commodore Gamer – Commodore 64 &amp; Amiga Nostalgia
+        <!-- Footer -->
+        <footer class="site-footer">
+            <p>&copy; 2025 Cheeky Commodore Gamer</p>
         </footer>
     </div>
-</div>
-
-<!-- Boot audio -->
-<audio id="boot-audio" preload="auto">
-    <source src="resources/audio/c64_speech_stayawhile.mp3" type="audio/mpeg">
-</audio>
-
-<script>
-(function() {
-    const bootLines = [
-        " **** COMMODORE 64 BASIC V2 ****",
-        " 64K RAM SYSTEM  38911 BASIC BYTES FREE",
-        "",
-        "READY.",
-        "",
-        "LOAD\"CCG MAIN MENU\",8,1",
-        "SEARCHING FOR CCG MAIN MENU",
-        "LOADING",
-        "READY.",
-        "",
-        "RUN",
-        ""
-    ];
-
-    const bootTextEl = document.getElementById("boot-text");
-    const pressFireEl = document.getElementById("press-fire");
-    const bootScreenEl = document.getElementById("boot-screen");
-    const menuScreenEl = document.getElementById("menu-screen");
-    const audioEl = document.getElementById("boot-audio");
-
-    let lineIndex = 0;
-    let charIndex = 0;
-    let currentLine = "";
-
-    function typeNextChar() {
-        if (lineIndex >= bootLines.length) {
-            pressFireEl.classList.remove("hidden");
-            enableStart();
-            return;
-        }
-
-        const fullLine = bootLines[lineIndex];
-
-        if (charIndex <= fullLine.length) {
-            currentLine = fullLine.substring(0, charIndex);
-            const previousLines = bootLines.slice(0, lineIndex).join("\n");
-            bootTextEl.textContent = previousLines + (lineIndex > 0 ? "\n" : "") + currentLine;
-            charIndex++;
-            setTimeout(typeNextChar, 25);
-        } else {
-            lineIndex++;
-            charIndex = 0;
-            setTimeout(typeNextChar, 120);
-        }
-    }
-
-    function enableStart() {
-        function startSequence() {
-            window.removeEventListener("keydown", startSequence);
-            window.removeEventListener("click", startSequence);
-
-            if (audioEl) {
-                audioEl.currentTime = 0;
-                audioEl.play().catch(() => {});
-            }
-
-            bootScreenEl.classList.add("hidden");
-            menuScreenEl.classList.add("visible");
-        }
-
-        window.addEventListener("keydown", startSequence);
-        window.addEventListener("click", startSequence);
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-        typeNextChar();
-    });
-})();
-</script>
-
 </body>
 </html>
