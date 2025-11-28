@@ -1,5 +1,5 @@
 /* ===========================================================================
-   CHEEKY COMMODORE GAMER — SINGLE GAME LOADER (FINAL)
+   CHEEKY COMMODORE GAMER — SINGLE GAME LOADER (SAFE, FINAL)
    ---------------------------------------------------------------------------
    Matches your JSON fields exactly:
    - id
@@ -12,13 +12,13 @@
    - pdflink
    - disklink
    - lemonlink
+   Uses a simple relative path: "games.json" (no BASE conflicts).
    ========================================================================== */
 
 console.log("Single Game Loader active...");
 
-// Auto-detect base URL on any domain (GitHub, Fasthosts, custom domain)
-const BASE = window.location.origin + "/ccgamer_website_new/";
-const JSON_URL = BASE + "games/games.json";
+// Path to JSON: game.html is in /games/, JSON is /games/games.json
+const JSON_URL = "games.json";
 
 /* ===========================================================================
    Helper: get ID from URL
@@ -43,15 +43,21 @@ async function loadSingleGame() {
         const response = await fetch(JSON_URL);
         const games = await response.json();
 
-        const game = games.find(g => g.id.toLowerCase() === id.toLowerCase());
+        if (!Array.isArray(games)) {
+            console.error("games.json is not an array:", games);
+            showError("Invalid game database format.");
+            return;
+        }
+
+        const game = games.find(g => String(g.id).toLowerCase() === String(id).toLowerCase());
 
         if (!game) {
+            console.warn("Game not found for ID:", id);
             showError("Game not found in database.");
             return;
         }
 
         console.log("Loaded game:", game);
-
         renderGame(game);
 
     } catch (err) {
@@ -66,58 +72,76 @@ async function loadSingleGame() {
 function renderGame(game) {
 
     // Title
-    document.getElementById("game-title").textContent = game.title;
+    const titleEl = document.getElementById("game-title");
+    if (titleEl) titleEl.textContent = game.title || "Unknown title";
 
     // Subline (year + developer)
     let subline = "";
     if (game.year) subline += game.year;
-    if (game.developer) subline += " · " + game.developer;
-    document.getElementById("game-subline").textContent = subline;
+    if (game.developer) subline += (subline ? " · " : "") + game.developer;
+
+    const sublineEl = document.getElementById("game-subline");
+    if (sublineEl) sublineEl.textContent = subline;
 
     // Metadata
     if (game.year) {
         const y = document.getElementById("meta-year");
-        y.style.display = "inline-block";
-        y.textContent = "Year: " + game.year;
+        if (y) {
+            y.style.display = "inline-block";
+            y.textContent = "Year: " + game.year;
+        }
     }
 
     if (game.developer) {
         const d = document.getElementById("meta-developer");
-        d.style.display = "inline-block";
-        d.textContent = "Developer: " + game.developer;
+        if (d) {
+            d.style.display = "inline-block";
+            d.textContent = "Developer: " + game.developer;
+        }
     }
 
     const idMeta = document.getElementById("meta-id");
-    idMeta.style.display = "inline-block";
-    idMeta.textContent = "ID: " + game.id;
+    if (idMeta) {
+        idMeta.style.display = "inline-block";
+        idMeta.textContent = "ID: " + game.id;
+    }
 
-    // Genres (your JSON uses `genre`, not `genres`)
+    // Genres (your JSON uses `genre`)
     const genreRow = document.getElementById("genres-row");
-    genreRow.innerHTML = "";
-
-    if (Array.isArray(game.genre)) {
-        game.genre.forEach(g => {
-            const chip = document.createElement("span");
-            chip.className = "genre-chip";
-            chip.textContent = g;
-            genreRow.appendChild(chip);
-        });
+    if (genreRow) {
+        genreRow.innerHTML = "";
+        if (Array.isArray(game.genre)) {
+            game.genre.forEach(g => {
+                const chip = document.createElement("span");
+                chip.className = "genre-chip";
+                chip.textContent = g;
+                genreRow.appendChild(chip);
+            });
+        }
     }
 
-    // Thumbnail
+    // Thumbnail (thumblink)
     if (game.thumblink) {
-        document.getElementById("game-thumbnail").src = game.thumblink;
-        document.getElementById("thumb-open-link").href = game.thumblink;
-        document.getElementById("thumb-label").textContent = "Box / Title Screen Art";
+        const thumbImg = document.getElementById("game-thumbnail");
+        if (thumbImg) {
+            thumbImg.src = game.thumblink;
+            thumbImg.alt = game.title || "Game thumbnail";
+        }
+
+        const thumbOpen = document.getElementById("thumb-open-link");
+        if (thumbOpen) thumbOpen.href = game.thumblink;
+
+        const thumbLabel = document.getElementById("thumb-label");
+        if (thumbLabel) thumbLabel.textContent = "Box / Title Screen Artwork";
     }
 
-    // YouTube
+    // YouTube video (videoid)
     if (game.videoid) {
         const shell = document.getElementById("video-shell");
-        shell.style.display = "block";
+        if (shell) shell.style.display = "block";
 
         const iframe = document.getElementById("game-video");
-        iframe.src = "https://www.youtube.com/embed/" + game.videoid;
+        if (iframe) iframe.src = "https://www.youtube.com/embed/" + game.videoid;
     }
 
     // Buttons
@@ -127,7 +151,8 @@ function renderGame(game) {
     setupButton("btn-youtube", game.videoid ? "https://www.youtube.com/watch?v=" + game.videoid : null);
 
     // Footer ID
-    document.getElementById("bottom-id").textContent = "ID: " + game.id;
+    const bottomId = document.getElementById("bottom-id");
+    if (bottomId) bottomId.textContent = "ID: " + game.id;
 }
 
 /* ===========================================================================
@@ -135,6 +160,8 @@ function renderGame(game) {
 =========================================================================== */
 function setupButton(id, url) {
     const btn = document.getElementById(id);
+    if (!btn) return;
+
     if (url && url !== "" && url !== null) {
         btn.classList.remove("disabled");
         btn.href = url;
@@ -149,8 +176,10 @@ function setupButton(id, url) {
 =========================================================================== */
 function showError(msg) {
     const box = document.getElementById("error-box");
-    box.style.display = "block";
-    box.textContent = msg;
+    if (box) {
+        box.style.display = "block";
+        box.textContent = msg;
+    }
 }
 
 /* ===========================================================================
