@@ -2,70 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Fighting Games</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fighting Games | CCG</title>
 
-    <!-- Genre loader -->
+    <link rel="stylesheet" href="../../css/engine.css">
+    <link rel="stylesheet" href="../../resources/css/main.css">
+
     <script defer src="../../js/genre-loader.js"></script>
-
-    <style>
-        body { 
-            background:#07101f; 
-            color:#e6f1ff; 
-            font-family:Arial; 
-            padding:20px; 
-        }
-        h1 { 
-            text-align:center; 
-            color:#00eaff; 
-            margin-bottom:10px; 
-        }
-        #genre-results {
-            display:grid;
-            grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-            gap:16px; 
-            margin-top:20px;
-        }
-        a.toplink { 
-            color:#9dd7ff; 
-            text-decoration:none; 
-            margin-right:15px; 
-        }
-        a.toplink:hover { color:#00eaff; }
-        .game-card img { 
-            width:100%; 
-            height:150px; 
-            object-fit:cover; 
-            border-radius:5px; 
-        }
-        .game-title { 
-            margin-top:6px; 
-            text-align:center; 
-            color:#9dd7ff; 
-        }
-        .game-info-link { 
-            margin-top:4px; 
-            text-align:center; 
-            color:#00eaff; 
-            font-size:0.8rem; 
-        }
-    </style>
 </head>
 
 <body>
 
-<!-- Navigation -->
-<div>
-    <a class="toplink" id="menu-link">← Main Menu</a>
-    <a class="toplink" id="complete-index-link">Complete Index</a>
-</div>
+    <h1>Fighting Games</h1>
+    <div id="genre-results">Loading games…</div>
 
-<!-- Required genre name -->
-<h1>Fighting Games</h1>
-
-<p style="text-align:center;">Enter the arena and battle through the toughest fighters on the C64 and Amiga.</p>
-
-<div id="genre-results">Loading...</div>
-
-<!-- Auto-fix links -->
-<
+</body>
+</html>
