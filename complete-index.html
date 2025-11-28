@@ -1,124 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Game Index | Cheeky Commodore Gamer</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete CCG Game Index</title>
+  <style>
+    body { background: #07101f; color: #e6f1ff; font-family: sans-serif; padding: 20px; }
+    h1 { color: #00eaff; text-align: center; margin-bottom: 20px; }
+    #search-bar {
+      width: 100%; max-width: 400px;
+      padding: 8px 10px;
+      font-size: 16px;
+      margin: 0 auto 20px auto;
+      display: block;
+      border: 1px solid #00aaff;
+      border-radius: 4px;
+      background: rgba(0,10,20,0.5);
+      color: #e6f1ff;
+    }
 
-    <!-- Global CRT + Main Styles -->
-    <link rel="stylesheet" href="resources/css/main.css">
-
-    <!-- Engine (Boot CRT Effects / Buttons etc.) -->
-    <script defer src="js/engine.js"></script>
-
-    <!-- Game Loader -->
-    <script defer src="js/load-games.js"></script>
-
-    <style>
-        body {
-            padding: 20px;
-            background: #07101f;
-            font-family: Arial, sans-serif;
-        }
-
-        h1 {
-            color: #00eaff;
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        #complete-results {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 16px;
-            padding: 20px;
-        }
-
-        .game-card {
-            background: rgba(0, 10, 20, 0.45);
-            padding: 10px;
-            text-align: center;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-        }
-
-        .game-card img {
-            width: 150px; /* Thumbnail width */
-            height: auto;
-            border-radius: 8px; /* Rounded corners */
-            object-fit: cover; /* Ensure the image fits properly */
-        }
-
-        .game-card a {
-            display: block;
-            color: #00eaff;
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-top: 10px;
-            text-decoration: none;
-        }
-
-        .game-card a:hover {
-            text-decoration: underline;
-        }
-
-        .back-buttons {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .back-buttons a {
-            color: #0ff;
-            margin: 0 15px;
-            font-size: 1rem;
-        }
-    </style>
+    .accordion-item {
+      background: rgba(0,10,20,0.45);
+      margin-bottom: 8px;
+      border: 1px solid #00aaff;
+      border-radius: 4px;
+    }
+    .accordion-header {
+      padding: 10px;
+      cursor: pointer;
+      font-size: 18px;
+      color: #00eaff;
+      user-select: none;
+    }
+    .accordion-header:hover {
+      background: rgba(0, 170, 255, 0.1);
+    }
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+      padding: 0 10px;
+    }
+    .accordion-content.open {
+      padding: 10px;
+      max-height: 500px; /* big enough for thumbnail */
+    }
+    .accordion-content img {
+      width: 150px;
+      max-width: 100%;
+      height: auto;
+      border-radius: 6px;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .accordion-content a {
+      display: inline‑block;
+      margin-bottom: 8px;
+      color: #00eaff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="crt"></div>
+  <h1>Complete CCG Game Index</h1>
+  <input type="text" id="search-bar" placeholder="Search games...">
 
-<h1>Complete CCG Game Index</h1>
+  <div id="games-accordion">
+    <!-- Games will be injected here by JS -->
+    <p>Loading games…</p>
+  </div>
 
-<div id="complete-results">
-    <p>Loading full index…</p>
-</div>
-
-<div class="back-buttons">
-    <a href="/complete-index.html">← Back to Complete Index</a>
-    <a href="/games/index.html">← Back to Game Categories</a>
-</div>
-
-<script>
-// Function to load the game data and display thumbnails
-async function loadCompleteIndex() {
-    const response = await fetch('games/games.json');  // Correct path to games.json
-    const games = await response.json(); // Assuming JSON format for game data
-    const container = document.getElementById('complete-results');
-    container.innerHTML = '';  // Clear the loading message
+  <script>
+  async function loadGames() {
+    const resp = await fetch('games/games.json');
+    const games = await resp.json();
+    const container = document.getElementById('games-accordion');
+    container.innerHTML = '';  // clear loading text
 
     games.forEach(game => {
-        const card = document.createElement('div');
-        card.className = 'game-card';
+      const item = document.createElement('div');
+      item.className = 'accordion-item';
+      item.dataset.title = game.title.toLowerCase();
 
-        const link = document.createElement('a');
-        link.href = `games/game.html?id=${game.id}`;  // Correct link to individual game page
-        link.textContent = game.title;  // Display the game title
+      const header = document.createElement('div');
+      header.className = 'accordion-header';
+      header.textContent = game.title;
 
-        const img = document.createElement('img');
-        img.src = game.thumblink;  // Use the thumbnail link from the JSON data
-        img.alt = game.title;  // Alt text for the image
+      const content = document.createElement('div');
+      content.className = 'accordion-content';
 
-        card.appendChild(link);
-        card.appendChild(img);
-        container.appendChild(card);
+      const link = document.createElement('a');
+      link.href = `games/game.html?id=${encodeURIComponent(game.id)}`;
+      link.textContent = 'View game details';
+
+      const img = document.createElement('img');
+      img.src = game.thumblink;
+      img.alt = game.title;
+
+      content.appendChild(img);
+      content.appendChild(link);
+
+      header.addEventListener('click', () => {
+        content.classList.toggle('open');
+      });
+
+      item.appendChild(header);
+      item.appendChild(content);
+      container.appendChild(item);
     });
-}
+  }
 
-// Call the function to load the index
-loadCompleteIndex();
-</script>
+  function setupSearch() {
+    const input = document.getElementById('search-bar');
+    input.addEventListener('input', () => {
+      const filter = input.value.toLowerCase();
+      document.querySelectorAll('.accordion-item').forEach(item => {
+        const title = item.dataset.title;
+        if (title.includes(filter)) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  }
+
+  // Run on load
+  window.addEventListener('DOMContentLoaded', () => {
+    loadGames();
+    setupSearch();
+  });
+  </script>
 
 </body>
 </html>
