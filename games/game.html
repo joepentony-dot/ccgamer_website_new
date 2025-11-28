@@ -8,6 +8,17 @@
     <!-- Single-game loader -->
     <script defer src="../js/load-single-game.js"></script>
 
+    <script>
+        /* ==========================================================
+           UNIVERSAL BASE PATH — AUTO-DETECT DOMAIN
+           Works on:
+           - GitHub Pages
+           - www.cheekycommodoregamer.co.uk
+           - ANY future hosting
+        ========================================================== */
+        const BASE = window.location.origin + "/ccgamer_website_new/";
+    </script>
+
     <style>
         :root {
             --bg-c64: radial-gradient(circle at top, #07101f 0, #02040a 55%, #000 100%);
@@ -34,28 +45,19 @@
             background: var(--bg-c64);
         }
 
-        body.mode-c64 {
-            background: var(--bg-c64);
-        }
+        body.mode-c64 { background: var(--bg-c64); }
+        body.mode-amiga { background: var(--bg-amiga); }
 
-        body.mode-amiga {
-            background: var(--bg-amiga);
-        }
-
-        body.mode-c64 .accent {
-            color: var(--accent-c64);
-        }
-        body.mode-amiga .accent {
-            color: var(--accent-amiga);
-        }
+        body.mode-c64 .accent { color: var(--accent-c64); }
+        body.mode-amiga .accent { color: var(--accent-amiga); }
 
         body.mode-c64 .pill-button.primary {
-            border-color: rgba(57, 153, 255, 0.8);
-            box-shadow: 0 0 14px rgba(0, 153, 255, 0.5);
+            border-color: rgba(57,153,255,0.8);
+            box-shadow: 0 0 14px rgba(0,153,255,0.5);
         }
         body.mode-amiga .pill-button.primary {
-            border-color: rgba(0, 203, 169, 0.9);
-            box-shadow: 0 0 14px rgba(0, 203, 169, 0.5);
+            border-color: rgba(0,203,169,0.9);
+            box-shadow: 0 0 14px rgba(0,203,169,0.5);
         }
 
         .page {
@@ -83,8 +85,7 @@
         .logo-img {
             height: 40px;
             width: auto;
-            object-fit: contain;
-            filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.7));
+            filter: drop-shadow(0 0 6px rgba(0,0,0,0.7));
         }
 
         .site-title {
@@ -106,8 +107,8 @@
             color: var(--text-soft);
             padding: 5px 10px;
             border-radius: 999px;
-            border: 1px solid rgba(102, 153, 255, 0.4);
-            background: rgba(5, 8, 18, 0.85);
+            border: 1px solid rgba(102,153,255,0.4);
+            background: rgba(5,8,18,0.85);
         }
 
         .small-link:hover {
@@ -116,12 +117,11 @@
         }
 
         /* Mode toggle */
-
         .mode-toggle {
             display: inline-flex;
-            background: rgba(8, 12, 24, 0.95);
+            background: rgba(8,12,24,0.95);
             border-radius: 999px;
-            border: 1px solid rgba(102, 153, 255, 0.5);
+            border: 1px solid rgba(102,153,255,0.5);
             overflow: hidden;
         }
 
@@ -137,40 +137,34 @@
 
         .mode-toggle button.active {
             color: #fff;
-            background: linear-gradient(135deg, rgba(57, 153, 255, 0.9), rgba(0, 203, 169, 0.85));
+            background: linear-gradient(135deg, rgba(57,153,255,0.9), rgba(0,203,169,0.85));
         }
 
         /* Main layout */
-
         .game-layout {
             display: grid;
-            grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.1fr);
+            grid-template-columns: minmax(0,1.3fr) minmax(0,1.1fr);
             gap: 18px;
         }
 
         @media (max-width: 850px) {
-            .game-layout {
-                grid-template-columns: 1fr;
-            }
+            .game-layout { grid-template-columns: 1fr; }
         }
 
         .panel {
             background: radial-gradient(circle at top left, #151a2b, #050711);
             border-radius: var(--radius-lg);
-            border: 1px solid rgba(102, 153, 255, 0.6);
-            box-shadow:
-                0 0 0 1px rgba(0, 34, 68, 0.7),
-                0 18px 40px rgba(0, 0, 0, 0.85);
+            border: 1px solid rgba(102,153,255,0.6);
+            box-shadow: 0 0 0 1px rgba(0,34,68,0.7), 0 18px 40px rgba(0,0,0,0.85);
             padding: 12px 12px 14px;
         }
 
-        /* Media column */
-
+        /* Media left */
         .thumb-shell {
             position: relative;
             border-radius: 12px;
             overflow: hidden;
-            border: 1px solid rgba(102, 153, 255, 0.65);
+            border: 1px solid rgba(102,153,255,0.65);
             background: radial-gradient(circle at top, #111a33, #05070f);
             margin-bottom: 10px;
         }
@@ -189,13 +183,11 @@
             align-items: flex-end;
             justify-content: space-between;
             padding: 6px 8px;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent 55%);
+            background: linear-gradient(to top, rgba(0,0,0,0.75), transparent 55%);
             font-size: 0.75rem;
         }
 
-        .thumb-label {
-            color: var(--text-soft);
-        }
+        .thumb-label { color: var(--text-soft); }
 
         .thumb-open {
             text-decoration: none;
@@ -205,20 +197,16 @@
             gap: 5px;
             padding: 4px 8px;
             border-radius: 999px;
-            background: rgba(0, 0, 0, 0.75);
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            background: rgba(0,0,0,0.75);
+            border: 1px solid rgba(255,255,255,0.6);
             font-size: 0.75rem;
-        }
-
-        .thumb-open span.icon {
-            font-size: 0.9rem;
         }
 
         .video-shell {
             margin-top: 8px;
             border-radius: 12px;
             overflow: hidden;
-            border: 1px solid rgba(102, 153, 255, 0.65);
+            border: 1px solid rgba(102,153,255,0.65);
             background: #000;
         }
 
@@ -234,14 +222,11 @@
             font-size: 0.8rem;
             color: var(--text-soft);
             background: #050713;
-            border-top: 1px solid rgba(20, 32, 68, 0.8);
+            border-top: 1px solid rgba(20,32,68,0.8);
         }
 
-        /* Info column */
-
-        .game-header-block {
-            margin-bottom: 8px;
-        }
+        /* Info right */
+        .game-header-block { margin-bottom: 8px; }
 
         .game-title {
             margin: 0 0 4px;
@@ -265,8 +250,8 @@
         .meta-pill {
             padding: 3px 8px;
             border-radius: 999px;
-            background: rgba(16, 30, 68, 0.85);
-            border: 1px solid rgba(102, 153, 255, 0.7);
+            background: rgba(16,30,68,0.85);
+            border: 1px solid rgba(102,153,255,0.7);
         }
 
         .genres-row {
@@ -281,8 +266,8 @@
             border-radius: 999px;
             font-size: 0.78rem;
             color: var(--text-soft);
-            border: 1px solid rgba(102, 153, 255, 0.5);
-            background: rgba(10, 16, 34, 0.85);
+            border: 1px solid rgba(102,153,255,0.5);
+            background: rgba(10,16,34,0.85);
         }
 
         .actions-row {
@@ -299,30 +284,16 @@
             font-size: 0.8rem;
             padding: 7px 11px;
             border-radius: 999px;
-            border: 1px solid rgba(102, 153, 255, 0.6);
-            background: rgba(5, 8, 18, 0.95);
+            border: 1px solid rgba(102,153,255,0.6);
+            background: rgba(5,8,18,0.95);
             color: var(--text-main);
             text-decoration: none;
             cursor: pointer;
         }
 
-        .pill-button span.icon {
-            font-size: 0.9rem;
-        }
-
-        .pill-button.primary {
-            font-weight: 600;
-        }
-
-        .pill-button.danger {
-            border-color: rgba(255, 79, 107, 0.8);
-            color: #ffd6df;
-        }
-
-        .pill-button.disabled {
-            opacity: 0.35;
-            pointer-events: none;
-        }
+        .pill-button.primary { font-weight: 600; }
+        .pill-button.danger { border-color: rgba(255,79,107,0.8); color: #ffd6df; }
+        .pill-button.disabled { opacity: 0.35; pointer-events: none; }
 
         .info-note {
             margin-top: 10px;
@@ -331,7 +302,6 @@
         }
 
         /* Bottom strip */
-
         .bottom-strip {
             margin-top: 16px;
             font-size: 0.78rem;
@@ -343,18 +313,12 @@
             opacity: 0.9;
         }
 
-        .bottom-strip span strong {
-            font-weight: 600;
-        }
-
-        /* Error state */
-
         .error-box {
             margin-top: 18px;
             padding: 12px 14px;
             border-radius: 12px;
-            border: 1px solid rgba(255, 79, 107, 0.8);
-            background: rgba(40, 0, 12, 0.9);
+            border: 1px solid rgba(255,79,107,0.8);
+            background: rgba(40,0,12,0.9);
             color: #ffd6df;
             font-size: 0.9rem;
         }
@@ -363,9 +327,10 @@
 
 <body class="mode-c64">
 <div class="page">
+
     <header class="top-bar">
         <div class="logo-wrap">
-            <a href="../index.html">
+            <a id="logo-link">
                 <img src="../resources/CCGAMER LOGO.png"
                      alt="Cheeky Commodore Gamer"
                      class="logo-img">
@@ -374,7 +339,8 @@
         </div>
 
         <div class="top-right">
-            <a href="/complete-index.html" class="small-link">⮌ Complete Index</a> <!-- Fixed link -->
+            <a id="complete-index-link" class="small-link">⮌ Complete Index</a>
+
             <div class="mode-toggle">
                 <button type="button" data-mode="c64" class="active">C64 Mode</button>
                 <button type="button" data-mode="amiga">Amiga Mode</button>
@@ -407,21 +373,17 @@
         <!-- Right: info -->
         <section class="panel">
             <div class="game-header-block">
-                <h1 class="game-title" id="game-title">Loading game…</h1>
-                <div class="game-subline" id="game-subline">
-                    <!-- Filled by JS: e.g. "1986 · Elite" -->
-                </div>
+                <h1 id="game-title" class="game-title">Loading game…</h1>
+                <div id="game-subline" class="game-subline"></div>
             </div>
 
             <div class="meta-row">
-                <span class="meta-pill" id="meta-year" style="display:none;"></span>
-                <span class="meta-pill" id="meta-developer" style="display:none;"></span>
-                <span class="meta-pill" id="meta-id" style="display:none;"></span>
+                <span id="meta-year" class="meta-pill" style="display:none;"></span>
+                <span id="meta-developer" class="meta-pill" style="display:none;"></span>
+                <span id="meta-id" class="meta-pill" style="display:none;"></span>
             </div>
 
-            <div class="genres-row" id="genres-row">
-                <!-- Genre chips injected here -->
-            </div>
+            <div class="genres-row" id="genres-row"></div>
 
             <div class="actions-row">
                 <a href="#" id="btn-disk" class="pill-button primary disabled" target="_blank" rel="noopener">
@@ -441,7 +403,7 @@
                 </a>
             </div>
 
-            <p class="info-note" id="info-note">
+            <p class="info-note">
                 All data for this page is loaded live from the Cheeky Commodore Gamer master database (games.json).
             </p>
 
@@ -456,5 +418,14 @@
         <span>Use the Complete Index or genre pages to jump between more C64 and Amiga classics.</span>
     </div>
 </div>
+
+<script>
+    /* ================================================
+       Apply auto-detected BASE path to dynamic links
+    ================================================= */
+    document.getElementById("complete-index-link").href = BASE + "complete-index.html";
+    document.getElementById("logo-link").href = BASE + "index.html";
+</script>
+
 </body>
 </html>
