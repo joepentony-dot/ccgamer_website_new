@@ -92,7 +92,8 @@
       content.className = 'accordion-content';
 
       const link = document.createElement('a');
-      link.href = `games/game.html?id=${encodeURIComponent(game.id)}`;
+      // Absolute URL for game details link
+      link.href = `https://joepentony-dot.github.io/ccgamer_website_new/games/game.html?id=${encodeURIComponent(game.id)}`;
       link.textContent = 'View game details';
 
       const img = document.createElement('img');
