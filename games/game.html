@@ -3,93 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Details | Cheeky Commodore Gamer</title>
+    <title>Loading Game…</title>
 
-    <!-- Global CRT + Main Styles -->
-    <link rel="stylesheet" href="../resources/css/main.css">
-
-    <!-- Engine (boot effects, CRT, keybinds) -->
-    <script defer src="../js/engine.js"></script>
-
-    <!-- Game Data Loader -->
-    <script defer src="../js/load-games.js"></script>
+    <!-- Core Styles -->
+    <link rel="stylesheet" href="../resources/main.css">
+    <link rel="stylesheet" href="../css/engine.css">
 
     <style>
         body {
+            color: #b8e4ff;
             padding: 20px;
+            font-family: "VT323", monospace;
+            background: #000;
         }
-
-        .game-container {
+        .container {
             max-width: 900px;
-            margin: 0 auto;
+            margin: auto;
         }
-
-        .game-header {
-            display: flex;
-            gap: 20px;
-            align-items: flex-start;
+        h1 {
+            font-size: 42px;
+            color: #6fc3ff;
+            margin-bottom: 10px;
+        }
+        .meta {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #a0d8ff;
+        }
+        .thumbnail img {
+            width: 100%;
+            max-width: 380px;
+            border-radius: 6px;
+            border: 2px solid #6fc3ff;
             margin-bottom: 20px;
         }
-
-        .game-thumb {
-            width: 260px;
-            border-radius: 6px;
-            border: 2px solid #00eaff;
-        }
-
-        .game-info h1 {
-            margin: 0 0 10px;
-            color: #00eaff;
-        }
-
-        .links-section {
-            margin-top: 25px;
-            padding: 15px;
-            background: rgba(0, 20, 40, 0.4);
-            border: 1px solid #00aaff;
-            border-radius: 6px;
-        }
-
-        .links-section h2 {
-            margin-top: 0;
-            color: #00eaff;
-        }
-
-        .links-section a {
-            display: block;
-            margin: 8px 0;
-            font-size: 19px;
-            text-decoration: none;
-            color: #6cf;
-        }
-
-        .back-buttons {
+        .section-title {
+            font-size: 28px;
             margin-top: 30px;
-            text-align: center;
+            margin-bottom: 10px;
+            color: #6fc3ff;
         }
-
-        .back-buttons a {
-            color: #0ff;
-            margin: 0 15px;
+        .genres span {
+            display: inline-block;
+            background: #073763;
+            padding: 6px 12px;
+            border-radius: 5px;
+            margin-right: 6px;
+            margin-bottom: 6px;
+            font-size: 20px;
+            border: 1px solid #6fc3ff;
+        }
+        .links a {
+            display: block;
+            margin: 6px 0;
+            font-size: 22px;
+            color: #99d9ff;
+        }
+        .back-button {
+            display: inline-block;
+            margin-top: 40px;
+            padding: 12px 20px;
+            background: #073763;
+            color: #b8e4ff;
+            border: 2px solid #6fc3ff;
+            border-radius: 6px;
+            font-size: 24px;
+            text-decoration: none;
+        }
+        iframe {
+            width: 100%;
+            height: 380px;
+            border: none;
+            margin-top: 15px;
         }
     </style>
 </head>
 
 <body>
 
-<div class="crt"></div>
-
-<div class="game-container">
-    <div id="game-content">
-        <!-- Populated by load-games.js -->
-        <p>Loading game details…</p>
+<div class="container">
+    <div id="game-container">
+        <h1>Loading…</h1>
     </div>
 
-    <div class="back-buttons">
-        <a href="../complete-index.html">← Back to Complete Index</a>
-        <a href="../index.html">← Back to Main Menu</a>
-    </div>
+    <a href="../complete-index.html" class="back-button">⬅ Back to Game Index</a>
 </div>
+
+<script>
+async function loadGame() {
+    const params = new URLSearchParams(window.location.search);
+    const gameId = params.get("id");
+
+    if (!gameId) {
+        document.getElementById("game-container").innerHTML = "<h1>Error: No game ID provided.</h1>";
+        return;
+    }
+
+    try {
+        const response = await fetch("games.json");
+        const games = await response.json();
+        const game = games.find(g => g.id === gameId);
+
+        if (!game) {
+            document.getElementById("game-container").innerHTML = "<h1>Game not found.</h1>";
+            return;
+        }
+
+        document.title = game.title + " | CCG Game Info";
+
+        const container = document.getElementById("game-container");
+
+        container.innerHTML = `
+            <h1>${game.title}</h1>
+
+            <div class="meta">
+                ${game.year ? `<strong>Year:</strong> ${game.year}<br>` : ''}
+                ${game.developer ? `<strong>Developer:</strong> ${game.developer}<br>` : ''}
+                ${game.composer ? `<strong>Composer:</strong> ${game.composer}<br>` : ''}
+                ${game.system ? `<strong>System:</strong> ${game.system}<br>` : ''}
+            </div>
+
+            <div class="thumbnail">
+                <img src="../${game.thumbnail}" alt="${game.title}">
+            </div>
+
+            <div class="section-title">Genres</div>
+            <div class="genres">
+                ${game.genre.map(g => `<span>${g}</span>`).join("")}
+            </div>
+
+            <div class="section-title">Links & Downloads</div>
+            <div class="links">
+                ${game.lemonlinks ? `<a href="${game.lemonlinks}" target="_blank">🍋 Lemon Page</a>` : ""}
+                ${game.pdflink ? `<a href="${game.pdflink}" target="_blank">📘 Manual (PDF)</a>` : ""}
+                ${game.disklinks ? `<a href="${game.disklinks}" target="_blank">💾 Disk Download</a>` : ""}
+            </div>
+
+            ${game.videoid ? `
+                <div class="section-title">Video</div>
+                <iframe src="https://www.youtube.com/embed/${game.videoid}" allowfullscreen></iframe>
+            ` : ''}
+        `;
+
+    } catch (err) {
+        document.getElementById("game-container").innerHTML = "<h1>Error loading game data.</h1>";
+    }
+}
+
+loadGame();
+</script>
 
 </body>
 </html>
