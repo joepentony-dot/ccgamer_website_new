@@ -4,50 +4,160 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Browse Games | Cheeky Commodore Gamer</title>
+
+    <!-- Global CCG Theme -->
+    <link rel="stylesheet" href="../resources/css/main.css">
 </head>
 <body>
 
-<header>
-    <h1>Browse Games</h1>
-    <p>Select a genre or collection to explore games.</p>
-</header>
+<div class="ccg-page">
+    <div class="ccg-page-inner ccg-crt-glow">
 
-<nav>
-    <a href="../index.html">Home</a> |
-    <a href="index.html">Browse Games</a> |
-    <a href="../complete-index.html">Complete Game Index</a>
-</nav>
+        <!-- HEADER -->
+        <header class="ccg-header">
+            <h1>Browse Games</h1>
+            <p class="ccg-header-subtitle">Choose a genre or explore a curated collection.</p>
+        </header>
 
-<h2>Genres</h2>
-<ul>
-    <li><a href="genres/arcade-games.html">Arcade Games</a></li>
-    <li><a href="genres/adventure-games.html">Adventure Games</a></li>
-    <li><a href="genres/action-adventure-games.html">Action Adventure Games</a></li>
-    <li><a href="genres/platform-games.html">Platform Games</a></li>
-    <li><a href="genres/puzzle-games.html">Puzzle Games</a></li>
-    <li><a href="genres/shooting-games.html">Shooting Games</a></li>
-    <li><a href="genres/strategy-games.html">Strategy Games</a></li>
-    <li><a href="genres/horror-games.html">Horror Games</a></li>
-    <li><a href="genres/sports-games.html">Sports Games</a></li>
-    <li><a href="genres/fighting-games.html">Fighting Games</a></li>
-    <li><a href="genres/racing-games.html">Racing Games</a></li>
-    <li><a href="genres/misc-games.html">Miscellaneous</a></li>
-    <li><a href="genres/quiz-games.html">Quiz Games</a></li>
-    <li><a href="genres/casino-games.html">Casino Games</a></li>
-    <li><a href="genres/role-playing-games.html">Role Playing Games</a></li>
-</ul>
+        <!-- GENRE GRID -->
+        <h2 class="ccg-section-title">Genres</h2>
 
-<h2>Collections</h2>
-<ul>
-    <li><a href="collections/bpjs-indexed-games.html">BPJS Indexed Games</a></li>
-    <li><a href="collections/c64-cartridge.html">Cartridge Games</a></li>
-    <li><a href="collections/licensed-games.html">Licensed Games</a></li>
-    <li><a href="collections/top-picks.html">Top Picks</a></li>
-</ul>
+        <div class="ccg-grid ccg-menu-grid">
 
-<footer>
-    <p>© Cheeky Commodore Gamer</p>
-</footer>
+            <!-- Action Adventure -->
+            <a href="genres/action-adventure-games.html" class="ccg-menu-tile">
+                <img src="../resources/images/genres/action-adventure.png" alt="Action Adventure Games">
+                <span>Action Adventure</span>
+            </a>
+
+            <!-- Adventure -->
+            <a href="genres/adventure-games.html" class="ccg-menu-tile">
+                <img src="../resources/images/genres/adventure.png" alt="Adventure Games">
+                <span>Adventure Games</span>
+            </a>
+
+            <!-- Arcade -->
+            <a href="genres/arcade-games.html" class="ccg-menu-tile">
+                <img src="../resources/images/genres/arcade.png" alt="Arcade Games">
+                <span>Arcade Games</span>
+            </a>
+
+            <!-- Casino -->
+            <a href="genres/casino-games.html" class="ccg-menu-tile">
+                <img src="../resources/images/genres/casino.png" alt="Casino Games">
+                <span>Casino</span>
+            </a>
+
+            <!-- Fighting -->
+            <a href="genres/fighting-games.html" class="ccg-menu-tile">
+                <img src="../resources/images/genres/fighting.png" alt="Fighting Games">
+                <span>Fighting</span>
+            </a>
+
+            <!-- Horror -->
+            <a href="genres/horror-games.html" class="ccg-menu-tile">
+                <img src="../resources/images/genres/horror.png" alt="Horror Games">
+                <span>Horror</span>
+            </a>
+
+            <!-- Misc -->
+            <a href="genres/misc-games.html" class="ccg-menu-tile">
+                <img src="../resources/images/genres/miscellaneous.png" alt="Misc Games">
+                <span>Misc</span>
+            </a>
+
+            <!-- Platform -->
+            <a href="genres/platform-games.html" class="ccg-menu-tile">
+                <img src="../resources/images/genres/platform.png" alt="Platform Games">
+                <span>Platform</span>
+            </a>
+
+            <!-- Puzzle -->
+            <a href="genres/puzzle-games.html" class="ccg-menu-tile">
+                <img src="../resources/images/genres/puzzle.png" alt="Puzzle Games">
+                <span>Puzzle</span>
+            </a>
+
+            <!-- Quiz -->
+            <a href="genres/quiz-games.html" class="ccg-menu-tile">
+                <img src="../resources/images/genres/quiz.png" alt="Quiz Games">
+                <span>Quiz</span>
+            </a>
+
+            <!-- Racing -->
+            <a href="genres/racing-games.html" class="ccg-menu-tile">
+                <img src="../resources/images/genres/racing.png" alt="Racing Games">
+                <span>Racing</span>
+            </a>
+
+            <!-- Role Playing -->
+            <a href="genres/role-playing-games.html" class="ccg-menu-tile">
+                <img src="../resources/images/genres/role-playing.png" alt="Role Playing Games">
+                <span>Role Playing</span>
+            </a>
+
+            <!-- Shooting -->
+            <a href="genres/shooting-games.html" class="ccg-menu-tile">
+                <img src="../resources/images/genres/shooting.png" alt="Shooting Games">
+                <span>Shooting</span>
+            </a>
+
+            <!-- Sports -->
+            <a href="genres/sports-games.html" class="ccg-menu-tile">
+                <img src="../resources/images/genres/sports.png" alt="Sports Games">
+                <span>Sports</span>
+            </a>
+
+            <!-- Strategy -->
+            <a href="genres/strategy-games.html" class="ccg-menu-tile">
+                <img src="../resources/images/genres/strategy.png" alt="Strategy Games">
+                <span>Strategy</span>
+            </a>
+
+        </div>
+
+        <!-- COLLECTION GRID -->
+        <h2 class="ccg-section-title">Collections</h2>
+
+        <div class="ccg-grid ccg-menu-grid">
+
+            <!-- BPJS -->
+            <a href="collections/bpjs-indexed-games.html" class="ccg-menu-tile">
+                <img src="../resources/images/genres/bpjs.png" alt="BPJS Indexed Games">
+                <span>BPJS Indexed</span>
+            </a>
+
+            <!-- Cartridge -->
+            <a href="collections/c64-cartridge.html" class="ccg-menu-tile">
+                <img src="../resources/images/genres/cartridge.png" alt="Cartridge Games">
+                <span>Cartridge</span>
+            </a>
+
+            <!-- Licensed -->
+            <a href="collections/licensed-games.html" class="ccg-menu-tile">
+                <img src="../resources/images/genres/licensed.png" alt="Licensed Games">
+                <span>Licensed</span>
+            </a>
+
+            <!-- Top Picks -->
+            <a href="collections/top-picks.html" class="ccg-menu-tile">
+                <img src="../resources/images/genres/top-picks.png" alt="Top Picks">
+                <span>Top Picks</span>
+            </a>
+
+        </div>
+
+        <!-- Back Button -->
+        <div class="ccg-back">
+            <a href="../index.html" class="ccg-btn-secondary">⬅ Back to Main Menu</a>
+        </div>
+
+        <footer class="ccg-footer">
+            Cheeky Commodore Gamer – Explore the entire C64 library in neon style
+        </footer>
+
+    </div>
+</div>
 
 </body>
 </html>
