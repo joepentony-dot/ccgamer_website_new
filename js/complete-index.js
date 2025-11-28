@@ -1,30 +1,19 @@
 // =====================================================
-// CCG Complete Index Loader (Final Version)
-// Works from BOTH:
-//   /ccgamer_website_new/complete-index.html
-//   /ccgamer_website_new/games/complete-index.html
+// CCG Complete Index Loader (Correct Version for Your Tree)
+// Folder Structure Supported:
+//   - root: /complete-index.html
+//   - game pages: /games/game.html?id=...
 // =====================================================
 
 async function loadCompleteIndex() {
     const container = document.getElementById("complete-results");
 
-    if (!container) {
-        console.error("complete-results container not found.");
-        return;
-    }
-
     try {
-        const path = window.location.pathname || "";
-        const inGamesFolder = path.includes("/games/");
-
-        // If we're in /games/, JSON is at ./games.json
-        // If we're at root, JSON is at games/games.json
-        const jsonPath = inGamesFolder ? "games.json" : "games/games.json";
-
-        const response = await fetch(jsonPath);
+        // Root page uses games/games.json
+        const response = await fetch("games/games.json");
         const games = await response.json();
 
-        // Sort alphabetically by title
+        // Alpha-sort
         games.sort((a, b) => a.title.localeCompare(b.title));
 
         container.innerHTML = "";
@@ -33,39 +22,30 @@ async function loadCompleteIndex() {
             const row = document.createElement("div");
             row.className = "entry";
 
-            // Build correct link depending on where we are
-            // /complete-index.html   → games/game.html?id=...
-            // /games/complete-index.html → game.html?id=...
             const link = document.createElement("a");
-            const gameId = encodeURIComponent(game.gameid || game.id);
+            const id = encodeURIComponent(game.gameid || game.id);
 
-            if (inGamesFolder) {
-                link.href = `game.html?id=${gameId}`;
-            } else {
-                link.href = `games/game.html?id=${gameId}`;
-            }
-
+            // Always point into /games/
+            link.href = `games/game.html?id=${id}`;
             link.textContent = game.title;
+
             row.appendChild(link);
 
-            // Optional year display
             if (game.year) {
-                const year = document.createElement("span");
-                year.style.opacity = "0.7";
-                year.textContent = ` — ${game.year}`;
-                row.appendChild(year);
+                const yr = document.createElement("span");
+                yr.style.opacity = "0.7";
+                yr.textContent = ` — ${game.year}`;
+                row.appendChild(yr);
             }
 
             container.appendChild(row);
         });
 
-        console.log(`Complete Index loaded: ${games.length} games`);
+        console.log("Complete Index loaded:", games.length);
 
     } catch (err) {
         console.error("Index load error:", err);
-        if (container) {
-            container.textContent = "Error loading game index.";
-        }
+        container.textContent = "Error loading game index.";
     }
 }
 
