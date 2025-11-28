@@ -1,57 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Top Picks | Cheeky Commodore Gamer</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="../../css/engine.css">
-<link rel="stylesheet" href="../../resources/main.css">
-<style>/* same styling */</style>
-<script defer src="../../js/load-games.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Picks | CCG</title>
+
+    <link rel="stylesheet" href="../../css/engine.css">
+    <link rel="stylesheet" href="../../resources/main.css">
+
+    <style>
+        body { 
+            background:#000; 
+            color:#b8e4ff; 
+            font-family:"VT323", monospace; 
+            padding:20px; 
+        }
+        .container { 
+            max-width:1100px; 
+            margin:auto; 
+        }
+        h1 { 
+            font-size:50px; 
+            color:#6fc3ff; 
+            margin-bottom:10px; 
+        }
+        .game-list { 
+            display:grid; 
+            grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); 
+            gap:22px; 
+            margin-top:25px; 
+        }
+        .game { 
+            background:#031c2d; 
+            border:2px solid #6fc3ff; 
+            border-radius:6px; 
+            padding:12px; 
+            text-align:center; 
+        }
+        .game img { 
+            width:100%; 
+            border-radius:6px; 
+            border:2px solid #6fc3ff; 
+            margin-bottom:10px; 
+        }
+        .game a { 
+            color:#a0d8ff; 
+            font-size:22px; 
+            display:block; 
+            margin-bottom:6px; 
+            text-decoration:none; 
+        }
+        .meta { 
+            color:#85c6ff; 
+            font-size:20px; 
+        }
+        .back-button { 
+            display:inline-block; 
+            padding:12px 20px; 
+            background:#073763; 
+            border:2px solid #6fc3ff;
+            color:#b8e4ff; 
+            font-size:24px; 
+            border-radius:6px; 
+            margin-top:35px; 
+            text-decoration:none; 
+        }
+    </style>
 </head>
 
 <body>
-<div class="ccg-shell">
+<div class="container">
 
-<header class="ccg-header">
-<h1>Top Picks</h1>
-<nav class="ccg-nav">
-<a href="../../index.html">Home</a>
-<a href="../index.html">Game Browser</a>
-<a href="../complete-index.html">Full Index</a>
-</nav>
-</header>
+    <h1>Top Picks</h1>
+    <p>The Cheeky Commodore Gamer hand-selected favourites.</p>
 
-<div id="games-container" class="games-grid"></div>
+    <div id="results" class="game-list"></div>
+
+    <a href="../index.html" class="back-button">⬅ Back to Game Menu</a>
+
 </div>
 
 <script>
-async function loadCollection(){
-  const games = await ccgFetchGames();
-  const filtered = games.filter(g =>
-    Array.isArray(g.genres) &&
-    g.genres.some(gn => gn.toLowerCase() === "top picks")
-  );
+const GENRE_NAME = "Top Picks";
 
-  const c=document.getElementById("games-container");
-  if(!filtered.length){ c.innerHTML="<p>No games found in this collection.</p>"; return;}
+async function loadCollection() {
+    const container = document.getElementById("results");
 
-  filtered.forEach(g=>{
-    c.innerHTML+=`
-      <div class="game-card">
-        <img src="${g.thumbUrl}" class="game-thumb">
-        <div class="game-title">${g.title}</div>
-        <div class="game-meta">${g.system?`System: ${g.system}`:""}</div>
-        <div class="game-links">
-          ${g.videoId?`<a href="https://www.youtube.com/watch?v=${g.videoId}" target="_blank">Watch Video</a><br>`:""}
-          ${g.lemonUrl?`<a href="${g.lemonUrl}" target="_blank">Lemon64</a><br>`:""}
-          ${g.pdfUrl?`<a href="${g.pdfUrl}" target="_blank">Manual</a><br>`:""}
-          ${g.diskUrl?`<a href="${g.diskUrl}" target="_blank">Disk Download</a>`:""}
-        </div>
-      </div>`;
-  });
+    try {
+        const response = await fetch("../games.json");
+        const games = await response.json();
+
+        // Filter by genre "Top Picks"
+        const filtered = games
+            .filter(g => Array.isArray(g.genre) && g.genre.includes(GENRE_NAME))
+            .sort((a,b) => a.title.localeCompare(b.title));
+
+        if (!filtered.length) {
+            container.innerHTML = "<p>No Top Picks yet.</p>";
+            return;
+        }
+
+        container.innerHTML = filtered.map(g => `
+            <div class="game">
+                <a href="../game.html?id=${g.id}">
+                    <img src="../../${g.thumbnail}" alt="${g.title}">
+                </a>
+                <a href="../game.html?id=${g.id}">${g.title}</a>
+                <div class="meta">${g.year ?? ""}</div>
+            </div>
+        `).join("");
+
+    } catch {
+        container.innerHTML = "<p>Error loading Top Picks.</p>";
+    }
 }
-document.addEventListener("DOMContentLoaded", loadCollection);
+
+loadCollection();
 </script>
 
 </body>
