@@ -4,76 +4,38 @@
     <meta charset="UTF-8">
     <title>Arcade Games | Cheeky Commodore Gamer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <style>
         body { background:#000; color:#cceeff; font-family: monospace; }
-        h1 { padding:20px; }
-
-        .game-grid {
-            display:grid;
-            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-            gap:18px;
-            padding:20px;
-        }
-
-        .game-card {
-            background:#001;
-            border:1px solid #224;
-            padding:10px;
-            border-radius:6px;
-            position:relative;
-        }
-
-        .game-card img {
-            width:100%;
-            aspect-ratio:16/9;
-            object-fit:cover;
-            border-radius:4px;
-        }
-
-        .play-icon {
-            position:absolute;
-            bottom:12px;
-            right:12px;
-            background:rgba(0,0,0,0.6);
-            padding:6px 8px;
-            border-radius:4px;
-            border:1px solid #88d;
-            font-size:18px;
-        }
-
-        .game-title {
-            margin-top:8px;
-            font-size:1rem;
-            color:#ffea99;
-        }
+        h1 { padding:20px; font-size: 1.8rem; }
+        .game-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap:18px; padding:20px; }
+        .game-card { background:#001; border:1px solid #224; padding:10px; border-radius:6px; position:relative; }
+        .game-card img { width:100%; aspect-ratio:16/9; object-fit:cover; border-radius:4px; }
+        .play-icon { position:absolute; bottom:12px; right:12px; background:rgba(0,0,0,0.6); padding:6px 8px; border-radius:4px; border:1px solid #88d; font-size:18px; }
+        .game-title { margin-top:8px; font-size:1rem; color:#ffea99; }
+        .icon-row { margin-top:8px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+        .icon-row img { width:22px; height:22px; object-fit:contain; }
+        .icon-row a { text-decoration:none; color:#aee4ff; font-size:0.9rem; display:flex; align-items:center; gap:4px; }
+        .icon-row a:hover { color:#fff; }
     </style>
 </head>
-
 <body>
 
 <h1>Arcade Games</h1>
 <div id="gameGrid" class="game-grid"></div>
 
 <script>
-const TARGET_GENRE = "Arcade Games"; // EXACT match from games.json
+const TARGET_GENRE = "Arcade Games";
 
-fetch("../games.json")  // <-- CORRECT PATH
+fetch("../games.json")
     .then(res => res.json())
     .then(games => {
-
         const grid = document.getElementById("gameGrid");
         grid.innerHTML = "";
 
-        // Some entries use "genre", some use "genres"
-        const matches = games.filter(g => {
-            const genres = g.genre || g.genres || [];
+        const matches = games.filter(game => {
+            const genres = game.genre || [];
             return Array.isArray(genres) && genres.includes(TARGET_GENRE);
         });
-
-        // Debug output
-        console.log("Loaded games:", games.length);
-        console.log("Arcade matches:", matches.length);
 
         matches.sort((a, b) =>
             (a.sorttitle || a.title).localeCompare(b.sorttitle || b.title)
@@ -84,30 +46,69 @@ fetch("../games.json")  // <-- CORRECT PATH
             card.className = "game-card";
 
             const link = document.createElement("a");
-            link.href = "../game.html?id=" + encodeURIComponent(game.gameid || game.id);
+            link.href = "../game.html?id=" + encodeURIComponent(game.id);
 
             const img = document.createElement("img");
-            img.src = "../" + game.thumbnail;
+            img.src = game.thumblink;
 
             const play = document.createElement("div");
             play.className = "play-icon";
             play.textContent = "▶";
 
             link.appendChild(img);
+            link.appendChild(play);
             card.appendChild(link);
-            card.appendChild(play);
 
-            const label = document.createElement("div");
-            label.className = "game-title";
-            label.textContent = game.title;
+            const title = document.createElement("div");
+            title.className = "game-title";
+            title.textContent = game.title;
+            card.appendChild(title);
 
-            card.appendChild(label);
+            const row = document.createElement("div");
+            row.className = "icon-row";
+
+            if (game.lemonlink) {
+                const lemon = document.createElement("a");
+                lemon.href = game.lemonlink;
+                lemon.target = "_blank";
+                lemon.textContent = "🍋 Lemon64";
+                row.appendChild(lemon);
+            }
+
+            if (game.disklink) {
+                const dl = document.createElement("a");
+                dl.href = game.disklink;
+                dl.target = "_blank";
+
+                const dlImg = document.createElement("img");
+                dlImg.src = "../../resources/images/icons/download.png";
+
+                dl.appendChild(dlImg);
+                dl.append(" Download");
+                row.appendChild(dl);
+            }
+
+            if (game.pdflink) {
+                const pdf = document.createElement("a");
+                pdf.href = game.pdflink;
+                pdf.target = "_blank";
+
+                const pdfImg = document.createElement("img");
+                pdfImg.src = "../../resources/images/icons/pdf.png";
+
+                pdf.appendChild(pdfImg);
+                pdf.append(" Manual");
+                row.appendChild(pdf);
+            }
+
+            if (row.children.length > 0) {
+                card.appendChild(row);
+            }
+
             grid.appendChild(card);
         });
     })
-    .catch(err => {
-        console.error("Error loading Arcade Games:", err);
-    });
+    .catch(err => console.error("Error loading Arcade Games:", err));
 </script>
 
 </body>
