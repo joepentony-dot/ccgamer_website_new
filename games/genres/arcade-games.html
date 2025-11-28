@@ -7,112 +7,62 @@
 
     <link rel="stylesheet" href="../../css/engine.css">
     <link rel="stylesheet" href="../../resources/css/main.css">
-
     <script defer src="../../js/engine.js"></script>
     <script defer src="../../js/genre-loader.js"></script>
-
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            if (typeof loadGenrePage === "function") {
-                loadGenrePage();
-            }
+            if (typeof loadGenrePage === "function") loadGenrePage();
         });
     </script>
 </head>
 <body class="crt-body" data-page-type="genre" data-genre="Arcade Games">
-    <div class="crt-wrapper">
-        <div class="crt-overlay"></div>
+<div class="crt-wrapper">
+    <div class="crt-overlay"></div>
 
-        <header class="site-header">
-            <div class="site-header-inner">
-                <a href="../../index.html" class="site-logo-link">
-                    <span class="site-logo-text">CHEEKY</span>
-                    <span class="site-logo-sub">COMMODORE GAMER</span>
-                </a>
-                <div class="site-header-meta">
-                    <span class="system-badge">C64 / Amiga Archive</span>
-                    <span class="page-badge">Genre View</span>
-                </div>
+    <!-- Header -->
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a href="../../index.html" class="site-logo-link">
+                <span class="site-logo-text">CHEEKY</span>
+                <span class="site-logo-sub">COMMODORE GAMER</span>
+            </a>
+        </div>
+        <nav class="top-nav">
+            <a href="../../index.html" class="nav-link">&larr; Main Menu</a>
+            <a href="../complete-index.html" class="nav-link">Complete Index</a> <!-- Corrected link -->
+            <a href="../genres-index.html" class="nav-link">All Genres</a>
+            <a href="../collections-index.html" class="nav-link">Collections</a>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="page-main">
+        <section class="panel panel-primary">
+            <header class="panel-header">
+                <h2 class="panel-title">Arcade Games</h2>
+                <p class="panel-subtitle">Relive the golden age of arcade gaming with these classic hits!</p>
+            </header>
+            <div id="genre-results" class="game-grid">
+                <div class="loading-message">Loading Arcade Games from the master archive...</div>
             </div>
+        </section>
+    </main>
 
-            <div class="site-header-title-block">
-                <h1 id="page-title" data-auto-title="true">Loading Arcade Games…</h1>
-                <p class="page-intro">
-                    Quick-fire blasts, high scores and “just one more go” – all filed under Arcade.
-                </p>
-            </div>
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>&copy; 2025 Cheeky Commodore Gamer</p>
+    </footer>
+</div>
 
-            <nav class="top-nav">
-                <a href="../../index.html" class="nav-link">&larr; Main Menu</a>
-                <a href="../complete-index.html" class="nav-link">Complete Index</a>
-                <a href="../genres-index.html" class="nav-link">All Genres</a>
-                <a href="../collections-index.html" class="nav-link">Collections</a>
-            </nav>
-        </header>
-
-        <main class="page-main">
-            <section class="panel panel-primary">
-                <header class="panel-header">
-                    <h2 class="panel-title">Arcade Games</h2>
-                    <p class="panel-subtitle">
-                        Auto-filtered from <code>games.json</code> for pure arcade experiences.
-                    </p>
-                </header>
-
-                <div id="genre-results" class="game-grid">
-                    <div class="loading-message">
-                        Loading Arcade Games from the master archive…
-                    </div>
-                </div>
-
-                <noscript>
-                    <p class="noscript-warning">
-                        JavaScript is disabled. This page needs JavaScript to load Arcade Games from
-                        <code>games.json</code>.
-                    </p>
-                </noscript>
-            </section>
-
-            <section class="panel panel-secondary">
-                <header class="panel-header">
-                    <h2 class="panel-title">Navigation</h2>
-                </header>
-                <div class="panel-body">
-                    <div class="nav-buttons">
-                        <a class="btn btn-small" href="../../index.html">&larr; Back to Main Menu</a>
-                        <a class="btn btn-small" href="../genres-index.html">Browse All Genres</a>
-                        <a class="btn btn-small" href="../collections-index.html">Browse Collections</a>
-                        <a class="btn btn-small" href="../complete-index.html">View Complete Index</a>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <footer class="site-footer">
-            <p>
-                Cheeky Commodore Gamer &mdash; Arcade hits, home computer style.
-            </p>
-        </footer>
-    </div>
-
-    <div id="video-modal" class="video-modal hidden" aria-hidden="true">
-        <div class="video-modal-backdrop" data-modal-close></div>
-        <div class="video-modal-inner">
-            <button class="video-modal-close" type="button" aria-label="Close video" data-modal-close>
-                &times;
-            </button>
-            <div class="video-modal-content">
-                <iframe
-                    id="video-frame"
-                    class="video-frame"
-                    src=""
-                    title="Game video"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen
-                ></iframe>
-            </div>
+<!-- Video Modal -->
+<div id="video-modal" class="video-modal hidden" aria-hidden="true">
+    <div class="video-modal-backdrop" data-modal-close></div>
+    <div class="video-modal-inner">
+        <button class="video-modal-close" type="button" aria-label="Close video" data-modal-close>&times;</button>
+        <div class="video-modal-content">
+            <iframe id="video-frame" class="video-frame" src="" title="Game video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
     </div>
+</div>
 </body>
 </html>
