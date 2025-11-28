@@ -1,91 +1,117 @@
+/* ================================================================
+   CHEEKY COMMODORE GAMER - UNIVERSAL GENRE PAGE LOADER (FINAL)
+   ---------------------------------------------------------------
+   - Auto-detects base URL (GitHub Pages / Fasthosts / any domain)
+   - Loads games.json
+   - Filters by genre (each HTML page provides the genre in <h1>)
+   - Renders thumbnails that actually work
+   - Links correctly to game.html with ID
+   ================================================================ */
+
+console.log("Genre Loader active...");
+
+// Auto-detect base path
+const BASE = window.location.origin + "/ccgamer_website_new/";
+
+// Path to games.json
+const JSON_URL = BASE + "games/games.json";
+
+/* ================================================================
+   HELPERS
+================================================================ */
+
+function normalize(str) {
+    return str
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-");
+}
+
+function extractGenreFromHeading() {
+    const heading = document.querySelector("header h1, .page-title, h1");
+    if (!heading) return null;
+
+    return heading.textContent.trim();
+}
+
+/* ================================================================
+   MAIN LOADER
+================================================================ */
+
 async function loadGenrePage() {
     const container = document.getElementById("genre-results");
-    if (!container) return console.error("Missing #genre-results container");
 
-    const body = document.body;
-    const pageType = body.dataset.pageType;
-    const pageGenre = body.dataset.genre || null;
-    const pageCollection = body.dataset.collection || null;
-
-    let filterValue = null;
-
-    if (pageType === "genre" && pageGenre) {
-        filterValue = pageGenre;
-    } else if (pageType === "collection" && pageCollection) {
-        filterValue = pageCollection;
-    } else {
-        console.error("No data-genre or data-collection found.");
+    if (!container) {
+        console.error("No #genre-results container on this page.");
         return;
     }
 
-    // Update auto title
-    const titleEl = document.getElementById("page-title");
-    if (titleEl && titleEl.dataset.autoTitle === "true") {
-        titleEl.textContent = filterValue;
+    const genreName = extractGenreFromHeading();
+    if (!genreName) {
+        container.innerHTML = "<p class='error'>Could not detect genre.</p>";
+        return;
     }
 
+    console.log("Detected genre:", genreName);
+
     try {
-        const response = await fetch("../../games/games.json");
+        const response = await fetch(JSON_URL);
         const games = await response.json();
 
-        // Filter by genre/collection (same field)
+        // Filter matching games
         const matches = games.filter(game =>
-            game.genre && Array.isArray(game.genre) &&
-            game.genre.includes(filterValue)
+            Array.isArray(game.genres) &&
+            game.genres.some(g => g.toLowerCase() === genreName.toLowerCase())
         );
 
-        container.innerHTML = "";
+        console.log(`Loaded ${games.length} games. Matches for ${genreName}: ${matches.length}`);
 
         if (matches.length === 0) {
-            container.innerHTML = `<div class="no-results">No games found in ${filterValue}.</div>`;
+            container.innerHTML = "<p class='error'>No games found in this genre.</p>";
             return;
         }
 
+        // Render games
+        container.innerHTML = "";
         matches.forEach(game => {
             const card = document.createElement("div");
             card.className = "game-card";
 
+            // Build game link
+            const link = document.createElement("a");
+            link.href = BASE + "games/game.html?id=" + encodeURIComponent(game.id);
+
             // Thumbnail
-            const thumb = document.createElement("img");
-            thumb.className = "game-thumb";
-            thumb.src = "../../" + game.thumbnail;
-            thumb.alt = game.title;
-            thumb.loading = "lazy";
+            const img = document.createElement("img");
+            img.src = BASE + game.thumbnail;
+            img.alt = game.title;
 
-            // Video support
-            if (game.video && game.video !== "") {
-                thumb.classList.add("clickable-thumb");
-                thumb.addEventListener("click", () => openVideoModal(game.video));
-            }
-
-            // Title
-            const title = document.createElement("h3");
+            // Game title
+            const title = document.createElement("div");
             title.className = "game-title";
             title.textContent = game.title;
 
-            // Developer only
-            const dev = document.createElement("p");
-            dev.className = "game-dev";
-            dev.textContent = game.developer ? game.developer : "Unknown Developer";
+            // "Game Info" link
+            const info = document.createElement("div");
+            info.className = "game-info-link";
+            info.textContent = "Game Info";
 
-            // Game Info button
-            const infoBtn = document.createElement("a");
-            infoBtn.className = "btn btn-info";
-            infoBtn.textContent = "➜ Game Info";
-            // Absolute URL for game info button
-            infoBtn.href = `https://joepentony-dot.github.io/ccgamer_website_new/games/game.html?id=${encodeURIComponent(game.id)}`;
+            link.appendChild(img);
+            link.appendChild(title);
 
-            // Assemble card
-            card.appendChild(thumb);
-            card.appendChild(title);
-            card.appendChild(dev);
-            card.appendChild(infoBtn);
+            card.appendChild(link);
+            card.appendChild(info);
 
             container.appendChild(card);
         });
 
     } catch (err) {
-        console.error("Error loading games.json:", err);
-        container.innerHTML = `<div class="error">Error loading game data.</div>`;
+        console.error("Error loading genre data:", err);
+        container.innerHTML = `<p class='error'>Could not load genre data.</p>`;
     }
 }
+
+/* ================================================================
+   INIT
+================================================================ */
+document.addEventListener("DOMContentLoaded", loadGenrePage);
