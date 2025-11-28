@@ -1,17 +1,3 @@
-/* ================================================================
-   CHEEKY COMMODORE GAMER – UNIVERSAL GENRE / COLLECTION LOADER
-   FINAL VERSION — FOR ALL GENRE & COLLECTION PAGES
-   ---------------------------------------------------------------
-   Supports:
-   - data-page-type="genre" with data-genre="Adventure Games"
-   - data-page-type="collection" with data-collection="BPJS Games"
-   Loads:
-   - Thumbnail
-   - Developer only
-   - Video button (thumbnail click)
-   - ➜ Game Info button
-   ============================================================== */
-
 async function loadGenrePage() {
     const container = document.getElementById("genre-results");
     if (!container) return console.error("Missing #genre-results container");
@@ -86,7 +72,8 @@ async function loadGenrePage() {
             const infoBtn = document.createElement("a");
             infoBtn.className = "btn btn-info";
             infoBtn.textContent = "➜ Game Info";
-            infoBtn.href = `../game.html?id=${encodeURIComponent(game.id)}`;
+            // Absolute URL for game info button
+            infoBtn.href = `https://joepentony-dot.github.io/ccgamer_website_new/games/game.html?id=${encodeURIComponent(game.id)}`;
 
             // Assemble card
             card.appendChild(thumb);
@@ -101,30 +88,4 @@ async function loadGenrePage() {
         console.error("Error loading games.json:", err);
         container.innerHTML = `<div class="error">Error loading game data.</div>`;
     }
-}
-
-/* ======================
-   UNIVERSAL VIDEO MODAL
-   ====================== */
-
-function openVideoModal(videoID) {
-    const modal = document.getElementById("video-modal");
-    const iframe = document.getElementById("video-frame");
-
-    iframe.src = `https://www.youtube.com/embed/${videoID}?autoplay=1`;
-    modal.classList.remove("hidden");
-}
-
-document.addEventListener("click", (e) => {
-    if (e.target.dataset.modalClose !== undefined) {
-        closeVideoModal();
-    }
-});
-
-function closeVideoModal() {
-    const modal = document.getElementById("video-modal");
-    const iframe = document.getElementById("video-frame");
-
-    iframe.src = "";
-    modal.classList.add("hidden");
 }
