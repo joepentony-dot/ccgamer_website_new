@@ -1,12 +1,10 @@
 /* ================================================================
-   CHEEKY COMMODORE GAMER - UNIVERSAL GENRE PAGE LOADER (FINAL)
+   CHEEKY COMMODORE GAMER - UNIVERSAL GENRE PAGE LOADER (FINAL FIX)
    ---------------------------------------------------------------
-   - Auto-detects base URL (GitHub Pages / Fasthosts / any domain)
-   - Loads games.json
-   - Filters by genre (each HTML page provides the genre in <h1>)
-   - Renders thumbnails that actually work
-   - Links correctly to game.html with ID
-   ================================================================ */
+   - Accepts BOTH "genre" and "genres" fields from games.json
+   - Auto-detects JSON structure
+   - Auto-detects domain
+   ================================================================= */
 
 console.log("Genre Loader active...");
 
@@ -30,7 +28,6 @@ function normalize(str) {
 function extractGenreFromHeading() {
     const heading = document.querySelector("header h1, .page-title, h1");
     if (!heading) return null;
-
     return heading.textContent.trim();
 }
 
@@ -58,11 +55,12 @@ async function loadGenrePage() {
         const response = await fetch(JSON_URL);
         const games = await response.json();
 
-        // Filter matching games
-        const matches = games.filter(game =>
-            Array.isArray(game.genres) &&
-            game.genres.some(g => g.toLowerCase() === genreName.toLowerCase())
-        );
+        // Filter matching games — NEW FIX supports "genre" AND "genres"
+        const matches = games.filter(game => {
+            const g = game.genres || game.genre || []; // accept both
+            return Array.isArray(g) &&
+                g.some(item => item.toLowerCase() === genreName.toLowerCase());
+        });
 
         console.log(`Loaded ${games.length} games. Matches for ${genreName}: ${matches.length}`);
 
@@ -71,27 +69,23 @@ async function loadGenrePage() {
             return;
         }
 
-        // Render games
+        // Render matches
         container.innerHTML = "";
         matches.forEach(game => {
             const card = document.createElement("div");
             card.className = "game-card";
 
-            // Build game link
             const link = document.createElement("a");
             link.href = BASE + "games/game.html?id=" + encodeURIComponent(game.id);
 
-            // Thumbnail
             const img = document.createElement("img");
             img.src = BASE + game.thumbnail;
             img.alt = game.title;
 
-            // Game title
             const title = document.createElement("div");
             title.className = "game-title";
             title.textContent = game.title;
 
-            // "Game Info" link
             const info = document.createElement("div");
             info.className = "game-info-link";
             info.textContent = "Game Info";
