@@ -2,110 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Action Adventure Games</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Action Adventure Games | CCG</title>
 
-    <!-- Universal Genre Loader -->
+    <link rel="stylesheet" href="../../css/engine.css">
+    <link rel="stylesheet" href="../../resources/css/main.css">
+
     <script defer src="../../js/genre-loader.js"></script>
 
-    <style>
-        body {
-            background: #07101f;
-            color: #e6f1ff;
-            margin: 0;
-            font-family: system-ui, sans-serif;
-        }
-
-        header {
-            text-align: center;
-            padding: 20px 10px 5px;
-        }
-
-        h1 {
-            margin-top: 10px;
-            font-size: 2rem;
-            color: #00eaff;
-            text-align: center;
-        }
-
-        p {
-            text-align: center;
-            margin-top: 5px;
-            color: #a4b3d6;
-        }
-
-        /* Game Grid */
-        #genre-results {
-            max-width: 900px;
-            margin: 20px auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 18px;
-            padding: 10px;
-        }
-
-        .game-card {
-            background: #0b1220;
-            border: 1px solid #123;
-            border-radius: 8px;
-            padding: 8px;
-            text-align: center;
-            transition: 0.2s;
-        }
-
-        .game-card:hover {
-            transform: scale(1.03);
-            border-color: #00eaff;
-        }
-
-        .game-card img {
-            width: 100%;
-            height: 140px;
-            object-fit: cover;
-            border-radius: 6px;
-            margin-bottom: 6px;
-        }
-
-        .game-title {
-            font-size: 0.95rem;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .game-info-link {
-            font-size: 0.75rem;
-            color: #00eaff;
-        }
-
-        footer {
-            margin: 40px 0 20px;
-            text-align: center;
-            font-size: 0.8rem;
-            opacity: 0.7;
-        }
-    </style>
 </head>
 
 <body>
 
-<header>
-    <a href="../../index.html" style="color:#e6f1ff; text-decoration:none;">← Main Menu</a> |
-    <a href="../../complete-index.html" style="color:#e6f1ff; text-decoration:none;">Complete Index</a> |
-    <a href="../../games/index.html" style="color:#e6f1ff; text-decoration:none;">All Genres</a>
-
-    <!-- CORRECT GENRE IDENTIFIER -->
     <h1>Action Adventure Games</h1>
-    <p>Explore gripping action adventures across the C64 and Amiga era!</p>
-</header>
-
-<!-- Results Grid -->
-<div id="genre-results">
-    <!-- Games will load here -->
-</div>
-
-<footer>
-    © 2025 Cheeky Commodore Gamer
-</footer>
+    <div id="genre-results">Loading games…</div>
 
 </body>
 </html>
