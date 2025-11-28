@@ -5,44 +5,107 @@
     <title>Action Adventure Games</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <script>
-        const BASE = window.location.origin + "/ccgamer_website_new/";
-    </script>
+    <!-- Universal Genre Loader -->
     <script defer src="../../js/genre-loader.js"></script>
 
     <style>
-        body { background:#07101f; color:#e6f1ff; font-family:Arial; padding:20px; }
-        h1 { text-align:center; color:#00eaff; margin-bottom:10px; }
-        #genre-results {
-            display:grid;
-            grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-            gap:16px; margin-top:20px;
+        body {
+            background: #07101f;
+            color: #e6f1ff;
+            margin: 0;
+            font-family: system-ui, sans-serif;
         }
-        a.toplink { color:#9dd7ff; text-decoration:none; margin-right:15px; }
-        a.toplink:hover { color:#00eaff; }
-        .game-card img { width:100%; height:150px; object-fit:cover; border-radius:5px; }
-        .game-title { margin-top:6px; text-align:center; color:#9dd7ff; }
-        .game-info-link { text-align:center; margin-top:4px; color:#00eaff; font-size:0.8rem; }
+
+        header {
+            text-align: center;
+            padding: 20px 10px 5px;
+        }
+
+        h1 {
+            margin-top: 10px;
+            font-size: 2rem;
+            color: #00eaff;
+            text-align: center;
+        }
+
+        p {
+            text-align: center;
+            margin-top: 5px;
+            color: #a4b3d6;
+        }
+
+        /* Game Grid */
+        #genre-results {
+            max-width: 900px;
+            margin: 20px auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 18px;
+            padding: 10px;
+        }
+
+        .game-card {
+            background: #0b1220;
+            border: 1px solid #123;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            transition: 0.2s;
+        }
+
+        .game-card:hover {
+            transform: scale(1.03);
+            border-color: #00eaff;
+        }
+
+        .game-card img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 6px;
+        }
+
+        .game-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .game-info-link {
+            font-size: 0.75rem;
+            color: #00eaff;
+        }
+
+        footer {
+            margin: 40px 0 20px;
+            text-align: center;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
     </style>
 </head>
 
 <body>
 
-<div>
-    <a class="toplink" id="menu-link">← Main Menu</a>
-    <a class="toplink" id="complete-index-link">Complete Index</a>
+<header>
+    <a href="../../index.html" style="color:#e6f1ff; text-decoration:none;">← Main Menu</a> |
+    <a href="../../complete-index.html" style="color:#e6f1ff; text-decoration:none;">Complete Index</a> |
+    <a href="../../games/index.html" style="color:#e6f1ff; text-decoration:none;">All Genres</a>
+
+    <!-- CORRECT GENRE IDENTIFIER -->
+    <h1>Action Adventure Games</h1>
+    <p>Explore gripping action adventures across the C64 and Amiga era!</p>
+</header>
+
+<!-- Results Grid -->
+<div id="genre-results">
+    <!-- Games will load here -->
 </div>
 
-<h1>Action Adventure Games</h1>
-
-<p style="text-align:center;">Experience gripping hybrid gameplay where action meets exploration.</p>
-
-<div id="genre-results">Loading...</div>
-
-<script>
-    document.getElementById("menu-link").href = BASE + "index.html";
-    document.getElementById("complete-index-link").href = BASE + "complete-index.html";
-</script>
+<footer>
+    © 2025 Cheeky Commodore Gamer
+</footer>
 
 </body>
 </html>
