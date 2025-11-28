@@ -1,198 +1,467 @@
-/* =========================================
-   CHEEKY COMMODORE GAMER — MAIN CSS
-   Complete safe version for full replacement
-   ========================================= */
+/* ===========================================
+   CHEEKY COMMODORE GAMER – GLOBAL THEME
+   Modern C64-inspired neon aesthetic
+   =========================================== */
 
-/* Global reset */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+/* Fonts
+   - VT323: body text
+   - Press Start 2P: C64-style headings (fallback if C64 Pro Mono not available)
+*/
+@import url('https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap');
+
+:root {
+    /* Core palette */
+    --ccg-bg-main: #020617;          /* deep navy */
+    --ccg-bg-panel: #050b24;        /* panel background */
+    --ccg-bg-panel-soft: #08112f;
+
+    --ccg-accent: #3f9cff;          /* your chosen premium neon blue */
+    --ccg-accent-soft: #9bd3ff;
+    --ccg-accent-strong: #c0e3ff;
+
+    --ccg-text-main: #e2f1ff;
+    --ccg-text-subtle: #9bb4d6;
+    --ccg-text-muted: #6e7e9f;
+
+    --ccg-border: #3f9cff;
+    --ccg-border-soft: #274b7a;
+
+    --ccg-shadow-glow: 0 0 18px rgba(63, 156, 255, 0.6);
+    --ccg-shadow-soft: 0 0 24px rgba(0, 0, 0, 0.6);
+
+    /* Layout */
+    --ccg-radius: 10px;
+    --ccg-radius-soft: 8px;
+    --ccg-gap: 1.2rem;
+    --ccg-max-width: 1100px;
+
+    /* Typography sizing */
+    --ccg-font-base: 20px;
+    --ccg-font-small: 14px;
+    --ccg-font-h1: 2.4rem;
+    --ccg-font-h2: 1.8rem;
+    --ccg-font-h3: 1.4rem;
 }
+
+/* ==========================
+   GLOBAL BASE
+   ========================== */
 
 html, body {
-    width: 100%;
-    height: 100%;
-    background: #000;
-    color: #d0f0ff;
-    font-family: 'VT323', monospace;
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
 }
 
-/* =========================================
-   CRT OVERLAY (Scanlines + Subtle Glow)
-   ========================================= */
-
-.crt-overlay {
-    pointer-events: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+body {
     background:
-        repeating-linear-gradient(
-            to bottom,
-            rgba(255,255,255,0.03),
-            rgba(255,255,255,0.03) 1px,
-            rgba(0,0,0,0.03) 3px,
-            rgba(0,0,0,0.03) 4px
-        );
-    z-index: 9999;
-    mix-blend-mode: overlay;
-    opacity: 0.25;
+        radial-gradient(circle at top, #132043 0, transparent 55%),
+        radial-gradient(circle at bottom, #000000 0, #020617 65%);
+    color: var(--ccg-text-main);
+    font-family: "VT323", system-ui, monospace;
+    font-size: var(--ccg-font-base);
+    line-height: 1.4;
 }
 
-/* =========================================
-   HEADER + NAVIGATION BAR
-   ========================================= */
+/* Generic layout container */
+.ccg-page {
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
 
-.ccg-header {
+.ccg-page-inner {
     width: 100%;
-    background: #00121f;
-    border-bottom: 2px solid #0ff;
-    padding: 20px 0;
-    box-shadow: 0 0 12px rgba(0,255,255,0.3);
+    max-width: var(--ccg-max-width);
+    margin: 0 auto;
+    background: linear-gradient(145deg, rgba(5, 11, 36, 0.98), rgba(4, 10, 28, 0.95));
+    border-radius: var(--ccg-radius);
+    border: 2px solid var(--ccg-border-soft);
+    box-shadow: var(--ccg-shadow-soft), var(--ccg-shadow-glow);
+    padding: 18px 16px 24px;
 }
 
-.ccg-header-inner {
-    max-width: 1100px;
-    margin: auto;
+/* ==========================
+   TYPOGRAPHY
+   ========================== */
+
+h1, h2, h3, h4 {
+    font-family: "Press Start 2P", "VT323", monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ccg-accent-strong);
+    text-shadow: 0 0 10px rgba(63, 156, 255, 0.85);
+}
+
+h1 {
+    font-size: var(--ccg-font-h1);
+    margin: 0 0 0.6rem 0;
     text-align: center;
 }
 
-.ccg-logo-text {
-    font-size: 42px;
-    color: #0ff;
-    text-shadow: 0 0 6px #0ff;
-    margin-bottom: 12px;
+h2 {
+    font-size: var(--ccg-font-h2);
+    margin: 1.6rem 0 0.7rem;
+}
+
+h3 {
+    font-size: var(--ccg-font-h3);
+    margin: 1.2rem 0 0.4rem;
+}
+
+p {
+    margin: 0 0 0.6rem 0;
+    color: var(--ccg-text-subtle);
+}
+
+small {
+    font-size: var(--ccg-font-small);
+    color: var(--ccg-text-muted);
+}
+
+a {
+    color: var(--ccg-accent-soft);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--ccg-accent-strong);
+}
+
+/* ==========================
+   NAV & HEADER
+   ========================== */
+
+.ccg-header {
+    text-align: center;
+    margin-bottom: 1.2rem;
+}
+
+.ccg-header-subtitle {
+    font-size: 1.2rem;
+    color: var(--ccg-text-subtle);
+}
+
+/* Horizontal top nav (for about/contact etc) */
+.ccg-nav {
+    margin: 0.8rem 0 1.4rem;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    list-style: none;
+    padding: 0;
+}
+
+.ccg-nav li {
+    list-style: none;
 }
 
 .ccg-nav a {
-    color: #d0f0ff;
+    font-size: 0.9rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(5, 11, 36, 0.85);
+    border: 1px solid var(--ccg-border-soft);
+}
+
+/* ==========================
+   BUTTONS
+   ========================== */
+
+.ccg-btn,
+.ccg-btn-primary,
+.ccg-btn-secondary {
+    display: inline-block;
+    padding: 0.7rem 1.1rem;
+    border-radius: var(--ccg-radius-soft);
+    border: 2px solid var(--ccg-border);
+    background: radial-gradient(circle at 20% 0%, #073763, #030816);
+    color: var(--ccg-text-main);
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.08s ease, border-color 0.08s ease, background 0.08s ease;
     text-decoration: none;
-    margin: 0 12px;
-    font-size: 20px;
-    transition: 0.2s;
+    text-align: center;
+    box-shadow: 0 0 9px rgba(63, 156, 255, 0.5);
 }
 
-.ccg-nav a:hover {
-    color: #0ff;
-    text-shadow: 0 0 8px #0ff;
+.ccg-btn-primary {
+    background: radial-gradient(circle at 20% 0%, #0b3d80, #020716);
 }
 
-/* =========================================
-   MAIN PAGE LAYOUT
-   ========================================= */
-
-.ccg-main {
-    max-width: 1100px;
-    margin: 30px auto;
-    padding: 0 18px;
+.ccg-btn-secondary {
+    background: radial-gradient(circle at 20% 0%, #1a1e3e, #020716);
+    border-color: var(--ccg-border-soft);
 }
 
-.ccg-genre-intro {
-    margin-bottom: 30px;
-    font-size: 22px;
-    color: #b8eaff;
+.ccg-btn:hover,
+.ccg-btn-primary:hover,
+.ccg-btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 16px rgba(63, 156, 255, 0.8);
+    border-color: var(--ccg-accent);
 }
 
-/* Back button */
-.ccg-back-button {
-    background: #003b4d;
-    border: 2px solid #0ff;
-    padding: 10px 16px;
-    font-size: 20px;
-    color: #0ff;
-    cursor: pointer;
-    margin-top: 18px;
-    border-radius: 4px;
-    transition: 0.2s;
+/* Back button used on many pages */
+.ccg-back {
+    margin-top: 1.6rem;
+    text-align: center;
 }
 
-.ccg-back-button:hover {
-    background: #005c75;
-    box-shadow: 0 0 12px #0ff;
+.ccg-back a {
+    font-size: 1.1rem;
 }
 
-/* =========================================
-   STATUS TEXT
-   ========================================= */
+/* ==========================
+   GAME GRID & CARDS
+   Used by genres, collections, index
+   ========================== */
 
-.ccg-status {
-    font-size: 20px;
-    color: #9de0ff;
-    margin-bottom: 20px;
-}
-
-/* =========================================
-   GAME GRID (GLOBAL) — with 16:9 thumbnails
-   ========================================= */
-
-.ccg-games-grid {
+.ccg-grid,
+.game-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 24px;
-    padding: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--ccg-gap);
+    margin-top: 1.4rem;
 }
 
-/* Thumbnail card container (16:9 enforced) */
-.ccg-game-card {
+/* Use .game-card for each game; older pages can keep .game */
+.game,
+.game-card {
+    background: linear-gradient(145deg, var(--ccg-bg-panel), var(--ccg-bg-panel-soft));
+    border-radius: var(--ccg-radius-soft);
+    border: 2px solid var(--ccg-border-soft);
+    padding: 0.75rem;
+    text-align: center;
+    box-shadow: 0 0 12px rgba(9, 9, 15, 0.9);
     position: relative;
+}
+
+.game::before,
+.game-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 1px solid rgba(63, 156, 255, 0.25);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+.game:hover::before,
+.game-card:hover::before {
+    opacity: 1;
+}
+
+.game img,
+.game-card img {
     width: 100%;
-    aspect-ratio: 16 / 9;
-    background: #000;
-    overflow: hidden;
+    height: auto;
     border-radius: 6px;
-    cursor: pointer;
-    border: 2px solid #003f4f;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-/* Hover effect */
-.ccg-game-card:hover {
-    transform: scale(1.03);
-    border-color: #0ff;
-    box-shadow: 0 0 12px rgba(0,255,255,0.6);
-}
-
-/* The thumbnail image — fill card without stretching */
-.ccg-game-thumb {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;     /* KEY FIX */
-    object-position: center;
+    border: 2px solid var(--ccg-border);
+    margin-bottom: 0.4rem;
     display: block;
 }
 
-/* Clickable play-style icon */
-.ccg-game-card::after {
-    content: "▶";
-    position: absolute;
-    bottom: 6px;
-    right: 10px;
-    font-size: 22px;
-    color: rgba(255,255,255,0.85);
-    text-shadow: 0 0 6px rgba(0,0,0,0.9);
-    opacity: 0.65;
-    pointer-events: none;
+.game a,
+.game-card a {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 1.1rem;
+    color: var(--ccg-accent-strong);
 }
 
-.ccg-game-card:hover::after {
-    opacity: 1;
+.game a:hover,
+.game-card a:hover {
+    color: #ffffff;
 }
 
-/* =========================================
-   FOOTER
-   ========================================= */
+.game .meta,
+.game-card .meta {
+    font-size: 0.95rem;
+    color: var(--ccg-text-subtle);
+}
 
-.ccg-footer {
+/* ==========================
+   COMPLETE INDEX LIST
+   (your root complete-index.html)
+   ========================== */
+
+#complete-results div {
+    margin: 0.3rem 0;
+    padding: 0.45rem 0.65rem;
+    background: rgba(4, 10, 30, 0.85);
+    border-radius: 6px;
+    border: 1px solid var(--ccg-border-soft);
+}
+
+#complete-results a {
+    font-size: 1.05rem;
+    color: var(--ccg-accent-strong);
+}
+
+#complete-results span {
+    color: var(--ccg-text-subtle);
+    margin-left: 4px;
+    font-size: 0.95rem;
+}
+
+/* ==========================
+   GAME DETAIL PAGE (game.html)
+   ========================== */
+
+.ccg-game-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr);
+    gap: 1.4rem;
+    margin-top: 1.2rem;
+}
+
+.ccg-game-left {
     text-align: center;
-    padding: 30px 0;
-    opacity: 0.6;
-    font-size: 18px;
 }
 
-.ccg-footer:hover {
-    opacity: 1;
-    color: #0ff;
+.ccg-game-left img {
+    max-width: 360px;
+    width: 100%;
+    border-radius: 8px;
+    border: 2px solid var(--ccg-border);
+    box-shadow: var(--ccg-shadow-glow);
+}
+
+.ccg-game-meta {
+    font-size: 1rem;
+    color: var(--ccg-text-subtle);
+    margin-top: 0.6rem;
+}
+
+.ccg-game-meta strong {
+    color: var(--ccg-accent-soft);
+}
+
+.ccg-genres {
+    margin-top: 1rem;
+}
+
+.ccg-genres span {
+    display: inline-block;
+    background: #071532;
+    border-radius: 999px;
+    border: 1px solid var(--ccg-border);
+    padding: 0.2rem 0.7rem;
+    margin: 0 0.35rem 0.35rem 0;
+    font-size: 0.95rem;
+    color: var(--ccg-accent-soft);
+}
+
+.ccg-links {
+    margin-top: 1.4rem;
+}
+
+.ccg-links a {
+    display: block;
+    margin: 0.2rem 0;
+    font-size: 1rem;
+}
+
+/* Video embed */
+.ccg-video-frame {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 10px;
+    border: 2px solid var(--ccg-border);
+    box-shadow: var(--ccg-shadow-glow);
+    overflow: hidden;
+}
+
+/* Mobile layout for game page */
+@media (max-width: 800px) {
+    .ccg-game-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================
+   COLLECTION / SECTION TITLES
+   ========================== */
+
+.ccg-section {
+    margin-top: 1.4rem;
+}
+
+.ccg-section-title {
+    font-family: "Press Start 2P", "VT323", monospace;
+    font-size: 1.2rem;
+    color: var(--ccg-accent-strong);
+    margin-bottom: 0.5rem;
+}
+
+/* ==========================
+   CRT / SCANLINE UTILITIES
+   (for pages where you want subtle CRT)
+   ========================== */
+
+.ccg-crt-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.ccg-scanlines {
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    background-image: linear-gradient(
+        rgba(0,0,0,0.25) 50%,
+        rgba(0,0,0,0.85) 50%
+    );
+    background-size: 100% 2px;
+    opacity: 0.2;
+    z-index: 10;
+}
+
+.ccg-crt-glow {
+    box-shadow:
+        0 0 18px rgba(63, 156, 255, 0.6),
+        0 0 60px rgba(0, 0, 0, 1) inset;
+}
+
+/* Optional very subtle flicker class for big panels */
+.ccg-flicker {
+    animation: ccg-flicker 0.14s infinite alternate;
+}
+
+@keyframes ccg-flicker {
+    from { opacity: 0.98; }
+    to   { opacity: 1; }
+}
+
+/* ==========================
+   UTILITIES
+   ========================== */
+
+.ccg-center {
+    text-align: center;
+}
+
+.ccg-mt {
+    margin-top: 1rem;
+}
+
+.ccg-mb {
+    margin-bottom: 1rem;
+}
+
+.ccg-muted {
+    color: var(--ccg-text-muted);
+}
+
+/* Footer */
+.ccg-footer {
+    margin-top: 1.6rem;
+    font-size: 0.85rem;
+    text-align: center;
+    color: var(--ccg-text-muted);
 }
