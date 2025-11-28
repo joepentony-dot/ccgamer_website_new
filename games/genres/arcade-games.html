@@ -5,12 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arcade Games | Cheeky Commodore Gamer</title>
 
-    <!-- Global CCG Theme -->
     <link rel="stylesheet" href="../../resources/css/main.css">
-
-    <!-- Optional CRT flicker (remove class if undesired) -->
-    <body class="crt-flicker">
-
 </head>
 <body>
 
@@ -19,7 +14,7 @@
 
         <header class="ccg-header">
             <h1>Arcade Games</h1>
-            <p class="ccg-header-subtitle">Fast-paced action straight from the golden age.</p>
+            <p class="ccg-header-subtitle">Instant action, quick reflexes and “just one more go” energy.</p>
         </header>
 
         <div id="results" class="ccg-grid"></div>
@@ -29,12 +24,11 @@
         </div>
 
         <footer class="ccg-footer">
-            Cheeky Commodore Gamer – Arcade Classics & Neon Nostalgia
+            Cheeky Commodore Gamer – Arcade thrills on the humble C64
         </footer>
 
     </div>
 </div>
-
 
 <script>
 async function loadGenre() {
@@ -44,15 +38,13 @@ async function loadGenre() {
         const response = await fetch("../games.json");
         const games = await response.json();
 
-        // Filter for this specific genre name EXACTLY as in your data
         const filtered = games.filter(g =>
-            g.genre && g.genre.includes("Arcade Games")
+            Array.isArray(g.genres) && g.genres.includes("Arcade Games")
         );
 
-        // Sort alphabetically
         filtered.sort((a, b) => a.title.localeCompare(b.title));
 
-        if (filtered.length === 0) {
+        if (!filtered.length) {
             container.innerHTML = "<p>No games found in this genre.</p>";
             return;
         }
@@ -62,11 +54,7 @@ async function loadGenre() {
                 <a href="../game.html?id=${g.id}">
                     <img src="../../${g.thumbnail}" alt="${g.title}">
                 </a>
-
-                <a href="../game.html?id=${g.id}">
-                    ${g.title}
-                </a>
-
+                <a href="../game.html?id=${g.id}">${g.title}</a>
                 <div class="meta">${g.year || ""}</div>
             </div>
         `).join("");
