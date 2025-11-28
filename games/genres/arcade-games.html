@@ -2,124 +2,113 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arcade Games | Cheeky Commodore Gamer</title>
-
-    <link rel="stylesheet" href="../resources/css/main.css">
-    <link rel="stylesheet" href="../resources/css/genre.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
-        .game-item {
-            position: relative;
-            display: inline-block;
-            margin: 10px;
+        body { background:#000; color:#cceeff; font-family: monospace; }
+        h1 { padding:20px; }
+
+        .game-grid {
+            display:grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap:18px;
+            padding:20px;
         }
 
-        .game-item img {
-            width: 260px;
-            height: 160px;
-            object-fit: cover;
-            border-radius: 6px;
+        .game-card {
+            background:#001;
+            border:1px solid #224;
+            padding:10px;
+            border-radius:6px;
+            position:relative;
         }
 
-        .video-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 55px;
-            height: 55px;
-            background: rgba(0,0,0,0.45);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .game-card img {
+            width:100%;
+            aspect-ratio:16/9;
+            object-fit:cover;
+            border-radius:4px;
         }
 
-        .video-overlay::before {
-            content: "";
-            border-style: solid;
-            border-width: 12px 0 12px 20px;
-            border-color: transparent transparent transparent white;
-            margin-left: 4px;
+        .play-icon {
+            position:absolute;
+            bottom:12px;
+            right:12px;
+            background:rgba(0,0,0,0.6);
+            padding:6px 8px;
+            border-radius:4px;
+            border:1px solid #88d;
+            font-size:18px;
         }
 
-        #backTop, #backMenu {
-            margin: 20px;
-            display: inline-block;
-            padding: 8px 14px;
-            background: #0af;
-            color: #000;
-            border-radius: 5px;
-            text-decoration: none;
+        .game-title {
+            margin-top:8px;
+            font-size:1rem;
+            color:#ffea99;
         }
     </style>
 </head>
 
 <body>
 
-    <header class="genre-header">
-        <h1>Arcade Games</h1>
-    </header>
+<h1>Arcade Games</h1>
+<div id="gameGrid" class="game-grid"></div>
 
-    <div id="game-list"></div>
+<script>
+const TARGET_GENRE = "Arcade Games"; // EXACT match from games.json
 
-    <a id="backTop" href="#">Return to Top</a>
-    <a id="backMenu" href="../index.html">Return to Main Menu</a>
+fetch("../games.json")  // <-- CORRECT PATH
+    .then(res => res.json())
+    .then(games => {
 
-    <script>
-        const TARGET_GENRE = "Arcade Games";  // EXACT MATCH REQUIRED
+        const grid = document.getElementById("gameGrid");
+        grid.innerHTML = "";
 
-        async function loadGenreList() {
-            try {
-                const response = await fetch("../games/games.json");
-                const games = await response.json();
+        // Some entries use "genre", some use "genres"
+        const matches = games.filter(g => {
+            const genres = g.genre || g.genres || [];
+            return Array.isArray(genres) && genres.includes(TARGET_GENRE);
+        });
 
-                const container = document.getElementById("game-list");
-                container.innerHTML = "";
+        // Debug output
+        console.log("Loaded games:", games.length);
+        console.log("Arcade matches:", matches.length);
 
-                const filtered = games.filter(g =>
-                    Array.isArray(g.genre) && g.genre.includes(TARGET_GENRE)
-                );
+        matches.sort((a, b) =>
+            (a.sorttitle || a.title).localeCompare(b.sorttitle || b.title)
+        );
 
-                if (filtered.length === 0) {
-                    container.innerHTML = "<p>No games found for this genre.</p>";
-                    return;
-                }
+        matches.forEach(game => {
+            const card = document.createElement("div");
+            card.className = "game-card";
 
-                filtered.sort((a, b) => a.sorttitle.localeCompare(b.sorttitle));
+            const link = document.createElement("a");
+            link.href = "../game.html?id=" + encodeURIComponent(game.gameid || game.id);
 
-                filtered.forEach(game => {
-                    const item = document.createElement("div");
-                    item.classList.add("game-item");
+            const img = document.createElement("img");
+            img.src = "../" + game.thumbnail;
 
-                    const link = document.createElement("a");
-                    link.href = `../games/game.html?id=${game.id}`;
+            const play = document.createElement("div");
+            play.className = "play-icon";
+            play.textContent = "▶";
 
-                    const img = document.createElement("img");
-                    img.src = `../${game.thumbnail}`;
+            link.appendChild(img);
+            card.appendChild(link);
+            card.appendChild(play);
 
-                    const overlay = document.createElement("div");
-                    overlay.classList.add("video-overlay");
+            const label = document.createElement("div");
+            label.className = "game-title";
+            label.textContent = game.title;
 
-                    link.appendChild(img);
-                    link.appendChild(overlay);
-                    item.appendChild(link);
-
-                    const label = document.createElement("p");
-                    label.textContent = game.title;
-                    item.appendChild(label);
-
-                    container.appendChild(item);
-                });
-
-            } catch (err) {
-                console.error("Error loading genre:", err);
-            }
-        }
-
-        loadGenreList();
-    </script>
+            card.appendChild(label);
+            grid.appendChild(card);
+        });
+    })
+    .catch(err => {
+        console.error("Error loading Arcade Games:", err);
+    });
+</script>
 
 </body>
 </html>
