@@ -1,32 +1,30 @@
 /* ================================================================
    CHEEKY COMMODORE GAMER - UNIVERSAL GENRE PAGE LOADER (FINAL FIX)
    ---------------------------------------------------------------
-   - Accepts BOTH "genre" and "genres" fields from games.json
-   - Auto-detects JSON structure
-   - Auto-detects domain
+   - Supports your JSON structure exactly:
+        * "genre" (array)
+        * "thumblink"
+        * "pdflink"
+        * "disklink"
+        * "lemonlink"
+   - Auto-detects base URL on any domain
+   - Renders thumbnails and titles correctly
    ================================================================= */
 
 console.log("Genre Loader active...");
 
-// Auto-detect base path
+// Auto domain detect
 const BASE = window.location.origin + "/ccgamer_website_new/";
 
-// Path to games.json
+// Path to JSON
 const JSON_URL = BASE + "games/games.json";
 
 /* ================================================================
    HELPERS
 ================================================================ */
 
-function normalize(str) {
-    return str
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9]+/g, "-");
-}
-
 function extractGenreFromHeading() {
-    const heading = document.querySelector("header h1, .page-title, h1");
+    const heading = document.querySelector("h1");
     if (!heading) return null;
     return heading.textContent.trim();
 }
@@ -39,7 +37,7 @@ async function loadGenrePage() {
     const container = document.getElementById("genre-results");
 
     if (!container) {
-        console.error("No #genre-results container on this page.");
+        console.error("Missing #genre-results container");
         return;
     }
 
@@ -55,11 +53,10 @@ async function loadGenrePage() {
         const response = await fetch(JSON_URL);
         const games = await response.json();
 
-        // Filter matching games — NEW FIX supports "genre" AND "genres"
+        // Support your JSON format -> "genre"
         const matches = games.filter(game => {
-            const g = game.genres || game.genre || []; // accept both
-            return Array.isArray(g) &&
-                g.some(item => item.toLowerCase() === genreName.toLowerCase());
+            if (!Array.isArray(game.genre)) return false;
+            return game.genre.some(g => g.toLowerCase() === genreName.toLowerCase());
         });
 
         console.log(`Loaded ${games.length} games. Matches for ${genreName}: ${matches.length}`);
@@ -69,23 +66,28 @@ async function loadGenrePage() {
             return;
         }
 
-        // Render matches
+        // Render
         container.innerHTML = "";
         matches.forEach(game => {
+
             const card = document.createElement("div");
             card.className = "game-card";
 
+            // Link to game page
             const link = document.createElement("a");
             link.href = BASE + "games/game.html?id=" + encodeURIComponent(game.id);
 
+            // Thumbnail (use your "thumblink")
             const img = document.createElement("img");
-            img.src = BASE + game.thumbnail;
+            img.src = game.thumblink;
             img.alt = game.title;
 
+            // Title
             const title = document.createElement("div");
             title.className = "game-title";
             title.textContent = game.title;
 
+            // Subtitle
             const info = document.createElement("div");
             info.className = "game-info-link";
             info.textContent = "Game Info";
@@ -100,8 +102,8 @@ async function loadGenrePage() {
         });
 
     } catch (err) {
-        console.error("Error loading genre data:", err);
-        container.innerHTML = `<p class='error'>Could not load genre data.</p>`;
+        console.error("Error loading genre:", err);
+        container.innerHTML = "<p class='error'>Could not load genre data.</p>";
     }
 }
 
