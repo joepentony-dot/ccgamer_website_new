@@ -18,7 +18,7 @@ async function loadGame() {
     }
 
     try {
-        const response = await fetch("games.json");
+        const response = await fetch("../games.json");
         const games = await response.json();
 
         // IMPORTANT: your JSON uses "gameid", not "id"
