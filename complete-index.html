@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Complete CCG Game Index</title>
 
+    <!-- Match your main site structure -->
     <link rel="stylesheet" href="css/engine.css">
-    <link rel="stylesheet" href="resources/css/main.css">
-    <script defer src="js/load-complete-index.js"></script>
+    <link rel="stylesheet" href="resources/main.css">
+
+    <script defer src="js/complete-index.js"></script>
 
     <style>
         body {
@@ -21,20 +23,21 @@
             text-align: center;
             margin-bottom: 20px;
         }
-
+        #complete-results {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .entry {
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.08);
+        }
         #complete-results a {
             color: #00eaff;
             text-decoration: none;
             font-weight: bold;
         }
-
         #complete-results a:hover {
             text-decoration: underline;
-        }
-
-        .entry {
-            padding: 6px 0;
-            border-bottom: 1px solid rgba(0, 255, 255, 0.1);
         }
     </style>
 </head>
