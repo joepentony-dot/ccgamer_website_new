@@ -2,68 +2,75 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>Fighting Games</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheeky Commodore Gamer | Fighting Games</title>
 
-    <link rel="stylesheet" href="../../css/engine.css">
-    <link rel="stylesheet" href="../../resources/css/main.css">
-    <script defer src="../../js/engine.js"></script>
-    <script defer src="../../js/genre-loader.js"></script>
+    <!-- Auto domain detection -->
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            if (typeof loadGenrePage === "function") loadGenrePage();
-        });
+        const BASE = window.location.origin + "/ccgamer_website_new/";
     </script>
+
+    <!-- Genre loader -->
+    <script defer src="../../js/genre-loader.js"></script>
+
+    <style>
+        body { 
+            background:#07101f; 
+            color:#e6f1ff; 
+            font-family:Arial; 
+            padding:20px; 
+        }
+        h1 { 
+            text-align:center; 
+            color:#00eaff; 
+            margin-bottom:10px; 
+        }
+        #genre-results {
+            display:grid;
+            grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+            gap:16px; 
+            margin-top:20px;
+        }
+        a.toplink { 
+            color:#9dd7ff; 
+            text-decoration:none; 
+            margin-right:15px; 
+        }
+        a.toplink:hover { color:#00eaff; }
+        .game-card img { 
+            width:100%; 
+            height:150px; 
+            object-fit:cover; 
+            border-radius:5px; 
+        }
+        .game-title { 
+            margin-top:6px; 
+            text-align:center; 
+            color:#9dd7ff; 
+        }
+        .game-info-link { 
+            margin-top:4px; 
+            text-align:center; 
+            color:#00eaff; 
+            font-size:0.8rem; 
+        }
+    </style>
 </head>
-<body class="crt-body" data-page-type="genre" data-genre="Fighting Games">
-<div class="crt-wrapper">
-    <div class="crt-overlay"></div>
 
-    <!-- Header -->
-    <header class="site-header">
-        <div class="site-header-inner">
-            <a href="../../index.html" class="site-logo-link">
-                <span class="site-logo-text">CHEEKY</span>
-                <span class="site-logo-sub">COMMODORE GAMER</span>
-            </a>
-        </div>
-        <nav class="top-nav">
-            <a href="../../index.html" class="nav-link">&larr; Main Menu</a>
-            <!-- Corrected Complete Index link -->
-            <a href="../complete-index.html" class="nav-link">Complete Index</a>
-            <a href="../genres-index.html" class="nav-link">All Genres</a>
-            <a href="../collections-index.html" class="nav-link">Collections</a>
-        </nav>
-    </header>
+<body>
 
-    <!-- Main Content -->
-    <main class="page-main">
-        <section class="panel panel-primary">
-            <header class="panel-header">
-                <h2 class="panel-title">Fighting Games</h2>
-                <p class="panel-subtitle">Fight your way to the top with these classic brawlers and beat 'em ups!</p>
-            </header>
-            <div id="genre-results" class="game-grid">
-                <div class="loading-message">Loading Fighting Games from the master archive...</div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="site-footer">
-        <p>&copy; 2025 Cheeky Commodore Gamer</p>
-    </footer>
+<!-- Navigation -->
+<div>
+    <a class="toplink" id="menu-link">← Main Menu</a>
+    <a class="toplink" id="complete-index-link">Complete Index</a>
 </div>
 
-<!-- Video Modal -->
-<div id="video-modal" class="video-modal hidden" aria-hidden="true">
-    <div class="video-modal-backdrop" data-modal-close></div>
-    <div class="video-modal-inner">
-        <button class="video-modal-close" type="button" aria-label="Close video" data-modal-close>&times;</button>
-        <div class="video-modal-content">
-            <iframe id="video-frame" class="video-frame" src="" title="Game video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
-    </div>
-</div>
-</body>
-</html>
+<!-- Required genre name -->
+<h1>Fighting Games</h1>
+
+<p style="text-align:center;">Enter the arena and battle through the toughest fighters on the C64 and Amiga.</p>
+
+<div id="genre-results">Loading...</div>
+
+<!-- Auto-fix links -->
+<
