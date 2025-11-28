@@ -4,35 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Complete Game Index | Cheeky Commodore Gamer</title>
+
+    <!-- Global CRT + Main Styles -->
+    <link rel="stylesheet" href="resources/css/main.css">
+
+    <!-- Engine (Boot CRT Effects / Buttons etc.) -->
+    <script defer src="js/engine.js"></script>
+
+    <!-- Game Loader -->
+    <script defer src="js/load-games.js"></script>
+
+    <style>
+        body {
+            padding: 20px;
+        }
+
+        h1 {
+            color: #00eaff;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        #complete-results div {
+            margin: 8px 0;
+            padding: 8px 12px;
+            background: rgba(0, 10, 20, 0.45);
+            border: 1px solid #00aaff;
+            border-radius: 4px;
+        }
+
+        #complete-results a {
+            font-size: 20px;
+            color: #00eaff;
+            text-decoration: none;
+        }
+
+        #complete-results span {
+            color: #8cf;
+            margin-left: 5px;
+        }
+
+        .back-buttons {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .back-buttons a {
+            color: #0ff;
+            margin: 0 15px;
+        }
+    </style>
+
 </head>
+
 <body>
-    <header>
-        <h1>Complete Game Index</h1>
-        <p>Full list of all Commodore 64 & Amiga games available on Cheeky Commodore Gamer.</p>
-    </header>
 
-    <nav>
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="games/index.html">Browse Games</a></li>
-            <li><a href="complete-index.html">Complete Game Index</a></li>
-        </ul>
-    </nav>
+<div class="crt"></div>
 
-    <main>
-        <section>
-            <h2>All Games</h2>
-            <div id="complete-results">
-                <p>Loading full game list…</p>
-            </div>
-        </section>
-    </main>
+<h1>Complete CCG Game Index</h1>
 
-    <footer>
-        <p>&copy; Cheeky Commodore Gamer</p>
-    </footer>
+<div id="complete-results">
+    <p>Loading full index…</p>
+</div>
 
-    <!-- Correct script -->
-    <script src="js/complete-index.js?v=1"></script>
+<div class="back-buttons">
+    <a href="index.html">← Back to Main Menu</a>
+    <a href="games/index.html">← Back to Game Categories</a>
+</div>
+
 </body>
 </html>
