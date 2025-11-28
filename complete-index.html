@@ -17,6 +17,8 @@
     <style>
         body {
             padding: 20px;
+            background: #07101f;
+            font-family: Arial, sans-serif;
         }
 
         h1 {
@@ -25,23 +27,39 @@
             margin-bottom: 25px;
         }
 
-        #complete-results div {
-            margin: 8px 0;
-            padding: 8px 12px;
-            background: rgba(0, 10, 20, 0.45);
-            border: 1px solid #00aaff;
-            border-radius: 4px;
+        #complete-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 16px;
+            padding: 20px;
         }
 
-        #complete-results a {
-            font-size: 20px;
+        .game-card {
+            background: rgba(0, 10, 20, 0.45);
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .game-card img {
+            width: 150px; /* Thumbnail width */
+            height: auto;
+            border-radius: 8px; /* Rounded corners */
+            object-fit: cover; /* Ensure the image fits properly */
+        }
+
+        .game-card a {
+            display: block;
             color: #00eaff;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 10px;
             text-decoration: none;
         }
 
-        #complete-results span {
-            color: #8cf;
-            margin-left: 5px;
+        .game-card a:hover {
+            text-decoration: underline;
         }
 
         .back-buttons {
@@ -52,15 +70,9 @@
         .back-buttons a {
             color: #0ff;
             margin: 0 15px;
-        }
-
-        .game-card img {
-            width: 100%; /* Adjust based on desired size */
-            height: auto;
-            border-radius: 8px; /* Optional: for rounded corners */
+            font-size: 1rem;
         }
     </style>
-
 </head>
 
 <body>
@@ -74,15 +86,15 @@
 </div>
 
 <div class="back-buttons">
-    <a href="index.html">← Back to Main Menu</a>
-    <a href="games/index.html">← Back to Game Categories</a>
+    <a href="/complete-index.html">← Back to Complete Index</a>
+    <a href="/games/index.html">← Back to Game Categories</a>
 </div>
 
 <script>
 // Function to load the game data and display thumbnails
 async function loadCompleteIndex() {
-    const response = await fetch('path_to_your_csv_or_json_file');
-    const games = await response.json(); // Assuming you convert CSV to JSON for ease of use
+    const response = await fetch('games/games.json');  // Correct path to games.json
+    const games = await response.json(); // Assuming JSON format for game data
     const container = document.getElementById('complete-results');
     container.innerHTML = '';  // Clear the loading message
 
@@ -91,12 +103,12 @@ async function loadCompleteIndex() {
         card.className = 'game-card';
 
         const link = document.createElement('a');
-        link.href = `games/game.html?id=${game.gameid}`;  // Link to the specific game page
-        link.textContent = game.gametitle;  // Display the game title
+        link.href = `games/game.html?id=${game.id}`;  // Correct link to individual game page
+        link.textContent = game.title;  // Display the game title
 
         const img = document.createElement('img');
-        img.src = game.thumblink;  // Use the thumbnail link from the CSV data
-        img.alt = game.gametitle;  // Alt text for the image
+        img.src = game.thumblink;  // Use the thumbnail link from the JSON data
+        img.alt = game.title;  // Alt text for the image
 
         card.appendChild(link);
         card.appendChild(img);
