@@ -53,6 +53,12 @@
             color: #0ff;
             margin: 0 15px;
         }
+
+        .game-card img {
+            width: 100%; /* Adjust based on desired size */
+            height: auto;
+            border-radius: 8px; /* Optional: for rounded corners */
+        }
     </style>
 
 </head>
@@ -71,6 +77,36 @@
     <a href="index.html">← Back to Main Menu</a>
     <a href="games/index.html">← Back to Game Categories</a>
 </div>
+
+<script>
+// Function to load the game data and display thumbnails
+async function loadCompleteIndex() {
+    const response = await fetch('path_to_your_csv_or_json_file');
+    const games = await response.json(); // Assuming you convert CSV to JSON for ease of use
+    const container = document.getElementById('complete-results');
+    container.innerHTML = '';  // Clear the loading message
+
+    games.forEach(game => {
+        const card = document.createElement('div');
+        card.className = 'game-card';
+
+        const link = document.createElement('a');
+        link.href = `games/game.html?id=${game.gameid}`;  // Link to the specific game page
+        link.textContent = game.gametitle;  // Display the game title
+
+        const img = document.createElement('img');
+        img.src = game.thumblink;  // Use the thumbnail link from the CSV data
+        img.alt = game.gametitle;  // Alt text for the image
+
+        card.appendChild(link);
+        card.appendChild(img);
+        container.appendChild(card);
+    });
+}
+
+// Call the function to load the index
+loadCompleteIndex();
+</script>
 
 </body>
 </html>
