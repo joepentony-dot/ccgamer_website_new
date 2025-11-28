@@ -18,10 +18,10 @@ async function loadGame() {
     }
 
     try {
-        const response = await fetch("../games.json");
+        const response = await fetch("../games.json"); 
         const games = await response.json();
 
-        // IMPORTANT: your JSON uses "gameid", not "id"
+        // YOUR JSON USES gameid, not id
         const game = games.find(g => String(g.gameid) === String(gameID));
 
         if (!game) {
@@ -37,18 +37,12 @@ async function loadGame() {
             html += `<p><strong>System:</strong> ${game.system}</p>`;
         }
 
-        // Optional (only show if the field exists)
-        if (game.year) {
-            html += `<p><strong>Year:</strong> ${game.year}</p>`;
-        }
-        if (game.publisher) {
-            html += `<p><strong>Publisher:</strong> ${game.publisher}</p>`;
-        }
-        if (game.developer) {
-            html += `<p><strong>Developer:</strong> ${game.developer}</p>`;
-        }
+        // Optional metadata if you add it later
+        if (game.year) html += `<p><strong>Year:</strong> ${game.year}</p>`;
+        if (game.publisher) html += `<p><strong>Publisher:</strong> ${game.publisher}</p>`;
+        if (game.developer) html += `<p><strong>Developer:</strong> ${game.developer}</p>`;
 
-        // Thumbnail (if added later)
+        // Thumbnail (future ready)
         if (game.thumbnail) {
             html += `
                 <div>
@@ -70,7 +64,6 @@ async function loadGame() {
         let hasLinks = false;
         let linksHtml = `<h2>Links</h2><ul>`;
 
-        // YOUR JSON USES THESE NAMES:
         if (game.lemonLink) {
             hasLinks = true;
             linksHtml += `<li><a href="${game.lemonLink}" target="_blank">Lemon Page</a></li>`;
@@ -81,7 +74,11 @@ async function loadGame() {
             linksHtml += `<li><a href="${game.diskLink}" target="_blank">Download Disk Image</a></li>`;
         }
 
-        // Prefer explicit videoLink, fallback to YouTube with videoId
+        if (game.pdfLink) {
+            hasLinks = true;
+            linksHtml += `<li><a href="${game.pdfLink}" target="_blank">Manual (PDF)</a></li>`;
+        }
+
         if (game.videoLink) {
             hasLinks = true;
             linksHtml += `<li><a href="${game.videoLink}" target="_blank">YouTube Video</a></li>`;
@@ -90,13 +87,11 @@ async function loadGame() {
             linksHtml += `<li><a href="https://www.youtube.com/watch?v=${game.videoId}" target="_blank">YouTube Video</a></li>`;
         }
 
-        linksHtml += "</ul>";
+        linksHtml += `</ul>`;
 
-        if (hasLinks) {
-            html += linksHtml;
-        }
+        if (hasLinks) html += linksHtml;
 
-        // Back
+        // Back button
         html += `<p><a href="javascript:history.back()">← Back</a></p>`;
 
         container.innerHTML = html;
