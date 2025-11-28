@@ -5,141 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheeky Commodore Gamer | Action Adventure Games</title>
 
-    <!-- CORE STYLES -->
-    <!-- From /ccgamer_website_new/ root -->
     <link rel="stylesheet" href="../../css/engine.css">
     <link rel="stylesheet" href="../../resources/css/main.css">
-
-    <!-- CORE SCRIPTS (BOOT/CRT + UNIVERSAL GENRE/COLLECTION LOADER) -->
     <script defer src="../../js/engine.js"></script>
     <script defer src="../../js/genre-loader.js"></script>
-
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // Universal loader (final version) – uses data-genre / data-collection
-            if (typeof loadGenrePage === "function") {
-                loadGenrePage();
-            } else {
-                console.error("loadGenrePage() not found – check genre-loader.js path.");
-            }
+            if (typeof loadGenrePage === "function") loadGenrePage();
         });
     </script>
 </head>
 <body class="crt-body" data-page-type="genre" data-genre="Action Adventure Games">
-    <div class="crt-wrapper">
-        <div class="crt-overlay"></div>
+<div class="crt-wrapper">
+    <div class="crt-overlay"></div>
 
-        <header class="site-header">
-            <div class="site-header-inner">
-                <a href="../../index.html" class="site-logo-link">
-                    <span class="site-logo-text">CHEEKY</span>
-                    <span class="site-logo-sub">COMMODORE GAMER</span>
-                </a>
+    <!-- Header -->
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a href="../../index.html" class="site-logo-link">
+                <span class="site-logo-text">CHEEKY</span>
+                <span class="site-logo-sub">COMMODORE GAMER</span>
+            </a>
+        </div>
+        <nav class="top-nav">
+            <a href="../../index.html" class="nav-link">&larr; Main Menu</a>
+            <a href="../complete-index.html" class="nav-link">Complete Index</a> <!-- Corrected link -->
+            <a href="../genres-index.html" class="nav-link">All Genres</a>
+            <a href="../collections-index.html" class="nav-link">Collections</a>
+        </nav>
+    </header>
 
-                <div class="site-header-meta">
-                    <span class="system-badge">C64 / Amiga Archive</span>
-                    <span class="page-badge">Genre View</span>
-                </div>
+    <!-- Main Content -->
+    <main class="page-main">
+        <section class="panel panel-primary">
+            <header class="panel-header">
+                <h2 class="panel-title">Action Adventure Games</h2>
+                <p class="panel-subtitle">Games that combine action and exploration, the best of both worlds.</p>
+            </header>
+            <div id="genre-results" class="game-grid">
+                <div class="loading-message">Loading Action Adventure Games from the master archive...</div>
             </div>
+        </section>
+    </main>
 
-            <div class="site-header-title-block">
-                <!-- AUTO HEADING: final genre-loader.js will overwrite this based on data-genre -->
-                <h1 id="page-title" data-auto-title="true">Loading Action Adventure Games…</h1>
-                <p class="page-intro">
-                    Grab your virtual backpack: these are the quests, climbs and corridor-crawls
-                    that blur the line between action and adventure.
-                </p>
-            </div>
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>&copy; 2025 Cheeky Commodore Gamer</p>
+    </footer>
+</div>
 
-            <nav class="top-nav">
-                <a href="../../index.html" class="nav-link">&larr; Main Menu</a>
-                <a href="../complete-index.html" class="nav-link">Complete Index</a>
-                <a href="../genres-index.html" class="nav-link">All Genres</a>
-                <a href="../collections-index.html" class="nav-link">Collections</a>
-            </nav>
-        </header>
-
-        <main class="page-main">
-            <section class="panel panel-primary">
-                <header class="panel-header">
-                    <h2 class="panel-title">Action Adventure Games</h2>
-                    <p class="panel-subtitle">
-                        Filtered automatically from the master database using <code>games.json</code>.
-                        Thumbnails are clickable for video previews; use <span class="keycap">➜ Game Info</span>
-                        to dive into the full game page.
-                    </p>
-                </header>
-
-                <!-- RESULTS GRID: populated entirely by final genre-loader.js -->
-                <div id="genre-results" class="game-grid">
-                    <div class="loading-message">
-                        Loading Action Adventure Games from the master archive…
-                    </div>
-                </div>
-
-                <noscript>
-                    <p class="noscript-warning">
-                        JavaScript is disabled. This page needs JavaScript to load Action Adventure
-                        games from <code>games.json</code>.
-                    </p>
-                </noscript>
-            </section>
-
-            <section class="panel panel-secondary">
-                <header class="panel-header">
-                    <h2 class="panel-title">Navigation</h2>
-                </header>
-                <div class="panel-body">
-                    <div class="nav-buttons">
-                        <a class="btn btn-small" href="../../index.html">&larr; Back to Main Menu</a>
-                        <a class="btn btn-small" href="../genres-index.html">Browse All Genres</a>
-                        <a class="btn btn-small" href="../collections-index.html">Browse Collections</a>
-                        <a class="btn btn-small" href="../complete-index.html">View Complete Index</a>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <footer class="site-footer">
-            <p>
-                Cheeky Commodore Gamer &mdash; Action Adventure vault.
-                Best enjoyed on a flickering CRT with a noisy 1541 drive.
-            </p>
-        </footer>
-    </div>
-
-    <!-- =========================================
-         UNIVERSAL VIDEO MODAL (USED BY LOADER)
-         - Thumbnails in genre-loader.js should:
-           * Add a data-video-id or data-video-url
-           * Call openVideoModal(..) on click
-       ========================================= -->
-    <div id="video-modal" class="video-modal hidden" aria-hidden="true">
-        <div class="video-modal-backdrop" data-modal-close></div>
-
-        <div class="video-modal-inner">
-            <button class="video-modal-close" type="button" aria-label="Close video" data-modal-close>
-                &times;
-            </button>
-
-            <div class="video-modal-content">
-                <!--
-                    The iframe src is set dynamically by genre-loader.js:
-                    - Only when opening the modal
-                    - Cleared again on close to stop playback
-                -->
-                <iframe
-                    id="video-frame"
-                    class="video-frame"
-                    src=""
-                    title="Game video"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen
-                ></iframe>
-            </div>
+<!-- Video Modal -->
+<div id="video-modal" class="video-modal hidden" aria-hidden="true">
+    <div class="video-modal-backdrop" data-modal-close></div>
+    <div class="video-modal-inner">
+        <button class="video-modal-close" type="button" aria-label="Close video" data-modal-close>&times;</button>
+        <div class="video-modal-content">
+            <iframe id="video-frame" class="video-frame" src="" title="Game video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
     </div>
-
+</div>
 </body>
 </html>
