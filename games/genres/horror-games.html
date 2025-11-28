@@ -40,4 +40,38 @@
             font-size:1.5rem;text-indent:3px;box-shadow:0 0 14px rgba(0,255,204,.55);}
         .card-body{padding:8px 10px 10px;display:flex;flex-direction:column;gap:4px;}
         .card-title-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
-        .card-title{font-siz
+        .card-title{font-size:.95rem;font-weight:600;}
+        .card-year{font-size:.8rem;color:var(--text-soft);}
+        .card-meta{font-size:.8rem;color:var(--text-soft);}
+        .card-footer{margin-top:4px;display:flex;justify-content:space-between;align-items:center;
+            font-size:.78rem;color:var(--text-soft);}
+        .open-link{text-decoration:none;font-size:.8rem;display:inline-flex;align-items:center;gap:4px;
+            color:var(--accent);}
+        .open-link span.icon{font-size:.9rem;}
+        .empty-message{margin-top:16px;padding:12px 14px;border-radius:12px;
+            background:rgba(16,30,68,.7);border:1px solid rgba(102,153,255,.7);
+            font-size:.9rem;color:var(--text-soft);}
+    </style>
+</head>
+
+<body data-genre="Horror Games">
+<div class="page">
+    <a href="../complete-index.html" class="back-link">← Back to full game index</a>
+
+    <h1>Horror Games</h1>
+    <p class="subtitle">
+        Creeping dread, haunted mansions and things in the dark that probably shouldn’t be on 8-bit hardware.
+    </p>
+
+    <div class="summary-row">
+        <div id="summary-text">Loading games…</div>
+        <div class="badge" id="summary-count"></div>
+    </div>
+
+    <div id="genre-results" class="grid"></div>
+    <div id="empty-message" class="empty-message" style="display:none;">
+        No games found for this category. Check the genre name in games.json matches “Horror Games”.
+    </div>
+</div>
+</body>
+</html>
