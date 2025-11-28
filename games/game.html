@@ -3,150 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loading Game…</title>
+    <title>Game Details | Cheeky Commodore Gamer</title>
 
-    <!-- Core Styles -->
-    <link rel="stylesheet" href="../resources/main.css">
-    <link rel="stylesheet" href="../css/engine.css">
-
-    <style>
-        body {
-            color: #b8e4ff;
-            padding: 20px;
-            font-family: "VT323", monospace;
-            background: #000;
-        }
-        .container {
-            max-width: 900px;
-            margin: auto;
-        }
-        h1 {
-            font-size: 42px;
-            color: #6fc3ff;
-            margin-bottom: 10px;
-        }
-        .meta {
-            font-size: 22px;
-            margin-bottom: 20px;
-            color: #a0d8ff;
-        }
-        .thumbnail img {
-            width: 100%;
-            max-width: 380px;
-            border-radius: 6px;
-            border: 2px solid #6fc3ff;
-            margin-bottom: 20px;
-        }
-        .section-title {
-            font-size: 28px;
-            margin-top: 30px;
-            margin-bottom: 10px;
-            color: #6fc3ff;
-        }
-        .genres span {
-            display: inline-block;
-            background: #073763;
-            padding: 6px 12px;
-            border-radius: 5px;
-            margin-right: 6px;
-            margin-bottom: 6px;
-            font-size: 20px;
-            border: 1px solid #6fc3ff;
-        }
-        .links a {
-            display: block;
-            margin: 6px 0;
-            font-size: 22px;
-            color: #99d9ff;
-        }
-        .back-button {
-            display: inline-block;
-            margin-top: 40px;
-            padding: 12px 20px;
-            background: #073763;
-            color: #b8e4ff;
-            border: 2px solid #6fc3ff;
-            border-radius: 6px;
-            font-size: 24px;
-            text-decoration: none;
-        }
-        iframe {
-            width: 100%;
-            height: 380px;
-            border: none;
-            margin-top: 15px;
-        }
-    </style>
+    <!-- Global CCG Theme -->
+    <link rel="stylesheet" href="../resources/css/main.css">
 </head>
-
 <body>
 
-<div class="container">
-    <div id="game-container">
-        <h1>Loading…</h1>
+<div class="ccg-page">
+<div class="ccg-page-inner ccg-crt-glow">
+
+    <header class="ccg-header">
+        <h1 id="game-title">Loading...</h1>
+        <p class="ccg-header-subtitle">Game details & retro info.</p>
+    </header>
+
+    <div id="game-container" class="ccg-game-layout">
+
+        <!-- Thumbnail -->
+        <div class="ccg-game-thumb">
+            <img id="game-thumbnail" src="" alt="Game Thumbnail">
+        </div>
+
+        <!-- Details -->
+        <div class="ccg-game-info">
+
+            <div class="ccg-info-block">
+                <h2>Game Information</h2>
+                <ul>
+                    <li><strong>Year:</strong> <span id="game-year"></span></li>
+                    <li><strong>Developer:</strong> <span id="game-developer"></span></li>
+                    <li><strong>Composer:</strong> <span id="game-composer"></span></li>
+                    <li><strong>Genres:</strong> <span id="game-genres"></span></li>
+                </ul>
+            </div>
+
+            <div class="ccg-info-block">
+                <h2>External Links</h2>
+                <ul>
+                    <li><a id="link-lemon64" href="#" target="_blank">Lemon64 Page</a></li>
+                    <li><a id="link-lemonamiga" href="#" target="_blank">LemonAmiga Page</a></li>
+                    <li><a id="link-pdf" href="#" target="_blank">Manual / PDF</a></li>
+                    <li><a id="link-download" href="#" target="_blank">Game Download</a></li>
+                    <li><a id="link-video" href="#" target="_blank">YouTube Gameplay</a></li>
+                </ul>
+            </div>
+
+        </div>
+
     </div>
 
-    <a href="../complete-index.html" class="back-button">⬅ Back to Game Index</a>
+    <div class="ccg-back">
+        <a href="index.html" class="ccg-btn-secondary">⬅ Back to Game Menu</a>
+        <a href="../index.html" class="ccg-btn-secondary">⬅ Back to Main Menu</a>
+    </div>
+
+    <footer class="ccg-footer">
+        Cheeky Commodore Gamer – Explore the classics in neon style
+    </footer>
+
+</div>
 </div>
 
 <script>
-async function loadGame() {
+// Utility: get ?id= value
+function getGameId() {
     const params = new URLSearchParams(window.location.search);
-    const gameId = params.get("id");
+    return params.get("id");
+}
+
+async function loadGame() {
+    const gameId = getGameId();
 
     if (!gameId) {
-        document.getElementById("game-container").innerHTML = "<h1>Error: No game ID provided.</h1>";
+        document.getElementById("game-title").textContent = "Game Not Found";
         return;
     }
 
     try {
         const response = await fetch("games.json");
         const games = await response.json();
-        const game = games.find(g => g.id === gameId);
+
+        const game = games.find(g => g.id == gameId);
 
         if (!game) {
-            document.getElementById("game-container").innerHTML = "<h1>Game not found.</h1>";
+            document.getElementById("game-title").textContent = "Game Not Found";
             return;
         }
 
-        document.title = game.title + " | CCG Game Info";
+        // Fill main fields
+        document.getElementById("game-title").textContent = game.title;
+        document.getElementById("game-year").textContent = game.year || "Unknown";
+        document.getElementById("game-developer").textContent = game.developer || "Unknown";
+        document.getElementById("game-composer").textContent = game.composer || "Unknown";
+        document.getElementById("game-genres").textContent = game.genres ? game.genres.join(", ") : "Unknown";
 
-        const container = document.getElementById("game-container");
+        // Thumbnail
+        document.getElementById("game-thumbnail").src = "../" + game.thumbnail;
 
-        container.innerHTML = `
-            <h1>${game.title}</h1>
-
-            <div class="meta">
-                ${game.year ? `<strong>Year:</strong> ${game.year}<br>` : ''}
-                ${game.developer ? `<strong>Developer:</strong> ${game.developer}<br>` : ''}
-                ${game.composer ? `<strong>Composer:</strong> ${game.composer}<br>` : ''}
-                ${game.system ? `<strong>System:</strong> ${game.system}<br>` : ''}
-            </div>
-
-            <div class="thumbnail">
-                <img src="../${game.thumbnail}" alt="${game.title}">
-            </div>
-
-            <div class="section-title">Genres</div>
-            <div class="genres">
-                ${game.genre.map(g => `<span>${g}</span>`).join("")}
-            </div>
-
-            <div class="section-title">Links & Downloads</div>
-            <div class="links">
-                ${game.lemonlinks ? `<a href="${game.lemonlinks}" target="_blank">🍋 Lemon Page</a>` : ""}
-                ${game.pdflink ? `<a href="${game.pdflink}" target="_blank">📘 Manual (PDF)</a>` : ""}
-                ${game.disklinks ? `<a href="${game.disklinks}" target="_blank">💾 Disk Download</a>` : ""}
-            </div>
-
-            ${game.videoid ? `
-                <div class="section-title">Video</div>
-                <iframe src="https://www.youtube.com/embed/${game.videoid}" allowfullscreen></iframe>
-            ` : ''}
-        `;
+        // Links
+        document.getElementById("link-lemon64").href = game.lemon64 || "#";
+        document.getElementById("link-lemonamiga").href = game.lemonamiga || "#";
+        document.getElementById("link-pdf").href = game.pdf || "#";
+        document.getElementById("link-download").href = game.download || "#";
+        document.getElementById("link-video").href = game.video || "#";
 
     } catch (err) {
-        document.getElementById("game-container").innerHTML = "<h1>Error loading game data.</h1>";
+        document.getElementById("game-title").textContent = "Error Loading Game";
     }
 }
 
