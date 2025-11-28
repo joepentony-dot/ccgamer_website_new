@@ -3,65 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Misc Games | CCG</title>
+    <title>Misc Games | Cheeky Commodore Gamer</title>
 
-    <link rel="stylesheet" href="../../css/engine.css">
-    <link rel="stylesheet" href="../../resources/main.css">
-
-    <style>
-        body { background:#000; color:#b8e4ff; font-family:"VT323", monospace; padding:20px; }
-        .container { max-width:1100px; margin:auto; }
-        h1 { color:#6fc3ff; font-size:50px; margin-bottom:10px; }
-        .game-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:22px; margin-top:25px; }
-        .game { background:#031c2d; border:2px solid #6fc3ff; border-radius:6px; padding:12px; text-align:center; }
-        .game img { width:100%; border-radius:6px; border:2px solid #6fc3ff; margin-bottom:10px; }
-        .game a { display:block; color:#a0d8ff; font-size:22px; margin-bottom:6px; text-decoration:none;}
-        .meta { font-size:20px; color:#85c6ff; }
-        .back-button { display:inline-block; margin-top:35px; padding:12px 20px; background:#073763; border:2px solid #6fc3ff; border-radius:6px; text-decoration:none; color:#b8e4ff; font-size:24px; }
-    </style>
+    <link rel="stylesheet" href="../../resources/css/main.css">
 </head>
-
 <body>
-<div class="container">
-    <h1>Misc Games</h1>
-    <div id="genre-results" class="game-list"></div>
-    <a href="../index.html" class="back-button">⬅ Back to Game Menu</a>
+
+<div class="ccg-page">
+    <div class="ccg-page-inner ccg-crt-glow">
+
+        <header class="ccg-header">
+            <h1>Misc Games</h1>
+            <p class="ccg-header-subtitle">Oddities, outliers and everything in-between.</p>
+        </header>
+
+        <div id="results" class="ccg-grid"></div>
+
+        <div class="ccg-back">
+            <a href="../index.html" class="ccg-btn-secondary">⬅ Back to Game Menu</a>
+        </div>
+
+        <footer class="ccg-footer">
+            Cheeky Commodore Gamer – The unexpected side of 8-bit gaming
+        </footer>
+
+    </div>
 </div>
 
 <script>
-const GENRE_NAME = "Miscellaneous"; // CSV genre name
-
 async function loadGenre() {
-    const container = document.getElementById("genre-results");
+    const container = document.getElementById("results");
 
     try {
         const response = await fetch("../games.json");
         const games = await response.json();
 
-        const results = games
-            .filter(g => Array.isArray(g.genre) && g.genre.includes(GENRE_NAME))
-            .sort((a,b) => a.title.localeCompare(b.title));
+        const filtered = games.filter(g =>
+            Array.isArray(g.genres) && g.genres.includes("Misc Games")
+        );
 
-        if (!results.length) {
+        filtered.sort((a, b) => a.title.localeCompare(b.title));
+
+        if (!filtered.length) {
             container.innerHTML = "<p>No games found in this genre.</p>";
             return;
         }
 
-        container.innerHTML = results.map(g => `
-            <div class="game">
+        container.innerHTML = filtered.map(g => `
+            <div class="game-card">
                 <a href="../game.html?id=${g.id}">
                     <img src="../../${g.thumbnail}" alt="${g.title}">
                 </a>
                 <a href="../game.html?id=${g.id}">${g.title}</a>
-                <div class="meta">${g.year ?? ""}</div>
+                <div class="meta">${g.year || ""}</div>
             </div>
         `).join("");
 
     } catch {
-        container.innerHTML = "<p>Error loading genre data.</p>";
+        container.innerHTML = "<p>Error loading Misc Games.</p>";
     }
 }
+
 loadGenre();
 </script>
+
 </body>
 </html>
