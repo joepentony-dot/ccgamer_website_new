@@ -2,70 +2,72 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>Cheeky Commodore Gamer | Fighting Games</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fighting Games | Cheeky Commodore Gamer</title>
 
-    <link rel="stylesheet" href="../../resources/css/main.css">
+    <script defer src="../../js/genre-loader.js"></script>
+
+    <style>
+        :root { --bg:#05060a; --panel:#10131d; --panel-soft:#151a25; --accent:#39f;
+                --accent-soft:rgba(0,153,255,0.2); --text-main:#e6f1ff; --text-soft:#a4b3d6; --radius-lg:16px; }
+        *{box-sizing:border-box;}
+        body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+             background:radial-gradient(circle at top,#07101f 0,#02040a 55%,#000 100%);
+             color:var(--text-main);min-height:100vh;}
+        .page{max-width:1100px;margin:0 auto;padding:16px 16px 32px;}
+        .back-link{display:inline-flex;align-items:center;gap:6px;font-size:.95rem;
+            text-decoration:none;color:var(--text-soft);padding:6px 10px;border-radius:999px;
+            background:rgba(10,14,26,.8);border:1px solid rgba(57,153,255,.3);margin-bottom:12px;}
+        .back-link:hover{border-color:var(--accent);color:var(--accent);}
+        h1{margin:0 0 6px;font-size:clamp(1.6rem,2.4vw,2rem);letter-spacing:.03em;}
+        .subtitle{margin:0 0 16px;font-size:.95rem;color:var(--text-soft);}
+        .summary-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+            font-size:.85rem;color:var(--text-soft);margin-bottom:8px;}
+        .badge{padding:3px 8px;border-radius:999px;border:1px solid rgba(102,153,255,.7);
+            background:rgba(16,30,68,.7);}
+        .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;}
+        .game-card{background:linear-gradient(135deg,#090d18,#050711);border-radius:var(--radius-lg);
+            border:1px solid rgba(102,153,255,.6);overflow:hidden;box-shadow:0 0 0 1px rgba(0,51,102,.4),
+            0 14px 32px rgba(0,0,0,.7);display:flex;flex-direction:column;}
+        .thumb-wrapper{position:relative;background:radial-gradient(circle at top,#111a33,#05070f);
+            border-bottom:1px solid rgba(102,153,255,.5);}
+        .thumb-wrapper img{display:block;width:100%;height:132px;object-fit:cover;}
+        .card-play-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+            pointer-events:none;}
+        .card-play-icon span{width:46px;height:46px;border-radius:50%;border:2px solid rgba(255,255,255,.85);
+            display:flex;align-items:center;justify-content:center;
+            background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.18),rgba(0,0,0,.9));
+            font-size:1.5rem;text-indent:3px;box-shadow:0 0 14px rgba(0,255,204,.55);}
+        .card-body{padding:8px 10px 10px;display:flex;flex-direction:column;gap:4px;}
+        .card-title-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+        .card-title{font-size:.95rem;font-weight:600;}
+        .card-year{font-size:.8rem;color:var(--text-soft);}
+        .card-meta{font-size:.8rem;color:var(--text-soft);}
+        .card-footer{margin-top:4px;display:flex;justify-content:space-between;align-items:center;
+            font-size:.78rem;color:var(--text-soft);}
+        .open-link{text-decoration:none;font-size:.8rem;display:inline-flex;align-items:center;gap:4px;
+            color:var(--accent);}
+        .open-link span.icon{font-size:.9rem;}
+        .empty-message{margin-top:16px;padding:12px 14px;border-radius:12px;
+            background:rgba(16,30,68,.7);border:1px solid rgba(102,153,255,.7);
+            font-size:.9rem;color:var(--text-soft);}
+    </style>
 </head>
-<body>
 
-<div class="ccg-page">
-    <div class="ccg-page-inner ccg-crt-glow">
+<body data-genre="Fighting Games">
+<div class="page">
+    <a href="../complete-index.html" class="back-link">← Back to full game index</a>
 
-        <header class="ccg-header">
-            <h1>Fighting Games</h1>
-            <p class="ccg-header-subtitle">Brawls, bouts and 8-bit bruising action.</p>
-        </header>
+    <h1>Fighting Games</h1>
+    <p class="subtitle">
+        One-on-one showdowns, side-scrolling scrap-ups and joystick-wrenching street brawls.
+    </p>
 
-        <div id="results" class="ccg-grid"></div>
-
-        <div class="ccg-back">
-            <a href="../index.html" class="ccg-btn-secondary">⬅ Back to Game Menu</a>
-        </div>
-
-        <footer class="ccg-footer">
-            Cheeky Commodore Gamer – C64 combat classics
-        </footer>
-
+    <div class="summary-row">
+        <div id="summary-text">Loading games…</div>
+        <div class="badge" id="summary-count"></div>
     </div>
-</div>
 
-<script>
-async function loadGenre() {
-    const container = document.getElementById("results");
-
-    try {
-        const response = await fetch("../games.json");
-        const games = await response.json();
-
-        const filtered = games.filter(g =>
-            Array.isArray(g.genres) && g.genres.includes("Fighting Games")
-        );
-
-        filtered.sort((a, b) => a.title.localeCompare(b.title));
-
-        if (!filtered.length) {
-            container.innerHTML = "<p>No games found in this genre.</p>";
-            return;
-        }
-
-        container.innerHTML = filtered.map(g => `
-            <div class="game-card">
-                <a href="../game.html?id=${g.id}">
-                    <img src="../../${g.thumbnail}" alt="${g.title}">
-                </a>
-                <a href="../game.html?id=${g.id}">${g.title}</a>
-                <div class="meta">${g.year || ""}</div>
-            </div>
-        `).join("");
-
-    } catch {
-        container.innerHTML = "<p>Error loading Fighting Games.</p>";
-    }
-}
-
-loadGenre();
-</script>
-
-</body>
-</html>
+    <div id="genre-results" class="grid"></div>
+    <div id="empty-message" class="empty-message" style="display:none;">
+        No games found for this category. Check the genre name in games.json matches “Fight
