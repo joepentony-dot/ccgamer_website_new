@@ -1,71 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Licensed Games | Cheeky Commodore Gamer</title>
+<meta charset="UTF-8">
+<title>Cheeky Commodore Gamer | Licensed Games</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="../../resources/css/main.css">
+<script defer src="../../js/genre-loader.js"></script>
+
+<style>
+/* unified style */
+:root{--bg:#05060a;--panel:#10131d;--accent:#39f;--text-main:#e6f1ff;--text-soft:#a4b3d6;
+      --radius-lg:16px;}
+*{box-sizing:border-box;}
+body{margin:0;background:radial-gradient(circle at top,#07101f,#02040a 55%,#000);
+     font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+     color:var(--text-main);}
+.page{max-width:1100px;margin:0 auto;padding:16px 16px 32px;}
+.back-link{display:inline-flex;align-items:center;gap:6px;text-decoration:none;
+    background:rgba(10,14,26,.8);padding:6px 10px;border-radius:999px;
+    border:1px solid rgba(57,153,255,.3);color:var(--text-soft);margin-bottom:12px;}
+.back-link:hover{border-color:var(--accent);color:var(--accent);}
+h1{margin:0;font-size:clamp(1.6rem,2.4vw,2rem);}
+.subtitle{margin:6px 0 16px;color:var(--text-soft);}
+.summary-row{display:flex;justify-content:space-between;margin-bottom:10px;color:var(--text-soft);
+    font-size:.9rem;}
+.badge{padding:3px 8px;border-radius:999px;background:rgba(16,30,68,.7);
+    border:1px solid rgba(102,153,255,.7);}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;}
+.game-card{background:linear-gradient(135deg,#090d18,#050711);border-radius:var(--radius-lg);
+    border:1px solid rgba(102,153,255,.6);overflow:hidden;display:flex;flex-direction:column;}
+.thumb-wrapper{position:relative;background:#0d1220;border-bottom:1px solid rgba(102,153,255,.5);}
+.thumb-wrapper img{width:100%;height:132px;object-fit:cover;}
+.card-play-icon{position:absolute;inset:0;display:flex;justify-content:center;
+    align-items:center;pointer-events:none;}
+.card-play-icon span{width:46px;height:46px;border-radius:50%;border:2px solid white;
+    display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.18),#000a);font-size:1.5rem;text-indent:3px;}
+.card-body{padding:10px;display:flex;flex-direction:column;gap:4px;}
+.card-title-row{display:flex;justify-content:space-between;}
+.card-title{font-size:.95rem;font-weight:600;}
+.card-year{font-size:.8rem;color:var(--text-soft);}
+.card-meta{font-size:.8rem;color:var(--text-soft);}
+.card-footer{margin-top:4px;display:flex;justify-content:space-between;font-size:.78rem;
+    color:var(--text-soft);}
+.open-link{text-decoration:none;color:var(--accent);display:flex;align-items:center;gap:4px;}
+.empty-message{margin-top:16px;padding:12px 14px;border-radius:12px;
+    background:rgba(16,30,68,.7);border:1px solid rgba(102,153,255,.7);}
+</style>
 </head>
-<body>
 
-<div class="ccg-page">
-<div class="ccg-page-inner ccg-crt-glow">
+<body data-collection="Licensed Games">
+<div class="page">
+    <a href="../complete-index.html" class="back-link">← Back to full game index</a>
 
-<header class="ccg-header">
     <h1>Licensed Games</h1>
-    <p class="ccg-header-subtitle">Film tie-ins, TV conversions and official adaptations.</p>
-</header>
+    <p class="subtitle">
+        Film tie-ins, TV adaptations, comic conversions and pop-culture classics — the official stuff from the era.
+    </p>
 
-<div id="results" class="ccg-grid"></div>
+    <div class="summary-row">
+        <div id="summary-text">Loading licensed titles…</div>
+        <div class="badge" id="summary-count"></div>
+    </div>
 
-<div class="ccg-back">
-    <a href="../index.html" class="ccg-btn-secondary">⬅ Back to Game Menu</a>
+    <div id="genre-results" class="grid"></div>
+
+    <div id="empty-message" class="empty-message" style="display:none;">
+        No licensed games found — confirm “Licensed Games” in games.json.
+    </div>
 </div>
-
-<footer class="ccg-footer">
-    Cheeky Commodore Gamer – Officially endorsed retro goodness
-</footer>
-
-</div>
-</div>
-
-<script>
-async function loadCollection() {
-    const container = document.getElementById("results");
-
-    try {
-        const response = await fetch("../games.json");
-        const games = await response.json();
-
-        const filtered = games.filter(g =>
-            Array.isArray(g.genres) && g.genres.includes("Licensed Games")
-        );
-
-        filtered.sort((a, b) => a.title.localeCompare(b.title));
-
-        if (!filtered.length) {
-            container.innerHTML = "<p>No licensed games found.</p>";
-            return;
-        }
-
-        container.innerHTML = filtered.map(g => `
-            <div class="game-card">
-                <a href="../game.html?id=${g.id}">
-                    <img src="../../${g.thumbnail}" alt="${g.title}">
-                </a>
-                <a href="../game.html?id=${g.id}">${g.title}</a>
-                <div class="meta">${g.year || ""}</div>
-            </div>
-        `).join("");
-
-    } catch {
-        container.innerHTML = "<p>Error loading Licensed Games.</p>";
-    }
-}
-
-loadCollection();
-</script>
-
 </body>
 </html>
