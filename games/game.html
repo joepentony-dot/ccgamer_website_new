@@ -5,436 +5,457 @@
     <title>Cheeky Commodore Gamer | Game Details</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- You can hook your global styles back in later if you like -->
-    <!-- <link rel="stylesheet" href="../css/engine.css"> -->
-    <!-- <link rel="stylesheet" href="../resources/main.css"> -->
+    <!-- Single-game loader -->
+    <script defer src="../js/load-single-game.js"></script>
 
     <style>
         :root {
-            --bg: #05060a;
-            --panel: #10131d;
-            --panel-soft: #151a25;
-            --accent: #39f;
-            --accent-soft: rgba(0, 153, 255, 0.2);
+            --bg-c64: radial-gradient(circle at top, #07101f 0, #02040a 55%, #000 100%);
+            --bg-amiga: radial-gradient(circle at top, #071822 0, #020612 55%, #000 100%);
+            --accent-c64: #39f;
+            --accent-amiga: #00cba9;
+            --panel: #090d18;
+            --panel-soft: #10131d;
             --text-main: #e6f1ff;
             --text-soft: #a4b3d6;
-            --danger: #ff4b4b;
-            --radius-lg: 16px;
+            --danger: #ff4f6b;
+            --radius-lg: 18px;
         }
 
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             margin: 0;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background: radial-gradient(circle at top, #07101f 0, #02040a 55%, #000 100%);
             color: var(--text-main);
             min-height: 100vh;
+            background: var(--bg-c64);
+        }
+
+        body.mode-c64 {
+            background: var(--bg-c64);
+        }
+
+        body.mode-amiga {
+            background: var(--bg-amiga);
+        }
+
+        body.mode-c64 .accent {
+            color: var(--accent-c64);
+        }
+        body.mode-amiga .accent {
+            color: var(--accent-amiga);
+        }
+
+        body.mode-c64 .pill-button.primary {
+            border-color: rgba(57, 153, 255, 0.8);
+            box-shadow: 0 0 14px rgba(0, 153, 255, 0.5);
+        }
+        body.mode-amiga .pill-button.primary {
+            border-color: rgba(0, 203, 169, 0.9);
+            box-shadow: 0 0 14px rgba(0, 203, 169, 0.5);
         }
 
         .page {
-            max-width: 1100px;
+            max-width: 1140px;
             margin: 0 auto;
             padding: 16px 16px 32px;
         }
 
-        .back-link {
-            display: inline-flex;
+        /* Top bar */
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 6px;
-            font-size: 0.95rem;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-img {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.7));
+        }
+
+        .site-title {
+            font-size: 0.9rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-soft);
+        }
+
+        .top-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .small-link {
             text-decoration: none;
+            font-size: 0.85rem;
             color: var(--text-soft);
-            padding: 6px 10px;
+            padding: 5px 10px;
             border-radius: 999px;
-            background: rgba(10, 14, 26, 0.8);
-            border: 1px solid rgba(57, 153, 255, 0.3);
-            margin-bottom: 12px;
-        }
-        .back-link:hover {
-            border-color: var(--accent);
-            color: var(--accent);
+            border: 1px solid rgba(102, 153, 255, 0.4);
+            background: rgba(5, 8, 18, 0.85);
         }
 
-        h1 {
-            margin: 0 0 12px;
-            font-size: clamp(1.6rem, 2.4vw, 2rem);
-            letter-spacing: 0.03em;
+        .small-link:hover {
+            color: var(--accent-c64);
+            border-color: var(--accent-c64);
         }
 
-        .subtitle {
-            margin: 0 0 20px;
-            font-size: 0.95rem;
+        /* Mode toggle */
+
+        .mode-toggle {
+            display: inline-flex;
+            background: rgba(8, 12, 24, 0.95);
+            border-radius: 999px;
+            border: 1px solid rgba(102, 153, 255, 0.5);
+            overflow: hidden;
+        }
+
+        .mode-toggle button {
+            border: none;
+            background: transparent;
             color: var(--text-soft);
+            font-size: 0.8rem;
+            padding: 6px 10px;
+            cursor: pointer;
+            min-width: 70px;
         }
+
+        .mode-toggle button.active {
+            color: #fff;
+            background: linear-gradient(135deg, rgba(57, 153, 255, 0.9), rgba(0, 203, 169, 0.85));
+        }
+
+        /* Main layout */
 
         .game-layout {
             display: grid;
-            grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
-            gap: 24px;
+            grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.1fr);
+            gap: 18px;
         }
 
-        @media (max-width: 800px) {
+        @media (max-width: 850px) {
             .game-layout {
-                grid-template-columns: minmax(0, 1fr);
+                grid-template-columns: 1fr;
             }
         }
 
         .panel {
-            background: linear-gradient(135deg, #090d18, #050711);
+            background: radial-gradient(circle at top left, #151a2b, #050711);
             border-radius: var(--radius-lg);
             border: 1px solid rgba(102, 153, 255, 0.6);
             box-shadow:
-                0 0 0 1px rgba(0, 51, 102, 0.5),
-                0 18px 40px rgba(0, 0, 0, 0.7);
-            padding: 16px;
+                0 0 0 1px rgba(0, 34, 68, 0.7),
+                0 18px 40px rgba(0, 0, 0, 0.85);
+            padding: 12px 12px 14px;
         }
 
-        .thumb-wrapper {
+        /* Media column */
+
+        .thumb-shell {
             position: relative;
-            border-radius: 14px;
+            border-radius: 12px;
             overflow: hidden;
+            border: 1px solid rgba(102, 153, 255, 0.65);
             background: radial-gradient(circle at top, #111a33, #05070f);
-            border: 1px solid rgba(84, 147, 255, 0.7);
+            margin-bottom: 10px;
         }
 
-        #game-thumb {
+        .thumb-shell img {
             display: block;
             width: 100%;
-            height: auto;
+            height: 230px;
+            object-fit: cover;
         }
 
         .thumb-overlay {
             position: absolute;
             inset: 0;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding: 6px 8px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent 55%);
+            font-size: 0.75rem;
         }
 
-        .play-icon {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15), rgba(0,0,0,0.85));
-            font-size: 2rem;
-            text-indent: 4px;
-            box-shadow: 0 0 18px rgba(0, 255, 204, 0.55);
+        .thumb-label {
+            color: var(--text-soft);
         }
 
-        .button-group {
-            margin-top: 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .ccg-button {
+        .thumb-open {
+            text-decoration: none;
+            color: #fff;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 9px 12px;
+            gap: 5px;
+            padding: 4px 8px;
             border-radius: 999px;
-            background: radial-gradient(circle at top, #1b315a, #09111f);
-            border: 1px solid rgba(102, 153, 255, 0.7);
-            color: var(--text-main);
-            text-decoration: none;
-            font-size: 0.92rem;
-            letter-spacing: 0.03em;
-            text-transform: uppercase;
-        }
-        .ccg-button span.icon {
-            font-size: 1.05rem;
-        }
-        .ccg-button:hover {
-            border-color: var(--accent);
-            box-shadow: 0 0 16px rgba(0, 153, 255, 0.45);
+            background: rgba(0, 0, 0, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            font-size: 0.75rem;
         }
 
-        .ccg-button.secondary {
-            background: radial-gradient(circle at top, #13202f, #070911);
+        .thumb-open span.icon {
+            font-size: 0.9rem;
         }
 
-        .meta-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 8px 18px;
-            margin-bottom: 16px;
+        .video-shell {
+            margin-top: 8px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(102, 153, 255, 0.65);
+            background: #000;
+        }
+
+        .video-shell iframe {
+            display: block;
+            width: 100%;
+            height: 220px;
+            border: none;
+        }
+
+        .video-caption {
+            padding: 6px 8px;
+            font-size: 0.8rem;
+            color: var(--text-soft);
+            background: #050713;
+            border-top: 1px solid rgba(20, 32, 68, 0.8);
+        }
+
+        /* Info column */
+
+        .game-header-block {
+            margin-bottom: 8px;
+        }
+
+        .game-title {
+            margin: 0 0 4px;
+            font-size: clamp(1.4rem, 2.4vw, 1.8rem);
+        }
+
+        .game-subline {
+            font-size: 0.9rem;
+            color: var(--text-soft);
         }
 
         .meta-row {
             display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            font-size: 0.9rem;
-        }
-
-        .meta-row span.label {
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0;
+            font-size: 0.8rem;
             color: var(--text-soft);
         }
-        .meta-row span.value {
-            text-align: right;
+
+        .meta-pill {
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: rgba(16, 30, 68, 0.85);
+            border: 1px solid rgba(102, 153, 255, 0.7);
         }
 
-        .tags {
+        .genres-row {
+            margin: 8px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .genre-chip {
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            color: var(--text-soft);
+            border: 1px solid rgba(102, 153, 255, 0.5);
+            background: rgba(10, 16, 34, 0.85);
+        }
+
+        .actions-row {
+            margin-top: 10px;
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin-bottom: 12px;
         }
 
-        .tag {
+        .pill-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            padding: 3px 8px;
+            padding: 7px 11px;
             border-radius: 999px;
             border: 1px solid rgba(102, 153, 255, 0.6);
-            background: rgba(16, 30, 68, 0.75);
-            color: var(--text-soft);
+            background: rgba(5, 8, 18, 0.95);
+            color: var(--text-main);
+            text-decoration: none;
+            cursor: pointer;
         }
 
-        .description {
-            font-size: 0.95rem;
-            line-height: 1.6;
-            color: var(--text-soft);
-            white-space: pre-wrap;
+        .pill-button span.icon {
+            font-size: 0.9rem;
         }
 
-        .error-box {
-            border-radius: var(--radius-lg);
-            padding: 14px 16px;
-            background: rgba(68, 18, 18, 0.85);
-            border: 1px solid rgba(255, 75, 75, 0.8);
-            color: #ffdede;
-            margin-top: 12px;
-            font-size: 0.95rem;
+        .pill-button.primary {
+            font-weight: 600;
         }
 
-        .id-hint {
-            margin-top: 4px;
+        .pill-button.danger {
+            border-color: rgba(255, 79, 107, 0.8);
+            color: #ffd6df;
+        }
+
+        .pill-button.disabled {
+            opacity: 0.35;
+            pointer-events: none;
+        }
+
+        .info-note {
+            margin-top: 10px;
             font-size: 0.8rem;
             color: var(--text-soft);
+        }
+
+        /* Bottom strip */
+
+        .bottom-strip {
+            margin-top: 16px;
+            font-size: 0.78rem;
+            color: var(--text-soft);
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+            opacity: 0.9;
+        }
+
+        .bottom-strip span strong {
+            font-weight: 600;
+        }
+
+        /* Error state */
+
+        .error-box {
+            margin-top: 18px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 79, 107, 0.8);
+            background: rgba(40, 0, 12, 0.9);
+            color: #ffd6df;
+            font-size: 0.9rem;
         }
     </style>
 </head>
-<body>
+
+<body class="mode-c64">
 <div class="page">
-    <a href="complete-index.html" class="back-link">← Back to full game index</a>
+    <header class="top-bar">
+        <div class="logo-wrap">
+            <!-- If this path differs, just adjust the src to your actual logo file -->
+            <a href="../index.html">
+                <img src="../resources/images/ccg-logo.png"
+                     alt="Cheeky Commodore Gamer"
+                     class="logo-img">
+            </a>
+            <div class="site-title">CHEEKY COMMODORE GAMER · GAME VIEWER</div>
+        </div>
 
-    <h1 id="game-title">Loading game…</h1>
-    <p class="subtitle" id="game-subtitle">Please wait while we spin up the 1541 drive.</p>
+        <div class="top-right">
+            <a href="complete-index.html" class="small-link">⮌ Complete Index</a>
+            <div class="mode-toggle">
+                <button type="button" data-mode="c64" class="active">C64 Mode</button>
+                <button type="button" data-mode="amiga">Amiga Mode</button>
+            </div>
+        </div>
+    </header>
 
-    <div id="error-container"></div>
-
-    <div class="game-layout" id="game-layout" style="display:none;">
-        <!-- LEFT COLUMN -->
-        <div class="panel">
-            <div class="thumb-wrapper" id="thumb-wrapper">
-                <img id="game-thumb" alt="Game thumbnail">
+    <main class="game-layout">
+        <!-- Left: media -->
+        <section class="panel">
+            <div class="thumb-shell">
+                <img id="game-thumbnail" src="" alt="Game thumbnail">
                 <div class="thumb-overlay">
-                    <div class="play-icon">▶</div>
+                    <div class="thumb-label" id="thumb-label">Thumbnail</div>
+                    <a href="#" id="thumb-open-link" class="thumb-open" target="_blank" rel="noopener">
+                        <span class="icon">⧉</span><span>Open image</span>
+                    </a>
                 </div>
             </div>
 
-            <div class="button-group">
-                <a id="btn-video" class="ccg-button" href="#" target="_blank" rel="noopener">
-                    <span class="icon">▶</span>
-                    <span>Watch gameplay video</span>
-                </a>
-                <a id="btn-disk" class="ccg-button secondary" href="#" target="_blank" rel="noopener">
-                    <span class="icon">💾</span>
-                    <span>Download game (disk)</span>
-                </a>
-                <a id="btn-pdf" class="ccg-button secondary" href="#" target="_blank" rel="noopener">
-                    <span class="icon">📄</span>
-                    <span>View manual / docs</span>
-                </a>
-                <a id="btn-lemon" class="ccg-button secondary" href="#" target="_blank" rel="noopener">
-                    <span class="icon">🍋</span>
-                    <span>Open Lemon64 entry</span>
-                </a>
+            <div class="video-shell" id="video-shell" style="display:none;">
+                <iframe id="game-video" src="" allowfullscreen></iframe>
+                <div class="video-caption">
+                    <span class="accent">▶</span>
+                    <span id="video-caption-text">In-game or longplay footage (YouTube).</span>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <!-- RIGHT COLUMN -->
-        <div class="panel">
-            <div class="meta-grid">
-                <div class="meta-row" id="row-year">
-                    <span class="label">Year</span>
-                    <span class="value" id="meta-year"></span>
-                </div>
-                <div class="meta-row" id="row-publisher">
-                    <span class="label">Publisher</span>
-                    <span class="value" id="meta-publisher"></span>
-                </div>
-                <div class="meta-row" id="row-developer">
-                    <span class="label">Developer</span>
-                    <span class="value" id="meta-developer"></span>
-                </div>
-                <div class="meta-row" id="row-composer">
-                    <span class="label">Music</span>
-                    <span class="value" id="meta-composer"></span>
+        <!-- Right: info -->
+        <section class="panel">
+            <div class="game-header-block">
+                <h1 class="game-title" id="game-title">Loading game…</h1>
+                <div class="game-subline" id="game-subline">
+                    <!-- Filled by JS: e.g. "1986 · Elite" -->
                 </div>
             </div>
 
-            <div class="tags" id="tag-row" style="display:none;">
-                <span class="tag" id="tag-genre"></span>
-                <span class="tag" id="tag-system"></span>
+            <div class="meta-row">
+                <span class="meta-pill" id="meta-year" style="display:none;"></span>
+                <span class="meta-pill" id="meta-developer" style="display:none;"></span>
+                <span class="meta-pill" id="meta-id" style="display:none;"></span>
             </div>
 
-            <div class="description" id="game-description">
-                <!-- Fallback text if no description in JSON -->
+            <div class="genres-row" id="genres-row">
+                <!-- Genre chips injected here -->
             </div>
-        </div>
+
+            <div class="actions-row">
+                <a href="#" id="btn-disk" class="pill-button primary disabled" target="_blank" rel="noopener">
+                    <span class="icon">💾</span><span>Download Disk</span>
+                </a>
+
+                <a href="#" id="btn-manual" class="pill-button disabled" target="_blank" rel="noopener">
+                    <span class="icon">📖</span><span>Manual / PDF</span>
+                </a>
+
+                <a href="#" id="btn-lemon" class="pill-button disabled" target="_blank" rel="noopener">
+                    <span class="icon">🍋</span><span>Lemon Entry</span>
+                </a>
+
+                <a href="#" id="btn-youtube" class="pill-button disabled" target="_blank" rel="noopener">
+                    <span class="icon">▶</span><span>YouTube</span>
+                </a>
+            </div>
+
+            <p class="info-note" id="info-note">
+                All data for this page is loaded live from the Cheeky Commodore Gamer master database (games.json).
+            </p>
+
+            <div id="error-box" class="error-box" style="display:none;">
+                Could not load this game. Double-check the link or ID in the URL, or try returning to the complete index.
+            </div>
+        </section>
+    </main>
+
+    <div class="bottom-strip">
+        <span id="bottom-id"></span>
+        <span>Use the Complete Index or genre pages to jump between more C64 and Amiga classics.</span>
     </div>
 </div>
-
-<script>
-    function getGameId(game) {
-        return game.id || game.gameid || game.slug || game.title;
-    }
-
-    function setTextOrHide(rowId, targetId, value) {
-        const row = document.getElementById(rowId);
-        const target = document.getElementById(targetId);
-        if (!row || !target) return;
-
-        if (value && String(value).trim() !== "") {
-            target.textContent = value;
-            row.style.display = "flex";
-        } else {
-            row.style.display = "none";
-        }
-    }
-
-    function setLinkOrHide(btnId, url) {
-        const btn = document.getElementById(btnId);
-        if (!btn) return;
-
-        if (url && String(url).trim() !== "") {
-            btn.href = url;
-            btn.style.display = "inline-flex";
-        } else {
-            btn.style.display = "none";
-        }
-    }
-
-    async function loadGamePage() {
-        const params = new URLSearchParams(window.location.search);
-        const idParam = params.get("id");
-
-        const errorContainer = document.getElementById("error-container");
-        const layout = document.getElementById("game-layout");
-        const titleEl = document.getElementById("game-title");
-        const subtitleEl = document.getElementById("game-subtitle");
-
-        if (!idParam) {
-            titleEl.textContent = "No game selected";
-            subtitleEl.textContent = "";
-            errorContainer.innerHTML = '<div class="error-box">No game ID was supplied in the URL.</div>';
-            return;
-        }
-
-        try {
-            const response = await fetch("games.json");
-            if (!response.ok) {
-                throw new Error("Failed to load games.json (" + response.status + ")");
-            }
-
-            const games = await response.json();
-            const idDecoded = decodeURIComponent(idParam);
-
-            const game = games.find(g => String(getGameId(g)) === idParam || String(getGameId(g)) === idDecoded);
-
-            if (!game) {
-                titleEl.textContent = "Game not found";
-                subtitleEl.textContent = "";
-                errorContainer.innerHTML =
-                    '<div class="error-box">I couldn\u2019t find a game with ID: <strong>' +
-                    idParam +
-                    '</strong>.</div>';
-                return;
-            }
-
-            // Found game – populate UI
-            layout.style.display = "grid";
-            errorContainer.innerHTML = "";
-
-            titleEl.textContent = game.title || "Untitled game";
-            subtitleEl.textContent = (game.subtitle || game.tagline || "")
-                || "Loaded from the CCG Master Database. Enjoy the nostalgia.";
-
-            // Thumbnail
-            const thumb = document.getElementById("game-thumb");
-            if (game.thumbnail) {
-                // JSON should store thumbnail path relative to repo root, e.g. "resources/images/thumbnails/foo.jpg"
-                thumb.src = "../" + game.thumbnail;
-                thumb.alt = game.title ? (game.title + " thumbnail") : "Game thumbnail";
-            } else {
-                thumb.style.display = "none";
-                document.getElementById("thumb-wrapper").style.minHeight = "180px";
-            }
-
-            // Meta
-            setTextOrHide("row-year", "meta-year", game.year);
-            setTextOrHide("row-publisher", "meta-publisher", game.publisher || game.label);
-            setTextOrHide("row-developer", "meta-developer", game.developer || game.developers);
-            setTextOrHide("row-composer", "meta-composer", game.composer || game.music);
-
-            // Tags
-            const tagRow = document.getElementById("tag-row");
-            const tagGenre = document.getElementById("tag-genre");
-            const tagSystem = document.getElementById("tag-system");
-
-            const genre =
-                (Array.isArray(game.genres) ? game.genres.join(", ") : game.genre) || "";
-            const system = game.system || game.machine || "Commodore 64";
-
-            if (genre || system) {
-                tagRow.style.display = "flex";
-                tagGenre.textContent = genre || "Miscellaneous";
-                tagSystem.textContent = system;
-            } else {
-                tagRow.style.display = "none";
-            }
-
-            // Description
-            const descEl = document.getElementById("game-description");
-            const desc = game.description || game.summary || "";
-            if (desc && String(desc).trim() !== "") {
-                descEl.textContent = desc;
-            } else {
-                descEl.textContent =
-                    "Description coming soon. This entry is already wired up in the CCG Master Database, " +
-                    "but the long-form write-up hasn\u2019t been pasted in yet.";
-            }
-
-            // Links/buttons
-            setLinkOrHide("btn-video", game.video || game.youtube || game.youtubeUrl);
-            setLinkOrHide("btn-disk", game.disk || game.disklink || game.download);
-            setLinkOrHide("btn-pdf", game.pdflink || game.pdf || game.manual);
-            setLinkOrHide("btn-lemon", game.lemon || game.lemon64 || game.lemon64Url);
-
-        } catch (err) {
-            console.error(err);
-            titleEl.textContent = "Error loading game";
-            subtitleEl.textContent = "";
-            errorContainer.innerHTML =
-                '<div class="error-box">' +
-                'There was a problem loading <code>games.json</code>.<br>' +
-                'Error: ' + (err.message || err) +
-                '</div>';
-        }
-    }
-
-    document.addEventListener("DOMContentLoaded", loadGamePage);
-</script>
 </body>
 </html>
