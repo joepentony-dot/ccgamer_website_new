@@ -1,7 +1,0 @@
-# Raw GitHub fallback — ensures image files are not treated as text
-*.jpg binary
-*.jpeg binary
-*.png binary
-
-# Optional: Git LFS rules (safe to include)
-/resources/images/thumbnails/** filter=lfs diff=lfs merge=lfs
