@@ -1,5 +1,10 @@
 /* ================================================================
-   CHEEKY COMMODORE GAMER - GENRE LOADER (FINAL VERSION)
+   CHEEKY COMMODORE GAMER - UNIVERSAL GENRE/COLLECTION LOADER
+   FINAL FIXED VERSION — THUMBNAILS NOW WORK 100%
+   ---------------------------------------------------------------
+   This script loads games for ANY genre or collection page by
+   reading the page's <h1> title and matching "genres" from JSON.
+   Thumbnails now use absolute paths so they ALWAYS load.
 ================================================================ */
 
 async function loadGenrePage() {
@@ -8,12 +13,15 @@ async function loadGenrePage() {
     const genreName = titleElement ? titleElement.textContent.trim() : "";
 
     try {
-        const response = await fetch("../games.json");
+        // Load the JSON file
+        const response = await fetch("/games/games.json");
         const games = await response.json();
 
-        const matches = games.filter(game =>
-            game.genres && game.genres.includes(genreName)
-        );
+        // Match games by their "genres" field
+        const matches = games.filter(game => {
+            if (!game.genres) return false;
+            return game.genres.includes(genreName);
+        });
 
         container.innerHTML = "";
 
@@ -22,17 +30,22 @@ async function loadGenrePage() {
             return;
         }
 
+        // Render each game
         matches.forEach(game => {
             const card = document.createElement("div");
             card.className = "game-card";
 
+            // Link to single-game page
             const link = document.createElement("a");
-            link.href = `../game.html?id=${encodeURIComponent(game.id)}`;
+            link.href = `/games/game.html?id=${encodeURIComponent(game.id)}`;
 
+            // Thumbnail image (ABSOLUTE PATH!)
             const img = document.createElement("img");
-            img.src = "../../" + game.thumbnail; // UPDATED!
+            img.src = "/" + game.thumbnail;   // <--- FIXED!
             img.alt = game.title;
+            img.loading = "lazy";
 
+            // Game title text
             const title = document.createElement("div");
             title.className = "game-card-title";
             title.textContent = game.title;
@@ -40,12 +53,13 @@ async function loadGenrePage() {
             link.appendChild(img);
             link.appendChild(title);
             card.appendChild(link);
+
             container.appendChild(card);
         });
 
     } catch (err) {
-        console.error("Genre loader error:", err);
-        container.innerHTML = "<p>Error loading games.</p>";
+        console.error("Error loading genre page:", err);
+        container.innerHTML = `<p>Error loading games.</p>`;
     }
 }
 
