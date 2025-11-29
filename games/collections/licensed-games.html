@@ -2,46 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Licensed Games</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Licensed Games | CCG</title>
+
+    <link rel="stylesheet" href="../../css/engine.css">
+    <link rel="stylesheet" href="../../resources/css/main.css">
 
     <script defer src="../../js/genre-loader.js"></script>
-
-    <style>
-        body { background:#07101f; color:#e6f1ff; font-family:Arial; padding:20px; }
-        h1 { text-align:center; color:#ffcc33; margin-bottom:10px; }
-        #genre-results {
-            display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-            gap:16px; margin-top:20px;
-        }
-        a.toplink { color:#ffd97a; text-decoration:none; margin-right:15px; }
-        a.toplink:hover { color:#ffcc33; }
-        .game-card img { width:100%; height:150px; object-fit:cover; border-radius:5px; }
-        .game-title { margin-top:6px; text-align:center; color:#ffd97a; }
-        .game-info-link { margin-top:4px; text-align:center; color:#ffcc33; font-size:0.8rem; }
-    </style>
 </head>
 
 <body>
 
-<div>
-    <a class="toplink" id="menu-link">← Main Menu</a>
-    <a class="toplink" id="complete-index-link">Complete Index</a>
-</div>
-
-<h1>Licensed Games</h1>
-
-<p style="text-align:center;">
-    Official movie, TV, comic, and brand-licensed games from the retro era.
-</p>
-
-<div id="genre-results">Loading...</div>
-
-<script>
-    document.getElementById("menu-link").href = BASE + "index.html";
-    document.getElementById("complete-index-link").href = BASE + "complete-index.html";
-</script>
+    <h1>Licensed Games</h1>
+    <div id="genre-results">Loading games…</div>
 
 </body>
 </html>
-
