@@ -1,31 +1,69 @@
-<main>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Details | CCG</title>
 
-    <!-- GAME TITLE -->
+    <!-- Correct CSS paths (from /games/game.html) -->
+    <link rel="stylesheet" href="../css/engine.css">
+    <link rel="stylesheet" href="../resources/css/main.css">
+
+    <!-- Correct script path -->
+    <script defer src="../js/load-single-game.js"></script>
+</head>
+
+<body>
+
+<header>
     <h1 id="game-title">Loading…</h1>
+</header>
 
-    <!-- THUMBNAIL -->
-    <img id="game-thumb" class="game-thumb" src="" alt="Game thumbnail">
+<main class="game-page">
 
-    <!-- DETAILS BLOCK -->
+    <!-- GAME THUMBNAIL -->
+    <div class="game-thumb-wrapper">
+        <img id="game-thumb" class="game-thumb" src="" alt="Game thumbnail">
+    </div>
+
+    <!-- GAME DETAILS -->
     <div id="game-details" class="game-details">
         Loading game information…
     </div>
 
     <!-- BUTTONS -->
-    <div class="buttons">
+    <div class="game-buttons">
 
-        <a id="btn-video" class="button disabled" href="#" target="_blank" aria-disabled="true">
-            ▶ Watch Video
+        <!-- YouTube -->
+        <a id="btn-video"
+           class="game-button disabled"
+           href="#"
+           target="_blank"
+           aria-disabled="true">
+           ▶ Watch Video
         </a>
 
-        <a id="btn-pdf" class="button disabled" href="#" target="_blank" aria-disabled="true">
-            📄 View Manual
+        <!-- PDF manual -->
+        <a id="btn-pdf"
+           class="game-button disabled"
+           href="#"
+           target="_blank"
+           aria-disabled="true">
+           📄 View Manual
         </a>
 
-        <a id="btn-disk" class="button disabled" href="#" target="_blank" aria-disabled="true">
-            💾 Download Disk
+        <!-- Disk Download -->
+        <a id="btn-disk"
+           class="game-button disabled"
+           href="#"
+           target="_blank"
+           aria-disabled="true">
+           💾 Download Disk
         </a>
 
     </div>
 
 </main>
+
+</body>
+</html>
