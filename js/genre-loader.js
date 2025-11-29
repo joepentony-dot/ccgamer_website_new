@@ -1,6 +1,5 @@
 /* ================================================================
-   CHEEKY COMMODORE GAMER - UNIVERSAL GENRE/COLLECTION LOADER
-   Updated for LOCAL thumbnails (Phase 4)
+   CHEEKY COMMODORE GAMER - GENRE LOADER (FINAL FIX)
 ================================================================ */
 
 async function loadGenrePage() {
@@ -9,14 +8,12 @@ async function loadGenrePage() {
     const genreName = titleElement ? titleElement.textContent.trim() : "";
 
     try {
-        const response = await fetch("../games/games.json");
+        const response = await fetch("../games.json"); 
         const games = await response.json();
 
-        // Match games by folder name or by genre array
-        const matches = games.filter(game => {
-            if (!game.genres) return false;
-            return game.genres.includes(genreName);
-        });
+        const matches = games.filter(game =>
+            game.genres && game.genres.includes(genreName)
+        );
 
         container.innerHTML = "";
 
@@ -43,13 +40,12 @@ async function loadGenrePage() {
             link.appendChild(img);
             link.appendChild(title);
             card.appendChild(link);
-
             container.appendChild(card);
         });
 
     } catch (err) {
-        console.error("Error loading genre page:", err);
-        container.innerHTML = `<p>Error loading games.</p>`;
+        console.error("Genre loader error:", err);
+        container.innerHTML = "<p>Error loading games.</p>";
     }
 }
 
