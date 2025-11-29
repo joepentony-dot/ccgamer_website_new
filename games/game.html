@@ -1,42 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Details | CCG</title>
+<main>
 
-    <!-- Core Styles -->
-    <link rel="stylesheet" href="../css/engine.css">
-    <link rel="stylesheet" href="../resources/css/main.css">
+    <!-- GAME TITLE -->
+    <h1 id="game-title">Loading…</h1>
 
-    <!-- Loader for single game data -->
-    <script defer src="../js/load-single-game.js"></script>
-</head>
+    <!-- THUMBNAIL -->
+    <img id="game-thumb" class="game-thumb" src="" alt="Game thumbnail">
 
-<body>
+    <!-- DETAILS BLOCK -->
+    <div id="game-details" class="game-details">
+        Loading game information…
+    </div>
 
-    <header>
-        <h1 id="game-title">Loading…</h1>
-    </header>
+    <!-- BUTTONS -->
+    <div class="buttons">
 
-    <main>
+        <a id="btn-video" class="button disabled" href="#" target="_blank" aria-disabled="true">
+            ▶ Watch Video
+        </a>
 
-        <div id="game-container">
-            <img id="game-thumbnail" alt="Game thumbnail">
+        <a id="btn-pdf" class="button disabled" href="#" target="_blank" aria-disabled="true">
+            📄 View Manual
+        </a>
 
-            <div id="game-info">
-                <p><strong>Year:</strong> <span id="game-year">—</span></p>
-                <p><strong>Developer:</strong> <span id="game-developer">—</span></p>
-                <p><strong>Genre:</strong> <span id="game-genre">—</span></p>
-            </div>
+        <a id="btn-disk" class="button disabled" href="#" target="_blank" aria-disabled="true">
+            💾 Download Disk
+        </a>
 
-            <div id="game-actions">
-                <a id="game-video" class="button" target="_blank">▶ Watch Video</a>
-                <a id="game-pdf" class="button" target="_blank" style="display:none;">📄 Manual</a>
-            </div>
-        </div>
+    </div>
 
-    </main>
-
-</body>
-</html>
+</main>
