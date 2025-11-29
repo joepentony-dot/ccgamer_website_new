@@ -3,125 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Cheeky Commodore Gamer | Game Details</title>
 
-    <!-- Core Styling -->
-    <link rel="stylesheet" href="/ccgamer_website_new/css/engine.css">
-    <link rel="stylesheet" href="/ccgamer_website_new/resources/css/main.css">
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="../css/engine.css">
+    <link rel="stylesheet" href="../resources/css/main.css">
 
-    <!-- Loaders -->
-    <script defer src="/ccgamer_website_new/js/engine.js"></script>
-    <script defer src="/ccgamer_website_new/js/load-single-game.js"></script>
+    <!-- JS Loaders -->
+    <script defer src="../js/engine.js"></script>
+    <script defer src="../js/load-single-game.js"></script>
 
-    <style>
-        /* Page-specific layout to match the new CCG ecosystem */
-
-        .game-wrapper {
-            max-width: 1100px;
-            margin: 30px auto;
-            padding: 20px;
-            color: #e6f1ff;
-        }
-
-        .game-header {
-            display: flex;
-            gap: 25px;
-            align-items: flex-start;
-        }
-
-        .game-header img {
-            width: 240px;
-            border: 2px solid #00eaff;
-            border-radius: 6px;
-        }
-
-        .game-meta {
-            flex: 1;
-        }
-
-        .game-meta h1 {
-            margin-top: 0;
-            color: #00eaff;
-        }
-
-        .game-meta .tag {
-            display: inline-block;
-            background: #003049;
-            border: 1px solid #00aaff;
-            padding: 5px 10px;
-            margin: 3px 5px 3px 0;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            color: #9eeeff;
-        }
-
-        .downloads-section, .video-section, .description-section {
-            margin-top: 30px;
-            background: rgba(0,20,40,0.5);
-            padding: 20px;
-            border: 1px solid #004d80;
-            border-radius: 8px;
-        }
-
-        .downloads-section h2,
-        .video-section h2,
-        .description-section h2 {
-            margin-top: 0;
-            color: #00eaff;
-        }
-
-        .download-list a {
-            display: inline-block;
-            margin: 8px 12px 8px 0;
-            padding: 8px 14px;
-            background: #002844;
-            color: #9eeeff;
-            text-decoration: none;
-            border: 1px solid #005b9a;
-            border-radius: 5px;
-        }
-
-        .download-list a:hover {
-            background: #004d7a;
-        }
-
-        iframe {
-            width: 100%;
-            height: 340px;
-            border: none;
-            margin-top: 12px;
-        }
-
-    </style>
 </head>
 
 <body>
 
-<div class="game-wrapper">
-
-    <!-- Populated by load-single-game.js -->
-    <div id="game-header" class="game-header"></div>
-
-    <!-- Downloads -->
-    <section id="downloads-section" class="downloads-section" style="display:none;">
-        <h2>Downloads</h2>
-        <div id="download-list" class="download-list"></div>
-    </section>
-
-    <!-- Video Trailer -->
-    <section id="video-section" class="video-section" style="display:none;">
-        <h2>Gameplay Video</h2>
-        <div id="video-player"></div>
-    </section>
-
-    <!-- Description -->
-    <section id="description-section" class="description-section" style="display:none;">
-        <h2>Game Overview</h2>
-        <p id="game-description"></p>
-    </section>
-
-</div>
+    <!-- CONTAINER POPULATED ENTIRELY BY load-single-game.js -->
+    <div id="game-container" class="game-wrapper">
+        <!-- loader will inject everything here -->
+    </div>
 
 </body>
 </html>
