@@ -1,12 +1,14 @@
-<script>
 // ================================================================
 // CHEEKY COMMODORE GAMER
 // UNIVERSAL GENRE / COLLECTION LOADER — V4 (FINAL)
 // ------------------------------------------------
-// - Powers ALL /games/genres/*.html and future /games/collections/*.html
+// - Powers ALL /games/genres/*.html & future collections
 // - Uses canonical genre keys via <body data-genre="arcade">
-// - Works on GitHub Pages AND future Fasthosts hosting
+// - Works on GitHub Pages AND Fasthosts hosting
+// - Automatically matches game.genres[] OR game.genre
+// - Supports thumbnail fallback, sorting, hero images
 // ================================================================
+
 
 const GENRE_CONFIG = {
   "action-adventure": {
@@ -106,13 +108,16 @@ const GENRE_CONFIG = {
   }
 };
 
-// Determine canonical key from <body data-genre> or filename fallback
+
+// ================================================================
+// GENRE KEY DETECTION
+// ================================================================
+
 function getCanonicalKey() {
   const bodyKey = document.body.dataset.genre;
   if (bodyKey && GENRE_CONFIG[bodyKey]) return bodyKey;
 
-  const path = window.location.pathname.toLowerCase();
-  const file = path.split("/").pop() || "";
+  const file = window.location.pathname.toLowerCase();
 
   if (file.includes("action-adventure")) return "action-adventure";
   if (file.includes("adventure-")) return "adventure";
@@ -137,6 +142,11 @@ function getCanonicalKey() {
   return null;
 }
 
+
+// ================================================================
+// GAME TAG NORMALISATION
+// ================================================================
+
 function normaliseTags(tags) {
   if (!tags) return [];
   if (!Array.isArray(tags)) tags = [tags];
@@ -144,6 +154,11 @@ function normaliseTags(tags) {
     .filter(Boolean)
     .map(t => t.toString().trim().toLowerCase());
 }
+
+
+// ================================================================
+// CHECK WHETHER A GAME BELONGS TO THIS GENRE
+// ================================================================
 
 function gameMatchesGenre(game, canonical) {
   const cfg = GENRE_CONFIG[canonical];
@@ -156,11 +171,17 @@ function gameMatchesGenre(game, canonical) {
   return gameTags.some(tag => wanted.includes(tag));
 }
 
+
+// ================================================================
+// BUILD A GAME CARD ELEMENT
+// ================================================================
+
 function buildGameCard(game, canonical) {
   const container = document.createElement("div");
   container.className = "game-card";
 
   const gameId = game.gameid || game.id;
+
   const link = document.createElement("a");
   link.className = "game-card-link";
   link.href = "../game.html?id=" + encodeURIComponent(gameId);
@@ -171,15 +192,11 @@ function buildGameCard(game, canonical) {
   const img = document.createElement("img");
   img.className = "game-thumb";
 
-  const thumbPath = (game.thumbnail || "").replace(/^\.?\//, "");
+  let thumbPath = (game.thumbnail || "").replace(/^\.?\//, "");
   if (thumbPath) {
     img.src = "../../" + thumbPath;
   } else {
-    // fallback: use genre badge image
-    const cfg = GENRE_CONFIG[canonical];
-    if (cfg && cfg.heroImage) {
-      img.src = "../../" + cfg.heroImage;
-    }
+    img.src = "../../" + GENRE_CONFIG[canonical].heroImage;
   }
   img.alt = game.title || "Game thumbnail";
 
@@ -201,7 +218,7 @@ function buildGameCard(game, canonical) {
   const infoEl = document.createElement("p");
   infoEl.className = "game-card-info";
 
-  const bits = [];
+  let bits = [];
   if (game.year) bits.push(game.year);
   if (game.developer) bits.push(game.developer);
   if (game.system) bits.push(game.system);
@@ -216,42 +233,41 @@ function buildGameCard(game, canonical) {
   return container;
 }
 
+
+// ================================================================
+// LOAD GENRE PAGE
+// ================================================================
+
 async function loadGenrePage() {
   const canonical = getCanonicalKey();
   const resultsEl = document.getElementById("genre-results");
   const heroTitle = document.getElementById("genre-title");
   const heroImage = document.getElementById("genre-image");
-  const heroIntro = document.getElementById("genre-intro");
 
   if (!resultsEl) return;
 
   if (!canonical || !GENRE_CONFIG[canonical]) {
-    resultsEl.innerHTML = "<p>Sorry, this genre page is not configured yet.</p>";
+    resultsEl.innerHTML = "<p>Genre not configured.</p>";
     return;
   }
 
   const cfg = GENRE_CONFIG[canonical];
 
-  // Optional: update hero title if the HTML didn't already hard-code it
   if (heroTitle && !heroTitle.dataset.locked) {
     heroTitle.textContent = cfg.label;
   }
 
   if (heroImage && cfg.heroImage) {
     heroImage.src = "../../" + cfg.heroImage;
-    if (!heroImage.alt) {
-      heroImage.alt = cfg.label;
-    }
+    heroImage.alt = cfg.label;
   }
 
   try {
-    // Genre pages live at /games/genres, so JSON is in ../games.json
     const response = await fetch("../games.json");
     const games = await response.json();
 
     const matches = games.filter(g => gameMatchesGenre(g, canonical));
 
-    // Sort by title (fallback: sorttitle, then id)
     matches.sort((a, b) => {
       const ta = (a.sorttitle || a.title || a.id || "").toString().toLowerCase();
       const tb = (b.sorttitle || b.title || b.id || "").toString().toLowerCase();
@@ -261,7 +277,7 @@ async function loadGenrePage() {
     resultsEl.innerHTML = "";
 
     if (!matches.length) {
-      resultsEl.innerHTML = "<p>No games found for this category (yet!).</p>";
+      resultsEl.innerHTML = "<p>No games found.</p>";
       return;
     }
 
@@ -270,10 +286,14 @@ async function loadGenrePage() {
     });
 
   } catch (err) {
-    console.error("Error loading genre page:", err);
-    resultsEl.innerHTML = "<p>There was a problem loading this list. Please try again later.</p>";
+    console.error("Genre load error:", err);
+    resultsEl.innerHTML = "<p>Error loading games.</p>";
   }
 }
 
+
+// ================================================================
+// INIT
+// ================================================================
+
 document.addEventListener("DOMContentLoaded", loadGenrePage);
-</script>
