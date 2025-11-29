@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CCG Collections</title>
+    <title>Collections | CCG</title>
 
+    <!-- Core Styles -->
     <link rel="stylesheet" href="../../css/engine.css">
     <link rel="stylesheet" href="../../resources/css/main.css">
 
@@ -13,44 +14,37 @@
             background: #07101f;
             color: #e6f1ff;
             font-family: sans-serif;
-            padding: 20px;
             text-align: center;
+            padding: 20px;
         }
-
         h1 {
             color: #00eaff;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
-
         .collection-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 25px;
             max-width: 1200px;
             margin: 0 auto;
         }
-
         .collection-card {
             background: rgba(0, 20, 40, 0.65);
             border: 1px solid #00aaff;
             border-radius: 10px;
-            padding: 15px;
-            transition: 0.2s ease;
+            padding: 12px;
+            transition: 0.2s;
         }
-
         .collection-card:hover {
             background: rgba(0, 40, 70, 0.75);
             transform: scale(1.03);
         }
-
         .collection-card img {
             width: 100%;
             border-radius: 8px;
         }
-
         .collection-card h2 {
-            margin-top: 12px;
-            font-size: 20px;
+            margin-top: 10px;
             color: #00eaff;
         }
     </style>
@@ -58,7 +52,7 @@
 
 <body>
 
-    <h1>Game Collections</h1>
+    <h1>Collections</h1>
 
     <div class="collection-grid">
 
@@ -69,7 +63,7 @@
 
         <a class="collection-card" href="c64-cartridge.html">
             <img src="../../resources/images/genres/cartridge.png">
-            <h2>C64 Cartridge Releases</h2>
+            <h2>C64 Cartridge Games</h2>
         </a>
 
         <a class="collection-card" href="licensed-games.html">
