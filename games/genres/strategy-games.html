@@ -1,27 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cheeky Commodore Gamer | Strategy Games</title>
 
-    <title>Cheeky Commodore Gamer | Strategy Games</title>
+  <link rel="stylesheet" href="../../css/engine.css">
+  <link rel="stylesheet" href="../../resources/css/main.css">
 
-    <link rel="stylesheet" href="/ccgamer_website_new/css/engine.css">
-    <link rel="stylesheet" href="/ccgamer_website_new/resources/css/main.css">
-
-    <script defer src="/ccgamer_website_new/js/engine.js"></script>
-    <script defer src="/ccgamer_website_new/js/genre-loader.js"></script>
+  <script defer src="../../js/engine.js"></script>
+  <script defer src="../../js/genre-loader.js"></script>
 </head>
+<body class="ccg-body ccg-theme-c64" data-genre="strategy">
+  <header class="ccg-header">
+    <div class="ccg-header-inner">
+      <a href="../../index.html" class="ccg-logo-link">CHEEKY</a>
+      <nav class="ccg-nav">
+        <a href="../../complete-index.html">Complete Index</a>
+        <a href="../../quiz/quiz.html">Quiz</a>
+        <a href="../../about.html">About</a>
+        <a href="../../contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
 
-<body>
+  <main class="ccg-main">
+    <section class="genre-hero">
+      <img id="genre-image" class="genre-hero-image"
+           src="../../resources/images/genres/strategy.png"
+           alt="Strategy Games">
+      <div class="genre-hero-text">
+        <h1 id="genre-title" data-locked="true">Strategy Games</h1>
+        <p id="genre-intro">
+          Tactics, planning and long-term thinking — from wargames to deep management sims.
+        </p>
+      </div>
+    </section>
 
-<header>
-    <h1>Strategy Games</h1>
-</header>
+    <section class="genre-results-section">
+      <div id="genre-results" class="genre-results">
+        <p>Loading games…</p>
+      </div>
+    </section>
+  </main>
 
-<p class="genre-intro">Plan, adapt, and outsmart—these titles challenge the mind more than the reflexes.</p>
-
-<div id="genre-results" class="genre-container"></div>
-
+  <footer class="ccg-footer">
+    <p>Cheeky Commodore Gamer © 2025</p>
+  </footer>
 </body>
 </html>
