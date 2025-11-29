@@ -5,23 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Action Adventure Games | CCG</title>
 
-    <!-- Core Styles -->
-    <link rel="stylesheet" href="../../css/engine.css">
-    <link rel="stylesheet" href="../../resources/css/main.css">
+    <link rel="stylesheet" href="/css/engine.css">
+    <link rel="stylesheet" href="/resources/css/main.css">
+    <script defer src="/js/genre-loader.js"></script>
 
-    <!-- Universal Genre Loader -->
-    <script defer src="../../js/genre-loader.js"></script>
+    <style>
+        body { background:#050b18; color:#c7e8ff; font-family:'Press Start 2P', monospace; padding:20px; }
+        header h1 { text-align:center; font-size:28px; color:#6fd4ff; margin-bottom:30px; }
+        #genre-results { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
+        .game-card { background:#0c1324; border:2px solid #4bb8ff; border-radius:6px; padding:10px; text-align:center; }
+        .game-card img { width:100%; border-radius:4px; border:2px solid #4bb8ff; }
+        .game-card-title { margin-top:10px; font-size:14px; color:#bde9ff; }
+    </style>
 </head>
-
 <body>
 
-    <header>
-        <h1>Action Adventure Games</h1>
-    </header>
+<header>
+    <h1>Action Adventure Games</h1>
+</header>
 
-    <main>
-        <div id="genre-results">Loading games…</div>
-    </main>
+<div id="genre-results">
+    <p>Loading…</p>
+</div>
 
 </body>
 </html>
