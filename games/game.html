@@ -3,112 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Details | CCG</title>
 
-    <!-- Core CSS -->
-    <link rel="stylesheet" href="/css/engine.css">
-    <link rel="stylesheet" href="/resources/css/main.css">
+    <title>Cheeky Commodore Gamer | Game Details</title>
 
-    <!-- Loader -->
-    <script defer src="/js/load-single-game.js"></script>
+    <!-- Core Styling -->
+    <link rel="stylesheet" href="/ccgamer_website_new/css/engine.css">
+    <link rel="stylesheet" href="/ccgamer_website_new/resources/css/main.css">
+
+    <!-- Loaders -->
+    <script defer src="/ccgamer_website_new/js/engine.js"></script>
+    <script defer src="/ccgamer_website_new/js/load-single-game.js"></script>
 
     <style>
-        /* TEMP styling until we apply the CRT / neon system */
+        /* Page-specific layout to match the new CCG ecosystem */
 
-        body {
-            background: #050b18;
-            color: #c7e8ff;
-            font-family: 'Press Start 2P', monospace;
+        .game-wrapper {
+            max-width: 1100px;
+            margin: 30px auto;
             padding: 20px;
-            max-width: 900px;
-            margin: 0 auto;
+            color: #e6f1ff;
         }
 
-        h1.game-title {
-            text-align: center;
-            color: #6fd4ff;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-
-        .game-top-section {
+        .game-header {
             display: flex;
-            gap: 20px;
+            gap: 25px;
             align-items: flex-start;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
         }
 
-        .game-thumbnail {
-            width: 260px;
-            border: 3px solid #4bb8ff;
+        .game-header img {
+            width: 240px;
+            border: 2px solid #00eaff;
             border-radius: 6px;
         }
 
-        .game-meta p {
-            margin: 8px 0;
-            line-height: 1.4;
+        .game-meta {
+            flex: 1;
         }
 
-        hr {
-            border: none;
-            border-bottom: 1px solid #144066;
-            margin: 30px 0;
+        .game-meta h1 {
+            margin-top: 0;
+            color: #00eaff;
         }
 
-        .video-wrapper {
-            position: relative;
-            width: 100%;
-            padding-bottom: 56.25%;
-            border: 3px solid #4bb8ff;
-            border-radius: 6px;
-            margin-bottom: 20px;
-        }
-
-        .video-wrapper iframe {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        a.pdf-button {
+        .game-meta .tag {
             display: inline-block;
-            padding: 10px 14px;
-            background: #0f3a60;
-            color: #c7e8ff;
+            background: #003049;
+            border: 1px solid #00aaff;
+            padding: 5px 10px;
+            margin: 3px 5px 3px 0;
             border-radius: 4px;
-            text-decoration: none;
-            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: #9eeeff;
         }
 
-        a.pdf-button:hover {
-            background: #155180;
+        .downloads-section, .video-section, .description-section {
+            margin-top: 30px;
+            background: rgba(0,20,40,0.5);
+            padding: 20px;
+            border: 1px solid #004d80;
+            border-radius: 8px;
         }
 
-        .disk-list li {
-            margin: 6px 0;
+        .downloads-section h2,
+        .video-section h2,
+        .description-section h2 {
+            margin-top: 0;
+            color: #00eaff;
         }
 
-        .back-button {
+        .download-list a {
             display: inline-block;
-            margin-top: 20px;
-            color: #6fd4ff;
+            margin: 8px 12px 8px 0;
+            padding: 8px 14px;
+            background: #002844;
+            color: #9eeeff;
             text-decoration: none;
-            font-size: 14px;
+            border: 1px solid #005b9a;
+            border-radius: 5px;
         }
 
-        .back-button:hover {
-            text-decoration: underline;
+        .download-list a:hover {
+            background: #004d7a;
         }
+
+        iframe {
+            width: 100%;
+            height: 340px;
+            border: none;
+            margin-top: 12px;
+        }
+
     </style>
 </head>
+
 <body>
 
-    <!-- OUTPUT RENDERED BY load-single-game.js -->
-    <div id="game-container">
-        <p>Loading game details…</p>
-    </div>
+<div class="game-wrapper">
+
+    <!-- Populated by load-single-game.js -->
+    <div id="game-header" class="game-header"></div>
+
+    <!-- Downloads -->
+    <section id="downloads-section" class="downloads-section" style="display:none;">
+        <h2>Downloads</h2>
+        <div id="download-list" class="download-list"></div>
+    </section>
+
+    <!-- Video Trailer -->
+    <section id="video-section" class="video-section" style="display:none;">
+        <h2>Gameplay Video</h2>
+        <div id="video-player"></div>
+    </section>
+
+    <!-- Description -->
+    <section id="description-section" class="description-section" style="display:none;">
+        <h2>Game Overview</h2>
+        <p id="game-description"></p>
+    </section>
+
+</div>
 
 </body>
 </html>
