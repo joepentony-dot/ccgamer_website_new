@@ -1,90 +1,81 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheeky Commodore Gamer</title>
+<!-- ==========================================================
+     CCG HOMEPAGE — GENRE GRID (UPGRADED)
+     ========================================================== -->
 
-    <link rel="stylesheet" href="css/engine.css">
-    <link rel="stylesheet" href="resources/css/main.css">
-    <script defer src="js/engine.js"></script>
-    <script defer src="js/homepage-loader.js"></script>
+<section id="genre-section">
+    <h1 class="genre-title">EXPLORE GENRES</h1>
 
-    <style>
-        /* ⚠ TEMPORARY minimal layout — styling pass added later */
-        body {
-            text-align: center;
-            padding: 20px;
-            color: #e6f1ff;
-        }
+    <div class="genre-grid">
+        <a href="games/genres/arcade-games.html">
+            <img src="resources/images/genres/arcade.png" alt="Arcade">
+        </a>
 
-        #power-on {
-            cursor: pointer;
-            font-size: 1.3rem;
-            margin: 20px 0;
-            color: #00eaff;
-        }
+        <a href="games/genres/action-adventure-games.html">
+            <img src="resources/images/genres/action-adventure.png" alt="Action Adventure">
+        </a>
 
-        .genre-grid {
-            display: grid;
-            gap: 12px;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            max-width: 900px;
-            margin: 0 auto;
-            margin-top: 20px;
-        }
+        <a href="games/genres/adventure-games.html">
+            <img src="resources/images/genres/adventure.png" alt="Adventure">
+        </a>
 
-        .genre-btn img {
-            width: 100%;
-            border-radius: 8px;
-        }
+        <a href="games/genres/bpjs.html">
+            <img src="resources/images/genres/bpjs.png" alt="BPJS">
+        </a>
 
-        .featured-container {
-            margin-top: 40px;
-        }
+        <a href="games/genres/cartridge-games.html">
+            <img src="resources/images/genres/cartridge.png" alt="Cartridge">
+        </a>
 
-        .featured-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 15px;
-            max-width: 900px;
-            margin: 20px auto;
-        }
+        <a href="games/genres/casino-games.html">
+            <img src="resources/images/genres/casino.png" alt="Casino">
+        </a>
 
-        .featured-card img {
-            width: 100%;
-            border-radius: 6px;
-        }
-    </style>
-</head>
+        <a href="games/genres/fighting-games.html">
+            <img src="resources/images/genres/fighting.png" alt="Fighting">
+        </a>
 
-<body>
+        <a href="games/genres/horror-games.html">
+            <img src="resources/images/genres/horror.png" alt="Horror">
+        </a>
 
-<header>
-    <img src="resources/CCGAMER LOGO.png" class="site-logo" alt="CCG Logo">
-    <h1>CHEEKY COMMODORE GAMER</h1>
+        <a href="games/genres/licensed-games.html">
+            <img src="resources/images/genres/licensed.png" alt="Licensed">
+        </a>
 
-    <p id="power-on">▶ CLICK TO POWER ON</p>
-    <p id="c64-intro" style="display:none; font-size:1.2rem;">
-        Stay a while… Stay forever!
-    </p>
-</header>
+        <a href="games/genres/platform-games.html">
+            <img src="resources/images/genres/platform.png" alt="Platform">
+        </a>
 
-<!-- GENRE BUTTONS -->
-<section>
-    <h2>Explore Genres</h2>
-    <div class="genre-grid" id="genre-buttons">
-        <!-- Homepage genre icons will load here -->
+        <a href="games/genres/puzzle-games.html">
+            <img src="resources/images/genres/puzzle.png" alt="Puzzle">
+        </a>
+
+        <a href="games/genres/quiz-games.html">
+            <img src="resources/images/genres/quiz.png" alt="Quiz">
+        </a>
+
+        <a href="games/genres/racing-games.html">
+            <img src="resources/images/genres/racing.png" alt="Racing">
+        </a>
+
+        <a href="games/genres/role-playing-games.html">
+            <img src="resources/images/genres/role-playing.png" alt="Role Playing Games">
+        </a>
+
+        <a href="games/genres/shoot-em-up-games.html">
+            <img src="resources/images/genres/shooting.png" alt="Shooting Games">
+        </a>
+
+        <a href="games/genres/sports-games.html">
+            <img src="resources/images/genres/sports.png" alt="Sports">
+        </a>
+
+        <a href="games/genres/strategy-games.html">
+            <img src="resources/images/genres/strategy.png" alt="Strategy">
+        </a>
+
+        <a href="games/genres/top-picks.html">
+            <img src="resources/images/genres/top-picks.png" alt="Top Picks">
+        </a>
     </div>
 </section>
-
-<!-- FEATURED GAMES -->
-<section class="featured-container">
-    <h2>Featured Games</h2>
-    <div class="featured-grid" id="featured-games">
-        <!-- Autoloaded from JSON -->
-    </div>
-</section>
-
-</body>
-</html>
