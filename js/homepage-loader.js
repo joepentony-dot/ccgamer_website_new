@@ -1,5 +1,5 @@
 /* ==============================================================
-   CHEEKY COMMODORE GAMER — HOMEPAGE LOADER (FINAL FIXED VERSION)
+   CHEEKY COMMODORE GAMER — HOMEPAGE LOADER (FINAL MAPPING)
    ============================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -8,9 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
     loadFeaturedGames();
 });
 
-/* --------------------------------------------------------------
-   1. Power On intro
--------------------------------------------------------------- */
 function setupPowerOn() {
     const powerOn = document.getElementById("power-on");
     const intro = document.getElementById("c64-intro");
@@ -21,32 +18,28 @@ function setupPowerOn() {
     });
 }
 
-/* --------------------------------------------------------------
-   2. Load Genre Buttons
--------------------------------------------------------------- */
 function loadGenres() {
     const container = document.getElementById("genre-buttons");
 
-    // MATCH YOUR REAL FOLDER STRUCTURE (genres + .png icons)
     const genres = [
-        { name: "Arcade Games", file: "arcade.png" },
-        { name: "Action Adventure Games", file: "action-adventure.png" },
-        { name: "Adventure Games", file: "adventure.png" },
-        { name: "BPJS Games", file: "bpjs.png" },
-        { name: "Cartridge Games", file: "cartridge.png" },
-        { name: "Fighting Games", file: "fighting.png" },
-        { name: "Horror Games", file: "horror.png" },
-        { name: "Licensed Games", file: "licensed.png" },
-        { name: "Miscellaneous", file: "misc.png" },
-        { name: "Platform Games", file: "platform.png" },
-        { name: "Puzzle Games", file: "puzzle.png" },
-        { name: "Quiz Games", file: "quiz.png" },
-        { name: "Racing Games", file: "racing.png" },
-        { name: "Role Playing Games", file: "rpg.png" },
-        { name: "Shooting Games", file: "shooting.png" },
-        { name: "Sports Games", file: "sports.png" },
-        { name: "Strategy Games", file: "strategy.png" }
-        // NOTE: No Top Picks (Top Picks is a collection, not a genre)
+        { name: "Arcade Games", file: "arcade.png", folder: "arcade" },
+        { name: "Action Adventure Games", file: "action-adventure.png", folder: "action-adventure" },
+        { name: "Adventure Games", file: "adventure.png", folder: "adventure" },
+        { name: "BPJS Games", file: "bpjs.png", folder: "bpjs" },
+        { name: "Cartridge Games", file: "cartridge.png", folder: "cartridge" },
+        { name: "Casino Games", file: "casino.png", folder: "casino" },
+        { name: "Fighting Games", file: "fighting.png", folder: "fighting" },
+        { name: "Horror Games", file: "horror.png", folder: "horror" },
+        { name: "Licensed Games", file: "licensed.png", folder: "licensed" },
+        { name: "Platform Games", file: "platform.png", folder: "platform" },
+        { name: "Puzzle Games", file: "puzzle.png", folder: "puzzle" },
+        { name: "Quiz Games", file: "quiz.png", folder: "quiz" },
+        { name: "Racing Games", file: "racing.png", folder: "racing" },
+        { name: "Role Playing Games", file: "rpg.png", folder: "rpg" },
+        { name: "Shooting Games", file: "shoot-em-up.png", folder: "shoot-em-up" },
+        { name: "Sports Games", file: "sports.png", folder: "sports" },
+        { name: "Strategy Games", file: "strategy.png", folder: "strategy" }
+        // Top Picks is a collection, not a genre
     ];
 
     genres.forEach(g => {
@@ -67,9 +60,6 @@ function toSlug(name) {
     return name.toLowerCase().replace(/\s+/g, '-');
 }
 
-/* --------------------------------------------------------------
-   3. Featured Games
--------------------------------------------------------------- */
 async function loadFeaturedGames() {
     const container = document.getElementById("featured-games");
 
