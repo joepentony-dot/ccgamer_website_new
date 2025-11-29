@@ -1,0 +1,115 @@
+<script>
+    // -----------------------------------------------------
+    // 1. CONFIGURATION
+    // -----------------------------------------------------
+    
+    // --- SET THIS PAGE'S GENRE (Must match the data exactly!) ---
+    const THIS_PAGE_GENRE = "Quiz Games";
+    
+    // --- RELIABLE CSV LINK (This is the working URL you provided) ---
+    const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQWiuznK7CJeHvaMSAmdVyzDEdpeNQxXGjhqEzsvsLTV792D_B1B5pA55T6kV7maskDFkn0oU0CQ3JM/pub?gid=1584452405&single=true&output=csv";
+
+    // -----------------------------------------------------
+    // 2. HELPER FUNCTIONS (OUR "SMART" CODE)
+    // -----------------------------------------------------
+
+    /**
+     * Converts any Google Drive "view" link into a direct "uc?export=download" link.
+     */
+    function convertGoogleDriveLink(link) {
+        if (typeof link !== 'string' || !link.includes('drive.google.com')) {
+            return link; 
+        }
+        const match = link.match(/file\/d\/([a-zA-Z0-9_-]+)/);
+        if (match && match[1]) {
+            const fileId = match[1];
+            return `https://drive.google.com/uc?id=${fileId}&export=download`;
+        }
+        return link; 
+    }
+
+    /**
+     * Takes a comma-separated string of links, cleans it, and returns a list.
+     */
+    function splitAndCleanLinks(linkString) {
+        if (typeof linkString !== 'string' || linkString.trim() === "") {
+            return []; 
+        }
+        return linkString.split(',')
+                             .map(link => link.trim())
+                             .filter(link => link.length > 0); 
+    }
+
+    // -----------------------------------------------------
+    // 3. MAIN SCRIPT (RUNS ON PAGE LOAD)
+    // -----------------------------------------------------
+    window.addEventListener('DOMContentLoaded', () => {
+        fetch(GOOGLE_SHEET_URL)
+            .then(response => response.text()) 
+            .then(csvText => {
+                
+                const rows = csvText.trim().split('\n').slice(1);
+                
+                let games = rows.map(row => {
+                    // **FIXED CSV PARSING**
+                    const columns = row.split(',');
+
+                    return {
+                        id: columns[1] ? columns[1].trim() : '',         
+                        title: columns[2] ? columns[2].trim() : '',      
+                        // **GENRE CLEANUP FIX**
+                        genre: columns[3] ? columns[3].trim().replace(/"/g, '') : '', 
+                        videoID: columns[4] ? columns[4].trim() : '',    
+                        lemonLinks: columns[5] ? columns[5].trim() : '', 
+                        thumbLink: columns[6] ? columns[6].trim() : '',  
+                        pdfLink: columns[7] ? columns[7].trim() : '',    
+                        diskLinks: columns[8] ? columns[8].trim() : '',   
+                        sortTitle: columns[9] ? columns[9].trim() : '',  
+                    };
+                });
+
+                // B. Filter by genre, then Sort by our "sortTitle" column
+                const filteredAndSortedGames = games
+                    .filter(game => game.genre === THIS_PAGE_GENRE && game.title.length > 0) 
+                    .sort((a, b) => a.sortTitle.localeCompare(b.sortTitle));
+
+                // C. Build the HTML (Remaining code is the same)
+                const container = document.getElementById('game-list-container');
+                container.innerHTML = ""; 
+
+                if (filteredAndSortedGames.length === 0) {
+                    container.innerHTML = `<p>No games found for the genre: "${THIS_PAGE_GENRE}".</p>`;
+                    return;
+                }
+
+                filteredAndSortedGames.forEach(game => {
+                    const lemonButtons = splitAndCleanLinks(game.lemonLinks)
+                        .map((link, index) => `<a href="${link}" target="_blank">Lemon64 (Link ${index + 1})</a>`)
+                        .join('');
+
+                    const diskButtons = splitAndCleanLinks(game.diskLinks)
+                        .map((link, index) => `<a href="${convertGoogleDriveLink(link)}" target="_blank">Download Disk ${index + 1}</a>`)
+                        .join('');
+
+                    const gameHtml = `
+                        <div class="game-entry" id="${game.id}">
+                            <img src="${game.thumbLink}" alt="${game.title} Thumbnail" loading="lazy">
+                            <h3>${game.title}</h3>
+                            <div class="game-entry-links">
+                                <a href="https://www.youtube.com/watch?v=${game.videoID}" target="_blank">Watch Video</a>
+                                <a href="${convertGoogleDriveLink(game.pdfLink)}" target="_blank">View Manual (PDF)</a>
+                                ${lemonButtons}
+                                ${diskButtons}
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += gameHtml;
+                });
+            })
+            .catch(error => {
+                console.error("Error fetching game data:", error);
+                const container = document.getElementById('game-list-container');
+                container.innerHTML = `<p><strong>FATAL ERROR:</strong> Could not load data. Check the Console (F12) for details and ensure the sheet is published correctly.</p>`;
+            });
+    });
+</script>
