@@ -1,62 +1,105 @@
-/* ================================================================
-   CCG – Load Single Game Page
-   Updated for LOCAL thumbnails (Phase 4)
-================================================================ */
+/* ==============================================================
+   CHEEKY COMMODORE GAMER — GAME PAGE LOADER (FINAL VERSION)
+   Loads a single game from games.json based on ?id= in the URL.
+   Fully compatible with the new thumbnail + JSON structure.
+   ============================================================== */
 
-async function loadGamePage() {
-
+async function loadSingleGame() {
+    // Get game ID from URL
     const params = new URLSearchParams(window.location.search);
     const gameId = params.get("id");
 
-    const titleEl = document.getElementById("game-title");
-    const imgEl = document.getElementById("game-thumbnail");
-    const devEl = document.getElementById("game-developer");
-    const yearEl = document.getElementById("game-year");
-    const genreEl = document.getElementById("game-genres");
-    const pdfBtn = document.getElementById("btn-pdf");
-    const diskBtn = document.getElementById("btn-disk");
-    const watchBtn = document.getElementById("btn-watch");
+    if (!gameId) {
+        document.getElementById("game-title").textContent = "Game not found.";
+        return;
+    }
 
     try {
-        const response = await fetch("games/games.json");
+        // Load JSON
+        const response = await fetch("games.json");
         const games = await response.json();
 
-        const game = games.find(g => g.id === gameId);
+        // Find game entry
+        const game = games.find(g => (g.id || "").toLowerCase() === gameId.toLowerCase());
 
         if (!game) {
-            titleEl.textContent = "Game Not Found";
+            document.getElementById("game-title").textContent = "Game not found.";
             return;
         }
 
-        titleEl.textContent = game.title;
-        imgEl.src = game.thumbnail.startsWith("http") ? game.thumbnail : game.thumbnail;
-        imgEl.alt = game.title;
+        /* --------------------------
+           BASIC GAME DETAILS
+        -------------------------- */
 
-        devEl.textContent = game.developer || "Unknown";
-        yearEl.textContent = game.year || "N/A";
-        genreEl.textContent = game.genres ? game.genres.join(", ") : "Uncategorised";
+        document.getElementById("game-title").textContent = game.title;
 
-        // WATCH BUTTON
-        if (game.videoid) {
-            watchBtn.href = `https://www.youtube.com/watch?v=${game.videoid}`;
-            watchBtn.classList.remove("disabled");
-        }
+        document.getElementById("game-year").textContent =
+            game.year ? game.year : "Unknown";
 
-        // PDF BUTTON
-        if (game.pdf) {
+        document.getElementById("game-developer").textContent =
+            game.developer ? game.developer : "Unknown";
+
+        document.getElementById("game-genres").textContent =
+            game.genres && game.genres.length > 0
+                ? game.genres.join(", ")
+                : "None";
+
+        /* --------------------------
+           THUMBNAIL
+        -------------------------- */
+
+        const thumb = document.getElementById("game-thumbnail");
+        thumb.src = "../" + game.thumbnail;
+        thumb.alt = game.title;
+
+        /* --------------------------
+           PDF MANUAL
+        -------------------------- */
+
+        const pdfBtn = document.getElementById("pdf-link");
+        if (game.pdf && game.pdf.trim() !== "") {
             pdfBtn.href = game.pdf;
-            pdfBtn.classList.remove("disabled");
+            pdfBtn.style.display = "inline-block";
         }
 
-        // DISK DOWNLOAD
-        if (game.disk && game.disk.length > 0) {
-            diskBtn.href = game.disk[0];
-            diskBtn.classList.remove("disabled");
+        /* --------------------------
+           DISK DOWNLOADS
+        -------------------------- */
+
+        const diskBtn = document.getElementById("disk-link");
+        if (game.disk && Array.isArray(game.disk) && game.disk.length > 0) {
+            diskBtn.href = game.disk[0]; // First disk link
+            diskBtn.style.display = "inline-block";
+        }
+
+        /* --------------------------
+           LEMON64 LINKS
+        -------------------------- */
+
+        const lemonBtn = document.getElementById("lemon-link");
+        if (game.lemon && Array.isArray(game.lemon) && game.lemon.length > 0) {
+            lemonBtn.href = game.lemon[0]; // First lemon URL
+            lemonBtn.style.display = "inline-block";
+        }
+
+        /* --------------------------
+           YOUTUBE VIDEO
+        -------------------------- */
+
+        const videoSection = document.getElementById("video-section");
+        const videoFrame = document.getElementById("game-video");
+
+        if (game.videoid && game.videoid.trim() !== "") {
+            videoFrame.src = "https://www.youtube.com/embed/" + game.videoid;
+            videoSection.style.display = "block";
         }
 
     } catch (err) {
-        console.error("Error loading single game:", err);
+        console.error("Error loading game:", err);
+        document.getElementById("game-title").textContent =
+            "Error loading game details.";
     }
 }
 
-document.addEventListener("DOMContentLoaded", loadGamePage);
+// Initialise loader
+document.addEventListener("DOMContentLoaded", loadSingleGame);
