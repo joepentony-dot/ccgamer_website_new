@@ -1,91 +1,40 @@
 /* ================================================================
-   CHEEKY COMMODORE GAMER — COMPLETE INDEX LOADER (FINAL VERSION)
-   ---------------------------------------------------------------
-   Supports both:
-   - /complete-index.html               → loads games/games.json
-   - /games/complete-index.html         → loads games.json
-   ================================================================ */
-
-function getJsonPathForCompleteIndex() {
-    const path = window.location.pathname;
-
-    // When inside /games/, load JSON from the same folder
-    if (path.includes("/games/")) {
-        return "games.json";
-    }
-
-    // When at root-level, load from games/games.json
-    return "games/games.json";
-}
+   CCG COMPLETE INDEX – Updated for local thumbnails (Phase 4)
+================================================================ */
 
 async function loadCompleteIndex() {
     const container = document.getElementById("complete-results");
-    if (!container) return;
 
     try {
-        const jsonPath = getJsonPathForCompleteIndex();
-        const response = await fetch(jsonPath);
-
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status} for ${jsonPath}`);
-        }
-
+        const response = await fetch("games/games.json");
         const games = await response.json();
+
+        games.sort((a, b) => a.title.localeCompare(b.title));
 
         container.innerHTML = "";
 
-        // Sort alphabetically (use sorttitle if available)
-        const sorted = games.slice().sort((a, b) => {
-            const A = (a.sorttitle || a.title || "").toLowerCase();
-            const B = (b.sorttitle || b.title || "").toLowerCase();
-            return A.localeCompare(B);
-        });
-
-        sorted.forEach(game => {
+        games.forEach(game => {
             const row = document.createElement("div");
-            row.className = "complete-row";
+            row.className = "complete-index-row";
 
-            // Build correct link depending on location
-            const id = encodeURIComponent(game.gameid || game.id);
-            const isInsideGamesFolder = window.location.pathname.includes("/games/");
+            const thumb = document.createElement("img");
+            thumb.src = game.thumbnail.startsWith("http") ? game.thumbnail : game.thumbnail;
+            thumb.alt = game.title;
+            thumb.className = "index-thumb";
 
             const link = document.createElement("a");
-            link.href = isInsideGamesFolder
-                ? `game.html?id=${id}`             // /games/complete-index.html
-                : `games/game.html?id=${id}`;      // /complete-index.html
+            link.href = `games/game.html?id=${encodeURIComponent(game.id)}`;
+            link.textContent = game.title;
 
-            link.textContent = game.title || "Untitled Game";
+            row.appendChild(thumb);
             row.appendChild(link);
-
-            // Year
-            if (game.year) {
-                const yearSpan = document.createElement("span");
-                yearSpan.className = "year";
-                yearSpan.textContent = game.year;
-                row.appendChild(yearSpan);
-            }
-
-            // Genre list
-            if (Array.isArray(game.genre) && game.genre.length > 0) {
-                const genreSpan = document.createElement("span");
-                genreSpan.className = "genre";
-                genreSpan.textContent = game.genre.join(", ");
-                row.appendChild(genreSpan);
-            }
 
             container.appendChild(row);
         });
 
-        console.log(`Complete Index Loaded Successfully: ${sorted.length} games`);
     } catch (err) {
         console.error("Error loading complete index:", err);
-        container.innerHTML = `
-            <p class="error">
-                Could not load the complete index.<br>
-                Please ensure <code>/games/games.json</code> is valid JSON
-                (no NaN, no trailing commas).
-            </p>
-        `;
+        container.innerHTML = `<p>Error loading index.</p>`;
     }
 }
 
