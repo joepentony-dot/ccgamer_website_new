@@ -1,188 +1,157 @@
-/* ===========================================================================
-   CHEEKY COMMODORE GAMER — SINGLE GAME LOADER (SAFE, FINAL)
-   ---------------------------------------------------------------------------
-   Matches your JSON fields exactly:
-   - id
-   - title
-   - year
-   - developer
-   - genre (array)
-   - thumblink
-   - videoid
-   - pdflink
-   - disklink
-   - lemonlink
-   Uses a simple relative path: "games.json" (no BASE conflicts).
-   ========================================================================== */
+/* ============================================================
+   CCG – SINGLE GAME PAGE LOADER (NEW JSON FORMAT)
+   ------------------------------------------------------------
+   - Used by /games/game.html?id=GAMEID
+   - Looks up game.id in games.json
+   - Fills in title, year, developer, genres, thumbnail
+   - Handles YouTube, Lemon, PDF, and Disk links
+   - Safe if some fields are missing
+   ============================================================ */
 
-console.log("Single Game Loader active...");
-
-// Path to JSON: game.html is in /games/, JSON is /games/games.json
-const JSON_URL = "games.json";
-
-/* ===========================================================================
-   Helper: get ID from URL
-=========================================================================== */
-function getGameId() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get("id");
+function getQueryParam(name) {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(name);
 }
 
-/* ===========================================================================
-   Main Loader
-=========================================================================== */
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+
+function setAttr(id, attr, value) {
+  const el = document.getElementById(id);
+  if (el && value) el.setAttribute(attr, value);
+}
+
+function showElement(id, show) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = show ? "" : "none";
+}
+
 async function loadSingleGame() {
-    const id = getGameId();
+  const gameId = getQueryParam("id");
+  const statusEl = document.getElementById("game-status");
 
-    if (!id) {
-        showError("No game ID provided.");
-        return;
+  if (!gameId) {
+    if (statusEl) statusEl.textContent = "No game ID specified.";
+    console.error("No game ID in query string.");
+    return;
+  }
+
+  if (statusEl) {
+    statusEl.textContent = "Loading game data...";
+  }
+
+  try {
+    // From /games/game.html → games.json
+    const response = await fetch("games.json");
+    if (!response.ok) throw new Error("HTTP " + response.status);
+    const games = await response.json();
+
+    const game = games.find(g => String(g.id) === String(gameId));
+
+    if (!game) {
+      if (statusEl) statusEl.textContent = "Game not found.";
+      console.error("Game not found in JSON for id:", gameId);
+      return;
     }
-
-    try {
-        const response = await fetch(JSON_URL);
-        const games = await response.json();
-
-        if (!Array.isArray(games)) {
-            console.error("games.json is not an array:", games);
-            showError("Invalid game database format.");
-            return;
-        }
-
-        const game = games.find(g => String(g.id).toLowerCase() === String(id).toLowerCase());
-
-        if (!game) {
-            console.warn("Game not found for ID:", id);
-            showError("Game not found in database.");
-            return;
-        }
-
-        console.log("Loaded game:", game);
-        renderGame(game);
-
-    } catch (err) {
-        console.error("Error loading game data:", err);
-        showError("Could not load game data.");
-    }
-}
-
-/* ===========================================================================
-   Renderer
-=========================================================================== */
-function renderGame(game) {
 
     // Title
-    const titleEl = document.getElementById("game-title");
-    if (titleEl) titleEl.textContent = game.title || "Unknown title";
+    const title = game.title || "Unknown Game";
+    setText("game-title", title);
 
-    // Subline (year + developer)
-    let subline = "";
-    if (game.year) subline += game.year;
-    if (game.developer) subline += (subline ? " · " : "") + game.developer;
-
-    const sublineEl = document.getElementById("game-subline");
-    if (sublineEl) sublineEl.textContent = subline;
-
-    // Metadata
-    if (game.year) {
-        const y = document.getElementById("meta-year");
-        if (y) {
-            y.style.display = "inline-block";
-            y.textContent = "Year: " + game.year;
-        }
+    // If your big heading is the first H1 and initially says LOADING...
+    const h1 = document.querySelector("h1");
+    if (h1 && h1.textContent.toLowerCase().includes("loading")) {
+      h1.textContent = title;
     }
 
-    if (game.developer) {
-        const d = document.getElementById("meta-developer");
-        if (d) {
-            d.style.display = "inline-block";
-            d.textContent = "Developer: " + game.developer;
-        }
+    // Meta fields
+    setText("game-year", game.year ? String(game.year) : "-");
+    setText("game-developer", game.developer || "-");
+    setText(
+      "game-genres",
+      Array.isArray(game.genres) && game.genres.length
+        ? game.genres.join(", ")
+        : "-"
+    );
+
+    // Thumbnail
+    if (game.thumbnail) {
+      const thumbEl = document.getElementById("game-thumbnail");
+      if (thumbEl && thumbEl.tagName.toLowerCase() === "img") {
+        thumbEl.src = game.thumbnail;
+        thumbEl.alt = title + " thumbnail";
+      }
     }
 
-    const idMeta = document.getElementById("meta-id");
-    if (idMeta) {
-        idMeta.style.display = "inline-block";
-        idMeta.textContent = "ID: " + game.id;
-    }
-
-    // Genres (your JSON uses `genre`)
-    const genreRow = document.getElementById("genres-row");
-    if (genreRow) {
-        genreRow.innerHTML = "";
-        if (Array.isArray(game.genre)) {
-            game.genre.forEach(g => {
-                const chip = document.createElement("span");
-                chip.className = "genre-chip";
-                chip.textContent = g;
-                genreRow.appendChild(chip);
-            });
-        }
-    }
-
-    // Thumbnail (thumblink)
-    if (game.thumblink) {
-        const thumbImg = document.getElementById("game-thumbnail");
-        if (thumbImg) {
-            thumbImg.src = game.thumblink;
-            thumbImg.alt = game.title || "Game thumbnail";
-        }
-
-        const thumbOpen = document.getElementById("thumb-open-link");
-        if (thumbOpen) thumbOpen.href = game.thumblink;
-
-        const thumbLabel = document.getElementById("thumb-label");
-        if (thumbLabel) thumbLabel.textContent = "Box / Title Screen Artwork";
-    }
-
-    // YouTube video (videoid)
+    // Video (YouTube)
     if (game.videoid) {
-        const shell = document.getElementById("video-shell");
-        if (shell) shell.style.display = "block";
-
-        const iframe = document.getElementById("game-video");
-        if (iframe) iframe.src = "https://www.youtube.com/embed/" + game.videoid;
-    }
-
-    // Buttons
-    setupButton("btn-disk", game.disklink);
-    setupButton("btn-manual", game.pdflink);
-    setupButton("btn-lemon", game.lemonlink);
-    setupButton("btn-youtube", game.videoid ? "https://www.youtube.com/watch?v=" + game.videoid : null);
-
-    // Footer ID
-    const bottomId = document.getElementById("bottom-id");
-    if (bottomId) bottomId.textContent = "ID: " + game.id;
-}
-
-/* ===========================================================================
-   Button helper
-=========================================================================== */
-function setupButton(id, url) {
-    const btn = document.getElementById(id);
-    if (!btn) return;
-
-    if (url && url !== "" && url !== null) {
-        btn.classList.remove("disabled");
-        btn.href = url;
+      const videoLink = document.getElementById("game-video-link");
+      if (videoLink) {
+        videoLink.href = `https://www.youtube.com/watch?v=${game.videoid}`;
+        showElement("game-video-link", true);
+      }
     } else {
-        btn.classList.add("disabled");
-        btn.href = "#";
+      showElement("game-video-link", false);
     }
+
+    // Lemon links (if you want to show them)
+    const lemonContainer = document.getElementById("game-lemon-links");
+    if (lemonContainer && Array.isArray(game.lemon) && game.lemon.length) {
+      lemonContainer.innerHTML = "";
+      game.lemon.forEach((url, index) => {
+        const a = document.createElement("a");
+        a.href = url;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = index === 0 ? "Lemon64" : `Lemon64 (${index + 1})`;
+        lemonContainer.appendChild(a);
+        if (index < game.lemon.length - 1) {
+          const sep = document.createTextNode(" | ");
+          lemonContainer.appendChild(sep);
+        }
+      });
+      lemonContainer.style.display = "";
+    } else if (lemonContainer) {
+      lemonContainer.style.display = "none";
+    }
+
+    // PDF manual
+    if (game.pdf) {
+      const pdfLink = document.getElementById("game-pdf-link");
+      if (pdfLink) {
+        pdfLink.href = game.pdf;
+        showElement("game-pdf-link", true);
+      }
+    } else {
+      showElement("game-pdf-link", false);
+    }
+
+    // Disk downloads (combine into one button)
+    const diskBtn = document.getElementById("game-disk-link");
+    if (diskBtn && Array.isArray(game.disk) && game.disk.length) {
+      // Click → open all disk urls in new tabs
+      diskBtn.onclick = function (e) {
+        e.preventDefault();
+        game.disk.forEach(url => {
+          if (url) window.open(url, "_blank", "noopener");
+        });
+      };
+      showElement("game-disk-link", true);
+    } else if (diskBtn) {
+      showElement("game-disk-link", false);
+    }
+
+    if (statusEl) {
+      statusEl.textContent = "";
+    }
+  } catch (err) {
+    console.error("Error loading single game:", err);
+    if (statusEl) {
+      statusEl.textContent = "Error loading game data.";
+    }
+  }
 }
 
-/* ===========================================================================
-   Error Display
-=========================================================================== */
-function showError(msg) {
-    const box = document.getElementById("error-box");
-    if (box) {
-        box.style.display = "block";
-        box.textContent = msg;
-    }
-}
-
-/* ===========================================================================
-   INIT
-=========================================================================== */
 document.addEventListener("DOMContentLoaded", loadSingleGame);
