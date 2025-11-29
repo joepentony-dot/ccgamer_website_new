@@ -2,46 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Top Picks</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Picks | CCG</title>
+
+    <link rel="stylesheet" href="../../css/engine.css">
+    <link rel="stylesheet" href="../../resources/css/main.css">
 
     <script defer src="../../js/genre-loader.js"></script>
-
-    <style>
-        body { background:#07101f; color:#e6f1ff; font-family:Arial; padding:20px; }
-        h1 { text-align:center; color:#39ffb3; margin-bottom:10px; }
-        #genre-results {
-            display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-            gap:16px; margin-top:20px;
-        }
-        a.toplink { color:#9dd7ff; text-decoration:none; margin-right:15px; }
-        a.toplink:hover { color:#39ffb3; }
-        .game-card img { width:100%; height:150px; object-fit:cover; border-radius:5px; }
-        .game-title { margin-top:6px; text-align:center; color:#39ffb3; }
-        .game-info-link { margin-top:4px; text-align:center; color:#39ffb3; font-size:0.8rem; }
-    </style>
 </head>
 
 <body>
 
-<div>
-    <a class="toplink" id="menu-link">← Main Menu</a>
-    <a class="toplink" id="complete-index-link">Complete Index</a>
-</div>
-
-<h1>Top Picks</h1>
-
-<p style="text-align:center;">
-    Hand-selected favourites — the best of the C64 & Amiga library.
-</p>
-
-<div id="genre-results">Loading...</div>
-
-<script>
-    document.getElementById("menu-link").href = BASE + "index.html";
-    document.getElementById("complete-index-link").href = BASE + "complete-index.html";
-</script>
+    <h1>Top Picks</h1>
+    <div id="genre-results">Loading games…</div>
 
 </body>
 </html>
-
