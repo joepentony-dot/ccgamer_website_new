@@ -3,69 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Details | CCG</title>
+    <title>Cheeky Commodore Gamer | Game Details</title>
 
-    <!-- Correct CSS paths -->
+    <!-- CORE ENGINE + STYLES -->
     <link rel="stylesheet" href="../css/engine.css">
     <link rel="stylesheet" href="../resources/css/main.css">
-
-    <!-- Game Loader Script -->
+    <script defer src="../js/engine.js"></script>
     <script defer src="../js/load-single-game.js"></script>
 </head>
 
 <body>
 
 <header>
+    <img src="../resources/CCGAMER LOGO.png" alt="CCG Logo" class="site-logo">
     <h1 id="game-title">Loading…</h1>
 </header>
 
-<main class="game-page">
+<main class="game-wrapper">
 
-    <!-- GAME THUMBNAIL -->
-    <div class="game-thumb-wrapper">
-        <img id="game-thumb" class="game-thumb" src="" alt="Game thumbnail">
-    </div>
+    <!-- Left side: thumbnail -->
+    <section class="game-media">
+        <img id="game-thumbnail" class="game-thumb" alt="Game Thumbnail">
+    </section>
 
-    <!-- GAME DETAILS -->
-    <div id="game-details" class="game-details">
-        Loading game information…
-    </div>
+    <!-- Right side: details -->
+    <section class="game-details">
 
-    <!-- BUTTONS -->
-    <div class="game-buttons">
+        <p><strong>Released:</strong> <span id="game-year"></span></p>
+        <p><strong>Developer:</strong> <span id="game-developer"></span></p>
+        <p><strong>Genres:</strong> <span id="game-genres"></span></p>
 
-        <!-- ▶ WATCH VIDEO -->
-        <a id="btn-video"
-            class="game-button disabled"
-            href="#"
-            target="_blank"
-            aria-disabled="true">
-            ▶ Watch Video
-        </a>
+        <div class="game-links">
+            <a id="pdf-link" class="btn" target="_blank" style="display:none;">📄 Manual (PDF)</a>
+            <a id="disk-link" class="btn" target="_blank" style="display:none;">💾 Disk Download</a>
+            <a id="lemon-link" class="btn" target="_blank" style="display:none;">🍋 Lemon64 Entry</a>
+        </div>
 
-        <!-- 📄 VIEW MANUAL (WITH ICON) -->
-        <a id="btn-pdf"
-           class="game-button disabled"
-           href="#"
-           target="_blank"
-           aria-disabled="true">
-            <img src="../resources/images/icons/pdf.png"
-                 alt="PDF"
-                 class="btn-icon"
-                 style="width:20px; height:20px; vertical-align:middle; margin-right:6px;">
-            View Manual
-        </a>
+        <div id="video-section" style="margin-top:20px; display:none;">
+            <h2>Gameplay Video</h2>
+            <iframe id="game-video"
+                    width="420"
+                    height="236"
+                    frameborder="0"
+                    allowfullscreen>
+            </iframe>
+        </div>
 
-        <!-- 💾 DISK DOWNLOAD (ICON CAN BE ADDED LATER IF YOU WANT) -->
-        <a id="btn-disk"
-           class="game-button disabled"
-           href="#"
-           target="_blank"
-           aria-disabled="true">
-            💾 Download Disk
-        </a>
-
-    </div>
+    </section>
 
 </main>
 
