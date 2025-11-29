@@ -1,40 +1,60 @@
-/* ================================================================
-   CCG COMPLETE INDEX – Updated for local thumbnails (Phase 4)
-================================================================ */
+/* ==============================================================
+   CHEEKY COMMODORE GAMER — COMPLETE INDEX LOADER (FINAL)
+   Loads all games from games.json and lists them alphabetically.
+   Search bar filters results instantly.
+   ============================================================== */
 
 async function loadCompleteIndex() {
     const container = document.getElementById("complete-results");
+    const searchBar = document.getElementById("search-bar");
 
     try {
         const response = await fetch("games/games.json");
         const games = await response.json();
 
+        // Sort alphabetically
         games.sort((a, b) => a.title.localeCompare(b.title));
 
-        container.innerHTML = "";
+        // Render list
+        function renderList(filter = "") {
+            container.innerHTML = "";
 
-        games.forEach(game => {
-            const row = document.createElement("div");
-            row.className = "complete-index-row";
+            const filtered = games.filter(game =>
+                game.title.toLowerCase().includes(filter.toLowerCase())
+            );
 
-            const thumb = document.createElement("img");
-            thumb.src = game.thumbnail.startsWith("http") ? game.thumbnail : game.thumbnail;
-            thumb.alt = game.title;
-            thumb.className = "index-thumb";
+            filtered.forEach(game => {
+                const item = document.createElement("div");
+                item.className = "index-item";
 
-            const link = document.createElement("a");
-            link.href = `games/game.html?id=${encodeURIComponent(game.id)}`;
-            link.textContent = game.title;
+                const link = document.createElement("a");
+                link.href = `games/game.html?id=${encodeURIComponent(game.id)}`;
+                link.textContent = game.title;
 
-            row.appendChild(thumb);
-            row.appendChild(link);
+                item.appendChild(link);
 
-            container.appendChild(row);
+                // Year display
+                if (game.year) {
+                    const yearEl = document.createElement("span");
+                    yearEl.style.color = "#999";
+                    yearEl.textContent = ` (${game.year})`;
+                    item.appendChild(yearEl);
+                }
+
+                container.appendChild(item);
+            });
+        }
+
+        renderList();
+
+        // Search
+        searchBar.addEventListener("input", () => {
+            renderList(searchBar.value);
         });
 
     } catch (err) {
         console.error("Error loading complete index:", err);
-        container.innerHTML = `<p>Error loading index.</p>`;
+        container.textContent = "Error loading game list.";
     }
 }
 
