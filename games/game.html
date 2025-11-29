@@ -3,55 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheeky Commodore Gamer | Game Details</title>
+    <title>Game Details | CCG</title>
 
-    <!-- CORE ENGINE + STYLES -->
-    <link rel="stylesheet" href="../css/engine.css">
-    <link rel="stylesheet" href="../resources/css/main.css">
-    <script defer src="../js/engine.js"></script>
-    <script defer src="../js/load-single-game.js"></script>
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="/css/engine.css">
+    <link rel="stylesheet" href="/resources/css/main.css">
+
+    <!-- Loader -->
+    <script defer src="/js/load-single-game.js"></script>
+
+    <style>
+        /* TEMP styling until we apply the CRT / neon system */
+
+        body {
+            background: #050b18;
+            color: #c7e8ff;
+            font-family: 'Press Start 2P', monospace;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1.game-title {
+            text-align: center;
+            color: #6fd4ff;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .game-top-section {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .game-thumbnail {
+            width: 260px;
+            border: 3px solid #4bb8ff;
+            border-radius: 6px;
+        }
+
+        .game-meta p {
+            margin: 8px 0;
+            line-height: 1.4;
+        }
+
+        hr {
+            border: none;
+            border-bottom: 1px solid #144066;
+            margin: 30px 0;
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            border: 3px solid #4bb8ff;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        a.pdf-button {
+            display: inline-block;
+            padding: 10px 14px;
+            background: #0f3a60;
+            color: #c7e8ff;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-bottom: 10px;
+        }
+
+        a.pdf-button:hover {
+            background: #155180;
+        }
+
+        .disk-list li {
+            margin: 6px 0;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            color: #6fd4ff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-button:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
-
 <body>
 
-<header>
-    <img src="../resources/CCGAMER LOGO.png" alt="CCG Logo" class="site-logo">
-    <h1 id="game-title">Loading…</h1>
-</header>
-
-<main class="game-wrapper">
-
-    <!-- Left side: thumbnail -->
-    <section class="game-media">
-        <img id="game-thumbnail" class="game-thumb" alt="Game Thumbnail">
-    </section>
-
-    <!-- Right side: details -->
-    <section class="game-details">
-
-        <p><strong>Released:</strong> <span id="game-year"></span></p>
-        <p><strong>Developer:</strong> <span id="game-developer"></span></p>
-        <p><strong>Genres:</strong> <span id="game-genres"></span></p>
-
-        <div class="game-links">
-            <a id="pdf-link" class="btn" target="_blank" style="display:none;">📄 Manual (PDF)</a>
-            <a id="disk-link" class="btn" target="_blank" style="display:none;">💾 Disk Download</a>
-            <a id="lemon-link" class="btn" target="_blank" style="display:none;">🍋 Lemon64 Entry</a>
-        </div>
-
-        <div id="video-section" style="margin-top:20px; display:none;">
-            <h2>Gameplay Video</h2>
-            <iframe id="game-video"
-                    width="420"
-                    height="236"
-                    frameborder="0"
-                    allowfullscreen>
-            </iframe>
-        </div>
-
-    </section>
-
-</main>
+    <!-- OUTPUT RENDERED BY load-single-game.js -->
+    <div id="game-container">
+        <p>Loading game details…</p>
+    </div>
 
 </body>
 </html>
