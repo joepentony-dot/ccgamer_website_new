@@ -1,5 +1,5 @@
 /* ================================================================
-   CHEEKY COMMODORE GAMER - GENRE LOADER (FINAL FIX)
+   CHEEKY COMMODORE GAMER - GENRE LOADER (FINAL VERSION)
 ================================================================ */
 
 async function loadGenrePage() {
@@ -8,7 +8,7 @@ async function loadGenrePage() {
     const genreName = titleElement ? titleElement.textContent.trim() : "";
 
     try {
-        const response = await fetch("../games.json"); 
+        const response = await fetch("../games.json");
         const games = await response.json();
 
         const matches = games.filter(game =>
@@ -30,7 +30,7 @@ async function loadGenrePage() {
             link.href = `../game.html?id=${encodeURIComponent(game.id)}`;
 
             const img = document.createElement("img");
-            img.src = "../" + game.thumbnail;
+            img.src = "../../" + game.thumbnail; // UPDATED!
             img.alt = game.title;
 
             const title = document.createElement("div");
