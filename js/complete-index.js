@@ -9,12 +9,12 @@
 function getJsonPathForCompleteIndex() {
     const path = window.location.pathname;
 
-    // If inside /games/, load JSON from the same folder
+    // When inside /games/, load JSON from the same folder
     if (path.includes("/games/")) {
         return "games.json";
     }
 
-    // Root-level complete-index.html
+    // When at root-level, load from games/games.json
     return "games/games.json";
 }
 
@@ -27,17 +27,17 @@ async function loadCompleteIndex() {
         const response = await fetch(jsonPath);
 
         if (!response.ok) {
-            throw new Error(`HTTP ${response.status} — ${jsonPath}`);
+            throw new Error(`HTTP ${response.status} for ${jsonPath}`);
         }
 
         const games = await response.json();
 
         container.innerHTML = "";
 
-        // Sort alphabetically
+        // Sort alphabetically (use sorttitle if available)
         const sorted = games.slice().sort((a, b) => {
-            const A = a.sorttitle || a.title || "";
-            const B = b.sorttitle || b.title || "";
+            const A = (a.sorttitle || a.title || "").toLowerCase();
+            const B = (b.sorttitle || b.title || "").toLowerCase();
             return A.localeCompare(B);
         });
 
@@ -45,29 +45,27 @@ async function loadCompleteIndex() {
             const row = document.createElement("div");
             row.className = "complete-row";
 
-            // Build link depending on where the page lives
-            const link = document.createElement("a");
+            // Build correct link depending on location
             const id = encodeURIComponent(game.gameid || game.id);
+            const isInsideGamesFolder = window.location.pathname.includes("/games/");
 
-            // If inside /games/ → link locally
-            if (window.location.pathname.includes("/games/")) {
-                link.href = `game.html?id=${id}`;
-            } else {
-                link.href = `games/game.html?id=${id}`;
-            }
+            const link = document.createElement("a");
+            link.href = isInsideGamesFolder
+                ? `game.html?id=${id}`             // /games/complete-index.html
+                : `games/game.html?id=${id}`;      // /complete-index.html
 
             link.textContent = game.title || "Untitled Game";
             row.appendChild(link);
 
             // Year
             if (game.year) {
-                const year = document.createElement("span");
-                year.className = "year";
-                year.textContent = game.year;
-                row.appendChild(year);
+                const yearSpan = document.createElement("span");
+                yearSpan.className = "year";
+                yearSpan.textContent = game.year;
+                row.appendChild(yearSpan);
             }
 
-            // Genre
+            // Genre list
             if (Array.isArray(game.genre) && game.genre.length > 0) {
                 const genreSpan = document.createElement("span");
                 genreSpan.className = "genre";
@@ -78,14 +76,14 @@ async function loadCompleteIndex() {
             container.appendChild(row);
         });
 
-        console.log(`Complete Index Loaded: ${sorted.length} games`);
+        console.log(`Complete Index Loaded Successfully: ${sorted.length} games`);
     } catch (err) {
-        console.error("Complete Index Error:", err);
+        console.error("Error loading complete index:", err);
         container.innerHTML = `
             <p class="error">
                 Could not load the complete index.<br>
-                Check <code>games/games.json</code> for:
-                <strong>NaN</strong>, missing quotes, or trailing commas.
+                Please ensure <code>/games/games.json</code> is valid JSON
+                (no NaN, no trailing commas).
             </p>
         `;
     }
