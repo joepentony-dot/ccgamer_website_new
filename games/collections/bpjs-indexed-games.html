@@ -2,46 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>BPjS Indexed Games</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BPJS Indexed Games | CCG</title>
+
+    <link rel="stylesheet" href="../../css/engine.css">
+    <link rel="stylesheet" href="../../resources/css/main.css">
 
     <script defer src="../../js/genre-loader.js"></script>
-
-    <style>
-        body { background:#07101f; color:#e6f1ff; font-family:Arial; padding:20px; }
-        h1 { text-align:center; color:#ff6b6b; margin-bottom:10px; }
-        #genre-results {
-            display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-            gap:16px; margin-top:20px;
-        }
-        a.toplink { color:#9dd7ff; text-decoration:none; margin-right:15px; }
-        a.toplink:hover { color:#ff6b6b; }
-        .game-card img { width:100%; height:150px; object-fit:cover; border-radius:5px; }
-        .game-title { margin-top:6px; text-align:center; color:#ff9e9e; }
-        .game-info-link { text-align:center; margin-top:4px; color:#ff6b6b; font-size:0.8rem; }
-    </style>
 </head>
 
 <body>
 
-<div>
-    <a class="toplink" id="menu-link">← Main Menu</a>
-    <a class="toplink" id="complete-index-link">Complete Index</a>
-</div>
-
-<h1>BPjS Indexed Games</h1>
-
-<p style="text-align:center;">
-    German BPjS–flagged titles. Restricted classics with a notorious legacy.
-</p>
-
-<div id="genre-results">Loading...</div>
-
-<script>
-    document.getElementById("menu-link").href = BASE + "index.html";
-    document.getElementById("complete-index-link").href = BASE + "complete-index.html";
-</script>
+    <h1>BPJS Indexed Games</h1>
+    <div id="genre-results">Loading games…</div>
 
 </body>
 </html>
-
