@@ -69,4 +69,35 @@ function toSlug(name) {
 
 /* --------------------------------------------------------------
    3. Featured Games
---------------------------
+-------------------------------------------------------------- */
+async function loadFeaturedGames() {
+    const container = document.getElementById("featured-games");
+
+    try {
+        const response = await fetch("games/games.json");
+        const games = await response.json();
+
+        const featured = games.filter(g =>
+            g.genres && g.genres.includes("Top Picks")
+        ).slice(0, 8);
+
+        const list = featured.length > 0 ? featured : games.slice(0, 8);
+
+        list.forEach(game => {
+            const card = document.createElement("a");
+            card.className = "featured-card";
+            card.href = `games/game.html?id=${encodeURIComponent(game.id)}`;
+
+            const img = document.createElement("img");
+            img.src = game.thumbnail;
+            img.alt = game.title;
+
+            card.appendChild(img);
+            container.appendChild(card);
+        });
+
+    } catch (err) {
+        console.error("Featured load error:", err);
+        container.textContent = "Could not load featured games.";
+    }
+}
