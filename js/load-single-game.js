@@ -1,11 +1,11 @@
 /* ================================================================
-   CHEEKY COMMODORE GAMER — SINGLE GAME PAGE LOADER (FINAL VERSION)
+   CHEEKY COMMODORE GAMER — SINGLE GAME PAGE LOADER (FINAL w/VIEWER)
    ---------------------------------------------------------------
-   Supports:
-   ✔ id / gameid
-   ✔ genre / genres / tags
-   ✔ pdf / pdflink / manual / manualpdf
-   ✔ disk[] / disk / diskimage / download / downloadlink / d64 / t64
+   Enhancements:
+   ✔ Direct-download disk links
+   ✔ PDF opens inside branded viewer
+   ✔ ID matching improved
+   ✔ Full support for genre/pdf/disk fields
    ================================================================ */
 
 function getQueryId() {
@@ -20,23 +20,30 @@ function cleanId(str) {
         .replace(/[^a-z0-9]/g, "");
 }
 
-function normalizeLink(value) {
-    if (!value) return "";
-
-    // Already a full URL
-    if (/^https?:\/\//i.test(value)) {
-        return value;
-    }
-
-    // Otherwise treat as relative path (usually not needed)
-    return "../" + value.replace(/^\/+/, "");
+function extractDriveId(url) {
+    // Matches: /d/<ID>/ OR id=<ID>
+    const match = url.match(/\/d\/([^/]+)/) || url.match(/id=([^&]+)/);
+    return match ? match[1] : "";
 }
 
-function setButtonState(btn, href) {
-    if (!btn) return;
+function convertToDirectDownload(url) {
+    const id = extractDriveId(url);
+    if (!id) return url;
+    return `https://drive.google.com/uc?export=download&id=${id}`;
+}
 
-    if (href) {
-        btn.href = href;
+function convertToViewerLink(url) {
+    const id = extractDriveId(url);
+    if (!id) return url;
+
+    // Use our branded viewer HTML page
+    return `../viewer/manual.html?file=${id}`;
+}
+
+function setButtonState(btn, link) {
+    if (!btn) return;
+    if (link) {
+        btn.href = link;
         btn.classList.remove("disabled");
         btn.removeAttribute("aria-disabled");
     } else {
@@ -65,13 +72,7 @@ async function loadGamePage() {
 
         const games = await response.json();
 
-        // ============================================================
-        // FINAL ID MATCHING LOGIC
-        // ============================================================
-        const game = games.find(g => {
-            const gid = cleanId(g.gameid || g.id);
-            return gid === targetId;
-        });
+        const game = games.find(g => cleanId(g.gameid || g.id) === targetId);
 
         if (!game) {
             titleEl.textContent = "Game Not Found";
@@ -79,91 +80,51 @@ async function loadGamePage() {
             return;
         }
 
-        // ============================================================
-        // SET TITLE
-        // ============================================================
+        // Title
         titleEl.textContent = game.title || "Untitled Game";
 
-        // ============================================================
-        // THUMBNAIL
-        // ============================================================
-        if (game.thumbnail) {
-            thumbEl.src = game.thumbnail;
-            thumbEl.alt = game.title;
-        } else {
-            thumbEl.src = "../resources/images/genres/miscellaneous.png";
-        }
+        // Thumbnail
+        thumbEl.src = game.thumbnail || "../resources/images/genres/miscellaneous.png";
 
-        // ============================================================
-        // GENRES (genre / genres / tags)
-        // ============================================================
+        // Genres
         let genres = [];
-
         if (Array.isArray(game.genre)) genres.push(...game.genre);
         if (Array.isArray(game.genres)) genres.push(...game.genres);
         if (Array.isArray(game.tags)) genres.push(...game.tags);
+        genres = genres.filter(x => x && x.trim().length > 0);
 
-        genres = genres.filter(g => g && g.trim() !== "");
-
-        const genreText = genres.length ? genres.join(", ") : "-";
-
-        // ============================================================
-        // DETAILS BLOCK
-        // ============================================================
         detailsEl.innerHTML = `
             <strong>Year:</strong> ${game.year || "-"}<br>
             <strong>Developer:</strong> ${game.developer || "-"}<br>
-            <strong>Genre:</strong> ${genreText}
+            <strong>Genre:</strong> ${genres.length ? genres.join(", ") : "-"}
         `;
 
-        // ============================================================
-        // BUTTONS (VIDEO / PDF / DISK)
-        // ============================================================
+        // BUTTONS
+        const videoBtn = document.getElementById("btn-video");
+        const pdfBtn   = document.getElementById("btn-pdf");
+        const diskBtn  = document.getElementById("btn-disk");
 
         // VIDEO
-        const videoBtn = document.getElementById("btn-video");
         if (game.videoid) {
             setButtonState(videoBtn, `https://www.youtube.com/watch?v=${game.videoid}`);
-        } else {
-            setButtonState(videoBtn, "");
         }
 
-        // PDF
-        const pdfBtn = document.getElementById("btn-pdf");
-        const pdfField =
-            game.pdf ||
-            game.pdflink ||
-            game.manual ||
-            game.manualpdf;
+        // PDF viewer inside CCG frame
+        const pdfField = game.pdf || game.pdflink || game.manual || game.manualpdf;
+        if (pdfField) {
+            setButtonState(pdfBtn, convertToViewerLink(pdfField));
+        }
 
-        setButtonState(pdfBtn, pdfField ? normalizeLink(pdfField) : "");
-
-        // DISK
-        const diskBtn = document.getElementById("btn-disk");
-
+        // DISK (always direct download)
         let diskField = "";
 
-        // disk as array
-        if (Array.isArray(game.disk) && game.disk.length > 0) {
-            diskField = game.disk[0];
-        }
+        if (Array.isArray(game.disk) && game.disk.length) diskField = game.disk[0];
+        else if (typeof game.disk === "string") diskField = game.disk;
+        else diskField = game.diskimage || game.download || game.downloadlink || game.d64 || game.t64;
 
-        // disk as string
-        if (typeof game.disk === "string") {
-            diskField = game.disk;
+        if (diskField) {
+            setButtonState(diskBtn, convertToDirectDownload(diskField));
         }
-
-        // fallback fields
-        if (!diskField) {
-            diskField =
-                game.diskimage ||
-                game.download ||
-                game.downloadlink ||
-                game.d64 ||
-                game.t64;
-        }
-
-        setButtonState(diskBtn, diskField ? normalizeLink(diskField) : "");
 
     } catch (err) {
         console.error(err);
