@@ -1,7 +1,6 @@
 /* ================================================================
-   CCG — SINGLE GAME LOADER (FINAL VERSION)
-   Loads full game info from games.json into game.html
-   Now 100% compatible with LOCAL THUMBNAILS + future domains
+   CCG — SINGLE GAME LOADER (PHASE 7B FUNCTIONAL EDITION)
+   CLEAN, FUTURE-PROOF, ZERO AESTHETIC LOCK-IN
 ================================================================ */
 
 async function loadSingleGame() {
@@ -10,13 +9,13 @@ async function loadSingleGame() {
     const gameId = params.get("id");
 
     if (!gameId) {
-        container.innerHTML = "<p>Game not found.</p>";
+        container.innerHTML = "<p>No game selected.</p>";
         return;
     }
 
     try {
-        // Absolute path ensures future Fasthosts hosting works perfectly
-        const response = await fetch("/games/games.json");
+        // Supports GitHub Pages AND future Fasthosts domain
+        const response = await fetch("../games.json");
         const games = await response.json();
 
         const game = games.find(g =>
@@ -29,46 +28,47 @@ async function loadSingleGame() {
             return;
         }
 
-        // Build HTML
+        // Build metadata
+        const dev = game.developer || "Unknown";
+        const year = game.year || "Unknown";
+        const genres = Array.isArray(game.genres) ? game.genres : [];
+        const thumb = game.thumbnail ? `../${game.thumbnail}` : "";
+        const pdf = game.pdf || null;
+        const downloads = game.disk || [];
+        const videoId = game.videoid || null;
+        const lemonList = game.lemon || [];
+
+        // ========== MAIN PAGE STRUCTURE ==========
         container.innerHTML = `
-            <h1 class="game-title">${game.title}</h1>
-
-            <div class="game-top-section">
-
-                <!-- Thumbnail -->
+            <div class="game-header">
                 <img class="game-thumbnail"
-                     src="/${game.thumbnail}"
+                     src="${thumb}"
                      alt="${game.title}"
                      loading="lazy">
 
                 <div class="game-meta">
-                    <p><strong>Year:</strong> ${game.year || "Unknown"}</p>
-                    <p><strong>Developer:</strong> ${game.developer || "Unknown"}</p>
+                    <h1>${game.title}</h1>
 
-                    ${renderGenres(game.genres)}
-                    ${renderLemonLinks(game.lemon)}
+                    <p><strong>Developer:</strong> ${dev}</p>
+                    <p><strong>Year:</strong> ${year}</p>
+
+                    ${renderGenres(genres)}
+                    ${renderLemonLinks(lemonList)}
                 </div>
             </div>
 
-            <hr>
-
-            <!-- Video -->
-            ${renderVideo(game.videoid)}
-
-            <!-- PDF Manual -->
-            ${renderPDF(game.pdf)}
-
-            <!-- Disk Downloads -->
-            ${renderDiskLinks(game.disk)}
+            ${renderVideo(videoId)}
+            ${renderPDF(pdf)}
+            ${renderDownloads(downloads)}
 
             <hr>
 
-            <a class="back-button" href="/complete-index.html">← Back to Index</a>
+            <a class="back-button" href="../complete-index.html">← Back to Index</a>
         `;
 
     } catch (err) {
-        console.error("Error loading game:", err);
         container.innerHTML = "<p>Error loading game data.</p>";
+        console.error(err);
     }
 }
 
@@ -76,55 +76,69 @@ async function loadSingleGame() {
    HELPERS
 ================================================================ */
 
-function renderGenres(genres) {
-    if (!genres || !genres.length) return "";
-
+// Genre list
+function renderGenres(list) {
+    if (!list || !list.length) return "";
     return `
-        <p><strong>Genres:</strong><br>${genres.join(", ")}</p>
-    `;
-}
-
-function renderLemonLinks(lemonList) {
-    if (!lemonList || !lemonList.length) return "";
-
-    return `
-        <p><strong>Lemon Links:</strong></p>
+        <p><strong>Genres:</strong></p>
         <ul>
-            ${lemonList.map(url => `<li><a href="${url}" target="_blank">Open on Lemon64</a></li>`).join("")}
+            ${list
+                .map(genre =>
+                    `<li><a href="./genres/${genre.toLowerCase().replace(/ /g, "-")}.html">${genre}</a></li>`
+                )
+                .join("")}
         </ul>
     `;
 }
 
-function renderPDF(pdfUrl) {
-    if (!pdfUrl) return "";
-
+// Lemon64 / LemonAmiga links
+function renderLemonLinks(list) {
+    if (!Array.isArray(list) || !list.length) return "";
     return `
-        <h2>Manual (PDF)</h2>
-        <a class="pdf-button" href="${pdfUrl}" target="_blank">📘 Open PDF Manual</a>
-    `;
-}
-
-function renderDiskLinks(disks) {
-    if (!disks || !disks.length) return "";
-
-    return `
-        <h2>Game Files</h2>
-        <ul class="disk-list">
-            ${disks.map(d => `<li><a href="${d}" target="_blank">💾 Download Disk</a></li>`).join("")}
+        <p><strong>Game Info:</strong></p>
+        <ul>
+            ${list.map(url => `<li><a href="${url}" target="_blank">Open Info Page</a></li>`).join("")}
         </ul>
     `;
 }
 
-function renderVideo(videoId) {
-    if (!videoId) return "";
-
+// YouTube embed
+function renderVideo(id) {
+    if (!id) return "";
     return `
-        <h2>Gameplay Video</h2>
-        <div class="video-wrapper">
-            <iframe 
-                src="https://www.youtube.com/embed/${videoId}"
+        <div class="video-section">
+            <h2>Gameplay Video</h2>
+            <iframe
+                src="https://www.youtube.com/embed/${id}"
+                loading="lazy"
                 allowfullscreen>
             </iframe>
+        </div>
+    `;
+}
+
+// PDF Manual
+function renderPDF(url) {
+    if (!url) return "";
+    return `
+        <div class="pdf-section">
+            <h2>Manual</h2>
+            <a class="pdf-button" href="${url}" target="_blank">📘 Open PDF Manual</a>
+        </div>
+    `;
+}
+
+// Disk / Tape / CRT downloads
+function renderDownloads(list) {
+    if (!Array.isArray(list) || !list.length) return "";
+    return `
+        <div class="downloads-section">
+            <h2>Downloads</h2>
+            <ul>
+                ${list
+                    .map(url => `<li><a href="${url}" target="_blank">💾 Download File</a></li>`)
+                    .join("")}
+            </ul>
         </div>
     `;
 }
