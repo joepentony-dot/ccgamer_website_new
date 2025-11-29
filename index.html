@@ -5,48 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheeky Commodore Gamer</title>
 
-    <!-- Core Styles -->
     <link rel="stylesheet" href="css/engine.css">
     <link rel="stylesheet" href="resources/css/main.css">
+    <script defer src="js/engine.js"></script>
+    <script defer src="js/homepage-loader.js"></script>
+
+    <style>
+        /* ⚠ TEMPORARY minimal layout — styling pass added later */
+        body {
+            text-align: center;
+            padding: 20px;
+            color: #e6f1ff;
+        }
+
+        #power-on {
+            cursor: pointer;
+            font-size: 1.3rem;
+            margin: 20px 0;
+            color: #00eaff;
+        }
+
+        .genre-grid {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            max-width: 900px;
+            margin: 0 auto;
+            margin-top: 20px;
+        }
+
+        .genre-btn img {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .featured-container {
+            margin-top: 40px;
+        }
+
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+            max-width: 900px;
+            margin: 20px auto;
+        }
+
+        .featured-card img {
+            width: 100%;
+            border-radius: 6px;
+        }
+    </style>
 </head>
 
 <body>
 
-    <header>
-        <h1>CHEEKY COMMODORE GAMER</h1>
-        <p>Retro Games • C64 & Amiga • Reviews • Quizzes</p>
-    </header>
+<header>
+    <img src="resources/CCGAMER LOGO.png" class="site-logo" alt="CCG Logo">
+    <h1>CHEEKY COMMODORE GAMER</h1>
 
-    <main>
+    <p id="power-on">▶ CLICK TO POWER ON</p>
+    <p id="c64-intro" style="display:none; font-size:1.2rem;">
+        Stay a while… Stay forever!
+    </p>
+</header>
 
-        <section>
-            <h2>Welcome Commander!</h2>
-            <p>Explore the full Commodore game library, quizzes, collections and more.</p>
-        </section>
+<!-- GENRE BUTTONS -->
+<section>
+    <h2>Explore Genres</h2>
+    <div class="genre-grid" id="genre-buttons">
+        <!-- Homepage genre icons will load here -->
+    </div>
+</section>
 
-        <section class="home-grid">
-            <a class="home-card" href="games/genres/index.html">
-                <h3>Game Genres</h3>
-                <p>Browse by category</p>
-            </a>
-
-            <a class="home-card" href="games/collections/index.html">
-                <h3>Collections</h3>
-                <p>BPJS, Licensed Games, Top Picks, and more</p>
-            </a>
-
-            <a class="home-card" href="complete-index.html">
-                <h3>Complete Index</h3>
-                <p>Full library of all games</p>
-            </a>
-
-            <a class="home-card" href="quiz/index.html">
-                <h3>Retro Quiz</h3>
-                <p>Think you know the C64 & Amiga?</p>
-            </a>
-        </section>
-
-    </main>
+<!-- FEATURED GAMES -->
+<section class="featured-container">
+    <h2>Featured Games</h2>
+    <div class="featured-grid" id="featured-games">
+        <!-- Autoloaded from JSON -->
+    </div>
+</section>
 
 </body>
 </html>
