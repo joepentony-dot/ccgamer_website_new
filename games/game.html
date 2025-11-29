@@ -1,26 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheeky Commodore Gamer | Game Details</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Details | Cheeky Commodore Gamer</title>
 
-    <!-- Global CSS -->
-    <link rel="stylesheet" href="../css/engine.css">
-    <link rel="stylesheet" href="../resources/css/main.css">
+  <!-- Core styles -->
+  <link rel="stylesheet" href="../css/engine.css">
+  <link rel="stylesheet" href="../resources/css/main.css">
 
-    <!-- JS Loaders -->
-    <script defer src="../js/engine.js"></script>
-    <script defer src="../js/load-single-game.js"></script>
-
+  <!-- Core scripts -->
+  <script defer src="../js/engine.js"></script>
+  <script defer src="../js/load-single-game.js"></script>
 </head>
-
-<body>
-
-    <!-- CONTAINER POPULATED ENTIRELY BY load-single-game.js -->
-    <div id="game-container" class="game-wrapper">
-        <!-- loader will inject everything here -->
+<body class="ccg-body ccg-theme-c64">
+  <header class="ccg-header">
+    <div class="ccg-header-inner">
+      <a href="../index.html" class="ccg-logo-link">CHEEKY</a>
+      <nav class="ccg-nav">
+        <a href="../complete-index.html">Complete Index</a>
+        <a href="../quiz/quiz.html">Quiz</a>
+        <a href="../about.html">About</a>
+        <a href="../contact.html">Contact</a>
+      </nav>
     </div>
+  </header>
 
+  <main class="ccg-main">
+    <section id="game-detail" class="game-detail">
+      <p>Loading game…</p>
+    </section>
+  </main>
+
+  <footer class="ccg-footer">
+    <p>Cheeky Commodore Gamer &copy; 2025</p>
+  </footer>
 </body>
 </html>
