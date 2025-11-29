@@ -1,27 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cheeky Commodore Gamer | Platform Games</title>
 
-    <title>Cheeky Commodore Gamer | Platform Games</title>
+  <link rel="stylesheet" href="../../css/engine.css">
+  <link rel="stylesheet" href="../../resources/css/main.css">
 
-    <link rel="stylesheet" href="/ccgamer_website_new/css/engine.css">
-    <link rel="stylesheet" href="/ccgamer_website_new/resources/css/main.css">
-
-    <script defer src="/ccgamer_website_new/js/engine.js"></script>
-    <script defer src="/ccgamer_website_new/js/genre-loader.js"></script>
+  <script defer src="../../js/engine.js"></script>
+  <script defer src="../../js/genre-loader.js"></script>
 </head>
+<body class="ccg-body ccg-theme-c64" data-genre="platform">
+  <header class="ccg-header">
+    <div class="ccg-header-inner">
+      <a href="../../index.html" class="ccg-logo-link">CHEEKY</a>
+      <nav class="ccg-nav">
+        <a href="../../complete-index.html">Complete Index</a>
+        <a href="../../quiz/quiz.html">Quiz</a>
+        <a href="../../about.html">About</a>
+        <a href="../../contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
 
-<body>
+  <main class="ccg-main">
+    <section class="genre-hero">
+      <img id="genre-image" class="genre-hero-image"
+           src="../../resources/images/genres/platform.png"
+           alt="Platform Games">
+      <div class="genre-hero-text">
+        <h1 id="genre-title" data-locked="true">Platform Games</h1>
+        <p id="genre-intro">
+          Running, jumping and perilous leaps — timing is everything in these C64 platform classics.
+        </p>
+      </div>
+    </section>
 
-<header>
-    <h1>Platform Games</h1>
-</header>
+    <section class="genre-results-section">
+      <div id="genre-results" class="genre-results">
+        <p>Loading games…</p>
+      </div>
+    </section>
+  </main>
 
-<p class="genre-intro">Leaps, hazards, ladders and timing—all wrapped in classic twitchy fun.</p>
-
-<div id="genre-results" class="genre-container"></div>
-
+  <footer class="ccg-footer">
+    <p>Cheeky Commodore Gamer © 2025</p>
+  </footer>
 </body>
 </html>
