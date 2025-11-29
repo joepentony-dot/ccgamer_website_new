@@ -3,26 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Game Index | CCG</title>
+    <title>Cheeky Commodore Gamer | Complete Game Index</title>
 
-    <!-- Core Styles -->
     <link rel="stylesheet" href="css/engine.css">
     <link rel="stylesheet" href="resources/css/main.css">
-
-    <!-- Loader for the full index -->
+    <script defer src="js/engine.js"></script>
     <script defer src="js/complete-index.js"></script>
+
+    <style>
+        /* Temporary basic layout (final CSS pass later) */
+        #search-bar {
+            width: 100%;
+            max-width: 400px;
+            margin: 10px auto 20px auto;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #00aaff;
+            border-radius: 4px;
+            background: rgba(0,0,0,0.4);
+            color: #e6f1ff;
+            display: block;
+        }
+
+        .index-item {
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .index-item a {
+            color: #00eaff;
+            text-decoration: none;
+        }
+
+        .index-item a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 
 <body>
 
-    <header>
-        <h1>Complete Game Index</h1>
-        <p>All Commodore titles in one place</p>
-    </header>
+<header>
+    <img src="resources/CCGAMER LOGO.png" alt="CCG Logo" class="site-logo">
+    <h1>Complete Game Index</h1>
+    <p>Browse the entire collection of Commodore 64 titles on the site.</p>
+</header>
 
-    <main>
-        <div id="complete-results">Loading games…</div>
-    </main>
+<input type="text" id="search-bar" placeholder="Search games…">
+
+<div id="complete-results">
+    <p class="loading">Loading game list…</p>
+</div>
 
 </body>
 </html>
