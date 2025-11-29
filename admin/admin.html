@@ -3,64 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CCG Admin | Game Manager</title>
-    <meta name="description" content="Internal admin area for managing the Cheeky Commodore Gamer game database.">
+    <title>CCG Admin Panel</title>
 
+    <!-- Core Styles -->
     <link rel="stylesheet" href="../css/engine.css">
-    <link rel="stylesheet" href="../resources/main.css">
+    <link rel="stylesheet" href="../resources/css/main.css">
 
-    <script defer src="../js/engine.js"></script>
+    <!-- Admin functionality will be added later -->
 </head>
-<body class="ccg-body">
-    <div id="start-screen">
-        <div class="boot-window">
-            <pre id="boot-log"></pre>
-            <div id="press-space">PRESS SPACE TO CONTINUE</div>
-        </div>
-    </div>
 
-    <div class="crt">
-        <div class="scanlines"></div>
-        <div class="screen">
-            <header class="ccg-header">
-                <div class="logo-area">
-                    <span class="logo-main">CHEEKY</span>
-                    <span class="logo-sub">COMMODORE GAMER</span>
-                </div>
-                <nav class="ccg-nav">
-                    <a href="../index.html" class="nav-link">Main Menu</a>
-                    <a href="../games/index.html" class="nav-link">Game Browser</a>
-                    <a href="../games/complete-index.html" class="nav-link">Full Index</a>
-                    <a href="../quiz/quiz.html" class="nav-link">Retro Quiz</a>
-                    <a href="../about.html" class="nav-link">About</a>
-                    <a href="../contact.html" class="nav-link">Contact</a>
-                </nav>
-            </header>
+<body>
 
-            <main class="ccg-main">
-                <section class="text-panel">
-                    <h1>CCG Admin – Game Manager</h1>
-                    <p>
-                        Access prohibited. This area is reserved for the Cheeky Commodore Gamer game
-                        management tools linked to Google Sheets and Apps Script.
-                    </p>
-                    <p>
-                        If you’ve stumbled in here by accident, use the navigation above to get back to the main site.
-                    </p>
-                </section>
-            </main>
+    <header>
+        <h1>CCG Admin Panel</h1>
+        <p>Authorised access only</p>
+    </header>
 
-            <footer class="ccg-footer">
-                <p>&copy; <span id="year"></span> Cheeky Commodore Gamer.</p>
-            </footer>
-        </div>
-    </div>
+    <main>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const y = document.getElementById('year');
-            if (y) y.textContent = new Date().getFullYear();
-        });
-    </script>
+        <section>
+            <p>
+                This area will be used for future admin tools, including game management,
+                database updates, and quiz set maintenance.
+            </p>
+
+            <p>
+                Full functionality will be restored once the structural rebuild is complete.
+            </p>
+        </section>
+
+    </main>
+
 </body>
 </html>
