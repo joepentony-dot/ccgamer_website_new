@@ -1,10 +1,11 @@
 /* ================================================================
    CHEEKY COMMODORE GAMER — SINGLE GAME PAGE LOADER (FINAL VERSION)
-   Fixes:
-   ✔ ERROR LOADING GAME for valid IDs
-   ✔ Handles id OR gameid
-   ✔ Handles genre OR genres OR tags
-   ✔ Shows proper data always
+   ---------------------------------------------------------------
+   Supports:
+   ✔ id / gameid
+   ✔ genre / genres / tags
+   ✔ pdf / pdflink / manual / manualpdf
+   ✔ disk[] / disk / diskimage / download / downloadlink / d64 / t64
    ================================================================ */
 
 function getQueryId() {
@@ -12,7 +13,6 @@ function getQueryId() {
     return params.get("id");
 }
 
-// Normalise ID for matching
 function cleanId(str) {
     return (str || "")
         .toString()
@@ -20,9 +20,35 @@ function cleanId(str) {
         .replace(/[^a-z0-9]/g, "");
 }
 
+function normalizeLink(value) {
+    if (!value) return "";
+
+    // Already a full URL
+    if (/^https?:\/\//i.test(value)) {
+        return value;
+    }
+
+    // Otherwise treat as relative path (usually not needed)
+    return "../" + value.replace(/^\/+/, "");
+}
+
+function setButtonState(btn, href) {
+    if (!btn) return;
+
+    if (href) {
+        btn.href = href;
+        btn.classList.remove("disabled");
+        btn.removeAttribute("aria-disabled");
+    } else {
+        btn.href = "#";
+        btn.classList.add("disabled");
+        btn.setAttribute("aria-disabled", "true");
+    }
+}
+
 async function loadGamePage() {
     const rawId = getQueryId();
-    const queryId = cleanId(rawId);
+    const targetId = cleanId(rawId);
 
     const titleEl = document.getElementById("game-title");
     const thumbEl = document.getElementById("game-thumb");
@@ -34,76 +60,110 @@ async function loadGamePage() {
     }
 
     try {
-        // GAME.JSON IS LOCATED IN SAME FOLDER
         const response = await fetch("games.json");
         if (!response.ok) throw new Error("Could not load games.json");
 
         const games = await response.json();
 
-        // ==============================
-        // FINAL ID-MATCHING LOGIC
-        // ==============================
+        // ============================================================
+        // FINAL ID MATCHING LOGIC
+        // ============================================================
         const game = games.find(g => {
-            const gid = cleanId(g.gameid) || cleanId(g.id);
-            return gid === queryId;
+            const gid = cleanId(g.gameid || g.id);
+            return gid === targetId;
         });
 
         if (!game) {
             titleEl.textContent = "Game Not Found";
-            detailsEl.textContent = `No entry in games.json for ID: ${rawId}`;
+            detailsEl.textContent = `No entry found for ID: ${rawId}`;
             return;
         }
 
-        // ==============================
-        // TITLE
-        // ==============================
+        // ============================================================
+        // SET TITLE
+        // ============================================================
         titleEl.textContent = game.title || "Untitled Game";
 
-        // ==============================
+        // ============================================================
         // THUMBNAIL
-        // ==============================
-        if (thumbEl) {
-            if (game.thumbnail) {
-                thumbEl.src = game.thumbnail;
-            } else {
-                thumbEl.src = "../resources/images/genres/miscellaneous.png";
-            }
+        // ============================================================
+        if (game.thumbnail) {
+            thumbEl.src = game.thumbnail;
+            thumbEl.alt = game.title;
+        } else {
+            thumbEl.src = "../resources/images/genres/miscellaneous.png";
         }
 
-        // ==============================
+        // ============================================================
         // GENRES (genre / genres / tags)
-        // ==============================
+        // ============================================================
         let genres = [];
 
         if (Array.isArray(game.genre)) genres.push(...game.genre);
         if (Array.isArray(game.genres)) genres.push(...game.genres);
         if (Array.isArray(game.tags)) genres.push(...game.tags);
 
-        genres = genres.filter(x => x && x.trim() !== "");
+        genres = genres.filter(g => g && g.trim() !== "");
 
         const genreText = genres.length ? genres.join(", ") : "-";
 
-        // ==============================
-        // DETAILS DISPLAY
-        // ==============================
+        // ============================================================
+        // DETAILS BLOCK
+        // ============================================================
         detailsEl.innerHTML = `
             <strong>Year:</strong> ${game.year || "-"}<br>
             <strong>Developer:</strong> ${game.developer || "-"}<br>
             <strong>Genre:</strong> ${genreText}
         `;
 
-        // ==============================
-        // VIDEO BUTTON
-        // ==============================
+        // ============================================================
+        // BUTTONS (VIDEO / PDF / DISK)
+        // ============================================================
+
+        // VIDEO
         const videoBtn = document.getElementById("btn-video");
-        if (videoBtn) {
-            if (game.videoid) {
-                videoBtn.href = `https://www.youtube.com/watch?v=${game.videoid}`;
-                videoBtn.classList.remove("disabled");
-            } else {
-                videoBtn.classList.add("disabled");
-            }
+        if (game.videoid) {
+            setButtonState(videoBtn, `https://www.youtube.com/watch?v=${game.videoid}`);
+        } else {
+            setButtonState(videoBtn, "");
         }
+
+        // PDF
+        const pdfBtn = document.getElementById("btn-pdf");
+        const pdfField =
+            game.pdf ||
+            game.pdflink ||
+            game.manual ||
+            game.manualpdf;
+
+        setButtonState(pdfBtn, pdfField ? normalizeLink(pdfField) : "");
+
+        // DISK
+        const diskBtn = document.getElementById("btn-disk");
+
+        let diskField = "";
+
+        // disk as array
+        if (Array.isArray(game.disk) && game.disk.length > 0) {
+            diskField = game.disk[0];
+        }
+
+        // disk as string
+        if (typeof game.disk === "string") {
+            diskField = game.disk;
+        }
+
+        // fallback fields
+        if (!diskField) {
+            diskField =
+                game.diskimage ||
+                game.download ||
+                game.downloadlink ||
+                game.d64 ||
+                game.t64;
+        }
+
+        setButtonState(diskBtn, diskField ? normalizeLink(diskField) : "");
 
     } catch (err) {
         console.error(err);
