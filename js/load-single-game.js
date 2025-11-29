@@ -1,11 +1,10 @@
 /* ================================================================
    CHEEKY COMMODORE GAMER — SINGLE GAME PAGE LOADER (FINAL VERSION)
-   ----------------------------------------------------------------
    Fixes:
-   ✔ Games failing to load from complete-index.html
-   ✔ Missing genres
-   ✔ Missing developer/year data
-   ✔ Corrects ID lookup using gameid OR id
+   ✔ ERROR LOADING GAME for valid IDs
+   ✔ Handles id OR gameid
+   ✔ Handles genre OR genres OR tags
+   ✔ Shows proper data always
    ================================================================ */
 
 function getQueryId() {
@@ -13,74 +12,103 @@ function getQueryId() {
     return params.get("id");
 }
 
+// Normalise ID for matching
+function cleanId(str) {
+    return (str || "")
+        .toString()
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "");
+}
+
 async function loadGamePage() {
-    const id = getQueryId();
+    const rawId = getQueryId();
+    const queryId = cleanId(rawId);
 
     const titleEl = document.getElementById("game-title");
     const thumbEl = document.getElementById("game-thumb");
     const detailsEl = document.getElementById("game-details");
 
-    if (!id) {
-        titleEl.textContent = "Game Not Found";
+    if (!rawId) {
+        titleEl.textContent = "Game Not Specified";
         return;
     }
 
     try {
+        // GAME.JSON IS LOCATED IN SAME FOLDER
         const response = await fetch("games.json");
-        if (!response.ok) throw new Error("Failed to load games.json");
+        if (!response.ok) throw new Error("Could not load games.json");
 
         const games = await response.json();
 
-        // FIXED: Correct match logic
-        const game = games.find(g =>
-            String(g.gameid).toLowerCase() === String(id).toLowerCase() ||
-            String(g.id).toLowerCase() === String(id).toLowerCase()
-        );
+        // ==============================
+        // FINAL ID-MATCHING LOGIC
+        // ==============================
+        const game = games.find(g => {
+            const gid = cleanId(g.gameid) || cleanId(g.id);
+            return gid === queryId;
+        });
 
         if (!game) {
             titleEl.textContent = "Game Not Found";
-            detailsEl.textContent = `No entry found for "${id}".`;
+            detailsEl.textContent = `No entry in games.json for ID: ${rawId}`;
             return;
         }
 
-        // Title
+        // ==============================
+        // TITLE
+        // ==============================
         titleEl.textContent = game.title || "Untitled Game";
 
-        // Thumbnail
+        // ==============================
+        // THUMBNAIL
+        // ==============================
         if (thumbEl) {
-            const img = game.thumbnail ? "../" + game.thumbnail : "../resources/images/genres/miscellaneous.png";
-            thumbEl.src = img;
-            thumbEl.alt = game.title || "";
+            if (game.thumbnail) {
+                thumbEl.src = game.thumbnail;
+            } else {
+                thumbEl.src = "../resources/images/genres/miscellaneous.png";
+            }
         }
 
-        // Genre Handling (FIXED)
+        // ==============================
+        // GENRES (genre / genres / tags)
+        // ==============================
         let genres = [];
 
-        if (Array.isArray(game.genre)) genres = game.genre;
-        if (Array.isArray(game.genres)) genres = game.genres;
-        if (Array.isArray(game.tags)) genres = [...genres, ...game.tags];
+        if (Array.isArray(game.genre)) genres.push(...game.genre);
+        if (Array.isArray(game.genres)) genres.push(...game.genres);
+        if (Array.isArray(game.tags)) genres.push(...game.tags);
 
-        genres = genres.filter(g => g && g.trim().length > 0);
+        genres = genres.filter(x => x && x.trim() !== "");
 
-        const genresText = genres.length ? genres.join(", ") : "-";
+        const genreText = genres.length ? genres.join(", ") : "-";
 
-        // Developer / Year / Genre block
+        // ==============================
+        // DETAILS DISPLAY
+        // ==============================
         detailsEl.innerHTML = `
             <strong>Year:</strong> ${game.year || "-"}<br>
             <strong>Developer:</strong> ${game.developer || "-"}<br>
-            <strong>Genre:</strong> ${genresText}
+            <strong>Genre:</strong> ${genreText}
         `;
 
-        // YOUTUBE BUTTON (Working)
+        // ==============================
+        // VIDEO BUTTON
+        // ==============================
         const videoBtn = document.getElementById("btn-video");
-        if (videoBtn && game.videoid) {
-            videoBtn.href = `https://www.youtube.com/watch?v=${game.videoid}`;
-            videoBtn.classList.remove("disabled");
+        if (videoBtn) {
+            if (game.videoid) {
+                videoBtn.href = `https://www.youtube.com/watch?v=${game.videoid}`;
+                videoBtn.classList.remove("disabled");
+            } else {
+                videoBtn.classList.add("disabled");
+            }
         }
 
     } catch (err) {
         console.error(err);
         titleEl.textContent = "Error Loading Game";
+        detailsEl.textContent = err.message;
     }
 }
 
