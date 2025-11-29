@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CCG Manual Viewer</title>
+
+    <link rel="stylesheet" href="../css/engine.css">
+    <link rel="stylesheet" href="../resources/css/main.css">
+
+    <style>
+        body {
+            background: #000814;
+            color: #00eaff;
+            font-family: 'Press Start 2P', monospace;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            padding: 20px;
+            text-align: center;
+            background: #001933;
+            border-bottom: 3px solid #00eaff;
+        }
+        iframe {
+            width: 100%;
+            height: calc(100vh - 90px);
+            border: none;
+        }
+        .brand {
+            font-size: 20px;
+            color: #00eaff;
+            letter-spacing: 2px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<header>
+    <div class="brand">📘 CHEEKY COMMODORE GAMER — MANUAL VIEWER 😇🕹️👌</div>
+</header>
+
+<iframe id="pdf-frame" src=""></iframe>
+
+<script>
+    // Get ?file=FILEID
+    const params = new URLSearchParams(window.location.search);
+    const fileId = params.get("file");
+
+    if (fileId) {
+        document.getElementById("pdf-frame").src =
+            `https://drive.google.com/file/d/${fileId}/preview`;
+    }
+</script>
+
+</body>
+</html>
