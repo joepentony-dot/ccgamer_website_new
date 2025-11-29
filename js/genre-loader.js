@@ -41,7 +41,7 @@ async function loadGenrePage() {
 
             // Thumbnail image (ABSOLUTE PATH!)
             const img = document.createElement("img");
-            img.src = "/" + game.thumbnail;   // <--- FIXED!
+            img.src = "/ccgamer_website_new/" + game.thumbnail;
             img.alt = game.title;
             img.loading = "lazy";
 
