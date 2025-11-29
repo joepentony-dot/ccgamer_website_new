@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Details | CCG</title>
 
-    <!-- Correct CSS paths (from /games/game.html) -->
+    <!-- Correct CSS paths -->
     <link rel="stylesheet" href="../css/engine.css">
     <link rel="stylesheet" href="../resources/css/main.css">
 
-    <!-- Correct script path -->
+    <!-- Game Loader Script -->
     <script defer src="../js/load-single-game.js"></script>
 </head>
 
@@ -34,31 +34,35 @@
     <!-- BUTTONS -->
     <div class="game-buttons">
 
-        <!-- YouTube -->
+        <!-- ▶ WATCH VIDEO -->
         <a id="btn-video"
-           class="game-button disabled"
-           href="#"
-           target="_blank"
-           aria-disabled="true">
-           ▶ Watch Video
+            class="game-button disabled"
+            href="#"
+            target="_blank"
+            aria-disabled="true">
+            ▶ Watch Video
         </a>
 
-        <!-- PDF manual -->
+        <!-- 📄 VIEW MANUAL (WITH ICON) -->
         <a id="btn-pdf"
            class="game-button disabled"
            href="#"
            target="_blank"
            aria-disabled="true">
-           📄 View Manual
+            <img src="../resources/images/icons/pdf.png"
+                 alt="PDF"
+                 class="btn-icon"
+                 style="width:20px; height:20px; vertical-align:middle; margin-right:6px;">
+            View Manual
         </a>
 
-        <!-- Disk Download -->
+        <!-- 💾 DISK DOWNLOAD (ICON CAN BE ADDED LATER IF YOU WANT) -->
         <a id="btn-disk"
            class="game-button disabled"
            href="#"
            target="_blank"
            aria-disabled="true">
-           💾 Download Disk
+            💾 Download Disk
         </a>
 
     </div>
