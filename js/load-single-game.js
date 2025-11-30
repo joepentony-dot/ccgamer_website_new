@@ -1,13 +1,11 @@
 // ================================================================
-// CHEEKY COMMODORE GAMER
-// SINGLE GAME PAGE LOADER — FINAL VERSION
+// CHEEKY COMMODORE GAMER – SINGLE GAME PAGE LOADER (FINAL UNIVERSAL VERSION)
 // ------------------------------------------------
 // - Loads from /games/games.json
-// - Finds correct game via ?id=
-// - Renders title, metadata, thumbnails, downloads, video links
-// - Fully relative-path safe for GitHub Pages + Fasthosts
-// - Fallback thumbnail support
-// - Clean layout injection into #game-detail
+// - Auto-selects BEST available download file
+// - ONE universal "Download Game" button
+// - Supports disk/tape/cart/prg/pdf/t64/tap/extras/etc.
+// - Safe for GitHub Pages & Fasthosts
 // ================================================================
 
 
@@ -27,6 +25,11 @@ function normaliseId(val) {
 
 function safeText(v) {
   return (v || "").toString();
+}
+
+function toArray(x) {
+  if (!x) return [];
+  return Array.isArray(x) ? x : [x];
 }
 
 
@@ -49,7 +52,6 @@ async function loadSingleGame() {
   }
 
   try {
-    // JSON is in the same folder as this page
     const response = await fetch("games.json");
     const games = await response.json();
 
@@ -67,8 +69,34 @@ async function loadSingleGame() {
 
   } catch (err) {
     console.error("Error loading single game:", err);
-    container.innerHTML = "<p>Error loading game details. Please try again later.</p>";
+    container.innerHTML = "<p>Error loading game details.</p>";
   }
+}
+
+
+// ------------------------------------------------
+// UNIVERSAL DOWNLOAD DETECTION
+// ------------------------------------------------
+
+function findBestDownload(game) {
+  // Priority order (best → fallback)
+  const fields = [
+    "disk", "d64",
+    "tape", "tap", "t64",
+    "cart", "crt",
+    "prg",
+    "pdf", "pdflink",
+    "extras", "manual", "docs", "files"
+  ];
+
+  for (const field of fields) {
+    if (game[field]) {
+      const arr = toArray(game[field]).filter(Boolean);
+      if (arr.length) return arr[0];
+    }
+  }
+
+  return ""; // no downloads at all
 }
 
 
@@ -78,29 +106,20 @@ async function loadSingleGame() {
 
 function renderGame(container, game) {
   const title = safeText(game.title);
+  document.title = `${title} | Cheeky Commodore Gamer`;
+
   const year = safeText(game.year);
   const system = safeText(game.system);
   const developer = safeText(game.developer);
   const publisher = safeText(game.publisher);
   const composer = safeText(game.composer);
+
   const genres = Array.isArray(game.genres || game.genre)
     ? (game.genres || game.genre)
     : [];
+
   const description = safeText(game.description || game.summary);
-
   const videoId = safeText(game.videoid);
-
-  const diskLinks = Array.isArray(game.disk)
-    ? game.disk
-    : game.disk ? [game.disk] : [];
-
-  const tapeLinks = Array.isArray(game.tape)
-    ? game.tape
-    : game.tape ? [game.tape] : [];
-
-  const pdfLinks = Array.isArray(game.pdflink)
-    ? game.pdflink
-    : game.pdflink ? [game.pdflink] : [];
 
   // Thumbnail
   const thumbPath = (game.thumbnail || "").replace(/^\.?\//, "");
@@ -108,93 +127,39 @@ function renderGame(container, game) {
     ? ("../" + thumbPath)
     : "../resources/images/genres/miscellaneous.png";
 
-  // Update page title
-  document.title = `${title} | Cheeky Commodore Gamer`;
-
-  // Join genres
+  // Genre display
   const genreText = genres.join(" • ");
 
-  // ------------------------------------------------
   // Video block
-  // ------------------------------------------------
   let videoBlock = "";
   if (videoId) {
     const ytUrl = `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
     videoBlock = `
       <div class="game-video">
         <h2>Gameplay Video</h2>
-        <a class="btn-cta" href="${ytUrl}" target="_blank" rel="noopener noreferrer">
-          Watch on YouTube
+        <a class="btn-cta" href="${ytUrl}" target="_blank">Watch on YouTube</a>
+      </div>
+    `;
+  }
+
+  // 🔥 UNIVERSAL DOWNLOAD BUTTON
+  const bestDownload = findBestDownload(game);
+
+  let downloadButton = "";
+  if (bestDownload) {
+    downloadButton = `
+      <div class="game-download-single">
+        <h2>Download</h2>
+        <a class="btn-cta" href="${bestDownload}"
+           target="_blank" rel="noopener noreferrer">
+          Download Game
         </a>
       </div>
     `;
   }
 
-  // ------------------------------------------------
-  // Downloads
-  // ------------------------------------------------
-  const downloadItems = [];
-
-  diskLinks.forEach((url, idx) => {
-    downloadItems.push(`
-      <li>
-        <a href="${url}" target="_blank" rel="noopener noreferrer">
-          Disk ${diskLinks.length > 1 ? idx + 1 : ""}
-        </a>
-      </li>
-    `);
-  });
-
-  tapeLinks.forEach((url, idx) => {
-    downloadItems.push(`
-      <li>
-        <a href="${url}" target="_blank" rel="noopener noreferrer">
-          Tape ${tapeLinks.length > 1 ? idx + 1 : ""}
-        </a>
-      </li>
-    `);
-  });
-
-  let downloadsBlock = "";
-  if (downloadItems.length) {
-    downloadsBlock = `
-      <div class="game-downloads">
-        <h2>Downloads</h2>
-        <ul>
-          ${downloadItems.join("")}
-        </ul>
-      </div>
-    `;
-  }
-
-  // ------------------------------------------------
-  // Manuals (PDF links)
-  // ------------------------------------------------
-  let manualsBlock = "";
-  if (pdfLinks.length) {
-    manualsBlock = `
-      <div class="game-manuals">
-        <h2>Manuals / Extras</h2>
-        <ul>
-          ${pdfLinks
-            .map((url, i) => `
-              <li>
-                <a href="${url}" target="_blank" rel="noopener noreferrer">
-                  Manual ${pdfLinks.length > 1 ? i + 1 : ""}
-                </a>
-              </li>
-            `)
-            .join("")}
-        </ul>
-      </div>
-    `;
-  }
-
-  // ------------------------------------------------
-  // Sidebar metadata grid
-  // ------------------------------------------------
+  // Metadata grid
   const infoRows = [];
-
   if (system) infoRows.push(`<div><span>System</span><strong>${system}</strong></div>`);
   if (year) infoRows.push(`<div><span>Year</span><strong>${year}</strong></div>`);
   if (developer) infoRows.push(`<div><span>Developer</span><strong>${developer}</strong></div>`);
@@ -202,9 +167,11 @@ function renderGame(container, game) {
   if (composer) infoRows.push(`<div><span>Music</span><strong>${composer}</strong></div>`);
   if (genres.length) infoRows.push(`<div><span>Genres</span><strong>${genreText}</strong></div>`);
 
+
   // ------------------------------------------------
   // FULL PAGE TEMPLATE
   // ------------------------------------------------
+
   container.innerHTML = `
     <article class="game-layout">
 
@@ -238,8 +205,7 @@ function renderGame(container, game) {
         }
 
         ${videoBlock}
-        ${downloadsBlock}
-        ${manualsBlock}
+        ${downloadButton}
       </div>
 
       <aside class="game-sidebar">
@@ -257,7 +223,6 @@ function renderGame(container, game) {
 }
 
 
-// ------------------------------------------------
 // INIT
 // ------------------------------------------------
 document.addEventListener("DOMContentLoaded", loadSingleGame);
