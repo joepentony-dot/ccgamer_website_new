@@ -6,33 +6,48 @@
 <title>Cheeky Commodore Gamer</title>
 
 <style>
-    /* RESET */
+    /* GLOBAL */
     html, body {
         margin: 0;
         padding: 0;
         width: 100%;
         height: 100%;
-        background: black;
         overflow: hidden;
         font-family: 'VT323', monospace;
-        color: #00eaff;
+        background: #0000AA;
     }
 
-    /* FIRST: C64 LOADING */
-    #loading-screen {
+    /* ============================================
+       1) C64 BOOT / TYPING SCREEN
+       ============================================ */
+    #c64-screen {
         position: fixed;
         inset: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 32px;
-        color: #00eaff;
-        background: black;
-        z-index: 9999;
+        background: #0000AA;
+        color: #A7A7A7;
+        padding: 40px;
+        font-size: 26px;
+        line-height: 32px;
+        white-space: pre-wrap;
+        z-index: 10000;
     }
 
-    /* SECOND: FULLSCREEN RASTER BARS */
-    #intro-screen {
+    .cursor {
+        display: inline-block;
+        width: 12px;
+        background: #A7A7A7;
+        animation: blink 0.9s infinite;
+    }
+
+    @keyframes blink {
+        0%, 50% { background: #A7A7A7; }
+        51%, 100% { background: transparent; }
+    }
+
+    /* ============================================
+       2) FULL SCREEN RASTER LOADER
+       ============================================ */
+    #raster-screen {
         position: fixed;
         inset: 0;
         display: none;
@@ -40,138 +55,192 @@
         align-items: center;
         flex-direction: column;
         background: black;
-        z-index: 9998;
+        z-index: 9000;
     }
 
-    /* ✔ FULLSCREEN BARS (NO BORDERS ANYWHERE) */
+    /* Fullscreen raster bars based EXACTLY on your image */
     #raster-bars {
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-
+        inset: 0;
         background: repeating-linear-gradient(
             to bottom,
             #000000 0px,
-            #000000 4px,
-            #ffffff 4px,
-            #ffffff 12px,
-            #8c32ff 12px,
-            #8c32ff 20px,
-            #f59d00 20px,
-            #f59d00 28px,
-            #7afcff 28px,
-            #7afcff 36px,
-            #ff4c4c 36px,
-            #ff4c4c 44px,
-            #adff2f 44px,
-            #adff2f 52px
+            #000000 5px,
+            #ffffff 5px,
+            #ffffff 15px,
+            #8c32ff 15px,
+            #8c32ff 25px,
+            #f59d00 25px,
+            #f59d00 35px,
+            #7afcff 35px,
+            #7afcff 45px,
+            #ff4c4c 45px,
+            #ff4c4c 55px,
+            #adff2f 55px,
+            #adff2f 65px
         );
 
-        animation: barsMove 0.45s infinite alternate ease-in-out;
+        animation: rasterMove 0.3s infinite alternate ease-in-out;
         opacity: 0;
-        transition: opacity 1s ease-in-out;
+        transition: opacity 1.2s ease-in-out;
     }
 
-    @keyframes barsMove {
+    @keyframes rasterMove {
         0%   { transform: translateY(0); }
-        100% { transform: translateY(-14px); }
+        100% { transform: translateY(-18px); }
     }
 
+    /* ============================================
+       3) TEXT OVERLAY (COOL AS FUCK)
+       ============================================ */
     #intro-text {
-        z-index: 5;
-        font-size: 42px;
-        text-shadow: 0 0 6px black;
+        position: relative;
+        z-index: 10;
+        color: #ffffff;
+        font-size: 48px;
+        text-align: center;
+        text-shadow: 0 0 12px #000, 0 0 25px #000;
         opacity: 0;
-        transition: opacity 1s ease-in-out;
+        transition: opacity 1.8s ease-in-out;
+        animation: pulse 2.2s infinite;
     }
 
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.03); }
+        100% { transform: scale(1); }
+    }
+
+    /* ============================================
+       4) SKIP INTRO BUTTON
+       ============================================ */
     #skip-intro {
-        z-index: 5;
-        margin-top: 40px;
-        padding: 10px 24px;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 11000;
+        padding: 8px 16px;
         background: #00eaff;
         color: black;
         border: none;
-        border-radius: 5px;
-        font-size: 24px;
+        border-radius: 4px;
+        font-size: 20px;
         cursor: pointer;
+        box-shadow: 0 0 10px black;
     }
 
+    #skip-intro:hover {
+        background: #34f3ff;
+    }
+
+    /* ============================================
+       5) MAIN SITE (HIDDEN UNTIL INTRO ENDS)
+       ============================================ */
     #main-site {
         display: none;
         padding: 20px;
+        color: white;
     }
 </style>
 </head>
 
 <body>
 
-<!-- AUDIO -->
+<!-- SID SPEECH -->
 <audio id="sidSpeech" preload="auto">
     <source src="resources/audio/c64_speech_stayawhile.mp3" type="audio/mpeg">
 </audio>
 
-<!-- SCREEN 1: C64 LOADING -->
-<div id="loading-screen">LOADING...</div>
+<!-- SKIP BUTTON -->
+<button id="skip-intro" style="display:none;">SKIP INTRO</button>
 
-<!-- SCREEN 2: FULLSCREEN RASTER INTRO -->
-<div id="intro-screen">
-    <div id="raster-bars"></div>
-    <div id="intro-text">ANOTHER VISITOR... STAY A WHILE... STAY FOREVER!</div>
-    <button id="skip-intro">SKIP INTRO</button>
+<!-- C64 TYPING SCREEN -->
+<div id="c64-screen">
+**** COMMODORE 64 BASIC V2 ****
+
+ 64K RAM SYSTEM  38911 BASIC BYTES FREE
+READY.
+<span id="typed"></span><span class="cursor"></span>
 </div>
 
-<!-- MAIN PAGE AFTER INTRO -->
+<!-- RASTER BAR LOADER -->
+<div id="raster-screen">
+    <div id="raster-bars"></div>
+    <div id="intro-text">ANOTHER VISITOR...<br>STAY A WHILE...<br>STAY FOREVER!</div>
+</div>
+
+<!-- MAIN SITE (AFTER INTRO) -->
 <div id="main-site">
     <h1>WELCOME TO CHEEKY COMMODORE GAMER</h1>
+    <!-- Your actual homepage will replace this -->
 </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
-    const loading = document.getElementById("loading-screen");
-    const intro = document.getElementById("intro-screen");
-    const raster = document.getElementById("raster-bars");
-    const text = document.getElementById("intro-text");
+    const typed = document.getElementById("typed");
+    const c64 = document.getElementById("c64-screen");
+    const raster = document.getElementById("raster-screen");
+    const rasterBars = document.getElementById("raster-bars");
+    const introText = document.getElementById("intro-text");
     const skip = document.getElementById("skip-intro");
     const audio = document.getElementById("sidSpeech");
     const main = document.getElementById("main-site");
 
-    /* STEP 1 — LOADING SCREEN */
-    setTimeout(() => {
+    skip.style.display = "block";
 
-        loading.style.display = "none";
-        intro.style.display = "flex";
+    /* TEXT TO TYPE OUT */
+    const sequence = [
+        'LOAD"*",8,1\n',
+        'SEARCHING FOR CHEEKY COMMODORE GAMER\n',
+        'LOADING\n'
+    ];
 
-        /* STEP 2 — FULLSCREEN RASTER FADE-IN */
-        setTimeout(() => raster.style.opacity = 1, 300);
+    let i = 0;
+    let j = 0;
 
-        /* STEP 3 — TEXT + AUDIO */
+    function typeLine() {
+        if (i < sequence.length) {
+            if (j < sequence[i].length) {
+                typed.textContent += sequence[i][j];
+                j++;
+                setTimeout(typeLine, 50);
+            } else {
+                i++;
+                j = 0;
+                setTimeout(typeLine, 400);
+            }
+        } else {
+            startRaster();
+        }
+    }
+
+    function startRaster() {
+        c64.style.display = "none";
+        raster.style.display = "flex";
+        setTimeout(() => rasterBars.style.opacity = 1, 100);
+
         setTimeout(() => {
-            text.style.opacity = 1;
-
+            introText.style.opacity = 1;
             audio.volume = 1.0;
-            audio.play().catch(() => {});
-        }, 1000);
+            audio.play().catch(()=>{});
+        }, 600);
+    }
 
-    }, 1500);
+    audio.onended = () => endIntro();
 
-    /* END INTRO WHEN MP3 ENDS */
-    audio.onended = () => finish();
-
-    /* SKIP BUTTON */
     skip.onclick = () => {
         audio.pause();
         audio.currentTime = 0;
-        finish();
+        endIntro();
     };
 
-    function finish() {
-        intro.style.display = "none";
+    function endIntro() {
+        raster.style.display = "none";
         main.style.display = "block";
     }
+
+    typeLine();
 
 });
 </script>
