@@ -1,11 +1,10 @@
 // ================================================================
-// CHEEKY COMMODORE GAMER – SINGLE GAME PAGE LOADER (FINAL UNIVERSAL VERSION)
+// CHEEKY COMMODORE GAMER – SINGLE GAME PAGE LOADER (FINAL VERSION)
 // ------------------------------------------------
-// - Loads from /games/games.json
-// - Auto-selects BEST available download file
-// - ONE universal "Download Game" button
-// - Supports disk/tape/cart/prg/pdf/t64/tap/extras/etc.
-// - Safe for GitHub Pages & Fasthosts
+// - One universal “Download Game” button (auto-picks best format)
+// - Optional “View Manual” button if PDF/manual exists
+// - Supports disk/tape/cart/crt/prg/t64/tap/d64/etc.
+// - Clean layout, future-proof, stable
 // ================================================================
 
 
@@ -75,11 +74,10 @@ async function loadSingleGame() {
 
 
 // ------------------------------------------------
-// UNIVERSAL DOWNLOAD DETECTION
+// UNIVERSAL DOWNLOAD SELECTION
 // ------------------------------------------------
 
 function findBestDownload(game) {
-  // Priority order (best → fallback)
   const fields = [
     "disk", "d64",
     "tape", "tap", "t64",
@@ -96,7 +94,26 @@ function findBestDownload(game) {
     }
   }
 
-  return ""; // no downloads at all
+  return "";
+}
+
+
+// ------------------------------------------------
+// MANUAL DETECTION (View Manual button)
+// ------------------------------------------------
+
+function findManual(game) {
+  // Prefer explicit PDF/manual fields
+  const fields = ["pdf", "pdflink", "manual", "docs"];
+
+  for (const field of fields) {
+    if (game[field]) {
+      const arr = toArray(game[field]).filter(Boolean);
+      if (arr.length) return arr[0];
+    }
+  }
+
+  return "";
 }
 
 
@@ -127,10 +144,11 @@ function renderGame(container, game) {
     ? ("../" + thumbPath)
     : "../resources/images/genres/miscellaneous.png";
 
-  // Genre display
   const genreText = genres.join(" • ");
 
-  // Video block
+  // ------------------------------------------------
+  // Gameplay Video
+  // ------------------------------------------------
   let videoBlock = "";
   if (videoId) {
     const ytUrl = `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
@@ -142,7 +160,9 @@ function renderGame(container, game) {
     `;
   }
 
-  // 🔥 UNIVERSAL DOWNLOAD BUTTON
+  // ------------------------------------------------
+  // DOWNLOAD BUTTON (One single button)
+  // ------------------------------------------------
   const bestDownload = findBestDownload(game);
 
   let downloadButton = "";
@@ -150,15 +170,33 @@ function renderGame(container, game) {
     downloadButton = `
       <div class="game-download-single">
         <h2>Download</h2>
-        <a class="btn-cta" href="${bestDownload}"
-           target="_blank" rel="noopener noreferrer">
+        <a class="btn-cta" href="${bestDownload}" target="_blank">
           Download Game
         </a>
       </div>
     `;
   }
 
-  // Metadata grid
+  // ------------------------------------------------
+  // MANUAL BUTTON (Optional)
+  // ------------------------------------------------
+  const manualUrl = findManual(game);
+
+  let manualButton = "";
+  if (manualUrl) {
+    manualButton = `
+      <div class="game-manual-single">
+        <h2>Manual</h2>
+        <a class="btn-cta" href="${manualUrl}" target="_blank">
+          View Manual
+        </a>
+      </div>
+    `;
+  }
+
+  // ------------------------------------------------
+  // Sidebar Metadata
+  // ------------------------------------------------
   const infoRows = [];
   if (system) infoRows.push(`<div><span>System</span><strong>${system}</strong></div>`);
   if (year) infoRows.push(`<div><span>Year</span><strong>${year}</strong></div>`);
@@ -169,22 +207,25 @@ function renderGame(container, game) {
 
 
   // ------------------------------------------------
-  // FULL PAGE TEMPLATE
+  // Full Layout
   // ------------------------------------------------
 
   container.innerHTML = `
     <article class="game-layout">
 
       <div class="game-main">
+
         <div class="game-hero-card">
           <img class="game-hero-thumb" src="${thumbSrc}" alt="${title}">
           <div class="game-hero-text">
             <h1>${title}</h1>
+
             ${
               year || system
                 ? `<p class="game-hero-meta">${system || ""}${system && year ? " • " : ""}${year || ""}</p>`
                 : ""
             }
+
             ${
               genres.length
                 ? `<p class="game-hero-genres">${genreText}</p>`
@@ -206,6 +247,8 @@ function renderGame(container, game) {
 
         ${videoBlock}
         ${downloadButton}
+        ${manualButton}
+
       </div>
 
       <aside class="game-sidebar">
@@ -223,6 +266,7 @@ function renderGame(container, game) {
 }
 
 
+// ------------------------------------------------
 // INIT
 // ------------------------------------------------
 document.addEventListener("DOMContentLoaded", loadSingleGame);
