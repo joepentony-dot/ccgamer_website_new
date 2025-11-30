@@ -5,353 +5,371 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheeky Commodore Gamer | C64 Loader Intro</title>
 
-    <!-- C64-style font -->
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 
     <style>
+
         :root {
-            /* Classic C64 palette approximation */
-            --c64-bg:     #352879; /* screen background */
-            --c64-border: #6050a8; /* border colour */
-            --c64-text:   #6c5eb5; /* light blue text */
-
-            --loading-dark: #292060;
-            --loading-light: #8f87ff;
-        }
-
-        * {
-            box-sizing: border-box;
+            --c64-blue:   #352879;
+            --c64-light:  #6c5eb5;
+            --c64-text:   #b8c76f;
+            --border-blue: #201856;
         }
 
         html, body {
-            height: 100%;
-            width: 100%;
             margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: "VT323", monospace;
-            background-color: var(--c64-bg);
-            color: var(--c64-text);
-            display: flex;
-            align-items: stretch;
-            justify-content: stretch;
+            height: 100%;
+            font-family: 'VT323', monospace;
+            text-transform: uppercase;
             overflow: hidden;
+            background: var(--c64-blue);
         }
 
-        /* Full-screen C64 frame */
-        .c64-screen {
-            width: 100vw;
-            height: 100vh;
-            border: 16px solid var(--c64-border);
-            padding: 20px;
+        /* ==========================
+           C64 BORDER FRAME
+           ========================== */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            border: 28px solid var(--border-blue);
             box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
+            pointer-events: none;
+            z-index: 99999;
         }
 
-        .top-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 6px;
+        /* ==========================
+           CRT CURVE / GLOW
+           ========================== */
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at center,
+                    rgba(255,255,255,0.03) 0%,
+                    rgba(0,0,0,0.5) 100%);
+            mix-blend-mode: soft-light;
+            pointer-events: none;
+            z-index: 99990;
         }
 
-        /* SKIP INTRO button – clear and obvious */
-        .skip-intro-btn {
-            font-family: "VT323", monospace;
-            font-size: 16px;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            padding: 4px 10px;
-            border-radius: 0;
-            border: 2px solid var(--c64-text);
-            background: var(--c64-bg);
-            color: var(--c64-text);
-            cursor: pointer;
-        }
-
-        .skip-intro-btn:hover {
-            background: var(--c64-border);
-        }
-
-        .skip-intro-btn:active {
-            transform: translateY(1px);
-        }
-
-        .boot-screen,
-        .raster-screen {
-            flex: 1;
-            display: none;
-            flex-direction: column;
-        }
-
-        body.phase-boot .boot-screen {
-            display: flex;
-        }
-
-        body.phase-raster .raster-screen {
-            display: flex;
-        }
-
-        /* Boot text area */
-        #c64-text {
-            flex: 1;
-            white-space: pre-wrap;
-            font-size: clamp(13px, 2.2vw, 17px);
-            line-height: 1.2;
-        }
-
-        /* Raster/loading area */
-        .raster-header {
-            text-align: center;
-            margin-bottom: 8px;
-        }
-
-        .raster-title {
-            font-size: clamp(20px, 3vw, 26px);
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-        }
-
-        .raster-subtitle {
-            font-size: clamp(14px, 2.3vw, 18px);
-            margin-top: 2px;
-        }
-
-        .loading-bars {
-            margin-top: 10px;
-            flex: 1;
+        /* ==========================
+           POWER-ON SCREEN
+           ========================== */
+        #power-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--c64-blue);
             display: flex;
             flex-direction: column;
             justify-content: center;
-            gap: 6px;
-        }
-
-        .loading-row {
-            background: var(--loading-dark);
-            height: 10px;
-            overflow: hidden;
-        }
-
-        .loading-fill {
-            height: 100%;
-            background: var(--loading-light);
-            width: 0%;
-            animation: load-line 1.6s linear infinite;
-        }
-
-        .loading-row:nth-child(2) .loading-fill { animation-duration: 1.8s; }
-        .loading-row:nth-child(3) .loading-fill { animation-duration: 1.4s; }
-        .loading-row:nth-child(4) .loading-fill { animation-duration: 2.0s; }
-        .loading-row:nth-child(5) .loading-fill { animation-duration: 1.5s; }
-        .loading-row:nth-child(6) .loading-fill { animation-duration: 1.9s; }
-
-        @keyframes load-line {
-            0%   { width: 0%; }
-            50%  { width: 100%; }
-            100% { width: 0%; }
-        }
-
-        .raster-footer {
-            margin-top: 10px;
-            font-size: clamp(13px, 2vw, 16px);
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .blink {
-            animation: blink 1s steps(2, start) infinite;
-        }
-
-        @keyframes blink {
-            0%, 49% { opacity: 1; }
-            50%, 100% { opacity: 0; }
-        }
-
-        .audio-hint {
-            margin-top: 8px;
-            font-size: 13px;
-            padding: 3px 6px;
-            border: 1px solid var(--c64-text);
-            display: inline-block;
-            visibility: hidden;
+            align-items: center;
+            z-index: 9000;
+            color: var(--c64-light);
             cursor: pointer;
         }
 
-        .audio-hint.visible {
-            visibility: visible;
+        #power-logo {
+            width: 160px;
+            margin-bottom: 26px;
+            image-rendering: pixelated;
         }
 
-        @media (max-width: 600px) {
-            .c64-screen {
-                border-width: 10px;
-                padding: 10px;
-            }
-
-            #c64-text {
-                font-size: 13px;
-            }
+        #power-text {
+            font-size: 36px;
+            letter-spacing: 2px;
+            animation: blink 1.1s steps(1,end) infinite;
         }
+
+        @keyframes blink {
+            0%,49% { opacity:1; }
+            50%,100% { opacity:0; }
+        }
+
+        /* POWER CRT SCANLINES */
+        #power-crt {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9100;
+            background:
+                linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,0.22) 50%),
+                linear-gradient(90deg, rgba(255,0,0,0.06), rgba(0,255,0,0.03), rgba(0,0,255,0.06));
+            background-size: 100% 2px, 3px 100%;
+            opacity: 0.55;
+        }
+
+        /* ==========================
+           SKIP INTRO BUTTON
+           ========================== */
+        #skip-btn {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 999999;
+            background: #880000;
+            color: #fff;
+            border: 2px solid #fff;
+            padding: 10px 20px;
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 #000;
+        }
+
+        #skip-btn:hover {
+            background: #fff;
+            color:#880000;
+        }
+
+        /* ==========================
+           LOADER SCREEN
+           ========================== */
+        #loader-screen {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: var(--c64-blue);
+            z-index: 9200;
+        }
+
+        .c64-screen {
+            padding: 16px 28px;
+            width: min(1200px, 90vw);
+            height: min(820px, 90vh);
+            background: var(--c64-blue);
+            color: var(--c64-light);
+        }
+
+        .c64-line {
+            font-size: 28px;
+        }
+
+        #loader-output {
+            margin-top: 32px;
+            font-size: 28px;
+            white-space: pre-wrap;
+            line-height: 1.2;
+        }
+
+        #loader-cursor {
+            display: inline-block;
+            width: 18px;
+            height: 1.4em;
+            background: var(--c64-light);
+            animation: blink 0.8s steps(1,end) infinite;
+            margin-left: 6px;
+        }
+
+        /* LOADER CRT */
+        #loader-crt {
+            position: fixed;
+            inset: 0;
+            pointer-events:none;
+            z-index: 9300;
+            background:
+                linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,0.17) 50%),
+                linear-gradient(90deg, rgba(255,0,0,0.04), rgba(0,255,0,0.02), rgba(0,0,255,0.04));
+            background-size: 100% 2px, 3px 100%;
+            opacity: 0.45;
+            transition: opacity .2s;
+        }
+
+        /* ==========================
+           RASTER BARS (SOFTENED)
+           ========================== */
+        #rasterBars {
+            position: fixed;
+            inset: 0;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 9400;
+            filter: blur(1.6px);
+            image-rendering: pixelated;
+            background:
+                repeating-linear-gradient(
+                    to bottom,
+                    #352879 0px,   #352879 10px,
+                    #ffffff 10px,  #ffffff 20px,
+                    #cc44cc 20px,  #cc44cc 30px,
+                    #feff6c 30px,  #feff6c 40px,
+                    #664400 40px,  #664400 50px,
+                    #55cc55 50px,  #55cc55 60px,
+                    #5c6cff 60px,  #5c6cff 70px,
+                    #00ffff 70px,  #00ffff 80px,
+                    #ff66ff 80px,  #ff66ff 90px,
+                    #ff3333 90px,  #ff3333 100px,
+                    #aaaaaa 100px, #aaaaaa 110px,
+                    #00ccaa 110px, #00ccaa 120px,
+                    #ff9900 120px, #ff9900 130px,
+                    #88ff44 130px, #88ff44 140px
+                );
+        }
+
+        #rasterBars.active {
+            opacity: 0.92;
+            animation: barscroll 1.1s linear infinite, barjitter 0.08s infinite;
+        }
+
+        @keyframes barscroll {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 340px; }
+        }
+
+        @keyframes barjitter {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-1px); }
+            100%{ transform: translateY(0px); }
+        }
+
     </style>
 </head>
-<body class="phase-boot">
+
+<body>
+
+<!-- SKIP INTRO -->
+<button id="skip-btn">SKIP INTRO</button>
+
+<!-- POWER SCREEN -->
+<div id="power-screen">
+    <img id="power-logo" src="resources/CCGAMER LOGO.png">
+    <div id="power-text">CLICK TO POWER ON</div>
+</div>
+
+<div id="power-crt"></div>
+
+<!-- LOADER -->
+<div id="loader-screen">
     <div class="c64-screen">
-        <div class="top-row">
-            <div></div>
-            <button id="skipIntro" class="skip-intro-btn">SKIP INTRO</button>
-        </div>
+        <div class="c64-line">**** COMMODORE 64 BASIC V2 ****</div>
+        <div class="c64-line">64K RAM SYSTEM 38911 BASIC BYTES FREE</div>
+        <div class="c64-line">&nbsp;</div>
 
-        <!-- BOOT PHASE -->
-        <div class="boot-screen">
-            <pre id="c64-text"></pre>
-        </div>
-
-        <!-- RASTER / LOADING BARS PHASE -->
-        <div class="raster-screen">
-            <div class="raster-header">
-                <div class="raster-title">CHEEKY COMMODORE GAMER</div>
-                <div class="raster-subtitle">ANOTHER VISITOR... STAY A WHILE, STAY FOREVER.</div>
-            </div>
-
-            <div class="loading-bars">
-                <div class="loading-row"><div class="loading-fill"></div></div>
-                <div class="loading-row"><div class="loading-fill"></div></div>
-                <div class="loading-row"><div class="loading-fill"></div></div>
-                <div class="loading-row"><div class="loading-fill"></div></div>
-                <div class="loading-row"><div class="loading-fill"></div></div>
-                <div class="loading-row"><div class="loading-fill"></div></div>
-            </div>
-
-            <div class="raster-footer">
-                <div>LOADING CCG MAIN HUB...</div>
-                <div>PRESS &lt;SKIP INTRO&gt; TO ENTER</div>
-            </div>
-
-            <div id="audioHint" class="audio-hint">
-                AUDIO BLOCKED – CLICK TO ENABLE
-            </div>
-        </div>
+        <div id="loader-output"></div>
+        <span id="loader-cursor"></span>
     </div>
+</div>
 
-    <!-- SID speech -->
-    <audio id="introAudio" preload="auto">
-        <source src="resources/audio/c64_speech_stayawhile.mp3" type="audio/mpeg">
-    </audio>
+<div id="loader-crt"></div>
 
-    <script>
-        (function () {
-            const bootLines = [
-                " **** COMMODORE 64 BASIC V2 ****",
-                " 64K RAM SYSTEM  38911 BASIC BYTES FREE",
-                "",
-                "READY.",
-                "",
-                "LOAD\"CHEEKY COMMODORE GAMER\",8,1",
-                "SEARCHING FOR CHEEKY COMMODORE GAMER",
-                "LOADING",
-                "LOADING",
-                "LOADING",
-                "READY.",
-                "RUN",
-                ""
-            ];
+<!-- RASTER BARS -->
+<div id="rasterBars"></div>
 
-            const typingSpeed = 35;   // ms per character
-            const linePause   = 220;  // ms between lines
+<!-- AUDIO -->
+<audio id="introAudio" preload="auto">
+    <source src="resources/audio/c64_speech_stayawhile.mp3" type="audio/mpeg">
+</audio>
 
-            const c64TextEl  = document.getElementById("c64-text");
-            const skipBtn    = document.getElementById("skipIntro");
-            const audioEl    = document.getElementById("introAudio");
-            const audioHint  = document.getElementById("audioHint");
+<script>
+(function(){
 
-            let cancelled       = false;
-            let fallbackTimeout = null;
+    const power     = document.getElementById('power-screen');
+    const loader    = document.getElementById('loader-screen');
+    const skipBtn   = document.getElementById('skip-btn');
+    const output    = document.getElementById('loader-output');
+    const cursor    = document.getElementById('loader-cursor');
+    const audio     = document.getElementById('introAudio');
+    const bars      = document.getElementById('rasterBars');
+    const loaderCRT = document.getElementById('loader-crt');
+    const powerCRT  = document.getElementById('power-crt');
 
-            function typeBoot(lines, lineIdx = 0, charIdx = 0) {
-                if (cancelled) return;
+    /* ==========================
+       SKIP INTRO ALWAYS WORKS
+       ========================== */
+    function goToHub() {
+        try { audio.pause(); } catch(e){}
+        try { audio.currentTime = 0; } catch(e){}
+        window.location.href = "home.html";
+    }
 
-                if (lineIdx >= lines.length) {
-                    startRasterPhase();
-                    return;
+    skipBtn.addEventListener('click', goToHub);
+
+    /* ==========================
+       POWER ON → LOADING
+       ========================== */
+    power.addEventListener('click', () => {
+        power.style.display = 'none';
+        powerCRT.style.display = 'none';
+        loader.style.display = 'flex';
+        runSequence();
+    });
+
+    /* ==========================
+       TEXT SEQUENCE
+       ========================== */
+    const steps = [
+        { text:'LOAD ""', wait:700, audio:true },
+        { text:'PRESS PLAY ON TAPE', wait:700 },
+        { text:'OK', wait:500 },
+        { text:'SEARCHING', wait:600 },
+        { text:'FOUND CHEEKY COMMODORE GAMER', wait:700 },
+        { text:'LOADING', wait:500, bars:true },
+        { text:'ANOTHER VISITOR...', wait:400 },
+        { text:'STAY A WHILE...', wait:400 },
+        { text:'STAY FOREVER!', wait:400 }
+    ];
+
+    /* TYPEWRITER */
+    function typeLine(text, triggerAudio=false) {
+        return new Promise(resolve => {
+            let i = 0;
+            const interval = setInterval(() => {
+                output.textContent += text.charAt(i);
+                i++;
+
+                if (i === text.length && triggerAudio) {
+                    startAudio();
                 }
 
-                const line = lines[lineIdx];
-
-                if (charIdx < line.length) {
-                    c64TextEl.textContent += line.charAt(charIdx);
-                    setTimeout(() => typeBoot(lines, lineIdx, charIdx + 1), typingSpeed);
-                } else {
-                    c64TextEl.textContent += "\n";
-                    setTimeout(() => typeBoot(lines, lineIdx + 1, 0), linePause);
+                if (i >= text.length) {
+                    clearInterval(interval);
+                    output.textContent += '\n';
+                    resolve();
                 }
-            }
+            }, 45);
+        });
+    }
 
-            function startRasterPhase() {
-                document.body.classList.remove("phase-boot");
-                document.body.classList.add("phase-raster");
+    /* AUDIO */
+    function startAudio() {
+        audio.currentTime = 0;
+        audio.muted = true;
 
-                playAudio();
+        audio.play().then(() => {
+            setTimeout(() => { audio.muted = false; }, 120);
+        }).catch(() => {
+            const unlock = () => {
+                audio.muted = false;
+                audio.currentTime = 0;
+                audio.play().catch(()=>{});
+                window.removeEventListener('click', unlock);
+            };
+            window.addEventListener('click', unlock, { once:true });
+        });
+    }
 
-                // Fallback in case audio never ends
-                fallbackTimeout = setTimeout(() => {
-                    goToHome();
-                }, 15000);
-            }
+    /* RASTER + REDIRECT */
+    function startBars() {
+        bars.classList.add('active');
+        loaderCRT.style.opacity = 0;
+        setTimeout(goToHub, 5500);
+    }
 
-            function playAudio() {
-                if (!audioEl) return;
+    /* RUN SEQUENCE */
+    async function runSequence() {
+        output.textContent = "";
 
-                audioEl.currentTime = 0;
-                const p = audioEl.play();
+        for (const step of steps) {
+            await typeLine(step.text, step.audio);
+            if (step.bars) startBars();
+            await new Promise(r => setTimeout(r, step.wait));
+        }
+    }
 
-                if (p && typeof p.then === "function") {
-                    p.then(() => {
-                        // playing OK
-                        if (audioHint) audioHint.classList.remove("visible");
-                    }).catch(() => {
-                        // autoplay blocked
-                        if (audioHint) audioHint.classList.add("visible");
-                    });
-                }
+})();
+</script>
 
-                audioEl.addEventListener("ended", () => {
-                    goToHome();
-                });
-            }
-
-            function goToHome() {
-                if (fallbackTimeout) {
-                    clearTimeout(fallbackTimeout);
-                    fallbackTimeout = null;
-                }
-                window.location.href = "home.html";
-            }
-
-            // SKIP INTRO
-            if (skipBtn) {
-                skipBtn.addEventListener("click", () => {
-                    cancelled = true;
-                    if (audioEl && !audioEl.paused) {
-                        audioEl.pause();
-                    }
-                    goToHome();
-                });
-            }
-
-            // Audio hint click
-            if (audioHint) {
-                audioHint.addEventListener("click", () => {
-                    audioHint.classList.remove("visible");
-                    playAudio();
-                });
-            }
-
-            window.addEventListener("load", () => {
-                typeBoot(bootLines);
-            });
-        })();
-    </script>
 </body>
 </html>
