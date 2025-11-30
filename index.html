@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheeky Commodore Gamer | C64 Loader Intro</title>
 
-    <!-- C64 Font -->
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 
     <style>
@@ -14,7 +13,6 @@
             --c64-light:  #6c5eb5;
             --c64-text:   #b8c76f;
 
-            /* Raster colours */
             --c64-black:  #000000;
             --c64-white:  #ffffff;
             --c64-purple: #cc44cc;
@@ -34,159 +32,190 @@
         html, body {
             margin: 0;
             height: 100%;
-            background: var(--c64-blue);
             font-family: 'VT323', monospace;
             text-transform: uppercase;
             overflow: hidden;
+            background: var(--c64-blue);
         }
 
-        /* ===========================
-           FULLSCREEN INTRO AREA
-           =========================== */
-        #intro-screen {
+        /* -----------------------
+           POWER-ON SCREEN
+           ----------------------- */
+        #power-screen {
             position: fixed;
             inset: 0;
             background: var(--c64-blue);
             display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: center;
+            align-items: center;
             z-index: 9000;
-        }
-
-        .c64-screen {
-            position: relative;
-            background: var(--c64-blue);
-            padding: 16px 28px;
-            width: min(1200px, 96vw);
-            height: min(820px, 92vh);
-            box-sizing: border-box;
-        }
-
-        .c64-line {
             color: var(--c64-light);
-            font-size: 28px;
-            letter-spacing: 1px;
         }
 
-        .c64-loader-output {
-            margin-top: 32px;
-            font-size: 28px;
-            color: var(--c64-light);
-            white-space: pre-wrap;
-            line-height: 1.3;
+        #power-logo {
+            width: 160px;
+            margin-bottom: 25px;
+            image-rendering: pixelated;
         }
 
-        .c64-cursor {
-            display: inline-block;
-            width: 16px;
-            height: 1.4em;
-            background: var(--c64-light);
-            margin-left: 6px;
-            animation: blink-cursor 0.8s steps(1, end) infinite;
+        #power-text {
+            font-size: 34px;
+            letter-spacing: 2px;
+            animation: blink 1.1s steps(1,end) infinite;
         }
 
-        @keyframes blink-cursor {
+        @keyframes blink {
             0%,49% { opacity:1; }
             50%,100% { opacity:0; }
         }
 
-        /* ===========================
-           SKIP BUTTON - ALWAYS ON TOP
-           =========================== */
-        #skip-intro-btn {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background: #880000;
-            color: #fff;
-            border: 2px solid #fff;
-            padding: 10px 20px;
-            font-size: 20px;
-            cursor: pointer;
-            box-shadow: 4px 4px 0 #000;
-            z-index: 999999 !important;
-            pointer-events: auto !important;
-        }
-
-        #skip-intro-btn:hover {
-            background:#fff;
-            color:#880000;
-        }
-
-        /* ===========================
-           CRT SCANLINES (DISABLED WHEN RASTER BARS ACTIVE)
-           =========================== */
-        #crtOverlay {
+        /* Scanlines for power screen */
+        #power-crt {
             position: fixed;
             inset: 0;
             pointer-events: none;
-            z-index: 9500;
+            z-index: 9100;
             background:
-                linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,0.15) 50%),
+                linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,0.22) 50%),
+                linear-gradient(90deg, rgba(255,0,0,0.05), rgba(0,255,0,0.02), rgba(0,0,255,0.05));
+            background-size: 100% 2px, 3px 100%;
+            opacity: 0.5;
+        }
+
+        /* -------------------------
+           SKIP INTRO BUTTON
+           ------------------------- */
+        #skip-btn {
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            z-index: 999999;
+            background: #880000;
+            color: #fff;
+            border: 2px solid #fff;
+            padding: 10px 22px;
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 #000;
+            pointer-events: auto !important;
+        }
+
+        #skip-btn:hover {
+            background: #fff;
+            color:#880000;
+        }
+
+        /* -------------------------
+           C64 LOADING SCREEN
+           ------------------------- */
+        #loader-screen {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: var(--c64-blue);
+            z-index: 9200;
+        }
+
+        .c64-screen {
+            padding: 16px 28px;
+            width: min(1200px, 96vw);
+            height: min(820px, 92vh);
+            box-sizing: border-box;
+            background: var(--c64-blue);
+            color: var(--c64-light);
+        }
+
+        .c64-line {
+            font-size: 28px;
+        }
+
+        #loader-output {
+            margin-top: 32px;
+            font-size: 28px;
+            line-height: 1.3;
+            white-space: pre-wrap;
+        }
+
+        #loader-cursor {
+            display: inline-block;
+            width: 16px;
+            height: 1.4em;
+            background: var(--c64-light);
+            animation: blink 0.8s steps(1,end) infinite;
+            margin-left: 5px;
+        }
+
+        /* Scanlines for loader */
+        #loader-crt {
+            position: fixed;
+            inset: 0;
+            pointer-events:none;
+            z-index: 9300;
+            background:
+                linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,0.17) 50%),
                 linear-gradient(90deg, rgba(255,0,0,0.04), rgba(0,255,0,0.02), rgba(0,0,255,0.04));
             background-size: 100% 2px, 3px 100%;
             opacity: 0.45;
-            transition: opacity 0.15s linear;
+            transition: opacity .2s;
         }
 
-        #crtOverlay.hidden {
-            opacity: 0;
-        }
-
-        /* ===========================
+        /* -------------------------
            FULLSCREEN RASTER BARS
-           =========================== */
+           ------------------------- */
         #rasterBars {
             position: fixed;
             inset: 0;
-            pointer-events: none !important;
             opacity: 0;
-            image-rendering: pixelated;
+            pointer-events: none;
             z-index: 9400;
+            image-rendering: pixelated;
             background:
                 repeating-linear-gradient(
                     to bottom,
-                    var(--c64-blue)   0px,  var(--c64-blue)    8px,
-                    var(--c64-white)  8px,  var(--c64-white)   16px,
-                    var(--c64-purple)16px,  var(--c64-purple)  24px,
-                    var(--c64-yellow)24px,  var(--c64-yellow)  32px,
-                    var(--c64-brown) 32px,  var(--c64-brown)   40px,
-                    var(--c64-green) 40px,  var(--c64-green)   48px,
-                    var(--c64-blue2) 48px,  var(--c64-blue2)   56px,
-                    var(--c64-cyan)  56px,  var(--c64-cyan)    64px,
-                    var(--c64-pink)  64px,  var(--c64-pink)    72px,
-                    var(--c64-red)   72px,  var(--c64-red)     80px,
-                    var(--c64-grey)  80px,  var(--c64-grey)    88px,
-                    var(--c64-teal)  88px,  var(--c64-teal)    96px,
-                    var(--c64-orange)96px,  var(--c64-orange) 104px,
-                    var(--c64-lime) 104px,  var(--c64-lime)   112px
+                    var(--c64-blue)   0px,   var(--c64-blue)    8px,
+                    var(--c64-white)  8px,   var(--c64-white)   16px,
+                    var(--c64-purple)16px,   var(--c64-purple)  24px,
+                    var(--c64-yellow)24px,   var(--c64-yellow)  32px,
+                    var(--c64-brown) 32px,   var(--c64-brown)   40px,
+                    var(--c64-green) 40px,   var(--c64-green)   48px,
+                    var(--c64-blue2) 48px,   var(--c64-blue2)   56px,
+                    var(--c64-cyan)  56px,   var(--c64-cyan)    64px,
+                    var(--c64-pink)  64px,   var(--c64-pink)    72px,
+                    var(--c64-red)   72px,   var(--c64-red)     80px,
+                    var(--c64-grey)  80px,   var(--c64-grey)    88px,
+                    var(--c64-teal)  88px,   var(--c64-teal)    96px,
+                    var(--c64-orange)96px,   var(--c64-orange) 104px,
+                    var(--c64-lime) 104px,   var(--c64-lime)   112px
                 );
         }
 
         #rasterBars.active {
-            opacity: 0.96;
+            opacity: 0.97;
             animation: barscroll 0.8s linear infinite, barjitter 0.06s infinite;
         }
 
         @keyframes barscroll {
-            0%   { background-position: 0 0; }
+            0% { background-position: 0 0; }
             100% { background-position: 0 320px; }
         }
 
         @keyframes barjitter {
-            0%   { transform: translateY(0px); }
-            50%  { transform: translateY(-1px); }
-            100% { transform: translateY(0px); }
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-1px); }
+            100%{ transform: translateY(0px); }
         }
 
-        /* ===========================
-           MAIN SITE PLACEHOLDER
-           =========================== */
+        /* -------------------------
+           MAIN SITE
+           ------------------------- */
         #main-site {
             display: none;
-            height: 100vh;
             background: var(--c64-blue);
             color: var(--c64-text);
+            height: 100vh;
             padding: 40px;
         }
     </style>
@@ -194,73 +223,114 @@
 
 <body>
 
-<div id="crtOverlay"></div>
-<div id="rasterBars"></div>
+<button id="skip-btn">SKIP INTRO</button>
 
-<div id="intro-screen">
+<!-- POWER SCREEN -->
+<div id="power-screen">
+    <img id="power-logo" src="resources/CCGAMER LOGO.png">
+    <div id="power-text">CLICK TO POWER ON</div>
+</div>
+<div id="power-crt"></div>
+
+<!-- LOADER SCREEN -->
+<div id="loader-screen">
     <div class="c64-screen">
         <div class="c64-line">**** COMMODORE 64 BASIC V2 ****</div>
         <div class="c64-line">64K RAM SYSTEM 38911 BASIC BYTES FREE</div>
         <div class="c64-line">&nbsp;</div>
 
-        <div id="c64-loader-output" class="c64-loader-output"></div>
-        <span id="c64-cursor" class="c64-cursor"></span>
+        <div id="loader-output"></div>
+        <span id="loader-cursor"></span>
     </div>
 </div>
+<div id="loader-crt"></div>
 
-<button id="skip-intro-btn">[ ESC ] SKIP INTRO</button>
+<div id="rasterBars"></div>
 
-<audio id="intro-audio" preload="auto">
+<audio id="introAudio" preload="auto">
     <source src="resources/audio/c64_speech_stayawhile.mp3" type="audio/mpeg">
 </audio>
 
+<!-- MAIN SITE -->
 <div id="main-site">
-    <h1>MAIN SITE PLACEHOLDER</h1>
+    <h1>Main site active</h1>
 </div>
 
 <script>
-(function () {
-    const output = document.getElementById('c64-loader-output');
-    const audio  = document.getElementById('intro-audio');
-    const bars   = document.getElementById('rasterBars');
-    const crt    = document.getElementById('crtOverlay');
-    const intro  = document.getElementById('intro-screen');
-    const main   = document.getElementById('main-site');
-    const skip   = document.getElementById('skip-intro-btn');
+(function(){
+
+    const power   = document.getElementById('power-screen');
+    const loader  = document.getElementById('loader-screen');
+    const main    = document.getElementById('main-site');
+
+    const skipBtn = document.getElementById('skip-btn');
+
+    const output  = document.getElementById('loader-output');
+    const cursor  = document.getElementById('loader-cursor');
+
+    const audio   = document.getElementById('introAudio');
+    const bars    = document.getElementById('rasterBars');
+
+    const loaderCRT = document.getElementById('loader-crt');
+    const powerCRT  = document.getElementById('power-crt');
 
     let finished = false;
 
-    /* ===========================
-       Loader sequence
-       =========================== */
-    const lines = [
-        { txt: 'LOAD ""',                       wait: 600, triggerAudio: true },
-        { txt: 'PRESS PLAY ON TAPE',           wait: 600 },
-        { txt: 'OK',                           wait: 500 },
-        { txt: 'SEARCHING',                    wait: 600 },
-        { txt: 'FOUND CHEEKY COMMODORE GAMER', wait: 600 },
-        { txt: 'LOADING',                      wait: 400, bars: true },
-        { txt: 'ANOTHER VISITOR...',           wait: 400 },
-        { txt: 'STAY A WHILE...',              wait: 400 },
-        { txt: 'STAY FOREVER!',                wait: 400 }
+    /* -------------------------
+       POWER ON → START LOADER
+       ------------------------- */
+    power.addEventListener('click', () => {
+        power.style.display = 'none';
+        powerCRT.style.display = 'none';
+
+        loader.style.display = 'flex';
+        runSequence();
+    });
+
+    /* -------------------------
+       SKIP INTRO
+       ------------------------- */
+    skipBtn.addEventListener('click', showMain);
+
+    function showMain() {
+        if (finished) return;
+        finished = true;
+        try { audio.pause(); } catch(e){}
+        
+        power.style.display  = 'none';
+        powerCRT.style.display = 'none';
+        loader.style.display = 'none';
+        bars.classList.remove('active');
+        loaderCRT.style.opacity = 0;
+
+        main.style.display   = 'block';
+        document.body.style.overflow = 'auto';
+    }
+
+    /* -------------------------
+       LOADER STEPS
+       ------------------------- */
+    const steps = [
+        { text:'LOAD ""', wait:600, audio:true },
+        { text:'PRESS PLAY ON TAPE', wait:600 },
+        { text:'OK', wait:500 },
+        { text:'SEARCHING', wait:600 },
+        { text:'FOUND CHEEKY COMMODORE GAMER', wait:600 },
+        { text:'LOADING', wait:400, bars:true },
+        { text:'ANOTHER VISITOR...', wait:400 },
+        { text:'STAY A WHILE...', wait:400 },
+        { text:'STAY FOREVER!', wait:400 }
     ];
 
-    /* ===========================
-       TYPEWRITER WITH AUDIO TRIGGER INSIDE
-       =========================== */
-    function typeLine(text, triggerAudio = false) {
+    function typeLine(text, triggerAudio=false) {
         return new Promise(resolve => {
-            if (text === '') {
-                output.textContent += '\n';
-                return resolve();
-            }
 
             let i = 0;
             const interval = setInterval(() => {
                 output.textContent += text.charAt(i);
                 i++;
 
-                /* 🔥 Audio starts the EXACT MOMENT LOAD "" finishes printing */
+                /* Start sound EXACTLY when LOAD "" finishes typing */
                 if (i === text.length && triggerAudio) {
                     startAudio();
                 }
@@ -274,68 +344,45 @@
         });
     }
 
-    /* ===========================
-       MP3 START
-       =========================== */
     function startAudio() {
-        if (!audio) return;
         audio.currentTime = 0;
         audio.muted = true;
 
         audio.play().then(() => {
             setTimeout(() => { audio.muted = false; }, 100);
         }).catch(() => {
-            // Only click unlock (ESC no longer triggers audio)
             const unlock = () => {
                 audio.muted = false;
                 audio.currentTime = 0;
-                audio.play().catch(() => {});
+                audio.play().catch(()=>{});
                 window.removeEventListener('click', unlock);
             };
-            window.addEventListener('click', unlock, { once: true });
+            window.addEventListener('click', unlock, { once:true });
         });
     }
 
-    /* ===========================
-       RASTER BARS – 3 second duration
-       =========================== */
-    function activateBars() {
-        if (bars) bars.classList.add('active');
-        if (crt)  crt.classList.add('hidden');
+    function startBars() {
+        bars.classList.add('active');
+        loaderCRT.style.opacity = 0;
 
         setTimeout(showMain, 3000);
     }
 
-    /* ===========================
-       FINISH INTRO
-       =========================== */
-    function showMain() {
-        if (finished) return;
-        finished = true;
+    /* -------------------------
+       RUN FULL LOADING SEQUENCE
+       ------------------------- */
+    async function runSequence() {
+        output.textContent = "";
 
-        try { audio.pause(); } catch(e) {}
+        for (const step of steps) {
+            await typeLine(step.text, step.audio);
 
-        intro.style.display = 'none';
-        main.style.display  = 'block';
-        document.body.style.overflow = 'auto';
-    }
-
-    skip.addEventListener('click', showMain);
-
-    /* ===========================
-       RUN FULL INTRO
-       =========================== */
-    async function runIntro() {
-        for (const step of lines) {
-            await typeLine(step.txt, step.triggerAudio);
-
-            if (step.bars) activateBars();
+            if (step.bars) startBars();
 
             await new Promise(r => setTimeout(r, step.wait));
         }
     }
 
-    window.addEventListener('load', runIntro);
 })();
 </script>
 
