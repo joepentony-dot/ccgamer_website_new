@@ -1,71 +1,72 @@
 /* ===========================================================
-   CHEEKY COMMODORE GAMER — HOMEPAGE INTRO CONTROLLER
-   Authentic C64 loading-style raster flicker + SID speech
+   CHEEKY COMMODORE GAMER — EPIC INTRO CONTROLLER
+   Phase 1: Fast fullscreen C64 typing boot
+   Phase 2: Chaotic loading-style raster bars + SID speech
    =========================================================== */
 
 let rasterCanvas, rasterCtx;
 let rasterAnimId = null;
 let introRunning = true;
 
-// Classic-ish C64 palette
+// Rough C64-like palette
 const C64_COLORS = [
-  '#000000', // black
-  '#ffffff', // white
-  '#68372b', // brown
-  '#70a4b2', // light red-ish cyan
-  '#6f3d86', // purple
-  '#588d43', // green
-  '#352879', // dark blue
-  '#b8c76f', // light green
-  '#6f4f25', // dark brown
-  '#433900', // dark grey-ish brown
-  '#9a6759', // light brown
-  '#444444', // dark grey
-  '#6c6c6c', // medium grey
-  '#9ad284', // pale green
-  '#6c5eb5', // light blue
-  '#959595'  // light grey
+  "#000000", // black
+  "#ffffff", // white
+  "#68372b", // brown
+  "#70a4b2", // light cyan
+  "#6f3d86", // purple
+  "#588d43", // green
+  "#352879", // dark blue
+  "#b8c76f", // light green
+  "#6f4f25", // dark brown
+  "#433900", // dark grey-brown
+  "#9a6759", // light brown
+  "#444444", // dark grey
+  "#6c6c6c", // medium grey
+  "#9ad284", // pale green
+  "#6c5eb5", // light blue
+  "#959595"  // light grey
 ];
 
-document.addEventListener('DOMContentLoaded', () => {
-  const overlay = document.getElementById('intro-overlay');
-  const homepage = document.getElementById('homepage-content');
-  const skipBtn = document.getElementById('skip-intro');
-  const audio = document.getElementById('intro-audio');
+document.addEventListener("DOMContentLoaded", () => {
+  const overlay  = document.getElementById("intro-overlay");
+  const homepage = document.getElementById("homepage-content");
+  const skipBtn  = document.getElementById("skip-intro");
+  const audio    = document.getElementById("intro-audio");
 
-  rasterCanvas = document.getElementById('raster-canvas');
+  rasterCanvas = document.getElementById("raster-canvas");
   if (rasterCanvas) {
-    rasterCtx = rasterCanvas.getContext('2d');
+    rasterCtx = rasterCanvas.getContext("2d");
     handleResize();
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
   }
 
   if (homepage) {
-    // Keep homepage hidden until intro finishes
-    homepage.classList.remove('homepage-show');
+    homepage.classList.remove("homepage-show");
   }
 
   if (skipBtn) {
-    skipBtn.addEventListener('click', () => {
+    skipBtn.addEventListener("click", () => {
       endIntro(true);
     });
   }
 
   if (audio) {
-    audio.addEventListener('ended', () => {
+    audio.addEventListener("ended", () => {
       endIntro(false);
     });
   }
 
-  // Phase 1: show boot screen for ~2 seconds
-  setTimeout(() => {
+  // Start fast C64 typing sequence
+  startBootTyping(() => {
+    // After typing completes, slam into raster phase + audio
     if (!introRunning) return;
-    overlay.classList.add('phase-raster');
+    overlay.classList.add("phase-raster");
     startRaster();
     attemptPlayAudio();
-  }, 2200);
+  });
 
-  // Safety timeout: if audio never fires, end intro after 12s
+  // Safety: if something goes wrong, auto-end intro after 12s
   setTimeout(() => {
     if (introRunning) {
       endIntro(false);
@@ -73,11 +74,63 @@ document.addEventListener('DOMContentLoaded', () => {
   }, 12000);
 });
 
+/* ========== C64 BOOT TYPING ========== */
+function startBootTyping(onComplete) {
+  const bootEl = document.getElementById("boot-text");
+  if (!bootEl) {
+    if (onComplete) onComplete();
+    return;
+  }
+
+  const lines = [
+    "**** COMMODORE 64 BASIC V2 ****",
+    " 64K RAM SYSTEM  38911 BASIC BYTES FREE",
+    "",
+    "READY.",
+    'LOAD "CCGAMER",8,1',
+    "SEARCHING FOR CCGAMER",
+    "LOADING",
+    "RUN"
+  ];
+
+  const fullText = lines.join("\n");
+  let index = 0;
+  const totalDuration = 1600; // ~1.6s total (fast boot)
+  const baseDelay = totalDuration / fullText.length;
+
+  function typeStep() {
+    if (!introRunning) return;
+
+    const slice = fullText.slice(0, index + 1);
+    bootEl.textContent = slice;
+
+    index++;
+    if (index < fullText.length) {
+      const jitter = (Math.random() - 0.5) * baseDelay * 0.5;
+      const delay = Math.max(8, baseDelay + jitter);
+      setTimeout(typeStep, delay);
+    } else {
+      // Add READY cursor blink at end for a brief beat
+      const cursor = document.createElement("span");
+      cursor.id = "boot-cursor";
+      cursor.textContent = "_";
+      cursor.classList.add("blink");
+      bootEl.appendChild(cursor);
+
+      setTimeout(() => {
+        if (onComplete) onComplete();
+      }, 250);
+    }
+  }
+
+  typeStep();
+}
+
+/* ========== RASTER CHAOS ========== */
 function handleResize() {
   if (!rasterCanvas) return;
-  const rect = rasterCanvas.getBoundingClientRect();
-  rasterCanvas.width = rect.width;
-  rasterCanvas.height = rect.height;
+  rasterCanvas.width = window.innerWidth;
+  rasterCanvas.height = window.innerHeight;
 }
 
 function startRaster() {
@@ -92,28 +145,28 @@ function drawRasterFrame() {
   const w = rasterCanvas.width;
   const h = rasterCanvas.height;
 
-  // Flickery loading-style stripes
   let y = 0;
   while (y < h) {
-    const barHeight = 3 + Math.floor(Math.random() * 10); // 3–12px
+    // Flickery stripe height 3–14px
+    const barHeight = 3 + Math.floor(Math.random() * 12);
     const color = C64_COLORS[Math.floor(Math.random() * C64_COLORS.length)];
 
     rasterCtx.fillStyle = color;
     rasterCtx.fillRect(0, y, w, barHeight);
 
-    // Occasional thin black divider to mimic CRT noise
-    if (Math.random() < 0.35) {
-      rasterCtx.fillStyle = '#000000';
+    // Thin black "tear" lines
+    if (Math.random() < 0.45) {
+      rasterCtx.fillStyle = "#000000";
       rasterCtx.fillRect(0, y + barHeight - 1, w, 1);
     }
 
     y += barHeight;
   }
 
-  // Slight extra noise overlay
-  if (Math.random() < 0.5) {
+  // Occasionally overlay darker band to mimic unstable loading
+  if (Math.random() < 0.6) {
     rasterCtx.globalAlpha = 0.08;
-    rasterCtx.fillStyle = '#000000';
+    rasterCtx.fillStyle = "#000000";
     rasterCtx.fillRect(0, 0, w, h);
     rasterCtx.globalAlpha = 1.0;
   }
@@ -121,19 +174,21 @@ function drawRasterFrame() {
   rasterAnimId = requestAnimationFrame(drawRasterFrame);
 }
 
+/* ========== AUDIO HANDLING ========== */
 async function attemptPlayAudio() {
-  const audio = document.getElementById('intro-audio');
+  const audio = document.getElementById("intro-audio");
   if (!audio) return;
 
   try {
+    // Tiny "unlock" attempt – some browsers will still block, but we try.
     await audio.play();
   } catch (err) {
-    // Browser blocked autoplay; keep everything visual only
-    console.warn('Intro audio autoplay was blocked by the browser:', err);
-    document.body.classList.add('intro-muted');
+    console.warn("Intro audio autoplay was blocked:", err);
+    document.body.classList.add("intro-muted");
   }
 }
 
+/* ========== END INTRO ========== */
 function endIntro(fromSkip) {
   if (!introRunning) return;
   introRunning = false;
@@ -143,9 +198,9 @@ function endIntro(fromSkip) {
     rasterAnimId = null;
   }
 
-  const overlay = document.getElementById('intro-overlay');
-  const homepage = document.getElementById('homepage-content');
-  const audio = document.getElementById('intro-audio');
+  const overlay  = document.getElementById("intro-overlay");
+  const homepage = document.getElementById("homepage-content");
+  const audio    = document.getElementById("intro-audio");
 
   if (audio && !audio.paused) {
     audio.pause();
@@ -153,8 +208,7 @@ function endIntro(fromSkip) {
   }
 
   if (overlay) {
-    overlay.classList.add('intro-fade-out');
-    // Remove from DOM after fade
+    overlay.classList.add("intro-fade-out");
     setTimeout(() => {
       if (overlay && overlay.parentNode) {
         overlay.parentNode.removeChild(overlay);
@@ -163,6 +217,6 @@ function endIntro(fromSkip) {
   }
 
   if (homepage) {
-    homepage.classList.add('homepage-show');
+    homepage.classList.add("homepage-show");
   }
 }
