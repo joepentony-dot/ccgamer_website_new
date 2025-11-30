@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheeky Commodore Gamer | C64 Loader Intro</title>
-    <meta name="description" content="Cheeky Commodore Gamer - C64 style intro loader with raster bars and SID speech.">
 
     <!-- C64 Font -->
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
@@ -29,9 +28,13 @@
             box-sizing: border-box;
         }
 
-        body {
+        html, body {
             margin: 0;
             padding: 0;
+            height: 100%;
+        }
+
+        body {
             background: var(--c64-black);
             color: var(--c64-light-blue);
             font-family: 'VT323', monospace;
@@ -49,7 +52,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 9999;
+            z-index: 9000;
         }
 
         .c64-wrapper {
@@ -60,18 +63,19 @@
             height: 100vh;
         }
 
-        /* Thin C64-style border */
+        /* Thin C64-style border, big screen */
         .c64-border {
-            padding: 18px; /* thin-ish */
+            padding: 12px;
             background: var(--c64-light-blue);
         }
 
         .c64-screen {
             position: relative;
             background: var(--c64-blue);
-            padding: 16px 24px;
-            width: min(800px, 90vw);
-            height: min(600px, 80vh);
+            padding: 18px 26px;
+            aspect-ratio: 4 / 3;
+            width: min(1200px, 94vw);
+            height: auto;
             overflow: hidden;
             box-sizing: border-box;
         }
@@ -83,21 +87,21 @@
 
         .c64-line {
             color: var(--c64-light-blue);
-            font-size: 22px;
+            font-size: 24px;
             letter-spacing: 1px;
         }
 
         .c64-loader-output {
             margin-top: 8px;
-            font-size: 22px;
+            font-size: 24px;
             color: var(--c64-light-blue);
             white-space: pre-wrap;
         }
 
         .c64-cursor {
             display: inline-block;
-            width: 12px;
-            height: 1.2em;
+            width: 13px;
+            height: 1.3em;
             margin-left: 4px;
             background: var(--c64-light-blue);
             animation: blink-cursor 0.8s steps(1, end) infinite;
@@ -114,7 +118,7 @@
             position: fixed;
             top: 10px;
             right: 10px;
-            z-index: 10000;
+            z-index: 10001;
             background: var(--c64-red);
             color: #fff;
             border: 2px solid #fff;
@@ -131,38 +135,73 @@
             color: var(--c64-red);
         }
 
-        /* RASTER BARS */
+        /* CRT SCANLINES OVERLAY */
+        .crt-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9500;
+            background:
+                linear-gradient(
+                    rgba(18, 16, 16, 0) 50%,
+                    rgba(0, 0, 0, 0.35) 50%
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255, 0, 0, 0.06),
+                    rgba(0, 255, 0, 0.02),
+                    rgba(0, 0, 255, 0.06)
+                );
+            background-size: 100% 2px, 3px 100%;
+            animation: crt-flicker 3s infinite;
+        }
+
+        @keyframes crt-flicker {
+            0%   { opacity: 0.88; }
+            50%  { opacity: 0.96; }
+            100% { opacity: 0.90; }
+        }
+
+        /* RASTER BARS – C64-ish, pixel-style */
         .raster-bars {
             position: absolute;
             inset: 0;
             pointer-events: none;
             opacity: 0;
             mix-blend-mode: screen;
-            background: linear-gradient(to bottom,
-                var(--c64-black) 0%,    var(--c64-black) 7%,
-                var(--c64-white) 7%,    var(--c64-white) 14%,
-                var(--c64-red) 14%,     var(--c64-red) 21%,
-                var(--c64-cyan) 21%,    var(--c64-cyan) 28%,
-                var(--c64-purple) 28%,  var(--c64-purple) 35%,
-                var(--c64-green) 35%,   var(--c64-green) 42%,
-                var(--c64-blue) 42%,    var(--c64-blue) 49%,
-                var(--c64-yellow) 49%,  var(--c64-yellow) 56%,
-                var(--c64-orange) 56%,  var(--c64-orange) 63%,
-                var(--c64-brown) 63%,   var(--c64-brown) 70%,
-                var(--c64-black) 70%,   var(--c64-black) 100%
-            );
-            background-size: 100% 320px;
-            filter: blur(3px);
+            background:
+                repeating-linear-gradient(
+                    to bottom,
+                    var(--c64-black) 0px,
+                    var(--c64-black) 3px,
+                    var(--c64-white) 3px,
+                    var(--c64-white) 6px,
+                    var(--c64-purple) 6px,
+                    var(--c64-purple) 9px,
+                    var(--c64-cyan) 9px,
+                    var(--c64-cyan) 12px,
+                    var(--c64-green) 12px,
+                    var(--c64-green) 15px,
+                    var(--c64-brown) 15px,
+                    var(--c64-brown) 18px,
+                    var(--c64-orange) 18px,
+                    var(--c64-orange) 21px,
+                    var(--c64-blue) 21px,
+                    var(--c64-blue) 24px,
+                    var(--c64-black) 24px,
+                    var(--c64-black) 27px
+                );
+            image-rendering: pixelated;
         }
 
         .raster-bars.active {
-            opacity: 0.9;
-            animation: rasterScroll 2.2s linear infinite, rasterJitter 0.1s infinite;
+            opacity: 0.95;
+            animation: rasterScroll 1.4s linear infinite, rasterJitter 0.08s infinite;
         }
 
         @keyframes rasterScroll {
             0% { background-position: 0 0; }
-            100% { background-position: 0 320px; }
+            100% { background-position: 0 270px; }
         }
 
         @keyframes rasterJitter {
@@ -173,7 +212,7 @@
             100% { transform: translateY(0px); }
         }
 
-        /* Placeholder main site layout (for now) */
+        /* MAIN SITE PLACEHOLDER FOR NOW */
         #main-site {
             display: none;
             min-height: 100vh;
@@ -204,10 +243,11 @@
 
         @media (max-width: 600px) {
             .c64-border {
-                padding: 10px;
+                padding: 8px;
             }
             .c64-screen {
                 padding: 10px 12px;
+                width: 96vw;
             }
             .c64-line,
             .c64-loader-output {
@@ -221,6 +261,9 @@
     </style>
 </head>
 <body>
+
+    <!-- CRT overlay for scanlines / RGB mask -->
+    <div class="crt-overlay"></div>
 
     <!-- ==============================
          C64 INTRO SCREEN
@@ -255,7 +298,7 @@
 
     <!-- ==============================
          MAIN SITE PLACEHOLDER
-         (will replace with full homepage later)
+         (we'll drop the full homepage here later)
     =============================== -->
     <div id="main-site">
         <div class="main-inner">
@@ -271,7 +314,6 @@
     <script>
         (function () {
             const loaderEl    = document.getElementById('c64-loader-output');
-            const cursorEl    = document.getElementById('c64-cursor');
             const rasterBars  = document.getElementById('rasterBars');
             const introAudio  = document.getElementById('intro-audio');
             const introScreen = document.getElementById('intro-screen');
@@ -279,43 +321,69 @@
             const skipBtn     = document.getElementById('skip-intro-btn');
 
             let introFinished = false;
+            let audioUnlocked = false;
 
-            // The sequence of lines to display
+            // Lines to display, in order
             const scriptLines = [
                 { text: 'LOAD ""', delayAfter: 600 },
                 { text: 'PRESS PLAY ON TAPE', delayAfter: 1200, startAudioHere: true },
                 { text: 'OK', delayAfter: 700 },
                 { text: 'SEARCHING', delayAfter: 900 },
                 { text: 'FOUND CHEEKY COMMODORE GAMER', delayAfter: 1100 },
-                { text: 'LOADING', delayAfter: 800, enableRaster: true }
+                { text: 'LOADING', delayAfter: 1000, enableRaster: true },
+                { text: '', delayAfter: 400 }, // blank line
+                { text: 'ANOTHER VISITOR...', delayAfter: 1300 },
+                { text: 'STAY A WHILE...', delayAfter: 1300 },
+                { text: 'STAY FOREVER!', delayAfter: 2000 }
             ];
 
             function typeLine(line, speed) {
                 return new Promise(resolve => {
                     let i = 0;
                     const text = line;
+                    if (text === '') {
+                        // blank line
+                        loaderEl.textContent += '\n';
+                        resolve();
+                        return;
+                    }
                     const interval = setInterval(() => {
                         loaderEl.textContent += text.charAt(i);
                         i++;
                         if (i >= text.length) {
                             clearInterval(interval);
-                            loaderEl.textContent += '\\n';
+                            loaderEl.textContent += '\n';  // REAL newline, not "\n"
                             resolve();
                         }
                     }, speed);
                 });
             }
 
-            function startAudioSafely() {
+            function tryPlayAudio() {
                 if (!introAudio) return;
-                try {
-                    introAudio.currentTime = 0;
-                    introAudio.play().catch(() => {
-                        // If autoplay is blocked, we just don't show a warning.
-                    });
-                } catch (e) {
-                    // ignore
-                }
+                introAudio.currentTime = 0;
+                // start muted first, then unmute to satisfy some autoplay rules
+                introAudio.muted = true;
+                introAudio.play().then(() => {
+                    // small delay then unmute
+                    setTimeout(() => {
+                        introAudio.muted = false;
+                    }, 100);
+                    audioUnlocked = true;
+                }).catch(() => {
+                    // Autoplay blocked: wait for first user interaction
+                    const unlock = () => {
+                        if (audioUnlocked) return;
+                        audioUnlocked = true;
+                        introAudio.currentTime = 0;
+                        introAudio.muted = false;
+                        introAudio.play().catch(() => {});
+                        window.removeEventListener('click', unlock);
+                        window.removeEventListener('keydown', unlock);
+                    };
+                    window.addEventListener('click', unlock, { once: true });
+                    window.addEventListener('keydown', unlock, { once: true });
+                });
             }
 
             function stopAudio() {
@@ -323,9 +391,7 @@
                 try {
                     introAudio.pause();
                     introAudio.currentTime = 0;
-                } catch (e) {
-                    // ignore
-                }
+                } catch (e) {}
             }
 
             function showRasterBars() {
@@ -339,14 +405,11 @@
             function finishIntro() {
                 if (introFinished) return;
                 introFinished = true;
-
                 stopAudio();
                 hideRasterBars();
 
                 if (introScreen) introScreen.style.display = 'none';
                 if (mainSite) mainSite.style.display = 'block';
-
-                // Allow scrolling on main site if it grows
                 document.body.style.overflow = 'auto';
             }
 
@@ -356,15 +419,13 @@
                     return;
                 }
 
-                // Step through script lines
                 for (let i = 0; i < scriptLines.length; i++) {
                     const step = scriptLines[i];
                     await typeLine(step.text, 55);
 
                     if (step.startAudioHere) {
-                        startAudioSafely();
+                        tryPlayAudio();
                     }
-
                     if (step.enableRaster) {
                         showRasterBars();
                     }
@@ -373,30 +434,15 @@
                     await new Promise(res => setTimeout(res, step.delayAfter));
                 }
 
-                // After lines complete, wait for audio end or timeout
-                const audioTimeout = 9000;
-                let resolved = false;
-
-                function endHandler() {
-                    if (resolved) return;
-                    resolved = true;
-                    introAudio && introAudio.removeEventListener('ended', endHandler);
-                    finishIntro();
-                }
-
-                if (introAudio) {
-                    introAudio.addEventListener('ended', endHandler);
-                    setTimeout(endHandler, audioTimeout);
-                } else {
-                    setTimeout(finishIntro, audioTimeout);
-                }
+                // Let the final line hang for a bit, then finish
+                setTimeout(finishIntro, 1500);
             }
 
             skipBtn.addEventListener('click', function () {
                 finishIntro();
             });
 
-            // Start intro once page is loaded
+            // Kick off intro when page has loaded
             window.addEventListener('load', runIntro);
         })();
     </script>
