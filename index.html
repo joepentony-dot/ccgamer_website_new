@@ -37,7 +37,7 @@
       justify-content: stretch;
       z-index: 9999;
       opacity: 1;
-      transition: opacity 0.8s ease-out;
+      transition: opacity 0.4s ease-out; /* fast, premium fade */
     }
 
     #intro-overlay.intro-fade-out {
@@ -73,7 +73,7 @@
           transparent 2px,
           transparent 3px
         );
-      opacity: 0.2;
+      opacity: 0.18;
       mix-blend-mode: multiply;
     }
 
@@ -88,7 +88,6 @@
       width: 0.6em;
     }
 
-    /* Blinking READY cursor after typing */
     .blink {
       animation: blink 0.8s steps(1, start) infinite;
     }
@@ -123,7 +122,7 @@
       display: block;
     }
 
-    /* Skip Intro button – only thing to click */
+    /* Skip Intro button – the ONLY thing to click */
     #skip-intro {
       position: fixed;
       right: 20px;
@@ -132,39 +131,23 @@
       background: #0040aa;
       color: #fdfdfd;
       border: 2px solid #9fdcff;
-      padding: 6px 16px;
+      padding: 8px 18px;
       font-family: "VT323", "Courier New", monospace;
-      font-size: 18px;
+      font-size: 20px;
       text-transform: uppercase;
       cursor: pointer;
-      box-shadow: 0 0 12px rgba(0, 153, 255, 0.8);
+      box-shadow: 0 0 14px rgba(0, 153, 255, 0.9);
     }
 
     #skip-intro:hover {
       background: #0060ff;
     }
 
-    #audio-note {
-      position: fixed;
-      left: 20px;
-      bottom: 24px;
-      z-index: 10000;
-      font-size: 12px;
-      color: #9fdcff;
-      opacity: 0;
-      transition: opacity 0.3s ease-out;
-      max-width: 40vw;
-    }
-
-    body.intro-muted #audio-note {
-      opacity: 1;
-    }
-
     /* Homepage reveal */
     #homepage-content {
       min-height: 100vh;
       opacity: 0;
-      transition: opacity 0.8s ease-in;
+      transition: opacity 0.4s ease-in;
     }
 
     #homepage-content.homepage-show {
@@ -178,11 +161,7 @@
       }
       #skip-intro {
         font-size: 16px;
-        padding: 4px 12px;
-      }
-      #audio-note {
-        font-size: 10px;
-        max-width: 60vw;
+        padding: 6px 14px;
       }
     }
   </style>
@@ -196,13 +175,14 @@
       <pre id="boot-text"></pre>
       <canvas id="raster-canvas"></canvas>
     </div>
-    <button id="skip-intro">SKIP INTRO</button>
-    <div id="audio-note">Intro speech may be muted by your browser’s autoplay rules.</div>
 
-    <!-- SID speech -->
+    <!-- SID speech (HTML audio element) -->
     <audio id="intro-audio" preload="auto">
       <source src="resources/audio/c64_speech_stayawhile.mp3" type="audio/mpeg">
     </audio>
+
+    <!-- Only interactive element -->
+    <button id="skip-intro">SKIP INTRO</button>
   </div>
 
   <!-- ==============================
