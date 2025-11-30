@@ -20,13 +20,13 @@ html, body {
 }
 
 /* ============================================================
-   1. AUTHENTIC C64 BOOT SCREEN WITH HARDWARE BORDER
+   1. AUTHENTIC C64 BOOT SCREEN WITH BORDER + CORRECT COLORS
    ============================================================ */
 
 #c64-wrapper {
     position: fixed;
     inset: 0;
-    background: #6FC0FF; /* C64 cyan border */
+    background: #6f8cff; /* softer cyan-ish border, like real C64 */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -35,8 +35,8 @@ html, body {
 #c64-screen {
     width: 80%;
     height: 80%;
-    background: #0000A8; /* C64 screen blue */
-    color: #D0D0D0;       /* C64 light grey text */
+    background: #3b3bff; /* lighter C64 blue */
+    color: #f3f3ff;       /* near-white C64 text */
     padding: 40px;
     font-size: 28px;
     line-height: 32px;
@@ -48,16 +48,16 @@ html, body {
 .cursor {
     display: inline-block;
     width: 14px;
-    background: #D0D0D0;
+    background: #f3f3ff;
     animation: blink 0.9s infinite;
 }
 @keyframes blink {
-    0%, 50% { background: #D0D0D0; }
+    0%, 50% { background: #f3f3ff; }
     51%, 100% { background: transparent; }
 }
 
 /* ============================================================
-   2. FULLSCREEN OCEAN LOADER RASTER (SUBTLE)
+   2. FULLSCREEN OCEAN-STYLE RASTER
    ============================================================ */
 
 #raster-screen {
@@ -95,7 +95,7 @@ html, body {
     opacity: 0;
     transition: opacity 1s ease-in-out;
 
-    /* Ocean Loader subtle drift */
+    /* Ocean Loader subtle drift + shimmer */
     animation:
         drift 0.8s infinite alternate ease-in-out,
         shimmer 0.13s infinite steps(2);
@@ -113,7 +113,7 @@ html, body {
 }
 
 /* ============================================================
-   3. OVERLAY TEXT (SUBTLE + COOL AS FUCK)
+   3. OVERLAY TEXT
    ============================================================ */
 
 #intro-text {
@@ -251,12 +251,27 @@ document.addEventListener("DOMContentLoaded", () => {
         /* Fade in bars */
         setTimeout(() => rasterBars.style.opacity = 1, 100);
 
-        /* Play MP3 — guaranteed method */
+        /* Try autoplay muted first, then unmute */
         setTimeout(() => {
             introText.style.opacity = 1;
-            audio.muted = false;
-            audio.play().catch(()=>{});
+
+            const playPromise = audio.play(); // still muted here
+
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    // Once it's actually playing silently, unmute
+                    setTimeout(() => { audio.muted = false; }, 100);
+                }).catch(() => {
+                    // Autoplay blocked: require first click to start
+                    document.addEventListener('click', resumeAudioOnce, { once: true });
+                });
+            }
         }, 400);
+    }
+
+    function resumeAudioOnce() {
+        audio.muted = false;
+        audio.play().catch(() => {});
     }
 
     /* End when MP3 finishes */
