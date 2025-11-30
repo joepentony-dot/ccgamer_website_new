@@ -66,7 +66,7 @@
         }
 
         .c64-loader-output {
-            margin-top: 32px;  /* lower the text area */
+            margin-top: 32px;  /* lowered text block */
             font-size: 28px;
             color: var(--c64-light);
             white-space: pre-wrap;
@@ -107,7 +107,7 @@
             color:#880000;
         }
 
-        /* CRT SCANLINES (ONLY WHEN NO RASTER BARS) */
+        /* CRT SCANLINES (off when raster bars active) */
         #crtOverlay {
             position: fixed;
             inset: 0;
@@ -128,55 +128,52 @@
             opacity: 0.45;
             transition: opacity 0.15s linear;
         }
-
         #crtOverlay.hidden {
-            opacity: 0; /* off when raster bars active */
+            opacity: 0;
         }
 
-        /* RASTER BARS — repeating pattern inspired by your image */
+        /* FULL-SCREEN RASTER BARS — THICKER, REPEATING PATTERN */
         #rasterBars {
-            position: absolute;
+            position: fixed;
             inset: 0;
             pointer-events: none;
             opacity: 0;
             image-rendering: pixelated;
+            z-index: 9400;
             background:
                 repeating-linear-gradient(
                     to bottom,
-                    var(--c64-blue)   0px,  var(--c64-blue)    4px,
-                    var(--c64-white)  4px,  var(--c64-white)   8px,
-                    var(--c64-purple) 8px,  var(--c64-purple)  12px,
-                    var(--c64-yellow) 12px, var(--c64-yellow)  16px,
-                    var(--c64-brown)  16px, var(--c64-brown)   20px,
-                    var(--c64-green)  20px, var(--c64-green)   24px,
-                    var(--c64-blue2)  24px, var(--c64-blue2)   28px,
-                    var(--c64-cyan)   28px, var(--c64-cyan)    32px,
-                    var(--c64-pink)   32px, var(--c64-pink)    36px,
-                    var(--c64-red)    36px, var(--c64-red)     40px,
-                    var(--c64-grey)   40px, var(--c64-grey)    44px,
-                    var(--c64-teal)   44px, var(--c64-teal)    48px,
-                    var(--c64-orange) 48px, var(--c64-orange)  52px,
-                    var(--c64-lime)   52px, var(--c64-lime)    56px
+                    var(--c64-blue)   0px,  var(--c64-blue)    8px,
+                    var(--c64-white)  8px,  var(--c64-white)   16px,
+                    var(--c64-purple)16px,  var(--c64-purple)  24px,
+                    var(--c64-yellow)24px,  var(--c64-yellow)  32px,
+                    var(--c64-brown) 32px,  var(--c64-brown)   40px,
+                    var(--c64-green) 40px,  var(--c64-green)   48px,
+                    var(--c64-blue2) 48px,  var(--c64-blue2)   56px,
+                    var(--c64-cyan)  56px,  var(--c64-cyan)    64px,
+                    var(--c64-pink)  64px,  var(--c64-pink)    72px,
+                    var(--c64-red)   72px,  var(--c64-red)     80px,
+                    var(--c64-grey)  80px,  var(--c64-grey)    88px,
+                    var(--c64-teal)  88px,  var(--c64-teal)    96px,
+                    var(--c64-orange)96px,  var(--c64-orange) 104px,
+                    var(--c64-lime) 104px,  var(--c64-lime)   112px
                 );
         }
-
         #rasterBars.active {
             opacity: 0.96;
             animation: barscroll 0.8s linear infinite, barjitter 0.06s infinite;
         }
-
         @keyframes barscroll {
             0%   { background-position: 0 0; }
             100% { background-position: 0 320px; }
         }
-
         @keyframes barjitter {
             0%   { transform: translateY(0px); }
             50%  { transform: translateY(-1px); }
             100% { transform: translateY(0px); }
         }
 
-        /* MAIN SITE PLACEHOLDER (to be replaced later) */
+        /* MAIN SITE PLACEHOLDER */
         #main-site {
             display: none;
             height: 100vh;
@@ -206,6 +203,7 @@
 <body>
 
 <div id="crtOverlay"></div>
+<div id="rasterBars"></div>
 
 <div id="intro-screen">
     <div class="c64-screen">
@@ -215,8 +213,6 @@
 
         <div id="c64-loader-output" class="c64-loader-output"></div>
         <span id="c64-cursor" class="c64-cursor"></span>
-
-        <div id="rasterBars"></div>
     </div>
 </div>
 
@@ -234,7 +230,6 @@
 <script>
 (function () {
     const output = document.getElementById('c64-loader-output');
-    const cursor = document.getElementById('c64-cursor');
     const audio  = document.getElementById('intro-audio');
     const bars   = document.getElementById('rasterBars');
     const crt    = document.getElementById('crtOverlay');
@@ -245,16 +240,15 @@
     let finished = false;
 
     const lines = [
-        { txt: 'LOAD ""',                        wait: 700,  audio: true }, // audio now starts here
-        { txt: 'PRESS PLAY ON TAPE',            wait: 1000 },
-        { txt: 'OK',                            wait: 700 },
-        { txt: 'SEARCHING',                     wait: 900 },
-        { txt: 'FOUND CHEEKY COMMODORE GAMER',  wait: 1000 },
-        { txt: 'LOADING',                       wait: 800,  bars: true },
-        { txt: '',                              wait: 300 },
-        { txt: 'ANOTHER VISITOR...',            wait: 1100 },
-        { txt: 'STAY A WHILE...',               wait: 1100 },
-        { txt: 'STAY FOREVER!',                 wait: 1600 }
+        { txt: 'LOAD ""',                       wait: 600, audio: true }, // MP3 starts here
+        { txt: 'PRESS PLAY ON TAPE',           wait: 600 },
+        { txt: 'OK',                           wait: 500 },
+        { txt: 'SEARCHING',                    wait: 600 },
+        { txt: 'FOUND CHEEKY COMMODORE GAMER', wait: 600 },
+        { txt: 'LOADING',                      wait: 400, bars: true },
+        { txt: 'ANOTHER VISITOR...',           wait: 400 },
+        { txt: 'STAY A WHILE...',              wait: 400 },
+        { txt: 'STAY FOREVER!',                wait: 400 }
     ];
 
     function typeLine(text) {
@@ -284,25 +278,27 @@
         audio.play().then(() => {
             setTimeout(() => { audio.muted = false; }, 100);
         }).catch(() => {
-            // Autoplay blocked: start on first click or key press
+            // Autoplay blocked: only start on first CLICK (not ESC key)
             const unlock = () => {
                 audio.muted = false;
                 audio.currentTime = 0;
                 audio.play().catch(() => {});
                 window.removeEventListener('click', unlock);
-                window.removeEventListener('keydown', unlock);
             };
             window.addEventListener('click', unlock, { once: true });
-            window.addEventListener('keydown', unlock, { once: true });
         });
-
-        // Hard fallback: ensure we continue even if audio never fires "ended"
-        setTimeout(showMain, 9500); // ~9.5s safety
+        // Note: no timer here; main-page timing is controlled by raster bars
     }
 
     function activateBars() {
-        if (bars) bars.classList.add('active');
-        if (crt)  crt.classList.add('hidden');  // turn OFF scanlines while bars active
+        if (bars) {
+            bars.classList.add('active');
+        }
+        if (crt) {
+            crt.classList.add('hidden'); // hide scanlines for clean bar view
+        }
+        // After 3 seconds of raster bars, go to main page
+        setTimeout(showMain, 3000);
     }
 
     function showMain() {
@@ -327,9 +323,7 @@
 
             await new Promise(r => setTimeout(r, step.wait));
         }
-
-        // Extra short delay for final line then move on
-        setTimeout(showMain, 600);
+        // No extra delay; raster-bar timer handles exit
     }
 
     window.addEventListener('load', runIntro);
