@@ -15,54 +15,68 @@
         overflow: hidden;
     }
 
+    /* LOADING SCREEN */
+    #loading-screen {
+        position: fixed;
+        inset: 0;
+        background: black;
+        color: #00eaff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 32px;
+        z-index: 99999;
+    }
+
+    /* RASTER BAR INTRO */
     #intro-screen {
         position: fixed;
         inset: 0;
         background: black;
-        display: flex;
+        display: none;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
-        flex-direction: column;
-        z-index: 9999;
-    }
-
-    #scroll-text {
-        font-size: 32px;
-        text-align: center;
-        margin-bottom: 40px;
-        opacity: 0;
-        transition: opacity 1s ease-in-out;
+        z-index: 99998;
     }
 
     #raster-bars {
         width: 100%;
-        height: 150px;
+        height: 250px;
         background: linear-gradient(
-            to bottom,
             red, yellow, green, cyan, blue, magenta, red
         );
-        animation: wobble 1.2s infinite;
+        animation: wobble 1s infinite ease-in-out;
         opacity: 0;
         transition: opacity 1s ease-in-out;
     }
 
     @keyframes wobble {
         0% { transform: translateY(0); }
-        50% { transform: translateY(10px); }
+        50% { transform: translateY(20px); }
         100% { transform: translateY(0); }
+    }
+
+    #intro-text {
+        margin-top: 40px;
+        font-size: 38px;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
     }
 
     #skip-intro {
         margin-top: 40px;
-        padding: 10px 20px;
+        padding: 10px 25px;
         background: #00eaff;
         border: none;
-        color: black;
-        font-size: 20px;
+        font-size: 22px;
         cursor: pointer;
         border-radius: 4px;
+        color: black;
     }
 
+    /* MAIN SITE */
     #main-site {
         display: none;
         padding: 20px;
@@ -72,72 +86,76 @@
 
 <body>
 
-<!-- 🔊 SID SPEECH -->
+<!-- SID SPEECH -->
 <audio id="sidSpeech" preload="auto">
     <source src="resources/audio/c64_speech_stayawhile.mp3" type="audio/mpeg">
 </audio>
 
-<!-- ⭐ INTRO SCREEN -->
+<!-- SCREEN 1: LOADING -->
+<div id="loading-screen">LOADING…</div>
+
+<!-- SCREEN 2: RASTER BAR INTRO -->
 <div id="intro-screen">
-    <div id="scroll-text">ANOTHER VISITOR...</div>
     <div id="raster-bars"></div>
+    <div id="intro-text">ANOTHER VISITOR… STAY A WHILE… STAY FOREVER!</div>
     <button id="skip-intro">SKIP INTRO</button>
 </div>
 
-<!-- ⭐ YOUR MAIN SITE CONTENT (TEMP PLACEHOLDER) -->
+<!-- YOUR REAL HOMEPAGE WILL LOAD HERE -->
 <div id="main-site">
+    <!-- Replace this with your real homepage content -->
     <h1>WELCOME TO CHEEKY COMMODORE GAMER</h1>
-    <p>Main site will go here after intro.</p>
 </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    const audio = document.getElementById("sidSpeech");
+
+    const loading = document.getElementById("loading-screen");
     const intro = document.getElementById("intro-screen");
     const main = document.getElementById("main-site");
-    const scrollText = document.getElementById("scroll-text");
-    const rasterBars = document.getElementById("raster-bars");
+    const bars = document.getElementById("raster-bars");
+    const text = document.getElementById("intro-text");
     const skip = document.getElementById("skip-intro");
+    const audio = document.getElementById("sidSpeech");
 
-    // ⭐ Start intro sequence
-    function startIntro() {
-        // Reveal text
+    /* STEP 1 — SHOW LOADING */
+    setTimeout(() => {
+        loading.style.display = "none";
+        intro.style.display = "flex";
+
+        /* Fade in raster bars */
         setTimeout(() => {
-            scrollText.style.opacity = 1;
-        }, 200);
+            bars.style.opacity = 1;
+        }, 300);
 
-        // Play the SID speech EXACTLY NOW
-        audio.volume = 1.0;
-        audio.play().catch(() => {
-            console.warn("Autoplay blocked — will start after first click.");
-        });
-
-        // Reveal raster bars
+        /* Fade in intro text + PLAY AUDIO NOW */
         setTimeout(() => {
-            rasterBars.style.opacity = 1;
+            text.style.opacity = 1;
+            audio.volume = 1.0;
+            audio.play().catch(() => {
+                console.warn("Autoplay blocked. Will play on first click.");
+            });
         }, 1200);
 
-        // Automatically end intro when MP3 finishes
-        audio.onended = () => {
-            endIntro();
-        };
-    }
+    }, 1500);
 
-    // ⭐ End intro → load site
-    function endIntro() {
-        intro.style.display = "none";
-        main.style.display = "block";
-    }
+    /* STEP 2 — WHEN AUDIO ENDS, GO TO MAIN SITE */
+    audio.onended = () => {
+        endIntro();
+    };
 
-    // ⭐ Skip button immediately stops audio + loads site
+    /* STEP 3 — SKIP BUTTON IMMEDIATELY CANCELS EVERYTHING */
     skip.addEventListener("click", () => {
         audio.pause();
         audio.currentTime = 0;
         endIntro();
     });
 
-    // ⭐ Start everything instantly
-    startIntro();
+    function endIntro() {
+        intro.style.display = "none";
+        main.style.display = "block";
+    }
+
 });
 </script>
 
