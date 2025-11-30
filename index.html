@@ -3,132 +3,264 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cheeky Commodore Gamer | Home</title>
+  <title>Cheeky Commodore Gamer</title>
 
-  <!-- Core styles -->
+  <!-- Global site styles -->
   <link rel="stylesheet" href="css/engine.css">
   <link rel="stylesheet" href="resources/css/main.css">
 
-  <!-- Core scripts -->
-  <script defer src="js/engine.js"></script>
-  <script defer src="js/homepage-loader.js"></script>
+  <style>
+    /* ===============================
+       C64 INTRO OVERLAY
+       =============================== */
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #000;
+    }
+
+    body {
+      font-family: "VT323", "Courier New", monospace;
+    }
+
+    /* Fullscreen overlay */
+    #intro-overlay {
+      position: fixed;
+      inset: 0;
+      background: #000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 0.8s ease-out;
+    }
+
+    #intro-overlay.intro-fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .intro-inner {
+      width: min(960px, 100vw);
+      height: min(540px, 100vh);
+      padding: 16px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* C64 frame */
+    .c64-frame {
+      flex: 1;
+      background: #000000;
+      border: 6px solid #ffffff;
+      box-shadow: 0 0 30px rgba(255,255,255,0.25);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Boot screen text (top phase) */
+    #boot-screen {
+      position: absolute;
+      inset: 0;
+      padding: 12px 16px;
+      box-sizing: border-box;
+      background: #2b2bcb; /* C64 blue-ish */
+      color: #fefefe;
+      font-size: 16px;
+      line-height: 1.4;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 6px;
+    }
+
+    #boot-screen .title {
+      margin-bottom: 8px;
+    }
+
+    #boot-screen .status {
+      margin-top: 10px;
+    }
+
+    #boot-screen .scroll {
+      margin-top: auto;
+      white-space: nowrap;
+      overflow: hidden;
+      border-top: 1px solid rgba(255,255,255,0.3);
+      padding-top: 6px;
+      font-size: 14px;
+    }
+
+    /* Horizontal scrolling C64 text */
+    #boot-screen .scroll span {
+      display: inline-block;
+      padding-left: 100%;
+      animation: c64-scroll 20s linear infinite;
+    }
+
+    @keyframes c64-scroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* Raster canvas (second phase) */
+    #raster-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+      display: none; /* shown when phase switches */
+    }
+
+    #intro-overlay.phase-raster #boot-screen {
+      opacity: 0;
+      transition: opacity 0.5s ease-out;
+    }
+
+    #intro-overlay.phase-raster #raster-canvas {
+      display: block;
+    }
+
+    /* Subtle CRT feel */
+    .c64-frame::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(0,0,0,0.15) 0px,
+          rgba(0,0,0,0.15) 1px,
+          transparent 2px,
+          transparent 3px
+        );
+      mix-blend-mode: multiply;
+    }
+
+    /* Bottom bar with skip + info */
+    .intro-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      color: #9fdcff;
+    }
+
+    #skip-intro {
+      background: #0033aa;
+      color: #fdfdfd;
+      border: 2px solid #9fdcff;
+      padding: 4px 12px;
+      font-family: "VT323", "Courier New", monospace;
+      font-size: 16px;
+      cursor: pointer;
+      text-transform: uppercase;
+      box-shadow: 0 0 10px rgba(0, 153, 255, 0.6);
+    }
+
+    #skip-intro:hover {
+      background: #0055ff;
+    }
+
+    #audio-warning {
+      opacity: 0;
+      transition: opacity 0.4s ease-out;
+    }
+
+    body.intro-muted #audio-warning {
+      opacity: 1;
+    }
+
+    /* Homepage fade-in handling */
+    #homepage-content {
+      min-height: 100vh;
+      opacity: 0;
+      transition: opacity 0.8s ease-in;
+    }
+
+    #homepage-content.homepage-show {
+      opacity: 1;
+    }
+
+    @media (max-width: 600px) {
+      .intro-inner {
+        padding: 8px;
+      }
+      #boot-screen {
+        font-size: 12px;
+      }
+      #skip-intro {
+        font-size: 14px;
+      }
+    }
+  </style>
 </head>
-
-<body class="ccg-body ccg-theme-c64 intro-active">
-
-  <!-- ===========================================================
-       EPIC INTRO OVERLAY (BOOT + RASTER + AUDIO)
-  ============================================================ -->
+<body>
+  <!-- ==============================
+       C64 INTRO OVERLAY
+       ============================== -->
   <div id="intro-overlay">
-    <!-- Phase 1: C64 Boot Screen -->
-    <div id="boot-phase" class="intro-phase">
-      <div class="boot-frame">
-        <pre id="boot-text" class="boot-text"></pre>
+    <div class="intro-inner">
+      <div class="c64-frame">
+        <div id="boot-screen">
+          <div class="title">**** CHEEKY COMMODORE GAMER ****</div>
+          <div>64K RAM SYSTEM  38911 BASIC BYTES FREE</div>
+          <div>READY.</div>
+          <div class="status">LOAD "CCGAMER",8,1</div>
+          <div>SEARCHING FOR CCGAMER</div>
+          <div>LOADING</div>
+          <div>RUN</div>
+
+          <div class="scroll">
+            <span>
+              ANOTHER VISITOR... STAY A WHILE, STAY FOREVER! &nbsp; • &nbsp;
+              WELCOME TO THE CHEEKY COMMODORE GAMER ARCHIVE • C64 • AMIGA • SIDS •
+              QUIZZES • LIVESTREAMS • BIG THUMBS UP GAMES 😇🕹️👌 &nbsp; • &nbsp;
+            </span>
+          </div>
+        </div>
+
+        <!-- Flickering raster canvas -->
+        <canvas id="raster-canvas"></canvas>
       </div>
+
+      <div class="intro-bottom">
+        <div id="audio-warning">Your browser may have muted the intro speech.</div>
+        <button id="skip-intro">SKIP INTRO</button>
+      </div>
+
+      <!-- SID speech -->
+      <audio id="intro-audio" preload="auto">
+        <source src="resources/audio/c64_speech_stayawhile.mp3" type="audio/mpeg">
+      </audio>
     </div>
-
-    <!-- Phase 2: Raster Bars + Speech -->
-    <div id="raster-phase" class="intro-phase hidden">
-      <div class="raster-bars">
-        <div class="raster-bar"></div>
-        <div class="raster-bar"></div>
-        <div class="raster-bar"></div>
-        <div class="raster-bar"></div>
-        <div class="raster-bar"></div>
-        <div class="raster-bar"></div>
-        <div class="raster-bar"></div>
-        <div class="raster-bar"></div>
-      </div>
-
-      <div class="intro-overlay-content">
-        <h1 class="intro-main-line">ANOTHER VISITOR...</h1>
-        <h2 class="intro-sub-line">STAY A WHILE...</h2>
-        <h2 class="intro-sub-line">STAY FOREVER.</h2>
-
-        <button id="enable-sound" class="intro-btn secondary hidden">
-          Enable Sound
-        </button>
-      </div>
-
-      <button id="skip-intro" class="intro-btn primary">
-        Skip Intro
-      </button>
-    </div>
-
-    <!-- Audio -->
-    <audio id="intro-audio"
-           src="resources/audio/c64_speech_stayawhile.mp3"
-           preload="auto"></audio>
   </div>
 
-  <!-- ===========================================================
-       GLOBAL HEADER
-  ============================================================ -->
-  <header class="ccg-header">
-    <div class="ccg-header-inner">
-      <a href="index.html" class="ccg-logo-link">CHEEKY</a>
-      <nav class="ccg-nav">
-        <a href="complete-index.html">Complete Index</a>
-        <a href="quiz/quiz.html">Quiz</a>
-        <a href="about.html">About</a>
-        <a href="contact.html">Contact</a>
-      </nav>
-    </div>
-  </header>
+  <!-- ==============================
+       MAIN HOMEPAGE CONTENT
+       ============================== -->
+  <div id="homepage-content">
+    <!-- BEGIN YOUR EXISTING HOMEPAGE CONTENT -->
+    <!-- Replace this block with your real homepage layout if you already have one -->
 
-  <!-- ===========================================================
-       MAIN HOMEPAGE CONTENT (NO GENRES HERE)
-  ============================================================ -->
-  <main class="ccg-main" id="homepage-main">
-    <section class="home-hero">
-      <div class="home-hero-inner">
-        <h1 class="home-title">Cheeky Commodore Gamer</h1>
-        <p class="home-tagline">
-          C64 and Amiga classics, deep dives, SID chip worship and curated retro goodness.
-        </p>
-        <div class="home-cta-row">
-          <a class="btn-cta" href="complete-index.html">Browse Complete Index</a>
-          <a class="btn-ghost" href="quiz/quiz.html">Take the C64 Quiz</a>
-        </div>
-      </div>
-    </section>
+    <main class="ccg-home">
+      <section class="hero">
+        <h1>Cheeky Commodore Gamer</h1>
+        <p>Curated C64 &amp; Amiga goodness, quizzes, livestreams, SID bangers and more.</p>
+      </section>
+      <!-- etc… -->
+    </main>
 
-    <section class="home-panels">
-      <div class="home-panel">
-        <h2>Featured Picks</h2>
-        <p>
-          Hand-picked standouts from the archive — the games that really earned a big thumbs up.
-        </p>
-        <a href="games/genres/top-picks.html" class="panel-link">View Top Picks →</a>
-      </div>
+    <!-- END YOUR EXISTING HOMEPAGE CONTENT -->
+  </div>
 
-      <div class="home-panel">
-        <h2>Explore by Genre</h2>
-        <p>
-          Fancy some arcade blasts, horror chills or adventure epics? Jump into the genre hub.
-        </p>
-        <a href="complete-index.html" class="panel-link">Open Genre & Game Index →</a>
-      </div>
-
-      <div class="home-panel">
-        <h2>Manuals & Extras</h2>
-        <p>
-          In-game scans, manuals and bits of retro paperwork to complete the experience.
-        </p>
-        <a href="viewer/manual.html" class="panel-link">Open Manual Viewer →</a>
-      </div>
-    </section>
-  </main>
-
-  <!-- ===========================================================
-       FOOTER
-  ============================================================ -->
-  <footer class="ccg-footer">
-    <p>Cheeky Commodore Gamer © 2025</p>
-    <p class="intro-replay">
-      <button id="replay-intro" type="button">Replay Intro</button>
-    </p>
-  </footer>
-
+  <script src="js/homepage-loader.js"></script>
 </body>
 </html>
