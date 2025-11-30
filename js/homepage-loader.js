@@ -2,13 +2,14 @@
    CHEEKY COMMODORE GAMER — EPIC INTRO CONTROLLER
    Phase 1: Fast fullscreen C64 typing boot
    Phase 2: Chaotic loading-style raster bars + SID speech
+   Phase 3: Fade to homepage when MP3 ends or user skips
    =========================================================== */
 
 let rasterCanvas, rasterCtx;
 let rasterAnimId = null;
 let introRunning = true;
 
-// Rough C64-like palette
+// Rough C64-ish palette
 const C64_COLORS = [
   "#000000", // black
   "#ffffff", // white
@@ -53,20 +54,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (audio) {
     audio.addEventListener("ended", () => {
+      // When SID sample finishes, go straight to homepage
       endIntro(false);
     });
   }
 
-  // Start fast C64 typing sequence
+  // Phase 1: fast C64 typing boot
   startBootTyping(() => {
-    // After typing completes, slam into raster phase + audio
     if (!introRunning) return;
+
+    // Phase 2: raster chaos + SID audio
     overlay.classList.add("phase-raster");
     startRaster();
     attemptPlayAudio();
   });
 
-  // Safety: if something goes wrong, auto-end intro after 12s
+  // Safety: if nothing ends the intro naturally, auto-quit after 12s
   setTimeout(() => {
     if (introRunning) {
       endIntro(false);
@@ -110,7 +113,7 @@ function startBootTyping(onComplete) {
       const delay = Math.max(8, baseDelay + jitter);
       setTimeout(typeStep, delay);
     } else {
-      // Add READY cursor blink at end for a brief beat
+      // Add READY-style cursor blink briefly
       const cursor = document.createElement("span");
       cursor.id = "boot-cursor";
       cursor.textContent = "_";
@@ -119,7 +122,7 @@ function startBootTyping(onComplete) {
 
       setTimeout(() => {
         if (onComplete) onComplete();
-      }, 250);
+      }, 200);
     }
   }
 
@@ -147,8 +150,7 @@ function drawRasterFrame() {
 
   let y = 0;
   while (y < h) {
-    // Flickery stripe height 3–14px
-    const barHeight = 3 + Math.floor(Math.random() * 12);
+    const barHeight = 3 + Math.floor(Math.random() * 12); // 3–14px
     const color = C64_COLORS[Math.floor(Math.random() * C64_COLORS.length)];
 
     rasterCtx.fillStyle = color;
@@ -163,7 +165,7 @@ function drawRasterFrame() {
     y += barHeight;
   }
 
-  // Occasionally overlay darker band to mimic unstable loading
+  // Slight extra dark overlay to feel unstable
   if (Math.random() < 0.6) {
     rasterCtx.globalAlpha = 0.08;
     rasterCtx.fillStyle = "#000000";
@@ -180,11 +182,11 @@ async function attemptPlayAudio() {
   if (!audio) return;
 
   try {
-    // Tiny "unlock" attempt – some browsers will still block, but we try.
     await audio.play();
   } catch (err) {
-    console.warn("Intro audio autoplay was blocked:", err);
-    document.body.classList.add("intro-muted");
+    // Browser blocked autoplay; fail silently.
+    // (We can later add a "tap to unmute" overlay if you want.)
+    console.warn("Intro audio autoplay was blocked by the browser:", err);
   }
 }
 
@@ -202,7 +204,7 @@ function endIntro(fromSkip) {
   const homepage = document.getElementById("homepage-content");
   const audio    = document.getElementById("intro-audio");
 
-  if (audio && !audio.paused) {
+  if (audio) {
     audio.pause();
     audio.currentTime = 0;
   }
@@ -213,7 +215,7 @@ function endIntro(fromSkip) {
       if (overlay && overlay.parentNode) {
         overlay.parentNode.removeChild(overlay);
       }
-    }, 900);
+    }, 420); // matches the 0.4s fade
   }
 
   if (homepage) {
