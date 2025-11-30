@@ -1,81 +1,134 @@
-<!-- ==========================================================
-     CCG HOMEPAGE — GENRE GRID (UPGRADED)
-     ========================================================== -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cheeky Commodore Gamer | Home</title>
 
-<section id="genre-section">
-    <h1 class="genre-title">EXPLORE GENRES</h1>
+  <!-- Core styles -->
+  <link rel="stylesheet" href="css/engine.css">
+  <link rel="stylesheet" href="resources/css/main.css">
 
-    <div class="genre-grid">
-        <a href="games/genres/arcade-games.html">
-            <img src="resources/images/genres/arcade.png" alt="Arcade">
-        </a>
+  <!-- Core scripts -->
+  <script defer src="js/engine.js"></script>
+  <script defer src="js/homepage-loader.js"></script>
+</head>
 
-        <a href="games/genres/action-adventure-games.html">
-            <img src="resources/images/genres/action-adventure.png" alt="Action Adventure">
-        </a>
+<body class="ccg-body ccg-theme-c64 intro-active">
 
-        <a href="games/genres/adventure-games.html">
-            <img src="resources/images/genres/adventure.png" alt="Adventure">
-        </a>
-
-        <a href="games/genres/bpjs.html">
-            <img src="resources/images/genres/bpjs.png" alt="BPJS">
-        </a>
-
-        <a href="games/genres/cartridge-games.html">
-            <img src="resources/images/genres/cartridge.png" alt="Cartridge">
-        </a>
-
-        <a href="games/genres/casino-games.html">
-            <img src="resources/images/genres/casino.png" alt="Casino">
-        </a>
-
-        <a href="games/genres/fighting-games.html">
-            <img src="resources/images/genres/fighting.png" alt="Fighting">
-        </a>
-
-        <a href="games/genres/horror-games.html">
-            <img src="resources/images/genres/horror.png" alt="Horror">
-        </a>
-
-        <a href="games/genres/licensed-games.html">
-            <img src="resources/images/genres/licensed.png" alt="Licensed">
-        </a>
-
-        <a href="games/genres/platform-games.html">
-            <img src="resources/images/genres/platform.png" alt="Platform">
-        </a>
-
-        <a href="games/genres/puzzle-games.html">
-            <img src="resources/images/genres/puzzle.png" alt="Puzzle">
-        </a>
-
-        <a href="games/genres/quiz-games.html">
-            <img src="resources/images/genres/quiz.png" alt="Quiz">
-        </a>
-
-        <a href="games/genres/racing-games.html">
-            <img src="resources/images/genres/racing.png" alt="Racing">
-        </a>
-
-        <a href="games/genres/role-playing-games.html">
-            <img src="resources/images/genres/role-playing.png" alt="Role Playing Games">
-        </a>
-
-        <a href="games/genres/shoot-em-up-games.html">
-            <img src="resources/images/genres/shooting.png" alt="Shooting Games">
-        </a>
-
-        <a href="games/genres/sports-games.html">
-            <img src="resources/images/genres/sports.png" alt="Sports">
-        </a>
-
-        <a href="games/genres/strategy-games.html">
-            <img src="resources/images/genres/strategy.png" alt="Strategy">
-        </a>
-
-        <a href="games/genres/top-picks.html">
-            <img src="resources/images/genres/top-picks.png" alt="Top Picks">
-        </a>
+  <!-- ===========================================================
+       EPIC INTRO OVERLAY (BOOT + RASTER + AUDIO)
+  ============================================================ -->
+  <div id="intro-overlay">
+    <!-- Phase 1: C64 Boot Screen -->
+    <div id="boot-phase" class="intro-phase">
+      <div class="boot-frame">
+        <pre id="boot-text" class="boot-text"></pre>
+      </div>
     </div>
-</section>
+
+    <!-- Phase 2: Raster Bars + Speech -->
+    <div id="raster-phase" class="intro-phase hidden">
+      <div class="raster-bars">
+        <div class="raster-bar"></div>
+        <div class="raster-bar"></div>
+        <div class="raster-bar"></div>
+        <div class="raster-bar"></div>
+        <div class="raster-bar"></div>
+        <div class="raster-bar"></div>
+        <div class="raster-bar"></div>
+        <div class="raster-bar"></div>
+      </div>
+
+      <div class="intro-overlay-content">
+        <h1 class="intro-main-line">ANOTHER VISITOR...</h1>
+        <h2 class="intro-sub-line">STAY A WHILE...</h2>
+        <h2 class="intro-sub-line">STAY FOREVER.</h2>
+
+        <button id="enable-sound" class="intro-btn secondary hidden">
+          Enable Sound
+        </button>
+      </div>
+
+      <button id="skip-intro" class="intro-btn primary">
+        Skip Intro
+      </button>
+    </div>
+
+    <!-- Audio -->
+    <audio id="intro-audio"
+           src="resources/audio/c64_speech_stayawhile.mp3"
+           preload="auto"></audio>
+  </div>
+
+  <!-- ===========================================================
+       GLOBAL HEADER
+  ============================================================ -->
+  <header class="ccg-header">
+    <div class="ccg-header-inner">
+      <a href="index.html" class="ccg-logo-link">CHEEKY</a>
+      <nav class="ccg-nav">
+        <a href="complete-index.html">Complete Index</a>
+        <a href="quiz/quiz.html">Quiz</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===========================================================
+       MAIN HOMEPAGE CONTENT (NO GENRES HERE)
+  ============================================================ -->
+  <main class="ccg-main" id="homepage-main">
+    <section class="home-hero">
+      <div class="home-hero-inner">
+        <h1 class="home-title">Cheeky Commodore Gamer</h1>
+        <p class="home-tagline">
+          C64 and Amiga classics, deep dives, SID chip worship and curated retro goodness.
+        </p>
+        <div class="home-cta-row">
+          <a class="btn-cta" href="complete-index.html">Browse Complete Index</a>
+          <a class="btn-ghost" href="quiz/quiz.html">Take the C64 Quiz</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="home-panels">
+      <div class="home-panel">
+        <h2>Featured Picks</h2>
+        <p>
+          Hand-picked standouts from the archive — the games that really earned a big thumbs up.
+        </p>
+        <a href="games/genres/top-picks.html" class="panel-link">View Top Picks →</a>
+      </div>
+
+      <div class="home-panel">
+        <h2>Explore by Genre</h2>
+        <p>
+          Fancy some arcade blasts, horror chills or adventure epics? Jump into the genre hub.
+        </p>
+        <a href="complete-index.html" class="panel-link">Open Genre & Game Index →</a>
+      </div>
+
+      <div class="home-panel">
+        <h2>Manuals & Extras</h2>
+        <p>
+          In-game scans, manuals and bits of retro paperwork to complete the experience.
+        </p>
+        <a href="viewer/manual.html" class="panel-link">Open Manual Viewer →</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===========================================================
+       FOOTER
+  ============================================================ -->
+  <footer class="ccg-footer">
+    <p>Cheeky Commodore Gamer © 2025</p>
+    <p class="intro-replay">
+      <button id="replay-intro" type="button">Replay Intro</button>
+    </p>
+  </footer>
+
+</body>
+</html>
