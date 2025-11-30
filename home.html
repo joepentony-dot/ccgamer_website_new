@@ -3,681 +3,977 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheeky Commodore Gamer | Home Hub</title>
+    <title>Cheeky Commodore Gamer | Games Hub</title>
 
     <!-- Core site styles -->
     <link rel="stylesheet" href="css/engine.css">
     <link rel="stylesheet" href="resources/css/main.css">
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+          integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <style>
         :root {
-            --c64-blue:   #352879;
-            --c64-light:  #6c5eb5;
-            --c64-text:   #b8c76f;
+            --c64-bg: #352879;
+            --c64-accent: #6c5eb5;
+            --c64-text: #b8c76f;
 
-            --fusion-bg:  radial-gradient(circle at top, #1a2340 0%, #050610 55%, #020308 100%);
-            --fusion-neon: #ff66ff;
-            --fusion-neon-soft: #00eaff;
+            --genre-neon: #4fe8ff;      /* cyan/blue neon */
+            --genre-neon-soft: rgba(79, 232, 255, 0.25);
+
+            --collection-neon: #ff66ff; /* magenta neon */
+            --collection-neon-soft: rgba(255, 102, 255, 0.25);
+
+            --amiga-accent: #ff9bff;
         }
 
         * {
             box-sizing: border-box;
         }
 
-        html, body {
+        body {
             margin: 0;
-            padding: 0;
-            height: 100%;
+            min-height: 100vh;
             font-family: 'VT323', monospace;
-            background: #000;
-            color: #e6f1ff;
+            text-transform: uppercase;
+            background: radial-gradient(circle at top, #4d3aa3 0%, #120b33 45%, #050212 100%);
+            color: var(--c64-text);
+            display: flex;
+            justify-content: center;
+            padding: 20px 10px 40px;
         }
 
-        body {
-            background-image:
-                radial-gradient(circle at 10% 0%, rgba(255,255,255,0.12) 0, transparent 45%),
-                radial-gradient(circle at 90% 100%, rgba(255,0,255,0.18) 0, transparent 55%),
-                var(--fusion-bg);
-            background-attachment: fixed;
+        body.c64-mode {
+            background: radial-gradient(circle at top, #4d3aa3 0%, #120b33 45%, #050212 100%);
+            color: var(--c64-text);
+        }
+
+        body.amiga-mode {
+            background: radial-gradient(circle at top, #f08fff 0%, #5a2d91 45%, #16021f 100%);
+            color: #fdf6ff;
         }
 
         /* CRT shell */
-        .hub-shell {
-            max-width: 1180px;
-            margin: 24px auto 32px auto;
-            padding: 18px;
-            border-radius: 26px;
-            background: linear-gradient(135deg, #02030a, #050814);
-            box-shadow:
-                0 0 0 4px rgba(0, 0, 0, 0.9),
-                0 0 60px rgba(0, 0, 0, 0.95),
-                0 0 40px rgba(255, 0, 255, 0.25);
+        .crt-shell {
             position: relative;
+            width: 100%;
+            max-width: 1100px;
+            border-radius: 28px;
+            padding: 16px;
+            background: radial-gradient(circle at top, rgba(255,255,255,0.12), rgba(0,0,0,0.95));
+            box-shadow:
+                0 0 0 2px rgba(255,255,255,0.06),
+                0 0 45px rgba(0,0,0,0.9),
+                inset 0 0 45px rgba(0,0,0,0.95);
             overflow: hidden;
+            transform: perspective(1400px) rotateX(3deg);
         }
 
-        .hub-shell::before {
+        /* faint outer bezel line */
+        .crt-shell::before {
             content: "";
             position: absolute;
-            inset: 0;
+            inset: 10px;
+            border-radius: 24px;
+            border: 2px solid rgba(255,255,255,0.08);
             pointer-events: none;
-            border-radius: 22px;
+        }
+
+        .crt-overlay {
+            pointer-events: none;
+            position: absolute;
+            inset: 0;
             background:
-                linear-gradient(rgba(255,255,255,0.05), rgba(0,0,0,0.55)),
-                repeating-linear-gradient(
-                    to bottom,
-                    rgba(255,255,255,0.08) 0px,
-                    rgba(255,255,255,0.08) 1px,
-                    rgba(0,0,0,0.0) 1px,
-                    rgba(0,0,0,0.0) 3px
-                );
-            mix-blend-mode: soft-light;
-            opacity: 0.6;
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.28) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.07), rgba(0, 255, 0, 0.03), rgba(0, 0, 255, 0.09));
+            background-size: 100% 2px, 3px 100%;
+            mix-blend-mode: screen;
+            opacity: 0.65;
+            z-index: 10;
+        }
+
+        body.amiga-mode .crt-overlay {
+            opacity: 0.45;
         }
 
         .hub-inner {
             position: relative;
+            z-index: 2;
+            background: radial-gradient(circle at top, rgba(10, 10, 45, 0.7), rgba(0, 0, 0, 0.95));
             border-radius: 18px;
-            padding: 20px 18px 26px 18px;
-            background: radial-gradient(circle at top, #111b2c 0%, #050814 55%, #05040b 100%);
-            box-shadow:
-                0 0 0 3px rgba(0,0,0,0.8) inset,
-                0 0 30px rgba(0,0,0,0.7) inset;
+            padding: 18px 16px 26px;
+            border: 1px solid rgba(255,255,255,0.08);
         }
 
-        /* C64-style border frame */
-        .hub-screen {
-            border-radius: 12px;
-            padding: 18px;
-            background: var(--c64-blue);
-            box-shadow:
-                0 0 0 3px rgba(0,0,0,0.75) inset,
-                0 0 24px rgba(0,0,0,0.8);
-        }
-
-        .hub-screen-inner {
-            border-radius: 8px;
-            padding: 16px 14px 22px 14px;
-            background: #02051a;
-            min-height: 60vh;
-        }
-
-        /* Header */
-        .hub-header {
-            display: flex;
+        /* MODE SWITCH */
+        .mode-switch {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            display: inline-flex;
             align-items: center;
-            gap: 14px;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            border: 2px solid rgba(255,255,255,0.35);
+            background: rgba(0,0,0,0.72);
+            cursor: pointer;
+            box-shadow: 0 0 12px rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            font-size: 14px;
+        }
+
+        .mode-switch i {
+            font-size: 18px;
+        }
+
+        body.c64-mode .mode-switch {
+            border-color: var(--genre-neon);
+            color: var(--genre-neon);
+        }
+
+        body.amiga-mode .mode-switch {
+            border-color: var(--amiga-accent);
+            color: var(--amiga-accent);
+        }
+
+        .mode-switch:hover {
+            transform: translateY(-1px);
+        }
+
+        /* HEADER */
+        .top-header {
+            text-align: center;
+            padding-top: 8px;
+            padding-bottom: 14px;
+            border-bottom: 1px dashed rgba(255,255,255,0.25);
             margin-bottom: 14px;
         }
 
-        .hub-logo-wrap {
-            flex-shrink: 0;
-        }
-
-        .hub-logo {
-            width: 70px;
-            height: auto;
-            image-rendering: pixelated;
-            border-radius: 10px;
-            box-shadow: 0 0 12px rgba(0,0,0,0.75);
-        }
-
-        .hub-title-block {
-            flex: 1;
-        }
-
-        .hub-title {
-            margin: 0;
-            font-size: 32px;
-            letter-spacing: 3px;
-            color: var(--fusion-neon);
-            text-shadow:
-                0 0 6px rgba(255,102,255,0.95),
-                0 0 16px rgba(255,102,255,0.78),
-                0 0 30px rgba(0,234,255,0.85);
-        }
-
-        .hub-subtitle {
-            margin: 2px 0 0 0;
-            font-size: 16px;
-            color: var(--fusion-neon-soft);
-            letter-spacing: 1px;
-            text-shadow: 0 0 6px rgba(0,234,255,0.8);
-        }
-
-        /* Hero blurb */
-        .hub-hero {
-            margin: 14px 0 18px 0;
-            font-size: 16px;
-            color: #d2e7ff;
-        }
-
-        .hub-hero p {
-            margin: 2px 0;
-        }
-
-        .hub-hero-keys {
-            font-size: 14px;
-            color: #8fc5ff;
-            opacity: 0.9;
-        }
-
-        /* Section headings */
-        .hub-section {
-            margin-top: 24px;
-        }
-
-        .hub-section-title {
-            font-size: 20px;
-            margin: 0 0 10px 0;
-            color: #00eaff;
+        .top-header-basic {
+            font-size: 15px;
             letter-spacing: 2px;
-            text-shadow: 0 0 8px rgba(0,234,255,0.9);
+            color: #e5ddff;
+            text-shadow: 2px 2px 0 #000;
         }
 
-        .hub-section-sub {
-            font-size: 14px;
-            margin: 0 0 12px 0;
-            color: #99caff;
+        .top-header-ram {
+            margin-top: 4px;
+            font-size: 13px;
+            color: #a8ff96;
+            text-shadow: 1px 1px 0 #000;
         }
 
-        /* Grids */
-        .hub-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        .nav-bar {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
             gap: 14px;
         }
 
-        .hub-card {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
+        .nav-link {
+            font-size: 13px;
             text-decoration: none;
-            color: #e6f1ff;
-            background: radial-gradient(circle at top, rgba(0, 40, 70, 0.9), rgba(0, 8, 18, 0.95));
-            border-radius: 10px;
-            padding: 10px 10px 11px 10px;
-            border: 1px solid rgba(0, 170, 255, 0.75);
-            box-shadow:
-                0 0 0 1px rgba(0,0,0,0.7),
-                0 0 18px rgba(0,0,0,0.8);
-            position: relative;
-            overflow: hidden;
-            transition:
-                transform 0.16s ease-out,
-                box-shadow 0.16s ease-out,
-                border-color 0.16s ease-out,
-                background 0.16s ease-out;
+            color: #e9e3ff;
+            letter-spacing: 1px;
+            padding-bottom: 2px;
+            border-bottom: 1px solid transparent;
+            cursor: pointer;
         }
 
-        .hub-card::before {
-            content: "";
-            position: absolute;
-            inset: -40%;
-            background:
-                radial-gradient(circle at 0% 0%, rgba(255,255,255,0.18), transparent 55%),
-                radial-gradient(circle at 100% 100%, rgba(255,0,255,0.24), transparent 55%);
-            opacity: 0;
-            mix-blend-mode: screen;
-            transition: opacity 0.2s ease-out;
+        .nav-link:hover {
+            border-color: #fff;
         }
 
-        .hub-card:hover {
-            transform: translateY(-3px);
-            border-color: var(--fusion-neon);
-            background: radial-gradient(circle at top, rgba(60, 40, 120, 0.9), rgba(3, 4, 15, 0.98));
-            box-shadow:
-                0 0 22px rgba(255,102,255,0.4),
-                0 0 30px rgba(0,234,255,0.25);
+        body.amiga-mode .nav-link {
+            color: #ffe8ff;
         }
 
-        .hub-card:hover::before {
-            opacity: 0.65;
+        /* HERO */
+        .hero {
+            text-align: center;
+            margin: 14px 0 18px;
         }
 
-        .hub-card-top {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            gap: 8px;
+        .hero-logo {
+            height: 40px;
+            margin-bottom: 6px;
+            image-rendering: pixelated;
+        }
+
+        .hero-title {
+            font-size: clamp(20px, 5vw, 30px);
+            letter-spacing: 3px;
+            color: #ffffff;
+            text-shadow: 3px 3px 0 #000;
             margin-bottom: 6px;
         }
 
-        .hub-card-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 6px;
-            overflow: hidden;
-            flex-shrink: 0;
-            box-shadow:
-                0 0 8px rgba(0,0,0,0.7),
-                0 0 10px rgba(0,234,255,0.6);
+        body.amiga-mode .hero-title {
+            text-shadow: 3px 3px 0 #44114f;
         }
 
-        .hub-card-icon img {
+        .hero-subtitle {
+            font-size: 14px;
+            letter-spacing: 2px;
+            color: #ffeeb0;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hero-subtitle i {
+            font-size: 14px;
+        }
+
+        /* INFO BOX */
+        .info-box {
+            margin: 18px auto 18px;
+            max-width: 720px;
+            border-radius: 10px;
+            padding: 10px 14px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: radial-gradient(circle at top left,
+                    rgba(79,232,255,0.18),
+                    rgba(0,0,0,0.7));
+            font-size: 13px;
+            text-align: left;
+        }
+
+        body.amiga-mode .info-box {
+            background: radial-gradient(circle at top left,
+                    rgba(255,144,255,0.2),
+                    rgba(6,0,22,0.9));
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .info-list li {
+            margin-bottom: 4px;
+            white-space: nowrap;
+        }
+
+        .info-label {
+            color: #ffffff;
+        }
+
+        /* BUTTON GRID */
+        .btn-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 10px;
+            margin: 0 auto 18px;
+            max-width: 720px;
+        }
+
+        .btn-retro {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 9px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.7);
+            background: linear-gradient(180deg,
+                    rgba(111, 95, 215, 0.9),
+                    rgba(21, 10, 68, 0.98));
+            color: #fdfdff;
+            text-decoration: none;
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 0 #000;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.7);
+        }
+
+        .btn-retro:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 0 rgba(0,0,0,0.9);
+        }
+
+        .btn-retro.youtube {
+            border-color: #ff5555;
+        }
+
+        body.amiga-mode .btn-retro {
+            background: linear-gradient(180deg,
+                    #ffffff,
+                    #d0c5ff);
+            color: #2a1248;
+        }
+
+        /* SECTION TITLES */
+        .section-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 18px 0 12px;
+            font-size: 14px;
+            letter-spacing: 2px;
+            color: #ffffff;
+        }
+
+        .section-title i {
+            font-size: 15px;
+        }
+
+        /* FEATURED VIDEOS */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .video-card {
+            border-radius: 12px;
+            overflow: hidden;
+            background: #02000a;
+            box-shadow: 0 0 14px rgba(0,0,0,0.9);
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .video-label {
+            background: linear-gradient(180deg, #4a3d7e, #120b33);
+            color: #fff;
+            text-align: center;
+            padding: 6px;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        body.amiga-mode .video-label {
+            background: linear-gradient(180deg, #ff9cff, #4b175e);
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            inset: 0;
             width: 100%;
             height: 100%;
+            border: 0;
+        }
+
+        .loading-text {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            color: #7f7bff;
+            letter-spacing: 2px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%,100% { opacity: 1; }
+            50% { opacity: 0.1; }
+        }
+
+        /* TILE GRIDS */
+        .tile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .tile-card {
+            position: relative;
+            border-radius: 12px;
+            padding: 8px 8px 10px;
+            overflow: hidden;
+            background: radial-gradient(circle at top,
+                    rgba(0,0,0,0.4),
+                    rgba(0,0,0,0.9));
+            text-align: left;
+            text-decoration: none;
+            color: #f9fbff;
+            border: 1px solid rgba(255,255,255,0.18);
+            box-shadow: 0 0 12px rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: row;
+            gap: 8px;
+            align-items: center;
+            isolation: isolate;
+        }
+
+        .tile-card::before {
+            content: "";
+            position: absolute;
+            inset: -40%;
+            background: radial-gradient(circle at top left,
+                    var(--genre-neon-soft),
+                    transparent 60%);
+            opacity: 0.9;
+            mix-blend-mode: screen;
+            transition: transform 0.25s ease, opacity 0.25s ease;
+            transform: translateX(-12px);
+            z-index: -1;
+        }
+
+        .tile-card.collection::before {
+            background: radial-gradient(circle at top left,
+                    var(--collection-neon-soft),
+                    transparent 60%);
+        }
+
+        .tile-card:hover::before {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .tile-image {
+            width: 72px;
+            min-width: 72px;
+            height: 60px;
+            border-radius: 8px;
             object-fit: cover;
             image-rendering: pixelated;
-            display: block;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: #000;
         }
 
-        .hub-card-title {
-            font-size: 17px;
-            margin: 0;
-            letter-spacing: 1px;
-            color: #f3fbff;
-            text-shadow: 0 0 6px rgba(0, 234, 255, 0.9);
-        }
-
-        .hub-card-tag {
-            font-size: 11px;
-            color: #9bd3ff;
-            opacity: 0.92;
-        }
-
-        .hub-card-body {
+        .tile-text-main {
             font-size: 13px;
-            color: #c6e2ff;
-            opacity: 0.94;
-            margin-top: 2px;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
         }
 
-        .hub-card-foot {
+        .tile-text-sub {
+            font-size: 11px;
+            opacity: 0.85;
+        }
+
+        .tile-accent-pill {
+            margin-left: auto;
+            font-size: 10px;
+            padding: 3px 6px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.6);
+            background: rgba(0,0,0,0.7);
+            letter-spacing: 1px;
+        }
+
+        .tile-card.collection .tile-accent-pill {
+            border-color: var(--collection-neon);
+            color: var(--collection-neon);
+        }
+
+        body.amiga-mode .tile-card.collection .tile-accent-pill {
+            border-color: var(--amiga-accent);
+            color: var(--amiga-accent);
+        }
+
+        /* SOCIAL STRIP */
+        .social-section {
             margin-top: 6px;
-            font-size: 11px;
-            color: #8fd3ff;
-            opacity: 0.9;
         }
 
-        .hub-card-foot span {
-            opacity: 0.9;
-        }
-
-        /* Divider */
-        .hub-divider {
-            margin: 22px 0 18px 0;
-            border: none;
-            border-top: 1px solid rgba(0, 170, 255, 0.4);
-        }
-
-        /* Footer mini-row */
-        .hub-footer {
-            margin-top: 14px;
-            font-size: 11px;
-            color: #7fb6ff;
+        .social-strip {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            justify-content: space-between;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .social-link-item {
+            display: inline-flex;
             align-items: center;
-        }
-
-        .hub-footer span {
-            opacity: 0.9;
-        }
-
-        .hub-footer-links {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .hub-footer-links a {
-            color: #9fd5ff;
+            gap: 6px;
+            padding: 5px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.35);
             text-decoration: none;
-            border-bottom: 1px dotted rgba(159,213,255,0.8);
             font-size: 11px;
+            color: #dadcff;
+            background: rgba(0,0,0,0.6);
         }
 
-        .hub-footer-links a:hover {
-            color: #ffffff;
-            border-bottom-style: solid;
+        .social-link-item i {
+            font-size: 13px;
         }
 
-        /* RESPONSIVE TWEAKS */
-        @media (max-width: 780px) {
-            .hub-shell {
-                margin: 10px;
+        .social-link-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        body.amiga-mode .social-link-item {
+            color: #ffe8ff;
+        }
+
+        /* FOOTER */
+        .footer-note {
+            margin-top: 14px;
+            text-align: center;
+            font-size: 10px;
+            opacity: 0.8;
+        }
+
+        /* MOBILE TWEAKS */
+        @media (max-width: 640px) {
+            body {
+                padding: 14px 6px 26px;
+            }
+            .crt-shell {
                 padding: 10px;
                 border-radius: 20px;
             }
-
             .hub-inner {
-                padding: 12px 10px 16px 10px;
-                border-radius: 16px;
+                padding: 16px 10px 20px;
             }
-
-            .hub-screen {
-                padding: 10px;
+            .mode-switch {
+                top: 10px;
+                right: 10px;
+                padding-inline: 10px;
             }
-
-            .hub-screen-inner {
-                padding: 12px 10px 18px 10px;
+            .mode-label-text {
+                display: none;
             }
-
-            .hub-header {
-                flex-direction: row;
-                align-items: center;
-            }
-
-            .hub-logo {
-                width: 56px;
-            }
-
-            .hub-title {
-                font-size: 22px;
-                letter-spacing: 2px;
-            }
-
-            .hub-subtitle {
-                font-size: 13px;
-            }
-
-            .hub-hero {
-                font-size: 13px;
-            }
-
-            .hub-hero-keys {
-                font-size: 11px;
-            }
-
-            .hub-grid {
-                grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
-            }
-
-            .hub-card {
-                padding: 9px;
-            }
-
-            .hub-card-title {
-                font-size: 15px;
-            }
-
-            .hub-card-body {
-                font-size: 12px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .hub-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .hub-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .hub-title {
-                font-size: 20px;
-            }
-
-            .hub-subtitle {
-                font-size: 12px;
-            }
-
-            .hub-card-body,
-            .hub-card-foot {
-                font-size: 11px;
+            .tile-card {
+                padding-inline: 8px;
             }
         }
     </style>
 </head>
-<body>
 
-<div class="hub-shell">
+<body class="c64-mode">
+<div class="crt-shell">
+    <div class="crt-overlay"></div>
     <div class="hub-inner">
-        <div class="hub-screen">
-            <div class="hub-screen-inner">
 
-                <!-- HEADER -->
-                <header class="hub-header">
-                    <div class="hub-logo-wrap">
-                        <img src="resources/CCGAMER LOGO.png" alt="Cheeky Commodore Gamer Logo" class="hub-logo">
-                    </div>
-                    <div class="hub-title-block">
-                        <h1 class="hub-title">CHEEKY COMMODORE GAMER</h1>
-                        <p class="hub-subtitle">C64 &amp; Amiga Heaven — Games, Guides, Quizzes &amp; Nostalgia</p>
-                    </div>
-                </header>
+        <!-- MODE SWITCH -->
+        <div class="mode-switch" id="modeSwitch">
+            <i class="fa-solid fa-desktop"></i>
+            <span class="mode-label-text">C64 MODE</span>
+        </div>
 
-                <!-- HERO TEXT -->
-                <section class="hub-hero">
-                    <p>Welcome, another visitor! Dive into curated Commodore 64 and Amiga goodness — hand-picked, tagged and loved.</p>
-                    <p class="hub-hero-keys">Use the tiles below to jump straight to genres, special collections, full index, emulation guide, quizzes and more.</p>
-                </section>
+        <!-- HEADER -->
+        <header class="top-header">
+            <div class="top-header-basic">**** COMMODORE 64 BASIC V2 ****</div>
+            <div class="top-header-ram">64K RAM SYSTEM 38911 BASIC BYTES FREE</div>
+            <nav class="nav-bar">
+                <a class="nav-link" href="games/genres/index.html">GENRES</a>
+                <a class="nav-link" href="complete-index.html">INDEX</a>
+                <a class="nav-link" href="quiz.html">QUIZ</a>
+                <a class="nav-link" href="emulation-guide.html">EMULATION</a>
+                <a class="nav-link" href="about.html">ABOUT</a>
+                <a class="nav-link" href="contact.html">CONTACT</a>
+                <a class="nav-link" href="javascript:void(0);" id="helpLink">?[HELP]</a>
+            </nav>
+        </header>
 
-                <!-- GENRES -->
-                <section class="hub-section">
-                    <h2 class="hub-section-title">Browse by Genre</h2>
-                    <p class="hub-section-sub">Pick a mood and explore classic titles by gameplay style.</p>
+        <!-- HERO -->
+        <section class="hero">
+            <img src="resources/CCGAMER LOGO.png" alt="Cheeky Commodore Gamer Logo" class="hero-logo">
+            <h1 class="hero-title">COMMODORE 64 & AMIGA GAMES DATABASE</h1>
+            <div class="hero-subtitle">
+                <i class="fa-solid fa-floppy-disk"></i>
+                ULTIMATE RESOURCE: REVIEWS &amp; DOWNLOADS
+            </div>
+        </section>
 
-                    <div class="hub-grid">
-                        <a class="hub-card" href="genres/arcade-games.html">
-                            <div class="hub-card-top">
-                                <div class="hub-card-icon">
-                                    <img src="resources/images/genres/arcade.png" alt="Arcade Games">
-                                </div>
-                                <div>
-                                    <h3 class="hub-card-title">Arcade Games</h3>
-                                    <div class="hub-card-tag">Instant-action coin-op energy</div>
-                                </div>
-                            </div>
-                            <div class="hub-card-body">
-                                Shoot-’em-ups, twitchy reflex tests and score-chasing classics.
-                            </div>
-                            <div class="hub-card-foot"><span>Includes shooters, beat-’em-ups &amp; high-score chasers.</span></div>
-                        </a>
+        <!-- INFO STRIP -->
+        <section class="info-box">
+            <ul class="info-list">
+                <li>&gt; <span class="info-label">WATCH GAMEPLAY:</span> INSTANT YOUTUBE REVIEWS</li>
+                <li>&gt; <span class="info-label">REVIEWS:</span> LEMON64 / LEMONAMIGA INTEGRATION</li>
+                <li>&gt; <span class="info-label">MANUALS:</span> ORIGINAL PDF SCANS INCLUDED</li>
+                <li>&gt; <span class="info-label">DOWNLOAD:</span> READY-TO-RUN EMULATOR FILES</li>
+            </ul>
+        </section>
 
-                        <a class="hub-card" href="genres/action-adventure-games.html">
-                            <div class="hub-card-top">
-                                <div class="hub-card-icon">
-                                    <img src="resources/images/genres/action-adventure.png" alt="Action Adventure">
-                                </div>
-                                <div>
-                                    <h3 class="hub-card-title">Action Adventure</h3>
-                                    <div class="hub-card-tag">Explore, fight, discover</div>
-                                </div>
-                            </div>
-                            <div class="hub-card-body">
-                                Quests, dungeons, maps and mayhem — arcade action with brains.
-                            </div>
-                            <div class="hub-card-foot"><span>From caverns to galaxies.</span></div>
-                        </a>
+        <!-- MAIN CTA BUTTONS -->
+        <section class="btn-grid">
+            <a href="emulation-guide.html" class="btn-retro">
+                <i class="fa-solid fa-gear"></i> EMULATION GUIDE
+            </a>
+            <a href="https://www.youtube.com/@CheekyCommodoreGamer?sub_confirmation=1"
+               class="btn-retro youtube" target="_blank" rel="noopener">
+                <i class="fa-brands fa-youtube"></i> SUBSCRIBE ON YOUTUBE
+            </a>
+        </section>
 
-                        <a class="hub-card" href="genres/adventure-games.html">
-                            <div class="hub-card-top">
-                                <div class="hub-card-icon">
-                                    <img src="resources/images/genres/adventure.png" alt="Adventure Games">
-                                </div>
-                                <div>
-                                    <h3 class="hub-card-title">Adventure Games</h3>
-                                    <div class="hub-card-tag">Type, think, solve</div>
-                                </div>
-                            </div>
-                            <div class="hub-card-body">
-                                Text and graphic adventures loaded with atmosphere and puzzles.
-                            </div>
-                            <div class="hub-card-foot"><span>Perfect with a notepad at your side.</span></div>
-                        </a>
+        <!-- FEATURED VIDEOS -->
+        <h2 class="section-title">
+            <i class="fa-brands fa-youtube"></i> FEATURED GAMEPLAY VIDEOS
+        </h2>
 
-                        <a class="hub-card" href="genres/sports-games.html">
-                            <div class="hub-card-top">
-                                <div class="hub-card-icon">
-                                    <img src="resources/images/genres/sports.png" alt="Sports Games">
-                                </div>
-                                <div>
-                                    <h3 class="hub-card-title">Sports Games</h3>
-                                    <div class="hub-card-tag">Olympic fingers at the ready</div>
-                                </div>
-                            </div>
-                            <div class="hub-card-body">
-                                Track &amp; field, football, racing and more joystick-waggling favourites.
-                            </div>
-                            <div class="hub-card-foot"><span>Ideal for rivalry and broken joysticks.</span></div>
-                        </a>
+        <section class="video-grid">
+            <div class="video-card" id="featured-c64">
+                <div class="video-label">COMMODORE 64</div>
+                <div class="video-wrapper">
+                    <div class="loading-text">LOADING SIGNAL...</div>
+                </div>
+            </div>
 
-                        <a class="hub-card" href="genres/platform-games.html">
-                            <div class="hub-card-top">
-                                <div class="hub-card-icon">
-                                    <img src="resources/images/genres/platform.png" alt="Platform Games">
-                                </div>
-                                <div>
-                                    <h3 class="hub-card-title">Platform Games</h3>
-                                    <div class="hub-card-tag">Jump, climb, avoid, repeat</div>
-                                </div>
-                            </div>
-                            <div class="hub-card-body">
-                                Ladders, lifts, enemies and pixel-perfect jumping challenges.
-                            </div>
-                            <div class="hub-card-foot"><span>From cute characters to brutal precision.</span></div>
-                        </a>
+            <div class="video-card" id="featured-amiga">
+                <div class="video-label">COMMODORE AMIGA</div>
+                <div class="video-wrapper">
+                    <div class="loading-text">LOADING SIGNAL...</div>
+                </div>
+            </div>
+        </section>
 
-                        <a class="hub-card" href="genres/puzzle-games.html">
-                            <div class="hub-card-top">
-                                <div class="hub-card-icon">
-                                    <img src="resources/images/genres/puzzle.png" alt="Puzzle Games">
-                                </div>
-                                <div>
-                                    <h3 class="hub-card-title">Puzzle &amp; Strategy</h3>
-                                    <div class="hub-card-tag">For the thoughtful joystick-wielder</div>
-                                </div>
-                            </div>
-                            <div class="hub-card-body">
-                                Logic, pattern-spotting and tactical brain teasers for quiet evenings.
-                            </div>
-                            <div class="hub-card-foot"><span>Lower action, higher brain strain.</span></div>
-                        </a>
-                    </div>
-                </section>
+        <!-- GENRES GRID -->
+        <h2 class="section-title">
+            <i class="fa-solid fa-gamepad"></i> EXPLORE GAME GENRES
+        </h2>
 
-                <hr class="hub-divider">
+        <section class="tile-grid">
+            <!-- Top Picks featured first -->
+            <a class="tile-card" href="games/genres/top-picks.html">
+                <img src="resources/images/genres/top-picks.png" alt="Top Picks" class="tile-image">
+                <div>
+                    <div class="tile-text-main">TOP PICKS</div>
+                    <div class="tile-text-sub">HAND-PICKED FAVOURITES</div>
+                </div>
+                <div class="tile-accent-pill">★</div>
+            </a>
 
-                <!-- COLLECTIONS -->
-                <section class="hub-section">
-                    <h2 class="hub-section-title">Curated Collections</h2>
-                    <p class="hub-section-sub">Special sets hand-picked by Cheeky Commodore Gamer.</p>
+            <a class="tile-card" href="games/genres/arcade-games.html">
+                <img src="resources/images/genres/arcade.png" alt="Arcade" class="tile-image">
+                <div>
+                    <div class="tile-text-main">ARCADE GAMES</div>
+                    <div class="tile-text-sub">HIGH-SCORE CHASERS</div>
+                </div>
+                <div class="tile-accent-pill">C64</div>
+            </a>
 
-                    <div class="hub-grid">
-                        <a class="hub-card" href="collections/bpjs-indexed-games.html">
-                            <div class="hub-card-top">
-                                <div class="hub-card-icon">
-                                    <img src="resources/images/genres/bpjs.png" alt="BPJS Indexed Games">
-                                </div>
-                                <div>
-                                    <h3 class="hub-card-title">BPJS Indexed Games</h3>
-                                    <div class="hub-card-tag">The notorious list</div>
-                                </div>
-                            </div>
-                            <div class="hub-card-body">
-                                German indexed titles and controversial curios. Handle with retro care.
-                            </div>
-                            <div class="hub-card-foot"><span>History, censorship and cult status in one list.</span></div>
-                        </a>
+            <a class="tile-card" href="games/genres/action-adventure-games.html">
+                <img src="resources/images/genres/action-adventure.png" alt="Action Adventure" class="tile-image">
+                <div>
+                    <div class="tile-text-main">ACTION ADVENTURE</div>
+                    <div class="tile-text-sub">EPIC QUESTS &amp; COMBAT</div>
+                </div>
+                <div class="tile-accent-pill">HYBRID</div>
+            </a>
 
-                        <a class="hub-card" href="collections/cartridge-games.html">
-                            <div class="hub-card-top">
-                                <div class="hub-card-icon">
-                                    <img src="resources/images/genres/cartridge.png" alt="C64 Cartridge Games">
-                                </div>
-                                <div>
-                                    <h3 class="hub-card-title">C64 Cartridge Games</h3>
-                                    <div class="hub-card-tag">Instant-load cartridges</div>
-                                </div>
-                            </div>
-                            <div class="hub-card-body">
-                                No waiting, no tapes — just plug in and play like it’s 1985.
-                            </div>
-                            <div class="hub-card-foot"><span>Perfect for impatient retro heads.</span></div>
-                        </a>
+            <a class="tile-card" href="games/genres/adventure-games.html">
+                <img src="resources/images/genres/adventure.png" alt="Adventure" class="tile-image">
+                <div>
+                    <div class="tile-text-main">ADVENTURE GAMES</div>
+                    <div class="tile-text-sub">TEXT &amp; GRAPHIC ADVENTURES</div>
+                </div>
+                <div class="tile-accent-pill">STORY</div>
+            </a>
 
-                        <a class="hub-card" href="collections/licensed-games.html">
-                            <div class="hub-card-top">
-                                <div class="hub-card-icon">
-                                    <img src="resources/images/genres/licensed.png" alt="Licensed Games">
-                                </div>
-                                <div>
-                                    <h3 class="hub-card-title">Licensed Games</h3>
-                                    <div class="hub-card-tag">Films, TV &amp; famous faces</div>
-                                </div>
-                            </div>
-                            <div class="hub-card-body">
-                                Tie-ins from brilliant to baffling — all catalogued in one place.
-                            </div>
-                            <div class="hub-card-foot"><span>Did your favourite movie get a C64 port?</span></div>
-                        </a>
+            <a class="tile-card" href="games/genres/platform-games.html">
+                <img src="resources/images/genres/platform.png" alt="Platform" class="tile-image">
+                <div>
+                    <div class="tile-text-main">PLATFORM GAMES</div>
+                    <div class="tile-text-sub">RUN, JUMP &amp; DODGE</div>
+                </div>
+                <div class="tile-accent-pill">ACTION</div>
+            </a>
 
-                        <a class="hub-card" href="collections/top-picks.html">
-                            <div class="hub-card-top">
-                                <div class="hub-card-icon">
-                                    <img src="resources/images/genres/top-picks.png" alt="Top Picks">
-                                </div>
-                                <div>
-                                    <h3 class="hub-card-title">Big Thumbs Up Picks</h3>
-                                    <div class="hub-card-tag">CCG approved classics</div>
-                                </div>
-                            </div>
-                            <div class="hub-card-body">
-                                Hand-selected favourites that deserve a big thumbs up and repeat plays.
-                            </div>
-                            <div class="hub-card-foot"><span>Start here if you’re new to the channel.</span></div>
-                        </a>
-                    </div>
-                </section>
+            <a class="tile-card" href="games/genres/fighting-games.html">
+                <img src="resources/images/genres/fighting.png" alt="Fighting" class="tile-image">
+                <div>
+                    <div class="tile-text-main">FIGHTING GAMES</div>
+                    <div class="tile-text-sub">ONE-ON-ONE SHOWDOWNS</div>
+                </div>
+                <div class="tile-accent-pill">VS</div>
+            </a>
 
-                <hr class="hub-divider">
+            <a class="tile-card" href="games/genres/shooting-games.html">
+                <img src="resources/images/genres/shooting.png" alt="Shooting" class="tile-image">
+                <div>
+                    <div class="tile-text-main">SHOOT 'EM UPS</div>
+                    <div class="tile-text-sub">BLASTERS &amp; BULLET HELL</div>
+                </div>
+                <div class="tile-accent-pill">PEW PEW</div>
+            </a>
 
-                <!-- MORE CCG STUFF -->
-                <section class="hub-section">
-                    <h2 class="hub-section-title">More from Cheeky Commodore Gamer</h2>
-                    <p class="hub-section-sub">Guides, full game index, interactive quizzes and ways to get in touch.</p>
+            <a class="tile-card" href="games/genres/racing-games.html">
+                <img src="resources/images/genres/racing.png" alt="Racing" class="tile-image">
+                <div>
+                    <div class="tile-text-main">RACING GAMES</div>
+                    <div class="tile-text-sub">PEDAL TO THE METAL</div>
+                </div>
+                <div class="tile-accent-pill">SPEED</div>
+            </a>
 
-                    <div class="hub-grid">
-                        <a class="hub-card" href="complete-index.html">
-                            <div class="hub-card-top">
-                                <div class="hub-card-icon">
-                                    <img src="resources/images/genres/miscellaneous.png" alt="Complete Index">
-                                </div>
-                                <div>
-                                    <h3 class="hub-card-title">Complete Game Index</h3>
-                                    <div class="hub-card-tag">Every catalogued title</div>
-                                </div>
-                            </div>
-                            <div class="hub-card-body">
-                                Browse the full master list. Filter, search and cross-reference to your heart’s content.
-                            </div>
-                            <div class="hub-card-foot"><span>Great for deep dives and database nerds.</span></div>
-                        </a>
+            <a class="tile-card" href="games/genres/sports-games.html">
+                <img src="resources/images/genres/sports.png" alt="Sports" class="tile-image">
+                <div>
+                    <div class="tile-text-main">SPORTS GAMES</div>
+                    <div class="tile-text-sub">PITCH, COURT &amp; FIELD</div>
+                </div>
+                <div class="tile-accent-pill">SPORT</div>
+            </a>
 
-                        <a class="hub-card" href="emulation-guide.html">
-                            <div class="hub-card-top">
-                                <div class="hub-card-icon">
-                                    <img src="resources/images/genres/emulation.png" alt="Emulation Guide">
-                                </div>
-                                <div>
-                                    <h3 class="hub-card-title">Emulation Guide</h3>
-                                    <div class="hub-card-tag">Get set up properly</div>
-                                </div>
-                            </div>
-                            <div class="hub-card-body">
-                                Step-by-step help to get C64 and Amiga running nicely on modern hardware.
-                            </div>
-                            <div class="hub-card-foot"><span>From stock installs to fancy front-ends.</span></div>
-                        </a>
+            <a class="tile-card" href="games/genres/puzzle-games.html">
+                <img src="resources/images/genres/puzzle.png" alt="Puzzle" class="tile-image">
+                <div>
+                    <div class="tile-text-main">PUZZLE GAMES</div>
+                    <div class="tile-text-sub">BRAIN-TWISTING CHALLENGES</div>
+                </div>
+                <div class="tile-accent-pill">THINK</div>
+            </a>
 
-                        <a class="hub-card" href="quiz.html">
-                            <div class="hub-card-top">
-                                <div class="hub-card-icon">
-                                    <img src="resources/images/genres/quiz.png" alt="CCG Quiz">
-                                </div>
-                                <div>
-                                    <h3 class="hub-card-title">Interactive Quiz</h3>
-                                    <div class="hub-card-tag">Test your retro knowledge</div>
-                                </div>
-                            </div>
-                            <div class="hub-card-body">
-                                Music stings, tricky questions and monthly leaderboards. Prove your C64 credentials.
-                            </div>
-                            <div class="hub-card-foot
+            <a class="tile-card" href="games/genres/quiz-games.html">
+                <img src="resources/images/genres/quiz.png" alt="Quiz" class="tile-image">
+                <div>
+                    <div class="tile-text-main">QUIZ GAMES</div>
+                    <div class="tile-text-sub">TRIVIA &amp; KNOWLEDGE</div>
+                </div>
+                <div class="tile-accent-pill">QUIZ</div>
+            </a>
+
+            <a class="tile-card" href="games/genres/casino-games.html">
+                <img src="resources/images/genres/casino.png" alt="Casino" class="tile-image">
+                <div>
+                    <div class="tile-text-main">CASINO GAMES</div>
+                    <div class="tile-text-sub">SLOTS, CARDS &amp; LUCK</div>
+                </div>
+                <div class="tile-accent-pill">RISK</div>
+            </a>
+
+            <a class="tile-card" href="games/genres/horror-games.html">
+                <img src="resources/images/genres/horror.png" alt="Horror" class="tile-image">
+                <div>
+                    <div class="tile-text-main">HORROR GAMES</div>
+                    <div class="tile-text-sub">NIGHTMARES ON FLOPPY</div>
+                </div>
+                <div class="tile-accent-pill">BOO</div>
+            </a>
+
+            <a class="tile-card" href="games/genres/role-playing-games.html">
+                <img src="resources/images/genres/role-playing.png" alt="Role-Playing" class="tile-image">
+                <div>
+                    <div class="tile-text-main">ROLE-PLAYING GAMES</div>
+                    <div class="tile-text-sub">STATS, STORIES &amp; SWORDS</div>
+                </div>
+                <div class="tile-accent-pill">RPG</div>
+            </a>
+
+            <a class="tile-card" href="games/genres/strategy-games.html">
+                <img src="resources/images/genres/strategy.png" alt="Strategy" class="tile-image">
+                <div>
+                    <div class="tile-text-main">STRATEGY GAMES</div>
+                    <div class="tile-text-sub">PLAN, BUILD, CONQUER</div>
+                </div>
+                <div class="tile-accent-pill">TACTICS</div>
+            </a>
+
+            <a class="tile-card" href="games/genres/miscellaneous.html">
+                <img src="resources/images/genres/miscellaneous.png" alt="Miscellaneous" class="tile-image">
+                <div>
+                    <div class="tile-text-main">MISCELLANEOUS</div>
+                    <div class="tile-text-sub">ODDITIES &amp; CURIOUS FINDS</div>
+                </div>
+                <div class="tile-accent-pill">???</div>
+            </a>
+        </section>
+
+        <!-- COLLECTIONS GRID -->
+        <h2 class="section-title">
+            <i class="fa-solid fa-layer-group"></i> SPECIAL COLLECTIONS
+        </h2>
+
+        <section class="tile-grid">
+            <a class="tile-card collection" href="games/collections/bpjs-indexed-games.html">
+                <img src="resources/images/genres/bpjs.png" alt="BPJS Indexed" class="tile-image">
+                <div>
+                    <div class="tile-text-main">BPJS INDEXED GAMES</div>
+                    <div class="tile-text-sub">GERMAN BPJS / INDEX TITLES</div>
+                </div>
+                <div class="tile-accent-pill">BPJS</div>
+            </a>
+
+            <a class="tile-card collection" href="games/collections/cartridge-games.html">
+                <img src="resources/images/genres/cartridge.png" alt="Cartridge Games" class="tile-image">
+                <div>
+                    <div class="tile-text-main">C64 CARTRIDGE GAMES</div>
+                    <div class="tile-text-sub">INSTANT-LOAD CLASSICS</div>
+                </div>
+                <div class="tile-accent-pill">ROM</div>
+            </a>
+
+            <a class="tile-card collection" href="games/collections/licensed-games.html">
+                <img src="resources/images/genres/licensed.png" alt="Licensed Games" class="tile-image">
+                <div>
+                    <div class="tile-text-main">LICENSED GAMES</div>
+                    <div class="tile-text-sub">MOVIES, TV &amp; CARTOONS</div>
+                </div>
+                <div class="tile-accent-pill">IP</div>
+            </a>
+
+            <a class="tile-card collection" href="games/collections/top-picks.html">
+                <img src="resources/images/genres/top-picks.png" alt="Top Picks Collection" class="tile-image">
+                <div>
+                    <div class="tile-text-main">TOP PICKS COLLECTION</div>
+                    <div class="tile-text-sub">JOE'S BIG THUMBS UP</div>
+                </div>
+                <div class="tile-accent-pill">★ CCG</div>
+            </a>
+        </section>
+
+        <!-- SOCIALS -->
+        <section class="social-section">
+            <h2 class="section-title">
+                <i class="fa-solid fa-users"></i> COMMUNITY LINKS
+            </h2>
+
+            <div class="social-strip">
+                <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener"
+                   class="social-link-item">
+                    <i class="fa-brands fa-youtube"></i> YOUTUBE
+                </a>
+                <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank" rel="noopener"
+                   class="social-link-item">
+                    <i class="fa-brands fa-patreon"></i> PATREON
+                </a>
+                <a href="https://facebook.com/cheekycommodoregamer" target="_blank" rel="noopener"
+                   class="social-link-item">
+                    <i class="fa-brands fa-facebook"></i> FACEBOOK
+                </a>
+                <a href="https://twitter.com/CheekyC64Gamer" target="_blank" rel="noopener"
+                   class="social-link-item">
+                    <i class="fa-brands fa-x-twitter"></i> TWITTER
+                </a>
+                <a href="https://discord.gg/83Xw9ktAn4" target="_blank" rel="noopener"
+                   class="social-link-item">
+                    <i class="fa-brands fa-discord"></i> DISCORD
+                </a>
+                <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" rel="noopener"
+                   class="social-link-item">
+                    <i class="fa-brands fa-paypal"></i> PAYPAL
+                </a>
+            </div>
+        </section>
+
+        <div class="footer-note">
+            Built for nostalgic joystick wizards. Another visitor... stay a while, stay forever. 😇🕹️👌
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // ====== MODE TOGGLE (C64 / AMIGA) ======
+    const body = document.body;
+    const modeSwitch = document.getElementById('modeSwitch');
+    const modeLabel = modeSwitch.querySelector('.mode-label-text');
+
+    function applyMode(mode) {
+        if (mode === 'amiga') {
+            body.classList.remove('c64-mode');
+            body.classList.add('amiga-mode');
+            if (modeLabel) modeLabel.textContent = 'AMIGA MODE';
+        } else {
+            body.classList.remove('amiga-mode');
+            body.classList.add('c64-mode');
+            if (modeLabel) modeLabel.textContent = 'C64 MODE';
+        }
+        try { localStorage.setItem('ccg_mode', mode); } catch (e) {}
+    }
+
+    // initial mode
+    (function initMode(){
+        let saved = null;
+        try { saved = localStorage.getItem('ccg_mode'); } catch (e) {}
+        applyMode(saved === 'amiga' ? 'amiga' : 'c64');
+    })();
+
+    modeSwitch.addEventListener('click', () => {
+        const isC64 = body.classList.contains('c64-mode');
+        applyMode(isC64 ? 'amiga' : 'c64');
+    });
+
+    // placeholder for future easter-egg
+    document.getElementById('helpLink').addEventListener('click', () => {
+        alert("Secret help / easter egg panel coming soon!");
+    });
+
+    // ====== FEATURED VIDEOS (YouTube API, same approach as old site) ======
+    const API_KEY = "AIzaSyABtgqVHmOrfzw2DLE-3ta3OmlaQ0ad_t8";
+    const C64_PLAYLIST_ID   = "PL_TYjnCNYSex7dxxCMMuOsjzcXE1VNiR9";
+    const AMIGA_PLAYLIST_ID = "PL_TYjnCNYSezw55SVAMN2_UhdH3gCca1n";
+
+    async function fetchAllVideoIds(playlistId) {
+        let videos = [];
+        let nextPageToken = "";
+        let pageCount = 0;
+
+        try {
+            do {
+                const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&pageToken=${nextPageToken}&playlistId=${playlistId}&key=${API_KEY}`;
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data.items) {
+                    videos = videos.concat(
+                        data.items.map(item => item.snippet.resourceId.videoId)
+                    );
+                }
+                nextPageToken = data.nextPageToken || "";
+                pageCount++;
+            } while (nextPageToken && pageCount < 3);
+        } catch (err) {
+            console.error("YouTube API error", err);
+        }
+
+        return videos;
+    }
+
+    function displayVideo(containerId, videoId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        const wrapper = container.querySelector('.video-wrapper');
+        if (!wrapper) return;
+
+        if (!videoId) {
+            wrapper.innerHTML = '<div class="loading-text">NO SIGNAL</div>';
+            return;
+        }
+
+        wrapper.innerHTML =
+            `<iframe src="https://www.youtube.com/embed/${videoId}"
+                     title="YouTube playback"
+                     loading="lazy"
+                     frameborder="0"
+                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                     allowfullscreen></iframe>`;
+    }
+
+    async function setupFeaturedVideos() {
+        const [c64Ids, amigaIds] = await Promise.all([
+            fetchAllVideoIds(C64_PLAYLIST_ID),
+            fetchAllVideoIds(AMIGA_PLAYLIST_ID)
+        ]);
+
+        const c64 = c64Ids.length
+            ? c64Ids[Math.floor(Math.random() * c64Ids.length)]
+            : null;
+        const amiga = amigaIds.length
+            ? amigaIds[Math.floor(Math.random() * amigaIds.length)]
+            : null;
+
+        displayVideo("featured-c64", c64);
+        displayVideo("featured-amiga", amiga);
+    }
+
+    document.addEventListener('DOMContentLoaded', setupFeaturedVideos);
+</script>
+
+</body>
+</html>
