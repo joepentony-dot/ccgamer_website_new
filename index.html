@@ -10,17 +10,23 @@
 
     <style>
         :root {
-            --c64-blue: #352879;
-            --c64-light-blue: #6c5eb5;
-            --c64-text: #b8c76f;
-            --c64-black: #000000;
-            --c64-white: #ffffff;
+            --c64-blue:   #352879;
+            --c64-light:  #6c5eb5;
+            --c64-text:   #b8c76f;
+            --c64-black:  #000000;
+            --c64-white:  #ffffff;
             --c64-purple: #cc44cc;
             --c64-yellow: #feff6c;
-            --c64-brown: #664400;
-            --c64-green: #55cc55;
-            --c64-blue2: #6c5eb5;
-            --c64-cyan: #00ffff;
+            --c64-brown:  #664400;
+            --c64-green:  #55cc55;
+            --c64-blue2:  #5c6cff;
+            --c64-cyan:   #00ffff;
+            --c64-pink:   #ff66ff;
+            --c64-red:    #ff3333;
+            --c64-grey:   #aaaaaa;
+            --c64-teal:   #00ccaa;
+            --c64-orange: #ff9900;
+            --c64-lime:   #88ff44;
         }
 
         html, body {
@@ -32,7 +38,7 @@
             overflow: hidden;
         }
 
-        /* FULLSCREEN INTRO WRAPPER */
+        /* FULLSCREEN INTRO */
         #intro-screen {
             position: fixed;
             inset: 0;
@@ -43,27 +49,26 @@
             z-index: 9000;
         }
 
-        /* C64 SCREEN (no border around entire screen) */
         .c64-screen {
             position: relative;
             background: var(--c64-blue);
-            padding: 14px 24px;
-            width: min(1200px, 94vw);
-            height: min(820px, 90vh);
-            overflow: hidden;
+            padding: 16px 28px;
+            width: min(1200px, 96vw);
+            height: min(820px, 92vh);
             box-sizing: border-box;
+            overflow: hidden;
         }
 
         .c64-line {
-            color: var(--c64-light-blue);
+            color: var(--c64-light);
             font-size: 28px;
             letter-spacing: 1px;
         }
 
         .c64-loader-output {
-            margin-top: 20px;
+            margin-top: 32px;  /* lower the text area */
             font-size: 28px;
-            color: var(--c64-light-blue);
+            color: var(--c64-light);
             white-space: pre-wrap;
             line-height: 1.3;
         }
@@ -71,10 +76,10 @@
         .c64-cursor {
             display: inline-block;
             width: 16px;
-            height: 1.35em;
-            background: var(--c64-light-blue);
-            animation: blink-cursor 0.8s steps(1,end) infinite;
+            height: 1.4em;
+            background: var(--c64-light);
             margin-left: 6px;
+            animation: blink-cursor 0.8s steps(1,end) infinite;
         }
 
         @keyframes blink-cursor {
@@ -102,8 +107,8 @@
             color:#880000;
         }
 
-        /* CRT scanlines (less prominent per your request) */
-        .crt-overlay {
+        /* CRT SCANLINES (ONLY WHEN NO RASTER BARS) */
+        #crtOverlay {
             position: fixed;
             inset: 0;
             pointer-events: none;
@@ -120,46 +125,58 @@
                     rgba(0,0,255,0.04)
                 );
             background-size: 100% 2px, 3px 100%;
-            opacity: 0.5;
+            opacity: 0.45;
+            transition: opacity 0.15s linear;
         }
 
-        /* AUTHENTIC RASTER BARS — STRICT “A” ORDER FROM YOUR IMAGE */
-        .raster-bars {
+        #crtOverlay.hidden {
+            opacity: 0; /* off when raster bars active */
+        }
+
+        /* RASTER BARS — repeating pattern inspired by your image */
+        #rasterBars {
             position: absolute;
             inset: 0;
             pointer-events: none;
             opacity: 0;
             image-rendering: pixelated;
-            background: repeating-linear-gradient(
-                to bottom,
-                var(--c64-black) 0px,   var(--c64-black) 6px,
-                var(--c64-white) 6px,   var(--c64-white) 12px,
-                var(--c64-purple) 12px, var(--c64-purple) 18px,
-                var(--c64-yellow) 18px, var(--c64-yellow) 24px,
-                var(--c64-brown) 24px,  var(--c64-brown) 30px,
-                var(--c64-green) 30px,  var(--c64-green) 36px,
-                var(--c64-blue2) 36px,  var(--c64-blue2) 42px,
-                var(--c64-cyan) 42px,   var(--c64-cyan) 48px
-            );
+            background:
+                repeating-linear-gradient(
+                    to bottom,
+                    var(--c64-blue)   0px,  var(--c64-blue)    4px,
+                    var(--c64-white)  4px,  var(--c64-white)   8px,
+                    var(--c64-purple) 8px,  var(--c64-purple)  12px,
+                    var(--c64-yellow) 12px, var(--c64-yellow)  16px,
+                    var(--c64-brown)  16px, var(--c64-brown)   20px,
+                    var(--c64-green)  20px, var(--c64-green)   24px,
+                    var(--c64-blue2)  24px, var(--c64-blue2)   28px,
+                    var(--c64-cyan)   28px, var(--c64-cyan)    32px,
+                    var(--c64-pink)   32px, var(--c64-pink)    36px,
+                    var(--c64-red)    36px, var(--c64-red)     40px,
+                    var(--c64-grey)   40px, var(--c64-grey)    44px,
+                    var(--c64-teal)   44px, var(--c64-teal)    48px,
+                    var(--c64-orange) 48px, var(--c64-orange)  52px,
+                    var(--c64-lime)   52px, var(--c64-lime)    56px
+                );
         }
 
-        .raster-bars.active {
-            opacity:0.92;
-            animation: barscroll 0.9s linear infinite, barjitter 0.07s infinite;
+        #rasterBars.active {
+            opacity: 0.96;
+            animation: barscroll 0.8s linear infinite, barjitter 0.06s infinite;
         }
 
         @keyframes barscroll {
-            0% { background-position: 0 0; }
-            100% { background-position: 0 300px; }
+            0%   { background-position: 0 0; }
+            100% { background-position: 0 320px; }
         }
 
         @keyframes barjitter {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-1px); }
+            0%   { transform: translateY(0px); }
+            50%  { transform: translateY(-1px); }
             100% { transform: translateY(0px); }
         }
 
-        /* MAIN SITE PLACEHOLDER */
+        /* MAIN SITE PLACEHOLDER (to be replaced later) */
         #main-site {
             display: none;
             height: 100vh;
@@ -167,14 +184,29 @@
             color: var(--c64-text);
             padding: 40px;
         }
+
+        @media (max-width: 600px) {
+            .c64-screen {
+                width: 96vw;
+                height: auto;
+                padding: 10px 14px;
+            }
+            .c64-line,
+            .c64-loader-output {
+                font-size: 20px;
+            }
+            #skip-intro-btn {
+                font-size: 16px;
+                padding: 6px 10px;
+            }
+        }
     </style>
 </head>
 
 <body>
 
-<div class="crt-overlay"></div>
+<div id="crtOverlay"></div>
 
-<!-- INTRO -->
 <div id="intro-screen">
     <div class="c64-screen">
         <div class="c64-line">**** COMMODORE 64 BASIC V2 ****</div>
@@ -184,7 +216,7 @@
         <div id="c64-loader-output" class="c64-loader-output"></div>
         <span id="c64-cursor" class="c64-cursor"></span>
 
-        <div id="rasterBars" class="raster-bars"></div>
+        <div id="rasterBars"></div>
     </div>
 </div>
 
@@ -194,17 +226,18 @@
     <source src="resources/audio/c64_speech_stayawhile.mp3" type="audio/mpeg">
 </audio>
 
-<!-- MAIN SITE PLACEHOLDER -->
 <div id="main-site">
     <h1>MAIN SITE PLACEHOLDER</h1>
+    <p>Once we are happy with the loader, we’ll drop the full homepage in here.</p>
 </div>
 
 <script>
-(function(){
+(function () {
     const output = document.getElementById('c64-loader-output');
     const cursor = document.getElementById('c64-cursor');
     const audio  = document.getElementById('intro-audio');
     const bars   = document.getElementById('rasterBars');
+    const crt    = document.getElementById('crtOverlay');
     const intro  = document.getElementById('intro-screen');
     const main   = document.getElementById('main-site');
     const skip   = document.getElementById('skip-intro-btn');
@@ -212,74 +245,94 @@
     let finished = false;
 
     const lines = [
-        { txt:'LOAD ""', wait:600 },
-        { txt:'PRESS PLAY ON TAPE', wait:1200, audio:true },
-        { txt:'OK', wait:700 },
-        { txt:'SEARCHING', wait:900 },
-        { txt:'FOUND CHEEKY COMMODORE GAMER', wait:1100 },
-        { txt:'LOADING', wait:800, bars:true },
-        { txt:'', wait:300 },
-        { txt:'ANOTHER VISITOR...', wait:1200 },
-        { txt:'STAY A WHILE...', wait:1200 },
-        { txt:'STAY FOREVER!', wait:2000 }
+        { txt: 'LOAD ""',                        wait: 700,  audio: true }, // audio now starts here
+        { txt: 'PRESS PLAY ON TAPE',            wait: 1000 },
+        { txt: 'OK',                            wait: 700 },
+        { txt: 'SEARCHING',                     wait: 900 },
+        { txt: 'FOUND CHEEKY COMMODORE GAMER',  wait: 1000 },
+        { txt: 'LOADING',                       wait: 800,  bars: true },
+        { txt: '',                              wait: 300 },
+        { txt: 'ANOTHER VISITOR...',            wait: 1100 },
+        { txt: 'STAY A WHILE...',               wait: 1100 },
+        { txt: 'STAY FOREVER!',                 wait: 1600 }
     ];
 
-    function typeLine(text){
-        return new Promise(res=>{
-            if(text===''){ output.textContent += '\n'; return res(); }
-            let i=0;
-            const int=setInterval(()=>{
-                output.textContent+=text.charAt(i);
+    function typeLine(text) {
+        return new Promise(resolve => {
+            if (text === '') {
+                output.textContent += '\n';
+                return resolve();
+            }
+            let i = 0;
+            const interval = setInterval(() => {
+                output.textContent += text.charAt(i);
                 i++;
-                if(i>=text.length){
-                    clearInterval(int);
-                    output.textContent+='\n';
-                    res();
+                if (i >= text.length) {
+                    clearInterval(interval);
+                    output.textContent += '\n';
+                    resolve();
                 }
-            },45);
+            }, 45);
         });
     }
 
-    function playAudio(){
+    function startAudio() {
+        if (!audio) return;
         audio.currentTime = 0;
         audio.muted = true;
 
-        audio.play().then(()=>{
-            setTimeout(()=>audio.muted=false,100);
-        }).catch(()=>{
-            window.addEventListener('click', ()=>{
-                audio.muted=false;
-                audio.play().catch(()=>{});
-            }, {once:true});
+        audio.play().then(() => {
+            setTimeout(() => { audio.muted = false; }, 100);
+        }).catch(() => {
+            // Autoplay blocked: start on first click or key press
+            const unlock = () => {
+                audio.muted = false;
+                audio.currentTime = 0;
+                audio.play().catch(() => {});
+                window.removeEventListener('click', unlock);
+                window.removeEventListener('keydown', unlock);
+            };
+            window.addEventListener('click', unlock, { once: true });
+            window.addEventListener('keydown', unlock, { once: true });
         });
+
+        // Hard fallback: ensure we continue even if audio never fires "ended"
+        setTimeout(showMain, 9500); // ~9.5s safety
     }
 
-    function showMain(){
-        if(finished) return;
-        finished=true;
-        audio.pause();
-        intro.style.display='none';
-        main.style.display='block';
-        document.body.style.overflow='auto';
+    function activateBars() {
+        if (bars) bars.classList.add('active');
+        if (crt)  crt.classList.add('hidden');  // turn OFF scanlines while bars active
+    }
+
+    function showMain() {
+        if (finished) return;
+        finished = true;
+
+        try { audio.pause(); } catch(e) {}
+        if (intro) intro.style.display = 'none';
+        if (main)  main.style.display  = 'block';
+
+        document.body.style.overflow = 'auto';
     }
 
     skip.addEventListener('click', showMain);
 
-    async function run(){
-        for(const step of lines){
+    async function runIntro() {
+        for (const step of lines) {
             await typeLine(step.txt);
 
-            if(step.audio) playAudio();
-            if(step.bars)  bars.classList.add('active');
+            if (step.audio) startAudio();
+            if (step.bars)  activateBars();
 
-            await new Promise(r=>setTimeout(r, step.wait));
+            await new Promise(r => setTimeout(r, step.wait));
         }
 
-        // GUARANTEED continuation
-        setTimeout(showMain, 500);
+        // Extra short delay for final line then move on
+        setTimeout(showMain, 600);
     }
 
-    window.addEventListener('load', run);
+    window.addEventListener('load', runIntro);
 })();
 </script>
 
