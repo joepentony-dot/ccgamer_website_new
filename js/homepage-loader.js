@@ -1,212 +1,168 @@
-// ================================================================
-// CHEEKY COMMODORE GAMER – HOMEPAGE INTRO CONTROLLER (FINAL)
-// ------------------------------------------------
-// - C64 boot screen → raster bars → audio speech
-// - Autoplay on first visit (desktop); graceful fallback
-// - Skip Intro button
-// - Remembers if user has seen intro (localStorage)
-// - "Replay Intro" button in footer
-// ================================================================
+/* ===========================================================
+   CHEEKY COMMODORE GAMER — HOMEPAGE INTRO CONTROLLER
+   Authentic C64 loading-style raster flicker + SID speech
+   =========================================================== */
 
-(function () {
-  const BOOT_TEXT = [
-    "**** COMMODORE 64 BASIC V2 ****",
-    " 64K RAM SYSTEM  38911 BASIC BYTES FREE",
-    "",
-    "READY.",
-    'LOAD "CCG",8,1',
-    "RUN"
-  ].join("\n");
+let rasterCanvas, rasterCtx;
+let rasterAnimId = null;
+let introRunning = true;
 
-  const INTRO_KEY = "ccg_intro_seen";
+// Classic-ish C64 palette
+const C64_COLORS = [
+  '#000000', // black
+  '#ffffff', // white
+  '#68372b', // brown
+  '#70a4b2', // light red-ish cyan
+  '#6f3d86', // purple
+  '#588d43', // green
+  '#352879', // dark blue
+  '#b8c76f', // light green
+  '#6f4f25', // dark brown
+  '#433900', // dark grey-ish brown
+  '#9a6759', // light brown
+  '#444444', // dark grey
+  '#6c6c6c', // medium grey
+  '#9ad284', // pale green
+  '#6c5eb5', // light blue
+  '#959595'  // light grey
+];
 
-  const body = document.body;
-  const overlay = document.getElementById("intro-overlay");
-  const bootPhase = document.getElementById("boot-phase");
-  const rasterPhase = document.getElementById("raster-phase");
-  const bootTextEl = document.getElementById("boot-text");
-  const audioEl = document.getElementById("intro-audio");
-  const skipBtn = document.getElementById("skip-intro");
-  const enableSoundBtn = document.getElementById("enable-sound");
-  const replayBtn = document.getElementById("replay-intro");
+document.addEventListener('DOMContentLoaded', () => {
+  const overlay = document.getElementById('intro-overlay');
+  const homepage = document.getElementById('homepage-content');
+  const skipBtn = document.getElementById('skip-intro');
+  const audio = document.getElementById('intro-audio');
 
-  let bootTimer = null;
-  let rasterTimeout = null;
-  let typingIndex = 0;
-
-  function hasSeenIntro() {
-    try {
-      return localStorage.getItem(INTRO_KEY) === "1";
-    } catch (e) {
-      return false;
-    }
+  rasterCanvas = document.getElementById('raster-canvas');
+  if (rasterCanvas) {
+    rasterCtx = rasterCanvas.getContext('2d');
+    handleResize();
+    window.addEventListener('resize', handleResize);
   }
 
-  function markIntroSeen() {
-    try {
-      localStorage.setItem(INTRO_KEY, "1");
-    } catch (e) {
-      // ignore
-    }
+  if (homepage) {
+    // Keep homepage hidden until intro finishes
+    homepage.classList.remove('homepage-show');
   }
 
-  function clearTimers() {
-    if (bootTimer) clearInterval(bootTimer);
-    if (rasterTimeout) clearTimeout(rasterTimeout);
-  }
-
-  function showBootPhase() {
-    bootPhase.classList.remove("hidden");
-    rasterPhase.classList.add("hidden");
-    bootTextEl.textContent = "";
-    typingIndex = 0;
-
-    const text = BOOT_TEXT;
-    bootTimer = setInterval(() => {
-      bootTextEl.textContent = text.slice(0, typingIndex);
-      typingIndex++;
-      if (typingIndex > text.length) {
-        clearInterval(bootTimer);
-        // small pause then move to raster
-        rasterTimeout = setTimeout(showRasterPhase, 800);
-      }
-    }, 35);
-  }
-
-  function showRasterPhase() {
-    bootPhase.classList.add("hidden");
-    rasterPhase.classList.remove("hidden");
-
-    // Try autoplay audio
-    if (audioEl) {
-      audioEl.currentTime = 0;
-      const playPromise = audioEl.play();
-      if (playPromise && typeof playPromise.then === "function") {
-        playPromise.catch(() => {
-          // Autoplay blocked → show "Enable Sound" button
-          if (enableSoundBtn) {
-            enableSoundBtn.classList.remove("hidden");
-          }
-        });
-      }
-      audioEl.onended = () => {
-        // When the speech finishes, finish the intro
-        finishIntro();
-      };
-    }
-
-    // Failsafe: if audio doesn't end for any reason, exit after ~12s
-    rasterTimeout = setTimeout(() => {
-      finishIntro();
-    }, 12000);
-  }
-
-  function finishIntro() {
-    clearTimers();
-    markIntroSeen();
-
-    if (audioEl) {
-      audioEl.onended = null;
-      try {
-        audioEl.pause();
-      } catch (e) {}
-    }
-
-    if (overlay) {
-      overlay.classList.add("intro-hidden");
-      // Allow CSS transition to finish then remove
-      setTimeout(() => {
-        if (overlay && overlay.parentNode) {
-          overlay.parentNode.removeChild(overlay);
-        }
-      }, 800);
-    }
-
-    body.classList.remove("intro-active");
-  }
-
-  function startFullIntro() {
-    if (!overlay) {
-      body.classList.remove("intro-active");
-      return;
-    }
-    body.classList.add("intro-active");
-    overlay.classList.remove("intro-hidden");
-
-    showBootPhase();
-  }
-
-  function skipIntro() {
-    finishIntro();
-  }
-
-  function enableSound() {
-    if (!audioEl) return;
-    enableSoundBtn.classList.add("hidden");
-    audioEl.currentTime = 0;
-    audioEl.play().catch(() => {
-      // If still blocked, just continue the intro silently
+  if (skipBtn) {
+    skipBtn.addEventListener('click', () => {
+      endIntro(true);
     });
   }
 
-  function replayIntro() {
-    // Clear the flag and reload page to re-run
-    try {
-      localStorage.removeItem(INTRO_KEY);
-    } catch (e) {}
-    window.location.reload();
+  if (audio) {
+    audio.addEventListener('ended', () => {
+      endIntro(false);
+    });
   }
 
-  // ------------------------------------------------
-  // Init on DOM ready
-  // ------------------------------------------------
-  document.addEventListener("DOMContentLoaded", () => {
-    const seen = hasSeenIntro();
+  // Phase 1: show boot screen for ~2 seconds
+  setTimeout(() => {
+    if (!introRunning) return;
+    overlay.classList.add('phase-raster');
+    startRaster();
+    attemptPlayAudio();
+  }, 2200);
 
-    if (!overlay) {
-      // No overlay present → just show site
-      body.classList.remove("intro-active");
-      return;
+  // Safety timeout: if audio never fires, end intro after 12s
+  setTimeout(() => {
+    if (introRunning) {
+      endIntro(false);
+    }
+  }, 12000);
+});
+
+function handleResize() {
+  if (!rasterCanvas) return;
+  const rect = rasterCanvas.getBoundingClientRect();
+  rasterCanvas.width = rect.width;
+  rasterCanvas.height = rect.height;
+}
+
+function startRaster() {
+  if (!rasterCtx || !rasterCanvas) return;
+  introRunning = true;
+  drawRasterFrame();
+}
+
+function drawRasterFrame() {
+  if (!introRunning || !rasterCtx || !rasterCanvas) return;
+
+  const w = rasterCanvas.width;
+  const h = rasterCanvas.height;
+
+  // Flickery loading-style stripes
+  let y = 0;
+  while (y < h) {
+    const barHeight = 3 + Math.floor(Math.random() * 10); // 3–12px
+    const color = C64_COLORS[Math.floor(Math.random() * C64_COLORS.length)];
+
+    rasterCtx.fillStyle = color;
+    rasterCtx.fillRect(0, y, w, barHeight);
+
+    // Occasional thin black divider to mimic CRT noise
+    if (Math.random() < 0.35) {
+      rasterCtx.fillStyle = '#000000';
+      rasterCtx.fillRect(0, y + barHeight - 1, w, 1);
     }
 
-    if (seen) {
-      // User has already seen the epic intro → skip immediately
-      body.classList.remove("intro-active");
-      overlay.classList.add("intro-hidden");
-      setTimeout(() => {
-        if (overlay && overlay.parentNode) {
-          overlay.parentNode.removeChild(overlay);
-        }
-      }, 800);
-    } else {
-      startFullIntro();
-    }
+    y += barHeight;
+  }
 
-    if (skipBtn) {
-      skipBtn.addEventListener("click", skipIntro);
-    }
+  // Slight extra noise overlay
+  if (Math.random() < 0.5) {
+    rasterCtx.globalAlpha = 0.08;
+    rasterCtx.fillStyle = '#000000';
+    rasterCtx.fillRect(0, 0, w, h);
+    rasterCtx.globalAlpha = 1.0;
+  }
 
-    if (enableSoundBtn) {
-      enableSoundBtn.addEventListener("click", enableSound);
-    }
+  rasterAnimId = requestAnimationFrame(drawRasterFrame);
+}
 
-    if (replayBtn) {
-      replayBtn.addEventListener("click", replayIntro);
-    }
+async function attemptPlayAudio() {
+  const audio = document.getElementById('intro-audio');
+  if (!audio) return;
 
-    // Also allow any key or click during boot to jump to raster
-    if (bootPhase) {
-      bootPhase.addEventListener("click", showRasterPhase);
-      document.addEventListener("keydown", (e) => {
-        if (body.classList.contains("intro-active") &&
-            !rasterPhase.classList.contains("hidden")) {
-          // Already in raster phase → let skip handle it
-          return;
-        }
-        if (body.classList.contains("intro-active")) {
-          showRasterPhase();
-        }
-      });
-    }
-  });
-})();
+  try {
+    await audio.play();
+  } catch (err) {
+    // Browser blocked autoplay; keep everything visual only
+    console.warn('Intro audio autoplay was blocked by the browser:', err);
+    document.body.classList.add('intro-muted');
+  }
+}
+
+function endIntro(fromSkip) {
+  if (!introRunning) return;
+  introRunning = false;
+
+  if (rasterAnimId !== null) {
+    cancelAnimationFrame(rasterAnimId);
+    rasterAnimId = null;
+  }
+
+  const overlay = document.getElementById('intro-overlay');
+  const homepage = document.getElementById('homepage-content');
+  const audio = document.getElementById('intro-audio');
+
+  if (audio && !audio.paused) {
+    audio.pause();
+    audio.currentTime = 0;
+  }
+
+  if (overlay) {
+    overlay.classList.add('intro-fade-out');
+    // Remove from DOM after fade
+    setTimeout(() => {
+      if (overlay && overlay.parentNode) {
+        overlay.parentNode.removeChild(overlay);
+      }
+    }, 900);
+  }
+
+  if (homepage) {
+    homepage.classList.add('homepage-show');
+  }
+}
