@@ -207,17 +207,6 @@
             50% { transform: translateY(-1px); }
             100%{ transform: translateY(0px); }
         }
-
-        /* -------------------------
-           MAIN SITE
-           ------------------------- */
-        #main-site {
-            display: none;
-            background: var(--c64-blue);
-            color: var(--c64-text);
-            height: 100vh;
-            padding: 40px;
-        }
     </style>
 </head>
 
@@ -245,24 +234,18 @@
 </div>
 <div id="loader-crt"></div>
 
+<!-- RASTER BARS -->
 <div id="rasterBars"></div>
 
 <audio id="introAudio" preload="auto">
     <source src="resources/audio/c64_speech_stayawhile.mp3" type="audio/mpeg">
 </audio>
 
-<!-- MAIN SITE -->
-<div id="main-site">
-    <h1>Main site active</h1>
-</div>
-
 <script>
 (function(){
 
     const power   = document.getElementById('power-screen');
     const loader  = document.getElementById('loader-screen');
-    const main    = document.getElementById('main-site');
-
     const skipBtn = document.getElementById('skip-btn');
 
     const output  = document.getElementById('loader-output');
@@ -290,21 +273,17 @@
     /* -------------------------
        SKIP INTRO
        ------------------------- */
-    skipBtn.addEventListener('click', showMain);
+    skipBtn.addEventListener('click', goToHub);
 
-    function showMain() {
+    function goToHub() {
         if (finished) return;
         finished = true;
-        try { audio.pause(); } catch(e){}
-        
-        power.style.display  = 'none';
-        powerCRT.style.display = 'none';
-        loader.style.display = 'none';
-        bars.classList.remove('active');
-        loaderCRT.style.opacity = 0;
 
-        main.style.display   = 'block';
-        document.body.style.overflow = 'auto';
+        try { audio.pause(); } catch(e){}
+        try { audio.currentTime = 0; } catch(e){}
+
+        // Redirect to actual hub
+        window.location.href = "complete-index.html";
     }
 
     /* -------------------------
@@ -365,7 +344,10 @@
         bars.classList.add('active');
         loaderCRT.style.opacity = 0;
 
-        setTimeout(showMain, 3000);
+        // After raster bars + speech → go to hub
+        setTimeout(() => {
+            if (!finished) goToHub();
+        }, 5500);
     }
 
     /* -------------------------
