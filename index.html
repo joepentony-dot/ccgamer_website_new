@@ -13,6 +13,8 @@
             --c64-blue:   #352879;
             --c64-light:  #6c5eb5;
             --c64-text:   #b8c76f;
+
+            /* Raster colours */
             --c64-black:  #000000;
             --c64-white:  #ffffff;
             --c64-purple: #cc44cc;
@@ -38,7 +40,9 @@
             overflow: hidden;
         }
 
-        /* FULLSCREEN INTRO */
+        /* ===========================
+           FULLSCREEN INTRO AREA
+           =========================== */
         #intro-screen {
             position: fixed;
             inset: 0;
@@ -56,7 +60,6 @@
             width: min(1200px, 96vw);
             height: min(820px, 92vh);
             box-sizing: border-box;
-            overflow: hidden;
         }
 
         .c64-line {
@@ -66,7 +69,7 @@
         }
 
         .c64-loader-output {
-            margin-top: 32px;  /* lowered text block */
+            margin-top: 32px;
             font-size: 28px;
             color: var(--c64-light);
             white-space: pre-wrap;
@@ -79,7 +82,7 @@
             height: 1.4em;
             background: var(--c64-light);
             margin-left: 6px;
-            animation: blink-cursor 0.8s steps(1,end) infinite;
+            animation: blink-cursor 0.8s steps(1, end) infinite;
         }
 
         @keyframes blink-cursor {
@@ -87,12 +90,13 @@
             50%,100% { opacity:0; }
         }
 
-        /* SKIP BUTTON */
+        /* ===========================
+           SKIP BUTTON - ALWAYS ON TOP
+           =========================== */
         #skip-intro-btn {
             position: fixed;
             top: 10px;
             right: 10px;
-            z-index: 10001;
             background: #880000;
             color: #fff;
             border: 2px solid #fff;
@@ -100,6 +104,8 @@
             font-size: 20px;
             cursor: pointer;
             box-shadow: 4px 4px 0 #000;
+            z-index: 999999 !important;
+            pointer-events: auto !important;
         }
 
         #skip-intro-btn:hover {
@@ -107,36 +113,33 @@
             color:#880000;
         }
 
-        /* CRT SCANLINES (off when raster bars active) */
+        /* ===========================
+           CRT SCANLINES (DISABLED WHEN RASTER BARS ACTIVE)
+           =========================== */
         #crtOverlay {
             position: fixed;
             inset: 0;
             pointer-events: none;
             z-index: 9500;
             background:
-                linear-gradient(
-                    rgba(0,0,0,0) 50%,
-                    rgba(0,0,0,0.15) 50%
-                ),
-                linear-gradient(
-                    90deg,
-                    rgba(255,0,0,0.04),
-                    rgba(0,255,0,0.02),
-                    rgba(0,0,255,0.04)
-                );
+                linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,0.15) 50%),
+                linear-gradient(90deg, rgba(255,0,0,0.04), rgba(0,255,0,0.02), rgba(0,0,255,0.04));
             background-size: 100% 2px, 3px 100%;
             opacity: 0.45;
             transition: opacity 0.15s linear;
         }
+
         #crtOverlay.hidden {
             opacity: 0;
         }
 
-        /* FULL-SCREEN RASTER BARS — THICKER, REPEATING PATTERN */
+        /* ===========================
+           FULLSCREEN RASTER BARS
+           =========================== */
         #rasterBars {
             position: fixed;
             inset: 0;
-            pointer-events: none;
+            pointer-events: none !important;
             opacity: 0;
             image-rendering: pixelated;
             z-index: 9400;
@@ -159,43 +162,32 @@
                     var(--c64-lime) 104px,  var(--c64-lime)   112px
                 );
         }
+
         #rasterBars.active {
             opacity: 0.96;
             animation: barscroll 0.8s linear infinite, barjitter 0.06s infinite;
         }
+
         @keyframes barscroll {
             0%   { background-position: 0 0; }
             100% { background-position: 0 320px; }
         }
+
         @keyframes barjitter {
             0%   { transform: translateY(0px); }
             50%  { transform: translateY(-1px); }
             100% { transform: translateY(0px); }
         }
 
-        /* MAIN SITE PLACEHOLDER */
+        /* ===========================
+           MAIN SITE PLACEHOLDER
+           =========================== */
         #main-site {
             display: none;
             height: 100vh;
             background: var(--c64-blue);
             color: var(--c64-text);
             padding: 40px;
-        }
-
-        @media (max-width: 600px) {
-            .c64-screen {
-                width: 96vw;
-                height: auto;
-                padding: 10px 14px;
-            }
-            .c64-line,
-            .c64-loader-output {
-                font-size: 20px;
-            }
-            #skip-intro-btn {
-                font-size: 16px;
-                padding: 6px 10px;
-            }
         }
     </style>
 </head>
@@ -224,7 +216,6 @@
 
 <div id="main-site">
     <h1>MAIN SITE PLACEHOLDER</h1>
-    <p>Once we are happy with the loader, we’ll drop the full homepage in here.</p>
 </div>
 
 <script>
@@ -239,8 +230,11 @@
 
     let finished = false;
 
+    /* ===========================
+       Loader sequence
+       =========================== */
     const lines = [
-        { txt: 'LOAD ""',                       wait: 600, audio: true }, // MP3 starts here
+        { txt: 'LOAD ""',                       wait: 600, triggerAudio: true },
         { txt: 'PRESS PLAY ON TAPE',           wait: 600 },
         { txt: 'OK',                           wait: 500 },
         { txt: 'SEARCHING',                    wait: 600 },
@@ -251,16 +245,26 @@
         { txt: 'STAY FOREVER!',                wait: 400 }
     ];
 
-    function typeLine(text) {
+    /* ===========================
+       TYPEWRITER WITH AUDIO TRIGGER INSIDE
+       =========================== */
+    function typeLine(text, triggerAudio = false) {
         return new Promise(resolve => {
             if (text === '') {
                 output.textContent += '\n';
                 return resolve();
             }
+
             let i = 0;
             const interval = setInterval(() => {
                 output.textContent += text.charAt(i);
                 i++;
+
+                /* 🔥 Audio starts the EXACT MOMENT LOAD "" finishes printing */
+                if (i === text.length && triggerAudio) {
+                    startAudio();
+                }
+
                 if (i >= text.length) {
                     clearInterval(interval);
                     output.textContent += '\n';
@@ -270,6 +274,9 @@
         });
     }
 
+    /* ===========================
+       MP3 START
+       =========================== */
     function startAudio() {
         if (!audio) return;
         audio.currentTime = 0;
@@ -278,7 +285,7 @@
         audio.play().then(() => {
             setTimeout(() => { audio.muted = false; }, 100);
         }).catch(() => {
-            // Autoplay blocked: only start on first CLICK (not ESC key)
+            // Only click unlock (ESC no longer triggers audio)
             const unlock = () => {
                 audio.muted = false;
                 audio.currentTime = 0;
@@ -287,43 +294,45 @@
             };
             window.addEventListener('click', unlock, { once: true });
         });
-        // Note: no timer here; main-page timing is controlled by raster bars
     }
 
+    /* ===========================
+       RASTER BARS – 3 second duration
+       =========================== */
     function activateBars() {
-        if (bars) {
-            bars.classList.add('active');
-        }
-        if (crt) {
-            crt.classList.add('hidden'); // hide scanlines for clean bar view
-        }
-        // After 3 seconds of raster bars, go to main page
+        if (bars) bars.classList.add('active');
+        if (crt)  crt.classList.add('hidden');
+
         setTimeout(showMain, 3000);
     }
 
+    /* ===========================
+       FINISH INTRO
+       =========================== */
     function showMain() {
         if (finished) return;
         finished = true;
 
         try { audio.pause(); } catch(e) {}
-        if (intro) intro.style.display = 'none';
-        if (main)  main.style.display  = 'block';
 
+        intro.style.display = 'none';
+        main.style.display  = 'block';
         document.body.style.overflow = 'auto';
     }
 
     skip.addEventListener('click', showMain);
 
+    /* ===========================
+       RUN FULL INTRO
+       =========================== */
     async function runIntro() {
         for (const step of lines) {
-            await typeLine(step.txt);
+            await typeLine(step.txt, step.triggerAudio);
 
-            if (step.audio) startAudio();
-            if (step.bars)  activateBars();
+            if (step.bars) activateBars();
 
             await new Promise(r => setTimeout(r, step.wait));
         }
-        // No extra delay; raster-bar timer handles exit
     }
 
     window.addEventListener('load', runIntro);
