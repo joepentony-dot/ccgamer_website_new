@@ -1,204 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cheeky Commodore Gamer</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cheeky Commodore Gamer</title>
 
-  <!-- Your global styles -->
-  <link rel="stylesheet" href="css/engine.css">
-  <link rel="stylesheet" href="resources/css/main.css">
-
-  <style>
-    /* ===============================
-       GLOBAL
-       =============================== */
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      background: #000;
-    }
-
+<style>
     body {
-      font-family: "VT323", "Courier New", monospace;
-      color: #ffffff;
+        margin: 0;
+        padding: 0;
+        background: black;
+        color: #00eaff;
+        font-family: 'VT323', monospace;
+        overflow: hidden;
     }
 
-    /* ===============================
-       INTRO OVERLAY — FULLSCREEN C64
-       =============================== */
-    #intro-overlay {
-      position: fixed;
-      inset: 0;
-      background: #000000;
-      display: flex;
-      align-items: stretch;
-      justify-content: stretch;
-      z-index: 9999;
-      opacity: 1;
-      transition: opacity 0.4s ease-out; /* fast, premium fade */
+    #intro-screen {
+        position: fixed;
+        inset: 0;
+        background: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        z-index: 9999;
     }
 
-    #intro-overlay.intro-fade-out {
-      opacity: 0;
-      pointer-events: none;
+    #scroll-text {
+        font-size: 32px;
+        text-align: center;
+        margin-bottom: 40px;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
     }
 
-    /* C64 screen fills entire viewport */
-    #c64-screen {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      background: #2b2bcb; /* C64 blue */
-      overflow: hidden;
-      padding: 3vh 4vw;
-      box-sizing: border-box;
-      color: #fefefe;
-      font-size: min(2.4vw, 18px);
-      line-height: 1.4;
-    }
-
-    /* Subtle static scanline vibe – toned down */
-    #c64-screen::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background:
-        repeating-linear-gradient(
-          to bottom,
-          rgba(0,0,0,0.18) 0px,
-          rgba(0,0,0,0.18) 1px,
-          transparent 2px,
-          transparent 3px
+    #raster-bars {
+        width: 100%;
+        height: 150px;
+        background: linear-gradient(
+            to bottom,
+            red, yellow, green, cyan, blue, magenta, red
         );
-      opacity: 0.18;
-      mix-blend-mode: multiply;
+        animation: wobble 1.2s infinite;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
     }
 
-    #boot-text {
-      position: relative;
-      white-space: pre-wrap;
-      z-index: 2;
+    @keyframes wobble {
+        0% { transform: translateY(0); }
+        50% { transform: translateY(10px); }
+        100% { transform: translateY(0); }
     }
 
-    #boot-cursor {
-      display: inline-block;
-      width: 0.6em;
-    }
-
-    .blink {
-      animation: blink 0.8s steps(1, start) infinite;
-    }
-
-    @keyframes blink {
-      0% { opacity: 1; }
-      50% { opacity: 0; }
-      100% { opacity: 1; }
-    }
-
-    /* Raster canvas phase */
-    #raster-canvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      display: none;
-      image-rendering: pixelated;
-      z-index: 1;
-    }
-
-    #intro-overlay.phase-raster #c64-screen {
-      background: #000000;
-      padding: 0;
-    }
-
-    #intro-overlay.phase-raster #boot-text {
-      display: none;
-    }
-
-    #intro-overlay.phase-raster #raster-canvas {
-      display: block;
-    }
-
-    /* Skip Intro button – the ONLY thing to click */
     #skip-intro {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      z-index: 10000;
-      background: #0040aa;
-      color: #fdfdfd;
-      border: 2px solid #9fdcff;
-      padding: 8px 18px;
-      font-family: "VT323", "Courier New", monospace;
-      font-size: 20px;
-      text-transform: uppercase;
-      cursor: pointer;
-      box-shadow: 0 0 14px rgba(0, 153, 255, 0.9);
+        margin-top: 40px;
+        padding: 10px 20px;
+        background: #00eaff;
+        border: none;
+        color: black;
+        font-size: 20px;
+        cursor: pointer;
+        border-radius: 4px;
     }
 
-    #skip-intro:hover {
-      background: #0060ff;
+    #main-site {
+        display: none;
+        padding: 20px;
     }
-
-    /* Homepage reveal */
-    #homepage-content {
-      min-height: 100vh;
-      opacity: 0;
-      transition: opacity 0.4s ease-in;
-    }
-
-    #homepage-content.homepage-show {
-      opacity: 1;
-    }
-
-    @media (max-width: 600px) {
-      #c64-screen {
-        padding: 3vh 3vw;
-        font-size: 12px;
-      }
-      #skip-intro {
-        font-size: 16px;
-        padding: 6px 14px;
-      }
-    }
-  </style>
+</style>
 </head>
+
 <body>
-  <!-- ==============================
-       INTRO: FULLSCREEN C64
-       ============================== -->
-  <div id="intro-overlay">
-    <div id="c64-screen">
-      <pre id="boot-text"></pre>
-      <canvas id="raster-canvas"></canvas>
-    </div>
 
-    <!-- SID speech (HTML audio element) -->
-    <audio id="intro-audio" preload="auto">
-      <source src="resources/audio/c64_speech_stayawhile.mp3" type="audio/mpeg">
-    </audio>
+<!-- 🔊 SID SPEECH -->
+<audio id="sidSpeech" preload="auto">
+    <source src="resources/audio/c64_speech_stayawhile.mp3" type="audio/mpeg">
+</audio>
 
-    <!-- Only interactive element -->
+<!-- ⭐ INTRO SCREEN -->
+<div id="intro-screen">
+    <div id="scroll-text">ANOTHER VISITOR...</div>
+    <div id="raster-bars"></div>
     <button id="skip-intro">SKIP INTRO</button>
-  </div>
+</div>
 
-  <!-- ==============================
-       MAIN HOMEPAGE CONTENT
-       ============================== -->
-  <div id="homepage-content">
-    <!-- Replace this placeholder with your proper homepage once ready -->
-    <main class="ccg-home">
-      <section class="hero">
-        <h1>Cheeky Commodore Gamer</h1>
-        <p>Curated C64 &amp; Amiga classics, quizzes, livestreams and SID greatness.</p>
-      </section>
-      <!-- Your real homepage layout goes here -->
-    </main>
-  </div>
+<!-- ⭐ YOUR MAIN SITE CONTENT (TEMP PLACEHOLDER) -->
+<div id="main-site">
+    <h1>WELCOME TO CHEEKY COMMODORE GAMER</h1>
+    <p>Main site will go here after intro.</p>
+</div>
 
-  <script src="js/homepage-loader.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const audio = document.getElementById("sidSpeech");
+    const intro = document.getElementById("intro-screen");
+    const main = document.getElementById("main-site");
+    const scrollText = document.getElementById("scroll-text");
+    const rasterBars = document.getElementById("raster-bars");
+    const skip = document.getElementById("skip-intro");
+
+    // ⭐ Start intro sequence
+    function startIntro() {
+        // Reveal text
+        setTimeout(() => {
+            scrollText.style.opacity = 1;
+        }, 200);
+
+        // Play the SID speech EXACTLY NOW
+        audio.volume = 1.0;
+        audio.play().catch(() => {
+            console.warn("Autoplay blocked — will start after first click.");
+        });
+
+        // Reveal raster bars
+        setTimeout(() => {
+            rasterBars.style.opacity = 1;
+        }, 1200);
+
+        // Automatically end intro when MP3 finishes
+        audio.onended = () => {
+            endIntro();
+        };
+    }
+
+    // ⭐ End intro → load site
+    function endIntro() {
+        intro.style.display = "none";
+        main.style.display = "block";
+    }
+
+    // ⭐ Skip button immediately stops audio + loads site
+    skip.addEventListener("click", () => {
+        audio.pause();
+        audio.currentTime = 0;
+        endIntro();
+    });
+
+    // ⭐ Start everything instantly
+    startIntro();
+});
+</script>
+
 </body>
 </html>
