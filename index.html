@@ -8,11 +8,11 @@
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 
     <style>
+
         :root {
             --c64-blue:   #352879;
             --c64-light:  #6c5eb5;
             --c64-text:   #b8c76f;
-
             --border-blue: #201856;
         }
 
@@ -25,7 +25,9 @@
             background: var(--c64-blue);
         }
 
-        /* C64 BORDER FRAME */
+        /* ==========================
+           C64 BORDER FRAME
+           ========================== */
         body::before {
             content: "";
             position: fixed;
@@ -36,7 +38,9 @@
             z-index: 99999;
         }
 
-        /* CRT CURVE */
+        /* ==========================
+           CRT CURVE / GLOW
+           ========================== */
         body::after {
             content: "";
             position: fixed;
@@ -50,9 +54,9 @@
             z-index: 99990;
         }
 
-        /* -----------------------
+        /* ==========================
            POWER-ON SCREEN
-           ----------------------- */
+           ========================== */
         #power-screen {
             position: fixed;
             inset: 0;
@@ -83,6 +87,7 @@
             50%,100% { opacity:0; }
         }
 
+        /* POWER CRT SCANLINES */
         #power-crt {
             position: fixed;
             inset: 0;
@@ -95,9 +100,9 @@
             opacity: 0.55;
         }
 
-        /* -------------------------
+        /* ==========================
            SKIP INTRO BUTTON
-           ------------------------- */
+           ========================== */
         #skip-btn {
             position: fixed;
             top: 16px;
@@ -117,9 +122,9 @@
             color:#880000;
         }
 
-        /* -------------------------
+        /* ==========================
            LOADER SCREEN
-           ------------------------- */
+           ========================== */
         #loader-screen {
             position: fixed;
             inset: 0;
@@ -158,6 +163,7 @@
             margin-left: 6px;
         }
 
+        /* LOADER CRT */
         #loader-crt {
             position: fixed;
             inset: 0;
@@ -171,9 +177,9 @@
             transition: opacity .2s;
         }
 
-        /* -------------------------
+        /* ==========================
            RASTER BARS (SOFTENED)
-           ------------------------- */
+           ========================== */
         #rasterBars {
             position: fixed;
             inset: 0;
@@ -223,6 +229,7 @@
 
 <body>
 
+<!-- SKIP INTRO -->
 <button id="skip-btn">SKIP INTRO</button>
 
 <!-- POWER SCREEN -->
@@ -230,9 +237,10 @@
     <img id="power-logo" src="resources/CCGAMER LOGO.png">
     <div id="power-text">CLICK TO POWER ON</div>
 </div>
+
 <div id="power-crt"></div>
 
-<!-- LOADER SCREEN -->
+<!-- LOADER -->
 <div id="loader-screen">
     <div class="c64-screen">
         <div class="c64-line">**** COMMODORE 64 BASIC V2 ****</div>
@@ -243,9 +251,10 @@
         <span id="loader-cursor"></span>
     </div>
 </div>
+
 <div id="loader-crt"></div>
 
-<!-- RASTER -->
+<!-- RASTER BARS -->
 <div id="rasterBars"></div>
 
 <!-- AUDIO -->
@@ -256,19 +265,19 @@
 <script>
 (function(){
 
-    const power    = document.getElementById('power-screen');
-    const loader   = document.getElementById('loader-screen');
-    const skipBtn  = document.getElementById('skip-btn');
-    const output   = document.getElementById('loader-output');
-    const cursor   = document.getElementById('loader-cursor');
-    const audio    = document.getElementById('introAudio');
-    const bars     = document.getElementById('rasterBars');
+    const power     = document.getElementById('power-screen');
+    const loader    = document.getElementById('loader-screen');
+    const skipBtn   = document.getElementById('skip-btn');
+    const output    = document.getElementById('loader-output');
+    const cursor    = document.getElementById('loader-cursor');
+    const audio     = document.getElementById('introAudio');
+    const bars      = document.getElementById('rasterBars');
     const loaderCRT = document.getElementById('loader-crt');
     const powerCRT  = document.getElementById('power-crt');
 
-    /* -------------------------
+    /* ==========================
        SKIP INTRO ALWAYS WORKS
-       ------------------------- */
+       ========================== */
     function goToHub() {
         try { audio.pause(); } catch(e){}
         try { audio.currentTime = 0; } catch(e){}
@@ -277,9 +286,9 @@
 
     skipBtn.addEventListener('click', goToHub);
 
-    /* -------------------------
-       POWER ON
-       ------------------------- */
+    /* ==========================
+       POWER ON → LOADING
+       ========================== */
     power.addEventListener('click', () => {
         power.style.display = 'none';
         powerCRT.style.display = 'none';
@@ -287,7 +296,9 @@
         runSequence();
     });
 
-    /* LOADER TEXT STEPS */
+    /* ==========================
+       TEXT SEQUENCE
+       ========================== */
     const steps = [
         { text:'LOAD ""', wait:700, audio:true },
         { text:'PRESS PLAY ON TAPE', wait:700 },
@@ -300,10 +311,9 @@
         { text:'STAY FOREVER!', wait:400 }
     ];
 
-    /* TYPEWRITER EFFECT */
+    /* TYPEWRITER */
     function typeLine(text, triggerAudio=false) {
         return new Promise(resolve => {
-
             let i = 0;
             const interval = setInterval(() => {
                 output.textContent += text.charAt(i);
@@ -322,7 +332,7 @@
         });
     }
 
-    /* START AUDIO */
+    /* AUDIO */
     function startAudio() {
         audio.currentTime = 0;
         audio.muted = true;
@@ -340,23 +350,20 @@
         });
     }
 
-    /* START RASTER + AUTO REDIRECT */
+    /* RASTER + REDIRECT */
     function startBars() {
         bars.classList.add('active');
         loaderCRT.style.opacity = 0;
-
         setTimeout(goToHub, 5500);
     }
 
-    /* RUN FULL LOAD SEQUENCE */
+    /* RUN SEQUENCE */
     async function runSequence() {
         output.textContent = "";
 
         for (const step of steps) {
             await typeLine(step.text, step.audio);
-
             if (step.bars) startBars();
-
             await new Promise(r => setTimeout(r, step.wait));
         }
     }
