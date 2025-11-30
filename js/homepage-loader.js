@@ -1,93 +1,212 @@
-/* ==============================================================
-   CHEEKY COMMODORE GAMER — HOMEPAGE LOADER (FINAL MAPPING)
-   ============================================================== */
+// ================================================================
+// CHEEKY COMMODORE GAMER – HOMEPAGE INTRO CONTROLLER (FINAL)
+// ------------------------------------------------
+// - C64 boot screen → raster bars → audio speech
+// - Autoplay on first visit (desktop); graceful fallback
+// - Skip Intro button
+// - Remembers if user has seen intro (localStorage)
+// - "Replay Intro" button in footer
+// ================================================================
 
-document.addEventListener("DOMContentLoaded", () => {
-    setupPowerOn();
-    loadGenres();
-    loadFeaturedGames();
-});
+(function () {
+  const BOOT_TEXT = [
+    "**** COMMODORE 64 BASIC V2 ****",
+    " 64K RAM SYSTEM  38911 BASIC BYTES FREE",
+    "",
+    "READY.",
+    'LOAD "CCG",8,1',
+    "RUN"
+  ].join("\n");
 
-function setupPowerOn() {
-    const powerOn = document.getElementById("power-on");
-    const intro = document.getElementById("c64-intro");
+  const INTRO_KEY = "ccg_intro_seen";
 
-    powerOn.addEventListener("click", () => {
-        powerOn.style.display = "none";
-        intro.style.display = "block";
-    });
-}
+  const body = document.body;
+  const overlay = document.getElementById("intro-overlay");
+  const bootPhase = document.getElementById("boot-phase");
+  const rasterPhase = document.getElementById("raster-phase");
+  const bootTextEl = document.getElementById("boot-text");
+  const audioEl = document.getElementById("intro-audio");
+  const skipBtn = document.getElementById("skip-intro");
+  const enableSoundBtn = document.getElementById("enable-sound");
+  const replayBtn = document.getElementById("replay-intro");
 
-function loadGenres() {
-    const container = document.getElementById("genre-buttons");
+  let bootTimer = null;
+  let rasterTimeout = null;
+  let typingIndex = 0;
 
-    const genres = [
-        { name: "Arcade Games", file: "arcade.png", folder: "arcade" },
-        { name: "Action Adventure Games", file: "action-adventure.png", folder: "action-adventure" },
-        { name: "Adventure Games", file: "adventure.png", folder: "adventure" },
-        { name: "BPJS Games", file: "bpjs.png", folder: "bpjs" },
-        { name: "Cartridge Games", file: "cartridge.png", folder: "cartridge" },
-        { name: "Casino Games", file: "casino.png", folder: "casino" },
-        { name: "Fighting Games", file: "fighting.png", folder: "fighting" },
-        { name: "Horror Games", file: "horror.png", folder: "horror" },
-        { name: "Licensed Games", file: "licensed.png", folder: "licensed" },
-        { name: "Platform Games", file: "platform.png", folder: "platform" },
-        { name: "Puzzle Games", file: "puzzle.png", folder: "puzzle" },
-        { name: "Quiz Games", file: "quiz.png", folder: "quiz" },
-        { name: "Racing Games", file: "racing.png", folder: "racing" },
-        { name: "Role Playing Games", file: "rpg.png", folder: "rpg" },
-        { name: "Shooting Games", file: "shoot-em-up.png", folder: "shoot-em-up" },
-        { name: "Sports Games", file: "sports.png", folder: "sports" },
-        { name: "Strategy Games", file: "strategy.png", folder: "strategy" }
-        // Top Picks is a collection, not a genre
-    ];
-
-    genres.forEach(g => {
-        const btn = document.createElement("a");
-        btn.className = "genre-btn";
-        btn.href = `games/genres/${toSlug(g.name)}.html`;
-
-        const img = document.createElement("img");
-        img.src = `resources/images/genres/${g.file}`;
-        img.alt = g.name;
-
-        btn.appendChild(img);
-        container.appendChild(btn);
-    });
-}
-
-function toSlug(name) {
-    return name.toLowerCase().replace(/\s+/g, '-');
-}
-
-async function loadFeaturedGames() {
-    const container = document.getElementById("featured-games");
-
+  function hasSeenIntro() {
     try {
-        const response = await fetch("games/games.json");
-        const games = await response.json();
-
-        const featured = games.filter(g =>
-            g.genres && g.genres.includes("Top Picks")
-        ).slice(0, 8);
-
-        const list = featured.length > 0 ? featured : games.slice(0, 8);
-
-        list.forEach(game => {
-            const card = document.createElement("a");
-            card.className = "featured-card";
-            card.href = `games/game.html?id=${encodeURIComponent(game.id)}`;
-
-            const img = document.createElement("img");
-            img.src = game.thumbnail;
-            img.alt = game.title;
-
-            card.appendChild(img);
-            container.appendChild(card);
-        });
-
-    } catch (err) {
-        console.error("Featured load error:", err);
-        container.textContent = "Could not load featured games.";
+      return localStorage.getItem(INTRO_KEY) === "1";
+    } catch (e) {
+      return false;
     }
-}
+  }
+
+  function markIntroSeen() {
+    try {
+      localStorage.setItem(INTRO_KEY, "1");
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  function clearTimers() {
+    if (bootTimer) clearInterval(bootTimer);
+    if (rasterTimeout) clearTimeout(rasterTimeout);
+  }
+
+  function showBootPhase() {
+    bootPhase.classList.remove("hidden");
+    rasterPhase.classList.add("hidden");
+    bootTextEl.textContent = "";
+    typingIndex = 0;
+
+    const text = BOOT_TEXT;
+    bootTimer = setInterval(() => {
+      bootTextEl.textContent = text.slice(0, typingIndex);
+      typingIndex++;
+      if (typingIndex > text.length) {
+        clearInterval(bootTimer);
+        // small pause then move to raster
+        rasterTimeout = setTimeout(showRasterPhase, 800);
+      }
+    }, 35);
+  }
+
+  function showRasterPhase() {
+    bootPhase.classList.add("hidden");
+    rasterPhase.classList.remove("hidden");
+
+    // Try autoplay audio
+    if (audioEl) {
+      audioEl.currentTime = 0;
+      const playPromise = audioEl.play();
+      if (playPromise && typeof playPromise.then === "function") {
+        playPromise.catch(() => {
+          // Autoplay blocked → show "Enable Sound" button
+          if (enableSoundBtn) {
+            enableSoundBtn.classList.remove("hidden");
+          }
+        });
+      }
+      audioEl.onended = () => {
+        // When the speech finishes, finish the intro
+        finishIntro();
+      };
+    }
+
+    // Failsafe: if audio doesn't end for any reason, exit after ~12s
+    rasterTimeout = setTimeout(() => {
+      finishIntro();
+    }, 12000);
+  }
+
+  function finishIntro() {
+    clearTimers();
+    markIntroSeen();
+
+    if (audioEl) {
+      audioEl.onended = null;
+      try {
+        audioEl.pause();
+      } catch (e) {}
+    }
+
+    if (overlay) {
+      overlay.classList.add("intro-hidden");
+      // Allow CSS transition to finish then remove
+      setTimeout(() => {
+        if (overlay && overlay.parentNode) {
+          overlay.parentNode.removeChild(overlay);
+        }
+      }, 800);
+    }
+
+    body.classList.remove("intro-active");
+  }
+
+  function startFullIntro() {
+    if (!overlay) {
+      body.classList.remove("intro-active");
+      return;
+    }
+    body.classList.add("intro-active");
+    overlay.classList.remove("intro-hidden");
+
+    showBootPhase();
+  }
+
+  function skipIntro() {
+    finishIntro();
+  }
+
+  function enableSound() {
+    if (!audioEl) return;
+    enableSoundBtn.classList.add("hidden");
+    audioEl.currentTime = 0;
+    audioEl.play().catch(() => {
+      // If still blocked, just continue the intro silently
+    });
+  }
+
+  function replayIntro() {
+    // Clear the flag and reload page to re-run
+    try {
+      localStorage.removeItem(INTRO_KEY);
+    } catch (e) {}
+    window.location.reload();
+  }
+
+  // ------------------------------------------------
+  // Init on DOM ready
+  // ------------------------------------------------
+  document.addEventListener("DOMContentLoaded", () => {
+    const seen = hasSeenIntro();
+
+    if (!overlay) {
+      // No overlay present → just show site
+      body.classList.remove("intro-active");
+      return;
+    }
+
+    if (seen) {
+      // User has already seen the epic intro → skip immediately
+      body.classList.remove("intro-active");
+      overlay.classList.add("intro-hidden");
+      setTimeout(() => {
+        if (overlay && overlay.parentNode) {
+          overlay.parentNode.removeChild(overlay);
+        }
+      }, 800);
+    } else {
+      startFullIntro();
+    }
+
+    if (skipBtn) {
+      skipBtn.addEventListener("click", skipIntro);
+    }
+
+    if (enableSoundBtn) {
+      enableSoundBtn.addEventListener("click", enableSound);
+    }
+
+    if (replayBtn) {
+      replayBtn.addEventListener("click", replayIntro);
+    }
+
+    // Also allow any key or click during boot to jump to raster
+    if (bootPhase) {
+      bootPhase.addEventListener("click", showRasterPhase);
+      document.addEventListener("keydown", (e) => {
+        if (body.classList.contains("intro-active") &&
+            !rasterPhase.classList.contains("hidden")) {
+          // Already in raster phase → let skip handle it
+          return;
+        }
+        if (body.classList.contains("intro-active")) {
+          showRasterPhase();
+        }
+      });
+    }
+  });
+})();
