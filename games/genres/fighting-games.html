@@ -3,70 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fighting Games | Cheeky Commodore Gamer</title>
+    <title>Cheeky Commodore Gamer | Fighting Games</title>
 
     <link rel="stylesheet" href="../../css/engine.css">
     <link rel="stylesheet" href="../../resources/css/main.css">
-    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
-    <script defer src="../../js/engine.js"></script>
-    <script defer src="../../js/genre-loader.js"></script>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <style>
-        :root{--c64-shell:#0b071c;--c64-inner:#1b123d;--c64-neon:#4fe8ff;}
-        body{margin:0;min-height:100vh;font-family:'VT323',monospace;text-transform:uppercase;
-             background:radial-gradient(circle at top,#4d3aa3 0%,#120b33 45%,#050212 100%);
-             color:#e6f1ff;display:flex;justify-content:center;padding:20px 10px 40px;}
-        .crt-shell{position:relative;width:100%;max-width:1100px;border-radius:26px;padding:14px;
-            background:radial-gradient(circle at top,rgba(255,255,255,0.16),rgba(0,0,0,0.98));
-            box-shadow:0 0 0 2px rgba(255,255,255,0.06),0 0 45px rgba(0,0,0,0.9),
-                       inset 0 0 45px rgba(0,0,0,0.95);overflow:hidden;}
-        .crt-overlay{pointer-events:none;position:absolute;inset:0;
-            background:linear-gradient(rgba(18,16,16,0) 50%,rgba(0,0,0,0.28) 50%),
-                       linear-gradient(90deg,rgba(255,0,0,0.07),rgba(0,255,0,0.03),rgba(0,0,255,0.09));
-            background-size:100% 2px,3px 100%;opacity:0.6;mix-blend-mode:screen;z-index:10;}
-        .genre-inner{position:relative;z-index:2;background:radial-gradient(circle at top,rgba(10,10,45,0.86),rgba(0,0,0,0.98));
-            border-radius:18px;padding:16px 16px 24px;border:1px solid rgba(255,255,255,0.1);}
-        header.genre-header{display:flex;align-items:center;gap:14px;padding-bottom:10px;
-            border-bottom:1px dashed rgba(255,255,255,0.3);margin-bottom:14px;}
-        .genre-logo{height:40px;image-rendering:pixelated;}
-        .genre-title-block{flex:1;}
-        .site-name{font-size:16px;letter-spacing:2px;color:#fff;text-shadow:2px 2px 0 #000;}
-        h1{margin:2px 0 0;font-size:18px;letter-spacing:2px;color:var(--c64-neon);text-shadow:2px 2px 0 #000;}
-        .genre-tagline{margin-top:4px;font-size:13px;color:#c8ffe1;}
-        .nav-back{font-size:12px;text-align:right;}
-        .nav-back a{color:#ffeb9b;text-decoration:none;}
-        .nav-back a:hover{text-decoration:underline;}
-        .genre-description{font-size:13px;margin:10px 0 14px;color:#e6f1ff;}
-        .genre-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;}
-        .loading-text{text-align:center;font-size:13px;letter-spacing:2px;opacity:0.7;}
+        body.genre-body { margin:0; min-height:100vh;
+            background:radial-gradient(circle at top,#4d3aa3 0%,#120b33 45%,#050212 100%);
+            color:#e6f1ff; font-family:'VT323',monospace; text-transform:uppercase; }
+
+        .genre-shell{max-width:1100px;margin:0 auto;padding:16px 12px 32px;}
+        .genre-header{border-bottom:1px dashed rgba(255,255,255,0.2);padding-bottom:10px;margin-bottom:14px;}
+        .genre-header-top{display:flex;align-items:center;gap:10px;}
+
+        .genre-logo{height:38px;image-rendering:pixelated;}
+
+        .genre-title-block h1{font-size:26px;margin:0;letter-spacing:2px;
+            color:#fff;text-shadow:2px 2px 0 #000;}
+        .genre-title-block p{margin:2px 0 0;font-size:13px;color:#b8c76f;}
+
+        .genre-basic{margin-top:6px;font-size:12px;color:#9fe6ff;}
+        .genre-basic span{display:inline-block;margin-right:12px;}
+
+        .genre-nav{margin-top:8px;display:flex;flex-wrap:wrap;gap:10px;font-size:12px;}
+        .genre-nav a{color:#e6f1ff;text-decoration:none;border-bottom:1px solid transparent;}
+        .genre-nav a:hover{border-color:#fff;}
+
+        .breadcrumb{margin-top:8px;font-size:11px;color:#9ba4ff;}
+        .breadcrumb a{color:#c7d2ff;text-decoration:none;}
+        .breadcrumb a:hover{text-decoration:underline;}
+
+        .genre-intro{margin:16px 0 12px;font-size:13px;color:#e8f0ff;}
+        .genre-intro span{color:#ffd86b;}
+
+        .genre-results-wrap{margin-top:10px;}
+
+        #genre-results{margin-top:6px;}
+        #genre-results .loading{
+            text-align:center;font-size:13px;color:#7f7bff;
+            letter-spacing:2px;animation:blink 1s infinite;}
+        @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.1;}}
+
+        @media(max-width:600px){
+            .genre-header-top{flex-direction:column;align-items:flex-start;}
+        }
     </style>
 </head>
-<body>
-<div class="crt-shell">
-    <div class="crt-overlay"></div>
-    <div class="genre-inner">
-        <header class="genre-header">
-            <img src="../../resources/CCGAMER LOGO.png" alt="CCG Logo" class="genre-logo">
+
+<body class="genre-body">
+<div class="genre-shell">
+
+    <header class="genre-header">
+        <div class="genre-header-top">
+            <a href="../../home.html">
+                <img src="../../resources/CCGAMER LOGO.png"
+                     alt="Cheeky Commodore Gamer"
+                     class="genre-logo">
+            </a>
+
             <div class="genre-title-block">
-                <div class="site-name">CHEEKY COMMODORE GAMER</div>
                 <h1>Fighting Games</h1>
-                <div class="genre-tagline">One-on-one bouts, karate showdowns and joystick-snapping duels.</div>
+                <p>Kick, punch, block — the 8-bit dojo awaits.</p>
             </div>
-            <div class="nav-back">
-                <a href="../../home.html">⟵ RETURN TO HUB</a><br>
-                <a href="../index.html">🎮 ALL GAME CATEGORIES</a>
-            </div>
-        </header>
-
-        <p class="genre-description">
-            All titles tagged as <strong>Fighting Games</strong> live here —
-            from tournament punch-ups to martial arts epics.
-        </p>
-
-        <div id="genre-results" class="genre-grid">
-            <p class="loading-text">Loading games…</p>
         </div>
-    </div>
+
+        <div class="genre-basic">
+            <span>**** COMMODORE 64 BASIC V2 ****</span>
+            <span>GENRE: FIGHTING GAMES</span>
+        </div>
+
+        <nav class="genre-nav">
+            <a href="../../home.html">HOME</a>
+            <a href="../index.html">GAMES HUB</a>
+            <a href="../../complete-index.html">FULL INDEX</a>
+            <a href="../../quiz/index.html">QUIZ</a>
+            <a href="../../emulation-guide.html">EMULATOR GUIDE</a>
+            <a href="../../about.html">ABOUT</a>
+            <a href="../../contact.html">CONTACT</a>
+        </nav>
+
+        <div class="breadcrumb">
+            <a href="../../home.html">Home</a> ›
+            <a href="../index.html">Games</a> ›
+            Fighting Games
+        </div>
+
+        <p class="genre-intro">
+            <span>Select your warrior.</span>
+            The classic one-on-one or one-against-many battlers of the C64 era.
+        </p>
+    </header>
+
+    <main>
+        <section class="genre-results-wrap" data-genre="Fighting Games">
+            <div id="genre-results">
+                <p class="loading">LOADING FIGHTING GAMES…</p>
+            </div>
+        </section>
+    </main>
+
 </div>
+
+<script src="../../js/engine.js"></script>
+<script src="../../js/genre-loader.js"></script>
+<script>loadGenrePage();</script>
 </body>
 </html>
