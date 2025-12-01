@@ -1,46 +1,249 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-page="genre">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fighting Games – CCG</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cheeky Commodore Gamer | Fighting Games</title>
 
-    <link rel="stylesheet" href="../../resources/css/ccg-master.css">
-    <link rel="stylesheet" href="../../resources/css/genre.css">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
 
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <!-- Icons -->
     <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="../../resources/css/ccg-master.css" />
+    <link rel="stylesheet" href="../../resources/css/ccg-effects.css" />
+    <link rel="stylesheet" href="../../resources/css/ccg-mode.css" />
+    <link rel="stylesheet" href="../../resources/css/home.css" />
+    <link rel="stylesheet" href="../../resources/css/genre.css" />
+
+    <link rel="icon" href="../../resources/CCG_FAVICON.png" />
 </head>
 
-<body data-genre="Fighting">
+<body data-page="genre" data-mode="c64" data-genre="fighting-games">
 
-<header class="ccg-header">
-    <a href="../../home.html" class="ccg-logo-link">
-        <img src="../../resources/CCGAMER LOGO.png" class="ccg-logo" alt="CCG Logo">
-    </a>
-    <div class="ccg-header-text">
-        <h1>Cheeky Commodore Gamer</h1>
-        <p>C64 &amp; Amiga Retro Gaming Hub</p>
-    </div>
-    <nav class="ccg-nav">
-        <a href="../../home.html">Home</a>
-        <a href="../../complete-index.html">Complete Index</a>
-        <a href="../../quiz/index.html">Quiz Hub</a>
-        <a href="../index.html">Games Hub</a>
-    </nav>
-</header>
+<!-- FX LAYERS -->
+<canvas id="starfield"></canvas>
+<div class="crt-overlay"></div>
+<div class="crt-glow"></div>
+<div class="neon-grid"></div>
 
-<main class="genre-main">
-    <h2 class="genre-title">Fighting Games</h2>
-    <p id="loading-status">Loading games…</p>
-    <div id="game-list" class="game-list"></div>
-</main>
+<div class="ccg-shell">
 
-<footer class="ccg-footer">
-    <p>Cheeky Commodore Gamer – Genre View</p>
-</footer>
+    <!-- HEADER -->
+    <header class="ccg-hud">
 
+        <div class="ccg-logo-wrap">
+            <button class="ccg-logo-button" id="logoModeToggle">
+                <img src="../../resources/CCGAMER LOGO.png" alt="CCG Logo" />
+            </button>
+
+            <div>
+                <div class="ccg-logo-caption">FIGHTING GAMES</div>
+                <div style="opacity:0.85; font-size:0.9rem;">
+                    Martial arts, street brawlers, arena duels — test your might!
+                </div>
+            </div>
+        </div>
+
+        <div class="ccg-mode-status">
+            <span id="currentModeText">SYSTEM MODE: C64 NEON</span>
+        </div>
+
+        <div class="ccg-hud-right">
+            <div class="ccg-hud-right-line"><strong>FIGHTING BROWSER</strong></div>
+            <div class="ccg-hud-right-line">STATUS: READY TO RUMBLE…</div>
+        </div>
+
+    </header>
+
+    <!-- HERO PANEL -->
+    <section class="ccg-panel ccg-panel--hero">
+
+        <div class="ccg-panel-header">
+            <div class="ccg-panel-title"><span>FIGHTING GAMES</span></div>
+            <div class="ccg-panel-tag">Combat Titles</div>
+        </div>
+
+        <div class="ccg-hero-text">
+            One-on-one duels or chaotic multi-fighter arenas —
+            <span class="ccg-hero-highlight">only the strongest survive.</span>
+        </div>
+
+        <div class="ccg-hero-actions">
+            <button class="ccg-button" onclick="window.location.href='../../home.html'">
+                <i class="fa-solid fa-house"></i> <span>Home Hub</span>
+            </button>
+
+            <button class="ccg-button" id="randomInGenreBtn">
+                <i class="fa-solid fa-hand-fist"></i> <span>Random Fighter</span>
+            </button>
+
+            <button class="ccg-button" onclick="window.location.href='../index.html'">
+                <i class="fa-solid fa-list"></i> <span>All Genres</span>
+            </button>
+        </div>
+
+    </section>
+
+    <!-- GAME GRID -->
+    <section class="ccg-panel">
+
+        <div class="ccg-panel-header">
+            <div class="ccg-panel-title"><span>AVAILABLE FIGHTERS</span></div>
+            <div class="ccg-panel-tag" id="gameCount">Loading…</div>
+        </div>
+
+        <div class="ccg-grid" id="genreGamesGrid">
+            <div>Loading games…</div>
+        </div>
+
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="ccg-footer">
+        <div>© <span id="ccgYear"></span> Cheeky Commodore Gamer</div>
+        <div>Fighting Games Browser</div>
+    </footer>
+
+</div>
+
+<!-- JS -->
+<script src="../../js/ccg-mode-engine.js"></script>
+<script src="../../js/ccj-global.js"></script>
 <script src="../../js/genre-loader.js"></script>
+
+<script>
+(function () {
+
+    const body = document.body;
+    const modeText = document.getElementById("currentModeText");
+    const logo = document.getElementById("logoModeToggle");
+    const year = document.getElementById("ccgYear");
+    const genreSlug = body.dataset.genre;
+    const grid = document.getElementById("genreGamesGrid");
+    const count = document.getElementById("gameCount");
+    const randomBtn = document.getElementById("randomInGenreBtn");
+
+    if (year) year.textContent = new Date().getFullYear();
+
+    /* MODE SWITCH */
+    function updateMode() {
+        if (!window.CCGModeEngine) return;
+        modeText.textContent =
+            "SYSTEM MODE: " + window.CCGModeEngine.getMode().toUpperCase() + " NEON";
+    }
+
+    if (logo) {
+        logo.addEventListener("click", () => {
+            window.CCGModeEngine.toggleMode();
+            updateMode();
+        });
+    }
+    updateMode();
+
+    /* LOAD GAMES */
+    if (typeof window.loadGenreGames === "function") {
+        window.loadGenreGames(genreSlug, grid, count);
+    } else {
+        count.textContent = "Loader missing";
+    }
+
+    /* RANDOM GAME */
+    if (randomBtn) {
+        randomBtn.addEventListener("click", async () => {
+
+            if (typeof window.randomGameInGenre === "function") {
+                window.randomGameInGenre(genreSlug);
+                return;
+            }
+
+            try {
+                const res = await fetch("../games.json", { cache: "no-cache" });
+                const data = await res.json();
+
+                const games = Array.isArray(data) ? data : (data.games || []);
+
+                const filtered = games.filter(g =>
+                    g.genreSlug === genreSlug ||
+                    (g.genres && g.genres.includes("Fighting")) ||
+                    (g.genre && g.genre.toLowerCase().includes("fight"))
+                );
+
+                const pool = filtered.length ? filtered : games;
+                const chosen = pool[Math.floor(Math.random() * pool.length)];
+
+                if (chosen && chosen.id) {
+                    window.location.href =
+                        "../game.html?id=" + encodeURIComponent(chosen.id);
+                }
+
+            } catch (e) {
+                console.error("Random fighter error", e);
+            }
+        });
+    }
+
+    /* STARFIELD */
+    const canvas = document.getElementById("starfield");
+    if (canvas) {
+        const ctx = canvas.getContext("2d");
+
+        let w = canvas.width = window.innerWidth;
+        let h = canvas.height = window.innerHeight;
+
+        const STAR_COUNT = 120;
+        const stars = [];
+
+        function init() {
+            stars.length = 0;
+            for (let i = 0; i < STAR_COUNT; i++) {
+                stars.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    z: Math.random() * 0.8 + 0.2,
+                    speed: Math.random() * 0.5 + 0.2
+                });
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, w, h);
+
+            const mode = body.dataset.mode;
+            let base = "rgba(112,255,240,";     // C64 cyan
+            if (mode === "amiga") base = "rgba(255,210,111,"; // Amiga gold
+            if (mode === "zx") base = "rgba(0,255,0,";        // ZX green
+
+            for (const s of stars) {
+                s.y += s.speed * (0.5 + s.z);
+                if (s.y > h) {
+                    s.y = 0;
+                    s.x = Math.random() * w;
+                    s.z = Math.random() * 0.8 + 0.2;
+                }
+
+                ctx.fillStyle = base + (0.3 + s.z * 0.7).toFixed(2) + ")";
+                ctx.fillRect(s.x, s.y, s.z * 2, s.z * 2);
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        init();
+        draw();
+
+        window.addEventListener("resize", () => {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+            init();
+        });
+    }
+
+})();
+</script>
+
 </body>
 </html>
