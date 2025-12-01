@@ -3,101 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheeky Commodore Gamer | Action Adventure Games</title>
+    <title>Action-Adventure Games | Cheeky Commodore Gamer</title>
 
-    <!-- Global CCG CSS -->
-    <link rel="stylesheet" href="../../resources/css/main.css">
-    <link rel="stylesheet" href="../../resources/css/home.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-console.css">
+    <!-- GLOBAL STYLES -->
+    <link rel="stylesheet" href="../../resources/css/ccg-master.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-mode.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-effects.css">
     <link rel="stylesheet" href="../../resources/css/ccg-anim.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-modal.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-zx.css">
 
-    <!-- Page-specific CSS -->
-    <link rel="stylesheet" href="../../resources/css/action-adventure-games.css">
+    <!-- GENRE SYSTEM -->
+    <link rel="stylesheet" href="../../resources/css/genre.css">
 
-    <!-- Icons -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-
-    <!-- Global CCG JS -->
-    <script defer src="../../js/ccg-global.js"></script>
-    <script defer src="../../js/ccg-console.js"></script>
-    <script defer src="../../js/ccg-mode.js"></script>
-    <script defer src="../../js/ccg-zx.js"></script>
-    <script defer src="../../js/ccg-anim.js"></script>
-    <script defer src="../../js/ccg-modal.js"></script>
-
-    <!-- Page Logic -->
-    <script defer src="../../js/engine.js"></script>
-    <script defer src="../../js/genre-loader.js"></script>
+    <!-- JS LOADERS -->
+    <script src="../../js/site-mode.js" defer></script>
+    <script src="../../js/genre-loader.js" defer></script>
 </head>
 
-<body class="genre-body">
+<body class="crt">
 
-<canvas id="starfield"></canvas>
-<div class="crt-overlay"></div>
+    <main class="genre-page">
+        <header class="genre-header">
+            <h1 class="genre-title">Action-Adventure Games</h1>
+            <p class="genre-intro">
+                A hybrid mix of exploration, combat and story. Venture into dungeons, solve puzzles, dodge traps and uncover legendary treasures.
+            </p>
+        </header>
 
-<div class="genre-shell">
-
-    <header class="genre-header">
-
-        <div class="genre-header-top">
-            <a href="../../home.html">
-                <img src="../../resources/CCGAMER LOGO.png"
-                     alt="Cheeky Commodore Gamer"
-                     class="genre-logo">
-            </a>
-
-            <div class="genre-title-block">
-                <h1>ACTION ADVENTURE GAMES</h1>
-                <p>Questing, fighting and exploring – all in one tape.</p>
-            </div>
-        </div>
-
-        <div class="genre-basic">
-            <span>**** COMMODORE 64 BASIC V2 ****</span>
-            <span>GENRE: ACTION ADVENTURE GAMES</span>
-        </div>
-
-        <nav class="genre-nav">
-            <a href="../../home.html">HOME</a>
-            <a href="../index.html">GAMES HUB</a>
-            <a href="../../complete-index.html">FULL INDEX</a>
-            <a href="../../quiz/index.html">QUIZ</a>
-            <a href="../../emulation-guide.html">EMULATOR GUIDE</a>
-            <a href="../../about.html">ABOUT</a>
-            <a href="../../contact.html">CONTACT</a>
-        </nav>
-
-        <div class="breadcrumb">
-            <a href="../../home.html">Home</a> ›
-            <a href="../index.html">Games</a> ›
-            Action Adventure Games
-        </div>
-
-        <p class="genre-intro">
-            <span>Maps in one hand, sword in the other.</span>
-            Story-driven romps where exploring and combat share top billing.
-        </p>
-
-    </header>
-
-    <main>
-        <section class="genre-results-wrap" data-genre="Action Adventure Games">
-            <div id="genre-results">
-                <p class="loading">LOADING ACTION ADVENTURE GAMES…</p>
-            </div>
-        </section>
+        <!-- GRID FOR GAMES -->
+        <section id="games-grid" class="games-grid"></section>
     </main>
-
-</div>
-
-<script>
-    loadGenrePage();
-</script>
 
 </body>
 </html>
