@@ -3,37 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Games Hub | Cheeky Commodore Gamer</title>
+    <title>Games Hub – CCG</title>
 
     <link rel="stylesheet" href="../resources/css/ccg-master.css">
+    <link rel="stylesheet" href="../resources/css/genre.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 
-<body class="crt c64-mode">
+<body>
 
-<header class="topnav">
-    <a href="../home.html">HOME</a>
-    <a href="../complete-index.html">COMPLETE INDEX</a>
-    <a href="genres/index.html">GENRES</a>
-    <a href="../quiz/quiz.html">QUIZ</a>
+<header class="ccg-header">
+    <a href="../home.html" class="ccg-logo-link">
+        <img src="../resources/CCGAMER LOGO.png" class="ccg-logo">
+    </a>
+
+    <div class="ccg-header-text">
+        <h1>Cheeky Commodore Gamer</h1>
+        <p>C64 & Amiga Retro Gaming Hub</p>
+    </div>
+
+    <nav class="ccg-nav">
+        <a href="../home.html">Home</a>
+        <a href="../complete-index.html">Complete Index</a>
+        <a href="../quiz/index.html">Quiz Hub</a>
+    </nav>
 </header>
 
-<main class="page-main">
-    <h1 class="site-title">GAMES HUB</h1>
-    <p class="subtitle">Choose from genres or collections.</p>
+<main class="genre-main">
+    <h2 class="genre-title">Games Hub</h2>
 
-    <section class="hub-links">
-        <h2>GENRES</h2>
-        <p><a href="genres/index.html">Browse All Genres</a></p>
+    <p class="genre-description">Choose a genre or browse all games.</p>
 
-        <h2>COLLECTIONS</h2>
-        <p><a href="collections/index.html">Browse Collections</a></p>
+    <div class="game-list categories-list">
 
-        <h2>COMPLETE INDEX</h2>
-        <p><a href="../complete-index.html">Full Game Index</a></p>
-    </section>
+        <a class="category-card" href="genres/arcade-games.html">
+            <img src="../resources/images/genres/arcade.png">
+            <span>Arcade Games</span>
+        </a>
+
+        <a class="category-card" href="genres/action-adventure-games.html">
+            <img src="../resources/images/genres/action-adventure.png">
+            <span>Action Adventure</span>
+        </a>
+
+        <a class="category-card" href="genres/adventure-games.html">
+            <img src="../resources/images/genres/adventure.png">
+            <span>Adventure</span>
+        </a>
+
+        <a class="category-card" href="genres/platform-games.html">
+            <img src="../resources/images/genres/platform.png">
+            <span>Platform</span>
+        </a>
+
+        <a class="category-card" href="genres/horror-games.html">
+            <img src="../resources/images/genres/horror.png">
+            <span>Horror</span>
+        </a>
+
+        <a class="category-card" href="genres/fighting-games.html">
+            <img src="../resources/images/genres/fighting.png">
+            <span>Fighting</span>
+        </a>
+
+        <a class="category-card" href="genres/shooting-games.html">
+            <img src="../resources/images/genres/shooting.png">
+            <span>Shooting</span>
+        </a>
+
+        <a class="category-card" href="genres/racing-games.html">
+            <img src="../resources/images/genres/racing.png">
+            <span>Racing</span>
+        </a>
+
+        <a class="category-card" href="genres/puzzle-games.html">
+            <img src="../resources/images/genres/puzzle.png">
+            <span>Puzzle</span>
+        </a>
+
+        <a class="category-card" href="genres/sports-games.html">
+            <img src="../resources/images/genres/sports.png">
+            <span>Sports</span>
+        </a>
+
+        <a class="category-card" href="genres/casino-games.html">
+            <img src="../resources/images/genres/casino.png">
+            <span>Casino</span>
+        </a>
+
+        <a class="category-card" href="genres/role-playing-games.html">
+            <img src="../resources/images/genres/role-playing.png">
+            <span>Role-Playing</span>
+        </a>
+
+        <a class="category-card" href="genres/miscellaneous.html">
+            <img src="../resources/images/genres/miscellaneous.png">
+            <span>Miscellaneous</span>
+        </a>
+
+        <a class="category-card" href="genres/top-picks.html">
+            <img src="../resources/images/genres/top-picks.png">
+            <span>Top Picks</span>
+        </a>
+
+        <a class="category-card" href="genres/bpjs-indexed-games.html">
+            <img src="../resources/images/genres/bpjs.png">
+            <span>BPJS Indexed</span>
+        </a>
+
+        <a class="category-card" href="genres/cartridge-games.html">
+            <img src="../resources/images/genres/cartridge.png">
+            <span>Cartridge</span>
+        </a>
+
+        <a class="category-card" href="genres/licensed-games.html">
+            <img src="../resources/images/genres/licensed.png">
+            <span>Licensed</span>
+        </a>
+
+        <a class="category-card" href="genres/strategy-games.html">
+            <img src="../resources/images/genres/strategy.png">
+            <span>Strategy</span>
+        </a>
+    </div>
 </main>
 
-<script src="../js/ccj-global.js"></script>
+<footer class="ccg-footer">
+    <p>Cheeky Commodore Gamer – Games Hub</p>
+</footer>
 
 </body>
 </html>
