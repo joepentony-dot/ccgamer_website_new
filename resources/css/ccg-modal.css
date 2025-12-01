@@ -1,0 +1,211 @@
+/* -------------------------------------------------
+   UNIVERSAL MODAL WRAPPER
+--------------------------------------------------*/
+
+.ccg-modal {
+    position: fixed;
+    inset: 0;
+    display: none; /* JS toggles this */
+    justify-content: center;
+    align-items: center;
+    z-index: 200000;
+    background: rgba(0, 0, 0, 0.85);
+    padding: 20px;
+    animation: fadeIn 0.2s ease;
+}
+
+/* -------------------------------------------------
+   MODAL BOX
+--------------------------------------------------*/
+
+.ccg-modal-box {
+    width: 90%;
+    max-width: 500px;
+    padding: 25px;
+    border-radius: 6px;
+    box-shadow: 0 0 20px #000;
+    font-family: 'VT323', monospace;
+    text-align: center;
+    animation: slideDown 0.25s ease;
+}
+
+/* -------------------------------------------------
+   C64 THEME (inherit from body)
+--------------------------------------------------*/
+
+body.c64-mode .ccg-modal-box {
+    background: rgba(20, 20, 50, 0.95);
+    border: 3px solid #6c5eb5;     /* light blue border */
+    color: #b8c76f;                /* C64 text */
+}
+
+body.c64-mode .ccg-modal-title {
+    color: #ffffff;
+    text-shadow: 2px 2px #000;
+}
+
+/* -------------------------------------------------
+   AMIGA THEME
+--------------------------------------------------*/
+
+body.amiga-mode .ccg-modal-box {
+    background: #ffffff;
+    border: 3px solid #0055AA;
+    color: #000;
+    font-family: 'Amiga Topaz', monospace;
+}
+
+body.amiga-mode .ccg-modal-title {
+    color: #0055AA;
+    text-shadow: none;
+}
+
+/* -------------------------------------------------
+   HEADINGS
+--------------------------------------------------*/
+
+.ccg-modal-title {
+    font-size: 2rem;
+    margin-bottom: 12px;
+}
+
+.ccg-modal-desc {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+}
+
+/* -------------------------------------------------
+   BUTTON WRAPPER
+--------------------------------------------------*/
+
+.ccg-modal-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* -------------------------------------------------
+   BUTTONS – BASE STYLE
+--------------------------------------------------*/
+
+.ccg-modal-btn {
+    cursor: pointer;
+    padding: 12px;
+    font-family: inherit;
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+}
+
+/* C64 Buttons */
+body.c64-mode .ccg-modal-btn {
+    background: #352879;
+    color: #fff;
+    border: 2px solid #fff;
+}
+
+body.c64-mode .ccg-modal-btn:hover {
+    background: #fff;
+    color: #352879;
+}
+
+/* Amiga Buttons */
+body.amiga-mode .ccg-modal-btn {
+    background: #EEEEEE;
+    color: #000;
+    border: 2px solid #0055AA;
+    font-weight: bold;
+}
+
+body.amiga-mode .ccg-modal-btn:hover {
+    background: #0055AA;
+    color: #fff;
+}
+
+/* -------------------------------------------------
+   SPECIAL BUTTONS
+--------------------------------------------------*/
+
+.ccg-btn-green {
+    border-color: #00ff00 !important;
+    color: #00ff00 !important;
+}
+
+.ccg-btn-red {
+    border-color: #ff3333 !important;
+    color: #ff3333 !important;
+}
+
+/* -------------------------------------------------
+   SECRET CHEAT LIST
+--------------------------------------------------*/
+
+.ccg-cheat-list {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0;
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.ccg-cheat-list li {
+    padding: 10px;
+    margin-bottom: 8px;
+    font-size: 1.2rem;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.25);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.ccg-cheat-list li:hover {
+    background: rgba(255,255,255,1);
+    color: #000;
+    transform: translateX(6px);
+}
+
+body.amiga-mode .ccg-cheat-list li {
+    background: #f2f2f2;
+    border: 1px solid #ccc;
+}
+
+body.amiga-mode .ccg-cheat-list li:hover {
+    background: #0055AA;
+    color: #fff;
+}
+
+/* -------------------------------------------------
+   SCROLLBAR RESTYLE
+--------------------------------------------------*/
+
+.ccg-cheat-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.ccg-cheat-list::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+body.c64-mode .ccg-cheat-list::-webkit-scrollbar-thumb {
+    background: #6c5eb5;
+}
+
+body.amiga-mode .ccg-cheat-list::-webkit-scrollbar-thumb {
+    background: #0055AA;
+}
+
+/* -------------------------------------------------
+   RESPONSIVE
+--------------------------------------------------*/
+
+@media (max-width: 600px) {
+    .ccg-modal-box {
+        padding: 18px;
+    }
+    .ccg-modal-title {
+        font-size: 1.6rem;
+    }
+    .ccg-modal-btn {
+        font-size: 1.2rem;
+    }
+}
