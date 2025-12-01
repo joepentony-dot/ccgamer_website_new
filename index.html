@@ -4,19 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheeky Commodore Gamer | C64 Loader Intro</title>
+    <meta name="description" content="Epic Commodore 64 style intro for the Cheeky Commodore Gamer retro gaming hub.">
 
-    <!-- Your global site CSS (CRT etc.) -->
-    <link rel="stylesheet" href="resources/css/ccg-master.css">
-
-    <!-- C64-style font -->
+    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
         :root {
-            --c64-border: #7c6cff;
-            --c64-blue: #3b2aa5;
-            --c64-screen: #221ba8;
-            --c64-text: #d0d0ff;
+            --c64-blue: #352879;
+            --c64-light-blue: #6c5eb5;
+            --c64-text: #b8c76f;
+            --c64-red: #880000;
+            --c64-green: #55cc55;
+            --c64-cyan: #00ffff;
+            --c64-yellow: #feff6c;
+            --c64-purple: #cc44cc;
+            --c64-white: #ffffff;
+            --c64-black: #000000;
+            --c64-orange: #d55e00;
+            --c64-brown: #664400;
         }
 
         * {
@@ -24,245 +32,275 @@
         }
 
         body {
+            background-color: var(--c64-blue);
+            color: var(--c64-text);
+            font-family: 'VT323', monospace;
             margin: 0;
             padding: 0;
-            height: 100vh;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            text-transform: uppercase;
             overflow: hidden;
-            background: radial-gradient(circle at center, #020012 0%, #010008 30%, #000 100%);
-            color: var(--c64-text);
-            font-family: "VT323", monospace;
         }
 
-        /* CRT scanlines + subtle flicker */
-        body::before {
-            content: "";
+        /* --- STARFIELD CANVAS --- */
+        #starfield {
             position: fixed;
-            inset: 0;
-            pointer-events: none;
-            background-image:
-                repeating-linear-gradient(
-                    to bottom,
-                    rgba(0, 0, 0, 0.35) 0px,
-                    rgba(0, 0, 0, 0.35) 1px,
-                    transparent 1px,
-                    transparent 3px
-                );
-            mix-blend-mode: multiply;
-            opacity: 0.6;
-            animation: crt-flicker 0.18s infinite alternate;
-        }
-
-        @keyframes crt-flicker {
-            from { opacity: 0.55; }
-            to   { opacity: 0.75; }
-        }
-
-        #intro-root {
-            position: fixed;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* POWER-ON SCREEN */
-        #power-screen {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            background: radial-gradient(circle at center, #050020 0%, #020014 55%, #000 100%);
-        }
-
-        #power-logo {
-            max-width: 520px;
-            width: 55vw;
-            height: auto;
-            image-rendering: pixelated;
-            filter:
-                drop-shadow(0 0 14px #000)
-                drop-shadow(0 0 22px #000);
-        }
-
-        #power-text {
-            margin-top: 32px;
-            font-size: 30px;
-            letter-spacing: 4px;
-            color: #f7f0ff;
-            text-shadow:
-                0 0 6px #ffffff,
-                0 0 14px #7cf9ff,
-                0 0 24px #7cf9ff;
-            animation: power-flash 0.9s steps(2, start) infinite;
-        }
-
-        @keyframes power-flash {
-            0%   { opacity: 1;   }
-            50%  { opacity: 0.25;}
-            100% { opacity: 1;   }
-        }
-
-        /* C64 SCREEN WRAPPER */
-        #c64-wrapper {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.4s ease-in-out;
-            background: var(--c64-blue);
-        }
-
-        #c64-wrapper.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        /* The actual C64 screen box */
-        #c64-frame {
-            width: 92vw;
-            max-width: 960px;
-            aspect-ratio: 4 / 3;
-            background: var(--c64-blue);
-            border: 22px solid var(--c64-border);
-            box-shadow:
-                0 0 22px rgba(0, 0, 0, 0.8),
-                0 0 60px rgba(0, 0, 60, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 26px;
-        }
-
-        #c64-inner {
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: var(--c64-screen);
-            padding: 32px 40px;
-            color: var(--c64-text);
-            font-size: 22px;       /* VT323 size – nice and chunky */
-            line-height: 1.45;
-            display: flex;
-            flex-direction: column;
+            z-index: -1;
+            opacity: 0.3;
         }
 
-        #c64-text {
+        /* --- CRT EFFECT --- */
+        .crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* --- START SCREEN (POWER ON) --- */
+        #start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            z-index: 6000;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            cursor: pointer;
+            padding-top: 3vh;
+        }
+
+        #start-screen .commodore-header {
+            border: none;
+            margin-bottom: 20px;
+        }
+
+        #start-screen img {
+            max-width: 150px;
+            image-rendering: pixelated;
+        }
+
+        .power-text {
+            color: var(--c64-text);
+            font-size: 2.5rem;
+            animation: blink 1s infinite;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        /* --- LOADING SCREEN --- */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--c64-blue);
+            z-index: 5000;
+            display: none;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding: 40px;
+            font-size: 1.5rem;
+            color: var(--c64-light-blue);
+            cursor: none;
+        }
+
+        /* C64 “screen” frame */
+        .c64-frame {
+            margin: 0 auto;
+            max-width: 800px;
+            width: 90vw;
+            aspect-ratio: 4 / 3;
+            border: 16px solid #1d16b6; /* border blue */
+            background-color: #3b31ef;   /* C64 screen blue */
+            padding: 20px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .c64-inner-text {
+            color: #9ae29b;
+            font-size: 1.4rem;
+            line-height: 1.4;
             white-space: pre-wrap;
         }
 
-        /* Raster overlay – full screen, blurred, multicolour */
-        #raster-overlay {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
-            mix-blend-mode: screen;
-            background-image:
-                repeating-linear-gradient(
-                    to bottom,
-                    rgba(255, 0, 64, 0.7) 0px,
-                    rgba(255, 0, 64, 0.7) 4px,
-                    rgba(255, 128, 0, 0.7) 4px,
-                    rgba(255, 128, 0, 0.7) 8px,
-                    rgba(255, 255, 0, 0.7) 8px,
-                    rgba(255, 255, 0, 0.7) 12px,
-                    rgba(64, 255, 0, 0.7) 12px,
-                    rgba(64, 255, 0, 0.7) 16px,
-                    rgba(0, 160, 255, 0.7) 16px,
-                    rgba(0, 160, 255, 0.7) 20px,
-                    rgba(0, 0, 255, 0.7) 20px,
-                    rgba(0, 0, 255, 0.7) 24px,
-                    rgba(160, 0, 255, 0.7) 24px,
-                    rgba(160, 0, 255, 0.7) 28px,
-                    rgba(0, 0, 0, 1) 28px,
-                    rgba(0, 0, 0, 1) 32px
-                );
-            filter: blur(1.4px);
-            animation: raster-flicker 0.11s linear infinite;
+        .c64-header-line {
+            display: block;
+            text-align: left;
         }
 
-        #raster-overlay.active {
-            opacity: 0.75;
+        .loading-text-wrapper {
+            position: relative;
+            z-index: 5002;
+            margin-top: 20px;
         }
 
-        @keyframes raster-flicker {
-            0%   { transform: translateX(-2px); }
-            50%  { transform: translateX(2px); }
-            100% { transform: translateX(-2px); }
+        .cursor {
+            display: inline-block;
+            width: 12px;
+            height: 1.1em;
+            background-color: var(--c64-light-blue);
+            vertical-align: bottom;
+            margin-left: 2px;
+            animation: blink 0.8s infinite;
         }
 
-        /* BIG RED SKIP BUTTON */
-        #skipIntro {
-            position: fixed;
-            top: 18px;
-            right: 18px;
-            z-index: 9999;
-            padding: 10px 22px;
-            font-size: 16px;
-            font-family: "VT323", monospace;
-            border: none;
-            border-radius: 4px;
-            background: #ff0033;
-            color: #ffffff;
+        /* --- SKIP BUTTON --- */
+        #skip-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 6002;
+            background: var(--c64-red);
+            color: #fff;
+            border: 2px solid #fff;
+            padding: 10px 20px;
+            font-family: 'VT323', monospace;
+            font-size: 1.5rem;
             cursor: pointer;
-            box-shadow:
-                0 0 6px rgba(0,0,0,0.8),
-                0 0 12px rgba(255,0,60,0.9);
-            text-shadow: 0 0 4px #000;
+            text-transform: uppercase;
+            box-shadow: 4px 4px 0px #000;
+            pointer-events: auto;
         }
 
-        #skipIntro:hover {
-            background: #ff3359;
+        #skip-btn:hover {
+            background: #fff;
+            color: var(--c64-red);
         }
 
-        @media (max-width: 720px) {
-            #power-text {
-                font-size: 22px;
+        /* --- RASTER BARS (BLURRED) --- */
+        .raster-bars {
+            position: absolute;
+            top: -50%;
+            left: 0;
+            width: 100%;
+            height: 200%;
+            z-index: 5001;
+            background: linear-gradient(
+                to bottom,
+                var(--c64-black) 0%,   var(--c64-black) 10%,
+                var(--c64-white) 10%,  var(--c64-white) 20%,
+                var(--c64-red) 20%,    var(--c64-red) 30%,
+                var(--c64-cyan) 30%,   var(--c64-cyan) 40%,
+                var(--c64-purple) 40%, var(--c64-purple) 50%,
+                var(--c64-green) 50%,  var(--c64-green) 60%,
+                var(--c64-blue) 60%,   var(--c64-blue) 70%,
+                var(--c64-yellow) 70%, var(--c64-yellow) 80%,
+                var(--c64-orange) 80%, var(--c64-orange) 90%,
+                var(--c64-brown) 90%,  var(--c64-brown) 100%
+            );
+            background-size: 100% 400px;
+            animation: rasterScroll 2.5s linear infinite;
+            opacity: 0.9;
+            display: none;
+            pointer-events: none;
+            filter: blur(4px);
+            mix-blend-mode: screen;
+        }
+
+        @keyframes rasterScroll {
+            0% {
+                transform: translateY(0);
             }
-            #c64-inner {
-                font-size: 18px;
-                padding: 22px 24px;
+            100% {
+                transform: translateY(400px);
+            }
+        }
+
+        .text-highlight {
+            background-color: #3b31ef;
+            color: var(--c64-light-blue);
+            padding: 2px 8px;
+            display: inline-block;
+            box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.5);
+            margin-bottom: 5px;
+        }
+
+        .blink {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 600px) {
+            #loading-screen {
+                padding: 20px;
+                font-size: 1.2rem;
+            }
+            .c64-frame {
+                border-width: 10px;
+                padding: 12px;
+            }
+            #skip-btn {
+                top: 5px;
+                right: 5px;
+                font-size: 1.2rem;
+                padding: 8px 12px;
+            }
+            #start-screen {
+                padding-top: 10px;
             }
         }
     </style>
 </head>
-
 <body>
 
-<div id="intro-root">
+    <canvas id="starfield"></canvas>
+    <div class="crt-overlay"></div>
+
     <!-- POWER ON SCREEN -->
-    <div id="power-screen">
-        <img id="power-logo" src="resources/CCGAMER LOGO.png" alt="Cheeky Commodore Gamer">
-        <div id="power-text">CLICK TO POWER ON</div>
+    <div id="start-screen" onclick="startSystem()">
+        <div class="commodore-header">
+            <img src="resources/CCGAMER LOGO.png"
+                 alt="Cheeky Commodore Gamer Logo">
+        </div>
+        <div class="power-text">CLICK TO POWER ON</div>
     </div>
 
-    <!-- C64 LOADER SCREEN -->
-    <div id="c64-wrapper">
-        <div id="c64-frame">
-            <div id="c64-inner">
-                <pre id="c64-text"></pre>
+    <!-- C64 LOADING SCREEN -->
+    <div id="loading-screen">
+        <button id="skip-btn" onclick="skipIntro()">[ ESC ] SKIP INTRO</button>
+
+        <div class="c64-frame">
+            <div class="raster-bars" id="rasterBars"></div>
+
+            <div class="c64-inner-text">
+                <span class="c64-header-line">**** COMMODORE 64 BASIC V2 ****</span><br>
+                <span class="c64-header-line">64K RAM SYSTEM  38911 BASIC BYTES FREE</span><br><br>
+                <span id="loading-terminal"></span><span class="cursor" id="loading-cursor"></span>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Full-screen raster overlay -->
-<div id="raster-overlay"></div>
-
-<!-- BIG RED SKIP BUTTON -->
-<button id="skipIntro">SKIP INTRO</button>
-
-<!-- SID Speech -->
-<audio id="sidAudio" src="resources/audio/c64_speech_stayawhile.mp3"></audio>
-
-<!-- Intro controller -->
-<script src="js/index-intro.js"></script>
-
+    <!-- Intro logic -->
+    <script src="js/index-intro.js"></script>
 </body>
 </html>
