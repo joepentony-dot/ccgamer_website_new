@@ -1,43 +1,69 @@
-(function () {
+/* ==========================================================
+   CCG MODE ENGINE — UNIVERSAL SYSTEM SWITCHER
+   Supports: C64 / Amiga / ZX Dev Lab (Easter Egg)
+   ========================================================== */
 
-    const MODE_KEY = "ccg-preferred-mode";
+window.CCGModeEngine = (function () {
 
-    // Apply mode at startup
+    const body = document.body;
+    const audio = new Audio("resources/audio/crt_hum_loop.mp3");
+    audio.loop = true;
+    audio.volume = 0.18;
+
+    /* Start ambience when user interacts */
+    window.addEventListener("click", () => {
+        if (audio.paused) {
+            audio.play().catch(() => {});
+        }
+    }, { once: true });
+
+    /* -------------------------------------------------------
+       Get current mode
+       ------------------------------------------------------- */
+    function getMode() {
+        return body.dataset.mode || "c64";
+    }
+
+    /* -------------------------------------------------------
+       Apply mode → sets body attribute + emits events
+       ------------------------------------------------------- */
     function applyMode(mode) {
-        document.body.classList.remove("c64-mode", "amiga-mode");
-        document.body.classList.add(mode);
-        localStorage.setItem(MODE_KEY, mode);
+        body.dataset.mode = mode;
+
+        // Global CSS transition smoother
+        body.style.transition = "all 0.35s ease-out";
+
+        // Custom global event for all pages
+        document.dispatchEvent(new CustomEvent("ccg:modeChange", {
+            detail: { mode }
+        }));
     }
 
-    // Load previous mode or default to C64
-    function initMode() {
-        const saved = localStorage.getItem(MODE_KEY) || "c64-mode";
-        applyMode(saved);
-    }
-
-    // Toggle mode on logo click
+    /* -------------------------------------------------------
+       Cycle mode (C64 → Amiga → C64 unless ZX triggered)
+       ------------------------------------------------------- */
     function toggleMode() {
-        const current = document.body.classList.contains("c64-mode")
-            ? "c64-mode"
-            : "amiga-mode";
-
-        const next = current === "c64-mode"
-            ? "amiga-mode"
-            : "c64-mode";
-
-        document.body.classList.add("mode-transition");
-        setTimeout(() => {
-            applyMode(next);
-            document.body.classList.remove("mode-transition");
-        }, 300);
+        const current = getMode();
+        let next = "amiga";
+        if (current === "amiga") next = "c64";
+        if (current === "zx") next = "c64";
+        applyMode(next);
     }
 
-    // Event listener for logo click
-    document.addEventListener("click", e => {
-        const logo = e.target.closest(".ccg-logo");
-        if (!logo) return;
-        toggleMode();
-    });
+    /* -------------------------------------------------------
+       Explicit setter (used by home.html)
+       ------------------------------------------------------- */
+    function setMode(mode) {
+        applyMode(mode);
+    }
 
-    initMode();
+    /* -------------------------------------------------------
+       PUBLIC API
+       ------------------------------------------------------- */
+    return {
+        setMode,
+        toggleMode,
+        getMode
+    };
+
 })();
