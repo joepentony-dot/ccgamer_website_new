@@ -2,44 +2,121 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>Cheeky Commodore Gamer | Game Viewer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Details – CCG</title>
 
+    <!-- Core CCG styles -->
     <link rel="stylesheet" href="../resources/css/ccg-master.css">
+    <link rel="stylesheet" href="../resources/css/ccg-mode.css">
+    <link rel="stylesheet" href="../resources/css/ccg-effects.css">
+    <link rel="stylesheet" href="../resources/css/ccg-modal.css">
+    <link rel="stylesheet" href="../resources/css/ccg-anim.css">
+    <!-- If genre.css contains card/grid styles we want to reuse: -->
     <link rel="stylesheet" href="../resources/css/genre.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <!-- Google Fonts (same as home) -->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
+<body class="ccg-body ccg-mode-c64">
+    <div class="ccg-page-shell">
+        <!-- TOP BAR / HEADER -->
+        <header class="ccg-header">
+            <div class="ccg-header-left">
+                <a href="../home.html" class="ccg-logo-link">
+                    <img src="../resources/CCGAMER LOGO.png" alt="Cheeky Commodore Gamer logo" class="ccg-logo-small">
+                </a>
+                <div class="ccg-header-text">
+                    <div class="ccg-title">Cheeky Commodore Gamer</div>
+                    <div class="ccg-subtitle">C64 &amp; Amiga game viewer</div>
+                </div>
+            </div>
+            <div class="ccg-header-right">
+                <button id="mode-toggle" class="ccg-pill-button ccg-pill-small" type="button">
+                    SYSTEM MODE: <span id="mode-label">C64 NEON</span>
+                </button>
+            </div>
+        </header>
 
-<body>
+        <!-- MAIN CRT SHELL -->
+        <main class="ccg-main">
+            <section class="ccg-crt-panel ccg-panel-wide">
+                <div class="ccg-panel-header">
+                    <div class="ccg-panel-title">
+                        <span id="game-system-label" class="ccg-panel-kicker">GAME VIEWER</span>
+                        <span id="game-title" class="ccg-panel-heading">Loading game…</span>
+                    </div>
+                    <nav class="ccg-panel-nav">
+                        <a href="../home.html" class="ccg-pill-button ccg-pill-small">🏠 HOME HUB</a>
+                        <a href="index.html" class="ccg-pill-button ccg-pill-small">🎮 GAMES HUB</a>
+                        <a href="../complete-index.html" class="ccg-pill-button ccg-pill-small">📜 COMPLETE INDEX</a>
+                    </nav>
+                </div>
 
-<header class="ccg-header">
-    <a href="../home.html" class="ccg-logo-link">
-        <img src="../resources/CCGAMER LOGO.png" class="ccg-logo">
-    </a>
+                <div class="ccg-panel-body ccg-game-layout">
+                    <!-- LEFT: THUMBNAIL -->
+                    <div class="ccg-game-thumb-wrap">
+                        <div class="ccg-game-thumb-frame">
+                            <img id="game-thumbnail" src="" alt="Game artwork" class="ccg-game-thumb">
+                        </div>
+                    </div>
 
-    <div class="ccg-header-text">
-        <h1>Cheeky Commodore Gamer</h1>
-        <p>C64 & Amiga Retro Gaming Hub</p>
+                    <!-- RIGHT: META -->
+                    <div class="ccg-game-meta-wrap">
+                        <div id="game-tagline" class="ccg-game-tagline"></div>
+
+                        <dl class="ccg-game-meta-list">
+                            <div>
+                                <dt>System</dt>
+                                <dd id="game-system">–</dd>
+                            </div>
+                            <div>
+                                <dt>Year</dt>
+                                <dd id="game-year">–</dd>
+                            </div>
+                            <div>
+                                <dt>Publisher</dt>
+                                <dd id="game-publisher">–</dd>
+                            </div>
+                            <div>
+                                <dt>Developer</dt>
+                                <dd id="game-developer">–</dd>
+                            </div>
+                            <div>
+                                <dt>Genre</dt>
+                                <dd id="game-genre">–</dd>
+                            </div>
+                            <div>
+                                <dt>Collection</dt>
+                                <dd id="game-collection">–</dd>
+                            </div>
+                        </dl>
+
+                        <div class="ccg-game-description-block">
+                            <h2 class="ccg-section-heading">Mission Briefing</h2>
+                            <p id="game-description" class="ccg-game-description">
+                                Loading data from mission archives…
+                            </p>
+                        </div>
+
+                        <div class="ccg-game-actions">
+                            <a id="back-to-genre" href="index.html" class="ccg-pill-button">⬅ BACK TO LIST</a>
+                            <a href="../quiz/index.html" class="ccg-pill-button">❓ TRIVIA QUIZ HUB</a>
+                        </div>
+
+                        <p id="game-error" class="ccg-error-message" hidden></p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="ccg-footer">
+            <span>© 2025 Cheeky Commodore Gamer</span>
+        </footer>
     </div>
 
-    <nav class="ccg-nav">
-        <a href="../home.html">Home</a>
-        <a href="../complete-index.html">Complete Index</a>
-        <a href="../quiz/index.html">Quiz Hub</a>
-        <a href="index.html">Games Hub</a>
-    </nav>
-</header>
-
-<main class="genre-main">
-    <h2 class="genre-title">Game Details</h2>
-    <div id="game-container" class="game-detail"></div>
-</main>
-
-<footer class="ccg-footer">
-    <p>Cheeky Commodore Gamer – Game Viewer</p>
-</footer>
-
-<script src="../js/load-single-game.js"></script>
+    <!-- Scripts -->
+    <script src="../js/ccg-mode-engine.js" defer></script>
+    <script src="../js/ccj-global.js" defer></script>
+    <script src="../js/load-single-game.js" defer></script>
 </body>
 </html>
