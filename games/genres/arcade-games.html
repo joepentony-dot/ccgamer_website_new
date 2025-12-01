@@ -23,7 +23,7 @@
 </head>
 <body data-page="genre" data-mode="c64" data-genre="arcade-games">
 
-<canvas id="starfield"></canvas>
+<!-- Starfield removed to avoid hum -->
 <div class="crt-overlay"></div>
 <div class="crt-glow"></div>
 <div class="neon-grid"></div>
@@ -47,7 +47,7 @@
 
         <div class="ccg-hud-right">
             <div class="ccg-hud-right-line">BROWSER: <strong>ARCADE GRID</strong></div>
-            <div class="ccg-hud-right-line">STATUS: LOADING GAME LIST…</div>
+            <div class="ccg-hud-right-line" id="genreStatus">STATUS: LOADING GAME LIST…</div>
         </div>
     </header>
 
@@ -101,15 +101,19 @@
 <script src="../../js/genre-loader.js"></script>
 
 <script>
+/* ==========================================================
+   LOCAL GENRE PAGE SCRIPT — ARCADE
+   ========================================================== */
 (function () {
-    const body = document.body;
-    const modeText = document.getElementById("currentModeText");
-    const logoBtn = document.getElementById("logoModeToggle");
-    const yearEl = document.getElementById("ccgYear");
+    const body      = document.body;
+    const modeText  = document.getElementById("currentModeText");
+    const logoBtn   = document.getElementById("logoModeToggle");
+    const yearEl    = document.getElementById("ccgYear");
     const genreSlug = body.dataset.genre;
-    const gridEl = document.getElementById("genreGamesGrid");
-    const countEl = document.getElementById("gameCount");
+    const gridEl    = document.getElementById("genreGamesGrid");
+    const countEl   = document.getElementById("gameCount");
     const randomBtn = document.getElementById("randomInGenreBtn");
+    const statusEl  = document.getElementById("genreStatus");
 
     if (yearEl) yearEl.textContent = new Date().getFullYear();
 
@@ -126,13 +130,20 @@
     }
     refreshModeLabel();
 
-    // Hook into genre-loader if available
+    // Load genre games and then update HUD status
     if (typeof window.loadGenreGames === "function") {
-        window.loadGenreGames(genreSlug, gridEl, countEl);
+        (async () => {
+            await window.loadGenreGames(genreSlug, gridEl, countEl);
+            if (statusEl) {
+                statusEl.textContent = "STATUS: LIST READY";
+            }
+        })();
     } else {
         if (countEl) countEl.textContent = "Loader not initialised";
+        if (statusEl) statusEl.textContent = "STATUS: LOADER NOT INITIALISED";
     }
 
+    // Random game button
     if (randomBtn) {
         randomBtn.addEventListener("click", async () => {
             if (typeof window.randomGameInGenre === "function") {
@@ -145,7 +156,7 @@
                 const games = Array.isArray(data) ? data : (data.games || []);
                 const filtered = games.filter(g =>
                     (g.genreSlug && g.genreSlug === genreSlug) ||
-                    (g.genres && Array.isArray(g.genres) && g.genres.includes("Arcade")) ||
+                    (Array.isArray(g.genres) && g.genres.includes("Arcade Games")) ||
                     (g.genre && String(g.genre).toLowerCase().includes("arcade"))
                 );
                 const pool = filtered.length ? filtered : games;
@@ -160,57 +171,6 @@
         });
     }
 
-    // Starfield
-    const canvas = document.getElementById("starfield");
-    if (canvas && canvas.getContext) {
-        const ctx = canvas.getContext("2d");
-        let w = canvas.width = window.innerWidth;
-        let h = canvas.height = window.innerHeight;
-        const STAR_COUNT = 120;
-        const stars = [];
-
-        function initStars() {
-            stars.length = 0;
-            for (let i = 0; i < STAR_COUNT; i++) {
-                stars.push({
-                    x: Math.random() * w,
-                    y: Math.random() * h,
-                    z: Math.random() * 0.8 + 0.2,
-                    speed: Math.random() * 0.5 + 0.2
-                });
-            }
-        }
-
-        function draw() {
-            ctx.clearRect(0, 0, w, h);
-            const mode = body.dataset.mode || "c64";
-            let base = "rgba(112,255,240,";
-            if (mode === "amiga") base = "rgba(255,210,111,";
-            if (mode === "zx") base = "rgba(0,255,0,";
-            for (const s of stars) {
-                s.y += s.speed * (0.5 + s.z);
-                if (s.y > h) {
-                    s.y = 0;
-                    s.x = Math.random() * w;
-                    s.z = Math.random() * 0.8 + 0.2;
-                }
-                const size = s.z * 2;
-                const alpha = 0.3 + s.z * 0.7;
-                ctx.fillStyle = base + alpha.toFixed(2) + ")";
-                ctx.fillRect(s.x, s.y, size, size);
-            }
-            requestAnimationFrame(draw);
-        }
-
-        initStars();
-        draw();
-
-        window.addEventListener("resize", () => {
-            w = canvas.width = window.innerWidth;
-            h = canvas.height = window.innerHeight;
-            initStars();
-        });
-    }
 })();
 </script>
 
