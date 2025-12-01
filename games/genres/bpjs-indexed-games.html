@@ -3,99 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheeky Commodore Gamer | BPjS Indexed Games</title>
+    <title>BPJS-Indexed Games | Cheeky Commodore Gamer</title>
 
-    <!-- Global CCG CSS -->
-    <link rel="stylesheet" href="../../resources/css/main.css">
-    <link rel="stylesheet" href="../../resources/css/home.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-console.css">
+    <!-- GLOBAL -->
+    <link rel="stylesheet" href="../../resources/css/ccg-master.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-mode.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-effects.css">
     <link rel="stylesheet" href="../../resources/css/ccg-anim.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-modal.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-zx.css">
 
-    <!-- Page-specific CSS -->
-    <link rel="stylesheet" href="../../resources/css/bpjs-indexed-games.css">
+    <!-- GENRE -->
+    <link rel="stylesheet" href="../../resources/css/genre.css">
 
-    <!-- Icons -->
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- JS -->
+    <script src="../../js/site-mode.js" defer></script>
+    <script src="../../js/genre-loader.js" defer></script>
 
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-
-    <!-- Global JS -->
-    <script defer src="../../js/ccg-global.js"></script>
-    <script defer src="../../js/ccg-console.js"></script>
-    <script defer src="../../js/ccg-mode.js"></script>
-    <script defer src="../../js/ccg-zx.js"></script>
-    <script defer src="../../js/ccg-anim.js"></script>
-    <script defer src="../../js/ccg-modal.js"></script>
-
-    <!-- Page Logic -->
-    <script defer src="../../js/engine.js"></script>
-    <script defer src="../../js/genre-loader.js"></script>
 </head>
 
-<body class="genre-body">
+<body class="crt">
 
-<canvas id="starfield"></canvas>
-<div class="crt-overlay"></div>
+    <main class="genre-page">
+        <header class="genre-header">
+            <h1 class="genre-title">BPJS-Indexed Games</h1>
+            <p class="genre-intro">
+                A historical list of titles once indexed by the German BPjS — preserved here for educational and archival purposes.
+            </p>
+        </header>
 
-<div class="genre-shell">
-
-<header class="genre-header">
-
-    <div class="genre-header-top">
-        <a href="../../home.html">
-            <img src="../../resources/CCGAMER LOGO.png" class="genre-logo" alt="CCG Logo">
-        </a>
-
-        <div class="genre-title-block">
-            <h1>BPjS INDEXED GAMES</h1>
-            <p>Titles placed on the German index — historically significant and rare.</p>
-        </div>
-    </div>
-
-    <div class="genre-basic">
-        <span>**** COMMODORE 64 BASIC V2 ****</span>
-        <span>COLLECTION: BPJS INDEXED GAMES</span>
-    </div>
-
-    <nav class="genre-nav">
-        <a href="../../home.html">HOME</a>
-        <a href="../index.html">GAMES HUB</a>
-        <a href="../../complete-index.html">FULL INDEX</a>
-        <a href="../../quiz/index.html">QUIZ</a>
-        <a href="../../emulation-guide.html">EMULATOR GUIDE</a>
-        <a href="../../about.html">ABOUT</a>
-        <a href="../../contact.html">CONTACT</a>
-    </nav>
-
-    <div class="breadcrumb">
-        <a href="../../home.html">Home</a> ›
-        <a href="../index.html">Games</a> ›
-        BPjS Indexed
-    </div>
-
-    <p class="genre-intro">
-        <span>Controversial and historic.</span>
-        These games were restricted in Germany and became legends because of it.
-    </p>
-
-</header>
-
-<main>
-    <section class="genre-results-wrap" data-genre="BPJS Indexed Games">
-        <div id="genre-results">
-            <p class="loading">LOADING INDEXED GAMES…</p>
-        </div>
-    </section>
-</main>
-
-</div>
-
-<script>
-    loadGenrePage();
-</script>
+        <section id="games-grid" class="games-grid"></section>
+    </main>
 
 </body>
 </html>
