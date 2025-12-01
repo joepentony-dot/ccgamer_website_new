@@ -5,32 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arcade Games | Cheeky Commodore Gamer</title>
 
-    <!-- GLOBAL STYLES -->
+    <!-- Correct CSS -->
     <link rel="stylesheet" href="../../resources/css/ccg-master.css">
     <link rel="stylesheet" href="../../resources/css/ccg-mode.css">
     <link rel="stylesheet" href="../../resources/css/ccg-effects.css">
     <link rel="stylesheet" href="../../resources/css/ccg-anim.css">
     <link rel="stylesheet" href="../../resources/css/ccg-zx.css">
-
-    <!-- GENRE SYSTEM -->
     <link rel="stylesheet" href="../../resources/css/genre.css">
 
-    <!-- JS LOADERS -->
-    <script src="../../js/site-mode.js" defer></script>
     <script src="../../js/genre-loader.js" defer></script>
+
+    <script>
+        window.CCG_GENRE = "Arcade Games";
+    </script>
 </head>
 
 <body class="crt">
-
     <main class="genre-page">
         <header class="genre-header">
             <h1 class="genre-title">Arcade Games</h1>
-            <p class="genre-intro">Fast-paced action from the arcades — shooters, beat ’em ups, coin-op conversions and pure joystick punishment.</p>
+            <p class="genre-intro">Fast reflexes, quick thinking and pure joystick action.</p>
         </header>
 
-        <!-- GRID WHERE JS WILL INJECT GAMES -->
         <section id="games-grid" class="games-grid"></section>
     </main>
-
 </body>
 </html>
