@@ -1,15 +1,10 @@
-// =====================================
-// CCG Genre Loader (FIXED PATH VERSION)
-// =====================================
-
 document.addEventListener("DOMContentLoaded", () => {
-
     const gameListEl = document.getElementById("game-list");
     const statusEl = document.getElementById("loading-status");
 
     if (!gameListEl || !statusEl) return;
 
-    // IMPORTANT: Correct JSON path for all genre pages
+    // Correct relative path from /games/genres/*.html to /games/games.json
     const jsonURL = "../games.json";
 
     fetch(jsonURL)
@@ -20,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(data => {
             statusEl.textContent = "Loading complete.";
 
-            const genre = document.body.dataset.genre;  
+            const genre = document.body.dataset.genre;
             if (!genre) {
                 statusEl.textContent = "Genre not specified.";
                 return;
@@ -48,7 +43,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 gameListEl.appendChild(card);
             });
-
         })
         .catch(err => {
             statusEl.textContent = "Error loading games.";
