@@ -1,205 +1,395 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheeky Commodore Gamer | Home Hub</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cheeky Commodore Gamer | Home Hub</title>
 
-    <!-- MASTER CSS -->
-    <link rel="stylesheet" href="css/ccg-master.css">
-    <link rel="stylesheet" href="css/ccg-mode.css">
-    <link rel="stylesheet" href="css/ccg-effects.css">
-    <link rel="stylesheet" href="css/ccg-overlays.css">
-    <link rel="stylesheet" href="css/ccg-console.css">
-    <link rel="stylesheet" href="css/ccg-anim.css">
+<!-- FONTS -->
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
 
-    <!-- FONTS -->
-    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: 'VT323', monospace;
-            color: var(--neon-text);
-            background: var(--starfield-bg);
-            overflow-x: hidden;
-        }
+/* ============================================================
+   BASE + GLOBAL VARIABLES (C64 + AMIGA MODES)
+============================================================ */
 
-        /* LOGO */
-        .ccg-logo {
-            width: 110px;
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            z-index: 5000;
-            cursor: pointer;
-            filter: drop-shadow(0 0 8px var(--neon-glow));
-            opacity: 0.9;
-            transition: 0.25s ease;
-        }
-        .ccg-logo:hover { transform: scale(1.08); }
+:root {
+    --neon-text: #5fffff;
+    --neon-glow: #00eaff;
+    --bg-grad-1: #020813;
+    --bg-grad-2: #000000;
+    --panel-bg: rgba(0,0,0,0.5);
+    --panel-border: rgba(0,255,255,0.4);
+}
 
-        /* CLICK PROMPT */
-        .click-hint {
-            position: fixed;
-            top: 140px;
-            left: 20px;
-            background: rgba(0,0,0,0.75);
-            padding: 6px 14px;
-            border-radius: 6px;
-            font-size: 1.1rem;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            color: #00e5ff;
-            text-shadow: 0 0 6px #00e5ff;
-            z-index: 4000;
-        }
-        .click-hint.visible { opacity: 1; }
+/* AMIGA MODE VARIABLES */
+body.amiga {
+    --neon-text: #ff6fff;
+    --neon-glow: #ff2ad8;
+    --bg-grad-1: #1a001a;
+    --bg-grad-2: #000000;
+    --panel-border: rgba(255,0,120,0.4);
+}
 
-        /* TITLE */
-        .page-title {
-            margin-top: 120px;
-            text-align: center;
-            font-size: 1.7rem;
-            font-family: 'Press Start 2P', monospace;
-            color: var(--neon-text);
-            text-shadow: 0 0 12px var(--neon-glow), 0 0 22px var(--neon-glow);
-        }
+/* ============================================================
+   BODY + STARFIELD
+============================================================ */
 
-        /* GRID */
-        .grid-container {
-            width: 94%;
-            max-width: 1400px;
-            margin: 30px auto 90px auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 25px;
-        }
+body {
+    margin: 0;
+    padding: 0;
+    background: radial-gradient(circle at top, var(--bg-grad-1), var(--bg-grad-2));
+    font-family: 'VT323', monospace;
+    color: var(--neon-text);
+    overflow-x: hidden;
+}
 
-        .grid-item {
-            padding: 10px;
-            border-radius: 10px;
-            background: rgba(0,0,0,0.65);
-            backdrop-filter: blur(4px);
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.20s ease, box-shadow 0.20s ease;
-            border: 2px solid var(--neon-dim);
-        }
-        .grid-item img {
-            width: 100%;
-            border-radius: 6px;
-        }
-        .grid-item:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 18px var(--neon-glow);
-        }
+/* STARFIELD LAYER */
+#starfield {
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image: url("resources/starfield.gif");
+    opacity: 0.35;
+}
 
-        /* ZX SPECTRUM EASTER EGG MODE */
-        body.spectrum-mode {
-            background: black !important;
-            animation: spec-glitch 0.12s infinite;
-        }
+/* CRT OVERLAY */
+#crt {
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.25) 0px,
+        rgba(0,0,0,0.25) 2px,
+        transparent 2px,
+        transparent 4px
+    );
+    opacity: 0.75;
+}
 
-        @keyframes spec-glitch {
-            0%   { filter: hue-rotate(0deg); }
-            25%  { filter: hue-rotate(90deg); }
-            50%  { filter: hue-rotate(180deg); }
-            75%  { filter: hue-rotate(270deg); }
-            100% { filter: hue-rotate(360deg); }
-        }
+/* ============================================================
+   TOP BAR (LOGO + MODE SWITCH + SOCIALS)
+============================================================ */
 
-        .spectrum-banner {
-            display: none;
-            text-align: center;
-            padding: 20px;
-            background: black;
-            color: #fff600;
-            font-size: 1.3rem;
-            font-family: 'Press Start 2P';
-            text-shadow: 0 0 5px #00f, 0 0 12px red;
-        }
-        body.spectrum-mode .spectrum-banner {
-            display: block;
-        }
-    </style>
+#topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 22px;
+}
+
+#ccgLogo {
+    width: 110px;
+    cursor: pointer;
+    filter: drop-shadow(0 0 12px var(--neon-glow));
+}
+
+#modeToggle {
+    cursor: pointer;
+    font-size: 20px;
+    text-shadow: 0 0 8px var(--neon-glow);
+}
+
+#socials a {
+    margin-left: 12px;
+    text-decoration: none;
+    color: var(--neon-text);
+    font-size: 20px;
+    text-shadow: 0 0 8px var(--neon-glow);
+}
+
+/* ============================================================
+   PAGE TITLE
+============================================================ */
+
+#pageTitle {
+    margin-top: 40px;
+    text-align: center;
+    font-family: "Press Start 2P";
+    font-size: 28px;
+    text-shadow: 0 0 14px var(--neon-glow);
+}
+
+/* ============================================================
+   GRID PANELS (GENRES + COLLECTIONS)
+============================================================ */
+
+.panel {
+    width: 92%;
+    margin: 20px auto;
+    padding: 20px;
+    border: 2px solid var(--panel-border);
+    background: var(--panel-bg);
+    box-shadow: 0 0 12px var(--panel-border);
+}
+
+.panel h2 {
+    font-family: "Press Start 2P";
+    font-size: 18px;
+    text-shadow: 0 0 12px var(--neon-glow);
+    text-align: center;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 14px;
+    padding-top: 10px;
+}
+
+.grid a {
+    display: block;
+    text-align: center;
+    padding: 14px;
+    border: 2px solid var(--panel-border);
+    background: rgba(0,0,0,0.35);
+    text-decoration: none;
+    color: var(--neon-text);
+    font-size: 18px;
+    transition: 0.18s;
+}
+
+.grid a:hover {
+    transform: scale(1.07);
+    background: rgba(0,0,0,0.6);
+    text-shadow: 0 0 8px var(--neon-glow);
+}
+
+/* ============================================================
+   TYPEWRITER TICKER (BOTTOM)
+============================================================ */
+
+#ticker {
+    width: 100%;
+    text-align: center;
+    padding: 12px 0;
+    font-size: 22px;
+    color: var(--neon-text);
+    text-shadow: 0 0 8px var(--neon-glow);
+    margin-top: 20px;
+}
+
+/* ============================================================
+   EASTER EGG "NEON DOS CONTROL ROOM"
+============================================================ */
+
+#easterRoom {
+    position: fixed;
+    inset: 0;
+    background: black;
+    display: none;
+    z-index: 20000;
+    padding: 40px;
+    color: #00ff88;
+    font-family: 'VT323';
+    font-size: 26px;
+    border: 4px solid #00ffaa;
+    box-shadow: 0 0 55px #00ffaa;
+}
+
+#easterInner {
+    width: 90%;
+    max-width: 900px;
+    margin: 0 auto;
+    background: rgba(0,0,0,0.75);
+    padding: 22px;
+    border: 2px solid #00ffaa;
+    box-shadow: 0 0 25px #00ffaa;
+}
+
+.eItem {
+    padding: 8px 0;
+    cursor: pointer;
+}
+
+.eItem:hover {
+    color: #ffffff;
+    text-shadow: 0 0 12px #00ffaa;
+}
+
+#closeEaster {
+    margin-top: 20px;
+    cursor: pointer;
+    color: #ff3333;
+}
+
+</style>
 </head>
 
 <body>
 
-    <!-- LOGO -->
-    <img src="resources/CCGAMER LOGO.png" class="ccg-logo" id="ccgLogo">
+<div id="starfield"></div>
 
-    <!-- CLICK HINT -->
-    <div id="clickHint" class="click-hint"></div>
-
-    <!-- ZX SPECTRUM MODE BANNER -->
-    <div class="spectrum-banner">
-        *** ZX SPECTRUM MODE ACTIVATED *** <br>
-        Colour Clash? Never Heard Of It.
+<div id="topbar">
+    <img src="resources/CCGAMER LOGO.png" id="ccgLogo">
+    <div id="modeToggle">C64 MODE</div>
+    <div id="socials">
+        <a href="https://www.youtube.com/@cheekycommodoregamer" target="_blank">YT</a>
+        <a href="https://www.patreon.com/cheekygamer" target="_blank">PT</a>
+        <a href="https://discord.gg/" target="_blank">DS</a>
     </div>
+</div>
 
-    <!-- TITLE -->
-    <div class="page-title">
-        WELCOME TO THE C64 / AMIGA HOME HUB
+<h1 id="pageTitle">CHEEKY COMMODORE GAMER HUB</h1>
+
+<!-- =====================================================
+     GENRES PANEL
+===================================================== -->
+<div class="panel">
+    <h2>GENRES</h2>
+
+    <div class="grid">
+        <a href="arcade-games.html">Arcade</a>
+        <a href="action-adventure-games.html">Action Adventure</a>
+        <a href="adventure-games.html">Adventure</a>
+        <a href="racing-games.html">Racing</a>
+        <a href="casino-games.html">Casino</a>
+        <a href="horror-games.html">Horror</a>
+        <a href="fighting-games.html">Fighting</a>
+        <a href="platform-games.html">Platform</a>
+        <a href="licensed-games.html">Licensed</a>
+        <a href="puzzle-games.html">Puzzle</a>
+        <a href="miscellaneous.html">Misc</a>
+        <a href="bpjs-indexed-games.html">BPjS Indexed</a>
     </div>
+</div>
 
-    <!-- GRID (GENRES) -->
-    <h2 class="page-title" style="font-size:1.3rem; margin-top:50px;">GAME GENRES</h2>
+<!-- =====================================================
+     COLLECTIONS PANEL
+===================================================== -->
+<div class="panel">
+    <h2>COLLECTIONS</h2>
 
-    <div class="grid-container">
-        <a href="arcade-games.html" class="grid-item"><img src="resources/images/genre-icons/arcade.png"><br>ARCADE</a>
-        <a href="action-adventure-games.html" class="grid-item"><img src="resources/images/genre-icons/action.png"><br>ACTION ADVENTURE</a>
-        <a href="adventure-games.html" class="grid-item"><img src="resources/images/genre-icons/adventure.png"><br>ADVENTURE</a>
-        <a href="fighting-games.html" class="grid-item"><img src="resources/images/genre-icons/fighting.png"><br>FIGHTING</a>
-        <a href="platform-games.html" class="grid-item"><img src="resources/images/genre-icons/platform.png"><br>PLATFORM</a>
-        <a href="puzzle-games.html" class="grid-item"><img src="resources/images/genre-icons/puzzle.png"><br>PUZZLE</a>
-        <a href="racing-games.html" class="grid-item"><img src="resources/images/genre-icons/racing.png"><br>RACING</a>
-        <a href="horror-games.html" class="grid-item"><img src="resources/images/genre-icons/horror.png"><br>HORROR</a>
-        <a href="bpjs-indexed-games.html" class="grid-item"><img src="resources/images/genre-icons/bpjs.png"><br>BPJS INDEXED</a>
-        <a href="licensed-games.html" class="grid-item"><img src="resources/images/genre-icons/licensed.png"><br>LICENSED</a>
-        <a href="cartridge-games.html" class="grid-item"><img src="resources/images/genre-icons/cartridge.png"><br>CARTRIDGES</a>
-        <a href="miscellaneous.html" class="grid-item"><img src="resources/images/genre-icons/misc.png"><br>MISC</a>
+    <div class="grid">
+        <a href="cartridge-games.html">C64 Cartridge Games</a>
+        <a href="top-picks.html">Top Picks</a>
+        <a href="quiz-games.html">Trivia Quiz</a>
+        <a href="complete-index.html">Complete Games Index</a>
     </div>
+</div>
 
-    <!-- COLLECTIONS GRID -->
-    <h2 class="page-title" style="font-size:1.3rem;">SPECIAL COLLECTIONS</h2>
+<!-- =====================================================
+     TICKER
+===================================================== -->
+<div id="ticker"></div>
 
-    <div class="grid-container">
-        <a href="top-picks.html" class="grid-item"><img src="resources/images/genre-icons/toppicks.png"><br>TOP PICKS</a>
-        <a href="casino-games.html" class="grid-item"><img src="resources/images/genre-icons/casino.png"><br>CASINO</a>
-        <a href="quiz-games.html" class="grid-item"><img src="resources/images/genre-icons/quiz.png"><br>QUIZ</a>
+<!-- =====================================================
+     EASTER EGG ROOM
+===================================================== -->
+
+<div id="easterRoom">
+    <div id="easterInner">
+
+        CHEEKY COMMANDER SYSTEM – EASTER OPERATIONS MODULE  
+        <br><br>
+
+        <div class="eItem" data-e="zx">[1] ZX Spectrum Mode</div>
+        <div class="eItem" data-e="lemmings">[2] Lemmings Detonation</div>
+        <div class="eItem" data-e="matrix">[3] Matrix Rain Protocol</div>
+        <div class="eItem" data-e="terminator">[4] Terminator Scan</div>
+        <div class="eItem" data-e="warp">[5] Warp Neon Mode</div>
+        <div class="eItem" data-e="party">[6] Party Mode</div>
+        <div class="eItem" data-e="konami">[7] Konami Unlock</div>
+        <div class="eItem" data-e="amiga">[8] Amiga Workbench Layer</div>
+        <div class="eItem" data-e="vic20">[9] VIC-20 Emulation</div>
+
+        <br>
+        <div id="closeEaster">[Q] EXIT</div>
     </div>
+</div>
 
+<div id="crt"></div>
 
-    <!-- JAVASCRIPT: EASTER EGG LOGIC -->
-    <script>
-        let clickCount = 0;
-        const logo = document.getElementById('ccgLogo');
-        const hint = document.getElementById('clickHint');
+<!-- =====================================================
+     JAVASCRIPT LOGIC: 
+     MODE TOGGLE, TICKER, EASTER EGGS, CHEATS, LOGO CLICKS
+===================================================== -->
+<script>
 
-        logo.addEventListener('click', () => {
-            clickCount++;
+let logoClicks = 0;
 
-            if (clickCount === 1) {
-                hint.innerText = "Click me again…";
-                hint.classList.add("visible");
-            }
+/* ===========================
+   MODE SWITCHER
+=========================== */
 
-            if (clickCount === 2) {
-                hint.innerText = "Go on… one more time…";
-            }
+document.getElementById("modeToggle").onclick = () => {
+    document.body.classList.toggle("amiga");
+    document.getElementById("modeToggle").textContent =
+        document.body.classList.contains("amiga")
+        ? "AMIGA MODE"
+        : "C64 MODE";
+};
 
-            if (clickCount === 3) {
-                hint.innerText = "";
-                hint.classList.remove("visible");
-                document.body.classList.toggle("spectrum-mode");
+/* ===========================
+   TYPEWRITER TICKER
+=========================== */
 
-                clickCount = 0; // reset cycle
-            }
-        });
-    </script>
+const tickMsg = "Welcome Commander! Choose your genre... or discover the secrets of the Cheeky Commodore Gamer... 😇🕹️👌   ";
+let ti = 0;
+
+setInterval(() => {
+    document.getElementById("ticker").textContent = tickMsg.slice(0, ti++);
+    if (ti > tickMsg.length) ti = 0;
+}, 90);
+
+/* ===========================
+   LOGO 3-CLICK EASTER EGG UNLOCK
+=========================== */
+
+document.getElementById("ccgLogo").onclick = () => {
+    logoClicks++;
+    if (logoClicks === 1) document.getElementById("ticker").textContent = "Click me again...";
+    if (logoClicks === 2) document.getElementById("ticker").textContent = "One more click...";
+    if (logoClicks === 3) openEasterRoom();
+};
+
+function openEasterRoom() {
+    document.getElementById("easterRoom").style.display = "block";
+}
+
+document.getElementById("closeEaster").onclick = () => {
+    document.getElementById("easterRoom").style.display = "none";
+    logoClicks = 0;
+};
+
+/* ===========================
+   CHEAT ENGINE (GLOBAL)
+=========================== */
+
+let cheat = "";
+
+document.addEventListener("keydown", e => {
+    cheat += e.key.toLowerCase();
+    if (cheat.length > 20) cheat = cheat.slice(-20);
+
+    if (cheat.includes("zx")) easterAction("zx");
+    if (cheat.includes("lemmings")) easterAction("lemmings");
+    if (cheat.includes("matrix")) easterAction("matrix");
+    if (cheat.includes("t800")) easterAction("terminator");
+    if (cheat.includes("warp")) easterAction("warp");
+    if (cheat.includes("party")) easterAction("party");
+    if (cheat.includes("amiga")) easterAction("amiga");
+    if (cheat.includes("vic20")) easterAction("vic20");
+    if (cheat.includes("konami")) easterAction("konami");
+});
+
+/* ===========================
+   EASTER ACTIONS
+=========================== */
+
+document.querySelectorAll(".eItem").forEach(btn => {
+    btn.onclick = () => easterAction(btn.dataset.e);
+});
+
+function easterAction(code) {
+    alert("Easter Egg Activated: " + code.toUpperCase());
+}
+
+</script>
 
 </body>
 </html>
