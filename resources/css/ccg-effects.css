@@ -1,4 +1,41 @@
 /* ==========================================================
+   CCG — GLOBAL FLICKER DISABLE PATCH (ANTI-HUM MODE)
+   ========================================================== */
+
+.crt-overlay,
+.crt-scanlines,
+.ccg-crt,
+.ccg-crt-overlay {
+    animation: none !important;
+    -webkit-animation: none !important;
+    opacity: 0.08 !important; /* keeps a light CRT feel without movement */
+}
+
+.flicker,
+.ccg-flicker,
+.crt-flicker {
+    animation: none !important;
+    -webkit-animation: none !important;
+}
+
+@keyframes crt-flicker { from { opacity: 1; } to { opacity: 1; } }
+@keyframes flicker { from { opacity: 1; } to { opacity: 1; } }
+@keyframes crt-warp { from { transform: none; } to { transform: none; } }
+@keyframes scanline-move { from { top: 0; } to { top: 0; } }
+
+:root {
+    --crt-flicker-strength: 0 !important;
+    --crt-warp-strength: 0 !important;
+    --crt-scanline-opacity: 0.08 !important;
+}
+
+body.ccg-body::before,
+body.ccg-body::after {
+    animation: none !important;
+    -webkit-animation: none !important;
+}
+
+/* ==========================================================
    CCG EFFECTS — CRT, NEON, BLOOM, SCANLINES, GLOW, FX STACK
    ========================================================== */
 
