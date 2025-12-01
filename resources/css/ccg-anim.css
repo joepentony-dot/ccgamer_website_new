@@ -1,3 +1,7 @@
+/* ===========================================================
+   GLOBAL ANIMATIONS (FADE, PULSE, SLIDE, CURSOR)
+   =========================================================== */
+
 /* -------------------------------------------------
    BASIC FADE / PULSE
 --------------------------------------------------*/
@@ -67,7 +71,7 @@
 }
 
 /* -------------------------------------------------
-   SHAKE / ERROR HINTS
+   SHAKE / ERROR
 --------------------------------------------------*/
 
 @keyframes shakeHorizontal {
@@ -86,7 +90,7 @@
 .shake-y { animation: shakeVertical 0.6s; }
 
 /* -------------------------------------------------
-   HUE ROTATION (used for ZX + party)
+   HUE ROTATION (ZX PARTY MODE)
 --------------------------------------------------*/
 
 @keyframes hueRotate {
@@ -99,7 +103,7 @@
 }
 
 /* -------------------------------------------------
-   CRT SCANLINE / FLICKER
+   CRT EFFECTS
 --------------------------------------------------*/
 
 @keyframes crtFlicker {
@@ -132,7 +136,7 @@
 }
 
 /* -------------------------------------------------
-   POWER CYCLE / TV-OFF (used in global.js)
+   POWER CYCLE
 --------------------------------------------------*/
 
 @keyframes tvOff {
@@ -153,7 +157,7 @@
 }
 
 /* -------------------------------------------------
-   GURU MEDITATION BLINK
+   GURU MEDITATION
 --------------------------------------------------*/
 
 @keyframes guruBlink {
@@ -167,7 +171,7 @@
 }
 
 /* -------------------------------------------------
-   EXPLOSION FLASH (nuclear)
+   NUKE FLASH
 --------------------------------------------------*/
 
 @keyframes nukeFlash {
@@ -182,7 +186,7 @@
 }
 
 /* -------------------------------------------------
-   INVADER MOVE
+   INVADER MOVE (Space Invaders)
 --------------------------------------------------*/
 
 @keyframes invaderMove {
@@ -213,7 +217,7 @@
 }
 
 /* -------------------------------------------------
-   LOADING SPINNER (optional)
+   LOADING SPINNER
 --------------------------------------------------*/
 
 @keyframes spin {
@@ -226,7 +230,7 @@
 }
 
 /* -------------------------------------------------
-   FLOAT / BOB
+   FLOATING / BOB
 --------------------------------------------------*/
 
 @keyframes floatUpDown {
@@ -240,7 +244,7 @@
 }
 
 /* -------------------------------------------------
-   WOBBLE BUTTONS
+   WOBBLE
 --------------------------------------------------*/
 
 @keyframes wobble {
@@ -253,4 +257,30 @@
 
 .wobble {
     animation: wobble 1.2s ease-in-out infinite;
+}
+
+/* ===========================================================
+   C64 INTRO – LOADING BARS + TYPE ANIMATION
+   =========================================================== */
+
+.intro-cursor {
+    margin-left: 0.3rem;
+    color: #aee7ff;
+    animation: introCursorBlink 0.7s steps(2, start) infinite;
+}
+
+@keyframes introCursorBlink {
+    0%, 50% { opacity: 1; }
+    50.01%, 100% { opacity: 0; }
+}
+
+/* LOADING BAR FLICKER */
+@keyframes barFlicker {
+    0%   { opacity: 0.9; transform: translateX(0); }
+    15%  { opacity: 0.6; transform: translateX(-1px); }
+    30%  { opacity: 1;   transform: translateX(1px); }
+    45%  { opacity: 0.7; transform: translateX(-0.5px); }
+    60%  { opacity: 0.95;transform: translateX(0.5px); }
+    75%  { opacity: 0.65;transform: translateX(0); }
+    100% { opacity: 0.9; transform: translateX(0); }
 }
