@@ -24,7 +24,7 @@
         }
 
         /* ======================
-           POWER-ON SCREEN
+           POWER ON
         ======================= */
         #powerOverlay {
             position: fixed;
@@ -34,7 +34,6 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            text-align: center;
             background: radial-gradient(circle at center, #04121c 0%, #000 100%);
         }
 
@@ -64,13 +63,13 @@
         .hidden { display: none !important; }
 
         /* ======================
-           SKIP INTRO BUTTON
+           SKIP BUTTON (TOP ALWAYS)
         ======================= */
         #skipIntroBtn {
             position: fixed;
             top: 18px;
             right: 18px;
-            z-index: 200;
+            z-index: 999999 !important;
             background: #b0002a;
             color: #ffffff;
             border: 2px solid #ffffff;
@@ -80,6 +79,7 @@
             cursor: pointer;
             text-transform: uppercase;
         }
+
         #skipIntroBtn:hover {
             box-shadow: 0 0 12px rgba(255,140,140,0.9);
         }
@@ -110,7 +110,6 @@
             height: 520px;
             max-height: 70vh;
             overflow: hidden;
-            box-sizing: border-box;
         }
 
         #c64Text {
@@ -122,16 +121,15 @@
         }
 
         /* ======================
-           BLACKOUT + RASTER BARS
+           RASTER BARS (HIGH DEFINITION)
         ======================= */
         #rasterOverlay {
             position: fixed;
             inset: 0;
-            background: black;
             z-index: 5000;
+            background: black;
             display: none;
 
-            /* High-definition raster bars */
             background-image:
                 repeating-linear-gradient(
                     0deg,
@@ -148,7 +146,7 @@
 
             animation:
                 rasterScroll 2.8s linear infinite,
-                rasterPulse 0.22s infinite,
+                rasterPulse 0.35s infinite,
                 rasterJitter 0.15s infinite,
                 rasterHueShift 3.5s infinite alternate;
         }
@@ -159,7 +157,7 @@
         }
 
         @keyframes rasterPulse {
-            0%   { opacity: 0.78; }
+            0%   { opacity: 0.75; }
             100% { opacity: 1.0; }
         }
 
@@ -175,7 +173,7 @@
         }
 
         /* ======================
-           SID SYNC TEXT (UPGRADED)
+           SID TEXT (LONGER DISPLAY)
         ======================= */
         #sidText {
             position: fixed;
@@ -183,23 +181,22 @@
             width: 100%;
             text-align: center;
             font-family: "Press Start 2P", monospace;
-            font-size: 44px;
-            letter-spacing: 0.14em;
+            font-size: 48px;
             opacity: 0;
+            letter-spacing: 0.12em;
             color: #00eaff;
             text-shadow:
-                0 0 8px #00eaff,
-                0 0 16px #00bbff,
-                0 0 24px #0088ff,
-                0 0 48px #0055ff,
-                0 0 96px #0022ff;
+                0 0 12px #00eaff,
+                0 0 28px #00bbff,
+                0 0 50px #0077ff,
+                0 0 120px #0050ff;
             z-index: 6000;
-            transition: opacity 0.45s ease, transform 0.45s ease;
+            transition: opacity 1.0s ease, transform 1.0s ease;
         }
 
         .sidTextVisible {
             opacity: 1 !important;
-            transform: scale(1.12);
+            transform: scale(1.08);
         }
 
     </style>
@@ -216,9 +213,7 @@
 
 <div id="c64Wrapper" class="hidden">
     <div class="c64-border">
-        <div class="c64-inner">
-            <pre id="c64Text"></pre>
-        </div>
+        <div class="c64-inner"><pre id="c64Text"></pre></div>
     </div>
 </div>
 
@@ -267,19 +262,24 @@ READY.
         c64Text.textContent += txt + "\n";
     }
 
-    /* SID TEXT (IMPROVED) */
+    /* ======================
+       SID TEXT: LONGER DISPLAY
+    ======================= */
     function flashSID(msg, delay) {
         schedule(() => {
             sidText.textContent = msg;
             sidText.classList.add("sidTextVisible");
         }, delay);
 
+        /* fade out after 3 seconds */
         schedule(() => {
             sidText.classList.remove("sidTextVisible");
-        }, delay + 1600);
+        }, delay + 3000);
     }
 
-    /* LOAD SEQUENCE */
+    /* ======================
+       LOAD SEQUENCE
+    ======================= */
     function startLoadSequence() {
 
         schedule(() => {
@@ -292,7 +292,7 @@ READY.
                     appendLine(`FOUND "CHEEKY COMMODORE GAMER"`);
                     appendLine(`LOADING`);
 
-                    schedule(startRasterAudio, 800);
+                    schedule(startRasterAudio, 900);
 
                 }, 900);
 
@@ -301,17 +301,20 @@ READY.
         }, 500);
     }
 
-    /* RASTER + SID START */
+    /* ======================
+       START RASTER + SID
+    ======================= */
     function startRasterAudio() {
 
-        /* Remove everything behind raster */
+        /* Blackout the C64 screen entirely */
         c64Wrapper.style.display = "none";
 
         raster.style.display = "block";
 
+        /* SID synced text now lasts longer */
         flashSID("ANOTHER VISITOR...", 200);
-        flashSID("...STAY A WHILE...", 1600);
-        flashSID("STAY FOREVER!", 3000);
+        flashSID("...STAY A WHILE...", 2000);
+        flashSID("STAY FOREVER!", 3900);
 
         try {
             sidAudio.currentTime = 0;
@@ -330,14 +333,12 @@ READY.
 
     function skipIntro() {
         clearTimers();
-        try {
-            sidAudio.pause(); sidAudio.currentTime=0;
-        }catch(e){}
+        try { sidAudio.pause(); sidAudio.currentTime=0; }catch(e){}
         window.location.href = "home.html";
     }
 
     document.addEventListener("click", e => {
-        if (powerOverlay && !powerOverlay.classList.contains("hidden")) beginIntro();
+        if (!powerOverlay.classList.contains("hidden")) beginIntro();
     });
 
     skipBtn.addEventListener("click", skipIntro);
