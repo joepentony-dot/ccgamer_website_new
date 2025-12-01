@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheeky Commodore Gamer – Intro</title>
 
-    <!-- Main site CSS (CRT, fonts, etc.) -->
+    <!-- Main CRT + Neon Styles -->
     <link rel="stylesheet" href="/ccgamer_website_new/resources/css/ccg-master.css">
 
     <style>
@@ -23,7 +23,7 @@
             position: relative;
         }
 
-        /* Pulsing neon-style power-on overlay */
+        /* POWER-ON SCREEN */
         #powerOverlay {
             position: fixed;
             inset: 0;
@@ -62,7 +62,7 @@
             display: none !important;
         }
 
-        /* Global Skip Intro button */
+        /* SKIP INTRO BUTTON */
         #skipIntroBtn {
             position: fixed;
             top: 18px;
@@ -82,7 +82,7 @@
             box-shadow: 0 0 12px rgba(255,140,140,0.9);
         }
 
-        /* C64 screen area */
+        /* C64 SCREEN */
         #c64Wrapper {
             position: relative;
             z-index: 5;
@@ -111,49 +111,46 @@
         #c64Text {
             white-space: pre;
             color: #5fffff;
-            font-size: 20px;
-            line-height: 1.4;
+            font-size: 18px;
+            line-height: 1.25;
+            letter-spacing: 0.05em;
         }
 
-        /* Full-screen raster bars (like attached GIF) */
+        /* FULL-SCREEN RASTER (softened, slowed, authentic) */
         #rasterOverlay {
             position: fixed;
             inset: 0;
             z-index: 30;
             display: none;
-            opacity: 0.9;
-            background:
+            opacity: 0.95;
+
+            /* blackout background */
+            background-color: black;
+
+            /* thick, blurred, colourful bars */
+            background-image:
                 repeating-linear-gradient(
                     0deg,
-                    #000000 0px,
-                    #000000 2px,
-                    #8cfffb 2px,
-                    #8cfffb 6px,
-                    #00ff00 6px,
-                    #00ff00 10px,
-                    #ffff00 10px,
-                    #ffff00 14px,
-                    #ff8800 14px,
-                    #ff8800 18px,
-                    #ff0000 18px,
-                    #ff0000 22px,
-                    #aa00ff 22px,
-                    #aa00ff 26px,
-                    #5555ff 26px,
-                    #5555ff 30px,
-                    #00aaff 30px,
-                    #00aaff 34px
+                    rgba(255, 0, 0, 0.9) 0px,   rgba(255, 0, 0, 0.9) 16px,
+                    rgba(255,165,0,0.9) 16px,  rgba(255,165,0,0.9) 32px,
+                    rgba(255,255,0,0.9) 32px,  rgba(255,255,0,0.9) 48px,
+                    rgba(0,255,0,0.9) 48px,    rgba(0,255,0,0.9) 64px,
+                    rgba(0,255,255,0.9) 64px,  rgba(0,255,255,0.9) 80px,
+                    rgba(0,128,255,0.9) 80px,  rgba(0,128,255,0.9) 96px,
+                    rgba(128,0,255,0.9) 96px,  rgba(128,0,255,0.9) 112px
                 );
-            animation: rasterScroll 0.2s linear infinite;
-            transform: scaleY(1.05);
+
+            filter: blur(4px);
+            animation: rasterScroll 0.45s linear infinite;
+            transform: scaleY(1.1);
         }
 
         @keyframes rasterScroll {
-            0%   { background-position-y: 0;   }
+            0%   { background-position-y: 0; }
             100% { background-position-y: 64px; }
         }
 
-        /* Subtle CRT scanlines for entire page */
+        /* CRT scanlines */
         body.intro-body::after {
             content: "";
             position: fixed;
@@ -175,23 +172,23 @@
 
         @keyframes crtFlicker {
             0%   { opacity: 0.88; }
-            100% { opacity: 1;    }
+            100% { opacity: 1; }
         }
     </style>
 </head>
 
 <body class="crt intro-body c64-mode">
 
-<!-- GLOBAL SKIP INTRO -->
+<!-- SKIP INTRO -->
 <button id="skipIntroBtn">[ ESC ] SKIP INTRO</button>
 
-<!-- POWER-ON SCREEN -->
+<!-- POWER ON -->
 <div id="powerOverlay">
-    <img src="resources/C64 NEON.png" alt="Cheeky Commodore Gamer" class="intro-logo">
+    <img src="resources/C64 NEON.png" class="intro-logo" alt="CCG Neon Logo">
     <p id="powerText">CLICK TO POWER ON</p>
 </div>
 
-<!-- C64 BASIC + LOAD SEQUENCE -->
+<!-- C64 SCREEN -->
 <div id="c64Wrapper" class="hidden">
     <div class="c64-border">
         <div class="c64-inner">
@@ -200,7 +197,7 @@
     </div>
 </div>
 
-<!-- FULL-SCREEN RASTER -->
+<!-- RASTER -->
 <div id="rasterOverlay"></div>
 
 <!-- AUDIO -->
@@ -216,45 +213,51 @@
     const sidAudio     = document.getElementById("sidAudio");
     const skipBtn      = document.getElementById("skipIntroBtn");
 
-    const timeouts = [];
+    const timers = [];
 
-    function schedule(fn, delay) {
-        const id = setTimeout(fn, delay);
-        timeouts.push(id);
+    function schedule(fn, ms) {
+        let id = setTimeout(fn, ms);
+        timers.push(id);
     }
 
-    function clearAllTimers() {
-        while (timeouts.length) {
-            clearTimeout(timeouts.pop());
-        }
+    function clearTimers() {
+        timers.forEach(id => clearTimeout(id));
+        timers.length = 0;
     }
 
-    // Enhanced C64 BASIC screen (neon but accurate layout)
-    const basicBootText =
+    const basicText =
 `**** COMMODORE 64 BASIC V2 ****
  64K RAM SYSTEM  38911 BASIC BYTES FREE
 
 READY.
+
 `;
 
-    function showBasicScreen() {
-        c64Text.textContent = basicBootText + "\n";
+    function showBasic() {
+        c64Text.textContent = basicText;
+    }
+
+    function appendLine(line) {
+        c64Text.textContent += line + "\n";
     }
 
     function startLoadSequence() {
-        // LOAD ""
+
         schedule(() => {
-            appendLine('LOAD ""');
+            appendLine(`LOAD ""`);
 
-            // PRESS PLAY ON TAPE
             schedule(() => {
-                appendLine('PRESS PLAY ON TAPE');
+                appendLine(`PRESS PLAY ON TAPE`);
 
-                // FOUND + start audio + raster
                 schedule(() => {
-                    appendLine('FOUND "CHEEKY COMMODORE GAMER"');
-                    appendLine('LOADING');
-                    startAudioAndRaster();
+                    appendLine(`FOUND "CHEEKY COMMODORE GAMER"`);
+                    appendLine(`LOADING`);
+
+                    // 1 second delay BEFORE raster/audio
+                    schedule(() => {
+                        startRasterAudio();
+                    }, 1000);
+
                 }, 900);
 
             }, 900);
@@ -262,82 +265,59 @@ READY.
         }, 800);
     }
 
-    function appendLine(line) {
-        c64Text.textContent += line + "\n";
+    function startRasterAudio() {
+        raster.style.display = "block";
+
+        try {
+            sidAudio.currentTime = 0;
+            sidAudio.play().catch(()=>{});
+        } catch(e){}
+
+        sidAudio.onended = () => window.location.href = "home.html";
     }
 
-    function startIntro() {
+    function beginIntro() {
         if (powerOverlay.classList.contains("hidden")) return;
 
         powerOverlay.classList.add("hidden");
         c64Wrapper.classList.remove("hidden");
 
-        showBasicScreen();
+        showBasic();
         startLoadSequence();
     }
 
-    function startAudioAndRaster() {
-        raster.style.display = "block";
-
-        try {
-            sidAudio.currentTime = 0;
-            sidAudio.play().catch(err => {
-                console.warn("Audio play blocked:", err);
-            });
-        } catch (e) {
-            console.warn("Audio error:", e);
-        }
-
-        sidAudio.onended = function () {
-            redirectHome();
-        };
-    }
-
-    function redirectHome() {
-        window.location.href = "home.html";
-    }
-
-    function skipIntro() {
-        clearAllTimers();
+    function skip() {
+        clearTimers();
         try {
             sidAudio.pause();
             sidAudio.currentTime = 0;
-        } catch (e) {
-            // ignore
-        }
-        redirectHome();
+        } catch(e){}
+        window.location.href = "home.html";
     }
 
-    // Click ANYWHERE (except Skip) to power on
-    document.addEventListener("click", function (e) {
-        if (e.target === skipBtn || e.target.closest("#skipIntroBtn")) {
-            return; // skip handled separately
-        }
-
-        if (!powerOverlay.classList.contains("hidden")) {
-            startIntro();
-        }
+    // CLICK ANYWHERE TO POWER ON (except Skip)
+    document.addEventListener("click", e => {
+        if (e.target === skipBtn || e.target.closest("#skipIntroBtn")) return;
+        if (!powerOverlay.classList.contains("hidden")) beginIntro();
     });
 
-    // Optional: clicking the text specifically also works
-    powerText.addEventListener("click", function (e) {
+    // TEXT CLICK
+    powerText.addEventListener("click", e => {
         e.stopPropagation();
-        startIntro();
+        beginIntro();
     });
 
-    // Skip button
-    skipBtn.addEventListener("click", function (e) {
+    // SKIP INTRO
+    skipBtn.addEventListener("click", e => {
         e.stopPropagation();
-        skipIntro();
+        skip();
     });
 
-    // Keyboard controls: ESC to skip, ENTER/SPACE to power on
-    document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape") {
-            skipIntro();
-        } else if ((e.key === "Enter" || e.key === " ") &&
-                   !powerOverlay.classList.contains("hidden")) {
-            startIntro();
+    // KEYS
+    document.addEventListener("keydown", e => {
+        if (e.key === "Escape") skip();
+        if ((e.key === "Enter" || e.key === " ") && !powerOverlay.classList.contains("hidden")) {
+            beginIntro();
         }
     });
 })();
