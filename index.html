@@ -1,35 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheeky Commodore Gamer – Intro</title>
-
-    <link rel="stylesheet" href="/ccgamer_website_new/resources/css/ccg-master.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cheeky Commodore Gamer – Intro</title>
+  <link rel="stylesheet" href="/ccgamer_website_new/resources/css/ccg-master.css">
 </head>
-
 <body class="crt intro-body">
-
-    <div id="audioUnlock" class="intro-overlay">
-        <p>CLICK TO START INTRO WITH SOUND</p>
-        <button id="introBegin">Begin</button>
-        <button id="skipIntroTop" class="skip-top">Skip Intro</button>
+  <div id="audioUnlock" class="intro-overlay">
+    <p>CLICK TO START INTRO WITH SOUND</p>
+    <button id="introBegin">Begin</button>
+    <button id="skipIntroTop" class="skip-top">Skip Intro</button>
+  </div>
+  <div id="introContainer" class="intro-container hidden">
+    <button id="skipIntro" class="skip-top">Skip Intro</button>
+    <div class="c64-border">
+      <div class="c64-screen">
+        <div id="loadingBars" class="loading-bars"></div>
+        <div id="introText" class="intro-text"></div>
+      </div>
     </div>
-
-    <div id="introContainer" class="intro-container hidden">
-        <button id="skipIntro" class="skip-top">Skip Intro</button>
-
-        <div class="c64-border">
-            <div class="c64-screen">
-                <div id="loadingBars" class="loading-bars"></div>
-                <div id="introText" class="intro-text"></div>
-            </div>
-        </div>
-    </div>
-
-    <audio id="sidAudio" src="/ccgamer_website_new/resources/audio/c64_speech_stayawhile.mp3"></audio>
-
-    <script src="/ccgamer_website_new/js/index-intro.js"></script>
-
+  </div>
+  <audio id="sidAudio" src="/ccgamer_website_new/resources/audio/c64_speech_stayawhile.mp3"></audio>
+  <script src="/ccgamer_website_new/js/index-intro.js"></script>
 </body>
 </html>
