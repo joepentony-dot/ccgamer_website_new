@@ -3,31 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Viewer | Cheeky Commodore Gamer</title>
+    <title>Game Details – CCG</title>
 
     <link rel="stylesheet" href="../resources/css/ccg-master.css">
+    <link rel="stylesheet" href="../resources/css/genre.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 </head>
 
-<body class="crt c64-mode">
+<body>
 
-<header class="topnav">
-    <a href="../home.html">HOME</a>
-    <a href="../complete-index.html">COMPLETE INDEX</a>
-    <a href="genres/index.html">GENRES</a>
-    <a href="../quiz/quiz.html">QUIZ</a>
+<header class="ccg-header">
+    <a href="../home.html" class="ccg-logo-link">
+        <img src="../resources/CCGAMER LOGO.png" class="ccg-logo">
+    </a>
+
+    <div class="ccg-header-text">
+        <h1>Cheeky Commodore Gamer</h1>
+        <p>C64 & Amiga Retro Gaming Hub</p>
+    </div>
+
+    <nav class="ccg-nav">
+        <a href="../home.html">Home</a>
+        <a href="../complete-index.html">Complete Index</a>
+        <a href="../quiz/index.html">Quiz Hub</a>
+        <a href="index.html">Games Hub</a>
+    </nav>
 </header>
 
-<main id="game-container" class="game-main">
-    <h1 class="site-title">GAME VIEWER</h1>
-    <p class="subtitle">Loading game data...</p>
-
-    <section id="game-content">
-        <!-- Loaded by load-single-game.js -->
-    </section>
+<main class="genre-main">
+    <h2 class="genre-title">Game Details</h2>
+    <div id="game-container" class="game-detail"></div>
 </main>
 
-<script src="../js/load-single-game.js"></script>
-<script src="../js/ccj-global.js"></script>
+<footer class="ccg-footer">
+    <p>Cheeky Commodore Gamer – Game Viewer</p>
+</footer>
 
+<script src="../js/load-single-game.js"></script>
 </body>
 </html>
