@@ -1,182 +1,157 @@
-<!-- ========================================================= -->
-<!--   C64 INTRO ENGINE — FUNCTIONALITY ONLY (NO STYLE)        -->
-<!--   (The CLICK TO POWER ON screen remains exactly as-is)    -->
-<!-- ========================================================= -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCG C64 Intro</title>
 
-<!-- BASIC + TAPE LOAD STATES (hidden initially until power on) -->
-<div id="c64-basic-screen" style="display:none;">
-<pre id="basic-text">
-**** COMMODORE 64 BASIC V2 ****
- 64K RAM SYSTEM 38911 BASIC BYTES FREE
+    <!-- Minimal functionality-only CSS -->
+    <style>
+        body {
+            margin: 0;
+            background: black;
+            color: #00ffff;
+            font-family: monospace;
+            font-size: 22px;
+            overflow: hidden;
+        }
 
-READY.
-</pre>
-</div>
+        #screen {
+            white-space: pre;
+            padding: 20px;
+        }
 
-<!-- Raster + Large Loading Bars (FRONT LAYER) -->
-<div id="raster-stage" style="display:none;">
-    <div id="big-loading-bars"></div>
-</div>
+        /* Raster bars overlay */
+        #raster {
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(
+                    0deg,
+                    red 0px,
+                    purple 4px,
+                    blue 8px
+            );
+            display: none;
+            z-index: 2000; /* IN FRONT of everything */
+            opacity: 0.75;
+            animation: scrollbars 0.25s linear infinite;
+        }
 
-<!-- Skip button stays visible at all times -->
-<button id="skip-intro" style="
-    position:fixed; top:10px; right:10px; z-index:9999;">
-    [ ESC ] SKIP INTRO
-</button>
+        @keyframes scrollbars {
+            0% { background-position-y: 0; }
+            100% { background-position-y: 30px; }
+        }
 
-<!-- SID AUDIO -->
-<audio id="sidSpeech" preload="auto">
-    <source src="resources/audio/c64_speech_stayawhile.mp3" type="audio/mpeg">
-</audio>
+        /* Skip Intro button */
+        #skip-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: red;
+            color: white;
+            padding: 12px 20px;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 3000;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="skip-btn">SKIP INTRO</div>
+
+<div id="screen"></div>
+<div id="raster"></div>
+
+<audio id="sid" src="resources/audio/c64_speech_stayawhile.mp3"></audio>
 
 <script>
-/* ---------------------------------------------------------
-    ELEMENTS
---------------------------------------------------------- */
-const basicScreen = document.getElementById("c64-basic-screen");
-const basicText   = document.getElementById("basic-text");
-const rasterStage = document.getElementById("raster-stage");
-const loadingBars = document.getElementById("big-loading-bars");
-const skipButton  = document.getElementById("skip-intro");
-const sidAudio    = document.getElementById("sidSpeech");
+/* ============================================
+   FUNCTIONALITY SEQUENCE ONLY
+   ============================================ */
 
-const REDIRECT_URL = "home.html";
+const screen = document.getElementById("screen");
+const raster = document.getElementById("raster");
+const sid = document.getElementById("sid");
+const skipBtn = document.getElementById("skip-btn");
 
-let redirectTimeout = null;
-
-/* ---------------------------------------------------------
-    EXTERNAL TRIGGER — CALL THIS WHEN “CLICK TO POWER ON”
-    FINISHES.  (This should already exist in your code.)
---------------------------------------------------------- */
-function startC64IntroSequence() {
-    // Show BASIC screen immediately
-    basicScreen.style.display = "block";
-    showLoadCommand();
-}
-
-/* ---------------------------------------------------------
-    Step 1 — Print LOAD""
---------------------------------------------------------- */
-function showLoadCommand() {
-    basicText.innerHTML =
+/* ==== 1. Perfect power-on phase (unchanged from your working version) ==== */
+/* For now, placeholder text — you will replace this with your perfect version */
+const powerOnText =
 `**** COMMODORE 64 BASIC V2 ****
- 64K RAM SYSTEM 38911 BASIC BYTES FREE
+ 64K RAM SYSTEM  38911 BASIC BYTES FREE
 
 READY.
-LOAD""`;
+`;
 
-    setTimeout(showPressPlay, 800);
+let phase = 0;
+
+/* TYPEWRITER PRINTER FUNCTION */
+function printLine(text, delay, next) {
+    setTimeout(() => {
+        screen.textContent += text + "\n";
+        if (next) next();
+    }, delay);
 }
 
-/* ---------------------------------------------------------
-    Step 2 — PRESS PLAY ON TAPE
---------------------------------------------------------- */
-function showPressPlay() {
-    basicText.innerHTML =
-`**** COMMODORE 64 BASIC V2 ****
- 64K RAM SYSTEM 38911 BASIC BYTES FREE
+/* ==== MAIN SEQUENCE ==== */
 
-READY.
-LOAD""
-PRESS PLAY ON TAPE`;
+function startSequence() {
+    // Phase 1 — Power on (perfect version will be inserted later)
+    screen.textContent = powerOnText;
 
-    setTimeout(showFoundMessage, 1000);
+    // start LOAD "" after 1.2 seconds
+    setTimeout(loadCommand, 1200);
 }
 
-/* ---------------------------------------------------------
-    Step 3 — FOUND "CHEEKY COMMODORE GAMER"
---------------------------------------------------------- */
-function showFoundMessage() {
-    basicText.innerHTML =
-`**** COMMODORE 64 BASIC V2 ****
- 64K RAM SYSTEM 38911 BASIC BYTES FREE
-
-READY.
-LOAD""
-PRESS PLAY ON TAPE
-FOUND "CHEEKY COMMODORE GAMER"`;
-
-    setTimeout(startRasterAndSID, 500);
+function loadCommand() {
+    printLine('LOAD ""', 500, pressPlay);
 }
 
-/* ---------------------------------------------------------
-    Step 4 — RASTER BARS (FRONT) + AUDIO + LOADING BARS
---------------------------------------------------------- */
-function startRasterAndSID() {
-
-    // Hide BASIC screen completely
-    basicScreen.style.display = "none";
-
-    // Show raster + loading bars (front layer)
-    rasterStage.style.display = "block";
-
-    startSIDAudio();
-    startBigLoadingBars();
+function pressPlay() {
+    printLine('PRESS PLAY ON TAPE', 800, foundFile);
 }
 
-/* ---------------------------------------------------------
-    Audio Engine
---------------------------------------------------------- */
-function startSIDAudio() {
-
-    // Try autoplay
-    const attempt = sidAudio.play();
-
-    if (attempt !== undefined) {
-        attempt.catch(() => {
-            // Autoplay blocked — user click will start audio
-            document.body.addEventListener("click", playSIDOnce, { once: true });
-        });
-    }
-
-    sidAudio.onended = () => finishIntro();
+function foundFile() {
+    printLine("FOUND 'CHEEKY COMMODORE GAMER'", 1000, startAudioAndRaster);
 }
 
-function playSIDOnce() {
-    sidAudio.play();
+function startAudioAndRaster() {
+
+    // SHOW RASTER BARS IN FRONT
+    raster.style.display = "block";
+
+    // PLAY AUDIO
+    sid.play().catch(() => {
+        console.log("Autoplay blocked");
+    });
+
+    // WHEN AUDIO FINISHES → REDIRECT
+    sid.onended = () => {
+        window.location.href = "home.html";
+    };
 }
 
-/* ---------------------------------------------------------
-    fallback redirect timer (in case audio fails)
---------------------------------------------------------- */
-redirectTimeout = setTimeout(() => {
-    finishIntro();
-}, 10000);
-
-/* ---------------------------------------------------------
-    Step 4 — Large Loading Bars Animation (logic only)
---------------------------------------------------------- */
-function startBigLoadingBars() {
-    let width = 0;
-
-    const interval = setInterval(() => {
-        width += 5;
-        loadingBars.style.width = width + "%";
-
-        if (width >= 100) {
-            clearInterval(interval);
-        }
-    }, 80);
+/* ==== SKIP INTRO ==== */
+function skipIntro() {
+    sid.pause();
+    sid.currentTime = 0;
+    window.location.href = "home.html";
 }
 
-/* ---------------------------------------------------------
-    Step 5 — Redirect to home.html
---------------------------------------------------------- */
-function finishIntro() {
-    sidAudio.pause();
-    sidAudio.currentTime = 0;
+skipBtn.addEventListener("click", skipIntro);
 
-    if (redirectTimeout) clearTimeout(redirectTimeout);
-
-    window.location.href = REDIRECT_URL;
-}
-
-/* ---------------------------------------------------------
-    Skip Intro (button + ESC)
---------------------------------------------------------- */
-skipButton.addEventListener("click", finishIntro);
-
+// ESC key
 document.addEventListener("keydown", e => {
-    if (e.key === "Escape") finishIntro();
+    if (e.key === "Escape") skipIntro();
 });
+
+/* START */
+startSequence();
 </script>
+
+</body>
+</html>
