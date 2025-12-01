@@ -3,80 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Collections | CCG</title>
+    <title>Collections | Cheeky Commodore Gamer</title>
 
-    <!-- Core Styles -->
-    <link rel="stylesheet" href="../../css/engine.css">
-    <link rel="stylesheet" href="../../resources/css/main.css">
-
-    <style>
-        body {
-            background: #07101f;
-            color: #e6f1ff;
-            font-family: sans-serif;
-            text-align: center;
-            padding: 20px;
-        }
-        h1 {
-            color: #00eaff;
-            margin-bottom: 20px;
-        }
-        .collection-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-            gap: 25px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .collection-card {
-            background: rgba(0, 20, 40, 0.65);
-            border: 1px solid #00aaff;
-            border-radius: 10px;
-            padding: 12px;
-            transition: 0.2s;
-        }
-        .collection-card:hover {
-            background: rgba(0, 40, 70, 0.75);
-            transform: scale(1.03);
-        }
-        .collection-card img {
-            width: 100%;
-            border-radius: 8px;
-        }
-        .collection-card h2 {
-            margin-top: 10px;
-            color: #00eaff;
-        }
-    </style>
+    <link rel="stylesheet" href="../../resources/css/ccg-master.css">
 </head>
 
-<body>
+<body class="crt c64-mode">
 
-    <h1>Collections</h1>
+<header class="topnav">
+    <a href="../../home.html">HOME</a>
+    <a href="../../complete-index.html">COMPLETE INDEX</a>
+    <a href="../genres/index.html">GENRES</a>
+    <a href="../../quiz/quiz.html">QUIZ</a>
+</header>
 
-    <div class="collection-grid">
+<main class="collections-main">
+    <h1 class="site-title">GAME COLLECTIONS</h1>
+    <p class="subtitle">Curated and special lists. Expand in the future.</p>
 
-        <a class="collection-card" href="bpjs-indexed-games.html">
-            <img src="../../resources/images/genres/bpjs.png">
-            <h2>BPJS Indexed Games</h2>
-        </a>
+    <section class="collections-list">
 
-        <a class="collection-card" href="c64-cartridge.html">
-            <img src="../../resources/images/genres/cartridge.png">
-            <h2>C64 Cartridge Games</h2>
-        </a>
-
-        <a class="collection-card" href="licensed-games.html">
-            <img src="../../resources/images/genres/licensed.png">
-            <h2>Licensed Games</h2>
-        </a>
-
-        <a class="collection-card" href="top-picks.html">
-            <img src="../../resources/images/genres/top-picks.png">
+        <!-- Placeholder for future custom collections -->
+        <div class="collection-item">
             <h2>Top Picks</h2>
-        </a>
+            <p>A curated set of the games you personally recommend.</p>
+            <a class="button" href="../genres/top-picks.html">VIEW COLLECTION</a>
+        </div>
 
-    </div>
+        <div class="collection-item">
+            <h2>BPjS Indexed Games</h2>
+            <p>Games that were placed on the German BPjS Index.</p>
+            <a class="button" href="../genres/bpjs-indexed-games.html">VIEW COLLECTION</a>
+        </div>
+
+        <div class="collection-item">
+            <h2>Licensed Games</h2>
+            <p>Games licensed from movies, TV shows, comics, etc.</p>
+            <a class="button" href="../genres/licensed-games.html">VIEW COLLECTION</a>
+        </div>
+
+        <div class="collection-item">
+            <h2>Cartridge Games</h2>
+            <p>Titles released as cartridges for instant load.</p>
+            <a class="button" href="../genres/cartridge-games.html">VIEW COLLECTION</a>
+        </div>
+
+        <div class="collection-item">
+            <h2>Quiz Games</h2>
+            <p>Trivia and quiz-based C64 titles.</p>
+            <a class="button" href="../genres/quiz-games.html">VIEW COLLECTION</a>
+        </div>
+
+    </section>
+</main>
+
+<script src="../../js/ccj-global.js"></script>
 
 </body>
 </html>
