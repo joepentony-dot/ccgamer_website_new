@@ -126,70 +126,47 @@ async function runLoadingSequence() {
 
     if (loadingAborted) return;
 
-    // Line 1: LOAD ""
+    // LOAD ""
     await typeText('loading-terminal', 'LOAD ""', 70);
-    await delay(550);
-    if (loadingAborted) return;
+    await delay(500);
     terminal.innerHTML += '<br>';
 
-    // Line 2: PRESS PLAY ON TAPE
-    await delay(550);
-    if (loadingAborted) return;
+    // PRESS PLAY ON TAPE
+    await delay(500);
     terminal.innerHTML += 'PRESS PLAY ON TAPE<br>';
 
-    await delay(850);
-    if (loadingAborted) return;
-
-    // Line 3: OK
+    await delay(700);
     terminal.innerHTML += 'OK<br>';
-    await delay(650);
-    if (loadingAborted) return;
 
-    // Line 4: SEARCHING
-    terminal.innerHTML += '<span class="text-highlight">SEARCHING</span><br>';
-    await delay(900);
-    if (loadingAborted) return;
+    await delay(500);
+    terminal.innerHTML += 'SEARCHING<br>';
 
-    // Line 5: FOUND
-    terminal.innerHTML += '<span class="text-highlight">FOUND CHEEKY COMMODORE GAMER</span><br>';
-    await delay(1100);
-    if (loadingAborted) return;
+    await delay(800);
+    terminal.innerHTML += 'FOUND CHEEKY COMMODORE GAMER<br>';
 
-    // Line 6: LOADING
-    terminal.innerHTML += '<span class="text-highlight">LOADING</span><br>';
+    await delay(600);
+    terminal.innerHTML += 'LOADING<br>';
 
-    // RASTER BARS ON
+    // SHOW RASTER BARS
     rasterBars.style.display = 'block';
 
-    // Start SID speech *exactly when raster bars appear*
-    playIntroAudio();
-
-    // HARD AUTO-REDIRECT after ~3 seconds of raster bars,
-    // regardless of audio success, so it never gets "stuck".
-    redirectTimeout = setTimeout(() => {
-        if (!loadingAborted) {
-            goToHome();
-        }
-    }, 3000);
-}
-
-function playIntroAudio() {
+    // Start SID immediately
     try {
         audio = new Audio(LOADING_SOUND_URL);
-        audio.volume = 0.9;
-        // We don't rely on audio events for redirect anymore,
-        // but still try to play for the full effect.
+        audio.volume = 1.0;
         audio.play().catch(() => {
-            // If autoplay fails, we just let the 3s timeout handle redirect.
+            // if autoplay blocked, we still move on via timeout below
         });
     } catch (e) {
-        // Fail silently; redirect handled by timeout.
+        // ignore – timeout will still fire
     }
-}
 
-function goToHome() {
-    loadingAborted = true;
-    window.location.href = NEXT_URL;
+    // ALWAYS AUTO-REDIRECT AFTER 3 SECONDS NO MATTER WHAT
+    redirectTimeout = setTimeout(() => {
+        if (!loadingAborted) {
+            window.location.href = NEXT_URL;
+        }
+    }, 3000);
 }
 
 // ESC key also skips
