@@ -1,11 +1,28 @@
 // js/load-single-game.js
-// Single game viewer loader for Cheeky Commodore Gamer
+// Single game loader for Cheeky Commodore Gamer
+// Reads /games/games.json and populates game.html 😇🕹️👌
 
 (function () {
     const GAMES_JSON_PATH = 'games.json'; // relative to /games/game.html
 
-    function qs(selector) {
-        return document.querySelector(selector);
+    function qs(sel) {
+        return document.querySelector(sel);
+    }
+
+    function setText(selector, value, fallback = '–') {
+        const el = qs(selector);
+        if (!el) return;
+        const v = (value === undefined || value === null || String(value).trim() === '')
+            ? fallback
+            : String(value);
+        el.textContent = v;
+    }
+
+    function showError(message) {
+        const el = qs('#game-error');
+        if (!el) return;
+        el.textContent = message;
+        el.hidden = false;
     }
 
     function getGameIdFromQuery() {
@@ -13,71 +30,139 @@
         return params.get('id');
     }
 
-    function showError(message) {
-        const errorEl = qs('#game-error');
-        if (!errorEl) return;
-        errorEl.textContent = message;
-        errorEl.hidden = false;
+    function resolveThumbUrl(game) {
+        const t = game.thumbnail || '';
+        if (!t) return '';
+
+        // Absolute URL
+        if (/^https?:\/\//i.test(t)) return t;
+
+        // Already root-relative
+        if (t.startsWith('/')) return t;
+
+        // Your JSON has: "resources/images/thumbnails/all/xxx.jpg"
+        // From /games/game.html we need "../" in front.
+        return '../' + t.replace(/^\.?\//, '');
     }
 
-    function setText(id, value, fallback = '–') {
-        const el = qs(id);
-        if (!el) return;
-        el.textContent = value && String(value).trim().length ? value : fallback;
+    function buildGenresString(game) {
+        if (Array.isArray(game.genres) && game.genres.length) {
+            return game.genres.join(' • ');
+        }
+        return 'Unclassified';
     }
 
-    function buildThumbnailUrl(game) {
-        // Try multiple property names just in case
-        const file =
-            game.thumbnail ||
-            game.thumb ||
-            game.thumbnail_file ||
-            '';
+    function buildCollectionsString(game) {
+        // For future use if you add collection fields.
+        // For now, we infer from genres like "BPJS Games", "Top Picks" etc.
+        const genreList = Array.isArray(game.genres) ? game.genres : [];
+        const collections = genreList.filter(g =>
+            /BPJS|Top Picks|Collection|Big Thumbs/i.test(g)
+        );
+        return collections.length ? collections.join(' • ') : '—';
+    }
 
-        if (!file) return '';
-        // From /games/ to /resources/images/thumbnails/all/
-        return `../resources/images/thumbnails/all/${file}`;
+    function populateExternalLinks(game) {
+        // Lemon / external archives
+        const lemonBlock = qs('#lemon-links-block');
+        const lemonList  = qs('#lemon-links-list');
+
+        if (lemonBlock && lemonList && Array.isArray(game.lemon) && game.lemon.length) {
+            lemonList.innerHTML = '';
+            game.lemon.forEach(url => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = url;
+                a.target = '_blank';
+                a.rel = 'noopener';
+                a.textContent = 'Lemon database entry';
+                li.appendChild(a);
+                lemonList.appendChild(li);
+            });
+            lemonBlock.hidden = false;
+        }
+
+        // Video (YouTube)
+        const videoButton = qs('#video-button');
+        if (videoButton) {
+            if (game.videoid) {
+                videoButton.href = 'https://www.youtube.com/watch?v=' + encodeURIComponent(game.videoid);
+                videoButton.hidden = false;
+            } else {
+                videoButton.hidden = true;
+            }
+        }
+
+        // PDF / Manual
+        const pdfButton = qs('#pdf-button');
+        if (pdfButton) {
+            if (game.pdf && String(game.pdf).trim() !== '') {
+                pdfButton.href = game.pdf;
+                pdfButton.hidden = false;
+            } else {
+                pdfButton.hidden = true;
+            }
+        }
+
+        // Disk(s)
+        const diskButton = qs('#disk-button');
+        if (diskButton) {
+            const disks = Array.isArray(game.disk) ? game.disk : [];
+            if (disks.length) {
+                diskButton.href = disks[0]; // first disk link
+                diskButton.hidden = false;
+            } else {
+                diskButton.hidden = true;
+            }
+        }
     }
 
     function populateGame(game) {
-        // Title & header bits
-        setText('#game-title', game.title || game.id || 'Unknown Game');
-        setText('#game-system', game.system || 'Unknown');
-        setText('#game-system-label', (game.system || 'Game').toUpperCase());
-        setText('#game-year', game.year);
-        setText('#game-publisher', game.publisher || game.publisher_name);
-        setText('#game-developer', game.developer || game.developer_name);
-        setText('#game-genre', game.genre || game.category);
-        setText('#game-collection', game.collection || game.set || '—');
+        const title = game.title || game.id || 'Unknown Game';
+        const system = game.system || 'Unknown System';
+        const year = game.year || '';
 
-        // Optional tagline / notes
-        const tagline = game.tagline || game.one_liner || '';
-        const notes = game.notes || game.description || '';
-        setText('#game-tagline', tagline, '');
-        setText('#game-description', notes, 'No mission briefing has been logged for this title yet.');
+        // Title + system labels
+        setText('#game-title', title);
+        setText('#game-system', system);
+        setText('#game-system-label', system.toUpperCase());
+        setText('#game-system-meta', system);
+        if (year) {
+            setText('#game-year', year);
+            setText('#game-year-pill', '• ' + year);
+        } else {
+            setText('#game-year', '—');
+            setText('#game-year-pill', '');
+        }
+
+        setText('#game-developer', game.developer || 'Unknown');
+        setText('#game-genre', buildGenresString(game));
+        setText('#game-collection', buildCollectionsString(game));
+        setText('#game-id-label', game.id ? `ID: ${game.id}` : '');
+
+        // Tagline = first 2–3 genres or a simple string
+        if (Array.isArray(game.genres) && game.genres.length) {
+            setText('#game-tagline', game.genres.slice(0, 3).join(' • '), '');
+        } else {
+            setText('#game-tagline', '', '');
+        }
+
+        // Description – currently no field in JSON, so keep placeholder
+        // (When you add descriptions later we can hook them here.)
 
         // Thumbnail
         const thumbEl = qs('#game-thumbnail');
         if (thumbEl) {
-            const url = buildThumbnailUrl(game);
+            const url = resolveThumbUrl(game);
             if (url) {
                 thumbEl.src = url;
-                thumbEl.alt = game.title || 'Game artwork';
+                thumbEl.alt = title + ' artwork';
             } else {
                 thumbEl.alt = 'No artwork available';
             }
         }
 
-        // Back link – if we have a genre, send back to its page
-        const backLink = qs('#back-to-genre');
-        if (backLink) {
-            if (game.genre_slug) {
-                backLink.href = `genres/${game.genre_slug}.html`;
-            } else {
-                // Fallback to games hub
-                backLink.href = 'index.html';
-            }
-        }
+        populateExternalLinks(game);
     }
 
     async function loadGame() {
@@ -95,7 +180,6 @@
             }
 
             const data = await response.json();
-            // Support either an array or { games: [...] }
             const gamesArray = Array.isArray(data) ? data : data.games || [];
             const game = gamesArray.find(g => g.id === gameId);
 
