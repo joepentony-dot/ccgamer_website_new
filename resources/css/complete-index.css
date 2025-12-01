@@ -1,0 +1,98 @@
+/* ==========================================================
+   COMPLETE INDEX PAGE — VISUALS ONLY
+   (Logic stays in complete-index.js)
+========================================================== */
+
+body {
+    font-family: 'VT323', monospace;
+    color: #e6f1ff;
+    text-transform: uppercase;
+}
+
+.index-header {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.index-header .site-logo {
+    width: 140px;
+    height: auto;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 0 10px rgba(0,0,0,0.7));
+}
+
+.index-header h1 {
+    margin: 0;
+    font-size: 2.4rem;
+    letter-spacing: 0.16em;
+}
+
+.index-header p {
+    margin-top: 4px;
+    font-size: 1.1rem;
+    opacity: 0.88;
+}
+
+/* Search Bar */
+#search-bar {
+    width: 100%;
+    max-width: 480px;
+    margin: 20px auto 24px auto;
+    padding: 12px;
+    display: block;
+
+    background: rgba(0,0,0,0.45);
+    border: 2px solid #00aaff;
+    border-radius: 8px;
+
+    font-size: 1.1rem;
+    color: #e6f1ff;
+    letter-spacing: 0.12em;
+}
+
+#search-bar::placeholder {
+    color: #9bdcff;
+}
+
+/* Results container */
+.index-shell {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+}
+
+#complete-results {
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    padding: 16px 20px;
+}
+
+.loading {
+    text-align: center;
+    opacity: 0.8;
+    font-size: 1.2rem;
+}
+
+/* Index rows */
+.index-item {
+    padding: 10px 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    font-size: 1.1rem;
+    letter-spacing: 0.08em;
+}
+
+.index-item:last-child {
+    border-bottom: none;
+}
+
+.index-item a {
+    text-decoration: none;
+    color: #00eaff;
+    transition: color 0.15s ease;
+}
+
+.index-item a:hover {
+    color: #ffffff;
+    text-shadow: 0 0 8px #00eaff;
+}
