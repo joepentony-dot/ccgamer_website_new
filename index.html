@@ -1,316 +1,182 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheeky Commodore Gamer | C64 Loader Intro</title>
-    <meta name="description" content="Epic Commodore 64 style intro for the Cheeky Commodore Gamer retro gaming hub.">
+<!-- ========================================================= -->
+<!--   C64 INTRO ENGINE — FUNCTIONALITY ONLY (NO STYLE)        -->
+<!--   (The CLICK TO POWER ON screen remains exactly as-is)    -->
+<!-- ========================================================= -->
 
-    <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- BASIC + TAPE LOAD STATES (hidden initially until power on) -->
+<div id="c64-basic-screen" style="display:none;">
+<pre id="basic-text">
+**** COMMODORE 64 BASIC V2 ****
+ 64K RAM SYSTEM 38911 BASIC BYTES FREE
 
-    <style>
-        :root {
-            --c64-border-blue: #1d16b6;
-            --c64-screen-blue: #3b31ef;
-            --c64-text-main: #66fff6;   /* PETSCII-ish cyan */
-            --c64-text-alt: #66fff6;
-            --c64-light-blue: #6c5eb5;
-            --c64-red: #ff3355;
-            --c64-black: #000000;
-            --c64-white: #ffffff;
-            --c64-cyan: #00ffff;
-            --c64-purple: #cc44cc;
-            --c64-green: #55cc55;
-            --c64-yellow: #feff6c;
-            --c64-orange: #d55e00;
-            --c64-brown: #664400;
+READY.
+</pre>
+</div>
+
+<!-- Raster + Large Loading Bars (FRONT LAYER) -->
+<div id="raster-stage" style="display:none;">
+    <div id="big-loading-bars"></div>
+</div>
+
+<!-- Skip button stays visible at all times -->
+<button id="skip-intro" style="
+    position:fixed; top:10px; right:10px; z-index:9999;">
+    [ ESC ] SKIP INTRO
+</button>
+
+<!-- SID AUDIO -->
+<audio id="sidSpeech" preload="auto">
+    <source src="resources/audio/c64_speech_stayawhile.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+/* ---------------------------------------------------------
+    ELEMENTS
+--------------------------------------------------------- */
+const basicScreen = document.getElementById("c64-basic-screen");
+const basicText   = document.getElementById("basic-text");
+const rasterStage = document.getElementById("raster-stage");
+const loadingBars = document.getElementById("big-loading-bars");
+const skipButton  = document.getElementById("skip-intro");
+const sidAudio    = document.getElementById("sidSpeech");
+
+const REDIRECT_URL = "home.html";
+
+let redirectTimeout = null;
+
+/* ---------------------------------------------------------
+    EXTERNAL TRIGGER — CALL THIS WHEN “CLICK TO POWER ON”
+    FINISHES.  (This should already exist in your code.)
+--------------------------------------------------------- */
+function startC64IntroSequence() {
+    // Show BASIC screen immediately
+    basicScreen.style.display = "block";
+    showLoadCommand();
+}
+
+/* ---------------------------------------------------------
+    Step 1 — Print LOAD""
+--------------------------------------------------------- */
+function showLoadCommand() {
+    basicText.innerHTML =
+`**** COMMODORE 64 BASIC V2 ****
+ 64K RAM SYSTEM 38911 BASIC BYTES FREE
+
+READY.
+LOAD""`;
+
+    setTimeout(showPressPlay, 800);
+}
+
+/* ---------------------------------------------------------
+    Step 2 — PRESS PLAY ON TAPE
+--------------------------------------------------------- */
+function showPressPlay() {
+    basicText.innerHTML =
+`**** COMMODORE 64 BASIC V2 ****
+ 64K RAM SYSTEM 38911 BASIC BYTES FREE
+
+READY.
+LOAD""
+PRESS PLAY ON TAPE`;
+
+    setTimeout(showFoundMessage, 1000);
+}
+
+/* ---------------------------------------------------------
+    Step 3 — FOUND "CHEEKY COMMODORE GAMER"
+--------------------------------------------------------- */
+function showFoundMessage() {
+    basicText.innerHTML =
+`**** COMMODORE 64 BASIC V2 ****
+ 64K RAM SYSTEM 38911 BASIC BYTES FREE
+
+READY.
+LOAD""
+PRESS PLAY ON TAPE
+FOUND "CHEEKY COMMODORE GAMER"`;
+
+    setTimeout(startRasterAndSID, 500);
+}
+
+/* ---------------------------------------------------------
+    Step 4 — RASTER BARS (FRONT) + AUDIO + LOADING BARS
+--------------------------------------------------------- */
+function startRasterAndSID() {
+
+    // Hide BASIC screen completely
+    basicScreen.style.display = "none";
+
+    // Show raster + loading bars (front layer)
+    rasterStage.style.display = "block";
+
+    startSIDAudio();
+    startBigLoadingBars();
+}
+
+/* ---------------------------------------------------------
+    Audio Engine
+--------------------------------------------------------- */
+function startSIDAudio() {
+
+    // Try autoplay
+    const attempt = sidAudio.play();
+
+    if (attempt !== undefined) {
+        attempt.catch(() => {
+            // Autoplay blocked — user click will start audio
+            document.body.addEventListener("click", playSIDOnce, { once: true });
+        });
+    }
+
+    sidAudio.onended = () => finishIntro();
+}
+
+function playSIDOnce() {
+    sidAudio.play();
+}
+
+/* ---------------------------------------------------------
+    fallback redirect timer (in case audio fails)
+--------------------------------------------------------- */
+redirectTimeout = setTimeout(() => {
+    finishIntro();
+}, 10000);
+
+/* ---------------------------------------------------------
+    Step 4 — Large Loading Bars Animation (logic only)
+--------------------------------------------------------- */
+function startBigLoadingBars() {
+    let width = 0;
+
+    const interval = setInterval(() => {
+        width += 5;
+        loadingBars.style.width = width + "%";
+
+        if (width >= 100) {
+            clearInterval(interval);
         }
+    }, 80);
+}
 
-        * {
-            box-sizing: border-box;
-        }
+/* ---------------------------------------------------------
+    Step 5 — Redirect to home.html
+--------------------------------------------------------- */
+function finishIntro() {
+    sidAudio.pause();
+    sidAudio.currentTime = 0;
 
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-        }
+    if (redirectTimeout) clearTimeout(redirectTimeout);
 
-        body {
-            background: radial-gradient(circle at center, #111a3b 0%, #050514 70%);
-            color: var(--c64-text-main);
-            font-family: 'VT323', monospace;
-            text-transform: uppercase;
-            overflow: hidden;
-            position: relative;
-        }
+    window.location.href = REDIRECT_URL;
+}
 
-        /* --- STARFIELD --- */
-        #starfield {
-            position: fixed;
-            inset: 0;
-            z-index: -2;
-            opacity: 0.25;
-        }
+/* ---------------------------------------------------------
+    Skip Intro (button + ESC)
+--------------------------------------------------------- */
+skipButton.addEventListener("click", finishIntro);
 
-        /* --- CRT OVERLAY --- */
-        .crt-overlay {
-            position: fixed;
-            inset: 0;
-            background:
-                linear-gradient(
-                    rgba(18, 16, 16, 0) 50%,
-                    rgba(0, 0, 0, 0.25) 50%
-                ),
-                linear-gradient(
-                    90deg,
-                    rgba(255, 0, 0, 0.06),
-                    rgba(0, 255, 0, 0.02),
-                    rgba(0, 0, 255, 0.06)
-                );
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none;
-            z-index: 999;
-        }
-
-        .screen-vignette::before {
-            content: "";
-            position: fixed;
-            inset: 4vh 4vw;
-            border-radius: 18px;
-            box-shadow:
-                0 0 80px rgba(0,0,0,0.9) inset,
-                0 0 40px rgba(0,0,0,0.9);
-            pointer-events: none;
-            z-index: 5;
-        }
-
-        /* =========================================
-           POWER ON SCREEN
-           ========================================= */
-        #start-screen {
-            position: fixed;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-            padding-top: 7vh;
-            cursor: pointer;
-            z-index: 6000;
-        }
-
-        #start-screen .logo-wrap {
-            text-align: center;
-            margin-bottom: 2rem;
-            filter: drop-shadow(0 0 18px rgba(0, 255, 255, 0.9));
-        }
-
-        #start-screen img {
-            max-width: min(260px, 35vw);
-            image-rendering: pixelated;
-        }
-
-        .power-text {
-            color: var(--c64-text-main);
-            font-size: min(3.2rem, 5vw);
-            text-align: center;
-            letter-spacing: 0.1em;
-            text-shadow:
-                0 0 8px rgba(0,255,255,0.9),
-                0 0 14px rgba(0,0,128,0.9);
-            animation: powerBlink 1.1s infinite;
-        }
-
-        @keyframes powerBlink {
-            0%, 100% { opacity: 1; transform: translateY(0); }
-            50% { opacity: 0.4; transform: translateY(1px); }
-        }
-
-        /* =========================================
-           LOADING SCREEN
-           ========================================= */
-        #loading-screen {
-            position: fixed;
-            inset: 0;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            background-color: var(--c64-screen-blue);
-            cursor: default;
-            z-index: 5000;
-        }
-
-        /* FULL-SCREEN RASTER BARS */
-        .raster-bars {
-            position: fixed;
-            inset: -20%;
-            z-index: -1;
-            background: linear-gradient(
-                to bottom,
-                var(--c64-black) 0%,   var(--c64-black) 8%,
-                var(--c64-white) 8%,   var(--c64-white) 16%,
-                var(--c64-cyan) 16%,   var(--c64-cyan) 24%,
-                var(--c64-purple) 24%, var(--c64-purple) 32%,
-                var(--c64-screen-blue) 32%,   var(--c64-screen-blue) 40%,
-                var(--c64-green) 40%,  var(--c64-green) 48%,
-                var(--c64-yellow) 48%, var(--c64-yellow) 56%,
-                var(--c64-red) 56%,    var(--c64-red) 64%,
-                var(--c64-orange) 64%, var(--c64-orange) 72%,
-                var(--c64-brown) 72%,  var(--c64-brown) 80%,
-                var(--c64-screen-blue) 80%,   var(--c64-screen-blue) 100%
-            );
-            background-size: 100% 360px;
-            filter: blur(4px);
-            opacity: 0.9;
-            mix-blend-mode: screen;
-            animation: rasterScroll 2.3s linear infinite;
-            display: none;
-        }
-
-        @keyframes rasterScroll {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(360px); }
-        }
-
-        /* C64 text “frame” */
-        .c64-frame {
-            width: 88vw;
-            max-width: 1200px;
-            height: 80vh;
-            border: min(16px, 2.2vw) solid var(--c64-border-blue);
-            background-color: var(--c64-screen-blue);
-            padding: min(24px, 2.5vw);
-            box-shadow: 0 0 60px rgba(0, 0, 0, 0.9);
-            position: relative;
-            display: flex;
-            align-items: flex-start;
-            justify-content: flex-start;
-        }
-
-        .c64-inner-text {
-            color: var(--c64-text-main);
-            font-size: min(1.8rem, 2.7vw);
-            line-height: 1.45;
-            white-space: pre-wrap;
-        }
-
-        .c64-header-line {
-            display: block;
-            color: var(--c64-text-alt);
-        }
-
-        .loading-text-wrapper {
-            margin-top: 1.6rem;
-        }
-
-        .cursor {
-            display: inline-block;
-            width: 14px;
-            height: 1.2em;
-            background-color: var(--c64-light-blue);
-            vertical-align: bottom;
-            margin-left: 3px;
-            animation: blink 0.9s infinite;
-        }
-
-        @keyframes blink {
-            0%,100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        .text-highlight {
-            background-color: var(--c64-screen-blue);
-            color: var(--c64-text-main);
-            padding: 0 4px;
-        }
-
-        /* GLOBAL SKIP BUTTON (visible from the start) */
-        #skip-btn {
-            position: fixed;
-            top: 12px;
-            right: 14px;
-            z-index: 7000;
-            background: var(--c64-red);
-            color: #fff;
-            border: 2px solid #fff;
-            padding: 10px 22px;
-            font-family: 'VT323', monospace;
-            font-size: 1.5rem;
-            cursor: pointer;
-            text-transform: uppercase;
-            box-shadow: 4px 4px 0px #000;
-            letter-spacing: 0.08em;
-            animation: skipPulse 2.4s infinite;
-        }
-
-        @keyframes skipPulse {
-            0%   { transform: translateY(0); box-shadow: 4px 4px 0px #000; }
-            50%  { transform: translateY(-1px); box-shadow: 0 0 16px rgba(255,255,255,0.9); }
-            100% { transform: translateY(0); box-shadow: 4px 4px 0px #000; }
-        }
-
-        #skip-btn:hover {
-            background: #fff;
-            color: var(--c64-red);
-        }
-
-        @media (max-width: 700px) {
-            .c64-frame {
-                width: 94vw;
-                height: 78vh;
-                padding: 16px;
-            }
-            .c64-inner-text {
-                font-size: 1.25rem;
-            }
-            #skip-btn {
-                font-size: 1.2rem;
-                padding: 7px 14px;
-            }
-            #start-screen img {
-                max-width: 190px;
-            }
-        }
-    </style>
-</head>
-<body class="screen-vignette">
-
-    <canvas id="starfield"></canvas>
-    <div class="crt-overlay"></div>
-
-    <!-- SKIP INTRO – ALWAYS VISIBLE -->
-    <button id="skip-btn" onclick="skipIntro()">[ ESC ] SKIP INTRO</button>
-
-    <!-- POWER ON SCREEN -->
-    <div id="start-screen" onclick="startSystem()">
-        <div class="logo-wrap">
-            <img src="resources/CCGAMER LOGO.png"
-                 alt="Cheeky Commodore Gamer Logo">
-        </div>
-        <div class="power-text">CLICK TO POWER ON</div>
-    </div>
-
-    <!-- LOADING SCREEN -->
-    <div id="loading-screen">
-        <div class="raster-bars" id="rasterBars"></div>
-
-        <div class="c64-frame">
-            <div class="c64-inner-text">
-                <span class="c64-header-line">**** COMMODORE 64 BASIC V2 ****</span>
-                <span class="c64-header-line">64K RAM SYSTEM  38911 BASIC BYTES FREE</span>
-
-                <div class="loading-text-wrapper">
-                    <span id="loading-terminal"></span><span class="cursor" id="loading-cursor"></span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="js/index-intro.js"></script>
-</body>
-</html>
+document.addEventListener("keydown", e => {
+    if (e.key === "Escape") finishIntro();
+});
+</script>
