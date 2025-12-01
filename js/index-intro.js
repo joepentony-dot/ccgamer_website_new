@@ -1,22 +1,29 @@
-// C64 Loader Intro for Cheeky Commodore Gamer
+// Cheeky Commodore Gamer — C64 Loader Intro
 // Sequence:
-// 1) Logo + CLICK TO POWER ON
-// 2) C64 BASIC boot text
-// 3) LOAD "", PRESS PLAY ON TAPE
-// 4) SEARCHING / LOADING "CHEEKY COMMODORE GAMER"
-// 5) SID speech + raster bars
-// 6) Auto-jump to home.html (or via Skip)
+// 1) Power screen with logo + CLICK TO POWER ON
+// 2) C64 BASIC screen appears
+// 3) Types:
+//    **** COMMODORE 64 BASIC V2 ****
+//     64K RAM SYSTEM  38911 BASIC BYTES FREE
+//    READY.
+//    LOAD ""
+//    PRESS PLAY ON TAPE
+//    SEARCHING FOR CHEEKY COMMODORE GAMER
+//    LOADING "CHEEKY COMMODORE GAMER"
+// 4) When LOADING starts -> SID speech + raster overlay
+// 5) When speech ends (or timeout) -> home.html
+// 6) SKIP INTRO always works, at any point.
 
 document.addEventListener("DOMContentLoaded", () => {
-    const powerScreen = document.getElementById("powerScreen");
-    const bootScreen  = document.getElementById("bootScreen");
-    const c64TextEl   = document.getElementById("c64Text");
-    const rasterBars  = document.getElementById("rasterBars");
-    const sidAudio    = document.getElementById("sidAudio");
-    const skipBtn     = document.getElementById("skipIntro");
+    const powerScreen   = document.getElementById("power-screen");
+    const c64Wrapper    = document.getElementById("c64-wrapper");
+    const c64TextEl     = document.getElementById("c64-text");
+    const rasterOverlay = document.getElementById("raster-overlay");
+    const sidAudio      = document.getElementById("sidAudio");
+    const skipBtn       = document.getElementById("skipIntro");
 
-    let hasStarted   = false;
-    let hasFinished  = false;
+    let introStarted  = false;
+    let introFinished = false;
     let speechStarted = false;
 
     const LINES = [
@@ -32,17 +39,20 @@ document.addEventListener("DOMContentLoaded", () => {
         ""
     ];
 
-    const TYPE_DELAY = 40;   // ms between characters
-    const LINE_PAUSE = 380;  // ms between lines
+    // Medium-epic timing (roughly 9–12 seconds with speech)
+    const CHAR_DELAY = 28;   // ms between characters
+    const LINE_PAUSE = 260;  // ms between lines
 
     function goHome() {
-        if (hasFinished) return;
-        hasFinished = true;
+        if (introFinished) return;
+        introFinished = true;
 
         try {
             sidAudio.pause();
             sidAudio.currentTime = 0;
-        } catch (e) { /* ignore */ }
+        } catch (e) {
+            // ignore
+        }
 
         window.location.href = "home.html";
     }
@@ -51,38 +61,40 @@ document.addEventListener("DOMContentLoaded", () => {
         if (speechStarted) return;
         speechStarted = true;
 
-        rasterBars.style.display = "flex";
+        rasterOverlay.classList.add("active");
 
         try {
             sidAudio.currentTime = 0;
             sidAudio.play().catch(() => {
-                // If, for some weird reason, playback still fails,
-                // we just let the loader run visually and fall back to timeout.
+                // If playback is blocked, we still keep the visual effect
             });
-        } catch (e) { /* ignore */ }
+        } catch (e) {
+            // ignore
+        }
     }
 
-    function runBootSequence() {
+    function runC64Typing() {
         let lineIndex = 0;
         let charIndex = 0;
 
         function typeNextChar() {
             if (lineIndex >= LINES.length) {
-                // All lines printed; now just wait for SID to end or the safety timeout
+                // Done with text, rely on speech end or timeout.
                 return;
             }
 
-            const currentLine = LINES[lineIndex];
+            const currentLine = LINES[lineIndex] || "";
 
             if (charIndex < currentLine.length) {
                 c64TextEl.textContent += currentLine.charAt(charIndex);
                 charIndex++;
-                setTimeout(typeNextChar, TYPE_DELAY);
+                setTimeout(typeNextChar, CHAR_DELAY);
             } else {
+                // line finished
                 c64TextEl.textContent += "\n";
 
-                // When we reach the LOADING line, start SID + raster bars
-                if (lineIndex === 8) {
+                // As soon as we start LOADING line, launch SID + raster
+                if (lineIndex === 8) { // "LOADING" index
                     startSpeechAndRaster();
                 }
 
@@ -96,32 +108,33 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function beginIntro() {
-        if (hasStarted) return;
-        hasStarted = true;
+        if (introStarted) return;
+        introStarted = true;
 
-        // Hide logo screen, show C64 boot screen
+        // Hide logo, reveal C64 screen
         powerScreen.style.display = "none";
-        bootScreen.classList.add("active");
+        c64Wrapper.classList.add("active");
 
-        runBootSequence();
+        // Start the text typing
+        runC64Typing();
 
-        // If SID finishes, jump to home
+        // When SID ends, go home
         sidAudio.addEventListener("ended", () => {
             goHome();
         });
 
-        // Safety timeout in case something never fires
+        // Safety timeout (in case 'ended' never fires, or audio blocked completely)
         setTimeout(() => {
-            if (!hasFinished) {
+            if (!introFinished) {
                 goHome();
             }
-        }, 20000); // 20 seconds
+        }, 16000); // 16s max
     }
 
-    // Clicking anywhere on the power screen starts the whole thing
+    // Clicking the power screen starts the whole thing (user gesture for audio)
     powerScreen.addEventListener("click", beginIntro);
 
-    // Skip button at any time
+    // SKIP INTRO ALWAYS WORKS
     skipBtn.addEventListener("click", () => {
         goHome();
     });
