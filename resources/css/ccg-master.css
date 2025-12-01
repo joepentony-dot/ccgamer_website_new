@@ -18,9 +18,6 @@
 /* Modal Windows System */
 @import url('ccg-modal.css');
 
-/* Console Overlay */
-@import url('ccg-console.css');
-
 /* Core Global Styling */
 @import url('genre.css');
 
