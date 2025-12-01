@@ -5,35 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheeky Commodore Gamer – Intro</title>
 
-    <!-- CSS (absolute project path) -->
     <link rel="stylesheet" href="/ccgamer_website_new/resources/css/ccg-master.css">
 </head>
 
 <body class="crt intro-body c64-mode">
 
-    <!-- Intro overlay -->
-    <div id="audioUnlock" class="intro-overlay">
+    <!-- CLICK TO START OVERLAY -->
+    <div id="intro-tap-overlay" class="intro-overlay">
         <p>CLICK TO START INTRO WITH SOUND</p>
-        <button id="introBegin">Begin</button>
-        <button id="skipIntroTop" class="skip-top">Skip Intro</button>
+        <button id="intro-overlay-btn">Begin</button>
+        <button id="skip-intro" class="skip-top">Skip Intro</button>
     </div>
 
-    <!-- Intro content -->
+    <!-- MAIN INTRO CONTAINER -->
     <div id="introContainer" class="intro-container hidden">
-        <button id="skipIntro" class="skip-top">Skip Intro</button>
+        <button id="skip-intro" class="skip-top">Skip Intro</button>
 
         <div class="c64-border">
             <div class="c64-screen">
                 <div id="loadingBars" class="loading-bars"></div>
-                <div id="introText" class="intro-text"></div>
+
+                <!-- the animated title text -->
+                <div id="intro-title-text" class="intro-text"></div>
             </div>
         </div>
     </div>
 
-    <!-- AUDIO (relative path) -->
+    <!-- AUDIO -->
     <audio id="sidAudio" src="resources/audio/c64_speech_stayawhile.mp3"></audio>
 
-    <!-- JS (relative path — required for GitHub Pages project sites) -->
+    <!-- JS -->
     <script src="js/index-intro.js"></script>
 
 </body>
