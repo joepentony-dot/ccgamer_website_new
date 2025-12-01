@@ -5,37 +5,328 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheeky Commodore Gamer – Intro</title>
 
+    <!-- Your main site styles (CRT etc.) -->
     <link rel="stylesheet" href="/ccgamer_website_new/resources/css/ccg-master.css">
+
+    <style>
+        /* Basic reset */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        body.intro-body {
+            background: radial-gradient(circle at top, #06091a 0, #050316 40%, #000000 100%);
+            color: #5fffff; /* C64 cyan */
+            font-family: monospace;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Simple starfield */
+        body.intro-body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,0.4) 0, transparent 50%),
+                radial-gradient(2px 2px at 80% 30%, rgba(255,255,255,0.3) 0, transparent 50%),
+                radial-gradient(2px 2px at 30% 80%, rgba(255,255,255,0.35) 0, transparent 50%),
+                radial-gradient(1px 1px at 60% 60%, rgba(255,255,255,0.25) 0, transparent 50%);
+            mix-blend-mode: screen;
+            opacity: 0.4;
+            z-index: 1;
+        }
+
+        /* CRT scanlines */
+        body.intro-body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                repeating-linear-gradient(
+                    to bottom,
+                    rgba(0, 0, 0, 0.45) 0px,
+                    rgba(0, 0, 0, 0.45) 2px,
+                    transparent 2px,
+                    transparent 4px
+                );
+            mix-blend-mode: multiply;
+            opacity: 0.9;
+            z-index: 2;
+            animation: crt-flicker 0.18s infinite alternate;
+        }
+
+        @keyframes crt-flicker {
+            0% { opacity: 0.82; }
+            100% { opacity: 0.95; }
+        }
+
+        /* POWER-ON OVERLAY */
+
+        #power-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .intro-logo {
+            width: 260px;
+            max-width: 80vw;
+            margin-bottom: 32px;
+            filter: drop-shadow(0 0 25px rgba(0, 255, 255, 0.8));
+        }
+
+        .intro-prompt {
+            font-size: 32px;
+            letter-spacing: 0.15em;
+            margin-bottom: 20px;
+        }
+
+        #power-on-btn {
+            font-family: monospace;
+            font-size: 18px;
+            padding: 10px 26px;
+            background: transparent;
+            border: 2px solid #5fffff;
+            color: #5fffff;
+            cursor: pointer;
+            margin-top: 8px;
+            text-transform: uppercase;
+        }
+
+        #power-on-btn:hover {
+            box-shadow: 0 0 14px rgba(95, 255, 255, 0.8);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Global Skip Intro button (always visible) */
+        .skip-intro-btn {
+            position: fixed;
+            top: 18px;
+            right: 18px;
+            z-index: 30;
+            background: #b0002a;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            font-family: monospace;
+            font-size: 14px;
+            padding: 8px 14px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .skip-intro-btn:hover {
+            box-shadow: 0 0 12px rgba(255, 140, 140, 0.9);
+        }
+
+        /* C64 screen wrapper */
+
+        #c64-wrapper {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .c64-border {
+            background: #00105a;
+            padding: 26px;
+        }
+
+        .c64-screen {
+            background: #1f23b0;
+            padding: 32px 40px;
+            width: 900px;
+            max-width: 90vw;
+            height: 520px;
+            max-height: 70vh;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        #c64-text {
+            white-space: pre;
+            color: #5fffff;
+            font-size: 20px;
+            line-height: 1.4;
+        }
+
+        /* Full-screen raster bars (IN FRONT OF EVERYTHING) */
+        #raster-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 25;
+            display: none;
+            opacity: 0.85;
+            background:
+                repeating-linear-gradient(
+                    0deg,
+                    #ff0000 0px,
+                    #ff0000 4px,
+                    #ffa500 4px,
+                    #ffa500 8px,
+                    #ffff00 8px,
+                    #ffff00 12px,
+                    #00ff00 12px,
+                    #00ff00 16px,
+                    #00ffff 16px,
+                    #00ffff 20px,
+                    #0000ff 20px,
+                    #0000ff 24px,
+                    #ff00ff 24px,
+                    #ff00ff 28px
+                );
+            animation: raster-scroll 0.22s linear infinite;
+        }
+
+        @keyframes raster-scroll {
+            0% { background-position-y: 0; }
+            100% { background-position-y: 40px; }
+        }
+    </style>
 </head>
 
 <body class="crt intro-body c64-mode">
 
-    <!-- CLICK TO START OVERLAY -->
-    <div id="intro-tap-overlay" class="intro-overlay">
-        <p>CLICK TO START INTRO WITH SOUND</p>
-        <button id="intro-overlay-btn">Begin</button>
-        <button id="skip-intro" class="skip-top">Skip Intro</button>
-    </div>
+<!-- GLOBAL SKIP INTRO -->
+<button class="skip-intro-btn">[ ESC ] SKIP INTRO</button>
 
-    <!-- MAIN INTRO CONTAINER -->
-    <div id="introContainer" class="intro-container hidden">
-        <button id="skip-intro" class="skip-top">Skip Intro</button>
+<!-- POWER-ON SCREEN -->
+<div id="power-overlay">
+    <img src="resources/CCGAMER LOGO.png" alt="Cheeky Commodore Gamer" class="intro-logo">
+    <p class="intro-prompt">CLICK TO POWER ON</p>
+    <button id="power-on-btn">POWER ON</button>
+</div>
 
-        <div class="c64-border">
-            <div class="c64-screen">
-                <div id="loadingBars" class="loading-bars"></div>
-
-                <!-- the animated title text -->
-                <div id="intro-title-text" class="intro-text"></div>
-            </div>
+<!-- C64 BASIC + LOAD SEQUENCE -->
+<div id="c64-wrapper" class="hidden">
+    <div class="c64-border">
+        <div class="c64-screen">
+            <pre id="c64-text"></pre>
         </div>
     </div>
+</div>
 
-    <!-- AUDIO -->
-    <audio id="sidAudio" src="resources/audio/c64_speech_stayawhile.mp3"></audio>
+<!-- FULL-SCREEN RASTER -->
+<div id="raster-overlay"></div>
 
-    <!-- JS -->
-    <script src="js/index-intro.js"></script>
+<!-- AUDIO -->
+<audio id="sidAudio" src="resources/audio/c64_speech_stayawhile.mp3"></audio>
+
+<script>
+(function () {
+    const powerOverlay = document.getElementById("power-overlay");
+    const powerOnBtn   = document.getElementById("power-on-btn");
+    const c64Wrapper   = document.getElementById("c64-wrapper");
+    const c64Text      = document.getElementById("c64-text");
+    const raster       = document.getElementById("raster-overlay");
+    const sidAudio     = document.getElementById("sidAudio");
+    const skipButtons  = document.querySelectorAll(".skip-intro-btn");
+
+    const timeouts = [];
+
+    function schedule(fn, delay) {
+        const id = setTimeout(fn, delay);
+        timeouts.push(id);
+    }
+
+    function clearAllTimers() {
+        while (timeouts.length) {
+            clearTimeout(timeouts.pop());
+        }
+    }
+
+    const powerOnText =
+` **** COMMODORE 64 BASIC V2 ****
+ 64K RAM SYSTEM  38911 BASIC BYTES FREE
+
+READY.
+`;
+
+    function startIntro() {
+        // Show C64 screen, hide overlay
+        powerOverlay.classList.add("hidden");
+        c64Wrapper.classList.remove("hidden");
+
+        // Set basic boot screen
+        c64Text.textContent = powerOnText + "\\n";
+
+        // Start the LOAD sequence
+        schedule(() => printLine('LOAD ""', () => {
+            schedule(() => printLine('PRESS PLAY ON TAPE', () => {
+                schedule(() => printLine('FOUND "CHEEKY COMMODORE GAMER"', () => {
+                    startAudioAndRaster();
+                }), 900);
+            }), 900);
+        }), 700);
+    }
+
+    function printLine(text, next) {
+        c64Text.textContent += text + "\\n";
+        if (typeof next === "function") next();
+    }
+
+    function startAudioAndRaster() {
+        // Show raster bars in front of everything
+        raster.style.display = "block";
+
+        // Play SID audio (user already clicked, so autoplay should work)
+        try {
+            sidAudio.currentTime = 0;
+            sidAudio.play().catch(err => {
+                console.warn("Audio play blocked:", err);
+            });
+        } catch (e) {
+            console.warn("Audio error:", e);
+        }
+
+        sidAudio.onended = function () {
+            redirectHome();
+        };
+    }
+
+    function redirectHome() {
+        window.location.href = "home.html";
+    }
+
+    function skipIntro() {
+        clearAllTimers();
+        try {
+            sidAudio.pause();
+            sidAudio.currentTime = 0;
+        } catch (e) {
+            /* ignore */
+        }
+        redirectHome();
+    }
+
+    powerOnBtn.addEventListener("click", startIntro);
+
+    skipButtons.forEach(btn => {
+        btn.addEventListener("click", skipIntro);
+    });
+
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+            skipIntro();
+        }
+    });
+})();
+</script>
 
 </body>
 </html>
