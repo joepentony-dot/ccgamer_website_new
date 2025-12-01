@@ -1,393 +1,1313 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cheeky Commodore Gamer | Home Hub</title>
+    <meta charset="UTF-8">
+    <title>Cheeky Commodore Gamer | Retro Hub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- FONTS -->
-<link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-<style>
+    <style>
+        :root {
+            /* C64 default */
+            --bg-top: #050915;
+            --bg-mid: #060320;
+            --bg-bottom: #000000;
+            --neon-main: #5fffff;
+            --neon-alt: #ff6ffb;
+            --panel-bg: rgba(3, 3, 20, 0.95);
+            --panel-border: #2188ff;
+            --panel-shadow: rgba(0, 200, 255, 0.8);
+            --genre-border: rgba(0, 200, 255, 0.7);
+            --text-main: #e5faff;
+            --ticker-bg: rgba(0, 0, 0, 0.9);
+            --ticker-text: #5fffff;
+            --logo-shadow: 0 0 24px rgba(0, 255, 255, 0.9);
+            --btn-bg: rgba(5, 20, 50, 0.9);
+            --btn-bg-hover: rgba(10, 40, 90, 0.96);
+            --btn-border: #61dafb;
+            --btn-shadow: rgba(0, 200, 255, 0.8);
+            --mode-pill-bg: rgba(0, 0, 0, 0.7);
+            --mode-pill-border: #61dafb;
+            --social-bg: rgba(0, 0, 0, 0.7);
+            --social-border: rgba(97, 218, 251, 0.6);
+            --social-hover-bg: rgba(20, 80, 140, 0.95);
+        }
 
-/* ============================================================
-   BASE + GLOBAL VARIABLES (C64 + AMIGA MODES)
-============================================================ */
+        body.amiga-mode {
+            /* Amiga 2.0 palette */
+            --bg-top: #310038;
+            --bg-mid: #190019;
+            --bg-bottom: #000000;
+            --neon-main: #ff6ffb;
+            --neon-alt: #5fffff;
+            --panel-bg: rgba(40, 10, 50, 0.98);
+            --panel-border: #ff6ffb;
+            --panel-shadow: rgba(255, 100, 255, 0.8);
+            --genre-border: rgba(255, 120, 255, 0.7);
+            --text-main: #ffe9ff;
+            --ticker-bg: rgba(0, 0, 0, 0.9);
+            --ticker-text: #ffb4ff;
+            --logo-shadow: 0 0 26px rgba(255, 100, 255, 0.95);
+            --btn-bg: rgba(60, 10, 70, 0.9);
+            --btn-bg-hover: rgba(90, 20, 110, 0.97);
+            --btn-border: #ff89ff;
+            --btn-shadow: rgba(255, 140, 255, 0.9);
+            --mode-pill-bg: rgba(0, 0, 0, 0.75);
+            --mode-pill-border: #ff89ff;
+            --social-bg: rgba(0, 0, 0, 0.7);
+            --social-border: rgba(255, 137, 255, 0.6);
+            --social-hover-bg: rgba(110, 20, 120, 0.96);
+        }
 
-:root {
-    --neon-text: #5fffff;
-    --neon-glow: #00eaff;
-    --bg-grad-1: #020813;
-    --bg-grad-2: #000000;
-    --panel-bg: rgba(0,0,0,0.5);
-    --panel-border: rgba(0,255,255,0.4);
-}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-/* AMIGA MODE VARIABLES */
-body.amiga {
-    --neon-text: #ff6fff;
-    --neon-glow: #ff2ad8;
-    --bg-grad-1: #1a001a;
-    --bg-grad-2: #000000;
-    --panel-border: rgba(255,0,120,0.4);
-}
+        html, body {
+            height: 100%;
+        }
 
-/* ============================================================
-   BODY + STARFIELD
-============================================================ */
+        body {
+            font-family: 'VT323', monospace;
+            background: radial-gradient(circle at top, var(--bg-top) 0%, var(--bg-mid) 40%, var(--bg-bottom) 100%);
+            color: var(--text-main);
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
 
-body {
-    margin: 0;
-    padding: 0;
-    background: radial-gradient(circle at top, var(--bg-grad-1), var(--bg-grad-2));
-    font-family: 'VT323', monospace;
-    color: var(--neon-text);
-    overflow-x: hidden;
-}
+        /* STARFIELD (CANVAS) */
+        #starfield {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+        }
 
-/* STARFIELD LAYER */
-#starfield {
-    pointer-events: none;
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    background-image: url("resources/starfield.gif");
-    opacity: 0.35;
-}
+        /* CRT Overlay */
+        #crt-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1000;
+            background:
+                    repeating-linear-gradient(
+                            to bottom,
+                            rgba(0, 0, 0, 0.35) 0px,
+                            rgba(0, 0, 0, 0.35) 2px,
+                            transparent 2px,
+                            transparent 4px
+                    );
+            mix-blend-mode: multiply;
+            opacity: 0.9;
+        }
 
-/* CRT OVERLAY */
-#crt {
-    pointer-events: none;
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: repeating-linear-gradient(
-        to bottom,
-        rgba(0,0,0,0.25) 0px,
-        rgba(0,0,0,0.25) 2px,
-        transparent 2px,
-        transparent 4px
-    );
-    opacity: 0.75;
-}
+        /* MAIN FRAME */
+        #frame {
+            max-width: 1200px;
+            margin: 18px auto 40px;
+            padding: 16px;
+            border-radius: 24px;
+            border: 3px solid var(--panel-border);
+            background: radial-gradient(circle at top, rgba(0,0,0,0.9) 0%, rgba(2, 4, 25, 0.98) 35%, rgba(0,0,0,0.98) 100%);
+            box-shadow:
+                    0 0 18px var(--panel-shadow),
+                    0 0 45px rgba(0, 0, 0, 0.9);
+            position: relative;
+            overflow: hidden;
+        }
 
-/* ============================================================
-   TOP BAR (LOGO + MODE SWITCH + SOCIALS)
-============================================================ */
+        /* Subtle inner scanlines */
+        #frame::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.25;
+            background:
+                    repeating-linear-gradient(
+                            to bottom,
+                            rgba(255,255,255,0.05) 0px,
+                            rgba(255,255,255,0.05) 1px,
+                            transparent 1px,
+                            transparent 3px
+                    );
+        }
 
-#topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 22px;
-}
+        /* TOP BAR: LOGO + TITLE + MODE + SOCIALS */
+        #top-bar {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+            position: relative;
+            z-index: 2;
+        }
 
-#ccgLogo {
-    width: 110px;
-    cursor: pointer;
-    filter: drop-shadow(0 0 12px var(--neon-glow));
-}
+        #logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-#modeToggle {
-    cursor: pointer;
-    font-size: 20px;
-    text-shadow: 0 0 8px var(--neon-glow);
-}
+        #ccg-logo {
+            width: 90px;
+            max-width: 24vw;
+            filter: var(--logo-shadow);
+            cursor: pointer;
+            transition: transform 0.18s ease, filter 0.2s ease;
+        }
 
-#socials a {
-    margin-left: 12px;
-    text-decoration: none;
-    color: var(--neon-text);
-    font-size: 20px;
-    text-shadow: 0 0 8px var(--neon-glow);
-}
+        #ccg-logo:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 18px var(--neon-main));
+        }
 
-/* ============================================================
-   PAGE TITLE
-============================================================ */
+        #title-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
 
-#pageTitle {
-    margin-top: 40px;
-    text-align: center;
-    font-family: "Press Start 2P";
-    font-size: 28px;
-    text-shadow: 0 0 14px var(--neon-glow);
-}
+        #title-main {
+            font-family: "Press Start 2P", monospace;
+            font-size: 20px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
 
-/* ============================================================
-   GRID PANELS (GENRES + COLLECTIONS)
-============================================================ */
+        #title-main .cheeky {
+            color: var(--neon-main);
+            text-shadow: 0 0 8px var(--neon-main), 0 0 18px var(--neon-main);
+        }
 
-.panel {
-    width: 92%;
-    margin: 20px auto;
-    padding: 20px;
-    border: 2px solid var(--panel-border);
-    background: var(--panel-bg);
-    box-shadow: 0 0 12px var(--panel-border);
-}
+        #title-main .commodore {
+            color: var(--neon-alt);
+            text-shadow: 0 0 10px var(--neon-alt), 0 0 22px var(--neon-alt);
+        }
 
-.panel h2 {
-    font-family: "Press Start 2P";
-    font-size: 18px;
-    text-shadow: 0 0 12px var(--neon-glow);
-    text-align: center;
-}
+        #title-sub {
+            font-size: 15px;
+            color: #ccc;
+            margin-top: 2px;
+        }
 
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 14px;
-    padding-top: 10px;
-}
+        /* Mode pill */
+        #mode-pill {
+            justify-self: center;
+            padding: 8px 18px;
+            border-radius: 28px;
+            border: 2px solid var(--mode-pill-border);
+            background: var(--mode-pill-bg);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 14px;
+            box-shadow: 0 0 12px rgba(0,0,0,0.8);
+        }
 
-.grid a {
-    display: block;
-    text-align: center;
-    padding: 14px;
-    border: 2px solid var(--panel-border);
-    background: rgba(0,0,0,0.35);
-    text-decoration: none;
-    color: var(--neon-text);
-    font-size: 18px;
-    transition: 0.18s;
-}
+        #mode-pill i {
+            font-size: 16px;
+        }
 
-.grid a:hover {
-    transform: scale(1.07);
-    background: rgba(0,0,0,0.6);
-    text-shadow: 0 0 8px var(--neon-glow);
-}
+        #mode-pill span {
+            letter-spacing: 0.08em;
+            color: var(--neon-main);
+        }
 
-/* ============================================================
-   TYPEWRITER TICKER (BOTTOM)
-============================================================ */
+        /* Social buttons bar */
+        #social-bar {
+            justify-self: end;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            border-radius: 999px;
+            background: var(--social-bg);
+            border: 1px solid var(--social-border);
+        }
 
-#ticker {
-    width: 100%;
-    text-align: center;
-    padding: 12px 0;
-    font-size: 22px;
-    color: var(--neon-text);
-    text-shadow: 0 0 8px var(--neon-glow);
-    margin-top: 20px;
-}
+        .social-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--neon-main);
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 16px;
+            transition: 0.18s ease;
+        }
 
-/* ============================================================
-   EASTER EGG "NEON DOS CONTROL ROOM"
-============================================================ */
+        .social-btn:hover {
+            background: var(--social-hover-bg);
+            border-color: var(--social-border);
+            transform: translateY(-1px);
+            box-shadow: 0 0 10px var(--panel-shadow);
+        }
 
-#easterRoom {
-    position: fixed;
-    inset: 0;
-    background: black;
-    display: none;
-    z-index: 20000;
-    padding: 40px;
-    color: #00ff88;
-    font-family: 'VT323';
-    font-size: 26px;
-    border: 4px solid #00ffaa;
-    box-shadow: 0 0 55px #00ffaa;
-}
+        /* MAIN CONTENT GRID */
+        #content-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 2.1fr) minmax(0, 1.9fr);
+            gap: 14px;
+            margin-top: 10px;
+            position: relative;
+            z-index: 2;
+        }
 
-#easterInner {
-    width: 90%;
-    max-width: 900px;
-    margin: 0 auto;
-    background: rgba(0,0,0,0.75);
-    padding: 22px;
-    border: 2px solid #00ffaa;
-    box-shadow: 0 0 25px #00ffaa;
-}
+        .panel {
+            border-radius: 18px;
+            border: 2px solid var(--panel-border);
+            background: var(--panel-bg);
+            box-shadow: 0 0 16px rgba(0,0,0,0.8);
+            padding: 14px 14px 16px;
+        }
 
-.eItem {
-    padding: 8px 0;
-    cursor: pointer;
-}
+        .panel h2 {
+            font-family: "Press Start 2P", monospace;
+            font-size: 15px;
+            text-transform: uppercase;
+            text-align: center;
+            letter-spacing: 0.1em;
+            margin-bottom: 10px;
+            color: var(--neon-main);
+            text-shadow: 0 0 8px var(--neon-main);
+        }
 
-.eItem:hover {
-    color: #ffffff;
-    text-shadow: 0 0 12px #00ffaa;
-}
+        /* GENRES GRID WITH THUMBNAILS */
+        #genres-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 10px;
+            margin-top: 4px;
+        }
 
-#closeEaster {
-    margin-top: 20px;
-    cursor: pointer;
-    color: #ff3333;
-}
+        .genre-card {
+            position: relative;
+            height: 90px;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 2px solid var(--genre-border);
+            background: radial-gradient(circle at top, #001020, #000000);
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text-main);
+            box-shadow: 0 0 10px rgba(0,0,0,0.9);
+            display: flex;
+            align-items: flex-end;
+            padding: 6px 8px;
+            font-size: 15px;
+            transition: transform 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease;
+        }
 
-</style>
+        .genre-card:hover {
+            transform: translateY(-2px) scale(1.03);
+            border-color: var(--neon-main);
+            box-shadow: 0 0 16px var(--panel-shadow);
+        }
+
+        .genre-thumb {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.5;
+            filter: saturate(1.2) contrast(1.1);
+        }
+
+        .genre-overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top, rgba(0,0,0,0.2), rgba(0,0,0,0.95));
+        }
+
+        .genre-label {
+            position: relative;
+            z-index: 2;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            text-shadow: 0 0 8px rgba(0,0,0,0.9);
+        }
+
+        .genre-icon {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            z-index: 2;
+            font-size: 16px;
+            color: var(--neon-main);
+            text-shadow: 0 0 8px var(--neon-main);
+        }
+
+        /* RIGHT COLUMN: FEATURED VIDEOS + COLLECTIONS */
+        #featured-videos {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .video-card {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid var(--genre-border);
+            background: radial-gradient(circle at top, #000, #020825);
+            box-shadow: 0 0 10px rgba(0,0,0,0.9);
+        }
+
+        .video-header {
+            font-size: 13px;
+            text-align: center;
+            padding: 4px 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            background: linear-gradient(to right, rgba(0,0,0,0.9), rgba(0,0,40,0.9));
+            color: var(--neon-main);
+            text-shadow: 0 0 6px var(--neon-main);
+        }
+
+        .video-body {
+            position: relative;
+            padding-bottom: 56.25%;
+            background: #000;
+        }
+
+        .video-body iframe {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .video-loading {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--neon-main);
+            font-size: 14px;
+            text-shadow: 0 0 8px var(--neon-main);
+        }
+
+        .collections-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .coll-btn {
+            text-decoration: none;
+            color: var(--text-main);
+            border-radius: 12px;
+            border: 2px solid var(--btn-border);
+            background: var(--btn-bg);
+            padding: 8px 10px;
+            font-size: 15px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            box-shadow: 0 0 12px rgba(0,0,0,0.9);
+            transition: 0.16s ease;
+        }
+
+        .coll-btn:hover {
+            background: var(--btn-bg-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 0 14px var(--btn-shadow);
+        }
+
+        /* WELCOMER TEXT BLOCK */
+        #welcome-block {
+            margin-top: 10px;
+            font-size: 15px;
+            text-align: center;
+            color: #d5f2ff;
+        }
+
+        #welcome-block span {
+            color: var(--neon-main);
+        }
+
+        /* TICKER AT BOTTOM OF FRAME */
+        #ticker-wrap {
+            margin-top: 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: var(--ticker-bg);
+            box-shadow: 0 0 12px rgba(0,0,0,0.9);
+            overflow: hidden;
+            position: relative;
+            z-index: 2;
+        }
+
+        #ticker {
+            padding: 8px 16px;
+            font-size: 16px;
+            letter-spacing: 0.06em;
+            color: var(--ticker-text);
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        #ticker span {
+            display: inline-block;
+        }
+
+        /* EASTER EGG: NEON DOS CONTROL ROOM */
+        #easter-room {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at top, #000000 0%, #000000 60%, #020202 100%);
+            z-index: 5000;
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 40px;
+        }
+
+        #easter-terminal {
+            width: 92%;
+            max-width: 920px;
+            border-radius: 16px;
+            border: 3px solid #18ffb2;
+            background: radial-gradient(circle at top, #00110b 0%, #000000 70%);
+            box-shadow:
+                    0 0 22px rgba(0, 255, 180, 0.9),
+                    0 0 60px rgba(0, 255, 120, 0.7);
+            padding: 18px 18px 24px;
+            color: #00ff9a;
+            font-size: 18px;
+        }
+
+        #easter-header {
+            border-bottom: 1px solid #0bff9c;
+            padding-bottom: 6px;
+            margin-bottom: 10px;
+            font-size: 17px;
+        }
+
+        #easter-header span {
+            color: #ffffff;
+        }
+
+        #easter-body {
+            margin-top: 6px;
+        }
+
+        .easter-item {
+            padding: 5px 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .easter-item i {
+            width: 22px;
+            text-align: center;
+            color: #0affce;
+        }
+
+        .easter-item:hover {
+            color: #ffffff;
+            text-shadow: 0 0 10px #0affce;
+        }
+
+        #easter-footer {
+            margin-top: 10px;
+            color: #0affce;
+        }
+
+        #easter-close {
+            margin-top: 6px;
+            color: #ff4f4f;
+            cursor: pointer;
+        }
+
+        /* Easter overlays / modes */
+        .zx-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 5500;
+            display: none;
+            background:
+                    repeating-linear-gradient(
+                            0deg,
+                            #0000ff 0px,
+                            #0000ff 8px,
+                            #ffff00 8px,
+                            #ffff00 16px,
+                            #00ffff 16px,
+                            #00ffff 24px,
+                            #ff0000 24px,
+                            #ff0000 32px
+                    );
+            animation: zxScroll 0.04s linear infinite;
+        }
+
+        @keyframes zxScroll {
+            0% { background-position-y: 0; }
+            100% { background-position-y: 32px; }
+        }
+
+        .matrix-mode {
+            background-color: #000000 !important;
+        }
+
+        .matrix-mode * {
+            color: #00ff00 !important;
+            text-shadow: 0 0 8px #00ff00 !important;
+        }
+
+        .terminator-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 0, 0, 0.25);
+            pointer-events: none;
+            z-index: 5100;
+            display: none;
+        }
+
+        .party-mode {
+            animation: hueRotate 0.6s linear infinite;
+        }
+
+        @keyframes hueRotate {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        .warp-mode {
+            animation: warpZoom 1.2s ease-out;
+        }
+
+        @keyframes warpZoom {
+            0% { transform: scale(1); filter: brightness(1.3); }
+            50% { transform: scale(0.92) rotate(1.5deg); filter: brightness(1.6); }
+            100% { transform: scale(1); filter: brightness(1); }
+        }
+
+        #lemmings-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.96);
+            z-index: 5600;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: #ffffff;
+            text-shadow: 0 0 14px #ffffff;
+            font-size: 60px;
+        }
+
+        #lemmings-overlay small {
+            font-size: 22px;
+            margin-top: 12px;
+            text-shadow: none;
+        }
+
+        #konami-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 5700;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: #0fff8b;
+            text-shadow: 0 0 18px #0fff8b, 0 0 40px #00ff55;
+            font-size: 34px;
+            font-family: "Press Start 2P", monospace;
+            background: radial-gradient(circle at top, #000000 0%, #000000 60%);
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 900px) {
+            #frame {
+                margin: 8px;
+                padding: 10px;
+            }
+            #top-bar {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            #logo-wrap {
+                justify-content: center;
+            }
+            #mode-pill {
+                margin-top: 6px;
+            }
+            #social-bar {
+                justify-self: center;
+                margin-top: 6px;
+            }
+            #content-grid {
+                grid-template-columns: 1fr;
+            }
+            .genre-card {
+                height: 100px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            #title-main {
+                font-size: 16px;
+            }
+            #title-sub {
+                font-size: 13px;
+            }
+            .panel h2 {
+                font-size: 13px;
+            }
+            .genre-card {
+                font-size: 14px;
+            }
+            #ticker {
+                font-size: 14px;
+            }
+        }
+
+    </style>
 </head>
+<body class="c64-mode">
 
-<body>
+<canvas id="starfield"></canvas>
+<div id="crt-overlay"></div>
 
-<div id="starfield"></div>
+<div id="frame">
+    <!-- TOP BAR -->
+    <div id="top-bar">
+        <div id="logo-wrap">
+            <img src="resources/CCGAMER LOGO.png" id="ccg-logo" alt="Cheeky Commodore Gamer Logo">
+            <div id="title-text">
+                <div id="title-main">
+                    <span class="cheeky">CHEEKY</span>
+                    &nbsp;
+                    <span class="commodore">COMMODORE GAMER</span>
+                </div>
+                <div id="title-sub">
+                    C64 &amp; AMIGA RETRO EXPERIENCE HUB
+                </div>
+            </div>
+        </div>
 
-<div id="topbar">
-    <img src="resources/CCGAMER LOGO.png" id="ccgLogo">
-    <div id="modeToggle">C64 MODE</div>
-    <div id="socials">
-        <a href="https://www.youtube.com/@cheekycommodoregamer" target="_blank">YT</a>
-        <a href="https://www.patreon.com/cheekygamer" target="_blank">PT</a>
-        <a href="https://discord.gg/" target="_blank">DS</a>
+        <div id="mode-pill">
+            <i class="fa-solid fa-tv"></i>
+            <span id="mode-label">C64 MODE</span>
+        </div>
+
+        <div id="social-bar">
+            <a class="social-btn" href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" title="YouTube">
+                <i class="fa-brands fa-youtube"></i>
+            </a>
+            <a class="social-btn" href="https://patreon.com/CheekyCommodoreGamer" target="_blank" title="Patreon">
+                <i class="fa-brands fa-patreon"></i>
+            </a>
+            <a class="social-btn" href="https://discord.gg/83Xw9ktAn4" target="_blank" title="Discord">
+                <i class="fa-brands fa-discord"></i>
+            </a>
+            <a class="social-btn" href="https://twitter.com/CheekyC64Gamer" target="_blank" title="X / Twitter">
+                <i class="fa-brands fa-x-twitter"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- CONTENT GRID -->
+    <div id="content-grid">
+        <!-- LEFT: GENRES PANEL -->
+        <div class="panel" id="genres-panel">
+            <h2><i class="fa-solid fa-gamepad"></i> GAME GENRES</h2>
+            <div id="genres-grid">
+                <!-- Use your real genre thumbnail paths here -->
+                <a href="arcade-games.html" class="genre-card">
+                    <div class="genre-thumb"
+                         style="background-image:url('resources/images/genres/arcade.jpg');"></div>
+                    <div class="genre-overlay"></div>
+                    <div class="genre-label">ARCADE</div>
+                    <i class="fa-solid fa-ghost genre-icon"></i>
+                </a>
+
+                <a href="action-adventure-games.html" class="genre-card">
+                    <div class="genre-thumb"
+                         style="background-image:url('resources/images/genres/action-adventure.jpg');"></div>
+                    <div class="genre-overlay"></div>
+                    <div class="genre-label">ACTION ADVENTURE</div>
+                    <i class="fa-solid fa-skull genre-icon"></i>
+                </a>
+
+                <a href="adventure-games.html" class="genre-card">
+                    <div class="genre-thumb"
+                         style="background-image:url('resources/images/genres/adventure.jpg');"></div>
+                    <div class="genre-overlay"></div>
+                    <div class="genre-label">ADVENTURE</div>
+                    <i class="fa-solid fa-map genre-icon"></i>
+                </a>
+
+                <a href="racing-games.html" class="genre-card">
+                    <div class="genre-thumb"
+                         style="background-image:url('resources/images/genres/racing.jpg');"></div>
+                    <div class="genre-overlay"></div>
+                    <div class="genre-label">RACING</div>
+                    <i class="fa-solid fa-car-side genre-icon"></i>
+                </a>
+
+                <a href="fighting-games.html" class="genre-card">
+                    <div class="genre-thumb"
+                         style="background-image:url('resources/images/genres/fighting.jpg');"></div>
+                    <div class="genre-overlay"></div>
+                    <div class="genre-label">FIGHTING</div>
+                    <i class="fa-solid fa-hand-fist genre-icon"></i>
+                </a>
+
+                <a href="platform-games.html" class="genre-card">
+                    <div class="genre-thumb"
+                         style="background-image:url('resources/images/genres/platform.jpg');"></div>
+                    <div class="genre-overlay"></div>
+                    <div class="genre-label">PLATFORM</div>
+                    <i class="fa-solid fa-person-running genre-icon"></i>
+                </a>
+
+                <a href="puzzle-games.html" class="genre-card">
+                    <div class="genre-thumb"
+                         style="background-image:url('resources/images/genres/puzzle.jpg');"></div>
+                    <div class="genre-overlay"></div>
+                    <div class="genre-label">PUZZLE</div>
+                    <i class="fa-solid fa-puzzle-piece genre-icon"></i>
+                </a>
+
+                <a href="quiz-games.html" class="genre-card">
+                    <div class="genre-thumb"
+                         style="background-image:url('resources/images/genres/quiz.jpg');"></div>
+                    <div class="genre-overlay"></div>
+                    <div class="genre-label">QUIZ</div>
+                    <i class="fa-solid fa-question genre-icon"></i>
+                </a>
+
+                <a href="sports-games.html" class="genre-card">
+                    <div class="genre-thumb"
+                         style="background-image:url('resources/images/genres/sports.jpg');"></div>
+                    <div class="genre-overlay"></div>
+                    <div class="genre-label">SPORTS</div>
+                    <i class="fa-solid fa-futbol genre-icon"></i>
+                </a>
+
+                <a href="horror-games.html" class="genre-card">
+                    <div class="genre-thumb"
+                         style="background-image:url('resources/images/genres/horror.jpg');"></div>
+                    <div class="genre-overlay"></div>
+                    <div class="genre-label">HORROR</div>
+                    <i class="fa-solid fa-spider genre-icon"></i>
+                </a>
+
+                <a href="casino-games.html" class="genre-card">
+                    <div class="genre-thumb"
+                         style="background-image:url('resources/images/genres/casino.jpg');"></div>
+                    <div class="genre-overlay"></div>
+                    <div class="genre-label">CASINO</div>
+                    <i class="fa-solid fa-dice genre-icon"></i>
+                </a>
+
+                <a href="licensed-games.html" class="genre-card">
+                    <div class="genre-thumb"
+                         style="background-image:url('resources/images/genres/licensed.jpg');"></div>
+                    <div class="genre-overlay"></div>
+                    <div class="genre-label">LICENSED</div>
+                    <i class="fa-solid fa-film genre-icon"></i>
+                </a>
+
+                <a href="bpjs-indexed-games.html" class="genre-card">
+                    <div class="genre-thumb"
+                         style="background-image:url('resources/images/genres/bpjs.jpg');"></div>
+                    <div class="genre-overlay"></div>
+                    <div class="genre-label">BPjS INDEXED</div>
+                    <i class="fa-solid fa-ban genre-icon"></i>
+                </a>
+
+                <a href="miscellaneous.html" class="genre-card">
+                    <div class="genre-thumb"
+                         style="background-image:url('resources/images/genres/misc.jpg');"></div>
+                    <div class="genre-overlay"></div>
+                    <div class="genre-label">MISCELLANEOUS</div>
+                    <i class="fa-solid fa-shuffle genre-icon"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- RIGHT: FEATURED VIDEOS + COLLECTIONS -->
+        <div class="panel" id="right-panel">
+            <h2><i class="fa-brands fa-youtube"></i> FEATURED C64 &amp; AMIGA</h2>
+
+            <div id="featured-videos">
+                <!-- C64 -->
+                <div class="video-card" id="video-c64">
+                    <div class="video-header">COMMODORE 64 FEATURE</div>
+                    <div class="video-body">
+                        <div class="video-loading">LOADING C64 SIGNAL...</div>
+                    </div>
+                </div>
+
+                <!-- Amiga -->
+                <div class="video-card" id="video-amiga">
+                    <div class="video-header">COMMODORE AMIGA FEATURE</div>
+                    <div class="video-body">
+                        <div class="video-loading">LOADING AMIGA SIGNAL...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="welcome-block">
+                <p>
+                    Browse <span>630+</span> carefully curated Commodore titles with
+                    thumbnails, manuals, reviews &amp; cheeky commentary.
+                </p>
+            </div>
+
+            <h2 style="margin-top: 12px;"><i class="fa-solid fa-layer-group"></i> COLLECTIONS</h2>
+            <div class="collections-grid">
+                <a href="top-picks.html" class="coll-btn">
+                    <i class="fa-solid fa-star"></i>&nbsp; Top Picks
+                </a>
+                <a href="cartridge-games.html" class="coll-btn">
+                    <i class="fa-solid fa-microchip"></i>&nbsp; C64 Cartridges
+                </a>
+                <a href="complete-index.html" class="coll-btn">
+                    <i class="fa-solid fa-list"></i>&nbsp; Complete Index
+                </a>
+                <a href="quiz-games.html" class="coll-btn">
+                    <i class="fa-solid fa-trophy"></i>&nbsp; Retro Quiz
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- TICKER -->
+    <div id="ticker-wrap">
+        <div id="ticker"><span id="ticker-text"></span></div>
     </div>
 </div>
 
-<h1 id="pageTitle">CHEEKY COMMODORE GAMER HUB</h1>
-
-<!-- =====================================================
-     GENRES PANEL
-===================================================== -->
-<div class="panel">
-    <h2>GENRES</h2>
-
-    <div class="grid">
-        <a href="arcade-games.html">Arcade</a>
-        <a href="action-adventure-games.html">Action Adventure</a>
-        <a href="adventure-games.html">Adventure</a>
-        <a href="racing-games.html">Racing</a>
-        <a href="casino-games.html">Casino</a>
-        <a href="horror-games.html">Horror</a>
-        <a href="fighting-games.html">Fighting</a>
-        <a href="platform-games.html">Platform</a>
-        <a href="licensed-games.html">Licensed</a>
-        <a href="puzzle-games.html">Puzzle</a>
-        <a href="miscellaneous.html">Misc</a>
-        <a href="bpjs-indexed-games.html">BPjS Indexed</a>
+<!-- EASTER EGG: NEON DOS CONTROL ROOM -->
+<div id="easter-room">
+    <div id="easter-terminal">
+        <div id="easter-header">
+            CHEEKY COMMANDER SYSTEM <span>– EASTER OPERATIONS MODULE</span><br>
+            <span>>> TYPE CODES ANYWHERE ON SITE OR CLICK BELOW</span>
+        </div>
+        <div id="easter-body">
+            <div class="easter-item" data-code="zxspectrum">
+                <i class="fa-solid fa-display"></i>
+                [1] ZX SPECTRUM MODE
+            </div>
+            <div class="easter-item" data-code="lemmings">
+                <i class="fa-solid fa-bomb"></i>
+                [2] LEMMINGS DETONATION
+            </div>
+            <div class="easter-item" data-code="matrix">
+                <i class="fa-solid fa-code"></i>
+                [3] MATRIX RAIN PROTOCOL
+            </div>
+            <div class="easter-item" data-code="terminator">
+                <i class="fa-solid fa-eye"></i>
+                [4] TERMINATOR SCAN OVERLAY
+            </div>
+            <div class="easter-item" data-code="warp">
+                <i class="fa-solid fa-jet-fighter-up"></i>
+                [5] WARP NEON MODE
+            </div>
+            <div class="easter-item" data-code="party">
+                <i class="fa-solid fa-music"></i>
+                [6] PARTY MODE (UNSTABLE)
+            </div>
+            <div class="easter-item" data-code="konami">
+                <i class="fa-solid fa-heart"></i>
+                [7] KONAMI UNLOCK
+            </div>
+            <div class="easter-item" data-code="amiga">
+                <i class="fa-solid fa-floppy-disk"></i>
+                [8] AMIGA WORKBENCH LAYER
+            </div>
+            <div class="easter-item" data-code="vic20">
+                <i class="fa-solid fa-microchip"></i>
+                [9] VIC-20 EMULATION (SORT OF)
+            </div>
+            <div class="easter-item" data-code="cheeky">
+                <i class="fa-solid fa-face-grin-tongue-wink"></i>
+                [C] CHEEKY REDIRECT
+            </div>
+        </div>
+        <div id="easter-footer">
+            TYPE: <code>SYS64738</code>, <code>LEMMINGS</code>, <code>ZXSPECTRUM</code>, <code>PARTY</code>, <code>WARP</code>...<br>
+            KONAMI CODE (↑↑↓↓←→←→BA) ALSO ACTIVE.
+        </div>
+        <div id="easter-close">[Q] EXIT TO HUB</div>
     </div>
 </div>
 
-<!-- =====================================================
-     COLLECTIONS PANEL
-===================================================== -->
-<div class="panel">
-    <h2>COLLECTIONS</h2>
+<!-- Overlays for effects -->
+<div class="zx-overlay" id="zx-overlay"></div>
+<div class="terminator-overlay" id="terminator-overlay"></div>
 
-    <div class="grid">
-        <a href="cartridge-games.html">C64 Cartridge Games</a>
-        <a href="top-picks.html">Top Picks</a>
-        <a href="quiz-games.html">Trivia Quiz</a>
-        <a href="complete-index.html">Complete Games Index</a>
+<div id="lemmings-overlay">
+    <div id="lemmings-count">5</div>
+    <small>OH NO!</small>
+</div>
+
+<div id="konami-overlay">
+    <div>
+        GOD MODE ENABLED<br>
+        30 LIVES ADDED
     </div>
 </div>
 
-<!-- =====================================================
-     TICKER
-===================================================== -->
-<div id="ticker"></div>
-
-<!-- =====================================================
-     EASTER EGG ROOM
-===================================================== -->
-
-<div id="easterRoom">
-    <div id="easterInner">
-
-        CHEEKY COMMANDER SYSTEM – EASTER OPERATIONS MODULE  
-        <br><br>
-
-        <div class="eItem" data-e="zx">[1] ZX Spectrum Mode</div>
-        <div class="eItem" data-e="lemmings">[2] Lemmings Detonation</div>
-        <div class="eItem" data-e="matrix">[3] Matrix Rain Protocol</div>
-        <div class="eItem" data-e="terminator">[4] Terminator Scan</div>
-        <div class="eItem" data-e="warp">[5] Warp Neon Mode</div>
-        <div class="eItem" data-e="party">[6] Party Mode</div>
-        <div class="eItem" data-e="konami">[7] Konami Unlock</div>
-        <div class="eItem" data-e="amiga">[8] Amiga Workbench Layer</div>
-        <div class="eItem" data-e="vic20">[9] VIC-20 Emulation</div>
-
-        <br>
-        <div id="closeEaster">[Q] EXIT</div>
-    </div>
-</div>
-
-<div id="crt"></div>
-
-<!-- =====================================================
-     JAVASCRIPT LOGIC: 
-     MODE TOGGLE, TICKER, EASTER EGGS, CHEATS, LOGO CLICKS
-===================================================== -->
 <script>
+    /* ============================
+       STARFIELD
+    ============================ */
+    (() => {
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
 
-let logoClicks = 0;
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            stars = [];
+            for (let i = 0; i < 140; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    z: Math.random() * 2 + 0.2
+                });
+            }
+        }
 
-/* ===========================
-   MODE SWITCHER
-=========================== */
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#ffffff";
+            stars.forEach(s => {
+                ctx.globalAlpha = 0.4 + s.z * 0.3;
+                ctx.fillRect(s.x, s.y, s.z * 1.3, s.z * 1.3);
+                s.y += s.z * 1.3;
+                if (s.y > canvas.height) {
+                    s.y = 0;
+                    s.x = Math.random() * canvas.width;
+                }
+            });
+            requestAnimationFrame(draw);
+        }
 
-document.getElementById("modeToggle").onclick = () => {
-    document.body.classList.toggle("amiga");
-    document.getElementById("modeToggle").textContent =
-        document.body.classList.contains("amiga")
-        ? "AMIGA MODE"
-        : "C64 MODE";
-};
+        window.addEventListener('resize', resize);
+        resize();
+        draw();
+    })();
 
-/* ===========================
-   TYPEWRITER TICKER
-=========================== */
+    /* ============================
+       MODE TOGGLE (C64 / AMIGA)
+    ============================ */
+    const body = document.body;
+    const modeLabel = document.getElementById('mode-label');
 
-const tickMsg = "Welcome Commander! Choose your genre... or discover the secrets of the Cheeky Commodore Gamer... 😇🕹️👌   ";
-let ti = 0;
+    function setMode(mode) {
+        if (mode === 'amiga') {
+            body.classList.add('amiga-mode');
+            modeLabel.textContent = 'AMIGA MODE';
+        } else {
+            body.classList.remove('amiga-mode');
+            modeLabel.textContent = 'C64 MODE';
+        }
+        localStorage.setItem('ccg-mode', mode);
+    }
 
-setInterval(() => {
-    document.getElementById("ticker").textContent = tickMsg.slice(0, ti++);
-    if (ti > tickMsg.length) ti = 0;
-}, 90);
+    document.getElementById('mode-pill').addEventListener('click', () => {
+        const current = body.classList.contains('amiga-mode') ? 'amiga' : 'c64';
+        setMode(current === 'amiga' ? 'c64' : 'amiga');
+    });
 
-/* ===========================
-   LOGO 3-CLICK EASTER EGG UNLOCK
-=========================== */
+    // Load mode preference
+    (() => {
+        const saved = localStorage.getItem('ccg-mode');
+        if (saved === 'amiga') setMode('amiga'); else setMode('c64');
+    })();
 
-document.getElementById("ccgLogo").onclick = () => {
-    logoClicks++;
-    if (logoClicks === 1) document.getElementById("ticker").textContent = "Click me again...";
-    if (logoClicks === 2) document.getElementById("ticker").textContent = "One more click...";
-    if (logoClicks === 3) openEasterRoom();
-};
+    /* ============================
+       TYPEWRITER TICKER
+    ============================ */
+    const tickerSpan = document.getElementById('ticker-text');
+    const tickerText =
+        "WELCOME TO THE CHEEKY COMMODORE GAMER HUB – C64 & AMIGA REVIEWS, THUMBNAILS, MANUALS, QUIZZES & EASTER EGGS. 😇🕹️👌   ";
+    let tickerIndex = 0;
 
-function openEasterRoom() {
-    document.getElementById("easterRoom").style.display = "block";
-}
+    function tick() {
+        tickerSpan.textContent = tickerText.slice(0, tickerIndex++);
+        if (tickerIndex > tickerText.length) tickerIndex = 0;
+    }
+    setInterval(tick, 80);
 
-document.getElementById("closeEaster").onclick = () => {
-    document.getElementById("easterRoom").style.display = "none";
-    logoClicks = 0;
-};
+    /* ============================
+       FEATURED VIDEOS (YouTube API)
+       (You can drop in your existing key & playlist IDs)
+    ============================ */
+    const YT_API_KEY = "AIzaSyABtgqVHmOrfzw2DLE-3ta3OmlaQ0ad_t8"; // from your old script
+    const C64_PLAYLIST_ID = "PL_TYjnCNYSex7dxxCMMuOsjzcXE1VNiR9";
+    const AMIGA_PLAYLIST_ID = "PL_TYjnCNYSezw55SVAMN2_UhdH3gCca1n";
 
-/* ===========================
-   CHEAT ENGINE (GLOBAL)
-=========================== */
+    async function fetchRandomFromPlaylist(playlistId) {
+        try {
+            const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=${YT_API_KEY}`;
+            const res = await fetch(url);
+            const data = await res.json();
+            if (!data.items || !data.items.length) return null;
+            const vids = data.items.map(item => item.snippet.resourceId.videoId).filter(Boolean);
+            if (!vids.length) return null;
+            return vids[Math.floor(Math.random() * vids.length)];
+        } catch (e) {
+            console.error("YT API error", e);
+            return null;
+        }
+    }
 
-let cheat = "";
+    function setVideo(containerId, videoId, fallbackText) {
+        const container = document.querySelector(`#${containerId} .video-body`);
+        if (!container) return;
+        if (!videoId) {
+            container.innerHTML = `<div class="video-loading">${fallbackText}</div>`;
+        } else {
+            container.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}"
+                title="YouTube video player"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>`;
+        }
+    }
 
-document.addEventListener("keydown", e => {
-    cheat += e.key.toLowerCase();
-    if (cheat.length > 20) cheat = cheat.slice(-20);
+    (async () => {
+        const [c64, amiga] = await Promise.all([
+            fetchRandomFromPlaylist(C64_PLAYLIST_ID),
+            fetchRandomFromPlaylist(AMIGA_PLAYLIST_ID)
+        ]);
+        setVideo("video-c64", c64, "C64 SIGNAL UNAVAILABLE");
+        setVideo("video-amiga", amiga, "AMIGA SIGNAL UNAVAILABLE");
+    })();
 
-    if (cheat.includes("zx")) easterAction("zx");
-    if (cheat.includes("lemmings")) easterAction("lemmings");
-    if (cheat.includes("matrix")) easterAction("matrix");
-    if (cheat.includes("t800")) easterAction("terminator");
-    if (cheat.includes("warp")) easterAction("warp");
-    if (cheat.includes("party")) easterAction("party");
-    if (cheat.includes("amiga")) easterAction("amiga");
-    if (cheat.includes("vic20")) easterAction("vic20");
-    if (cheat.includes("konami")) easterAction("konami");
-});
+    /* ============================
+       EASTER EGGS – NEON DOS CONTROL ROOM
+    ============================ */
+    const easterRoom = document.getElementById('easter-room');
+    const zxOverlay = document.getElementById('zx-overlay');
+    const termOverlay = document.getElementById('terminator-overlay');
+    const lemmingsOverlay = document.getElementById('lemmings-overlay');
+    const lemmingsCount = document.getElementById('lemmings-count');
+    const konamiOverlay = document.getElementById('konami-overlay');
 
-/* ===========================
-   EASTER ACTIONS
-=========================== */
+    let logoClicks = 0;
+    let logoClickTimeout = null;
 
-document.querySelectorAll(".eItem").forEach(btn => {
-    btn.onclick = () => easterAction(btn.dataset.e);
-});
+    function openEasterRoom() {
+        easterRoom.style.display = 'flex';
+    }
 
-function easterAction(code) {
-    alert("Easter Egg Activated: " + code.toUpperCase());
-}
+    function closeEasterRoom() {
+        easterRoom.style.display = 'none';
+    }
+
+    document.getElementById('easter-close').addEventListener('click', () => {
+        closeEasterRoom();
+        logoClicks = 0;
+    });
+
+    // Logo triple-click
+    document.getElementById('ccg-logo').addEventListener('click', () => {
+        logoClicks++;
+        if (logoClickTimeout) clearTimeout(logoClickTimeout);
+        logoClickTimeout = setTimeout(() => {
+            logoClicks = 0;
+        }, 1800);
+
+        if (logoClicks === 1) {
+            tickerSpan.textContent = "CLICK ME AGAIN...";
+        } else if (logoClicks === 2) {
+            tickerSpan.textContent = "ONE MORE CLICK UNLOCKS SOMETHING CHEEKY...";
+        } else if (logoClicks === 3) {
+            logoClicks = 0;
+            openEasterRoom();
+        }
+    });
+
+    // Easter menu click
+    document.querySelectorAll('.easter-item').forEach(item => {
+        item.addEventListener('click', () => {
+            runEasterAction(item.dataset.code);
+        });
+    });
+
+    // Cheat engine: typed anywhere
+    let cheatBuffer = "";
+    const MAX_BUFFER = 32;
+
+    const KONAMI_SEQ = [
+        'arrowup', 'arrowup',
+        'arrowdown', 'arrowdown',
+        'arrowleft', 'arrowright',
+        'arrowleft', 'arrowright',
+        'b', 'a'
+    ];
+    let konamiIndex = 0;
+
+    document.addEventListener('keydown', (e) => {
+        // Avoid interfering with typing in inputs/textareas
+        const tag = e.target.tagName.toLowerCase();
+        if (tag === 'input' || tag === 'textarea') return;
+
+        const key = e.key.toLowerCase();
+        cheatBuffer += key;
+        if (cheatBuffer.length > MAX_BUFFER) {
+            cheatBuffer = cheatBuffer.slice(-MAX_BUFFER);
+        }
+
+        // keyword-based
+        const cleaned = cheatBuffer.replace(/[^a-z0-9]/g, '');
+        const triggers = [
+            'zxspectrum', 'zx', 'lemmings', 'matrix', 'terminator',
+            't800', 'warp', 'party', 'konami', 'sys64738', 'amiga', 'vic20', 'cheeky'
+        ];
+
+        for (const code of triggers) {
+            if (cleaned.endsWith(code)) {
+                runEasterAction(code);
+                cheatBuffer = "";
+                break;
+            }
+        }
+
+        // KONAMI sequence detection
+        if (key === KONAMI_SEQ[konamiIndex]) {
+            konamiIndex++;
+            if (konamiIndex === KONAMI_SEQ.length) {
+                konamiIndex = 0;
+                runEasterAction('konami');
+            }
+        } else if (['arrowup','arrowdown','arrowleft','arrowright','b','a'].includes(key)) {
+            konamiIndex = 0; // reset if sequence broken
+        }
+
+        // Easter room quick exit
+        if (easterRoom.style.display === 'flex' && (key === 'q' || key === 'escape')) {
+            closeEasterRoom();
+        }
+    });
+
+    function runEasterAction(codeRaw) {
+        const code = (codeRaw || '').toLowerCase();
+
+        if (code.includes('zxspectrum') || code === 'zx') {
+            zxOverlay.style.display = 'block';
+            setTimeout(() => {
+                zxOverlay.style.display = 'none';
+            }, 2800);
+            return;
+        }
+
+        if (code.includes('lemmings')) {
+            startLemmings();
+            return;
+        }
+
+        if (code.includes('matrix')) {
+            body.classList.add('matrix-mode');
+            setTimeout(() => {
+                body.classList.remove('matrix-mode');
+            }, 6000);
+            return;
+        }
+
+        if (code.includes('terminator') || code.includes('t800')) {
+            termOverlay.style.display = 'block';
+            setTimeout(() => {
+                termOverlay.style.display = 'none';
+            }, 5000);
+            return;
+        }
+
+        if (code.includes('warp')) {
+            body.classList.add('warp-mode');
+            setTimeout(() => {
+                body.classList.remove('warp-mode');
+            }, 1300);
+            return;
+        }
+
+        if (code.includes('party')) {
+            body.classList.toggle('party-mode');
+            return;
+        }
+
+        if (code.includes('konami')) {
+            showKonami();
+            return;
+        }
+
+        if (code.includes('sys64738')) {
+            // Soft reset: just blink ticker
+            tickerSpan.textContent = "SOFT RESET: READY.";
+            return;
+        }
+
+        if (code.includes('amiga')) {
+            setMode('amiga');
+            return;
+        }
+
+        if (code.includes('vic20')) {
+            alert("VIC-20 MODE: 5K OF GLORIOUS MEMORY. (OK, not really... yet!)");
+            return;
+        }
+
+        if (code.includes('cheeky')) {
+            window.location.href = "https://gaydar.net/";
+            return;
+        }
+    }
+
+    function startLemmings() {
+        lemmingsOverlay.style.display = 'flex';
+        let count = 5;
+        lemmingsCount.textContent = count.toString();
+        const audio = new Audio('https://raw.githubusercontent.com/joepentony-dot/website-images/main/Lemmings%20Blow.mp3');
+        audio.play().catch(() => {});
+        const timer = setInterval(() => {
+            count--;
+            if (count > 0) {
+                lemmingsCount.textContent = count.toString();
+            } else {
+                clearInterval(timer);
+                lemmingsCount.textContent = "OH NO!";
+                setTimeout(() => {
+                    lemmingsOverlay.style.display = 'none';
+                }, 900);
+            }
+        }, 800);
+    }
+
+    function showKonami() {
+        konamiOverlay.style.display = 'flex';
+        setTimeout(() => {
+            konamiOverlay.style.display = 'none';
+        }, 2200);
+    }
 
 </script>
 
