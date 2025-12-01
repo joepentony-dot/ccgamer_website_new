@@ -5,55 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheeky Commodore Gamer | Complete Game Index</title>
 
-    <link rel="stylesheet" href="css/engine.css">
+    <!-- Global CCG CSS -->
     <link rel="stylesheet" href="resources/css/main.css">
-    <script defer src="js/engine.js"></script>
+    <link rel="stylesheet" href="resources/css/home.css">
+    <link rel="stylesheet" href="resources/css/ccg-console.css">
+    <link rel="stylesheet" href="resources/css/ccg-anim.css">
+    <link rel="stylesheet" href="resources/css/ccg-modal.css">
+
+    <!-- Page-specific CSS -->
+    <link rel="stylesheet" href="resources/css/complete-index.css">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <!-- Global CCG JS -->
+    <script defer src="js/ccg-global.js"></script>
+    <script defer src="js/ccg-console.js"></script>
+    <script defer src="js/ccg-mode.js"></script>
+    <script defer src="js/ccg-zx.js"></script>
+    <script defer src="js/ccg-anim.js"></script>
+    <script defer src="js/ccg-modal.js"></script>
+
+    <!-- Complete Index Logic -->
     <script defer src="js/complete-index.js"></script>
-
-    <style>
-        /* Temporary basic layout (final CSS pass later) */
-        #search-bar {
-            width: 100%;
-            max-width: 400px;
-            margin: 10px auto 20px auto;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #00aaff;
-            border-radius: 4px;
-            background: rgba(0,0,0,0.4);
-            color: #e6f1ff;
-            display: block;
-        }
-
-        .index-item {
-            padding: 8px 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .index-item a {
-            color: #00eaff;
-            text-decoration: none;
-        }
-
-        .index-item a:hover {
-            text-decoration: underline;
-        }
-    </style>
 </head>
 
-<body>
+<body class="c64-mode">
 
-<header>
+<!-- CRT / overlays globally injected by ccg-global.js -->
+<canvas id="starfield"></canvas>
+<div class="crt-overlay"></div>
+
+<header class="index-header">
     <img src="resources/CCGAMER LOGO.png" alt="CCG Logo" class="site-logo">
-    <h1>Complete Game Index</h1>
-    <p>Browse the entire collection of Commodore 64 titles on the site.</p>
+    <h1>COMPLETE GAME INDEX</h1>
+    <p>Browse the entire curated collection of Commodore 64 titles.</p>
 </header>
 
-<input type="text" id="search-bar" placeholder="Search games…">
-
-<div id="complete-results">
-    <p class="loading">Loading game list…</p>
-</div>
+<section class="index-shell">
+    <input type="text" id="search-bar" placeholder="Search games…">
+    <div id="complete-results">
+        <p class="loading">Loading game list…</p>
+    </div>
+</section>
 
 </body>
 </html>
