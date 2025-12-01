@@ -5,17 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheeky Commodore Gamer – Intro</title>
 
+    <!-- CSS (absolute project path) -->
     <link rel="stylesheet" href="/ccgamer_website_new/resources/css/ccg-master.css">
 </head>
 
 <body class="crt intro-body c64-mode">
 
+    <!-- Intro overlay -->
     <div id="audioUnlock" class="intro-overlay">
         <p>CLICK TO START INTRO WITH SOUND</p>
         <button id="introBegin">Begin</button>
         <button id="skipIntroTop" class="skip-top">Skip Intro</button>
     </div>
 
+    <!-- Intro content -->
     <div id="introContainer" class="intro-container hidden">
         <button id="skipIntro" class="skip-top">Skip Intro</button>
 
@@ -27,8 +30,11 @@
         </div>
     </div>
 
-    <audio id="sidAudio" src="/ccgamer_website_new/resources/audio/c64_speech_stayawhile.mp3"></audio>
-    <script src="/ccgamer_website_new/js/index-intro.js"></script>
+    <!-- AUDIO (relative path) -->
+    <audio id="sidAudio" src="resources/audio/c64_speech_stayawhile.mp3"></audio>
+
+    <!-- JS (relative path — required for GitHub Pages project sites) -->
+    <script src="js/index-intro.js"></script>
 
 </body>
 </html>
