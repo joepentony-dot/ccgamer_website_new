@@ -3,102 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheeky Commodore Gamer | Casino Games</title>
+    <title>Casino Games | Cheeky Commodore Gamer</title>
 
-    <!-- GLOBAL CSS -->
-    <link rel="stylesheet" href="../../resources/css/main.css">
-    <link rel="stylesheet" href="../../resources/css/home.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-console.css">
+    <!-- GLOBAL -->
+    <link rel="stylesheet" href="../../resources/css/ccg-master.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-mode.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-effects.css">
     <link rel="stylesheet" href="../../resources/css/ccg-anim.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-modal.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-zx.css">
 
-    <!-- PAGE SPECIFIC CSS -->
-    <link rel="stylesheet" href="../../resources/css/casino.css">
+    <!-- GENRE -->
+    <link rel="stylesheet" href="../../resources/css/genre.css">
 
-    <!-- Icons -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- JS -->
+    <script src="../../js/site-mode.js" defer></script>
+    <script src="../../js/genre-loader.js" defer></script>
 
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-
-    <!-- GLOBAL JS -->
-    <script defer src="../../js/ccg-global.js"></script>
-    <script defer src="../../js/ccg-console.js"></script>
-    <script defer src="../../js/ccg-mode.js"></script>
-    <script defer src="../../js/ccg-zx.js"></script>
-    <script defer src="../../js/ccg-anim.js"></script>
-    <script defer src="../../js/ccg-modal.js"></script>
-
-    <!-- PAGE JS -->
-    <script defer src="../../js/engine.js"></script>
-    <script defer src="../../js/genre-loader.js"></script>
 </head>
+<body class="crt">
 
-<body class="genre-body">
+    <main class="genre-page">
+        <header class="genre-header">
+            <h1 class="genre-title">Casino Games</h1>
+            <p class="genre-intro">
+                Slots, blackjack, roulette and classic 8-bit casino entertainment.
+            </p>
+        </header>
 
-<!-- STARFIELD + CRT -->
-<canvas id="starfield"></canvas>
-<div class="crt-overlay"></div>
-
-<div class="genre-shell">
-
-<header class="genre-header">
-
-    <div class="genre-header-top">
-        <a href="../../home.html">
-            <img src="../../resources/CCGAMER LOGO.png"
-                 alt="Cheeky Commodore Gamer"
-                 class="genre-logo">
-        </a>
-
-        <div class="genre-title-block">
-            <h1>CASINO GAMES</h1>
-            <p>Cards, wheels, chips — 8-bit style.</p>
-        </div>
-    </div>
-
-    <div class="genre-basic">
-        <span>**** COMMODORE 64 BASIC V2 ****</span>
-        <span>GENRE: CASINO GAMES</span>
-    </div>
-
-    <nav class="genre-nav">
-        <a href="../../home.html">HOME</a>
-        <a href="../index.html">GAMES HUB</a>
-        <a href="../../complete-index.html">FULL INDEX</a>
-        <a href="../../quiz/index.html">QUIZ</a>
-        <a href="../../emulation-guide.html">EMULATOR GUIDE</a>
-        <a href="../../about.html">ABOUT</a>
-        <a href="../../contact.html">CONTACT</a>
-    </nav>
-
-    <div class="breadcrumb">
-        <a href="../../home.html">Home</a> ›
-        <a href="../index.html">Games</a> ›
-        Casino Games
-    </div>
-
-    <p class="genre-intro">
-        <span>FEELING LUCKY?</span>
-        Poker, blackjack, roulette — all recreated in glorious 8-bit form.
-    </p>
-
-</header>
-
-<main>
-    <section class="genre-results-wrap" data-genre="Casino Games">
-        <div id="genre-results">
-            <p class="loading">LOADING CASINO GAMES…</p>
-        </div>
-    </section>
-</main>
-
-</div>
-
-<script>
-    loadGenrePage();
-</script>
+        <section id="games-grid" class="games-grid"></section>
+    </main>
 
 </body>
 </html>
