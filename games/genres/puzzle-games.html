@@ -3,32 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Puzzle Games | Cheeky Commodore Gamer</title>
+    <title>Puzzle Games | CCG</title>
 
-    <!-- GLOBAL -->
     <link rel="stylesheet" href="../../resources/css/ccg-master.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-mode.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-effects.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-anim.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-zx.css">
-    
-    <!-- GENRE -->
-    <link rel="stylesheet" href="../../resources/css/genre.css">
-
-    <!-- JS -->
-    <script src="../../js/site-mode.js" defer></script>
-    <script src="../../js/genre-loader.js" defer></script>
+    <script>
+        window.CCG_GENRE = "Puzzle Games";
+    </script>
 </head>
-<body class="crt">
 
-    <main class="genre-page">
-        <header class="genre-header">
-            <h1 class="genre-title">Puzzle Games</h1>
-            <p class="genre-intro">Brain-twisters, tile matchers, logic puzzles and timeless strategy challenges.</p>
-        </header>
+<body class="crt c64-mode">
 
-        <section id="games-grid" class="games-grid"></section>
-    </main>
+<header class="topnav">
+    <a href="../../home.html">HOME</a>
+    <a href="../../complete-index.html">COMPLETE INDEX</a>
+    <a href="index.html">GENRES</a>
+    <a href="../../quiz/quiz.html">QUIZ</a>
+</header>
+
+<main id="genre-container" class="genre-main">
+    <h1 class="site-title">PUZZLE GAMES</h1>
+    <p class="subtitle">Loading puzzle titles…</p>
+
+    <section id="genre-list"></section>
+</main>
+
+<script src="../../js/genre-loader.js"></script>
+<script src="../../js/ccj-global.js"></script>
 
 </body>
 </html>
