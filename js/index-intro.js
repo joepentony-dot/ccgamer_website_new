@@ -1,8 +1,8 @@
 // js/index-intro.js
 
-// ===============================
+// =========================================
 // CONFIG
-// ===============================
+// =========================================
 const NEXT_URL = 'home.html';
 const LOADING_SOUND_URL = 'resources/audio/c64_speech_stayawhile.mp3';
 
@@ -11,9 +11,9 @@ let loadingAborted = false;
 let audio = null;
 let redirectTimeout = null;
 
-// ===============================
-// STARFIELD
-// ===============================
+// =========================================
+// STARFIELD BACKGROUND
+// =========================================
 const canvas = document.getElementById('starfield');
 const ctx = canvas.getContext('2d');
 let stars = [];
@@ -26,23 +26,26 @@ function resizeCanvas() {
 
 function initStars() {
     stars = [];
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 120; i++) {
         stars.push({
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
             size: Math.random() * 2,
-            speed: Math.random() * 3 + 0.5
+            speed: Math.random() * 2 + 0.4
         });
     }
 }
 
 function animateStars() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = '#ffffff';
     stars.forEach(star => {
         ctx.fillRect(star.x, star.y, star.size, star.size);
         star.y += star.speed;
-        if (star.y > canvas.height) star.y = 0;
+        if (star.y > canvas.height) {
+            star.y = 0;
+            star.x = Math.random() * canvas.width;
+        }
     });
     requestAnimationFrame(animateStars);
 }
@@ -51,10 +54,14 @@ window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 animateStars();
 
-// ===============================
-// TYPEWRITER
-// ===============================
-function typeText(elementId, text, delay = 50) {
+// =========================================
+// UTILITIES
+// =========================================
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function typeText(elementId, text, delayMs = 55) {
     return new Promise(resolve => {
         if (loadingAborted) {
             resolve();
@@ -74,15 +81,15 @@ function typeText(elementId, text, delay = 50) {
                 clearInterval(timer);
                 resolve();
             }
-        }, delay);
+        }, delayMs);
     });
 }
 
-// ===============================
+// =========================================
 // INTRO FLOW
-// ===============================
+// =========================================
 function startSystem() {
-    if (loadingAborted) return; // Just in case
+    if (loadingAborted) return;
 
     const startScreen = document.getElementById('start-screen');
     const loadingScreen = document.getElementById('loading-screen');
@@ -96,21 +103,20 @@ function startSystem() {
 function skipIntro() {
     loadingAborted = true;
 
-    // Stop audio if playing
+    // Stop audio
     try {
         if (audio) {
             audio.pause();
             audio.currentTime = 0;
         }
-    } catch (e) { }
+    } catch (e) {}
 
-    // Cancel redirect timeout if any
+    // Cancel any pending redirect
     if (redirectTimeout) {
         clearTimeout(redirectTimeout);
         redirectTimeout = null;
     }
 
-    // Hard redirect to home
     window.location.href = NEXT_URL;
 }
 
@@ -120,70 +126,64 @@ async function runLoadingSequence() {
 
     if (loadingAborted) return;
 
-    // LOAD ""
+    // Line 1: LOAD ""
     await typeText('loading-terminal', 'LOAD ""', 70);
-    await delay(600);
+    await delay(550);
     if (loadingAborted) return;
     terminal.innerHTML += '<br>';
 
-    // PRESS PLAY ON TAPE
-    await delay(600);
+    // Line 2: PRESS PLAY ON TAPE
+    await delay(550);
     if (loadingAborted) return;
     terminal.innerHTML += 'PRESS PLAY ON TAPE<br>';
 
-    await delay(900);
+    await delay(850);
     if (loadingAborted) return;
 
-    // OK
+    // Line 3: OK
     terminal.innerHTML += 'OK<br>';
-    await delay(700);
+    await delay(650);
     if (loadingAborted) return;
 
-    // SEARCHING
+    // Line 4: SEARCHING
     terminal.innerHTML += '<span class="text-highlight">SEARCHING</span><br>';
     await delay(900);
     if (loadingAborted) return;
 
-    // FOUND
+    // Line 5: FOUND
     terminal.innerHTML += '<span class="text-highlight">FOUND CHEEKY COMMODORE GAMER</span><br>';
     await delay(1100);
     if (loadingAborted) return;
 
-    // LOADING
+    // Line 6: LOADING
     terminal.innerHTML += '<span class="text-highlight">LOADING</span><br>';
 
-    // RASTER BARS ON + SID SPEECH STARTS *NOW*
+    // RASTER BARS ON
     rasterBars.style.display = 'block';
 
-    try {
-        audio = new Audio(LOADING_SOUND_URL);
-        audio.volume = 0.9;
+    // Start SID speech *exactly when raster bars appear*
+    playIntroAudio();
 
-        // When audio ends → go to home (if not skipped)
-        audio.addEventListener('ended', () => {
-            if (!loadingAborted) {
-                goToHome();
-            }
-        });
-
-        // Fallback: in case ended doesn't fire reliably, force redirect
-        audio.addEventListener('loadedmetadata', () => {
-            if (loadingAborted) return;
-            const duration = audio.duration || 10; // seconds
-            redirectTimeout = setTimeout(() => {
-                if (!loadingAborted) {
-                    goToHome();
-                }
-            }, (duration + 0.5) * 1000);
-        });
-
-        await audio.play();
-    } catch (e) {
-        // Audio failed; still show raster for a bit then go home
-        await delay(5000);
+    // HARD AUTO-REDIRECT after ~3 seconds of raster bars,
+    // regardless of audio success, so it never gets "stuck".
+    redirectTimeout = setTimeout(() => {
         if (!loadingAborted) {
             goToHome();
         }
+    }, 3000);
+}
+
+function playIntroAudio() {
+    try {
+        audio = new Audio(LOADING_SOUND_URL);
+        audio.volume = 0.9;
+        // We don't rely on audio events for redirect anymore,
+        // but still try to play for the full effect.
+        audio.play().catch(() => {
+            // If autoplay fails, we just let the 3s timeout handle redirect.
+        });
+    } catch (e) {
+        // Fail silently; redirect handled by timeout.
     }
 }
 
@@ -192,12 +192,7 @@ function goToHome() {
     window.location.href = NEXT_URL;
 }
 
-// Simple delay helper
-function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-// Make skip work via ESC key too (optional nicety)
+// ESC key also skips
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         skipIntro();
