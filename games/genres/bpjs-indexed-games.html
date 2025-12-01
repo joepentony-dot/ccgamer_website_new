@@ -3,24 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BPJS Indexed Games | Cheeky Commodore Gamer</title>
+    <title>BPjS Indexed Games | CCG</title>
 
-    <!-- CSS -->
     <link rel="stylesheet" href="../../resources/css/ccg-master.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-mode.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-effects.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-anim.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-zx.css">
-    <link rel="stylesheet" href="../../resources/css/genre.css">
-
-    <!-- JS -->
-    <script src="../../js/genre-loader.js" defer></script>
     <script>
-        window.CCG_GENRE = "BPJS Indexed Games";
+        window.CCG_GENRE = "BPjS Indexed Games";
     </script>
 </head>
 
-<body class="crt">
-    <main class="genre-page">
+<body class="crt c64-mode">
 
-        <header class="genre-header
+<header class="topnav">
+    <a href="../../home.html">HOME</a>
+    <a href="../../complete-index.html">COMPLETE INDEX</a>
+    <a href="index.html">GENRES</a>
+    <a href="../../quiz/quiz.html">QUIZ</a>
+</header>
+
+<main id="genre-container" class="genre-main">
+    <h1 class="site-title">BPjS INDEXED GAMES</h1>
+    <p class="subtitle">Loading BPjS titles…</p>
+
+    <section id="genre-list"></section>
+</main>
+
+<script src="../../js/genre-loader.js"></script>
+<script src="../../js/ccj-global.js"></script>
+
+</body>
+</html>
