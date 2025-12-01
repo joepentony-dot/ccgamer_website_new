@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheeky Commodore Gamer – C64 Intro</title>
+    <title>Cheeky Commodore Gamer – Intro</title>
 
-    <!-- GLOBAL STYLES -->
+    <!-- Correct CSS Folder -->
     <link rel="stylesheet" href="resources/css/ccg-master.css">
     <link rel="stylesheet" href="resources/css/ccg-mode.css">
     <link rel="stylesheet" href="resources/css/ccg-effects.css">
@@ -13,55 +13,33 @@
     <link rel="stylesheet" href="resources/css/ccg-zx.css">
 
     <!-- JS -->
-    <script src="js/site-mode.js" defer></script>
     <script src="js/index-intro.js" defer></script>
 </head>
 
-<body class="crt c64-intro">
+<body class="crt intro-body">
 
-    <!-- CLICK-TO-START OVERLAY (shown ONLY if autoplay is blocked) -->
-    <div id="intro-tap-overlay" class="intro-overlay">
-        <div class="intro-overlay-inner">
-            <p>Click to start intro with sound</p>
-            <button id="intro-overlay-btn">Begin</button>
-        </div>
+    <!-- Autoplay Overlay -->
+    <div id="audioUnlock" class="intro-overlay">
+        <p>CLICK TO START INTRO WITH SOUND</p>
+        <button id="introBegin">Begin</button>
+        <button id="skipIntroTop" class="skip-top">Skip Intro</button>
     </div>
 
-    <!-- SKIP BUTTON (TOP-RIGHT) -->
-    <button id="skip-intro" class="skip-button">Skip Intro</button>
+    <div id="introContainer" class="intro-container hidden">
 
-    <!-- MAIN C64 INTRO SHELL -->
-    <div class="intro-shell">
-        <div class="intro-border">
-            <div class="intro-screen">
+        <!-- Skip Button -->
+        <button id="skipIntro" class="skip-top">Skip Intro</button>
 
-                <!-- TITLE TEXT AREA -->
-                <div class="intro-title-wrapper">
-                    <div class="intro-title-line">
-                        <span id="intro-title-text" class="intro-title-text"></span>
-                        <span class="intro-cursor">█</span>
-                    </div>
-                </div>
-
-                <!-- LOADING BARS AREA -->
-                <div class="loader-bars">
-                    <div class="loader-bar bar1"></div>
-                    <div class="loader-bar bar2"></div>
-                    <div class="loader-bar bar3"></div>
-                    <div class="loader-bar bar4"></div>
-                    <div class="loader-bar bar5"></div>
-                    <div class="loader-bar bar6"></div>
-                    <div class="loader-bar bar7"></div>
-                    <div class="loader-bar bar8"></div>
-                    <div class="loader-bar bar9"></div>
-                    <div class="loader-bar bar10"></div>
-                    <div class="loader-bar bar11"></div>
-                    <div class="loader-bar bar12"></div>
-                </div>
-
+        <!-- C64 Border + Screen -->
+        <div class="c64-border">
+            <div class="c64-screen">
+                <div id="loadingBars" class="loading-bars"></div>
+                <div id="introText" class="intro-text"></div>
             </div>
         </div>
     </div>
+
+    <audio id="sidAudio" src="resources/audio/c64_speech_stayawhile.mp3"></audio>
 
 </body>
 </html>
