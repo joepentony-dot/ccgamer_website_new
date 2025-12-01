@@ -1,0 +1,206 @@
+/* -------------------------------------------------
+   ZX SPECTRUM FULL MENU OVERLAY
+--------------------------------------------------*/
+
+#zx-menu {
+    display: none; /* activated by JS */
+    position: fixed;
+    inset: 0;
+    background: #bcbcbc;
+    z-index: 99995;
+    font-family: 'Press Start 2P', monospace;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 60px;
+}
+
+/* -------------------------------------------------
+   ZX MENU CONTAINER
+--------------------------------------------------*/
+
+.zx-menu-box {
+    width: 300px;
+    background: #fff;
+    border: 4px solid #000;
+    box-shadow: 8px 8px 0 rgba(0,0,0,0.3);
+}
+
+/* -------------------------------------------------
+   ZX HEADER (RAINBOW + TITLE)
+--------------------------------------------------*/
+
+.zx-header {
+    background: #000;
+    color: #fff;
+    font-size: 0.8rem;
+    padding: 6px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.zx-title {
+    letter-spacing: 1px;
+}
+
+.zx-rainbow {
+    width: 70px;
+    height: 12px;
+    background: linear-gradient(
+        90deg,
+        #f00 0%,
+        #ff0 25%,
+        #0f0 50%,
+        #0ff 75%,
+        #00f 100%
+    );
+}
+
+/* -------------------------------------------------
+   ZX OPTIONS LIST
+--------------------------------------------------*/
+
+.zx-options {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.zx-option {
+    padding: 12px;
+    border-bottom: 1px solid #ccc;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    color: #000;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.zx-option:hover {
+    background: #00ffff;
+    color: #000;
+}
+
+.zx-option.selected {
+    background: #0ff;
+    font-weight: bold;
+    color: #000;
+}
+
+/* -------------------------------------------------
+   ZX FOOTER
+--------------------------------------------------*/
+
+.zx-footer {
+    font-size: 0.6rem;
+    padding: 10px;
+    letter-spacing: 1px;
+    color: #000;
+    text-align: center;
+}
+
+/* -------------------------------------------------
+   ZX LOADING BARS (KEMPSTON STYLE)
+--------------------------------------------------*/
+
+#zx-loading-bars {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(90deg,
+        #00e, #ff0, #f00, #0f0, #0ff, #00e
+    );
+    animation: zx-hue 0.25s linear infinite;
+    z-index: 99997;
+}
+
+@keyframes zx-hue {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+
+/* -------------------------------------------------
+   ZX D-PAD CONTROLS (TOUCH UI)
+--------------------------------------------------*/
+
+#game-controls.visible {
+    display: block;
+}
+
+#game-controls {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 99998;
+}
+
+.d-pad {
+    position: relative;
+    width: 120px;
+    height: 120px;
+}
+
+.d-pad button {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 2px solid #000;
+    background: rgba(255,255,255,0.35);
+    color: #000;
+    font-size: 1.2rem;
+    font-family: 'Press Start 2P';
+    cursor: pointer;
+}
+
+.d-up    { top: 0; left: 40px; }
+.d-down  { bottom: 0; left: 40px; }
+.d-left  { top: 40px; left: 0; }
+.d-right { top: 40px; right: 0; }
+
+/* -------------------------------------------------
+   ZX FIRE BUTTON
+--------------------------------------------------*/
+
+#fire-btn.visible {
+    display: flex;
+}
+
+#fire-btn {
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid #000;
+    background: red;
+    color: #fff;
+    font-family: 'Press Start 2P';
+    font-size: 0.9rem;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.4);
+    z-index: 99998;
+    cursor: pointer;
+}
+
+/* -------------------------------------------------
+   EMULATOR PRANK OVERLAY (BLANKET)
+--------------------------------------------------*/
+
+#emulator-prank-overlay {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    display: none;
+    z-index: 99999;
+}
+
+#emulator-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
