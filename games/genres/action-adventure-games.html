@@ -3,36 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Action-Adventure Games | Cheeky Commodore Gamer</title>
+    <title>Action Adventure Games | CCG</title>
 
-    <!-- GLOBAL STYLES -->
     <link rel="stylesheet" href="../../resources/css/ccg-master.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-mode.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-effects.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-anim.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-zx.css">
-
-    <!-- GENRE SYSTEM -->
-    <link rel="stylesheet" href="../../resources/css/genre.css">
-
-    <!-- JS LOADERS -->
-    <script src="../../js/site-mode.js" defer></script>
-    <script src="../../js/genre-loader.js" defer></script>
+    <script>
+        window.CCG_GENRE = "Action Adventure Games";
+    </script>
 </head>
 
-<body class="crt">
+<body class="crt c64-mode">
 
-    <main class="genre-page">
-        <header class="genre-header">
-            <h1 class="genre-title">Action-Adventure Games</h1>
-            <p class="genre-intro">
-                A hybrid mix of exploration, combat and story. Venture into dungeons, solve puzzles, dodge traps and uncover legendary treasures.
-            </p>
-        </header>
+<header class="topnav">
+    <a href="../../home.html">HOME</a>
+    <a href="../../complete-index.html">COMPLETE INDEX</a>
+    <a href="index.html">GENRES</a>
+    <a href="../../quiz/quiz.html">QUIZ</a>
+</header>
 
-        <!-- GRID FOR GAMES -->
-        <section id="games-grid" class="games-grid"></section>
-    </main>
+<main id="genre-container" class="genre-main">
+    <h1 class="site-title">ACTION ADVENTURE</h1>
+    <p class="subtitle">Loading action-adventure titles…</p>
+
+    <section id="genre-list"></section>
+</main>
+
+<script src="../../js/genre-loader.js"></script>
+<script src="../../js/ccj-global.js"></script>
 
 </body>
 </html>
