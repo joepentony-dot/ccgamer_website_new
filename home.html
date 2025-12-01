@@ -3,206 +3,113 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Cheeky Commodore Gamer | Home Hub</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheeky Commodore Gamer | Home Hub</title>
 
-    <!-- Description / SEO -->
-    <meta name="description" content="Cheeky Commodore Gamer: the ultimate Commodore 64 & Amiga hub. Reviews, downloads, manuals, quizzes and more – stay a while, stay forever.">
-
-    <!-- FONTS -->
-    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link href="https://db.onlinewebfonts.com/c/05eb10077a913e99089a693039e6273e?family=Amiga+Topaz" rel="stylesheet">
-
-    <!-- ICONS -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-
-    <!-- MASTER CCG STYLESHEET (all modular CSS loaded in correct sequence) -->
+    <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="resources/css/ccg-master.css">
+    <link rel="stylesheet" href="resources/css/ccg-mode.css">
+    <link rel="stylesheet" href="resources/css/ccg-effects.css">
+    <link rel="stylesheet" href="resources/css/ccg-anim.css">
+    <link rel="stylesheet" href="resources/css/ccg-zx.css">
 
-    <!-- HOME-PAGE-SPECIFIC CSS (your unique layout stays isolated here) -->
+    <!-- HOMEPAGE-SPECIFIC (light) -->
     <link rel="stylesheet" href="resources/css/home.css">
+
+    <!-- JS -->
+    <script src="js/site-mode.js" defer></script>
 </head>
 
-<body class="c64-mode">
-<canvas id="starfield"></canvas>
-<div class="crt-overlay"></div>
+<body class="crt">
 
-<!-- MODE SWITCH -->
-<div class="mode-switch" id="modeSwitch">
-    <i class="fa-solid fa-desktop mode-icon c64-icon"></i>
-    <span class="mode-label">C64 MODE</span>
-    <i class="fa-solid fa-computer mode-icon amiga-icon"></i>
-</div>
+    <!-- ========================= -->
+    <!-- TOP NAVIGATION BAR        -->
+    <!-- ========================= -->
+    <header class="top-nav">
+        <div class="nav-inner">
+            <a href="home.html" class="nav-logo">
+                <img src="resources/CCGAMER LOGO.png" alt="CCG" class="mini-logo">
+            </a>
 
-<div class="page-shell">
-    <div class="page-inner">
+            <nav class="nav-links">
+                <a href="home.html">Home</a>
+                <a href="complete-index.html">Complete Index</a>
+                <a href="games/genres/arcade-games.html">Genres</a>
+                <a href="quiz/index.html">Quiz</a>
+                <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank">YouTube</a>
+                <a href="https://www.patreon.com/CheekyCommodoreGamer" target="_blank">Patreon</a>
+            </nav>
+        </div>
+    </header>
 
-        <!-- SYSTEM BAR -->
-        <div class="system-bar">
-            <div class="system-bar-line" id="systemText">**** COMMODORE 64 BASIC V2 ****</div>
-            <div class="system-bar-line" id="ramText">64K RAM SYSTEM 38911 BASIC BYTES FREE</div>
+    <!-- ========================= -->
+    <!-- HERO SECTION              -->
+    <!-- ========================= -->
+    <section class="hero-section">
+        <h1 class="hero-title">Cheeky Commodore Gamer</h1>
+        <p class="hero-subtitle">Your ultimate C64 & Amiga retro gaming vault.</p>
+    </section>
+
+    <!-- ========================= -->
+    <!-- GENRES GRID               -->
+    <!-- ========================= -->
+    <main class="genre-hub">
+
+        <h2 class="section-title">Browse Genres</h2>
+
+        <div class="genre-grid">
+
+            <a class="genre-card" href="games/genres/arcade-games.html">Arcade</a>
+            <a class="genre-card" href="games/genres/action-adventure-games.html">Action Adventure</a>
+            <a class="genre-card" href="games/genres/adventure-games.html">Adventure</a>
+            <a class="genre-card" href="games/genres/platform-games.html">Platform</a>
+            <a class="genre-card" href="games/genres/puzzle-games.html">Puzzle</a>
+            <a class="genre-card" href="games/genres/sports-games.html">Sports</a>
+            <a class="genre-card" href="games/genres/racing-games.html">Racing</a>
+            <a class="genre-card" href="games/genres/shooting-games.html">Shooting</a>
+            <a class="genre-card" href="games/genres/fighting-games.html">Fighting</a>
+            <a class="genre-card" href="games/genres/strategy-games.html">Strategy</a>
+            <a class="genre-card" href="games/genres/horror-games.html">Horror</a>
+            <a class="genre-card" href="games/genres/casino-games.html">Casino</a>
+            <a class="genre-card" href="games/genres/role-playing-games.html">RPG</a>
+            <a class="genre-card" href="games/genres/miscellaneous.html">Miscellaneous</a>
+            <a class="genre-card" href="games/genres/top-picks.html">Top Picks</a>
+            <a class="genre-card" href="games/genres/cartridge-games.html">Cartridge</a>
+            <a class="genre-card" href="games/genres/licensed-games.html">Licensed</a>
+            <a class="genre-card" href="games/genres/quiz-games.html">Quiz</a>
+            <a class="genre-card" href="games/genres/bpjs-indexed-games.html">BPJS Indexed</a>
+
         </div>
 
-        <!-- HERO -->
-        <!-- (unchanged – structure kept exactly the same) -->
-        <!-- (your layout 100% preserved) -->
-        <!-- (moved styles into home.css) -->
+    </main>
 
-        <section class="hero">
-            <div class="hero-left">
-                <div class="brand-row">
-                    <div class="brand-logo" id="ccgLogo" title="Triple-tap for secrets…">
-                        <img src="resources/CCGAMER LOGO.png" alt="Cheeky Commodore Gamer logo">
-                    </div>
-                    <div class="brand-text">
-                        <h1>CHEEKY COMMODORE GAMER</h1>
-                        <p class="tagline">C64 & AMIGA GAMES VAULT</p>
-                    </div>
-                </div>
+    <!-- ========================= -->
+    <!-- FEATURED VIDEOS SECTION   -->
+    <!-- ========================= -->
+    <section class="videos-section">
+        <h2 class="section-title">Featured Videos</h2>
 
-                <ul class="hero-bullets">
-                    <li><i class="fa-solid fa-play"></i> WATCH: INSTANT GAMEPLAY REVIEWS</li>
-                    <li><i class="fa-solid fa-book"></i> MANUALS: ORIGINAL PDF SCANS</li>
-                    <li><i class="fa-solid fa-download"></i> DOWNLOADS: EMULATOR-READY FILES</li>
-                    <li><i class="fa-solid fa-list"></i> <span id="gameCountText">INDEX: LOADING CURATED TITLES…</span></li>
-                </ul>
+        <div class="video-grid">
 
-                <div class="hero-cta-row">
-                    <a class="btn-cta btn-subscribe"
-                       href="https://www.youtube.com/@CheekyCommodoreGamer?sub_confirmation=1"
-                       target="_blank" rel="noopener">
-                        <i class="fa-brands fa-youtube"></i> SUBSCRIBE
-                    </a>
+            <iframe src="https://www.youtube.com/embed/C2kMyPfgFX8" title="Featured Video 1" allowfullscreen></iframe>
+            <iframe src="https://www.youtube.com/embed/pYV7N8OyrT4" title="Featured Video 2" allowfullscreen></iframe>
+            <iframe src="https://www.youtube.com/embed/lVVBBFzEvFQ" title="Featured Video 3" allowfullscreen></iframe>
 
-                    <a class="btn-cta" href="complete-index.html">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        FULL GAME INDEX
-                    </a>
+        </div>
+    </section>
 
-                    <a class="btn-cta" href="quiz/index.html">
-                        <i class="fa-solid fa-question"></i>
-                        RETRO QUIZ
-                    </a>
-
-                    <a class="btn-cta" href="#genresSection">
-                        <i class="fa-solid fa-grid-2"></i>
-                        BROWSE GENRES
-                    </a>
-                </div>
-
-                <nav class="quick-nav">
-                    <a href="home.html">HOME</a>
-                    <a href="#genresSection">GENRES</a>
-                    <a href="complete-index.html">INDEX</a>
-                    <a href="quiz/index.html">QUIZ</a>
-                    <a href="#collectionsSection">COLLECTIONS</a>
-                </nav>
-            </div>
-
-            <div class="hero-right">
-                <div class="hero-rotator-shell">
-                    <div class="hero-rotator-label">
-                        <i class="fa-solid fa-gamepad"></i> FEATURED CLASSICS
-                    </div>
-                    <div class="hero-rotator" id="heroRotator"></div>
-                    <div class="hero-rotator-dots" id="heroDots"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ===================== -->
-        <!-- GENRES SECTION (unchanged) -->
-        <!-- ===================== -->
-
-        <section class="section" id="genresSection">
-            <div class="section-header">
-                <i class="fa-solid fa-layer-group"></i>
-                <h2>GAME GENRES</h2>
-            </div>
-
-            <div class="card-grid">
-
-                <!-- ALL CARDS UNCHANGED – you built these perfectly -->
-                <!-- All styles are now clean in home.css -->
-
-                <a class="card" href="games/genres/action-adventure-games.html">
-                    <div class="card-thumb" style="background-image:url('resources/images/genres/action-adventure.png');"></div>
-                    <div class="card-caption">
-                        <span class="card-title">ACTION ADVENTURE</span>
-                        <span class="card-sub">Quests, puzzles & danger.</span>
-                    </div>
-                </a>
-
-                <!-- (ALL OTHER CARDS REMAIN EXACTLY AS THEY WERE) -->
-
-                <!-- … existing card list continues … -->
-
-            </div>
-        </section>
-
-        <!-- ===================== -->
-        <!-- COLLECTIONS SECTION -->
-        <!-- ===================== -->
-
-        <section class="section" id="collectionsSection">
-
-            <div class="section-header">
-                <i class="fa-solid fa-box-archive"></i>
-                <h2>CURATED COLLECTIONS</h2>
-            </div>
-
-            <div class="card-grid">
-                <!-- unchanged -->
-                <a class="card" href="games/genres/top-picks.html">
-                    <div class="card-thumb" style="background-image:url('resources/images/genres/top-picks.png');"></div>
-                    <div class="card-caption">
-                        <span class="card-title">TOP PICKS</span>
-                        <span class="card-sub">The CCG big thumbs up.</span>
-                    </div>
-                </a>
-                <!-- etc -->
-            </div>
-        </section>
-
-        <!-- ===================== -->
-        <!-- SOCIALS -->
-        <!-- ===================== -->
-
-        <section class="section" id="socialsSection">
-            <div class="section-header">
-                <i class="fa-solid fa-users"></i>
-                <h2>COMMUNITY & SUPPORT</h2>
-            </div>
-
-            <div class="social-strip">
-                <!-- unchanged – links preserved -->
-                <a class="social-link"
-                   href="https://www.youtube.com/@CheekyCommodoreGamer"
-                   target="_blank" rel="noopener">
-                    <i class="fa-brands fa-youtube"></i>
-                    YOUTUBE
-                </a>
-                <!-- etc -->
-            </div>
-        </section>
-
-        <!-- ===================== -->
-        <!-- FOOTER -->
-        <!-- ===================== -->
-
-        <footer>
-            <span>© CHEEKY COMMODORE GAMER 2025</span>
-        </footer>
-
-    </div>
-</div>
-
-<!-- GLOBAL UI SYSTEM -->
-<script src="js/ccg-global.js"></script>
-
-<!-- PAGE-SPECIFIC JS -->
-<script src="js/homepage-loader.js"></script>
+    <!-- ========================= -->
+    <!-- SOCIAL LINKS              -->
+    <!-- ========================= -->
+    <footer class="footer">
+        <p>Join the community</p>
+        <div class="social-links">
+            <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank">YouTube</a>
+            <a href="https://www.patreon.com/CheekyCommodoreGamer" target="_blank">Patreon</a>
+            <a href="https://discord.gg/" target="_blank">Discord</a>
+            <a href="https://twitter.com/" target="_blank">Twitter</a>
+        </div>
+    </footer>
 
 </body>
 </html>
