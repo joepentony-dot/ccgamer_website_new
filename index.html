@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CCG C64 Intro</title>
 
-    <!-- Minimal functionality-only CSS -->
     <style>
         body {
             margin: 0;
@@ -21,7 +20,6 @@
             padding: 20px;
         }
 
-        /* Raster bars overlay */
         #raster {
             position: fixed;
             inset: 0;
@@ -32,7 +30,7 @@
                     blue 8px
             );
             display: none;
-            z-index: 2000; /* IN FRONT of everything */
+            z-index: 2000;
             opacity: 0.75;
             animation: scrollbars 0.25s linear infinite;
         }
@@ -42,7 +40,6 @@
             100% { background-position-y: 30px; }
         }
 
-        /* Skip Intro button */
         #skip-btn {
             position: fixed;
             top: 20px;
@@ -54,7 +51,6 @@
             font-size: 18px;
             cursor: pointer;
             z-index: 3000;
-            display: block;
         }
     </style>
 </head>
@@ -69,42 +65,34 @@
 <audio id="sid" src="resources/audio/c64_speech_stayawhile.mp3"></audio>
 
 <script>
-/* ============================================
-   FUNCTIONALITY SEQUENCE ONLY
-   ============================================ */
-
 const screen = document.getElementById("screen");
 const raster = document.getElementById("raster");
 const sid = document.getElementById("sid");
 const skipBtn = document.getElementById("skip-btn");
 
-/* ==== 1. Perfect power-on phase (unchanged from your working version) ==== */
-/* For now, placeholder text — you will replace this with your perfect version */
+/* =====================================================
+   PERFECT, AUTHENTIC C64 POWER-ON SEQUENCE
+   ===================================================== */
 const powerOnText =
-`**** COMMODORE 64 BASIC V2 ****
+` **** COMMODORE 64 BASIC V2 ****
  64K RAM SYSTEM  38911 BASIC BYTES FREE
 
 READY.
 `;
 
-let phase = 0;
+function startSequence() {
+    // Instantly place perfect power-on screen
+    screen.textContent = powerOnText;
 
-/* TYPEWRITER PRINTER FUNCTION */
+    // After a short delay, go into the LOAD phase
+    setTimeout(loadCommand, 1100);
+}
+
 function printLine(text, delay, next) {
     setTimeout(() => {
         screen.textContent += text + "\n";
         if (next) next();
     }, delay);
-}
-
-/* ==== MAIN SEQUENCE ==== */
-
-function startSequence() {
-    // Phase 1 — Power on (perfect version will be inserted later)
-    screen.textContent = powerOnText;
-
-    // start LOAD "" after 1.2 seconds
-    setTimeout(loadCommand, 1200);
 }
 
 function loadCommand() {
@@ -120,22 +108,17 @@ function foundFile() {
 }
 
 function startAudioAndRaster() {
-
-    // SHOW RASTER BARS IN FRONT
     raster.style.display = "block";
 
-    // PLAY AUDIO
     sid.play().catch(() => {
-        console.log("Autoplay blocked");
+        console.warn("Autoplay blocked");
     });
 
-    // WHEN AUDIO FINISHES → REDIRECT
     sid.onended = () => {
         window.location.href = "home.html";
     };
 }
 
-/* ==== SKIP INTRO ==== */
 function skipIntro() {
     sid.pause();
     sid.currentTime = 0;
@@ -144,12 +127,11 @@ function skipIntro() {
 
 skipBtn.addEventListener("click", skipIntro);
 
-// ESC key
 document.addEventListener("keydown", e => {
     if (e.key === "Escape") skipIntro();
 });
 
-/* START */
+// INIT
 startSequence();
 </script>
 
