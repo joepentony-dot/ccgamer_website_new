@@ -1,98 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CCG | C64 INTRO</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCG | C64 INTRO</title>
 
-    <link rel="stylesheet" href="resources/css/ccg-master.css">
-    <link rel="stylesheet" href="resources/css/index.css">
+<!-- C64 FONT -->
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: #1a0a6b;
-            color: #ffffff;
-            font-family: "Press Start 2P", monospace;
-        }
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background: #00002b;
+        color: #ffffff;
+        font-family: 'Press Start 2P', monospace;
+        overflow: hidden;
+        text-shadow: 0 0 6px #0011ff;
+    }
 
-        /* Intro title */
-        #intro-title {
-            position: absolute;
-            top: 20%;
-            width: 100%;
-            text-align: center;
-            font-size: 32px;
-            letter-spacing: 2px;
-        }
+    /* TITLE */
+    #intro-title {
+        position: absolute;
+        top: 30%;
+        width: 100%;
+        text-align: center;
+        font-size: 26px;
+        letter-spacing: 8px;
+        opacity: 0;
+        animation: fadeIn 1.5s forwards 0.7s;
+    }
 
-        #intro-title-text {
-            display: inline-block;
-        }
+    /* RASTER BARS */
+    .bars {
+        position: absolute;
+        width: 100%;
+        top: 55%;
+        height: 150px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        opacity: 0;
+        animation: fadeIn 1.5s forwards 2s;
+    }
+    .bar {
+        height: 10px;
+        animation: move 0.2s infinite;
+    }
+    @keyframes move { 
+        0%   { transform: translateX(-10px); }
+        50%  { transform: translateX(10px); }
+        100% { transform: translateX(-10px); }
+    }
 
-        /* Click-to-unlock overlay */
-        #intro-tap-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.85);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            font-size: 20px;
-            opacity: 0;
-            pointer-events: none;
-            transition: 0.3s ease;
-        }
+    /* Skip Button */
+    #skip-intro {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 10px 18px;
+        font-size: 14px;
+        background: white;
+        color: black;
+        cursor: pointer;
+        border: none;
+        border-radius: 4px;
+        z-index: 99;
+    }
 
-        #intro-tap-overlay.visible {
-            opacity: 1;
-            pointer-events: all;
-        }
+    @keyframes fadeIn { 
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
 
-        #intro-overlay-btn {
-            margin-top: 20px;
-            padding: 12px 20px;
-            font-size: 18px;
-            cursor: pointer;
-        }
-
-        /* Skip button */
-        #skip-intro {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 12px 20px;
-            font-size: 18px;
-            cursor: pointer;
-            z-index: 9999;
-        }
-    </style>
+    /* Click-to-start overlay (hidden by default!) */
+    #audioUnlock {
+        display: none;
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.8);
+        color: white;
+        font-family: 'Press Start 2P';
+        text-align: center;
+        padding-top: 40vh;
+    }
+    #audioUnlock button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background: white;
+        color: black;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+    }
+</style>
 </head>
 
-<body class="crt c64-mode">
+<body>
 
-    <!-- Skip button -->
-    <button id="skip-intro">SKIP INTRO</button>
+<button id="skip-intro">SKIP INTRO</button>
 
-    <!-- Title -->
-    <div id="intro-title">
-        <span id="intro-title-text"></span>
-    </div>
+<div id="intro-title">CHEEKY COMMODORE GAMER</div>
 
-    <!-- Overlay for unlocking audio -->
-    <div id="intro-tap-overlay">
-        TAP TO ENABLE SOUND
-        <button id="intro-overlay-btn">BEGIN</button>
-    </div>
+<!-- Raster bars -->
+<div class="bars">
+    <div class="bar" style="background:#ff0000;"></div>
+    <div class="bar" style="background:#ffaa00;"></div>
+    <div class="bar" style="background:#ffff00;"></div>
+    <div class="bar" style="background:#00ff00;"></div>
+    <div class="bar" style="background:#00aaff;"></div>
+    <div class="bar" style="background:#0000ff;"></div>
+    <div class="bar" style="background:#aa00ff;"></div>
+</div>
 
-    <!-- Embedded audio -->
-    <audio id="sidAudio" src="resources/audio/c64_speech_stayawhile.mp3"></audio>
+<!-- Shown ONLY if autoplay blocked -->
+<div id="audioUnlock">
+    TAP TO ENABLE SOUND<br>
+    <button id="audio-btn">BEGIN</button>
+</div>
 
-    <!-- Intro controller -->
-    <script src="js/index-intro.js"></script>
+<script src="js/index-intro.js"></script>
 
 </body>
 </html>
