@@ -3,65 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CCG Retro Quiz Hub | Cheeky Commodore Gamer</title>
-    <meta name="description" content="Hub for the Cheeky Commodore Gamer Retro Quiz and monthly leaderboard.">
+    <title>Quiz Hub | Cheeky Commodore Gamer</title>
 
-    <link rel="stylesheet" href="../css/engine.css">
-    <link rel="stylesheet" href="../resources/main.css">
-
-    <script defer src="../js/engine.js"></script>
+    <link rel="stylesheet" href="../resources/css/ccg-master.css">
 </head>
-<body class="ccg-body">
-    <div id="start-screen">
-        <div class="boot-window">
-            <pre id="boot-log"></pre>
-            <div id="press-space">PRESS SPACE TO CONTINUE</div>
+
+<body class="crt c64-mode">
+
+<header class="topnav">
+    <a href="../home.html">HOME</a>
+    <a href="../complete-index.html">COMPLETE INDEX</a>
+    <a href="../games/genres/index.html">GENRES</a>
+    <a href="quiz.html">QUIZ</a>
+</header>
+
+<main class="quiz-main">
+    <h1 class="site-title">THE C64 + AMIGA QUIZ HUB</h1>
+    <p class="subtitle">Choose your challenge.</p>
+
+    <section class="quiz-links">
+
+        <div class="quiz-item">
+            <h2>Start Quiz</h2>
+            <p>Begin the full retro gaming trivia quiz.</p>
+            <a class="button" href="quiz.html">START QUIZ</a>
         </div>
-    </div>
 
-    <div class="crt">
-        <div class="scanlines"></div>
-        <div class="screen">
-            <header class="ccg-header">
-                <div class="logo-area">
-                    <span class="logo-main">CHEEKY</span>
-                    <span class="logo-sub">COMMODORE GAMER</span>
-                </div>
-                <nav class="ccg-nav">
-                    <a href="../index.html" class="nav-link">Main Menu</a>
-                    <a href="../games/index.html" class="nav-link">Game Browser</a>
-                    <a href="../games/complete-index.html" class="nav-link">Full Index</a>
-                    <a href="quiz.html" class="nav-link active">Retro Quiz</a>
-                    <a href="../about.html" class="nav-link">About</a>
-                    <a href="../contact.html" class="nav-link">Contact</a>
-                </nav>
-            </header>
-
-            <main class="ccg-main">
-                <section class="text-panel">
-                    <h1>CCG Retro Quiz Hub</h1>
-                    <p>
-                        Test your Commodore 64 and Amiga knowledge with multiple quiz sets, SID audio
-                        snippets and a monthly leaderboard.
-                    </p>
-                    <ul class="link-list">
-                        <li><a href="quiz.html">▶ Start the Quiz</a></li>
-                        <li><a href="quiz-leaderboard.html">🏆 View Monthly Leaderboard</a></li>
-                    </ul>
-                </section>
-            </main>
-
-            <footer class="ccg-footer">
-                <p>&copy; <span id="year"></span> Cheeky Commodore Gamer.</p>
-            </footer>
+        <div class="quiz-item">
+            <h2>Leaderboard</h2>
+            <p>View scores submitted through Google Apps Script.</p>
+            <a class="button" href="quiz-leaderboard.html">VIEW LEADERBOARD</a>
         </div>
-    </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const y = document.getElementById('year');
-            if (y) y.textContent = new Date().getFullYear();
-        });
-    </script>
+    </section>
+</main>
+
+<script src="../js/ccj-global.js"></script>
+
 </body>
 </html>
