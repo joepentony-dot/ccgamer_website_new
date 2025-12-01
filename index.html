@@ -1,40 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheeky Commodore Gamer – Intro</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CCG | C64 INTRO</title>
 
-    <link rel="stylesheet" href="/ccgamer_website_new/resources/css/ccg-master.css">
+    <link rel="stylesheet" href="resources/css/ccg-master.css">
+    <link rel="stylesheet" href="resources/css/index.css">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #1a0a6b;
+            color: #ffffff;
+            font-family: "Press Start 2P", monospace;
+        }
+
+        /* Intro title */
+        #intro-title {
+            position: absolute;
+            top: 20%;
+            width: 100%;
+            text-align: center;
+            font-size: 32px;
+            letter-spacing: 2px;
+        }
+
+        #intro-title-text {
+            display: inline-block;
+        }
+
+        /* Click-to-unlock overlay */
+        #intro-tap-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            font-size: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s ease;
+        }
+
+        #intro-tap-overlay.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        #intro-overlay-btn {
+            margin-top: 20px;
+            padding: 12px 20px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        /* Skip button */
+        #skip-intro {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 9999;
+        }
+    </style>
 </head>
 
-<body class="crt intro-body c64-mode">
+<body class="crt c64-mode">
 
-    <!-- CLICK TO START OVERLAY -->
-    <div id="intro-tap-overlay" class="intro-overlay">
-        <p>CLICK TO START INTRO WITH SOUND</p>
-        <button id="intro-overlay-btn">Begin</button>
-        <button id="skip-intro" class="skip-top">Skip Intro</button>
+    <!-- Skip button -->
+    <button id="skip-intro">SKIP INTRO</button>
+
+    <!-- Title -->
+    <div id="intro-title">
+        <span id="intro-title-text"></span>
     </div>
 
-    <!-- MAIN INTRO CONTAINER -->
-    <div id="introContainer" class="intro-container hidden">
-        <button id="skip-intro" class="skip-top">Skip Intro</button>
-
-        <div class="c64-border">
-            <div class="c64-screen">
-                <div id="loadingBars" class="loading-bars"></div>
-
-                <!-- the animated title text -->
-                <div id="intro-title-text" class="intro-text"></div>
-            </div>
-        </div>
+    <!-- Overlay for unlocking audio -->
+    <div id="intro-tap-overlay">
+        TAP TO ENABLE SOUND
+        <button id="intro-overlay-btn">BEGIN</button>
     </div>
 
-    <!-- AUDIO -->
+    <!-- Embedded audio -->
     <audio id="sidAudio" src="resources/audio/c64_speech_stayawhile.mp3"></audio>
 
-    <!-- JS -->
+    <!-- Intro controller -->
     <script src="js/index-intro.js"></script>
 
 </body>
