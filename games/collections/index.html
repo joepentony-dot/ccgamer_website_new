@@ -3,61 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Collections | Cheeky Commodore Gamer</title>
+    <title>Collections – CCG</title>
 
     <link rel="stylesheet" href="../../resources/css/ccg-master.css">
+    <link rel="stylesheet" href="../../resources/css/genre.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 
-<body class="crt c64-mode">
+<body>
 
-<header class="topnav">
-    <a href="../../home.html">HOME</a>
-    <a href="../../complete-index.html">COMPLETE INDEX</a>
-    <a href="../genres/index.html">GENRES</a>
-    <a href="../../quiz/quiz.html">QUIZ</a>
+<header class="ccg-header">
+    <a href="../../home.html" class="ccg-logo-link">
+        <img src="../../resources/CCGAMER LOGO.png" class="ccg-logo">
+    </a>
+
+    <div class="ccg-header-text">
+        <h1>Cheeky Commodore Gamer</h1>
+        <p>C64 & Amiga Retro Gaming Hub</p>
+    </div>
+
+    <nav class="ccg-nav">
+        <a href="../../home.html">Home</a>
+        <a href="../../complete-index.html">Complete Index</a>
+        <a href="../../quiz/index.html">Quiz Hub</a>
+        <a href="../index.html">Games Hub</a>
+    </nav>
 </header>
 
-<main class="collections-main">
-    <h1 class="site-title">GAME COLLECTIONS</h1>
-    <p class="subtitle">Curated and special lists. Expand in the future.</p>
+<main class="genre-main">
+    <h2 class="genre-title">Collections</h2>
 
-    <section class="collections-list">
+    <div class="collections-list">
 
-        <!-- Placeholder for future custom collections -->
-        <div class="collection-item">
-            <h2>Top Picks</h2>
-            <p>A curated set of the games you personally recommend.</p>
-            <a class="button" href="../genres/top-picks.html">VIEW COLLECTION</a>
-        </div>
+        <a class="category-card" href="../genres/top-picks.html">
+            <img src="../../resources/images/genres/top-picks.png">
+            <span>Top Picks</span>
+        </a>
 
-        <div class="collection-item">
-            <h2>BPjS Indexed Games</h2>
-            <p>Games that were placed on the German BPjS Index.</p>
-            <a class="button" href="../genres/bpjs-indexed-games.html">VIEW COLLECTION</a>
-        </div>
+        <a class="category-card" href="../genres/bpjs-indexed-games.html">
+            <img src="../../resources/images/genres/bpjs.png">
+            <span>BPJS Indexed</span>
+        </a>
 
-        <div class="collection-item">
-            <h2>Licensed Games</h2>
-            <p>Games licensed from movies, TV shows, comics, etc.</p>
-            <a class="button" href="../genres/licensed-games.html">VIEW COLLECTION</a>
-        </div>
+        <a class="category-card" href="../genres/cartridge-games.html">
+            <img src="../../resources/images/genres/cartridge.png">
+            <span>Cartridge Games</span>
+        </a>
 
-        <div class="collection-item">
-            <h2>Cartridge Games</h2>
-            <p>Titles released as cartridges for instant load.</p>
-            <a class="button" href="../genres/cartridge-games.html">VIEW COLLECTION</a>
-        </div>
-
-        <div class="collection-item">
-            <h2>Quiz Games</h2>
-            <p>Trivia and quiz-based C64 titles.</p>
-            <a class="button" href="../genres/quiz-games.html">VIEW COLLECTION</a>
-        </div>
-
-    </section>
+        <a class="category-card" href="../genres/licensed-games.html">
+            <img src="../../resources/images/genres/licensed.png">
+            <span>Licensed Games</span>
+        </a>
+    </div>
 </main>
 
-<script src="../../js/ccj-global.js"></script>
+<footer class="ccg-footer">
+    <p>Cheeky Commodore Gamer – Collections Hub</p>
+</footer>
 
 </body>
 </html>
