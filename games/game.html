@@ -1,56 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cheeky Commodore Gamer | Game Details</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Viewer | Cheeky Commodore Gamer</title>
 
-  <!-- Core styles -->
-  <link rel="stylesheet" href="../css/engine.css">
-  <link rel="stylesheet" href="../resources/css/main.css">
-
-  <!-- Core scripts -->
-  <script defer src="../js/engine.js"></script>
-  <script defer src="../js/load-single-game.js"></script>
+    <link rel="stylesheet" href="../resources/css/ccg-master.css">
 </head>
 
-<body class="ccg-body ccg-theme-c64">
+<body class="crt c64-mode">
 
-  <!-- --------------------------------------------------------------
-       GLOBAL HEADER
-  --------------------------------------------------------------- -->
-  <header class="ccg-header">
-    <div class="ccg-header-inner">
-      <a href="../index.html" class="ccg-logo-link">CHEEKY</a>
+<header class="topnav">
+    <a href="../home.html">HOME</a>
+    <a href="../complete-index.html">COMPLETE INDEX</a>
+    <a href="genres/index.html">GENRES</a>
+    <a href="../quiz/quiz.html">QUIZ</a>
+</header>
 
-      <nav class="ccg-nav">
-        <a href="../complete-index.html">Complete Index</a>
-        <a href="../quiz/quiz.html">Quiz</a>
-        <a href="../about.html">About</a>
-        <a href="../contact.html">Contact</a>
-      </nav>
-    </div>
-  </header>
+<main id="game-container" class="game-main">
+    <h1 class="site-title">GAME VIEWER</h1>
+    <p class="subtitle">Loading game data...</p>
 
-
-  <!-- --------------------------------------------------------------
-       MAIN CONTENT
-  --------------------------------------------------------------- -->
-  <main class="ccg-main">
-
-    <section id="game-detail" class="game-detail">
-      <p>Loading game…</p>
+    <section id="game-content">
+        <!-- Loaded by load-single-game.js -->
     </section>
+</main>
 
-  </main>
-
-
-  <!-- --------------------------------------------------------------
-       FOOTER
-  --------------------------------------------------------------- -->
-  <footer class="ccg-footer">
-    <p>Cheeky Commodore Gamer © 2025</p>
-  </footer>
+<script src="../js/load-single-game.js"></script>
+<script src="../js/ccj-global.js"></script>
 
 </body>
 </html>
