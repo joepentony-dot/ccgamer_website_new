@@ -3,30 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Index | Cheeky Commodore Gamer</title>
+    <title>Cheeky Commodore Gamer | Complete Index</title>
 
-    <!-- Correct CSS -->
     <link rel="stylesheet" href="resources/css/ccg-master.css">
-    <link rel="stylesheet" href="resources/css/ccg-mode.css">
-    <link rel="stylesheet" href="resources/css/ccg-effects.css">
-    <link rel="stylesheet" href="resources/css/ccg-anim.css">
-    <link rel="stylesheet" href="resources/css/ccg-zx.css">
-    <link rel="stylesheet" href="resources/css/genre.css">
-
-    <script src="js/genre-loader.js" defer></script>
-    <script>
-        window.CCG_MODE = "complete-index";
-    </script>
 </head>
 
-<body class="crt">
-    <main class="genre-page">
-        <header class="genre-header">
-            <h1 class="genre-title">Complete Games Index</h1>
-            <p class="genre-intro">Every game in the Cheeky Commodore Gamer library.</p>
-        </header>
+<body class="crt c64-mode">
 
-        <section id="games-grid" class="games-grid"></section>
-    </main>
+<header class="topnav">
+    <a href="home.html">HOME</a>
+    <a href="complete-index.html">COMPLETE INDEX</a>
+    <a href="games/genres/index.html">GENRES</a>
+    <a href="quiz/quiz.html">QUIZ</a>
+    <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener">YOUTUBE</a>
+    <a href="https://www.patreon.com/" target="_blank" rel="noopener">PATREON</a>
+</header>
+
+<main class="complete-index-main">
+    <h1 class="site-title">COMPLETE GAME INDEX</h1>
+    <p class="subtitle">
+        A browsable list of every game currently in <code>games/games.json</code>.
+        Styling and accordion behaviour can be upgraded later &mdash; this is the
+        clean, functional version.
+    </p>
+
+    <section id="index-controls">
+        <label>
+            Filter by title:
+            <input type="text" id="titleFilter" placeholder="Start typing a game name...">
+        </label>
+    </section>
+
+    <section id="games-index">
+        <div id="gamesCount"></div>
+        <div id="gamesList" class="games-list"></div>
+    </section>
+</main>
+
+<script>
+    const gamesUrl = 'games/games.json';
+    const gamesListEl = document.getElementById('gamesList');
+    const gamesCountEl = document.getElementById('gamesCount');
+    const titleFilterEl = document.getElementById('titleFilter');
+
+    let allGames = [];
+
+    async function loadGames() {
+        try {
+            const response = await fetch(gamesUrl);
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+            }
+            const data = await response.json();
+
+            // Expecting an array of game objects
+            if (!Array.isArray(data)) {
+                console.error('games.json is not an array');
+                gamesListEl.textContent = 'Error: games.json format not recognised.';
+                return;
+            }
+
+            // Basic sort by title
+            allGames = data.slice().sort((a, b) => {
+                const tA = (a.title || '').toLowerCase();
+                const tB = (b.title || '').toLowerCase();
+                if (tA < tB) return -1;
+                if (tA > tB) return 1;
+                return 0;
+            });
+
+            renderGames(allGames);
+        } catch (err) {
+            console.error('Failed to load games.json', err);
+            gamesListEl.textContent = 'Error loading games.json. Check console for details.';
+        }
+    }
+
+    function renderGames(list) {
+        gamesListEl.innerHTML = '';
+
+        gamesCountEl.textContent = `${list.length} game(s) found`;
+
+        if (list.length === 0) {
+            gamesListEl.textContent = 'No games match your current filter.';
+            return;
+        }
+
+        const fragment = document.createDocumentFragment();
+
+        list.forEach(game => {
+            const title = game.title || '(Untitled)';
+            const system = game.system || '';
+            const year = game.year || '';
+            const id = game.id || '';
+            const genres = Array.isArray(game.genres) ? game.genres.join(', ') : (game.genres || '');
+
+            const item = document.createElement('div');
+            item.className = 'index-item';
+
+            const heading = document.createElement('h2');
+            heading.className = 'index-title';
+            heading.textContent = title;
+
+            const meta = document.createElement('p');
+            meta.className = 'index-meta';
+            meta.textContent = [
+                system && `System: ${system}`,
+                year && `Year: ${year}`,
+                genres && `Genres: ${genres}`
+            ].filter(Boolean).join(' | ');
+
+            // Link through to game.html?id=<id> if id exists
+            if (id) {
+                const link = document.createElement('a');
+                link.href = `games/game.html?id=${encodeURIComponent(id)}`;
+                link.textContent = 'View details';
+                link.className = 'index-link';
+                item.appendChild(heading);
+                item.appendChild(meta);
+                item.appendChild(link);
+            } else {
+                item.appendChild(heading);
+                item.appendChild(meta);
+            }
+
+            fragment.appendChild(item);
+        });
+
+        gamesListEl.appendChild(fragment);
+    }
+
+    // Simple title filter
+    titleFilterEl.addEventListener('input', () => {
+        const term = titleFilterEl.value.trim().toLowerCase();
+        if (!term) {
+            renderGames(allGames);
+            return;
+        }
+
+        const filtered = allGames.filter(game =>
+            (game.title || '').toLowerCase().includes(term)
+        );
+        renderGames(filtered);
+    });
+
+    loadGames();
+</script>
+
+<script src="js/ccj-global.js"></script>
+
 </body>
 </html>
