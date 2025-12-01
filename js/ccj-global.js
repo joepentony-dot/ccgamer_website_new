@@ -16,7 +16,7 @@
        SCANLINE INTENSITY SETUP
        ----------------------------------------------- */
     const scanlineOverlay = document.querySelector(".crt-overlay");
-    let scanlineStrength = 0.18;
+    let scanlineStrength = 0.05;
 
     function updateScanlines() {
         if (!scanlineOverlay) return;
