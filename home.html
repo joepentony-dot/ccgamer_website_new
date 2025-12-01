@@ -3,344 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheeky Commodore Gamer | Retro Games Hub</title>
+    <title>Cheeky Commodore Gamer – Home Hub</title>
 
-    <meta name="description" content="Main hub for the Cheeky Commodore Gamer website. Jump to C64 & Amiga game genres, collections, quizzes, manuals, and more.">
-
-    <!-- Existing core styles (no new fancy visuals yet) -->
+    <!-- Base Structure -->
     <link rel="stylesheet" href="resources/css/ccg-master.css">
     <link rel="stylesheet" href="resources/css/home.css">
+    <link rel="stylesheet" href="resources/css/ccg-mode.css">
 
-    <!-- Optional fonts & icons that you already use elsewhere -->
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body>
 
-<header>
-    <div class="hub-header">
-        <a href="home.html">
-            <img src="resources/CCGAMER LOGO.png"
-                 alt="Cheeky Commodore Gamer Logo"
-                 class="hub-logo">
-        </a>
-        <div class="hub-title-block">
-            <h1>Cheeky Commodore Gamer</h1>
-            <p>Main Retro Hub – Commodore 64 &amp; Amiga</p>
-        </div>
+<body class="c64-mode">
+
+<header class="ccg-header">
+    <a class="ccg-logo-link">
+        <img src="resources/CCGAMER LOGO.png" class="ccg-logo" alt="CCG Logo">
+    </a>
+
+    <div class="ccg-header-text">
+        <h1>Cheeky Commodore Gamer</h1>
+        <p>C64 & Amiga Retro Gaming Hub</p>
     </div>
 
-    <!-- Top-level navigation for the whole site -->
-    <nav class="hub-main-nav">
-        <ul>
-            <li><a href="home.html">Home Hub</a></li>
-            <li><a href="games/index.html">Games Hub</a></li>
-            <li><a href="complete-index.html">Complete Index</a></li>
-            <li><a href="quiz/index.html">Quiz Hub</a></li>
-            <li><a href="resources/emulation-guide.html">Emulation Guide</a></li>
-            <li><a href="viewer/manual.html">Manual Viewer</a></li>
-            <li><a href="about.html">About CCG</a></li>
-            <li><a href="contact.html">Contact</a></li>
-        </ul>
+    <nav class="ccg-nav">
+        <a href="complete-index.html">Complete Index</a>
+        <a href="quiz/index.html">Quiz Hub</a>
+        <a href="games/index.html">Games Hub</a>
     </nav>
 </header>
 
-<main>
+<main class="home-main">
 
-    <!-- Quick access panel to the main C64/Amiga areas -->
-    <section class="hub-quick-links">
-        <h2>Jump Straight In</h2>
-        <div class="hub-quick-grid">
-            <a href="games/index.html" class="hub-quick-card">
-                <h3>Games Browser</h3>
-                <p>Browse all C64 &amp; Amiga games from the master database.</p>
+    <!-- GENRE GRID -->
+    <section class="home-section">
+        <h2>Genres</h2>
+        <div class="home-grid">
+            <a class="home-card" href="games/genres/arcade-games.html">
+                <img src="resources/images/genres/arcade.png">
+                <span>Arcade</span>
             </a>
-            <a href="complete-index.html" class="hub-quick-card">
-                <h3>Complete Games Index</h3>
-                <p>Full alphabetical listing – every game in one place.</p>
+
+            <a class="home-card" href="games/genres/action-adventure-games.html">
+                <img src="resources/images/genres/action-adventure.png">
+                <span>Action Adventure</span>
             </a>
-            <a href="quiz/index.html" class="hub-quick-card">
-                <h3>Retro Quiz</h3>
-                <p>Test your C64 &amp; Amiga knowledge, track your high scores.</p>
+
+            <a class="home-card" href="games/genres/adventure-games.html">
+                <img src="resources/images/genres/adventure.png">
+                <span>Adventure</span>
             </a>
-            <a href="resources/emulation-guide.html" class="hub-quick-card">
-                <h3>Emulation Guide</h3>
-                <p>Get your setup running with emulators &amp; configs.</p>
+
+            <a class="home-card" href="games/genres/horror-games.html">
+                <img src="resources/images/genres/horror.png">
+                <span>Horror</span>
+            </a>
+
+            <a class="home-card" href="games/genres/platform-games.html">
+                <img src="resources/images/genres/platform.png">
+                <span>Platform</span>
+            </a>
+
+            <a class="home-card" href="games/genres/shooting-games.html">
+                <img src="resources/images/genres/shooting.png">
+                <span>Shooting</span>
+            </a>
+
+            <a class="home-card" href="games/genres/sports-games.html">
+                <img src="resources/images/genres/sports.png">
+                <span>Sports</span>
+            </a>
+
+            <a class="home-card" href="games/genres/puzzle-games.html">
+                <img src="resources/images/genres/puzzle.png">
+                <span>Puzzle</span>
             </a>
         </div>
     </section>
 
-    <!-- GENRES – ALL from games/genres/ with matching icons -->
-    <section class="hub-section">
-        <h2>Browse by Game Genre</h2>
-        <p>These links go directly to your genre pages under <code>games/genres/</code>.</p>
-
-        <div class="hub-genre-grid">
-
-            <!-- Action Adventure -->
-            <a href="games/genres/action-adventure-games.html" class="hub-genre-card">
-                <img src="resources/images/genres/action-adventure.png"
-                     alt="Action Adventure">
-                <h3>Action Adventure</h3>
-                <p>Hybrids with exploration, combat and story.</p>
+    <!-- COLLECTIONS -->
+    <section class="home-section">
+        <h2>Collections</h2>
+        <div class="home-grid">
+            <a class="home-card" href="games/genres/top-picks.html">
+                <img src="resources/images/genres/top-picks.png">
+                <span>Top Picks</span>
             </a>
 
-            <!-- Adventure -->
-            <a href="games/genres/adventure-games.html" class="hub-genre-card">
-                <img src="resources/images/genres/adventure.png"
-                     alt="Adventure">
-                <h3>Adventure</h3>
-                <p>Point &amp; click, text adventures and puzzle-driven quests.</p>
+            <a class="home-card" href="games/genres/bpjs-indexed-games.html">
+                <img src="resources/images/genres/bpjs.png">
+                <span>BPJS Indexed</span>
             </a>
 
-            <!-- Arcade -->
-            <a href="games/genres/arcade-games.html" class="hub-genre-card">
-                <img src="resources/images/genres/arcade.png"
-                     alt="Arcade">
-                <h3>Arcade</h3>
-                <p>Quick-fire coin-op style action and score chasers.</p>
+            <a class="home-card" href="games/genres/cartridge-games.html">
+                <img src="resources/images/genres/cartridge.png">
+                <span>Cartridge Games</span>
             </a>
 
-            <!-- BPJS Indexed -->
-            <a href="games/genres/bpjs-indexed-games.html" class="hub-genre-card">
-                <img src="resources/images/genres/bpjs.png"
-                     alt="BPjS Indexed">
-                <h3>BPjS Indexed Games</h3>
-                <p>Titles indexed by the German BPjS – historically restricted.</p>
+            <a class="home-card" href="games/genres/licensed-games.html">
+                <img src="resources/images/genres/licensed.png">
+                <span>Licensed Games</span>
             </a>
-
-            <!-- Cartridge -->
-            <a href="games/genres/cartridge-games.html" class="hub-genre-card">
-                <img src="resources/images/genres/cartridge.png"
-                     alt="Cartridge Games">
-                <h3>C64 Cartridge Games</h3>
-                <p>Instant-loading ROM cart classics.</p>
-            </a>
-
-            <!-- Casino -->
-            <a href="games/genres/casino-games.html" class="hub-genre-card">
-                <img src="resources/images/genres/casino.png"
-                     alt="Casino">
-                <h3>Casino</h3>
-                <p>Fruit machines, cards, betting and virtual cash.</p>
-            </a>
-
-            <!-- Fighting -->
-            <a href="games/genres/fighting-games.html" class="hub-genre-card">
-                <img src="resources/images/genres/fighting.png"
-                     alt="Fighting">
-                <h3>Fighting</h3>
-                <p>One-on-one brawlers, martial arts and beatdowns.</p>
-            </a>
-
-            <!-- Horror -->
-            <a href="games/genres/horror-games.html" class="hub-genre-card">
-                <img src="resources/images/genres/horror.png"
-                     alt="Horror">
-                <h3>Horror</h3>
-                <p>Dark, creepy and unsettling titles for brave souls.</p>
-            </a>
-
-            <!-- Licensed -->
-            <a href="games/genres/licensed-games.html" class="hub-genre-card">
-                <img src="resources/images/genres/licensed.png"
-                     alt="Licensed">
-                <h3>Licensed</h3>
-                <p>Movies, TV shows, comics and celebrity tie-ins.</p>
-            </a>
-
-            <!-- Miscellaneous -->
-            <a href="games/genres/miscellaneous.html" class="hub-genre-card">
-                <img src="resources/images/genres/miscellaneous.png"
-                     alt="Miscellaneous">
-                <h3>Miscellaneous</h3>
-                <p>Oddities, curios, and hard-to-classify experiences.</p>
-            </a>
-
-            <!-- Platform -->
-            <a href="games/genres/platform-games.html" class="hub-genre-card">
-                <img src="resources/images/genres/platform.png"
-                     alt="Platform">
-                <h3>Platform Games</h3>
-                <p>Leaps, ladders and pixel-perfect jumps.</p>
-            </a>
-
-            <!-- Puzzle -->
-            <a href="games/genres/puzzle-games.html" class="hub-genre-card">
-                <img src="resources/images/genres/puzzle.png"
-                     alt="Puzzle">
-                <h3>Puzzle</h3>
-                <p>Brain-teasers, logic games and tile shufflers.</p>
-            </a>
-
-            <!-- Quiz -->
-            <a href="games/genres/quiz-games.html" class="hub-genre-card">
-                <img src="resources/images/genres/quiz.png"
-                     alt="Quiz">
-                <h3>Quiz</h3>
-                <p>Trivia and question-based C64 &amp; Amiga games.</p>
-            </a>
-
-            <!-- Racing -->
-            <a href="games/genres/racing-games.html" class="hub-genre-card">
-                <img src="resources/images/genres/racing.png"
-                     alt="Racing">
-                <h3>Racing</h3>
-                <p>Arcade racers, rally and top-down speed demons.</p>
-            </a>
-
-            <!-- Role-Playing -->
-            <a href="games/genres/role-playing-games.html" class="hub-genre-card">
-                <img src="resources/images/genres/role-playing.png"
-                     alt="Role-Playing Games">
-                <h3>Role-Playing Games</h3>
-                <p>RPG epics, dungeons, stats and sprawling stories.</p>
-            </a>
-
-            <!-- Shooting -->
-            <a href="games/genres/shooting-games.html" class="hub-genre-card">
-                <img src="resources/images/genres/shooting.png"
-                     alt="Shooting Games">
-                <h3>Shooting Games</h3>
-                <p>Shoot’em ups, run’n’gun, lasers and explosions.</p>
-            </a>
-
-            <!-- Sports -->
-            <a href="games/genres/sports-games.html" class="hub-genre-card">
-                <img src="resources/images/genres/sports.png"
-                     alt="Sports Games">
-                <h3>Sports Games</h3>
-                <p>Footy, athletics, racing and more competitive chaos.</p>
-            </a>
-
-            <!-- Strategy -->
-            <a href="games/genres/strategy-games.html" class="hub-genre-card">
-                <img src="resources/images/genres/strategy.png"
-                     alt="Strategy Games">
-                <h3>Strategy Games</h3>
-                <p>Tactics, planning and long-term thinking.</p>
-            </a>
-
         </div>
     </section>
 
-    <!-- Collections / Special Lists -->
-    <section class="hub-section">
-        <h2>Special Collections &amp; Lists</h2>
-
-        <div class="hub-collection-grid">
-
-            <!-- Top Picks -->
-            <a href="games/genres/top-picks.html" class="hub-collection-card">
-                <img src="resources/images/genres/top-picks.png"
-                     alt="Top Picks">
-                <h3>Top Picks</h3>
-                <p>Cheeky Commodore Gamer’s personal favourites.</p>
-            </a>
-
-            <!-- Cartridge Games (also listed above but important collection) -->
-            <a href="games/genres/cartridge-games.html" class="hub-collection-card">
-                <img src="resources/images/genres/cartridge.png"
-                     alt="Cartridge Games">
-                <h3>C64 Cartridge Collection</h3>
-                <p>Instant-start cart titles and special editions.</p>
-            </a>
-
-            <!-- BPJS Indexed (also in genres, but special) -->
-            <a href="games/genres/bpjs-indexed-games.html" class="hub-collection-card">
-                <img src="resources/images/genres/bpjs.png"
-                     alt="BPjS Indexed Games">
-                <h3>BPjS Indexed</h3>
-                <p>Controversial or restricted C64 &amp; Amiga titles.</p>
-            </a>
-
-            <!-- Complete Index -->
-            <a href="complete-index.html" class="hub-collection-card">
-                <img src="resources/images/icons/pdf.png"
-                     alt="Complete Index Icon">
-                <h3>Complete Games Index</h3>
-                <p>Full alphabetical list for power users &amp; archivists.</p>
-            </a>
-
+    <!-- FEATURED VIDEOS PLACEHOLDER (Phase 3.2) -->
+    <section class="home-section">
+        <h2>Featured Videos</h2>
+        <div id="featured-videos" class="placeholder-box">
+            Featured videos will appear here.
         </div>
     </section>
 
-    <!-- Quiz / Community -->
-    <section class="hub-section">
-        <h2>Quiz &amp; Community</h2>
-
-        <div class="hub-quick-grid">
-
-            <a href="quiz/index.html" class="hub-quick-card">
-                <h3>Retro Quiz Hub</h3>
-                <p>Access the main quiz launcher and quiz info.</p>
+    <!-- SOCIAL LINKS PLACEHOLDER -->
+    <section class="home-section">
+        <h2>Community</h2>
+        <div class="social-grid">
+            <a class="social-btn" href="https://youtube.com/@CheekyCommodoreGamer">
+                <i class="fa-brands fa-youtube"></i> YouTube
             </a>
-
-            <a href="quiz/quiz.html" class="hub-quick-card">
-                <h3>Play the Quiz</h3>
-                <p>Jump directly into the current quiz set.</p>
+            <a class="social-btn" href="https://discord.gg/">
+                <i class="fa-brands fa-discord"></i> Discord
             </a>
-
-            <a href="quiz/quiz-leaderboard.html" class="hub-quick-card">
-                <h3>Quiz Leaderboard</h3>
-                <p>Check high scores and monthly winners.</p>
+            <a class="social-btn" href="https://patreon.com/">
+                <i class="fa-brands fa-patreon"></i> Patreon
             </a>
-
-            <a href="resources/quiz.html" class="hub-quick-card">
-                <h3>Quiz Info / Help</h3>
-                <p>How the quiz works, rules and support.</p>
-            </a>
-
         </div>
-    </section>
-
-    <!-- External & Social Links (functional, no fancy styling yet) -->
-    <section class="hub-section">
-        <h2>Community &amp; Social Links</h2>
-
-        <ul class="hub-social-list">
-            <li>
-                <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener">
-                    <i class="fa-brands fa-youtube"></i> YouTube Channel
-                </a>
-            </li>
-            <li>
-                <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank" rel="noopener">
-                    <i class="fa-brands fa-patreon"></i> Patreon
-                </a>
-            </li>
-            <li>
-                <a href="https://facebook.com/cheekycommodoregamer" target="_blank" rel="noopener">
-                    <i class="fa-brands fa-facebook"></i> Facebook
-                </a>
-            </li>
-            <li>
-                <a href="https://twitter.com/CheekyC64Gamer" target="_blank" rel="noopener">
-                    <i class="fa-brands fa-x-twitter"></i> Twitter / X
-                </a>
-            </li>
-            <li>
-                <a href="https://discord.gg/83Xw9ktAn4" target="_blank" rel="noopener">
-                    <i class="fa-brands fa-discord"></i> Discord
-                </a>
-            </li>
-            <li>
-                <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" rel="noopener">
-                    <i class="fa-brands fa-paypal"></i> PayPal Support
-                </a>
-            </li>
-        </ul>
     </section>
 
 </main>
 
-<footer class="hub-footer">
-    <p>Cheeky Commodore Gamer Retro Hub – Functional Layout v1 (links + structure only).</p>
+<footer class="ccg-footer">
+    <p>Cheeky Commodore Gamer – Home Hub</p>
 </footer>
 
-<!-- No Easter eggs / mode switch / starfield here yet.
-     Those will be moved into shared JS (ccg-mode.js, ccg-easter.js, etc.) later. -->
-
+<script src="js/ccg-mode-engine.js"></script>
 </body>
 </html>
