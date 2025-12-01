@@ -4,77 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz Leaderboard | Cheeky Commodore Gamer</title>
-    <meta name="description" content="Monthly leaderboard for the Cheeky Commodore Gamer Retro Quiz.">
 
-    <link rel="stylesheet" href="../css/engine.css">
-    <link rel="stylesheet" href="../resources/main.css">
-
-    <script defer src="../js/engine.js"></script>
-    <script defer src="../js/quiz-loader.js"></script>
+    <link rel="stylesheet" href="../resources/css/ccg-master.css">
 </head>
-<body class="ccg-body">
-    <div id="start-screen">
-        <div class="boot-window">
-            <pre id="boot-log"></pre>
-            <div id="press-space">PRESS SPACE TO CONTINUE</div>
-        </div>
-    </div>
 
-    <div class="crt">
-        <div class="scanlines"></div>
-        <div class="screen">
-            <header class="ccg-header">
-                <div class="logo-area">
-                    <span class="logo-main">CHEEKY</span>
-                    <span class="logo-sub">COMMODORE GAMER</span>
-                </div>
-                <nav class="ccg-nav">
-                    <a href="../index.html" class="nav-link">Main Menu</a>
-                    <a href="../games/index.html" class="nav-link">Game Browser</a>
-                    <a href="../games/complete-index.html" class="nav-link">Full Index</a>
-                    <a href="quiz.html" class="nav-link">Retro Quiz</a>
-                    <a href="quiz-leaderboard.html" class="nav-link active">Leaderboard</a>
-                    <a href="../about.html" class="nav-link">About</a>
-                    <a href="../contact.html" class="nav-link">Contact</a>
-                </nav>
-            </header>
+<body class="crt c64-mode">
 
-            <main class="ccg-main">
-                <section class="text-panel">
-                    <h1>Monthly Quiz Leaderboard</h1>
-                    <p>Scores are reset monthly via the CCG Apps Script backend.</p>
-                </section>
+<header class="topnav">
+    <a href="../home.html">HOME</a>
+    <a href="../complete-index.html">COMPLETE INDEX</a>
+    <a href="../games/genres/index.html">GENRES</a>
+    <a href="quiz.html">QUIZ</a>
+</header>
 
-                <section class="index-panel">
-                    <table class="index-table" id="quiz-leaderboard-table">
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>Name</th>
-                                <th>Score</th>
-                                <th>Set</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- quiz-loader.js populates rows -->
-                        </tbody>
-                    </table>
-                    <p id="leaderboard-status" class="games-status">Loading leaderboard…</p>
-                </section>
-            </main>
+<main class="leaderboard-main">
+    <h1 class="site-title">QUIZ LEADERBOARD</h1>
+    <p class="subtitle">Fetching data…</p>
 
-            <footer class="ccg-footer">
-                <p>&copy; <span id="year"></span> Cheeky Commodore Gamer.</p>
-            </footer>
-        </div>
-    </div>
+    <section id="leaderboard-root"></section>
+</main>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const y = document.getElementById('year');
-            if (y) y.textContent = new Date().getFullYear();
-        });
-    </script>
+<script src="../js/quiz-loader.js"></script>
+<script src="../js/ccj-global.js"></script>
+
 </body>
 </html>
