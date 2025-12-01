@@ -3,59 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheeky Commodore Gamer | Home</title>
+    <title>Cheeky Commodore Gamer | Home Hub</title>
 
-    <!-- Core site styles -->
-    <link rel="stylesheet" href="resources/css/ccg-master.css">
+    <!-- MASTER CSS -->
+    <link rel="stylesheet" href="css/ccg-master.css">
+    <link rel="stylesheet" href="css/ccg-mode.css">
+    <link rel="stylesheet" href="css/ccg-effects.css">
+    <link rel="stylesheet" href="css/ccg-overlays.css">
+    <link rel="stylesheet" href="css/ccg-console.css">
+    <link rel="stylesheet" href="css/ccg-anim.css">
+
+    <!-- FONTS -->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'VT323', monospace;
+            color: var(--neon-text);
+            background: var(--starfield-bg);
+            overflow-x: hidden;
+        }
+
+        /* LOGO */
+        .ccg-logo {
+            width: 110px;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 5000;
+            cursor: pointer;
+            filter: drop-shadow(0 0 8px var(--neon-glow));
+            opacity: 0.9;
+            transition: 0.25s ease;
+        }
+        .ccg-logo:hover { transform: scale(1.08); }
+
+        /* CLICK PROMPT */
+        .click-hint {
+            position: fixed;
+            top: 140px;
+            left: 20px;
+            background: rgba(0,0,0,0.75);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            color: #00e5ff;
+            text-shadow: 0 0 6px #00e5ff;
+            z-index: 4000;
+        }
+        .click-hint.visible { opacity: 1; }
+
+        /* TITLE */
+        .page-title {
+            margin-top: 120px;
+            text-align: center;
+            font-size: 1.7rem;
+            font-family: 'Press Start 2P', monospace;
+            color: var(--neon-text);
+            text-shadow: 0 0 12px var(--neon-glow), 0 0 22px var(--neon-glow);
+        }
+
+        /* GRID */
+        .grid-container {
+            width: 94%;
+            max-width: 1400px;
+            margin: 30px auto 90px auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 25px;
+        }
+
+        .grid-item {
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(4px);
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.20s ease, box-shadow 0.20s ease;
+            border: 2px solid var(--neon-dim);
+        }
+        .grid-item img {
+            width: 100%;
+            border-radius: 6px;
+        }
+        .grid-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 18px var(--neon-glow);
+        }
+
+        /* ZX SPECTRUM EASTER EGG MODE */
+        body.spectrum-mode {
+            background: black !important;
+            animation: spec-glitch 0.12s infinite;
+        }
+
+        @keyframes spec-glitch {
+            0%   { filter: hue-rotate(0deg); }
+            25%  { filter: hue-rotate(90deg); }
+            50%  { filter: hue-rotate(180deg); }
+            75%  { filter: hue-rotate(270deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        .spectrum-banner {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background: black;
+            color: #fff600;
+            font-size: 1.3rem;
+            font-family: 'Press Start 2P';
+            text-shadow: 0 0 5px #00f, 0 0 12px red;
+        }
+        body.spectrum-mode .spectrum-banner {
+            display: block;
+        }
+    </style>
 </head>
 
-<body class="crt c64-mode">
+<body>
 
-<header class="topnav">
-    <a href="home.html">HOME</a>
-    <a href="complete-index.html">COMPLETE INDEX</a>
-    <a href="games/genres/index.html">GENRES</a>
-    <a href="quiz/quiz.html">QUIZ</a>
-    <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener">YOUTUBE</a>
-    <a href="https://www.patreon.com/" target="_blank" rel="noopener">PATREON</a>
-</header>
+    <!-- LOGO -->
+    <img src="resources/CCGAMER LOGO.png" class="ccg-logo" id="ccgLogo">
 
-<main class="home-main">
-    <h1 class="site-title">CHEEKY COMMODORE GAMER</h1>
-    <p class="subtitle">YOUR ULTIMATE C64 &amp; AMIGA RETRO GAMING VAULT.</p>
+    <!-- CLICK HINT -->
+    <div id="clickHint" class="click-hint"></div>
 
-    <!-- Genres grid -->
-    <section class="home-genres">
-        <h2>BROWSE GENRES</h2>
-        <div class="genre-grid">
+    <!-- ZX SPECTRUM MODE BANNER -->
+    <div class="spectrum-banner">
+        *** ZX SPECTRUM MODE ACTIVATED *** <br>
+        Colour Clash? Never Heard Of It.
+    </div>
 
-            <a href="games/genres/arcade-games.html">ARCADE</a>
-            <a href="games/genres/action-adventure-games.html">ACTION ADVENTURE</a>
-            <a href="games/genres/adventure-games.html">ADVENTURE</a>
-            <a href="games/genres/platform-games.html">PLATFORM</a>
-            <a href="games/genres/puzzle-games.html">PUZZLE</a>
-            <a href="games/genres/sports-games.html">SPORTS</a>
-            <a href="games/genres/racing-games.html">RACING</a>
-            <a href="games/genres/shooting-games.html">SHOOTING</a>
-            <a href="games/genres/fighting-games.html">FIGHTING</a>
-            <a href="games/genres/strategy-games.html">STRATEGY</a>
-            <a href="games/genres/role-playing-games.html">RPG</a>
-            <a href="games/genres/miscellaneous.html">MISCELLANEOUS</a>
-            <a href="games/genres/casino-games.html">CASINO</a>
-            <a href="games/genres/bpjs-indexed-games.html">BPJS INDEXED</a>
-            <a href="games/genres/cartridge-games.html">CARTRIDGE</a>
-            <a href="games/genres/licensed-games.html">LICENSED</a>
-            <a href="games/genres/top-picks.html">TOP PICKS</a>
-            <a href="games/genres/quiz-games.html">QUIZ GAMES</a>
-            <a href="games/genres/horror-games.html">HORROR</a>
+    <!-- TITLE -->
+    <div class="page-title">
+        WELCOME TO THE C64 / AMIGA HOME HUB
+    </div>
 
-        </div>
-    </section>
+    <!-- GRID (GENRES) -->
+    <h2 class="page-title" style="font-size:1.3rem; margin-top:50px;">GAME GENRES</h2>
 
-    <!-- You can expand later with collections, featured videos, etc -->
-</main>
+    <div class="grid-container">
+        <a href="arcade-games.html" class="grid-item"><img src="resources/images/genre-icons/arcade.png"><br>ARCADE</a>
+        <a href="action-adventure-games.html" class="grid-item"><img src="resources/images/genre-icons/action.png"><br>ACTION ADVENTURE</a>
+        <a href="adventure-games.html" class="grid-item"><img src="resources/images/genre-icons/adventure.png"><br>ADVENTURE</a>
+        <a href="fighting-games.html" class="grid-item"><img src="resources/images/genre-icons/fighting.png"><br>FIGHTING</a>
+        <a href="platform-games.html" class="grid-item"><img src="resources/images/genre-icons/platform.png"><br>PLATFORM</a>
+        <a href="puzzle-games.html" class="grid-item"><img src="resources/images/genre-icons/puzzle.png"><br>PUZZLE</a>
+        <a href="racing-games.html" class="grid-item"><img src="resources/images/genre-icons/racing.png"><br>RACING</a>
+        <a href="horror-games.html" class="grid-item"><img src="resources/images/genre-icons/horror.png"><br>HORROR</a>
+        <a href="bpjs-indexed-games.html" class="grid-item"><img src="resources/images/genre-icons/bpjs.png"><br>BPJS INDEXED</a>
+        <a href="licensed-games.html" class="grid-item"><img src="resources/images/genre-icons/licensed.png"><br>LICENSED</a>
+        <a href="cartridge-games.html" class="grid-item"><img src="resources/images/genre-icons/cartridge.png"><br>CARTRIDGES</a>
+        <a href="miscellaneous.html" class="grid-item"><img src="resources/images/genre-icons/misc.png"><br>MISC</a>
+    </div>
 
-<script src="js/ccj-global.js"></script>
+    <!-- COLLECTIONS GRID -->
+    <h2 class="page-title" style="font-size:1.3rem;">SPECIAL COLLECTIONS</h2>
+
+    <div class="grid-container">
+        <a href="top-picks.html" class="grid-item"><img src="resources/images/genre-icons/toppicks.png"><br>TOP PICKS</a>
+        <a href="casino-games.html" class="grid-item"><img src="resources/images/genre-icons/casino.png"><br>CASINO</a>
+        <a href="quiz-games.html" class="grid-item"><img src="resources/images/genre-icons/quiz.png"><br>QUIZ</a>
+    </div>
+
+
+    <!-- JAVASCRIPT: EASTER EGG LOGIC -->
+    <script>
+        let clickCount = 0;
+        const logo = document.getElementById('ccgLogo');
+        const hint = document.getElementById('clickHint');
+
+        logo.addEventListener('click', () => {
+            clickCount++;
+
+            if (clickCount === 1) {
+                hint.innerText = "Click me again…";
+                hint.classList.add("visible");
+            }
+
+            if (clickCount === 2) {
+                hint.innerText = "Go on… one more time…";
+            }
+
+            if (clickCount === 3) {
+                hint.innerText = "";
+                hint.classList.remove("visible");
+                document.body.classList.toggle("spectrum-mode");
+
+                clickCount = 0; // reset cycle
+            }
+        });
+    </script>
 
 </body>
 </html>
