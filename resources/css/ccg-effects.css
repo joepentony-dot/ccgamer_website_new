@@ -1,0 +1,286 @@
+/* -------------------------------------------------
+   BASIC OVERLAYS
+--------------------------------------------------*/
+
+.tv-off-overlay {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle, #fff, #000 80%);
+    animation: tv-off 0.7s forwards;
+    z-index: 999999;
+}
+
+@keyframes tv-off {
+    0% { opacity: 1; transform: scaleY(1); }
+    70% { opacity: 1; transform: scaleY(0.05); }
+    100% { opacity: 0; transform: scaleY(0); }
+}
+
+.press-play-overlay {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: 'VT323', monospace;
+    font-size: 2.2rem;
+    color: #5cf1ff;
+}
+
+.c64-bars {
+    width: 100%;
+    height: 4px;
+    background: repeating-linear-gradient(
+        to right,
+        #00ffff 0 10px,
+        #000 10px 20px
+    );
+    margin: 10px 0;
+}
+
+/* -------------------------------------------------
+   MATRIX MODE
+--------------------------------------------------*/
+
+.matrix-mode {
+    background: #000 !important;
+    color: #0f0 !important;
+    text-shadow: 0 0 5px #0f0;
+}
+
+/* -------------------------------------------------
+   VHS EFFECT
+--------------------------------------------------*/
+
+.vhs-effect {
+    position: relative;
+    overflow: hidden;
+}
+
+.vhs-effect::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        rgba(255,255,255,0.01) 0px,
+        rgba(255,255,255,0.04) 1px,
+        transparent 2px
+    );
+    animation: vhs-flicker 0.3s infinite;
+}
+
+@keyframes vhs-flicker {
+    0% { opacity: 0.3; }
+    50% { opacity: 0.1; }
+    100% { opacity: 0.4; }
+}
+
+/* -------------------------------------------------
+   TERMINATOR MODE
+--------------------------------------------------*/
+
+.terminator-mode {
+    filter: hue-rotate(240deg) contrast(1.3) saturate(1.8);
+}
+
+/* -------------------------------------------------
+   PARTY MODE (rainbow pulse)
+--------------------------------------------------*/
+
+.party-mode {
+    animation: rainbow-bg 2s linear infinite;
+}
+
+@keyframes rainbow-bg {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+
+/* -------------------------------------------------
+   NUCLEAR EXPLOSION
+--------------------------------------------------*/
+
+.nuclear-explosion {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle, #fff, #f90, #000);
+    animation: nuclear-flash 0.8s forwards;
+    z-index: 99999;
+}
+
+@keyframes nuclear-flash {
+    0% { opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 0.7; }
+    100% { opacity: 0; }
+}
+
+/* -------------------------------------------------
+   GHOST / PACMAN
+--------------------------------------------------*/
+
+.pacman-sprite,
+.ghost-sprite {
+    position: fixed;
+    top: 40%;
+    left: -100px;
+    font-size: 4rem;
+    color: yellow;
+    animation: pacman-run 10s linear forwards;
+    z-index: 9999;
+}
+
+.ghost-sprite {
+    top: 55%;
+    color: #ff0066;
+    animation-delay: 1s;
+}
+
+@keyframes pacman-run {
+    0% { left: -120px; }
+    100% { left: 120%; }
+}
+
+/* -------------------------------------------------
+   BOING BALL
+--------------------------------------------------*/
+
+.boing-ball {
+    position: fixed;
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, #fff, #f00);
+    border-radius: 50%;
+    left: 20%;
+    top: 20%;
+    animation: boing-bounce 2s ease-in-out infinite;
+    z-index: 99999;
+}
+
+@keyframes boing-bounce {
+    0% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(200px) scale(1.3); }
+    100% { transform: translateY(0) scale(1); }
+}
+
+/* -------------------------------------------------
+   BSOD
+--------------------------------------------------*/
+
+.bsod {
+    position: fixed;
+    inset: 0;
+    background: #0100aa;
+    color: #fff;
+    z-index: 999999;
+    font-family: Consolas, monospace;
+    padding: 60px;
+    font-size: 1.4rem;
+}
+
+/* -------------------------------------------------
+   GOD MODE POPUP
+--------------------------------------------------*/
+
+.god-mode-msg {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #000;
+    border: 2px solid #0f0;
+    padding: 25px 40px;
+    font-family: 'VT323', monospace;
+    color: #0f0;
+    font-size: 2rem;
+    text-align: center;
+    animation: god-fade 2.5s forwards;
+    z-index: 99999;
+}
+
+@keyframes god-fade {
+    0% { opacity: 0; transform: translate(-50%, -20px); }
+    10% { opacity: 1; transform: translate(-50%, 0); }
+    90% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* -------------------------------------------------
+   LEMMINGS OVERLAY
+--------------------------------------------------*/
+
+.lemmings-overlay {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    color: #0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'VT323', monospace;
+    font-size: 6rem;
+    z-index: 999999;
+}
+
+/* -------------------------------------------------
+   ZX SPECTRUM LOADER
+--------------------------------------------------*/
+
+#zx-loading-bars {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(90deg, #00e, #ff0, #f00, #0f0, #00e);
+    animation: zx-load 0.2s infinite;
+    z-index: 99999;
+}
+
+@keyframes zx-load {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+
+/* -------------------------------------------------
+   COMMAND CONSOLE
+--------------------------------------------------*/
+
+#command-console.hidden {
+    display: none !important;
+}
+
+#command-console {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999999;
+}
+
+#console-input {
+    font-size: 2rem;
+    font-family: 'VT323', monospace;
+    padding: 10px 20px;
+    border: 3px solid #0f0;
+    background: #000;
+    color: #0f0;
+    outline: none;
+}
+
+#console-input.error {
+    border-color: red;
+    color: red;
+}
+
+/* -------------------------------------------------
+   MISC
+--------------------------------------------------*/
+
+.arabic-mode {
+    direction: rtl;
+}
