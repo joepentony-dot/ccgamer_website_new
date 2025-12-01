@@ -15,8 +15,8 @@
         :root {
             --c64-border-blue: #1d16b6;
             --c64-screen-blue: #3b31ef;
-            --c64-text-main: #f7f7a0;   /* softer yellow like screenshot */
-            --c64-text-alt: #9ae29b;
+            --c64-text-main: #66fff6;   /* PETSCII-ish cyan */
+            --c64-text-alt: #66fff6;
             --c64-light-blue: #6c5eb5;
             --c64-red: #ff3355;
             --c64-black: #000000;
@@ -41,7 +41,7 @@
         }
 
         body {
-            background-color: #120f2b;
+            background: radial-gradient(circle at center, #111a3b 0%, #050514 70%);
             color: var(--c64-text-main);
             font-family: 'VT323', monospace;
             text-transform: uppercase;
@@ -77,12 +77,11 @@
             z-index: 999;
         }
 
-        /* Subtle screen vignette / curve */
         .screen-vignette::before {
             content: "";
             position: fixed;
-            inset: 3vh 4vw;
-            border-radius: 20px;
+            inset: 4vh 4vw;
+            border-radius: 18px;
             box-shadow:
                 0 0 80px rgba(0,0,0,0.9) inset,
                 0 0 40px rgba(0,0,0,0.9);
@@ -101,7 +100,6 @@
             justify-content: flex-start;
             align-items: center;
             padding-top: 7vh;
-            background: radial-gradient(circle at center, #121638 0%, #02010a 70%);
             cursor: pointer;
             z-index: 6000;
         }
@@ -109,7 +107,7 @@
         #start-screen .logo-wrap {
             text-align: center;
             margin-bottom: 2rem;
-            filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.7));
+            filter: drop-shadow(0 0 18px rgba(0, 255, 255, 0.9));
         }
 
         #start-screen img {
@@ -130,7 +128,7 @@
 
         @keyframes powerBlink {
             0%, 100% { opacity: 1; transform: translateY(0); }
-            50% { opacity: 0.35; transform: translateY(1px); }
+            50% { opacity: 0.4; transform: translateY(1px); }
         }
 
         /* =========================================
@@ -143,7 +141,7 @@
             justify-content: center;
             align-items: center;
             background-color: var(--c64-screen-blue);
-            cursor: default; /* keep mouse visible */
+            cursor: default;
             z-index: 5000;
         }
 
@@ -158,13 +156,13 @@
                 var(--c64-white) 8%,   var(--c64-white) 16%,
                 var(--c64-cyan) 16%,   var(--c64-cyan) 24%,
                 var(--c64-purple) 24%, var(--c64-purple) 32%,
-                var(--c64-blue) 32%,   var(--c64-blue) 40%,
+                var(--c64-screen-blue) 32%,   var(--c64-screen-blue) 40%,
                 var(--c64-green) 40%,  var(--c64-green) 48%,
                 var(--c64-yellow) 48%, var(--c64-yellow) 56%,
                 var(--c64-red) 56%,    var(--c64-red) 64%,
                 var(--c64-orange) 64%, var(--c64-orange) 72%,
                 var(--c64-brown) 72%,  var(--c64-brown) 80%,
-                var(--c64-blue) 80%,   var(--c64-blue) 100%
+                var(--c64-screen-blue) 80%,   var(--c64-screen-blue) 100%
             );
             background-size: 100% 360px;
             filter: blur(4px);
@@ -179,7 +177,7 @@
             100% { transform: translateY(360px); }
         }
 
-        /* C64 text “frame” – fills most of the screen */
+        /* C64 text “frame” */
         .c64-frame {
             width: 88vw;
             max-width: 1200px;
@@ -225,12 +223,18 @@
             50% { opacity: 0; }
         }
 
-        /* SKIP BUTTON */
+        .text-highlight {
+            background-color: var(--c64-screen-blue);
+            color: var(--c64-text-main);
+            padding: 0 4px;
+        }
+
+        /* GLOBAL SKIP BUTTON (visible from the start) */
         #skip-btn {
             position: fixed;
             top: 12px;
             right: 14px;
-            z-index: 6002;
+            z-index: 7000;
             background: var(--c64-red);
             color: #fff;
             border: 2px solid #fff;
@@ -240,7 +244,6 @@
             cursor: pointer;
             text-transform: uppercase;
             box-shadow: 4px 4px 0px #000;
-            pointer-events: auto;
             letter-spacing: 0.08em;
             animation: skipPulse 2.4s infinite;
         }
@@ -280,6 +283,9 @@
     <canvas id="starfield"></canvas>
     <div class="crt-overlay"></div>
 
+    <!-- SKIP INTRO – ALWAYS VISIBLE -->
+    <button id="skip-btn" onclick="skipIntro()">[ ESC ] SKIP INTRO</button>
+
     <!-- POWER ON SCREEN -->
     <div id="start-screen" onclick="startSystem()">
         <div class="logo-wrap">
@@ -292,8 +298,6 @@
     <!-- LOADING SCREEN -->
     <div id="loading-screen">
         <div class="raster-bars" id="rasterBars"></div>
-
-        <button id="skip-btn" onclick="skipIntro()">[ ESC ] SKIP INTRO</button>
 
         <div class="c64-frame">
             <div class="c64-inner-text">
