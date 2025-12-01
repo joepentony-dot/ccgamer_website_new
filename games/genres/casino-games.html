@@ -5,113 +5,100 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheeky Commodore Gamer | Casino Games</title>
 
-    <link rel="stylesheet" href="../../css/engine.css">
+    <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="../../resources/css/main.css">
+    <link rel="stylesheet" href="../../resources/css/home.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-console.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-anim.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-modal.css">
+
+    <!-- PAGE SPECIFIC CSS -->
+    <link rel="stylesheet" href="../../resources/css/casino.css">
+
+    <!-- Icons -->
     <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-          crossorigin="anonymous" referrerpolicy="no-referrer" />
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <style>
-        body.genre-body { margin:0; min-height:100vh;
-            background:radial-gradient(circle at top,#4d3aa3 0%,#120b33 45%,#050212 100%);
-            color:#e6f1ff; font-family:'VT323',monospace; text-transform:uppercase; }
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 
-        .genre-shell{max-width:1100px;margin:0 auto;padding:16px 12px 32px;}
-        .genre-header{border-bottom:1px dashed rgba(255,255,255,0.2);padding-bottom:10px;margin-bottom:14px;}
+    <!-- GLOBAL JS -->
+    <script defer src="../../js/ccg-global.js"></script>
+    <script defer src="../../js/ccg-console.js"></script>
+    <script defer src="../../js/ccg-mode.js"></script>
+    <script defer src="../../js/ccg-zx.js"></script>
+    <script defer src="../../js/ccg-anim.js"></script>
+    <script defer src="../../js/ccg-modal.js"></script>
 
-        .genre-header-top{display:flex;align-items:center;gap:10px;}
-        .genre-logo{height:38px;image-rendering:pixelated;}
-
-        .genre-title-block h1{font-size:26px;margin:0;letter-spacing:2px;
-            color:#fff;text-shadow:2px 2px 0 #000;}
-        .genre-title-block p{margin:2px 0 0;font-size:13px;color:#b8c76f;}
-
-        .genre-basic{margin-top:6px;font-size:12px;color:#9fe6ff;}
-        .genre-basic span{display:inline-block;margin-right:12px;}
-
-        .genre-nav{margin-top:8px;display:flex;flex-wrap:wrap;gap:10px;font-size:12px;}
-        .genre-nav a{color:#e6f1ff;text-decoration:none;border-bottom:1px solid transparent;}
-        .genre-nav a:hover{border-color:#fff;}
-
-        .breadcrumb{margin-top:8px;font-size:11px;color:#9ba4ff;}
-        .breadcrumb a{color:#c7d2ff;text-decoration:none;}
-        .breadcrumb a:hover{text-decoration:underline;}
-
-        .genre-intro{margin:16px 0 12px;font-size:13px;color:#e8f0ff;}
-        .genre-intro span{color:#ffd86b;}
-
-        .genre-results-wrap{margin-top:10px;}
-
-        #genre-results{margin-top:6px;}
-        #genre-results .loading{
-            text-align:center;font-size:13px;color:#7f7bff;
-            letter-spacing:2px;animation:blink 1s infinite;}
-        @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.1;}}
-
-        @media(max-width:600px){
-            .genre-header-top{flex-direction:column;align-items:flex-start;}
-        }
-    </style>
+    <!-- PAGE JS -->
+    <script defer src="../../js/engine.js"></script>
+    <script defer src="../../js/genre-loader.js"></script>
 </head>
 
 <body class="genre-body">
+
+<!-- STARFIELD + CRT -->
+<canvas id="starfield"></canvas>
+<div class="crt-overlay"></div>
+
 <div class="genre-shell">
 
-    <header class="genre-header">
+<header class="genre-header">
 
-        <div class="genre-header-top">
-            <a href="../../home.html">
-                <img src="../../resources/CCGAMER LOGO.png"
-                     alt="Cheeky Commodore Gamer"
-                     class="genre-logo">
-            </a>
+    <div class="genre-header-top">
+        <a href="../../home.html">
+            <img src="../../resources/CCGAMER LOGO.png"
+                 alt="Cheeky Commodore Gamer"
+                 class="genre-logo">
+        </a>
 
-            <div class="genre-title-block">
-                <h1>Casino Games</h1>
-                <p>Cards, wheels, chips — 8-bit style.</p>
-            </div>
+        <div class="genre-title-block">
+            <h1>CASINO GAMES</h1>
+            <p>Cards, wheels, chips — 8-bit style.</p>
         </div>
+    </div>
 
-        <div class="genre-basic">
-            <span>**** COMMODORE 64 BASIC V2 ****</span>
-            <span>GENRE: CASINO GAMES</span>
+    <div class="genre-basic">
+        <span>**** COMMODORE 64 BASIC V2 ****</span>
+        <span>GENRE: CASINO GAMES</span>
+    </div>
+
+    <nav class="genre-nav">
+        <a href="../../home.html">HOME</a>
+        <a href="../index.html">GAMES HUB</a>
+        <a href="../../complete-index.html">FULL INDEX</a>
+        <a href="../../quiz/index.html">QUIZ</a>
+        <a href="../../emulation-guide.html">EMULATOR GUIDE</a>
+        <a href="../../about.html">ABOUT</a>
+        <a href="../../contact.html">CONTACT</a>
+    </nav>
+
+    <div class="breadcrumb">
+        <a href="../../home.html">Home</a> ›
+        <a href="../index.html">Games</a> ›
+        Casino Games
+    </div>
+
+    <p class="genre-intro">
+        <span>FEELING LUCKY?</span>
+        Poker, blackjack, roulette — all recreated in glorious 8-bit form.
+    </p>
+
+</header>
+
+<main>
+    <section class="genre-results-wrap" data-genre="Casino Games">
+        <div id="genre-results">
+            <p class="loading">LOADING CASINO GAMES…</p>
         </div>
-
-        <nav class="genre-nav">
-            <a href="../../home.html">HOME</a>
-            <a href="../index.html">GAMES HUB</a>
-            <a href="../../complete-index.html">FULL INDEX</a>
-            <a href="../../quiz/index.html">QUIZ</a>
-            <a href="../../emulation-guide.html">EMULATOR GUIDE</a>
-            <a href="../../about.html">ABOUT</a>
-            <a href="../../contact.html">CONTACT</a>
-        </nav>
-
-        <div class="breadcrumb">
-            <a href="../../home.html">Home</a> ›
-            <a href="../index.html">Games</a> ›
-            Casino Games
-        </div>
-
-        <p class="genre-intro">
-            <span>Feeling lucky?</span>
-            Play the classic 8-bit takes on poker, blackjack, roulette and more.
-        </p>
-
-    </header>
-
-    <main>
-        <section class="genre-results-wrap" data-genre="Casino Games">
-            <div id="genre-results">
-                <p class="loading">LOADING CASINO GAMES…</p>
-            </div>
-        </section>
-    </main>
+    </section>
+</main>
 
 </div>
 
-<script src="../../js/engine.js"></script>
-<script src="../../js/genre-loader.js"></script>
-<script>loadGenrePage();</script>
+<script>
+    loadGenrePage();
+</script>
+
 </body>
 </html>
