@@ -3,39 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Games Index | Cheeky Commodore Gamer</title>
+    <title>Complete Index | Cheeky Commodore Gamer</title>
 
-    <!-- GLOBAL STYLES -->
+    <!-- Correct CSS -->
     <link rel="stylesheet" href="resources/css/ccg-master.css">
     <link rel="stylesheet" href="resources/css/ccg-mode.css">
     <link rel="stylesheet" href="resources/css/ccg-effects.css">
     <link rel="stylesheet" href="resources/css/ccg-anim.css">
     <link rel="stylesheet" href="resources/css/ccg-zx.css">
-
-    <!-- SHARED GENRE GRID SYSTEM -->
     <link rel="stylesheet" href="resources/css/genre.css">
 
-    <!-- JS LOADERS -->
-    <script src="js/site-mode.js" defer></script>
     <script src="js/genre-loader.js" defer></script>
+    <script>
+        window.CCG_MODE = "complete-index";
+    </script>
 </head>
 
 <body class="crt">
-
     <main class="genre-page">
-
         <header class="genre-header">
             <h1 class="genre-title">Complete Games Index</h1>
-            <p class="genre-intro">
-                A full, alphabetical index of every Commodore 64 game in the Cheeky Commodore Gamer library.
-                Search, browse or discover hidden gems from the complete database.
-            </p>
+            <p class="genre-intro">Every game in the Cheeky Commodore Gamer library.</p>
         </header>
 
-        <!-- FULL INDEX GRID -->
         <section id="games-grid" class="games-grid"></section>
-
     </main>
-
 </body>
 </html>
