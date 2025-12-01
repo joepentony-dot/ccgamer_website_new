@@ -1,208 +1,81 @@
-/* ===========================================================
-   Cheeky Commodore Gamer — GENRE / COLLECTION LAYOUT
-   Shared by ALL genre pages + collections + complete index
-   =========================================================== */
+/* ==========================================================
+   CCG GENRE GRID — CARD & THUMBNAIL SIZING
+   ========================================================== */
 
-/* --- Page wrapper --- */
-.genre-page {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 1.5rem 1rem 3rem;
-}
-
-/* If your main uses just <main>, this still helps a bit */
-main.genre-page,
-main.genre-page .genre-inner {
-    width: 100%;
-}
-
-/* --- Header / title --- */
-
-.genre-header {
-    text-align: center;
-    margin-bottom: 1.5rem;
-}
-
-.genre-title {
-    font-size: 2.4rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin: 0 0 0.5rem;
-}
-
-.genre-intro {
-    max-width: 720px;
-    margin: 0.25rem auto 0;
-    font-size: 0.95rem;
-    line-height: 1.5;
-    opacity: 0.9;
-}
-
-/* Optional little badge row, if you use it */
-.genre-meta {
-    margin-top: 0.75rem;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    opacity: 0.85;
-}
-
-/* --- Games grid --- */
-
-.games-grid,
-.game-grid,
-#games-grid,
-#games {
+.ccg-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1rem;
-    align-items: stretch;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
 }
 
-/* --- Game card --- */
+.ccg-game-card {
+    background: rgba(5, 10, 32, 0.95);
+    border: 1px solid var(--ccg-accent);
+    padding: 8px;
+    border-radius: 6px;
+}
 
-.game-card,
-.game-item,
-.game-entry {
-    position: relative;
-    background: rgba(0, 0, 0, 0.75);
-    border-radius: 0.75rem;
-    padding: 0.75rem;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow:
-        0 0 0 1px rgba(0, 0, 0, 0.9),
-        0 0 14px rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(4px);
+.ccg-game-card__inner {
     display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    transition:
-        transform 150ms ease-out,
-        box-shadow 150ms ease-out,
-        border-color 150ms ease-out;
-}
-
-/* Slight lift on hover without going mad */
-.game-card:hover,
-.game-item:hover,
-.game-entry:hover {
-    transform: translateY(-3px);
-    border-color: rgba(255, 255, 255, 0.22);
-    box-shadow:
-        0 0 0 1px rgba(0, 0, 0, 0.8),
-        0 0 18px rgba(0, 0, 0, 0.95);
-}
-
-/* --- Thumbnail --- */
-
-.game-thumb-wrapper,
-.game-thumb {
-    position: relative;
-    margin-bottom: 0.5rem;
-}
-
-.game-thumb-wrapper img,
-.game-thumb img,
-.game-card img {
+    gap: 10px;
     width: 100%;
-    height: auto;
-    display: block;
-    border-radius: 0.35rem;
-    object-fit: cover;
-    image-rendering: pixelated;
-}
-
-/* Optional subtle border for thumbs */
-.game-thumb-border {
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 0.4rem;
-    padding: 2px;
-}
-
-/* --- Title + meta text --- */
-
-.game-title {
-    font-size: 1rem;
-    margin: 0 0 0.25rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-}
-
-.game-subtitle,
-.game-meta {
-    font-size: 0.8rem;
-    opacity: 0.85;
-    margin-bottom: 0.25rem;
-}
-
-/* Little tag row (e.g. year / system / developer) */
-.game-tags {
-    margin-top: auto;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem;
-}
-
-.game-tag {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    padding: 2px 6px;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    opacity: 0.9;
-}
-
-/* --- Links / buttons inside cards --- */
-
-.game-links {
-    margin-top: 0.4rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-}
-
-.game-link,
-.game-button {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    padding: 4px 8px;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.24);
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
+    background: transparent;
+    border: none;
+    text-align: left;
     cursor: pointer;
+    padding: 0;
+    color: inherit;
 }
 
-.game-link:hover,
-.game-button:hover {
-    border-color: rgba(255, 255, 255, 0.4);
+.ccg-game-card__thumb-wrap {
+    flex: 0 0 auto;
 }
 
-/* --- Responsive tweaks --- */
-
-@media (max-width: 768px) {
-    .genre-page {
-        padding: 1rem 0.75rem 2rem;
-    }
-
-    .genre-title {
-        font-size: 1.8rem;
-    }
-
-    .games-grid,
-    .game-grid,
-    #games-grid,
-    #games {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    }
+.ccg-game-card__thumb-wrap img {
+    display: block;
+    width: 120px;
+    height: auto;
+    border-radius: 4px;
 }
 
-@media (max-width: 480px) {
-    .genre-title {
-        font-size: 1.5rem;
-    }
+.ccg-game-card__thumb-placeholder {
+    width: 120px;
+    height: 90px;
+    border-radius: 4px;
+    border: 1px dashed var(--ccg-accent);
+    font-family: "VT323", monospace;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+}
+
+.ccg-game-card__meta {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.ccg-game-card__title {
+    font-family: "VT323", monospace;
+    font-size: 20px;
+    margin: 0 0 4px;
+    color: var(--ccg-accent);
+}
+
+.ccg-game-card__system {
+    font-size: 14px;
+    opacity: 0.8;
+    margin-bottom: 4px;
+}
+
+.ccg-game-card__tags {
+    font-size: 13px;
+    opacity: 0.75;
+}
+
+.ccg-loading,
+.ccg-empty {
+    font-family: "VT323", monospace;
+    opacity: 0.8;
 }
