@@ -3,75 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheeky Commodore Gamer | Strategy Games</title>
+    <title>Strategy Games | Cheeky Commodore Gamer</title>
 
-    <!-- GLOBAL SYSTEM -->
-    <link rel="stylesheet" href="../../css/engine.css">
-    <link rel="stylesheet" href="../../resources/css/main.css">
-    <script defer src="../../js/engine.js"></script>
-    <script defer src="../../js/ccg-global.js"></script>
-    <script defer src="../../js/genre-loader.js"></script>
+    <!-- GLOBAL STYLES -->
+    <link rel="stylesheet" href="../../resources/css/ccg-master.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-mode.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-effects.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-anim.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-zx.css">
 
-    <!-- Icons -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- SHARED GENRE LAYOUT -->
+    <link rel="stylesheet" href="../../resources/css/genre.css">
+
+    <!-- JS LOADERS -->
+    <script src="../../js/site-mode.js" defer></script>
+    <script src="../../js/genre-loader.js" defer></script>
 </head>
 
-<body class="genre-body">
-<div class="genre-shell">
+<body class="crt">
 
-<header class="genre-header">
+    <main class="genre-page">
+        <header class="genre-header">
+            <h1 class="genre-title">Strategy Games</h1>
+            <p class="genre-intro">
+                Tactical challenges, turn-based warfare, deep-thinking puzzles and command-based simulations from the C64’s vast library.
+            </p>
+        </header>
 
-    <div class="genre-header-top">
-        <a href="../../home.html">
-            <img src="../../resources/CCGAMER LOGO.png"
-                 class="genre-logo"
-                 alt="Cheeky Commodore Gamer">
-        </a>
+        <section id="games-grid" class="games-grid"></section>
+    </main>
 
-        <div class="genre-title-block">
-            <h1>Strategy Games</h1>
-            <p>Tactics, planning, conquest — the thinking gamer's domain.</p>
-        </div>
-    </div>
-
-    <div class="genre-basic">
-        <span>**** COMMODORE 64 BASIC V2 ****</span>
-        <span>GENRE: STRATEGY GAMES</span>
-    </div>
-
-    <nav class="genre-nav">
-        <a href="../../home.html">HOME</a>
-        <a href="../index.html">GAMES HUB</a>
-        <a href="../../complete-index.html">FULL INDEX</a>
-        <a href="../../quiz/index.html">QUIZ</a>
-        <a href="../../emulation-guide.html">EMULATOR GUIDE</a>
-        <a href="../../about.html">ABOUT</a>
-        <a href="../../contact.html">CONTACT</a>
-    </nav>
-
-    <div class="breadcrumb">
-        <a href="../../home.html">Home</a> ›
-        <a href="../index.html">Games</a> ›
-        Strategy Games
-    </div>
-
-    <p class="genre-intro">
-        <span>Plan your next move.</span>
-        From turn-based thinking to real-time command, these C64 classics reward clever minds.
-    </p>
-
-</header>
-
-<main>
-    <section class="genre-results-wrap" data-genre="Strategy Games">
-        <div id="genre-results">
-            <p class="loading">LOADING STRATEGY GAMES…</p>
-        </div>
-    </section>
-</main>
-
-</div>
 </body>
 </html>
