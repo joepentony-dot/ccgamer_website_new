@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheeky Commodore Gamer – Intro</title>
 
-    <!-- MAIN CRT + NEON -->
     <link rel="stylesheet" href="resources/css/ccg-master.css">
 
     <style>
@@ -17,7 +16,7 @@
 
         body.intro-body {
             background: radial-gradient(circle at top, #050915 0, #060320 40%, #000000 100%);
-            color: #5fffff; /* C64 cyan */
+            color: #5fffff;
             font-family: monospace;
             overflow: hidden;
             position: relative;
@@ -58,16 +57,14 @@
             100% { opacity: 0.45; transform: scale(1); }
         }
 
-        .hidden {
-            display: none !important;
-        }
+        .hidden { display: none !important; }
 
-        /* SKIP INTRO BUTTON */
+        /* SKIP INTRO */
         #skipIntroBtn {
             position: fixed;
             top: 18px;
             right: 18px;
-            z-index: 40;
+            z-index: 200;
             background: #b0002a;
             color: #ffffff;
             border: 2px solid #ffffff;
@@ -116,16 +113,18 @@
             letter-spacing: 0.05em;
         }
 
-        /* SMOOTH, REALISTIC RASTER BARS (INTRO ONLY) */
+        /* PERFECTED AUTHENTIC RASTER BARS */
         #rasterOverlay {
             position: fixed;
             inset: 0;
-            z-index: 30;
+            z-index: 100;
             display: none;
-            opacity: 0.92;
+            opacity: 1;
 
-            background-color: black;
+            /* FULL BLACKOUT of everything behind */
+            background-color: black !important;
 
+            /* C64 rainbow */
             background-image:
                 repeating-linear-gradient(
                     0deg,
@@ -139,7 +138,11 @@
                 );
 
             filter: blur(5px);
-            animation: rasterScrollSmooth 3.5s linear infinite;
+
+            animation:
+                rasterScrollSmooth 3.5s linear infinite,
+                rasterFlicker 0.12s infinite,
+                rasterJitter 0.28s infinite;
         }
 
         @keyframes rasterScrollSmooth {
@@ -147,41 +150,43 @@
             100% { background-position-y: 56px; }
         }
 
-        /* CRT Scanlines */
-        body.intro-body::after {
-            content: "";
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            background:
-                repeating-linear-gradient(
-                    to bottom,
-                    rgba(0, 0, 0, 0.45) 0px,
-                    rgba(0, 0, 0, 0.45) 2px,
-                    transparent 2px,
-                    transparent 4px
-                );
-            mix-blend-mode: multiply;
-            opacity: 0.95;
-            z-index: 2;
-            animation: crtFlicker 0.18s infinite alternate;
-        }
-
-        @keyframes crtFlicker {
+        @keyframes rasterFlicker {
             0%   { opacity: 0.88; }
             100% { opacity: 1; }
+        }
+
+        @keyframes rasterJitter {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-2px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* EPIC NEON TEXT DURING SID */
+        #sidText {
+            position: fixed;
+            top: 40%;
+            width: 100%;
+            text-align: center;
+            font-family: "Press Start 2P", monospace;
+            font-size: 32px;
+            letter-spacing: 0.12em;
+            color: #00eaff;
+            text-shadow: 0 0 18px #00eaff, 0 0 35px #00c8ff;
+            z-index: 150;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease;
         }
     </style>
 </head>
 
 <body class="crt intro-body c64-mode">
 
-<!-- SKIP -->
 <button id="skipIntroBtn">[ ESC ] SKIP INTRO</button>
 
 <!-- POWER ON -->
 <div id="powerOverlay">
-    <img src="resources/C64 NEON.png" class="intro-logo" alt="CCG Neon Logo">
+    <img src="resources/C64 NEON.png" class="intro-logo">
     <p id="powerText">CLICK TO POWER ON</p>
 </div>
 
@@ -197,11 +202,15 @@
 <!-- RASTER -->
 <div id="rasterOverlay"></div>
 
+<!-- SID TEXT -->
+<div id="sidText"></div>
+
 <!-- AUDIO -->
 <audio id="sidAudio" src="resources/audio/c64_speech_stayawhile.mp3"></audio>
 
 <script>
 (function () {
+
     const powerOverlay = document.getElementById("powerOverlay");
     const powerText    = document.getElementById("powerText");
     const c64Wrapper   = document.getElementById("c64Wrapper");
@@ -209,6 +218,7 @@
     const raster       = document.getElementById("rasterOverlay");
     const sidAudio     = document.getElementById("sidAudio");
     const skipBtn      = document.getElementById("skipIntroBtn");
+    const sidText      = document.getElementById("sidText");
 
     const timers = [];
 
@@ -238,7 +248,20 @@ READY.
         c64Text.textContent += line + "\n";
     }
 
+    /* SID TEXT EFFECT */
+    function showSIDText(msg, delay) {
+        schedule(() => {
+            sidText.style.opacity = 1;
+            sidText.innerText = msg;
+        }, delay);
+
+        schedule(() => {
+            sidText.style.opacity = 0;
+        }, delay + 1800);
+    }
+
     function startLoadSequence() {
+
         schedule(() => {
             appendLine(`LOAD ""`);
 
@@ -249,10 +272,7 @@ READY.
                     appendLine(`FOUND "CHEEKY COMMODORE GAMER"`);
                     appendLine(`LOADING`);
 
-                    /* Raster + SID trigger after 1 second */
-                    schedule(() => {
-                        startRasterAudio();
-                    }, 1000);
+                    schedule(() => { startRasterAudio(); }, 1000);
 
                 }, 900);
 
@@ -262,7 +282,12 @@ READY.
     }
 
     function startRasterAudio() {
+
         raster.style.display = "block";
+
+        showSIDText("ANOTHER VISITOR...", 200);
+        showSIDText("...STAY A WHILE...", 1600);
+        showSIDText("STAY FOREVER!", 3000);
 
         try {
             sidAudio.currentTime = 0;
@@ -291,9 +316,8 @@ READY.
         window.location.href = "home.html";
     }
 
-    /* CLICK ANYWHERE TO POWER ON (except Skip) */
     document.addEventListener("click", e => {
-        if (e.target === skipBtn || e.target.closest("#skipIntroBtn")) return;
+        if (e.target === skipBtn) return;
         if (!powerOverlay.classList.contains("hidden")) beginIntro();
     });
 
@@ -302,10 +326,7 @@ READY.
         beginIntro();
     });
 
-    skipBtn.addEventListener("click", e => {
-        e.stopPropagation();
-        skip();
-    });
+    skipBtn.addEventListener("click", skip);
 
     document.addEventListener("keydown", e => {
         if (e.key === "Escape") skip();
@@ -313,6 +334,7 @@ READY.
             beginIntro();
         }
     });
+
 })();
 </script>
 
