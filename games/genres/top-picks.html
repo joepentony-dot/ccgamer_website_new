@@ -3,101 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheeky Commodore Gamer | Top Picks</title>
+    <title>Top Picks | Cheeky Commodore Gamer</title>
 
-    <!-- Global CCG CSS -->
-    <link rel="stylesheet" href="../../resources/css/main.css">
-    <link rel="stylesheet" href="../../resources/css/home.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-console.css">
+    <!-- GLOBAL -->
+    <link rel="stylesheet" href="../../resources/css/ccg-master.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-mode.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-effects.css">
     <link rel="stylesheet" href="../../resources/css/ccg-anim.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-modal.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-zx.css">
 
-    <!-- Page-specific CSS -->
-    <link rel="stylesheet" href="../../resources/css/top-picks.css">
+    <!-- COLLECTION LAYOUT -->
+    <link rel="stylesheet" href="../../resources/css/genre.css">
 
-    <!-- Icons -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-
-    <!-- Global JS -->
-    <script defer src="../../js/ccg-global.js"></script>
-    <script defer src="../../js/ccg-console.js"></script>
-    <script defer src="../../js/ccg-mode.js"></script>
-    <script defer src="../../js/ccg-zx.js"></script>
-    <script defer src="../../js/ccg-anim.js"></script>
-    <script defer src="../../js/ccg-modal.js"></script>
-
-    <!-- Page Logic -->
-    <script defer src="../../js/engine.js"></script>
-    <script defer src="../../js/genre-loader.js"></script>
+    <!-- JS -->
+    <script src="../../js/site-mode.js" defer></script>
+    <script src="../../js/genre-loader.js" defer></script>
 </head>
 
-<body class="genre-body">
+<body class="crt">
+    <main class="genre-page">
+        <header class="genre-header">
+            <h1 class="genre-title">Top Picks</h1>
+            <p class="genre-intro">
+                A hand-curated selection of standout Commodore 64 games that shine in gameplay, creativity or legacy.
+            </p>
+        </header>
 
-<canvas id="starfield"></canvas>
-<div class="crt-overlay"></div>
-
-<div class="genre-shell">
-
-<header class="genre-header">
-
-    <div class="genre-header-top">
-        <a href="../../home.html">
-            <img src="../../resources/CCGAMER LOGO.png"
-                 class="genre-logo"
-                 alt="Cheeky Commodore Gamer">
-        </a>
-
-        <div class="genre-title-block">
-            <h1>TOP PICKS</h1>
-            <p>The best of the best — curated by Cheeky Commodore Gamer.</p>
-        </div>
-    </div>
-
-    <div class="genre-basic">
-        <span>**** COMMODORE 64 BASIC V2 ****</span>
-        <span>COLLECTION: TOP PICKS</span>
-    </div>
-
-    <nav class="genre-nav">
-        <a href="../../home.html">HOME</a>
-        <a href="../index.html">GAMES HUB</a>
-        <a href="../../complete-index.html">FULL INDEX</a>
-        <a href="../../quiz/index.html">QUIZ</a>
-        <a href="../../emulation-guide.html">EMULATOR GUIDE</a>
-        <a href="../../about.html">ABOUT</a>
-        <a href="../../contact.html">CONTACT</a>
-    </nav>
-
-    <div class="breadcrumb">
-        <a href="../../home.html">Home</a> ›
-        <a href="../index.html">Games</a> ›
-        Top Picks
-    </div>
-
-    <p class="genre-intro">
-        <span>My personal favourites.</span>
-        These games defined eras, inspired fans, and remain timeless masterpieces.
-    </p>
-
-</header>
-
-<main>
-    <section class="genre-results-wrap" data-genre="Top Picks">
-        <div id="genre-results">
-            <p class="loading">LOADING TOP PICKS…</p>
-        </div>
-    </section>
-</main>
-
-</div>
-
-<script>
-    loadGenrePage();
-</script>
-
+        <section id="games-grid" class="games-grid"></section>
+    </main>
 </body>
 </html>
