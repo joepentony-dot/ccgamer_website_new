@@ -1,141 +1,205 @@
-// Cheeky Commodore Gamer — C64 Loader Intro
-// Sequence:
-// 1) Power screen with logo + CLICK TO POWER ON
-// 2) C64 BASIC screen appears
-// 3) Types:
-//    **** COMMODORE 64 BASIC V2 ****
-//     64K RAM SYSTEM  38911 BASIC BYTES FREE
-//    READY.
-//    LOAD ""
-//    PRESS PLAY ON TAPE
-//    SEARCHING FOR CHEEKY COMMODORE GAMER
-//    LOADING "CHEEKY COMMODORE GAMER"
-// 4) When LOADING starts -> SID speech + raster overlay
-// 5) When speech ends (or timeout) -> home.html
-// 6) SKIP INTRO always works, at any point.
+// js/index-intro.js
 
-document.addEventListener("DOMContentLoaded", () => {
-    const powerScreen   = document.getElementById("power-screen");
-    const c64Wrapper    = document.getElementById("c64-wrapper");
-    const c64TextEl     = document.getElementById("c64-text");
-    const rasterOverlay = document.getElementById("raster-overlay");
-    const sidAudio      = document.getElementById("sidAudio");
-    const skipBtn       = document.getElementById("skipIntro");
+// ===============================
+// CONFIG
+// ===============================
+const NEXT_URL = 'home.html';
+const LOADING_SOUND_URL = 'resources/audio/c64_speech_stayawhile.mp3';
 
-    let introStarted  = false;
-    let introFinished = false;
-    let speechStarted = false;
+// State
+let loadingAborted = false;
+let audio = null;
+let redirectTimeout = null;
 
-    const LINES = [
-        "**** COMMODORE 64 BASIC V2 ****",
-        " 64K RAM SYSTEM  38911 BASIC BYTES FREE",
-        "READY.",
-        "",
-        "LOAD \"\"",
-        "PRESS PLAY ON TAPE",
-        "",
-        "SEARCHING FOR CHEEKY COMMODORE GAMER",
-        "LOADING \"CHEEKY COMMODORE GAMER\"",
-        ""
-    ];
+// ===============================
+// STARFIELD
+// ===============================
+const canvas = document.getElementById('starfield');
+const ctx = canvas.getContext('2d');
+let stars = [];
 
-    // Medium-epic timing (roughly 9–12 seconds with speech)
-    const CHAR_DELAY = 28;   // ms between characters
-    const LINE_PAUSE = 260;  // ms between lines
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    initStars();
+}
 
-    function goHome() {
-        if (introFinished) return;
-        introFinished = true;
-
-        try {
-            sidAudio.pause();
-            sidAudio.currentTime = 0;
-        } catch (e) {
-            // ignore
-        }
-
-        window.location.href = "home.html";
+function initStars() {
+    stars = [];
+    for (let i = 0; i < 100; i++) {
+        stars.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 2,
+            speed: Math.random() * 3 + 0.5
+        });
     }
+}
 
-    function startSpeechAndRaster() {
-        if (speechStarted) return;
-        speechStarted = true;
+function animateStars() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#fff';
+    stars.forEach(star => {
+        ctx.fillRect(star.x, star.y, star.size, star.size);
+        star.y += star.speed;
+        if (star.y > canvas.height) star.y = 0;
+    });
+    requestAnimationFrame(animateStars);
+}
 
-        rasterOverlay.classList.add("active");
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+animateStars();
 
-        try {
-            sidAudio.currentTime = 0;
-            sidAudio.play().catch(() => {
-                // If playback is blocked, we still keep the visual effect
-            });
-        } catch (e) {
-            // ignore
+// ===============================
+// TYPEWRITER
+// ===============================
+function typeText(elementId, text, delay = 50) {
+    return new Promise(resolve => {
+        if (loadingAborted) {
+            resolve();
+            return;
         }
-    }
-
-    function runC64Typing() {
-        let lineIndex = 0;
-        let charIndex = 0;
-
-        function typeNextChar() {
-            if (lineIndex >= LINES.length) {
-                // Done with text, rely on speech end or timeout.
+        const el = document.getElementById(elementId);
+        let i = 0;
+        const timer = setInterval(() => {
+            if (loadingAborted) {
+                clearInterval(timer);
+                resolve();
                 return;
             }
-
-            const currentLine = LINES[lineIndex] || "";
-
-            if (charIndex < currentLine.length) {
-                c64TextEl.textContent += currentLine.charAt(charIndex);
-                charIndex++;
-                setTimeout(typeNextChar, CHAR_DELAY);
-            } else {
-                // line finished
-                c64TextEl.textContent += "\n";
-
-                // As soon as we start LOADING line, launch SID + raster
-                if (lineIndex === 8) { // "LOADING" index
-                    startSpeechAndRaster();
-                }
-
-                lineIndex++;
-                charIndex = 0;
-                setTimeout(typeNextChar, LINE_PAUSE);
+            el.innerHTML += text.charAt(i);
+            i++;
+            if (i >= text.length) {
+                clearInterval(timer);
+                resolve();
             }
-        }
+        }, delay);
+    });
+}
 
-        typeNextChar();
+// ===============================
+// INTRO FLOW
+// ===============================
+function startSystem() {
+    if (loadingAborted) return; // Just in case
+
+    const startScreen = document.getElementById('start-screen');
+    const loadingScreen = document.getElementById('loading-screen');
+
+    startScreen.style.display = 'none';
+    loadingScreen.style.display = 'flex';
+
+    runLoadingSequence();
+}
+
+function skipIntro() {
+    loadingAborted = true;
+
+    // Stop audio if playing
+    try {
+        if (audio) {
+            audio.pause();
+            audio.currentTime = 0;
+        }
+    } catch (e) { }
+
+    // Cancel redirect timeout if any
+    if (redirectTimeout) {
+        clearTimeout(redirectTimeout);
+        redirectTimeout = null;
     }
 
-    function beginIntro() {
-        if (introStarted) return;
-        introStarted = true;
+    // Hard redirect to home
+    window.location.href = NEXT_URL;
+}
 
-        // Hide logo, reveal C64 screen
-        powerScreen.style.display = "none";
-        c64Wrapper.classList.add("active");
+async function runLoadingSequence() {
+    const terminal = document.getElementById('loading-terminal');
+    const rasterBars = document.getElementById('rasterBars');
 
-        // Start the text typing
-        runC64Typing();
+    if (loadingAborted) return;
 
-        // When SID ends, go home
-        sidAudio.addEventListener("ended", () => {
-            goHome();
+    // LOAD ""
+    await typeText('loading-terminal', 'LOAD ""', 70);
+    await delay(600);
+    if (loadingAborted) return;
+    terminal.innerHTML += '<br>';
+
+    // PRESS PLAY ON TAPE
+    await delay(600);
+    if (loadingAborted) return;
+    terminal.innerHTML += 'PRESS PLAY ON TAPE<br>';
+
+    await delay(900);
+    if (loadingAborted) return;
+
+    // OK
+    terminal.innerHTML += 'OK<br>';
+    await delay(700);
+    if (loadingAborted) return;
+
+    // SEARCHING
+    terminal.innerHTML += '<span class="text-highlight">SEARCHING</span><br>';
+    await delay(900);
+    if (loadingAborted) return;
+
+    // FOUND
+    terminal.innerHTML += '<span class="text-highlight">FOUND CHEEKY COMMODORE GAMER</span><br>';
+    await delay(1100);
+    if (loadingAborted) return;
+
+    // LOADING
+    terminal.innerHTML += '<span class="text-highlight">LOADING</span><br>';
+
+    // RASTER BARS ON + SID SPEECH STARTS *NOW*
+    rasterBars.style.display = 'block';
+
+    try {
+        audio = new Audio(LOADING_SOUND_URL);
+        audio.volume = 0.9;
+
+        // When audio ends → go to home (if not skipped)
+        audio.addEventListener('ended', () => {
+            if (!loadingAborted) {
+                goToHome();
+            }
         });
 
-        // Safety timeout (in case 'ended' never fires, or audio blocked completely)
-        setTimeout(() => {
-            if (!introFinished) {
-                goHome();
-            }
-        }, 16000); // 16s max
+        // Fallback: in case ended doesn't fire reliably, force redirect
+        audio.addEventListener('loadedmetadata', () => {
+            if (loadingAborted) return;
+            const duration = audio.duration || 10; // seconds
+            redirectTimeout = setTimeout(() => {
+                if (!loadingAborted) {
+                    goToHome();
+                }
+            }, (duration + 0.5) * 1000);
+        });
+
+        await audio.play();
+    } catch (e) {
+        // Audio failed; still show raster for a bit then go home
+        await delay(5000);
+        if (!loadingAborted) {
+            goToHome();
+        }
     }
+}
 
-    // Clicking the power screen starts the whole thing (user gesture for audio)
-    powerScreen.addEventListener("click", beginIntro);
+function goToHome() {
+    loadingAborted = true;
+    window.location.href = NEXT_URL;
+}
 
-    // SKIP INTRO ALWAYS WORKS
-    skipBtn.addEventListener("click", () => {
-        goHome();
-    });
+// Simple delay helper
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Make skip work via ESC key too (optional nicety)
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        skipIntro();
+    }
 });
