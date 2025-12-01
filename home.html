@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,7 +25,6 @@
             --c64-blue-dark: #1d1545;
             --c64-light-blue: #6c5eb5;
             --c64-text: #b8c76f;
-            --c64-accent: #ff9f43;
 
             --amiga-blue: #0055AA;
             --amiga-blue-dark: #003d7a;
@@ -384,11 +384,35 @@
             color: #fff;
         }
 
-        .hero-meta {
-            font-size: 0.95rem;
-            opacity: 0.9;
+        /* Quick nav strip under CTAs */
+        .quick-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin-top: 12px;
+            font-size: 1.05rem;
             letter-spacing: 0.18em;
-            margin-top: 6px;
+        }
+
+        .quick-nav a {
+            color: #bdefff;
+            text-decoration: none;
+            transition: color .15s ease, text-shadow .15s ease, transform .15s ease;
+        }
+
+        .quick-nav a:hover {
+            color: #ffffff;
+            text-shadow: 0 0 10px #6ae2ff;
+            transform: translateY(-1px);
+        }
+
+        body.amiga-mode .quick-nav a {
+            color: #ffe0ff;
+        }
+
+        body.amiga-mode .quick-nav a:hover {
+            color: #ffffff;
+            text-shadow: 0 0 10px #ff9cff;
         }
 
         /* Featured rotator */
@@ -564,23 +588,16 @@
 
         .card {
             position: relative;
-            border-radius: 14px;
-            padding: 12px 12px 10px;
-            border: 1px solid rgba(255, 255, 255, 0.28);
-            background: radial-gradient(circle at top, rgba(108, 94, 181, 0.4), rgba(0, 0, 0, 0.95));
+            border-radius: 16px;
+            overflow: hidden;
             text-decoration: none;
             color: #f5f5f5;
+            background: rgba(0, 0, 0, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.28);
             display: flex;
             flex-direction: column;
-            gap: 4px;
-            cursor: pointer;
-            overflow: hidden;
             transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-        }
-
-        body.amiga-mode .card {
-            background: radial-gradient(circle at top, rgba(255, 255, 255, 0.8), #d0d0d0);
-            color: #000;
+            cursor: pointer;
         }
 
         .card:hover {
@@ -589,28 +606,19 @@
             border-color: #ffffff;
         }
 
-        /* Image-based cards using your thumbnails */
-        .card-image {
-            padding: 0;
-            min-height: 190px;
-            background-image: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent 60%), var(--card-bg);
+        .card-thumb {
+            width: 100%;
+            height: 170px;
             background-size: cover;
             background-position: center;
-            display: flex;
-            align-items: flex-end;
         }
 
-        .card-image-inner {
-            width: 100%;
+        .card-caption {
             padding: 10px 12px 12px;
             display: flex;
             flex-direction: column;
-            gap: 3px;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
-        }
-
-        body.amiga-mode .card-image {
-            background-image: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent 60%), var(--card-bg);
+            gap: 4px;
+            background: linear-gradient(to bottom, rgba(10,10,20,0.9), rgba(0,0,0,0.95));
         }
 
         .card-title {
@@ -621,6 +629,16 @@
         .card-sub {
             font-size: 0.85rem;
             opacity: 0.9;
+        }
+
+        body.amiga-mode .card {
+            background: #dedede;
+            color: #000;
+            border-color: rgba(0,0,0,0.15);
+        }
+
+        body.amiga-mode .card-caption {
+            background: linear-gradient(to bottom, #ffffff, #d8d8d8);
         }
 
         /* Social strip */
@@ -654,6 +672,12 @@
             transform: translateY(-2px);
             box-shadow: 0 0 16px rgba(0, 0, 0, 0.9);
             border-color: #ffffff;
+        }
+
+        body.amiga-mode .social-link {
+            background: #f0f0f0;
+            color: #000;
+            border-color: rgba(0,0,0,0.2);
         }
 
         /* Footer */
@@ -761,7 +785,7 @@
                     </a>
 
                     <a class="btn-cta"
-                       href="games/complete-index.html">
+                       href="complete-index.html">
                         <i class="fa-solid fa-magnifying-glass"></i>
                         FULL GAME INDEX
                     </a>
@@ -779,9 +803,13 @@
                     </a>
                 </div>
 
-                <div class="hero-meta">
-                    HOME · GENRES · INDEX · QUIZ · COLLECTIONS
-                </div>
+                <nav class="quick-nav">
+                    <a href="home.html">HOME</a>
+                    <a href="#genresSection">GENRES</a>
+                    <a href="complete-index.html">INDEX</a>
+                    <a href="quiz/index.html">QUIZ</a>
+                    <a href="#collectionsSection">COLLECTIONS</a>
+                </nav>
             </div>
 
             <!-- RIGHT: FEATURED ROTATOR -->
@@ -806,136 +834,121 @@
                 <h2>GAME GENRES</h2>
             </div>
             <div class="card-grid">
-                <a class="card card-image"
-                   style="--card-bg: url('resources/images/genres/action-adventure.png');"
-                   href="games/genres/action-adventure-games.html">
-                    <div class="card-image-inner">
+                <a class="card" href="games/genres/action-adventure-games.html">
+                    <div class="card-thumb" style="background-image:url('resources/images/genres/action-adventure.png');"></div>
+                    <div class="card-caption">
                         <span class="card-title">ACTION ADVENTURE</span>
-                        <span class="card-sub">Quests, danger &amp; dungeons.</span>
+                        <span class="card-sub">Quests, puzzles &amp; danger.</span>
                     </div>
                 </a>
 
-                <a class="card card-image"
-                   style="--card-bg: url('resources/images/genres/adventure.png');"
-                   href="games/genres/adventure-games.html">
-                    <div class="card-image-inner">
+                <a class="card" href="games/genres/adventure-games.html">
+                    <div class="card-thumb" style="background-image:url('resources/images/genres/adventure.png');"></div>
+                    <div class="card-caption">
                         <span class="card-title">ADVENTURE</span>
                         <span class="card-sub">Text, puzzles &amp; mysteries.</span>
                     </div>
                 </a>
 
-                <a class="card card-image"
-                   style="--card-bg: url('resources/images/genres/arcade.png');"
-                   href="games/genres/arcade-games.html">
-                    <div class="card-image-inner">
+                <a class="card" href="games/genres/arcade-games.html">
+                    <div class="card-thumb" style="background-image:url('resources/images/genres/arcade.png');"></div>
+                    <div class="card-caption">
                         <span class="card-title">ARCADE</span>
-                        <span class="card-sub">Pure arcade thrills.</span>
+                        <span class="card-sub">Pure arcade hits &amp; high scores.</span>
                     </div>
                 </a>
 
-                <a class="card card-image"
-                   style="--card-bg: url('resources/images/genres/casino.png');"
-                   href="games/genres/casino-games.html">
-                    <div class="card-image-inner">
+                <a class="card" href="games/genres/casino-games.html">
+                    <div class="card-thumb" style="background-image:url('resources/images/genres/casino.png');"></div>
+                    <div class="card-caption">
                         <span class="card-title">CASINO</span>
                         <span class="card-sub">Cards, dice &amp; credits.</span>
                     </div>
                 </a>
 
-                <a class="card card-image"
-                   style="--card-bg: url('resources/images/genres/fighting.png');"
-                   href="games/genres/fighting-games.html">
-                    <div class="card-image-inner">
+                <a class="card" href="games/genres/fighting-games.html">
+                    <div class="card-thumb" style="background-image:url('resources/images/genres/fighting.png');"></div>
+                    <div class="card-caption">
                         <span class="card-title">FIGHTING</span>
                         <span class="card-sub">Beatdowns &amp; black belts.</span>
                     </div>
                 </a>
 
-                <a class="card card-image"
-                   style="--card-bg: url('resources/images/genres/horror.png');"
-                   href="games/genres/horror-games.html">
-                    <div class="card-image-inner">
+                <a class="card" href="games/genres/horror-games.html">
+                    <div class="card-thumb" style="background-image:url('resources/images/genres/horror.png');"></div>
+                    <div class="card-caption">
                         <span class="card-title">HORROR</span>
-                        <span class="card-sub">Creeps, chills &amp; CRT glow.</span>
+                        <span class="card-sub">Creeps, chills &amp; CRT shadows.</span>
                     </div>
                 </a>
 
-                <a class="card card-image"
-                   style="--card-bg: url('resources/images/genres/miscellaneous.png');"
-                   href="games/genres/miscellaneous-games.html">
-                    <div class="card-image-inner">
+                <a class="card" href="games/genres/miscellaneous.html">
+                    <div class="card-thumb" style="background-image:url('resources/images/genres/miscellaneous.png');"></div>
+                    <div class="card-caption">
                         <span class="card-title">MISCELLANEOUS</span>
                         <span class="card-sub">Oddballs &amp; curiosities.</span>
                     </div>
                 </a>
 
-                <a class="card card-image"
-                   style="--card-bg: url('resources/images/genres/platform.png');"
-                   href="games/genres/platform-games.html">
-                    <div class="card-image-inner">
+                <a class="card" href="games/genres/platform-games.html">
+                    <div class="card-thumb" style="background-image:url('resources/images/genres/platform.png');"></div>
+                    <div class="card-caption">
                         <span class="card-title">PLATFORM</span>
                         <span class="card-sub">Jump, run &amp; survive.</span>
                     </div>
                 </a>
 
-                <a class="card card-image"
-                   style="--card-bg: url('resources/images/genres/puzzle.png');"
-                   href="games/genres/puzzle-games.html">
-                    <div class="card-image-inner">
+                <a class="card" href="games/genres/puzzle-games.html">
+                    <div class="card-thumb" style="background-image:url('resources/images/genres/puzzle.png');"></div>
+                    <div class="card-caption">
                         <span class="card-title">PUZZLE</span>
                         <span class="card-sub">Think first, move later.</span>
                     </div>
                 </a>
 
-                <a class="card card-image"
-                   style="--card-bg: url('resources/images/genres/quiz.png');"
-                   href="games/genres/quiz-games.html">
-                    <div class="card-image-inner">
+                <a class="card" href="games/genres/quiz-games.html">
+                    <div class="card-thumb" style="background-image:url('resources/images/genres/quiz.png');"></div>
+                    <div class="card-caption">
                         <span class="card-title">QUIZ</span>
-                        <span class="card-sub">Test your retro knowledge.</span>
+                        <span class="card-sub">Test your retro brain.</span>
                     </div>
                 </a>
 
-                <a class="card card-image"
-                   style="--card-bg: url('resources/images/genres/racing.png');"
-                   href="games/genres/racing-games.html">
-                    <div class="card-image-inner">
+                <a class="card" href="games/genres/racing-games.html">
+                    <div class="card-thumb" style="background-image:url('resources/images/genres/racing.png');"></div>
+                    <div class="card-caption">
                         <span class="card-title">RACING</span>
                         <span class="card-sub">Burn rubber, 8-bit style.</span>
                     </div>
                 </a>
 
-                <a class="card card-image"
-                   style="--card-bg: url('resources/images/genres/role-playing.png');"
-                   href="games/genres/role-playing-games.html">
-                    <div class="card-image-inner">
+                <a class="card" href="games/genres/role-playing-games.html">
+                    <div class="card-thumb" style="background-image:url('resources/images/genres/role-playing.png');"></div>
+                    <div class="card-caption">
                         <span class="card-title">RPG</span>
                         <span class="card-sub">Stats, spells &amp; stories.</span>
                     </div>
                 </a>
 
-                <a class="card card-image"
-                   style="--card-bg: url('resources/images/genres/shooting.png');"
-                   href="games/genres/shooting-games.html">
-                    <div class="card-image-inner">
+                <a class="card" href="games/genres/shooting-games.html">
+                    <div class="card-thumb" style="background-image:url('resources/images/genres/shooting.png');"></div>
+                    <div class="card-caption">
                         <span class="card-title">SHOOTING</span>
                         <span class="card-sub">Shmups &amp; firepower.</span>
                     </div>
                 </a>
 
-                <a class="card card-image"
-                   style="--card-bg: url('resources/images/genres/sports.png');"
-                   href="games/genres/sports-games.html">
-                    <div class="card-image-inner">
+                <a class="card" href="games/genres/sports-games.html">
+                    <div class="card-thumb" style="background-image:url('resources/images/genres/sports.png');"></div>
+                    <div class="card-caption">
                         <span class="card-title">SPORTS</span>
                         <span class="card-sub">Pitch, court &amp; track.</span>
                     </div>
                 </a>
 
-                <a class="card card-image"
-                   style="--card-bg: url('resources/images/genres/strategy.png');"
-                   href="games/genres/strategy-games.html">
-                    <div class="card-image-inner">
+                <a class="card" href="games/genres/strategy-games.html">
+                    <div class="card-thumb" style="background-image:url('resources/images/genres/strategy.png');"></div>
+                    <div class="card-caption">
                         <span class="card-title">STRATEGY</span>
                         <span class="card-sub">Plan, plot &amp; dominate.</span>
                     </div>
@@ -950,37 +963,33 @@
                 <h2>CURATED COLLECTIONS</h2>
             </div>
             <div class="card-grid">
-                <a class="card card-image"
-                   style="--card-bg: url('resources/images/genres/top-picks.png');"
-                   href="games/collections/top-picks.html">
-                    <div class="card-image-inner">
+                <a class="card" href="games/genres/top-picks.html">
+                    <div class="card-thumb" style="background-image:url('resources/images/genres/top-picks.png');"></div>
+                    <div class="card-caption">
                         <span class="card-title">TOP PICKS</span>
                         <span class="card-sub">The CCG big thumbs up.</span>
                     </div>
                 </a>
 
-                <a class="card card-image"
-                   style="--card-bg: url('resources/images/genres/bpjs.png');"
-                   href="games/collections/bpjs-indexed-games.html">
-                    <div class="card-image-inner">
+                <a class="card" href="games/genres/bpjs-indexed-games.html">
+                    <div class="card-thumb" style="background-image:url('resources/images/genres/bpjs.png');"></div>
+                    <div class="card-caption">
                         <span class="card-title">BPJS INDEXED</span>
                         <span class="card-sub">Germany’s infamous list.</span>
                     </div>
                 </a>
 
-                <a class="card card-image"
-                   style="--card-bg: url('resources/images/genres/cartridge.png');"
-                   href="games/collections/cartridge-games.html">
-                    <div class="card-image-inner">
+                <a class="card" href="games/genres/cartridge-games.html">
+                    <div class="card-thumb" style="background-image:url('resources/images/genres/cartridge.png');"></div>
+                    <div class="card-caption">
                         <span class="card-title">C64 CARTRIDGE</span>
                         <span class="card-sub">Instant load, no faff.</span>
                     </div>
                 </a>
 
-                <a class="card card-image"
-                   style="--card-bg: url('resources/images/genres/licensed.png');"
-                   href="games/collections/licensed-games.html">
-                    <div class="card-image-inner">
+                <a class="card" href="games/genres/licensed-games.html">
+                    <div class="card-thumb" style="background-image:url('resources/images/genres/licensed.png');"></div>
+                    <div class="card-caption">
                         <span class="card-title">LICENSED</span>
                         <span class="card-sub">Films, TV &amp; comic tie-ins.</span>
                     </div>
@@ -1250,7 +1259,6 @@
             const data = await res.json();
             if (!data.items || !data.items.length) return [];
 
-            // Pick 1 random item from the list for now
             const item = data.items[Math.floor(Math.random() * data.items.length)];
             const snippet = item.snippet;
             const videoId = snippet.resourceId.videoId;
@@ -1283,7 +1291,6 @@
 
             heroSlides = [...c64Slides, ...amigaSlides];
 
-            // If API is blocked or quota’d, fall back
             if (!heroSlides.length) {
                 heroSlides = fallbackSlides();
             }
@@ -1312,7 +1319,6 @@
     }
 
     function openDesktopEasterConsole() {
-        // Placeholder – will be replaced by full Easter Egg console modal later
         alert("EASTER EGG CONSOLE (desktop) – cheat engine coming back soon, Bit Chief 😇🕹️👌");
     }
 
@@ -1325,7 +1331,7 @@
         if (tapCount === 1) {
             tapTimer = setTimeout(() => {
                 tapCount = 0;
-            }, 600); // 0.6s window for triple tap
+            }, 600);
         }
         if (tapCount >= 3) {
             clearTimeout(tapTimer);
