@@ -3,51 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheeky Commodore Gamer | Complete Game Index</title>
+    <title>Complete Games Index | Cheeky Commodore Gamer</title>
 
-    <!-- Global CCG CSS -->
-    <link rel="stylesheet" href="resources/css/main.css">
-    <link rel="stylesheet" href="resources/css/home.css">
-    <link rel="stylesheet" href="resources/css/ccg-console.css">
+    <!-- GLOBAL STYLES -->
+    <link rel="stylesheet" href="resources/css/ccg-master.css">
+    <link rel="stylesheet" href="resources/css/ccg-mode.css">
+    <link rel="stylesheet" href="resources/css/ccg-effects.css">
     <link rel="stylesheet" href="resources/css/ccg-anim.css">
-    <link rel="stylesheet" href="resources/css/ccg-modal.css">
+    <link rel="stylesheet" href="resources/css/ccg-zx.css">
 
-    <!-- Page-specific CSS -->
-    <link rel="stylesheet" href="resources/css/complete-index.css">
+    <!-- SHARED GENRE GRID SYSTEM -->
+    <link rel="stylesheet" href="resources/css/genre.css">
 
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
-
-    <!-- Global CCG JS -->
-    <script defer src="js/ccg-global.js"></script>
-    <script defer src="js/ccg-console.js"></script>
-    <script defer src="js/ccg-mode.js"></script>
-    <script defer src="js/ccg-zx.js"></script>
-    <script defer src="js/ccg-anim.js"></script>
-    <script defer src="js/ccg-modal.js"></script>
-
-    <!-- Complete Index Logic -->
-    <script defer src="js/complete-index.js"></script>
+    <!-- JS LOADERS -->
+    <script src="js/site-mode.js" defer></script>
+    <script src="js/genre-loader.js" defer></script>
 </head>
 
-<body class="c64-mode">
+<body class="crt">
 
-<!-- CRT / overlays globally injected by ccg-global.js -->
-<canvas id="starfield"></canvas>
-<div class="crt-overlay"></div>
+    <main class="genre-page">
 
-<header class="index-header">
-    <img src="resources/CCGAMER LOGO.png" alt="CCG Logo" class="site-logo">
-    <h1>COMPLETE GAME INDEX</h1>
-    <p>Browse the entire curated collection of Commodore 64 titles.</p>
-</header>
+        <header class="genre-header">
+            <h1 class="genre-title">Complete Games Index</h1>
+            <p class="genre-intro">
+                A full, alphabetical index of every Commodore 64 game in the Cheeky Commodore Gamer library.
+                Search, browse or discover hidden gems from the complete database.
+            </p>
+        </header>
 
-<section class="index-shell">
-    <input type="text" id="search-bar" placeholder="Search games…">
-    <div id="complete-results">
-        <p class="loading">Loading game list…</p>
-    </div>
-</section>
+        <!-- FULL INDEX GRID -->
+        <section id="games-grid" class="games-grid"></section>
+
+    </main>
 
 </body>
 </html>
