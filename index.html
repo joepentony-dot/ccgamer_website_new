@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="resources/css/ccg-master.css">
 
     <style>
+
         html, body {
             margin: 0;
             padding: 0;
@@ -15,14 +16,16 @@
         }
 
         body.intro-body {
-            background: radial-gradient(circle at top, #050915 0, #060320 40%, #000000 100%);
+            background: black;
             color: #5fffff;
             font-family: monospace;
             overflow: hidden;
             position: relative;
         }
 
-        /* POWER-ON SCREEN */
+        /* ======================
+           POWER-ON SCREEN
+        ======================= */
         #powerOverlay {
             position: fixed;
             inset: 0;
@@ -32,6 +35,7 @@
             align-items: center;
             justify-content: center;
             text-align: center;
+            background: radial-gradient(circle at center, #04121c 0%, #000 100%);
         }
 
         .intro-logo {
@@ -39,27 +43,29 @@
             max-width: 80vw;
             margin-bottom: 32px;
             filter:
-                drop-shadow(0 0 25px rgba(0, 255, 255, 0.7))
-                drop-shadow(0 0 45px rgba(0, 100, 255, 0.7));
+                drop-shadow(0 0 25px rgba(0, 255, 255, 0.75))
+                drop-shadow(0 0 55px rgba(0, 180, 255, 0.75));
         }
 
         #powerText {
             font-size: 32px;
             letter-spacing: 0.18em;
-            text-shadow: 0 0 8px rgba(95,255,255,0.9);
+            text-shadow: 0 0 8px rgba(95,255,255,1);
             animation: pulse 1.3s infinite ease-in-out;
             cursor: pointer;
         }
 
         @keyframes pulse {
             0%   { opacity: 0.45; transform: scale(1); }
-            50%  { opacity: 1;    transform: scale(1.06); }
+            50%  { opacity: 1;    transform: scale(1.08); }
             100% { opacity: 0.45; transform: scale(1); }
         }
 
         .hidden { display: none !important; }
 
-        /* SKIP INTRO */
+        /* ======================
+           SKIP INTRO BUTTON
+        ======================= */
         #skipIntroBtn {
             position: fixed;
             top: 18px;
@@ -74,19 +80,21 @@
             cursor: pointer;
             text-transform: uppercase;
         }
-
         #skipIntroBtn:hover {
             box-shadow: 0 0 12px rgba(255,140,140,0.9);
         }
 
-        /* C64 SCREEN */
+        /* ======================
+           C64 SCREEN
+        ======================= */
         #c64Wrapper {
-            position: relative;
+            position: fixed;
+            inset: 0;
             z-index: 5;
-            height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            background: black;
         }
 
         .c64-border {
@@ -113,84 +121,99 @@
             letter-spacing: 0.05em;
         }
 
-        /* PERFECTED AUTHENTIC RASTER BARS */
+        /* ======================
+           BLACKOUT + RASTER BARS
+        ======================= */
         #rasterOverlay {
             position: fixed;
             inset: 0;
-            z-index: 100;
+            background: black;
+            z-index: 5000;
             display: none;
-            opacity: 1;
 
-            /* FULL BLACKOUT of everything behind */
-            background-color: black !important;
-
-            /* C64 rainbow */
+            /* High-definition raster bars */
             background-image:
                 repeating-linear-gradient(
                     0deg,
-                    rgba(255, 0, 0, 0.55)   0px,  rgba(255, 0, 0, 0.55)   8px,
-                    rgba(255,165,0,0.55)   8px,  rgba(255,165,0,0.55)  16px,
-                    rgba(255,255,0,0.55)  16px,  rgba(255,255,0,0.55)  24px,
-                    rgba(0,255,0,0.55)    24px,  rgba(0,255,0,0.55)    32px,
-                    rgba(0,255,255,0.55)  32px,  rgba(0,255,255,0.55)  40px,
-                    rgba(0,128,255,0.55)  40px,  rgba(0,128,255,0.55)  48px,
-                    rgba(128,0,255,0.55)  48px,  rgba(128,0,255,0.55)  56px
+                    rgba(255,   0,   0, 0.85) 0px, rgba(255,   0,   0, 0.85) 10px,
+                    rgba(255, 120,   0, 0.85) 10px,rgba(255, 120,   0, 0.85) 20px,
+                    rgba(255, 255,   0, 0.85) 20px,rgba(255, 255,   0, 0.85) 30px,
+                    rgba(  0, 255,   0, 0.85) 30px,rgba(  0, 255,   0, 0.85) 40px,
+                    rgba(  0, 255, 255, 0.85) 40px,rgba(  0, 255, 255, 0.85) 50px,
+                    rgba(  0, 128, 255, 0.85) 50px,rgba(  0, 128, 255, 0.85) 60px,
+                    rgba(128,   0, 255, 0.85) 60px,rgba(128,   0, 255, 0.85) 70px
                 );
 
-            filter: blur(5px);
+            filter: blur(3px);
 
             animation:
-                rasterScrollSmooth 3.5s linear infinite,
-                rasterFlicker 0.12s infinite,
-                rasterJitter 0.28s infinite;
+                rasterScroll 2.8s linear infinite,
+                rasterPulse 0.22s infinite,
+                rasterJitter 0.15s infinite,
+                rasterHueShift 3.5s infinite alternate;
         }
 
-        @keyframes rasterScrollSmooth {
+        @keyframes rasterScroll {
             0%   { background-position-y: 0; }
-            100% { background-position-y: 56px; }
+            100% { background-position-y: 70px; }
         }
 
-        @keyframes rasterFlicker {
-            0%   { opacity: 0.88; }
-            100% { opacity: 1; }
+        @keyframes rasterPulse {
+            0%   { opacity: 0.78; }
+            100% { opacity: 1.0; }
         }
 
         @keyframes rasterJitter {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-2px); }
+            0%   { transform: translateY(0px); }
+            50%  { transform: translateY(-1.5px); }
             100% { transform: translateY(0px); }
         }
 
-        /* EPIC NEON TEXT DURING SID */
+        @keyframes rasterHueShift {
+            0%   { filter: hue-rotate(0deg) blur(3px); }
+            100% { filter: hue-rotate(30deg) blur(3px); }
+        }
+
+        /* ======================
+           SID SYNC TEXT (UPGRADED)
+        ======================= */
         #sidText {
             position: fixed;
             top: 40%;
             width: 100%;
             text-align: center;
             font-family: "Press Start 2P", monospace;
-            font-size: 32px;
-            letter-spacing: 0.12em;
-            color: #00eaff;
-            text-shadow: 0 0 18px #00eaff, 0 0 35px #00c8ff;
-            z-index: 150;
+            font-size: 44px;
+            letter-spacing: 0.14em;
             opacity: 0;
-            pointer-events: none;
-            transition: opacity 1s ease;
+            color: #00eaff;
+            text-shadow:
+                0 0 8px #00eaff,
+                0 0 16px #00bbff,
+                0 0 24px #0088ff,
+                0 0 48px #0055ff,
+                0 0 96px #0022ff;
+            z-index: 6000;
+            transition: opacity 0.45s ease, transform 0.45s ease;
         }
+
+        .sidTextVisible {
+            opacity: 1 !important;
+            transform: scale(1.12);
+        }
+
     </style>
 </head>
 
-<body class="crt intro-body c64-mode">
+<body class="intro-body">
 
 <button id="skipIntroBtn">[ ESC ] SKIP INTRO</button>
 
-<!-- POWER ON -->
 <div id="powerOverlay">
     <img src="resources/C64 NEON.png" class="intro-logo">
     <p id="powerText">CLICK TO POWER ON</p>
 </div>
 
-<!-- C64 SCREEN -->
 <div id="c64Wrapper" class="hidden">
     <div class="c64-border">
         <div class="c64-inner">
@@ -199,26 +222,22 @@
     </div>
 </div>
 
-<!-- RASTER -->
 <div id="rasterOverlay"></div>
 
-<!-- SID TEXT -->
 <div id="sidText"></div>
 
-<!-- AUDIO -->
 <audio id="sidAudio" src="resources/audio/c64_speech_stayawhile.mp3"></audio>
 
 <script>
 (function () {
 
     const powerOverlay = document.getElementById("powerOverlay");
-    const powerText    = document.getElementById("powerText");
     const c64Wrapper   = document.getElementById("c64Wrapper");
     const c64Text      = document.getElementById("c64Text");
     const raster       = document.getElementById("rasterOverlay");
     const sidAudio     = document.getElementById("sidAudio");
-    const skipBtn      = document.getElementById("skipIntroBtn");
     const sidText      = document.getElementById("sidText");
+    const skipBtn      = document.getElementById("skipIntroBtn");
 
     const timers = [];
 
@@ -244,22 +263,23 @@ READY.
         c64Text.textContent = basicText;
     }
 
-    function appendLine(line) {
-        c64Text.textContent += line + "\n";
+    function appendLine(txt) {
+        c64Text.textContent += txt + "\n";
     }
 
-    /* SID TEXT EFFECT */
-    function showSIDText(msg, delay) {
+    /* SID TEXT (IMPROVED) */
+    function flashSID(msg, delay) {
         schedule(() => {
-            sidText.style.opacity = 1;
-            sidText.innerText = msg;
+            sidText.textContent = msg;
+            sidText.classList.add("sidTextVisible");
         }, delay);
 
         schedule(() => {
-            sidText.style.opacity = 0;
-        }, delay + 1800);
+            sidText.classList.remove("sidTextVisible");
+        }, delay + 1600);
     }
 
+    /* LOAD SEQUENCE */
     function startLoadSequence() {
 
         schedule(() => {
@@ -272,22 +292,26 @@ READY.
                     appendLine(`FOUND "CHEEKY COMMODORE GAMER"`);
                     appendLine(`LOADING`);
 
-                    schedule(() => { startRasterAudio(); }, 1000);
+                    schedule(startRasterAudio, 800);
 
                 }, 900);
 
             }, 900);
 
-        }, 800);
+        }, 500);
     }
 
+    /* RASTER + SID START */
     function startRasterAudio() {
+
+        /* Remove everything behind raster */
+        c64Wrapper.style.display = "none";
 
         raster.style.display = "block";
 
-        showSIDText("ANOTHER VISITOR...", 200);
-        showSIDText("...STAY A WHILE...", 1600);
-        showSIDText("STAY FOREVER!", 3000);
+        flashSID("ANOTHER VISITOR...", 200);
+        flashSID("...STAY A WHILE...", 1600);
+        flashSID("STAY FOREVER!", 3000);
 
         try {
             sidAudio.currentTime = 0;
@@ -298,41 +322,29 @@ READY.
     }
 
     function beginIntro() {
-        if (powerOverlay.classList.contains("hidden")) return;
-
         powerOverlay.classList.add("hidden");
         c64Wrapper.classList.remove("hidden");
-
         showBasic();
         startLoadSequence();
     }
 
-    function skip() {
+    function skipIntro() {
         clearTimers();
         try {
-            sidAudio.pause();
-            sidAudio.currentTime = 0;
-        } catch(e){}
+            sidAudio.pause(); sidAudio.currentTime=0;
+        }catch(e){}
         window.location.href = "home.html";
     }
 
     document.addEventListener("click", e => {
-        if (e.target === skipBtn) return;
-        if (!powerOverlay.classList.contains("hidden")) beginIntro();
+        if (powerOverlay && !powerOverlay.classList.contains("hidden")) beginIntro();
     });
 
-    powerText.addEventListener("click", e => {
-        e.stopPropagation();
-        beginIntro();
-    });
-
-    skipBtn.addEventListener("click", skip);
+    skipBtn.addEventListener("click", skipIntro);
 
     document.addEventListener("keydown", e => {
-        if (e.key === "Escape") skip();
-        if ((e.key === "Enter" || e.key === " ") && !powerOverlay.classList.contains("hidden")) {
-            beginIntro();
-        }
+        if (e.key === "Escape") skipIntro();
+        if (e.key === "Enter" && !powerOverlay.classList.contains("hidden")) beginIntro();
     });
 
 })();
