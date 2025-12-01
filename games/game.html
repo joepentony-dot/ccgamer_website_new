@@ -9,114 +9,450 @@
     <link rel="stylesheet" href="../resources/css/ccg-master.css">
     <link rel="stylesheet" href="../resources/css/ccg-mode.css">
     <link rel="stylesheet" href="../resources/css/ccg-effects.css">
-    <link rel="stylesheet" href="../resources/css/ccg-modal.css">
-    <link rel="stylesheet" href="../resources/css/ccg-anim.css">
-    <!-- If genre.css contains card/grid styles we want to reuse: -->
+    <link rel="stylesheet" href="../resources/css/home.css">
     <link rel="stylesheet" href="../resources/css/genre.css">
 
-    <!-- Google Fonts (same as home) -->
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <link rel="icon" href="../resources/CCG_FAVICON.png" />
+
+    <style>
+        /* ==========================================================
+           CCG — GAME VIEWER LAYOUT (CINEMATIC STYLE)
+           ========================================================== */
+
+        body.ccg-body {
+            background: radial-gradient(circle at top, #101631 0, #020617 55%, #000000 100%);
+            color: #f4f4ff;
+        }
+
+        .ccg-game-shell {
+            max-width: 1200px;
+            margin: 20px auto 40px;
+            padding: 0 16px;
+        }
+
+        /* HEADER */
+        .ccg-game-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            border-radius: 14px;
+            border: 2px solid var(--ccg-accent);
+            background: linear-gradient(135deg, rgba(6,10,35,0.95), rgba(7,12,45,0.95));
+            margin-bottom: 24px;
+        }
+
+        .ccg-game-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .ccg-logo-small {
+            width: 72px;
+            height: auto;
+        }
+
+        .ccg-header-text-main {
+            font-family: "VT323", monospace;
+            font-size: 28px;
+            color: var(--ccg-accent);
+        }
+
+        .ccg-header-text-sub {
+            font-family: "VT323", monospace;
+            font-size: 16px;
+            opacity: 0.85;
+        }
+
+        .ccg-game-header-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        #mode-toggle {
+            padding: 6px 14px;
+            font-family: "VT323", monospace;
+            font-size: 16px;
+            border-radius: 999px;
+            border: 2px solid var(--ccg-accent);
+            background: transparent;
+            color: var(--ccg-accent);
+            cursor: pointer;
+        }
+
+        .ccg-game-badge {
+            font-family: "VT323", monospace;
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            opacity: 0.85;
+        }
+
+        /* MAIN LAYOUT */
+        .ccg-game-main {
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr);
+            gap: 22px;
+        }
+
+        @media (max-width: 900px) {
+            .ccg-game-main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* LEFT: ARTWORK PANEL */
+        .ccg-game-art-panel {
+            background: radial-gradient(circle at top, rgba(20,32,80,0.9), rgba(4,8,30,0.95));
+            border-radius: 18px;
+            border: 2px solid var(--ccg-accent);
+            padding: 14px 14px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .ccg-game-title {
+            font-family: "Press Start 2P", system-ui, sans-serif;
+            font-size: 18px;
+            line-height: 1.4;
+            color: var(--ccg-accent);
+        }
+
+        .ccg-game-system-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: "VT323", monospace;
+            font-size: 14px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--ccg-accent);
+            background: rgba(5,10,32,0.95);
+        }
+
+        .ccg-game-thumb-frame {
+            margin-top: 6px;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 2px solid rgba(112,255,240,0.7);
+            background: radial-gradient(circle at top, #1f2937, #020617);
+        }
+
+        .ccg-game-thumb {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .ccg-game-tagline {
+            font-family: "VT323", monospace;
+            font-size: 16px;
+            margin-top: 8px;
+            opacity: 0.9;
+        }
+
+        /* ACTION BUTTONS */
+        .ccg-game-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .ccg-pill-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            font-family: "VT323", monospace;
+            font-size: 14px;
+            border-radius: 999px;
+            border: 1px solid var(--ccg-accent);
+            background: rgba(3,7,26,0.95);
+            color: var(--ccg-accent);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .ccg-pill-btn span.icon {
+            font-size: 1.1em;
+        }
+
+        .ccg-pill-btn[hidden] {
+            display: none;
+        }
+
+        /* RIGHT: INFO PANEL */
+        .ccg-game-info-panel {
+            background: linear-gradient(150deg, rgba(3,7,30,0.96), rgba(3,9,45,0.98));
+            border-radius: 18px;
+            border: 2px solid var(--ccg-accent);
+            padding: 18px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .ccg-info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .ccg-info-heading {
+            font-family: "VT323", monospace;
+            font-size: 18px;
+            letter-spacing: 0.06em;
+        }
+
+        .ccg-info-sub {
+            font-family: "VT323", monospace;
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        .ccg-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px 16px;
+            margin-top: 4px;
+        }
+
+        .ccg-meta-item dt {
+            font-family: "VT323", monospace;
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            opacity: 0.75;
+        }
+
+        .ccg-meta-item dd {
+            margin: 0;
+            font-family: "VT323", monospace;
+            font-size: 16px;
+        }
+
+        .ccg-description-block {
+            margin-top: 6px;
+        }
+
+        .ccg-description-block h2 {
+            font-family: "VT323", monospace;
+            font-size: 16px;
+            margin: 0 0 4px;
+            letter-spacing: 0.08em;
+            opacity: 0.9;
+        }
+
+        .ccg-description-block p {
+            font-family: "VT323", monospace;
+            font-size: 15px;
+            line-height: 1.4;
+            opacity: 0.92;
+        }
+
+        .ccg-links-section {
+            margin-top: 10px;
+            font-family: "VT323", monospace;
+            font-size: 14px;
+        }
+
+        .ccg-links-section ul {
+            margin: 6px 0 0;
+            padding-left: 18px;
+        }
+
+        .ccg-links-section a {
+            color: var(--ccg-accent);
+            text-decoration: underline;
+        }
+
+        /* ERROR */
+        .ccg-error {
+            margin-top: 12px;
+            font-family: "VT323", monospace;
+            font-size: 14px;
+            color: #ffb4b4;
+        }
+
+        footer.ccg-footer {
+            margin-top: 26px;
+            text-align: center;
+            font-family: "VT323", monospace;
+            font-size: 13px;
+            opacity: 0.7;
+        }
+    </style>
 </head>
+
 <body class="ccg-body ccg-mode-c64">
-    <div class="ccg-page-shell">
-        <!-- TOP BAR / HEADER -->
-        <header class="ccg-header">
-            <div class="ccg-header-left">
-                <a href="../home.html" class="ccg-logo-link">
-                    <img src="../resources/CCGAMER LOGO.png" alt="Cheeky Commodore Gamer logo" class="ccg-logo-small">
-                </a>
-                <div class="ccg-header-text">
-                    <div class="ccg-title">Cheeky Commodore Gamer</div>
-                    <div class="ccg-subtitle">C64 &amp; Amiga game viewer</div>
-                </div>
+<div class="ccg-game-shell">
+
+    <!-- HEADER -->
+    <header class="ccg-game-header">
+        <div class="ccg-game-header-left">
+            <a href="../home.html">
+                <img src="../resources/CCGAMER LOGO.png"
+                     alt="Cheeky Commodore Gamer logo"
+                     class="ccg-logo-small">
+            </a>
+            <div>
+                <div class="ccg-header-text-main">Cheeky Commodore Gamer</div>
+                <div class="ccg-header-text-sub">C64 &amp; Amiga game dossier</div>
             </div>
-            <div class="ccg-header-right">
-                <button id="mode-toggle" class="ccg-pill-button ccg-pill-small" type="button">
-                    SYSTEM MODE: <span id="mode-label">C64 NEON</span>
+        </div>
+
+        <div class="ccg-game-header-right">
+            <button id="mode-toggle" type="button">
+                SYSTEM MODE: <span id="mode-label">C64 NEON</span>
+            </button>
+            <div class="ccg-game-badge" id="game-system-label">GAME VIEWER</div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="ccg-game-main">
+
+        <!-- LEFT COLUMN: ARTWORK + CTA -->
+        <section class="ccg-game-art-panel">
+            <div class="ccg-game-title" id="game-title">Loading game…</div>
+
+            <div class="ccg-game-system-pill">
+                <span id="game-system">–</span>
+                <span id="game-year-pill"></span>
+            </div>
+
+            <div class="ccg-game-thumb-frame">
+                <img id="game-thumbnail" class="ccg-game-thumb" src="" alt="Game artwork">
+            </div>
+
+            <div class="ccg-game-tagline" id="game-tagline">
+                Pulling mission briefing from archives…
+            </div>
+
+            <div class="ccg-game-actions">
+                <button class="ccg-pill-btn" type="button" id="back-button">
+                    <span class="icon">⬅</span>
+                    <span>Back</span>
                 </button>
+
+                <a class="ccg-pill-btn" id="video-button" href="#" target="_blank" rel="noopener" hidden>
+                    <span class="icon">▶</span>
+                    <span>Watch Longplay</span>
+                </a>
+
+                <a class="ccg-pill-btn" id="pdf-button" href="#" target="_blank" rel="noopener" hidden>
+                    <span class="icon">📖</span>
+                    <span>View Manual / Docs</span>
+                </a>
+
+                <a class="ccg-pill-btn" id="disk-button" href="#" target="_blank" rel="noopener" hidden>
+                    <span class="icon">💾</span>
+                    <span>Download Disk</span>
+                </a>
             </div>
-        </header>
+        </section>
 
-        <!-- MAIN CRT SHELL -->
-        <main class="ccg-main">
-            <section class="ccg-crt-panel ccg-panel-wide">
-                <div class="ccg-panel-header">
-                    <div class="ccg-panel-title">
-                        <span id="game-system-label" class="ccg-panel-kicker">GAME VIEWER</span>
-                        <span id="game-title" class="ccg-panel-heading">Loading game…</span>
-                    </div>
-                    <nav class="ccg-panel-nav">
-                        <a href="../home.html" class="ccg-pill-button ccg-pill-small">🏠 HOME HUB</a>
-                        <a href="index.html" class="ccg-pill-button ccg-pill-small">🎮 GAMES HUB</a>
-                        <a href="../complete-index.html" class="ccg-pill-button ccg-pill-small">📜 COMPLETE INDEX</a>
-                    </nav>
+        <!-- RIGHT COLUMN: INFO -->
+        <section class="ccg-game-info-panel">
+            <div class="ccg-info-header">
+                <div class="ccg-info-heading">MISSION DATA</div>
+                <div class="ccg-info-sub" id="game-id-label"></div>
+            </div>
+
+            <dl class="ccg-meta-grid">
+                <div class="ccg-meta-item">
+                    <dt>System</dt>
+                    <dd id="game-system-meta">–</dd>
                 </div>
-
-                <div class="ccg-panel-body ccg-game-layout">
-                    <!-- LEFT: THUMBNAIL -->
-                    <div class="ccg-game-thumb-wrap">
-                        <div class="ccg-game-thumb-frame">
-                            <img id="game-thumbnail" src="" alt="Game artwork" class="ccg-game-thumb">
-                        </div>
-                    </div>
-
-                    <!-- RIGHT: META -->
-                    <div class="ccg-game-meta-wrap">
-                        <div id="game-tagline" class="ccg-game-tagline"></div>
-
-                        <dl class="ccg-game-meta-list">
-                            <div>
-                                <dt>System</dt>
-                                <dd id="game-system">–</dd>
-                            </div>
-                            <div>
-                                <dt>Year</dt>
-                                <dd id="game-year">–</dd>
-                            </div>
-                            <div>
-                                <dt>Publisher</dt>
-                                <dd id="game-publisher">–</dd>
-                            </div>
-                            <div>
-                                <dt>Developer</dt>
-                                <dd id="game-developer">–</dd>
-                            </div>
-                            <div>
-                                <dt>Genre</dt>
-                                <dd id="game-genre">–</dd>
-                            </div>
-                            <div>
-                                <dt>Collection</dt>
-                                <dd id="game-collection">–</dd>
-                            </div>
-                        </dl>
-
-                        <div class="ccg-game-description-block">
-                            <h2 class="ccg-section-heading">Mission Briefing</h2>
-                            <p id="game-description" class="ccg-game-description">
-                                Loading data from mission archives…
-                            </p>
-                        </div>
-
-                        <div class="ccg-game-actions">
-                            <a id="back-to-genre" href="index.html" class="ccg-pill-button">⬅ BACK TO LIST</a>
-                            <a href="../quiz/index.html" class="ccg-pill-button">❓ TRIVIA QUIZ HUB</a>
-                        </div>
-
-                        <p id="game-error" class="ccg-error-message" hidden></p>
-                    </div>
+                <div class="ccg-meta-item">
+                    <dt>Year</dt>
+                    <dd id="game-year">–</dd>
                 </div>
-            </section>
-        </main>
+                <div class="ccg-meta-item">
+                    <dt>Developer</dt>
+                    <dd id="game-developer">–</dd>
+                </div>
+                <div class="ccg-meta-item">
+                    <dt>Genres</dt>
+                    <dd id="game-genre">–</dd>
+                </div>
+                <div class="ccg-meta-item">
+                    <dt>Collections</dt>
+                    <dd id="game-collection">–</dd>
+                </div>
+            </dl>
 
-        <footer class="ccg-footer">
-            <span>© 2025 Cheeky Commodore Gamer</span>
-        </footer>
-    </div>
+            <div class="ccg-description-block">
+                <h2>Briefing</h2>
+                <p id="game-description">
+                    No mission briefing has been logged for this title yet. Data will be patched in a future update.
+                </p>
+            </div>
 
-    <!-- Scripts -->
-    <script src="../js/ccg-mode-engine.js" defer></script>
-    <script src="../js/ccj-global.js" defer></script>
-    <script src="../js/load-single-game.js" defer></script>
+            <div class="ccg-links-section" id="lemon-links-block" hidden>
+                <div>External Archives</div>
+                <ul id="lemon-links-list"></ul>
+            </div>
+
+            <div class="ccg-error" id="game-error" hidden></div>
+        </section>
+
+    </main>
+
+    <footer class="ccg-footer">
+        © <span id="footerYear"></span> Cheeky Commodore Gamer — C64 &amp; Amiga Command
+    </footer>
+</div>
+
+<!-- Scripts -->
+<script src="../js/ccg-mode-engine.js"></script>
+<script src="../js/ccj-global.js"></script>
+<script src="../js/load-single-game.js"></script>
+
+<script>
+    // Small shell script: mode toggle + footer year + back button behaviour
+    (function () {
+        const modeToggle = document.getElementById('mode-toggle');
+        const modeLabel  = document.getElementById('mode-label');
+        const yearEl     = document.getElementById('footerYear');
+        const backBtn    = document.getElementById('back-button');
+
+        if (yearEl) {
+            yearEl.textContent = new Date().getFullYear();
+        }
+
+        function refreshModeLabel() {
+            if (!window.CCGModeEngine || !modeLabel) return;
+            const m = window.CCGModeEngine.getMode();
+            modeLabel.textContent = (m || 'C64').toUpperCase() + ' NEON';
+        }
+
+        if (modeToggle && window.CCGModeEngine) {
+            modeToggle.addEventListener('click', () => {
+                window.CCGModeEngine.toggleMode();
+                refreshModeLabel();
+            });
+        }
+        refreshModeLabel();
+
+        if (backBtn) {
+            backBtn.addEventListener('click', () => {
+                if (window.history.length > 1) {
+                    window.history.back();
+                } else {
+                    window.location.href = '../games/index.html';
+                }
+            });
+        }
+    })();
+</script>
+
 </body>
 </html>
