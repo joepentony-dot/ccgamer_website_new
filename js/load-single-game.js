@@ -1,272 +1,116 @@
-// ================================================================
-// CHEEKY COMMODORE GAMER – SINGLE GAME PAGE LOADER (FINAL VERSION)
-// ------------------------------------------------
-// - One universal “Download Game” button (auto-picks best format)
-// - Optional “View Manual” button if PDF/manual exists
-// - Supports disk/tape/cart/crt/prg/t64/tap/d64/etc.
-// - Clean layout, future-proof, stable
-// ================================================================
+// js/load-single-game.js
+// Single game viewer loader for Cheeky Commodore Gamer
 
+(function () {
+    const GAMES_JSON_PATH = 'games.json'; // relative to /games/game.html
 
-// ------------------------------------------------
-// Helpers
-// ------------------------------------------------
-
-function getQueryId() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get("id");
-}
-
-function normaliseId(val) {
-  if (!val) return "";
-  return decodeURIComponent(val.toString().trim());
-}
-
-function safeText(v) {
-  return (v || "").toString();
-}
-
-function toArray(x) {
-  if (!x) return [];
-  return Array.isArray(x) ? x : [x];
-}
-
-
-// ------------------------------------------------
-// MAIN LOADER
-// ------------------------------------------------
-
-async function loadSingleGame() {
-  const container = document.getElementById("game-detail");
-  if (!container) return;
-
-  container.innerHTML = "<p>Loading game data…</p>";
-
-  const rawId = getQueryId();
-  const id = normaliseId(rawId);
-
-  if (!id) {
-    container.innerHTML = "<p>No game ID provided.</p>";
-    return;
-  }
-
-  try {
-    const response = await fetch("games.json");
-    const games = await response.json();
-
-    const game = games.find(g => {
-      const gid = normaliseId(g.gameid || g.id);
-      return gid === id;
-    });
-
-    if (!game) {
-      container.innerHTML = `<p>Game not found: <code>${id}</code></p>`;
-      return;
+    function qs(selector) {
+        return document.querySelector(selector);
     }
 
-    renderGame(container, game);
-
-  } catch (err) {
-    console.error("Error loading single game:", err);
-    container.innerHTML = "<p>Error loading game details.</p>";
-  }
-}
-
-
-// ------------------------------------------------
-// UNIVERSAL DOWNLOAD SELECTION
-// ------------------------------------------------
-
-function findBestDownload(game) {
-  const fields = [
-    "disk", "d64",
-    "tape", "tap", "t64",
-    "cart", "crt",
-    "prg",
-    "pdf", "pdflink",
-    "extras", "manual", "docs", "files"
-  ];
-
-  for (const field of fields) {
-    if (game[field]) {
-      const arr = toArray(game[field]).filter(Boolean);
-      if (arr.length) return arr[0];
+    function getGameIdFromQuery() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('id');
     }
-  }
 
-  return "";
-}
-
-
-// ------------------------------------------------
-// MANUAL DETECTION (View Manual button)
-// ------------------------------------------------
-
-function findManual(game) {
-  // Prefer explicit PDF/manual fields
-  const fields = ["pdf", "pdflink", "manual", "docs"];
-
-  for (const field of fields) {
-    if (game[field]) {
-      const arr = toArray(game[field]).filter(Boolean);
-      if (arr.length) return arr[0];
+    function showError(message) {
+        const errorEl = qs('#game-error');
+        if (!errorEl) return;
+        errorEl.textContent = message;
+        errorEl.hidden = false;
     }
-  }
 
-  return "";
-}
+    function setText(id, value, fallback = '–') {
+        const el = qs(id);
+        if (!el) return;
+        el.textContent = value && String(value).trim().length ? value : fallback;
+    }
 
+    function buildThumbnailUrl(game) {
+        // Try multiple property names just in case
+        const file =
+            game.thumbnail ||
+            game.thumb ||
+            game.thumbnail_file ||
+            '';
 
-// ------------------------------------------------
-// RENDER GAME BLOCK
-// ------------------------------------------------
+        if (!file) return '';
+        // From /games/ to /resources/images/thumbnails/all/
+        return `../resources/images/thumbnails/all/${file}`;
+    }
 
-function renderGame(container, game) {
-  const title = safeText(game.title);
-  document.title = `${title} | Cheeky Commodore Gamer`;
+    function populateGame(game) {
+        // Title & header bits
+        setText('#game-title', game.title || game.id || 'Unknown Game');
+        setText('#game-system', game.system || 'Unknown');
+        setText('#game-system-label', (game.system || 'Game').toUpperCase());
+        setText('#game-year', game.year);
+        setText('#game-publisher', game.publisher || game.publisher_name);
+        setText('#game-developer', game.developer || game.developer_name);
+        setText('#game-genre', game.genre || game.category);
+        setText('#game-collection', game.collection || game.set || '—');
 
-  const year = safeText(game.year);
-  const system = safeText(game.system);
-  const developer = safeText(game.developer);
-  const publisher = safeText(game.publisher);
-  const composer = safeText(game.composer);
+        // Optional tagline / notes
+        const tagline = game.tagline || game.one_liner || '';
+        const notes = game.notes || game.description || '';
+        setText('#game-tagline', tagline, '');
+        setText('#game-description', notes, 'No mission briefing has been logged for this title yet.');
 
-  const genres = Array.isArray(game.genres || game.genre)
-    ? (game.genres || game.genre)
-    : [];
-
-  const description = safeText(game.description || game.summary);
-  const videoId = safeText(game.videoid);
-
-  // Thumbnail
-  const thumbPath = (game.thumbnail || "").replace(/^\.?\//, "");
-  const thumbSrc = thumbPath
-    ? ("../" + thumbPath)
-    : "../resources/images/genres/miscellaneous.png";
-
-  const genreText = genres.join(" • ");
-
-  // ------------------------------------------------
-  // Gameplay Video
-  // ------------------------------------------------
-  let videoBlock = "";
-  if (videoId) {
-    const ytUrl = `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
-    videoBlock = `
-      <div class="game-video">
-        <h2>Gameplay Video</h2>
-        <a class="btn-cta" href="${ytUrl}" target="_blank">Watch on YouTube</a>
-      </div>
-    `;
-  }
-
-  // ------------------------------------------------
-  // DOWNLOAD BUTTON (One single button)
-  // ------------------------------------------------
-  const bestDownload = findBestDownload(game);
-
-  let downloadButton = "";
-  if (bestDownload) {
-    downloadButton = `
-      <div class="game-download-single">
-        <h2>Download</h2>
-        <a class="btn-cta" href="${bestDownload}" target="_blank">
-          Download Game
-        </a>
-      </div>
-    `;
-  }
-
-  // ------------------------------------------------
-  // MANUAL BUTTON (Optional)
-  // ------------------------------------------------
-  const manualUrl = findManual(game);
-
-  let manualButton = "";
-  if (manualUrl) {
-    manualButton = `
-      <div class="game-manual-single">
-        <h2>Manual</h2>
-        <a class="btn-cta" href="${manualUrl}" target="_blank">
-          View Manual
-        </a>
-      </div>
-    `;
-  }
-
-  // ------------------------------------------------
-  // Sidebar Metadata
-  // ------------------------------------------------
-  const infoRows = [];
-  if (system) infoRows.push(`<div><span>System</span><strong>${system}</strong></div>`);
-  if (year) infoRows.push(`<div><span>Year</span><strong>${year}</strong></div>`);
-  if (developer) infoRows.push(`<div><span>Developer</span><strong>${developer}</strong></div>`);
-  if (publisher) infoRows.push(`<div><span>Publisher</span><strong>${publisher}</strong></div>`);
-  if (composer) infoRows.push(`<div><span>Music</span><strong>${composer}</strong></div>`);
-  if (genres.length) infoRows.push(`<div><span>Genres</span><strong>${genreText}</strong></div>`);
-
-
-  // ------------------------------------------------
-  // Full Layout
-  // ------------------------------------------------
-
-  container.innerHTML = `
-    <article class="game-layout">
-
-      <div class="game-main">
-
-        <div class="game-hero-card">
-          <img class="game-hero-thumb" src="${thumbSrc}" alt="${title}">
-          <div class="game-hero-text">
-            <h1>${title}</h1>
-
-            ${
-              year || system
-                ? `<p class="game-hero-meta">${system || ""}${system && year ? " • " : ""}${year || ""}</p>`
-                : ""
+        // Thumbnail
+        const thumbEl = qs('#game-thumbnail');
+        if (thumbEl) {
+            const url = buildThumbnailUrl(game);
+            if (url) {
+                thumbEl.src = url;
+                thumbEl.alt = game.title || 'Game artwork';
+            } else {
+                thumbEl.alt = 'No artwork available';
             }
-
-            ${
-              genres.length
-                ? `<p class="game-hero-genres">${genreText}</p>`
-                : ""
-            }
-          </div>
-        </div>
-
-        ${
-          description
-            ? `
-              <section class="game-description">
-                <h2>About this Game</h2>
-                <p>${description}</p>
-              </section>
-            `
-            : ""
         }
 
-        ${videoBlock}
-        ${downloadButton}
-        ${manualButton}
+        // Back link – if we have a genre, send back to its page
+        const backLink = qs('#back-to-genre');
+        if (backLink) {
+            if (game.genre_slug) {
+                backLink.href = `genres/${game.genre_slug}.html`;
+            } else {
+                // Fallback to games hub
+                backLink.href = 'index.html';
+            }
+        }
+    }
 
-      </div>
+    async function loadGame() {
+        const gameId = getGameIdFromQuery();
+        if (!gameId) {
+            showError('No game ID supplied in the URL.');
+            setText('#game-title', 'Unknown Game');
+            return;
+        }
 
-      <aside class="game-sidebar">
-        <div class="game-info-grid">
-          ${infoRows.join("")}
-        </div>
+        try {
+            const response = await fetch(GAMES_JSON_PATH, { cache: 'no-store' });
+            if (!response.ok) {
+                throw new Error(`Unable to load games.json (status ${response.status})`);
+            }
 
-        <div class="game-back-link">
-          <a href="../complete-index.html">← Back to Complete Index</a>
-        </div>
-      </aside>
+            const data = await response.json();
+            // Support either an array or { games: [...] }
+            const gamesArray = Array.isArray(data) ? data : data.games || [];
+            const game = gamesArray.find(g => g.id === gameId);
 
-    </article>
-  `;
-}
+            if (!game) {
+                showError(`No data found for game ID "${gameId}".`);
+                setText('#game-title', 'Unknown Game');
+                return;
+            }
 
+            populateGame(game);
+        } catch (err) {
+            console.error('Error loading game details', err);
+            showError('There was a problem loading this game. Please try again later.');
+        }
+    }
 
-// ------------------------------------------------
-// INIT
-// ------------------------------------------------
-document.addEventListener("DOMContentLoaded", loadSingleGame);
+    document.addEventListener('DOMContentLoaded', loadGame);
+})();
