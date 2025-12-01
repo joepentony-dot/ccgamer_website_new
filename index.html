@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheeky Commodore Gamer – Intro</title>
 
-    <!-- Main CRT + Neon Styles -->
-    <link rel="stylesheet" href="/ccgamer_website_new/resources/css/ccg-master.css">
+    <!-- MAIN CRT + NEON -->
+    <link rel="stylesheet" href="resources/css/ccg-master.css">
 
     <style>
         html, body {
@@ -17,7 +17,7 @@
 
         body.intro-body {
             background: radial-gradient(circle at top, #050915 0, #060320 40%, #000000 100%);
-            color: #5fffff;
+            color: #5fffff; /* C64 cyan */
             font-family: monospace;
             overflow: hidden;
             position: relative;
@@ -93,12 +93,12 @@
         }
 
         .c64-border {
-            background: #000f5a;
-            padding: 26px;
+            background: #000e78;
+            padding: 22px;
         }
 
         .c64-inner {
-            background: #1f23b0;
+            background: #3c31ff;
             padding: 32px 40px;
             width: 900px;
             max-width: 90vw;
@@ -116,41 +116,38 @@
             letter-spacing: 0.05em;
         }
 
-        /* FULL-SCREEN RASTER (softened, slowed, authentic) */
+        /* SMOOTH, REALISTIC RASTER BARS (INTRO ONLY) */
         #rasterOverlay {
             position: fixed;
             inset: 0;
             z-index: 30;
             display: none;
-            opacity: 0.95;
+            opacity: 0.92;
 
-            /* blackout background */
             background-color: black;
 
-            /* thick, blurred, colourful bars */
             background-image:
                 repeating-linear-gradient(
                     0deg,
-                    rgba(255, 0, 0, 0.9) 0px,   rgba(255, 0, 0, 0.9) 16px,
-                    rgba(255,165,0,0.9) 16px,  rgba(255,165,0,0.9) 32px,
-                    rgba(255,255,0,0.9) 32px,  rgba(255,255,0,0.9) 48px,
-                    rgba(0,255,0,0.9) 48px,    rgba(0,255,0,0.9) 64px,
-                    rgba(0,255,255,0.9) 64px,  rgba(0,255,255,0.9) 80px,
-                    rgba(0,128,255,0.9) 80px,  rgba(0,128,255,0.9) 96px,
-                    rgba(128,0,255,0.9) 96px,  rgba(128,0,255,0.9) 112px
+                    rgba(255, 0, 0, 0.55)   0px,  rgba(255, 0, 0, 0.55)   8px,
+                    rgba(255,165,0,0.55)   8px,  rgba(255,165,0,0.55)  16px,
+                    rgba(255,255,0,0.55)  16px,  rgba(255,255,0,0.55)  24px,
+                    rgba(0,255,0,0.55)    24px,  rgba(0,255,0,0.55)    32px,
+                    rgba(0,255,255,0.55)  32px,  rgba(0,255,255,0.55)  40px,
+                    rgba(0,128,255,0.55)  40px,  rgba(0,128,255,0.55)  48px,
+                    rgba(128,0,255,0.55)  48px,  rgba(128,0,255,0.55)  56px
                 );
 
-            filter: blur(4px);
-            animation: rasterScroll 0.45s linear infinite;
-            transform: scaleY(1.1);
+            filter: blur(5px);
+            animation: rasterScrollSmooth 3.5s linear infinite;
         }
 
-        @keyframes rasterScroll {
+        @keyframes rasterScrollSmooth {
             0%   { background-position-y: 0; }
-            100% { background-position-y: 64px; }
+            100% { background-position-y: 56px; }
         }
 
-        /* CRT scanlines */
+        /* CRT Scanlines */
         body.intro-body::after {
             content: "";
             position: fixed;
@@ -179,7 +176,7 @@
 
 <body class="crt intro-body c64-mode">
 
-<!-- SKIP INTRO -->
+<!-- SKIP -->
 <button id="skipIntroBtn">[ ESC ] SKIP INTRO</button>
 
 <!-- POWER ON -->
@@ -242,7 +239,6 @@ READY.
     }
 
     function startLoadSequence() {
-
         schedule(() => {
             appendLine(`LOAD ""`);
 
@@ -253,7 +249,7 @@ READY.
                     appendLine(`FOUND "CHEEKY COMMODORE GAMER"`);
                     appendLine(`LOADING`);
 
-                    // 1 second delay BEFORE raster/audio
+                    /* Raster + SID trigger after 1 second */
                     schedule(() => {
                         startRasterAudio();
                     }, 1000);
@@ -295,25 +291,22 @@ READY.
         window.location.href = "home.html";
     }
 
-    // CLICK ANYWHERE TO POWER ON (except Skip)
+    /* CLICK ANYWHERE TO POWER ON (except Skip) */
     document.addEventListener("click", e => {
         if (e.target === skipBtn || e.target.closest("#skipIntroBtn")) return;
         if (!powerOverlay.classList.contains("hidden")) beginIntro();
     });
 
-    // TEXT CLICK
     powerText.addEventListener("click", e => {
         e.stopPropagation();
         beginIntro();
     });
 
-    // SKIP INTRO
     skipBtn.addEventListener("click", e => {
         e.stopPropagation();
         skip();
     });
 
-    // KEYS
     document.addEventListener("keydown", e => {
         if (e.key === "Escape") skip();
         if ((e.key === "Enter" || e.key === " ") && !powerOverlay.classList.contains("hidden")) {
