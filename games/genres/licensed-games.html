@@ -3,32 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Licensed Games | CCG</title>
+    <title>Licensed Games – CCG</title>
 
     <link rel="stylesheet" href="../../resources/css/ccg-master.css">
-    <script>
-        window.CCG_GENRE = "Licensed Games";
-    </script>
+    <link rel="stylesheet" href="../../resources/css/genre.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 
-<body class="crt c64-mode">
+<body data-genre="Licensed">
 
-<header class="topnav">
-    <a href="../../home.html">HOME</a>
-    <a href="../../complete-index.html">COMPLETE INDEX</a>
-    <a href="index.html">GENRES</a>
-    <a href="../../quiz/quiz.html">QUIZ</a>
+<header class="ccg-header">
+    <a href="../../home.html" class="ccg-logo-link">
+        <img src="../../resources/CCGAMER LOGO.png" class="ccg-logo" alt="CCG Logo">
+    </a>
+    <div class="ccg-header-text">
+        <h1>Cheeky Commodore Gamer</h1>
+        <p>C64 &amp; Amiga Retro Gaming Hub</p>
+    </div>
+    <nav class="ccg-nav">
+        <a href="../../home.html">Home</a>
+        <a href="../../complete-index.html">Complete Index</a>
+        <a href="../../quiz/index.html">Quiz Hub</a>
+        <a href="../index.html">Games Hub</a>
+    </nav>
 </header>
 
-<main id="genre-container" class="genre-main">
-    <h1 class="site-title">LICENSED GAMES</h1>
-    <p class="subtitle">Loading licensed titles…</p>
-
-    <section id="genre-list"></section>
+<main class="genre-main">
+    <h2 class="genre-title">Licensed Games</h2>
+    <p id="loading-status">Loading games…</p>
+    <div id="game-list" class="game-list"></div>
 </main>
 
-<script src="../../js/genre-loader.js"></script>
-<script src="../../js/ccj-global.js"></script>
+<footer class="ccg-footer">
+    <p>Cheeky Commodore Gamer – Genre View</p>
+</footer>
 
+<script src="../../js/genre-loader.js"></script>
 </body>
 </html>
