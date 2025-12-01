@@ -5,11 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheeky Commodore Gamer – Intro</title>
 
-    <!-- Your main site styles (CRT etc.) -->
+    <!-- Main site CSS (CRT, fonts, etc.) -->
     <link rel="stylesheet" href="/ccgamer_website_new/resources/css/ccg-master.css">
 
     <style>
-        /* Basic reset */
         html, body {
             margin: 0;
             padding: 0;
@@ -17,30 +16,144 @@
         }
 
         body.intro-body {
-            background: radial-gradient(circle at top, #06091a 0, #050316 40%, #000000 100%);
-            color: #5fffff; /* C64 cyan */
+            background: radial-gradient(circle at top, #050915 0, #060320 40%, #000000 100%);
+            color: #5fffff;
             font-family: monospace;
             overflow: hidden;
             position: relative;
         }
 
-        /* Simple starfield */
-        body.intro-body::before {
-            content: "";
+        /* Pulsing neon-style power-on overlay */
+        #powerOverlay {
             position: fixed;
             inset: 0;
-            pointer-events: none;
-            background-image:
-                radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,0.4) 0, transparent 50%),
-                radial-gradient(2px 2px at 80% 30%, rgba(255,255,255,0.3) 0, transparent 50%),
-                radial-gradient(2px 2px at 30% 80%, rgba(255,255,255,0.35) 0, transparent 50%),
-                radial-gradient(1px 1px at 60% 60%, rgba(255,255,255,0.25) 0, transparent 50%);
-            mix-blend-mode: screen;
-            opacity: 0.4;
-            z-index: 1;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
         }
 
-        /* CRT scanlines */
+        .intro-logo {
+            width: 280px;
+            max-width: 80vw;
+            margin-bottom: 32px;
+            filter:
+                drop-shadow(0 0 25px rgba(0, 255, 255, 0.7))
+                drop-shadow(0 0 45px rgba(0, 100, 255, 0.7));
+        }
+
+        #powerText {
+            font-size: 32px;
+            letter-spacing: 0.18em;
+            text-shadow: 0 0 8px rgba(95,255,255,0.9);
+            animation: pulse 1.3s infinite ease-in-out;
+            cursor: pointer;
+        }
+
+        @keyframes pulse {
+            0%   { opacity: 0.45; transform: scale(1); }
+            50%  { opacity: 1;    transform: scale(1.06); }
+            100% { opacity: 0.45; transform: scale(1); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Global Skip Intro button */
+        #skipIntroBtn {
+            position: fixed;
+            top: 18px;
+            right: 18px;
+            z-index: 40;
+            background: #b0002a;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            font-family: monospace;
+            font-size: 14px;
+            padding: 8px 14px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        #skipIntroBtn:hover {
+            box-shadow: 0 0 12px rgba(255,140,140,0.9);
+        }
+
+        /* C64 screen area */
+        #c64Wrapper {
+            position: relative;
+            z-index: 5;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .c64-border {
+            background: #000f5a;
+            padding: 26px;
+        }
+
+        .c64-inner {
+            background: #1f23b0;
+            padding: 32px 40px;
+            width: 900px;
+            max-width: 90vw;
+            height: 520px;
+            max-height: 70vh;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        #c64Text {
+            white-space: pre;
+            color: #5fffff;
+            font-size: 20px;
+            line-height: 1.4;
+        }
+
+        /* Full-screen raster bars (like attached GIF) */
+        #rasterOverlay {
+            position: fixed;
+            inset: 0;
+            z-index: 30;
+            display: none;
+            opacity: 0.9;
+            background:
+                repeating-linear-gradient(
+                    0deg,
+                    #000000 0px,
+                    #000000 2px,
+                    #8cfffb 2px,
+                    #8cfffb 6px,
+                    #00ff00 6px,
+                    #00ff00 10px,
+                    #ffff00 10px,
+                    #ffff00 14px,
+                    #ff8800 14px,
+                    #ff8800 18px,
+                    #ff0000 18px,
+                    #ff0000 22px,
+                    #aa00ff 22px,
+                    #aa00ff 26px,
+                    #5555ff 26px,
+                    #5555ff 30px,
+                    #00aaff 30px,
+                    #00aaff 34px
+                );
+            animation: rasterScroll 0.2s linear infinite;
+            transform: scaleY(1.05);
+        }
+
+        @keyframes rasterScroll {
+            0%   { background-position-y: 0;   }
+            100% { background-position-y: 64px; }
+        }
+
+        /* Subtle CRT scanlines for entire page */
         body.intro-body::after {
             content: "";
             position: fixed;
@@ -55,147 +168,14 @@
                     transparent 4px
                 );
             mix-blend-mode: multiply;
-            opacity: 0.9;
+            opacity: 0.95;
             z-index: 2;
-            animation: crt-flicker 0.18s infinite alternate;
+            animation: crtFlicker 0.18s infinite alternate;
         }
 
-        @keyframes crt-flicker {
-            0% { opacity: 0.82; }
-            100% { opacity: 0.95; }
-        }
-
-        /* POWER-ON OVERLAY */
-
-        #power-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-
-        .intro-logo {
-            width: 260px;
-            max-width: 80vw;
-            margin-bottom: 32px;
-            filter: drop-shadow(0 0 25px rgba(0, 255, 255, 0.8));
-        }
-
-        .intro-prompt {
-            font-size: 32px;
-            letter-spacing: 0.15em;
-            margin-bottom: 20px;
-        }
-
-        #power-on-btn {
-            font-family: monospace;
-            font-size: 18px;
-            padding: 10px 26px;
-            background: transparent;
-            border: 2px solid #5fffff;
-            color: #5fffff;
-            cursor: pointer;
-            margin-top: 8px;
-            text-transform: uppercase;
-        }
-
-        #power-on-btn:hover {
-            box-shadow: 0 0 14px rgba(95, 255, 255, 0.8);
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        /* Global Skip Intro button (always visible) */
-        .skip-intro-btn {
-            position: fixed;
-            top: 18px;
-            right: 18px;
-            z-index: 30;
-            background: #b0002a;
-            color: #ffffff;
-            border: 2px solid #ffffff;
-            font-family: monospace;
-            font-size: 14px;
-            padding: 8px 14px;
-            cursor: pointer;
-            text-transform: uppercase;
-        }
-
-        .skip-intro-btn:hover {
-            box-shadow: 0 0 12px rgba(255, 140, 140, 0.9);
-        }
-
-        /* C64 screen wrapper */
-
-        #c64-wrapper {
-            position: relative;
-            z-index: 5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-
-        .c64-border {
-            background: #00105a;
-            padding: 26px;
-        }
-
-        .c64-screen {
-            background: #1f23b0;
-            padding: 32px 40px;
-            width: 900px;
-            max-width: 90vw;
-            height: 520px;
-            max-height: 70vh;
-            overflow: hidden;
-            box-sizing: border-box;
-        }
-
-        #c64-text {
-            white-space: pre;
-            color: #5fffff;
-            font-size: 20px;
-            line-height: 1.4;
-        }
-
-        /* Full-screen raster bars (IN FRONT OF EVERYTHING) */
-        #raster-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 25;
-            display: none;
-            opacity: 0.85;
-            background:
-                repeating-linear-gradient(
-                    0deg,
-                    #ff0000 0px,
-                    #ff0000 4px,
-                    #ffa500 4px,
-                    #ffa500 8px,
-                    #ffff00 8px,
-                    #ffff00 12px,
-                    #00ff00 12px,
-                    #00ff00 16px,
-                    #00ffff 16px,
-                    #00ffff 20px,
-                    #0000ff 20px,
-                    #0000ff 24px,
-                    #ff00ff 24px,
-                    #ff00ff 28px
-                );
-            animation: raster-scroll 0.22s linear infinite;
-        }
-
-        @keyframes raster-scroll {
-            0% { background-position-y: 0; }
-            100% { background-position-y: 40px; }
+        @keyframes crtFlicker {
+            0%   { opacity: 0.88; }
+            100% { opacity: 1;    }
         }
     </style>
 </head>
@@ -203,39 +183,38 @@
 <body class="crt intro-body c64-mode">
 
 <!-- GLOBAL SKIP INTRO -->
-<button class="skip-intro-btn">[ ESC ] SKIP INTRO</button>
+<button id="skipIntroBtn">[ ESC ] SKIP INTRO</button>
 
 <!-- POWER-ON SCREEN -->
-<div id="power-overlay">
-    <img src="resources/CCGAMER LOGO.png" alt="Cheeky Commodore Gamer" class="intro-logo">
-    <p class="intro-prompt">CLICK TO POWER ON</p>
-    <button id="power-on-btn">POWER ON</button>
+<div id="powerOverlay">
+    <img src="resources/C64 NEON.png" alt="Cheeky Commodore Gamer" class="intro-logo">
+    <p id="powerText">CLICK TO POWER ON</p>
 </div>
 
 <!-- C64 BASIC + LOAD SEQUENCE -->
-<div id="c64-wrapper" class="hidden">
+<div id="c64Wrapper" class="hidden">
     <div class="c64-border">
-        <div class="c64-screen">
-            <pre id="c64-text"></pre>
+        <div class="c64-inner">
+            <pre id="c64Text"></pre>
         </div>
     </div>
 </div>
 
 <!-- FULL-SCREEN RASTER -->
-<div id="raster-overlay"></div>
+<div id="rasterOverlay"></div>
 
 <!-- AUDIO -->
 <audio id="sidAudio" src="resources/audio/c64_speech_stayawhile.mp3"></audio>
 
 <script>
 (function () {
-    const powerOverlay = document.getElementById("power-overlay");
-    const powerOnBtn   = document.getElementById("power-on-btn");
-    const c64Wrapper   = document.getElementById("c64-wrapper");
-    const c64Text      = document.getElementById("c64-text");
-    const raster       = document.getElementById("raster-overlay");
+    const powerOverlay = document.getElementById("powerOverlay");
+    const powerText    = document.getElementById("powerText");
+    const c64Wrapper   = document.getElementById("c64Wrapper");
+    const c64Text      = document.getElementById("c64Text");
+    const raster       = document.getElementById("rasterOverlay");
     const sidAudio     = document.getElementById("sidAudio");
-    const skipButtons  = document.querySelectorAll(".skip-intro-btn");
+    const skipBtn      = document.getElementById("skipIntroBtn");
 
     const timeouts = [];
 
@@ -250,41 +229,56 @@
         }
     }
 
-    const powerOnText =
-` **** COMMODORE 64 BASIC V2 ****
+    // Enhanced C64 BASIC screen (neon but accurate layout)
+    const basicBootText =
+`**** COMMODORE 64 BASIC V2 ****
  64K RAM SYSTEM  38911 BASIC BYTES FREE
 
 READY.
 `;
 
+    function showBasicScreen() {
+        c64Text.textContent = basicBootText + "\n";
+    }
+
+    function startLoadSequence() {
+        // LOAD ""
+        schedule(() => {
+            appendLine('LOAD ""');
+
+            // PRESS PLAY ON TAPE
+            schedule(() => {
+                appendLine('PRESS PLAY ON TAPE');
+
+                // FOUND + start audio + raster
+                schedule(() => {
+                    appendLine('FOUND "CHEEKY COMMODORE GAMER"');
+                    appendLine('LOADING');
+                    startAudioAndRaster();
+                }, 900);
+
+            }, 900);
+
+        }, 800);
+    }
+
+    function appendLine(line) {
+        c64Text.textContent += line + "\n";
+    }
+
     function startIntro() {
-        // Show C64 screen, hide overlay
+        if (powerOverlay.classList.contains("hidden")) return;
+
         powerOverlay.classList.add("hidden");
         c64Wrapper.classList.remove("hidden");
 
-        // Set basic boot screen
-        c64Text.textContent = powerOnText + "\\n";
-
-        // Start the LOAD sequence
-        schedule(() => printLine('LOAD ""', () => {
-            schedule(() => printLine('PRESS PLAY ON TAPE', () => {
-                schedule(() => printLine('FOUND "CHEEKY COMMODORE GAMER"', () => {
-                    startAudioAndRaster();
-                }), 900);
-            }), 900);
-        }), 700);
-    }
-
-    function printLine(text, next) {
-        c64Text.textContent += text + "\\n";
-        if (typeof next === "function") next();
+        showBasicScreen();
+        startLoadSequence();
     }
 
     function startAudioAndRaster() {
-        // Show raster bars in front of everything
         raster.style.display = "block";
 
-        // Play SID audio (user already clicked, so autoplay should work)
         try {
             sidAudio.currentTime = 0;
             sidAudio.play().catch(err => {
@@ -309,20 +303,41 @@ READY.
             sidAudio.pause();
             sidAudio.currentTime = 0;
         } catch (e) {
-            /* ignore */
+            // ignore
         }
         redirectHome();
     }
 
-    powerOnBtn.addEventListener("click", startIntro);
+    // Click ANYWHERE (except Skip) to power on
+    document.addEventListener("click", function (e) {
+        if (e.target === skipBtn || e.target.closest("#skipIntroBtn")) {
+            return; // skip handled separately
+        }
 
-    skipButtons.forEach(btn => {
-        btn.addEventListener("click", skipIntro);
+        if (!powerOverlay.classList.contains("hidden")) {
+            startIntro();
+        }
     });
 
+    // Optional: clicking the text specifically also works
+    powerText.addEventListener("click", function (e) {
+        e.stopPropagation();
+        startIntro();
+    });
+
+    // Skip button
+    skipBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        skipIntro();
+    });
+
+    // Keyboard controls: ESC to skip, ENTER/SPACE to power on
     document.addEventListener("keydown", function (e) {
         if (e.key === "Escape") {
             skipIntro();
+        } else if ((e.key === "Enter" || e.key === " ") &&
+                   !powerOverlay.classList.contains("hidden")) {
+            startIntro();
         }
     });
 })();
