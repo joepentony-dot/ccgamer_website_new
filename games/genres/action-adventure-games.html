@@ -5,58 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheeky Commodore Gamer | Action Adventure Games</title>
 
-    <link rel="stylesheet" href="../../css/engine.css">
+    <!-- Global CCG CSS -->
     <link rel="stylesheet" href="../../resources/css/main.css">
+    <link rel="stylesheet" href="../../resources/css/home.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-console.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-anim.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-modal.css">
+
+    <!-- Page-specific CSS -->
+    <link rel="stylesheet" href="../../resources/css/action-adventure-games.css">
+
+    <!-- Icons -->
     <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-          crossorigin="anonymous" referrerpolicy="no-referrer" />
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <style>
-        body.genre-body { margin:0; min-height:100vh;
-            background:radial-gradient(circle at top,#4d3aa3 0%,#120b33 45%,#050212 100%);
-            color:#e6f1ff; font-family:'VT323',monospace; text-transform:uppercase; }
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 
-        .genre-shell{max-width:1100px;margin:0 auto;padding:16px 12px 32px;}
-        .genre-header{border-bottom:1px dashed rgba(255,255,255,0.2);padding-bottom:10px;margin-bottom:14px;}
+    <!-- Global CCG JS -->
+    <script defer src="../../js/ccg-global.js"></script>
+    <script defer src="../../js/ccg-console.js"></script>
+    <script defer src="../../js/ccg-mode.js"></script>
+    <script defer src="../../js/ccg-zx.js"></script>
+    <script defer src="../../js/ccg-anim.js"></script>
+    <script defer src="../../js/ccg-modal.js"></script>
 
-        .genre-header-top{display:flex;align-items:center;gap:10px;}
-        .genre-logo{height:38px;image-rendering:pixelated;}
-
-        .genre-title-block h1{font-size:26px;margin:0;letter-spacing:2px;
-            color:#fff;text-shadow:2px 2px 0 #000;}
-        .genre-title-block p{margin:2px 0 0;font-size:13px;color:#b8c76f;}
-
-        .genre-basic{margin-top:6px;font-size:12px;color:#9fe6ff;}
-        .genre-basic span{display:inline-block;margin-right:12px;}
-
-        .genre-nav{margin-top:8px;display:flex;flex-wrap:wrap;gap:10px;font-size:12px;}
-        .genre-nav a{color:#e6f1ff;text-decoration:none;border-bottom:1px solid transparent;}
-        .genre-nav a:hover{border-color:#fff;}
-
-        .breadcrumb{margin-top:8px;font-size:11px;color:#9ba4ff;}
-        .breadcrumb a{color:#c7d2ff;text-decoration:none;}
-        .breadcrumb a:hover{text-decoration:underline;}
-
-        .genre-intro{margin:16px 0 12px;font-size:13px;color:#e8f0ff;}
-        .genre-intro span{color:#ffd86b;}
-
-        .genre-results-wrap{margin-top:10px;}
-
-        #genre-results{margin-top:6px;}
-        #genre-results .loading{
-            text-align:center;font-size:13px;color:#7f7bff;
-            letter-spacing:2px;animation:blink 1s infinite;
-        }
-
-        @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.1;}}
-
-        @media(max-width:600px){
-            .genre-header-top{flex-direction:column;align-items:flex-start;}
-        }
-    </style>
+    <!-- Page Logic -->
+    <script defer src="../../js/engine.js"></script>
+    <script defer src="../../js/genre-loader.js"></script>
 </head>
 
 <body class="genre-body">
+
+<canvas id="starfield"></canvas>
+<div class="crt-overlay"></div>
+
 <div class="genre-shell">
 
     <header class="genre-header">
@@ -67,8 +50,9 @@
                      alt="Cheeky Commodore Gamer"
                      class="genre-logo">
             </a>
+
             <div class="genre-title-block">
-                <h1>Action Adventure Games</h1>
+                <h1>ACTION ADVENTURE GAMES</h1>
                 <p>Questing, fighting and exploring – all in one tape.</p>
             </div>
         </div>
@@ -111,8 +95,9 @@
 
 </div>
 
-<script src="../../js/engine.js"></script>
-<script src="../../js/genre-loader.js"></script>
-<script>loadGenrePage();</script>
+<script>
+    loadGenrePage();
+</script>
+
 </body>
 </html>
