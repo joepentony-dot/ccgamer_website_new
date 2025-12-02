@@ -1,61 +1,157 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-page="genre">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Platform Games | Cheeky Commodore Gamer</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cheeky Commodore Gamer | Platform Games</title>
 
-    <link rel="icon" href="../../favicon.ico">
-    <link rel="stylesheet" href="../../css/engine.css">
-    <link rel="stylesheet" href="../../css/ccg-master.css">
-    <link rel="stylesheet" href="../../css/ccg-genres.css">
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../resources/css/ccg-master.css" />
+    <link rel="stylesheet" href="../../resources/css/ccg-effects.css" />
+    <link rel="stylesheet" href="../../resources/css/ccg-mode.css" />
+    <link rel="stylesheet" href="../../resources/css/home.css" />
+    <link rel="stylesheet" href="../../resources/css/genre.css" />
+
+    <link rel="icon" href="../../resources/CCG_FAVICON.png" />
+
 </head>
-<body class="mode-c64" data-genre="platform">
-<div class="ccg-shell genre-shell">
-    <header class="ccg-header neon-header">
-        <a href="../../home.html" class="ccg-logo-link">
-            <img src="../../resources/CCGAMER LOGO.png" alt="Cheeky Commodore Gamer" class="ccg-logo">
-        </a>
-        <div class="ccg-header-text">
-            <h1 class="ccg-title">Platform Games</h1>
-            <p class="ccg-subtitle">
-                Precise jumps, deadly pits, and pixel-perfect timing.
-            </p>
+
+<body data-page="genre" data-mode="c64" data-genre="platform-games">
+
+<canvas id="starfield"></canvas>
+<div class="crt-overlay"></div>
+<div class="crt-glow"></div>
+<div class="neon-grid"></div>
+
+<div class="ccg-shell">
+
+<header class="ccg-hud">
+    <div class="ccg-logo-wrap">
+        <button id="logoModeToggle" class="ccg-logo-button">
+            <img src="../../resources/CCGAMER LOGO.png">
+        </button>
+
+        <div>
+            <div class="ccg-logo-caption">PLATFORM GAMES</div>
+            <div style="opacity:.85;font-size:.9rem;">Jump, run, dodge, climb — pixel precision required.</div>
         </div>
-        <button id="mode-toggle" class="mode-toggle-btn">C64 MODE</button>
-    </header>
+    </div>
 
-    <nav class="ccg-breadcrumb">
-        <a href="../../home.html" class="crumb-link">🏠 Game Hub</a>
-        <span class="crumb-separator">/</span>
-        <span class="crumb-current">Platform</span>
-    </nav>
+    <div class="ccg-mode-status">
+        <span id="currentModeText">SYSTEM MODE: C64 NEON</span>
+    </div>
 
-    <main class="ccg-main">
-        <section class="genre-hero">
-            <div class="hero-text">
-                <h2 id="genre-label" class="genre-label">Platform</h2>
-                <p class="genre-description">
-                    From rooftops to caverns, keep those jumps tight and tidy.
-                </p>
-            </div>
-            <div class="hero-glow-panel">
-                <span class="hero-tag">JUMPING</span>
-                <span class="hero-tag">TRAPS</span>
-                <span class="hero-tag">TIMING</span>
-            </div>
-        </section>
+    <div class="ccg-hud-right">
+        <div class="ccg-hud-right-line"><strong>PLATFORM BROWSER</strong></div>
+        <div class="ccg-hud-right-line">STATUS: LOADING LEVEL 1…</div>
+    </div>
+</header>
 
-        <section id="game-list" class="game-grid" aria-live="polite"></section>
-        <section id="pagination" class="pagination"></section>
-    </main>
+<section class="ccg-panel ccg-panel--hero">
+    <div class="ccg-panel-header">
+        <div class="ccg-panel-title"><span>PLATFORM GAMES</span></div>
+        <div class="ccg-panel-tag">Jump & Run</div>
+    </div>
 
-    <footer class="ccg-footer">
-        <p>Cheeky Commodore Gamer · Platform Parade 😇🕹️👌</p>
-    </footer>
+    <div class="ccg-hero-text">
+        From sprawling castles to deadly pits —
+        <span class="ccg-hero-highlight">the classic blend of danger and mobility.</span>
+    </div>
+
+    <div class="ccg-hero-actions">
+        <button class="ccg-button" onclick="window.location.href='../../home.html'">
+            <i class="fa-solid fa-house"></i><span>Home Hub</span>
+        </button>
+
+        <button id="randomInGenreBtn" class="ccg-button">
+            <i class="fa-solid fa-person-running"></i><span>Random Platform Game</span>
+        </button>
+
+        <button class="ccg-button" onclick="window.location.href='../index.html'">
+            <i class="fa-solid fa-list"></i><span>All Genres</span>
+        </button>
+    </div>
+</section>
+
+<section class="ccg-panel">
+    <div class="ccg-panel-header">
+        <div class="ccg-panel-title"><span>PLATFORM TITLES</span></div>
+        <div class="ccg-panel-tag" id="gameCount">Loading…</div>
+    </div>
+
+    <div id="genreGamesGrid" class="ccg-grid">
+        <div>Loading games…</div>
+    </div>
+</section>
+
+<footer class="ccg-footer">
+    <div>© <span id="ccgYear"></span> Cheeky Commodore Gamer</div>
+    <div>Platform Games Browser</div>
+</footer>
+
 </div>
 
+<script src="../../js/ccg-mode-engine.js"></script>
+<script src="../../js/ccj-global.js"></script>
 <script src="../../js/genre-loader.js"></script>
+
+<script>
+/* IDENTICAL JS TO THE OTHER GENRE PAGES */
+(function(){
+    const body=document.body;
+    const logo=document.getElementById("logoModeToggle");
+    const year=document.getElementById("ccgYear");
+    const modeText=document.getElementById("currentModeText");
+    const grid=document.getElementById("genreGamesGrid");
+    const count=document.getElementById("gameCount");
+    const randomBtn=document.getElementById("randomInGenreBtn");
+    const slug=body.dataset.genre;
+
+    if(year) year.textContent=new Date().getFullYear();
+
+    function updateMode(){
+        modeText.textContent="SYSTEM MODE: "+window.CCGModeEngine.getMode().toUpperCase()+" NEON";
+    }
+    logo.addEventListener("click",()=>{window.CCGModeEngine.toggleMode();updateMode();});
+    updateMode();
+
+    window.loadGenreGames?.(slug,grid,count);
+
+    randomBtn?.addEventListener("click",()=>window.randomGameInGenre?.(slug));
+
+    /* STARFIELD copied from master template */
+    const canvas=document.getElementById("starfield");
+    if(canvas?.getContext){
+        const ctx=canvas.getContext("2d");
+        let w=canvas.width=innerWidth,h=canvas.height=innerHeight;
+        const stars=[];
+        for(let i=0;i<120;i++){
+            stars.push({x:Math.random()*w,y:Math.random()*h,z:Math.random()*0.8+0.2,speed:Math.random()*0.5+0.2});
+        }
+        function draw(){
+            ctx.clearRect(0,0,w,h);
+            const base=(body.dataset.mode==="amiga")?"rgba(255,210,111,":(body.dataset.mode==="zx")?"rgba(0,255,0,":"rgba(112,255,240,";
+            for(const s of stars){
+                s.y+=s.speed*(0.5+s.z);
+                if(s.y>h){s.y=0;s.x=Math.random()*w;}
+                ctx.fillStyle=base+(0.4+s.z*0.6)+")";
+                ctx.fillRect(s.x,s.y,s.z*2,s.z*2);
+            }
+            requestAnimationFrame(draw);
+        }
+        draw();
+        addEventListener("resize",()=>{w=canvas.width=innerWidth;h=canvas.height=innerHeight;});
+    }
+
+})();
+</script>
+
 </body>
 </html>
