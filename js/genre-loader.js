@@ -9,7 +9,7 @@
 // - Smooth transitions (CSS hooks only; animations done in CSS)
 
 (() => {
-    const GAMES_JSON_URL = '/games/games.json'; // root-relative for GitHub Pages
+    const GAMES_JSON_URL = '../games.json'; // root-relative for GitHub Pages
     const PAGE_SIZE = 24;
 
     const state = {
