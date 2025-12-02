@@ -13,7 +13,9 @@
     /* ==========================================================
        🔥 FIXED FOR GITHUB PAGES — RELATIVE PATH AUTO-DETECT
        ========================================================== */
-    const GAMES_JSON_URL = "../games.json";
+   /* UNIVERSAL PATH — WORKS ON GITHUB, FUTURE DOMAIN, LOCAL, ANY DEPTH */
+const GAMES_JSON_URL =
+    `${window.location.origin}${window.location.pathname.split('/games/')[0]}/games/games.json`;
 
     const PAGE_SIZE = 24;
 
