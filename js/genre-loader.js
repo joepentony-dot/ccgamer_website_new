@@ -1,22 +1,21 @@
 // js/genre-loader.js
-// BIT CHIEF — FINAL ABSOLUTE VERSION 😇🕹️👌
-// Works with your neon HTML, your grid ID, your count tag, your thumbnail paths.
+// BIT CHIEF — FINAL WORKING VERSION 😇🕹️👌
+// Uses correct JSON thumbnail paths (Option B)
 
 (function () {
 
     // ============================================================
-    //  MASTER JSON SOURCE (always works: GitHub Pages + Fasthosts)
+    //  MASTER JSON SOURCE
     // ============================================================
     const GAMES_JSON_URL =
         "https://raw.githubusercontent.com/joepentony-dot/ccgamer_website_new/main/games/games.json";
 
-    // Fallback thumbnail for missing images
+    // Fallback thumbnail
     const FALLBACK_THUMB =
-        "../../resources/images/genres/miscellaneous.png";
+        "/ccgamer_website_new/resources/images/thumbnails/all/_no_thumbnail.png";
 
     // ============================================================
     //  UNIVERSAL GENRE LOADER
-    //  Called by HTML:  window.loadGenreGames(genreSlug, gridEl, countEl)
     // ============================================================
     window.loadGenreGames = async function (genreSlug, gridEl, countEl) {
 
@@ -29,19 +28,17 @@
         if (countEl) countEl.textContent = "Loading…";
 
         try {
-            // Always fetch fresh data
             const res = await fetch(GAMES_JSON_URL + "?cache=" + Date.now());
             const data = await res.json();
 
-            // Normalise genre incoming from HTML
+            // Normalise slug
             const search = genreSlug
                 .toLowerCase()
                 .replace(/[-_]/g, " ")
                 .trim();
 
-            // Filter by ANY genre field found in JSON
+            // Filter games by ANY genre field
             const filtered = data.filter(game => {
-
                 const fields = [
                     game.genre,
                     ...(Array.isArray(game.genres) ? game.genres : []),
@@ -58,7 +55,6 @@
                 );
             });
 
-            // Nothing found
             if (filtered.length === 0) {
                 gridEl.innerHTML =
                     `<div>No games found for <strong>${genreSlug}</strong>.</div>`;
@@ -66,13 +62,13 @@
                 return;
             }
 
-            // Update count
+            // Update title count
             if (countEl) {
                 countEl.textContent = `${filtered.length} titles`;
             }
 
             // ============================================================
-            //  BUILD GAME CARDS (MATCHES YOUR NEON DESIGN)
+            //  BUILD GAME CARDS (CORRECTED THUMBNAILS)
             // ============================================================
             gridEl.innerHTML = "";
 
@@ -80,9 +76,9 @@
                 const card = document.createElement("div");
                 card.className = "ccg-card";
 
-                // FIXED THUMBNAIL PATH (FULL PATH BUILT HERE)
+                // CORRECT — TRUST JSON PATH (Option B)
                 const thumb = game.thumbnail
-                    ? `../../resources/images/thumbnails/all/${game.thumbnail}`
+                    ? game.thumbnail                   // ← THIS IS THE FIX
                     : FALLBACK_THUMB;
 
                 card.innerHTML = `
