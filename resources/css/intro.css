@@ -1,10 +1,9 @@
 /* ============================================
    INTRO PAGE — PURE RASTER BAR LOADING EFFECT
    Cheeky Commodore Gamer 😇🕹️👌
-   Fully rebuilt — smooth, flowing, GIF-accurate
 ============================================ */
 
-/* RESET */
+/* BASIC RESET */
 html, body {
     margin: 0;
     padding: 0;
@@ -15,7 +14,7 @@ html, body {
 }
 
 /* ============================
-   SKIP BUTTON — ALWAYS ON TOP
+   SKIP BUTTON — ALWAYS FRONT
 ============================= */
 #skipIntroBtn {
     position: fixed;
@@ -38,7 +37,7 @@ html, body {
 }
 
 /* ============================
-   POWER-ON SCREEN
+   POWER ON SCREEN
 ============================= */
 #start-screen {
     position: fixed;
@@ -48,7 +47,7 @@ html, body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: 2000;
 }
 
 #start-screen img {
@@ -69,13 +68,13 @@ html, body {
 }
 
 @keyframes startPulse {
-    0%   { opacity: 0.45; transform: scale(1); }
-    50%  { opacity: 1;    transform: scale(1.08); }
+    0% { opacity: 0.45; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.08); }
     100% { opacity: 0.45; transform: scale(1); }
 }
 
 /* ============================
-   LOADING TERMINAL TEXT
+   TEXT LOADING DISPLAY
 ============================= */
 #loading-screen {
     display: none;
@@ -83,20 +82,16 @@ html, body {
     inset: 0;
     background: black;
     color: #5fffff;
-    font-size: 22px;
     padding: 40px;
+    font-size: 22px;
     white-space: pre;
-    z-index: 2000;
     line-height: 1.35;
     letter-spacing: 0.05em;
-}
-
-#loading-terminal {
-    max-width: 960px;
+    z-index: 3000;
 }
 
 /* ============================
-   FINAL RASTER BARS — GIF MATCH
+   RASTER BARS (GIF-accurate)
 ============================= */
 #rasterBars {
     position: fixed;
@@ -104,12 +99,9 @@ html, body {
     display: none;
     z-index: 6000;
 
-    /* Slight CRT softness */
+    background-color: #000;
     filter: blur(4px);
 
-    background-color: #000;
-
-    /* The full 30-colour GIF-based palette */
     background-image:
         repeating-linear-gradient(
             180deg,
@@ -136,15 +128,12 @@ html, body {
             #000000 184px,#000000 188px
         );
 
-    /* Height of full colour cycle */
     background-size: 100% 188px;
 
-    /* Smooth infinite scroll ONLY (no jitter) */
     animation: rasterScroll 0.32s linear infinite;
 }
 
-/* Smooth continuous downward motion */
 @keyframes rasterScroll {
-    0%   { background-position-y: 0; }
+    0% { background-position-y: 0; }
     100% { background-position-y: 188px; }
 }
