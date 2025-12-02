@@ -47,34 +47,30 @@
                     <span class="ccg-mode-toggle-label">C64 / Amiga</span>
                 </button>
 
-                <!-- Social control row -->
-                <div class="ccg-social-row" aria-label="Follow Cheeky Commodore Gamer">
+                <!-- Inline social bar -->
+                <div class="ccg-social-inline" aria-label="Follow Cheeky Commodore Gamer">
                     <a class="ccg-social-pill ccg-social-youtube" href="https://www.youtube.com/@CheekyCommodoreGamer?sub_confirmation=1" target="_blank" rel="noopener noreferrer">
-                        <span class="ccg-social-pill-main">Subscribe</span>
-                        <span class="ccg-social-pill-sub">YouTube</span>
+                        Subscribe
                     </a>
                     <a class="ccg-social-pill ccg-social-patreon" href="https://www.patreon.com/CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer">
-                        <span class="ccg-social-pill-main">Support</span>
-                        <span class="ccg-social-pill-sub">Patreon</span>
+                        Support
                     </a>
                     <a class="ccg-social-pill ccg-social-paypal" href="https://www.paypal.com/donate/?hosted_button_id=4C6UZ5YT2ZZ8L" target="_blank" rel="noopener noreferrer">
-                        <span class="ccg-social-pill-main">Donate</span>
-                        <span class="ccg-social-pill-sub">PayPal</span>
+                        Donate
                     </a>
                     <a class="ccg-social-pill ccg-social-x" href="https://x.com/CheekyC64Gamer" target="_blank" rel="noopener noreferrer">
-                        <span class="ccg-social-pill-main">Follow</span>
-                        <span class="ccg-social-pill-sub">X / Twitter</span>
+                        Follow
                     </a>
                     <a class="ccg-social-pill ccg-social-discord" href="https://discord.gg/83Xw9ktAn4" target="_blank" rel="noopener noreferrer">
-                        <span class="ccg-social-pill-main">Join</span>
-                        <span class="ccg-social-pill-sub">Discord</span>
+                        Join
                     </a>
                 </div>
             </div>
         </header>
 
-        <!-- HERO SECTION -->
+        <!-- MAIN -->
         <main class="ccg-main" id="top">
+            <!-- HERO SECTION -->
             <section class="ccg-hero">
                 <div class="ccg-hero-background">
                     <div class="ccg-hero-overlay-grid"></div>
@@ -124,7 +120,7 @@
                             <h3 class="ccg-card-title">Featured Game</h3>
                             <span class="ccg-tag ccg-tag-system" id="featured-game-system">C64 / Amiga</span>
                         </header>
-                        <div class="ccg-card-body ccg-card-body-horizontal">
+                        <div class="ccg-card-body">
                             <a href="#" id="featured-game-link" class="ccg-card-thumb-link">
                                 <div class="ccg-thumb-frame ccg-thumb-frame-big">
                                     <img src="resources/ccgamer_logo.png"
@@ -150,14 +146,15 @@
                         </div>
                     </article>
 
-                    <!-- Featured Video -->
+                    <!-- Featured Video (static highlight, but styled epic) -->
                     <article class="ccg-card ccg-card-featured-video ccg-neon-panel">
                         <header class="ccg-card-header">
                             <h3 class="ccg-card-title">Featured Video</h3>
                             <span class="ccg-tag ccg-tag-video">YouTube</span>
                         </header>
-                        <div class="ccg-card-body ccg-card-body-vertical">
+                        <div class="ccg-card-body ccg-card-body-video">
                             <div class="ccg-video-frame">
+                                <!-- Replace video ID here easily in future -->
                                 <iframe
                                     class="ccg-video-embed"
                                     src="https://www.youtube.com/embed/6IYw6wRW3-0"
@@ -194,8 +191,8 @@
                 </div>
             </section>
 
-            <!-- GENRES + COLLECTIONS -->
-            <section class="ccg-section ccg-section-genres" aria-label="Browse by genre and collection">
+            <!-- GENRES -->
+            <section class="ccg-section ccg-section-genres" aria-label="Browse by genre">
                 <div class="ccg-section-header">
                     <h2 class="ccg-section-title">Browse by Genre</h2>
                     <p class="ccg-section-subtitle">
@@ -203,8 +200,8 @@
                     </p>
                 </div>
 
-                <!-- GENRES -->
-                <div class="ccg-genre-grid" aria-label="Game genres">
+                <div class="ccg-genre-grid">
+                    <!-- Pure genres only -->
                     <a href="games/genres/action-adventure-games.html" class="ccg-genre-card ccg-neon-panel">
                         <img src="resources/images/genres/action-adventure.png" alt="Action Adventure" class="ccg-genre-image">
                     </a>
@@ -251,27 +248,29 @@
                         <img src="resources/images/genres/strategy.png" alt="Strategy" class="ccg-genre-image">
                     </a>
                 </div>
+            </section>
 
-                <!-- COLLECTIONS -->
-                <div class="ccg-section-header ccg-section-header-collections">
-                    <h3 class="ccg-section-title-sub">Curated Collections</h3>
+            <!-- COLLECTIONS -->
+            <section class="ccg-section ccg-section-collections" aria-label="Curated collections">
+                <div class="ccg-section-header">
+                    <h2 class="ccg-section-title">Curated Collections</h2>
                     <p class="ccg-section-subtitle">
-                        Special sets hand-picked by Cheeky Commodore Gamer – cartridges, licensed titles, BPJS and more.
+                        Hand-picked sets of games – top community favourites, cartridges, licensed titles and more.
                     </p>
                 </div>
 
-                <div class="ccg-genre-grid ccg-collection-grid" aria-label="Game collections">
+                <div class="ccg-genre-grid ccg-collections-grid">
+                    <a href="games/genres/top-picks.html" class="ccg-genre-card ccg-neon-panel">
+                        <img src="resources/images/genres/top-picks.png" alt="Top Picks" class="ccg-genre-image">
+                    </a>
                     <a href="games/genres/bpjs-indexed-games.html" class="ccg-genre-card ccg-neon-panel">
                         <img src="resources/images/genres/bpjs.png" alt="BPJS Indexed" class="ccg-genre-image">
                     </a>
-                    <a href="games/genres/cartridge-games.html" class="ccg-genre-card ccg-neon-panel">
-                        <img src="resources/images/genres/cartridge.png" alt="Cartridge Games" class="ccg-genre-image">
-                    </a>
                     <a href="games/genres/licensed-games.html" class="ccg-genre-card ccg-neon-panel">
-                        <img src="resources/images/genres/licensed.png" alt="Licensed Games" class="ccg-genre-image">
+                        <img src="resources/images/genres/licensed.png" alt="Licensed" class="ccg-genre-image">
                     </a>
-                    <a href="games/genres/top-picks.html" class="ccg-genre-card ccg-neon-panel">
-                        <img src="resources/images/genres/top-picks.png" alt="Top Picks" class="ccg-genre-image">
+                    <a href="games/genres/cartridge-games.html" class="ccg-genre-card ccg-neon-panel">
+                        <img src="resources/images/genres/cartridge.png" alt="Cartridge" class="ccg-genre-image">
                     </a>
                 </div>
             </section>
@@ -290,7 +289,7 @@
                 </div>
             </section>
 
-            <!-- MANUALS / EMULATION / QUIZ PROMO -->
+            <!-- MANUALS / QUIZ / EMULATION -->
             <section class="ccg-section ccg-section-utility" aria-label="Manuals, quizzes and emulation guides">
                 <div class="ccg-utility-grid">
                     <article class="ccg-card ccg-neon-panel">
@@ -370,7 +369,7 @@
         </footer>
     </div>
 
-    <!-- Global JS (already in your repo) -->
+    <!-- Global JS -->
     <script src="js/ccg-mode-engine.js" defer></script>
     <script src="js/ccj-global.js" defer></script>
 
@@ -393,24 +392,14 @@
             }
 
             function safeThumbnail(game) {
-                if (game.thumbnail) {
-                    return "resources/images/thumbnails/all/" + game.thumbnail;
-                }
-                if (game.thumb) {
-                    return "resources/images/thumbnails/all/" + game.thumb;
-                }
+                if (game.thumbnail) return "resources/images/thumbnails/all/" + game.thumbnail;
+                if (game.thumb) return "resources/images/thumbnails/all/" + game.thumb;
                 return "resources/ccgamer_logo.png";
             }
 
             function gameUrl(game) {
-                if (game.id) {
-                    const encoded = encodeURIComponent(game.id);
-                    return "games/game.html?id=" + encoded;
-                }
-                if (game.slug) {
-                    const encoded = encodeURIComponent(game.slug);
-                    return "games/game.html?id=" + encoded;
-                }
+                if (game.id) return "games/game.html?id=" + encodeURIComponent(game.id);
+                if (game.slug) return "games/game.html?id=" + encodeURIComponent(game.slug);
                 return "games/index.html";
             }
 
@@ -425,8 +414,7 @@
             }
 
             function formatSystem(game) {
-                if (!game.system) return "C64 / Amiga";
-                return game.system;
+                return game.system || "C64 / Amiga";
             }
 
             function createHighlightCard(game) {
@@ -477,31 +465,20 @@
                 const url = gameUrl(game);
                 const thumb = safeThumbnail(game);
 
-                if (featuredGameTitleEl) {
-                    featuredGameTitleEl.textContent = game.title || "Featured Game";
-                }
-                if (featuredGameSystemEl) {
-                    featuredGameSystemEl.textContent = formatSystem(game);
-                }
+                if (featuredGameTitleEl) featuredGameTitleEl.textContent = game.title || "Featured Game";
+                if (featuredGameSystemEl) featuredGameSystemEl.textContent = formatSystem(game);
                 if (featuredGameThumbEl) {
                     featuredGameThumbEl.src = thumb;
                     featuredGameThumbEl.alt = game.title || "Featured game cover";
                 }
-                if (featuredGameLinkEl) {
-                    featuredGameLinkEl.href = url;
-                }
-                if (featuredGamePlayEl) {
-                    featuredGamePlayEl.href = url;
-                }
+                if (featuredGameLinkEl) featuredGameLinkEl.href = url;
+                if (featuredGamePlayEl) featuredGamePlayEl.href = url;
+
                 if (featuredGameSummaryEl) {
                     let summary = "";
-                    if (game.summary) {
-                        summary = game.summary;
-                    } else if (game.description) {
-                        summary = game.description;
-                    } else {
-                        summary = "A classic pulled from the Cheeky Commodore Gamer library. Click through for screenshots, video and more details.";
-                    }
+                    if (game.summary) summary = game.summary;
+                    else if (game.description) summary = game.description;
+                    else summary = "A classic pulled from the Cheeky Commodore Gamer library. Click through for screenshots, video and more details.";
                     featuredGameSummaryEl.textContent = summary;
                 }
             }
@@ -509,12 +486,8 @@
             function populateHighlights(games) {
                 if (!highlightGamesStripEl) return;
                 highlightGamesStripEl.innerHTML = "";
-
                 const picks = pickRandom(games, 10);
-                picks.forEach(game => {
-                    const card = createHighlightCard(game);
-                    highlightGamesStripEl.appendChild(card);
-                });
+                picks.forEach(game => highlightGamesStripEl.appendChild(createHighlightCard(game)));
             }
 
             async function loadGames() {
@@ -535,7 +508,7 @@
                         featuredGameTitleEl.textContent = "Unable to load featured game";
                     }
                     if (featuredGameSummaryEl) {
-                        featuredGameSummaryEl.textContent = "There was a problem loading the game database. Please try again later or browse the full games list.";
+                        featuredGameSummaryEl.textContent = "There was a problem loading the game database. This may be due to opening the file directly rather than via a web server. It will work correctly on GitHub Pages.";
                     }
                 }
             }
