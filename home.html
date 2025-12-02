@@ -19,7 +19,6 @@
            CCG — HOME PAGE NO-CRT VERSION (NO HUM)
            ========================================================== */
 
-        /* REMOVE ALL CRT EFFECTS COMPLETELY */
         .crt-overlay,
         .crt-scanlines,
         .ccg-crt,
@@ -31,13 +30,11 @@
             animation: none !important;
         }
 
-        /* REMOVE RGB SEPARATION & SUBPIXEL SHIMMER */
         .ccg-rgb::before,
         .ccg-rgb::after {
             display: none !important;
         }
 
-        /* REMOVE ANY REMAINING FLICKER / JITTER */
         .ccg-flicker,
         .ccg-pulse,
         .ccg-shimmer,
@@ -45,14 +42,12 @@
             animation: none !important;
         }
 
-        /* CLEAN STATIC BACKGROUND */
         body {
-            background: #000718; /* dark retro blue-black */
+            background: #000718;
             color: #ffffff;
             overflow-x: hidden;
         }
 
-        /* HEADER — clean, bright, neon accents */
         .ccg-header {
             display: flex;
             justify-content: space-between;
@@ -73,7 +68,6 @@
             margin-left: 12px;
         }
 
-        /* MODE TOGGLE BUTTON */
         #mode-toggle {
             padding: 10px 18px;
             font-family: "VT323", monospace;
@@ -84,7 +78,6 @@
             cursor: pointer;
         }
 
-        /* MAIN PANEL */
         .ccg-panel {
             max-width: 1200px;
             margin: 30px auto;
@@ -101,7 +94,6 @@
             text-align: center;
         }
 
-        /* GENRE GRID */
         .genre-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -135,7 +127,6 @@
             color: var(--ccg-accent);
         }
 
-        /* FOOTER */
         footer {
             text-align: center;
             color: #777;
@@ -149,7 +140,6 @@
 
 <body class="ccg-body ccg-mode-c64">
 
-    <!-- HEADER -->
     <header class="ccg-header">
         <div style="display:flex;align-items:center;">
             <img src="resources/CCGAMER LOGO.png" class="ccg-logo">
@@ -159,14 +149,12 @@
         <button id="mode-toggle">SYSTEM MODE</button>
     </header>
 
-    <!-- MAIN PANEL -->
     <main>
         <section class="ccg-panel">
             <div class="ccg-panel-title">GAME GENRES</div>
 
             <div class="genre-grid">
                 
-                <!-- Auto-linked genre cards -->
                 <a class="genre-card" href="games/genres/arcade-games.html">
                     <img src="resources/images/genres/arcade.png">
                     <div class="genre-label">ARCADE</div>
@@ -217,7 +205,8 @@
                     <div class="genre-label">RACING</div>
                 </a>
 
-                <a class="genre-card" href="games/genres/role-playing-games.html">
+                <!-- 🔥 FIXED RPG LINK -->
+                <a class="genre-card" href="games/genres/rpg-games.html">
                     <img src="resources/images/genres/role-playing.png">
                     <div class="genre-label">RPG</div>
                 </a>
@@ -250,7 +239,6 @@
         © 2025 Cheeky Commodore Gamer — All Rights Reserved
     </footer>
 
-    <!-- Scripts -->
     <script src="js/ccg-mode-engine.js" defer></script>
 
 </body>
