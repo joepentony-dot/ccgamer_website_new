@@ -188,44 +188,35 @@ body.intro-body {
 
     /* Chunky 10px-ish stripes, colours matching your GIF */
     background-image:
-        repeating-linear-gradient(
-            180deg,
+    repeating-linear-gradient(
+        180deg,
 
-            /* dark border gap */
-            #000000 0px, #000000 6px,
+        /* dark edges */
+        #000000 0px, #000000 4px,
 
-            /* purple band */
-            #7c2cff 6px, #7c2cff 16px,
+        #7c2cff 4px,  #7c2cff 14px,
+        #00e0ff 14px, #00e0ff 24px,
+        #3cff54 24px, #3cff54 34px,
+        #ff3535 34px, #ff3535 44px,
+        #ff7f27 44px, #ff7f27 54px,
+        #ffd38c 54px, #ffd38c 64px,
+        #fff23c 64px, #fff23c 74px,
+        #c4c4c4 74px, #c4c4c4 84px,
+        #384aff 84px, #384aff 94px,
+        #8e00ff 94px, #8e00ff 104px,
+        #00ffe0 104px, #00ffe0 114px,
+        #39ff3c 114px, #39ff3c 124px,
+        #ff4545 124px, #ff4545 134px,
+        #ffa03d 134px,#ffa03d 144px,
+        #ffe6a8 144px,#ffe6a8 154px,
+        #fff870 154px,#fff870 164px,
+        #d2d2d2 164px,#d2d2d2 174px,
+        #2f40ff 174px,#2f40ff 184px,
 
-            /* cyan band */
-            #00f6ff 16px, #00f6ff 26px,
+        #000000 184px, #000000 188px
+    );
 
-            /* bright green band */
-            #54ff39 26px, #54ff39 36px,
-
-            /* red band */
-            #ff2626 36px, #ff2626 46px,
-
-            /* orange band */
-            #ff8d24 46px, #ff8d24 56px,
-
-            /* peach band */
-            #ffcc8a 56px, #ffcc8a 66px,
-
-            /* yellow band */
-            #ffe857 66px, #ffe857 76px,
-
-            /* grey band */
-            #b4b4b4 76px, #b4b4b4 86px,
-
-            /* blue band */
-            #2c5dff 86px, #2c5dff 96px,
-
-            /* darker gap */
-            #000000 96px, #000000 100px
-        );
-
-    background-size: 100% 100px;
+background-size: 100% 188px;
 
     /* No pulsing – just scroll + tiny jitter */
     animation:
@@ -248,14 +239,6 @@ body.intro-body {
     0%   { opacity: 0.95; }
     50%  { opacity: 0.75; }
     100% { opacity: 1; }
-}
-
-@keyframes rasterJitterX {
-    0%   { transform: translateX(0);   }
-    25%  { transform: translateX(-2px);}
-    50%  { transform: translateX(1px); }
-    75%  { transform: translateX(-1px);}
-    100% { transform: translateX(0);   }
 }
 
 /* =======================================================================
