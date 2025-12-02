@@ -182,7 +182,7 @@ body.intro-body {
     display: none;
 
     background-color: #000;
-    filter: blur(2.5px);
+    filter: blur(3.5px);
 
     background-image:
         repeating-linear-gradient(
