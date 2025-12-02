@@ -1,6 +1,6 @@
 /* ==========================================================
    CCG MODE ENGINE — UNIVERSAL SYSTEM SWITCHER
-   Supports: C64 / Amiga / ZX Dev Lab (Easter Egg)
+   Now supports both data-mode AND CSS class switching.
    ========================================================== */
 
 window.CCGModeEngine = (function () {
@@ -25,22 +25,31 @@ window.CCGModeEngine = (function () {
     }
 
     /* -------------------------------------------------------
-       Apply mode → sets body attribute + emits events
+       Apply mode → sets body attribute AND CSS classes
        ------------------------------------------------------- */
     function applyMode(mode) {
+
+        // 1) Store in dataset (your existing system)
         body.dataset.mode = mode;
 
-        // Global CSS transition smoother
+        // 2) Apply CSS classes for new home.html
+        body.classList.remove("ccg-mode-c64", "ccg-mode-amiga", "ccg-mode-zx");
+
+        if (mode === "c64")  body.classList.add("ccg-mode-c64");
+        if (mode === "amiga") body.classList.add("ccg-mode-amiga");
+        if (mode === "zx")    body.classList.add("ccg-mode-zx");
+
+        // Smooth transition
         body.style.transition = "all 0.35s ease-out";
 
-        // Custom global event for all pages
+        // Global mode-change event
         document.dispatchEvent(new CustomEvent("ccg:modeChange", {
             detail: { mode }
         }));
     }
 
     /* -------------------------------------------------------
-       Cycle mode (C64 → Amiga → C64 unless ZX triggered)
+       Cycle mode (C64 → Amiga → C64)
        ------------------------------------------------------- */
     function toggleMode() {
         const current = getMode();
