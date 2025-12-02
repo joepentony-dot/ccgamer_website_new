@@ -1,63 +1,66 @@
-const GAMES_JSON_URL = '../../games/games.json';
+/* ============================================================
+   CCG — ULTIMATE GENRE LOADER (Option A — Ultra Fast Edition)
+   Loads /games/games.json and filters by <body data-genre="">
+   Fully compatible with GitHub Pages & Fasthosts.
+   No styling, no animations — CSS can be added later.
+   ============================================================ */
 
-document.addEventListener('DOMContentLoaded', () => {
-    const body = document.body;
-    const genreSlug = body.getAttribute('data-genre');
-    if (!genreSlug) return;
+document.addEventListener("DOMContentLoaded", () => {
 
-    const countEl = document.getElementById('genreGamesCount');
-    const gridEl = document.getElementById('genreGamesGrid');
+    const genreSlug = document.body.getAttribute("data-genre");
+    const gamesCountEl = document.getElementById("genreGamesCount");
+    const gamesGridEl = document.getElementById("genreGamesGrid");
 
-    fetch(GAMES_JSON_URL)
-        .then(res => res.json())
-        .then(data => {
-            let games = Array.isArray(data) ? data : data.games || [];
+    if (!genreSlug) {
+        console.error("❌ No data-genre found on body.");
+        return;
+    }
 
-            const filtered = games.filter(g => {
-                const g1 = (g.genre || '').toLowerCase();
-                const g2 = Array.isArray(g.genres) ? g.genres.map(x => x.toLowerCase()) : [];
-                const p1 = (g.primaryGenre || '').toLowerCase();
-                const p2 = (g.secondaryGenre || '').toLowerCase();
-                const slug = genreSlug.toLowerCase();
-                return g1 === slug || g2.includes(slug) || p1 === slug || p2 === slug;
-            });
+    const gamesJsonUrl = "../../games/games.json";
 
-            countEl.textContent = filtered.length.toString();
-
-            const frag = document.createDocumentFragment();
-
-            filtered.forEach(game => {
-                const item = document.createElement('div');
-                item.className = 'game-item';
-
-                const img = document.createElement('img');
-                img.loading = 'lazy';
-                img.alt = game.title || 'Game';
-                img.src = game.thumbnail || '../../resources/images/thumbnails/fallback.jpg';
-                img.onerror = () => {
-                    img.src = '../../resources/images/thumbnails/fallback.jpg';
-                };
-
-                const title = document.createElement('div');
-                title.className = 'game-title';
-                title.textContent = game.title || 'Unknown Title';
-
-                const system = document.createElement('div');
-                system.className = 'game-system';
-                system.textContent = game.system || '';
-
-                item.appendChild(img);
-                item.appendChild(title);
-                item.appendChild(system);
-
-                frag.appendChild(item);
-            });
-
-            gridEl.innerHTML = '';
-            gridEl.appendChild(frag);
+    fetch(gamesJsonUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Failed to load games.json");
+            }
+            return response.json();
         })
-        .catch(() => {
-            countEl.textContent = '0';
-            gridEl.innerHTML = '<p>Unable to load games for this category.</p>';
+        .then(allGames => {
+
+            // filter games whose genre matches the page slug
+            const filteredGames = allGames.filter(game => {
+                if (!game.genres || !Array.isArray(game.genres)) return false;
+
+                // normalise slugs
+                const cleanGenres = game.genres.map(g =>
+                    g.trim().toLowerCase().replace(/\s+/g, "-")
+                );
+
+                return cleanGenres.includes(genreSlug.trim().toLowerCase());
+            });
+
+            // update count
+            gamesCountEl.textContent = filteredGames.length + " games found";
+
+            // inject cards
+            gamesGridEl.innerHTML = filteredGames
+                .map(game => {
+                    const thumb = game.thumbnail
+                        ? "../../resources/images/thumbnails/all/" + game.thumbnail
+                        : "../../resources/images/thumbnails/all/_fallback.jpg";
+
+                    return `
+                        <a class="genre-game-card" href="../game.html?id=${encodeURIComponent(game.id)}">
+                            <img src="${thumb}" alt="${game.title}" onerror="this.src='../../resources/images/thumbnails/all/_fallback.jpg'">
+                            <div class="genre-game-title">${game.title}</div>
+                        </a>
+                    `;
+                })
+                .join("");
+        })
+        .catch(err => {
+            console.error("❌ Genre Loader Error:", err);
+            gamesCountEl.textContent = "Failed to load games.";
+            gamesGridEl.innerHTML = "<p>Error loading games.</p>";
         });
 });
