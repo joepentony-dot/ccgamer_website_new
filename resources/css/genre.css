@@ -71,7 +71,7 @@ body.ccg-mode-amiga {
     text-align: center;
 }
 
-/* GRID MASTER STYLE */
+/* GRID */
 #genreGamesGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -79,8 +79,12 @@ body.ccg-mode-amiga {
     padding: 20px 0;
 }
 
-/* GAME CARD */
-.game-card {
+/* ============================================================
+   GAME CARD — VISUAL WOW STYLE
+   ============================================================ */
+
+.game-card,
+.genre-game-card { /* support both class sets */
     background: rgba(10, 18, 40, 0.85);
     border: 2px solid var(--ccg-accent-soft);
     border-radius: 10px;
@@ -92,15 +96,16 @@ body.ccg-mode-amiga {
     overflow: hidden;
 }
 
-/* Hover WOW effect */
-.game-card:hover {
+.game-card:hover,
+.genre-game-card:hover {
     transform: translateY(-6px) scale(1.03);
     border-color: var(--ccg-accent);
     box-shadow: 0 0 18px var(--ccg-accent);
 }
 
-/* GAME THUMBNAIL */
-.game-card img {
+/* THUMBNAIL */
+.game-card img,
+.genre-game-card img {
     width: 100%;
     height: 135px;
     object-fit: cover;
@@ -109,14 +114,16 @@ body.ccg-mode-amiga {
     transition: 0.25s;
 }
 
-/* On hover only glow the image */
-.game-card:hover img {
+/* Hover glow */
+.game-card:hover img,
+.genre-game-card:hover img {
     border-color: var(--ccg-accent);
     box-shadow: 0 0 14px var(--ccg-accent);
 }
 
-/* GAME TITLE */
-.game-title {
+/* TITLE */
+.game-title,
+.genre-game-title {
     font-family: "VT323";
     margin-top: 10px;
     font-size: 22px;
@@ -130,7 +137,8 @@ body.ccg-mode-amiga {
         grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     }
 
-    .game-card img {
+    .game-card img,
+    .genre-game-card img {
         height: 120px;
     }
 
