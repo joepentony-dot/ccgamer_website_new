@@ -1,279 +1,430 @@
 /* ============================================================
-   EPIC MODE — HOME PAGE VISUAL OVERHAUL
+   HOME.CSS — EPIC MODE (LEVEL 3)
    Cheeky Commodore Gamer 😇🕹️👌
-   Full neon glow overhaul for 2025 aesthetic
+   Fully rebuilt for neon glow, CRT depth & polished UI
 ============================================================ */
 
-/* ============================
-   GLOBAL PAGE LAYOUT
-=============================== */
+/* ------------------------------------------------------------
+   GLOBAL PAGE SETTINGS
+------------------------------------------------------------ */
 body.home-page {
-    background: radial-gradient(circle at 50% 0%, #001326, #000814 60%, #000000);
-    color: #d8e9ff;
+    background: radial-gradient(circle at 50% 20%, #04121f 0%, #020912 60%, #000000 100%);
+    color: #d6f1ff;
+    font-family: "Press Start 2P", monospace;
     overflow-x: hidden;
+    min-height: 100vh;
 }
 
-.ccg-main {
-    padding-top: 40px;
-}
-
-/* ============================
-   HEADER — FULL EPIC MODE
-=============================== */
-.ccg-header {
+/* ------------------------------------------------------------
+   EPIC HEADER WRAPPER
+------------------------------------------------------------ */
+.epic-header {
     width: 100%;
-    padding: 22px 40px;
+    padding: 14px 0 20px;
+    background: linear-gradient(
+        180deg,
+        rgba(0, 60, 110, 0.40) 0%,
+        rgba(0, 20, 40, 0.90) 80%
+    );
+    box-shadow: 0 0 40px rgba(0, 180, 255, 0.35),
+                0 0 80px rgba(0, 140, 255, 0.15);
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+    backdrop-filter: blur(6px);
+}
+
+.ccg-header-inner {
+    width: 92%;
+    margin: auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(0, 10, 20, 0.75);
-    backdrop-filter: blur(14px);
-    box-shadow: 0 0 60px #0af inset, 0 0 140px #0af4;
-    border-bottom: 1px solid rgba(0, 180, 255, 0.25);
+}
+
+/* ------------------------------------------------------------
+   BRAND LOGO + TEXT
+------------------------------------------------------------ */
+.epic-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
 }
 
 .ccg-logo {
-    width: 80px;
-    filter: drop-shadow(0 0 12px #0ff) drop-shadow(0 0 24px #0ff);
+    width: 75px;
+    height: auto;
+    filter: drop-shadow(0 0 12px #00eaffaa);
 }
 
-.ccg-brand-title {
-    font-size: 1.65rem;
-    font-weight: 700;
-    color: #6df3ff;
-    text-shadow: 0 0 8px #46d4ff, 0 0 18px #2d9eff;
-}
-
-.ccg-brand-subtitle {
-    color: #92d7ff;
-    font-size: 0.85rem;
-    margin-top: 4px;
-    opacity: 0.9;
-}
-
-/* ----------------------------
-   NAVIGATION LINKS
----------------------------- */
-.ccg-main-nav .nav-link {
-    position: relative;
-    margin: 0 14px;
-    padding: 8px 14px;
-    font-size: 1.05rem;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    color: #bde6ff;
-    transition: 0.25s ease;
-}
-
-.ccg-main-nav .nav-link:hover,
-.ccg-main-nav .nav-link-active {
-    color: #fff;
-    text-shadow: 0 0 10px #9cf0ff, 0 0 20px #0ff;
-}
-
-.nav-link-active {
-    border-bottom: 2px solid #6df3ff;
-}
-
-/* ----------------------------
-   MODE TOGGLE — EPIC EDITION
----------------------------- */
-#ccg-mode-toggle {
-    background: linear-gradient(145deg, #003b60, #001d33);
-    border: 1px solid #00cfff;
-    padding: 10px 24px;
-    border-radius: 22px;
-    font-size: 1rem;
-    color: #bdf7ff;
-    cursor: pointer;
-    transition: 0.25s;
-    box-shadow: 0 0 18px #00d0ff99;
-}
-
-#ccg-mode-toggle:hover {
-    color: #fff;
-    box-shadow: 0 0 30px #00eaff, 0 0 70px #00b5ff;
-}
-
-/* ----------------------------
-   SOCIAL PILL BUTTONS (EPIC)
----------------------------- */
-.ccg-header-social-row {
+.brand-text-group {
     display: flex;
-    gap: 12px;
+    flex-direction: column;
 }
 
-.ccg-social-pill {
-    padding: 8px 20px;
-    border-radius: 20px;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.85rem;
+.brand-title {
+    font-size: 1.45rem;
+    color: #7ee6ff;
+    text-shadow: 0 0 8px #00eaff,
+                 0 0 18px #008eff;
+    font-family: "Orbitron", sans-serif;
+    font-weight: 700;
     letter-spacing: 1px;
-    transition: 0.25s;
 }
 
-/* YouTube red */
-.ccg-social-youtube {
-    background: #ff0030;
-    color: #fff;
-    box-shadow: 0 0 14px #ff0030;
-}
-.ccg-social-youtube:hover {
-    box-shadow: 0 0 25px #ff4060, 0 0 45px #ff0030;
-    transform: translateY(-2px);
+.brand-subtitle {
+    font-size: 0.7rem;
+    margin-top: 2px;
+    color: #99d2ff;
 }
 
-/* Patreon orange */
-.ccg-social-patreon {
-    background: #ff7b00;
-    color: #fff;
-    box-shadow: 0 0 14px #ff7b00;
+/* ------------------------------------------------------------
+   NAVIGATION BAR (EPIC)
+------------------------------------------------------------ */
+.epic-nav {
+    display: flex;
+    gap: 32px;
 }
 
-.ccg-social-patreon:hover {
-    box-shadow: 0 0 30px #ffaa47;
-    transform: translateY(-2px);
+.epic-nav .nav-item {
+    color: #b9dcff;
+    font-size: 1rem;
+    text-decoration: none;
+    position: relative;
+    transition: 0.25s ease;
+    letter-spacing: 1px;
 }
 
-/* PayPal blue */
-.ccg-social-paypal {
-    background: #004fdd;
-    color: #fff;
-    box-shadow: 0 0 14px #0074ff;
-}
-.ccg-social-paypal:hover {
-    box-shadow: 0 0 30px #3ca6ff;
+.epic-nav .nav-item:hover {
+    color: #ffffff;
+    text-shadow: 0 0 12px #00c8ff, 0 0 30px #00aaff;
 }
 
-/* X.com */
-.ccg-social-x {
-    background: #111;
-    color: #fff;
-    box-shadow: 0 0 14px #333;
+.epic-nav .nav-active {
+    color: #ffffff;
+    text-shadow: 0 0 14px #ff00ff,
+                 0 0 32px #a800ff;
 }
 
-/* Discord purple */
-.ccg-social-discord {
-    background: #5865f2;
-    color: #fff;
-    box-shadow: 0 0 14px #5865f2;
-}
-.ccg-social-discord:hover {
-    box-shadow: 0 0 30px #7d88ff;
+/* ------------------------------------------------------------
+   MODE TOGGLE — C64 / AMIGA
+------------------------------------------------------------ */
+.epic-mode-toggle {
+    padding: 10px 24px;
+    border-radius: 40px;
+    border: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+    background: radial-gradient(circle, #0075ff, #003cff);
+    color: white;
+    font-family: "Orbitron";
+    box-shadow: 0 0 12px #009dff, 0 0 28px #0044ff;
+    transition: 0.3s;
 }
 
-/* ============================
-   HERO SECTION — EPIC MODE
-=============================== */
+.epic-mode-toggle:hover {
+    box-shadow: 0 0 18px #00ccff, 0 0 50px #0066ff;
+    transform: scale(1.05);
+}
+
+/* ------------------------------------------------------------
+   SOCIAL MEDIA BUTTONS — FULL NEON
+------------------------------------------------------------ */
+.epic-social {
+    display: flex;
+    gap: 14px;
+}
+
+.social-btn {
+    padding: 10px 22px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    text-decoration: none;
+    font-family: "Orbitron";
+    letter-spacing: 1px;
+    color: white;
+    transition: 0.25s ease;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.social-btn.youtube {
+    background: #ff003c;
+    box-shadow: 0 0 10px #ff004c, 0 0 28px #ff005a;
+}
+
+.social-btn.patreon {
+    background: #ff7a00;
+    box-shadow: 0 0 10px #ff7a00, 0 0 26px #ff5500;
+}
+
+.social-btn.paypal {
+    background: #0075ff;
+    box-shadow: 0 0 10px #007bff, 0 0 26px #007aff;
+}
+
+.social-btn.xdotcom {
+    background: #0e0e0e;
+    box-shadow: 0 0 10px #ffffff22;
+}
+
+.social-btn.discord {
+    background: #5562ea;
+    box-shadow: 0 0 10px #6675ff, 0 0 28px #4455ff;
+}
+
+.social-btn:hover {
+    transform: scale(1.08);
+    filter: brightness(1.2);
+}
+
+/* ------------------------------------------------------------
+   HERO SECTION
+------------------------------------------------------------ */
 .ccg-hero {
-    padding: 80px 0;
+    width: 100%;
+    min-height: 550px;
+    margin-top: 40px;
+    position: relative;
+}
+
+.ccg-hero-background {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, #001d33 0%, #00040a 85%);
+}
+
+.ccg-hero-images {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    z-index: 3;
+}
+
+.ccg-hero-image {
+    width: 42%;
+    max-width: 460px;
+    filter: drop-shadow(0 0 18px #00c8ff);
+    opacity: 0.94;
+    transition: 0.4s;
+}
+
+.ccg-hero-image:hover {
+    transform: scale(1.03);
+}
+
+.ccg-hero-content {
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 28px;
+    text-align: center;
+    z-index: 5;
     position: relative;
 }
 
 .ccg-hero-title {
-    font-size: 3rem;
-    color: #f6f8ff;
-    text-shadow: 0 0 20px #8bf0ff, 0 0 40px #00e7ff;
+    font-size: 2.6rem;
+    color: #8fefff;
+    text-shadow: 0 0 18px #00efff, 0 0 28px #009eff;
+    margin-bottom: 16px;
+    font-family: "Orbitron";
 }
 
 .ccg-hero-text {
-    font-size: 1.2rem;
-    color: #bde8ff;
-    margin-top: 20px;
-    max-width: 700px;
+    width: 70%;
+    margin: 10px auto 25px;
+    color: #cfefff;
+    line-height: 1.8rem;
+    font-size: 1rem;
 }
 
-/* Hero buttons */
 .ccg-btn {
-    padding: 12px 24px;
-    border-radius: 24px;
-    font-size: 1rem;
+    padding: 14px 28px;
+    border-radius: 30px;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
     letter-spacing: 1px;
-    transition: 0.25s;
+    font-family: "Orbitron";
+    transition: 0.3s ease;
 }
 
 .ccg-btn-primary {
-    background: #00caff;
-    color: #001122;
-    box-shadow: 0 0 20px #00dfff;
+    background: #00aaff;
+    color: black;
+    box-shadow: 0 0 14px #00b7ff, 0 0 28px #0070ff;
 }
+
 .ccg-btn-primary:hover {
-    box-shadow: 0 0 40px #00eaff;
-    transform: translateY(-2px);
+    transform: scale(1.05);
+    box-shadow: 0 0 20px #00e5ff, 0 0 40px #007aff;
 }
 
 .ccg-btn-secondary {
-    background: transparent;
-    border: 1px solid #00caff;
-    color: #00caff;
+    background: #ff00dd;
+    color: white;
+    box-shadow: 0 0 14px #ff00f7, 0 0 30px #a800ff;
 }
+
 .ccg-btn-secondary:hover {
-    background: rgba(0, 200, 255, 0.12);
+    transform: scale(1.05);
+    box-shadow: 0 0 22px #ff65ff, 0 0 40px #b900ff;
 }
 
-/* ============================
-   FEATURED CARDS
-=============================== */
+/* ------------------------------------------------------------
+   FEATURED SECTION
+------------------------------------------------------------ */
+.ccg-featured-grid {
+    width: 92%;
+    margin: 40px auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 34px;
+}
+
 .ccg-card {
+    background: rgba(0,0,0,0.25);
+    border: 1px solid rgba(0,150,255,0.35);
     border-radius: 22px;
-    background: rgba(0, 22, 40, 0.88);
-    box-shadow: 0 0 40px #0af4;
-    border: 1px solid rgba(0, 180, 255, 0.35);
+    padding: 24px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 18px #007eff55;
+    transition: 0.3s ease;
 }
 
-/* Video embed fix */
-.ccg-video-frame iframe {
+.ccg-card:hover {
+    transform: scale(1.015);
+    box-shadow: 0 0 26px #009dff,
+                0 0 50px #0066ff;
+}
+
+.ccg-thumb-frame-big {
     width: 100%;
-    height: 280px;
+    padding-bottom: 62%;
     border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid #004477;
+    background: #00131e;
+    box-shadow: inset 0 0 22px #003355;
 }
 
-/* ============================
-   GENRE GRID FIX
-=============================== */
+.ccg-thumb-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ------------------------------------------------------------
+   SECTION HEADERS
+------------------------------------------------------------ */
+.ccg-section-title {
+    text-align: center;
+    font-size: 2rem;
+    color: #8fefff;
+    text-shadow: 0 0 14px #00d4ff;
+    margin-bottom: 10px;
+}
+
+.ccg-section-subtitle {
+    text-align: center;
+    font-size: 1rem;
+    color: #a8dfff;
+    margin-bottom: 30px;
+}
+
+/* ------------------------------------------------------------
+   GENRE GRID
+------------------------------------------------------------ */
+.ccg-genre-grid {
+    width: 92%;
+    margin: auto;
+    display: grid;
+    gap: 22px;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+}
+
+.ccg-genre-card {
+    display: block;
+    padding: 6px;
+    border-radius: 12px;
+    background: #00121d;
+    border: 1px solid #003a55;
+    transition: 0.3s;
+    overflow: hidden;
+    box-shadow: 0 0 14px #003d55aa;
+}
+
+.ccg-genre-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 22px #00c8ff;
+}
+
 .ccg-genre-image {
     width: 100%;
-    border-radius: 20px;
-    box-shadow: 0 0 16px #00dfff66;
-    transition: 0.25s;
+    border-radius: 10px;
 }
 
-.ccg-genre-image:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 0 30px #00eaff;
+/* ------------------------------------------------------------
+   RANDOM HIGHLIGHTS STRIP
+------------------------------------------------------------ */
+.ccg-game-strip {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 20px;
+    padding: 16px 6%;
 }
 
-/* Reduced scale to prevent clipping */
-.ccg-genre-card {
-    transform: scale(0.92);
-}
-
-/* ============================
-   HIGHLIGHTS STRIP FIX
-=============================== */
 .ccg-game-strip-card {
-    border-radius: 18px;
-    background: rgba(0, 18, 28, 0.88);
-    border: 1px solid #003e66;
-    box-shadow: 0 0 20px #005f99aa;
+    min-width: 200px;
+    background: #00121d;
+    border-radius: 12px;
+    border: 1px solid #003a55;
+    padding: 12px;
+    box-shadow: 0 0 14px #003d55aa;
+    transition: 0.28s ease;
 }
 
-.ccg-thumb-frame-strip img {
-    border-radius: 14px;
+.ccg-game-strip-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 26px #00baff;
 }
 
-/* ============================
-   FOOTER — CLEAN MODE
-=============================== */
+/* ------------------------------------------------------------
+   UTILITY CARDS (Manuals / Quiz / Guide)
+------------------------------------------------------------ */
+.ccg-utility-grid {
+    width: 92%;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 24px;
+}
+
+/* ------------------------------------------------------------
+   FOOTER
+------------------------------------------------------------ */
 .ccg-footer {
-    padding: 50px 0;
-    background: #001e26;
-    border-top: 1px solid #003f55;
-    box-shadow: 0 0 60px #002f40 inset;
+    margin-top: 80px;
+    padding: 40px 0;
+    background: #00040a;
+    text-align: center;
+    border-top: 1px solid #002a44;
 }
 
 .ccg-footer-text {
-    font-size: 0.95rem;
-    color: #9bd5ff;
+    color: #8fefff;
+    margin-bottom: 8px;
+}
+
+.ccg-footer-links a {
+    color: #9ed9ff;
+    text-decoration: none;
+    margin: 0 6px;
+}
+
+.ccg-footer-links a:hover {
+    color: white;
+    text-shadow: 0 0 10px #00d4ff;
 }
