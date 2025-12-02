@@ -1,0 +1,194 @@
+/* ==========================================================
+   CCG COMPLETE-INDEX — POLISH PACK
+   Makes everything sharper, smoother, more neon, more Amiga.
+   ========================================================== */
+
+/* ------------------------------
+   GLOBAL CLEANUP / SPACING
+   ------------------------------ */
+
+body {
+    --c64-glow: rgba(0, 255, 255, 0.9);
+    --c64-glow-soft: rgba(0, 255, 255, 0.45);
+    --c64-panel: rgba(0, 20, 40, 0.6);
+
+    --amiga-bg: #c0c0c0;
+    --amiga-edge-light: #ffffff;
+    --amiga-edge-dark: #808080;
+    --amiga-text: #000;
+}
+
+main {
+    animation: ccgFadeIn 0.65s ease-out;
+}
+
+@keyframes ccgFadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ------------------------------
+   SEARCH BAR POLISH
+   ------------------------------ */
+
+#search-wrapper {
+    position: relative;
+}
+
+#search-input {
+    border-radius: 8px;
+    font-size: 22px;
+    padding: 16px 20px;
+    backdrop-filter: blur(6px);
+}
+
+/* C64 neon highlight */
+body.ccg-mode-c64 #search-input {
+    background: rgba(0, 0, 40, 0.8);
+    border: 2px solid var(--c64-glow-soft);
+    box-shadow:
+        0 0 8px var(--c64-glow-soft),
+        inset 0 0 12px rgba(0, 60, 120, 0.75);
+}
+
+/* Amiga workbench input */
+body.ccg-mode-amiga #search-input {
+    background: var(--amiga-bg);
+    border: 2px solid var(--amiga-edge-dark);
+    color: var(--amiga-text);
+    box-shadow:
+        inset 2px 2px var(--amiga-edge-light),
+        inset -2px -2px var(--amiga-edge-dark);
+}
+body.ccg-mode-amiga #search-input:focus {
+    background: #dcdcdc;
+}
+
+/* ------------------------------
+   ACCORDION HEADER POLISH
+   ------------------------------ */
+
+.accordion-header {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    padding: 18px 22px;
+    font-size: 24px;
+    letter-spacing: 0.11em;
+    transition: all 0.25s ease;
+}
+
+/* Glowing cyber grid effect behind header */
+body.ccg-mode-c64 .accordion-header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(0, 255, 255, 0.10),
+        rgba(0, 0, 0, 0.1) 45%,
+        rgba(0, 255, 255, 0.10) 80%
+    );
+    opacity: 0.2;
+    pointer-events: none;
+}
+
+/* C64 hover intensified */
+body.ccg-mode-c64 .accordion-header:hover {
+    box-shadow:
+        0 0 20px var(--c64-glow),
+        0 0 40px rgba(0, 160, 255, 0.6);
+    border-color: var(--c64-glow);
+    transform: translateY(-3px);
+}
+
+/* Amiga drawer perfection */
+body.ccg-mode-amiga .accordion-header {
+    background: var(--amiga-bg);
+    border: 2px solid var(--amiga-edge-dark);
+    color: var(--amiga-text);
+    box-shadow:
+        inset 2px 2px var(--amiga-edge-light),
+        inset -2px -2px var(--amiga-edge-dark);
+}
+body.ccg-mode-amiga .accordion-header:hover {
+    background: #d8d8d8;
+}
+
+/* ------------------------------
+   ACCORDION CONTENT POLISH
+   ------------------------------ */
+
+.accordion-content {
+    margin-top: 4px;
+    border-radius: 0 0 10px 10px;
+    overflow: hidden;
+}
+
+/* C64 styling */
+body.ccg-mode-c64 .accordion-content {
+    background: rgba(0, 20, 45, 0.7);
+    border-left: 2px solid var(--c64-glow-soft);
+    border-right: 2px solid rgba(0,255,255,0.25);
+    border-bottom: 2px solid rgba(0,255,255,0.35);
+    box-shadow:
+        inset 0 0 16px rgba(0,255,255,0.05),
+        0 0 14px rgba(0,255,255,0.10);
+}
+
+/* Amiga content drawer */
+body.ccg-mode-amiga .accordion-content {
+    background: #d5d5d5;
+    border-left: 2px solid var(--amiga-edge-dark);
+    border-right: 2px solid var(--amiga-edge-dark);
+    border-bottom: 2px solid var(--amiga-edge-dark);
+    color: #000;
+    box-shadow:
+        inset 3px 3px var(--amiga-edge-light),
+        inset -3px -3px var(--amiga-edge-dark);
+}
+
+/* ------------------------------
+   GAME ITEM POLISH
+   ------------------------------ */
+
+.game-item {
+    padding: 10px 6px;
+    font-size: 20px;
+    letter-spacing: 0.06em;
+    transition: 0.2s ease;
+}
+
+/* C64 hover */
+body.ccg-mode-c64 .game-item:hover {
+    color: cyan;
+    text-shadow:
+        0 0 8px cyan,
+        0 0 14px rgba(0,255,255,0.6);
+}
+
+/* Amiga hover */
+body.ccg-mode-amiga .game-item:hover {
+    background: #e7e7e7;
+    padding-left: 12px;
+}
+
+/* ------------------------------
+   MOBILE POLISH
+   ------------------------------ */
+
+@media (max-width: 700px) {
+
+    .accordion-header {
+        font-size: 20px;
+        padding: 14px 16px;
+    }
+
+    #search-input {
+        font-size: 18px;
+    }
+
+    .game-item {
+        font-size: 18px;
+    }
+}
