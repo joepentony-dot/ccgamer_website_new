@@ -1,239 +1,61 @@
 <!DOCTYPE html>
-<html lang="en" data-page="genre">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cheeky Commodore Gamer | Action Adventure Games</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Action Adventure Games | Cheeky Commodore Gamer</title>
 
-    <!-- Fonts -->
+    <link rel="icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../css/engine.css">
+    <link rel="stylesheet" href="../../css/ccg-master.css">
+    <link rel="stylesheet" href="../../css/ccg-genres.css">
     <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
-
-    <!-- Icons -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-
-    <!-- Core CSS -->
-    <link rel="stylesheet" href="../../resources/css/ccg-master.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-effects.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-mode.css" />
-    <link rel="stylesheet" href="../../resources/css/home.css" />
-    <link rel="stylesheet" href="../../resources/css/genre.css" />
-
-    <link rel="icon" href="../../resources/CCG_FAVICON.png" />
 </head>
-<body data-page="genre" data-mode="c64" data-genre="action-adventure-games">
-
-<canvas id="starfield"></canvas>
-<div class="crt-overlay"></div>
-<div class="crt-glow"></div>
-<div class="neon-grid"></div>
-
-<div class="ccg-shell">
-
-    <!-- HEADER / HUD -->
-    <header class="ccg-hud">
-        <div class="ccg-logo-wrap">
-            <button class="ccg-logo-button" id="logoModeToggle" type="button">
-                <img src="../../resources/CCGAMER LOGO.png" alt="Cheeky Commodore Gamer logo" />
-            </button>
-            <div>
-                <div class="ccg-logo-caption">ACTION ADVENTURE</div>
-                <div style="font-size:0.9rem; opacity:0.85;">Exploration, puzzles, combat, story-driven quests.</div>
-            </div>
+<body class="mode-c64" data-genre="action-adventure">
+<div class="ccg-shell genre-shell">
+    <header class="ccg-header neon-header">
+        <a href="../../home.html" class="ccg-logo-link">
+            <img src="../../resources/CCGAMER LOGO.png" alt="Cheeky Commodore Gamer" class="ccg-logo">
+        </a>
+        <div class="ccg-header-text">
+            <h1 class="ccg-title">Action Adventure Games</h1>
+            <p class="ccg-subtitle">
+                Explore, fight, loot, repeat — epic journeys on 8 &amp; 16-bit.
+            </p>
         </div>
-
-        <div class="ccg-mode-status">
-            <span id="currentModeText">SYSTEM MODE: C64 NEON</span>
-        </div>
-
-        <div class="ccg-hud-right">
-            <div class="ccg-hud-right-line">BROWSER: <strong>ACTION ADVENTURE GRID</strong></div>
-            <div class="ccg-hud-right-line">STATUS: LOADING GAME LIST…</div>
-        </div>
+        <button id="mode-toggle" class="mode-toggle-btn">C64 MODE</button>
     </header>
 
-    <!-- HERO PANEL -->
-    <section class="ccg-panel ccg-panel--hero">
-        <div class="ccg-panel-header">
-            <div class="ccg-panel-title">
-                <span>ACTION ADVENTURE GAMES</span>
+    <nav class="ccg-breadcrumb">
+        <a href="../../home.html" class="crumb-link">🏠 Game Hub</a>
+        <span class="crumb-separator">/</span>
+        <span class="crumb-current">Action Adventure</span>
+    </nav>
+
+    <main class="ccg-main">
+        <section class="genre-hero">
+            <div class="hero-text">
+                <h2 id="genre-label" class="genre-label">Action Adventure</h2>
+                <p class="genre-description">
+                    Story-driven quests with plenty of sword-swinging and peril.
+                </p>
             </div>
-            <div class="ccg-panel-tag">Genre View</div>
-        </div>
-
-        <div class="ccg-hero-text">
-            Explore worlds, solve mysteries, defeat enemies.
-            <span class="ccg-hero-highlight">Adventure with adrenaline.</span>
-        </div>
-
-        <div class="ccg-hero-actions">
-            <button class="ccg-button" type="button" onclick="window.location.href='../../home.html'">
-                <i class="fa-solid fa-house"></i>
-                <span>Home Hub</span>
-            </button>
-
-            <button class="ccg-button" id="randomInGenreBtn" type="button">
-                <i class="fa-solid fa-dice"></i>
-                <span>Random Action Adventure</span>
-            </button>
-
-            <button class="ccg-button" type="button" onclick="window.location.href='../index.html'">
-                <i class="fa-solid fa-list-ul"></i>
-                <span>All Genres</span>
-            </button>
-        </div>
-    </section>
-
-    <!-- GAMES GRID -->
-    <section class="ccg-panel">
-        <div class="ccg-panel-header">
-            <div class="ccg-panel-title">
-                <span>AVAILABLE TITLES</span>
+            <div class="hero-glow-panel">
+                <span class="hero-tag">EPIC QUESTS</span>
+                <span class="hero-tag">EXPLORATION</span>
+                <span class="hero-tag">COMBAT</span>
             </div>
-            <div class="ccg-panel-tag" id="gameCount">Loading…</div>
-        </div>
+        </section>
 
-        <div class="ccg-grid" id="genreGamesGrid">
-            <div>Loading games…</div>
-        </div>
-    </section>
+        <section id="game-list" class="game-grid" aria-live="polite"></section>
+        <section id="pagination" class="pagination"></section>
+    </main>
 
-    <!-- FOOTER -->
     <footer class="ccg-footer">
-        <div>© <span id="ccgYear"></span> Cheeky Commodore Gamer</div>
-        <div>Action Adventure Browser</div>
+        <p>Cheeky Commodore Gamer · Action Adventure Greats 😇🕹️👌</p>
     </footer>
 </div>
 
-<!-- JS -->
-<script src="../../js/ccg-mode-engine.js"></script>
-<script src="../../js/ccj-global.js"></script>
 <script src="../../js/genre-loader.js"></script>
-
-<script>
-(function () {
-    const body = document.body;
-    const modeText = document.getElementById("currentModeText");
-    const logoBtn = document.getElementById("logoModeToggle");
-    const yearEl = document.getElementById("ccgYear");
-    const genreSlug = body.dataset.genre;
-    const gridEl = document.getElementById("genreGamesGrid");
-    const countEl = document.getElementById("gameCount");
-    const randomBtn = document.getElementById("randomInGenreBtn");
-
-    if (yearEl) yearEl.textContent = new Date().getFullYear();
-
-    function refreshModeLabel() {
-        if (!modeText || !window.CCGModeEngine) return;
-        modeText.textContent =
-            "SYSTEM MODE: " + window.CCGModeEngine.getMode().toUpperCase() + " NEON";
-    }
-
-    if (logoBtn && window.CCGModeEngine) {
-        logoBtn.addEventListener("click", () => {
-            window.CCGModeEngine.toggleMode();
-            refreshModeLabel();
-        });
-    }
-    refreshModeLabel();
-
-    // Load games
-    if (typeof window.loadGenreGames === "function") {
-        window.loadGenreGames(genreSlug, gridEl, countEl);
-    } else {
-        if (countEl) countEl.textContent = "Loader not initialised";
-    }
-
-    // Random game
-    if (randomBtn) {
-        randomBtn.addEventListener("click", async () => {
-            if (typeof window.randomGameInGenre === "function") {
-                window.randomGameInGenre(genreSlug);
-                return;
-            }
-
-            try {
-                const res = await fetch("../games.json", { cache: "no-cache" });
-                const data = await res.json();
-                const games = Array.isArray(data) ? data : (data.games || []);
-
-                const pool = games.filter(g =>
-                    (g.genreSlug && g.genreSlug === genreSlug) ||
-                    (g.genres && g.genres.includes("Action Adventure")) ||
-                    (g.genre && g.genre.toLowerCase().includes("action"))
-                );
-
-                const list = pool.length ? pool : games;
-                const game = list[Math.floor(Math.random() * list.length)];
-
-                if (game && game.id) {
-                    window.location.href = "../game.html?id=" + encodeURIComponent(game.id);
-                }
-            } catch (e) {
-                console.error("Random game error", e);
-            }
-        });
-    }
-
-    // STARFIELD
-    const canvas = document.getElementById("starfield");
-    if (canvas && canvas.getContext) {
-        const ctx = canvas.getContext("2d");
-        let w = canvas.width = window.innerWidth;
-        let h = canvas.height = window.innerHeight;
-
-        const STAR_COUNT = 120;
-        const stars = [];
-
-        function initStars() {
-            stars.length = 0;
-            for (let i = 0; i < STAR_COUNT; i++) {
-                stars.push({
-                    x: Math.random() * w,
-                    y: Math.random() * h,
-                    z: Math.random() * 0.8 + 0.2,
-                    speed: Math.random() * 0.5 + 0.2
-                });
-            }
-        }
-
-        function draw() {
-            ctx.clearRect(0, 0, w, h);
-
-            const mode = body.dataset.mode || "c64";
-            let base = "rgba(112,255,240,";
-            if (mode === "amiga") base = "rgba(255,210,111,";
-            if (mode === "zx") base = "rgba(0,255,0,";
-
-            for (const s of stars) {
-                s.y += s.speed * (0.5 + s.z);
-                if (s.y > h) {
-                    s.y = 0;
-                    s.x = Math.random() * w;
-                    s.z = Math.random() * 0.8 + 0.2;
-                }
-
-                const size = s.z * 2;
-                const alpha = 0.3 + s.z * 0.7;
-
-                ctx.fillStyle = base + alpha.toFixed(2) + ")";
-                ctx.fillRect(s.x, s.y, size, size);
-            }
-
-            requestAnimationFrame(draw);
-        }
-
-        initStars();
-        draw();
-
-        window.addEventListener("resize", () => {
-            w = canvas.width = window.innerWidth;
-            h = canvas.height = window.innerHeight;
-            initStars();
-        });
-    }
-})();
-</script>
-
 </body>
 </html>
