@@ -1,83 +1,140 @@
 /* ============================================================
-   CCG — GENRE PAGE GRID SYSTEM (Final)
-   Clean grid; thumbnail cards; responsive; lightweight.
+   CHEEKY COMMODORE GAMER — GENRE PAGE MASTER STYLES
+   Neon WOW Edition 😇🕹️👌
    ============================================================ */
 
-/* Page Container */
+/* ROOT COLOURS (auto swaps with your mode engine) */
+:root {
+    --ccg-accent: #34b2ff;       /* C64 neon blue */
+    --ccg-accent-soft: #2a95d4;
+    --ccg-bg-panel: rgba(0, 10, 26, 0.85);
+    --ccg-text: #d9eaff;
+    --ccg-subtext: #7fa3c7;
+}
+
+/* AMIGA MODE OVERLAY (your engine sets a class on <body>) */
+body.ccg-mode-amiga {
+    --ccg-accent: #ff6bcb;       /* Amiga neon pink-purple */
+    --ccg-accent-soft: #cc56a0;
+}
+
+/* PAGE LAYOUT */
 .genre-page {
     max-width: 1200px;
-    margin: 30px auto;
-    padding: 20px;
-    color: #ffffff;
-    font-family: "VT323", monospace;
+    margin: 40px auto;
+    padding: 25px;
+    background: var(--ccg-bg-panel);
+    border: 2px solid var(--ccg-accent);
+    border-radius: 14px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
 }
 
-.genre-page h1, 
-.genre-page h2 {
-    color: var(--ccg-accent, #33aaff);
-    margin-bottom: 10px;
+.genre-page h1 {
+    font-family: "Press Start 2P";
+    color: var(--ccg-accent);
+    text-align: center;
+    font-size: 26px;
+    margin-bottom: 25px;
+    text-shadow: 0 0 6px var(--ccg-accent);
 }
 
-/* --- COUNTER --- */
-#genreGamesCount {
+.genre-page p {
+    font-family: "VT323";
+    font-size: 21px;
+    line-height: 1.5;
+    color: var(--ccg-text);
+    margin-bottom: 16px;
+}
+
+/* BREADCRUMB */
+.breadcrumb {
+    font-family: "VT323";
+    margin: 20px 0;
     font-size: 20px;
-    margin-bottom: 20px;
-    color: #cccccc;
 }
 
-/* --- GRID LAYOUT --- */
+.breadcrumb a {
+    color: var(--ccg-accent);
+    text-decoration: none;
+}
+
+.breadcrumb span {
+    color: var(--ccg-subtext);
+}
+
+/* GAME COUNT */
+#genreGamesCount {
+    font-family: "VT323";
+    color: var(--ccg-accent);
+    font-size: 24px;
+    margin: 10px 0 25px;
+    text-align: center;
+}
+
+/* GRID MASTER STYLE */
 #genreGamesGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 22px;
-    margin-top: 25px;
+    padding: 20px 0;
 }
 
-/* --- INDIVIDUAL GAME CARD --- */
-.genre-game-card {
-    background: #0a1028;
+/* GAME CARD */
+.game-card {
+    background: rgba(10, 18, 40, 0.85);
+    border: 2px solid var(--ccg-accent-soft);
+    border-radius: 10px;
     padding: 12px;
-    border: 2px solid var(--ccg-accent, #33aaff);
-    border-radius: 8px;
     text-align: center;
-    display: block;
-    text-decoration: none;
-    color: #ffffff;
-    transition: transform 0.15s ease, background 0.15s ease;
-}
-
-.genre-game-card:hover {
-    background: #112047;
-    transform: scale(1.04);
-}
-
-/* --- THUMBNAILS --- */
-.genre-game-card img {
-    width: 100%;
-    height: auto;
-    border-radius: 6px;
-    margin-bottom: 10px;
-    object-fit: cover;
-    border: 1px solid #222;
-}
-
-/* --- TITLE TEXT --- */
-.genre-game-title {
-    font-size: 18px;
-    line-height: 18px;
-    color: #ffffff;
-    text-decoration: none;
+    cursor: pointer;
+    transition: 0.25s ease;
+    position: relative;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
-/* --- MOBILE IMPROVEMENTS --- */
-@media (max-width: 600px) {
+/* Hover WOW effect */
+.game-card:hover {
+    transform: translateY(-6px) scale(1.03);
+    border-color: var(--ccg-accent);
+    box-shadow: 0 0 18px var(--ccg-accent);
+}
+
+/* GAME THUMBNAIL */
+.game-card img {
+    width: 100%;
+    height: 135px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 2px solid var(--ccg-accent-soft);
+    transition: 0.25s;
+}
+
+/* On hover only glow the image */
+.game-card:hover img {
+    border-color: var(--ccg-accent);
+    box-shadow: 0 0 14px var(--ccg-accent);
+}
+
+/* GAME TITLE */
+.game-title {
+    font-family: "VT323";
+    margin-top: 10px;
+    font-size: 22px;
+    color: var(--ccg-text);
+    text-shadow: 0 0 4px var(--ccg-accent-soft);
+}
+
+/* MOBILE FRIENDLY */
+@media (max-width: 650px) {
     #genreGamesGrid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     }
-    .genre-game-title {
-        font-size: 16px;
+
+    .game-card img {
+        height: 120px;
+    }
+
+    .genre-page h1 {
+        font-size: 22px;
     }
 }
