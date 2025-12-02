@@ -677,11 +677,25 @@
         </section>
     </main>
 
-    <footer>
+        <footer>
         © 2025 Cheeky Commodore Gamer — All Rights Reserved • Stay a while, stay forever…
     </footer>
 
     <!-- System mode engine (handles C64 ↔ Amiga toggle) -->
     <script src="js/ccg-mode-engine.js" defer></script>
+
+    <!-- Wire the "System Mode" button to the engine -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const toggleButton = document.getElementById("mode-toggle");
+
+            if (toggleButton && window.CCGModeEngine) {
+                toggleButton.addEventListener("click", () => {
+                    CCGModeEngine.toggleMode();
+                });
+            }
+        });
+    </script>
 </body>
 </html>
+
