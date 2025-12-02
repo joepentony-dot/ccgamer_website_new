@@ -1,301 +1,150 @@
-/* =======================================================================
-   Cheeky Commodore Gamer — EPIC C64 INTRO
-   Pure raster mode (no starfield). All visuals here.
-   ======================================================================= */
+/* ============================================
+   INTRO PAGE — PURE RASTER BAR LOADING EFFECT
+   Cheeky Commodore Gamer 😇🕹️👌
+   Fully rebuilt — smooth, flowing, GIF-accurate
+============================================ */
 
+/* RESET */
 html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-}
-
-body.intro-body {
-    background: #000;
-    color: #5fffff;
-    font-family: monospace;
     overflow: hidden;
-    position: relative;
+    background: black;
+    font-family: monospace;
 }
 
-/* Utility */
-.hidden {
-    display: none !important;
-}
-
-/* =======================================================================
-   POWER-ON OVERLAY
-   ======================================================================= */
-
-#powerOverlay {
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    background:
-        radial-gradient(circle at center,
-            rgba(0, 60, 120, 0.75) 0%,
-            rgba(0, 0, 0, 1) 70%);
-}
-
-.intro-logo {
-    width: 320px;
-    max-width: 85vw;
-    margin-bottom: 32px;
-
-    image-rendering: crisp-edges;
-    image-rendering: pixelated;
-
-    filter:
-        drop-shadow(0 0 26px rgba(0,255,255,0.95))
-        drop-shadow(0 0 60px rgba(0,180,255,0.9));
-}
-
-#powerText {
-    font-size: clamp(22px, 5vw, 32px);
-    letter-spacing: 0.18em;
-    text-shadow: 0 0 8px rgba(95,255,255,1);
-    cursor: pointer;
-    animation: powerPulse 1.25s infinite ease-in-out;
-}
-
-@keyframes powerPulse {
-    0%   { opacity: 0.35; transform: scale(1);   }
-    50%  { opacity: 1;    transform: scale(1.09);}
-    100% { opacity: 0.35; transform: scale(1);   }
-}
-
-/* =======================================================================
-   SKIP BUTTON
-   ======================================================================= */
-
+/* ============================
+   SKIP BUTTON — ALWAYS ON TOP
+============================= */
 #skipIntroBtn {
     position: fixed;
     top: 14px;
     right: 14px;
     z-index: 999999 !important;
-
     background: #b0002a;
-    color: #fff;
-    border: 2px solid #fff;
+    color: #ffffff;
+    border: 2px solid #ffffff;
+    padding: 8px 14px;
+    font-size: 14px;
     font-family: monospace;
-    font-size: 13px;
-    padding: 7px 14px;
     cursor: pointer;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
 }
 
 #skipIntroBtn:hover {
-    box-shadow: 0 0 12px rgba(255,140,140,0.9);
+    box-shadow: 0 0 12px rgba(255,150,150,0.9);
 }
 
-/* =======================================================================
-   C64 BLUE SCREEN
-   ======================================================================= */
-
-#c64Wrapper {
+/* ============================
+   POWER-ON SCREEN
+============================= */
+#start-screen {
     position: fixed;
     inset: 0;
-    z-index: 500;
-
+    background: radial-gradient(circle at center, #04121c 0%, #000 100%);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-
-    background: #000;
+    z-index: 1000;
 }
 
-.c64-border {
-    background: #000e78;
-    padding: clamp(10px, 3vw, 26px);
-    box-shadow:
-        0 0 25px rgba(0,0,0,0.9),
-        0 0 60px rgba(0, 80, 255, 0.55);
+#start-screen img {
+    width: 280px;
+    max-width: 80vw;
+    filter:
+        drop-shadow(0 0 20px rgba(0,255,255,0.7))
+        drop-shadow(0 0 40px rgba(0,180,255,0.7));
 }
 
-.c64-inner {
-    background: #3c31ff;
-    padding: clamp(22px, 4vw, 40px);
-    width: 900px;
-    max-width: 92vw;
-    height: 520px;
-    max-height: 70vh;
-    overflow: hidden;
-    border: 3px solid rgba(0,0,0,0.5);
-
-    box-shadow:
-        inset 0 0 40px rgba(0,0,0,0.7),
-        0 0 45px rgba(95,140,255,0.7);
-}
-
-#c64Text {
-    white-space: pre;
+#start-text {
+    margin-top: 26px;
+    font-size: 30px;
     color: #5fffff;
-    font-size: clamp(13px, 2vw, 18px);
-    line-height: 1.33;
-    letter-spacing: 0.05em;
-    text-shadow:
-        0 0 6px rgba(95,255,255,0.8),
-        0 0 12px rgba(95,255,255,0.5);
+    letter-spacing: 0.16em;
+    cursor: pointer;
+    animation: startPulse 1.4s infinite ease-in-out;
 }
 
-/* =======================================================================
-   MICRO FLASH OVERLAY
-   ======================================================================= */
-
-#flashOverlay {
-    position: fixed;
-    inset: 0;
-    z-index: 5500;
-    pointer-events: none;
-    opacity: 0;
-
-    background:
-        radial-gradient(circle at center,
-            #ffffff 0%,
-            #b0d9ff 35%,
-            #000000 80%);
+@keyframes startPulse {
+    0%   { opacity: 0.45; transform: scale(1); }
+    50%  { opacity: 1;    transform: scale(1.08); }
+    100% { opacity: 0.45; transform: scale(1); }
 }
 
-.flash-active {
-    animation: flashBurst 0.09s ease-out forwards;
-}
-
-@keyframes flashBurst {
-    0%   { opacity: 1; }
-    100% { opacity: 0; }
-}
-
-/* =======================================================================
-   FULL-SCREEN RASTER BARS
-   ======================================================================= */
-
-#rasterOverlay {
-    position: fixed;
-    inset: 0;
-    z-index: 6000;
+/* ============================
+   LOADING TERMINAL TEXT
+============================= */
+#loading-screen {
     display: none;
+    position: fixed;
+    inset: 0;
+    background: black;
+    color: #5fffff;
+    font-size: 22px;
+    padding: 40px;
+    white-space: pre;
+    z-index: 2000;
+    line-height: 1.35;
+    letter-spacing: 0.05em;
+}
+
+#loading-terminal {
+    max-width: 960px;
+}
+
+/* ============================
+   FINAL RASTER BARS — GIF MATCH
+============================= */
+#rasterBars {
+    position: fixed;
+    inset: 0;
+    display: none;
+    z-index: 6000;
+
+    /* Slight CRT softness */
+    filter: blur(4px);
 
     background-color: #000;
 
-    /* Softer, CRT-style edges */
-    filter: blur(4px);
-
-    /* Chunky 10px-ish stripes, colours matching your GIF */
+    /* The full 30-colour GIF-based palette */
     background-image:
-    repeating-linear-gradient(
-        180deg,
+        repeating-linear-gradient(
+            180deg,
 
-        /* dark edges */
-        #000000 0px, #000000 4px,
+            #000000 0px, #000000 4px,
+            #7c2cff 4px,  #7c2cff 14px,
+            #00e0ff 14px, #00e0ff 24px,
+            #3cff54 24px, #3cff54 34px,
+            #ff3535 34px, #ff3535 44px,
+            #ff7f27 44px, #ff7f27 54px,
+            #ffd38c 54px, #ffd38c 64px,
+            #fff23c 64px, #fff23c 74px,
+            #c4c4c4 74px, #c4c4c4 84px,
+            #384aff 84px, #384aff 94px,
+            #8e00ff 94px, #8e00ff 104px,
+            #00ffe0 104px, #00ffe0 114px,
+            #39ff3c 114px, #39ff3c 124px,
+            #ff4545 124px, #ff4545 134px,
+            #ffa03d 134px,#ffa03d 144px,
+            #ffe6a8 144px,#ffe6a8 154px,
+            #fff870 154px,#fff870 164px,
+            #d2d2d2 164px,#d2d2d2 174px,
+            #2f40ff 174px,#2f40ff 184px,
+            #000000 184px,#000000 188px
+        );
 
-        #7c2cff 4px,  #7c2cff 14px,
-        #00e0ff 14px, #00e0ff 24px,
-        #3cff54 24px, #3cff54 34px,
-        #ff3535 34px, #ff3535 44px,
-        #ff7f27 44px, #ff7f27 54px,
-        #ffd38c 54px, #ffd38c 64px,
-        #fff23c 64px, #fff23c 74px,
-        #c4c4c4 74px, #c4c4c4 84px,
-        #384aff 84px, #384aff 94px,
-        #8e00ff 94px, #8e00ff 104px,
-        #00ffe0 104px, #00ffe0 114px,
-        #39ff3c 114px, #39ff3c 124px,
-        #ff4545 124px, #ff4545 134px,
-        #ffa03d 134px,#ffa03d 144px,
-        #ffe6a8 144px,#ffe6a8 154px,
-        #fff870 154px,#fff870 164px,
-        #d2d2d2 164px,#d2d2d2 174px,
-        #2f40ff 174px,#2f40ff 184px,
+    /* Height of full colour cycle */
+    background-size: 100% 188px;
 
-        #000000 184px, #000000 188px
-    );
-
-background-size: 100% 188px;
-
-    /* No pulsing – just scroll + tiny jitter */
-    animation:
-        rasterScroll 0.32s linear infinite,
-        rasterJitterX 0.24s ease-in-out infinite;
+    /* Smooth infinite scroll ONLY (no jitter) */
+    animation: rasterScroll 0.32s linear infinite;
 }
 
-/* Make active when JS flips it on */
-#rasterOverlay.raster-active {
-    display: block;
-}
-
-
+/* Smooth continuous downward motion */
 @keyframes rasterScroll {
     0%   { background-position-y: 0; }
-    100% { background-position-y: 36px; }
-}
-
-@keyframes rasterFlicker {
-    0%   { opacity: 0.95; }
-    50%  { opacity: 0.75; }
-    100% { opacity: 1; }
-}
-
-/* =======================================================================
-   SID BIG TEXT
-   ======================================================================= */
-
-#sidText {
-    position: fixed;
-    top: 38%;
-    width: 100%;
-    text-align: center;
-
-    font-family: "Press Start 2P", monospace;
-    font-size: clamp(26px, 6.5vw, 52px);
-
-    opacity: 0;
-    letter-spacing: 0.15em;
-    color: #00eaff;
-
-    text-shadow:
-        0 0 14px #00eaff,
-        0 0 34px #00bbff,
-        0 0 64px #0077ff,
-        0 0 140px #0050ff;
-
-    z-index: 6500;
-    transform: scale(1);
-    transition: opacity 1s ease, transform 1s ease;
-}
-
-.sidTextVisible {
-    opacity: 1 !important;
-    transform: scale(1.12);
-}
-
-/* =======================================================================
-   MOBILE TWEAKS
-   ======================================================================= */
-
-@media (max-width: 600px) {
-    .c64-inner {
-        padding: 20px;
-        height: 380px;
-        max-height: 55vh;
-    }
-
-    #c64Text {
-        font-size: 12px;
-    }
-
-    .intro-logo {
-        width: 240px;
-        margin-bottom: 24px;
-    }
-
-    #skipIntroBtn {
-        font-size: 11px;
-        padding: 6px 10px;
-    }
+    100% { background-position-y: 188px; }
 }
