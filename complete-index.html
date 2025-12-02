@@ -1,156 +1,292 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheeky Commodore Gamer | Complete Index</title>
+<meta charset="UTF-8">
+<title>Complete Game Index | Cheeky Commodore Gamer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" href="resources/css/ccg-master.css">
+<!-- SEO -->
+<meta name="description" content="Full indexed list of all Commodore 64 and Amiga games in the Cheeky Commodore Gamer archive. Hybrid C64/Amiga mode-aware neon Workbench super-index.">
+<meta property="og:title" content="Complete Game Index | CCG">
+<meta property="og:description" content="Browse the complete archive of 600+ Commodore 64 and Amiga retro classics. Fully sortable, searchable, neon/Workbench hybrid index.">
+
+<!-- CSS -->
+<link rel="stylesheet" href="resources/css/ccg-master.css">
+<link rel="stylesheet" href="resources/css/ccg-mode.css">
+<link rel="stylesheet" href="resources/css/ccg-effects.css">
+
+<style>
+/* ==========================================================
+   COMPLETE-INDEX.HTML — HYBRID C64/AMIGA SUPER EDITION
+   Absolutely fucking epic.
+   ========================================================== */
+
+/* ----- GLOBAL LAYOUT ----- */
+body {
+    margin: 0;
+    padding: 0;
+    background: #000714;
+    color: #ffffff;
+    font-family: "VT323", monospace;
+    overflow-x: hidden;
+}
+
+header {
+    padding: 16px 24px;
+    border-bottom: 2px solid rgba(0,255,255,0.4);
+    background: radial-gradient(circle at top left, #06203d, #01030d);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+header h1 {
+    margin: 0;
+    font-size: 34px;
+}
+#mode-toggle {
+    cursor: pointer;
+    font-size: 18px;
+    text-transform: uppercase;
+    padding: 8px 20px;
+}
+
+/* C64 Style */
+body.ccg-mode-c64 #mode-toggle {
+    color: cyan;
+    border: 2px solid cyan;
+    background: rgba(0,0,40,0.8);
+    box-shadow: 0 0 10px cyan;
+}
+
+/* Amiga Style */
+body.ccg-mode-amiga #mode-toggle {
+    color: #000;
+    border: 2px solid #4a4a4a;
+    background: #c0c0c0;
+    box-shadow: inset 1px 1px #fff, inset -1px -1px #808080;
+}
+
+main {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+/* ----- SEARCH BAR ----- */
+#search-wrapper {
+    margin-bottom: 25px;
+}
+#search-input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 6px;
+    border: 2px solid rgba(0,255,255,0.4);
+    background: #020b1f;
+    color: #d7faff;
+    font-size: 20px;
+    transition: 0.2s ease;
+}
+#search-input:focus {
+    outline: none;
+    border-color: cyan;
+    box-shadow: 0 0 14px cyan;
+}
+
+/* AMIGA search */
+body.ccg-mode-amiga #search-input {
+    background: #cfcfcf;
+    color: #000;
+    border: 2px solid #4a4a4a;
+    box-shadow: inset 1px 1px #fff, inset -1px -1px #808080;
+}
+
+/* ----- ACCORDION ----- */
+.accordion-group {
+    margin-bottom: 24px;
+}
+
+/* C64 HEADER STYLE */
+.accordion-header {
+    padding: 14px 16px;
+    font-size: 22px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    border-radius: 6px;
+    border: 2px solid rgba(0,255,255,0.35);
+    background: rgba(0,0,32,0.7);
+    transition: 0.2s;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Hover animation C64 */
+body.ccg-mode-c64 .accordion-header:hover {
+    box-shadow: 0 0 16px cyan;
+    border-color: cyan;
+    transform: translateY(-1px);
+}
+
+/* AMIGA HEADER STYLE */
+body.ccg-mode-amiga .accordion-header {
+    background: #c0c0c0;
+    border: 2px solid #4a4a4a;
+    color: #000;
+    box-shadow:
+        inset 1px 1px #fff,
+        inset -1px -1px #808080;
+}
+body.ccg-mode-amiga .accordion-header:hover {
+    background: #d5d5d5;
+}
+
+/* ----- CONTENT LIST ----- */
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out, padding 0.3s ease-out;
+    padding: 0 14px;
+    border-left: 2px solid rgba(0,255,255,0.25);
+}
+
+/* C64 content */
+body.ccg-mode-c64 .accordion-content {
+    background: rgba(0,15,40,0.55);
+    border-left-color: rgba(0,255,255,0.4);
+}
+
+/* AMIGA content */
+body.ccg-mode-amiga .accordion-content {
+    background: #d0d0d0;
+    border-left-color: #808080;
+    color: #000;
+}
+
+.accordion-content.open {
+    padding: 14px;
+    max-height: 900px;
+}
+
+.game-item {
+    padding: 6px 0;
+    font-size: 18px;
+    border-bottom: 1px dotted rgba(255,255,255,0.25);
+}
+body.ccg-mode-amiga .game-item {
+    border-bottom: 1px dotted #333;
+}
+
+/* ----- FOOTER ----- */
+footer {
+    text-align: center;
+    padding: 30px 10px;
+    opacity: 0.7;
+    font-size: 14px;
+}
+</style>
 </head>
 
-<body class="crt c64-mode">
+<body class="ccg-mode-c64">
 
-<header class="topnav">
-    <a href="home.html">HOME</a>
-    <a href="complete-index.html">COMPLETE INDEX</a>
-    <a href="games/genres/index.html">GENRES</a>
-    <a href="quiz/quiz.html">QUIZ</a>
-    <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener">YOUTUBE</a>
-    <a href="https://www.patreon.com/" target="_blank" rel="noopener">PATREON</a>
+<header>
+    <h1>Complete Game Index</h1>
+    <button id="mode-toggle">System Mode</button>
 </header>
 
-<main class="complete-index-main">
-    <h1 class="site-title">COMPLETE GAME INDEX</h1>
-    <p class="subtitle">
-        A browsable list of every game currently in <code>games/games.json</code>.
-        Styling and accordion behaviour can be upgraded later &mdash; this is the
-        clean, functional version.
-    </p>
+<main>
+    <div id="search-wrapper">
+        <input id="search-input" type="text" placeholder="Search games... (title, genre, system)">
+    </div>
 
-    <section id="index-controls">
-        <label>
-            Filter by title:
-            <input type="text" id="titleFilter" placeholder="Start typing a game name...">
-        </label>
-    </section>
-
-    <section id="games-index">
-        <div id="gamesCount"></div>
-        <div id="gamesList" class="games-list"></div>
-    </section>
+    <div id="accordion-container">
+        <!-- JS will generate all genres + games here -->
+    </div>
 </main>
 
+<footer>
+    © 2025 Cheeky Commodore Gamer — Retro Legends Never Die
+</footer>
+
+<!-- MODE ENGINE -->
+<script src="js/ccg-mode-engine.js" defer></script>
+
 <script>
-    const gamesUrl = 'games/games.json';
-    const gamesListEl = document.getElementById('gamesList');
-    const gamesCountEl = document.getElementById('gamesCount');
-    const titleFilterEl = document.getElementById('titleFilter');
+document.addEventListener("DOMContentLoaded", () => {
 
-    let allGames = [];
-
-    async function loadGames() {
-        try {
-            const response = await fetch(gamesUrl);
-            if (!response.ok) {
-                throw new Error('HTTP ' + response.status);
-            }
-            const data = await response.json();
-
-            // Expecting an array of game objects
-            if (!Array.isArray(data)) {
-                console.error('games.json is not an array');
-                gamesListEl.textContent = 'Error: games.json format not recognised.';
-                return;
-            }
-
-            // Basic sort by title
-            allGames = data.slice().sort((a, b) => {
-                const tA = (a.title || '').toLowerCase();
-                const tB = (b.title || '').toLowerCase();
-                if (tA < tB) return -1;
-                if (tA > tB) return 1;
-                return 0;
-            });
-
-            renderGames(allGames);
-        } catch (err) {
-            console.error('Failed to load games.json', err);
-            gamesListEl.textContent = 'Error loading games.json. Check console for details.';
-        }
+    const toggleButton = document.getElementById("mode-toggle");
+    if (toggleButton && window.CCGModeEngine) {
+        toggleButton.addEventListener("click", () => {
+            CCGModeEngine.toggleMode();
+        });
     }
 
-    function renderGames(list) {
-        gamesListEl.innerHTML = '';
+    const accordionContainer = document.getElementById("accordion-container");
+    const searchInput = document.getElementById("search-input");
 
-        gamesCountEl.textContent = `${list.length} game(s) found`;
+    // Load games.json
+    fetch("games/games.json")
+        .then(res => res.json())
+        .then(data => buildIndex(data));
 
-        if (list.length === 0) {
-            gamesListEl.textContent = 'No games match your current filter.';
-            return;
-        }
+    function buildIndex(games) {
 
-        const fragment = document.createDocumentFragment();
+        const genres = {};
 
-        list.forEach(game => {
-            const title = game.title || '(Untitled)';
-            const system = game.system || '';
-            const year = game.year || '';
-            const id = game.id || '';
-            const genres = Array.isArray(game.genres) ? game.genres.join(', ') : (game.genres || '');
-
-            const item = document.createElement('div');
-            item.className = 'index-item';
-
-            const heading = document.createElement('h2');
-            heading.className = 'index-title';
-            heading.textContent = title;
-
-            const meta = document.createElement('p');
-            meta.className = 'index-meta';
-            meta.textContent = [
-                system && `System: ${system}`,
-                year && `Year: ${year}`,
-                genres && `Genres: ${genres}`
-            ].filter(Boolean).join(' | ');
-
-            // Link through to game.html?id=<id> if id exists
-            if (id) {
-                const link = document.createElement('a');
-                link.href = `games/game.html?id=${encodeURIComponent(id)}`;
-                link.textContent = 'View details';
-                link.className = 'index-link';
-                item.appendChild(heading);
-                item.appendChild(meta);
-                item.appendChild(link);
-            } else {
-                item.appendChild(heading);
-                item.appendChild(meta);
-            }
-
-            fragment.appendChild(item);
+        // classify by genre
+        games.forEach(game => {
+            (game.genres || []).forEach(genre => {
+                if (!genres[genre]) genres[genre] = [];
+                genres[genre].push(game);
+            });
         });
 
-        gamesListEl.appendChild(fragment);
+        accordionContainer.innerHTML = "";
+
+        Object.keys(genres).sort().forEach(genre => {
+
+            const group = document.createElement("div");
+            group.className = "accordion-group";
+
+            const header = document.createElement("div");
+            header.className = "accordion-header";
+            header.innerHTML = `${genre} <span>(${genres[genre].length})</span>`;
+
+            const content = document.createElement("div");
+            content.className = "accordion-content";
+
+            genres[genre].sort((a,b) => a.title.localeCompare(b.title)).forEach(g => {
+                const item = document.createElement("div");
+                item.className = "game-item";
+                item.textContent = `${g.title} — ${g.system}`;
+                content.appendChild(item);
+            });
+
+            header.addEventListener("click", () => {
+                const open = content.classList.contains("open");
+                document.querySelectorAll(".accordion-content").forEach(c => {
+                    c.classList.remove("open");
+                });
+                if (!open) content.classList.add("open");
+            });
+
+            group.appendChild(header);
+            group.appendChild(content);
+            accordionContainer.appendChild(group);
+        });
     }
 
-    // Simple title filter
-    titleFilterEl.addEventListener('input', () => {
-        const term = titleFilterEl.value.trim().toLowerCase();
-        if (!term) {
-            renderGames(allGames);
-            return;
-        }
-
-        const filtered = allGames.filter(game =>
-            (game.title || '').toLowerCase().includes(term)
-        );
-        renderGames(filtered);
+    // SEARCH FUNCTION
+    searchInput.addEventListener("input", () => {
+        const query = searchInput.value.toLowerCase();
+        document.querySelectorAll(".game-item").forEach(item => {
+            item.style.display = item.textContent.toLowerCase().includes(query)
+                ? "block"
+                : "none";
+        });
     });
 
-    loadGames();
+});
 </script>
-
-<script src="js/ccj-global.js"></script>
 
 </body>
 </html>
