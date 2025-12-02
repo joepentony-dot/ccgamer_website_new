@@ -1,238 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Complete Game Index | Cheeky Commodore Gamer</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Game Index | Cheeky Commodore Gamer</title>
 
-<!-- SEO -->
-<meta name="description" content="Full indexed list of all Commodore 64 and Amiga games in the Cheeky Commodore Gamer archive. Hybrid C64/Amiga mode-aware neon Workbench super-index.">
-<meta property="og:title" content="Complete Game Index | CCG">
-<meta property="og:description" content="Browse the complete archive of 600+ Commodore 64 and Amiga retro classics. Fully sortable, searchable, neon/Workbench hybrid index.">
+    <!-- SEO -->
+    <meta name="description" content="Full indexed list of all Commodore 64 and Amiga games in the Cheeky Commodore Gamer archive. Hybrid C64/Amiga neon–Workbench super-index.">
+    <meta property="og:title" content="Complete Game Index | CCG">
+    <meta property="og:description" content="Browse the complete archive of 600+ Commodore 64 and Amiga retro classics. Fully sortable, searchable, neon/Workbench hybrid index.">
 
-<!-- CSS -->
-<link rel="stylesheet" href="resources/css/ccg-master.css">
-<link rel="stylesheet" href="resources/css/ccg-mode.css">
-<link rel="stylesheet" href="resources/css/ccg-effects.css">
+    <!-- CSS -->
+    <link rel="stylesheet" href="resources/css/ccg-master.css">
+    <link rel="stylesheet" href="resources/css/ccg-mode.css">
+    <link rel="stylesheet" href="resources/css/ccg-effects.css">
+    <link rel="stylesheet" href="resources/css/complete-index.css">
 
-<style>
-/* ==========================================================
-   COMPLETE-INDEX.HTML — HYBRID C64/AMIGA SUPER EDITION
-   Absolutely fucking epic.
-   ========================================================== */
-
-/* ----- GLOBAL LAYOUT ----- */
-body {
-    margin: 0;
-    padding: 0;
-    background: #000714;
-    color: #ffffff;
-    font-family: "VT323", monospace;
-    overflow-x: hidden;
-}
-
-header {
-    padding: 16px 24px;
-    border-bottom: 2px solid rgba(0,255,255,0.4);
-    background: radial-gradient(circle at top left, #06203d, #01030d);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-header h1 {
-    margin: 0;
-    font-size: 34px;
-}
-#mode-toggle {
-    cursor: pointer;
-    font-size: 18px;
-    text-transform: uppercase;
-    padding: 8px 20px;
-}
-
-/* C64 Style */
-body.ccg-mode-c64 #mode-toggle {
-    color: cyan;
-    border: 2px solid cyan;
-    background: rgba(0,0,40,0.8);
-    box-shadow: 0 0 10px cyan;
-}
-
-/* Amiga Style */
-body.ccg-mode-amiga #mode-toggle {
-    color: #000;
-    border: 2px solid #4a4a4a;
-    background: #c0c0c0;
-    box-shadow: inset 1px 1px #fff, inset -1px -1px #808080;
-}
-
-main {
-    max-width: 1200px;
-    margin: 30px auto;
-    padding: 0 20px;
-}
-
-/* ----- SEARCH BAR ----- */
-#search-wrapper {
-    margin-bottom: 25px;
-}
-#search-input {
-    width: 100%;
-    padding: 14px 16px;
-    border-radius: 6px;
-    border: 2px solid rgba(0,255,255,0.4);
-    background: #020b1f;
-    color: #d7faff;
-    font-size: 20px;
-    transition: 0.2s ease;
-}
-#search-input:focus {
-    outline: none;
-    border-color: cyan;
-    box-shadow: 0 0 14px cyan;
-}
-
-/* AMIGA search */
-body.ccg-mode-amiga #search-input {
-    background: #cfcfcf;
-    color: #000;
-    border: 2px solid #4a4a4a;
-    box-shadow: inset 1px 1px #fff, inset -1px -1px #808080;
-}
-
-/* ----- ACCORDION ----- */
-.accordion-group {
-    margin-bottom: 24px;
-}
-
-/* C64 HEADER STYLE */
-.accordion-header {
-    padding: 14px 16px;
-    font-size: 22px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    cursor: pointer;
-    border-radius: 6px;
-    border: 2px solid rgba(0,255,255,0.35);
-    background: rgba(0,0,32,0.7);
-    transition: 0.2s;
-    display: flex;
-    justify-content: space-between;
-}
-
-/* Hover animation C64 */
-body.ccg-mode-c64 .accordion-header:hover {
-    box-shadow: 0 0 16px cyan;
-    border-color: cyan;
-    transform: translateY(-1px);
-}
-
-/* AMIGA HEADER STYLE */
-body.ccg-mode-amiga .accordion-header {
-    background: #c0c0c0;
-    border: 2px solid #4a4a4a;
-    color: #000;
-    box-shadow:
-        inset 1px 1px #fff,
-        inset -1px -1px #808080;
-}
-body.ccg-mode-amiga .accordion-header:hover {
-    background: #d5d5d5;
-}
-
-/* ----- CONTENT LIST ----- */
-.accordion-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s ease-out, padding 0.3s ease-out;
-    padding: 0 14px;
-    border-left: 2px solid rgba(0,255,255,0.25);
-}
-
-/* C64 content */
-body.ccg-mode-c64 .accordion-content {
-    background: rgba(0,15,40,0.55);
-    border-left-color: rgba(0,255,255,0.4);
-}
-
-/* AMIGA content */
-body.ccg-mode-amiga .accordion-content {
-    background: #d0d0d0;
-    border-left-color: #808080;
-    color: #000;
-}
-
-.accordion-content.open {
-    padding: 14px;
-    max-height: 900px;
-}
-
-.game-item {
-    padding: 6px 0;
-    font-size: 18px;
-    border-bottom: 1px dotted rgba(255,255,255,0.25);
-}
-body.ccg-mode-amiga .game-item {
-    border-bottom: 1px dotted #333;
-}
-
-/* ----- FOOTER ----- */
-footer {
-    text-align: center;
-    padding: 30px 10px;
-    opacity: 0.7;
-    font-size: 14px;
-}
-</style>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 
-<body class="ccg-mode-c64">
+<body data-mode="c64">
 
-<header>
-    <h1>Complete Game Index</h1>
-    <button id="mode-toggle">System Mode</button>
+<header class="ci-header">
+    <h1 class="ci-title">Complete Game Index</h1>
+    <button id="mode-toggle" class="ci-mode-btn">System Mode</button>
 </header>
 
-<main>
+<main class="ci-main">
+
+    <!-- SEARCH BAR -->
     <div id="search-wrapper">
         <input id="search-input" type="text" placeholder="Search games... (title, genre, system)">
     </div>
 
-    <div id="accordion-container">
-        <!-- JS will generate all genres + games here -->
-    </div>
+    <!-- ACCORDION CONTAINER -->
+    <div id="accordion-container"></div>
+
 </main>
 
-<footer>
-    © 2025 Cheeky Commodore Gamer — Retro Legends Never Die
+<footer class="ci-footer">
+    © 2025 Cheeky Commodore Gamer — Retro Legends Never Die.
 </footer>
 
-<!-- MODE ENGINE -->
+<!-- JS -->
 <script src="js/ccg-mode-engine.js" defer></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
+    /* MODE TOGGLE */
     const toggleButton = document.getElementById("mode-toggle");
     if (toggleButton && window.CCGModeEngine) {
         toggleButton.addEventListener("click", () => {
-            CCGModeEngine.toggleMode();
+            window.CCGModeEngine.toggleMode();
         });
     }
 
     const accordionContainer = document.getElementById("accordion-container");
     const searchInput = document.getElementById("search-input");
 
-    // Load games.json
+    /* LOAD GAMES.JSON */
     fetch("games/games.json")
         .then(res => res.json())
         .then(data => buildIndex(data));
 
     function buildIndex(games) {
-
         const genres = {};
 
-        // classify by genre
+        /* CLASSIFY BY GENRE */
         games.forEach(game => {
             (game.genres || []).forEach(genre => {
                 if (!genres[genre]) genres[genre] = [];
@@ -242,6 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         accordionContainer.innerHTML = "";
 
+        /* BUILD ACCORDIONS */
         Object.keys(genres).sort().forEach(genre => {
 
             const group = document.createElement("div");
@@ -254,18 +91,19 @@ document.addEventListener("DOMContentLoaded", () => {
             const content = document.createElement("div");
             content.className = "accordion-content";
 
-            genres[genre].sort((a,b) => a.title.localeCompare(b.title)).forEach(g => {
-                const item = document.createElement("div");
-                item.className = "game-item";
-                item.textContent = `${g.title} — ${g.system}`;
-                content.appendChild(item);
-            });
+            genres[genre]
+                .sort((a, b) => a.title.localeCompare(b.title))
+                .forEach(g => {
+                    const item = document.createElement("div");
+                    item.className = "game-item";
+                    item.textContent = `${g.title} — ${g.system}`;
+                    content.appendChild(item);
+                });
 
+            /* OPEN/CLOSE */
             header.addEventListener("click", () => {
                 const open = content.classList.contains("open");
-                document.querySelectorAll(".accordion-content").forEach(c => {
-                    c.classList.remove("open");
-                });
+                document.querySelectorAll(".accordion-content").forEach(c => c.classList.remove("open"));
                 if (!open) content.classList.add("open");
             });
 
@@ -275,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // SEARCH FUNCTION
+    /* SEARCH FUNCTION */
     searchInput.addEventListener("input", () => {
         const query = searchInput.value.toLowerCase();
         document.querySelectorAll(".game-item").forEach(item => {
