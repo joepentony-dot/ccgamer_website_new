@@ -6,258 +6,523 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- SEO -->
-    <meta name="description" content="Cheeky Commodore Gamer — Explore Commodore 64 & Amiga classics, longplays, manuals, genres and exclusive retro content.">
-    <meta property="og:title" content="Cheeky Commodore Gamer | Retro Gaming Hub">
-    <meta property="og:description" content="Dive into 600+ Commodore 64 & Amiga classics with neon C64/Amiga hybrid styling.">
+    <meta name="description" content="Cheeky Commodore Gamer — the ultimate retro gaming hub for Commodore 64 and Amiga fans. Explore 600+ classics by genre, watch gameplay, and dive into the world of retro computing.">
+    <meta property="og:title" content="Cheeky Commodore Gamer | C64 & Amiga Hub">
+    <meta property="og:description" content="Browse 600+ Commodore 64 & Amiga classics by genre, watch gameplay videos and rediscover retro legends.">
+    <meta property="og:type" content="website">
     <meta property="og:image" content="resources/images/hero/ccg-hero-c64.png">
 
-    <!-- CSS -->
+    <!-- Core CSS engine (imports mode, anim, effects, home, etc.) -->
     <link rel="stylesheet" href="resources/css/ccg-master.css">
-    <link rel="stylesheet" href="resources/css/ccg-effects.css">
-    <link rel="stylesheet" href="resources/css/ccg-mode.css">
-    <link rel="stylesheet" href="resources/css/home.css">
 
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
 
+    <!-- Icons (Font Awesome) -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+          integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer" />
 </head>
 
-<body data-page="home" data-mode="c64">
+<body class="ccg-body ccg-mode-c64 ccg-fade-in" data-page="home" data-mode="c64">
 
-<!-- GLOBAL BACKGROUND LAYERS -->
-<canvas id="starfield"></canvas>
-<div class="crt-overlay"></div>
-<div class="crt-glow"></div>
-<div class="neon-grid"></div>
+    <!-- GLOBAL BACKGROUND FX -->
+    <canvas id="starfield"></canvas>
+    <div class="crt-overlay"></div>
+    <div class="crt-glow"></div>
+    <div class="neon-grid"></div>
 
-<!-- MAIN WRAPPER SHELL -->
-<div class="ccg-shell">
+    <!-- MAIN SHELL -->
+    <div class="ccg-shell ccg-scanlines ccg-crt ccg-rgb">
 
-    <!-- HUD HEADER -->
-    <header class="ccg-hud">
-
-        <!-- Logo left -->
-        <div class="ccg-logo-wrap">
-            <button class="ccg-logo-button" id="mode-logo-toggle">
-                <img src="resources/ccgamer_logo.png" alt="CCG Logo">
-            </button>
-            <div class="ccg-logo-caption">Cheeky Commodore Gamer</div>
-        </div>
-
-        <!-- Mode Status -->
-        <div class="ccg-mode-status">
-            <span id="mode-status-text">C64 MODE</span>
-        </div>
-
-        <!-- HUD Right Info -->
-        <div class="ccg-hud-right">
-            <div class="ccg-hud-right-line">
-                <strong>System Library:</strong> 600+ Classics
+        <!-- HUD / HEADER -->
+        <header class="ccg-hud">
+            <!-- Left: Logo & caption -->
+            <div class="ccg-logo-wrap">
+                <button id="ccg-logo-button" class="ccg-logo-button ccg-hover-glow ccg-press" type="button">
+                    <img src="resources/ccgamer_logo.png"
+                         alt="Cheeky Commodore Gamer logo"
+                         class="ccg-logo-image">
+                </button>
+                <div>
+                    <div class="ccg-logo-caption">CHEEKY COMMODORE GAMER</div>
+                    <div class="ccg-logo-caption">C64 • AMIGA • ZX DEV LAB</div>
+                </div>
             </div>
-            <div class="ccg-hud-right-line">
-                <strong>Source:</strong> C64 • Amiga
+
+            <!-- Centre: Mode status -->
+            <div class="ccg-mode-status">
+                <span id="ccg-mode-label">SYSTEM: C64 • NEON READY</span>
             </div>
-            <div class="ccg-hud-right-line">
-                <strong>Status:</strong> Fully Online
+
+            <!-- Right: Stats + mode button -->
+            <div class="ccg-hud-right">
+                <div class="ccg-hud-right-line">
+                    <strong>Library:</strong> 600+ games indexed
+                </div>
+                <div class="ccg-hud-right-line">
+                    <strong>Systems:</strong> Commodore 64 &amp; Amiga
+                </div>
+                <button id="mode-toggle" type="button" class="ccg-button ccg-button--mode">
+                    <i class="fa-solid fa-microchip"></i>
+                    <span class="ccg-button-label">Toggle System</span>
+                </button>
             </div>
-        </div>
+        </header>
 
-    </header>
+        <!-- SOCIAL BAR -->
+        <nav class="ccg-social-bar">
+            <a href="https://www.youtube.com/@CheekyCommodoreGamer"
+               target="_blank"
+               class="ccg-social-link social-link-item play-sound">
+                <i class="fa-brands fa-youtube"></i>
+                <span>YOUTUBE</span>
+            </a>
+            <a href="https://patreon.com/CheekyCommodoreGamer"
+               target="_blank"
+               class="ccg-social-link social-link-item play-sound">
+                <i class="fa-brands fa-patreon"></i>
+                <span>PATREON</span>
+            </a>
+            <a href="https://facebook.com/cheekycommodoregamer"
+               target="_blank"
+               class="ccg-social-link social-link-item play-sound">
+                <i class="fa-brands fa-facebook"></i>
+                <span>FACEBOOK</span>
+            </a>
+            <a href="https://twitter.com/CheekyC64Gamer"
+               target="_blank"
+               class="ccg-social-link social-link-item play-sound">
+                <i class="fa-brands fa-x-twitter"></i>
+                <span>TWITTER</span>
+            </a>
+            <a href="https://discord.gg/83Xw9ktAn4"
+               target="_blank"
+               class="ccg-social-link social-link-item play-sound">
+                <i class="fa-brands fa-discord"></i>
+                <span>DISCORD</span>
+            </a>
+            <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"
+               target="_blank"
+               class="ccg-social-link social-link-item play-sound">
+                <i class="fa-brands fa-paypal"></i>
+                <span>PAYPAL</span>
+            </a>
+        </nav>
 
-    <!-- SOCIAL BAR -->
-    <nav class="ccg-social-bar">
-        <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" class="ccg-social-link">
-            <i class="fa-brands fa-youtube"></i> YouTube
-        </a>
-        <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank" class="ccg-social-link">
-            <i class="fa-brands fa-patreon"></i> Patreon
-        </a>
-        <a href="https://facebook.com/cheekycommodoregamer" target="_blank" class="ccg-social-link">
-            <i class="fa-brands fa-facebook"></i> Facebook
-        </a>
-        <a href="https://twitter.com/CheekyC64Gamer" target="_blank" class="ccg-social-link">
-            <i class="fa-brands fa-x-twitter"></i> Twitter
-        </a>
-        <a href="https://discord.gg/83Xw9ktAn4" target="_blank" class="ccg-social-link">
-            <i class="fa-brands fa-discord"></i> Discord
-        </a>
-        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" class="ccg-social-link">
-            <i class="fa-brands fa-paypal"></i> Paypal
-        </a>
-    </nav>
+        <!-- MAIN GRID (Hero + Videos) -->
+        <main class="ccg-main">
 
-    <!-- MAIN GRID -->
-    <main class="ccg-main">
+            <!-- HERO PANEL -->
+            <section class="ccg-panel ccg-panel--hero">
+                <div class="ccg-panel-header">
+                    <div class="ccg-panel-title">
+                        <span>HOME HUB</span>
+                        <span>CHEEKY COMMODORE GAMER</span>
+                    </div>
+                    <div class="ccg-panel-tag">LOAD &ldquo;RETRO LEGENDS&rdquo;,8,1</div>
+                </div>
 
-        <!-- LEFT PANEL: HERO + ACTIONS + GENRES -->
-        <section class="ccg-panel">
+                <div class="ccg-hero-text">
+                    Welcome to your <span class="ccg-hero-highlight">C64 &amp; Amiga command centre</span>.
+                    Browse hand-picked classics, watch longplays, explore manuals and rediscover the
+                    golden age of home computing — all from a single neon-lit hub.
+                </div>
 
+                <div class="ccg-hero-actions">
+                    <a href="games/genres/top-picks.html"
+                       class="ccg-button ccg-button--primary play-sound">
+                        <i class="fa-solid fa-star"></i>
+                        TOP PICKS
+                    </a>
+
+                    <a href="complete-index.html"
+                       class="ccg-button ccg-button--secondary play-sound">
+                        <i class="fa-solid fa-list"></i>
+                        COMPLETE INDEX
+                    </a>
+
+                    <a href="quiz/quiz.html"
+                       class="ccg-button ccg-button--accent play-sound">
+                        <i class="fa-solid fa-question-circle"></i>
+                        COMMUNITY QUIZ
+                    </a>
+                </div>
+
+                <div class="ccg-hero-sub">
+                    Tip: Use the <span class="ccg-hero-highlight">System Toggle</span> to flip between
+                    C64 neon mode and Amiga Workbench mode. Rumour has it there&rsquo;s a secret ZX
+                    Dev Lab lurking somewhere…
+                </div>
+            </section>
+
+            <!-- FEATURED VIDEOS / NEWS PANEL -->
+            <aside class="ccg-panel ccg-panel--videos">
+                <div class="ccg-panel-header">
+                    <div class="ccg-panel-title">
+                        <span>FEATURED TRANSMISSIONS</span>
+                        <span>YOUTUBE LONGPLAYS &amp; SPECIALS</span>
+                    </div>
+                    <div class="ccg-panel-tag">LIVE FROM @CHEEKYCOMMODOREGAMER</div>
+                </div>
+
+                <div class="ccg-videos-list">
+                    <a href="https://www.youtube.com/@CheekyCommodoreGamer"
+                       target="_blank"
+                       class="ccg-video-card play-sound">
+                        <div class="ccg-video-thumb">
+                            <div class="ccg-video-thumb-inner ccg-video-thumb-inner--ch1"></div>
+                            <div class="ccg-video-chip">C64</div>
+                            <div class="ccg-video-play">
+                                <i class="fa-solid fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="ccg-video-meta">
+                            <div class="ccg-video-title">
+                                Deep dives, longplays &amp; nostalgia trips from the 8-bit era.
+                            </div>
+                            <div class="ccg-video-details">
+                                Hand-picked classics, commentary and authentic hardware love.
+                            </div>
+                            <div class="ccg-video-tagline">
+                                Stay a while, stay forever…
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="https://www.youtube.com/@CheekyCommodoreGamer/videos"
+                       target="_blank"
+                       class="ccg-video-card play-sound">
+                        <div class="ccg-video-thumb">
+                            <div class="ccg-video-thumb-inner ccg-video-thumb-inner--ch2"></div>
+                            <div class="ccg-video-chip">AMIGA</div>
+                            <div class="ccg-video-play">
+                                <i class="fa-solid fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="ccg-video-meta">
+                            <div class="ccg-video-title">
+                                16-bit legends, cinematic intros and crunchy MOD soundtracks.
+                            </div>
+                            <div class="ccg-video-details">
+                                Amiga action, adventure and atmospheric classics.
+                            </div>
+                            <div class="ccg-video-tagline">
+                                Kickstart the Workbench and boot some memories.
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </aside>
+
+        </main>
+
+        <!-- GENRE GRID -->
+        <section class="ccg-panel ccg-panel--genres">
             <div class="ccg-panel-header">
                 <div class="ccg-panel-title">
-                    <span>★</span> Retro Command Console
+                    <span>BROWSE BY GENRE</span>
+                    <span>CHOOSE YOUR ADVENTURE</span>
                 </div>
-                <div class="ccg-panel-tag">C64 / Amiga Mode Aware</div>
-            </div>
-
-            <!-- HERO TEXT -->
-            <div class="ccg-hero-text">
-                Welcome Commander! Load the archive, browse legendary classics, and step into the neon-coded world of  
-                <span class="ccg-hero-highlight">Commodore gaming history</span>.
-            </div>
-
-            <!-- HERO ACTIONS -->
-            <div class="ccg-hero-actions">
-                <a href="games/genres/top-picks.html" class="ccg-button">
-                    <i class="fa-solid fa-star"></i> Top Picks
-                </a>
-                <a href="complete-index.html" class="ccg-button">
-                    <i class="fa-solid fa-list"></i> Full Index
-                </a>
-                <a href="quiz/quiz.html" class="ccg-button">
-                    <i class="fa-solid fa-circle-question"></i> Quiz Mode
-                </a>
-            </div>
-
-            <div class="ccg-hero-sub">
-                Choose an option above, or dive straight into the genre grid below.
-            </div>
-
-            <!-- GENRE GRID -->
-            <div class="ccg-panel-header" style="margin-top:1rem;">
-                <div class="ccg-panel-title">
-                    <span>▲</span> Game Genres
-                </div>
-                <div class="ccg-panel-tag">Browse by theme</div>
+                <div class="ccg-panel-tag">C64 &amp; AMIGA CATALOGUE</div>
             </div>
 
             <div class="ccg-grid">
-
-                <!-- ONE CARD PER GENRE -->
                 <a class="ccg-grid-card" href="games/genres/arcade-games.html">
-                    <div class="ccg-grid-label">Genre</div>
+                    <div class="ccg-grid-label">GENRE</div>
                     <div class="ccg-grid-name">Arcade</div>
-                    <div class="ccg-grid-meta">Fast-action classics</div>
-                    <i class="fa-solid fa-gamepad ccg-grid-icon"></i>
+                    <div class="ccg-grid-meta">High score chases, instant action.</div>
+                    <img src="resources/images/genres/arcade.png"
+                         alt="Arcade"
+                         class="ccg-grid-thumb">
                 </a>
 
                 <a class="ccg-grid-card" href="games/genres/action-adventure-games.html">
-                    <div class="ccg-grid-label">Genre</div>
+                    <div class="ccg-grid-label">GENRE</div>
                     <div class="ccg-grid-name">Action Adventure</div>
-                    <div class="ccg-grid-meta">Quests & exploration</div>
-                    <i class="fa-solid fa-compass ccg-grid-icon"></i>
+                    <div class="ccg-grid-meta">Combat, exploration, story beats.</div>
+                    <img src="resources/images/genres/action-adventure.png"
+                         alt="Action Adventure"
+                         class="ccg-grid-thumb">
                 </a>
 
                 <a class="ccg-grid-card" href="games/genres/adventure-games.html">
-                    <div class="ccg-grid-label">Genre</div>
+                    <div class="ccg-grid-label">GENRE</div>
                     <div class="ccg-grid-name">Adventure</div>
-                    <div class="ccg-grid-meta">Interactive stories</div>
-                    <i class="fa-solid fa-book-open ccg-grid-icon"></i>
+                    <div class="ccg-grid-meta">Text, puzzles and atmosphere.</div>
+                    <img src="resources/images/genres/adventure.png"
+                         alt="Adventure"
+                         class="ccg-grid-thumb">
+                </a>
+
+                <a class="ccg-grid-card" href="games/genres/bpjs-indexed-games.html">
+                    <div class="ccg-grid-label">SPECIAL</div>
+                    <div class="ccg-grid-name">BPJS Indexed</div>
+                    <div class="ccg-grid-meta">Curated spreadsheet-grade goodness.</div>
+                    <img src="resources/images/genres/bpjs.png"
+                         alt="BPJS Indexed"
+                         class="ccg-grid-thumb">
+                </a>
+
+                <a class="ccg-grid-card" href="games/genres/cartridge-games.html">
+                    <div class="ccg-grid-label">GENRE</div>
+                    <div class="ccg-grid-name">Cartridge</div>
+                    <div class="ccg-grid-meta">Instant-loading classics.</div>
+                    <img src="resources/images/genres/cartridge.png"
+                         alt="Cartridge"
+                         class="ccg-grid-thumb">
+                </a>
+
+                <a class="ccg-grid-card" href="games/genres/casino-games.html">
+                    <div class="ccg-grid-label">GENRE</div>
+                    <div class="ccg-grid-name">Casino</div>
+                    <div class="ccg-grid-meta">Chips, reels and risk.</div>
+                    <img src="resources/images/genres/casino.png"
+                         alt="Casino"
+                         class="ccg-grid-thumb">
+                </a>
+
+                <a class="ccg-grid-card" href="games/genres/fighting-games.html">
+                    <div class="ccg-grid-label">GENRE</div>
+                    <div class="ccg-grid-name">Fighting</div>
+                    <div class="ccg-grid-meta">One-on-one showdowns.</div>
+                    <img src="resources/images/genres/fighting.png"
+                         alt="Fighting"
+                         class="ccg-grid-thumb">
+                </a>
+
+                <a class="ccg-grid-card" href="games/genres/horror-games.html">
+                    <div class="ccg-grid-label">GENRE</div>
+                    <div class="ccg-grid-name">Horror</div>
+                    <div class="ccg-grid-meta">Creepy sprites &amp; dread.</div>
+                    <img src="resources/images/genres/horror.png"
+                         alt="Horror"
+                         class="ccg-grid-thumb">
                 </a>
 
                 <a class="ccg-grid-card" href="games/genres/platform-games.html">
-                    <div class="ccg-grid-label">Genre</div>
+                    <div class="ccg-grid-label">GENRE</div>
                     <div class="ccg-grid-name">Platform</div>
-                    <div class="ccg-grid-meta">Run, jump & climb</div>
-                    <i class="fa-solid fa-person-running ccg-grid-icon"></i>
+                    <div class="ccg-grid-meta">Precision jumps &amp; secrets.</div>
+                    <img src="resources/images/genres/platform.png"
+                         alt="Platform"
+                         class="ccg-grid-thumb">
+                </a>
+
+                <a class="ccg-grid-card" href="games/genres/puzzle-games.html">
+                    <div class="ccg-grid-label">GENRE</div>
+                    <div class="ccg-grid-name">Puzzle</div>
+                    <div class="ccg-grid-meta">Thinky, tricky, addictive.</div>
+                    <img src="resources/images/genres/puzzle.png"
+                         alt="Puzzle"
+                         class="ccg-grid-thumb">
+                </a>
+
+                <a class="ccg-grid-card" href="games/genres/quiz-games.html">
+                    <div class="ccg-grid-label">GENRE</div>
+                    <div class="ccg-grid-name">Quiz</div>
+                    <div class="ccg-grid-meta">Retro trivia &amp; brain strain.</div>
+                    <img src="resources/images/genres/quiz.png"
+                         alt="Quiz"
+                         class="ccg-grid-thumb">
                 </a>
 
                 <a class="ccg-grid-card" href="games/genres/racing-games.html">
-                    <div class="ccg-grid-label">Genre</div>
+                    <div class="ccg-grid-label">GENRE</div>
                     <div class="ccg-grid-name">Racing</div>
-                    <div class="ccg-grid-meta">Speed & reflexes</div>
-                    <i class="fa-solid fa-flag-checkered ccg-grid-icon"></i>
+                    <div class="ccg-grid-meta">Tyres, turbo and tarmac.</div>
+                    <img src="resources/images/genres/racing.png"
+                         alt="Racing"
+                         class="ccg-grid-thumb">
                 </a>
 
                 <a class="ccg-grid-card" href="games/genres/rpg-games.html">
-                    <div class="ccg-grid-label">Genre</div>
+                    <div class="ccg-grid-label">GENRE</div>
                     <div class="ccg-grid-name">RPG</div>
-                    <div class="ccg-grid-meta">Fantasy & lore</div>
-                    <i class="fa-solid fa-dragon ccg-grid-icon"></i>
+                    <div class="ccg-grid-meta">Stats, quests and saves.</div>
+                    <img src="resources/images/genres/role-playing.png"
+                         alt="RPG"
+                         class="ccg-grid-thumb">
                 </a>
 
                 <a class="ccg-grid-card" href="games/genres/shooting-games.html">
-                    <div class="ccg-grid-label">Genre</div>
+                    <div class="ccg-grid-label">GENRE</div>
                     <div class="ccg-grid-name">Shooting</div>
-                    <div class="ccg-grid-meta">Run-and-gun</div>
-                    <i class="fa-solid fa-bullseye ccg-grid-icon"></i>
+                    <div class="ccg-grid-meta">Blasters, lasers, mayhem.</div>
+                    <img src="resources/images/genres/shooting.png"
+                         alt="Shooting"
+                         class="ccg-grid-thumb">
+                </a>
+
+                <a class="ccg-grid-card" href="games/genres/sports-games.html">
+                    <div class="ccg-grid-label">GENRE</div>
+                    <div class="ccg-grid-name">Sports</div>
+                    <div class="ccg-grid-meta">Sidelines, stadiums, scoreboards.</div>
+                    <img src="resources/images/genres/sports.png"
+                         alt="Sports"
+                         class="ccg-grid-thumb">
+                </a>
+
+                <a class="ccg-grid-card" href="games/genres/strategy-games.html">
+                    <div class="ccg-grid-label">GENRE</div>
+                    <div class="ccg-grid-name">Strategy</div>
+                    <div class="ccg-grid-meta">Tactics, maps &amp; planning.</div>
+                    <img src="resources/images/genres/strategy.png"
+                         alt="Strategy"
+                         class="ccg-grid-thumb">
+                </a>
+
+                <a class="ccg-grid-card" href="games/genres/licensed-games.html">
+                    <div class="ccg-grid-label">GENRE</div>
+                    <div class="ccg-grid-name">Licensed</div>
+                    <div class="ccg-grid-meta">Movies, TV &amp; comic tie-ins.</div>
+                    <img src="resources/images/genres/licensed.png"
+                         alt="Licensed"
+                         class="ccg-grid-thumb">
+                </a>
+
+                <a class="ccg-grid-card" href="games/genres/miscellaneous.html">
+                    <div class="ccg-grid-label">GENRE</div>
+                    <div class="ccg-grid-name">Miscellaneous</div>
+                    <div class="ccg-grid-meta">Oddities, experiments &amp; gems.</div>
+                    <img src="resources/images/genres/miscellaneous.png"
+                         alt="Miscellaneous"
+                         class="ccg-grid-thumb">
                 </a>
 
                 <a class="ccg-grid-card" href="games/genres/top-picks.html">
-                    <div class="ccg-grid-label">Special</div>
+                    <div class="ccg-grid-label">CURATED</div>
                     <div class="ccg-grid-name">Top Picks</div>
-                    <div class="ccg-grid-meta">CCG’s favourites</div>
-                    <i class="fa-solid fa-star ccg-grid-icon"></i>
+                    <div class="ccg-grid-meta">Hand-picked favourites from the channel.</div>
+                    <img src="resources/images/genres/top-picks.png"
+                         alt="Top Picks"
+                         class="ccg-grid-thumb">
                 </a>
-
             </div>
         </section>
 
-        <!-- RIGHT PANEL: FEATURED VIDEOS -->
-        <aside class="ccg-panel">
+        <!-- FOOTER -->
+        <footer class="ccg-footer">
+            <div>© 2025 Cheeky Commodore Gamer — Retro legends never die.</div>
+            <div>Intro Loader: &ldquo;Stay a while, stay forever…&rdquo; lives on at index.html</div>
+        </footer>
+    </div>
 
-            <div class="ccg-panel-header">
-                <div class="ccg-panel-title">
-                    <span>▶</span> Featured Videos
-                </div>
-                <div class="ccg-panel-tag">From the CCG YouTube Channel</div>
-            </div>
+    <!-- ZX TOAST / EASTER EGG FEEDBACK -->
+    <div id="ccg-toast" class="ccg-toast">
+        ZX DEV LAB UNLOCKED • EXPERIMENTAL MODE
+    </div>
 
-            <div class="ccg-videos-list">
+    <!-- JS ENGINES -->
+    <script src="js/ccg-mode-engine.js" defer></script>
+    <script src="js/ccj-global.js" defer></script>
 
-                <!-- TEMPLATE FEATURED VIDEO CARD (you can replace thumbnails later) -->
-                <a class="ccg-video-card" href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank">
-                    <div class="ccg-video-thumb">
-                        <div class="ccg-video-chip">Featured</div>
-                        <div class="ccg-video-play"><i class="fa-solid fa-play"></i></div>
-                        <div class="ccg-video-thumb-inner" style="background-image:url('resources/images/hero/ccg-hero-c64.png');"></div>
-                    </div>
-                    <div class="ccg-video-meta">
-                        <div class="ccg-video-title">CCG Channel Trailer</div>
-                        <div class="ccg-video-details">C64 • Amiga • Longplays • Reviews</div>
-                        <div class="ccg-video-tagline">Stay a while… stay forever</div>
-                    </div>
-                </a>
+    <!-- HOME-SPECIFIC LOGIC (mode label + starfield) -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const body = document.body;
+            const modeToggle = document.getElementById("mode-toggle");
+            const modeLabel = document.getElementById("ccg-mode-label");
+            const logoButton = document.getElementById("ccg-logo-button");
+            const toast = document.getElementById("ccg-toast");
 
-            </div>
+            function updateModeLabel(mode) {
+                if (!modeLabel) return;
+                if (mode === "amiga") {
+                    modeLabel.textContent = "SYSTEM: AMIGA • WORKBENCH 2.0 ONLINE";
+                } else if (mode === "zx") {
+                    modeLabel.textContent = "SYSTEM: ZX DEV LAB • EXPERIMENTAL";
+                } else {
+                    modeLabel.textContent = "SYSTEM: C64 • NEON READY";
+                }
+            }
 
-        </aside>
+            function showToast() {
+                if (!toast) return;
+                toast.classList.add("ccg-toast--visible");
+                setTimeout(() => toast.classList.remove("ccg-toast--visible"), 2600);
+            }
 
-    </main>
+            if (modeToggle && window.CCGModeEngine) {
+                modeToggle.addEventListener("click", () => {
+                    CCGModeEngine.toggleMode();
+                });
+            }
 
-    <!-- FOOTER -->
-    <footer class="ccg-footer">
-        <div>© 2025 Cheeky Commodore Gamer</div>
-        <div>Retro Legends Never Die</div>
-    </footer>
+            if (logoButton && window.CCGModeEngine) {
+                logoButton.addEventListener("click", () => {
+                    CCGModeEngine.toggleMode();
+                });
+            }
 
-</div>
+            document.addEventListener("ccg:modeChange", (event) => {
+                const mode = (event.detail && event.detail.mode) || "c64";
+                body.dataset.mode = mode;
+                updateModeLabel(mode);
+                if (mode === "zx") {
+                    showToast();
+                }
+            });
 
-<!-- MODE ENGINE -->
-<script src="js/ccg-mode-engine.js" defer></script>
+            const initialMode =
+                (window.CCGModeEngine && window.CCGModeEngine.getMode()) ||
+                body.dataset.mode ||
+                "c64";
+            body.dataset.mode = initialMode;
+            updateModeLabel(initialMode);
 
-<!-- GLOBAL INIT -->
-<script>
-document.addEventListener("DOMContentLoaded", () => {
+            // Simple starfield
+            const canvas = document.getElementById("starfield");
+            if (canvas && canvas.getContext) {
+                const ctx = canvas.getContext("2d");
+                let width, height;
+                const stars = [];
+                const STAR_COUNT = 140;
 
-    const modeStatus = document.getElementById("mode-status-text");
-    const logoButton = document.getElementById("mode-logo-toggle");
+                function resize() {
+                    width = canvas.width = window.innerWidth;
+                    height = canvas.height = window.innerHeight;
+                }
 
-    function updateStatus() {
-        const mode = CCGModeEngine.getMode().toUpperCase();
-        modeStatus.textContent = mode + " MODE";
-    }
+                function initStars() {
+                    stars.length = 0;
+                    for (let i = 0; i < STAR_COUNT; i++) {
+                        stars.push({
+                            x: Math.random() * width,
+                            y: Math.random() * height,
+                            z: Math.random() * 0.7 + 0.3,
+                            speed: Math.random() * 0.4 + 0.1
+                        });
+                    }
+                }
 
-    // Update on change
-    document.addEventListener("ccg:modeChange", updateStatus);
+                function draw() {
+                    ctx.clearRect(0, 0, width, height);
+                    for (const s of stars) {
+                        s.y += s.speed * 0.7;
+                        if (s.y > height) {
+                            s.y = 0;
+                            s.x = Math.random() * width;
+                        }
+                        const size = s.z * 2;
+                        ctx.globalAlpha = 0.3 + s.z * 0.7;
+                        ctx.fillStyle = "#70fff0";
+                        ctx.fillRect(s.x, s.y, size, size);
+                    }
+                    requestAnimationFrame(draw);
+                }
 
-    // Logo also toggles mode
-    logoButton.addEventListener("click", () => {
-        CCGModeEngine.toggleMode();
-    });
-
-    updateStatus();
-});
-</script>
-
+                resize();
+                initStars();
+                draw();
+                window.addEventListener("resize", () => {
+                    resize();
+                    initStars();
+                });
+            }
+        });
+    </script>
 </body>
 </html>
