@@ -1,150 +1,92 @@
 <!DOCTYPE html>
-<html lang="en" data-page="genre">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cheeky Commodore Gamer | Quiz Games</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-
-    <link rel="stylesheet" href="../../resources/css/ccg-master.css"/>
-    <link rel="stylesheet" href="../../resources/css/ccg-effects.css"/>
-    <link rel="stylesheet" href="../../resources/css/ccg-mode.css"/>
-    <link rel="stylesheet" href="../../resources/css/home.css"/>
-    <link rel="stylesheet" href="../../resources/css/genre.css"/>
-
-    <link rel="icon" href="../../resources/CCG_FAVICON.png"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Games | Cheeky Commodore Gamer</title>
+    <meta name="description" content="Quiz and trivia games for the Commodore 64 and Amiga. General knowledge, sports quizzes, TV tie-ins and brain-testing question sets from the classic era.">
+    <meta name="robots" content="index,follow">
+    <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/genres/quiz-games.html">
+    <meta property="og:title" content="Quiz Games | Cheeky Commodore Gamer">
+    <meta property="og:description" content="Browse Quiz games on C64 and Amiga, from pub-style quizzes to TV-inspired trivia and themed question packs.">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../css/engine.css">
+    <link rel="stylesheet" href="../../resources/css/main.css">
+    <script src="../../js/genre-loader.js" defer></script>
 </head>
-
-<body data-mode="c64" data-page="genre" data-genre="quiz-games">
-
-<canvas id="starfield"></canvas>
-<div class="neon-grid"></div>
-<div class="crt-overlay"></div>
-<div class="crt-glow"></div>
-
-<div class="ccg-shell">
-
-<header class="ccg-hud">
-    <div class="ccg-logo-wrap">
-        <button id="logoModeToggle" class="ccg-logo-button">
-            <img src="../../resources/CCGAMER LOGO.png">
-        </button>
-        <div>
-            <div class="ccg-logo-caption">QUIZ GAMES</div>
-            <div style="opacity:.85;font-size:.9rem;">Test your knowledge, old-school style.</div>
+<body data-genre="quiz-games">
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a href="../../home.html" class="site-logo-link">
+                <img src="../../resources/CCGAMER LOGO.png" alt="Cheeky Commodore Gamer logo" class="site-logo">
+                <span class="site-title-text">Cheeky Commodore Gamer</span>
+            </a>
+            <nav class="site-nav" aria-label="Primary">
+                <a href="../../home.html">Home Hub</a>
+                <a href="../index.html">All Games Index</a>
+                <a href="../../complete-index.html">Complete Games List</a>
+                <a href="../../quiz/">Trivia Quiz</a>
+            </nav>
         </div>
-    </div>
+    </header>
 
-    <div class="ccg-mode-status">
-        <span id="currentModeText">SYSTEM MODE: C64 NEON</span>
-    </div>
+    <main id="mainContent" class="genre-page">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="../../home.html">Home</a></li>
+                <li><a href="../index.html">All Games</a></li>
+                <li aria-current="page">Quiz Games</li>
+            </ol>
+        </nav>
 
-    <div class="ccg-hud-right">
-        <div class="ccg-hud-right-line"><strong>QUIZ BROWSER</strong></div>
-        <div class="ccg-hud-right-line">STATUS: THINK FAST…</div>
-    </div>
-</header>
+        <section class="genre-hero">
+            <h1>Quiz Games</h1>
+            <p>
+                Quiz games turn the Commodore 64 and Amiga into buzzing quiz machines. Question sets can range from
+                general knowledge and pop culture to niche sports, TV shows and specialist subjects, often with
+                multiplayer options so friends can compete for the highest score.
+            </p>
+            <p>
+                This section is perfect for players who enjoy testing what they know, learning new facts and seeing
+                how far they can get before the wrong answers finally catch up with them.
+            </p>
+            <div class="genre-meta-tags">
+                <span class="genre-tag">Quiz</span>
+                <span class="genre-tag">Trivia</span>
+                <span class="genre-tag">Multiplayer</span>
+            </div>
+        </section>
 
-<section class="ccg-panel ccg-panel--hero">
+        <section class="genre-intro">
+            <h2>Test your knowledge</h2>
+            <p>
+                Quiz titles usually present you with multiple-choice questions, picture clues or rapid-fire prompts,
+                sometimes against the clock. Many of them are built for party play, making them ideal for living-room
+                sessions where everyone shouts answers at the screen.
+            </p>
+            <p>
+                If you like the idea of combining retro hardware with quiz-night vibes, this category brings those
+                classic question-and-answer experiences together in one place.
+            </p>
+        </section>
 
-    <div class="ccg-panel-header">
-        <div class="ccg-panel-title"><span>QUIZ GAMES</span></div>
-        <div class="ccg-panel-tag">Trivia</div>
-    </div>
+        <section class="genre-stats">
+            <h2>Total Quiz games listed</h2>
+            <div id="genreGamesCount"></div>
+        </section>
 
-    <div class="ccg-hero-text">
-        Trivia, puzzles and fast-paced brain battles —
-        <span class="ccg-hero-highlight">perfect for retro masterminds.</span>
-    </div>
+        <section class="genre-grid">
+            <h2>Browse Quiz games</h2>
+            <div id="genreGamesGrid"></div>
+        </section>
+    </main>
 
-    <div class="ccg-hero-actions">
-
-        <button class="ccg-button" onclick="location.href='../../home.html'">
-            <i class="fa-solid fa-house"></i><span>Home Hub</span>
-        </button>
-
-        <button id="randomInGenreBtn" class="ccg-button">
-            <i class="fa-solid fa-circle-question"></i><span>Random Quiz Game</span>
-        </button>
-
-        <button class="ccg-button" onclick="location.href='../index.html'">
-            <i class="fa-solid fa-list"></i><span>All Genres</span>
-        </button>
-
-    </div>
-
-</section>
-
-<section class="ccg-panel">
-    <div class="ccg-panel-header">
-        <div class="ccg-panel-title"><span>QUIZ TITLES</span></div>
-        <div class="ccg-panel-tag" id="gameCount">Loading…</div>
-    </div>
-
-    <div id="genreGamesGrid" class="ccg-grid">
-        <div>Loading games…</div>
-    </div>
-</section>
-
-<footer class="ccg-footer">
-    <div>© <span id="ccgYear"></span> Cheeky Commodore Gamer</div>
-    <div>Quiz Games Browser</div>
-</footer>
-
-</div>
-
-<script src="../../js/ccg-mode-engine.js"></script>
-<script src="../../js/ccj-global.js"></script>
-<script src="../../js/genre-loader.js"></script>
-
-<script>
-(function(){
-
-    const body=document.body;
-    const slug=body.dataset.genre;
-
-    const year=document.getElementById("ccgYear");
-    const logo=document.getElementById("logoModeToggle");
-    const modeText=document.getElementById("currentModeText");
-    const grid=document.getElementById("genreGamesGrid");
-    const count=document.getElementById("gameCount");
-    const rand=document.getElementById("randomInGenreBtn");
-
-    if(year)year.textContent=new Date().getFullYear();
-
-    function update(){modeText.textContent="SYSTEM MODE: "+window.CCGModeEngine.getMode().toUpperCase()+" NEON";}
-    logo.addEventListener("click",()=>{window.CCGModeEngine.toggleMode();update();});
-    update();
-
-    window.loadGenreGames?.(slug,grid,count);
-    rand?.addEventListener("click",()=>window.randomGameInGenre?.(slug));
-
-    /* STARFIELD */
-    const canvas=document.getElementById("starfield");
-    if(canvas?.getContext){
-        const ctx=canvas.getContext("2d");
-        let w=canvas.width=innerWidth,h=canvas.height=innerHeight;
-        const stars=[];
-        for(let i=0;i<120;i++)stars.push({x:Math.random()*w,y:Math.random()*h,z:Math.random()*0.8+0.2,speed:Math.random()*0.5+0.2});
-        function draw(){
-            ctx.clearRect(0,0,w,h);
-            const base=(body.dataset.mode==="amiga")?"rgba(255,210,111,":(body.dataset.mode==="zx")?"rgba(0,255,0,":"rgba(112,255,240,";
-            for(const s of stars){
-                s.y+=s.speed*(0.5+s.z);
-                if(s.y>h){s.y=0;s.x=Math.random()*w;}
-                ctx.fillStyle=base+(0.4+s.z*0.6)+")";
-                ctx.fillRect(s.x,s.y,s.z*2,s.z*2);
-            }
-            requestAnimationFrame(draw);
-        }
-        draw();
-    }
-
-})();
-</script>
-
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <p>&copy; Cheeky Commodore Gamer. Quiz and trivia favourites from the C64 and Amiga scene.</p>
+            <p>Return to the <a href="../../home.html">Home Hub</a> for more genres and community quiz content.</p>
+        </div>
+    </footer>
 </body>
 </html>
