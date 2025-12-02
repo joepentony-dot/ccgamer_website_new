@@ -19,30 +19,6 @@
     <link rel="icon" type="image/png" href="resources/CCG_FAVICON.png">
 </head>
 <body class="ccg-body home-page" data-mode="c64">
-    <!-- Floating Social Bar (always visible, top-right, neon) -->
-    <aside class="ccg-social-bar" aria-label="Follow Cheeky Commodore Gamer">
-        <a class="ccg-social-link ccg-social-youtube" href="https://www.youtube.com/@CheekyCommodoreGamer?sub_confirmation=1" target="_blank" rel="noopener noreferrer">
-            <span class="ccg-social-label">Subscribe</span>
-            <span class="ccg-social-sub">YouTube</span>
-        </a>
-        <a class="ccg-social-link ccg-social-patreon" href="https://www.patreon.com/CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer">
-            <span class="ccg-social-label">Support</span>
-            <span class="ccg-social-sub">Patreon</span>
-        </a>
-        <a class="ccg-social-link ccg-social-paypal" href="https://www.paypal.com/donate/?hosted_button_id=4C6UZ5YT2ZZ8L" target="_blank" rel="noopener noreferrer">
-            <span class="ccg-social-label">Donate</span>
-            <span class="ccg-social-sub">PayPal</span>
-        </a>
-        <a class="ccg-social-link ccg-social-x" href="https://x.com/CheekyC64Gamer" target="_blank" rel="noopener noreferrer">
-            <span class="ccg-social-label">Follow</span>
-            <span class="ccg-social-sub">X / Twitter</span>
-        </a>
-        <a class="ccg-social-link ccg-social-discord" href="https://discord.gg/83Xw9ktAn4" target="_blank" rel="noopener noreferrer">
-            <span class="ccg-social-label">Join</span>
-            <span class="ccg-social-sub">Discord</span>
-        </a>
-    </aside>
-
     <div class="ccg-page-shell">
         <!-- HEADER -->
         <header class="ccg-header">
@@ -51,7 +27,7 @@
                     <img src="resources/ccgamer_logo.png" alt="Cheeky Commodore Gamer Logo" class="ccg-logo">
                     <div class="ccg-brand-text">
                         <span class="ccg-brand-title">Cheeky Commodore Gamer</span>
-                        <span class="ccg-brand-subtitle">Commodore 64 & Amiga Retro Gaming</span>
+                        <span class="ccg-brand-subtitle">Commodore 64 &amp; Amiga Retro Gaming</span>
                     </div>
                 </a>
             </div>
@@ -68,8 +44,32 @@
             <div class="ccg-header-right">
                 <!-- Mode toggle — wired by ccg-mode-engine.js -->
                 <button id="ccg-mode-toggle" class="ccg-mode-toggle" type="button" aria-label="Toggle between C64 and Amiga modes">
-                    <span class="ccg-mode-toggle-label">Switch Mode</span>
+                    <span class="ccg-mode-toggle-label">C64 / Amiga</span>
                 </button>
+
+                <!-- Social control row -->
+                <div class="ccg-social-row" aria-label="Follow Cheeky Commodore Gamer">
+                    <a class="ccg-social-pill ccg-social-youtube" href="https://www.youtube.com/@CheekyCommodoreGamer?sub_confirmation=1" target="_blank" rel="noopener noreferrer">
+                        <span class="ccg-social-pill-main">Subscribe</span>
+                        <span class="ccg-social-pill-sub">YouTube</span>
+                    </a>
+                    <a class="ccg-social-pill ccg-social-patreon" href="https://www.patreon.com/CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer">
+                        <span class="ccg-social-pill-main">Support</span>
+                        <span class="ccg-social-pill-sub">Patreon</span>
+                    </a>
+                    <a class="ccg-social-pill ccg-social-paypal" href="https://www.paypal.com/donate/?hosted_button_id=4C6UZ5YT2ZZ8L" target="_blank" rel="noopener noreferrer">
+                        <span class="ccg-social-pill-main">Donate</span>
+                        <span class="ccg-social-pill-sub">PayPal</span>
+                    </a>
+                    <a class="ccg-social-pill ccg-social-x" href="https://x.com/CheekyC64Gamer" target="_blank" rel="noopener noreferrer">
+                        <span class="ccg-social-pill-main">Follow</span>
+                        <span class="ccg-social-pill-sub">X / Twitter</span>
+                    </a>
+                    <a class="ccg-social-pill ccg-social-discord" href="https://discord.gg/83Xw9ktAn4" target="_blank" rel="noopener noreferrer">
+                        <span class="ccg-social-pill-main">Join</span>
+                        <span class="ccg-social-pill-sub">Discord</span>
+                    </a>
+                </div>
             </div>
         </header>
 
@@ -124,7 +124,7 @@
                             <h3 class="ccg-card-title">Featured Game</h3>
                             <span class="ccg-tag ccg-tag-system" id="featured-game-system">C64 / Amiga</span>
                         </header>
-                        <div class="ccg-card-body">
+                        <div class="ccg-card-body ccg-card-body-horizontal">
                             <a href="#" id="featured-game-link" class="ccg-card-thumb-link">
                                 <div class="ccg-thumb-frame ccg-thumb-frame-big">
                                     <img src="resources/ccgamer_logo.png"
@@ -150,15 +150,14 @@
                         </div>
                     </article>
 
-                    <!-- Featured Video (static highlight, but styled epic) -->
+                    <!-- Featured Video -->
                     <article class="ccg-card ccg-card-featured-video ccg-neon-panel">
                         <header class="ccg-card-header">
                             <h3 class="ccg-card-title">Featured Video</h3>
                             <span class="ccg-tag ccg-tag-video">YouTube</span>
                         </header>
-                        <div class="ccg-card-body">
+                        <div class="ccg-card-body ccg-card-body-vertical">
                             <div class="ccg-video-frame">
-                                <!-- Replace video ID here easily in future -->
                                 <iframe
                                     class="ccg-video-embed"
                                     src="https://www.youtube.com/embed/6IYw6wRW3-0"
@@ -195,8 +194,8 @@
                 </div>
             </section>
 
-            <!-- GENRE GRID -->
-            <section class="ccg-section ccg-section-genres" aria-label="Browse by genre">
+            <!-- GENRES + COLLECTIONS -->
+            <section class="ccg-section ccg-section-genres" aria-label="Browse by genre and collection">
                 <div class="ccg-section-header">
                     <h2 class="ccg-section-title">Browse by Genre</h2>
                     <p class="ccg-section-subtitle">
@@ -204,87 +203,80 @@
                     </p>
                 </div>
 
-                <div class="ccg-genre-grid">
+                <!-- GENRES -->
+                <div class="ccg-genre-grid" aria-label="Game genres">
                     <a href="games/genres/action-adventure-games.html" class="ccg-genre-card ccg-neon-panel">
                         <img src="resources/images/genres/action-adventure.png" alt="Action Adventure" class="ccg-genre-image">
-                        <span class="ccg-genre-label">Action Adventure</span>
                     </a>
                     <a href="games/genres/adventure-games.html" class="ccg-genre-card ccg-neon-panel">
                         <img src="resources/images/genres/adventure.png" alt="Adventure" class="ccg-genre-image">
-                        <span class="ccg-genre-label">Adventure</span>
                     </a>
                     <a href="games/genres/arcade-games.html" class="ccg-genre-card ccg-neon-panel">
                         <img src="resources/images/genres/arcade.png" alt="Arcade" class="ccg-genre-image">
-                        <span class="ccg-genre-label">Arcade</span>
-                    </a>
-                    <a href="games/genres/bpjs-indexed-games.html" class="ccg-genre-card ccg-neon-panel">
-                        <img src="resources/images/genres/bpjs.png" alt="BPJS Indexed" class="ccg-genre-image">
-                        <span class="ccg-genre-label">BPJS Indexed</span>
-                    </a>
-                    <a href="games/genres/cartridge-games.html" class="ccg-genre-card ccg-neon-panel">
-                        <img src="resources/images/genres/cartridge.png" alt="Cartridge Games" class="ccg-genre-image">
-                        <span class="ccg-genre-label">Cartridge</span>
                     </a>
                     <a href="games/genres/casino-games.html" class="ccg-genre-card ccg-neon-panel">
                         <img src="resources/images/genres/casino.png" alt="Casino" class="ccg-genre-image">
-                        <span class="ccg-genre-label">Casino</span>
                     </a>
                     <a href="games/genres/fighting-games.html" class="ccg-genre-card ccg-neon-panel">
                         <img src="resources/images/genres/fighting.png" alt="Fighting" class="ccg-genre-image">
-                        <span class="ccg-genre-label">Fighting</span>
                     </a>
                     <a href="games/genres/horror-games.html" class="ccg-genre-card ccg-neon-panel">
                         <img src="resources/images/genres/horror.png" alt="Horror" class="ccg-genre-image">
-                        <span class="ccg-genre-label">Horror</span>
-                    </a>
-                    <a href="games/genres/licensed-games.html" class="ccg-genre-card ccg-neon-panel">
-                        <img src="resources/images/genres/licensed.png" alt="Licensed" class="ccg-genre-image">
-                        <span class="ccg-genre-label">Licensed</span>
                     </a>
                     <a href="games/genres/miscellaneous.html" class="ccg-genre-card ccg-neon-panel">
                         <img src="resources/images/genres/miscellaneous.png" alt="Miscellaneous" class="ccg-genre-image">
-                        <span class="ccg-genre-label">Miscellaneous</span>
                     </a>
                     <a href="games/genres/platform-games.html" class="ccg-genre-card ccg-neon-panel">
                         <img src="resources/images/genres/platform.png" alt="Platform" class="ccg-genre-image">
-                        <span class="ccg-genre-label">Platform</span>
                     </a>
                     <a href="games/genres/puzzle-games.html" class="ccg-genre-card ccg-neon-panel">
                         <img src="resources/images/genres/puzzle.png" alt="Puzzle" class="ccg-genre-image">
-                        <span class="ccg-genre-label">Puzzle</span>
                     </a>
                     <a href="games/genres/quiz-games.html" class="ccg-genre-card ccg-neon-panel">
                         <img src="resources/images/genres/quiz.png" alt="Quiz" class="ccg-genre-image">
-                        <span class="ccg-genre-label">Quiz</span>
                     </a>
                     <a href="games/genres/racing-games.html" class="ccg-genre-card ccg-neon-panel">
                         <img src="resources/images/genres/racing.png" alt="Racing" class="ccg-genre-image">
-                        <span class="ccg-genre-label">Racing</span>
                     </a>
                     <a href="games/genres/rpg-games.html" class="ccg-genre-card ccg-neon-panel">
-                        <img src="resources/images/genres/role-playing.png" alt="Role-Playing / RPG" class="ccg-genre-image">
-                        <span class="ccg-genre-label">Role-Playing</span>
+                        <img src="resources/images/genres/role-playing.png" alt="Role-Playing" class="ccg-genre-image">
                     </a>
                     <a href="games/genres/shooting-games.html" class="ccg-genre-card ccg-neon-panel">
                         <img src="resources/images/genres/shooting.png" alt="Shooting" class="ccg-genre-image">
-                        <span class="ccg-genre-label">Shooting</span>
                     </a>
                     <a href="games/genres/sports-games.html" class="ccg-genre-card ccg-neon-panel">
                         <img src="resources/images/genres/sports.png" alt="Sports" class="ccg-genre-image">
-                        <span class="ccg-genre-label">Sports</span>
                     </a>
                     <a href="games/genres/strategy-games.html" class="ccg-genre-card ccg-neon-panel">
                         <img src="resources/images/genres/strategy.png" alt="Strategy" class="ccg-genre-image">
-                        <span class="ccg-genre-label">Strategy</span>
+                    </a>
+                </div>
+
+                <!-- COLLECTIONS -->
+                <div class="ccg-section-header ccg-section-header-collections">
+                    <h3 class="ccg-section-title-sub">Curated Collections</h3>
+                    <p class="ccg-section-subtitle">
+                        Special sets hand-picked by Cheeky Commodore Gamer – cartridges, licensed titles, BPJS and more.
+                    </p>
+                </div>
+
+                <div class="ccg-genre-grid ccg-collection-grid" aria-label="Game collections">
+                    <a href="games/genres/bpjs-indexed-games.html" class="ccg-genre-card ccg-neon-panel">
+                        <img src="resources/images/genres/bpjs.png" alt="BPJS Indexed" class="ccg-genre-image">
+                    </a>
+                    <a href="games/genres/cartridge-games.html" class="ccg-genre-card ccg-neon-panel">
+                        <img src="resources/images/genres/cartridge.png" alt="Cartridge Games" class="ccg-genre-image">
+                    </a>
+                    <a href="games/genres/licensed-games.html" class="ccg-genre-card ccg-neon-panel">
+                        <img src="resources/images/genres/licensed.png" alt="Licensed Games" class="ccg-genre-image">
                     </a>
                     <a href="games/genres/top-picks.html" class="ccg-genre-card ccg-neon-panel">
                         <img src="resources/images/genres/top-picks.png" alt="Top Picks" class="ccg-genre-image">
-                        <span class="ccg-genre-label">Top Picks</span>
                     </a>
                 </div>
             </section>
 
-            <!-- HIGHLIGHT GAMES (random curated strip) -->
+            <!-- HIGHLIGHT GAMES (random strip) -->
             <section class="ccg-section ccg-section-highlights" aria-label="Game highlights">
                 <div class="ccg-section-header">
                     <h2 class="ccg-section-title">Random Retro Highlights</h2>
@@ -382,7 +374,7 @@
     <script src="js/ccg-mode-engine.js" defer></script>
     <script src="js/ccj-global.js" defer></script>
 
-    <!-- Home-page specific JS (safe, no extra files needed) -->
+    <!-- Home-page specific JS -->
     <script>
         (function () {
             const GAMES_JSON_URL = "games/games.json";
@@ -401,7 +393,6 @@
             }
 
             function safeThumbnail(game) {
-                // Prefer explicit thumbnail field if present, otherwise fall back.
                 if (game.thumbnail) {
                     return "resources/images/thumbnails/all/" + game.thumbnail;
                 }
@@ -412,7 +403,6 @@
             }
 
             function gameUrl(game) {
-                // Prefer slug or id for linking into game.html
                 if (game.id) {
                     const encoded = encodeURIComponent(game.id);
                     return "games/game.html?id=" + encoded;
@@ -550,7 +540,6 @@
                 }
             }
 
-            // Kick everything off once DOM is ready
             if (document.readyState === "loading") {
                 document.addEventListener("DOMContentLoaded", loadGames);
             } else {
