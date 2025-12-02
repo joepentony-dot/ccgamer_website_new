@@ -1,157 +1,94 @@
 <!DOCTYPE html>
-<html lang="en" data-page="genre">
+<html lang="en">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Cheeky Commodore Gamer | Fighting Games</title>
-
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
-    <!-- Icons -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="../../resources/css/ccg-master.css"/>
-    <link rel="stylesheet" href="../../resources/css/ccg-effects.css"/>
-    <link rel="stylesheet" href="../../resources/css/ccg-mode.css"/>
-    <link rel="stylesheet" href="../../resources/css/home.css"/>
-    <link rel="stylesheet" href="../../resources/css/genre.css"/>
-
-    <link rel="icon" href="../../resources/CCG_FAVICON.png"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fighting Games | Cheeky Commodore Gamer</title>
+    <meta name="description" content="One-on-one fighters, wrestling games and beat-'em-ups for the Commodore 64 and Amiga. Discover classic Fighting games, from brawlers to ring-based showdowns.">
+    <meta name="robots" content="index,follow">
+    <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/genres/fighting-games.html">
+    <meta property="og:title" content="Fighting Games | Cheeky Commodore Gamer">
+    <meta property="og:description" content="Explore Fighting games on C64 and Amiga, including one-on-one fighters, wrestling titles and scrolling beat-'em-ups.">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../css/engine.css">
+    <link rel="stylesheet" href="../../resources/css/main.css">
+    <script src="../../js/genre-loader.js" defer></script>
 </head>
-
-<body data-page="genre" data-mode="c64" data-genre="fighting-games">
-
-<!-- BACKGROUND -->
-<canvas id="starfield"></canvas>
-<div class="crt-overlay"></div>
-<div class="crt-glow"></div>
-<div class="neon-grid"></div>
-
-<div class="ccg-shell">
-
-    <!-- HUD -->
-    <header class="ccg-hud">
-        <div class="ccg-logo-wrap">
-            <button id="logoModeToggle" class="ccg-logo-button">
-                <img src="../../resources/CCGAMER LOGO.png" alt="CCG Logo"/>
-            </button>
-
-            <div>
-                <div class="ccg-logo-caption">FIGHTING GAMES</div>
-                <div style="opacity:0.85;font-size:0.9rem;">
-                    One-on-one duels, brawls and brutal showdowns.
-                </div>
-            </div>
-        </div>
-
-        <div class="ccg-mode-status">
-            <span id="currentModeText">SYSTEM MODE: C64 NEON</span>
-        </div>
-
-        <div class="ccg-hud-right">
-            <div class="ccg-hud-right-line"><strong>FIGHTING BROWSER</strong></div>
-            <div class="ccg-hud-right-line">STATUS: FISTS READY…</div>
+<body data-genre="fighting-games">
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a href="../../home.html" class="site-logo-link">
+                <img src="../../resources/CCGAMER LOGO.png" alt="Cheeky Commodore Gamer logo" class="site-logo">
+                <span class="site-title-text">Cheeky Commodore Gamer</span>
+            </a>
+            <nav class="site-nav" aria-label="Primary">
+                <a href="../../home.html">Home Hub</a>
+                <a href="../index.html">All Games Index</a>
+                <a href="../../complete-index.html">Complete Games List</a>
+                <a href="../../quiz/">Trivia Quiz</a>
+            </nav>
         </div>
     </header>
 
-    <!-- HERO PANEL -->
-    <section class="ccg-panel ccg-panel--hero">
+    <main id="mainContent" class="genre-page">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="../../home.html">Home</a></li>
+                <li><a href="../index.html">All Games</a></li>
+                <li aria-current="page">Fighting Games</li>
+            </ol>
+        </nav>
 
-        <div class="ccg-panel-header">
-            <div class="ccg-panel-title"><span>FIGHTING GAMES</span></div>
-            <div class="ccg-panel-tag">Combat</div>
+        <section class="genre-hero">
+            <h1>Fighting Games</h1>
+            <p>
+                Fighting games on the Commodore 64 and Amiga cover everything from one-on-one arena battles to
+                side-scrolling brawlers and wrestling spectaculars. They are built around timing, reaction and
+                learning how to use each move, combo or throw to its full advantage.
+            </p>
+            <p>
+                This section highlights games where close combat is the main event. Whether it is martial arts,
+                fantasy duels, wrestling rings or street battles, the focus is on head-to-head clashes and
+                satisfying hits.
+            </p>
+            <div class="genre-meta-tags">
+                <span class="genre-tag">Fighting</span>
+                <span class="genre-tag">Beat-'em-ups</span>
+                <span class="genre-tag">Versus</span>
+            </div>
+        </section>
+
+        <section class="genre-intro">
+            <h2>What makes a Fighting game?</h2>
+            <p>
+                Games listed under this Fighting category usually revolve around direct physical combat between a
+                small number of characters. Matches may take place on a single screen or across scrolling arenas,
+                but your main goal is to wear down an opponent&apos;s energy, score knockouts or outlast them on
+                points.
+            </p>
+            <p>
+                Expect distinctive fighters with different strengths and weaknesses, special moves, grapples and
+                attacks that reward practice and mastery rather than simple button bashing.
+            </p>
+        </section>
+
+        <section class="genre-stats">
+            <h2>Total Fighting games listed</h2>
+            <div id="genreGamesCount"></div>
+        </section>
+
+        <section class="genre-grid">
+            <h2>Browse Fighting games</h2>
+            <div id="genreGamesGrid"></div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <p>&copy; Cheeky Commodore Gamer. Classic Fighting games from the C64 and Amiga era.</p>
+            <p>Return to the <a href="../../home.html">Home Hub</a> to explore more retro game genres and collections.</p>
         </div>
-
-        <div class="ccg-hero-text">
-            Arena battles, martial arts and digital knockout punches —
-            <span class="ccg-hero-highlight">beat your rivals in neon-lit arenas.</span>
-        </div>
-
-        <div class="ccg-hero-actions">
-            <button class="ccg-button" onclick="window.location.href='../../home.html'">
-                <i class="fa-solid fa-house"></i><span>Home Hub</span>
-            </button>
-
-            <button class="ccg-button" id="randomInGenreBtn">
-                <i class="fa-solid fa-hand-fist"></i><span>Random Fighting Game</span>
-            </button>
-
-            <button class="ccg-button" onclick="window.location.href='../index.html'">
-                <i class="fa-solid fa-list"></i><span>All Genres</span>
-            </button>
-        </div>
-    </section>
-
-    <!-- GAME GRID -->
-    <section class="ccg-panel">
-        <div class="ccg-panel-header">
-            <div class="ccg-panel-title"><span>FIGHTING TITLES</span></div>
-            <div class="ccg-panel-tag" id="gameCount">Loading…</div>
-        </div>
-
-        <div id="genreGamesGrid" class="ccg-grid"><div>Loading games…</div></div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="ccg-footer">
-        <div>© <span id="ccgYear"></span> Cheeky Commodore Gamer</div>
-        <div>Fighting Games Browser</div>
     </footer>
-
-</div>
-
-<!-- JS + STARFIELD (same block as previous pages) -->
-<script src="../../js/ccg-mode-engine.js"></script>
-<script src="../../js/ccj-global.js"></script>
-<script src="../../js/genre-loader.js"></script>
-<script>
-/* Same script logic as Casino page */
-(function(){
-    const body=document.body;
-    const year=document.getElementById("ccgYear");
-    const logo=document.getElementById("logoModeToggle");
-    const modeText=document.getElementById("currentModeText");
-    const genreSlug=body.dataset.genre;
-    const grid=document.getElementById("genreGamesGrid");
-    const count=document.getElementById("gameCount");
-    const randomBtn=document.getElementById("randomInGenreBtn");
-
-    if(year)year.textContent=new Date().getFullYear();
-
-    function updateMode(){
-        if(!window.CCGModeEngine)return;
-        modeText.textContent="SYSTEM MODE: "+window.CCGModeEngine.getMode().toUpperCase()+" NEON";
-    }
-
-    logo?.addEventListener("click",()=>{window.CCGModeEngine.toggleMode();updateMode();});
-    updateMode();
-
-    if(window.loadGenreGames)window.loadGenreGames(genreSlug,grid,count);
-
-    randomBtn?.addEventListener("click",()=>{if(window.randomGameInGenre)window.randomGameInGenre(genreSlug);});
-
-    /* Starfield identical to previous pages */
-    const canvas=document.getElementById("starfield");
-    if(canvas?.getContext){
-        const ctx=canvas.getContext("2d");
-        let w=canvas.width=window.innerWidth,h=canvas.height=window.innerHeight;
-        const STAR_COUNT=120,stars=[];
-        function init(){stars.length=0;for(let i=0;i<STAR_COUNT;i++)stars.push({x:Math.random()*w,y:Math.random()*h,z:Math.random()*0.8+0.2,speed:Math.random()*0.5+0.2});}
-        function draw(){
-            ctx.clearRect(0,0,w,h);
-            const mode=body.dataset.mode;
-            let base="rgba(112,255,240,";if(mode==="amiga")base="rgba(255,210,111,";if(mode==="zx")base="rgba(0,255,0,";
-            for(const s of stars){s.y+=s.speed*(0.5+s.z);if(s.y>h){s.y=0;s.x=Math.random()*w;s.z=Math.random()*0.8+0.2;}
-                ctx.fillStyle=base+(0.3+s.z*0.7).toFixed(2)+")";ctx.fillRect(s.x,s.y,s.z*2,s.z*2);}
-            requestAnimationFrame(draw);
-        }
-        init();draw();
-        window.addEventListener("resize",()=>{w=canvas.width=window.innerWidth;h=canvas.height=window.innerHeight;init();});
-    }
-})();
-</script>
-
 </body>
 </html>
