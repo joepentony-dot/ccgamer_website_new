@@ -1,181 +1,92 @@
 <!DOCTYPE html>
-<html lang="en" data-page="genre">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cheeky Commodore Gamer | Horror Games</title>
-
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
-
-    <!-- Icons -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="../../resources/css/ccg-master.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-effects.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-mode.css" />
-    <link rel="stylesheet" href="../../resources/css/home.css" />
-    <link rel="stylesheet" href="../../resources/css/genre.css" />
-
-    <link rel="icon" href="../../resources/CCG_FAVICON.png" />
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horror Games | Cheeky Commodore Gamer</title>
+    <meta name="description" content="Horror-themed games for the Commodore 64 and Amiga. Creepy adventures, monster chases, haunted mansions and chilling atmospheres from the classic micro era.">
+    <meta name="robots" content="index,follow">
+    <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/genres/horror-games.html">
+    <meta property="og:title" content="Horror Games | Cheeky Commodore Gamer">
+    <meta property="og:description" content="Discover Horror games on C64 and Amiga, from spooky adventures to monster-filled action with eerie soundtracks and haunted settings.">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../css/engine.css">
+    <link rel="stylesheet" href="../../resources/css/main.css">
+    <script src="../../js/genre-loader.js" defer></script>
 </head>
-
-<body data-page="genre" data-mode="c64" data-genre="horror-games">
-
-<!-- BACKGROUND -->
-<canvas id="starfield"></canvas>
-<div class="crt-overlay"></div>
-<div class="crt-glow"></div>
-<div class="neon-grid"></div>
-
-<div class="ccg-shell">
-
-    <!-- HUD -->
-    <header class="ccg-hud">
-        <div class="ccg-logo-wrap">
-            <button id="logoModeToggle" class="ccg-logo-button">
-                <img src="../../resources/CCGAMER LOGO.png" alt="CCG Logo" />
-            </button>
-
-            <div>
-                <div class="ccg-logo-caption">HORROR GAMES</div>
-                <div style="opacity:0.85; font-size:0.9rem;">
-                    Dark corridors, unknown creatures, pixel dread…
-                </div>
-            </div>
-        </div>
-
-        <div class="ccg-mode-status">
-            <span id="currentModeText">SYSTEM MODE: C64 NEON</span>
-        </div>
-
-        <div class="ccg-hud-right">
-            <div class="ccg-hud-right-line"><strong>HORROR BROWSER</strong></div>
-            <div class="ccg-hud-right-line">STATUS: FEAR ACTIVATED…</div>
+<body data-genre="horror-games">
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a href="../../home.html" class="site-logo-link">
+                <img src="../../resources/CCGAMER LOGO.png" alt="Cheeky Commodore Gamer logo" class="site-logo">
+                <span class="site-title-text">Cheeky Commodore Gamer</span>
+            </a>
+            <nav class="site-nav" aria-label="Primary">
+                <a href="../../home.html">Home Hub</a>
+                <a href="../index.html">All Games Index</a>
+                <a href="../../complete-index.html">Complete Games List</a>
+                <a href="../../quiz/">Trivia Quiz</a>
+            </nav>
         </div>
     </header>
 
-    <!-- HERO PANEL -->
-    <section class="ccg-panel ccg-panel--hero">
+    <main id="mainContent" class="genre-page">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="../../home.html">Home</a></li>
+                <li><a href="../index.html">All Games</a></li>
+                <li aria-current="page">Horror Games</li>
+            </ol>
+        </nav>
 
-        <div class="ccg-panel-header">
-            <div class="ccg-panel-title"><span>HORROR GAMES</span></div>
-            <div class="ccg-panel-tag">Fear & Suspense</div>
+        <section class="genre-hero">
+            <h1>Horror Games</h1>
+            <p>
+                Horror games on the Commodore 64 and Amiga lean into spooky settings, monsters, dark storylines
+                and unsettling atmosphere. Even with limited graphics, developers used clever sound design and
+                imagination to deliver genuine chills on a home computer.
+            </p>
+            <p>
+                This section gathers titles featuring haunted houses, vampires, zombies, cursed artefacts and
+                other horror themes, whether they play as adventures, action games or hybrids.
+            </p>
+            <div class="genre-meta-tags">
+                <span class="genre-tag">Horror</span>
+                <span class="genre-tag">Monsters</span>
+                <span class="genre-tag">Atmospheric</span>
+            </div>
+        </section>
+
+        <section class="genre-intro">
+            <h2>Horror on classic micros</h2>
+            <p>
+                Many Horror games rely on mood and suggestion rather than explicit visuals. Flickering lights,
+                eerie music and tense exploration all help create a sense of dread, even when you are viewing
+                everything through chunky sprites and bold colours.
+            </p>
+            <p>
+                Games in this category are a great pick if you want something a little darker than the usual
+                platformers and arcade conversions, especially around Halloween or late-night sessions.
+            </p>
+        </section>
+
+        <section class="genre-stats">
+            <h2>Total Horror games listed</h2>
+            <div id="genreGamesCount"></div>
+        </section>
+
+        <section class="genre-grid">
+            <h2>Browse Horror games</h2>
+            <div id="genreGamesGrid"></div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <p>&copy; Cheeky Commodore Gamer. Horror and spooky classics for the C64 and Amiga faithful.</p>
+            <p>Head back to the <a href="../../home.html">Home Hub</a> to browse lighter genres and themed playlists.</p>
         </div>
-
-        <div class="ccg-hero-text">
-            Haunted houses, eerie forests and nightmares in 8-bit —
-            <span class="ccg-hero-highlight">brace yourself for retro terror.</span>
-        </div>
-
-        <div class="ccg-hero-actions">
-
-            <button class="ccg-button" onclick="window.location.href='../../home.html'">
-                <i class="fa-solid fa-house"></i>
-                <span>Home Hub</span>
-            </button>
-
-            <button id="randomInGenreBtn" class="ccg-button">
-                <i class="fa-solid fa-ghost"></i>
-                <span>Random Horror Game</span>
-            </button>
-
-            <button class="ccg-button" onclick="window.location.href='../index.html'">
-                <i class="fa-solid fa-list"></i>
-                <span>All Genres</span>
-            </button>
-
-        </div>
-
-    </section>
-
-    <!-- GAME GRID -->
-    <section class="ccg-panel">
-        <div class="ccg-panel-header">
-            <div class="ccg-panel-title"><span>HORROR TITLES</span></div>
-            <div class="ccg-panel-tag" id="gameCount">Loading…</div>
-        </div>
-
-        <div class="ccg-grid" id="genreGamesGrid">
-            <div>Loading games…</div>
-        </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="ccg-footer">
-        <div>© <span id="ccgYear"></span> Cheeky Commodore Gamer</div>
-        <div>Horror Games Browser</div>
     </footer>
-
-</div>
-
-<!-- JS -->
-<script src="../../js/ccg-mode-engine.js"></script>
-<script src="../../js/ccj-global.js"></script>
-<script src="../../js/genre-loader.js"></script>
-
-<script>
-/* Full unified JS block */
-(function(){
-
-    const body = document.body;
-    const logo = document.getElementById("logoModeToggle");
-    const year = document.getElementById("ccgYear");
-    const modeText = document.getElementById("currentModeText");
-
-    const genreSlug = body.dataset.genre;
-    const grid = document.getElementById("genreGamesGrid");
-    const count = document.getElementById("gameCount");
-    const randomBtn = document.getElementById("randomInGenreBtn");
-
-    if(year) year.textContent = new Date().getFullYear();
-
-    /* MODE */
-    function updateMode(){
-        if(!window.CCGModeEngine) return;
-        modeText.textContent = "SYSTEM MODE: " + window.CCGModeEngine.getMode().toUpperCase() + " NEON";
-    }
-    logo?.addEventListener("click",()=>{window.CCGModeEngine.toggleMode(); updateMode();});
-    updateMode();
-
-    /* LOAD GAMES */
-    if(window.loadGenreGames) window.loadGenreGames(genreSlug,grid,count);
-
-    /* RANDOM */
-    randomBtn?.addEventListener("click",()=>{
-        if(window.randomGameInGenre) window.randomGameInGenre(genreSlug);
-    });
-
-    /* STARFIELD */
-    const canvas=document.getElementById("starfield");
-    if(canvas?.getContext){
-        const ctx=canvas.getContext("2d");
-        let w=canvas.width=window.innerWidth;
-        let h=canvas.height=window.innerHeight;
-        const STAR_COUNT=120,stars=[];
-        function init(){stars.length=0;for(let i=0;i<STAR_COUNT;i++)stars.push({
-            x:Math.random()*w,y:Math.random()*h,z:Math.random()*0.8+0.2,speed:Math.random()*0.5+0.2});}
-        function draw(){
-            ctx.clearRect(0,0,w,h);
-            const mode=body.dataset.mode;
-            let base="rgba(112,255,240,"; if(mode==="amiga") base="rgba(255,210,111,"; if(mode==="zx") base="rgba(0,255,0,";
-            for(const s of stars){
-                s.y+=s.speed*(0.5+s.z);
-                if(s.y>h){s.y=0;s.x=Math.random()*w;s.z=Math.random()*0.8+0.2;}
-                ctx.fillStyle=base+(0.3+s.z*0.7).toFixed(2)+")";
-                ctx.fillRect(s.x,s.y,s.z*2,s.z*2);
-            }
-            requestAnimationFrame(draw);
-        }
-        init(); draw();
-        window.addEventListener("resize",()=>{w=canvas.width=window.innerWidth;h=canvas.height=window.innerHeight;init();});
-    }
-
-})();
-</script>
-
 </body>
 </html>
