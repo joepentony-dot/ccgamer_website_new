@@ -1,157 +1,92 @@
 <!DOCTYPE html>
-<html lang="en" data-page="genre">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cheeky Commodore Gamer | Platform Games</title>
-
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
-
-    <!-- Icons -->
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="../../resources/css/ccg-master.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-effects.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-mode.css" />
-    <link rel="stylesheet" href="../../resources/css/home.css" />
-    <link rel="stylesheet" href="../../resources/css/genre.css" />
-
-    <link rel="icon" href="../../resources/CCG_FAVICON.png" />
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Games | Cheeky Commodore Gamer</title>
+    <meta name="description" content="Platform games for the Commodore 64 and Amiga. Leaping across gaps, climbing ladders, collecting items and dodging hazards in classic side-scrolling and single-screen adventures.">
+    <meta name="robots" content="index,follow">
+    <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/genres/platform-games.html">
+    <meta property="og:title" content="Platform Games | Cheeky Commodore Gamer">
+    <meta property="og:description" content="Explore Platform games on C64 and Amiga, featuring jumps, ladders, traps, collectibles and precision timing challenges.">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../css/engine.css">
+    <link rel="stylesheet" href="../../resources/css/main.css">
+    <script src="../../js/genre-loader.js" defer></script>
 </head>
-
-<body data-page="genre" data-mode="c64" data-genre="platform-games">
-
-<canvas id="starfield"></canvas>
-<div class="crt-overlay"></div>
-<div class="crt-glow"></div>
-<div class="neon-grid"></div>
-
-<div class="ccg-shell">
-
-<header class="ccg-hud">
-    <div class="ccg-logo-wrap">
-        <button id="logoModeToggle" class="ccg-logo-button">
-            <img src="../../resources/CCGAMER LOGO.png">
-        </button>
-
-        <div>
-            <div class="ccg-logo-caption">PLATFORM GAMES</div>
-            <div style="opacity:.85;font-size:.9rem;">Jump, run, dodge, climb — pixel precision required.</div>
+<body data-genre="platform-games">
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a href="../../home.html" class="site-logo-link">
+                <img src="../../resources/CCGAMER LOGO.png" alt="Cheeky Commodore Gamer logo" class="site-logo">
+                <span class="site-title-text">Cheeky Commodore Gamer</span>
+            </a>
+            <nav class="site-nav" aria-label="Primary">
+                <a href="../../home.html">Home Hub</a>
+                <a href="../index.html">All Games Index</a>
+                <a href="../../complete-index.html">Complete Games List</a>
+                <a href="../../quiz/">Trivia Quiz</a>
+            </nav>
         </div>
-    </div>
+    </header>
 
-    <div class="ccg-mode-status">
-        <span id="currentModeText">SYSTEM MODE: C64 NEON</span>
-    </div>
+    <main id="mainContent" class="genre-page">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="../../home.html">Home</a></li>
+                <li><a href="../index.html">All Games</a></li>
+                <li aria-current="page">Platform Games</li>
+            </ol>
+        </nav>
 
-    <div class="ccg-hud-right">
-        <div class="ccg-hud-right-line"><strong>PLATFORM BROWSER</strong></div>
-        <div class="ccg-hud-right-line">STATUS: LOADING LEVEL 1…</div>
-    </div>
-</header>
+        <section class="genre-hero">
+            <h1>Platform Games</h1>
+            <p>
+                Platform games are built around running, jumping and climbing through hazard-filled levels. On the
+                Commodore 64 and Amiga that meant ladders, moving platforms, disappearing ledges, enemies on fixed
+                patrol routes and tricky leaps that demanded precise timing.
+            </p>
+            <p>
+                This section covers both single-screen platformers and scrolling adventures, from early
+                ladder-climbing classics to more advanced multi-level epics.
+            </p>
+            <div class="genre-meta-tags">
+                <span class="genre-tag">Platform</span>
+                <span class="genre-tag">Jump &amp; Run</span>
+                <span class="genre-tag">Side-Scrolling</span>
+            </div>
+        </section>
 
-<section class="ccg-panel ccg-panel--hero">
-    <div class="ccg-panel-header">
-        <div class="ccg-panel-title"><span>PLATFORM GAMES</span></div>
-        <div class="ccg-panel-tag">Jump & Run</div>
-    </div>
+        <section class="genre-intro">
+            <h2>Precision jumps and tricky layouts</h2>
+            <p>
+                Platform games usually reward pattern recognition and muscle memory. You will often need to learn
+                enemy paths, time moving platforms and plan the safest way through each stage while scooping up
+                collectables, rescuing characters or chasing a high score.
+            </p>
+            <p>
+                If you grew up on jumping across gaps and climbing endless ladders, this category is a direct hit
+                of nostalgia and a great way to test your reflexes again.
+            </p>
+        </section>
 
-    <div class="ccg-hero-text">
-        From sprawling castles to deadly pits —
-        <span class="ccg-hero-highlight">the classic blend of danger and mobility.</span>
-    </div>
+        <section class="genre-stats">
+            <h2>Total Platform games listed</h2>
+            <div id="genreGamesCount"></div>
+        </section>
 
-    <div class="ccg-hero-actions">
-        <button class="ccg-button" onclick="window.location.href='../../home.html'">
-            <i class="fa-solid fa-house"></i><span>Home Hub</span>
-        </button>
+        <section class="genre-grid">
+            <h2>Browse Platform games</h2>
+            <div id="genreGamesGrid"></div>
+        </section>
+    </main>
 
-        <button id="randomInGenreBtn" class="ccg-button">
-            <i class="fa-solid fa-person-running"></i><span>Random Platform Game</span>
-        </button>
-
-        <button class="ccg-button" onclick="window.location.href='../index.html'">
-            <i class="fa-solid fa-list"></i><span>All Genres</span>
-        </button>
-    </div>
-</section>
-
-<section class="ccg-panel">
-    <div class="ccg-panel-header">
-        <div class="ccg-panel-title"><span>PLATFORM TITLES</span></div>
-        <div class="ccg-panel-tag" id="gameCount">Loading…</div>
-    </div>
-
-    <div id="genreGamesGrid" class="ccg-grid">
-        <div>Loading games…</div>
-    </div>
-</section>
-
-<footer class="ccg-footer">
-    <div>© <span id="ccgYear"></span> Cheeky Commodore Gamer</div>
-    <div>Platform Games Browser</div>
-</footer>
-
-</div>
-
-<script src="../../js/ccg-mode-engine.js"></script>
-<script src="../../js/ccj-global.js"></script>
-<script src="../../js/genre-loader.js"></script>
-
-<script>
-/* IDENTICAL JS TO THE OTHER GENRE PAGES */
-(function(){
-    const body=document.body;
-    const logo=document.getElementById("logoModeToggle");
-    const year=document.getElementById("ccgYear");
-    const modeText=document.getElementById("currentModeText");
-    const grid=document.getElementById("genreGamesGrid");
-    const count=document.getElementById("gameCount");
-    const randomBtn=document.getElementById("randomInGenreBtn");
-    const slug=body.dataset.genre;
-
-    if(year) year.textContent=new Date().getFullYear();
-
-    function updateMode(){
-        modeText.textContent="SYSTEM MODE: "+window.CCGModeEngine.getMode().toUpperCase()+" NEON";
-    }
-    logo.addEventListener("click",()=>{window.CCGModeEngine.toggleMode();updateMode();});
-    updateMode();
-
-    window.loadGenreGames?.(slug,grid,count);
-
-    randomBtn?.addEventListener("click",()=>window.randomGameInGenre?.(slug));
-
-    /* STARFIELD copied from master template */
-    const canvas=document.getElementById("starfield");
-    if(canvas?.getContext){
-        const ctx=canvas.getContext("2d");
-        let w=canvas.width=innerWidth,h=canvas.height=innerHeight;
-        const stars=[];
-        for(let i=0;i<120;i++){
-            stars.push({x:Math.random()*w,y:Math.random()*h,z:Math.random()*0.8+0.2,speed:Math.random()*0.5+0.2});
-        }
-        function draw(){
-            ctx.clearRect(0,0,w,h);
-            const base=(body.dataset.mode==="amiga")?"rgba(255,210,111,":(body.dataset.mode==="zx")?"rgba(0,255,0,":"rgba(112,255,240,";
-            for(const s of stars){
-                s.y+=s.speed*(0.5+s.z);
-                if(s.y>h){s.y=0;s.x=Math.random()*w;}
-                ctx.fillStyle=base+(0.4+s.z*0.6)+")";
-                ctx.fillRect(s.x,s.y,s.z*2,s.z*2);
-            }
-            requestAnimationFrame(draw);
-        }
-        draw();
-        addEventListener("resize",()=>{w=canvas.width=innerWidth;h=canvas.height=innerHeight;});
-    }
-
-})();
-</script>
-
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <p>&copy; Cheeky Commodore Gamer. Platforming favourites from the C64 and Amiga catalogue.</p>
+            <p>Return to the <a href="../../home.html">Home Hub</a> to discover shooters, adventures and more.</p>
+        </div>
+    </footer>
 </body>
 </html>
