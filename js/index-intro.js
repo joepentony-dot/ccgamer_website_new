@@ -1,73 +1,52 @@
 // js/index-intro.js
+//
+// Cheeky Commodore Gamer — EPIC C64 INTRO FLOW
+// Built on your original logic: same config, same fundamentals,
+// but now driving the new pure-raster intro.
 
-// =========================================
-// CONFIG
-// =========================================
-const NEXT_URL = 'home.html';
-const LOADING_SOUND_URL = 'resources/audio/c64_speech_stayawhile.mp3';
+/* ============================================================
+   CONFIG
+============================================================ */
+const NEXT_URL = "home.html";
+const LOADING_SOUND_URL = "resources/audio/c64_speech_stayawhile.mp3";
 
-// State
+/* State */
 let loadingAborted = false;
 let audio = null;
 let redirectTimeout = null;
+const timers = [];
 
-// =========================================
-// STARFIELD BACKGROUND
-// =========================================
-const canvas = document.getElementById('starfield');
-const ctx = canvas.getContext('2d');
-let stars = [];
+/* ============================================================
+   UTILITIES
+============================================================ */
 
-function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    initStars();
+function schedule(fn, ms) {
+    if (loadingAborted) return;
+    const id = setTimeout(() => {
+        if (!loadingAborted) fn();
+    }, ms);
+    timers.push(id);
 }
 
-function initStars() {
-    stars = [];
-    for (let i = 0; i < 120; i++) {
-        stars.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            size: Math.random() * 2,
-            speed: Math.random() * 2 + 0.4
-        });
-    }
+function clearAllTimers() {
+    timers.forEach(id => clearTimeout(id));
+    timers.length = 0;
 }
 
-function animateStars() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#ffffff';
-    stars.forEach(star => {
-        ctx.fillRect(star.x, star.y, star.size, star.size);
-        star.y += star.speed;
-        if (star.y > canvas.height) {
-            star.y = 0;
-            star.x = Math.random() * canvas.width;
-        }
-    });
-    requestAnimationFrame(animateStars);
-}
-
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
-animateStars();
-
-// =========================================
-// UTILITIES
-// =========================================
 function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise(resolve => {
+        schedule(resolve, ms);
+    });
 }
 
 function typeText(elementId, text, delayMs = 55) {
     return new Promise(resolve => {
-        if (loadingAborted) {
+        const el = document.getElementById(elementId);
+        if (!el || loadingAborted) {
             resolve();
             return;
         }
-        const el = document.getElementById(elementId);
+
         let i = 0;
         const timer = setInterval(() => {
             if (loadingAborted) {
@@ -75,103 +54,190 @@ function typeText(elementId, text, delayMs = 55) {
                 resolve();
                 return;
             }
-            el.innerHTML += text.charAt(i);
+            el.textContent += text.charAt(i);
             i++;
             if (i >= text.length) {
                 clearInterval(timer);
                 resolve();
             }
         }, delayMs);
+        timers.push(timer);
     });
 }
 
-// =========================================
-// INTRO FLOW
-// =========================================
-function startSystem() {
-    if (loadingAborted) return;
+/* ============================================================
+   MAIN INTRO LOGIC
+============================================================ */
 
-    const startScreen = document.getElementById('start-screen');
-    const loadingScreen = document.getElementById('loading-screen');
+document.addEventListener("DOMContentLoaded", () => {
+    const powerOverlay = document.getElementById("powerOverlay");
+    const c64Wrapper   = document.getElementById("c64Wrapper");
+    const c64TextEl    = document.getElementById("c64Text");
+    const raster       = document.getElementById("rasterOverlay");
+    const flashOverlay = document.getElementById("flashOverlay");
+    const sidAudio     = document.getElementById("sidAudio");
+    const sidText      = document.getElementById("sidText");
+    const skipBtn      = document.getElementById("skipIntroBtn");
 
-    startScreen.style.display = 'none';
-    loadingScreen.style.display = 'flex';
+    if (!powerOverlay || !c64Wrapper || !c64TextEl || !raster || !sidAudio || !sidText) {
+        console.error("Intro DOM elements missing");
+        return;
+    }
 
-    runLoadingSequence();
-}
+    const basicText =
+`**** COMMODORE 64 BASIC V2 ****
+ 64K RAM SYSTEM  38911 BASIC BYTES FREE
 
-function skipIntro() {
-    loadingAborted = true;
+READY.
 
-    // Stop audio
-    try {
-        if (audio) {
-            audio.pause();
+`;
+
+    function showBasic() {
+        c64TextEl.textContent = basicText;
+    }
+
+    function appendLine(text) {
+        c64TextEl.textContent += text + "\n";
+    }
+
+    function flashSID(msg, delayMs) {
+        schedule(() => {
+            sidText.textContent = msg;
+            sidText.classList.add("sidTextVisible");
+        }, delayMs);
+
+        schedule(() => {
+            sidText.classList.remove("sidTextVisible");
+        }, delayMs + 3200);
+    }
+
+    function triggerMicroFlash() {
+        if (!flashOverlay) return;
+        flashOverlay.classList.remove("flash-active");
+        // Force reflow so animation can retrigger
+        void flashOverlay.offsetWidth;
+        flashOverlay.classList.add("flash-active");
+    }
+
+    function startRasterAndSID() {
+        // Hide C64 blue screen
+        c64Wrapper.classList.add("hidden");
+
+        // Tiny white/blue flash, then raster
+        triggerMicroFlash();
+        schedule(() => {
+            raster.classList.add("raster-active");
+        }, 60);
+
+        // SID text beats
+        flashSID("ANOTHER VISITOR...", 200);
+        flashSID("...STAY A WHILE...", 2200);
+        flashSID("STAY FOREVER!", 4200);
+
+        // Play audio
+        try {
+            audio = sidAudio;
             audio.currentTime = 0;
-        }
-    } catch (e) {}
+            audio.play().catch(() => {});
+        } catch (e) {}
 
-    // Cancel any pending redirect
-    if (redirectTimeout) {
-        clearTimeout(redirectTimeout);
-        redirectTimeout = null;
+        // Redirect when SID ends (main behaviour)
+        audio.onended = () => {
+            if (!loadingAborted) {
+                window.location.href = NEXT_URL;
+            }
+        };
+
+        // Fallback redirect in case audio fails
+        redirectTimeout = setTimeout(() => {
+            if (!loadingAborted) {
+                window.location.href = NEXT_URL;
+            }
+        }, 9000);
     }
 
-    window.location.href = NEXT_URL;
-}
+    async function runLoadingSequence() {
+        if (loadingAborted) return;
 
-async function runLoadingSequence() {
-    const terminal = document.getElementById('loading-terminal');
-    const rasterBars = document.getElementById('rasterBars');
+        // BASIC header already shown
+        await delay(600);
 
-    if (loadingAborted) return;
+        // LOAD ""
+        await typeText("c64Text", 'LOAD ""', 70);
+        appendLine(""); // newline
 
-    // LOAD ""
-    await typeText('loading-terminal', 'LOAD ""', 70);
-    await delay(500);
-    terminal.innerHTML += '<br>';
+        // PRESS PLAY ON TAPE
+        await delay(500);
+        appendLine("PRESS PLAY ON TAPE");
 
-    // PRESS PLAY ON TAPE
-    await delay(500);
-    terminal.innerHTML += 'PRESS PLAY ON TAPE<br>';
+        // OK
+        await delay(700);
+        appendLine("OK");
 
-    await delay(700);
-    terminal.innerHTML += 'OK<br>';
+        // SEARCHING
+        await delay(500);
+        appendLine("SEARCHING");
 
-    await delay(500);
-    terminal.innerHTML += 'SEARCHING<br>';
+        // FOUND "CHEEKY COMMODORE GAMER"
+        await delay(800);
+        appendLine('FOUND "CHEEKY COMMODORE GAMER"');
 
-    await delay(800);
-    terminal.innerHTML += 'FOUND CHEEKY COMMODORE GAMER<br>';
+        // LOADING
+        await delay(600);
+        appendLine("LOADING");
 
-    await delay(600);
-    terminal.innerHTML += 'LOADING<br>';
-
-    // SHOW RASTER BARS
-    rasterBars.style.display = 'block';
-
-    // Start SID immediately
-    try {
-        audio = new Audio(LOADING_SOUND_URL);
-        audio.volume = 1.0;
-        audio.play().catch(() => {
-            // if autoplay blocked, we still move on via timeout below
-        });
-    } catch (e) {
-        // ignore – timeout will still fire
-    }
-
-    // ALWAYS AUTO-REDIRECT AFTER 3 SECONDS NO MATTER WHAT
-    redirectTimeout = setTimeout(() => {
+        // Straight into raster + SID
+        await delay(400);
         if (!loadingAborted) {
-            window.location.href = NEXT_URL;
+            startRasterAndSID();
         }
-    }, 3000);
-}
-
-// ESC key also skips
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        skipIntro();
     }
+
+    function beginIntro() {
+        if (loadingAborted) return;
+        if (powerOverlay.classList.contains("hidden")) return;
+
+        powerOverlay.classList.add("hidden");
+        c64Wrapper.classList.remove("hidden");
+
+        showBasic();
+        runLoadingSequence();
+    }
+
+    function skipIntro() {
+        loadingAborted = true;
+        clearAllTimers();
+
+        try {
+            if (audio) {
+                audio.pause();
+                audio.currentTime = 0;
+            }
+        } catch (e) {}
+
+        if (redirectTimeout) {
+            clearTimeout(redirectTimeout);
+            redirectTimeout = null;
+        }
+
+        window.location.href = NEXT_URL;
+    }
+
+    // Events
+    powerOverlay.addEventListener("click", () => {
+        beginIntro();
+    });
+
+    if (skipBtn) {
+        skipBtn.addEventListener("click", skipIntro);
+    }
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            skipIntro();
+        }
+        if (e.key === "Enter" && !powerOverlay.classList.contains("hidden")) {
+            beginIntro();
+        }
+    });
 });
