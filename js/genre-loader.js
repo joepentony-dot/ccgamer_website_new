@@ -1,198 +1,346 @@
 // js/genre-loader.js
-// Central loader for genre pages & game grids
-// Cheeky Commodore Gamer 😇🕹️👌
+// Ultimate full-system GENRE LOADER for Cheeky Commodore Gamer 😇🕹️👌
+//
+// - Handles ALL genres via <body data-genre="...">
+// - Multi-genre aware (supports genre, genres[], primary/secondary etc.)
+// - Pagination
+// - Fallback thumbnails
+// - C64 / Amiga dual-mode toggle
+// - Smooth transitions (CSS hooks only; animations done in CSS)
 
-(function () {
-    let gamesCache = null;
-    let loadPromise = null;
+(() => {
+    const GAMES_JSON_URL = '/games/games.json'; // root-relative for GitHub Pages
+    const PAGE_SIZE = 24;
 
-    function getGamesJsonUrl() {
-        const path = window.location.pathname;
+    const state = {
+        allGames: [],
+        filteredGames: [],
+        currentPage: 1,
+        pageSize: PAGE_SIZE,
+        genreKey: null
+    };
 
-        // Works on GitHub Pages & local:
-        // /ccgamer_website_new/games/genres/... → ../games.json
-        // /ccgamer_website_new/games/...       → games.json
-        // /ccgamer_website_new/home.html       → games/games.json (for future use)
-        if (path.includes('/games/genres/')) return '../games.json';
-        if (path.includes('/games/')) return 'games.json';
-        return 'games/games.json';
-    }
+    const GENRE_ALIASES = {
+        'arcade': ['arcade'],
+        'action-adventure': ['action adventure', 'action-adventure', 'action/adventure'],
+        'adventure': ['adventure', 'graphic adventure', 'text adventure'],
+        'bpjs-indexed': ['bpjs', 'bpjs indexed games', 'bpjs-indexed'],
+        'cartridge': ['cartridge', 'cart', 'cartridge games'],
+        'casino': ['casino', 'gambling'],
+        'fighting': ['fighting', 'beat \'em up', 'beat em up'],
+        'horror': ['horror'],
+        'licensed': ['licensed', 'movie tie-in', 'tv tie-in'],
+        'miscellaneous': ['miscellaneous', 'misc', 'other'],
+        'platform': ['platform', 'platformer'],
+        'puzzle': ['puzzle', 'brain', 'brain teaser'],
+        'quiz': ['quiz', 'trivia'],
+        'racing': ['racing', 'driving'],
+        'rpg': ['rpg', 'role playing'],
+        'shooting': ['shooting', 'shooter'],
+        'sports': ['sports', 'sport'],
+        'strategy': ['strategy', 'tactics'],
+        'top-picks': ['top picks', 'top-picks', 'favourites', 'favorites']
+    };
 
-    async function loadAllGames() {
-        if (gamesCache) return gamesCache;
-        if (!loadPromise) {
-            const url = getGamesJsonUrl();
-            loadPromise = fetch(url, { cache: 'no-store' })
-                .then(res => {
-                    if (!res.ok) {
-                        throw new Error(`Failed to load games.json (${res.status})`);
-                    }
-                    return res.json();
-                })
-                .then(data => {
-                    const arr = Array.isArray(data) ? data : data.games || [];
-                    gamesCache = arr;
-                    return arr;
-                })
-                .catch(err => {
-                    console.error('Error loading games.json', err);
-                    gamesCache = [];
-                    return [];
-                });
-        }
-        return loadPromise;
-    }
-
-    // --- Helpers ---------------------------------------------------------
-
-    function normaliseGenre(str) {
+    function canonicalize(str) {
         if (!str) return '';
         return String(str)
-            .replace(/\bgames?\b/gi, '')   // remove "Games" / "Game"
-            .replace(/_/g, ' ')
+            .toLowerCase()
             .trim()
-            .toLowerCase();
+            .replace(/&/g, 'and')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
     }
 
-    function gameMatchesGenre(game, genreSlug) {
-        const slugNorm = normaliseGenre(genreSlug);
-        const list = Array.isArray(game.genres) ? game.genres : [];
+    function resolveGenreKey(raw) {
+        const key = canonicalize(raw);
+        if (!key) return null;
 
-        if (!slugNorm) return true; // "all" fallback if needed
+        // Direct hit
+        if (GENRE_ALIASES[key]) return key;
 
-        for (const raw of list) {
-            const gNorm = normaliseGenre(raw);
-            if (!gNorm) continue;
+        // Alias hit
+        for (const [canonical, aliases] of Object.entries(GENRE_ALIASES)) {
+            if (canonical === key) return canonical;
+            if (aliases.some(a => canonicalize(a) === key)) {
+                return canonical;
+            }
+        }
 
-            // Exact match
-            if (gNorm === slugNorm) return true;
-            // Partial matches both ways (covers BPJS / BPJS Indexed etc.)
-            if (gNorm.includes(slugNorm) || slugNorm.includes(gNorm)) return true;
+        // Fallback to key itself
+        return key;
+    }
+
+    function extractGenresFromGame(game) {
+        const genres = new Set();
+
+        function addFromValue(val) {
+            if (!val) return;
+            if (Array.isArray(val)) {
+                val.forEach(v => addFromValue(v));
+                return;
+            }
+            String(val)
+                .split(/[;,/]/)
+                .map(s => s.trim())
+                .filter(Boolean)
+                .forEach(s => genres.add(canonicalize(s)));
+        }
+
+        // Common fields we might have
+        addFromValue(game.genre);
+        addFromValue(game.genres);
+        addFromValue(game.primary_genre);
+        addFromValue(game.secondary_genre);
+        addFromValue(game.tertiary_genre);
+        addFromValue(game.tags);
+
+        return genres;
+    }
+
+    function gameMatchesGenre(game, requestedGenreKey) {
+        if (!requestedGenreKey) return true; // "all-games" behaviour if needed
+        const requestedAliases = new Set(
+            (GENRE_ALIASES[requestedGenreKey] || [])
+                .map(canonicalize)
+                .concat([requestedGenreKey])
+        );
+
+        const gameGenres = extractGenresFromGame(game);
+        for (const g of gameGenres) {
+            if (requestedAliases.has(g)) return true;
         }
         return false;
     }
 
-    function resolveThumbUrl(game) {
-        const t = game.thumbnail || '';
-        if (!t) return null;
-
-        // Absolute URL (if you ever add YouTube/thumb CDN etc.)
-        if (/^https?:\/\//i.test(t)) return t;
-
-        // Your JSON uses: "resources/images/thumbnails/all/xxx.jpg"
-        const path = window.location.pathname;
-        if (path.includes('/games/genres/')) {
-            return '../../' + t;
+    function buildThumbnailUrl(game) {
+        // Prefer explicit thumbnail field if present
+        if (game.thumbnail) {
+            // Assume already a usable URL or relative path
+            if (/^https?:\/\//i.test(game.thumbnail)) {
+                return game.thumbnail;
+            }
+            if (game.thumbnail.startsWith('/')) {
+                return game.thumbnail;
+            }
+            return `/resources/images/thumbnails/all/${game.thumbnail}`;
         }
-        if (path.includes('/games/')) {
-            return '../' + t;
+
+        // Otherwise, derive from id if possible
+        if (game.id) {
+            return `/resources/images/thumbnails/all/${game.id}.jpg`;
         }
-        // Fallback for root-level usage
-        return t;
+
+        // Fallback to generic no-thumb image
+        return '/resources/images/thumbnails/all/_no_thumbnail.png';
     }
 
-    function escapeHtml(str) {
-        return String(str || '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
+    function getSystemBadge(game) {
+        const systemRaw = game.system || game.machine || '';
+        const system = String(systemRaw).toUpperCase();
+        if (!system) return '';
+
+        return `<span class="badge badge-system badge-system-${canonicalize(system)}">${system}</span>`;
     }
 
-    function createGameCard(game) {
-        const card = document.createElement('article');
-        card.className = 'ccg-game-card';
+    function getYearPublisherLine(game) {
+        const bits = [];
+        if (game.year) bits.push(game.year);
+        if (game.publisher) bits.push(game.publisher);
+        return bits.join(' · ');
+    }
 
-        const thumbUrl = resolveThumbUrl(game);
-        const safeTitle = escapeHtml(game.title || game.id || 'Untitled');
+    function getComposerLine(game) {
+        if (!game.composer) return '';
+        return `<span class="meta-composer">${game.composer}</span>`;
+    }
 
-        const genres = Array.isArray(game.genres) ? game.genres : [];
-        const tagLine = genres.slice(0, 3).join(' • ');
+    function clearNode(el) {
+        while (el.firstChild) {
+            el.removeChild(el.firstChild);
+        }
+    }
 
-        const system = game.system || '';
-        const year = game.year ? ` • ${game.year}` : '';
+    function renderGamesPage() {
+        const listEl = document.getElementById('game-list');
+        const paginationEl = document.getElementById('pagination');
+        if (!listEl || !paginationEl) return;
 
-        card.innerHTML = `
-            <button class="ccg-game-card__inner" type="button" data-game-id="${escapeHtml(game.id)}">
-                <div class="ccg-game-card__thumb-wrap">
-                    ${
-                        thumbUrl
-                            ? `<img src="${thumbUrl}" alt="${safeTitle} cover" loading="lazy">`
-                            : `<div class="ccg-game-card__thumb-placeholder">NO ART</div>`
-                    }
-                </div>
-                <div class="ccg-game-card__meta">
-                    <h3 class="ccg-game-card__title">${safeTitle}</h3>
-                    <div class="ccg-game-card__system">${escapeHtml(system)}${year}</div>
-                    <div class="ccg-game-card__tags">${escapeHtml(tagLine)}</div>
-                </div>
-            </button>
-        `;
+        const total = state.filteredGames.length;
+        const totalPages = Math.max(1, Math.ceil(total / state.pageSize));
+        state.currentPage = Math.min(Math.max(1, state.currentPage), totalPages);
 
-        const btn = card.querySelector('.ccg-game-card__inner');
-        if (btn) {
-            btn.addEventListener('click', () => {
-                if (!game.id) return;
-                window.location.href = `../game.html?id=${encodeURIComponent(game.id)}`;
+        clearNode(listEl);
+        clearNode(paginationEl);
+
+        listEl.classList.add('is-transitioning');
+
+        const start = (state.currentPage - 1) * state.pageSize;
+        const end = Math.min(start + state.pageSize, total);
+        const slice = state.filteredGames.slice(start, end);
+
+        if (slice.length === 0) {
+            const empty = document.createElement('div');
+            empty.className = 'game-list-empty';
+            empty.textContent = 'No games found for this genre (yet). Stay tuned…';
+            listEl.appendChild(empty);
+        } else {
+            const frag = document.createDocumentFragment();
+
+            slice.forEach(game => {
+                const card = document.createElement('article');
+                card.className = 'game-card fade-in';
+
+                const thumbUrl = buildThumbnailUrl(game);
+                const imgAlt = game.title ? `${game.title} (thumbnail)` : 'Game thumbnail';
+
+                card.innerHTML = `
+                    <div class="game-thumb-wrap">
+                        <img class="game-thumb"
+                             src="${thumbUrl}"
+                             alt="${imgAlt}"
+                             loading="lazy"
+                             onerror="this.onerror=null;this.src='/resources/images/thumbnails/all/_no_thumbnail.png';">
+                        <div class="thumb-overlay glow-border"></div>
+                    </div>
+                    <div class="game-meta">
+                        <h3 class="game-title">${game.title || 'Unknown Title'}</h3>
+                        <div class="game-meta-line">
+                            ${getSystemBadge(game)}
+                            <span class="meta-year-pub">${getYearPublisherLine(game)}</span>
+                        </div>
+                        ${getComposerLine(game)}
+                    </div>
+                `.trim();
+
+                frag.appendChild(card);
             });
+
+            listEl.appendChild(frag);
         }
 
-        return card;
+        // Pagination controls
+        if (totalPages > 1) {
+            const pager = document.createElement('div');
+            pager.className = 'pager-inner';
+
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'pager-btn pager-prev';
+            prevBtn.textContent = '⟵ Previous';
+            prevBtn.disabled = state.currentPage === 1;
+            prevBtn.addEventListener('click', () => {
+                if (state.currentPage > 1) {
+                    state.currentPage--;
+                    renderGamesPage();
+                }
+            });
+
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'pager-btn pager-next';
+            nextBtn.textContent = 'Next ⟶';
+            nextBtn.disabled = state.currentPage === totalPages;
+            nextBtn.addEventListener('click', () => {
+                if (state.currentPage < totalPages) {
+                    state.currentPage++;
+                    renderGamesPage();
+                }
+            });
+
+            const info = document.createElement('div');
+            info.className = 'pager-info';
+            info.textContent = `Page ${state.currentPage} of ${totalPages} · ${total} game${total === 1 ? '' : 's'}`;
+
+            pager.appendChild(prevBtn);
+            pager.appendChild(info);
+            pager.appendChild(nextBtn);
+
+            paginationEl.appendChild(pager);
+        }
+
+        // Allow CSS to animate
+        requestAnimationFrame(() => {
+            listEl.classList.remove('is-transitioning');
+        });
     }
 
-    // --- Public API: loadGenreGames & randomGameInGenre -------------------
+    function filterGamesByGenre() {
+        state.filteredGames = state.allGames.filter(game =>
+            gameMatchesGenre(game, state.genreKey)
+        );
+        state.currentPage = 1;
+        renderGamesPage();
+    }
 
-    async function loadGenreGames(genreSlug, gridEl, countEl) {
-        if (!gridEl) return;
+    async function loadGames() {
+        try {
+            const response = await fetch(GAMES_JSON_URL, { cache: 'no-store' });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
 
-        gridEl.innerHTML = '<div class="ccg-loading">Loading games…</div>';
-        if (countEl) countEl.textContent = 'Loading…';
+            state.allGames = Array.isArray(data) ? data : (data.games || []);
+            filterGamesByGenre();
+        } catch (err) {
+            console.error('Failed to load games.json', err);
+            const listEl = document.getElementById('game-list');
+            if (listEl) {
+                clearNode(listEl);
+                const error = document.createElement('div');
+                error.className = 'game-list-error';
+                error.textContent = 'Error loading games list. Please try refreshing the page.';
+                listEl.appendChild(error);
+            }
+        }
+    }
 
-        const allGames = await loadAllGames();
-        const filtered = allGames.filter(g => gameMatchesGenre(g, genreSlug));
+    // C64 / Amiga mode toggle
+    function initModeToggle() {
+        const btn = document.getElementById('mode-toggle');
+        if (!btn) return;
 
-        // Sort by sorttitle then title
-        filtered.sort((a, b) => {
-            const sa = (a.sorttitle || a.title || '').toLowerCase();
-            const sb = (b.sorttitle || b.title || '').toLowerCase();
-            if (sa < sb) return -1;
-            if (sa > sb) return 1;
-            return 0;
+        const body = document.body;
+
+        function updateLabel() {
+            if (body.classList.contains('mode-amiga')) {
+                btn.textContent = 'AMIGA MODE';
+            } else {
+                btn.textContent = 'C64 MODE';
+            }
+        }
+
+        // Default to C64 unless already set
+        if (!body.classList.contains('mode-c64') && !body.classList.contains('mode-amiga')) {
+            body.classList.add('mode-c64');
+        }
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('mode-c64');
+            body.classList.toggle('mode-amiga');
+            updateLabel();
         });
 
-        gridEl.innerHTML = '';
+        updateLabel();
+    }
 
-        if (!filtered.length) {
-            gridEl.innerHTML = '<div class="ccg-empty">No games found in this genre (yet!).</div>';
-            if (countEl) countEl.textContent = '0 titles';
-            return;
-        }
-
-        const frag = document.createDocumentFragment();
-        filtered.forEach(game => {
-            frag.appendChild(createGameCard(game));
-        });
-        gridEl.appendChild(frag);
-
-        if (countEl) {
-            countEl.textContent = `${filtered.length} title${filtered.length !== 1 ? 's' : ''}`;
+    function initGenreFromBody() {
+        const rawGenre = document.body.dataset.genre || '';
+        state.genreKey = resolveGenreKey(rawGenre);
+        const labelEl = document.getElementById('genre-label');
+        if (labelEl && rawGenre) {
+            labelEl.textContent = rawGenre
+                .replace(/-/g, ' ')
+                .replace(/\b\w/g, c => c.toUpperCase());
         }
     }
 
-    async function randomGameInGenre(genreSlug) {
-        const allGames = await loadAllGames();
-        let pool = allGames.filter(g => gameMatchesGenre(g, genreSlug));
-        if (!pool.length) pool = allGames;
-        if (!pool.length) return;
-
-        const picked = pool[Math.floor(Math.random() * pool.length)];
-        if (picked && picked.id) {
-            window.location.href = `../game.html?id=${encodeURIComponent(picked.id)}`;
-        }
+    function init() {
+        initGenreFromBody();
+        initModeToggle();
+        loadGames();
     }
 
-    // Expose to pages
-    window.loadGenreGames = loadGenreGames;
-    window.randomGameInGenre = randomGameInGenre;
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 })();
