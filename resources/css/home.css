@@ -1,255 +1,264 @@
-/* -----------------------------------------
-   HOME.CSS — EPIC REBUILD  
-   Cheeky Commodore Gamer 😇🕹️👌
-   ----------------------------------------- */
+/* ==========================================================================
+   Cheeky Commodore Gamer — HOME PAGE
+   Scoped styles for home.html
+   ========================================================================== */
 
-/* GLOBAL RESET */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+:root {
+    --ccg-c64-primary: #5ed0ff;
+    --ccg-c64-accent: #8bf8ff;
+    --ccg-c64-deep: #00163a;
+
+    --ccg-amiga-primary: #ff6ad5;
+    --ccg-amiga-accent: #ffbdf2;
+    --ccg-amiga-deep: #12001e;
+
+    --ccg-surface: rgba(5, 8, 20, 0.88);
+    --ccg-border: rgba(255, 255, 255, 0.14);
+    --ccg-text-main: #e7f4ff;
+    --ccg-text-soft: #a2b7d9;
+
+    --ccg-radius-lg: 1.25rem;
+    --ccg-radius-md: 0.85rem;
+    --ccg-radius-sm: 0.55rem;
+
+    --ccg-shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.65);
+
+    --ccg-transition-fast: 0.18s ease-out;
+    --ccg-transition-med: 0.28s ease-out;
 }
 
-/* PAGE BACKDROP */
-body {
-    background: radial-gradient(circle at center, #05060A 0%, #03040A 60%, #02030A 100%);
-    color: #E8F3FF;
-    font-family: "Ubuntu", "Inter", sans-serif;
-    overflow-x: hidden;
-}
+/* Base layout for home page */
 
-/* -----------------------------------------
-   HERO SECTION
-   ----------------------------------------- */
-.ccg-hero-wrapper {
-    position: relative;
-    width: 100%;
-    height: 220px; /* FIXED: removes giant empty space */
-    overflow: hidden;
-    border-bottom: 2px solid rgba(0, 255, 255, 0.2);
-}
-
-.ccg-hero-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0.75;
-    filter: brightness(1.15);
-}
-
-/* Neon sweep overlay */
-.ccg-hero-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(120deg,
-        rgba(0,255,255,0.05) 0%,
-        rgba(0,0,0,0) 40%,
-        rgba(255,0,255,0.08) 100%);
-    pointer-events: none;
-}
-
-/* -----------------------------------------
-   SOCIAL BAR — NEW HORIZONTAL CONTROL PANEL
-   ----------------------------------------- */
-.ccg-social-panel {
-    position: absolute;
-    top: 15px;
-    right: 20px;
+body.home-page {
+    background: radial-gradient(circle at top, #1b1f3b 0, #050510 45%, #000000 100%);
+    color: var(--ccg-text-main);
+    min-height: 100vh;
     display: flex;
-    gap: 0.6rem;
-    z-index: 999;
+    flex-direction: column;
 }
 
-.ccg-social-button {
-    padding: 0.35rem 1rem;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,0.25);
-    font-size: 0.75rem;
-    letter-spacing: 1px;
-    font-weight: 600;
-    text-transform: uppercase;
-    text-decoration: none;
-    color: #fff;
-    background: rgba(0,0,0,0.35);
-    transition: 0.25s;
+.ccg-page-shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-.ccg-social-button:hover {
-    background: rgba(0,255,255,0.15);
-    box-shadow: 0 0 12px rgba(0,255,255,0.55);
-    border-color: rgba(0,255,255,0.65);
-}
+/* ==========================================================================
+   HEADER
+   ========================================================================== */
 
-/* -----------------------------------------
-   MODE SWITCH BUTTON
-   ----------------------------------------- */
-#modeToggle {
-    padding: 0.4rem 1.2rem;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,0.3);
-    margin-right: 0.8rem;
-    background: rgba(0,0,0,0.5);
-    color: white;
-    cursor: pointer;
-    transition: 0.25s;
-}
-
-#modeToggle:hover {
-    box-shadow: 0 0 15px rgba(0,255,255,0.6);
-    border-color: rgba(0,255,255,0.75);
-}
-
-/* -----------------------------------------
-   FEATURED SECTIONS WRAPPER
-   ----------------------------------------- */
-.ccg-featured-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    padding: 3rem 2rem;
-}
-
-/* FEATURED GAME */
-.ccg-featured-game,
-.ccg-featured-video {
-    background: rgba(0, 10, 20, 0.6);
-    border: 1px solid rgba(0,255,255,0.2);
-    border-radius: 16px;
-    padding: 1.8rem;
-    min-height: 350px;
-    position: relative;
-    box-shadow: 0 0 25px rgba(0,255,255,0.1);
-}
-
-.ccg-featured-game:hover,
-.ccg-featured-video:hover {
-    box-shadow: 0 0 35px rgba(0,255,255,0.35);
-}
-
-/* Featured game image */
-.ccg-featured-img {
-    width: 140px;
-    border-radius: 12px;
-    box-shadow: 0 0 20px rgba(0,255,255,0.25);
-    float: left;
-    margin-right: 1rem;
-}
-
-.ccg-featured-title {
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-}
-
-.ccg-featured-desc {
-    margin-top: 0.6rem;
-    font-size: 0.95rem;
-    opacity: 0.85;
-}
-
-/* Buttons inside both cards */
-.ccg-button {
-    padding: 0.6rem 1.2rem;
-    border-radius: 20px;
-    text-decoration: none;
-    display: inline-block;
-    margin-top: 1rem;
-    margin-right: 0.5rem;
-    font-weight: 600;
-    font-size: 0.9rem;
-    border: 1px solid rgba(255,255,255,0.25);
-    background: rgba(0,0,0,0.3);
-    color: white;
-    transition: 0.25s;
-}
-
-.ccg-button:hover {
-    border-color: rgba(0,255,255,0.6);
-    box-shadow: 0 0 12px rgba(0,255,255,0.4);
-}
-
-/* -----------------------------------------
-   YOUTUBE EMBED
-   ----------------------------------------- */
-.ccg-video-frame {
-    width: 100%;
-    height: 200px;
-    border-radius: 12px;
-    border: none;
-    overflow: hidden;
-    background: #000;
-    margin-bottom: 1rem;
-}
-
-/* -----------------------------------------
-   SECTION HEADINGS
-   ----------------------------------------- */
-.ccg-section-title {
-    font-size: 1.8rem;
-    font-weight: 800;
-    text-align: center;
-    margin: 3rem 0 1.5rem;
-    letter-spacing: 1px;
-    text-shadow: 0 0 10px rgba(0,255,255,0.4);
-}
-
-/* -----------------------------------------
-   GENRES & COLLECTIONS GRID
-   ----------------------------------------- */
-.ccg-grid {
-    padding: 2rem 2rem 3rem;
-    display: grid;
-    gap: 1.8rem;
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-    justify-content: center;
-}
-
-/* Genre Card */
-.ccg-genre-card {
-    background: radial-gradient(circle at top, #06101A, #050A14);
-    border: 1px solid rgba(0,255,255,0.15);
-    border-radius: 16px;
-    padding: 1rem;
-    text-align: center;
-    transition: 0.25s;
-    box-shadow: 0 0 12px rgba(0,255,255,0.1);
-    height: 170px;
+.ccg-header {
+    position: sticky;
+    top: 0;
+    z-index: 500;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 0.9rem 1.75rem;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.96), rgba(0, 0, 0, 0.82));
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(12px);
+}
+
+.ccg-header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.ccg-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.85rem;
+    text-decoration: none;
+}
+
+.ccg-logo {
+    width: 52px;
+    height: auto;
+    border-radius: 0.75rem;
+    box-shadow:
+        0 0 10px rgba(0, 0, 0, 0.9),
+        0 0 25px rgba(0, 247, 255, 0.4);
+}
+
+.ccg-brand-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.ccg-brand-title {
+    font-size: 1.2rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #ffffff;
+}
+
+.ccg-brand-subtitle {
+    font-size: 0.8rem;
+    color: var(--ccg-text-soft);
+}
+
+/* Main navigation */
+
+.ccg-main-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-left: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.nav-link {
+    font-size: 0.9rem;
+    text-decoration: none;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    position: relative;
+    color: var(--ccg-text-soft);
+    transition: color var(--ccg-transition-fast), background var(--ccg-transition-fast), box-shadow var(--ccg-transition-fast), transform var(--ccg-transition-fast);
+}
+
+.nav-link::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 1px solid transparent;
+    transition: border var(--ccg-transition-fast), box-shadow var(--ccg-transition-fast), opacity var(--ccg-transition-fast);
+    opacity: 0;
+}
+
+.nav-link:hover,
+.nav-link:focus-visible {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.04);
+    transform: translateY(-1px);
+}
+
+body[data-mode="c64"] .nav-link:hover::before,
+body[data-mode="c64"] .nav-link:focus-visible::before {
+    border-color: rgba(94, 208, 255, 0.75);
+    box-shadow: 0 0 12px rgba(94, 208, 255, 0.9);
+    opacity: 1;
+}
+
+body[data-mode="amiga"] .nav-link:hover::before,
+body[data-mode="amiga"] .nav-link:focus-visible::before {
+    border-color: rgba(255, 106, 213, 0.8);
+    box-shadow: 0 0 12px rgba(255, 106, 213, 0.9);
+    opacity: 1;
+}
+
+.nav-link-active {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.nav-link-active::before {
+    opacity: 1;
+}
+
+body[data-mode="c64"] .nav-link-active::before {
+    border-color: rgba(94, 208, 255, 0.65);
+    box-shadow: 0 0 10px rgba(94, 208, 255, 0.7);
+}
+
+body[data-mode="amiga"] .nav-link-active::before {
+    border-color: rgba(255, 106, 213, 0.7);
+    box-shadow: 0 0 10px rgba(255, 106, 213, 0.8);
+}
+
+/* Header right: mode switch + socials */
+
+.ccg-header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
+}
+
+/* Mode toggle */
+
+.ccg-mode-toggle {
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    padding: 0.4rem 1.1rem;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: radial-gradient(circle at top, rgba(255, 255, 255, 0.15), rgba(0, 0, 0, 0.95));
+    color: var(--ccg-text-main);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform var(--ccg-transition-fast), box-shadow var(--ccg-transition-fast), border var(--ccg-transition-fast), background var(--ccg-transition-fast);
+}
+
+.ccg-mode-toggle::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: 0 0 18px rgba(94, 208, 255, 0.4);
+    opacity: 0;
+    transition: opacity var(--ccg-transition-fast);
+}
+
+body[data-mode="amiga"] .ccg-mode-toggle::before {
+    box-shadow: 0 0 18px rgba(255, 106, 213, 0.5);
+}
+
+.ccg-mode-toggle:hover,
+.ccg-mode-toggle:focus-visible {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.7);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.ccg-mode-toggle:hover::before,
+.ccg-mode-toggle:focus-visible::before {
+    opacity: 1;
+}
+
+/* Inline social bar */
+
+.ccg-social-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.ccg-social-pill {
+    pointer-events: auto;
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
+    padding: 0.32rem 0.8rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    background: radial-gradient(circle at top, rgba(10, 14, 35, 0.96), rgba(3, 3, 10, 0.96));
+    color: var(--ccg-text-main);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.85);
+    position: relative;
+    overflow: hidden;
+    transition:
+        transform var(--ccg-transition-fast),
+        box-shadow var(--ccg-transition-fast),
+        border var(--ccg-transition-fast),
+        background var(--ccg-transition-fast),
+        opacity var(--ccg-transition-fast);
 }
 
-.ccg-genre-card:hover {
-    box-shadow: 0 0 25px rgba(0,255,255,0.35);
-    transform: translateY(-4px);
-    border-color: rgba(0,255,255,0.6);
-}
-
-/* Genre Image fills card beautifully */
-.ccg-genre-image {
-    width: 100%;
-    max-height: 115px;
-    object-fit: contain;
-    filter: drop-shadow(0 0 6px rgba(0,255,255,0.3));
-}
-
-/* -----------------------------------------
-   MOBILE
-   ----------------------------------------- */
-@media (max-width: 900px) {
-    .ccg-featured-wrapper {
-        grid-template-columns: 1fr;
-    }
-
-    .ccg-social-panel {
-        right: 10px;
-        top: 10px;
-        transform: scale(0.8);
-    }
-}
-
-@media (max-width: 550px) {
-    .ccg-genre-card {
-        height: 150px;
-    }
-}
+.ccg-social-pill::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity var(--ccg-transition-fast), box
