@@ -182,37 +182,39 @@ body.intro-body {
     display: none;
 
     background-color: #000;
+    filter: blur(2.5px);
+
     background-image:
         repeating-linear-gradient(
             180deg,
 
             /* black gap */
-            #000 0px, #000 2px,
+            #000 0px, #000 4px,
             /* magenta */
-            #f94cff 2px, #f94cff 6px,
+            #f94cff 4px, #f94cff 12px,
             /* black */
-            #000 6px, #000 8px,
+            #000 12px, #000 16px,
             /* cyan */
-            #4ffcff 8px, #4ffcff 12px,
+            #4ffcff 16px, #4ffcff 24px,
             /* black */
-            #000 12px, #000 14px,
+            #000 24px, #000 28px,
             /* bright green */
-            #4fff4f 14px, #4fff4f 18px,
+            #4fff4f 28px, #4fff4f 36px,
             /* black */
-            #000 18px, #000 20px,
+            #000 36px, #000 40px,
             /* yellow */
-            #ffe857 20px, #ffe857 24px,
+            #ffe857 40px, #ffe857 48px,
             /* black */
-            #000 24px, #000 26px,
+            #000 48px, #000 52px,
             /* light blue */
-            #66a9ff 26px, #66a9ff 30px,
+            #66a9ff 52px, #66a9ff 60px,
             /* black */
-            #000 30px, #000 32px,
+            #000 60px, #000 64px,
             /* purple */
-            #c377ff 32px, #c377ff 36px
+            #c377ff 64px, #c377ff 72px
         );
 
-    background-size: 100% 36px;
+    background-size: 100% 72px;
 
     animation:
         rasterScroll 0.32s linear infinite,
