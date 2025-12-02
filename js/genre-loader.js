@@ -1,6 +1,6 @@
 // js/genre-loader.js
-// BIT CHIEF — FINAL HOTFIX VERSION 😇🕹️👌
-// Compatible with existing Cheeky Neon Layout (uses #game-list)
+// BIT CHIEF — UNIVERSAL GENRE LOADER 😇🕹️👌
+// Works with ANY genre naming convention
 
 (() => {
 
@@ -11,7 +11,7 @@
         "../../resources/images/genres/miscellaneous.png";
 
     async function loadGames() {
-        const genre = (document.body.dataset.genre || "").trim().toLowerCase();
+        const rawGenre = (document.body.dataset.genre || "").trim();
         const listEl = document.getElementById("game-list");
 
         if (!listEl) {
@@ -23,20 +23,34 @@
 
         try {
             const response = await fetch(GAMES_JSON_URL + "?cache=" + Date.now());
-            if (!response.ok) throw new Error("HTTP " + response.status);
-
             const games = await response.json();
 
+            // normalize search term
+            const search = rawGenre
+                .toLowerCase()
+                .replace(/-/g, " ")
+                .replace(/_/g, " ")
+                .trim();
+
             const filtered = games.filter(game => {
-                const g = [];
-                if (game.genre) g.push(game.genre);
-                if (Array.isArray(game.genres)) g.push(...game.genres);
-                return g.map(v => v.toLowerCase()).includes(genre);
+                const fields = [
+                    game.genre,
+                    ...(Array.isArray(game.genres) ? game.genres : []),
+                    game.primary_genre,
+                    game.secondary_genre,
+                    game.tertiary_genre,
+                ].filter(Boolean);
+
+                return fields.some(field =>
+                    String(field)
+                        .toLowerCase()
+                        .replace(/[-_/]/g, " ")
+                        .includes(search)
+                );
             });
 
             if (filtered.length === 0) {
-                listEl.innerHTML =
-                    `<p>No games found for <strong>${genre}</strong>.</p>`;
+                listEl.innerHTML = `<p>No matching games found for: <strong>${rawGenre}</strong></p>`;
                 return;
             }
 
@@ -46,7 +60,7 @@
                 const card = document.createElement("div");
                 card.classList.add("game-card");
 
-                const thumb = game.thumbnail ? game.thumbnail : FALLBACK_THUMB;
+                const thumb = game.thumbnail || FALLBACK_THUMB;
 
                 card.innerHTML = `
                     <div class="game-card-thumb">
@@ -61,9 +75,8 @@
             });
 
         } catch (err) {
-            console.error("BIT CHIEF LOAD ERROR:", err);
-            listEl.innerHTML =
-                "<p class='error'>Error loading games. Please refresh.</p>";
+            console.error(err);
+            listEl.innerHTML = "<p>Error loading games.</p>";
         }
     }
 
