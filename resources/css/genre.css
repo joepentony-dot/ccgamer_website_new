@@ -1,81 +1,83 @@
-/* ==========================================================
-   CCG GENRE GRID — CARD & THUMBNAIL SIZING
-   ========================================================== */
+/* ============================================================
+   CCG — GENRE PAGE GRID SYSTEM (Final)
+   Clean grid; thumbnail cards; responsive; lightweight.
+   ============================================================ */
 
-.ccg-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 18px;
-}
-
-.ccg-game-card {
-    background: rgba(5, 10, 32, 0.95);
-    border: 1px solid var(--ccg-accent);
-    padding: 8px;
-    border-radius: 6px;
-}
-
-.ccg-game-card__inner {
-    display: flex;
-    gap: 10px;
-    width: 100%;
-    background: transparent;
-    border: none;
-    text-align: left;
-    cursor: pointer;
-    padding: 0;
-    color: inherit;
-}
-
-.ccg-game-card__thumb-wrap {
-    flex: 0 0 auto;
-}
-
-.ccg-game-card__thumb-wrap img {
-    display: block;
-    width: 120px;
-    height: auto;
-    border-radius: 4px;
-}
-
-.ccg-game-card__thumb-placeholder {
-    width: 120px;
-    height: 90px;
-    border-radius: 4px;
-    border: 1px dashed var(--ccg-accent);
+/* Page Container */
+.genre-page {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
+    color: #ffffff;
     font-family: "VT323", monospace;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0.6;
 }
 
-.ccg-game-card__meta {
-    flex: 1 1 auto;
-    min-width: 0;
+.genre-page h1, 
+.genre-page h2 {
+    color: var(--ccg-accent, #33aaff);
+    margin-bottom: 10px;
 }
 
-.ccg-game-card__title {
-    font-family: "VT323", monospace;
+/* --- COUNTER --- */
+#genreGamesCount {
     font-size: 20px;
-    margin: 0 0 4px;
-    color: var(--ccg-accent);
+    margin-bottom: 20px;
+    color: #cccccc;
 }
 
-.ccg-game-card__system {
-    font-size: 14px;
-    opacity: 0.8;
-    margin-bottom: 4px;
+/* --- GRID LAYOUT --- */
+#genreGamesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 22px;
+    margin-top: 25px;
 }
 
-.ccg-game-card__tags {
-    font-size: 13px;
-    opacity: 0.75;
+/* --- INDIVIDUAL GAME CARD --- */
+.genre-game-card {
+    background: #0a1028;
+    padding: 12px;
+    border: 2px solid var(--ccg-accent, #33aaff);
+    border-radius: 8px;
+    text-align: center;
+    display: block;
+    text-decoration: none;
+    color: #ffffff;
+    transition: transform 0.15s ease, background 0.15s ease;
 }
 
-.ccg-loading,
-.ccg-empty {
-    font-family: "VT323", monospace;
-    opacity: 0.8;
+.genre-game-card:hover {
+    background: #112047;
+    transform: scale(1.04);
+}
+
+/* --- THUMBNAILS --- */
+.genre-game-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    object-fit: cover;
+    border: 1px solid #222;
+}
+
+/* --- TITLE TEXT --- */
+.genre-game-title {
+    font-size: 18px;
+    line-height: 18px;
+    color: #ffffff;
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* --- MOBILE IMPROVEMENTS --- */
+@media (max-width: 600px) {
+    #genreGamesGrid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+    .genre-game-title {
+        font-size: 16px;
+    }
 }
