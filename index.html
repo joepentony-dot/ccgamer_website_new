@@ -5,52 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cheeky Commodore Gamer – Intro</title>
 
-    <!-- MASTER + INTRO CSS -->
+    <!-- Global + intro CSS -->
     <link rel="stylesheet" href="resources/css/ccg-master.css">
     <link rel="stylesheet" href="resources/css/intro.css">
+
+    <!-- SID big text font -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 
-<body>
+<body class="intro-body">
 
-<!-- ============================
-     SKIP BUTTON
-============================= -->
-<button id="skipIntroBtn">[ ESC ] SKIP INTRO</button>
+    <!-- SKIP BUTTON (ALWAYS ON TOP) -->
+    <button id="skipIntroBtn">[ ESC ] SKIP INTRO</button>
 
+    <!-- POWER-ON OVERLAY -->
+    <div id="powerOverlay">
+        <img src="resources/c64_neon.png" class="intro-logo" alt="Cheeky Commodore Gamer C64 Neon Logo">
+        <p id="powerText">CLICK TO POWER ON</p>
+    </div>
 
-<!-- ============================
-     START SCREEN (POWER ON)
-============================= -->
-<div id="start-screen">
-    <img src="resources/c64_neon.png" alt="C64 Neon Logo">
-    <div id="start-text">CLICK TO POWER ON</div>
-</div>
+    <!-- C64 BLUE SCREEN / BASIC -->
+    <div id="c64Wrapper" class="hidden">
+        <div class="c64-border">
+            <div class="c64-inner">
+                <pre id="c64Text"></pre>
+            </div>
+        </div>
+    </div>
 
+    <!-- MICRO FLASH BETWEEN C64 SCREEN AND RASTER -->
+    <div id="flashOverlay"></div>
 
-<!-- ============================
-     TEXT LOADING SCREEN
-============================= -->
-<div id="loading-screen">
-    <div id="loading-terminal"></div>
-</div>
+    <!-- FULL-SCREEN RASTER BARS -->
+    <div id="rasterOverlay"></div>
 
+    <!-- BIG SID QUOTE TEXT -->
+    <div id="sidText"></div>
 
-<!-- ============================
-     FINAL RASTER BAR OVERLAY
-============================= -->
-<div id="rasterBars"></div>
+    <!-- ONLY AUDIO: STAY A WHILE, STAY FOREVER -->
+    <audio id="sidAudio" src="resources/audio/c64_speech_stayawhile.mp3"></audio>
 
-
-<!-- ============================
-     AUDIO
-============================= -->
-<audio id="sidAudio" src="resources/audio/c64_speech_stayawhile.mp3"></audio>
-
-
-<!-- ============================
-     INTRO SCRIPT
-============================= -->
-<script src="js/index-intro.js"></script>
-
+    <!-- INTRO LOGIC -->
+    <script src="js/index-intro.js" defer></script>
 </body>
 </html>
