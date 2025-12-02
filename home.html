@@ -340,10 +340,9 @@
     if (yearEl) yearEl.textContent = new Date().getFullYear();
 
     function safeThumbnail(game) {
-        if (game.thumbnail) return "resources/images/thumbnails/all/" + game.thumbnail;
-        if (game.thumb) return "resources/images/thumbnails/all/" + game.thumb;
-        return "resources/ccgamer_logo.png";
-    }
+    const base = "resources/images/thumbnails/all/";
+    return base + (game.thumbnail || game.thumb || "ccgamer_logo.png");
+}
 
     function gameUrl(game) {
         if (game.id) return "games/game.html?id=" + encodeURIComponent(game.id);
