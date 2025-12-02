@@ -1,178 +1,69 @@
 <!DOCTYPE html>
-<html lang="en" data-page="genre">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cheeky Commodore Gamer | Arcade Games</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcade Games | Cheeky Commodore Gamer</title>
+
+    <link rel="icon" href="../../favicon.ico">
+    <!-- Core Styles -->
+    <link rel="stylesheet" href="../../css/engine.css">
+    <link rel="stylesheet" href="../../css/ccg-master.css">
+    <link rel="stylesheet" href="../../css/ccg-genres.css">
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
-
-    <!-- Icons -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-
-    <!-- Core CSS -->
-    <link rel="stylesheet" href="../../resources/css/ccg-master.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-effects.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-mode.css" />
-    <link rel="stylesheet" href="../../resources/css/home.css" />
-    <link rel="stylesheet" href="../../resources/css/genre.css" />
-
-    <link rel="icon" href="../../resources/CCG_FAVICON.png" />
 </head>
-<body data-page="genre" data-mode="c64" data-genre="arcade-games">
-
-<!-- Starfield removed to avoid hum -->
-<div class="crt-overlay"></div>
-<div class="crt-glow"></div>
-<div class="neon-grid"></div>
-
-<div class="ccg-shell">
-
-    <header class="ccg-hud">
-        <div class="ccg-logo-wrap">
-            <button class="ccg-logo-button" id="logoModeToggle" type="button">
-                <img src="../../resources/CCGAMER LOGO.png" alt="Cheeky Commodore Gamer logo" />
-            </button>
-            <div>
-                <div class="ccg-logo-caption">ARCADE GAMES</div>
-                <div style="font-size:0.9rem; opacity:0.85;">Coin-op classics, quick blasts, joystick wobblers.</div>
-            </div>
+<body class="mode-c64" data-genre="arcade">
+<div class="ccg-shell genre-shell">
+    <header class="ccg-header neon-header">
+        <a href="../../home.html" class="ccg-logo-link">
+            <img src="../../resources/CCGAMER LOGO.png" alt="Cheeky Commodore Gamer" class="ccg-logo">
+        </a>
+        <div class="ccg-header-text">
+            <h1 class="ccg-title">Arcade Games</h1>
+            <p class="ccg-subtitle">
+                Hyper-neon arcade hits for C64 &amp; Amiga — pure joystick joy.
+            </p>
         </div>
-
-        <div class="ccg-mode-status">
-            <span id="currentModeText">SYSTEM MODE: C64 NEON</span>
-        </div>
-
-        <div class="ccg-hud-right">
-            <div class="ccg-hud-right-line">BROWSER: <strong>ARCADE GRID</strong></div>
-            <div class="ccg-hud-right-line" id="genreStatus">STATUS: LOADING GAME LIST…</div>
-        </div>
+        <button id="mode-toggle" class="mode-toggle-btn">C64 MODE</button>
     </header>
 
-    <section class="ccg-panel ccg-panel--hero">
-        <div class="ccg-panel-header">
-            <div class="ccg-panel-title">
-                <span>ARCADE GAMES</span>
-            </div>
-            <div class="ccg-panel-tag">Genre View</div>
-        </div>
-        <div class="ccg-hero-text">
-            Short, sharp bursts of action.  
-            <span class="ccg-hero-highlight">High scores, fast reflexes, one more go.</span>
-        </div>
-        <div class="ccg-hero-actions">
-            <button class="ccg-button" type="button" onclick="window.location.href='../../home.html'">
-                <i class="fa-solid fa-house"></i>
-                <span>Home Hub</span>
-            </button>
-            <button class="ccg-button" id="randomInGenreBtn" type="button">
-                <i class="fa-solid fa-dice"></i>
-                <span>Random Arcade Game</span>
-            </button>
-            <button class="ccg-button" type="button" onclick="window.location.href='../index.html'">
-                <i class="fa-solid fa-list-ul"></i>
-                <span>All Genres</span>
-            </button>
-        </div>
-    </section>
+    <nav class="ccg-breadcrumb">
+        <a href="../../home.html" class="crumb-link">🏠 Game Hub</a>
+        <span class="crumb-separator">/</span>
+        <span class="crumb-current">Arcade</span>
+    </nav>
 
-    <section class="ccg-panel">
-        <div class="ccg-panel-header">
-            <div class="ccg-panel-title">
-                <span>AVAILABLE TITLES</span>
+    <main class="ccg-main">
+        <section class="genre-hero">
+            <div class="hero-text">
+                <h2 id="genre-label" class="genre-label">Arcade</h2>
+                <p class="genre-description">
+                    Quick-fire blasts, high scores, and one-more-go greatness.
+                </p>
             </div>
-            <div class="ccg-panel-tag" id="gameCount">Loading…</div>
-        </div>
-        <div class="ccg-grid" id="genreGamesGrid">
-            <div>Loading games…</div>
-        </div>
-    </section>
+            <div class="hero-glow-panel">
+                <span class="hero-tag">FAST ACTION</span>
+                <span class="hero-tag">HIGH SCORES</span>
+                <span class="hero-tag">INSTANT FUN</span>
+            </div>
+        </section>
+
+        <section id="game-list" class="game-grid" aria-live="polite">
+            <!-- Filled by genre-loader.js -->
+        </section>
+
+        <section id="pagination" class="pagination">
+            <!-- Filled by genre-loader.js -->
+        </section>
+    </main>
 
     <footer class="ccg-footer">
-        <div>© <span id="ccgYear"></span> Cheeky Commodore Gamer</div>
-        <div>Arcade Games Browser</div>
+        <p>Cheeky Commodore Gamer · Arcade Classics • C64 &amp; Amiga 😇🕹️👌</p>
     </footer>
 </div>
 
-<script src="../../js/ccg-mode-engine.js"></script>
-<script src="../../js/ccj-global.js"></script>
 <script src="../../js/genre-loader.js"></script>
-
-<script>
-/* ==========================================================
-   LOCAL GENRE PAGE SCRIPT — ARCADE
-   ========================================================== */
-(function () {
-    const body      = document.body;
-    const modeText  = document.getElementById("currentModeText");
-    const logoBtn   = document.getElementById("logoModeToggle");
-    const yearEl    = document.getElementById("ccgYear");
-    const genreSlug = body.dataset.genre;
-    const gridEl    = document.getElementById("genreGamesGrid");
-    const countEl   = document.getElementById("gameCount");
-    const randomBtn = document.getElementById("randomInGenreBtn");
-    const statusEl  = document.getElementById("genreStatus");
-
-    if (yearEl) yearEl.textContent = new Date().getFullYear();
-
-    function refreshModeLabel() {
-        if (!modeText || !window.CCGModeEngine) return;
-        modeText.textContent = "SYSTEM MODE: " + window.CCGModeEngine.getMode().toUpperCase() + " NEON";
-    }
-
-    if (logoBtn && window.CCGModeEngine) {
-        logoBtn.addEventListener("click", () => {
-            window.CCGModeEngine.toggleMode();
-            refreshModeLabel();
-        });
-    }
-    refreshModeLabel();
-
-    // Load genre games and then update HUD status
-    if (typeof window.loadGenreGames === "function") {
-        (async () => {
-            await window.loadGenreGames(genreSlug, gridEl, countEl);
-            if (statusEl) {
-                statusEl.textContent = "STATUS: LIST READY";
-            }
-        })();
-    } else {
-        if (countEl) countEl.textContent = "Loader not initialised";
-        if (statusEl) statusEl.textContent = "STATUS: LOADER NOT INITIALISED";
-    }
-
-    // Random game button
-    if (randomBtn) {
-        randomBtn.addEventListener("click", async () => {
-            if (typeof window.randomGameInGenre === "function") {
-                window.randomGameInGenre(genreSlug);
-                return;
-            }
-            try {
-                const res = await fetch("../games.json", { cache: "no-cache" });
-                const data = await res.json();
-                const games = Array.isArray(data) ? data : (data.games || []);
-                const filtered = games.filter(g =>
-                    (g.genreSlug && g.genreSlug === genreSlug) ||
-                    (Array.isArray(g.genres) && g.genres.includes("Arcade Games")) ||
-                    (g.genre && String(g.genre).toLowerCase().includes("arcade"))
-                );
-                const pool = filtered.length ? filtered : games;
-                if (!pool.length) return;
-                const game = pool[Math.floor(Math.random() * pool.length)];
-                if (game && game.id) {
-                    window.location.href = "../game.html?id=" + encodeURIComponent(game.id);
-                }
-            } catch (e) {
-                console.error("Random arcade game error", e);
-            }
-        });
-    }
-
-})();
-</script>
-
 </body>
 </html>
