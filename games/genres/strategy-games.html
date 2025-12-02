@@ -1,148 +1,92 @@
 <!DOCTYPE html>
-<html lang="en" data-page="genre">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cheeky Commodore Gamer | Strategy Games</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-
-    <link rel="stylesheet" href="../../resources/css/ccg-master.css"/>
-    <link rel="stylesheet" href="../../resources/css/ccg-effects.css"/>
-    <link rel="stylesheet" href="../../resources/css/ccg-mode.css"/>
-    <link rel="stylesheet" href="../../resources/css/home.css"/>
-    <link rel="stylesheet" href="../../resources/css/genre.css"/>
-
-    <link rel="icon" href="../../resources/CCG_FAVICON.png"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strategy Games | Cheeky Commodore Gamer</title>
+    <meta name="description" content="Strategy games for the Commodore 64 and Amiga. War simulations, management titles, turn-based tactics, board game conversions and long-term planning challenges.">
+    <meta name="robots" content="index,follow">
+    <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/genres/strategy-games.html">
+    <meta property="og:title" content="Strategy Games | Cheeky Commodore Gamer">
+    <meta property="og:description" content="Explore Strategy games on C64 and Amiga, from war simulations and resource management titles to thoughtful board game adaptations.">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../css/engine.css">
+    <link rel="stylesheet" href="../../resources/css/main.css">
+    <script src="../../js/genre-loader.js" defer></script>
 </head>
-
-<body data-page="genre" data-mode="c64" data-genre="strategy-games">
-
-<canvas id="starfield"></canvas>
-<div class="neon-grid"></div>
-<div class="crt-overlay"></div>
-<div class="crt-glow"></div>
-
-<div class="ccg-shell">
-
-<header class="ccg-hud">
-    <div class="ccg-logo-wrap">
-        <button id="logoModeToggle" class="ccg-logo-button">
-            <img src="../../resources/CCGAMER LOGO.png"/>
-        </button>
-        <div>
-            <div class="ccg-logo-caption">STRATEGY GAMES</div>
-            <div style="opacity:.85;font-size:.9rem;">War rooms, tactics, decisions and careful planning.</div>
+<body data-genre="strategy-games">
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a href="../../home.html" class="site-logo-link">
+                <img src="../../resources/CCGAMER LOGO.png" alt="Cheeky Commodore Gamer logo" class="site-logo">
+                <span class="site-title-text">Cheeky Commodore Gamer</span>
+            </a>
+            <nav class="site-nav" aria-label="Primary">
+                <a href="../../home.html">Home Hub</a>
+                <a href="../index.html">All Games Index</a>
+                <a href="../../complete-index.html">Complete Games List</a>
+                <a href="../../quiz/">Trivia Quiz</a>
+            </nav>
         </div>
-    </div>
+    </header>
 
-    <div class="ccg-mode-status"><span id="currentModeText">SYSTEM MODE: C64 NEON</span></div>
+    <main id="mainContent" class="genre-page">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="../../home.html">Home</a></li>
+                <li><a href="../index.html">All Games</a></li>
+                <li aria-current="page">Strategy Games</li>
+            </ol>
+        </nav>
 
-    <div class="ccg-hud-right">
-        <div class="ccg-hud-right-line"><strong>STRATEGY BROWSER</strong></div>
-        <div class="ccg-hud-right-line">STATUS: PLANNING MOVE 1…</div>
-    </div>
-</header>
+        <section class="genre-hero">
+            <h1>Strategy Games</h1>
+            <p>
+                Strategy games focus on planning, resource management and long-term decisions rather than quick
+                reflexes. On the Commodore 64 and Amiga that includes war simulations, economic management titles,
+                tactical squad games and conversions of classic board and tabletop systems.
+            </p>
+            <p>
+                This section is ideal for players who enjoy thinking several turns ahead, weighing risk versus
+                reward and gradually building up an advantage over time.
+            </p>
+            <div class="genre-meta-tags">
+                <span class="genre-tag">Strategy</span>
+                <span class="genre-tag">Tactics</span>
+                <span class="genre-tag">Simulation</span>
+            </div>
+        </section>
 
-<section class="ccg-panel ccg-panel--hero">
+        <section class="genre-intro">
+            <h2>Plan, adapt and out-think the opposition</h2>
+            <p>
+                Strategy titles might play out in real time or in clear turns, but they almost always reward careful
+                analysis of the situation on screen. Positioning units, managing resources, negotiating territories
+                and choosing when to attack or defend are all central to success.
+            </p>
+            <p>
+                If you are in the mood for slower, more thoughtful sessions rather than pure twitch action, this
+                category collects the C64 and Amiga games that put strategy first.
+            </p>
+        </section>
 
-    <div class="ccg-panel-header">
-        <div class="ccg-panel-title"><span>STRATEGY GAMES</span></div>
-        <div class="ccg-panel-tag">Tactics</div>
-    </div>
+        <section class="genre-stats">
+            <h2>Total Strategy games listed</h2>
+            <div id="genreGamesCount"></div>
+        </section>
 
-    <div class="ccg-hero-text">
-        Command armies, solve puzzles, manage resources —
-        <span class="ccg-hero-highlight">outthink your opponents, retro style.</span>
-    </div>
+        <section class="genre-grid">
+            <h2>Browse Strategy games</h2>
+            <div id="genreGamesGrid"></div>
+        </section>
+    </main>
 
-    <div class="ccg-hero-actions">
-        <button class="ccg-button" onclick="location.href='../../home.html'">
-            <i class="fa-solid fa-house"></i><span>Home Hub</span>
-        </button>
-
-        <button id="randomInGenreBtn" class="ccg-button">
-            <i class="fa-solid fa-chess-knight"></i><span>Random Strategy Game</span>
-        </button>
-
-        <button class="ccg-button" onclick="location.href='../index.html'">
-            <i class="fa-solid fa-list"></i><span>All Genres</span>
-        </button>
-    </div>
-
-</section>
-
-<section class="ccg-panel">
-    <div class="ccg-panel-header">
-        <div class="ccg-panel-title"><span>STRATEGY TITLES</span></div>
-        <div class="ccg-panel-tag" id="gameCount">Loading…</div>
-    </div>
-    <div id="genreGamesGrid" class="ccg-grid">
-        <div>Loading games…</div>
-    </div>
-</section>
-
-<footer class="ccg-footer">
-    <div>© <span id="ccgYear"></span> Cheeky Commodore Gamer</div>
-    <div>Strategy Games Browser</div>
-</footer>
-
-</div>
-
-<script src="../../js/ccg-mode-engine.js"></script>
-<script src="../../js/ccj-global.js"></script>
-<script src="../../js/genre-loader.js"></script>
-
-<script>
-/* UNIVERSAL ENGINE */
-(function(){
-
-    const body=document.body;
-    const slug=body.dataset.genre;
-
-    const year=document.getElementById("ccgYear");
-    const logo=document.getElementById("logoModeToggle");
-    const modeText=document.getElementById("currentModeText");
-    const grid=document.getElementById("genreGamesGrid");
-    const count=document.getElementById("gameCount");
-    const rand=document.getElementById("randomInGenreBtn");
-
-    if(year)year.textContent=new Date().getFullYear();
-
-    function update(){modeText.textContent="SYSTEM MODE: "+window.CCGModeEngine.getMode().toUpperCase()+" NEON";}
-    logo.addEventListener("click",()=>{window.CCGModeEngine.toggleMode();update();});
-    update();
-
-    window.loadGenreGames?.(slug,grid,count);
-    rand?.addEventListener("click",()=>window.randomGameInGenre?.(slug));
-
-    /* STARFIELD */
-    const canvas=document.getElementById("starfield");
-    if(canvas?.getContext){
-        const ctx=canvas.getContext("2d");
-        let w=canvas.width=innerWidth,h=canvas.height=innerHeight;
-        const stars=[];
-        for(let i=0;i<120;i++){
-            stars.push({x:Math.random()*w,y:Math.random()*h,z:Math.random()*0.8+0.2,speed:Math.random()*0.5+0.2});
-        }
-        function draw(){
-            ctx.clearRect(0,0,w,h);
-            const base=(body.dataset.mode==="amiga")?"rgba(255,210,111,":(body.dataset.mode==="zx")?"rgba(0,255,0,":"rgba(112,255,240,";
-            for(const s of stars){
-                s.y+=s.speed*(0.5+s.z);
-                if(s.y>h){s.y=0;s.x=Math.random()*w;}
-                ctx.fillStyle=base+(0.4+s.z*0.6)+")";
-                ctx.fillRect(s.x,s.y,s.z*2,s.z*2);
-            }
-            requestAnimationFrame(draw);
-        }
-        draw();
-    }
-
-})();
-</script>
-
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <p>&copy; Cheeky Commodore Gamer. Strategy and tactics titles from the classic microcomputer era.</p>
+            <p>Head back to the <a href="../../home.html">Home Hub</a> when you are ready to plot your next move in a different genre.</p>
+        </div>
+    </footer>
 </body>
 </html>
