@@ -1,537 +1,279 @@
-/* ==========================================================================
-   HOME PAGE — Cheeky Commodore Gamer 😇🕹️👌
-   File: resources/css/home.css
-   Scope: home.html only (body.home-page)
-   ========================================================================== */
+/* ============================================================
+   EPIC MODE — HOME PAGE VISUAL OVERHAUL
+   Cheeky Commodore Gamer 😇🕹️👌
+   Full neon glow overhaul for 2025 aesthetic
+============================================================ */
 
-/* === ROOT COLOUR + NEON VARIABLES === */
-
-.home-page {
-    --ccg-bg-deep: #020313;
-    --ccg-bg-panel: rgba(3, 8, 30, 0.92);
-    --ccg-border-neon: rgba(80, 250, 255, 0.9);
-    --ccg-border-neon-alt: rgba(255, 84, 235, 0.9);
-    --ccg-glow-soft: 0 0 18px rgba(80, 250, 255, 0.6);
-    --ccg-glow-strong: 0 0 30px rgba(80, 250, 255, 0.9);
-    --ccg-glow-pink: 0 0 26px rgba(255, 84, 235, 0.85);
-    --ccg-text-main: #eaf6ff;
-    --ccg-text-soft: #b0c8ff;
-    --ccg-accent: #4ffcff;
-    --ccg-accent-alt: #ff54eb;
-    --ccg-accent-warm: #ffd75e;
-    --ccg-grid-line: rgba(76, 110, 245, 0.15);
-    --ccg-radius-lg: 18px;
-    --ccg-radius-xl: 28px;
-    --ccg-gap-sm: 0.75rem;
-    --ccg-gap: 1.25rem;
-    --ccg-gap-lg: 1.75rem;
-    --ccg-gap-xl: 2.25rem;
+/* ============================
+   GLOBAL PAGE LAYOUT
+=============================== */
+body.home-page {
+    background: radial-gradient(circle at 50% 0%, #001326, #000814 60%, #000000);
+    color: #d8e9ff;
+    overflow-x: hidden;
 }
 
-/* === PAGE BACKGROUND === */
-
-.home-page .ccg-page-shell {
-    background:
-        radial-gradient(circle at 0 0, rgba(79, 252, 255, 0.08), transparent 55%),
-        radial-gradient(circle at 100% 100%, rgba(255, 84, 235, 0.12), transparent 55%),
-        radial-gradient(circle at 50% 120%, rgba(0, 146, 255, 0.35), transparent 65%),
-        linear-gradient(180deg, #020313 0%, #02010c 40%, #000000 100%);
-    color: var(--ccg-text-main);
-    min-height: 100vh;
+.ccg-main {
+    padding-top: 40px;
 }
 
-/* ==========================================================================
-   HEADER AREA (BRAND + NAV + MODE TOGGLE + SOCIALS)
-   ========================================================================== */
-
-.home-page .ccg-header {
-    position: sticky;
-    top: 0;
-    z-index: 40;
+/* ============================
+   HEADER — FULL EPIC MODE
+=============================== */
+.ccg-header {
+    width: 100%;
+    padding: 22px 40px;
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    gap: var(--ccg-gap);
-    padding: 1rem 1.6rem;
-    backdrop-filter: blur(16px);
-    background: linear-gradient(90deg, rgba(4, 12, 40, 0.92), rgba(5, 4, 35, 0.92));
-    border-bottom: 1px solid rgba(79, 252, 255, 0.35);
-    box-shadow: 0 0 0 1px rgba(4,255,255,0.15), 0 12px 35px rgba(0,0,0,0.65);
-}
-
-/* === LOGO + BRAND TEXT === */
-
-.home-page .ccg-header-left {
-    display: flex;
     align-items: center;
-    gap: 0.9rem;
+    background: rgba(0, 10, 20, 0.75);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 0 60px #0af inset, 0 0 140px #0af4;
+    border-bottom: 1px solid rgba(0, 180, 255, 0.25);
 }
 
-.home-page .ccg-brand {
-    display: flex;
-    align-items: center;
-    gap: 0.9rem;
-    text-decoration: none;
+.ccg-logo {
+    width: 80px;
+    filter: drop-shadow(0 0 12px #0ff) drop-shadow(0 0 24px #0ff);
 }
 
-.home-page .ccg-logo {
-    height: 46px;
-    width: auto;
-    filter: drop-shadow(0 0 10px rgba(4,255,255,0.9))
-            drop-shadow(0 0 20px rgba(4,255,255,0.6));
+.ccg-brand-title {
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: #6df3ff;
+    text-shadow: 0 0 8px #46d4ff, 0 0 18px #2d9eff;
 }
 
-.home-page .ccg-brand-text {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.home-page .ccg-brand-title {
-    font-size: 1.15rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--ccg-accent);
-}
-
-.home-page .ccg-brand-subtitle {
-    font-size: 0.75rem;
-    text-transform: uppercase;
+.ccg-brand-subtitle {
+    color: #92d7ff;
+    font-size: 0.85rem;
+    margin-top: 4px;
     opacity: 0.9;
-    color: var(--ccg-text-soft);
 }
 
-/* === NAVIGATION === */
-
-.home-page .ccg-main-nav {
-    display: flex;
-    align-items: center;
-    gap: 1.1rem;
-    font-size: 0.82rem;
-    letter-spacing: 0.12em;
+/* ----------------------------
+   NAVIGATION LINKS
+---------------------------- */
+.ccg-main-nav .nav-link {
+    position: relative;
+    margin: 0 14px;
+    padding: 8px 14px;
+    font-size: 1.05rem;
     text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #bde6ff;
+    transition: 0.25s ease;
 }
 
-.home-page .nav-link {
-    padding: 0.45rem 0.7rem;
-    border-radius: 999px;
-    color: var(--ccg-text-soft);
-    text-decoration: none;
-    transition: 0.15s ease-out;
+.ccg-main-nav .nav-link:hover,
+.ccg-main-nav .nav-link-active {
+    color: #fff;
+    text-shadow: 0 0 10px #9cf0ff, 0 0 20px #0ff;
 }
 
-.home-page .nav-link:hover {
-    color: var(--ccg-accent);
-    background: rgba(10, 35, 80, 0.8);
-    box-shadow: 0 0 10px rgba(79,252,255,0.7);
+.nav-link-active {
+    border-bottom: 2px solid #6df3ff;
 }
 
-.home-page .nav-link-active {
-    color: var(--ccg-accent-warm);
-    background: linear-gradient(90deg, rgba(79,252,255,0.15), rgba(255,84,235,0.18));
-    box-shadow: 0 0 15px rgba(255,84,235,0.7);
-}
-
-/* === MODE TOGGLE SWITCH === */
-
-.home-page .ccg-header-right {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.home-page .ccg-mode-toggle {
-    padding: 0.4rem 1.3rem;
-    font-size: 0.78rem;
-    text-transform: uppercase;
-    letter-spacing: 0.16em;
+/* ----------------------------
+   MODE TOGGLE — EPIC EDITION
+---------------------------- */
+#ccg-mode-toggle {
+    background: linear-gradient(145deg, #003b60, #001d33);
+    border: 1px solid #00cfff;
+    padding: 10px 24px;
+    border-radius: 22px;
+    font-size: 1rem;
+    color: #bdf7ff;
     cursor: pointer;
-    border-radius: 999px;
-    border: 1px solid rgba(79,252,255,0.8);
-    background: radial-gradient(circle at 0% 0%, rgba(79,252,255,0.28), rgba(0,0,0,0.96));
-    color: var(--ccg-text-main);
-    box-shadow: 0 0 20px rgba(79,252,255,0.9);
-    text-shadow: 0 0 8px rgba(79,252,255,1);
-    transition: 0.2s ease-out;
+    transition: 0.25s;
+    box-shadow: 0 0 18px #00d0ff99;
 }
 
-.home-page[data-mode="amiga"] .ccg-mode-toggle {
-    border-color: rgba(255,84,235,0.85);
-    background: radial-gradient(circle at 100% 0%, rgba(255,84,235,0.35), rgba(0,0,0,0.96));
-    box-shadow: 0 0 20px rgba(255,84,235,0.9);
+#ccg-mode-toggle:hover {
+    color: #fff;
+    box-shadow: 0 0 30px #00eaff, 0 0 70px #00b5ff;
 }
 
-/* === SOCIAL BUTTON ROW === */
-
-.home-page .ccg-header-social-row {
+/* ----------------------------
+   SOCIAL PILL BUTTONS (EPIC)
+---------------------------- */
+.ccg-header-social-row {
     display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
+    gap: 12px;
 }
 
-.home-page .ccg-social-pill {
-    padding: 0.35rem 0.75rem;
-    font-size: 0.7rem;
+.ccg-social-pill {
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.14em;
-    border-radius: 999px;
-    text-decoration: none;
-    color: var(--ccg-text-soft);
-    border: 1px solid rgba(100,150,255,0.8);
-    background: rgba(6,12,35,0.95);
-    transition: 0.2s ease-out;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    transition: 0.25s;
 }
 
-.home-page .ccg-social-pill:hover {
-    color: white;
-    background: radial-gradient(circle at 50% 0%, rgba(79,252,255,0.22), rgba(3,6,28,0.98));
-    box-shadow: 0 0 20px rgba(79,252,255,0.9);
+/* YouTube red */
+.ccg-social-youtube {
+    background: #ff0030;
+    color: #fff;
+    box-shadow: 0 0 14px #ff0030;
+}
+.ccg-social-youtube:hover {
+    box-shadow: 0 0 25px #ff4060, 0 0 45px #ff0030;
+    transform: translateY(-2px);
 }
 
-/* ==========================================================================
-   MAIN WRAPPER
-   ========================================================================== */
-
-.home-page .ccg-main {
-    padding: 2rem clamp(1rem, 3vw, 2.6rem);
-    max-width: 1280px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 3rem;
+/* Patreon orange */
+.ccg-social-patreon {
+    background: #ff7b00;
+    color: #fff;
+    box-shadow: 0 0 14px #ff7b00;
 }
 
-/* ==========================================================================
-   HERO SECTION (BACKGROUND GRID + STARFIELD + SCANLINES)
-   ========================================================================== */
+.ccg-social-patreon:hover {
+    box-shadow: 0 0 30px #ffaa47;
+    transform: translateY(-2px);
+}
 
-.home-page .ccg-hero {
+/* PayPal blue */
+.ccg-social-paypal {
+    background: #004fdd;
+    color: #fff;
+    box-shadow: 0 0 14px #0074ff;
+}
+.ccg-social-paypal:hover {
+    box-shadow: 0 0 30px #3ca6ff;
+}
+
+/* X.com */
+.ccg-social-x {
+    background: #111;
+    color: #fff;
+    box-shadow: 0 0 14px #333;
+}
+
+/* Discord purple */
+.ccg-social-discord {
+    background: #5865f2;
+    color: #fff;
+    box-shadow: 0 0 14px #5865f2;
+}
+.ccg-social-discord:hover {
+    box-shadow: 0 0 30px #7d88ff;
+}
+
+/* ============================
+   HERO SECTION — EPIC MODE
+=============================== */
+.ccg-hero {
+    padding: 80px 0;
     position: relative;
-    overflow: hidden;
-    padding: 2rem;
-    border-radius: var(--ccg-radius-xl);
-    background: radial-gradient(circle at 0% 100%, rgba(79,252,255,0.16), rgba(5,7,20,0.98));
-    border: 1px solid rgba(79,252,255,0.5);
-    box-shadow: 0 0 40px rgba(79,252,255,0.6), inset 0 0 50px rgba(0,0,0,0.8);
-    display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: 2rem;
 }
 
-.home-page .ccg-hero-background {
-    position: absolute;
-    inset: 0;
+.ccg-hero-title {
+    font-size: 3rem;
+    color: #f6f8ff;
+    text-shadow: 0 0 20px #8bf0ff, 0 0 40px #00e7ff;
 }
 
-.home-page .ccg-hero-overlay-grid {
-    position: absolute;
-    inset: 0;
-    background-image:
-        linear-gradient(rgba(76,110,245,0.22) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(76,110,245,0.22) 1px, transparent 1px);
-    background-size: 38px 38px;
-    opacity: 0.26;
+.ccg-hero-text {
+    font-size: 1.2rem;
+    color: #bde8ff;
+    margin-top: 20px;
+    max-width: 700px;
 }
 
-.home-page .ccg-hero-overlay-starfield {
-    position: absolute;
-    inset: 0;
-    background-image:
-        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.5) 0, transparent 40px),
-        radial-gradient(circle at 80% 10%, rgba(79,252,255,0.7) 0, transparent 45px),
-        radial-gradient(circle at 60% 80%, rgba(255,84,235,0.8) 0, transparent 55px);
-    opacity: 0.12;
+/* Hero buttons */
+.ccg-btn {
+    padding: 12px 24px;
+    border-radius: 24px;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    transition: 0.25s;
 }
 
-.home-page .ccg-hero-scanlines {
-    position: absolute;
-    inset: 0;
-    background-image: linear-gradient(rgba(0,0,0,0.5) 1px, transparent 1px);
-    background-size: 100% 3px;
-    opacity: 0.3;
+.ccg-btn-primary {
+    background: #00caff;
+    color: #001122;
+    box-shadow: 0 0 20px #00dfff;
+}
+.ccg-btn-primary:hover {
+    box-shadow: 0 0 40px #00eaff;
+    transform: translateY(-2px);
 }
 
-/* === HERO ART IMAGES === */
-
-.home-page .ccg-hero-images {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.ccg-btn-secondary {
+    background: transparent;
+    border: 1px solid #00caff;
+    color: #00caff;
+}
+.ccg-btn-secondary:hover {
+    background: rgba(0, 200, 255, 0.12);
 }
 
-.home-page .ccg-hero-image {
-    position: absolute;
-    max-width: 100%;
-    opacity: 0;
-    transform: translateY(15px);
-    filter: drop-shadow(0 0 26px rgba(0,0,0,1));
-    transition: 0.4s ease-out;
+/* ============================
+   FEATURED CARDS
+=============================== */
+.ccg-card {
+    border-radius: 22px;
+    background: rgba(0, 22, 40, 0.88);
+    box-shadow: 0 0 40px #0af4;
+    border: 1px solid rgba(0, 180, 255, 0.35);
 }
 
-.home-page[data-mode="c64"] .ccg-hero-image-c64 {
-    opacity: 1;
-    transform: translateY(0);
-    filter: drop-shadow(0 0 26px rgba(79,252,255,1));
-}
-
-.home-page[data-mode="amiga"] .ccg-hero-image-amiga {
-    opacity: 1;
-    transform: translateY(0);
-    filter: drop-shadow(0 0 26px rgba(255,84,235,1));
-}
-
-/* === HERO CONTENT PANEL === */
-
-.home-page .ccg-hero-content {
-    background: rgba(4,7,25,0.9);
-    padding: 1.6rem;
-    border-radius: var(--ccg-radius-xl);
-    border: 1px solid rgba(79,252,255,0.3);
-    box-shadow: inset 0 0 30px rgba(0,0,0,0.5), 0 0 40px rgba(79,252,255,0.6);
-}
-
-.home-page .ccg-hero-badge {
-    display: inline-block;
-    padding: 0.3rem 0.8rem;
-    border-radius: 999px;
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    border: 1px solid rgba(255,215,94,0.7);
-    color: var(--ccg-accent-warm);
-}
-
-.home-page .ccg-hero-title {
-    margin-top: 0.8rem;
-    font-size: 2.1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    text-shadow: 0 0 20px rgba(79,252,255,1), 0 0 30px rgba(255,84,235,1);
-}
-
-.home-page .ccg-hero-text {
-    margin-top: 0.8rem;
-    font-size: 0.9rem;
-    line-height: 1.6;
-    color: var(--ccg-text-soft);
-}
-
-.home-page .ccg-hero-actions {
-    margin-top: 1rem;
-    display: flex;
-    gap: 0.8rem;
-}
-
-.home-page .ccg-hero-footnote {
-    margin-top: 0.8rem;
-    font-size: 0.78rem;
-    color: var(--ccg-text-soft);
-}
-
-/* ==========================================================================
-   FEATURED GAME + FEATURED VIDEO (FULL EPIC SYMMETRIC GRID)
-   ========================================================================== */
-
-.home-page .ccg-section-featured {
-    background: radial-gradient(circle at 100% 0%, rgba(255,84,235,0.2), rgba(5,7,20,0.98));
-}
-
-.home-page .ccg-featured-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-}
-
-/* === FEATURED CARDS === */
-
-.home-page .ccg-card {
-    background: rgba(5,11,30,0.95);
-    border: 1px solid rgba(79,252,255,0.5);
-    border-radius: var(--ccg-radius-lg);
-    box-shadow: 0 0 25px rgba(79,252,255,0.6), inset 0 0 30px rgba(0,0,0,0.6);
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-/* Card headers */
-.home-page .ccg-card-header {
-    padding: 1rem 1.2rem;
-    border-bottom: 1px solid rgba(79,252,255,0.3);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.home-page .ccg-card-title {
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    font-size: 0.9rem;
-}
-
-/* === Featured Game Layout === */
-
-.home-page .ccg-card-featured-game .ccg-card-body {
-    padding: 1.2rem;
-    display: grid;
-    grid-template-columns: 180px 1fr;
-    gap: 1.2rem;
-}
-
-.home-page .ccg-thumb-frame-big {
-    width: 180px;
-    aspect-ratio: 4/5;
-    border: 1px solid rgba(79,252,255,0.6);
-    background: rgba(10,20,40,1);
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 0 20px rgba(79,252,255,0.6);
-}
-
-.home-page .ccg-thumb-image {
+/* Video embed fix */
+.ccg-video-frame iframe {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* === Featured Video Layout === */
-
-.home-page .ccg-card-featured-video .ccg-card-body {
-    padding: 1.2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.home-page .ccg-video-frame {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16/9;
+    height: 280px;
     border-radius: 16px;
-    overflow: hidden;
-    border: 1px solid rgba(255,84,235,0.8);
-    box-shadow: 0 0 25px rgba(255,84,235,0.9);
 }
 
-/* ==========================================================================
-   GENRE GRID + COLLECTIONS GRID
-   ========================================================================== */
-
-.home-page .ccg-genre-grid,
-.home-page .ccg-collections-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-    gap: 1.4rem;
+/* ============================
+   GENRE GRID FIX
+=============================== */
+.ccg-genre-image {
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 0 16px #00dfff66;
+    transition: 0.25s;
 }
 
-.home-page .ccg-genre-card {
-    aspect-ratio: 16/9;
+.ccg-genre-image:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0 30px #00eaff;
+}
+
+/* Reduced scale to prevent clipping */
+.ccg-genre-card {
+    transform: scale(0.92);
+}
+
+/* ============================
+   HIGHLIGHTS STRIP FIX
+=============================== */
+.ccg-game-strip-card {
     border-radius: 18px;
-    overflow: hidden;
-    border: 1px solid rgba(79,252,255,0.7);
-    box-shadow: 0 0 25px rgba(79,252,255,0.8);
-    transition: 0.2s ease-out;
+    background: rgba(0, 18, 28, 0.88);
+    border: 1px solid #003e66;
+    box-shadow: 0 0 20px #005f99aa;
 }
 
-.home-page .ccg-genre-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0 35px rgba(255,84,235,0.9);
+.ccg-thumb-frame-strip img {
+    border-radius: 14px;
 }
 
-.home-page .ccg-genre-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+/* ============================
+   FOOTER — CLEAN MODE
+=============================== */
+.ccg-footer {
+    padding: 50px 0;
+    background: #001e26;
+    border-top: 1px solid #003f55;
+    box-shadow: 0 0 60px #002f40 inset;
 }
 
-/* ==========================================================================
-   RANDOM HIGHLIGHT STRIP
-   ========================================================================== */
-
-.home-page .ccg-game-strip {
-    display: flex;
-    gap: 1.2rem;
-    overflow-x: auto;
-    padding: 0.5rem;
-    scrollbar-width: none;
-}
-
-.home-page .ccg-game-strip::-webkit-scrollbar {
-    display: none;
-}
-
-.home-page .ccg-game-strip-card {
-    min-width: 220px;
-    border-radius: 16px;
-    background: rgba(5,11,30,0.95);
-    border: 1px solid rgba(79,252,255,0.5);
-    box-shadow: 0 0 20px rgba(79,252,255,0.6);
-}
-
-.home-page .ccg-game-strip-link {
-    display: flex;
-    flex-direction: column;
-    padding: 1rem;
-    gap: 0.6rem;
-    text-decoration: none;
-    color: var(--ccg-text-main);
-}
-
-/* ==========================================================================
-   UTILITIES (MANUALS, QUIZ, EMULATION GUIDE)
-   ========================================================================== */
-
-.home-page .ccg-utility-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 2rem;
-}
-
-.home-page .ccg-utility-grid .ccg-card {
-    height: 100%;
-    padding-bottom: 1rem;
-}
-
-/* ==========================================================================
-   FOOTER
-   ========================================================================== */
-
-.home-page .ccg-footer {
-    padding: 2rem 1.2rem;
-    background: linear-gradient(180deg, #021, #000);
-    border-top: 1px solid rgba(79,252,255,0.4);
-}
-
-.home-page .ccg-footer-inner {
-    max-width: 1280px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-    color: var(--ccg-text-soft);
-}
-
-/* ==========================================================================
-   RESPONSIVE TWEAKS
-   ========================================================================== */
-
-@media (max-width: 1024px) {
-    .home-page .ccg-hero {
-        grid-template-columns: 1fr;
-    }
-    .home-page .ccg-featured-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 768px) {
-    .home-page .ccg-card-featured-game .ccg-card-body {
-        grid-template-columns: 1fr;
-    }
-    .home-page .ccg-thumb-frame-big {
-        width: 100%;
-        max-width: 240px;
-        margin: 0 auto;
-    }
+.ccg-footer-text {
+    font-size: 0.95rem;
+    color: #9bd5ff;
 }
