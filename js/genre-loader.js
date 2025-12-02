@@ -1,103 +1,63 @@
-// js/genre-loader.js
-// BIT CHIEF — FINAL WORKING VERSION 😇🕹️👌
-// Uses correct JSON thumbnail paths (Option B)
+const GAMES_JSON_URL = '../../games/games.json';
 
-(function () {
+document.addEventListener('DOMContentLoaded', () => {
+    const body = document.body;
+    const genreSlug = body.getAttribute('data-genre');
+    if (!genreSlug) return;
 
-    // ============================================================
-    //  MASTER JSON SOURCE
-    // ============================================================
-    const GAMES_JSON_URL =
-        "https://raw.githubusercontent.com/joepentony-dot/ccgamer_website_new/main/games/games.json";
+    const countEl = document.getElementById('genreGamesCount');
+    const gridEl = document.getElementById('genreGamesGrid');
 
-    // Fallback thumbnail
-    const FALLBACK_THUMB =
-        "/ccgamer_website_new/resources/images/thumbnails/all/_no_thumbnail.png";
+    fetch(GAMES_JSON_URL)
+        .then(res => res.json())
+        .then(data => {
+            let games = Array.isArray(data) ? data : data.games || [];
 
-    // ============================================================
-    //  UNIVERSAL GENRE LOADER
-    // ============================================================
-    window.loadGenreGames = async function (genreSlug, gridEl, countEl) {
-
-        if (!gridEl) {
-            console.error("BIT CHIEF ERROR: #genreGamesGrid not found!");
-            return;
-        }
-
-        gridEl.innerHTML = "<div>Loading games…</div>";
-        if (countEl) countEl.textContent = "Loading…";
-
-        try {
-            const res = await fetch(GAMES_JSON_URL + "?cache=" + Date.now());
-            const data = await res.json();
-
-            // Normalise slug
-            const search = genreSlug
-                .toLowerCase()
-                .replace(/[-_]/g, " ")
-                .trim();
-
-            // Filter games by ANY genre field
-            const filtered = data.filter(game => {
-                const fields = [
-                    game.genre,
-                    ...(Array.isArray(game.genres) ? game.genres : []),
-                    game.primary_genre,
-                    game.secondary_genre,
-                    game.tertiary_genre
-                ].filter(Boolean);
-
-                return fields.some(f =>
-                    String(f)
-                        .toLowerCase()
-                        .replace(/[-_/]/g, " ")
-                        .includes(search)
-                );
+            const filtered = games.filter(g => {
+                const g1 = (g.genre || '').toLowerCase();
+                const g2 = Array.isArray(g.genres) ? g.genres.map(x => x.toLowerCase()) : [];
+                const p1 = (g.primaryGenre || '').toLowerCase();
+                const p2 = (g.secondaryGenre || '').toLowerCase();
+                const slug = genreSlug.toLowerCase();
+                return g1 === slug || g2.includes(slug) || p1 === slug || p2 === slug;
             });
 
-            if (filtered.length === 0) {
-                gridEl.innerHTML =
-                    `<div>No games found for <strong>${genreSlug}</strong>.</div>`;
-                if (countEl) countEl.textContent = "0 titles";
-                return;
-            }
+            countEl.textContent = filtered.length.toString();
 
-            // Update title count
-            if (countEl) {
-                countEl.textContent = `${filtered.length} titles`;
-            }
-
-            // ============================================================
-            //  BUILD GAME CARDS (CORRECTED THUMBNAILS)
-            // ============================================================
-            gridEl.innerHTML = "";
+            const frag = document.createDocumentFragment();
 
             filtered.forEach(game => {
-                const card = document.createElement("div");
-                card.className = "ccg-card";
+                const item = document.createElement('div');
+                item.className = 'game-item';
 
-                // CORRECT — TRUST JSON PATH (Option B)
-                const thumb = game.thumbnail
-                    ? game.thumbnail                   // ← THIS IS THE FIX
-                    : FALLBACK_THUMB;
+                const img = document.createElement('img');
+                img.loading = 'lazy';
+                img.alt = game.title || 'Game';
+                img.src = game.thumbnail || '../../resources/images/thumbnails/fallback.jpg';
+                img.onerror = () => {
+                    img.src = '../../resources/images/thumbnails/fallback.jpg';
+                };
 
-                card.innerHTML = `
-                    <div class="ccg-card-thumb">
-                        <img src="${thumb}"
-                             alt="${game.title}"
-                             onerror="this.onerror=null;this.src='${FALLBACK_THUMB}';">
-                    </div>
-                    <div class="ccg-card-title">${game.title}</div>
-                `;
+                const title = document.createElement('div');
+                title.className = 'game-title';
+                title.textContent = game.title || 'Unknown Title';
 
-                gridEl.appendChild(card);
+                const system = document.createElement('div');
+                system.className = 'game-system';
+                system.textContent = game.system || '';
+
+                item.appendChild(img);
+                item.appendChild(title);
+                item.appendChild(system);
+
+                frag.appendChild(item);
             });
 
-        } catch (err) {
-            console.error("BIT CHIEF LOAD ERROR:", err);
-            gridEl.innerHTML = "<div>Error loading games.</div>";
-            if (countEl) countEl.textContent = "Error";
-        }
-    };
-
-})();
+            gridEl.innerHTML = '';
+            gridEl.appendChild(frag);
+        })
+        .catch(() => {
+            countEl.textContent = '0';
+            gridEl.innerHTML = '<p>Unable to load games for this category.</p>';
+        });
+});
