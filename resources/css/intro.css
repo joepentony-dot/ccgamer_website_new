@@ -182,49 +182,62 @@ body.intro-body {
     display: none;
 
     background-color: #000;
-    filter: blur(3.5px);
 
+    /* Softer, CRT-style edges */
+    filter: blur(4px);
+
+    /* Chunky 10px-ish stripes, colours matching your GIF */
     background-image:
         repeating-linear-gradient(
             180deg,
 
-            /* black gap */
-            #000 0px, #000 4px,
-            /* magenta */
-            #f94cff 4px, #f94cff 12px,
-            /* black */
-            #000 12px, #000 16px,
-            /* cyan */
-            #4ffcff 16px, #4ffcff 24px,
-            /* black */
-            #000 24px, #000 28px,
-            /* bright green */
-            #4fff4f 28px, #4fff4f 36px,
-            /* black */
-            #000 36px, #000 40px,
-            /* yellow */
-            #ffe857 40px, #ffe857 48px,
-            /* black */
-            #000 48px, #000 52px,
-            /* light blue */
-            #66a9ff 52px, #66a9ff 60px,
-            /* black */
-            #000 60px, #000 64px,
-            /* purple */
-            #c377ff 64px, #c377ff 72px
+            /* dark border gap */
+            #000000 0px, #000000 6px,
+
+            /* purple band */
+            #7c2cff 6px, #7c2cff 16px,
+
+            /* cyan band */
+            #00f6ff 16px, #00f6ff 26px,
+
+            /* bright green band */
+            #54ff39 26px, #54ff39 36px,
+
+            /* red band */
+            #ff2626 36px, #ff2626 46px,
+
+            /* orange band */
+            #ff8d24 46px, #ff8d24 56px,
+
+            /* peach band */
+            #ffcc8a 56px, #ffcc8a 66px,
+
+            /* yellow band */
+            #ffe857 66px, #ffe857 76px,
+
+            /* grey band */
+            #b4b4b4 76px, #b4b4b4 86px,
+
+            /* blue band */
+            #2c5dff 86px, #2c5dff 96px,
+
+            /* darker gap */
+            #000000 96px, #000000 100px
         );
 
-    background-size: 100% 72px;
+    background-size: 100% 100px;
 
+    /* No pulsing – just scroll + tiny jitter */
     animation:
         rasterScroll 0.32s linear infinite,
-        rasterFlicker 0.18s ease-in-out infinite,
         rasterJitterX 0.24s ease-in-out infinite;
 }
 
+/* Make active when JS flips it on */
 #rasterOverlay.raster-active {
     display: block;
 }
+
 
 @keyframes rasterScroll {
     0%   { background-position-y: 0; }
