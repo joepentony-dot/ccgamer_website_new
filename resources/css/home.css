@@ -1,801 +1,202 @@
 /* ==========================================================
-   CCG HOME HUD — NEON C64 / AMIGA SHELL
+   HOME.CSS — EPIC POLISH PACK (C64 • AMIGA • ZX)
+   Adds premium visual upgrades without altering layout.
    ========================================================== */
 
-:root {
-    /* Core palette */
-    --ccg-c64-bg: #1b0133;
-    --ccg-c64-border: #342b71;
-    --ccg-c64-cyan: #70fff0;
-    --ccg-c64-violet: #aa55ff;
+/* ----------------------------------------------------------
+   GLOBAL POLISH
+   ---------------------------------------------------------- */
 
-    --ccg-amiga-bg: #050914;
-    --ccg-amiga-teal: #32f6ff;
-    --ccg-amiga-magenta: #ff4da6;
-    --ccg-amiga-gold: #ffd26f;
-
-    --ccg-shell-radius: 18px;
-    --ccg-shell-padding: 1.5rem;
-    --ccg-transition-fast: 0.2s ease-out;
-    --ccg-transition-med: 0.35s ease-out;
-}
-
-/* Body styling specific to the home hub */
 body[data-page="home"] {
-    margin: 0;
-    min-height: 100vh;
-    font-family: "VT323", monospace;
-    background: radial-gradient(circle at top, #19003a 0, #050010 40%, #000 100%);
-    color: var(--ccg-c64-cyan);
-    overflow-x: hidden;
-    scroll-behavior: smooth;
+    text-shadow: 0 0 3px rgba(0,255,255,0.25);
+    transition: background 0.45s ease-out, color 0.35s ease-out;
 }
 
+/* Sharper text neon for C64 */
 body[data-page="home"][data-mode="c64"] {
-    background: radial-gradient(circle at top, #12003a 0, #050010 40%, #000 100%);
     color: var(--ccg-c64-cyan);
+    text-shadow:
+        0 0 4px rgba(112,255,240,0.55),
+        0 0 8px rgba(112,255,240,0.3);
 }
 
+/* Softer, premium Amiga look */
 body[data-page="home"][data-mode="amiga"] {
-    background: radial-gradient(circle at top, #001d2b 0, #02050d 35%, #000 100%);
     color: var(--ccg-amiga-teal);
+    text-shadow:
+        0 0 4px rgba(50,246,255,0.35),
+        0 0 8px rgba(255,77,166,0.25);
 }
 
+/* ZX ultra neon */
 body[data-page="home"][data-mode="zx"] {
-    background: radial-gradient(circle at top, #010101 0, #000 100%);
+    color: #00ff00;
+    text-shadow:
+        0 0 4px #0f0,
+        0 0 8px #0f0;
 }
 
-/* ==========================================================
-   SHELL
-   ========================================================== */
-
-.ccg-shell {
-    position: relative;
-    max-width: 1200px;
-    margin: 1.5rem auto 3rem auto;
-    padding: 1.5rem;
-    border-radius: var(--ccg-shell-radius);
-    border: 4px solid var(--ccg-c64-border);
-    background: rgba(3, 0, 20, 0.9);
-    box-shadow:
-        0 0 35px rgba(0, 0, 0, 0.9),
-        0 0 45px rgba(112, 255, 240, 0.2);
-    overflow: hidden;
-}
-
-body[data-page="home"][data-mode="amiga"] .ccg-shell {
-    border-color: var(--ccg-amiga-magenta);
-    box-shadow:
-        0 0 35px rgba(0, 0, 0, 0.9),
-        0 0 45px rgba(50, 246, 255, 0.25);
-}
-
-body[data-page="home"][data-mode="zx"] .ccg-shell {
-    border-color: #00ff00;
-    box-shadow:
-        0 0 35px rgba(0, 0, 0, 0.9),
-        0 0 45px rgba(0, 255, 0, 0.3);
-}
-
-/* ==========================================================
-   STARFIELD + CRT OVERLAYS
-   ========================================================== */
+/* ----------------------------------------------------------
+   STARFIELD UPGRADE
+   ---------------------------------------------------------- */
 
 #starfield {
-    position: fixed;
-    inset: 0;
-    z-index: -3;
-    pointer-events: none;
+    filter: brightness(1.2) contrast(1.05);
+    opacity: 0.8;
 }
 
-/* CRT overlay (scanlines base is in ccg-effects.css, this is home tint) */
+/* ----------------------------------------------------------
+   CRT OVERLAY — ENHANCED
+   ---------------------------------------------------------- */
+
 .crt-overlay {
-    pointer-events: none;
-    position: fixed;
-    inset: 0;
-    z-index: -1;
+    opacity: 0.28;
     background:
         repeating-linear-gradient(
             to bottom,
-            rgba(255, 255, 255, 0.05),
-            rgba(255, 255, 255, 0.05) 1px,
-            transparent 2px,
-            transparent 3px
+            rgba(255,255,255,0.05) 0px,
+            rgba(255,255,255,0.04) 1px,
+            transparent 3px,
+            transparent 4px
         );
-    mix-blend-mode: soft-light;
-    opacity: 0.2;
 }
 
-.crt-glow {
-    position: fixed;
-    inset: -10vh;
-    background:
-        radial-gradient(circle at top, rgba(112, 255, 240, 0.18), transparent 55%),
-        radial-gradient(circle at bottom, rgba(170, 85, 255, 0.12), transparent 60%);
-    z-index: -2;
-    pointer-events: none;
+/* Stronger glow for C64 */
+body[data-page="home"][data-mode="c64"] .crt-glow {
+    filter: blur(4px) brightness(1.15);
 }
 
+/* Warmer glow for Amiga */
 body[data-page="home"][data-mode="amiga"] .crt-glow {
-    background:
-        radial-gradient(circle at top, rgba(50, 246, 255, 0.18), transparent 55%),
-        radial-gradient(circle at bottom, rgba(255, 77, 166, 0.12), transparent 60%);
+    filter: blur(5px) brightness(1.1);
 }
 
-body[data-page="home"][data-mode="zx"] .crt-glow {
-    background:
-        radial-gradient(circle at top, rgba(0, 255, 0, 0.25), transparent 55%),
-        radial-gradient(circle at bottom, rgba(0, 255, 255, 0.16), transparent 60%);
+/* ----------------------------------------------------------
+   SHELL — PREMIUM RIM GLOW
+   ---------------------------------------------------------- */
+
+.ccg-shell {
+    backdrop-filter: blur(4px);
+    border-width: 4px;
+    animation: shellPulse 4s ease-in-out infinite alternate;
 }
 
-/* ==========================================================
-   NEON GRID FLOOR
-   ========================================================== */
-
-.neon-grid {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 45vh;
-    background:
-        linear-gradient(to top, rgba(0, 0, 0, 1) 0, rgba(0, 0, 0, 0) 70%),
-        repeating-linear-gradient(
-            to right,
-            rgba(112, 255, 240, 0.3) 0,
-            rgba(112, 255, 240, 0.3) 1px,
-            transparent 4px,
-            transparent 8px
-        ),
-        repeating-linear-gradient(
-            to top,
-            rgba(170, 85, 255, 0.3) 0,
-            rgba(170, 85, 255, 0.3) 1px,
-            transparent 6px,
-            transparent 12px
-        );
-    transform-origin: center bottom;
-    transform: perspective(600px) rotateX(75deg) translateY(15vh);
-    opacity: 0.3;
-    animation: gridScroll 18s linear infinite;
-    z-index: -1;
+@keyframes shellPulse {
+    0% { box-shadow: 0 0 22px rgba(112,255,240,0.12); }
+    100% { box-shadow: 0 0 32px rgba(112,255,240,0.2); }
 }
 
-body[data-page="home"][data-mode="amiga"] .neon-grid {
-    background:
-        linear-gradient(to top, rgba(0, 0, 0, 1) 0, rgba(0, 0, 0, 0) 70%),
-        repeating-linear-gradient(
-            to right,
-            rgba(50, 246, 255, 0.35) 0,
-            rgba(50, 246, 255, 0.35) 1px,
-            transparent 4px,
-            transparent 8px
-        ),
-        repeating-linear-gradient(
-            to top,
-            rgba(255, 77, 166, 0.35) 0,
-            rgba(255, 77, 166, 0.35) 1px,
-            transparent 6px,
-            transparent 12px
-        );
+/* Amiga rim */
+body[data-page="home"][data-mode="amiga"] .ccg-shell {
+    animation: shellPulseAmiga 4s ease-in-out infinite alternate;
 }
 
-body[data-page="home"][data-mode="zx"] .neon-grid {
-    background:
-        linear-gradient(to top, rgba(0, 0, 0, 1) 0, rgba(0, 0, 0, 0) 70%),
-        repeating-linear-gradient(
-            to right,
-            rgba(0, 255, 0, 0.4) 0,
-            rgba(0, 255, 0, 0.4) 1px,
-            transparent 4px,
-            transparent 8px
-        ),
-        repeating-linear-gradient(
-            to top,
-            rgba(0, 255, 255, 0.4) 0,
-            rgba(0, 255, 255, 0.4) 1px,
-            transparent 6px,
-            transparent 12px
-        );
+@keyframes shellPulseAmiga {
+    0% { box-shadow: 0 0 22px rgba(255,77,166,0.12); }
+    100% { box-shadow: 0 0 32px rgba(255,210,111,0.25); }
 }
 
-@keyframes gridScroll {
-    from {
-        background-position: 0 0, 0 0, 0 0;
-    }
-    to {
-        background-position: 0 0, 0 40px, 0 60px;
-    }
+/* ZX electric rim */
+body[data-page="home"][data-mode="zx"] .ccg-shell {
+    animation: shellPulseZX 3s linear infinite alternate;
 }
 
-/* ==========================================================
-   HUD HEADER
-   ========================================================== */
-
-.ccg-hud {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    grid-gap: 1rem;
-    align-items: center;
-    margin-bottom: 1.25rem;
+@keyframes shellPulseZX {
+    0% { box-shadow: 0 0 28px rgba(0,255,0,0.2); }
+    100% { box-shadow: 0 0 34px rgba(0,255,255,0.3); }
 }
 
-.ccg-logo-wrap {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.ccg-logo-button {
-    border: none;
-    background: transparent;
-    padding: 0;
-    cursor: pointer;
-    transition: transform var(--ccg-transition-fast), filter var(--ccg-transition-fast);
-}
-
-.ccg-logo-button img {
-    display: block;
-    height: 64px;
-    width: auto;
-    border-radius: 12px;
-    box-shadow: 0 0 18px rgba(0, 0, 0, 0.8);
-}
-
-.ccg-logo-button:hover {
-    transform: scale(1.05);
-    filter: drop-shadow(0 0 12px rgba(112, 255, 240, 0.8));
-}
-
-.ccg-logo-caption {
-    font-family: "Press Start 2P", system-ui, sans-serif;
-    font-size: 0.55rem;
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: rgba(255, 255, 255, 0.6);
-}
-
-.ccg-mode-status {
-    text-align: center;
-    font-size: 1.1rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-}
-
-.ccg-mode-status span {
-    display: inline-block;
-    padding: 0.2rem 0.75rem;
-    border-radius: 999px;
-    border: 1px solid rgba(112, 255, 240, 0.8);
-    box-shadow:
-        0 0 10px rgba(112, 255, 240, 0.5),
-        inset 0 0 8px rgba(3, 0, 40, 0.8);
-}
-
-body[data-page="home"][data-mode="amiga"] .ccg-mode-status span {
-    border-color: var(--ccg-amiga-magenta);
-    box-shadow:
-        0 0 10px rgba(255, 77, 166, 0.6),
-        inset 0 0 8px rgba(3, 0, 40, 0.8);
-}
-
-body[data-page="home"][data-mode="zx"] .ccg-mode-status span {
-    border-color: #00ff00;
-    box-shadow:
-        0 0 10px rgba(0, 255, 0, 0.7),
-        inset 0 0 8px rgba(3, 40, 0, 0.8);
-}
-
-.ccg-hud-right {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 0.4rem;
-    font-size: 0.95rem;
-}
-
-.ccg-hud-right-line {
-    opacity: 0.8;
-}
-
-.ccg-hud-right-line strong {
-    color: var(--ccg-c64-violet);
-}
-
-body[data-page="home"][data-mode="amiga"] .ccg-hud-right-line strong {
-    color: var(--ccg-amiga-gold);
-}
-
-/* ==========================================================
-   SOCIAL BAR
-   ========================================================== */
-
-.ccg-social-bar {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-}
-
-.ccg-social-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.35rem 0.8rem;
-    border-radius: 999px;
-    border: 1px solid rgba(112, 255, 240, 0.5);
-    text-decoration: none;
-    font-size: 0.9rem;
-    color: inherit;
-    background: radial-gradient(circle at top, rgba(112, 255, 240, 0.08), rgba(0, 0, 0, 0.9));
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
-    transition:
-        transform var(--ccg-transition-fast),
-        box-shadow var(--ccg-transition-fast),
-        border-color var(--ccg-transition-fast),
-        background var(--ccg-transition-fast);
-}
-
-.ccg-social-link i {
-    font-size: 1rem;
-}
-
-.ccg-social-link:hover {
-    transform: translateY(-1px);
-    border-color: rgba(170, 85, 255, 0.85);
-    box-shadow: 0 0 14px rgba(170, 85, 255, 0.7);
-    background: radial-gradient(circle at top, rgba(170, 85, 255, 0.18), rgba(0, 0, 0, 0.9));
-}
-
-body[data-page="home"][data-mode="amiga"] .ccg-social-link:hover {
-    border-color: rgba(255, 210, 111, 0.9);
-    box-shadow: 0 0 14px rgba(255, 210, 111, 0.7);
-    background: radial-gradient(circle at top, rgba(255, 210, 111, 0.2), rgba(0, 0, 0, 0.9));
-}
-
-/* ==========================================================
-   MAIN GRID LAYOUT
-   ========================================================== */
-
-.ccg-main {
-    display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1.6fr);
-    grid-gap: 1.25rem;
-    align-items: flex-start;
-}
-
-@media (max-width: 960px) {
-    .ccg-main {
-        grid-template-columns: minmax(0, 1fr);
-    }
-
-    .ccg-hud {
-        grid-template-columns: 1fr;
-        text-align: center;
-    }
-
-    .ccg-hud-right {
-        align-items: center;
-    }
-}
-
-/* ==========================================================
-   PANELS
-   ========================================================== */
-
-.ccg-panel {
-    position: relative;
-    padding: 1rem;
-    border-radius: 14px;
-    border: 1px solid rgba(112, 255, 240, 0.35);
-    background: radial-gradient(circle at top, rgba(10, 0, 40, 0.9), rgba(0, 0, 0, 0.96));
-    box-shadow:
-        0 0 18px rgba(0, 0, 0, 0.9),
-        0 0 24px rgba(112, 255, 240, 0.18);
-    overflow: hidden;
-}
-
-body[data-page="home"][data-mode="amiga"] .ccg-panel {
-    border-color: rgba(50, 246, 255, 0.35);
-    box-shadow:
-        0 0 18px rgba(0, 0, 0, 0.9),
-        0 0 24px rgba(255, 77, 166, 0.18);
-}
-
-body[data-page="home"][data-mode="zx"] .ccg-panel {
-    border-color: rgba(0, 255, 0, 0.35);
-    box-shadow:
-        0 0 18px rgba(0, 0, 0, 0.9),
-        0 0 24px rgba(0, 255, 0, 0.18);
-}
-
-.ccg-panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.7rem;
-    font-size: 0.95rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-}
-
-.ccg-panel-title {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.ccg-panel-title span {
-    font-family: "Press Start 2P", system-ui, sans-serif;
-    font-size: 0.6rem;
-}
-
-.ccg-panel-tag {
-    font-size: 0.75rem;
-    opacity: 0.8;
-}
-
-/* ==========================================================
-   HERO PANEL
-   ========================================================== */
-
-.ccg-hero-text {
-    font-size: 1.05rem;
-    line-height: 1.4;
-    margin-bottom: 0.75rem;
-}
-
-.ccg-hero-text .ccg-hero-highlight {
-    color: var(--ccg-c64-violet);
-}
-
-body[data-page="home"][data-mode="amiga"] .ccg-hero-text .ccg-hero-highlight {
-    color: var(--ccg-amiga-gold);
-}
-
-.ccg-hero-actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 0.5rem;
-}
-
-.ccg-button {
-    border-radius: 999px;
-    border: 1px solid rgba(112, 255, 240, 0.75);
-    background: radial-gradient(circle at top, rgba(112, 255, 240, 0.18), rgba(0, 0, 0, 0.95));
-    color: inherit;
-    padding: 0.45rem 1.2rem;
-    font-family: "Press Start 2P", system-ui, sans-serif;
-    font-size: 0.55rem;
-    text-transform: uppercase;
-    letter-spacing: 0.16em;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    box-shadow: 0 0 14px rgba(0, 0, 0, 0.9);
-    transition:
-        transform var(--ccg-transition-fast),
-        box-shadow var(--ccg-transition-fast),
-        border-color var(--ccg-transition-fast),
-        background var(--ccg-transition-fast);
-}
-
-.ccg-button i {
-    font-size: 0.7rem;
-}
-
-.ccg-button:hover {
-    transform: translateY(-1px);
-    border-color: rgba(170, 85, 255, 0.9);
-    background: radial-gradient(circle at top, rgba(170, 85, 255, 0.25), rgba(0, 0, 0, 0.95));
-    box-shadow: 0 0 18px rgba(170, 85, 255, 0.7);
-}
-
-body[data-page="home"][data-mode="amiga"] .ccg-button:hover {
-    border-color: rgba(255, 210, 111, 0.9);
-    background: radial-gradient(circle at top, rgba(255, 210, 111, 0.25), rgba(0, 0, 0, 0.95));
-    box-shadow: 0 0 18px rgba(255, 210, 111, 0.7);
-}
-
-.ccg-hero-sub {
-    font-size: 0.9rem;
-    opacity: 0.85;
-}
-
-/* ==========================================================
-   GRID CARDS (GENRES + COLLECTIONS)
-   ========================================================== */
-
-.ccg-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 0.75rem;
-}
+/* ----------------------------------------------------------
+   GRID CARDS — MORE EPIC NEON
+   ---------------------------------------------------------- */
 
 .ccg-grid-card {
-    position: relative;
-    border-radius: 12px;
-    padding: 0.55rem 0.6rem 0.65rem 0.6rem;
-    border: 1px solid rgba(112, 255, 240, 0.45);
-    background:
-        radial-gradient(circle at top, rgba(14, 0, 55, 0.95), rgba(0, 0, 0, 0.98));
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-    font-size: 0.9rem;
-    box-shadow: 0 0 14px rgba(0, 0, 0, 0.9);
-    overflow: hidden;
-    transition:
-        transform var(--ccg-transition-med),
-        box-shadow var(--ccg-transition-med),
-        border-color var(--ccg-transition-med),
-        background var(--ccg-transition-med),
-        opacity var(--ccg-transition-med);
-}
-
-.ccg-grid-card::before {
-    content: "";
-    position: absolute;
-    inset: -40%;
-    background: radial-gradient(circle at top, rgba(112, 255, 240, 0.35), transparent 55%);
-    opacity: 0;
-    transform: translateY(20%);
-    transition:
-        opacity var(--ccg-transition-med),
-        transform var(--ccg-transition-med);
-    pointer-events: none;
-}
-
-.ccg-grid-card:hover::before {
-    opacity: 1;
     transform: translateY(0);
+    transition: 
+        transform var(--ccg-transition-med),
+        filter 0.35s ease,
+        opacity 0.35s ease;
+    filter: drop-shadow(0 0 6px rgba(0,0,0,0.8));
 }
 
 .ccg-grid-card:hover {
-    transform: translateY(-3px);
-    border-color: rgba(170, 85, 255, 0.95);
-    background:
-        radial-gradient(circle at top, rgba(30, 0, 90, 0.95), rgba(0, 0, 0, 0.99));
-    box-shadow:
-        0 0 18px rgba(0, 0, 0, 0.95),
-        0 0 24px rgba(170, 85, 255, 0.7);
+    transform: translateY(-4px) scale(1.03);
+    filter: drop-shadow(0 0 14px rgba(170,85,255,0.55));
 }
 
+/* Amiga hover */
 body[data-page="home"][data-mode="amiga"] .ccg-grid-card:hover {
-    border-color: rgba(255, 210, 111, 0.95);
-    box-shadow:
-        0 0 18px rgba(0, 0, 0, 0.95),
-        0 0 24px rgba(255, 210, 111, 0.7);
+    filter: drop-shadow(0 0 14px rgba(255,210,111,0.55));
 }
 
-.ccg-grid-label {
-    font-family: "Press Start 2P", system-ui, sans-serif;
-    font-size: 0.55rem;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
+/* ZX hover */
+body[data-page="home"][data-mode="zx"] .ccg-grid-card:hover {
+    filter: drop-shadow(0 0 14px #00ff00);
 }
 
-.ccg-grid-name {
-    font-size: 0.95rem;
-    margin-top: 0.1rem;
+/* ----------------------------------------------------------
+   SOCIAL BAR — GLOW UPGRADE
+   ---------------------------------------------------------- */
+
+.ccg-social-link {
+    border-width: 2px;
+    filter: drop-shadow(0 0 4px rgba(0,0,0,0.8));
 }
 
-.ccg-grid-meta {
-    font-size: 0.75rem;
-    opacity: 0.75;
+.ccg-social-link:hover {
+    transform: translateY(-2px) scale(1.05);
+    filter: drop-shadow(0 0 14px rgba(170,85,255,0.65));
 }
 
-.ccg-grid-icon {
-    align-self: flex-end;
-    font-size: 1.1rem;
-    opacity: 0.9;
+/* Amiga hover variant */
+body[data-page="home"][data-mode="amiga"] .ccg-social-link:hover {
+    filter: drop-shadow(0 0 14px rgba(255,210,111,0.75));
 }
 
-.ccg-grid-card img.ccg-grid-thumb {
-    width: 40px;
-    height: 40px;
-    object-fit: contain;
-    position: absolute;
-    top: 0.45rem;
-    right: 0.6rem;
-    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.9));
+/* ZX hover */
+body[data-page="home"][data-mode="zx"] .ccg-social-link:hover {
+    filter: drop-shadow(0 0 14px #00ff00);
 }
 
-/* ==========================================================
-   FEATURED VIDEOS
-   ========================================================== */
+/* ----------------------------------------------------------
+   HERO PANEL — RICH TEXT BOOST
+   ---------------------------------------------------------- */
 
-.ccg-videos-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+.ccg-hero-text {
+    text-shadow:
+        0 0 3px rgba(170,85,255,0.35),
+        0 0 6px rgba(170,85,255,0.2);
+    line-height: 1.55;
+    font-size: 1.12rem;
 }
+
+/* ----------------------------------------------------------
+   FEATURED VIDEOS — POLISHED
+   ---------------------------------------------------------- */
 
 .ccg-video-card {
-    position: relative;
-    display: grid;
-    grid-template-columns: 120px 1fr;
-    gap: 0.6rem;
-    border-radius: 12px;
-    padding: 0.5rem;
-    border: 1px solid rgba(112, 255, 240, 0.4);
-    background:
-        radial-gradient(circle at top left, rgba(16, 0, 50, 0.95), rgba(0, 0, 0, 0.98));
-    text-decoration: none;
-    color: inherit;
-    font-size: 0.85rem;
-    overflow: hidden;
     transition:
-        transform var(--ccg-transition-fast),
-        box-shadow var(--ccg-transition-fast),
-        border-color var(--ccg-transition-fast),
-        background var(--ccg-transition-fast);
-}
-
-.ccg-video-thumb {
-    position: relative;
-    border-radius: 10px;
-    overflow: hidden;
-    background: #000;
-}
-
-.ccg-video-thumb::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at center, rgba(112, 255, 240, 0.2), transparent 70%);
-    mix-blend-mode: screen;
-    opacity: 0.5;
-}
-
-.ccg-video-thumb-inner {
-    width: 100%;
-    padding-top: 60%;
-    background-size: cover;
-    background-position: center;
-}
-
-.ccg-video-chip {
-    position: absolute;
-    left: 0.4rem;
-    top: 0.4rem;
-    padding: 0.15rem 0.4rem;
-    border-radius: 999px;
-    border: 1px solid rgba(112, 255, 240, 0.75);
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    background: rgba(0, 0, 0, 0.8);
-}
-
-.ccg-video-play {
-    position: absolute;
-    bottom: 0.3rem;
-    right: 0.4rem;
-    font-size: 1.3rem;
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
-}
-
-.ccg-video-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-}
-
-.ccg-video-title {
-    font-size: 0.9rem;
-}
-
-.ccg-video-details {
-    font-size: 0.75rem;
-    opacity: 0.8;
-}
-
-.ccg-video-tagline {
-    font-size: 0.75rem;
-    color: var(--ccg-c64-violet);
-}
-
-body[data-page="home"][data-mode="amiga"] .ccg-video-tagline {
-    color: var(--ccg-amiga-gold);
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        filter 0.25s ease;
 }
 
 .ccg-video-card:hover {
-    transform: translateY(-2px);
-    border-color: rgba(170, 85, 255, 0.8);
-    background:
-        radial-gradient(circle at top left, rgba(30, 0, 95, 0.95), rgba(0, 0, 0, 0.99));
-    box-shadow:
-        0 0 18px rgba(0, 0, 0, 0.95),
-        0 0 22px rgba(170, 85, 255, 0.7);
+    transform: translateY(-3px) scale(1.02);
+    filter: brightness(1.05);
 }
 
-/* ==========================================================
-   TOAST (EASTER EGG)
-   ========================================================== */
+/* thumbnail bloom */
+.ccg-video-thumb-inner {
+    filter: brightness(1.08) contrast(1.04);
+}
+
+/* ----------------------------------------------------------
+   ZX TOAST — IMPROVED TIMING
+   ---------------------------------------------------------- */
 
 .ccg-toast {
-    position: fixed;
-    left: 50%;
-    top: 1rem;
-    transform: translateX(-50%) translateY(-150%);
-    padding: 0.45rem 1rem;
-    border-radius: 999px;
-    border: 1px solid rgba(0, 255, 0, 0.85);
-    background: radial-gradient(circle at top, rgba(0, 0, 0, 0.98), rgba(0, 0, 0, 1));
-    color: #00ff00;
-    font-family: "Press Start 2P", system-ui, sans-serif;
-    font-size: 0.55rem;
-    text-transform: uppercase;
-    letter-spacing: 0.16em;
-    box-shadow:
-        0 0 16px rgba(0, 0, 0, 0.95),
-        0 0 20px rgba(0, 255, 0, 0.7);
-    opacity: 0;
-    z-index: 50;
-    pointer-events: none;
     transition:
-        transform 0.4s ease-out,
+        transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
         opacity 0.4s ease-out;
-}
-
-.ccg-toast--visible {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-}
-
-/* ==========================================================
-   FOOTER
-   ========================================================== */
-
-.ccg-footer {
-    margin-top: 1.5rem;
-    font-size: 0.8rem;
-    opacity: 0.75;
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-/* ==========================================================
-   RESPONSIVE
-   ========================================================== */
-
-@media (max-width: 640px) {
-    .ccg-shell {
-        margin: 0.75rem;
-        padding: 1rem;
-    }
-
-    .ccg-logo-button img {
-        height: 52px;
-    }
-
-    .ccg-main {
-        grid-gap: 0.9rem;
-    }
-
-    .ccg-panel {
-        padding: 0.8rem;
-    }
-
-    .ccg-video-card {
-        grid-template-columns: 1fr;
-    }
-
-    .ccg-social-bar {
-        gap: 0.5rem;
-    }
-
-    .ccg-social-link {
-        font-size: 0.8rem;
-        padding: 0.25rem 0.6rem;
-    }
 }
