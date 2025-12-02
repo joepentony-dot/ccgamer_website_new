@@ -1,0 +1,171 @@
+====== THUMBNAIL AUTO-PATCH REPORT v1 ======
+
+Total games: 630
+Unchanged thumbnails: 556
+Fixed by exact-case match: 12
+Fixed by smart matching (normalised names etc.): 17
+Still unresolved / missing: 45
+
+=== CHANGES APPLIED ===
+[FIXED] army_moves
+  OLD: army_moves_.jpg
+  NEW: army_moves.jpg
+
+[FIXED] beach-head_ii
+  OLD: beach-head_ii_-_the_dictator_strikes_back!.jpg
+  NEW: beach_head_ii_the_dictator_strikes_back.jpg
+
+[FIXED] blood_'n_guts
+  OLD: blood_n_guts_.jpg
+  NEW: blood_n_guts.jpg
+
+[FIXED] double_dare
+  OLD: doubledares.jpg
+  NEW: DoubleDares.jpg
+
+[FIXED] falcon_patrol
+  OLD: falcon_patrol_.jpg
+  NEW: falcon_patrol.jpg
+
+[FIXED] fernandez_must_die
+  OLD: fernandez_must_die_.jpg
+  NEW: fernandez_must_die.jpg
+
+[FIXED] fiendish_freddy's_big_top_o'_fun
+  OLD: fiendish_freddy.jpg
+  NEW: fiendish_freddy.JPG
+
+[FIXED] golden_axe
+  OLD: golden_axe_.jpg
+  NEW: golden_axe.jpg
+
+[FIXED] highlander
+  OLD: highlander_.jpg
+  NEW: highlander.jpg
+
+[FIXED] knight_tyme
+  OLD: knight-tyme.jpg
+  NEW: knightmare.jpg
+
+[FIXED] micro_mouse_goes_debugging
+  OLD: micro mouse new.png
+  NEW: micro_mouse_new.png
+
+[FIXED] operation_wolf
+  OLD: operation_wolf_.jpg
+  NEW: operation_wolf.jpg
+
+[FIXED] renegade
+  OLD: renegade_.jpg
+  NEW: renegade.jpg
+
+[FIXED] rock'n_wrestle
+  OLD: rock n wrestle.png
+  NEW: rock_n_wrestle.png
+
+[FIXED] silent_service
+  OLD: silent_service_.jpg
+  NEW: silent_service.jpg
+
+[FIXED] target:_renegade
+  OLD: target_renegade_.jpg
+  NEW: target_renegade.jpg
+
+[FIXED] track_&_field
+  OLD: track_&_field.jpg
+  NEW: black_tiger.png
+
+[FIXED] visible_solar_system
+  OLD: visible solar system new.png
+  NEW: visible_solar_system_new.png
+
+[FIXED] agony
+  OLD: agony.png
+  NEW: Agony.png
+
+[FIXED] apocalypse
+  OLD: apocalypse.png
+  NEW: Apocalypse.png
+
+[FIXED] benefactor
+  OLD: benefactor.png
+  NEW: Benefactor.png
+
+[FIXED] heimdall
+  OLD: heimdall.png
+  NEW: Heimdall.png
+
+[FIXED] walker
+  OLD: walker.png
+  NEW: Walker.png
+
+[FIXED] superfrog
+  OLD: superfrog.png
+  NEW: Superfrog.png
+
+[FIXED] gods
+  OLD: gods.png
+  NEW: Gods.png
+
+[FIXED] d/generation
+  OLD: d_generation.png
+  NEW: D_Generation.png
+
+[FIXED] skidmarks
+  OLD: skidmarks.png
+  NEW: Skidmarks.png
+
+[FIXED] moonstone:_a_hard_days_knight
+  OLD: moonstone_-_a_hard_days_knight.png
+  NEW: moonstone_a_hard_days_knight.png
+
+[FIXED] populous
+  OLD: populous.png
+  NEW: Populous.png
+
+=== UNRESOLVED ENTRIES ===
+[UNRESOLVED] apollo_18:_mission_to_the_moon → apollo_18_-_mission_to_the_moon.jpg
+[UNRESOLVED] automania → auto_mania_-_manic_mechanic.jpg
+[UNRESOLVED] blockbusters → blockbusters new.png
+[UNRESOLVED] cauldron_ii:_the_pumpkin_strikes_back → cauldron_ii_-_the_pumpkin_strikes_back.jpg
+[UNRESOLVED] cave_of_the_word_wizard → cave of the word wizard new.png
+[UNRESOLVED] caveman_ugh-lympics → caveman_ugh-lympics.jpg
+[UNRESOLVED] creatures_2:_torture_trouble → creatures_ii_-_torture_trouble.jpg
+[UNRESOLVED] dizzy → dizzy_-_the_ultimate_cartoon_adventure.jpg
+[UNRESOLVED] face_off! → face_off!.jpg
+[UNRESOLVED] fighting_warrior → fighting warrior new.png
+[UNRESOLVED] frak! → frak!.jpg
+[UNRESOLVED] grannys_garden → granys garden new.png
+[UNRESOLVED] the_great_giana_sisters → great_giana_sisters,_the_-_crazy_hack.jpg
+[UNRESOLVED] ik+_c64 → IK%2B%20C64%20NEW.png
+[UNRESOLVED] ivan_'ironman'_stewart's_super_off_road → ivan__ironman__stewart_s_super_off_road.jpg
+[UNRESOLVED] jack_the_nipper_ii:_in_coconut_capers → jack_the_nipper_ii_-_coconut_capers.jpg
+[UNRESOLVED] kikstart_ii → kikstart_ii_-_the_construction_set.jpg
+[UNRESOLVED] master_of_magic → master_of_magic,_the.jpg
+[UNRESOLVED] he-man_and_the_masters_of_the_universe:_the_movie → masters_of_the_universe_-_the_movie.jpg
+[UNRESOLVED] mike_reads_computer_pop_quiz → Mike%20Read's%20Computer%20Pop%20Quiz%20(Europe).jpg
+[UNRESOLVED] mr_robot_and_his_robot_factory → mr._robot_and_his_robot_factory.jpg
+[UNRESOLVED] sid_meier's_pirates! → pirates!.jpg
+[UNRESOLVED] pyjamarama → pyjamarama!.jpg
+[UNRESOLVED] raid_on_bungeling_bay → raid_on_bungeling_bay_.jpg
+[UNRESOLVED] rescue_on_fractalus! → rescue_on_fractalus!.jpg
+[UNRESOLVED] rock_star_ate_my_hamster → rock_star_ate_my_hamster,_a.jpg
+[UNRESOLVED] spy_vs_spy_ii:_the_island_caper → spy_vs_spy_ii_-_the_island_caper.jpg
+[UNRESOLVED] spy_vs_spy_iii:_arctic_antics → spy_vs_spy_iii_-_arctic_antics.jpg
+[UNRESOLVED] sword_of_fargoal → sword_of_fargoal,_the.jpg
+[UNRESOLVED] teenage_mutant_hero_turtles:_the_coin-op → teenage_mutant_ninja_turtles_-_the_arcade_game_usa_disk_1_side_a.jpg
+[UNRESOLVED] ultima_i:_the_first_age_of_darkness → ultima_i_-_the_first_age_of_darkness.jpg
+[UNRESOLVED] wwf_wrestlemania → WWF WrestleMania (Europe).jpg
+[UNRESOLVED] ducktales:_the_quest_for_gold → duck_tales_-_the_quest_for_gold.png
+[UNRESOLVED] final_fight → Final%20Fight.png
+[UNRESOLVED] james_pond:_underwater_agent → james_pond_-_underwater_agent.png
+[UNRESOLVED] kingpin → kingpin_-_arcade_sports_bowling.png
+[UNRESOLVED] push-over → push-over.png
+[UNRESOLVED] speedball_2:_brutal_deluxe → speedball_2_-_brutal_deluxe.png
+[UNRESOLVED] x-out → x-out.jpg
+[UNRESOLVED] the_settlers → the settlers new.png
+[UNRESOLVED] dune_ii:_the_battle_for_arrakis → dune_ii_-_battle_for_arrakis.png
+[UNRESOLVED] ik+_amiga → IK%2B.png
+[UNRESOLVED] jimmy_white's_whirlwind_snooker → jimmy_white_s__whirlwind__snooker.png
+[UNRESOLVED] north_&_south → north_&_south.png
+[UNRESOLVED] kawasaki_rhythm_rocker → kawasaki rhythm rocker new.png
