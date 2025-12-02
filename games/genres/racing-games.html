@@ -1,179 +1,92 @@
 <!DOCTYPE html>
-<html lang="en" data-page="genre">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cheeky Commodore Gamer | Racing Games</title>
-
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
-
-    <!-- Icons -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="../../resources/css/ccg-master.css"/>
-    <link rel="stylesheet" href="../../resources/css/ccg-effects.css"/>
-    <link rel="stylesheet" href="../../resources/css/ccg-mode.css"/>
-    <link rel="stylesheet" href="../../resources/css/home.css"/>
-    <link rel="stylesheet" href="../../resources/css/genre.css"/>
-
-    <link rel="icon" href="../../resources/CCG_FAVICON.png"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Racing Games | Cheeky Commodore Gamer</title>
+    <meta name="description" content="Racing games for the Commodore 64 and Amiga. Arcade racers, rally stages, Formula One, motorbikes and futuristic speed-fests from the classic era.">
+    <meta name="robots" content="index,follow">
+    <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/genres/racing-games.html">
+    <meta property="og:title" content="Racing Games | Cheeky Commodore Gamer">
+    <meta property="og:description" content="Explore Racing games on C64 and Amiga, from arcade-style sprints to more serious simulations and futuristic speed challenges.">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../css/engine.css">
+    <link rel="stylesheet" href="../../resources/css/main.css">
+    <script src="../../js/genre-loader.js" defer></script>
 </head>
-
-<body data-page="genre" data-mode="c64" data-genre="racing-games">
-
-<!-- BACKGROUND -->
-<canvas id="starfield"></canvas>
-<div class="crt-overlay"></div>
-<div class="crt-glow"></div>
-<div class="neon-grid"></div>
-
-<div class="ccg-shell">
-
-<header class="ccg-hud">
-
-    <div class="ccg-logo-wrap">
-        <button id="logoModeToggle" class="ccg-logo-button">
-            <img src="../../resources/CCGAMER LOGO.png" alt="CCG Logo"/>
-        </button>
-
-        <div>
-            <div class="ccg-logo-caption">RACING GAMES</div>
-            <div style="opacity:.85;font-size:.9rem;">
-                Drift, accelerate, overtake — feel the retro speed.
-            </div>
+<body data-genre="racing-games">
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a href="../../home.html" class="site-logo-link">
+                <img src="../../resources/CCGAMER LOGO.png" alt="Cheeky Commodore Gamer logo" class="site-logo">
+                <span class="site-title-text">Cheeky Commodore Gamer</span>
+            </a>
+            <nav class="site-nav" aria-label="Primary">
+                <a href="../../home.html">Home Hub</a>
+                <a href="../index.html">All Games Index</a>
+                <a href="../../complete-index.html">Complete Games List</a>
+                <a href="../../quiz/">Trivia Quiz</a>
+            </nav>
         </div>
-    </div>
+    </header>
 
-    <div class="ccg-mode-status">
-        <span id="currentModeText">SYSTEM MODE: C64 NEON</span>
-    </div>
+    <main id="mainContent" class="genre-page">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="../../home.html">Home</a></li>
+                <li><a href="../index.html">All Games</a></li>
+                <li aria-current="page">Racing Games</li>
+            </ol>
+        </nav>
 
-    <div class="ccg-hud-right">
-        <div class="ccg-hud-right-line"><strong>RACING BROWSER</strong></div>
-        <div class="ccg-hud-right-line">STATUS: ENGINES READY…</div>
-    </div>
+        <section class="genre-hero">
+            <h1>Racing Games</h1>
+            <p>
+                Racing games put you behind the wheel or handlebars and ask you to chase lap times, positions and
+                checkpoints. On the Commodore 64 and Amiga this covers everything from simple overhead racers to
+                pseudo-3D road burners and serious attempts at motorsport simulation.
+            </p>
+            <p>
+                Cars, bikes, futuristic craft and even more unusual vehicles all make an appearance, giving you a
+                wide range of ways to put your reflexes and racing lines to the test.
+            </p>
+            <div class="genre-meta-tags">
+                <span class="genre-tag">Racing</span>
+                <span class="genre-tag">Driving</span>
+                <span class="genre-tag">Motorsport</span>
+            </div>
+        </section>
 
-</header>
+        <section class="genre-intro">
+            <h2>From arcade sprints to simulations</h2>
+            <p>
+                Some Racing games focus on pure arcade thrills, with forgiving handling and dramatic crashes, while
+                others ask you to manage gears, braking points and careful overtakes. Time limits, championship
+                modes and multiplayer options all add extra replay value.
+            </p>
+            <p>
+                Whether you prefer casual laps around a track or mastering every corner of a full season, this
+                category collects the C64 and Amiga racing experiences in one place.
+            </p>
+        </section>
 
-<section class="ccg-panel ccg-panel--hero">
+        <section class="genre-stats">
+            <h2>Total Racing games listed</h2>
+            <div id="genreGamesCount"></div>
+        </section>
 
-    <div class="ccg-panel-header">
-        <div class="ccg-panel-title"><span>RACING GAMES</span></div>
-        <div class="ccg-panel-tag">Speed</div>
-    </div>
+        <section class="genre-grid">
+            <h2>Browse Racing games</h2>
+            <div id="genreGamesGrid"></div>
+        </section>
+    </main>
 
-    <div class="ccg-hero-text">
-        From street circuits to off-road mayhem —
-        <span class="ccg-hero-highlight">hit the apex and leave rivals behind.</span>
-    </div>
-
-    <div class="ccg-hero-actions">
-        <button class="ccg-button" onclick="location.href='../../home.html'">
-            <i class="fa-solid fa-house"></i><span>Home Hub</span>
-        </button>
-
-        <button id="randomInGenreBtn" class="ccg-button">
-            <i class="fa-solid fa-flag-checkered"></i><span>Random Racing Game</span>
-        </button>
-
-        <button class="ccg-button" onclick="location.href='../index.html'">
-            <i class="fa-solid fa-list"></i><span>All Genres</span>
-        </button>
-    </div>
-
-</section>
-
-<section class="ccg-panel">
-    <div class="ccg-panel-header">
-        <div class="ccg-panel-title"><span>RACING TITLES</span></div>
-        <div class="ccg-panel-tag" id="gameCount">Loading…</div>
-    </div>
-
-    <div id="genreGamesGrid" class="ccg-grid">
-        <div>Loading games…</div>
-    </div>
-</section>
-
-<footer class="ccg-footer">
-    <div>© <span id="ccgYear"></span> Cheeky Commodore Gamer</div>
-    <div>Racing Games Browser</div>
-</footer>
-
-</div>
-
-<script src="../../js/ccg-mode-engine.js"></script>
-<script src="../../js/ccj-global.js"></script>
-<script src="../../js/genre-loader.js"></script>
-
-<script>
-/* UNIVERSAL GENRE JS */
-(function(){
-
-    const body=document.body;
-    const slug=body.dataset.genre;
-
-    const year=document.getElementById("ccgYear");
-    const logo=document.getElementById("logoModeToggle");
-    const modeText=document.getElementById("currentModeText");
-    const grid=document.getElementById("genreGamesGrid");
-    const count=document.getElementById("gameCount");
-    const rand=document.getElementById("randomInGenreBtn");
-
-    if(year)year.textContent=new Date().getFullYear();
-
-    function update(){
-        modeText.textContent="SYSTEM MODE: "+window.CCGModeEngine.getMode().toUpperCase()+" NEON";
-    }
-    logo.addEventListener("click",()=>{window.CCGModeEngine.toggleMode();update();});
-    update();
-
-    window.loadGenreGames?.(slug,grid,count);
-
-    rand?.addEventListener("click",()=>window.randomGameInGenre?.(slug));
-
-    /* STARFIELD */
-    const canvas=document.getElementById("starfield");
-    if(canvas?.getContext){
-        const ctx=canvas.getContext("2d");
-        let w=canvas.width=innerWidth;
-        let h=canvas.height=innerHeight;
-
-        const stars=[];
-        for(let i=0;i<120;i++){
-            stars.push({
-                x:Math.random()*w,
-                y:Math.random()*h,
-                z:Math.random()*0.8+0.2,
-                speed:Math.random()*0.5+0.2
-            });
-        }
-
-        function draw(){
-            ctx.clearRect(0,0,w,h);
-            const base=(body.dataset.mode==="amiga")
-                ?"rgba(255,210,111,"
-                :(body.dataset.mode==="zx")
-                ?"rgba(0,255,0,"
-                :"rgba(112,255,240,";
-
-            for(const s of stars){
-                s.y+=s.speed*(0.5+s.z);
-                if(s.y>h){s.x=Math.random()*w; s.y=0;}
-                ctx.fillStyle=base+(0.4+s.z*0.6)+")";
-                ctx.fillRect(s.x,s.y,s.z*2,s.z*2);
-            }
-
-            requestAnimationFrame(draw);
-        }
-
-        draw();
-    }
-
-})();
-</script>
-
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <p>&copy; Cheeky Commodore Gamer. Racing highlights from the Commodore 64 and Amiga catalogue.</p>
+            <p>Head back to the <a href="../../home.html">Home Hub</a> to change gear into other genres.</p>
+        </div>
+    </footer>
 </body>
 </html>
