@@ -1,255 +1,94 @@
 <!DOCTYPE html>
-<html lang="en" data-page="genre">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cheeky Commodore Gamer | BPjS Indexed Games</title>
-
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
-
-    <!-- Icons -->
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-
-    <!-- Core CSS -->
-    <link rel="stylesheet" href="../../resources/css/ccg-master.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-effects.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-mode.css" />
-    <link rel="stylesheet" href="../../resources/css/home.css" />
-    <link rel="stylesheet" href="../../resources/css/genre.css" />
-
-    <link rel="icon" href="../../resources/CCG_FAVICON.png" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BPjS-Indexed Games | Cheeky Commodore Gamer</title>
+    <meta name="description" content="Reference list of historically BPjS-indexed games connected to the Commodore 64 and Amiga scene. Informational overview for retro historians and collectors.">
+    <meta name="robots" content="noindex,follow">
+    <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/genres/bpjs-indexed-games.html">
+    <meta property="og:title" content="BPjS-Indexed Games | Cheeky Commodore Gamer">
+    <meta property="og:description" content="Explore how certain C64 and Amiga titles were historically treated by the BPjS in Germany, presented as a neutral reference.">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../css/engine.css">
+    <link rel="stylesheet" href="../../resources/css/main.css">
+    <script src="../../js/genre-loader.js" defer></script>
 </head>
-
-<body data-page="genre" data-mode="c64" data-genre="bpjs-indexed-games">
-
-<!-- BACKGROUND -->
-<canvas id="starfield"></canvas>
-<div class="crt-overlay"></div>
-<div class="crt-glow"></div>
-<div class="neon-grid"></div>
-
-<div class="ccg-shell">
-
-    <!-- HUD -->
-    <header class="ccg-hud">
-
-        <div class="ccg-logo-wrap">
-            <button id="logoModeToggle" class="ccg-logo-button">
-                <img src="../../resources/CCGAMER LOGO.png" alt="CCG Logo">
-            </button>
-
-            <div>
-                <div class="ccg-logo-caption">BPjS INDEXED GAMES</div>
-                <div style="opacity:0.85; font-size:0.9rem;">
-                    The infamous German list — preserved as a historical record.
-                </div>
-            </div>
+<body data-genre="bpjs-indexed-games">
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a href="../../home.html" class="site-logo-link">
+                <img src="../../resources/CCGAMER LOGO.png" alt="Cheeky Commodore Gamer logo" class="site-logo">
+                <span class="site-title-text">Cheeky Commodore Gamer</span>
+            </a>
+            <nav class="site-nav" aria-label="Primary">
+                <a href="../../home.html">Home Hub</a>
+                <a href="../index.html">All Games Index</a>
+                <a href="../../complete-index.html">Complete Games List</a>
+                <a href="../../quiz/">Trivia Quiz</a>
+            </nav>
         </div>
-
-        <div class="ccg-mode-status">
-            <span id="currentModeText">SYSTEM MODE: C64 NEON</span>
-        </div>
-
-        <div class="ccg-hud-right">
-            <div class="ccg-hud-right-line"><strong>BPjS INDEX BROWSER</strong></div>
-            <div class="ccg-hud-right-line">STATUS: ARCHIVE ONLINE…</div>
-        </div>
-
     </header>
 
-    <!-- HERO PANEL -->
-    <section class="ccg-panel ccg-panel--hero">
+    <main id="mainContent" class="genre-page">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="../../home.html">Home</a></li>
+                <li><a href="../index.html">All Games</a></li>
+                <li aria-current="page">BPjS-Indexed Games</li>
+            </ol>
+        </nav>
 
-        <div class="ccg-panel-header">
-            <div class="ccg-panel-title"><span>BPjS INDEXED GAMES</span></div>
-            <div class="ccg-panel-tag">Historical</div>
+        <section class="genre-hero">
+            <h1>BPjS-Indexed Games</h1>
+            <p>
+                This page documents games that were historically listed by the BPjS in Germany
+                (Bundespr&uuml;fstelle f&uuml;r jugendgef&auml;hrdende Schriften) during the classic home
+                computer era. It exists as an archival reference for collectors, historians and retro fans who
+                are interested in how certain titles were handled at the time.
+            </p>
+            <p>
+                The focus is on factual, neutral information. No downloads are provided from this page, and the
+                presence of a game here should be read as documentation of history rather than a statement about
+                its content.
+            </p>
+            <div class="genre-meta-tags">
+                <span class="genre-tag">Historical Reference</span>
+                <span class="genre-tag">BPjS</span>
+                <span class="genre-tag">Commodore Era</span>
+            </div>
+        </section>
+
+        <section class="genre-intro">
+            <h2>Understanding the BPjS context</h2>
+            <p>
+                The BPjS list affected how some games were advertised, sold and discussed in Germany. For retro
+                enthusiasts it has become part of the wider story of how computer games were perceived in the
+                eighties and early nineties.
+            </p>
+            <p>
+                This overview is designed to help you identify which C64 and Amiga titles appeared on those lists
+                and to give you a starting point for further research using independent sources.
+            </p>
+        </section>
+
+        <section class="genre-stats">
+            <h2>Total BPjS-indexed games listed here</h2>
+            <div id="genreGamesCount"></div>
+        </section>
+
+        <section class="genre-grid">
+            <h2>Browse BPjS-indexed games</h2>
+            <div id="genreGamesGrid"></div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <p>&copy; Cheeky Commodore Gamer. BPjS-indexed games presented as historical reference only.</p>
+            <p>Navigate back to the <a href="../../home.html">Home Hub</a> for regular genre browsing and collections.</p>
         </div>
-
-        <div class="ccg-hero-text">
-            Games that rattled the censors and landed on the index —
-            <span class="ccg-hero-highlight">viewed here purely as part of retro preservation and history.</span>
-        </div>
-
-        <div class="ccg-hero-actions">
-
-            <button class="ccg-button" onclick="window.location.href='../../home.html'">
-                <i class="fa-solid fa-house"></i>
-                <span>Home Hub</span>
-            </button>
-
-            <button id="randomInGenreBtn" class="ccg-button">
-                <i class="fa-solid fa-vial"></i>
-                <span>Random Indexed Game</span>
-            </button>
-
-            <button class="ccg-button" onclick="window.location.href='../index.html'">
-                <i class="fa-solid fa-list"></i>
-                <span>All Genres</span>
-            </button>
-
-        </div>
-
-    </section>
-
-    <!-- GAME GRID -->
-    <section class="ccg-panel">
-        <div class="ccg-panel-header">
-            <div class="ccg-panel-title"><span>BPjS INDEXED TITLES</span></div>
-            <div class="ccg-panel-tag" id="gameCount">Loading…</div>
-        </div>
-
-        <div id="genreGamesGrid" class="ccg-grid">
-            <div>Loading games…</div>
-        </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="ccg-footer">
-        <div>© <span id="ccgYear"></span> Cheeky Commodore Gamer</div>
-        <div>BPjS Indexed Games Browser</div>
     </footer>
-
-</div>
-
-<!-- JS -->
-<script src="../../js/ccg-mode-engine.js"></script>
-<script src="../../js/ccj-global.js"></script>
-<script src="../../js/genre-loader.js"></script>
-
-<script>
-(function(){
-
-    const body = document.body;
-    const year = document.getElementById("ccgYear");
-    const modeText = document.getElementById("currentModeText");
-    const logo = document.getElementById("logoModeToggle");
-
-    const genreSlug = body.dataset.genre;
-
-    const grid = document.getElementById("genreGamesGrid");
-    const count = document.getElementById("gameCount");
-    const randomBtn = document.getElementById("randomInGenreBtn");
-
-    if (year) year.textContent = new Date().getFullYear();
-
-    /* MODE SYSTEM */
-    function updateMode(){
-        if(!window.CCGModeEngine) return;
-        modeText.textContent =
-            "SYSTEM MODE: " + window.CCGModeEngine.getMode().toUpperCase() + " NEON";
-    }
-
-    logo?.addEventListener("click", ()=>{
-        window.CCGModeEngine.toggleMode();
-        updateMode();
-    });
-    updateMode();
-
-    /* LOAD GAMES */
-    if (typeof window.loadGenreGames === "function"){
-        window.loadGenreGames(genreSlug, grid, count);
-    } else {
-        count.textContent = "Loader missing";
-    }
-
-    /* RANDOM GAME */
-    randomBtn?.addEventListener("click", async ()=>{
-
-        if (typeof window.randomGameInGenre === "function"){
-            return window.randomGameInGenre(genreSlug);
-        }
-
-        try{
-            const res = await fetch("../games.json", {cache:"no-cache"});
-            const data = await res.json();
-
-            const games = Array.isArray(data) ? data : (data.games || []);
-
-            const filtered = games.filter(g =>
-                g.genreSlug === genreSlug ||
-                (g.tags && g.tags.includes("BPJS")) ||
-                (g.genre && g.genre.toLowerCase().includes("bpjs")) ||
-                (g.genre && g.genre.toLowerCase().includes("indexed"))
-            );
-
-            const list = filtered.length ? filtered : games;
-            const candidate = list[Math.floor(Math.random()*list.length)];
-
-            if(candidate?.id){
-                window.location.href =
-                    "../game.html?id=" + encodeURIComponent(candidate.id);
-            }
-
-        }catch(err){
-            console.error("Random BPjS game error", err);
-        }
-
-    });
-
-    /* STARFIELD */
-    const canvas = document.getElementById("starfield");
-
-    if (canvas?.getContext){
-
-        const ctx = canvas.getContext("2d");
-
-        let w = canvas.width = window.innerWidth;
-        let h = canvas.height = window.innerHeight;
-
-        const STAR_COUNT = 120;
-        const stars = [];
-
-        function init(){
-            stars.length = 0;
-            for (let i=0;i<STAR_COUNT;i++){
-                stars.push({
-                    x: Math.random()*w,
-                    y: Math.random()*h,
-                    z: Math.random()*0.8 + 0.2,
-                    speed: Math.random()*0.5 + 0.2
-                });
-            }
-        }
-
-        function draw(){
-            ctx.clearRect(0,0,w,h);
-
-            const mode = body.dataset.mode;
-            let base = "rgba(112,255,240,"; // C64
-            if (mode==="amiga") base = "rgba(255,210,111,";
-            if (mode==="zx") base = "rgba(0,255,0,";
-
-            for (const s of stars){
-                s.y += s.speed * (0.5 + s.z);
-
-                if (s.y > h){
-                    s.y = 0;
-                    s.x = Math.random()*w;
-                    s.z = Math.random()*0.8 + 0.2;
-                }
-
-                ctx.fillStyle = base + (0.3 + s.z*0.7).toFixed(2) + ")";
-                ctx.fillRect(s.x, s.y, s.z*2, s.z*2);
-            }
-
-            requestAnimationFrame(draw);
-        }
-
-        init();
-        draw();
-
-        window.addEventListener("resize", ()=>{
-            w = canvas.width = window.innerWidth;
-            h = canvas.height = window.innerHeight;
-            init();
-        });
-
-    }
-
-})();
-</script>
-
 </body>
 </html>
