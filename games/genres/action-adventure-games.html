@@ -1,162 +1,96 @@
 <!DOCTYPE html>
-<html lang="en" data-page="genre">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cheeky Commodore Gamer | Action Adventure Games</title>
-
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
-
-    <!-- Icons -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-
-    <!-- Core CSS -->
-    <link rel="stylesheet" href="../../resources/css/ccg-master.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-effects.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-mode.css" />
-    <link rel="stylesheet" href="../../resources/css/home.css" />
-    <link rel="stylesheet" href="../../resources/css/genre.css" />
-
-    <link rel="icon" href="../../resources/CCG_FAVICON.png" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Action Adventure Games | Cheeky Commodore Gamer</title>
+    <meta name="description" content="Explore the very best Action Adventure games for the Commodore 64 and Amiga on Cheeky Commodore Gamer. Box art, screenshots, trivia and hand-picked retro recommendations.">
+    <meta name="robots" content="index,follow">
+    <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/genres/action-adventure-games.html">
+    <meta property="og:title" content="Action Adventure Games | Cheeky Commodore Gamer">
+    <meta property="og:description" content="Browse classic Action Adventure games for C64 and Amiga with curated art, trivia and links from Cheeky Commodore Gamer.">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../css/engine.css">
+    <link rel="stylesheet" href="../../resources/css/main.css">
+    <script src="../../js/genre-loader.js" defer></script>
 </head>
-
-<body data-page="genre" data-mode="c64" data-genre="action-adventure">
-
-<!-- BACKGROUND -->
-<canvas id="starfield"></canvas>
-<div class="crt-overlay"></div>
-<div class="crt-glow"></div>
-<div class="neon-grid"></div>
-
-<div class="ccg-shell">
-
-    <!-- HUD -->
-    <header class="ccg-hud">
-
-        <div class="ccg-logo-wrap">
-            <button id="logoModeToggle" class="ccg-logo-button">
-                <img src="../../resources/CCGAMER LOGO.png" alt="CCG Logo">
-            </button>
-
-            <div>
-                <div class="ccg-logo-caption">ACTION ADVENTURE</div>
-                <div style="opacity:0.85; font-size:0.9rem;">
-                    Explore, fight, loot and survive in neon-drenched quests.
-                </div>
-            </div>
+<body data-genre="action-adventure-games">
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a href="../../home.html" class="site-logo-link">
+                <img src="../../resources/CCGAMER LOGO.png" alt="Cheeky Commodore Gamer logo" class="site-logo">
+                <span class="site-title-text">Cheeky Commodore Gamer</span>
+            </a>
+            <nav class="site-nav" aria-label="Primary">
+                <a href="../../home.html">Home Hub</a>
+                <a href="../index.html">All Games Index</a>
+                <a href="../../complete-index.html">Complete Games List</a>
+                <a href="../../quiz/">Trivia Quiz</a>
+            </nav>
         </div>
-
-        <div class="ccg-mode-status">
-            <span id="currentModeText">SYSTEM MODE: C64 NEON</span>
-        </div>
-
-        <div class="ccg-hud-right">
-            <div class="ccg-hud-right-line"><strong>ACTION ADVENTURE BROWSER</strong></div>
-            <div class="ccg-hud-right-line">STATUS: QUESTS INITIALISED…</div>
-        </div>
-
     </header>
 
-    <!-- HERO PANEL -->
-    <section class="ccg-panel ccg-panel--hero">
+    <main id="mainContent" class="genre-page">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <ol>
+                <li><a href="../../home.html">Home</a></li>
+                <li><a href="../index.html">All Games</a></li>
+                <li aria-current="page">Action Adventure Games</li>
+            </ol>
+        </nav>
 
-        <div class="ccg-panel-header">
-            <div class="ccg-panel-title"><span>ACTION ADVENTURE GAMES</span></div>
-            <div class="ccg-panel-tag">Epic Quests</div>
+        <section class="genre-hero">
+            <h1>Action Adventure Games</h1>
+            <p>
+                This section is dedicated to Action Adventure epics on the Commodore 64 and Amiga. 
+                Story-driven quests, swords and sorcery, exploration-heavy sci-fi, and anything that mixes 
+                arcade-style action with a sense of adventure all live here.
+            </p>
+            <p>
+                Every entry is pulled directly from the main Cheeky Commodore Gamer database, including 
+                cover art thumbnails, quick info, and links out to trusted reference sites where possible.
+            </p>
+            <div class="genre-meta-tags">
+                <span class="genre-tag">Commodore 64</span>
+                <span class="genre-tag">Amiga</span>
+                <span class="genre-tag">Action Adventure</span>
+            </div>
+        </section>
+
+        <section class="genre-intro">
+            <h2>About this Action Adventure collection</h2>
+            <p>
+                From sprawling fantasy worlds to sci-fi odysseys and cinematic licensed adventures, this 
+                gallery focuses on games where exploration and narrative are just as important as quick 
+                reactions. Some titles lean more towards pure action, others towards puzzle-solving and 
+                story, but they all sit comfortably within that classic Action Adventure feel.
+            </p>
+            <p>
+                Use this page as a launchpad: pick a box that catches your eye, rediscover an old favourite, 
+                or track down a game you only remember from a magazine preview or playground rumour.
+            </p>
+        </section>
+
+        <section class="genre-stats">
+            <h2>Total Action Adventure games in the database</h2>
+            <div id="genreGamesCount"></div>
+        </section>
+
+        <section class="genre-grid">
+            <h2>Browse Action Adventure games</h2>
+            <div id="genreGamesGrid"></div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <p>&copy; Cheeky Commodore Gamer. Celebrating classic Action Adventure games on C64 and Amiga.</p>
+            <p>
+                Visit the main hub via <a href="../../home.html">home.html</a> for more genres, collections, 
+                livestream links and trivia.
+            </p>
         </div>
-
-        <div class="ccg-hero-text">
-            Dungeon crawls, wild jungles and dangerous city streets —
-            <span class="ccg-hero-highlight">cinematic journeys with plenty of sword-swinging and peril.</span>
-        </div>
-
-        <div class="ccg-hero-actions">
-
-            <button class="ccg-button" onclick="window.location.href='../../home.html'">
-                <i class="fa-solid fa-house"></i>
-                <span>Home Hub</span>
-            </button>
-
-            <button id="randomInGenreBtn" class="ccg-button">
-                <i class="fa-solid fa-compass"></i>
-                <span>Random Action Adventure</span>
-            </button>
-
-            <button class="ccg-button" onclick="window.location.href='../index.html'">
-                <i class="fa-solid fa-list"></i>
-                <span>All Genres</span>
-            </button>
-
-        </div>
-
-    </section>
-
-    <!-- GAME GRID -->
-    <section class="ccg-panel">
-        <div class="ccg-panel-header">
-            <div class="ccg-panel-title"><span>ACTION ADVENTURE TITLES</span></div>
-            <div class="ccg-panel-tag" id="gameCount">Loading…</div>
-        </div>
-
-        <!-- THE ACTUAL GRID -->
-        <div id="genreGamesGrid" class="ccg-grid">
-            <div>Loading games…</div>
-        </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="ccg-footer">
-        <div>© <span id="ccgYear"></span> Cheeky Commodore Gamer</div>
-        <div>Action Adventure Browser</div>
     </footer>
-
-</div>
-
-<!-- JS -->
-<script src="../../js/ccg-mode-engine.js"></script>
-<script src="../../js/ccj-global.js"></script>
-<script src="../../js/genre-loader.js"></script>
-
-<script>
-(function(){
-
-    const body = document.body;
-    const year = document.getElementById("ccgYear");
-    const modeText = document.getElementById("currentModeText");
-    const logo = document.getElementById("logoModeToggle");
-
-    const genreSlug = body.dataset.genre; // NOW: action-adventure
-
-    const grid = document.getElementById("genreGamesGrid");
-    const count = document.getElementById("gameCount");
-    const randomBtn = document.getElementById("randomInGenreBtn");
-
-    if (year) year.textContent = new Date().getFullYear();
-
-    // MODE SYSTEM
-    function updateMode(){
-        if(!window.CCGModeEngine) return;
-        modeText.textContent =
-            "SYSTEM MODE: " + window.CCGModeEngine.getMode().toUpperCase() + " NEON";
-    }
-
-    logo?.addEventListener("click", ()=>{
-        window.CCGModeEngine.toggleMode();
-        updateMode();
-    });
-    updateMode();
-
-    // LOAD GAMES
-    if (typeof window.loadGenreGames === "function"){
-        window.loadGenreGames(genreSlug, grid, count);
-    } else {
-        count.textContent = "Loader missing";
-    }
-
-})();
-</script>
-
 </body>
 </html>
