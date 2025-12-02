@@ -9,7 +9,12 @@
 // - Smooth transitions (CSS hooks only; animations done in CSS)
 
 (() => {
-    const GAMES_JSON_URL = '../games.json'; // root-relative for GitHub Pages
+
+    /* ==========================================================
+       🔥 FIXED FOR GITHUB PAGES — RELATIVE PATH AUTO-DETECT
+       ========================================================== */
+    const GAMES_JSON_URL = "../games.json";
+
     const PAGE_SIZE = 24;
 
     const state = {
@@ -21,53 +26,48 @@
     };
 
     const GENRE_ALIASES = {
-        'arcade': ['arcade'],
-        'action-adventure': ['action adventure', 'action-adventure', 'action/adventure'],
-        'adventure': ['adventure', 'graphic adventure', 'text adventure'],
-        'bpjs-indexed': ['bpjs', 'bpjs indexed games', 'bpjs-indexed'],
-        'cartridge': ['cartridge', 'cart', 'cartridge games'],
-        'casino': ['casino', 'gambling'],
-        'fighting': ['fighting', 'beat \'em up', 'beat em up'],
-        'horror': ['horror'],
-        'licensed': ['licensed', 'movie tie-in', 'tv tie-in'],
-        'miscellaneous': ['miscellaneous', 'misc', 'other'],
-        'platform': ['platform', 'platformer'],
-        'puzzle': ['puzzle', 'brain', 'brain teaser'],
-        'quiz': ['quiz', 'trivia'],
-        'racing': ['racing', 'driving'],
-        'rpg': ['rpg', 'role playing'],
-        'shooting': ['shooting', 'shooter'],
-        'sports': ['sports', 'sport'],
-        'strategy': ['strategy', 'tactics'],
-        'top-picks': ['top picks', 'top-picks', 'favourites', 'favorites']
+        "arcade": ["arcade"],
+        "action-adventure": ["action adventure", "action-adventure", "action/adventure"],
+        "adventure": ["adventure", "graphic adventure", "text adventure"],
+        "bpjs-indexed": ["bpjs", "bpjs indexed games", "bpjs-indexed"],
+        "cartridge": ["cartridge", "cart", "cartridge games"],
+        "casino": ["casino", "gambling"],
+        "fighting": ["fighting", "beat 'em up", "beat em up"],
+        "horror": ["horror"],
+        "licensed": ["licensed", "movie tie-in", "tv tie-in"],
+        "miscellaneous": ["miscellaneous", "misc", "other"],
+        "platform": ["platform", "platformer"],
+        "puzzle": ["puzzle", "brain", "brain teaser"],
+        "quiz": ["quiz", "trivia"],
+        "racing": ["racing", "driving"],
+        "rpg": ["rpg", "role playing"],
+        "shooting": ["shooting", "shooter"],
+        "sports": ["sports", "sport"],
+        "strategy": ["strategy", "tactics"],
+        "top-picks": ["top picks", "top-picks", "favourites", "favorites"]
     };
 
     function canonicalize(str) {
-        if (!str) return '';
+        if (!str) return "";
         return String(str)
             .toLowerCase()
             .trim()
-            .replace(/&/g, 'and')
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/^-+|-+$/g, '');
+            .replace(/&/g, "and")
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "");
     }
 
     function resolveGenreKey(raw) {
         const key = canonicalize(raw);
         if (!key) return null;
 
-        // Direct hit
         if (GENRE_ALIASES[key]) return key;
 
-        // Alias hit
         for (const [canonical, aliases] of Object.entries(GENRE_ALIASES)) {
             if (canonical === key) return canonical;
-            if (aliases.some(a => canonicalize(a) === key)) {
-                return canonical;
-            }
+            if (aliases.some(a => canonicalize(a) === key)) return canonical;
         }
 
-        // Fallback to key itself
         return key;
     }
 
@@ -87,7 +87,6 @@
                 .forEach(s => genres.add(canonicalize(s)));
         }
 
-        // Common fields we might have
         addFromValue(game.genre);
         addFromValue(game.genres);
         addFromValue(game.primary_genre);
@@ -99,7 +98,8 @@
     }
 
     function gameMatchesGenre(game, requestedGenreKey) {
-        if (!requestedGenreKey) return true; // "all-games" behaviour if needed
+        if (!requestedGenreKey) return true;
+
         const requestedAliases = new Set(
             (GENRE_ALIASES[requestedGenreKey] || [])
                 .map(canonicalize)
@@ -114,31 +114,23 @@
     }
 
     function buildThumbnailUrl(game) {
-        // Prefer explicit thumbnail field if present
         if (game.thumbnail) {
-            // Assume already a usable URL or relative path
-            if (/^https?:\/\//i.test(game.thumbnail)) {
-                return game.thumbnail;
-            }
-            if (game.thumbnail.startsWith('/')) {
-                return game.thumbnail;
-            }
-            return `/resources/images/thumbnails/all/${game.thumbnail}`;
+            if (/^https?:\/\//i.test(game.thumbnail)) return game.thumbnail;
+            if (game.thumbnail.startsWith("/")) return game.thumbnail;
+            return `/ccgamer_website_new/resources/images/thumbnails/all/${game.thumbnail}`;
         }
 
-        // Otherwise, derive from id if possible
         if (game.id) {
-            return `/resources/images/thumbnails/all/${game.id}.jpg`;
+            return `/ccgamer_website_new/resources/images/thumbnails/all/${game.id}.jpg`;
         }
 
-        // Fallback to generic no-thumb image
-        return '/resources/images/thumbnails/all/_no_thumbnail.png';
+        return "/ccgamer_website_new/resources/images/thumbnails/all/_no_thumbnail.png";
     }
 
     function getSystemBadge(game) {
-        const systemRaw = game.system || game.machine || '';
+        const systemRaw = game.system || game.machine || "";
         const system = String(systemRaw).toUpperCase();
-        if (!system) return '';
+        if (!system) return "";
 
         return `<span class="badge badge-system badge-system-${canonicalize(system)}">${system}</span>`;
     }
@@ -147,23 +139,21 @@
         const bits = [];
         if (game.year) bits.push(game.year);
         if (game.publisher) bits.push(game.publisher);
-        return bits.join(' · ');
+        return bits.join(" · ");
     }
 
     function getComposerLine(game) {
-        if (!game.composer) return '';
+        if (!game.composer) return "";
         return `<span class="meta-composer">${game.composer}</span>`;
     }
 
     function clearNode(el) {
-        while (el.firstChild) {
-            el.removeChild(el.firstChild);
-        }
+        while (el.firstChild) el.removeChild(el.firstChild);
     }
 
     function renderGamesPage() {
-        const listEl = document.getElementById('game-list');
-        const paginationEl = document.getElementById('pagination');
+        const listEl = document.getElementById("game-list");
+        const paginationEl = document.getElementById("pagination");
         if (!listEl || !paginationEl) return;
 
         const total = state.filteredGames.length;
@@ -173,26 +163,29 @@
         clearNode(listEl);
         clearNode(paginationEl);
 
-        listEl.classList.add('is-transitioning');
+        listEl.classList.add("is-transitioning");
 
         const start = (state.currentPage - 1) * state.pageSize;
         const end = Math.min(start + state.pageSize, total);
         const slice = state.filteredGames.slice(start, end);
 
         if (slice.length === 0) {
-            const empty = document.createElement('div');
-            empty.className = 'game-list-empty';
-            empty.textContent = 'No games found for this genre (yet). Stay tuned…';
+            const empty = document.createElement("div");
+            empty.className = "game-list-empty";
+            empty.textContent =
+                "No games found for this genre (yet). Stay tuned…";
             listEl.appendChild(empty);
         } else {
             const frag = document.createDocumentFragment();
 
             slice.forEach(game => {
-                const card = document.createElement('article');
-                card.className = 'game-card fade-in';
+                const card = document.createElement("article");
+                card.className = "game-card fade-in";
 
                 const thumbUrl = buildThumbnailUrl(game);
-                const imgAlt = game.title ? `${game.title} (thumbnail)` : 'Game thumbnail';
+                const imgAlt = game.title
+                    ? `${game.title} (thumbnail)`
+                    : "Game thumbnail";
 
                 card.innerHTML = `
                     <div class="game-thumb-wrap">
@@ -200,11 +193,11 @@
                              src="${thumbUrl}"
                              alt="${imgAlt}"
                              loading="lazy"
-                             onerror="this.onerror=null;this.src='/resources/images/thumbnails/all/_no_thumbnail.png';">
+                             onerror="this.onerror=null;this.src='/ccgamer_website_new/resources/images/thumbnails/all/_no_thumbnail.png';">
                         <div class="thumb-overlay glow-border"></div>
                     </div>
                     <div class="game-meta">
-                        <h3 class="game-title">${game.title || 'Unknown Title'}</h3>
+                        <h3 class="game-title">${game.title || "Unknown Title"}</h3>
                         <div class="game-meta-line">
                             ${getSystemBadge(game)}
                             <span class="meta-year-pub">${getYearPublisherLine(game)}</span>
@@ -219,36 +212,35 @@
             listEl.appendChild(frag);
         }
 
-        // Pagination controls
         if (totalPages > 1) {
-            const pager = document.createElement('div');
-            pager.className = 'pager-inner';
+            const pager = document.createElement("div");
+            pager.className = "pager-inner";
 
-            const prevBtn = document.createElement('button');
-            prevBtn.className = 'pager-btn pager-prev';
-            prevBtn.textContent = '⟵ Previous';
+            const prevBtn = document.createElement("button");
+            prevBtn.className = "pager-btn pager-prev";
+            prevBtn.textContent = "⟵ Previous";
             prevBtn.disabled = state.currentPage === 1;
-            prevBtn.addEventListener('click', () => {
+            prevBtn.addEventListener("click", () => {
                 if (state.currentPage > 1) {
                     state.currentPage--;
                     renderGamesPage();
                 }
             });
 
-            const nextBtn = document.createElement('button');
-            nextBtn.className = 'pager-btn pager-next';
-            nextBtn.textContent = 'Next ⟶';
+            const nextBtn = document.createElement("button");
+            nextBtn.className = "pager-btn pager-next";
+            nextBtn.textContent = "Next ⟶";
             nextBtn.disabled = state.currentPage === totalPages;
-            nextBtn.addEventListener('click', () => {
+            nextBtn.addEventListener("click", () => {
                 if (state.currentPage < totalPages) {
                     state.currentPage++;
                     renderGamesPage();
                 }
             });
 
-            const info = document.createElement('div');
-            info.className = 'pager-info';
-            info.textContent = `Page ${state.currentPage} of ${totalPages} · ${total} game${total === 1 ? '' : 's'}`;
+            const info = document.createElement("div");
+            info.className = "pager-info";
+            info.textContent = `Page ${state.currentPage} of ${totalPages} · ${total} game${total === 1 ? "" : "s"}`;
 
             pager.appendChild(prevBtn);
             pager.appendChild(info);
@@ -257,9 +249,8 @@
             paginationEl.appendChild(pager);
         }
 
-        // Allow CSS to animate
         requestAnimationFrame(() => {
-            listEl.classList.remove('is-transitioning');
+            listEl.classList.remove("is-transitioning");
         });
     }
 
@@ -273,48 +264,54 @@
 
     async function loadGames() {
         try {
-            const response = await fetch(GAMES_JSON_URL, { cache: 'no-store' });
+            const response = await fetch(GAMES_JSON_URL, { cache: "no-store" });
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();
 
-            state.allGames = Array.isArray(data) ? data : (data.games || []);
+            state.allGames = Array.isArray(data)
+                ? data
+                : data.games || [];
+
             filterGamesByGenre();
         } catch (err) {
-            console.error('Failed to load games.json', err);
-            const listEl = document.getElementById('game-list');
+            console.error("Failed to load games.json", err);
+
+            const listEl = document.getElementById("game-list");
             if (listEl) {
                 clearNode(listEl);
-                const error = document.createElement('div');
-                error.className = 'game-list-error';
-                error.textContent = 'Error loading games list. Please try refreshing the page.';
+                const error = document.createElement("div");
+                error.className = "game-list-error";
+                error.textContent =
+                    "Error loading games list. Please try refreshing the page.";
                 listEl.appendChild(error);
             }
         }
     }
 
-    // C64 / Amiga mode toggle
     function initModeToggle() {
-        const btn = document.getElementById('mode-toggle');
+        const btn = document.getElementById("mode-toggle");
         if (!btn) return;
 
         const body = document.body;
 
         function updateLabel() {
-            if (body.classList.contains('mode-amiga')) {
-                btn.textContent = 'AMIGA MODE';
+            if (body.classList.contains("mode-amiga")) {
+                btn.textContent = "AMIGA MODE";
             } else {
-                btn.textContent = 'C64 MODE';
+                btn.textContent = "C64 MODE";
             }
         }
 
-        // Default to C64 unless already set
-        if (!body.classList.contains('mode-c64') && !body.classList.contains('mode-amiga')) {
-            body.classList.add('mode-c64');
+        if (
+            !body.classList.contains("mode-c64") &&
+            !body.classList.contains("mode-amiga")
+        ) {
+            body.classList.add("mode-c64");
         }
 
-        btn.addEventListener('click', () => {
-            body.classList.toggle('mode-c64');
-            body.classList.toggle('mode-amiga');
+        btn.addEventListener("click", () => {
+            body.classList.toggle("mode-c64");
+            body.classList.toggle("mode-amiga");
             updateLabel();
         });
 
@@ -322,12 +319,13 @@
     }
 
     function initGenreFromBody() {
-        const rawGenre = document.body.dataset.genre || '';
+        const rawGenre = document.body.dataset.genre || "";
         state.genreKey = resolveGenreKey(rawGenre);
-        const labelEl = document.getElementById('genre-label');
+
+        const labelEl = document.getElementById("genre-label");
         if (labelEl && rawGenre) {
             labelEl.textContent = rawGenre
-                .replace(/-/g, ' ')
+                .replace(/-/g, " ")
                 .replace(/\b\w/g, c => c.toUpperCase());
         }
     }
@@ -338,9 +336,10 @@
         loadGames();
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
     } else {
         init();
     }
+
 })();
