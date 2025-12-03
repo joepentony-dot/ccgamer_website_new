@@ -41,18 +41,18 @@
 }
 
 /* ------------------------------------------------------------
-   HERO SECTION (TIGHT VERSION)
+   HERO SECTION (BASE STRUCTURE)
 ------------------------------------------------------------ */
 
 .ccg-hero {
     position: relative;
-    height: 80vh;          /* Previously 88vh */
-    min-height: 620px;     /* Previously 680px */
+    height: 80vh;
+    min-height: 620px;
     max-height: 980px;
     width: 100%;
     max-width: 1500px;
     margin: 0 auto 80px auto;
-    padding: 28px 40px;    /* Reduced */
+    padding: 28px 40px;
     overflow: hidden;
 }
 
@@ -71,54 +71,50 @@
     pointer-events: none;
 }
 
-/* Images */
+/* ------------------------------------------------------------
+   HERO IMAGE LAYER (NEW FIXED VERSION)
+------------------------------------------------------------ */
+
 .ccg-hero-images {
     position: absolute;
-    inset: 0;
+    top: 50%;
+    left: 50%;
+    width: 1200px;
+    height: auto;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
     z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    /* Slight tightening tweak so images appear more balanced */
-    transform: translateY(-2%);
 }
 
 .ccg-hero-image {
     position: absolute;
-    max-height: 88%;
-    object-fit: contain;
-    pointer-events: none;
-
+    width: 100%;
+    max-width: 1200px;
+    opacity: 0;
     transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: none;
 }
 
-.ccg-hero-image-c64 {
+/* Default visible is C64 */
+body[data-mode="c64"] .ccg-hero-image-c64 {
     opacity: 1;
-}
-
-.ccg-hero-image-amiga {
-    opacity: 0;
-}
-
-body[data-mode="amiga"] .ccg-hero-image-c64 {
-    opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(-20px);
 }
 
 body[data-mode="amiga"] .ccg-hero-image-amiga {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(-10px);
 }
 
-/* HERO CONTENT */
+/* ------------------------------------------------------------
+   HERO CONTENT
+------------------------------------------------------------ */
+
 .ccg-hero-content {
     position: relative;
     z-index: 3;
     max-width: 620px;
     text-align: left;
-
-    /* Slight upward adjustment to align visually with reduced padding */
     transform: translateY(-14px);
 }
 
@@ -147,7 +143,11 @@ body[data-mode="amiga"] .ccg-hero-image-amiga {
     margin-bottom: 30px;
 }
 
-/* HERO ACTIONS */
+.ccg-inline-highlight {
+    color: #39d9ff;
+}
+
+/* ACTIONS */
 .ccg-hero-actions {
     display: flex;
     gap: 16px;
@@ -160,13 +160,10 @@ body[data-mode="amiga"] .ccg-hero-image-amiga {
     opacity: 0.9;
 }
 
-.ccg-inline-highlight {
-    color: #39d9ff;
-}
-
 /* ------------------------------------------------------------
-   SOCIAL GRID (UNDER HERO)
+   SOCIAL GRID (Under Hero)
 ------------------------------------------------------------ */
+
 .ccg-section-socials {
     margin-top: 40px;
 }
@@ -231,7 +228,7 @@ body[data-mode="amiga"] .ccg-hero-image-amiga {
 }
 
 /* ------------------------------------------------------------
-   MOBILE REFINEMENTS
+   MOBILE REFINEMENTS (BASE)
 ------------------------------------------------------------ */
 
 @media (max-width: 900px) {
@@ -240,17 +237,6 @@ body[data-mode="amiga"] .ccg-hero-image-amiga {
         height: auto;
         min-height: 540px;
         padding: 32px 20px;
-    }
-
-    .ccg-hero-images {
-        transform: translateY(-4%);
-    }
-
-    .ccg-hero-image {
-        max-width: 110%;
-        max-height: 380px;
-        opacity: 0.3;
-        filter: blur(1.5px);
     }
 
     .ccg-hero-content {
@@ -270,5 +256,52 @@ body[data-mode="amiga"] .ccg-hero-image-amiga {
     .ccg-hero-actions {
         justify-content: center;
         flex-wrap: wrap;
+    }
+
+    /* NEW HERO FIX SPECIFIC */
+    .ccg-hero-images {
+        width: 850px;
+        top: 45%;
+    }
+
+    body[data-mode="c64"] .ccg-hero-image-c64 {
+        transform: translateY(-10px);
+    }
+
+    body[data-mode="amiga"] .ccg-hero-image-amiga {
+        transform: translateY(-5px);
+    }
+}
+
+/* ------------------------------------------------------------
+   SMALL MOBILE REFINEMENTS (FIXED HERO)
+------------------------------------------------------------ */
+
+@media (max-width: 600px) {
+
+    .ccg-hero {
+        padding-top: 40px;
+        padding-bottom: 35px;
+    }
+
+    .ccg-hero-images {
+        width: 600px;
+        top: 50%;
+    }
+
+    .ccg-hero-image {
+        opacity: 0.28;
+        filter: blur(1.5px);
+        max-height: 360px;
+    }
+
+    .ccg-hero-title {
+        font-size: 1.55rem;
+        margin-bottom: 14px;
+    }
+
+    .ccg-hero-text {
+        font-size: 0.9rem;
+        line-height: 1.4;
     }
 }
