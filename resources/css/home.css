@@ -1,14 +1,15 @@
 /* ============================================================
-   HOME PAGE — CCG ULTRA EPIC LAYOUT (TIGHT HERO VERSION)
-   This stylesheet controls ONLY the Home page.
+   CHEEKY COMMODORE GAMER — HOME PAGE MASTER LAYOUT
+   FINAL BUILD • TIGHT HERO • SVG SOCIALS • FEATURED SECTIONS
    ============================================================ */
 
+
 /* ------------------------------------------------------------
-   GENERAL LAYOUT
+   MAIN WRAPPER
 ------------------------------------------------------------ */
 
 .ccg-main {
-    padding-top: 32px; /* Reduced */
+    padding-top: 32px;
     padding-bottom: 80px;
     overflow-x: hidden;
 }
@@ -40,9 +41,10 @@
     opacity: 0.9;
 }
 
-/* ------------------------------------------------------------
-   HERO SECTION (BASE STRUCTURE)
------------------------------------------------------------- */
+
+/* ============================================================
+   HERO SECTION (TIGHT VERSION)
+============================================================ */
 
 .ccg-hero {
     position: relative;
@@ -56,7 +58,6 @@
     overflow: hidden;
 }
 
-/* Background */
 .ccg-hero-background {
     position: absolute;
     inset: 0;
@@ -71,45 +72,39 @@
     pointer-events: none;
 }
 
-/* ------------------------------------------------------------
-   HERO IMAGE LAYER (NEW FIXED VERSION)
------------------------------------------------------------- */
-
+/* HERO IMAGES */
 .ccg-hero-images {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 1200px;
-    height: auto;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
+    inset: 0;
     z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(-2%);
 }
 
 .ccg-hero-image {
     position: absolute;
-    width: 100%;
-    max-width: 1200px;
-    opacity: 0;
-    transition: opacity 0.4s ease, transform 0.4s ease;
+    max-height: 88%;
+    object-fit: contain;
     pointer-events: none;
+    transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
-/* Default visible is C64 */
-body[data-mode="c64"] .ccg-hero-image-c64 {
-    opacity: 1;
-    transform: translateY(-20px);
+.ccg-hero-image-c64 { opacity: 1; }
+.ccg-hero-image-amiga { opacity: 0; }
+
+body[data-mode="amiga"] .ccg-hero-image-c64 {
+    opacity: 0;
+    transform: translateY(8px);
 }
 
 body[data-mode="amiga"] .ccg-hero-image-amiga {
     opacity: 1;
-    transform: translateY(-10px);
+    transform: translateY(0);
 }
 
-/* ------------------------------------------------------------
-   HERO CONTENT
------------------------------------------------------------- */
-
+/* HERO TEXT CONTENT */
 .ccg-hero-content {
     position: relative;
     z-index: 3;
@@ -123,8 +118,6 @@ body[data-mode="amiga"] .ccg-hero-image-amiga {
     font-size: 0.85rem;
     letter-spacing: 0.18em;
     margin-bottom: 14px;
-    opacity: 0.9;
-    text-transform: uppercase;
 }
 
 .ccg-hero-title {
@@ -143,11 +136,6 @@ body[data-mode="amiga"] .ccg-hero-image-amiga {
     margin-bottom: 30px;
 }
 
-.ccg-inline-highlight {
-    color: #39d9ff;
-}
-
-/* ACTIONS */
 .ccg-hero-actions {
     display: flex;
     gap: 16px;
@@ -157,20 +145,65 @@ body[data-mode="amiga"] .ccg-hero-image-amiga {
 .ccg-hero-footnote {
     font-size: 0.9rem;
     color: #aee3ff;
-    opacity: 0.9;
 }
 
-/* ------------------------------------------------------------
-   SOCIAL GRID (Under Hero)
------------------------------------------------------------- */
+.ccg-inline-highlight {
+    color: #39d9ff;
+}
+
+
+/* ============================================================
+   SOCIAL GRID — UNDER HERO (SVG VERSION)
+============================================================ */
 
 .ccg-section-socials {
-    margin-top: 40px;
+    max-width: 1400px;
+    margin: 0 auto 70px auto;
+    padding: 0 40px;
 }
 
-/* ------------------------------------------------------------
-   FEATURED GRID
------------------------------------------------------------- */
+.ccg-social-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 22px;
+    align-items: stretch;
+}
+
+.ccg-social-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: #d4f4ff;
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 1px solid rgba(140, 200, 255, 0.3);
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(6px);
+    transition: 0.22s ease;
+}
+
+.ccg-social-btn:hover {
+    background: rgba(80, 130, 255, 0.12);
+    border-color: var(--ccg-accent-strong);
+    box-shadow: 0 0 14px var(--ccg-accent);
+}
+
+.ccg-social-icon img {
+    width: 28px;
+    height: 28px;
+}
+
+.ccg-social-label {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+
+/* ============================================================
+   FEATURED CONTENT GRID
+============================================================ */
 
 .ccg-featured-grid {
     display: grid;
@@ -180,9 +213,10 @@ body[data-mode="amiga"] .ccg-hero-image-amiga {
     margin: 0 auto;
 }
 
-/* ------------------------------------------------------------
+
+/* ============================================================
    GENRE GRID
------------------------------------------------------------- */
+============================================================ */
 
 .ccg-genre-grid {
     display: grid;
@@ -192,9 +226,10 @@ body[data-mode="amiga"] .ccg-hero-image-amiga {
     margin: 0 auto;
 }
 
-/* ------------------------------------------------------------
+
+/* ============================================================
    COLLECTIONS GRID
------------------------------------------------------------- */
+============================================================ */
 
 .ccg-collections-grid {
     display: grid;
@@ -204,9 +239,10 @@ body[data-mode="amiga"] .ccg-hero-image-amiga {
     margin: 0 auto;
 }
 
-/* ------------------------------------------------------------
-   HIGHLIGHTS STRIP
------------------------------------------------------------- */
+
+/* ============================================================
+   RANDOM HIGHLIGHTS STRIP
+============================================================ */
 
 .ccg-game-strip {
     display: flex;
@@ -215,9 +251,19 @@ body[data-mode="amiga"] .ccg-hero-image-amiga {
     padding: 10px 4px;
 }
 
-/* ------------------------------------------------------------
+.ccg-game-strip::-webkit-scrollbar {
+    height: 8px;
+}
+
+.ccg-game-strip::-webkit-scrollbar-thumb {
+    background: rgba(130, 180, 255, 0.3);
+    border-radius: 6px;
+}
+
+
+/* ============================================================
    UTILITIES GRID
------------------------------------------------------------- */
+============================================================ */
 
 .ccg-utility-grid {
     display: grid;
@@ -227,9 +273,10 @@ body[data-mode="amiga"] .ccg-hero-image-amiga {
     margin: 0 auto;
 }
 
-/* ------------------------------------------------------------
-   MOBILE REFINEMENTS (BASE)
------------------------------------------------------------- */
+
+/* ============================================================
+   MOBILE OPTIMISATIONS
+============================================================ */
 
 @media (max-width: 900px) {
 
@@ -237,6 +284,17 @@ body[data-mode="amiga"] .ccg-hero-image-amiga {
         height: auto;
         min-height: 540px;
         padding: 32px 20px;
+    }
+
+    .ccg-hero-images {
+        transform: translateY(-4%);
+    }
+
+    .ccg-hero-image {
+        max-width: 110%;
+        max-height: 380px;
+        opacity: 0.3;
+        filter: blur(1.5px);
     }
 
     .ccg-hero-content {
@@ -256,52 +314,5 @@ body[data-mode="amiga"] .ccg-hero-image-amiga {
     .ccg-hero-actions {
         justify-content: center;
         flex-wrap: wrap;
-    }
-
-    /* NEW HERO FIX SPECIFIC */
-    .ccg-hero-images {
-        width: 850px;
-        top: 45%;
-    }
-
-    body[data-mode="c64"] .ccg-hero-image-c64 {
-        transform: translateY(-10px);
-    }
-
-    body[data-mode="amiga"] .ccg-hero-image-amiga {
-        transform: translateY(-5px);
-    }
-}
-
-/* ------------------------------------------------------------
-   SMALL MOBILE REFINEMENTS (FIXED HERO)
------------------------------------------------------------- */
-
-@media (max-width: 600px) {
-
-    .ccg-hero {
-        padding-top: 40px;
-        padding-bottom: 35px;
-    }
-
-    .ccg-hero-images {
-        width: 600px;
-        top: 50%;
-    }
-
-    .ccg-hero-image {
-        opacity: 0.28;
-        filter: blur(1.5px);
-        max-height: 360px;
-    }
-
-    .ccg-hero-title {
-        font-size: 1.55rem;
-        margin-bottom: 14px;
-    }
-
-    .ccg-hero-text {
-        font-size: 0.9rem;
-        line-height: 1.4;
     }
 }
