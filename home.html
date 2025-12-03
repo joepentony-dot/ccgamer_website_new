@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="resources/css/ccg-effects.css">
     <link rel="stylesheet" href="resources/css/ccg-modal.css">
     <link rel="stylesheet" href="resources/css/ccg-zx.css">
+    <link rel="stylesheet" href="resources/css/ccg-socials.css">
     <link rel="stylesheet" href="resources/css/home.css">
 
     <link rel="icon" type="image/png" href="resources/CCG_FAVICON.png" />
@@ -24,7 +25,7 @@
 <div class="ccg-page-shell">
 
     <!-- ============================================================
-         EPIC AUTO-HIDE SLIM HEADER (WITH WRAPPER)
+         EPIC AUTO-HIDE SLIM HEADER
     ============================================================ -->
     <header class="ccg-header auto-header" id="ccgHeader">
         <div class="ccg-header-inner">
@@ -40,7 +41,7 @@
                 <span class="ccg-brand-subtitle">Commodore 64 &amp; Amiga Retro Gaming</span>
             </div>
 
-            <!-- NAV -->
+            <!-- NAVIGATION -->
             <nav class="ccg-nav">
                 <a href="home.html" class="nav-item nav-active">Home</a>
                 <a href="games/index.html" class="nav-item">All Games</a>
@@ -50,44 +51,60 @@
                 <a href="contact.html" class="nav-item">Contact</a>
             </nav>
 
-            <!-- RIGHT SIDE: MODE TOGGLE + SOCIALS -->
+            <!-- RIGHT SIDE (MODE TOGGLE + SOCIAL ICON STRIP) -->
             <div class="ccg-header-right">
                 <button id="ccg-mode-toggle" type="button" aria-label="Toggle C64 / Amiga Mode">
                     <span>C64 / Amiga</span>
                 </button>
 
-                <a class="social-btn youtube"
-                   href="https://www.youtube.com/@CheekyCommodoreGamer?sub_confirmation=1"
-                   target="_blank">
-                    Subscribe
-                </a>
+                <div class="ccg-header-socials">
 
-                <a class="social-btn patreon"
-                   href="https://www.patreon.com/CheekyCommodoreGamer"
-                   target="_blank">
-                    Support
-                </a>
+                    <a class="ccg-header-social"
+                       href="https://www.youtube.com/@CheekyCommodoreGamer?sub_confirmation=1"
+                       target="_blank"
+                       aria-label="YouTube">
+                        <img src="resources/icons/youtube.svg" alt="YouTube">
+                    </a>
 
-                <a class="social-btn paypal"
-                   href="https://www.paypal.com/donate/?hosted_button_id=4C6UZ5YT2ZZ8L"
-                   target="_blank">
-                    Donate
-                </a>
+                    <a class="ccg-header-social"
+                       href="https://patreon.com/CheekyCommodoreGamer"
+                       target="_blank"
+                       aria-label="Patreon">
+                        <img src="resources/icons/patreon.svg" alt="Patreon">
+                    </a>
 
-                <a class="social-btn xdotcom"
-                   href="https://x.com/CheekyC64Gamer"
-                   target="_blank">
-                    Follow
-                </a>
+                    <a class="ccg-header-social"
+                       href="https://www.paypal.com/donate/?hosted_button_id=4C6UZ5YT2ZZ8L"
+                       target="_blank"
+                       aria-label="PayPal">
+                        <img src="resources/icons/paypal.svg" alt="PayPal">
+                    </a>
 
-                <a class="social-btn discord"
-                   href="https://discord.gg/83Xw9ktAn4"
-                   target="_blank">
-                    Join
-                </a>
+                    <a class="ccg-header-social"
+                       href="https://x.com/CheekyC64Gamer"
+                       target="_blank"
+                       aria-label="X (Twitter)">
+                        <img src="resources/icons/twitter.svg" alt="X">
+                    </a>
+
+                    <a class="ccg-header-social"
+                       href="https://facebook.com/cheekycommodoregamer"
+                       target="_blank"
+                       aria-label="Facebook">
+                        <img src="resources/icons/facebook.svg" alt="Facebook">
+                    </a>
+
+                    <a class="ccg-header-social"
+                       href="https://discord.gg/83Xw9ktAn4"
+                       target="_blank"
+                       aria-label="Discord">
+                        <img src="resources/icons/discord.svg" alt="Discord">
+                    </a>
+
+                </div>
             </div>
 
-        </div> <!-- END WRAPPER -->
+        </div>
     </header>
 
 
@@ -97,18 +114,16 @@
     <main class="ccg-main" id="top">
 
         <!-- ============================================================
-             TALL HERO SECTION (C64 / AMIGA ARTWORK)
+             HERO SECTION (TIGHTER VERSION)
         ============================================================ -->
         <section class="ccg-hero">
 
-            <!-- Background + scanlines + starfield -->
             <div class="ccg-hero-background">
                 <div class="ccg-hero-overlay-grid"></div>
                 <div class="ccg-hero-overlay-starfield"></div>
                 <div class="ccg-hero-scanlines"></div>
             </div>
 
-            <!-- HERO IMAGES (C64 + AMIGA) -->
             <div class="ccg-hero-images">
                 <img src="resources/images/hero/ccg-hero-c64.png"
                      class="ccg-hero-image ccg-hero-image-c64"
@@ -119,7 +134,6 @@
                      alt="Amiga Hero Artwork" />
             </div>
 
-            <!-- HERO TEXT BLOCK -->
             <div class="ccg-hero-content">
                 <div class="ccg-hero-badge">COMMODORE 64 • AMIGA</div>
 
@@ -144,6 +158,97 @@
                     <span class="ccg-inline-highlight">Amiga</span> using the switch above.
                 </p>
             </div>
+
+        </section>
+
+
+        <!-- ============================================================
+             SOCIAL HUB (UNDER HERO)
+        ============================================================ -->
+        <section class="ccg-section ccg-section-socials">
+
+            <div class="ccg-section-header">
+                <h2 class="ccg-section-title">Join the Cheeky Commodore Gamer Crew</h2>
+                <p class="ccg-section-subtitle">
+                    Subscribe, follow and chat with the community across the retro net.
+                </p>
+            </div>
+
+            <div class="ccg-socials-grid">
+
+                <a href="https://www.youtube.com/@CheekyCommodoreGamer?sub_confirmation=1"
+                   target="_blank"
+                   class="ccg-social-card">
+                    <div class="ccg-social-card-icon">
+                        <img src="resources/icons/youtube.svg" alt="YouTube">
+                    </div>
+                    <div class="ccg-social-text">
+                        <span class="ccg-social-title">YouTube</span>
+                        <span class="ccg-social-sub">Longplays, reviews &amp; more</span>
+                    </div>
+                </a>
+
+                <a href="https://patreon.com/CheekyCommodoreGamer"
+                   target="_blank"
+                   class="ccg-social-card">
+                    <div class="ccg-social-card-icon">
+                        <img src="resources/icons/patreon.svg" alt="Patreon">
+                    </div>
+                    <div class="ccg-social-text">
+                        <span class="ccg-social-title">Patreon</span>
+                        <span class="ccg-social-sub">Support future C64 &amp; Amiga content</span>
+                    </div>
+                </a>
+
+                <a href="https://www.paypal.com/donate/?hosted_button_id=4C6UZ5YT2ZZ8L"
+                   target="_blank"
+                   class="ccg-social-card">
+                    <div class="ccg-social-card-icon">
+                        <img src="resources/icons/paypal.svg" alt="PayPal">
+                    </div>
+                    <div class="ccg-social-text">
+                        <span class="ccg-social-title">PayPal</span>
+                        <span class="ccg-social-sub">One-off retro fuel donation</span>
+                    </div>
+                </a>
+
+                <a href="https://x.com/CheekyC64Gamer"
+                   target="_blank"
+                   class="ccg-social-card">
+                    <div class="ccg-social-card-icon">
+                        <img src="resources/icons/twitter.svg" alt="Twitter">
+                    </div>
+                    <div class="ccg-social-text">
+                        <span class="ccg-social-title">X / Twitter</span>
+                        <span class="ccg-social-sub">Quick updates &amp; hot takes</span>
+                    </div>
+                </a>
+
+                <a href="https://facebook.com/cheekycommodoregamer"
+                   target="_blank"
+                   class="ccg-social-card">
+                    <div class="ccg-social-card-icon">
+                        <img src="resources/icons/facebook.svg" alt="Facebook">
+                    </div>
+                    <div class="ccg-social-text">
+                        <span class="ccg-social-title">Facebook</span>
+                        <span class="ccg-social-sub">Retro chat &amp; nostalgia</span>
+                    </div>
+                </a>
+
+                <a href="https://discord.gg/83Xw9ktAn4"
+                   target="_blank"
+                   class="ccg-social-card">
+                    <div class="ccg-social-card-icon">
+                        <img src="resources/icons/discord.svg" alt="Discord">
+                    </div>
+                    <div class="ccg-social-text">
+                        <span class="ccg-social-title">Discord</span>
+                        <span class="ccg-social-sub">Live chat with the crew</span>
+                    </div>
+                </a>
+
+            </div>
         </section>
 
 
@@ -165,7 +270,7 @@
                         <span class="ccg-tag ccg-tag-system" id="featured-game-system">C64 / Amiga</span>
                     </header>
 
-                    <div classcc="ccg-card-body">
+                    <div class="ccg-card-body">
                         <a href="#" id="featured-game-link">
                             <div class="ccg-thumb-frame ccg-thumb-frame-big">
                                 <img id="featured-game-thumb"
@@ -176,7 +281,9 @@
                         </a>
 
                         <div class="ccg-card-info">
-                            <h4 id="featured-game-title" class="ccg-card-game-title">Loading featured game…</h4>
+                            <h4 id="featured-game-title" class="ccg-card-game-title">
+                                Loading featured game…
+                            </h4>
                             <p id="featured-game-summary" class="ccg-card-text">
                                 Pulling something epic from the library…
                             </p>
@@ -184,10 +291,10 @@
                             <div class="ccg-card-actions">
                                 <a href="#" class="ccg-btn ccg-btn-primary ccg-btn-sm"
                                    id="featured-game-play">
-                                   View Game Page
+                                    View Game Page
                                 </a>
                                 <a href="games/index.html" class="ccg-btn ccg-btn-ghost ccg-btn-sm">
-                                   Explore Library
+                                    Explore Library
                                 </a>
                             </div>
                         </div>
@@ -214,19 +321,21 @@
 
                         <div class="ccg-card-info">
                             <h4 class="ccg-card-game-title">Top 15 Commodore 64 Games</h4>
-                            <p class="ccg-card-text">A curated countdown of essential C64 classics.</p>
+                            <p class="ccg-card-text">
+                                A curated countdown of essential C64 classics.
+                            </p>
 
                             <div class="ccg-card-actions">
                                 <a href="https://www.youtube.com/@CheekyCommodoreGamer?sub_confirmation=1"
                                    class="ccg-btn ccg-btn-primary ccg-btn-sm"
                                    target="_blank">
-                                   Subscribe
+                                    Subscribe
                                 </a>
 
                                 <a href="https://www.youtube.com/@CheekyCommodoreGamer/videos"
                                    class="ccg-btn ccg-btn-ghost ccg-btn-sm"
                                    target="_blank">
-                                   View All Videos
+                                    View All Videos
                                 </a>
                             </div>
                         </div>
@@ -238,7 +347,7 @@
 
 
         <!-- ============================================================
-             GENRES
+             GENRES SECTION
         ============================================================ -->
         <section class="ccg-section ccg-section-genres">
             <div class="ccg-section-header">
@@ -247,7 +356,6 @@
             </div>
 
             <div class="ccg-genre-grid">
-
                 <a href="games/genres/action-adventure-games.html" class="ccg-genre-card">
                     <img src="resources/images/genres/action-adventure.png"
                          class="ccg-genre-image" alt="Action Adventure">
@@ -322,13 +430,12 @@
                     <img src="resources/images/genres/strategy.png"
                          class="ccg-genre-image" alt="Strategy">
                 </a>
-
             </div>
         </section>
 
 
         <!-- ============================================================
-             COLLECTIONS
+             COLLECTIONS SECTION
         ============================================================ -->
         <section class="ccg-section ccg-section-collections">
             <div class="ccg-section-header">
@@ -374,7 +481,7 @@
 
 
         <!-- ============================================================
-             UTILITIES
+             UTILITIES SECTION
         ============================================================ -->
         <section class="ccg-section ccg-section-utility">
             <div class="ccg-utility-grid">
