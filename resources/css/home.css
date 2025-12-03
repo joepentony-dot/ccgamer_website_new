@@ -146,8 +146,6 @@
     filter: drop-shadow(0 0 6px rgba(0, 255, 255, 0.8));
 }
 
-/* Right side is handled by omega-mode-toggle.css for the button itself */
-
 /* Header main: title + socials */
 
 .ccg-header-main {
@@ -254,6 +252,20 @@
         box-shadow 160ms ease-out,
         border-color 160ms ease-out,
         background 160ms ease-out;
+}
+
+/* Social SVG icon */
+.ccg-social-card-icon {
+    margin-bottom: 0.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.ccg-social-card-icon img {
+    width: 18px;
+    height: 18px;
+    display: block;
 }
 
 .ccg-social-card::before {
@@ -378,8 +390,7 @@
     transform: scale(1.02);
 }
 
-/* Dynamic hero image per mode */
-
+/* Dynamic hero image per mode — pulls from resources/images/hero */
 body[data-ccg-mode="c64"] .omega-hero-media {
     background-image: url("../images/hero/ccg-hero-c64.png");
 }
@@ -657,8 +668,6 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
     position: relative;
     overflow: hidden;
 }
-
-/* Optional: place a thumbnail via background-image in future if you want */
 
 .featured-game-copy {
     display: flex;
