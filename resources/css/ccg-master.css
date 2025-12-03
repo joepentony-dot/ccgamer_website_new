@@ -380,3 +380,105 @@ body[data-mode="amiga"] #ccg-mode-toggle {
         font-size: 1.1rem;
     }
 }
+/* ============================================================
+   MODE TOGGLE — AUTHENTIC C64 / AMIGA VISUAL UPGRADE
+   ============================================================ */
+
+#ccg-mode-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 22px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    font-family: "Orbitron", sans-serif;
+    letter-spacing: 1px;
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.22s ease,
+        background 0.22s ease,
+        filter 0.22s ease;
+    background: #003cff;
+}
+
+#ccg-mode-toggle:hover {
+    transform: scale(1.07);
+    filter: brightness(1.1);
+}
+
+/* ICON */
+#ccg-mode-toggle .toggle-icon {
+    width: 22px;
+    height: 22px;
+    display: inline-block;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: drop-shadow(0 0 6px rgba(255,255,255,0.8));
+}
+
+/* LABEL */
+#ccg-mode-toggle .toggle-label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    color: #e8faff;
+}
+
+/* ------------------------------------------------------------
+   C64 MODE (DEFAULT)
+------------------------------------------------------------ */
+
+body[data-mode="c64"] #ccg-mode-toggle {
+    background: linear-gradient(135deg, #004cff, #00b8ff);
+    box-shadow:
+        0 0 14px #00eaff,
+        0 0 34px #006dff;
+    border: 1px solid rgba(0,200,255,0.5);
+}
+
+body[data-mode="c64"] #ccg-mode-toggle .toggle-label {
+    color: #dffaff;
+}
+
+body[data-mode="c64"] #ccg-mode-toggle .toggle-icon {
+    background-image: url("resources/icons/c64.svg");
+}
+
+/* ------------------------------------------------------------
+   AMIGA MODE
+------------------------------------------------------------ */
+
+body[data-mode="amiga"] #ccg-mode-toggle {
+    background: linear-gradient(135deg, #ff74f9, #bc00ff);
+    box-shadow:
+        0 0 16px #ff71ff,
+        0 0 40px #7a00ae;
+    border: 1px solid rgba(255,120,255,0.5);
+}
+
+body[data-mode="amiga"] #ccg-mode-toggle .toggle-label {
+    color: #fff1ff;
+}
+
+body[data-mode="amiga"] #ccg-mode-toggle .toggle-icon {
+    background-image: url("resources/icons/amiga.svg");
+}
+
+/* ------------------------------------------------------------
+   SHRINK MODE (header auto-hide)
+------------------------------------------------------------ */
+
+.ccg-header.shrink #ccg-mode-toggle {
+    padding: 6px 16px;
+    gap: 8px;
+}
+
+.ccg-header.shrink #ccg-mode-toggle .toggle-label {
+    font-size: 0.7rem;
+}
+
+.ccg-header.shrink #ccg-mode-toggle .toggle-icon {
+    width: 18px;
+    height: 18px;
+}
