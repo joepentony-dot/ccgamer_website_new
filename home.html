@@ -25,6 +25,9 @@
 
     <!-- HOME PAGE LAYOUT / OMEGA BUILD -->
     <link rel="stylesheet" href="resources/css/home.css" />
+
+    <!-- OMEGA MODE TOGGLE (header switch styling) -->
+    <link rel="stylesheet" href="resources/css/omega-mode-toggle.css" />
 </head>
 
 <body class="ccg-body ccg-mode-c64" data-ccg-mode="c64">
@@ -133,12 +136,13 @@
         </header>
 
         <!-- =====================================================
-             OMEGA CINEMATIC HERO
+             OMEGA CINEMATIC HERO (TIGHT 4:1)
              Tight 4:1 strips with dynamic C64/Amiga art
              ===================================================== -->
         <section class="omega-hero" aria-label="Featured retro highlights">
             <!-- Primary 4:1 cinematic banner -->
             <div class="omega-hero-strip omega-hero-strip--primary">
+                <div class="omega-hero-media"></div>
                 <div class="omega-hero-overlay">
                     <div class="omega-hero-text">
                         <h2 class="omega-hero-title">
@@ -204,7 +208,7 @@
                                 <h4 class="featured-game-name">[Pick your showpiece classic]</h4>
                                 <p class="featured-game-blurb">
                                     Drop in your favourite showcase title here — perfect scrolling, banging SID/Amiga tunes,
-                                    and the kind of gameplay that makes people say “I forgot how good this was!”
+                                    and the kind of gameplay that makes people say “I forgot how good this was!”.
                                 </p>
                                 <ul class="featured-game-meta">
                                     <li><span class="meta-label">System:</span> C64 / Amiga</li>
@@ -482,7 +486,7 @@
     </div>
 
     <!-- =========================================================
-         JS LOADER
+         JS LOADER (do not touch game / thumbnail logic)
          ========================================================= -->
     <script src="js/ccg-mode-engine.js" defer></script>
     <script src="js/ccj-global.js" defer></script>
