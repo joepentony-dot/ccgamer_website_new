@@ -1,206 +1,209 @@
-/* -------------------------------------------------
-   ZX SPECTRUM FULL MENU OVERLAY
---------------------------------------------------*/
+/* ============================================================
+   CHEEKY COMMODORE GAMER — ZX MODE THEME
+   Hyper-retro green CRT mode • Easter Egg • Neon Spectrum Glow
+   ============================================================ */
 
-#zx-menu {
-    display: none; /* activated by JS */
-    position: fixed;
-    inset: 0;
-    background: #bcbcbc;
-    z-index: 99995;
-    font-family: 'Press Start 2P', monospace;
-    justify-content: center;
-    align-items: flex-start;
-    padding-top: 60px;
+/* ------------------------------------------------------------
+   ZX MODE — GLOBAL OVERRIDES
+------------------------------------------------------------ */
+
+body[data-mode="zx"] {
+    --ccg-accent: #00ff00;
+    --ccg-accent-strong: #08ff08;
+
+    background-color: #000900 !important;
+    color: #c8ffc8 !important;
+    text-shadow: 0 0 6px #00ff00;
 }
 
-/* -------------------------------------------------
-   ZX MENU CONTAINER
---------------------------------------------------*/
-
-.zx-menu-box {
-    width: 300px;
-    background: #fff;
-    border: 4px solid #000;
-    box-shadow: 8px 8px 0 rgba(0,0,0,0.3);
+body[data-mode="zx"] .ccg-body {
+    background-color: #000900 !important;
 }
 
-/* -------------------------------------------------
-   ZX HEADER (RAINBOW + TITLE)
---------------------------------------------------*/
 
-.zx-header {
-    background: #000;
-    color: #fff;
-    font-size: 0.8rem;
-    padding: 6px 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+/* ------------------------------------------------------------
+   HEADER OVERRIDES
+------------------------------------------------------------ */
+
+body[data-mode="zx"] .ccg-header {
+    background: rgba(0, 15, 0, 0.85);
+    border-bottom: 2px solid #00ff00;
+    box-shadow: 0 0 16px #00ff00;
 }
 
-.zx-title {
-    letter-spacing: 1px;
+body[data-mode="zx"] .ccg-header a,
+body[data-mode="zx"] .ccg-header span {
+    color: #aaffaa !important;
+    text-shadow: 0 0 6px #00ff00;
 }
 
-.zx-rainbow {
-    width: 70px;
-    height: 12px;
-    background: linear-gradient(
-        90deg,
-        #f00 0%,
-        #ff0 25%,
-        #0f0 50%,
-        #0ff 75%,
-        #00f 100%
-    );
+body[data-mode="zx"] #ccg-mode-toggle {
+    border-color: #00ff00;
+    color: #00ff00;
+    box-shadow: 0 0 12px #00ff00;
 }
 
-/* -------------------------------------------------
-   ZX OPTIONS LIST
---------------------------------------------------*/
-
-.zx-options {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+body[data-mode="zx"] #ccg-mode-toggle:hover {
+    background: rgba(0, 255, 0, 0.16);
 }
 
-.zx-option {
-    padding: 12px;
-    border-bottom: 1px solid #ccc;
-    font-size: 0.75rem;
-    letter-spacing: 1px;
-    color: #000;
-    background: #fff;
-    cursor: pointer;
-    transition: all 0.15s ease;
+
+/* ------------------------------------------------------------
+   ZX — HERO AREA
+------------------------------------------------------------ */
+
+body[data-mode="zx"] .ccg-hero-background,
+body[data-mode="zx"] .ccg-hero-overlay-grid,
+body[data-mode="zx"] .ccg-hero-overlay-starfield {
+    filter: hue-rotate(110deg) brightness(1.8) saturate(0.4);
 }
 
-.zx-option:hover {
-    background: #00ffff;
-    color: #000;
+body[data-mode="zx"] .ccg-hero-scanlines {
+    opacity: 0.55;
 }
 
-.zx-option.selected {
-    background: #0ff;
-    font-weight: bold;
-    color: #000;
+/* ZX turns hero images ghostly green */
+body[data-mode="zx"] .ccg-hero-image {
+    opacity: 0.33;
+    filter: grayscale(1) brightness(1.2) sepia(1) hue-rotate(90deg);
 }
 
-/* -------------------------------------------------
-   ZX FOOTER
---------------------------------------------------*/
 
-.zx-footer {
-    font-size: 0.6rem;
-    padding: 10px;
-    letter-spacing: 1px;
-    color: #000;
-    text-align: center;
+/* ------------------------------------------------------------
+   ZX — TYPOGRAPHY
+------------------------------------------------------------ */
+
+body[data-mode="zx"] h1,
+body[data-mode="zx"] h2,
+body[data-mode="zx"] h3,
+body[data-mode="zx"] h4,
+body[data-mode="zx"] h5,
+body[data-mode="zx"] h6 {
+    color: #99ff99 !important;
+    text-shadow: 0 0 6px #00ff00, 0 0 10px #00ff00;
 }
 
-/* -------------------------------------------------
-   ZX LOADING BARS (KEMPSTON STYLE)
---------------------------------------------------*/
-
-#zx-loading-bars {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(90deg,
-        #00e, #ff0, #f00, #0f0, #0ff, #00e
-    );
-    animation: zx-hue 0.25s linear infinite;
-    z-index: 99997;
+body[data-mode="zx"] p,
+body[data-mode="zx"] li,
+body[data-mode="zx"] a {
+    color: #aaffaa !important;
 }
 
-@keyframes zx-hue {
-    0% { filter: hue-rotate(0deg); }
-    100% { filter: hue-rotate(360deg); }
+
+/* ------------------------------------------------------------
+   ZX — BUTTONS
+------------------------------------------------------------ */
+
+body[data-mode="zx"] .ccg-btn-primary {
+    background: #00aa00 !important;
+    border-color: #00ff00 !important;
+    box-shadow: 0 0 12px #00ff00 !important;
 }
 
-/* -------------------------------------------------
-   ZX D-PAD CONTROLS (TOUCH UI)
---------------------------------------------------*/
-
-#game-controls.visible {
-    display: block;
+body[data-mode="zx"] .ccg-btn-secondary,
+body[data-mode="zx"] .ccg-btn-ghost {
+    border-color: #00ff00 !important;
+    color: #00ff00 !important;
 }
 
-#game-controls {
-    display: none;
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    z-index: 99998;
+body[data-mode="zx"] .ccg-btn-primary:hover {
+    background: #00ff00 !important;
+    color: #003300 !important;
 }
 
-.d-pad {
-    position: relative;
-    width: 120px;
-    height: 120px;
+
+/* ------------------------------------------------------------
+   ZX — CARDS / SECTIONS
+------------------------------------------------------------ */
+
+body[data-mode="zx"] .ccg-card {
+    background: rgba(0, 20, 0, 0.55) !important;
+    border-color: #00ff00 !important;
+    box-shadow:
+        0 0 14px #00ff00,
+        inset 0 0 16px rgba(0, 255, 0, 0.25);
 }
 
-.d-pad button {
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    border: 2px solid #000;
-    background: rgba(255,255,255,0.35);
-    color: #000;
-    font-size: 1.2rem;
-    font-family: 'Press Start 2P';
-    cursor: pointer;
+body[data-mode="zx"] .ccg-section {
+    border-color: #00ff00 !important;
 }
 
-.d-up    { top: 0; left: 40px; }
-.d-down  { bottom: 0; left: 40px; }
-.d-left  { top: 40px; left: 0; }
-.d-right { top: 40px; right: 0; }
-
-/* -------------------------------------------------
-   ZX FIRE BUTTON
---------------------------------------------------*/
-
-#fire-btn.visible {
-    display: flex;
+body[data-mode="zx"] .ccg-section-title {
+    color: #00ff00 !important;
 }
 
-#fire-btn {
-    display: none;
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: 3px solid #000;
-    background: red;
-    color: #fff;
-    font-family: 'Press Start 2P';
-    font-size: 0.9rem;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 4px 4px 0 rgba(0,0,0,0.4);
-    z-index: 99998;
-    cursor: pointer;
+
+/* ------------------------------------------------------------
+   ZX — THUMBNAILS
+------------------------------------------------------------ */
+
+body[data-mode="zx"] .ccg-thumb-image {
+    filter: grayscale(1) brightness(1.4) contrast(1.8) hue-rotate(90deg);
+    box-shadow: 0 0 10px #00ff00;
 }
 
-/* -------------------------------------------------
-   EMULATOR PRANK OVERLAY (BLANKET)
---------------------------------------------------*/
-
-#emulator-prank-overlay {
-    position: fixed;
-    inset: 0;
-    background: #000;
-    display: none;
-    z-index: 99999;
+body[data-mode="zx"] .ccg-thumb-frame {
+    border-color: #00ff00;
 }
 
-#emulator-frame {
-    width: 100%;
-    height: 100%;
-    border: none;
+
+/* ------------------------------------------------------------
+   ZX — SOCIAL ICON GRID
+------------------------------------------------------------ */
+
+body[data-mode="zx"] .ccg-social-btn {
+    border-color: #00ff00 !important;
+    box-shadow: 0 0 12px #00ff00;
+}
+
+body[data-mode="zx"] .ccg-social-icon img {
+    filter: brightness(2) hue-rotate(90deg);
+}
+
+
+/* ------------------------------------------------------------
+   ZX — FOOTER
+------------------------------------------------------------ */
+
+body[data-mode="zx"] .ccg-footer {
+    background: rgba(0, 18, 0, 0.8);
+    border-top: 2px solid #00ff00;
+    box-shadow: 0 0 16px #00ff00;
+}
+
+body[data-mode="zx"] .ccg-footer-text,
+body[data-mode="zx"] .ccg-footer-links a {
+    color: #aaffaa !important;
+}
+
+
+/* ------------------------------------------------------------
+   ZX — SCANLINES SUPER MODE
+------------------------------------------------------------ */
+
+body[data-mode="zx"] .crt-overlay {
+    opacity: 0.28 !important;
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(0, 255, 0, 0.12) 0px,
+            rgba(0, 255, 0, 0.12) 2px,
+            transparent 2px,
+            transparent 4px
+        );
+}
+
+
+/* ------------------------------------------------------------
+   OPTIONAL ZX FLASH EFFECT (SHIFT+Z)
+------------------------------------------------------------ */
+
+@keyframes zxFlash {
+    0% { filter: brightness(1); }
+    50% { filter: brightness(3); }
+    100% { filter: brightness(1); }
+}
+
+body[data-zx-flash="true"] {
+    animation: zxFlash 0.14s linear 1;
 }
