@@ -174,7 +174,7 @@ body.ccg-mode-amiga .ccg-mode-toggle-knob {
 }
 
 /* ============================================================
-   OMEGA CINEMATIC HERO — **DYNAMIC PER-MODE HERO IMAGES**
+   OMEGA CINEMATIC HERO — DYNAMIC PER-MODE HERO IMAGES
    ============================================================ */
 
 .omega-hero {
@@ -193,7 +193,7 @@ body.ccg-mode-amiga .ccg-mode-toggle-knob {
     background-repeat: no-repeat;
 }
 
-/* 🌟 PRIMARY BANNER — dynamic C64/Amiga backgrounds */
+/* Primary banner — dynamic C64/Amiga backgrounds */
 body.ccg-mode-c64 .omega-hero-strip--primary {
     background-image: url("../images/hero/ccg-hero-c64.png");
 }
@@ -202,7 +202,7 @@ body.ccg-mode-amiga .omega-hero-strip--primary {
     background-image: url("../images/hero/ccg-hero-amiga.png");
 }
 
-/* DARKENING OVERLAY FOR NEON TEXT */
+/* Darkening overlay for neon text */
 .omega-hero-overlay {
     position: absolute;
     inset: 0;
@@ -231,7 +231,7 @@ body.ccg-mode-amiga .omega-hero-strip--primary {
     opacity: 0.88;
 }
 
-/* SECONDARY MICRO-STRIPS */
+/* Secondary micro-strips */
 .omega-hero-strip-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -248,7 +248,7 @@ body.ccg-mode-amiga .omega-hero-strip--primary {
     overflow: hidden;
 }
 
-/* 🌟 Uniform per mode — all strips switch together */
+/* Uniform per mode — all strips switch together */
 body.ccg-mode-c64 .omega-hero-strip--link {
     background-image: url("../images/hero/ccg-hero-c64.png");
 }
@@ -361,7 +361,6 @@ body.ccg-mode-amiga .omega-hero-strip--link {
 /* -----------------------------------------
    GRIDS
 ----------------------------------------- */
-
 .home-grid {
     display: grid;
     gap: 22px;
