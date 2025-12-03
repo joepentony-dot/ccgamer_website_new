@@ -525,8 +525,19 @@
     if (yearEl) yearEl.textContent = new Date().getFullYear();
 
     function safeThumbnail(game) {
-        if (game.thumbnail) return "resources/images/thumbnails/all/" + game.thumbnail;
-        if (game.thumb) return "resources/images/thumbnails/all/" + game.thumb;
+        // If thumbnail already contains a path, use it as-is
+        if (game.thumbnail) {
+            if (game.thumbnail.includes("/")) {
+                return game.thumbnail;
+            }
+            return "resources/images/thumbnails/all/" + game.thumbnail;
+        }
+        if (game.thumb) {
+            if (game.thumb.includes("/")) {
+                return game.thumb;
+            }
+            return "resources/images/thumbnails/all/" + game.thumb;
+        }
         return "resources/ccgamer_logo.png";
     }
 
