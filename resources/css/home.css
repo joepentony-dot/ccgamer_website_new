@@ -1,7 +1,7 @@
 /* ============================================================
    HOME.CSS — PHASE OMEGA (Balanced Header + Balanced Hero)
    Cheeky Commodore Gamer 😇🕹️👌
-   STEP 1: Header + Hero Fixes
+   STEP 1+2: Header/Hero Fixes + Amiga Hybrid Light Mode
    ============================================================ */
 
 
@@ -40,7 +40,7 @@
     backdrop-filter: blur(6px);
     border-bottom: 1px solid rgba(112, 255, 240, 0.25);
     z-index: 999;
-    transition: transform 0.35s ease, background 0.25s ease;
+    transition: transform 0.35s ease, background 0.25s ease, border-color 0.25s ease;
 }
 
 .ccg-header-inner {
@@ -357,7 +357,6 @@ body[data-mode="amiga"] .ccg-hero-image-c64 {
 
 /* ============================================================
    FEATURED SECTION
-   (unchanged in STEP 1 – we’ll polish more in a later step)
 ============================================================ */
 .ccg-section-featured {
     margin-top: 60px;
@@ -431,7 +430,7 @@ body[data-mode="amiga"] .ccg-hero-image-c64 {
 
 
 /* ============================================================
-   GENRE GRID (we’ll polish more later)
+   GENRE GRID
 ============================================================ */
 .ccg-section-genres {
     margin-top: 50px;
@@ -548,4 +547,124 @@ body[data-mode="amiga"] .ccg-hero-image-c64 {
     padding: 25px;
     border-top: 1px solid rgba(112,255,240,0.2);
     text-align: center;
+}
+
+
+
+/* ============================================================
+   AMIGA HYBRID LIGHT THEME OVERRIDES
+   (Option B → Light, pastel, airy Workbench-inspired)
+============================================================ */
+
+/* Overall lighter feel for Amiga mode */
+body[data-mode="amiga"] .ccg-main {
+    background: radial-gradient(circle at 50% -20%, #f5f6ff 0%, #252842 50%, #050814 100%);
+}
+
+/* Header: soften, add lilac/pastel tint */
+body[data-mode="amiga"] .ccg-header {
+    background: linear-gradient(90deg, rgba(60, 60, 92, 0.95), rgba(96, 54, 116, 0.96));
+    border-bottom-color: rgba(255, 170, 255, 0.55);
+}
+
+/* Brand text a touch softer/pastel */
+body[data-mode="amiga"] .ccg-brand-title {
+    color: #f9f0ff;
+    text-shadow: 0 0 5px rgba(255, 160, 255, 0.9);
+}
+
+body[data-mode="amiga"] .ccg-brand-subtitle {
+    color: #f2e9ff;
+    opacity: 0.95;
+}
+
+/* Nav items with pastel hover */
+body[data-mode="amiga"] .ccg-nav .nav-item {
+    color: #f6e9ff;
+}
+
+body[data-mode="amiga"] .ccg-nav .nav-item:hover {
+    color: #ffffff;
+    text-shadow: 0 0 6px rgba(255, 170, 255, 1);
+}
+
+/* Active nav under Amiga: stronger pink glow */
+body[data-mode="amiga"] .ccg-nav .nav-active {
+    text-shadow: 0 0 8px rgba(255, 170, 255, 1);
+}
+
+/* Social icon glow in Amiga mode */
+body[data-mode="amiga"] .ccg-header-social-icon img {
+    filter: drop-shadow(0 0 4px rgba(255, 170, 255, 0.9));
+}
+
+/* X stays bright but with magenta hint */
+body[data-mode="amiga"] .ccg-header-social-icon img[alt*="Twitter"] {
+    filter: invert(1) drop-shadow(0 0 7px rgba(255, 200, 255, 1));
+}
+
+/* Hero: lighten overlays a bit for pastel look */
+body[data-mode="amiga"] .ccg-hero-overlay-grid {
+    opacity: 0.14;
+    filter: hue-rotate(220deg);
+}
+
+body[data-mode="amiga"] .ccg-hero-overlay-starfield {
+    opacity: 0.20;
+}
+
+/* Hero text glow tuned for Amiga palette */
+body[data-mode="amiga"] .ccg-hero-title {
+    text-shadow: 0 0 12px rgba(255, 190, 255, 1);
+}
+
+body[data-mode="amiga"] .ccg-hero-text {
+    color: #f7f2ff;
+}
+
+/* Hero buttons: more Amiga UI-like (soft pastel) */
+body[data-mode="amiga"] .ccg-hero-actions .ccg-btn-primary,
+body[data-mode="amiga"] .ccg-hero-actions .ccg-btn-secondary {
+    background: linear-gradient(180deg, #ffe5ff, #ff9ff5);
+    color: #3a2342;
+    box-shadow: 0 0 14px rgba(255, 150, 255, 0.9);
+    border-color: rgba(255, 190, 255, 0.8);
+}
+
+/* Social cards: lighter panel with pastel border */
+body[data-mode="amiga"] .ccg-social-btn {
+    background: rgba(22, 24, 42, 0.9);
+    border-color: rgba(255, 180, 255, 0.6);
+}
+
+body[data-mode="amiga"] .ccg-social-btn:hover {
+    box-shadow: 0 0 18px rgba(255, 180, 255, 1);
+}
+
+/* Featured cards: softer Amiga panels */
+body[data-mode="amiga"] .ccg-card {
+    background: radial-gradient(circle at top left, #363b5a 0%, #171a2a 60%);
+    border-color: rgba(255, 180, 255, 0.6);
+}
+
+/* Genre & collections cards under Amiga: slightly lighter frame */
+body[data-mode="amiga"] .ccg-genre-card,
+body[data-mode="amiga"] .ccg-collections-grid .ccg-genre-card {
+    box-shadow: 0 0 12px rgba(255, 160, 255, 0.85);
+}
+
+/* Highlights card glow Amiga-style */
+body[data-mode="amiga"] .ccg-game-strip-card {
+    box-shadow: 0 0 10px rgba(255, 170, 255, 0.7);
+}
+
+/* Utility cards (manuals/quiz/emulation) pastel */
+body[data-mode="amiga"] .ccg-section-utility .ccg-card {
+    background: radial-gradient(circle at top, #3e4264 0%, #171a28 70%);
+    border-color: rgba(255, 190, 255, 0.7);
+}
+
+/* Footer border a little more lilac in Amiga mode */
+body[data-mode="amiga"] .ccg-footer {
+    border-top-color: rgba(255, 190, 255, 0.6);
 }
