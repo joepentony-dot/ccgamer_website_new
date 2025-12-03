@@ -24,7 +24,7 @@ a {
 }
 
 /* ============================================================
-   ULTRA EPIC CENTER HEADER (H2)
+   ULTRA EPIC CENTER HEADER (H2) — SLIM + AUTO-HIDE
    ============================================================ */
 
 .ccg-header {
@@ -32,18 +32,48 @@ a {
     top: 0;
     z-index: 9999;
     width: 100%;
-    padding: 26px 30px 34px;
+    padding: 18px 24px 20px;
     background: radial-gradient(circle at top, #051e37, #010515 65%, #00040c 100%);
     border-bottom: 1px solid rgba(0,255,255,0.25);
     box-shadow:
-        0 0 38px rgba(0,255,255,0.25),
+        0 0 28px rgba(0,255,255,0.25),
         0 0 120px rgba(0,0,0,1);
     backdrop-filter: blur(6px);
 
+    transition:
+        padding 0.22s ease-out,
+        box-shadow 0.22s ease-out,
+        transform 0.25s ease-out,
+        background 0.22s ease-out;
+}
+
+/* Smooth wrapper to prevent flicker + layout jumps */
+.ccg-header-inner {
+    max-width: 1240px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 22px;
+    gap: 18px;
+    transition: gap 0.2s ease-out;
+}
+
+/* Auto-hide: slide up when scrolling down */
+.ccg-header.ccg-header--hidden {
+    transform: translateY(-140%);
+}
+
+/* Slim state when scrolled a little */
+.ccg-header.ccg-header--scrolled {
+    padding: 10px 20px 12px;
+    box-shadow:
+        0 0 18px rgba(0,255,255,0.28),
+        0 0 80px rgba(0,0,0,1);
+    background: radial-gradient(circle at top, #041528, #010414 70%, #00040c 100%);
+}
+
+.ccg-header.ccg-header--scrolled .ccg-header-inner {
+    gap: 10px;
 }
 
 /* BRAND AREA CENTERED --------------------------------------- */
@@ -59,6 +89,7 @@ a {
     width: 82px;
     height: auto;
     filter: drop-shadow(0 0 14px #00eaff) drop-shadow(0 0 22px #0088ff);
+    transition: width 0.22s ease-out, filter 0.22s ease-out, transform 0.22s ease-out;
 }
 
 .ccg-brand-title {
@@ -69,6 +100,7 @@ a {
     text-shadow:
         0 0 22px #00e7ff,
         0 0 44px #004cff;
+    transition: font-size 0.22s ease-out, text-shadow 0.22s ease-out;
 }
 
 .ccg-brand-subtitle {
@@ -76,6 +108,24 @@ a {
     letter-spacing: 0.18em;
     opacity: 0.75;
     margin-top: -2px;
+    transition: opacity 0.22s ease-out;
+}
+
+/* Slim state tweaks */
+.ccg-header.ccg-header--scrolled .ccg-logo {
+    width: 58px;
+    filter: drop-shadow(0 0 10px #00eaff) drop-shadow(0 0 16px #0060c8);
+}
+
+.ccg-header.ccg-header--scrolled .ccg-brand-title {
+    font-size: 1.3rem;
+    text-shadow:
+        0 0 14px #00e7ff,
+        0 0 28px #004cff;
+}
+
+.ccg-header.ccg-header--scrolled .ccg-brand-subtitle {
+    opacity: 0.6;
 }
 
 /* NAVIGATION BAR -------------------------------------------- */
@@ -85,7 +135,7 @@ a {
     gap: 40px;
     flex-wrap: wrap;
     justify-content: center;
-    padding: 12px 0;
+    padding: 10px 18px;
 
     border-radius: 999px;
     background: rgba(0, 40, 80, 0.25);
@@ -93,6 +143,12 @@ a {
     box-shadow:
         0 0 16px rgba(0,255,255,0.4),
         inset 0 0 26px rgba(0,140,255,0.2);
+
+    transition:
+        padding 0.2s ease-out,
+        box-shadow 0.2s ease-out,
+        background 0.2s ease-out,
+        gap 0.2s ease-out;
 }
 
 .nav-item {
@@ -119,16 +175,40 @@ a {
         0 0 44px #b300ff;
 }
 
+/* Slim state nav tweaks */
+.ccg-header.ccg-header--scrolled .ccg-nav {
+    gap: 26px;
+    padding: 6px 16px;
+    box-shadow:
+        0 0 12px rgba(0,255,255,0.35),
+        inset 0 0 22px rgba(0,100,220,0.3);
+}
+
+.ccg-header.ccg-header--scrolled .nav-item {
+    font-size: 0.8rem;
+}
+
 /* RIGHT SIDE: MODE TOGGLE + SOCIALS -------------------------- */
 
 .ccg-header-right {
     position: absolute;
     right: 38px;
-    top: 34px;
+    top: 26px;
 
     display: flex;
     align-items: center;
     gap: 14px;
+
+    transition:
+        top 0.22s ease-out,
+        gap 0.22s ease-out,
+        transform 0.22s ease-out;
+}
+
+.ccg-header.ccg-header--scrolled .ccg-header-right {
+    top: 16px;
+    gap: 10px;
+    transform: scale(0.9);
 }
 
 /* MODE TOGGLE */
@@ -146,6 +226,10 @@ a {
     box-shadow:
         0 0 14px #00d4ff,
         0 0 32px #006cff;
+    transition:
+        transform 0.18s ease-out,
+        box-shadow 0.18s ease-out,
+        background 0.18s ease-out;
 }
 
 #ccg-mode-toggle:hover {
@@ -208,6 +292,105 @@ body[data-mode="amiga"] #ccg-mode-toggle {
 
 .social-btn:hover {
     transform: scale(1.08);
+}
+
+/* ============================================================
+   RESPONSIVE HEADER TWEAKS
+   ============================================================ */
+
+@media (max-width: 960px) {
+    .ccg-header-inner {
+        gap: 14px;
+    }
+
+    .ccg-header-brand {
+        gap: 4px;
+    }
+
+    .ccg-brand-title {
+        font-size: 1.4rem;
+    }
+
+    .ccg-header.ccg-header--scrolled .ccg-brand-title {
+        font-size: 1.15rem;
+    }
+
+    .ccg-header-right {
+        right: 22px;
+    }
+}
+
+@media (max-width: 768px) {
+    .ccg-header {
+        padding: 10px 12px 12px;
+    }
+
+    .ccg-header-inner {
+        gap: 10px;
+    }
+
+    .ccg-header-brand {
+        flex-direction: row;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .ccg-logo {
+        width: 56px;
+    }
+
+    .ccg-header.ccg-header--scrolled .ccg-logo {
+        width: 42px;
+    }
+
+    .ccg-brand-title {
+        font-size: 1.1rem;
+    }
+
+    .ccg-brand-subtitle {
+        display: none;
+    }
+
+    .ccg-nav {
+        gap: 18px;
+        padding: 6px 12px;
+    }
+
+    .nav-item {
+        font-size: 0.75rem;
+    }
+
+    .ccg-header-right {
+        position: static;
+        transform: scale(0.9);
+        align-self: center;
+        order: -1;
+    }
+
+    .ccg-header.ccg-header--scrolled .ccg-header-right {
+        transform: scale(0.85);
+    }
+}
+
+@media (max-width: 520px) {
+    .ccg-nav {
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .nav-item {
+        font-size: 0.7rem;
+    }
+
+    #ccg-mode-toggle {
+        padding: 7px 16px;
+        font-size: 0.7rem;
+    }
+
+    .social-btn {
+        padding: 6px 10px;
+        font-size: 0.65rem;
+    }
 }
 
 /* ============================================================
