@@ -1,7 +1,7 @@
 /* ============================================================
-   HOME PAGE — OMEGA BUILD
+   HOME PAGE — OMEGA BUILD (FIXED HERO MODE DYNAMICS)
    Cheeky Commodore Gamer 😇🕹️👌
-   FINAL PRODUCTION VERSION
+   FINAL PRODUCTION VERSION — DYNAMIC C64/AMIGA HEROES
    ============================================================ */
 
 /* -----------------------------------------
@@ -63,7 +63,6 @@
     overflow: hidden;
 }
 
-/* Toggle pill halves */
 .ccg-mode-toggle-pill {
     flex: 1;
     text-align: center;
@@ -92,7 +91,6 @@
     transition: transform 0.25s ease-out;
 }
 
-/* Active positioning */
 body.ccg-mode-amiga .ccg-mode-toggle-knob {
     transform: translateX(72px);
 }
@@ -175,10 +173,10 @@ body.ccg-mode-amiga .ccg-mode-toggle-knob {
     background: #ff0000;
 }
 
-/* -----------------------------------------
-   OMEGA CINEMATIC HERO
-   4:1 STRIPS
------------------------------------------ */
+/* ============================================================
+   OMEGA CINEMATIC HERO — **DYNAMIC PER-MODE HERO IMAGES**
+   ============================================================ */
+
 .omega-hero {
     width: 100%;
     margin-bottom: 60px;
@@ -195,17 +193,22 @@ body.ccg-mode-amiga .ccg-mode-toggle-knob {
     background-repeat: no-repeat;
 }
 
-/* PRIMARY BANNER — YOU SUBSTITUTE BACKGROUND IMAGES */
-.omega-hero-strip--primary {
-    background-image: url("../images/hero/omega_primary.jpg");
+/* 🌟 PRIMARY BANNER — dynamic C64/Amiga backgrounds */
+body.ccg-mode-c64 .omega-hero-strip--primary {
+    background-image: url("../images/hero/ccg-hero-c64.png");
 }
 
+body.ccg-mode-amiga .omega-hero-strip--primary {
+    background-image: url("../images/hero/ccg-hero-amiga.png");
+}
+
+/* DARKENING OVERLAY FOR NEON TEXT */
 .omega-hero-overlay {
     position: absolute;
     inset: 0;
     background: linear-gradient(
         to bottom,
-        rgba(0,0,0,0.55),
+        rgba(0,0,0,0.45),
         rgba(0,0,0,0.75)
     );
     display: flex;
@@ -228,7 +231,7 @@ body.ccg-mode-amiga .ccg-mode-toggle-knob {
     opacity: 0.88;
 }
 
-/* SECONDARY STRIP ROW */
+/* SECONDARY MICRO-STRIPS */
 .omega-hero-strip-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -245,16 +248,13 @@ body.ccg-mode-amiga .ccg-mode-toggle-knob {
     overflow: hidden;
 }
 
-.omega-hero-strip--c64 {
-    background-image: url("../images/hero/strip_c64.jpg");
+/* 🌟 Uniform per mode — all strips switch together */
+body.ccg-mode-c64 .omega-hero-strip--link {
+    background-image: url("../images/hero/ccg-hero-c64.png");
 }
 
-.omega-hero-strip--amiga {
-    background-image: url("../images/hero/strip_amiga.jpg");
-}
-
-.omega-hero-strip--quiz {
-    background-image: url("../images/hero/strip_quiz.jpg");
+body.ccg-mode-amiga .omega-hero-strip--link {
+    background-image: url("../images/hero/ccg-hero-amiga.png");
 }
 
 .omega-hero-link-inner {
@@ -335,7 +335,6 @@ body.ccg-mode-amiga .ccg-mode-toggle-knob {
     gap: 16px;
 }
 
-/* Featured game panel art */
 .featured-game-art {
     width: 100%;
     height: 220px;
@@ -345,7 +344,6 @@ body.ccg-mode-amiga .ccg-mode-toggle-knob {
     background-position: center;
 }
 
-/* Featured video frame */
 .featured-video-frame {
     width: 100%;
     aspect-ratio: 16/9;
@@ -354,7 +352,6 @@ body.ccg-mode-amiga .ccg-mode-toggle-knob {
     overflow: hidden;
 }
 
-/* Buttons */
 .featured-panel-footer {
     margin-top: 16px;
     display: flex;
@@ -362,17 +359,15 @@ body.ccg-mode-amiga .ccg-mode-toggle-knob {
 }
 
 /* -----------------------------------------
-   GRIDS: GENRES, COLLECTIONS, HIGHLIGHTS, UTILITIES
+   GRIDS
 ----------------------------------------- */
+
 .home-grid {
     display: grid;
     gap: 22px;
 }
 
-.home-grid--genres {
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-}
-
+.home-grid--genres,
 .home-grid--collections,
 .home-grid--highlights,
 .home-grid--utilities {
