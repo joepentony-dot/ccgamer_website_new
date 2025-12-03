@@ -1,211 +1,200 @@
-/* -------------------------------------------------
-   UNIVERSAL MODAL WRAPPER
---------------------------------------------------*/
+/* ============================================================
+   CHEEKY COMMODORE GAMER — MODAL & OVERLAY SYSTEM
+   UNIVERSAL POPUPS • LIGHTBOXES • VIEWERS • ESC CLOSE
+   EPIC RETRO WINDOW SYSTEM 😇🕹️👌
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   OVERLAY BACKDROP
+------------------------------------------------------------ */
+
+.ccg-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 12, 0.78);
+    backdrop-filter: blur(12px);
+    z-index: 9000;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+}
+
+.ccg-modal-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+
+/* ------------------------------------------------------------
+   MODAL WRAPPER
+------------------------------------------------------------ */
 
 .ccg-modal {
     position: fixed;
-    inset: 0;
-    display: none; /* JS toggles this */
-    justify-content: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.85);
+    background: rgba(0, 0, 20, 0.78);
+    border: 2px solid var(--ccg-accent-strong);
+    border-radius: 16px;
+    box-shadow:
+        0 0 22px var(--ccg-accent),
+        inset 0 0 26px rgba(255, 255, 255, 0.12),
+        0 0 80px #000;
+    width: min(90%, 800px);
+    max-height: 86vh;
+    overflow: hidden;
+    z-index: 9990;
+
+    opacity: 0;
+    transition:
+        opacity 0.35s ease,
+        transform 0.35s ease;
+}
+
+.ccg-modal.active {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+
+/* ------------------------------------------------------------
+   MODAL HEADER
+------------------------------------------------------------ */
+
+.ccg-modal-header {
+    padding: 18px 26px;
+    background: rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    z-index: 200000;
-    background: rgba(0, 0, 0, 0.85);
-    padding: 20px;
-    animation: fadeIn 0.2s ease;
 }
-
-/* -------------------------------------------------
-   MODAL BOX
---------------------------------------------------*/
-
-.ccg-modal-box {
-    width: 90%;
-    max-width: 500px;
-    padding: 25px;
-    border-radius: 6px;
-    box-shadow: 0 0 20px #000;
-    font-family: 'VT323', monospace;
-    text-align: center;
-    animation: slideDown 0.25s ease;
-}
-
-/* -------------------------------------------------
-   C64 THEME (inherit from body)
---------------------------------------------------*/
-
-body.c64-mode .ccg-modal-box {
-    background: rgba(20, 20, 50, 0.95);
-    border: 3px solid #6c5eb5;     /* light blue border */
-    color: #b8c76f;                /* C64 text */
-}
-
-body.c64-mode .ccg-modal-title {
-    color: #ffffff;
-    text-shadow: 2px 2px #000;
-}
-
-/* -------------------------------------------------
-   AMIGA THEME
---------------------------------------------------*/
-
-body.amiga-mode .ccg-modal-box {
-    background: #ffffff;
-    border: 3px solid #0055AA;
-    color: #000;
-    font-family: 'Amiga Topaz', monospace;
-}
-
-body.amiga-mode .ccg-modal-title {
-    color: #0055AA;
-    text-shadow: none;
-}
-
-/* -------------------------------------------------
-   HEADINGS
---------------------------------------------------*/
 
 .ccg-modal-title {
-    font-size: 2rem;
-    margin-bottom: 12px;
-}
-
-.ccg-modal-desc {
-    font-size: 1.4rem;
-    margin-bottom: 20px;
-}
-
-/* -------------------------------------------------
-   BUTTON WRAPPER
---------------------------------------------------*/
-
-.ccg-modal-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-/* -------------------------------------------------
-   BUTTONS – BASE STYLE
---------------------------------------------------*/
-
-.ccg-modal-btn {
-    cursor: pointer;
-    padding: 12px;
-    font-family: inherit;
-    font-size: 1.4rem;
-    text-transform: uppercase;
-    transition: all 0.2s ease;
-}
-
-/* C64 Buttons */
-body.c64-mode .ccg-modal-btn {
-    background: #352879;
-    color: #fff;
-    border: 2px solid #fff;
-}
-
-body.c64-mode .ccg-modal-btn:hover {
-    background: #fff;
-    color: #352879;
-}
-
-/* Amiga Buttons */
-body.amiga-mode .ccg-modal-btn {
-    background: #EEEEEE;
-    color: #000;
-    border: 2px solid #0055AA;
-    font-weight: bold;
-}
-
-body.amiga-mode .ccg-modal-btn:hover {
-    background: #0055AA;
-    color: #fff;
-}
-
-/* -------------------------------------------------
-   SPECIAL BUTTONS
---------------------------------------------------*/
-
-.ccg-btn-green {
-    border-color: #00ff00 !important;
-    color: #00ff00 !important;
-}
-
-.ccg-btn-red {
-    border-color: #ff3333 !important;
-    color: #ff3333 !important;
-}
-
-/* -------------------------------------------------
-   SECRET CHEAT LIST
---------------------------------------------------*/
-
-.ccg-cheat-list {
-    list-style: none;
-    padding: 0;
-    margin: 15px 0;
-    max-height: 320px;
-    overflow-y: auto;
-}
-
-.ccg-cheat-list li {
-    padding: 10px;
-    margin-bottom: 8px;
+    font-family: "Press Start 2P";
+    color: var(--ccg-accent);
     font-size: 1.2rem;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.25);
+    letter-spacing: 0.06em;
+}
+
+.ccg-modal-close {
+    font-size: 1.5rem;
     cursor: pointer;
-    transition: all 0.15s ease;
+    color: #ffffff;
+    text-shadow: 0 0 12px var(--ccg-accent-strong);
+    transition: transform 0.18s ease;
 }
 
-.ccg-cheat-list li:hover {
-    background: rgba(255,255,255,1);
-    color: #000;
-    transform: translateX(6px);
+.ccg-modal-close:hover {
+    transform: scale(1.2);
 }
 
-body.amiga-mode .ccg-cheat-list li {
-    background: #f2f2f2;
-    border: 1px solid #ccc;
+
+/* ------------------------------------------------------------
+   MODAL BODY
+------------------------------------------------------------ */
+
+.ccg-modal-body {
+    padding: 26px;
+    overflow-y: auto;
+    max-height: calc(86vh - 70px);
+    color: #d8ecff;
+    line-height: 1.65;
 }
 
-body.amiga-mode .ccg-cheat-list li:hover {
-    background: #0055AA;
-    color: #fff;
+
+/* ------------------------------------------------------------
+   MODAL FOOTER (optional)
+------------------------------------------------------------ */
+
+.ccg-modal-footer {
+    padding: 16px 26px;
+    background: rgba(255, 255, 255, 0.03);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: right;
 }
 
-/* -------------------------------------------------
-   SCROLLBAR RESTYLE
---------------------------------------------------*/
-
-.ccg-cheat-list::-webkit-scrollbar {
-    width: 6px;
+.ccg-modal-footer .ccg-btn {
+    margin-left: 12px;
 }
 
-.ccg-cheat-list::-webkit-scrollbar-thumb {
-    background: #888;
+
+/* ------------------------------------------------------------
+   ESC HINT
+------------------------------------------------------------ */
+
+.ccg-modal-esc-hint {
+    font-size: 0.8rem;
+    color: #a8d9ff;
+    opacity: 0.8;
+    margin-top: 6px;
+    text-align: right;
 }
 
-body.c64-mode .ccg-cheat-list::-webkit-scrollbar-thumb {
-    background: #6c5eb5;
+
+/* ------------------------------------------------------------
+   IMAGE LIGHTBOX MODE
+------------------------------------------------------------ */
+
+.ccg-lightbox-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 10px;
+    box-shadow:
+        0 0 26px rgba(255, 255, 255, 0.25),
+        0 0 60px rgba(0, 0, 0, 1);
 }
 
-body.amiga-mode .ccg-cheat-list::-webkit-scrollbar-thumb {
-    background: #0055AA;
+.ccg-modal.lightbox .ccg-modal-body {
+    padding: 0;
 }
 
-/* -------------------------------------------------
-   RESPONSIVE
---------------------------------------------------*/
+
+/* ------------------------------------------------------------
+   MODE-SPECIFIC GLOWS
+------------------------------------------------------------ */
+
+body[data-mode="amiga"] .ccg-modal {
+    border-color: #ff41f9;
+    box-shadow:
+        0 0 26px rgba(255, 0, 200, 0.8),
+        inset 0 0 32px rgba(255, 100, 255, 0.25),
+        0 0 80px #000;
+}
+
+body[data-mode="zx"] .ccg-modal {
+    border-color: #00ff00;
+    box-shadow:
+        0 0 26px #00ff00,
+        inset 0 0 32px rgba(0, 255, 0, 0.25),
+        0 0 80px #000;
+}
+
+
+/* ------------------------------------------------------------
+   RESPONSIVE IMPROVEMENTS
+------------------------------------------------------------ */
 
 @media (max-width: 600px) {
-    .ccg-modal-box {
-        padding: 18px;
+
+    .ccg-modal {
+        width: 94%;
+        max-height: 90vh;
+        border-radius: 12px;
     }
+
+    .ccg-modal-header {
+        padding: 14px 20px;
+    }
+
     .ccg-modal-title {
-        font-size: 1.6rem;
+        font-size: 1rem;
     }
-    .ccg-modal-btn {
-        font-size: 1.2rem;
+
+    .ccg-modal-body {
+        padding: 20px;
     }
 }
