@@ -1,0 +1,217 @@
+/* ============================================================
+   CCG SOCIALS — HEADER ICONS + HOME SOCIAL GRID
+   Hybrid white → colour on hover, neon glow 😇🕹️👌
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   HEADER SOCIAL ICON STRIP
+------------------------------------------------------------ */
+
+.ccg-header-socials {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ccg-header-social {
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    padding: 4px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        radial-gradient(circle at top, rgba(0,255,255,0.15), rgba(0,40,60,0.9));
+    border: 1px solid rgba(0,255,255,0.75);
+
+    box-shadow:
+        0 0 10px rgba(0,255,255,0.6),
+        0 0 36px rgba(0,0,0,1);
+
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.ccg-header.shrink .ccg-header-social {
+    transform: scale(0.88);
+}
+
+.ccg-header-social img {
+    width: 100%;
+    height: 100%;
+    display: block;
+
+    /* White-ish default: desaturate + brighten */
+    filter: grayscale(1) brightness(1.8) contrast(0.7);
+    transition: filter 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+/* Hover → full colour + bigger neon */
+.ccg-header-social:hover img {
+    filter: none;
+    transform: scale(1.08);
+}
+
+.ccg-header-social:hover {
+    box-shadow:
+        0 0 16px rgba(0,255,255,0.9),
+        0 0 52px rgba(0,0,0,1);
+}
+
+/* Amiga mode — shift glow tint */
+body[data-mode="amiga"] .ccg-header-social {
+    background:
+        radial-gradient(circle at top, rgba(255,0,200,0.14), rgba(40,0,60,0.96));
+    border-color: rgba(255,120,255,0.9);
+    box-shadow:
+        0 0 12px rgba(255,120,255,0.8),
+        0 0 40px rgba(0,0,0,1);
+}
+
+body[data-mode="amiga"] .ccg-header-social:hover {
+    box-shadow:
+        0 0 18px rgba(255,160,255,1),
+        0 0 60px rgba(0,0,0,1);
+}
+
+/* ------------------------------------------------------------
+   HOME PAGE SOCIAL GRID (big cards under hero)
+------------------------------------------------------------ */
+
+.ccg-section-socials {
+    margin-bottom: 90px;
+}
+
+.ccg-socials-grid {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 22px;
+}
+
+.ccg-social-card {
+    padding: 12px 14px;
+    border-radius: 20px;
+
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    background:
+        radial-gradient(circle at top left, rgba(0,255,255,0.18), transparent 60%),
+        linear-gradient(150deg, #02071b, #010413 45%, #02061b);
+
+    border: 1px solid rgba(0,255,255,0.5);
+
+    box-shadow:
+        0 0 18px rgba(0,255,255,0.5),
+        0 0 60px rgba(0,0,0,1);
+
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.ccg-social-card:hover {
+    transform: translateY(-3px);
+    box-shadow:
+        0 0 24px rgba(0,255,255,0.85),
+        0 0 80px rgba(0,0,0,1);
+    border-color: rgba(0,255,255,0.9);
+}
+
+/* Amiga mode tint */
+body[data-mode="amiga"] .ccg-social-card {
+    background:
+        radial-gradient(circle at top left, rgba(255,0,200,0.2), transparent 60%),
+        linear-gradient(150deg, #120034, #010715);
+    border-color: rgba(255,120,255,0.7);
+    box-shadow:
+        0 0 20px rgba(255,120,255,0.7),
+        0 0 70px rgba(0,0,0,1);
+}
+
+body[data-mode="amiga"] .ccg-social-card:hover {
+    border-color: rgba(255,180,255,0.95);
+}
+
+/* Icon circle in card */
+.ccg-social-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        radial-gradient(circle at top, rgba(0,255,255,0.22), rgba(0,30,55,0.9));
+
+    box-shadow:
+        0 0 10px rgba(0,255,255,0.7),
+        0 0 32px rgba(0,0,0,1);
+}
+
+body[data-mode="amiga"] .ccg-social-card-icon {
+    background:
+        radial-gradient(circle at top, rgba(255,0,200,0.25), rgba(20,0,60,0.95));
+    box-shadow:
+        0 0 12px rgba(255,140,255,0.9),
+        0 0 36px rgba(0,0,0,1);
+}
+
+.ccg-social-card-icon img {
+    width: 70%;
+    height: 70%;
+    display: block;
+
+    filter: grayscale(1) brightness(1.8) contrast(0.7);
+    transition: filter 0.22s ease, transform 0.22s ease;
+}
+
+.ccg-social-card:hover .ccg-social-card-icon img {
+    filter: none;
+    transform: scale(1.08);
+}
+
+.ccg-social-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.ccg-social-title {
+    font-family: "Press Start 2P";
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #e8fbff;
+}
+
+.ccg-social-sub {
+    font-size: 0.82rem;
+    color: #a7ddff;
+    opacity: 0.9;
+    margin-top: 3px;
+}
+
+/* ------------------------------------------------------------
+   RESPONSIVE
+------------------------------------------------------------ */
+
+@media (max-width: 768px) {
+    .ccg-header-socials {
+        gap: 6px;
+    }
+
+    .ccg-header-social {
+        width: 26px;
+        height: 26px;
+        padding: 3px;
+    }
+
+    .ccg-social-card {
+        padding: 10px 12px;
+    }
+}
