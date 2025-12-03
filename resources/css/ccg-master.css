@@ -1,25 +1,242 @@
-/* --------------------------------------------
-   CCG MASTER STYLESHEET
-   Loads all modular CSS in correct order
----------------------------------------------*/
+/* ============================================================
+   GLOBAL EPIC HEADER — Cheeky Commodore Gamer 😇🕹️👌
+   Applies across ALL pages (C64 + Amiga modes supported)
+============================================================ */
 
-/* MODE (C64/Amiga theming engine) */
-@import url('ccg-mode.css');
+/* Reset common header area */
+.ccg-header,
+.epic-header,
+header.ccg-header {
+    width: 100%;
+    background: linear-gradient(
+        180deg,
+        rgba(0, 60, 110, 0.40) 0%,
+        rgba(0, 20, 40, 0.90) 80%
+    );
+    padding: 18px 0 24px;
+    border-bottom: 1px solid rgba(0,180,255,0.25);
+    box-shadow:
+        0 0 30px rgba(0,150,255,0.30),
+        0 0 60px rgba(0,120,255,0.15),
+        inset 0 0 25px rgba(0,90,255,0.12);
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+    backdrop-filter: blur(6px);
+}
 
-/* ZXSpectrum UI (menus, D-pad, overlays) */
-@import url('ccg-zx.css');
+/* Inner header layout */
+.ccg-header-left,
+.ccg-header-right {
+    display: flex;
+    align-items: center;
+}
 
-/* Global Animations (pulse, blink, flicker, CRT, power, etc.) */
-@import url('ccg-anim.css');
+.ccg-header {
+    display: flex;
+    justify-content: space-between;
+    width: 92%;
+    margin: auto;
+    align-items: center;
+}
 
-/* Special Effects (VHS, Matrix, BSOD, Pacman, nuclear flash, etc.) */
-@import url('ccg-effects.css');
+/* ============================================================
+   LOGO + BRAND TEXT
+============================================================ */
 
-/* Modal Windows System */
-@import url('ccg-modal.css');
+.ccg-logo {
+    width: 75px;
+    height: auto;
+    margin-right: 12px;
+    filter: drop-shadow(0 0 10px #00edff) drop-shadow(0 0 18px #008aff);
+}
 
-/* Core Global Styling */
-@import url('genre.css');
+.ccg-brand {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
 
-/* Homepage Layout */
-@import url('home.css');
+.ccg-brand-title {
+    font-family: "Orbitron", sans-serif;
+    font-size: 1.35rem;
+    letter-spacing: 1px;
+    font-weight: 700;
+    color: #7ee6ff;
+    text-shadow: 0 0 10px #00eaff, 0 0 20px #008cff;
+}
+
+.ccg-brand-subtitle {
+    margin-top: 4px;
+    font-size: 0.75rem;
+    color: #9ad9ff;
+}
+
+/* ============================================================
+   NAVIGATION LINKS — EPIC MODE
+============================================================ */
+
+.ccg-main-nav {
+    display: flex;
+    gap: 36px;
+    align-items: center;
+}
+
+.nav-link {
+    color: #b9dcff;
+    text-decoration: none;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    font-family: "Press Start 2P", monospace;
+    position: relative;
+    transition: 0.25s ease;
+}
+
+/* Hover glow */
+.nav-link:hover {
+    color: #ffffff;
+    text-shadow:
+        0 0 10px #00caff,
+        0 0 22px #008aff;
+}
+
+/* Active link glow */
+.nav-link-active {
+    color: #ffffff;
+    text-shadow:
+        0 0 12px #ff00f7,
+        0 0 32px #b300ff;
+}
+
+/* ============================================================
+   MODE TOGGLE (C64 / AMIGA)
+============================================================ */
+
+#ccg-mode-toggle,
+.ccg-mode-toggle {
+    padding: 10px 24px;
+    border-radius: 40px;
+    border: none;
+    background: radial-gradient(circle, #0075ff, #003cff);
+    color: #e3f6ff;
+    font-family: "Orbitron";
+    cursor: pointer;
+    transition: 0.3s ease;
+    box-shadow:
+        0 0 12px #009aff,
+        0 0 28px #0044ff;
+    letter-spacing: 1px;
+}
+
+#ccg-mode-toggle:hover,
+.ccg-mode-toggle:hover {
+    transform: scale(1.05);
+    box-shadow:
+        0 0 20px #00e5ff,
+        0 0 44px #0066ff;
+}
+
+/* When in AMIGA mode */
+body[data-mode="amiga"] #ccg-mode-toggle {
+    background: radial-gradient(circle, #ff8df7, #c400ff);
+    box-shadow: 0 0 12px #ff7dff, 0 0 28px #a900ff;
+}
+
+/* ============================================================
+   SOCIAL BUTTONS (GLOBAL)
+============================================================ */
+
+.ccg-header-social-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.ccg-social-pill {
+    padding: 9px 20px;
+    border-radius: 30px;
+    font-family: "Orbitron";
+    font-size: 0.75rem;
+    text-decoration: none;
+    letter-spacing: 1px;
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: 0.28s ease;
+}
+
+.ccg-social-youtube {
+    background: #ff003c;
+    box-shadow: 0 0 14px #ff004c, 0 0 32px #ff005a;
+}
+
+.ccg-social-patreon {
+    background: #ff7a00;
+    box-shadow: 0 0 14px #ff7a00, 0 0 32px #ff5500;
+}
+
+.ccg-social-paypal {
+    background: #0075ff;
+    box-shadow: 0 0 14px #007bff, 0 0 32px #0090ff;
+}
+
+.ccg-social-x {
+    background: #0e0e0e;
+    box-shadow: 0 0 12px #ffffff22;
+}
+
+.ccg-social-discord {
+    background: #5562ea;
+    box-shadow: 0 0 14px #6675ff, 0 0 30px #4455ff;
+}
+
+.ccg-social-pill:hover {
+    transform: scale(1.1);
+    filter: brightness(1.2);
+}
+
+/* ============================================================
+   RESPONSIVE HEADER (GLOBAL)
+============================================================ */
+@media (max-width: 980px) {
+    .ccg-header {
+        flex-wrap: wrap;
+        gap: 14px;
+        padding-bottom: 28px;
+    }
+
+    .ccg-main-nav {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .ccg-header-right {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 680px) {
+    .ccg-brand-title {
+        font-size: 1.05rem;
+    }
+
+    .ccg-logo {
+        width: 55px;
+    }
+
+    .ccg-main-nav {
+        gap: 16px;
+    }
+
+    .ccg-social-pill {
+        padding: 7px 12px;
+        font-size: 0.65rem;
+    }
+
+    #ccg-mode-toggle {
+        padding: 7px 18px;
+    }
+}
