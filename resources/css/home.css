@@ -1,6 +1,7 @@
 /* ============================================================
    HOME.CSS — PHASE OMEGA (Balanced Header + Balanced Hero)
    Cheeky Commodore Gamer 😇🕹️👌
+   STEP 1: Header + Hero Fixes
    ============================================================ */
 
 
@@ -8,7 +9,7 @@
    GLOBAL ROOTS
 ------------------------------------------------------------ */
 :root {
-    --ccg-header-height: 82px;       /* Medium Header */
+    --ccg-header-height: 96px;       /* Slightly taller so subtitle fits cleanly */
     --ccg-header-padding-y: 10px;
     --ccg-logo-height: 52px;         /* Medium Logo */
     --ccg-hero-height: 68vh;         /* Medium Hero */
@@ -35,7 +36,7 @@
     top: 0;
     width: 100%;
     height: var(--ccg-header-height);
-    background: rgba(0, 0, 0, 0.76);
+    background: rgba(0, 0, 0, 0.86);
     backdrop-filter: blur(6px);
     border-bottom: 1px solid rgba(112, 255, 240, 0.25);
     z-index: 999;
@@ -63,6 +64,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
+    line-height: 1.1;
 }
 
 .ccg-logo {
@@ -75,15 +77,15 @@
     font-size: 14px;
     font-weight: 700;
     color: #fff;
-    margin-top: 3px;
+    margin-top: 4px;
     text-shadow: 0 0 4px var(--ccg-accent);
 }
 
 .ccg-brand-subtitle {
-    font-size: 12px;
-    opacity: 0.85;
+    font-size: 11px;
+    opacity: 0.9;
     color: #d4fefe;
-    margin-top: -2px;
+    margin-top: 0;
 }
 
 
@@ -102,6 +104,8 @@
     color: #d8ffff;
     text-decoration: none;
     padding: 6px 4px;
+    min-width: 70px;          /* keeps “ALL / GAMES” centred nicely */
+    text-align: center;       /* multi-line nav labels align centrally */
     transition: color 0.2s ease, text-shadow 0.2s ease;
 }
 
@@ -131,7 +135,7 @@
 .ccg-header-social-icon img {
     width: 20px;
     height: 20px;
-    opacity: 0.85;
+    opacity: 0.9;
     transition: opacity 0.2s ease, filter 0.2s ease, transform 0.2s ease;
 }
 
@@ -141,9 +145,9 @@
     transform: translateY(-1px);
 }
 
-/* Make Twitter/X icon visible on dark background */
+/* Make Twitter/X icon clearly visible on dark background */
 .ccg-header-social-icon img[alt*="Twitter"] {
-    filter: brightness(2.4);
+    filter: invert(1) drop-shadow(0 0 6px #ffffff);
 }
 
 
@@ -260,11 +264,12 @@
     pointer-events: none;
 }
 
+/* Default: hide both, then enable per-mode to stop both showing */
 .ccg-hero-image {
     position: absolute;
     width: 42vw;
     max-width: 620px;
-    opacity: 0; /* default, we fade per-mode below */
+    opacity: 0 !important;
     transform: translateY(20px);
     transition: opacity 0.35s ease, transform 0.35s ease;
 }
@@ -277,24 +282,24 @@
     right: 8%;
 }
 
-/* Mode-specific hero art */
+/* Mode-specific hero art (FORCE override) */
 body[data-mode="c64"] .ccg-hero-image-c64 {
-    opacity: 0.75;
+    opacity: 0.8 !important;
     transform: translateY(0);
 }
 
 body[data-mode="c64"] .ccg-hero-image-amiga {
-    opacity: 0;
+    opacity: 0 !important;
     transform: translateY(30px);
 }
 
 body[data-mode="amiga"] .ccg-hero-image-amiga {
-    opacity: 0.8;
+    opacity: 0.85 !important;
     transform: translateY(0);
 }
 
 body[data-mode="amiga"] .ccg-hero-image-c64 {
-    opacity: 0;
+    opacity: 0 !important;
     transform: translateY(30px);
 }
 
@@ -343,15 +348,16 @@ body[data-mode="amiga"] .ccg-hero-image-c64 {
     margin-bottom: 10px;
 }
 
-/* Make X in social grid visible too (if dark) */
+/* Make X in social grid visible too */
 .ccg-social-icon img[alt*="Twitter"] {
-    filter: brightness(1.8);
+    filter: invert(1) drop-shadow(0 0 6px #ffffff);
 }
 
 
 
 /* ============================================================
    FEATURED SECTION
+   (unchanged in STEP 1 – we’ll polish more in a later step)
 ============================================================ */
 .ccg-section-featured {
     margin-top: 60px;
@@ -425,7 +431,7 @@ body[data-mode="amiga"] .ccg-hero-image-c64 {
 
 
 /* ============================================================
-   GENRE GRID (Stable Layout)
+   GENRE GRID (we’ll polish more later)
 ============================================================ */
 .ccg-section-genres {
     margin-top: 50px;
