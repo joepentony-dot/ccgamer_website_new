@@ -1,318 +1,376 @@
 /* ============================================================
-   CHEEKY COMMODORE GAMER — HOME PAGE MASTER LAYOUT
-   FINAL BUILD • TIGHT HERO • SVG SOCIALS • FEATURED SECTIONS
+   HOME.CSS — PHASE OMEGA (Balanced Header + Balanced Hero)
+   Cheeky Commodore Gamer 😇🕹️👌
    ============================================================ */
 
 
 /* ------------------------------------------------------------
-   MAIN WRAPPER
+   GLOBAL ROOTS
 ------------------------------------------------------------ */
-
-.ccg-main {
-    padding-top: 32px;
-    padding-bottom: 80px;
-    overflow-x: hidden;
+:root {
+    --ccg-header-height: 82px;       /* Medium Header */
+    --ccg-header-padding-y: 10px;
+    --ccg-logo-height: 52px;         /* Medium Logo */
+    --ccg-hero-height: 68vh;         /* Medium Hero */
+    --ccg-hero-min-height: 520px;
 }
 
-.ccg-section {
-    margin: 80px auto;
-    max-width: 1500px;
-    width: 100%;
-    padding: 0 40px;
+
+/* ------------------------------------------------------------
+   PAGE SHELL
+------------------------------------------------------------ */
+.ccg-page-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-.ccg-section-header {
-    text-align: center;
-    margin-bottom: 40px;
-}
-
-.ccg-section-title {
-    font-size: 2.1rem;
-    font-family: "Press Start 2P";
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #e7faff;
-    margin-bottom: 10px;
-}
-
-.ccg-section-subtitle {
-    font-size: 1.1rem;
-    color: #aad8ff;
-    opacity: 0.9;
-}
 
 
 /* ============================================================
-   HERO SECTION (TIGHT VERSION)
+   HEADER (Balanced Version)
 ============================================================ */
-
-.ccg-hero {
-    position: relative;
-    height: 80vh;
-    min-height: 620px;
-    max-height: 980px;
+.ccg-header {
+    position: fixed;
+    top: 0;
     width: 100%;
-    max-width: 1500px;
-    margin: 0 auto 80px auto;
-    padding: 28px 40px;
-    overflow: hidden;
+    height: var(--ccg-header-height);
+    background: rgba(0, 0, 0, 0.76);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid rgba(112, 255, 240, 0.25);
+    z-index: 999;
+    transition: transform 0.35s ease, background 0.25s ease;
 }
 
+.ccg-header-inner {
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    height: 100%;
+    padding: var(--ccg-header-padding-y) 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+
+/* ------------------------------------------------------------
+   BRAND AREA
+------------------------------------------------------------ */
+.ccg-header-brand {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.ccg-logo {
+    height: var(--ccg-logo-height);
+    width: auto;
+    display: block;
+}
+
+.ccg-brand-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    margin-top: 3px;
+    text-shadow: 0 0 4px var(--ccg-accent);
+}
+
+.ccg-brand-subtitle {
+    font-size: 12px;
+    opacity: 0.85;
+    color: #d4fefe;
+    margin-top: -2px;
+}
+
+
+
+/* ------------------------------------------------------------
+   NAVIGATION
+------------------------------------------------------------ */
+.ccg-nav {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+}
+
+.ccg-nav .nav-item {
+    font-size: 14px;
+    color: #d8ffff;
+    text-decoration: none;
+    padding: 6px 4px;
+    transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.ccg-nav .nav-item:hover {
+    color: var(--ccg-accent);
+    text-shadow: 0 0 6px var(--ccg-accent);
+}
+
+.nav-active {
+    color: var(--ccg-accent) !important;
+    text-shadow: 0 0 6px var(--ccg-accent);
+}
+
+
+
+/* ------------------------------------------------------------
+   HEADER RIGHT SIDE (Toggle + Social Icons)
+------------------------------------------------------------ */
+.ccg-header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+
+/* Social icons prepared to align neatly */
+.ccg-header-social-icon img {
+    width: 20px;
+    height: 20px;
+    opacity: 0.85;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.ccg-header-social-icon:hover img {
+    opacity: 1;
+    filter: drop-shadow(0 0 6px var(--ccg-accent));
+}
+
+
+
+/* ============================================================
+   HERO SECTION (Balanced Height)
+============================================================ */
+.ccg-hero {
+    position: relative;
+    width: 100%;
+    height: var(--ccg-hero-height);
+    min-height: var(--ccg-hero-min-height);
+    margin-top: var(--ccg-header-height);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+
+/* Hero background layers */
 .ccg-hero-background {
     position: absolute;
     inset: 0;
     z-index: 1;
-}
-
-.ccg-hero-overlay-grid,
-.ccg-hero-overlay-starfield,
-.ccg-hero-scanlines {
-    position: absolute;
-    inset: 0;
     pointer-events: none;
 }
 
-/* HERO IMAGES */
+.ccg-hero-overlay-grid {
+    position: absolute;
+    inset: 0;
+    opacity: 0.2;
+    background-image: url("../images/overlays/hero_grid.png");
+    background-size: cover;
+}
+
+.ccg-hero-overlay-starfield {
+    position: absolute;
+    inset: 0;
+    background-image: url("../images/overlays/starfield.png");
+    background-size: cover;
+    opacity: 0.35;
+}
+
+.ccg-hero-scanlines {
+    position: absolute;
+    inset: 0;
+    opacity: 0.12;
+    background-image: url("../images/overlays/scanlines.png");
+    background-size: cover;
+}
+
+
+
+/* Hero content layout */
+.ccg-hero-content {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    max-width: 850px;
+    padding: 20px;
+}
+
+.ccg-hero-title {
+    font-size: 52px;
+    line-height: 1.1;
+    font-weight: 800;
+    color: #fff;
+    text-shadow: 0 0 10px var(--ccg-accent);
+}
+
+.ccg-hero-badge {
+    color: #fff;
+    opacity: 0.85;
+    letter-spacing: 2px;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.ccg-hero-text {
+    margin: 20px auto;
+    color: #d8ffff;
+    font-size: 17px;
+    line-height: 1.6;
+}
+
+
+
+/* Hero buttons */
+.ccg-hero-actions {
+    margin-top: 26px;
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+}
+
+.ccg-hero-footnote {
+    font-size: 13px;
+    margin-top: 25px;
+    opacity: 0.75;
+}
+
+
+
+/* Hero artwork (C64 + Amiga) */
 .ccg-hero-images {
     position: absolute;
     inset: 0;
     z-index: 2;
     display: flex;
-    align-items: center;
     justify-content: center;
-    transform: translateY(-2%);
+    align-items: center;
+    pointer-events: none;
 }
 
 .ccg-hero-image {
     position: absolute;
-    max-height: 88%;
-    object-fit: contain;
-    pointer-events: none;
-    transition: opacity 0.4s ease, transform 0.4s ease;
-}
-
-.ccg-hero-image-c64 { opacity: 1; }
-.ccg-hero-image-amiga { opacity: 0; }
-
-body[data-mode="amiga"] .ccg-hero-image-c64 {
-    opacity: 0;
-    transform: translateY(8px);
-}
-
-body[data-mode="amiga"] .ccg-hero-image-amiga {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* HERO TEXT CONTENT */
-.ccg-hero-content {
-    position: relative;
-    z-index: 3;
+    width: 42vw;
     max-width: 620px;
-    text-align: left;
-    transform: translateY(-14px);
+    opacity: 0.62;
+    transform: translateY(10px);
 }
 
-.ccg-hero-badge {
-    color: #a8eaff;
-    font-size: 0.85rem;
-    letter-spacing: 0.18em;
-    margin-bottom: 14px;
+.ccg-hero-image-c64 {
+    left: 8%;
 }
 
-.ccg-hero-title {
-    font-family: "Press Start 2P";
-    font-size: 2.8rem;
-    line-height: 1.28;
-    color: #e0f8ff;
-    margin-bottom: 22px;
+.ccg-hero-image-amiga {
+    right: 8%;
 }
 
-.ccg-hero-text {
-    font-size: 1.1rem;
-    color: #b9e5ff;
-    opacity: 0.95;
-    line-height: 1.65;
-    margin-bottom: 30px;
-}
-
-.ccg-hero-actions {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 32px;
-}
-
-.ccg-hero-footnote {
-    font-size: 0.9rem;
-    color: #aee3ff;
-}
-
-.ccg-inline-highlight {
-    color: #39d9ff;
-}
 
 
 /* ============================================================
-   SOCIAL GRID — UNDER HERO (SVG VERSION)
+   SOCIAL GRID BELOW HERO
 ============================================================ */
-
 .ccg-section-socials {
-    max-width: 1400px;
-    margin: 0 auto 70px auto;
-    padding: 0 40px;
+    margin-top: 40px;
+    padding: 0 20px;
 }
 
 .ccg-social-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 22px;
-    align-items: stretch;
+    max-width: 1100px;
+    margin: 0 auto;
 }
 
+
+
+/* BUTTONS */
 .ccg-social-btn {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 12px;
+    background: rgba(0,0,0,0.45);
+    border-radius: 10px;
+    padding: 20px;
     text-decoration: none;
-    color: #d4f4ff;
-    padding: 14px 18px;
-    border-radius: 12px;
-    border: 1px solid rgba(140, 200, 255, 0.3);
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(6px);
-    transition: 0.22s ease;
+    color: #d8ffff;
+    border: 1px solid rgba(112,255,240,0.25);
+    transition: 0.2s ease;
 }
 
 .ccg-social-btn:hover {
-    background: rgba(80, 130, 255, 0.12);
-    border-color: var(--ccg-accent-strong);
-    box-shadow: 0 0 14px var(--ccg-accent);
+    border-color: var(--ccg-accent);
+    box-shadow: 0 0 12px var(--ccg-accent);
 }
 
 .ccg-social-icon img {
-    width: 28px;
-    height: 28px;
+    width: 38px;
+    height: 38px;
+    margin-bottom: 10px;
 }
 
-.ccg-social-label {
-    font-size: 1rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-}
 
 
 /* ============================================================
-   FEATURED CONTENT GRID
+   FEATURED SECTION
 ============================================================ */
-
-.ccg-featured-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
-    gap: 30px;
-    max-width: 1400px;
-    margin: 0 auto;
+.ccg-section-featured {
+    margin-top: 60px;
 }
 
 
-/* ============================================================
-   GENRE GRID
-============================================================ */
 
+/* ============================================================
+   GENRE GRID (Stable Layout)
+============================================================ */
 .ccg-genre-grid {
+    margin-top: 40px;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 22px;
-    max-width: 1400px;
-    margin: 0 auto;
+    gap: 26px;
 }
+
 
 
 /* ============================================================
    COLLECTIONS GRID
 ============================================================ */
-
 .ccg-collections-grid {
+    margin-top: 32px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 24px;
-    max-width: 1200px;
-    margin: 0 auto;
 }
 
 
+
 /* ============================================================
-   RANDOM HIGHLIGHTS STRIP
+   HIGHLIGHTS STRIP
 ============================================================ */
+.ccg-section-highlights {
+    margin-top: 60px;
+}
 
 .ccg-game-strip {
     display: flex;
-    gap: 18px;
+    gap: 24px;
     overflow-x: auto;
-    padding: 10px 4px;
+    padding: 15px 10px;
 }
 
-.ccg-game-strip::-webkit-scrollbar {
-    height: 8px;
-}
-
-.ccg-game-strip::-webkit-scrollbar-thumb {
-    background: rgba(130, 180, 255, 0.3);
-    border-radius: 6px;
-}
 
 
 /* ============================================================
-   UTILITIES GRID
+   FOOTER
 ============================================================ */
-
-.ccg-utility-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-    gap: 32px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-
-/* ============================================================
-   MOBILE OPTIMISATIONS
-============================================================ */
-
-@media (max-width: 900px) {
-
-    .ccg-hero {
-        height: auto;
-        min-height: 540px;
-        padding: 32px 20px;
-    }
-
-    .ccg-hero-images {
-        transform: translateY(-4%);
-    }
-
-    .ccg-hero-image {
-        max-width: 110%;
-        max-height: 380px;
-        opacity: 0.3;
-        filter: blur(1.5px);
-    }
-
-    .ccg-hero-content {
-        max-width: 100%;
-        text-align: center;
-        transform: none;
-    }
-
-    .ccg-hero-title {
-        font-size: 2.2rem;
-    }
-
-    .ccg-hero-text {
-        font-size: 1.05rem;
-    }
-
-    .ccg-hero-actions {
-        justify-content: center;
-        flex-wrap: wrap;
-    }
+.ccg-footer {
+    margin-top: 70px;
+    padding: 25px;
+    border-top: 1px solid rgba(112,255,240,0.2);
+    text-align: center;
 }
