@@ -1,364 +1,221 @@
 /* ============================================================
-   HOME.CSS — EPIC HOME PAGE
-   FULL-HEIGHT HERO • NEON STARFIELD • CRISP ALIGNMENT
+   HOME PAGE — CCG ULTRA EPIC LAYOUT (TIGHT HERO VERSION)
+   This stylesheet controls ONLY the Home page.
    ============================================================ */
 
 /* ------------------------------------------------------------
-   PAGE BASE
+   GENERAL LAYOUT
 ------------------------------------------------------------ */
 
-.home-page.ccg-body {
-    background:
-        radial-gradient(circle at top, #02162b 0%, #010714 55%, #000108 100%);
-    color: #e5f5ff;
-}
-
-.ccg-page-shell {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
 .ccg-main {
-    padding-top: 40px;
+    padding-top: 32px; /* Reduced */
     padding-bottom: 80px;
     overflow-x: hidden;
 }
 
+.ccg-section {
+    margin: 80px auto;
+    max-width: 1500px;
+    width: 100%;
+    padding: 0 40px;
+}
+
+.ccg-section-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.ccg-section-title {
+    font-size: 2.1rem;
+    font-family: "Press Start 2P";
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #e7faff;
+    margin-bottom: 10px;
+}
+
+.ccg-section-subtitle {
+    font-size: 1.1rem;
+    color: #aad8ff;
+    opacity: 0.9;
+}
+
 /* ------------------------------------------------------------
-   FULL-HEIGHT HERO SECTION
+   HERO SECTION (TIGHT VERSION)
 ------------------------------------------------------------ */
 
 .ccg-hero {
     position: relative;
-    height: 88vh;             /* FULL HEIGHT HERO */
-    min-height: 680px;        /* Prevent collapse */
-    max-height: 1080px;       /* Prevent absurd size */
-
+    height: 80vh;          /* Previously 88vh */
+    min-height: 620px;     /* Previously 680px */
+    max-height: 980px;
     width: 100%;
     max-width: 1500px;
-    margin: 0 auto 120px auto;
-
-    padding: 40px 46px;
-    border-radius: 34px;
-
-    display: grid;
-    grid-template-columns: minmax(0,1fr) minmax(0,1.15fr);
-    gap: 32px;
-
-    background:
-        radial-gradient(circle at top left, rgba(0,255,255,0.28), transparent 60%),
-        radial-gradient(circle at bottom right, rgba(255,0,180,0.35), transparent 60%),
-        linear-gradient(145deg, #02152a 0%, #02051a 45%, #01030f 100%);
-
-    box-shadow:
-        0 0 55px rgba(0,255,255,0.22),
-        0 0 150px rgba(0,0,0,0.95);
-
+    margin: 0 auto 80px auto;
+    padding: 28px 40px;    /* Reduced */
     overflow: hidden;
 }
 
-/* ------------------------------------------------------------
-   HERO BACKGROUND LAYERS
------------------------------------------------------------- */
-
+/* Background */
 .ccg-hero-background {
     position: absolute;
     inset: 0;
-    pointer-events: none;
-    z-index: 0;
+    z-index: 1;
 }
 
-.ccg-hero-overlay-grid {
-    position: absolute;
-    inset: 0;
-    opacity: 0.28;
-    background-image:
-        linear-gradient(rgba(0,140,255,0.14) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,140,255,0.14) 1px, transparent 1px);
-    background-size: 70px 70px;
-}
-
-.ccg-hero-overlay-starfield {
-    position: absolute;
-    inset: 0;
-    opacity: 0.25;
-    mix-blend-mode: screen;
-
-    background-image:
-        radial-gradient(circle at 30% 20%, rgba(255,255,255,0.6) 0, transparent 55%),
-        radial-gradient(circle at 70% 60%, rgba(0,255,255,0.55) 0, transparent 55%),
-        radial-gradient(circle at 50% 85%, rgba(0,200,255,0.45) 0, transparent 55%);
-}
-
+.ccg-hero-overlay-grid,
+.ccg-hero-overlay-starfield,
 .ccg-hero-scanlines {
     position: absolute;
     inset: 0;
-    opacity: 0.55;
     pointer-events: none;
-    background-image: repeating-linear-gradient(
-        to bottom,
-        rgba(0,0,0,0.6) 0px,
-        rgba(0,0,0,0.6) 1px,
-        rgba(0,0,0,0.25) 3px,
-        rgba(0,0,0,0.15) 5px
-    );
 }
 
-/* ------------------------------------------------------------
-   HERO ARTWORK — ALIGNMENT FIXED
------------------------------------------------------------- */
-
+/* Images */
 .ccg-hero-images {
-    z-index: 1;
-    position: relative;
-
+    position: absolute;
+    inset: 0;
+    z-index: 2;
     display: flex;
+    align-items: center;
     justify-content: center;
-    align-items: flex-end;
 
-    padding-bottom: 20px;
+    /* Slight tightening tweak so images appear more balanced */
+    transform: translateY(-2%);
 }
 
 .ccg-hero-image {
-    max-height: 82%;
-    max-width: 100%;
-    height: auto;
-
+    position: absolute;
+    max-height: 88%;
     object-fit: contain;
+    pointer-events: none;
 
-    filter:
-        drop-shadow(0 0 40px rgba(0,255,255,0.75))
-        drop-shadow(0 0 70px rgba(0,0,0,0.9));
-
-    transform: translateY(18px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
+    transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
-/* Make C64 default visible */
 .ccg-hero-image-c64 {
     opacity: 1;
 }
 
-/* Amiga hidden until mode switch */
 .ccg-hero-image-amiga {
-    position: absolute;
     opacity: 0;
-    transform: translateY(28px) scale(0.96);
 }
 
-/* ACTIVE AMIGA MODE */
 body[data-mode="amiga"] .ccg-hero-image-c64 {
     opacity: 0;
-    transform: translateY(30px) scale(0.95);
+    transform: translateY(8px);
 }
 
 body[data-mode="amiga"] .ccg-hero-image-amiga {
     opacity: 1;
-    transform: translateY(14px) scale(1);
+    transform: translateY(0);
 }
 
-/* ------------------------------------------------------------
-   HERO TEXT BLOCK
------------------------------------------------------------- */
-
+/* HERO CONTENT */
 .ccg-hero-content {
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    justify-content: center;
+    position: relative;
+    z-index: 3;
+    max-width: 620px;
+    text-align: left;
+
+    /* Slight upward adjustment to align visually with reduced padding */
+    transform: translateY(-14px);
 }
 
 .ccg-hero-badge {
-    display: inline-flex;
-    align-items: center;
-
-    padding: 10px 24px;
-    border-radius: 999px;
-
-    color: #b3fdff;
-    border: 1px solid rgba(0,255,255,0.65);
-
-    font-size: 0.9rem;
+    color: #a8eaff;
+    font-size: 0.85rem;
     letter-spacing: 0.18em;
+    margin-bottom: 14px;
+    opacity: 0.9;
     text-transform: uppercase;
-
-    background: rgba(0,12,30,0.85);
-
-    box-shadow:
-        0 0 12px rgba(0,255,255,0.75),
-        0 0 50px rgba(0,0,0,0.9);
 }
 
 .ccg-hero-title {
-    font-family: "Press Start 2P", "VT323", monospace;
-    font-size: 2.9rem;
-    line-height: 1.25;
-    text-transform: uppercase;
-
-    color: #e9ffff;
-
-    text-shadow:
-        0 0 16px rgba(0,255,255,0.85),
-        0 0 40px rgba(0,150,255,0.5);
+    font-family: "Press Start 2P";
+    font-size: 2.8rem;
+    line-height: 1.28;
+    color: #e0f8ff;
+    margin-bottom: 22px;
 }
 
 .ccg-hero-text {
     font-size: 1.1rem;
-    max-width: 42rem;
-    color: #c2e9ff;
-    line-height: 1.7;
+    color: #b9e5ff;
+    opacity: 0.95;
+    line-height: 1.65;
+    margin-bottom: 30px;
 }
 
-.ccg-inline-highlight {
-    color: #6fffff;
-}
-
+/* HERO ACTIONS */
 .ccg-hero-actions {
     display: flex;
     gap: 16px;
+    margin-bottom: 32px;
 }
 
 .ccg-hero-footnote {
-    margin-top: 2px;
-    font-size: 0.88rem;
-    letter-spacing: 0.11em;
-    text-transform: uppercase;
-    color: rgba(170,230,255,0.85);
+    font-size: 0.9rem;
+    color: #aee3ff;
+    opacity: 0.9;
+}
+
+.ccg-inline-highlight {
+    color: #39d9ff;
+}
+
+/* ------------------------------------------------------------
+   SOCIAL GRID (UNDER HERO)
+------------------------------------------------------------ */
+.ccg-section-socials {
+    margin-top: 40px;
 }
 
 /* ------------------------------------------------------------
    FEATURED GRID
 ------------------------------------------------------------ */
 
-.ccg-section-featured {
-    margin-bottom: 100px;
-}
-
 .ccg-featured-grid {
-    max-width: 1240px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+    gap: 30px;
+    max-width: 1400px;
     margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 34px;
-}
-
-/* Shared card layout (title block already handled in master.css) */
-
-.ccg-card-body {
-    display: grid;
-    grid-template-columns: minmax(0,1.05fr) minmax(0,1.2fr);
-    gap: 20px;
-}
-
-.ccg-card-featured-video .ccg-card-body {
-    grid-template-columns: minmax(0,1.1fr) minmax(0,1fr);
-}
-
-.ccg-video-frame {
-    border-radius: 22px;
-    overflow: hidden;
-    box-shadow:
-        0 0 16px rgba(255,0,170,0.75),
-        0 0 60px rgba(0,0,0,1);
-}
-
-.ccg-video-embed {
-    width: 100%;
-    height: 100%;
-    min-height: 260px;
-    border: none;
 }
 
 /* ------------------------------------------------------------
    GENRE GRID
 ------------------------------------------------------------ */
 
-.ccg-genre-grid,
-.ccg-collections-grid {
-    max-width: 1240px;
-    margin: 0 auto 100px auto;
-
+.ccg-genre-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(190px,1fr));
-    gap: 28px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 22px;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
-.ccg-genre-card {
-    padding: 6px;
-    border-radius: 22px;
+/* ------------------------------------------------------------
+   COLLECTIONS GRID
+------------------------------------------------------------ */
 
-    background:
-        radial-gradient(circle at top, rgba(255,0,200,0.7), transparent 65%),
-        radial-gradient(circle at bottom, rgba(0,255,255,0.7), transparent 65%),
-        linear-gradient(145deg, #120034, #010715);
-
-    box-shadow:
-        0 0 18px rgba(0,255,255,0.7),
-        0 0 75px rgba(0,0,0,1);
-
-    transition: 0.2s ease;
-}
-
-.ccg-genre-card:hover {
-    transform: translateY(-3px);
-    box-shadow:
-        0 0 26px rgba(255,0,200,0.9),
-        0 0 95px rgba(0,0,0,1);
-}
-
-.ccg-genre-image {
-    width: 100%;
-    border-radius: 18px;
-    display: block;
+.ccg-collections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 /* ------------------------------------------------------------
    HIGHLIGHTS STRIP
 ------------------------------------------------------------ */
 
-.ccg-section-highlights .ccg-section-header {
-    text-align: center;
-}
-
 .ccg-game-strip {
-    max-width: 1240px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(230px,1fr));
-    gap: 24px;
-}
-
-.ccg-game-strip-card {
-    border-radius: 20px;
-    overflow: hidden;
-
-    background:
-        radial-gradient(circle at top left, rgba(0,255,255,0.16), transparent 60%),
-        linear-gradient(170deg,#02071b,#010413 50%,#02061f);
-
-    box-shadow:
-        0 0 18px rgba(0,255,255,0.4),
-        0 0 65px rgba(0,0,0,1);
-}
-
-.ccg-game-strip-info {
-    padding: 12px 14px 16px 14px;
-}
-
-.ccg-game-strip-title {
-    font-family: "Press Start 2P";
-    font-size: 0.82rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #e7fbff;
-    margin-bottom: 6px;
-}
-
-.ccg-game-strip-meta {
-    font-size: 0.88rem;
-    color: #9ddcff;
+    display: flex;
+    gap: 18px;
+    overflow-x: auto;
+    padding: 10px 4px;
 }
 
 /* ------------------------------------------------------------
@@ -366,111 +223,52 @@ body[data-mode="amiga"] .ccg-hero-image-amiga {
 ------------------------------------------------------------ */
 
 .ccg-utility-grid {
-    max-width: 1240px;
-    margin: 0 auto 100px auto;
-
     display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
-    gap: 22px;
-}
-
-.ccg-utility-grid .ccg-card-body {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-/* ------------------------------------------------------------
-   FOOTER
------------------------------------------------------------- */
-
-.ccg-footer {
-    margin-top: auto;
-    padding: 30px 20px;
-
-    background: radial-gradient(circle at top, #011325, #00040a 60%, #000000 100%);
-    border-top: 1px solid rgba(0,255,255,0.2);
-    box-shadow: 0 -10px 50px rgba(0,0,0,1);
-}
-
-.ccg-footer-inner {
-    max-width: 1240px;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 32px;
+    max-width: 1200px;
     margin: 0 auto;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-}
-
-.ccg-footer-text {
-    font-size: 0.85rem;
-    color: #9edcff;
-}
-
-.ccg-footer-links {
-    display: flex;
-    gap: 12px;
-    font-size: 0.85rem;
-}
-
-.ccg-footer-links a:hover {
-    text-decoration: underline;
 }
 
 /* ------------------------------------------------------------
-   RESPONSIVE BEHAVIOUR
+   MOBILE REFINEMENTS
 ------------------------------------------------------------ */
 
-@media (max-width: 1220px) {
-    .ccg-hero {
-        grid-template-columns: 1fr 1fr;
-    }
-}
+@media (max-width: 900px) {
 
-@media (max-width: 1024px) {
     .ccg-hero {
-        grid-template-columns: 1fr;
         height: auto;
-        padding: 36px 26px;
-        gap: 20px;
+        min-height: 540px;
+        padding: 32px 20px;
     }
 
     .ccg-hero-images {
-        order: -1;
-        justify-content: center;
+        transform: translateY(-4%);
+    }
+
+    .ccg-hero-image {
+        max-width: 110%;
+        max-height: 380px;
+        opacity: 0.3;
+        filter: blur(1.5px);
+    }
+
+    .ccg-hero-content {
+        max-width: 100%;
+        text-align: center;
+        transform: none;
     }
 
     .ccg-hero-title {
-        font-size: 2.3rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .ccg-hero-title {
-        font-size: 1.8rem;
+        font-size: 2.2rem;
     }
 
     .ccg-hero-text {
-        font-size: 0.98rem;
+        font-size: 1.05rem;
     }
 
-    .ccg-featured-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .ccg-video-embed {
-        min-height: 200px;
-    }
-}
-
-@media (max-width: 520px) {
-    .ccg-hero {
-        padding: 24px 16px;
-        gap: 14px;
-    }
-
-    .ccg-hero-title {
-        font-size: 1.55rem;
+    .ccg-hero-actions {
+        justify-content: center;
+        flex-wrap: wrap;
     }
 }
