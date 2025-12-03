@@ -240,3 +240,123 @@ body[data-mode="amiga"] #ccg-mode-toggle {
         padding: 7px 18px;
     }
 }
+/* =========================================================
+   EPIC MODE HEADER TUNING (GLOBAL)
+   - Locks ~180px header height on desktop
+   - Keeps neon, but stops it crushing content
+   ========================================================= */
+
+.ccg-header {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    min-height: 180px;
+    padding: 22px 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    background: radial-gradient(circle at top, #041a30 0%, #020514 55%, #010308 100%);
+    box-shadow:
+        0 0 40px rgba(0, 255, 255, 0.4),
+        0 0 90px rgba(0, 0, 0, 0.95);
+}
+
+/* Slightly smaller brand + nav so it doesn’t look oversized on home */
+.ccg-brand-title {
+    font-size: 1.35rem;
+}
+
+.ccg-brand-subtitle {
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+.ccg-main-nav .nav-link {
+    font-size: 1.05rem;
+    letter-spacing: 0.06em;
+}
+
+/* Calmer neon bar under header (stops slicing through content) */
+.ccg-header::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 10px;
+    background:
+        radial-gradient(circle at 10%, rgba(0, 255, 255, 0.9), transparent 60%),
+        radial-gradient(circle at 90%, rgba(255, 0, 128, 0.85), transparent 60%),
+        linear-gradient(to right,
+            rgba(0, 255, 255, 0.0),
+            rgba(0, 255, 255, 0.65),
+            rgba(255, 0, 200, 0.8),
+            rgba(0, 255, 255, 0.65),
+            rgba(0, 255, 255, 0.0));
+    opacity: 0.85;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Social row spacing tweak */
+.ccg-header-right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+/* Mobile + tablet */
+@media (max-width: 1024px) {
+    .ccg-header {
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 16px 20px;
+        gap: 16px;
+        min-height: 140px;
+    }
+
+    .ccg-main-nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 14px;
+    }
+
+    .ccg-main-nav .nav-link {
+        font-size: 0.95rem;
+    }
+
+    .ccg-header-right {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .ccg-header::after {
+        bottom: -4px;
+        height: 8px;
+    }
+}
+
+@media (max-width: 640px) {
+    .ccg-header {
+        padding: 10px 12px;
+        gap: 10px;
+    }
+
+    .ccg-brand-text {
+        display: none; /* logo only on tiny screens for more room */
+    }
+
+    .ccg-main-nav {
+        gap: 10px;
+    }
+
+    .ccg-main-nav .nav-link {
+        font-size: 0.85rem;
+    }
+
+    .ccg-header-right {
+        gap: 10px;
+    }
+}
