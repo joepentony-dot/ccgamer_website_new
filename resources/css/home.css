@@ -1,439 +1,925 @@
 /* ============================================================
-   HOME PAGE — OMEGA BUILD (FIXED HERO MODE DYNAMICS)
+   HOME PAGE — OMEGA STAGE 2 (TIGHT HERO BUILD)
    Cheeky Commodore Gamer 😇🕹️👌
-   FINAL PRODUCTION VERSION — DYNAMIC C64/AMIGA HEROES
+   Layout + visual polish only. No JS logic touched.
+   ------------------------------------------------------------
+   This file is HOME-ONLY styling. Global stuff lives in:
+   - ccg-master.css
+   - ccg-mode.css
+   - ccg-effects.css
+   - ccg-anim.css
+   - ccg-modal.css
    ============================================================ */
 
 /* -----------------------------------------
    PAGE CONTAINER
 ----------------------------------------- */
+
 .ccg-page--home {
-    width: 100%;
-    max-width: 1680px;
-    margin: 0 auto;
-    padding: 40px 32px 80px;
     position: relative;
-    z-index: 2;
+    min-height: 100vh;
+    padding: 1.5rem 1rem 2.5rem;
 }
 
-/* -----------------------------------------
-   HEADER — OMEGA EPIC LAYOUT
------------------------------------------ */
-.ccg-header--omega {
-    width: 100%;
-    margin: 0 auto 40px;
-    padding-top: 40px;
-    text-align: center;
-    position: relative;
-    z-index: 10;
+@media (min-width: 900px) {
+    .ccg-page--home {
+        padding: 2.25rem 2rem 3rem;
+    }
 }
 
-/* Top bar: logo + mode toggle */
-.ccg-header-top {
-    width: 100%;
-    max-width: 1650px;
-    margin: 0 auto 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+/* Background layers (sit behind everything) */
 
-.ccg-logo-img {
-    width: 88px;
-    height: auto;
-    opacity: 0.9;
-    transition: opacity 0.2s ease-out;
-}
-
-.ccg-logo-img:hover {
-    opacity: 1;
-}
-
-/* System mode toggle container */
-.ccg-mode-toggle {
-    display: flex;
-    align-items: center;
-    position: relative;
-    width: 150px;
-    height: 48px;
-    border-radius: 40px;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.2);
-    cursor: pointer;
+.ccg-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -3;
     overflow: hidden;
 }
 
-.ccg-mode-toggle-pill {
-    flex: 1;
-    text-align: center;
-    padding: 6px 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    z-index: 2;
-}
-
-.ccg-mode-toggle-label {
-    font-size: 0.75rem;
-    opacity: 0.85;
-    margin-top: 2px;
-}
-
-/* Knob */
-.ccg-mode-toggle-knob {
+/* Soft starfield / nebula */
+.ccg-bg-starfield {
     position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 70px;
-    height: 42px;
-    border-radius: 40px;
-    background: rgba(0,0,0,0.35);
-    transition: transform 0.25s ease-out;
+    inset: 0;
+    background:
+        radial-gradient(circle at 20% 10%, rgba(102, 178, 255, 0.35), transparent 55%),
+        radial-gradient(circle at 80% 70%, rgba(255, 105, 180, 0.35), transparent 55%),
+        radial-gradient(circle at 10% 80%, rgba(0, 255, 200, 0.25), transparent 55%),
+        radial-gradient(circle at 90% 20%, rgba(255, 255, 255, 0.18), transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.98));
+    opacity: 0.9;
 }
 
-body.ccg-mode-amiga .ccg-mode-toggle-knob {
-    transform: translateX(72px);
+/* Subtle grid */
+.ccg-bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    opacity: 0.45;
+    mix-blend-mode: soft-light;
+}
+
+/* CRT overlay */
+.ccg-bg-crt-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.4) 0px,
+            rgba(0, 0, 0, 0.4) 1px,
+            rgba(0, 0, 0, 0.15) 2px,
+            rgba(0, 0, 0, 0.15) 3px
+        );
+    pointer-events: none;
+    opacity: 0.45;
 }
 
 /* -----------------------------------------
-   HEADER MAIN TITLE AREA
+   OMEGA HEADER — FUSED LOGO / TOGGLE / TITLE / SOCIALS
 ----------------------------------------- */
+
+.ccg-header--omega {
+    margin: 0 auto 1.75rem;
+    max-width: 1220px;
+    background: linear-gradient(
+        135deg,
+        rgba(6, 12, 40, 0.98),
+        rgba(15, 5, 35, 0.98)
+    );
+    border-radius: 18px;
+    border: 1px solid rgba(120, 200, 255, 0.45);
+    box-shadow:
+        0 0 32px rgba(0, 204, 255, 0.25),
+        0 0 80px rgba(255, 0, 170, 0.18);
+    padding: 1rem 1.25rem 1.3rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.ccg-header--omega::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 10% 0%, rgba(0, 255, 255, 0.18), transparent 60%),
+        radial-gradient(circle at 90% 100%, rgba(255, 0, 200, 0.18), transparent 60%);
+    mix-blend-mode: screen;
+    opacity: 0.9;
+    pointer-events: none;
+}
+
+.ccg-header-inner {
+    position: relative;
+    z-index: 1;
+}
+
+/* Top bar: logo + toggle */
+
+.ccg-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 0.9rem;
+}
+
+.ccg-header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.ccg-logo-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ccg-logo-img {
+    display: block;
+    height: 46px;
+    width: auto;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 0 6px rgba(0, 255, 255, 0.8));
+}
+
+/* Right side is handled by omega-mode-toggle.css for the button itself */
+
+/* Header main: title + socials */
+
 .ccg-header-main {
-    margin-top: 14px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.4fr);
+    gap: 1.5rem;
+    align-items: stretch;
+}
+
+@media (max-width: 960px) {
+    .ccg-header-main {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1.25rem;
+    }
 }
 
 .ccg-header-title-block {
-    text-align: center;
-    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .ccg-header-title {
-    font-size: 2.85rem;
-    line-height: 1.05;
-    font-weight: 900;
-    text-transform: uppercase;
+    line-height: 1;
+    margin: 0 0 0.4rem;
 }
 
 .ccg-header-title-top {
     display: block;
-    font-size: 2.2rem;
-    margin-bottom: 6px;
+    font-family: var(--ccg-font-wide, "Press Start 2P", system-ui, sans-serif);
+    font-size: 1.4rem;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: #6bf3ff;
+    text-shadow:
+        0 0 6px rgba(0, 255, 255, 0.9),
+        0 0 14px rgba(0, 180, 255, 0.9);
 }
 
 .ccg-header-title-bottom {
     display: block;
-    font-size: 3.2rem;
+    margin-top: 0.28rem;
+    font-family: var(--ccg-font-main, "VT323", monospace);
+    font-size: 2.3rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #ffd6ff;
+    text-shadow:
+        0 0 8px rgba(255, 0, 170, 0.9),
+        0 0 18px rgba(255, 0, 255, 0.8);
 }
 
 .ccg-header-subtitle {
-    margin-top: 14px;
-    font-size: 1.15rem;
-    opacity: 0.9;
-    max-width: 900px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0.35rem 0 0;
+    font-size: 0.93rem;
+    line-height: 1.5;
+    color: rgba(230, 240, 255, 0.9);
+    max-width: 32rem;
 }
 
-/* -----------------------------------------
-   SOCIAL GRID
------------------------------------------ */
+/* SOCIAL GRID */
+
 .ccg-header-social-wrap {
-    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: stretch;
 }
 
 .ccg-social-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 18px;
-    max-width: 1100px;
-    margin: 0 auto;
-}
-
-.ccg-social-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 18px;
-    border-radius: 12px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-    transition: transform 0.15s ease-out, box-shadow 0.2s ease-out;
-}
-
-.ccg-social-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 0 18px rgba(0,150,255,0.25);
-}
-
-.ccg-social-cta {
-    font-size: 0.85rem;
-    font-weight: 700;
-    padding: 6px 12px;
-    border-radius: 6px;
-    background: #ff0000;
-}
-
-/* ============================================================
-   OMEGA CINEMATIC HERO — DYNAMIC PER-MODE HERO IMAGES
-   ============================================================ */
-
-.omega-hero {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.65rem;
     width: 100%;
-    margin-bottom: 60px;
 }
 
-.omega-hero-strip {
-    position: relative;
-    width: 100%;
-    height: 260px;
-    border-radius: 14px;
-    overflow: hidden;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
-/* Primary banner — dynamic C64/Amiga backgrounds */
-body.ccg-mode-c64 .omega-hero-strip--primary {
-    background-image: url("../images/hero/ccg-hero-c64.png");
-}
-
-body.ccg-mode-amiga .omega-hero-strip--primary {
-    background-image: url("../images/hero/ccg-hero-amiga.png");
-}
-
-/* Darkening overlay for neon text */
-.omega-hero-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        to bottom,
-        rgba(0,0,0,0.45),
-        rgba(0,0,0,0.75)
-    );
-    display: flex;
-    align-items: flex-end;
-    padding: 30px 40px;
-}
-
-.omega-hero-title {
-    font-size: 2.2rem;
-    font-weight: 800;
-    margin-bottom: 6px;
-}
-
-.omega-hero-title span {
-    color: var(--ccg-accent);
-}
-
-.omega-hero-subtitle {
-    font-size: 1.1rem;
-    opacity: 0.88;
-}
-
-/* Secondary micro-strips */
-.omega-hero-strip-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 18px;
-    margin-top: 14px;
-}
-
-.omega-hero-strip--link {
-    height: 160px;
-    position: relative;
-    background-size: cover;
-    background-position: center;
-    border-radius: 14px;
-    overflow: hidden;
-}
-
-/* Uniform per mode — all strips switch together */
-body.ccg-mode-c64 .omega-hero-strip--link {
-    background-image: url("../images/hero/ccg-hero-c64.png");
-}
-
-body.ccg-mode-amiga .omega-hero-strip--link {
-    background-image: url("../images/hero/ccg-hero-amiga.png");
-}
-
-.omega-hero-link-inner {
-    position: absolute;
-    bottom: 14px;
-    left: 20px;
-}
-
-.omega-hero-link-label {
-    font-size: 1.3rem;
-    font-weight: 700;
-}
-
-.omega-hero-link-tag {
-    font-size: 0.9rem;
-    opacity: 0.75;
-}
-
-/* -----------------------------------------
-   HOME SECTION FRAMEWORK
------------------------------------------ */
-.home-section {
-    margin-bottom: 70px;
-    text-align: center;
-}
-
-.home-section-header {
-    margin-bottom: 30px;
-}
-
-.home-section-title {
-    font-size: 1.9rem;
-    letter-spacing: 1.2px;
-    font-weight: 800;
-    text-transform: uppercase;
-    margin-bottom: 6px;
-}
-
-.home-section-subtitle {
-    opacity: 0.85;
-    max-width: 720px;
-    margin: 0 auto;
-}
-
-/* -----------------------------------------
-   FEATURED GAME + VIDEO PANELS
------------------------------------------ */
-.home-featured-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 36px;
-}
-
-.featured-panel {
-    background: rgba(255,255,255,0.045);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 16px;
-    padding: 22px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.featured-panel-header {
-    text-align: left;
-    margin-bottom: 16px;
-}
-
-.featured-panel-title {
-    font-size: 1.4rem;
-    font-weight: 800;
-    margin-bottom: 4px;
-}
-
-.featured-panel-body {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.featured-game-art {
-    width: 100%;
-    height: 220px;
-    background: rgba(255,255,255,0.03);
-    border-radius: 12px;
-    background-size: cover;
-    background-position: center;
-}
-
-.featured-video-frame {
-    width: 100%;
-    aspect-ratio: 16/9;
-    background: #000;
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.featured-panel-footer {
-    margin-top: 16px;
-    display: flex;
-    gap: 14px;
-}
-
-/* -----------------------------------------
-   GRIDS
------------------------------------------ */
-.home-grid {
-    display: grid;
-    gap: 22px;
-}
-
-.home-grid--genres,
-.home-grid--collections,
-.home-grid--highlights,
-.home-grid--utilities {
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-}
-
-.home-card {
-    display: block;
-    background: rgba(255,255,255,0.04);
-    border-radius: 12px;
-    padding: 18px 20px;
-    text-align: left;
-    border: 1px solid rgba(255,255,255,0.12);
-    transition: transform 0.15s ease-out, box-shadow 0.2s ease-out;
-}
-
-.home-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 0 18px rgba(0,150,255,0.25);
-}
-
-.home-card-title {
-    font-size: 1.25rem;
-    font-weight: 800;
-    margin-bottom: 6px;
-}
-
-.home-card-text {
-    opacity: 0.8;
-    font-size: 0.95rem;
-}
-
-/* -----------------------------------------
-   FOOTER
------------------------------------------ */
-.ccg-footer {
-    text-align: center;
-    opacity: 0.8;
-    margin-top: 90px;
-}
-
-.ccg-footer-text {
-    margin: 4px 0;
-}
-
-.ccg-footer-text--small {
-    font-size: 0.85rem;
-    opacity: 0.65;
-}
-
-/* -----------------------------------------
-   RESPONSIVE TWEAKS
------------------------------------------ */
-@media (max-width: 1200px) {
-    .home-featured-grid {
-        grid-template-columns: 1fr;
+@media (max-width: 1160px) {
+    .ccg-social-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
 @media (max-width: 720px) {
-    .omega-hero-strip {
-        height: 200px;
+    .ccg-social-grid {
+        grid-template-columns: minmax(0, 1fr);
     }
-    .omega-hero-strip--link {
-        height: 140px;
+}
+
+.ccg-social-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0.55rem 0.7rem;
+    border-radius: 12px;
+    border: 1px solid rgba(170, 220, 255, 0.4);
+    background: radial-gradient(circle at 0% 0%, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.92));
+    text-decoration: none;
+    color: #f5f7ff;
+    font-size: 0.8rem;
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.65);
+    overflow: hidden;
+    transition:
+        transform 160ms ease-out,
+        box-shadow 160ms ease-out,
+        border-color 160ms ease-out,
+        background 160ms ease-out;
+}
+
+.ccg-social-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    mix-blend-mode: screen;
+    background:
+        radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.25), transparent 55%),
+        radial-gradient(circle at 90% 90%, rgba(255, 255, 255, 0.25), transparent 55%);
+    pointer-events: none;
+    transition: opacity 160ms ease-out;
+}
+
+.ccg-social-main {
+    z-index: 1;
+}
+
+.ccg-social-label {
+    display: block;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.18rem;
+}
+
+.ccg-social-tagline {
+    display: block;
+    font-size: 0.78rem;
+    opacity: 0.9;
+}
+
+.ccg-social-cta {
+    z-index: 1;
+    margin-top: 0.32rem;
+    align-self: flex-start;
+    padding: 0.15rem 0.52rem;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+/* Per-network colour accents */
+
+.ccg-social-card--youtube {
+    border-color: rgba(255, 80, 80, 0.7);
+    background: radial-gradient(circle at 0% 0%, rgba(70, 0, 0, 0.85), rgba(0, 0, 0, 0.95));
+}
+
+.ccg-social-card--patreon {
+    border-color: rgba(255, 120, 80, 0.7);
+}
+
+.ccg-social-card--paypal {
+    border-color: rgba(0, 140, 255, 0.7);
+}
+
+.ccg-social-card--discord {
+    border-color: rgba(114, 137, 218, 0.7);
+}
+
+.ccg-social-card--x {
+    border-color: rgba(200, 200, 200, 0.6);
+}
+
+/* Hover */
+
+.ccg-social-card:hover,
+.ccg-social-card:focus-visible {
+    transform: translateY(-2px);
+    box-shadow:
+        0 0 28px rgba(0, 200, 255, 0.25),
+        0 0 60px rgba(255, 0, 200, 0.18);
+    border-color: rgba(255, 255, 255, 0.85);
+}
+
+.ccg-social-card:hover::before,
+.ccg-social-card:focus-visible::before {
+    opacity: 1;
+}
+
+/* -----------------------------------------
+   OMEGA HERO — TIGHT 4:1 CINEMATIC STRIPS
+----------------------------------------- */
+
+.omega-hero {
+    max-width: 1220px;
+    margin: 0 auto 2.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+/* Primary strip (4:1) */
+
+.omega-hero-strip {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(135, 215, 255, 0.4);
+    box-shadow:
+        0 0 40px rgba(0, 0, 0, 0.9),
+        0 0 24px rgba(0, 200, 255, 0.25);
+    background: radial-gradient(circle at 10% 10%, #050914, #02030a);
+}
+
+.omega-hero-strip--primary {
+    aspect-ratio: 4 / 1;
+    min-height: 150px;
+}
+
+.omega-hero-media {
+    position: absolute;
+    inset: 0;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    filter: saturate(1.1) contrast(1.08) brightness(0.9);
+    transform: scale(1.02);
+}
+
+/* Dynamic hero image per mode */
+
+body[data-ccg-mode="c64"] .omega-hero-media {
+    background-image: url("../images/hero/ccg-hero-c64.png");
+}
+
+body[data-ccg-mode="amiga"] .omega-hero-media {
+    background-image: url("../images/hero/ccg-hero-amiga.png");
+}
+
+/* Overlay & text */
+
+.omega-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 0% 0%, rgba(0, 255, 255, 0.35), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(255, 0, 200, 0.4), transparent 55%),
+        linear-gradient(to right, rgba(1, 2, 12, 0.95), rgba(3, 0, 20, 0.7));
+}
+
+.omega-hero-text {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    padding: 1.1rem 1.35rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+@media (min-width: 900px) {
+    .omega-hero-text {
+        padding: 1.3rem 1.7rem;
     }
-    .ccg-header-title {
-        font-size: 2.2rem;
+}
+
+.omega-hero-title {
+    margin: 0 0 0.35rem;
+    font-family: var(--ccg-font-main, "VT323", monospace);
+    font-size: 1.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #e8f7ff;
+    text-shadow:
+        0 0 6px rgba(0, 255, 255, 0.9),
+        0 0 16px rgba(0, 120, 255, 0.8);
+}
+
+@media (min-width: 900px) {
+    .omega-hero-title {
+        font-size: 1.9rem;
+    }
+}
+
+.omega-hero-title span {
+    color: #ffd0ff;
+    text-shadow:
+        0 0 6px rgba(255, 0, 200, 0.9),
+        0 0 16px rgba(255, 80, 190, 0.8);
+}
+
+.omega-hero-subtitle {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    max-width: 40rem;
+    color: rgba(235, 245, 255, 0.95);
+}
+
+/* Secondary strip row */
+
+.omega-hero-strip-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+@media (max-width: 900px) {
+    .omega-hero-strip-row {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.omega-hero-strip--link {
+    aspect-ratio: 4 / 1;
+    min-height: 80px;
+    text-decoration: none;
+    color: #f5f7ff;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    transition:
+        transform 150ms ease-out,
+        box-shadow 150ms ease-out,
+        border-color 150ms ease-out,
+        background 150ms ease-out;
+}
+
+/* Base backgrounds for link strips */
+
+.omega-hero-strip--c64 {
+    background-image:
+        linear-gradient(120deg, rgba(0, 0, 0, 0.9), rgba(0, 24, 60, 0.9));
+}
+
+.omega-hero-strip--amiga {
+    background-image:
+        linear-gradient(120deg, rgba(0, 0, 0, 0.9), rgba(40, 3, 55, 0.9));
+}
+
+.omega-hero-strip--quiz {
+    background-image:
+        linear-gradient(120deg, rgba(0, 0, 0, 0.9), rgba(65, 35, 92, 0.95));
+}
+
+.omega-hero-link-inner {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    padding: 0.85rem 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.omega-hero-link-label {
+    display: block;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+.omega-hero-link-tag {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.8rem;
+    opacity: 0.9;
+}
+
+/* Hover states */
+
+.omega-hero-strip--link::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    background:
+        radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.35), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.35), transparent 55%);
+    mix-blend-mode: screen;
+    transition: opacity 150ms ease-out;
+}
+
+.omega-hero-strip--link:hover,
+.omega-hero-strip--link:focus-visible {
+    transform: translateY(-2px);
+    box-shadow:
+        0 0 20px rgba(0, 200, 255, 0.35),
+        0 0 40px rgba(255, 0, 200, 0.28);
+    border-color: rgba(255, 255, 255, 0.85);
+}
+
+.omega-hero-strip--link:hover::before,
+.omega-hero-strip--link:focus-visible::before {
+    opacity: 1;
+}
+
+/* -----------------------------------------
+   HOME SECTIONS — GENERAL
+----------------------------------------- */
+
+.home-section {
+    max-width: 1220px;
+    margin: 0 auto 2.3rem;
+}
+
+.home-section:last-of-type {
+    margin-bottom: 2.8rem;
+}
+
+.home-section-header {
+    margin-bottom: 1.1rem;
+}
+
+.home-section-title {
+    margin: 0 0 0.2rem;
+    font-size: 1.25rem;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: #eaf3ff;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.45);
+}
+
+.home-section-subtitle {
+    margin: 0;
+    font-size: 0.9rem;
+    color: rgba(220, 230, 255, 0.9);
+    max-width: 36rem;
+}
+
+/* -----------------------------------------
+   FEATURED GAME + VIDEO GRID
+----------------------------------------- */
+
+.home-featured-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 1.25rem;
+}
+
+@media (max-width: 1024px) {
+    .home-featured-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.featured-panel {
+    position: relative;
+    border-radius: 18px;
+    border: 1px solid rgba(135, 215, 255, 0.4);
+    background: radial-gradient(circle at 0% 0%, rgba(3, 8, 25, 0.98), rgba(1, 2, 10, 0.98));
+    box-shadow:
+        0 0 26px rgba(0, 0, 0, 0.9),
+        0 0 26px rgba(0, 204, 255, 0.16);
+    padding: 0.9rem 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.featured-panel-header {
+    margin-bottom: 0.35rem;
+}
+
+.featured-panel-title {
+    margin: 0;
+    font-size: 1.05rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #f0f4ff;
+}
+
+.featured-panel-system {
+    margin: 0.18rem 0 0;
+    font-size: 0.8rem;
+    color: rgba(200, 220, 255, 0.88);
+}
+
+.featured-panel-body {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 0.95fr 1.4fr;
+    gap: 0.75rem;
+    align-items: stretch;
+}
+
+@media (max-width: 760px) {
+    .featured-panel-body {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* Featured GAME art block */
+
+.featured-game-art {
+    border-radius: 14px;
+    background:
+        linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 180, 0.12)),
+        radial-gradient(circle at 30% 0%, rgba(0, 255, 255, 0.5), transparent 60%),
+        radial-gradient(circle at 100% 100%, rgba(255, 0, 200, 0.5), transparent 60%);
+    box-shadow:
+        0 0 26px rgba(0, 204, 255, 0.35),
+        0 0 36px rgba(255, 0, 180, 0.25);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Optional: place a thumbnail via background-image in future if you want */
+
+.featured-game-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.featured-game-name {
+    margin: 0 0 0.3rem;
+    font-size: 1rem;
+    color: #f4f6ff;
+}
+
+.featured-game-blurb {
+    margin: 0 0 0.4rem;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: rgba(215, 225, 255, 0.92);
+}
+
+.featured-game-meta {
+    margin: 0;
+    padding-left: 0.9rem;
+    font-size: 0.83rem;
+    color: rgba(200, 215, 245, 0.9);
+}
+
+.featured-game-meta li {
+    margin-bottom: 0.16rem;
+}
+
+.meta-label {
+    font-weight: 600;
+}
+
+/* Featured VIDEO */
+
+.featured-video-frame {
+    border-radius: 14px;
+    overflow: hidden;
+    background: #000;
+    box-shadow:
+        0 0 26px rgba(0, 204, 255, 0.35),
+        0 0 36px rgba(255, 0, 180, 0.25);
+}
+
+.featured-video-embed {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: none;
+}
+
+.featured-video-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.featured-video-title {
+    margin: 0 0 0.3rem;
+    font-size: 0.98rem;
+    color: #f4f6ff;
+}
+
+.featured-video-blurb {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: rgba(215, 225, 255, 0.92);
+}
+
+.featured-panel-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+/* Button tweaks */
+
+.ccg-btn--primary {
+    background: linear-gradient(135deg, #00d1ff, #00ffa8);
+    color: #031019;
+    border-radius: 999px;
+    border: none;
+}
+
+.ccg-btn--youtube {
+    background: linear-gradient(135deg, #ff3b3b, #ff7b7b);
+    color: #fff;
+    border-radius: 999px;
+    border: none;
+}
+
+.ccg-btn--ghost {
+    border-radius: 999px;
+    border: 1px solid rgba(180, 210, 255, 0.9);
+    background: rgba(14, 20, 40, 0.9);
+}
+
+/* -----------------------------------------
+   HOME GRIDS & CARDS (Genres / Collections / etc.)
+----------------------------------------- */
+
+.home-grid {
+    display: grid;
+    gap: 0.9rem;
+}
+
+.home-grid--genres {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.home-grid--collections,
+.home-grid--highlights,
+.home-grid--utilities {
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+/* Home card base */
+
+.home-card {
+    position: relative;
+    padding: 0.8rem 0.9rem;
+    border-radius: 14px;
+    border: 1px solid rgba(135, 215, 255, 0.4);
+    background: radial-gradient(circle at 0% 0%, rgba(8, 20, 45, 0.95), rgba(4, 6, 18, 0.98));
+    text-decoration: none;
+    color: #f2f5ff;
+    box-shadow:
+        0 0 24px rgba(0, 0, 0, 0.85),
+        0 0 18px rgba(0, 200, 255, 0.25);
+    transition:
+        transform 140ms ease-out,
+        box-shadow 140ms ease-out,
+        border-color 140ms ease-out,
+        background 140ms ease-out;
+    overflow: hidden;
+}
+
+.home-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    background:
+        radial-gradient(circle at 15% 0%, rgba(255, 255, 255, 0.25), transparent 55%),
+        radial-gradient(circle at 85% 100%, rgba(255, 255, 255, 0.25), transparent 55%);
+    mix-blend-mode: screen;
+    pointer-events: none;
+    transition: opacity 140ms ease-out;
+}
+
+.home-card-title {
+    margin: 0 0 0.25rem;
+    font-size: 0.98rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.home-card-text {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: rgba(215, 228, 255, 0.93);
+}
+
+/* Genre colour hints */
+
+.home-card--genre {
+    border-color: rgba(0, 204, 255, 0.6);
+}
+
+.home-card--collection {
+    border-color: rgba(170, 255, 170, 0.6);
+}
+
+.home-card--highlight {
+    border-color: rgba(255, 214, 125, 0.6);
+}
+
+.home-card--utility {
+    border-color: rgba(200, 210, 255, 0.6);
+}
+
+/* Special layout tweaks */
+
+.home-card--all {
+    grid-column: span 2;
+}
+
+@media (max-width: 640px) {
+    .home-card--all {
+        grid-column: span 1;
+    }
+}
+
+/* Hover */
+
+.home-card:hover,
+.home-card:focus-visible {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.93);
+    box-shadow:
+        0 0 26px rgba(0, 204, 255, 0.35),
+        0 0 44px rgba(255, 0, 200, 0.24);
+}
+
+.home-card:hover::before,
+.home-card:focus-visible::before {
+    opacity: 1;
+}
+
+/* -----------------------------------------
+   FOOTER TWEAKS
+----------------------------------------- */
+
+.ccg-footer {
+    max-width: 1220px;
+    margin: 0 auto;
+    padding-top: 0.5rem;
+}
+
+.ccg-footer-inner {
+    border-top: 1px solid rgba(135, 215, 255, 0.35);
+    padding-top: 0.75rem;
+}
+
+.ccg-footer-text {
+    margin: 0;
+    font-size: 0.8rem;
+    color: rgba(210, 225, 245, 0.9);
+}
+
+.ccg-footer-text--small {
+    margin-top: 0.15rem;
+    font-size: 0.74rem;
+    color: rgba(190, 205, 230, 0.9);
+}
+
+/* -----------------------------------------
+   RESPONSIVE GENERAL NUDGES
+----------------------------------------- */
+
+@media (max-width: 600px) {
+    .ccg-header--omega {
+        padding: 0.85rem 0.9rem 1.05rem;
+    }
+
+    .ccg-header-title-top {
+        font-size: 1.2rem;
+        letter-spacing: 0.26em;
+    }
+
+    .ccg-header-title-bottom {
+        font-size: 1.8rem;
+        letter-spacing: 0.09em;
+    }
+
+    .home-section {
+        margin-bottom: 1.8rem;
     }
 }
