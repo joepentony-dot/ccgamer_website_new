@@ -1,33 +1,34 @@
 /* ============================================================
    HOME PAGE — OMEGA STAGE 2 (TIGHT HERO BUILD)
    Cheeky Commodore Gamer 😇🕹️👌
-   Layout + visual polish only. No JS logic touched.
-   ------------------------------------------------------------
-   This file is HOME-ONLY styling. Global stuff lives in:
-   - ccg-master.css
-   - ccg-mode.css
-   - ccg-effects.css
-   - ccg-anim.css
-   - ccg-modal.css
+
+   - Version B: OMEGA FUSION HEADER + HERO
+   - Full-width cinematic hero (C64 / Amiga)
+   - Hybrid Amiga Workbench 2.x / 3.x palette
+   - Thumbnail-only genre & collection cards
+   - Epic buttons & panels
+   - No JS logic touched
    ============================================================ */
 
 /* -----------------------------------------
-   PAGE CONTAINER
+   PAGE WRAPPER & GLOBAL BG
 ----------------------------------------- */
 
 .ccg-page--home {
     position: relative;
     min-height: 100vh;
-    padding: 1.5rem 1rem 2.5rem;
+    padding: 1.5rem 0 2.5rem;
+    max-width: 1600px;
+    margin: 0 auto;
 }
 
 @media (min-width: 900px) {
     .ccg-page--home {
-        padding: 2.25rem 2rem 3rem;
+        padding: 2rem 0 3rem;
     }
 }
 
-/* Background layers (sit behind everything) */
+/* Background container comes from global HTML */
 
 .ccg-bg {
     position: fixed;
@@ -36,7 +37,8 @@
     overflow: hidden;
 }
 
-/* Soft starfield / nebula */
+/* Soft nebula + starfield */
+
 .ccg-bg-starfield {
     position: absolute;
     inset: 0;
@@ -49,7 +51,8 @@
     opacity: 0.9;
 }
 
-/* Subtle grid */
+/* Grid overlay */
+
 .ccg-bg-grid {
     position: absolute;
     inset: 0;
@@ -57,11 +60,12 @@
         linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
     background-size: 60px 60px;
-    opacity: 0.45;
+    opacity: 0.4;
     mix-blend-mode: soft-light;
 }
 
-/* CRT overlay */
+/* CRT scanlines */
+
 .ccg-bg-crt-overlay {
     position: absolute;
     inset: 0;
@@ -78,23 +82,24 @@
 }
 
 /* -----------------------------------------
-   OMEGA HEADER — FUSED LOGO / TOGGLE / TITLE / SOCIALS
+   OMEGA FUSION HEADER
+   Logo + toggle + neon title + socials
 ----------------------------------------- */
 
 .ccg-header--omega {
     margin: 0 auto 1.75rem;
     max-width: 1220px;
-    background: linear-gradient(
-        135deg,
-        rgba(6, 12, 40, 0.98),
-        rgba(15, 5, 35, 0.98)
-    );
+    padding: 1rem 1.25rem 1.2rem;
     border-radius: 18px;
     border: 1px solid rgba(120, 200, 255, 0.45);
+    background: linear-gradient(
+        135deg,
+        rgba(5, 8, 28, 0.98),
+        rgba(14, 5, 40, 0.98)
+    );
     box-shadow:
         0 0 32px rgba(0, 204, 255, 0.25),
         0 0 80px rgba(255, 0, 170, 0.18);
-    padding: 1rem 1.25rem 1.3rem;
     position: relative;
     overflow: hidden;
 }
@@ -107,7 +112,7 @@
         radial-gradient(circle at 10% 0%, rgba(0, 255, 255, 0.18), transparent 60%),
         radial-gradient(circle at 90% 100%, rgba(255, 0, 200, 0.18), transparent 60%);
     mix-blend-mode: screen;
-    opacity: 0.9;
+    opacity: 0.85;
     pointer-events: none;
 }
 
@@ -116,14 +121,13 @@
     z-index: 1;
 }
 
-/* Top bar: logo + toggle */
-
 .ccg-header-top {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1.5rem;
     margin-bottom: 0.9rem;
+    padding-inline: 0.1rem;
 }
 
 .ccg-header-left {
@@ -143,7 +147,9 @@
     height: 46px;
     width: auto;
     image-rendering: pixelated;
-    filter: drop-shadow(0 0 6px rgba(0, 255, 255, 0.8));
+    filter:
+        drop-shadow(0 0 6px rgba(0, 255, 255, 0.8))
+        drop-shadow(0 0 12px rgba(0, 120, 255, 0.9));
 }
 
 /* Header main: title + socials */
@@ -151,14 +157,14 @@
 .ccg-header-main {
     display: grid;
     grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.4fr);
-    gap: 1.5rem;
+    gap: 1.4rem;
     align-items: stretch;
 }
 
 @media (max-width: 960px) {
     .ccg-header-main {
         grid-template-columns: minmax(0, 1fr);
-        gap: 1.25rem;
+        gap: 1.2rem;
     }
 }
 
@@ -187,7 +193,7 @@
 
 .ccg-header-title-bottom {
     display: block;
-    margin-top: 0.28rem;
+    margin-top: 0.3rem;
     font-family: var(--ccg-font-main, "VT323", monospace);
     font-size: 2.3rem;
     letter-spacing: 0.12em;
@@ -206,7 +212,9 @@
     max-width: 32rem;
 }
 
-/* SOCIAL GRID */
+/* -----------------------------------------
+   SOCIAL BUTTON GRID (with SVG icons)
+----------------------------------------- */
 
 .ccg-header-social-wrap {
     display: flex;
@@ -217,7 +225,7 @@
 .ccg-social-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.65rem;
+    gap: 0.7rem;
     width: 100%;
 }
 
@@ -238,14 +246,16 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 0.55rem 0.7rem;
-    border-radius: 12px;
-    border: 1px solid rgba(170, 220, 255, 0.4);
-    background: radial-gradient(circle at 0% 0%, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.92));
+    padding: 0.55rem 0.8rem;
+    border-radius: 14px;
+    border: 1px solid rgba(170, 220, 255, 0.5);
+    background: radial-gradient(circle at 0% 0%, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.96));
     text-decoration: none;
     color: #f5f7ff;
     font-size: 0.8rem;
-    box-shadow: 0 0 16px rgba(0, 0, 0, 0.65);
+    box-shadow:
+        0 0 16px rgba(0, 0, 0, 0.75),
+        0 0 26px rgba(0, 204, 255, 0.28);
     overflow: hidden;
     transition:
         transform 160ms ease-out,
@@ -254,34 +264,40 @@
         background 160ms ease-out;
 }
 
-/* Social SVG icon */
+/* Icon bubble */
+
 .ccg-social-card-icon {
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.15rem;
     display: inline-flex;
     align-items: center;
     justify-content: flex-start;
 }
 
+.ccg-social-card-icon::before {
+    content: "";
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    filter: blur(10px);
+    opacity: 0.85;
+    left: 0.1rem;
+    top: 0.15rem;
+    z-index: 0;
+}
+
 .ccg-social-card-icon img {
-    width: 18px;
-    height: 18px;
+    position: relative;
+    z-index: 1;
+    width: 20px;
+    height: 20px;
     display: block;
 }
 
-.ccg-social-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    mix-blend-mode: screen;
-    background:
-        radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.25), transparent 55%),
-        radial-gradient(circle at 90% 90%, rgba(255, 255, 255, 0.25), transparent 55%);
-    pointer-events: none;
-    transition: opacity 160ms ease-out;
-}
+/* Social content */
 
 .ccg-social-main {
+    position: relative;
     z-index: 1;
 }
 
@@ -290,7 +306,7 @@
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    margin-bottom: 0.18rem;
+    margin-bottom: 0.1rem;
 }
 
 .ccg-social-tagline {
@@ -300,38 +316,59 @@
 }
 
 .ccg-social-cta {
+    position: relative;
     z-index: 1;
     margin-top: 0.32rem;
     align-self: flex-start;
-    padding: 0.15rem 0.52rem;
+    padding: 0.18rem 0.6rem;
     border-radius: 999px;
     font-size: 0.76rem;
     letter-spacing: 0.09em;
     text-transform: uppercase;
-    border: 1px solid rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
-/* Per-network colour accents */
+/* Per-network colouring & glow */
 
 .ccg-social-card--youtube {
-    border-color: rgba(255, 80, 80, 0.7);
-    background: radial-gradient(circle at 0% 0%, rgba(70, 0, 0, 0.85), rgba(0, 0, 0, 0.95));
+    border-color: rgba(255, 80, 80, 0.85);
+    background: radial-gradient(circle at 0% 0%, rgba(70, 0, 0, 0.85), rgba(0, 0, 0, 0.96));
+}
+.ccg-social-card--youtube .ccg-social-card-icon::before {
+    background: rgba(255, 0, 0, 0.85);
+}
+.ccg-social-card--youtube .ccg-social-cta {
+    background: #ff4b4b;
+    color: #fff;
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
 }
 
 .ccg-social-card--patreon {
-    border-color: rgba(255, 120, 80, 0.7);
+    border-color: rgba(255, 140, 90, 0.8);
+}
+.ccg-social-card--patreon .ccg-social-card-icon::before {
+    background: rgba(255, 120, 80, 0.85);
 }
 
 .ccg-social-card--paypal {
-    border-color: rgba(0, 140, 255, 0.7);
+    border-color: rgba(0, 140, 255, 0.8);
+}
+.ccg-social-card--paypal .ccg-social-card-icon::before {
+    background: rgba(0, 140, 255, 0.85);
 }
 
 .ccg-social-card--discord {
-    border-color: rgba(114, 137, 218, 0.7);
+    border-color: rgba(114, 137, 218, 0.85);
+}
+.ccg-social-card--discord .ccg-social-card-icon::before {
+    background: rgba(114, 137, 218, 0.9);
 }
 
 .ccg-social-card--x {
-    border-color: rgba(200, 200, 200, 0.6);
+    border-color: rgba(220, 220, 220, 0.8);
+}
+.ccg-social-card--x .ccg-social-card-icon::before {
+    background: rgba(255, 255, 255, 0.9);
 }
 
 /* Hover */
@@ -340,97 +377,110 @@
 .ccg-social-card:focus-visible {
     transform: translateY(-2px);
     box-shadow:
-        0 0 28px rgba(0, 200, 255, 0.25),
-        0 0 60px rgba(255, 0, 200, 0.18);
-    border-color: rgba(255, 255, 255, 0.85);
-}
-
-.ccg-social-card:hover::before,
-.ccg-social-card:focus-visible::before {
-    opacity: 1;
+        0 0 26px rgba(0, 204, 255, 0.4),
+        0 0 60px rgba(255, 0, 200, 0.3);
+    border-color: rgba(255, 255, 255, 0.95);
 }
 
 /* -----------------------------------------
-   OMEGA HERO — TIGHT 4:1 CINEMATIC STRIPS
+   CINEMATIC HERO — FULL WIDTH STRIP
 ----------------------------------------- */
 
 .omega-hero {
-    max-width: 1220px;
-    margin: 0 auto 2.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
+    max-width: 1600px;
+    margin: 0 auto 2.3rem;
+    padding-inline: 1.25rem;
 }
 
-/* Primary strip (4:1) */
+@media (max-width: 900px) {
+    .omega-hero {
+        padding-inline: 0.75rem;
+    }
+}
 
 .omega-hero-strip {
     position: relative;
     border-radius: 18px;
     overflow: hidden;
     border: 1px solid rgba(135, 215, 255, 0.4);
+    background: #02030a;
     box-shadow:
         0 0 40px rgba(0, 0, 0, 0.9),
         0 0 24px rgba(0, 200, 255, 0.25);
-    background: radial-gradient(circle at 10% 10%, #050914, #02030a);
 }
 
 .omega-hero-strip--primary {
-    aspect-ratio: 4 / 1;
-    min-height: 150px;
+    aspect-ratio: 21 / 5;
+    min-height: 180px;
 }
+
+/* Actual hero artwork — from ccg-hero-c64.png / ccg-hero-amiga.png */
 
 .omega-hero-media {
     position: absolute;
-    inset: 0;
+    inset: -4%;
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
     filter: saturate(1.1) contrast(1.08) brightness(0.9);
-    transform: scale(1.02);
+    transform: translate3d(0, 0, 0);
+    will-change: transform;
 }
 
-/* Dynamic hero image per mode — pulls from resources/images/hero */
+/* C64 hero art */
+
 body[data-ccg-mode="c64"] .omega-hero-media {
     background-image: url("../images/hero/ccg-hero-c64.png");
 }
+
+/* Amiga hero art */
 
 body[data-ccg-mode="amiga"] .omega-hero-media {
     background-image: url("../images/hero/ccg-hero-amiga.png");
 }
 
-/* Overlay & text */
+/* Cinematic overlay & text */
 
 .omega-hero-overlay {
     position: absolute;
     inset: 0;
-    background:
-        radial-gradient(circle at 0% 0%, rgba(0, 255, 255, 0.35), transparent 55%),
-        radial-gradient(circle at 100% 100%, rgba(255, 0, 200, 0.4), transparent 55%),
-        linear-gradient(to right, rgba(1, 2, 12, 0.95), rgba(3, 0, 20, 0.7));
+    pointer-events: none;
 }
+
+.omega-hero-overlay::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(to right, rgba(2, 5, 20, 0.94), rgba(2, 5, 20, 0.5), rgba(2, 5, 20, 0.2)),
+        radial-gradient(circle at 0% 0%, rgba(0, 255, 255, 0.35), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(255, 0, 200, 0.35), transparent 55%);
+    mix-blend-mode: soft-light;
+}
+
+/* Text container */
 
 .omega-hero-text {
     position: relative;
     z-index: 1;
     height: 100%;
-    padding: 1.1rem 1.35rem;
+    padding: 1.2rem 1.6rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 1100px) {
     .omega-hero-text {
-        padding: 1.3rem 1.7rem;
+        padding: 1.5rem 2rem;
     }
 }
 
 .omega-hero-title {
-    margin: 0 0 0.35rem;
+    margin: 0 0 0.4rem;
     font-family: var(--ccg-font-main, "VT323", monospace);
-    font-size: 1.6rem;
-    letter-spacing: 0.14em;
+    font-size: 1.7rem;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: #e8f7ff;
     text-shadow:
@@ -440,7 +490,7 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
 
 @media (min-width: 900px) {
     .omega-hero-title {
-        font-size: 1.9rem;
+        font-size: 1.95rem;
     }
 }
 
@@ -453,18 +503,19 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
 
 .omega-hero-subtitle {
     margin: 0;
-    font-size: 0.95rem;
+    font-size: 0.96rem;
     line-height: 1.5;
     max-width: 40rem;
-    color: rgba(235, 245, 255, 0.95);
+    color: rgba(235, 245, 255, 0.96);
 }
 
-/* Secondary strip row */
+/* Secondary hero row (links) */
 
 .omega-hero-strip-row {
+    margin-top: 0.9rem;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.75rem;
+    gap: 0.85rem;
 }
 
 @media (max-width: 900px) {
@@ -474,14 +525,18 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
 }
 
 .omega-hero-strip--link {
-    aspect-ratio: 4 / 1;
+    aspect-ratio: 4.2 / 1;
     min-height: 80px;
     text-decoration: none;
     color: #f5f7ff;
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
+    position: relative;
     overflow: hidden;
+    border-radius: 16px;
+    border: 1px solid rgba(135, 215, 255, 0.4);
+    background: radial-gradient(circle at 0% 0%, rgba(2, 8, 30, 0.9), rgba(2, 6, 18, 0.98));
+    box-shadow:
+        0 0 22px rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(0, 200, 255, 0.2);
     transition:
         transform 150ms ease-out,
         box-shadow 150ms ease-out,
@@ -489,28 +544,31 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
         background 150ms ease-out;
 }
 
-/* Base backgrounds for link strips */
+/* C64 / Amiga / Quiz accents */
 
 .omega-hero-strip--c64 {
-    background-image:
-        linear-gradient(120deg, rgba(0, 0, 0, 0.9), rgba(0, 24, 60, 0.9));
+    background:
+        radial-gradient(circle at 0% 0%, rgba(0, 255, 255, 0.22), transparent 60%),
+        linear-gradient(120deg, rgba(0, 16, 60, 0.96), rgba(0, 0, 0, 0.96));
 }
 
 .omega-hero-strip--amiga {
-    background-image:
-        linear-gradient(120deg, rgba(0, 0, 0, 0.9), rgba(40, 3, 55, 0.9));
+    background:
+        radial-gradient(circle at 0% 0%, rgba(255, 188, 120, 0.24), transparent 60%),
+        linear-gradient(120deg, rgba(13, 22, 46, 0.98), rgba(7, 9, 18, 0.98));
 }
 
 .omega-hero-strip--quiz {
-    background-image:
-        linear-gradient(120deg, rgba(0, 0, 0, 0.9), rgba(65, 35, 92, 0.95));
+    background:
+        radial-gradient(circle at 0% 0%, rgba(189, 120, 255, 0.24), transparent 60%),
+        linear-gradient(120deg, rgba(18, 8, 40, 0.98), rgba(7, 6, 20, 0.98));
 }
 
 .omega-hero-link-inner {
     position: relative;
     z-index: 1;
     height: 100%;
-    padding: 0.85rem 1rem;
+    padding: 0.85rem 1.1rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -528,10 +586,10 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
     display: block;
     margin-top: 0.25rem;
     font-size: 0.8rem;
-    opacity: 0.9;
+    opacity: 0.92;
 }
 
-/* Hover states */
+/* Hover glow */
 
 .omega-hero-strip--link::before {
     content: "";
@@ -539,8 +597,8 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
     inset: 0;
     opacity: 0;
     background:
-        radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.35), transparent 55%),
-        radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.35), transparent 55%);
+        radial-gradient(circle at 15% 0%, rgba(255, 255, 255, 0.25), transparent 55%),
+        radial-gradient(circle at 85% 100%, rgba(255, 255, 255, 0.25), transparent 55%);
     mix-blend-mode: screen;
     transition: opacity 150ms ease-out;
 }
@@ -548,10 +606,10 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
 .omega-hero-strip--link:hover,
 .omega-hero-strip--link:focus-visible {
     transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.92);
     box-shadow:
-        0 0 20px rgba(0, 200, 255, 0.35),
-        0 0 40px rgba(255, 0, 200, 0.28);
-    border-color: rgba(255, 255, 255, 0.85);
+        0 0 26px rgba(0, 200, 255, 0.4),
+        0 0 46px rgba(255, 0, 200, 0.26);
 }
 
 .omega-hero-strip--link:hover::before,
@@ -560,8 +618,18 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
 }
 
 /* -----------------------------------------
-   HOME SECTIONS — GENERAL
+   MAIN SECTIONS — GENERIC
 ----------------------------------------- */
+
+.ccg-main {
+    padding-inline: 1.25rem;
+}
+
+@media (max-width: 900px) {
+    .ccg-main {
+        padding-inline: 0.75rem;
+    }
+}
 
 .home-section {
     max-width: 1220px;
@@ -569,11 +637,11 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
 }
 
 .home-section:last-of-type {
-    margin-bottom: 2.8rem;
+    margin-bottom: 2.9rem;
 }
 
 .home-section-header {
-    margin-bottom: 1.1rem;
+    margin-bottom: 1.05rem;
 }
 
 .home-section-title {
@@ -593,8 +661,12 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
 }
 
 /* -----------------------------------------
-   FEATURED GAME + VIDEO GRID
+   FEATURED GAME + FEATURED VIDEO
 ----------------------------------------- */
+
+.home-section--featured .home-section-header {
+    margin-bottom: 1.2rem;
+}
 
 .home-featured-grid {
     display: grid;
@@ -611,19 +683,19 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
 .featured-panel {
     position: relative;
     border-radius: 18px;
-    border: 1px solid rgba(135, 215, 255, 0.4);
-    background: radial-gradient(circle at 0% 0%, rgba(3, 8, 25, 0.98), rgba(1, 2, 10, 0.98));
+    border: 1px solid rgba(135, 215, 255, 0.5);
+    background: radial-gradient(circle at 0% 0%, rgba(3, 10, 32, 0.97), rgba(2, 4, 14, 0.99));
     box-shadow:
         0 0 26px rgba(0, 0, 0, 0.9),
-        0 0 26px rgba(0, 204, 255, 0.16);
-    padding: 0.9rem 1rem 1rem;
+        0 0 28px rgba(0, 204, 255, 0.24);
+    padding: 0.95rem 1rem 1rem;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
 }
 
 .featured-panel-header {
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.25rem;
 }
 
 .featured-panel-title {
@@ -640,11 +712,13 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
     color: rgba(200, 220, 255, 0.88);
 }
 
+/* Body uses 2-column layout (art / text) */
+
 .featured-panel-body {
     flex: 1;
     display: grid;
     grid-template-columns: 0.95fr 1.4fr;
-    gap: 0.75rem;
+    gap: 0.8rem;
     align-items: stretch;
 }
 
@@ -654,20 +728,20 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
     }
 }
 
-/* Featured GAME art block */
+/* Featured game art placeholder (you can drop in static promo later) */
 
 .featured-game-art {
     border-radius: 14px;
     background:
-        linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 180, 0.12)),
-        radial-gradient(circle at 30% 0%, rgba(0, 255, 255, 0.5), transparent 60%),
-        radial-gradient(circle at 100% 100%, rgba(255, 0, 200, 0.5), transparent 60%);
+        radial-gradient(circle at 0% 0%, rgba(0, 255, 255, 0.25), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(255, 0, 180, 0.25), transparent 55%),
+        linear-gradient(135deg, rgba(2, 18, 50, 0.95), rgba(3, 4, 18, 0.98));
     box-shadow:
         0 0 26px rgba(0, 204, 255, 0.35),
         0 0 36px rgba(255, 0, 180, 0.25);
-    position: relative;
-    overflow: hidden;
 }
+
+/* Game text */
 
 .featured-game-copy {
     display: flex;
@@ -690,7 +764,7 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
 
 .featured-game-meta {
     margin: 0;
-    padding-left: 0.9rem;
+    padding-left: 0.95rem;
     font-size: 0.83rem;
     color: rgba(200, 215, 245, 0.9);
 }
@@ -703,7 +777,7 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
     font-weight: 600;
 }
 
-/* Featured VIDEO */
+/* Featured video panel */
 
 .featured-video-frame {
     border-radius: 14px;
@@ -740,14 +814,22 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
     color: rgba(215, 225, 255, 0.92);
 }
 
+/* Footer buttons */
+
 .featured-panel-footer {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
+    gap: 0.55rem;
+    margin-top: 0.55rem;
 }
 
-/* Button tweaks */
+/* Generic button enhancements */
+
+.ccg-btn {
+    cursor: pointer;
+}
+
+/* C64 default / will adjust per-mode later */
 
 .ccg-btn--primary {
     background: linear-gradient(135deg, #00d1ff, #00ffa8);
@@ -770,7 +852,7 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
 }
 
 /* -----------------------------------------
-   HOME GRIDS & CARDS (Genres / Collections / etc.)
+   GRIDS & CARDS — BASE
 ----------------------------------------- */
 
 .home-grid {
@@ -779,7 +861,7 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
 }
 
 .home-grid--genres {
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 }
 
 .home-grid--collections,
@@ -788,11 +870,10 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
     grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
 }
 
-/* Home card base */
+/* Card container */
 
 .home-card {
     position: relative;
-    padding: 0.8rem 0.9rem;
     border-radius: 14px;
     border: 1px solid rgba(135, 215, 255, 0.4);
     background: radial-gradient(circle at 0% 0%, rgba(8, 20, 45, 0.95), rgba(4, 6, 18, 0.98));
@@ -809,6 +890,16 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
     overflow: hidden;
 }
 
+/* Genre & collection cards will use thumbnail-only style */
+.home-card-title,
+.home-card-text {
+    font-size: 0.9rem;
+}
+
+/* Highlight & utility keep text; genre/collection get thumbnails-only handled later */
+
+/* Hover behaviour */
+
 .home-card::before {
     content: "";
     position: absolute;
@@ -820,6 +911,161 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
     mix-blend-mode: screen;
     pointer-events: none;
     transition: opacity 140ms ease-out;
+}
+
+.home-card:hover,
+.home-card:focus-visible {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.93);
+    box-shadow:
+        0 0 26px rgba(0, 204, 255, 0.4),
+        0 0 44px rgba(255, 0, 200, 0.24);
+}
+
+.home-card:hover::before,
+.home-card:focus-visible::before {
+    opacity: 1;
+}
+
+/* -----------------------------------------
+   THUMBNAIL-ONLY GENRE & COLLECTION CARDS
+   Uses your PNGs in resources/images/genres/
+----------------------------------------- */
+
+/* Generic thumbnail card layout */
+
+.home-grid--genres .home-card,
+.home-grid--collections .home-card {
+    min-height: 120px;
+    padding: 0; /* thumbnail fills the card */
+}
+
+.home-grid--genres .home-card::after,
+.home-grid--collections .home-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    transition: transform 160ms ease-out, filter 160ms ease-out;
+}
+
+/* Hide inner text for these (thumbnails already contain writing) */
+.home-grid--genres .home-card-title,
+.home-grid--genres .home-card-text,
+.home-grid--collections .home-card-title,
+.home-grid--collections .home-card-text {
+    display: none;
+}
+
+/* On hover, give a tiny zoom + brighten */
+
+.home-grid--genres .home-card:hover::after,
+.home-grid--genres .home-card:focus-visible::after,
+.home-grid--collections .home-card:hover::after,
+.home-grid--collections .home-card:focus-visible::after {
+    transform: scale(1.03);
+    filter: brightness(1.05) saturate(1.05);
+}
+
+/* === GENRE IMAGE MAPPING === */
+
+.home-grid--genres a[href$="arcade-games.html"]::after {
+    background-image: url("../images/genres/arcade.png");
+}
+
+.home-grid--genres a[href$="platform-games.html"]::after {
+    background-image: url("../images/genres/platform.png");
+}
+
+.home-grid--genres a[href$="action-adventure-games.html"]::after {
+    background-image: url("../images/genres/action-adventure.png");
+}
+
+.home-grid--genres a[href$="adventure-games.html"]::after {
+    background-image: url("../images/genres/adventure.png");
+}
+
+.home-grid--genres a[href$="shooting-games.html"]::after {
+    background-image: url("../images/genres/shooting.png");
+}
+
+.home-grid--genres a[href$="rpg-games.html"]::after {
+    background-image: url("../images/genres/role-playing.png");
+}
+
+.home-grid--genres a[href$="puzzle-games.html"]::after {
+    background-image: url("../images/genres/puzzle.png");
+}
+
+.home-grid--genres a[href$="sports-games.html"]::after {
+    background-image: url("../images/genres/sports.png");
+}
+
+.home-grid--genres a[href$="racing-games.html"]::after {
+    background-image: url("../images/genres/racing.png");
+}
+
+.home-grid--genres a[href$="fighting-games.html"]::after {
+    background-image: url("../images/genres/fighting.png");
+}
+
+.home-grid--genres a[href$="horror-games.html"]::after {
+    background-image: url("../images/genres/horror.png");
+}
+
+.home-grid--genres a[href$="strategy-games.html"]::after {
+    background-image: url("../images/genres/strategy.png");
+}
+
+.home-grid--genres a[href$="casino-games.html"]::after {
+    background-image: url("../images/genres/casino.png");
+}
+
+.home-grid--genres a[href$="quiz-games.html"]::after {
+    background-image: url("../images/genres/quiz.png");
+}
+
+.home-grid--genres a[href$="licensed-games.html"]::after {
+    background-image: url("../images/genres/licensed.png");
+}
+
+.home-grid--genres a[href$="miscellaneous.html"]::after {
+    background-image: url("../images/genres/miscellaneous.png");
+}
+
+/* "All genres" uses a dedicated banner */
+
+.home-card--all::after {
+    background-image: url("../images/genres/top-picks.png");
+}
+
+/* === COLLECTION IMAGE MAPPING === */
+
+.home-grid--collections a[href="games/index.html"]::after {
+    background-image: url("../images/genres/arcade.png");
+}
+
+.home-grid--collections a[href$="top-picks.html"]::after {
+    background-image: url("../images/genres/top-picks.png");
+}
+
+.home-grid--collections a[href$="cartridge-games.html"]::after {
+    background-image: url("../images/genres/cartridge.png");
+}
+
+.home-grid--collections a[href$="bpjs-indexed-games.html"]::after {
+    background-image: url("../images/genres/bpjs.png");
+}
+
+/* -----------------------------------------
+   HIGHLIGHTS & UTILITY CARDS (TEXT MODE)
+----------------------------------------- */
+
+.home-grid--highlights .home-card,
+.home-grid--utilities .home-card {
+    padding: 0.8rem 0.9rem;
 }
 
 .home-card-title {
@@ -836,65 +1082,20 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
     color: rgba(215, 228, 255, 0.93);
 }
 
-/* Genre colour hints */
-
-.home-card--genre {
-    border-color: rgba(0, 204, 255, 0.6);
-}
-
-.home-card--collection {
-    border-color: rgba(170, 255, 170, 0.6);
-}
-
-.home-card--highlight {
-    border-color: rgba(255, 214, 125, 0.6);
-}
-
-.home-card--utility {
-    border-color: rgba(200, 210, 255, 0.6);
-}
-
-/* Special layout tweaks */
-
-.home-card--all {
-    grid-column: span 2;
-}
-
-@media (max-width: 640px) {
-    .home-card--all {
-        grid-column: span 1;
-    }
-}
-
-/* Hover */
-
-.home-card:hover,
-.home-card:focus-visible {
-    transform: translateY(-2px);
-    border-color: rgba(255, 255, 255, 0.93);
-    box-shadow:
-        0 0 26px rgba(0, 204, 255, 0.35),
-        0 0 44px rgba(255, 0, 200, 0.24);
-}
-
-.home-card:hover::before,
-.home-card:focus-visible::before {
-    opacity: 1;
-}
-
 /* -----------------------------------------
-   FOOTER TWEAKS
+   FOOTER
 ----------------------------------------- */
 
 .ccg-footer {
     max-width: 1220px;
     margin: 0 auto;
-    padding-top: 0.5rem;
+    padding-top: 0.6rem;
 }
 
 .ccg-footer-inner {
     border-top: 1px solid rgba(135, 215, 255, 0.35);
     padding-top: 0.75rem;
+    text-align: center;
 }
 
 .ccg-footer-text {
@@ -903,14 +1104,135 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
     color: rgba(210, 225, 245, 0.9);
 }
 
-.ccg-footer-text--small {
-    margin-top: 0.15rem;
-    font-size: 0.74rem;
-    color: rgba(190, 205, 230, 0.9);
+/* -----------------------------------------
+   MODE-SPECIFIC THEMING
+   (Hybrid: C64 Neon / Amiga Workbench)
+----------------------------------------- */
+
+/* === C64 MODE — Electric Neon ================================= */
+
+body[data-ccg-mode="c64"] .ccg-header--omega {
+    background: linear-gradient(135deg, #030825, #05041a);
+    border-color: rgba(120, 210, 255, 0.75);
+    box-shadow:
+        0 0 40px rgba(0, 200, 255, 0.45),
+        0 0 80px rgba(0, 80, 255, 0.35);
+}
+
+body[data-ccg-mode="c64"] .omega-hero-overlay::before {
+    background:
+        linear-gradient(to right, rgba(0, 10, 35, 0.95), rgba(0, 10, 35, 0.6), rgba(0, 10, 35, 0.25)),
+        radial-gradient(circle at 0% 0%, rgba(0, 255, 255, 0.4), transparent 60%),
+        radial-gradient(circle at 100% 100%, rgba(0, 120, 255, 0.35), transparent 60%);
+}
+
+body[data-ccg-mode="c64"] .ccg-btn--primary {
+    background: linear-gradient(135deg, #00e2ff, #00ffa8);
+    color: #020810;
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.6);
+}
+
+body[data-ccg-mode="c64"] .ccg-btn--ghost {
+    background: rgba(5, 12, 32, 0.98);
+}
+
+/* === AMIGA MODE — Workbench Hybrid ============================ */
+
+body[data-ccg-mode="amiga"] .ccg-header--omega {
+    background:
+        linear-gradient(135deg, #c0c0c0, #b2b2b2);
+    border-color: rgba(60, 80, 130, 0.9);
+    box-shadow:
+        0 0 26px rgba(0, 0, 0, 0.8),
+        0 0 38px rgba(40, 60, 120, 0.45);
+}
+
+body[data-ccg-mode="amiga"] .ccg-header--omega::before {
+    background:
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.4), transparent 55%),
+        radial-gradient(circle at 0% 0%, rgba(0, 0, 0, 0.1), transparent 60%),
+        radial-gradient(circle at 100% 100%, rgba(0, 0, 0, 0.2), transparent 60%);
+    mix-blend-mode: normal;
+}
+
+/* Title colours a bit more Workbench-neutral in Amiga mode */
+
+body[data-ccg-mode="amiga"] .ccg-header-title-top {
+    color: #003b8f;
+    text-shadow:
+        1px 1px 0 #ffffff,
+        -1px -1px 0 #4f6fa8;
+}
+
+body[data-ccg-mode="amiga"] .ccg-header-title-bottom {
+    color: #1b1b1b;
+    text-shadow:
+        1px 1px 0 #ffffff,
+        -1px -1px 0 #595959;
+}
+
+/* Hero overlay: Workbench-ish blue + warm accent */
+
+body[data-ccg-mode="amiga"] .omega-hero-overlay::before {
+    background:
+        linear-gradient(to right, rgba(10, 16, 32, 0.95), rgba(10, 16, 32, 0.6), rgba(10, 16, 32, 0.25)),
+        radial-gradient(circle at 0% 0%, rgba(0, 70, 160, 0.45), transparent 60%),
+        radial-gradient(circle at 100% 100%, rgba(220, 150, 80, 0.4), transparent 60%);
+}
+
+/* Panels adopt subtle Workbench plastics */
+
+body[data-ccg-mode="amiga"] .featured-panel,
+body[data-ccg-mode="amiga"] .home-grid--highlights .home-card,
+body[data-ccg-mode="amiga"] .home-grid--utilities .home-card {
+    background:
+        linear-gradient(145deg, #c4c4c4, #b4b4b4);
+    border-color: #7b7b7b;
+    box-shadow:
+        0 0 0 1px #ffffff inset,
+        0 0 24px rgba(0, 0, 0, 0.6);
+    color: #111;
+}
+
+body[data-ccg-mode="amiga"] .featured-game-blurb,
+body[data-ccg-mode="amiga"] .featured-video-blurb,
+body[data-ccg-mode="amiga"] .home-card-text,
+body[data-ccg-mode="amiga"] .home-section-subtitle {
+    color: #222;
+}
+
+body[data-ccg-mode="amiga"] .home-section-title {
+    color: #003b8f;
+    text-shadow: none;
+}
+
+/* Amiga buttons: Workbench bevel */
+
+body[data-ccg-mode="amiga"] .ccg-btn--primary,
+body[data-ccg-mode="amiga"] .ccg-btn--youtube,
+body[data-ccg-mode="amiga"] .ccg-btn--ghost {
+    background: linear-gradient(145deg, #d8d8d8, #b0b0b0);
+    border-radius: 0;
+    border: 1px solid #3d3d3d;
+    box-shadow:
+        1px 1px 0 #000000,
+        -1px -1px 0 #ffffff;
+    color: #000;
+    text-shadow: none;
+}
+
+/* Amiga footer: flatter */
+
+body[data-ccg-mode="amiga"] .ccg-footer-inner {
+    border-top-color: #7b7b7b;
+}
+
+body[data-ccg-mode="amiga"] .ccg-footer-text {
+    color: #111;
 }
 
 /* -----------------------------------------
-   RESPONSIVE GENERAL NUDGES
+   RESPONSIVE NUDGES
 ----------------------------------------- */
 
 @media (max-width: 600px) {
@@ -929,6 +1251,6 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
     }
 
     .home-section {
-        margin-bottom: 1.8rem;
+        margin-bottom: 1.9rem;
     }
 }
