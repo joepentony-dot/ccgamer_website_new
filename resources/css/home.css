@@ -896,8 +896,6 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
     font-size: 0.9rem;
 }
 
-/* Highlight & utility keep text; genre/collection get thumbnails-only handled later */
-
 /* Hover behaviour */
 
 .home-card::before {
@@ -1102,6 +1100,11 @@ body[data-ccg-mode="amiga"] .omega-hero-media {
     margin: 0;
     font-size: 0.8rem;
     color: rgba(210, 225, 245, 0.9);
+}
+
+/* Hide legal waffle second line if still present in HTML */
+.ccg-footer-text--small {
+    display: none;
 }
 
 /* -----------------------------------------
