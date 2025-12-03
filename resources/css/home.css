@@ -1,299 +1,245 @@
-/* ==========================================================================
-   HOME.CSS — PHASE OMEGA (STEP A ONLY)
-   Clean, Optimised, Mode-Reactive, Subtitle Alignment Fixed
-========================================================================== */
+/* ============================================================
+   HOME PAGE — TIGHT HERO VERSION
+   Cheeky Commodore Gamer 😇🕹️👌
+============================================================ */
 
-
-/* ------------------------------------------------------------
-   GLOBAL VARIABLES
------------------------------------------------------------- */
-:root {
-    --ccg-header-height: 96px;
-    --ccg-header-padding-y: 10px;
-    --ccg-logo-height: 52px;
-
-    --ccg-hero-height: 55vh;
-    --ccg-hero-min-height: 460px;
-
-    --ccg-c64-accent: #70fff0;
-    --ccg-amiga-accent: #ffb7ff;
-
-    --ccg-dark-bg: rgba(0, 0, 0, 0.86);
-}
-
-/* Mode accent logic */
-body[data-mode="c64"] {
-    --ccg-accent: var(--ccg-c64-accent);
-}
-
-body[data-mode="amiga"] {
-    --ccg-accent: var(--ccg-amiga-accent);
-}
-
-
-/* ------------------------------------------------------------
-   PAGE WRAPPER
------------------------------------------------------------- */
-.ccg-page-shell {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-
-
-
-/* ==========================================================================
-   HEADER — FIXED VERSION (STEP A: subtitle alignment fixed)
-========================================================================== */
-.ccg-header {
-    position: fixed;
-    top: 0;
+/* -----------------------------------------
+   GLOBAL PAGE WRAPPER
+----------------------------------------- */
+.ccg-main {
     width: 100%;
-    height: var(--ccg-header-height);
-    padding: var(--ccg-header-padding-y) 0;
-    background: var(--ccg-dark-bg);
-    backdrop-filter: blur(6px);
-    border-bottom: 1px solid rgba(112,255,240,0.25);
-    z-index: 999;
-    transition: background 0.25s ease, transform 0.35s ease;
-}
-
-.ccg-header-inner {
     max-width: 1600px;
     margin: 0 auto;
-    height: 100%;
-    padding: 0 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    padding-top: 120px;
 }
 
-
-/* ------------------------------------------------------------
-   BRAND AREA (STACKED LAYOUT)
-   FIXED: subtitle vertical alignment in ALL modes
------------------------------------------------------------- */
+/* -----------------------------------------
+   HEADER SUBTITLE FIX (Step A)
+----------------------------------------- */
 .ccg-header-brand {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    padding-top: 0;
-    margin-top: -2px; /* pulls whole block upward */
+    justify-content: center;
+    line-height: 1.1;
 }
 
-.ccg-logo {
-    height: var(--ccg-logo-height);
-    width: auto;
-    margin-bottom: 1px;
-}
-
-/* MAIN TITLE */
 .ccg-brand-title {
-    font-size: 14px;
+    font-size: 1.55rem;
     font-weight: 700;
-    color: #ffffff;
-    line-height: 1.05;
-    margin: 0 0 1px 4px;
-    text-shadow: 0 0 5px var(--ccg-accent);
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
 }
 
-/* SUBTITLE — **THIS IS THE FIX FOR STEP A** */
 .ccg-brand-subtitle {
-    font-size: 0.78rem;
-    line-height: 0.95rem;
-    margin: 0 0 0 4px;
-    padding: 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-top: -4px;      /* Forces correct vertical alignment */
     opacity: 0.85;
-    color: #d4fefe;
-
-    position: relative;
-    top: -3px;  /* PERFECT vertical correction */
 }
 
-/* Amiga mode requires slightly higher lift to look aligned */
-body[data-mode="amiga"] .ccg-brand-subtitle {
-    top: -4px !important;
-    opacity: 0.92;
-    color: #ffe7ff;
-}
-
-
-
-/* ==========================================================================
-   NAVIGATION
-========================================================================== */
-.ccg-nav {
-    display: flex;
-    gap: 18px;
-    align-items: center;
-}
-
-.nav-item {
-    font-size: 14px;
-    color: #d8ffff;
-    text-decoration: none;
-    padding: 6px 4px;
-    transition: 0.25s;
-}
-
-.nav-item:hover {
-    color: var(--ccg-accent);
-    text-shadow: 0 0 6px var(--ccg-accent);
-}
-
-.nav-active {
-    color: var(--ccg-accent) !important;
-    text-shadow: 0 0 6px var(--ccg-accent);
-}
-
-
-
-/* ==========================================================================
-   HEADER RIGHT — MODE TOGGLE + SOCIALS
-========================================================================== */
-.ccg-header-right {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-/* Social icons */
-.ccg-header-social-icon img {
-    width: 20px;
-    height: 20px;
-    opacity: 0.9;
-    transition: 0.2s ease;
-}
-
-.ccg-header-social-icon:hover img {
-    opacity: 1;
-    transform: translateY(-1px);
-    filter: drop-shadow(0 0 6px var(--ccg-accent));
-}
-
-/* Twitter always visible */
-.ccg-header-social-icon img[alt*="Twitter"] {
-    filter: invert(1) drop-shadow(0 0 6px #ffffff) !important;
-}
-
-
-
-/* ==========================================================================
-   SECTION HEADERS (GENERIC)
-========================================================================== */
-.ccg-section-header {
-    text-align: center;
-    max-width: 800px;
-    margin: 0 auto 24px;
-}
-
-.ccg-section-title {
-    font-size: 1.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-}
-
-.ccg-section-subtitle {
-    font-size: 0.98rem;
-    opacity: 0.8;
-}
-
-
-
-/* ==========================================================================
-   HERO SECTION — (NO STEP B CHANGES YET)
-========================================================================== */
+/* -----------------------------------------
+   HERO SECTION — Tight, Clean, Epic
+----------------------------------------- */
 .ccg-hero {
     position: relative;
     width: 100%;
-    height: var(--ccg-hero-height);
-    min-height: var(--ccg-hero-min-height);
-    margin-top: var(--ccg-header-height);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px 0 10px;
+    height: 420px;               /* TIGHT hero height */
+    margin: 0 auto 40px auto;
+    overflow: hidden;
+    border-radius: 14px;
+    background: #000;
 }
 
+/* Background overlays */
 .ccg-hero-background {
     position: absolute;
     inset: 0;
     z-index: 1;
+}
+
+.ccg-hero-overlay-grid {
+    position: absolute;
+    inset: 0;
+    background-image: url("../images/grid-overlay.png");
+    opacity: 0.16;
     pointer-events: none;
 }
 
-.ccg-hero-overlay-grid,
-.ccg-hero-overlay-starfield,
+.ccg-hero-overlay-starfield {
+    position: absolute;
+    inset: 0;
+    background-image: url("../images/starfield-blue.png");
+    background-size: cover;
+    opacity: 0.33;
+    pointer-events: none;
+}
+
 .ccg-hero-scanlines {
     position: absolute;
     inset: 0;
-    background-size: cover;
-    opacity: 0.2;
+    background-image: url("../images/scanlines.png");
+    opacity: 0.22;
+    mix-blend-mode: overlay;
+    pointer-events: none;
 }
 
-.ccg-hero-overlay-starfield { opacity: 0.35; }
-.ccg-hero-scanlines { opacity: 0.12; }
+/* HERO IMAGE WRAPPER */
+.ccg-hero-images {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
+.ccg-hero-image {
+    position: absolute;
+    width: 92%;             /* TIGHT banner size */
+    max-width: 1500px;
+    height: auto;
+    opacity: 0;
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+    transform: translateY(4px);
+}
+
+body[data-mode="c64"] .ccg-hero-image-c64 { opacity: 1; transform: translateY(0); }
+body[data-mode="amiga"] .ccg-hero-image-amiga { opacity: 1; transform: translateY(0); }
+
+/* -----------------------------------------
+   HERO CONTENT
+----------------------------------------- */
 .ccg-hero-content {
     position: relative;
     z-index: 3;
-    text-align: center;
-    max-width: 850px;
-    padding: 20px;
+    padding: 40px 60px;
+    max-width: 900px;
+    text-align: left;
+}
+
+.ccg-hero-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 6px;
+    margin-bottom: 18px;
 }
 
 .ccg-hero-title {
-    font-size: 52px;
+    font-size: 2.75rem;
     font-weight: 800;
-    color: #fff;
-    text-shadow: 0 0 10px var(--ccg-accent);
+    margin: 0 0 14px 0;
+    line-height: 1.15;
 }
 
-
-
-/* ==========================================================================
-   EVERYTHING BELOW HERE REMAINS UNCHANGED FOR STEP A
-   (GENRES, COLLECTIONS, HIGHLIGHTS, UTILITIES, FOOTER)
-   These areas will be rebuilt in Steps C–F.
-========================================================================== */
-
-/* SOCIAL GRID */
-.ccg-section-socials {
-    margin-top: -10px;
-    padding: 0 20px;
+.ccg-hero-text {
+    font-size: 1.15rem;
+    line-height: 1.5;
+    max-width: 720px;
+    margin-bottom: 22px;
 }
 
-.ccg-social-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 22px;
-    max-width: 1100px;
-    margin: 0 auto;
-}
-
-.ccg-social-btn {
+/* ACTION BUTTONS */
+.ccg-hero-actions {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: rgba(0,0,0,0.45);
+    gap: 14px;
+    margin-bottom: 12px;
+}
+
+.ccg-hero-footnote {
+    font-size: 0.9rem;
+    opacity: 0.85;
+}
+
+/* -----------------------------------------
+   SECTION HEADERS (for Featured, Genres, etc.)
+----------------------------------------- */
+.ccg-section-header {
+    text-align: center;
+    margin-bottom: 26px;
+}
+
+.ccg-section-title {
+    font-size: 1.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.6px;
+    margin-bottom: 4px;
+}
+
+.ccg-section-subtitle {
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+/* -----------------------------------------
+   GENRE GRID — temporary (will be upgraded later)
+----------------------------------------- */
+.ccg-genre-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 22px;
+    margin-bottom: 50px;
+}
+
+.ccg-genre-card {
+    display: block;
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 10px;
-    padding: 20px;
-    text-decoration: none;
-    color: #d8ffff;
-    border: 1px solid rgba(112,255,240,0.25);
-    transition: 0.2s ease;
+    padding: 10px;
+    transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
 }
 
-.ccg-social-btn:hover {
-    border-color: var(--ccg-accent);
-    box-shadow: 0 0 12px var(--ccg-accent);
+.ccg-genre-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0 18px rgba(0, 150, 255, 0.25);
 }
 
-.ccg-social-icon img {
-    width: 38px;
-    height: 38px;
-    margin-bottom: 10px;
+.ccg-genre-image {
+    width: 100%;
+    height: auto;
+    display: block;
 }
 
-/* FEATURED, GENRES, COLLECTIONS, HIGHLIGHTS, UTILITIES, FOOTER */
-/* — These will be rebuilt starting in Step B and Step C — */
+/* -----------------------------------------
+   FEATURED GRID
+----------------------------------------- */
+.ccg-featured-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-bottom: 60px;
+}
+
+/* -----------------------------------------
+   HIGHLIGHTS STRIP
+----------------------------------------- */
+.ccg-game-strip {
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+    padding-bottom: 10px;
+}
+
+/* -----------------------------------------
+   UTILITY GRID
+----------------------------------------- */
+.ccg-utility-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 26px;
+    margin-top: 40px;
+}
+
+/* -----------------------------------------
+   FOOTER
+----------------------------------------- */
+.ccg-footer {
+    margin-top: 60px;
+    padding: 26px 0;
+    text-align: center;
+    opacity: 0.8;
+}
