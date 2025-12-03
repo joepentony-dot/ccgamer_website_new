@@ -1,6 +1,7 @@
 /* ============================================================
-   CCG MASTER CSS — GLOBAL SYSTEM (Header, Nav, Cards, Grids)
-   SLIM + AUTO-HIDE EDITION 😇🕹️👌
+   CCG MASTER CSS — GLOBAL SYSTEM
+   Header, Nav, Cards, Grids (Used across ALL pages)
+   Slim Auto-Hide Header Edition 😇🕹️👌
    ============================================================ */
 
 /* RESET & BASE ------------------------------------------------ */
@@ -12,7 +13,7 @@
 }
 
 body.ccg-body {
-    font-family: system-ui, sans-serif;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     background: #01040d;
     color: #daf4ff;
     overflow-x: hidden;
@@ -24,134 +25,145 @@ a {
 }
 
 /* ============================================================
-   AUTO-HIDE SLIM HEADER (Wrapper Enabled)
+   ULTRA EPIC CENTER HEADER (H2) + AUTO-HIDE / SLIM
+   (Used on Home + any other page that adopts this header)
    ============================================================ */
 
 .ccg-header {
     position: sticky;
     top: 0;
-    width: 100%;
     z-index: 9999;
-    transition: transform 0.38s ease, padding 0.28s ease, background 0.28s ease;
-    backdrop-filter: blur(8px);
-}
+    width: 100%;
 
-/* The wrapper inside – prevents layout shifting */
-.ccg-header-inner {
-    max-width: 1480px;
-    margin: 0 auto;
-    padding: 18px 24px 22px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-
-    background: radial-gradient(circle at top,
-        rgba(0, 80, 110, 0.45),
-        rgba(0, 20, 40, 0.70) 55%,
-        rgba(0, 8, 20, 0.9) 100%);
-
-    border-bottom: 1px solid rgba(0,255,255,0.18);
-    border-radius: 0 0 20px 20px;
-
+    background: radial-gradient(circle at top, #051e37, #010515 65%, #00040c 100%);
+    border-bottom: 1px solid rgba(0,255,255,0.25);
     box-shadow:
-        0 0 26px rgba(0,255,255,0.20),
-        0 0 70px rgba(0,0,0,1);
+        0 0 28px rgba(0,255,255,0.2),
+        0 0 90px rgba(0,0,0,1);
+    backdrop-filter: blur(7px);
+
+    transition:
+        transform 0.25s ease,
+        padding 0.25s ease,
+        box-shadow 0.25s ease;
+
+    /* base padding; reduced compared to old version */
+    padding: 14px 18px 16px;
 }
 
-/* ON SCROLL — shrink + float */
+/* Auto-hide state (JS adds .hidden) */
 .ccg-header.hidden {
     transform: translateY(-100%);
 }
 
-.ccg-header.shrink .ccg-header-inner {
-    padding: 10px 24px 12px;
-    gap: 10px;
-    background: radial-gradient(circle at top,
-        rgba(0, 40, 60, 0.55),
-        rgba(0, 12, 30, 0.85));
-    box-shadow: 0 0 16px rgba(0,255,255,0.22);
+/* Inner flex wrapper (brand + nav + right side) */
+.ccg-header-inner {
+    max-width: 1500px;
+    margin: 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
 }
 
+/* SHRINK STATE (on scroll) — JS toggles .shrink */
+.ccg-header.shrink {
+    padding: 8px 16px 9px;
+    box-shadow:
+        0 0 18px rgba(0,255,255,0.3),
+        0 0 55px rgba(0,0,0,1);
+}
 
-/* ============================================================
-   BRAND AREA (centered)
-   ============================================================ */
+/* BRAND AREA CENTERED --------------------------------------- */
 
 .ccg-header-brand {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    transform: translateY(4px);
+    align-items: flex-start;
+    gap: 4px;
 }
 
 .ccg-logo {
-    width: 72px;
+    width: 82px;
     height: auto;
-    filter: drop-shadow(0 0 14px #00eaff)
-            drop-shadow(0 0 22px #0088ff);
-    transition: width 0.25s ease;
+    filter:
+        drop-shadow(0 0 14px #00eaff)
+        drop-shadow(0 0 22px #0088ff);
+    transition: transform 0.22s ease, filter 0.22s ease, width 0.22s ease;
 }
 
 .ccg-header.shrink .ccg-logo {
-    width: 58px;
+    width: 68px;
+    filter:
+        drop-shadow(0 0 10px #00eaff)
+        drop-shadow(0 0 18px #0088ff);
 }
 
 .ccg-brand-title {
     font-family: "Orbitron", sans-serif;
-    font-size: 1.55rem;
+    font-size: 1.5rem;
     letter-spacing: 2px;
     color: #8bf0ff;
     text-shadow:
-        0 0 20px #00e7ff,
-        0 0 38px #004cff;
+        0 0 22px #00e7ff,
+        0 0 44px #004cff;
+    transition: font-size 0.25s ease, opacity 0.25s ease;
 }
 
 .ccg-brand-subtitle {
-    font-size: 0.78rem;
-    opacity: 0.75;
-    letter-spacing: 0.16em;
-    margin-top: -3px;
+    font-size: 0.8rem;
+    letter-spacing: 0.18em;
+    opacity: 0.8;
+    text-transform: uppercase;
+    margin-top: -2px;
+    transition: opacity 0.2s ease;
 }
 
+/* When shrinking, slightly reduce visual weight */
+.ccg-header.shrink .ccg-brand-title {
+    font-size: 1.3rem;
+}
 
-/* ============================================================
-   NAVIGATION (centered bar)
-   ============================================================ */
+.ccg-header.shrink .ccg-brand-subtitle {
+    opacity: 0.0; /* effectively hides subtitle to save vertical space */
+}
+
+/* NAVIGATION BAR -------------------------------------------- */
 
 .ccg-nav {
     display: flex;
+    gap: 32px;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 34px;
-    padding: 10px 20px;
+
+    padding: 10px 22px;
 
     border-radius: 999px;
-
-    background: rgba(0, 30, 55, 0.30);
+    background: rgba(0, 40, 80, 0.25);
     backdrop-filter: blur(3px);
-
     box-shadow:
-        0 0 14px rgba(0,255,255,0.35),
-        inset 0 0 20px rgba(0,140,255,0.18);
+        0 0 16px rgba(0,255,255,0.4),
+        inset 0 0 26px rgba(0,140,255,0.2);
 
-    transition: gap 0.25s ease, padding 0.25s ease;
+    transition: padding 0.22s ease, box-shadow 0.22s ease;
 }
 
 .ccg-header.shrink .ccg-nav {
-    gap: 26px;
-    padding: 6px 16px;
+    padding: 6px 18px;
+    box-shadow:
+        0 0 12px rgba(0,255,255,0.35),
+        inset 0 0 20px rgba(0,140,255,0.18);
 }
 
 .nav-item {
     font-family: "Press Start 2P", monospace;
-    font-size: 0.82rem;
-    letter-spacing: 0.11em;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: #c7f4ff;
-    transition: 0.2s ease;
     padding: 4px 2px;
+    transition: 0.2s ease;
 }
 
 .nav-item:hover {
@@ -164,78 +176,73 @@ a {
 .nav-active {
     color: #ffffff;
     text-shadow:
-        0 0 16px #ff00ff,
-        0 0 38px #b300ff;
+        0 0 18px #ff00ff,
+        0 0 44px #b300ff;
 }
 
-
-/* ============================================================
-   MODE TOGGLE + SOCIAL BUTTONS (top-right floating)
-   ============================================================ */
+/* RIGHT SIDE: MODE TOGGLE + SOCIALS -------------------------- */
 
 .ccg-header-right {
-    position: absolute;
-    top: 18px;
-    right: 22px;
     display: flex;
     align-items: center;
     gap: 12px;
-    transition: opacity 0.25s ease, top 0.25s ease;
 }
 
-.ccg-header.shrink .ccg-header-right {
-    top: 10px;
-    opacity: 0.90;
-}
-
-/* MODE BUTTON */
+/* MODE TOGGLE */
 #ccg-mode-toggle {
     padding: 8px 18px;
-    border-radius: 40px;
+    border-radius: 999px;
     border: none;
-
-    font-family: "Orbitron";
-    font-size: 0.72rem;
-    letter-spacing: 1px;
-
+    font-family: "Orbitron", sans-serif;
+    font-size: 0.75rem;
     cursor: pointer;
+    letter-spacing: 1px;
     color: #e8faff;
 
     background: radial-gradient(circle, #0098ff, #004cff);
-    box-shadow: 0 0 14px #00d4ff, 0 0 32px #006cff;
+    box-shadow:
+        0 0 14px #00d4ff,
+        0 0 32px #006cff;
 
-    transition: transform 0.25s ease;
+    transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 #ccg-mode-toggle:hover {
-    transform: scale(1.08);
+    transform: scale(1.06);
+    box-shadow:
+        0 0 18px #00e4ff,
+        0 0 40px #006cff;
 }
 
-/* Amiga mode toggle appearance */
+/* Shrink mode: slightly smaller toggle */
+.ccg-header.shrink #ccg-mode-toggle {
+    padding: 6px 14px;
+    font-size: 0.7rem;
+}
+
+/* AMIGA MODE */
 body[data-mode="amiga"] #ccg-mode-toggle {
     background: radial-gradient(circle, #ff8df7, #c400ff);
     box-shadow: 0 0 16px #ff8dff;
 }
 
-
-/* ============================================================
-   SOCIAL BUTTONS
-   ============================================================ */
+/* LEGACY SOCIAL BUTTONS (still available if used elsewhere) -- */
 
 .social-btn {
-    padding: 8px 16px;
+    padding: 9px 18px;
     border-radius: 30px;
-    font-family: "Orbitron";
+    font-family: "Orbitron", sans-serif;
     font-size: 0.7rem;
-    color: #ffffff;
     letter-spacing: 0.06em;
+    color: #ffffff;
     transition: 0.2s ease;
 }
 
-/* Specific colours */
 .social-btn.youtube {
     background: #ff004c;
-    box-shadow: 0 0 14px #ff0068, 0 0 34px #c4003b;
+    box-shadow:
+        0 0 14px #ff0068,
+        0 0 34px #c4003b;
 }
 
 .social-btn.patreon {
@@ -262,41 +269,39 @@ body[data-mode="amiga"] #ccg-mode-toggle {
     transform: scale(1.08);
 }
 
-
 /* ============================================================
-   GLOBAL CARDS / THUMBNAILS / GRIDS
+   GLOBAL CARDS / THUMBNAILS / GRIDS (USED BY GENRE PAGES)
    ============================================================ */
 
 /* GAME CARD GRID */
 .ccg-card-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
     gap: 26px;
     padding: 10px 0;
 }
 
-/* CARD */
-.ccg-card {
+/* GAME CARD (used on e.g. genre pages) */
+.ccg-game-card {
     border-radius: 22px;
-    padding: 18px;
+    padding: 12px;
     background:
         radial-gradient(circle at top left, rgba(0,255,255,0.18), transparent 55%),
         linear-gradient(160deg, #02071a 0%, #010412 40%, #02071e 100%);
     box-shadow:
         0 0 18px rgba(0,255,255,0.32),
         0 0 60px rgba(0,0,0,0.95);
-
     transition: 0.2s ease;
 }
 
-.ccg-card:hover {
+.ccg-game-card:hover {
     transform: translateY(-4px);
     box-shadow:
         0 0 26px rgba(255,0,200,0.9),
         0 0 95px rgba(0,0,0,1);
 }
 
-/* THUMBNAIL FRAME */
+/* CARD THUMBNAIL FRAME (global) */
 .ccg-thumb-frame {
     border-radius: 16px;
     overflow: hidden;
@@ -313,15 +318,65 @@ body[data-mode="amiga"] #ccg-mode-toggle {
     object-fit: cover;
 }
 
-/* CARD TITLE */
-.ccg-game-title,
-.ccg-card-game-title {
+/* GAME CARD TITLE + META */
+.ccg-game-title {
     margin-top: 12px;
-    font-family: "Press Start 2P";
+    font-family: "Press Start 2P", monospace;
     font-size: 0.82rem;
     letter-spacing: 0.1em;
     line-height: 1.4;
     color: #defcff;
 }
 
-/* END MASTER CSS */
+/* ============================================================
+   RESPONSIVE HEADER BEHAVIOUR
+   ============================================================ */
+
+@media (max-width: 1024px) {
+    .ccg-header-inner {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px 18px;
+    }
+
+    .ccg-header-brand {
+        align-items: center;
+        text-align: center;
+    }
+
+    .ccg-brand-subtitle {
+        text-align: center;
+    }
+
+    .ccg-header-right {
+        order: 3;
+    }
+}
+
+@media (max-width: 768px) {
+    .ccg-header {
+        padding: 10px 10px 12px;
+    }
+
+    .ccg-header.shrink {
+        padding: 6px 10px 7px;
+    }
+
+    .ccg-nav {
+        gap: 18px;
+        padding: 8px 14px;
+    }
+
+    .nav-item {
+        font-size: 0.72rem;
+        letter-spacing: 0.09em;
+    }
+
+    .ccg-brand-title {
+        font-size: 1.25rem;
+    }
+
+    .ccg-header.shrink .ccg-brand-title {
+        font-size: 1.1rem;
+    }
+}
