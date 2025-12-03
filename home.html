@@ -17,6 +17,9 @@
     <link rel="stylesheet" href="resources/css/ccg-zx.css">
     <link rel="stylesheet" href="resources/css/home.css">
 
+    <!-- OMEGA MODE TOGGLE CSS (NEW) -->
+    <link rel="stylesheet" href="resources/css/omega-mode-toggle.css">
+
     <link rel="icon" type="image/png" href="resources/CCG_FAVICON.png" />
 </head>
 
@@ -53,12 +56,26 @@
             <!-- MODE + SOCIAL ICONS -->
             <div class="ccg-header-right">
 
-                <!-- MODE TOGGLE -->
-                <button id="ccg-mode-toggle" type="button" aria-label="Toggle C64 / Amiga Mode">
-                    <span>C64 / Amiga</span>
+                <!-- ===========================================
+                     OMEGA MODE TOGGLE — EPIC EDITION
+                     (This replaces your old C64/Amiga button)
+                ============================================ -->
+                <button id="ccg-mode-toggle"
+                        class="ccg-omega-toggle"
+                        type="button"
+                        aria-label="Toggle C64 / Amiga Mode">
+
+                    <!-- Dynamic label updated by ccj-global.js -->
+                    <span id="ccg-mode-label" class="ccg-omega-label">C64 Mode</span>
+
+                    <!-- Neon sliding handle -->
+                    <span class="ccg-omega-switch">
+                        <span class="ccg-omega-handle"></span>
+                    </span>
+
                 </button>
 
-                <!-- SVG HEADER SOCIAL ICONS (EPIC EDITION) -->
+                <!-- SOCIAL ICONS -->
                 <a class="ccg-header-social-icon" href="https://www.youtube.com/@CheekyCommodoreGamer?sub_confirmation=1" target="_blank">
                     <img src="resources/icons/youtube.svg" alt="YouTube">
                 </a>
@@ -84,7 +101,6 @@
                 </a>
 
             </div>
-
         </div>
     </header>
 
@@ -192,8 +208,9 @@
 
             </div>
         </section>
+
         <!-- ============================================================
-             FEATURED CONTENT
+             FEATURED SECTION
         ============================================================ -->
         <section class="ccg-section ccg-section-featured">
             <div class="ccg-section-header">
@@ -279,7 +296,6 @@
             </div>
         </section>
 
-
         <!-- ============================================================
              GENRES
         ============================================================ -->
@@ -354,7 +370,6 @@
             </div>
         </section>
 
-
         <!-- ============================================================
              COLLECTIONS
         ============================================================ -->
@@ -385,7 +400,6 @@
             </div>
         </section>
 
-
         <!-- ============================================================
              RANDOM RETRO HIGHLIGHTS
         ============================================================ -->
@@ -397,7 +411,6 @@
 
             <div class="ccg-game-strip" id="highlight-games"></div>
         </section>
-
 
         <!-- ============================================================
              UTILITIES
@@ -466,7 +479,6 @@
         </section>
 
     </main>
-
 
     <!-- ============================================================
          FOOTER
@@ -630,4 +642,3 @@
 
 </body>
 </html>
-
