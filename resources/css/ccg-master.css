@@ -1,6 +1,6 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL SYSTEM (Header, Nav, Cards, Grids)
-   ULTRA EPIC CENTER HEADER EDITION 😇🕹️👌
+   SLIM + AUTO-HIDE EDITION 😇🕹️👌
    ============================================================ */
 
 /* RESET & BASE ------------------------------------------------ */
@@ -24,141 +24,134 @@ a {
 }
 
 /* ============================================================
-   ULTRA EPIC CENTER HEADER (H2) — SLIM + AUTO-HIDE
+   AUTO-HIDE SLIM HEADER (Wrapper Enabled)
    ============================================================ */
 
 .ccg-header {
     position: sticky;
     top: 0;
-    z-index: 9999;
     width: 100%;
-    padding: 18px 24px 20px;
-    background: radial-gradient(circle at top, #051e37, #010515 65%, #00040c 100%);
-    border-bottom: 1px solid rgba(0,255,255,0.25);
-    box-shadow:
-        0 0 28px rgba(0,255,255,0.25),
-        0 0 120px rgba(0,0,0,1);
-    backdrop-filter: blur(6px);
-
-    transition:
-        padding 0.22s ease-out,
-        box-shadow 0.22s ease-out,
-        transform 0.25s ease-out,
-        background 0.22s ease-out;
+    z-index: 9999;
+    transition: transform 0.38s ease, padding 0.28s ease, background 0.28s ease;
+    backdrop-filter: blur(8px);
 }
 
-/* Smooth wrapper to prevent flicker + layout jumps */
+/* The wrapper inside – prevents layout shifting */
 .ccg-header-inner {
-    max-width: 1240px;
+    max-width: 1480px;
     margin: 0 auto;
+    padding: 18px 24px 22px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 18px;
-    transition: gap 0.2s ease-out;
-}
+    gap: 14px;
 
-/* Auto-hide: slide up when scrolling down */
-.ccg-header.ccg-header--hidden {
-    transform: translateY(-140%);
-}
+    background: radial-gradient(circle at top,
+        rgba(0, 80, 110, 0.45),
+        rgba(0, 20, 40, 0.70) 55%,
+        rgba(0, 8, 20, 0.9) 100%);
 
-/* Slim state when scrolled a little */
-.ccg-header.ccg-header--scrolled {
-    padding: 10px 20px 12px;
+    border-bottom: 1px solid rgba(0,255,255,0.18);
+    border-radius: 0 0 20px 20px;
+
     box-shadow:
-        0 0 18px rgba(0,255,255,0.28),
-        0 0 80px rgba(0,0,0,1);
-    background: radial-gradient(circle at top, #041528, #010414 70%, #00040c 100%);
+        0 0 26px rgba(0,255,255,0.20),
+        0 0 70px rgba(0,0,0,1);
 }
 
-.ccg-header.ccg-header--scrolled .ccg-header-inner {
+/* ON SCROLL — shrink + float */
+.ccg-header.hidden {
+    transform: translateY(-100%);
+}
+
+.ccg-header.shrink .ccg-header-inner {
+    padding: 10px 24px 12px;
     gap: 10px;
+    background: radial-gradient(circle at top,
+        rgba(0, 40, 60, 0.55),
+        rgba(0, 12, 30, 0.85));
+    box-shadow: 0 0 16px rgba(0,255,255,0.22);
 }
 
-/* BRAND AREA CENTERED --------------------------------------- */
+
+/* ============================================================
+   BRAND AREA (centered)
+   ============================================================ */
 
 .ccg-header-brand {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 3px;
+    transform: translateY(4px);
 }
 
 .ccg-logo {
-    width: 82px;
+    width: 72px;
     height: auto;
-    filter: drop-shadow(0 0 14px #00eaff) drop-shadow(0 0 22px #0088ff);
-    transition: width 0.22s ease-out, filter 0.22s ease-out, transform 0.22s ease-out;
+    filter: drop-shadow(0 0 14px #00eaff)
+            drop-shadow(0 0 22px #0088ff);
+    transition: width 0.25s ease;
+}
+
+.ccg-header.shrink .ccg-logo {
+    width: 58px;
 }
 
 .ccg-brand-title {
     font-family: "Orbitron", sans-serif;
-    font-size: 1.7rem;
+    font-size: 1.55rem;
     letter-spacing: 2px;
     color: #8bf0ff;
     text-shadow:
-        0 0 22px #00e7ff,
-        0 0 44px #004cff;
-    transition: font-size 0.22s ease-out, text-shadow 0.22s ease-out;
+        0 0 20px #00e7ff,
+        0 0 38px #004cff;
 }
 
 .ccg-brand-subtitle {
-    font-size: 0.85rem;
-    letter-spacing: 0.18em;
+    font-size: 0.78rem;
     opacity: 0.75;
-    margin-top: -2px;
-    transition: opacity 0.22s ease-out;
+    letter-spacing: 0.16em;
+    margin-top: -3px;
 }
 
-/* Slim state tweaks */
-.ccg-header.ccg-header--scrolled .ccg-logo {
-    width: 58px;
-    filter: drop-shadow(0 0 10px #00eaff) drop-shadow(0 0 16px #0060c8);
-}
 
-.ccg-header.ccg-header--scrolled .ccg-brand-title {
-    font-size: 1.3rem;
-    text-shadow:
-        0 0 14px #00e7ff,
-        0 0 28px #004cff;
-}
-
-.ccg-header.ccg-header--scrolled .ccg-brand-subtitle {
-    opacity: 0.6;
-}
-
-/* NAVIGATION BAR -------------------------------------------- */
+/* ============================================================
+   NAVIGATION (centered bar)
+   ============================================================ */
 
 .ccg-nav {
     display: flex;
-    gap: 40px;
     flex-wrap: wrap;
     justify-content: center;
-    padding: 10px 18px;
+    gap: 34px;
+    padding: 10px 20px;
 
     border-radius: 999px;
-    background: rgba(0, 40, 80, 0.25);
-    backdrop-filter: blur(3px);
-    box-shadow:
-        0 0 16px rgba(0,255,255,0.4),
-        inset 0 0 26px rgba(0,140,255,0.2);
 
-    transition:
-        padding 0.2s ease-out,
-        box-shadow 0.2s ease-out,
-        background 0.2s ease-out,
-        gap 0.2s ease-out;
+    background: rgba(0, 30, 55, 0.30);
+    backdrop-filter: blur(3px);
+
+    box-shadow:
+        0 0 14px rgba(0,255,255,0.35),
+        inset 0 0 20px rgba(0,140,255,0.18);
+
+    transition: gap 0.25s ease, padding 0.25s ease;
+}
+
+.ccg-header.shrink .ccg-nav {
+    gap: 26px;
+    padding: 6px 16px;
 }
 
 .nav-item {
     font-family: "Press Start 2P", monospace;
-    font-size: 0.85rem;
-    letter-spacing: 0.12em;
+    font-size: 0.82rem;
+    letter-spacing: 0.11em;
     text-transform: uppercase;
     color: #c7f4ff;
-    padding: 6px 4px;
     transition: 0.2s ease;
+    padding: 4px 2px;
 }
 
 .nav-item:hover {
@@ -171,120 +164,95 @@ a {
 .nav-active {
     color: #ffffff;
     text-shadow:
-        0 0 18px #ff00ff,
-        0 0 44px #b300ff;
+        0 0 16px #ff00ff,
+        0 0 38px #b300ff;
 }
 
-/* Slim state nav tweaks */
-.ccg-header.ccg-header--scrolled .ccg-nav {
-    gap: 26px;
-    padding: 6px 16px;
-    box-shadow:
-        0 0 12px rgba(0,255,255,0.35),
-        inset 0 0 22px rgba(0,100,220,0.3);
-}
 
-.ccg-header.ccg-header--scrolled .nav-item {
-    font-size: 0.8rem;
-}
-
-/* RIGHT SIDE: MODE TOGGLE + SOCIALS -------------------------- */
+/* ============================================================
+   MODE TOGGLE + SOCIAL BUTTONS (top-right floating)
+   ============================================================ */
 
 .ccg-header-right {
     position: absolute;
-    right: 38px;
-    top: 26px;
-
+    top: 18px;
+    right: 22px;
     display: flex;
     align-items: center;
-    gap: 14px;
-
-    transition:
-        top 0.22s ease-out,
-        gap 0.22s ease-out,
-        transform 0.22s ease-out;
+    gap: 12px;
+    transition: opacity 0.25s ease, top 0.25s ease;
 }
 
-.ccg-header.ccg-header--scrolled .ccg-header-right {
-    top: 16px;
-    gap: 10px;
-    transform: scale(0.9);
+.ccg-header.shrink .ccg-header-right {
+    top: 10px;
+    opacity: 0.90;
 }
 
-/* MODE TOGGLE */
+/* MODE BUTTON */
 #ccg-mode-toggle {
-    padding: 10px 20px;
+    padding: 8px 18px;
     border-radius: 40px;
     border: none;
+
     font-family: "Orbitron";
-    font-size: 0.75rem;
-    cursor: pointer;
+    font-size: 0.72rem;
     letter-spacing: 1px;
+
+    cursor: pointer;
     color: #e8faff;
 
     background: radial-gradient(circle, #0098ff, #004cff);
-    box-shadow:
-        0 0 14px #00d4ff,
-        0 0 32px #006cff;
-    transition:
-        transform 0.18s ease-out,
-        box-shadow 0.18s ease-out,
-        background 0.18s ease-out;
+    box-shadow: 0 0 14px #00d4ff, 0 0 32px #006cff;
+
+    transition: transform 0.25s ease;
 }
 
 #ccg-mode-toggle:hover {
-    transform: scale(1.06);
+    transform: scale(1.08);
 }
 
-/* AMIGA MODE */
+/* Amiga mode toggle appearance */
 body[data-mode="amiga"] #ccg-mode-toggle {
     background: radial-gradient(circle, #ff8df7, #c400ff);
     box-shadow: 0 0 16px #ff8dff;
 }
 
-/* SOCIAL BUTTONS */
+
+/* ============================================================
+   SOCIAL BUTTONS
+   ============================================================ */
+
 .social-btn {
-    padding: 9px 18px;
+    padding: 8px 16px;
     border-radius: 30px;
     font-family: "Orbitron";
     font-size: 0.7rem;
-    letter-spacing: 0.06em;
     color: #ffffff;
+    letter-spacing: 0.06em;
     transition: 0.2s ease;
 }
 
-/* EPIC RED YOUTUBE BUTTON */
+/* Specific colours */
 .social-btn.youtube {
     background: #ff004c;
-    box-shadow:
-        0 0 14px #ff0068,
-        0 0 34px #c4003b;
+    box-shadow: 0 0 14px #ff0068, 0 0 34px #c4003b;
 }
 
-.social-btn.youtube:hover {
-    transform: scale(1.12);
-    filter: brightness(1.2);
-}
-
-/* Patreon */
 .social-btn.patreon {
     background: #ff7b00;
     box-shadow: 0 0 14px #ff8c22;
 }
 
-/* PayPal */
 .social-btn.paypal {
     background: #007dff;
     box-shadow: 0 0 14px #008cff;
 }
 
-/* X / Twitter */
 .social-btn.xdotcom {
     background: #0f0f0f;
     box-shadow: 0 0 18px #ffffff33;
 }
 
-/* Discord */
 .social-btn.discord {
     background: #5562ea;
     box-shadow: 0 0 18px #6676ff;
@@ -294,138 +262,41 @@ body[data-mode="amiga"] #ccg-mode-toggle {
     transform: scale(1.08);
 }
 
-/* ============================================================
-   RESPONSIVE HEADER TWEAKS
-   ============================================================ */
-
-@media (max-width: 960px) {
-    .ccg-header-inner {
-        gap: 14px;
-    }
-
-    .ccg-header-brand {
-        gap: 4px;
-    }
-
-    .ccg-brand-title {
-        font-size: 1.4rem;
-    }
-
-    .ccg-header.ccg-header--scrolled .ccg-brand-title {
-        font-size: 1.15rem;
-    }
-
-    .ccg-header-right {
-        right: 22px;
-    }
-}
-
-@media (max-width: 768px) {
-    .ccg-header {
-        padding: 10px 12px 12px;
-    }
-
-    .ccg-header-inner {
-        gap: 10px;
-    }
-
-    .ccg-header-brand {
-        flex-direction: row;
-        justify-content: center;
-        gap: 10px;
-    }
-
-    .ccg-logo {
-        width: 56px;
-    }
-
-    .ccg-header.ccg-header--scrolled .ccg-logo {
-        width: 42px;
-    }
-
-    .ccg-brand-title {
-        font-size: 1.1rem;
-    }
-
-    .ccg-brand-subtitle {
-        display: none;
-    }
-
-    .ccg-nav {
-        gap: 18px;
-        padding: 6px 12px;
-    }
-
-    .nav-item {
-        font-size: 0.75rem;
-    }
-
-    .ccg-header-right {
-        position: static;
-        transform: scale(0.9);
-        align-self: center;
-        order: -1;
-    }
-
-    .ccg-header.ccg-header--scrolled .ccg-header-right {
-        transform: scale(0.85);
-    }
-}
-
-@media (max-width: 520px) {
-    .ccg-nav {
-        gap: 12px;
-        flex-wrap: wrap;
-    }
-
-    .nav-item {
-        font-size: 0.7rem;
-    }
-
-    #ccg-mode-toggle {
-        padding: 7px 16px;
-        font-size: 0.7rem;
-    }
-
-    .social-btn {
-        padding: 6px 10px;
-        font-size: 0.65rem;
-    }
-}
 
 /* ============================================================
-   GLOBAL CARDS / THUMBNAILS / GRIDS (USED BY GENRE PAGES)
+   GLOBAL CARDS / THUMBNAILS / GRIDS
    ============================================================ */
 
 /* GAME CARD GRID */
 .ccg-card-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 26px;
     padding: 10px 0;
 }
 
 /* CARD */
-.ccg-game-card {
+.ccg-card {
     border-radius: 22px;
-    padding: 12px;
+    padding: 18px;
     background:
         radial-gradient(circle at top left, rgba(0,255,255,0.18), transparent 55%),
         linear-gradient(160deg, #02071a 0%, #010412 40%, #02071e 100%);
     box-shadow:
         0 0 18px rgba(0,255,255,0.32),
         0 0 60px rgba(0,0,0,0.95);
+
     transition: 0.2s ease;
 }
 
-.ccg-game-card:hover {
+.ccg-card:hover {
     transform: translateY(-4px);
     box-shadow:
         0 0 26px rgba(255,0,200,0.9),
         0 0 95px rgba(0,0,0,1);
 }
 
-/* CARD THUMBNAIL FRAME */
+/* THUMBNAIL FRAME */
 .ccg-thumb-frame {
     border-radius: 16px;
     overflow: hidden;
@@ -442,8 +313,9 @@ body[data-mode="amiga"] #ccg-mode-toggle {
     object-fit: cover;
 }
 
-/* CARD TITLE + META */
-.ccg-game-title {
+/* CARD TITLE */
+.ccg-game-title,
+.ccg-card-game-title {
     margin-top: 12px;
     font-family: "Press Start 2P";
     font-size: 0.82rem;
