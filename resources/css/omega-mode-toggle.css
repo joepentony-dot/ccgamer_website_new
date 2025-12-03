@@ -1,0 +1,88 @@
+/* ============================================================
+   OMEGA MODE TOGGLE — EPIC DUAL-MODE SWITCH
+   ============================================================ */
+
+.ccg-omega-toggle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #111;
+    border: 2px solid var(--ccg-accent, #70fff0);
+    padding: 6px 14px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--ccg-accent, #70fff0);
+    text-shadow: 0 0 4px var(--ccg-accent, #70fff0);
+    transition: all 0.25s ease;
+}
+
+.ccg-omega-toggle:hover {
+    box-shadow: 0 0 12px var(--ccg-accent);
+}
+
+.ccg-omega-label {
+    font-size: 14px;
+    font-weight: 600;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+/* --------------------------------------------
+   SWITCH SLIDER
+-------------------------------------------- */
+.ccg-omega-switch {
+    position: relative;
+    width: 46px;
+    height: 20px;
+    background: #222;
+    border-radius: 20px;
+    border: 1px solid var(--ccg-accent);
+    box-shadow: inset 0 0 6px var(--ccg-accent);
+    pointer-events: none;
+}
+
+.ccg-omega-handle {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background: var(--ccg-accent);
+    border-radius: 50%;
+    transition: transform 0.25s ease;
+    box-shadow:
+        0 0 6px var(--ccg-accent),
+        0 0 16px var(--ccg-accent);
+}
+
+/* C64 mode (default) */
+.ccg-omega-toggle.omega-c64 .ccg-omega-handle {
+    transform: translateX(0);
+}
+
+/* Amiga mode (handle slides right) */
+.ccg-omega-toggle.omega-amiga .ccg-omega-handle {
+    transform: translateX(26px);
+}
+
+/* Amiga glow */
+.ccg-omega-toggle.omega-amiga {
+    border-color: #f432ff;
+    color: #f432ff;
+    text-shadow: 0 0 6px #f432ff;
+}
+
+.ccg-omega-toggle.omega-amiga .ccg-omega-switch {
+    border-color: #f432ff;
+    box-shadow: inset 0 0 6px #f432ff;
+}
+
+.ccg-omega-toggle.omega-amiga .ccg-omega-handle {
+    background: #f432ff;
+    box-shadow:
+        0 0 6px #f432ff,
+        0 0 16px #f432ff;
+}
