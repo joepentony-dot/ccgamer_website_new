@@ -1,5 +1,5 @@
 /* ==========================================================
-   CCG GLOBAL SCRIPT — APPLIES UNIVERSAL EFFECTS
+   CCG GLOBAL SCRIPT — UNIVERSAL EFFECTS + OMEGA TOGGLE
    ========================================================== */
 
 (function () {
@@ -7,25 +7,23 @@
 
     /* -----------------------------------------------
        PAGE FADE-IN
-       ----------------------------------------------- */
+    ----------------------------------------------- */
     document.addEventListener("DOMContentLoaded", () => {
         body.classList.add("ccg-fade-in");
     });
 
     /* -----------------------------------------------
-       SCANLINE INTENSITY SETUP
-       ----------------------------------------------- */
+       SCANLINE INTENSITY (SHIFT + S)
+    ----------------------------------------------- */
     const scanlineOverlay = document.querySelector(".crt-overlay");
     let scanlineStrength = 0.05;
 
     function updateScanlines() {
-        if (!scanlineOverlay) return;
-        scanlineOverlay.style.opacity = scanlineStrength;
+        if (scanlineOverlay) scanlineOverlay.style.opacity = scanlineStrength;
     }
 
     updateScanlines();
 
-    // SHIFT + S → cycle scanline density
     window.addEventListener("keydown", (e) => {
         if (e.key.toLowerCase() === "s" && e.shiftKey) {
             scanlineStrength += 0.1;
@@ -35,29 +33,28 @@
     });
 
     /* -----------------------------------------------
-       GLOBAL MODE CHANGE HANDLER
-       ----------------------------------------------- */
+       GLOBAL MODE CHANGE
+       Fired by ccg-mode-engine.js
+    ----------------------------------------------- */
     document.addEventListener("ccg:modeChange", (event) => {
         const mode = event.detail.mode;
+
         console.log("GLOBAL MODE UPDATE →", mode);
 
-        // Adjust accent colour sitewide
+        // Apply accent colour
         if (mode === "c64") {
-            body.style.setProperty("--ccg-accent", "#70fff0");
+            body.style.setProperty("--ccg-accent", "#70fff0");   // cyan glow
         } else if (mode === "amiga") {
-            body.style.setProperty("--ccg-accent", "#32f6ff");
-        } else if (mode === "zx") {
-            body.style.setProperty("--ccg-accent", "#00ff00");
+            body.style.setProperty("--ccg-accent", "#f432ff");   // neon magenta
         }
 
-        // Update mode toggle label when mode actually changes
         updateModeToggleLabel();
+        updateOmegaSwitchVisual();
     });
 
     /* -----------------------------------------------
-       MODE TOGGLE — AUTO LABEL UPDATER
-       ----------------------------------------------- */
-
+       MODE LABEL HANDLER
+    ----------------------------------------------- */
     function updateModeToggleLabel() {
         const label = document.getElementById("ccg-mode-label");
         if (!label) return;
@@ -66,20 +63,25 @@
         label.textContent = mode === "amiga" ? "Amiga Mode" : "C64 Mode";
     }
 
+    /* -----------------------------------------------
+       SWITCH HANDLE POSITION
+    ----------------------------------------------- */
+    function updateOmegaSwitchVisual() {
+        const switchEl = document.querySelector(".ccg-omega-toggle");
+        if (!switchEl) return;
+
+        const mode = body.dataset.mode;
+
+        switchEl.classList.toggle("omega-amiga", mode === "amiga");
+        switchEl.classList.toggle("omega-c64", mode === "c64");
+    }
+
+    /* -----------------------------------------------
+       INITIALISE ON LOAD
+    ----------------------------------------------- */
     document.addEventListener("DOMContentLoaded", () => {
-        const btn = document.getElementById("ccg-mode-toggle");
-        const label = document.getElementById("ccg-mode-label");
-
-        if (!btn || !label) return;
-
-        // Ensure label is correct on page load
         updateModeToggleLabel();
-
-        // When the mode button is clicked, wait for mode engine to flip the data-mode,
-        // then update the text.
-        btn.addEventListener("click", () => {
-            setTimeout(updateModeToggleLabel, 20);
-        });
+        updateOmegaSwitchVisual();
     });
 
 })();
