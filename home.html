@@ -31,7 +31,6 @@
     ============================================================ -->
     <header class="ccg-header auto-header" id="ccgHeader">
         <div class="ccg-header-inner">
-
             <!-- BRAND -->
             <div class="ccg-header-brand">
                 <a href="home.html">
@@ -55,55 +54,37 @@
 
             <!-- MODE + SOCIAL ICONS -->
             <div class="ccg-header-right">
-
-                <!-- ===========================================
-                     OMEGA MODE TOGGLE — EPIC EDITION
-                     (This replaces your old C64/Amiga button)
-                ============================================ -->
                 <button id="ccg-mode-toggle"
                         class="ccg-omega-toggle"
                         type="button"
                         aria-label="Toggle C64 / Amiga Mode">
-
-                    <!-- Dynamic label updated by ccj-global.js -->
                     <span id="ccg-mode-label" class="ccg-omega-label">C64 Mode</span>
-
-                    <!-- Neon sliding handle -->
                     <span class="ccg-omega-switch">
                         <span class="ccg-omega-handle"></span>
                     </span>
-
                 </button>
 
-                <!-- SOCIAL ICONS -->
                 <a class="ccg-header-social-icon" href="https://www.youtube.com/@CheekyCommodoreGamer?sub_confirmation=1" target="_blank">
                     <img src="resources/icons/youtube.svg" alt="YouTube">
                 </a>
-
                 <a class="ccg-header-social-icon" href="https://www.patreon.com/CheekyCommodoreGamer" target="_blank">
                     <img src="resources/icons/patreon.svg" alt="Patreon">
                 </a>
-
                 <a class="ccg-header-social-icon" href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank">
                     <img src="resources/icons/paypal.svg" alt="PayPal">
                 </a>
-
                 <a class="ccg-header-social-icon" href="https://facebook.com/cheekycommodoregamer" target="_blank">
                     <img src="resources/icons/facebook.svg" alt="Facebook">
                 </a>
-
                 <a class="ccg-header-social-icon" href="https://twitter.com/CheekyC64Gamer" target="_blank">
                     <img src="resources/icons/twitter.svg" alt="Twitter/X">
                 </a>
-
                 <a class="ccg-header-social-icon" href="https://discord.gg/83Xw9ktAn4" target="_blank">
                     <img src="resources/icons/discord.svg" alt="Discord">
                 </a>
-
             </div>
         </div>
     </header>
-
 
     <!-- ============================================================
          MAIN CONTENT
@@ -122,20 +103,18 @@
                 <div class="ccg-hero-scanlines"></div>
             </div>
 
-            <!-- Hero Artwork -->
+            <!-- Hero Wide Banner Images -->
             <div class="ccg-hero-images">
-
                 <img src="resources/images/hero/ccg-hero-c64.png"
                      class="ccg-hero-image ccg-hero-image-c64"
-                     alt="Commodore 64 Hero">
+                     alt="Commodore 64 Hero Banner">
 
                 <img src="resources/images/hero/ccg-hero-amiga.png"
                      class="ccg-hero-image ccg-hero-image-amiga"
-                     alt="Amiga Hero">
-
+                     alt="Amiga Hero Banner">
             </div>
 
-            <!-- Hero Text -->
+            <!-- HERO CONTENT -->
             <div class="ccg-hero-content">
 
                 <div class="ccg-hero-badge">COMMODORE 64 • AMIGA</div>
@@ -145,7 +124,7 @@
                 </h1>
 
                 <p class="ccg-hero-text">
-                    Discover legendary C64 &amp; Amiga games, deep-dive videos,
+                    Discover legendary C64 & Amiga games, deep-dive videos,
                     curated collections and fiendish quizzes — powered by the
                     Cheeky Commodore Gamer community.
                 </p>
@@ -163,9 +142,8 @@
             </div>
         </section>
 
-
         <!-- ============================================================
-             SOCIAL MEDIA GRID — SVG EDITION
+             SOCIAL MEDIA GRID
         ============================================================ -->
         <section class="ccg-section-socials">
             <div class="ccg-social-grid">
@@ -418,7 +396,6 @@
         <section class="ccg-section ccg-section-utility">
             <div class="ccg-utility-grid">
 
-                <!-- Manuals -->
                 <article class="ccg-card">
                     <header class="ccg-card-header">
                         <h3 class="ccg-card-title">Game Manuals</h3>
@@ -436,7 +413,6 @@
                     </div>
                 </article>
 
-                <!-- Quiz -->
                 <article class="ccg-card">
                     <header class="ccg-card-header">
                         <h3 class="ccg-card-title">Retro Quiz Challenge</h3>
@@ -457,7 +433,6 @@
                     </div>
                 </article>
 
-                <!-- Emulation -->
                 <article class="ccg-card">
                     <header class="ccg-card-header">
                         <h3 class="ccg-card-title">Emulation Guide</h3>
@@ -480,9 +455,6 @@
 
     </main>
 
-    <!-- ============================================================
-         FOOTER
-    ============================================================ -->
     <footer class="ccg-footer">
         <div class="ccg-footer-inner">
             <p class="ccg-footer-text">
@@ -498,156 +470,14 @@
         </div>
     </footer>
 
-</div> <!-- END WRAPPER -->
+</div>
 
-
-<!-- ============================================================
-     JS — MODE ENGINE + GLOBAL + HEADER AUTO + HOME LOADER
-============================================================ -->
 <script src="js/ccg-mode-engine.js" defer></script>
 <script src="js/ccj-global.js" defer></script>
 <script src="js/ccg-header-auto.js" defer></script>
-
-<!-- HOME PAGE LOADER -->
 <script>
 (function () {
     const GAMES_JSON_URL = "./games/games.json";
-
-    const featuredGameTitleEl = document.getElementById("featured-game-title");
-    const featuredGameSystemEl = document.getElementById("featured-game-system");
-    const featuredGameThumbEl = document.getElementById("featured-game-thumb");
-    const featuredGameLinkEl = document.getElementById("featured-game-link");
-    const featuredGamePlayEl = document.getElementById("featured-game-play");
-    const featuredGameSummaryEl = document.getElementById("featured-game-summary");
-    const highlightGamesStripEl = document.getElementById("highlight-games");
-    const yearEl = document.getElementById("ccg-year");
-
-    if (yearEl) yearEl.textContent = new Date().getFullYear();
-
-    function safeThumbnail(game) {
-        // If thumbnail already contains a path, use it as-is
-        if (game.thumbnail) {
-            if (game.thumbnail.includes("/")) {
-                return game.thumbnail;
-            }
-            return "resources/images/thumbnails/all/" + game.thumbnail;
-        }
-        if (game.thumb) {
-            if (game.thumb.includes("/")) {
-                return game.thumb;
-            }
-            return "resources/images/thumbnails/all/" + game.thumb;
-        }
-        return "resources/ccgamer_logo.png";
-    }
-
-    function gameUrl(game) {
-        if (game.id) return "games/game.html?id=" + encodeURIComponent(game.id);
-        if (game.slug) return "games/game.html?id=" + encodeURIComponent(game.slug);
-        return "games/index.html";
-    }
-
-    function pickRandom(items, count) {
-        const copy = items.slice();
-        const result = [];
-        while (copy.length && result.length < count) {
-            const idx = Math.floor(Math.random() * copy.length);
-            result.push(copy.splice(idx, 1)[0]);
-        }
-        return result;
-    }
-
-    function formatSystem(game) {
-        return game.system || "C64 / Amiga";
-    }
-
-    function createHighlightCard(game) {
-        const card = document.createElement("article");
-        card.className = "ccg-game-strip-card";
-
-        const link = document.createElement("a");
-        link.className = "ccg-game-strip-link";
-        link.href = gameUrl(game);
-
-        const thumbFrame = document.createElement("div");
-        thumbFrame.className = "ccg-thumb-frame ccg-thumb-frame-strip";
-
-        const img = document.createElement("img");
-        img.className = "ccg-thumb-image";
-        img.loading = "lazy";
-        img.alt = game.title || "Retro game";
-        img.src = safeThumbnail(game);
-
-        thumbFrame.appendChild(img);
-
-        const info = document.createElement("div");
-        info.className = "ccg-game-strip-info";
-
-        const title = document.createElement("h4");
-        title.className = "ccg-game-strip-title";
-        title.textContent = game.title;
-
-        const meta = document.createElement("p");
-        meta.className = "ccg-game-strip-meta";
-        const year = game.year ? " • " + game.year : "";
-        meta.textContent = formatSystem(game) + year;
-
-        info.appendChild(title);
-        info.appendChild(meta);
-
-        link.appendChild(thumbFrame);
-        link.appendChild(info);
-        card.appendChild(link);
-
-        return card;
-    }
-
-    function populateFeaturedGame(game) {
-        if (!game) return;
-        const url = gameUrl(game);
-        const thumb = safeThumbnail(game);
-
-        featuredGameTitleEl.textContent = game.title;
-        featuredGameSystemEl.textContent = formatSystem(game);
-        featuredGameThumbEl.src = thumb;
-        featuredGameThumbEl.alt = game.title;
-        featuredGameLinkEl.href = url;
-        featuredGamePlayEl.href = url;
-
-        featuredGameSummaryEl.textContent =
-            game.summary || game.description ||
-            "A curated pick from the Cheeky Commodore Gamer library.";
-    }
-
-    function populateHighlights(games) {
-        if (!highlightGamesStripEl) return;
-        highlightGamesStripEl.innerHTML = "";
-        pickRandom(games, 10).forEach(game =>
-            highlightGamesStripEl.appendChild(createHighlightCard(game))
-        );
-    }
-
-    async function loadGames() {
-        try {
-            const res = await fetch(GAMES_JSON_URL);
-            const data = await res.json();
-            const games = Array.isArray(data) ? data : data.games || [];
-
-            if (!games.length) return;
-
-            const featured = games[Math.floor(Math.random() * games.length)];
-            populateFeaturedGame(featured);
-            populateHighlights(games);
-        } catch (err) {
-            console.error("Error loading games:", err);
-        }
-    }
-
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", loadGames);
-    } else {
-        loadGames();
-    }
 })();
 </script>
 
