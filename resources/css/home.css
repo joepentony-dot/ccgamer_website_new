@@ -1,245 +1,445 @@
 /* ============================================================
-   HOME PAGE — TIGHT HERO VERSION
+   HOME PAGE — OMEGA BUILD
    Cheeky Commodore Gamer 😇🕹️👌
-============================================================ */
+   FINAL PRODUCTION VERSION
+   ============================================================ */
 
 /* -----------------------------------------
-   GLOBAL PAGE WRAPPER
+   PAGE CONTAINER
 ----------------------------------------- */
-.ccg-main {
+.ccg-page--home {
     width: 100%;
-    max-width: 1600px;
+    max-width: 1680px;
     margin: 0 auto;
-    padding-top: 120px;
-}
-
-/* -----------------------------------------
-   HEADER SUBTITLE FIX (Step A)
------------------------------------------ */
-.ccg-header-brand {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    line-height: 1.1;
-}
-
-.ccg-brand-title {
-    font-size: 1.55rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    margin-bottom: 2px;
-}
-
-.ccg-brand-subtitle {
-    font-size: 0.95rem;
-    font-weight: 500;
-    margin-top: -4px;      /* Forces correct vertical alignment */
-    opacity: 0.85;
-}
-
-/* -----------------------------------------
-   HERO SECTION — Tight, Clean, Epic
------------------------------------------ */
-.ccg-hero {
+    padding: 40px 32px 80px;
     position: relative;
-    width: 100%;
-    height: 420px;               /* TIGHT hero height */
-    margin: 0 auto 40px auto;
-    overflow: hidden;
-    border-radius: 14px;
-    background: #000;
-}
-
-/* Background overlays */
-.ccg-hero-background {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-}
-
-.ccg-hero-overlay-grid {
-    position: absolute;
-    inset: 0;
-    background-image: url("../images/grid-overlay.png");
-    opacity: 0.16;
-    pointer-events: none;
-}
-
-.ccg-hero-overlay-starfield {
-    position: absolute;
-    inset: 0;
-    background-image: url("../images/starfield-blue.png");
-    background-size: cover;
-    opacity: 0.33;
-    pointer-events: none;
-}
-
-.ccg-hero-scanlines {
-    position: absolute;
-    inset: 0;
-    background-image: url("../images/scanlines.png");
-    opacity: 0.22;
-    mix-blend-mode: overlay;
-    pointer-events: none;
-}
-
-/* HERO IMAGE WRAPPER */
-.ccg-hero-images {
-    position: absolute;
-    inset: 0;
     z-index: 2;
+}
+
+/* -----------------------------------------
+   HEADER — OMEGA EPIC LAYOUT
+----------------------------------------- */
+.ccg-header--omega {
+    width: 100%;
+    margin: 0 auto 40px;
+    padding-top: 40px;
+    text-align: center;
+    position: relative;
+    z-index: 10;
+}
+
+/* Top bar: logo + mode toggle */
+.ccg-header-top {
+    width: 100%;
+    max-width: 1650px;
+    margin: 0 auto 20px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
 }
 
-.ccg-hero-image {
-    position: absolute;
-    width: 92%;             /* TIGHT banner size */
-    max-width: 1500px;
+.ccg-logo-img {
+    width: 88px;
     height: auto;
-    opacity: 0;
-    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
-    transform: translateY(4px);
+    opacity: 0.9;
+    transition: opacity 0.2s ease-out;
 }
 
-body[data-mode="c64"] .ccg-hero-image-c64 { opacity: 1; transform: translateY(0); }
-body[data-mode="amiga"] .ccg-hero-image-amiga { opacity: 1; transform: translateY(0); }
-
-/* -----------------------------------------
-   HERO CONTENT
------------------------------------------ */
-.ccg-hero-content {
-    position: relative;
-    z-index: 3;
-    padding: 40px 60px;
-    max-width: 900px;
-    text-align: left;
+.ccg-logo-img:hover {
+    opacity: 1;
 }
 
-.ccg-hero-badge {
-    display: inline-block;
-    padding: 4px 10px;
-    font-size: 0.8rem;
-    letter-spacing: 1px;
-    background: rgba(0, 0, 0, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.45);
-    border-radius: 6px;
-    margin-bottom: 18px;
-}
-
-.ccg-hero-title {
-    font-size: 2.75rem;
-    font-weight: 800;
-    margin: 0 0 14px 0;
-    line-height: 1.15;
-}
-
-.ccg-hero-text {
-    font-size: 1.15rem;
-    line-height: 1.5;
-    max-width: 720px;
-    margin-bottom: 22px;
-}
-
-/* ACTION BUTTONS */
-.ccg-hero-actions {
+/* System mode toggle container */
+.ccg-mode-toggle {
     display: flex;
-    gap: 14px;
-    margin-bottom: 12px;
+    align-items: center;
+    position: relative;
+    width: 150px;
+    height: 48px;
+    border-radius: 40px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.2);
+    cursor: pointer;
+    overflow: hidden;
 }
 
-.ccg-hero-footnote {
-    font-size: 0.9rem;
-    opacity: 0.85;
-}
-
-/* -----------------------------------------
-   SECTION HEADERS (for Featured, Genres, etc.)
------------------------------------------ */
-.ccg-section-header {
+/* Toggle pill halves */
+.ccg-mode-toggle-pill {
+    flex: 1;
     text-align: center;
-    margin-bottom: 26px;
+    padding: 6px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 2;
 }
 
-.ccg-section-title {
-    font-size: 1.9rem;
-    font-weight: 700;
+.ccg-mode-toggle-label {
+    font-size: 0.75rem;
+    opacity: 0.85;
+    margin-top: 2px;
+}
+
+/* Knob */
+.ccg-mode-toggle-knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 70px;
+    height: 42px;
+    border-radius: 40px;
+    background: rgba(0,0,0,0.35);
+    transition: transform 0.25s ease-out;
+}
+
+/* Active positioning */
+body.ccg-mode-amiga .ccg-mode-toggle-knob {
+    transform: translateX(72px);
+}
+
+/* -----------------------------------------
+   HEADER MAIN TITLE AREA
+----------------------------------------- */
+.ccg-header-main {
+    margin-top: 14px;
+}
+
+.ccg-header-title-block {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.ccg-header-title {
+    font-size: 2.85rem;
+    line-height: 1.05;
+    font-weight: 900;
     text-transform: uppercase;
-    letter-spacing: 1.6px;
-    margin-bottom: 4px;
 }
 
-.ccg-section-subtitle {
-    font-size: 1rem;
-    opacity: 0.8;
+.ccg-header-title-top {
+    display: block;
+    font-size: 2.2rem;
+    margin-bottom: 6px;
+}
+
+.ccg-header-title-bottom {
+    display: block;
+    font-size: 3.2rem;
+}
+
+.ccg-header-subtitle {
+    margin-top: 14px;
+    font-size: 1.15rem;
+    opacity: 0.9;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* -----------------------------------------
-   GENRE GRID — temporary (will be upgraded later)
+   SOCIAL GRID
 ----------------------------------------- */
-.ccg-genre-grid {
+.ccg-header-social-wrap {
+    margin-top: 24px;
+}
+
+.ccg-social-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-    gap: 22px;
-    margin-bottom: 50px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 18px;
+    max-width: 1100px;
+    margin: 0 auto;
 }
 
-.ccg-genre-card {
-    display: block;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    padding: 10px;
-    transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+.ccg-social-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    transition: transform 0.15s ease-out, box-shadow 0.2s ease-out;
 }
 
-.ccg-genre-card:hover {
+.ccg-social-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 0 18px rgba(0, 150, 255, 0.25);
+    box-shadow: 0 0 18px rgba(0,150,255,0.25);
 }
 
-.ccg-genre-image {
-    width: 100%;
-    height: auto;
-    display: block;
+.ccg-social-cta {
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 6px;
+    background: #ff0000;
 }
 
 /* -----------------------------------------
-   FEATURED GRID
+   OMEGA CINEMATIC HERO
+   4:1 STRIPS
 ----------------------------------------- */
-.ccg-featured-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 32px;
+.omega-hero {
+    width: 100%;
     margin-bottom: 60px;
 }
 
-/* -----------------------------------------
-   HIGHLIGHTS STRIP
------------------------------------------ */
-.ccg-game-strip {
+.omega-hero-strip {
+    position: relative;
+    width: 100%;
+    height: 260px;
+    border-radius: 14px;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* PRIMARY BANNER — YOU SUBSTITUTE BACKGROUND IMAGES */
+.omega-hero-strip--primary {
+    background-image: url("../images/hero/omega_primary.jpg");
+}
+
+.omega-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.55),
+        rgba(0,0,0,0.75)
+    );
     display: flex;
-    overflow-x: auto;
-    gap: 20px;
-    padding-bottom: 10px;
+    align-items: flex-end;
+    padding: 30px 40px;
+}
+
+.omega-hero-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+}
+
+.omega-hero-title span {
+    color: var(--ccg-accent);
+}
+
+.omega-hero-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.88;
+}
+
+/* SECONDARY STRIP ROW */
+.omega-hero-strip-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 18px;
+    margin-top: 14px;
+}
+
+.omega-hero-strip--link {
+    height: 160px;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.omega-hero-strip--c64 {
+    background-image: url("../images/hero/strip_c64.jpg");
+}
+
+.omega-hero-strip--amiga {
+    background-image: url("../images/hero/strip_amiga.jpg");
+}
+
+.omega-hero-strip--quiz {
+    background-image: url("../images/hero/strip_quiz.jpg");
+}
+
+.omega-hero-link-inner {
+    position: absolute;
+    bottom: 14px;
+    left: 20px;
+}
+
+.omega-hero-link-label {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.omega-hero-link-tag {
+    font-size: 0.9rem;
+    opacity: 0.75;
 }
 
 /* -----------------------------------------
-   UTILITY GRID
+   HOME SECTION FRAMEWORK
 ----------------------------------------- */
-.ccg-utility-grid {
+.home-section {
+    margin-bottom: 70px;
+    text-align: center;
+}
+
+.home-section-header {
+    margin-bottom: 30px;
+}
+
+.home-section-title {
+    font-size: 1.9rem;
+    letter-spacing: 1.2px;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.home-section-subtitle {
+    opacity: 0.85;
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+/* -----------------------------------------
+   FEATURED GAME + VIDEO PANELS
+----------------------------------------- */
+.home-featured-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 26px;
-    margin-top: 40px;
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+}
+
+.featured-panel {
+    background: rgba(255,255,255,0.045);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.featured-panel-header {
+    text-align: left;
+    margin-bottom: 16px;
+}
+
+.featured-panel-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+}
+
+.featured-panel-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Featured game panel art */
+.featured-game-art {
+    width: 100%;
+    height: 220px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    background-size: cover;
+    background-position: center;
+}
+
+/* Featured video frame */
+.featured-video-frame {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Buttons */
+.featured-panel-footer {
+    margin-top: 16px;
+    display: flex;
+    gap: 14px;
+}
+
+/* -----------------------------------------
+   GRIDS: GENRES, COLLECTIONS, HIGHLIGHTS, UTILITIES
+----------------------------------------- */
+.home-grid {
+    display: grid;
+    gap: 22px;
+}
+
+.home-grid--genres {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.home-grid--collections,
+.home-grid--highlights,
+.home-grid--utilities {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.home-card {
+    display: block;
+    background: rgba(255,255,255,0.04);
+    border-radius: 12px;
+    padding: 18px 20px;
+    text-align: left;
+    border: 1px solid rgba(255,255,255,0.12);
+    transition: transform 0.15s ease-out, box-shadow 0.2s ease-out;
+}
+
+.home-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0 18px rgba(0,150,255,0.25);
+}
+
+.home-card-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+}
+
+.home-card-text {
+    opacity: 0.8;
+    font-size: 0.95rem;
 }
 
 /* -----------------------------------------
    FOOTER
 ----------------------------------------- */
 .ccg-footer {
-    margin-top: 60px;
-    padding: 26px 0;
     text-align: center;
     opacity: 0.8;
+    margin-top: 90px;
+}
+
+.ccg-footer-text {
+    margin: 4px 0;
+}
+
+.ccg-footer-text--small {
+    font-size: 0.85rem;
+    opacity: 0.65;
+}
+
+/* -----------------------------------------
+   RESPONSIVE TWEAKS
+----------------------------------------- */
+@media (max-width: 1200px) {
+    .home-featured-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .omega-hero-strip {
+        height: 200px;
+    }
+    .omega-hero-strip--link {
+        height: 140px;
+    }
+    .ccg-header-title {
+        font-size: 2.2rem;
+    }
 }
