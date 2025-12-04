@@ -1,51 +1,146 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ccg-page="genre">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>BPjS-Indexed Games | Cheeky Commodore Gamer</title>
-    <meta name="description" content="Browse BPjS-indexed games for the Commodore 64 and Amiga. Controversial titles that ran into trouble with the German Bundesprüfstelle but remain fascinating pieces of gaming history.">
+    <meta name="description" content="Browse BPjS-indexed games for the Commodore 64 and Amiga. Controversial titles restricted by the German Bundesprüfstelle, now preserved for historical context.">
     <link rel="canonical" href="bpjs-indexed-games.html">
 
+    <link rel="icon" href="../../favicon.ico">
+
+    <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="../../resources/css/ccg-master.css">
     <link rel="stylesheet" href="../../resources/css/ccg-mode.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-console.css">
     <link rel="stylesheet" href="../../resources/css/ccg-effects.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-anim.css">
     <link rel="stylesheet" href="../../resources/css/ccg-overlays.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-modal.css">
+
+    <!-- PAGE CSS -->
     <link rel="stylesheet" href="../../resources/css/genre.css">
 </head>
 
-<body data-genre="BPJS Games">
-<header>
-    <a href="../../home.html">
-        <img src="../../resources/ccgamer_logo.png" alt="Cheeky Commodore Gamer Logo" class="logo">
-    </a>
-</header>
+<body class="ccg-body" data-ccg-mode="c64" data-genre="BPJS">
 
-<nav class="breadcrumb">
-    <a href="../../home.html">Home Hub</a> ›
-    <a href="../../games/index.html">All Games</a> ›
-    <span>BPjS-Indexed Games</span>
-</nav>
+    <!-- =========================================================
+         GLOBAL BACKGROUND
+    ========================================================= -->
+    <div class="ccg-bg">
+        <div class="ccg-bg-starfield"></div>
+        <div class="ccg-bg-grid"></div>
+        <div class="ccg-bg-crt-overlay"></div>
+    </div>
 
-<main class="genre-page">
-    <h1>BPjS-Indexed Games</h1>
+    <div class="ccg-page ccg-page--genre">
 
-    <p>This section highlights games that found themselves on the BPjS index in Germany, usually for violence or controversial themes. On the C64 and Amiga these titles often built a certain reputation precisely because they were restricted.</p>
-    <p>Presented here from a historical perspective, these games are part of gaming culture and censorship history, and show how attitudes to content have changed over the years.</p>
+        <!-- =====================================================
+             OMEGA SUBPAGE HEADER
+        ===================================================== -->
+        <header class="ccg-header">
+            <div class="ccg-header-inner">
 
-    <h2>Total Games Available</h2>
-    <div id="genreGamesCount"></div>
+                <!-- Logo -->
+                <a href="../../home.html" class="ccg-logo-link">
+                    <img src="../../resources/ccgamer_logo.png"
+                         alt="Cheeky Commodore Gamer Logo"
+                         class="ccg-logo-img">
+                </a>
 
-    <h2>Browse BPjS-Indexed Games</h2>
-    <div id="genreGamesGrid"></div>
-</main>
+                <!-- Navigation -->
+                <nav class="ccg-nav">
+                    <a href="../../home.html" class="nav-item">Home</a>
+                    <a href="../../games/index.html" class="nav-item">Games</a>
+                    <a href="../../games/genres/index.html" class="nav-item">Genres</a>
+                    <a href="../../games/collections/index.html" class="nav-item">Collections</a>
+                    <a href="../../quiz/quiz.html" class="nav-item">Quiz</a>
+                    <a href="../../complete-index.html" class="nav-item">Index</a>
+                    <a href="../../about.html" class="nav-item">About</a>
+                    <a href="../../contact.html" class="nav-item">Contact</a>
+                </nav>
 
-<footer>
-    <p>© Cheeky Commodore Gamer.</p>
-</footer>
+                <!-- Mode Toggle -->
+                <button
+                    class="ccg-mode-toggle"
+                    type="button"
+                    aria-label="Toggle system mode"
+                    data-ccg-mode-toggle="true"
+                >
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--c64">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="../../resources/icons/c64.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">C64</span>
+                    </span>
 
-<script src="../../js/genre-loader.js" defer></script>
+                    <span class="ccg-mode-toggle-knob"></span>
+
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--amiga">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="../../resources/icons/amiga.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">Amiga</span>
+                    </span>
+                </button>
+
+            </div>
+        </header>
+
+        <!-- =====================================================
+             MAIN CONTENT
+        ===================================================== -->
+        <main class="ccg-main">
+
+            <!-- Intro -->
+            <section class="ccg-section">
+                <h1 class="ccg-section-title">BPjS-Indexed Games</h1>
+
+                <p class="ccg-section-subtitle">
+                    Historically restricted titles from Germany’s Bundesprüfstelle, preserved here for context.
+                </p>
+
+                <p>
+                    These games were placed on the BPjS index in Germany, often due to violence or themes considered 
+                    controversial at the time. While restricted upon release, they remain important pieces of gaming 
+                    culture and censorship history.
+                </p>
+
+                <p>
+                    This section aims to document them respectfully and accurately as part of retro history.
+                </p>
+            </section>
+
+            <!-- Game Count -->
+            <section class="ccg-section">
+                <h2 class="ccg-section-title">Total Games Available</h2>
+                <div id="genreGamesCount" class="genre-count"></div>
+            </section>
+
+            <!-- Game Grid -->
+            <section class="ccg-section">
+                <h2 class="ccg-section-title">Browse BPjS-Indexed Games</h2>
+                <div id="genreGamesGrid" class="genre-grid"></div>
+            </section>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="ccg-footer">
+            <div class="ccg-footer-inner">
+                <p class="ccg-footer-text">&copy; 2025 Cheeky Commodore Gamer.</p>
+                <p class="ccg-footer-text ccg-footer-text--small">
+                    Not affiliated with Commodore or Amiga.
+                </p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- JS -->
+    <script src="../../js/ccg-mode-engine.js" defer></script>
+    <script src="../../js/ccj-global.js" defer></script>
+    <script src="../../js/genre-loader.js" defer></script>
+
 </body>
 </html>
