@@ -14,10 +14,11 @@
     <link rel="stylesheet" href="../resources/css/ccg-mode.css" />
     <link rel="stylesheet" href="../resources/css/ccg-effects.css" />
     <link rel="stylesheet" href="../resources/css/ccg-anim.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-overlays.css" />
     <link rel="stylesheet" href="../resources/css/ccg-modal.css" />
 
     <!-- PAGE CSS -->
-    <link rel="stylesheet" href="../resources/css/game.css" />
+    <link rel="stylesheet" href="../resources/css/games.css" />
 </head>
 
 <body class="ccg-body" data-ccg-mode="c64">
@@ -29,59 +30,58 @@
         <div class="ccg-bg-crt-overlay"></div>
     </div>
 
-    <div class="ccg-page-shell">
+    <div class="ccg-page ccg-page--game">
 
         <!-- =====================================================
-             GLOBAL HEADER — OMEGA MATCHING HOME + GAMES PAGES
+             UNIVERSAL HEADER (OMEGA SUBPAGE VERSION)
         ===================================================== -->
         <header class="ccg-header">
             <div class="ccg-header-inner">
 
-                <!-- Brand -->
-                <div class="ccg-header-brand">
-                    <a href="../home.html" class="ccg-logo-link">
-                        <img src="../resources/ccgamer_logo.png"
-                             alt="Cheeky Commodore Gamer logo"
-                             class="ccg-logo-img">
-                    </a>
-                    <div class="ccg-brand-title">CHEEKY COMMODORE GAMER</div>
-                    <div class="ccg-brand-subtitle">Game Details</div>
-                </div>
+                <!-- Logo -->
+                <a href="../home.html" class="ccg-logo-link">
+                    <img src="../resources/ccgamer_logo.png" class="ccg-logo-img" alt="Cheeky Commodore Gamer logo">
+                </a>
 
                 <!-- Navigation -->
-                <nav class="ccg-nav" aria-label="Main navigation">
+                <nav class="ccg-nav">
                     <a href="../home.html" class="nav-item">Home</a>
-                    <a href="index.html" class="nav-item">Games</a>
+                    <a href="../games/index.html" class="nav-item">Games</a>
+                    <a href="../games/genres/index.html" class="nav-item">Genres</a>
                     <a href="../quiz/quiz.html" class="nav-item">Quiz</a>
                     <a href="../complete-index.html" class="nav-item">Index</a>
                     <a href="../about.html" class="nav-item">About</a>
                 </nav>
 
-                <!-- Right side -->
-                <div class="ccg-header-right">
-                    <button id="ccg-mode-toggle" class="ccg-mode-toggle">C64 / Amiga</button>
+                <!-- Mode Toggle -->
+                <button
+                    class="ccg-mode-toggle"
+                    type="button"
+                    aria-label="Toggle system mode"
+                    data-ccg-mode-toggle="true"
+                >
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--c64">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="../resources/icons/c64.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">C64</span>
+                    </span>
 
-                    <a class="ccg-header-social-icon"
-                       href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank">
-                        <img src="../resources/icons/youtube.svg" alt="YouTube">
-                    </a>
+                    <span class="ccg-mode-toggle-knob" aria-hidden="true"></span>
 
-                    <a class="ccg-header-social-icon"
-                       href="https://www.patreon.com/cheekycommodoregamer" target="_blank">
-                        <img src="../resources/icons/patreon.svg" alt="Patreon">
-                    </a>
-
-                    <a class="ccg-header-social-icon"
-                       href="https://www.paypal.me/CheekyCommodoreGamer" target="_blank">
-                        <img src="../resources/icons/paypal.svg" alt="PayPal">
-                    </a>
-                </div>
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--amiga">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="../resources/icons/amiga.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">Amiga</span>
+                    </span>
+                </button>
 
             </div>
         </header>
 
         <!-- =====================================================
-             MAIN GAME PAGE
+             MAIN GAME CONTENT
         ===================================================== -->
         <main class="ccg-main ccg-main--game" id="main">
 
@@ -114,7 +114,7 @@
                             <a id="game-play-video"
                                href="#"
                                target="_blank"
-                               class="ccg-btn ccg-btn--primary"
+                               class="ccg-btn ccg-btn-primary"
                                hidden>
                                Watch Video
                             </a>
@@ -122,13 +122,12 @@
                             <a id="game-open-manual"
                                href="#"
                                target="_blank"
-                               class="ccg-btn ccg-btn--secondary"
+                               class="ccg-btn ccg-btn-secondary"
                                hidden>
                                Read Manual
                             </a>
 
-                            <a href="index.html"
-                               class="ccg-btn ccg-btn--ghost">
+                            <a href="index.html" class="ccg-btn ccg-btn-ghost">
                                Back to Games
                             </a>
                         </div>
@@ -163,7 +162,7 @@
                 <a id="game-manual-link"
                    href="#"
                    target="_blank"
-                   class="ccg-btn ccg-btn--accent">
+                   class="ccg-btn ccg-btn-primary">
                     Open Manual PDF
                 </a>
             </section>
@@ -173,15 +172,10 @@
         <!-- FOOTER -->
         <footer class="ccg-footer">
             <div class="ccg-footer-inner">
-                <div class="ccg-footer-text">
-                    © <span id="ccg-year">2025</span> Cheeky Commodore Gamer.
-                </div>
-
-                <div class="ccg-footer-links">
-                    <a href="../about.html">About</a>
-                    <a href="../contact.html">Contact</a>
-                    <a href="../complete-index.html">Complete Index</a>
-                </div>
+                <p class="ccg-footer-text">© <span id="ccg-year">2025</span> Cheeky Commodore Gamer.</p>
+                <p class="ccg-footer-text ccg-footer-text--small">
+                    Not affiliated with Commodore or Amiga brands.
+                </p>
             </div>
         </footer>
 
@@ -189,7 +183,6 @@
 
     <!-- JS -->
     <script src="../js/ccg-mode-engine.js" defer></script>
-    <script src="../js/ccg-header-auto.js" defer></script>
     <script src="../js/ccj-global.js" defer></script>
 
     <!-- SINGLE GAME LOADER -->
