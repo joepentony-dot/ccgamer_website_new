@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ccg-page="genre">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,44 +8,138 @@
     <meta name="description" content="Discover the best Action Adventure games for the Commodore 64 and Amiga. Story-driven quests packed with exploration, combat, puzzles and cinematic retro thrills.">
     <link rel="canonical" href="action-adventure-games.html">
 
+    <link rel="icon" href="../../favicon.ico">
+
+    <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="../../resources/css/ccg-master.css">
     <link rel="stylesheet" href="../../resources/css/ccg-mode.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-console.css">
     <link rel="stylesheet" href="../../resources/css/ccg-effects.css">
     <link rel="stylesheet" href="../../resources/css/ccg-overlays.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-anim.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-modal.css">
+
+    <!-- PAGE CSS -->
     <link rel="stylesheet" href="../../resources/css/genre.css">
 </head>
 
-<body data-genre="Action Adventure Games">
-<header>
-    <a href="../../home.html">
-        <img src="../../resources/ccgamer_logo.png" alt="Cheeky Commodore Gamer Logo" class="logo">
-    </a>
-</header>
+<body class="ccg-body" data-ccg-mode="c64" data-genre="Action Adventure">
 
-<nav class="breadcrumb">
-    <a href="../../home.html">Home Hub</a> ›
-    <a href="../../games/index.html">All Games</a> ›
-    <span>Action Adventure Games</span>
-</nav>
+    <!-- =========================================================
+         GLOBAL BACKGROUND
+    ========================================================= -->
+    <div class="ccg-bg">
+        <div class="ccg-bg-starfield"></div>
+        <div class="ccg-bg-grid"></div>
+        <div class="ccg-bg-crt-overlay"></div>
+    </div>
 
-<main class="genre-page">
-    <h1>Action Adventure Games</h1>
+    <div class="ccg-page ccg-page--genre">
 
-    <p>Action Adventure games on the Commodore 64 and Amiga mix exploration, combat, platforming and puzzle-solving into one big quest. These are the games where you roam maps, uncover secrets and battle through dangerous locations.</p>
-    <p>From fantasy epics to blockbuster movie tie-ins, this genre delivers some of the most memorable, atmospheric and replayable adventures in retro gaming history.</p>
+        <!-- =====================================================
+            OMEGA SUBPAGE HEADER (MATCHES ALL OTHER PAGES)
+        ===================================================== -->
+        <header class="ccg-header">
+            <div class="ccg-header-inner">
 
-    <h2>Total Games Available</h2>
-    <div id="genreGamesCount"></div>
+                <!-- Logo -->
+                <a href="../../home.html" class="ccg-logo-link">
+                    <img src="../../resources/ccgamer_logo.png"
+                         alt="Cheeky Commodore Gamer Logo"
+                         class="ccg-logo-img">
+                </a>
 
-    <h2>Browse Action Adventure Games</h2>
-    <div id="genreGamesGrid"></div>
-</main>
+                <!-- Navigation -->
+                <nav class="ccg-nav">
+                    <a href="../../home.html" class="nav-item">Home</a>
+                    <a href="../../games/index.html" class="nav-item">Games</a>
+                    <a href="../../games/genres/index.html" class="nav-item nav-item--active">Genres</a>
+                    <a href="../../games/collections/index.html" class="nav-item">Collections</a>
+                    <a href="../../quiz/quiz.html" class="nav-item">Quiz</a>
+                    <a href="../../complete-index.html" class="nav-item">Index</a>
+                    <a href="../../about.html" class="nav-item">About</a>
+                    <a href="../../contact.html" class="nav-item">Contact</a>
+                </nav>
 
-<footer>
-    <p>© Cheeky Commodore Gamer.</p>
-</footer>
+                <!-- MODE TOGGLE -->
+                <button
+                    class="ccg-mode-toggle"
+                    data-ccg-mode-toggle="true"
+                    aria-label="Toggle system mode"
+                >
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--c64">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="../../resources/icons/c64.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">C64</span>
+                    </span>
 
-<script src="../../js/genre-loader.js" defer></script>
+                    <span class="ccg-mode-toggle-knob"></span>
+
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--amiga">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="../../resources/icons/amiga.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">Amiga</span>
+                    </span>
+                </button>
+
+            </div>
+        </header>
+
+        <!-- =====================================================
+            MAIN CONTENT
+        ===================================================== -->
+        <main class="ccg-main">
+
+            <!-- PAGE INTRO -->
+            <section class="ccg-section">
+                <h1 class="ccg-section-title">Action Adventure Games</h1>
+                <p class="ccg-section-subtitle">
+                    Exploration, combat, puzzles and cinematic storytelling — the big retro quests live here.
+                </p>
+
+                <p>
+                    Action Adventure games on the Commodore 64 and Amiga deliver exploration-heavy gameplay,
+                    environmental puzzles, combat encounters, and atmospheric worlds.
+                    From sprawling fantasy challenges to film tie-ins, this genre offers some of the most
+                    iconic and replayable classics in computer gaming history.
+                </p>
+            </section>
+
+            <!-- GAME COUNT -->
+            <section class="ccg-section">
+                <h2 class="ccg-section-title">Total Games Available</h2>
+                <div id="genreGamesCount" class="genre-count"></div>
+            </section>
+
+            <!-- GAME GRID -->
+            <section class="ccg-section">
+                <h2 class="ccg-section-title">Browse Action Adventure Games</h2>
+                <div id="genreGamesGrid" class="genre-grid"></div>
+            </section>
+
+        </main>
+
+        <!-- =====================================================
+            FOOTER
+        ===================================================== -->
+        <footer class="ccg-footer">
+            <div class="ccg-footer-inner">
+                <p class="ccg-footer-text">&copy; 2025 Cheeky Commodore Gamer.</p>
+                <p class="ccg-footer-text ccg-footer-text--small">Not affiliated with Commodore or Amiga.</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- =====================================================
+        JS LOADING
+    ===================================================== -->
+    <script src="../../js/ccg-mode-engine.js" defer></script>
+    <script src="../../js/ccj-global.js" defer></script>
+
+    <!-- GENRE LOADER (pulls from games.json) -->
+    <script src="../../js/genre-loader.js" defer></script>
+
 </body>
 </html>
