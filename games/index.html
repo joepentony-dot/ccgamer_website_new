@@ -1,187 +1,76 @@
 <!DOCTYPE html>
-<html lang="en" data-ccg-page="games">
+<html lang="en" data-ccg-page="games-index">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Cheeky Commodore Gamer | Games Library</title>
-    <meta name="description" content="Browse the full Cheeky Commodore Gamer library of Commodore 64 and Amiga games. Filter by system, search by title, or jump via A–Z.">
+    <title>All Games | Cheeky Commodore Gamer</title>
+    <meta name="description" content="Browse the full Commodore 64 and Amiga games library.">
 
-    <link rel="icon" href="../favicon.ico" />
+    <link rel="icon" href="../favicon.ico">
 
-    <!-- GLOBAL CSS -->
-    <link rel="stylesheet" href="../resources/css/ccg-master.css" />
-    <link rel="stylesheet" href="../resources/css/ccg-mode.css" />
-    <link rel="stylesheet" href="../resources/css/ccg-effects.css" />
-    <link rel="stylesheet" href="../resources/css/ccg-anim.css" />
-    <link rel="stylesheet" href="../resources/css/ccg-modal.css" />
-
-    <!-- GAMES LIBRARY LAYOUT -->
-    <link rel="stylesheet" href="../resources/css/games.css" />
+    <!-- JS kept for mode & global hooks -->
+    <script src="../js/ccg-mode-engine.js" defer></script>
+    <script src="../js/ccj-global.js" defer></script>
 </head>
 
-<body class="ccg-body" data-ccg-mode="c64">
-    <!-- GLOBAL BACKGROUND -->
-    <div class="ccg-bg">
-        <div class="ccg-bg-starfield"></div>
-        <div class="ccg-bg-grid"></div>
-        <div class="ccg-bg-crt-overlay"></div>
-    </div>
+<body data-ccg-mode="c64">
 
-    <div class="ccg-page-shell">
+<header>
+    <div>
 
-        <!-- =====================================================
-             GLOBAL HEADER — MATCHED TO HOME PAGE OMEGA STYLE
-        ===================================================== -->
-        <header class="ccg-header">
-            <div class="ccg-header-inner">
-                
-                <!-- Brand -->
-                <div class="ccg-header-brand">
-                    <a href="../home.html" class="ccg-logo-link">
-                        <img src="../resources/ccgamer_logo.png" 
-                             alt="Cheeky Commodore Gamer logo" 
-                             class="ccg-logo-img">
-                    </a>
-                    <div class="ccg-brand-title">CHEEKY COMMODORE GAMER</div>
-                    <div class="ccg-brand-subtitle">Commodore 64 & Amiga Library</div>
-                </div>
+        <div>
+            <a href="../home.html">
+                <img src="../resources/ccgamer_logo.png" alt="Cheeky Commodore Gamer logo">
+            </a>
+        </div>
 
-                <!-- Navigation -->
-                <nav class="ccg-nav" aria-label="Main navigation">
-                    <a href="../home.html" class="nav-item">Home</a>
-                    <a href="index.html" class="nav-item nav-active">Games</a>
-                    <a href="../quiz/quiz.html" class="nav-item">Quiz</a>
-                    <a href="../complete-index.html" class="nav-item">Index</a>
-                    <a href="../about.html" class="nav-item">About</a>
-                </nav>
+        <nav>
+            <a href="../home.html">Home</a>
+            <a href="../games/index.html">Games</a>
+            <a href="../games/genres/index.html">Genres</a>
+            <a href="../games/collections/index.html">Collections</a>
+            <a href="../quiz/quiz.html">Quiz</a>
+            <a href="../about.html">About</a>
+            <a href="../contact.html">Contact</a>
+            <a href="../admin/admin.html">Admin</a>
+        </nav>
 
-                <!-- Mode + Socials -->
-                <div class="ccg-header-right">
-                    <button id="ccg-mode-toggle" class="ccg-mode-toggle">C64 / Amiga</button>
+        <button data-ccg-mode-toggle="true">Toggle Mode</button>
 
-                    <a class="ccg-header-social-icon" href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank">
-                        <img src="../resources/icons/youtube.svg" alt="YouTube">
-                    </a>
-                    <a class="ccg-header-social-icon" href="https://www.patreon.com/cheekycommodoregamer" target="_blank">
-                        <img src="../resources/icons/patreon.svg" alt="Patreon">
-                    </a>
-                    <a class="ccg-header-social-icon" href="https://www.paypal.me/CheekyCommodoreGamer" target="_blank">
-                        <img src="../resources/icons/paypal.svg" alt="PayPal">
-                    </a>
-                </div>
-            </div>
-        </header>
-
-        <!-- =====================================================
-             MAIN CONTENT — GAMES LIBRARY
-        ===================================================== -->
-        <main class="ccg-main ccg-main--games" id="main">
-
-            <!-- HERO -->
-            <section class="games-hero">
-                <div class="games-hero-inner">
-
-                    <div class="games-hero-copy">
-                        <h1 class="games-hero-title">Games Library</h1>
-                        <p class="games-hero-tagline">
-                            Every Commodore 64 & Amiga title in one neon-soaked grid. 
-                            Search, filter by system, or jump via A–Z.
-                        </p>
-                        <p class="games-hero-meta">
-                            <span id="games-total-count" class="games-count-pill">Loading games…</span>
-                        </p>
-                    </div>
-
-                    <div class="games-hero-aside">
-                        <div class="games-hero-note">
-                            <span class="games-hero-note-label">Tip</span>
-                            <p>
-                                Hit <strong>Random Game</strong> from the home page or use the 
-                                <span class="games-pill-inline">#random</span> link here to jump straight into discovery mode.
-                            </p>
-                        </div>
-                    </div>
-
-                </div>
-            </section>
-
-            <!-- CONTROLS -->
-            <section class="games-controls">
-
-                <!-- Search -->
-                <div class="games-search">
-                    <label for="games-search-input" class="games-search-label">Search</label>
-                    <div class="games-search-input-wrap">
-                        <input 
-                            type="search"
-                            id="games-search-input"
-                            class="games-search-input"
-                            placeholder="Search by game title…"
-                            autocomplete="off">
-                    </div>
-                </div>
-
-                <!-- System filters -->
-                <div class="games-system-filters">
-                    <span class="games-system-label">System:</span>
-                    <button type="button" class="games-system-pill is-active" data-system="all">All</button>
-                    <button type="button" class="games-system-pill games-system-pill--c64" data-system="c64">C64</button>
-                    <button type="button" class="games-system-pill games-system-pill--amiga" data-system="amiga">Amiga</button>
-                </div>
-
-                <!-- A–Z BAR -->
-                <div class="games-alpha-bar">
-                    <button type="button" class="games-alpha-pill is-active" data-letter="all">All</button>
-                    <button type="button" class="games-alpha-pill" data-letter="#">#</button>
-                    <div id="games-alpha-dynamic"></div>
-                </div>
-
-            </section>
-
-            <!-- GRID -->
-            <section class="games-grid-section">
-                <div class="games-grid-header">
-                    <p class="games-grid-count">
-                        Showing <span id="games-visible-count">0</span> of 
-                        <span id="games-total-count-2">0</span> games
-                    </p>
-                </div>
-
-                <div id="games-grid" class="games-grid" aria-live="polite">
-                    <!-- Cards injected by JS -->
-                </div>
-
-                <div id="games-empty-message" class="games-empty-message" hidden>
-                    No games match your filters yet. Try clearing search or switching systems.
-                </div>
-            </section>
-
-        </main>
-
-        <!-- FOOTER -->
-        <footer class="ccg-footer">
-            <div class="ccg-footer-inner">
-                <div class="ccg-footer-text">
-                    © <span id="ccg-year">2025</span> Cheeky Commodore Gamer. Commodore forever.
-                </div>
-                <div class="ccg-footer-links">
-                    <a href="../about.html">About</a>
-                    <a href="../contact.html">Contact</a>
-                    <a href="../complete-index.html">Complete Index</a>
-                </div>
-            </div>
-        </footer>
+        <div>
+            <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank">YouTube</a>
+            <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank">Patreon</a>
+            <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank">PayPal</a>
+            <a href="https://www.facebook.com/cheekycommodoregamer" target="_blank">Facebook</a>
+            <a href="https://twitter.com/CheekyC64Gamer" target="_blank">X</a>
+            <a href="https://discord.gg/83Xw9ktAn4" target="_blank">Discord</a>
+        </div>
 
     </div>
+</header>
 
-    <!-- JS -->
-    <script src="../js/ccg-mode-engine.js" defer></script>
-    <script src="../js/ccg-header-auto.js" defer></script>
-    <script src="../js/ccj-global.js" defer></script>
+<main>
+    <section>
+        <h1>All Games</h1>
+        <p>This page will dynamically load and display all titles from <code>games.json</code>.</p>
+        <p>Sorting, filters, thumbnails, and random game functionality will be added in Phase 4.</p>
+    </section>
 
-    <!-- GAMES LOADER (unchanged logic) -->
-    <script src="games-loader.js" defer></script>
+    <section>
+        <h2>Game List</h2>
+
+        <!-- Placeholder for dynamic population -->
+        <div id="games-list">
+            <p>Games will appear here once the loader is implemented.</p>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <p>&copy; 2025 Cheeky Commodore Gamer.</p>
+    <p>Not affiliated with Commodore or Amiga.</p>
+</footer>
 
 </body>
 </html>
