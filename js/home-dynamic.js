@@ -1,21 +1,20 @@
 // ============================================================================
-// HOME DYNAMIC — FEATURED GAME + VIDEO ENGINE
+// HOME DYNAMIC — FEATURED GAME + VIDEO ENGINE (OMEGA V2)
 // Cheeky Commodore Gamer 😇🕹️👌
 // ============================================================================
 //
 // Behaviour:
-//  - Loads games/games.json (GitHub Pages–aware via REPO_PREFIX).
-//  - Optionally hard-locks the featured game and/or video by slug.
-//  - Otherwise picks a random game that has BOTH a thumbnail and video ID.
+//  - Loads /games/games.json (repo-prefix aware for GitHub Pages).
+//  - Optionally hard-locks Featured Game and/or Featured Video by slug.
+//  - Otherwise picks a random game with a valid thumbnail + (ideally) video ID.
 //  - Populates:
-//      * Featured Game panel (title, blurb, system, year, genres, thumbnail, link)
-//      * Featured Video panel (YouTube iframe, title, blurb)
-//  - If no fully valid candidates exist, relaxes rules but keeps sensible fallbacks.
-//  - If anything fails, leaves your placeholder content intact.
+//      • Featured Game panel (title, meta line, thumbnail, link)
+//      • Featured Video panel (YouTube iframe, title, blurb)
+//  - If anything fails, leaves placeholder content intact.
 //
-// To hard-lock a specific game:
-//  - Set FEATURED_CONFIG.lockFeaturedSlug to a valid game.slug (string).
-//  - Optionally set FEATURED_CONFIG.lockVideoSlug separately.
+// HOW TO HARD-LOCK A GAME:
+//  - Set FEATURED_CONFIG.lockFeaturedSlug = 'your-game-slug';
+//  - (Optional) FEATURED_CONFIG.lockVideoSlug for a different video source.
 // ============================================================================
 
 (function () {
@@ -23,33 +22,88 @@
     // CONFIG
     // -------------------------------
     const FEATURED_CONFIG = {
-        // GitHub Pages repo prefix (for /username/repo paths). Leave as-is for your setup.
+        // For GitHub Pages project site:
+        //   https://<user>.github.io/ccgamer_website_new/
+        // Keep this as your repo folder name.
         REPO_PREFIX: '/ccgamer_website_new',
 
-        // Hard-lock the featured game by slug (e.g. "sid-meiers-pirates").
-        // Set to null to allow random selection.
+        // Hard-lock the Featured Game by slug (exact match to games.json `slug`).
+        // Example: 'sid-meiers-pirates'
         lockFeaturedSlug: null,
 
-        // Optional: lock the video panel to a different slug.
-        // If null, it uses the same game as the Featured Game.
+        // Optional: Hard-lock the video panel to a different game slug.
+        // If null, will use the same game as Featured Game where possible.
         lockVideoSlug: null,
 
-        // Fallback YouTube video ID if a chosen game has no video.
+        // Fallback YouTube video ID if chosen game has no `videoid`.
         fallbackYouTubeId: 'dQw4w9WgXcQ'
     };
 
+    // -------------------------------
+    // INIT
+    // -------------------------------
     document.addEventListener('DOMContentLoaded', () => {
         hydrateFeaturedFromGames();
+        updateFooterYear();
     });
 
-    // Resolve the correct JSON path depending on GitHub Pages vs root hosting
-    function resolveJsonPath() {
-        const usingRepoPrefix = window.location.pathname.startsWith(FEATURED_CONFIG.REPO_PREFIX);
-        return (usingRepoPrefix ? FEATURED_CONFIG.REPO_PREFIX : '') + '/games/games.json';
+    // Ensure footer year always current
+    function updateFooterYear() {
+        const yearNode = document.getElementById('ccg-year');
+        if (!yearNode) return;
+        const year = new Date().getFullYear();
+        yearNode.textContent = year;
     }
 
+    // -------------------------------
+    // PATH HELPERS
+    // -------------------------------
+
+    function getBasePrefix() {
+        const { REPO_PREFIX } = FEATURED_CONFIG;
+        if (!REPO_PREFIX) return '';
+        // If running under /ccgamer_website_new/ (GitHub Pages project site)
+        const inRepo = window.location.pathname.startsWith(REPO_PREFIX);
+        return inRepo ? REPO_PREFIX : '';
+    }
+
+    function resolveJsonPath() {
+        const base = getBasePrefix();
+        return base + '/games/games.json';
+    }
+
+    function buildGameUrl(id) {
+        const base = getBasePrefix();
+        const path = base + '/games/game.html';
+
+        if (!id) return path;
+
+        try {
+            const url = new URL(path, window.location.origin);
+            url.searchParams.set('id', id);
+            return url.pathname + url.search;
+        } catch (e) {
+            return path + '?id=' + encodeURIComponent(id);
+        }
+    }
+
+    function normaliseThumb(raw) {
+        if (!raw) return '';
+        if (/^https?:\/\//i.test(raw)) return raw; // already absolute
+
+        const base = getBasePrefix();
+
+        // Remove any leading slash so we can safely re-build from site root.
+        const cleaned = raw.replace(/^\/+/, '');
+        return base + '/' + cleaned;
+    }
+
+    // -------------------------------
+    // MAIN HYDRATION LOGIC
+    // -------------------------------
+
     async function hydrateFeaturedFromGames() {
-        // Grab DOM hooks once
+        // DOM hooks
         const featuredGameTitle  = document.getElementById('featured-game-title');
         const featuredGameBlurb  = document.getElementById('featured-game-blurb');
         const featuredGameMeta   = document.getElementById('featured-game-meta');
@@ -60,19 +114,20 @@
         const featuredVideoTitle = document.getElementById('featured-video-title');
         const featuredVideoBlurb = document.getElementById('featured-video-blurb');
 
-        // If any of the critical nodes are missing, bail early to avoid errors
         if (!featuredGameTitle || !featuredGameThumb || !featuredVideoFrame) {
-            console.warn('[CCG HOME] Featured DOM nodes not found; skipping dynamic hydrate.');
+            console.warn('[CCG HOME] Required featured elements missing. Skipping dynamic hydrate.');
             return;
         }
 
         try {
             const response = await fetch(resolveJsonPath(), { cache: 'no-store' });
-            if (!response.ok) throw new Error('Unable to load games.json');
+            if (!response.ok) {
+                throw new Error('Failed to load games.json: ' + response.status);
+            }
 
             const games = await response.json();
             if (!Array.isArray(games) || games.length === 0) {
-                throw new Error('games.json is empty or invalid');
+                throw new Error('games.json is empty or not an array');
             }
 
             const gamePool = games.filter(g => g && typeof g.title === 'string' && g.title.trim().length);
@@ -81,17 +136,18 @@
             const featuredGame =
                 pickLockedGame(gamePool, FEATURED_CONFIG.lockFeaturedSlug, true) ||
                 pickRandomValidGame(gamePool, true) ||
+                pickRandomValidGame(gamePool, false) ||
                 pickRandom(gamePool);
 
             if (!featuredGame) {
-                throw new Error('No suitable featured game found');
+                throw new Error('No suitable featured game candidate found');
             }
 
-            // 2) Pick Video Game (can be separate lock, otherwise same as featuredGame)
+            // 2) Pick Video Game (may be same or different lock)
             const videoGame =
                 pickLockedGame(gamePool, FEATURED_CONFIG.lockVideoSlug, false) ||
                 featuredGame ||
-                pickRandomValidGame(gamePool, false) ||
+                pickRandomValidGame(gamePool, true) ||
                 pickRandom(gamePool);
 
             // ------------------------
@@ -115,18 +171,18 @@
                 const thumbSrc = normaliseThumb(featuredGame.thumbnail);
                 if (thumbSrc) {
                     featuredGameThumb.src = thumbSrc;
-                    featuredGameThumb.alt = `${featuredGame.title} thumbnail`;
+                    featuredGameThumb.alt = featuredGame.title + ' thumbnail';
                 }
             }
 
             // ------------------------
             // Populate Featured Video
             // ------------------------
-            const chosenVideoId = (videoGame && isValidVideo(videoGame))
+            const videoId = (videoGame && isValidVideo(videoGame))
                 ? String(videoGame.videoid).trim()
                 : FEATURED_CONFIG.fallbackYouTubeId;
 
-            featuredVideoFrame.src = 'https://www.youtube.com/embed/' + encodeURIComponent(chosenVideoId);
+            featuredVideoFrame.src = 'https://www.youtube.com/embed/' + encodeURIComponent(videoId);
 
             if (featuredVideoTitle && videoGame) {
                 featuredVideoTitle.textContent = `${videoGame.title} — Featured Video`;
@@ -142,53 +198,57 @@
                 }
             }
         } catch (error) {
-            console.error('[CCG HOME] Featured content error:', error);
+            console.error('[CCG HOME] Error hydrating featured content:', error);
 
-            // Fall back to safe, readable copy – keep layout intact
+            // Soft fallback: keep layout intact but with safe text
             if (featuredGameTitle) {
                 featuredGameTitle.textContent = 'Featured game coming soon';
             }
             if (featuredGameBlurb) {
-                featuredGameBlurb.textContent = 'We’re lining up more Commodore 64 and Amiga gems for this slot.';
+                featuredGameBlurb.textContent =
+                    'We’re lining up more Commodore 64 and Amiga gems for this featured slot.';
             }
             if (featuredGameMeta) {
                 featuredGameMeta.textContent = 'Cheeky Commodore Gamer database';
             }
             if (featuredVideoTitle) {
-                featuredVideoTitle.textContent = 'Video not available right now';
+                featuredVideoTitle.textContent = 'Featured video coming soon';
             }
             if (featuredVideoBlurb) {
                 featuredVideoBlurb.textContent =
-                    'The featured video will kick in once games.json is available and linked to the channel.';
+                    'The featured video will appear here once games.json is available and wired to the channel.';
             }
         }
     }
 
     // -------------------------------
-    // Selection helpers
+    // SELECTION HELPERS
     // -------------------------------
 
-    // Pick a game by slug, with optional "strict" requirement for thumbnail + video
     function pickLockedGame(games, slug, requireFullMedia) {
         if (!slug) return null;
-        const lower = String(slug).toLowerCase();
+        const target = String(slug).toLowerCase();
 
         const match = games.find(g => {
+            if (!g) return false;
             const gSlug = (g.slug || '').toString().toLowerCase();
-            if (!gSlug || gSlug !== lower) return false;
-            return requireFullMedia ? isValidThumbnail(g) && isValidVideo(g) : true;
+            if (!gSlug || gSlug !== target) return false;
+            if (!requireFullMedia) return true;
+            return isValidThumbnail(g) && isValidVideo(g);
         });
 
         return match || null;
     }
 
-    // Prefer games that have BOTH thumbnail and video
     function pickRandomValidGame(games, requireVideo) {
+        if (!Array.isArray(games)) return null;
+
         const candidates = games.filter(g => {
             if (!isValidThumbnail(g)) return false;
             if (requireVideo && !isValidVideo(g)) return false;
             return true;
         });
+
         return pickRandom(candidates);
     }
 
@@ -199,15 +259,14 @@
     }
 
     // -------------------------------
-    // Validation helpers
+    // VALIDATION HELPERS
     // -------------------------------
 
     function isValidThumbnail(game) {
         if (!game || typeof game.thumbnail !== 'string') return false;
-        const trimmed = game.thumbnail.trim();
-        if (!trimmed) return false;
-        // Loose check: must end with an image extension
-        return /\.(png|jpe?g|webp|gif)$/i.test(trimmed);
+        const t = game.thumbnail.trim();
+        if (!t) return false;
+        return /\.(png|jpe?g|webp|gif)$/i.test(t);
     }
 
     function isValidVideo(game) {
@@ -217,69 +276,47 @@
     }
 
     // -------------------------------
-    // URL + text helpers
+    // TEXT HELPERS
     // -------------------------------
 
-    function buildGameUrl(id) {
-        const base = 'games/game.html';
-        if (!id) return base;
-        try {
-            const url = new URL(base, window.location.origin);
-            url.searchParams.set('id', id);
-            return url.pathname + url.search;
-        } catch (e) {
-            return base + '?id=' + encodeURIComponent(id);
-        }
-    }
-
-    function normaliseThumb(raw) {
-        if (!raw) return '';
-        if (/^https?:\/\//i.test(raw)) return raw;
-
-        const cleaned = raw.replace(/^\/?/, ''); // strip leading slash if present
-        const usingRepoPrefix = window.location.pathname.startsWith(FEATURED_CONFIG.REPO_PREFIX);
-        const prefix = usingRepoPrefix ? FEATURED_CONFIG.REPO_PREFIX + '/' : '';
-
-        return prefix + cleaned;
-    }
-
     function buildGameBlurb(game) {
-        const pieces = [];
+        const parts = [];
 
         if (Array.isArray(game.genres) && game.genres.length) {
-            pieces.push(game.genres[0]);
+            parts.push(game.genres[0]);
         }
 
         if (game.developer) {
-            pieces.push('by ' + game.developer);
+            parts.push('by ' + game.developer);
         }
 
-        if (game.year) {
-            pieces.push(String(game.year));
-        }
-
-        if (pieces.length === 0) {
-            return 'Retro goodness queued up for you.';
-        }
-
-        return pieces.join(' • ');
-    }
-
-    function buildMetaLine(game) {
-        const parts = [];
-
-        if (game.system) {
-            parts.push(String(game.system));
-        }
         if (game.year) {
             parts.push(String(game.year));
         }
 
-        if (Array.isArray(game.genres) && game.genres.length) {
-            // Up to two genres for a compact line
-            parts.push(game.genres.slice(0, 2).join(' • '));
+        if (!parts.length) {
+            return 'Retro goodness queued up from the Cheeky Commodore Gamer vault.';
         }
 
-        return parts.length ? parts.join('  ·  ') : 'From the Cheeky Commodore Gamer vault';
+        return parts.join(' • ');
+    }
+
+    function buildMetaLine(game) {
+        const bits = [];
+
+        if (game.system) {
+            bits.push(String(game.system));
+        }
+        if (game.year) {
+            bits.push(String(game.year));
+        }
+        if (Array.isArray(game.genres) && game.genres.length) {
+            const genreLine = game.genres.slice(0, 2).join(' • ');
+            bits.push(genreLine);
+        }
+
+        return bits.length
+            ? bits.join('  ·  ')
+            : 'From the Cheeky Commodore Gamer collection';
     }
 })();
