@@ -1,54 +1,111 @@
 /* ============================================================
-   OMEGA MODE TOGGLE — FINAL WORKING VERSION
+   OMEGA MODE TOGGLE — FINAL PRODUCTION VERSION
+   Perfect alignment with home.html + header
    ============================================================ */
 
 .ccg-mode-toggle {
     position: relative;
     display: inline-flex;
     align-items: center;
+    justify-content: space-between;
     background: rgba(0,0,0,0.4);
     border-radius: 40px;
-    padding: 0.4rem;
+    padding: 0.35rem;
     cursor: pointer;
     border: 1px solid rgba(255,255,255,0.15);
-    transition: background 0.3s ease;
+    transition: background 0.3s ease, border-color 0.3s ease;
+    user-select: none;
 }
+
+.ccg-mode-toggle:hover {
+    background: rgba(255,255,255,0.18);
+}
+
+/* -----------------------------------------
+   PILLS — C64 & Amiga labels
+----------------------------------------- */
 
 .ccg-mode-toggle-pill {
     position: relative;
-    padding: 0.5rem 1rem;
+    padding: 0.45rem 0.9rem;
     flex: 1;
     text-align: center;
     font-size: 0.85rem;
     font-weight: 600;
-    opacity: 0.6;
+    opacity: 0.55;
     transition: opacity 0.3s ease, color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+.ccg-mode-toggle-pill--c64 {
+    color: var(--c64-blue);
+}
+
+.ccg-mode-toggle-pill--amiga {
+    color: var(--amiga-pink);
+}
+
+/* Icons inside pills */
 .ccg-mode-toggle-icon img {
     height: 18px;
     margin-right: 6px;
     vertical-align: middle;
+    opacity: 0.9;
 }
+
+/* -----------------------------------------
+   SLIDING KNOB
+----------------------------------------- */
 
 .ccg-mode-toggle-knob {
     position: absolute;
+    top: 0;
+    left: 0;
     width: 50%;
     height: 100%;
     border-radius: 40px;
     background: var(--c64-blue);
-    top: 0;
-    left: 0;
     z-index: -1;
-    transition: left 0.3s ease, background 0.3s ease;
+    transition: left 0.32s ease, background 0.32s ease;
 }
 
-/* Active states */
-.ccg-mode-toggle.is-c64 .ccg-mode-toggle-pill--c64 { opacity: 1; color: #fff; }
-.ccg-mode-toggle.is-amiga .ccg-mode-toggle-pill--amiga { opacity: 1; color: #fff; }
+/* -----------------------------------------
+   ACTIVE STATES
+----------------------------------------- */
 
-/* Knob slide */
+.ccg-mode-toggle.is-c64 .ccg-mode-toggle-pill--c64 {
+    opacity: 1;
+    color: #fff;
+}
+
+.ccg-mode-toggle.is-amiga .ccg-mode-toggle-pill--amiga {
+    opacity: 1;
+    color: #fff;
+}
+
 .ccg-mode-toggle.is-amiga .ccg-mode-toggle-knob {
     left: 50%;
     background: var(--amiga-pink);
+}
+
+/* -----------------------------------------
+   RESPONSIVE TWEAKS
+----------------------------------------- */
+
+@media (max-width: 600px) {
+    .ccg-mode-toggle {
+        padding: 0.25rem;
+    }
+
+    .ccg-mode-toggle-pill {
+        padding: 0.35rem 0.7rem;
+        font-size: 0.78rem;
+    }
+
+    .ccg-mode-toggle-icon img {
+        height: 16px;
+        margin-right: 4px;
+    }
 }
