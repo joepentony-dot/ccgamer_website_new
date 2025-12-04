@@ -1,182 +1,161 @@
 /* ============================================================
-   CHEEKY COMMODORE GAMER — MODE ENGINE CSS
-   C64 MODE • AMIGA MODE • ZX MODE
-   PURE EPIC NEON 😇🕹️👌
+   CHEEKY COMMODORE GAMER — MODE ENGINE (FINAL POLISHED BUILD)
+   Correct selectors • Full neon upshift • Smooth transitions
+   C64 MODE • AMIGA MODE • ZX MODE (Easter Egg)
    ============================================================ */
 
 /* ------------------------------------------------------------
-   DEFAULT MODE VARIABLES (C64 BASELINE)
+   BASE VARIABLES (DEFAULT → C64 BASELINE)
 ------------------------------------------------------------ */
 
 :root {
     --ccg-accent: #6ffcff;
     --ccg-accent-strong: #00eaff;
-    --ccg-header-glow-c64: 0 0 22px rgba(0, 240, 255, 0.9);
     --ccg-bg-c64: radial-gradient(circle at top, #031e45 0%, #020816 55%, #00040d 100%);
+    --ccg-bg-amiga: radial-gradient(circle at top, #330027 0%, #180015 45%, #080009 100%);
+    --ccg-bg-zx: linear-gradient(135deg, #000000 0%, #000000 30%, #111111 100%);
+    --ccg-transition-speed: 260ms;
 }
 
-/* BODY DEFAULT */
-body {
+/* Base body state */
+body.ccg-body {
+    background: var(--ccg-bg-c64);
+    transition: background var(--ccg-transition-speed) ease-out,
+                color var(--ccg-transition-speed) ease-out,
+                filter var(--ccg-transition-speed) ease-out;
+}
+
+/* HERO default swap states */
+.ccg-hero-image-c64 { opacity: 1; transform: translateY(0); }
+.ccg-hero-image-amiga { opacity: 0; transform: translateY(12px); }
+
+/* ------------------------------------------------------------
+   MODE: C64 — Default reality
+------------------------------------------------------------ */
+
+body[data-ccg-mode="c64"] {
+    --ccg-accent: #6ffcff;
+    --ccg-accent-strong: #00eaff;
     background: var(--ccg-bg-c64);
 }
 
-/* HERO IMAGE default visibility */
-.ccg-hero-image-c64 { opacity: 1; }
-.ccg-hero-image-amiga { opacity: 0; }
-
-/* ------------------------------------------------------------
-   C64 MODE
------------------------------------------------------------- */
-
-body[data-mode="c64"] {
-    --ccg-accent: #6ffcff;
-    --ccg-accent-strong: #00eaff;
-
-    background: radial-gradient(circle at top, #042445 0%, #020716 55%, #00040d 100%);
-}
-
-/* C64 HERO */
-body[data-mode="c64"] .ccg-hero-image-c64 {
+/* Hero visuals */
+body[data-ccg-mode="c64"] .ccg-hero-image-c64 {
     opacity: 1;
     transform: translateY(0);
 }
 
-body[data-mode="c64"] .ccg-hero-image-amiga {
+body[data-ccg-mode="c64"] .ccg-hero-image-amiga {
     opacity: 0;
     transform: translateY(12px);
 }
 
+/* Button tints */
+body[data-ccg-mode="c64"] .ccg-btn {
+    transition: background var(--ccg-transition-speed),
+                box-shadow var(--ccg-transition-speed),
+                transform var(--ccg-transition-speed);
+}
+
 /* ------------------------------------------------------------
-   AMIGA MODE
+   MODE: AMIGA — The Workbench Universe
 ------------------------------------------------------------ */
 
-body[data-mode="amiga"] {
+body[data-ccg-mode="amiga"] {
     --ccg-accent: #ff98ff;
     --ccg-accent-strong: #ff41f9;
-
-    background: radial-gradient(circle at top,
-        #330027 0%,
-        #180015 45%,
-        #080009 100%);
+    background: var(--ccg-bg-amiga);
 }
 
-/* Amiga hero swap */
-body[data-mode="amiga"] .ccg-hero-image-c64 {
+/* Hero crossfade */
+body[data-ccg-mode="amiga"] .ccg-hero-image-c64 {
     opacity: 0;
     transform: translateY(12px);
 }
 
-body[data-mode="amiga"] .ccg-hero-image-amiga {
+body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
     opacity: 1;
     transform: translateY(0);
 }
 
-/* Amiga neon shift */
-body[data-mode="amiga"] .ccg-nav {
+/* Nav / header glow tint */
+body[data-ccg-mode="amiga"] .ccg-header--omega {
     box-shadow:
-        0 0 22px rgba(255, 0, 180, 0.6),
-        inset 0 0 22px rgba(255, 120, 240, 0.55);
-    border-color: rgba(255, 160, 255, 0.45);
+        0 0 0 1px rgba(255, 150, 255, 0.16),
+        0 0 28px rgba(255, 0, 180, 0.45),
+        0 0 70px rgba(255, 0, 120, 0.35);
 }
 
-body[data-mode="amiga"] .nav-item {
-    color: #ffddff;
-}
-
-body[data-mode="amiga"] .nav-active {
-    text-shadow:
-        0 0 18px #ff3bff,
-        0 0 46px #c000ff;
-}
-
-/* Amiga buttons */
-body[data-mode="amiga"] .ccg-btn-primary {
+/* Buttons */
+body[data-ccg-mode="amiga"] .ccg-btn-primary {
     background: radial-gradient(circle at top, #ff6ffe, #d900ff);
     color: #ffffff;
     box-shadow:
-        0 0 16px rgba(255, 90, 255, 0.9),
+        0 0 18px rgba(255, 120, 255, 0.85),
         0 0 60px rgba(0, 0, 0, 1);
 }
 
-body[data-mode="amiga"] .ccg-btn-secondary {
+body[data-ccg-mode="amiga"] .ccg-btn-secondary {
     background: radial-gradient(circle at top, #ff7a9e, #ff2f63);
 }
 
-body[data-mode="amiga"] .ccg-btn-ghost {
-    border-color: rgba(255, 120, 255, 0.65);
-    color: #ffe3ff;
+body[data-ccg-mode="amiga"] .ccg-btn-ghost {
+    border-color: rgba(255, 120, 255, 0.7);
+    color: #ffe9ff;
 }
 
-/* Amiga card neon */
-body[data-mode="amiga"] .ccg-card {
+/* Cards */
+body[data-ccg-mode="amiga"] .ccg-card,
+body[data-ccg-mode="amiga"] .featured-panel,
+body[data-ccg-mode="amiga"] .ccg-collection-card,
+body[data-ccg-mode="amiga"] .ccg-highlight-card,
+body[data-ccg-mode="amiga"] .ccg-utility-card {
     box-shadow:
-        0 0 26px rgba(255, 0, 200, 0.7),
-        0 0 130px rgba(0, 0, 0, 1);
+        0 0 24px rgba(255, 0, 200, 0.45),
+        0 0 80px rgba(0, 0, 0, 1);
 }
 
 /* ------------------------------------------------------------
-   ZX MODE (EASTER EGG)
+   MODE: ZX — Secret glitch mode
 ------------------------------------------------------------ */
 
-body[data-mode="zx"] {
+body[data-ccg-mode="zx"] {
     --ccg-accent: #00ff00;
     --ccg-accent-strong: #ffff00;
-
-    background: linear-gradient(135deg,
-        #000000 0%,
-        #000000 30%,
-        #111111 100%);
+    background: var(--ccg-bg-zx);
 }
 
-/* ZX hero glitch style */
-body[data-mode="zx"] .ccg-hero-image-c64,
-body[data-mode="zx"] .ccg-hero-image-amiga {
+/* Hero glitch */
+body[data-ccg-mode="zx"] .ccg-hero-image-c64,
+body[data-ccg-mode="zx"] .ccg-hero-image-amiga {
     opacity: 0.85;
     filter: contrast(2) brightness(1.3) saturate(1.4);
     transform: skewX(2deg);
 }
 
-/* ZX nav bar */
-body[data-mode="zx"] .ccg-nav {
-    background: #000000 !important;
-    border: 1px solid #00ff00 !important;
-    box-shadow:
-        0 0 16px #00ff00,
-        inset 0 0 20px rgba(0, 255, 0, 0.55);
-}
-
-body[data-mode="zx"] .nav-item {
-    color: #00ff00;
-    text-shadow: 0 0 12px #00ff00;
-}
-
-/* ZX active */
-body[data-mode="zx"] .nav-active {
-    color: #ffff00;
-    text-shadow:
-        0 0 14px #ffff00,
-        0 0 22px #ff0000;
-}
-
-/* ZX buttons */
-body[data-mode="zx"] .ccg-btn-primary {
+/* Buttons */
+body[data-ccg-mode="zx"] .ccg-btn-primary {
     background: #000;
     border: 1px solid #00ff00;
     color: #00ff00;
 }
 
-body[data-mode="zx"] .ccg-btn-secondary {
+body[data-ccg-mode="zx"] .ccg-btn-secondary {
     background: #000;
     border: 1px solid #ff00ff;
     color: #ff00ff;
 }
 
-body[data-mode="zx"] .ccg-btn-ghost {
+body[data-ccg-mode="zx"] .ccg-btn-ghost {
     border-color: #00ffff;
 }
 
-/* ZX cards */
-body[data-mode="zx"] .ccg-card {
+/* Cards */
+body[data-ccg-mode="zx"] .ccg-card,
+body[data-ccg-mode="zx"] .featured-panel,
+body[data-ccg-mode="zx"] .ccg-collection-card,
+body[data-ccg-mode="zx"] .ccg-highlight-card,
+body[data-ccg-mode="zx"] .ccg-utility-card {
     background: #000000;
     border: 1px solid #00ff00;
     box-shadow:
