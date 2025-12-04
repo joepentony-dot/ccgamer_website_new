@@ -1,51 +1,143 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ccg-page="genre">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Casino Games | Cheeky Commodore Gamer</title>
-    <meta name="description" content="Casino and gambling themed games for the Commodore 64 and Amiga. Slots, card games, roulette and more, all without losing a real penny.">
+    <meta name="description" content="Casino and gambling themed games for the Commodore 64 and Amiga. Slots, card games, roulette and full casino simulations — all without losing a real penny.">
     <link rel="canonical" href="casino-games.html">
 
+    <link rel="icon" href="../../favicon.ico">
+
+    <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="../../resources/css/ccg-master.css">
     <link rel="stylesheet" href="../../resources/css/ccg-mode.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-console.css">
     <link rel="stylesheet" href="../../resources/css/ccg-effects.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-anim.css">
     <link rel="stylesheet" href="../../resources/css/ccg-overlays.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-modal.css">
+
+    <!-- PAGE CSS -->
     <link rel="stylesheet" href="../../resources/css/genre.css">
 </head>
 
-<body data-genre="Casino Games">
-<header>
-    <a href="../../home.html">
-        <img src="../../resources/ccgamer_logo.png" alt="Cheeky Commodore Gamer Logo" class="logo">
-    </a>
-</header>
+<body class="ccg-body" data-ccg-mode="c64" data-genre="Casino Games">
 
-<nav class="breadcrumb">
-    <a href="../../home.html">Home Hub</a> ›
-    <a href="../../games/index.html">All Games</a> ›
-    <span>Casino Games</span>
-</nav>
+    <!-- GLOBAL BACKGROUND -->
+    <div class="ccg-bg">
+        <div class="ccg-bg-starfield"></div>
+        <div class="ccg-bg-grid"></div>
+        <div class="ccg-bg-crt-overlay"></div>
+    </div>
 
-<main class="genre-page">
-    <h1>Casino Games</h1>
+    <div class="ccg-page ccg-page--genre">
 
-    <p>Casino games bring the atmosphere of slot machines, card tables and roulette wheels to the C64 and Amiga. These titles simulate the highs and lows of gambling without putting real money on the line.</p>
-    <p>From fruit machines and poker to full casino simulations, this section is perfect if you enjoy testing your luck, your nerve or your basic maths skills.</p>
+        <!-- =====================================================
+             UNIVERSAL OMEGA HEADER
+        ===================================================== -->
+        <header class="ccg-header">
+            <div class="ccg-header-inner">
 
-    <h2>Total Games Available</h2>
-    <div id="genreGamesCount"></div>
+                <!-- Logo -->
+                <a href="../../home.html" class="ccg-logo-link">
+                    <img src="../../resources/ccgamer_logo.png"
+                         alt="Cheeky Commodore Gamer logo"
+                         class="ccg-logo-img">
+                </a>
 
-    <h2>Browse Casino Games</h2>
-    <div id="genreGamesGrid"></div>
-</main>
+                <!-- Navigation -->
+                <nav class="ccg-nav">
+                    <a href="../../home.html" class="nav-item">Home</a>
+                    <a href="../../games/index.html" class="nav-item">Games</a>
+                    <a href="../../games/genres/index.html" class="nav-item">Genres</a>
+                    <a href="../../games/collections/index.html" class="nav-item">Collections</a>
+                    <a href="../../quiz/quiz.html" class="nav-item">Quiz</a>
+                    <a href="../../complete-index.html" class="nav-item">Index</a>
+                    <a href="../../about.html" class="nav-item">About</a>
+                    <a href="../../contact.html" class="nav-item">Contact</a>
+                </nav>
 
-<footer>
-    <p>© Cheeky Commodore Gamer.</p>
-</footer>
+                <!-- Mode Toggle -->
+                <button
+                    class="ccg-mode-toggle"
+                    type="button"
+                    aria-label="Toggle system mode"
+                    data-ccg-mode-toggle="true"
+                >
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--c64">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="../../resources/icons/c64.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">C64</span>
+                    </span>
 
-<script src="../../js/genre-loader.js" defer></script>
+                    <span class="ccg-mode-toggle-knob"></span>
+
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--amiga">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="../../resources/icons/amiga.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">Amiga</span>
+                    </span>
+                </button>
+
+            </div>
+        </header>
+
+        <!-- =====================================================
+             MAIN CONTENT
+        ===================================================== -->
+        <main class="ccg-main">
+
+            <section class="ccg-section">
+                <h1 class="ccg-section-title">Casino Games</h1>
+
+                <p class="ccg-section-subtitle">
+                    Gambling without the risk — C64 & Amiga style.
+                </p>
+
+                <p>
+                    Casino titles recreate the thrill of slot machines, poker tables, roulette wheels
+                    and full gambling halls, all wrapped in classic retro presentation.
+                </p>
+
+                <p>
+                    Whether you enjoy fruit machines, blackjack or full casino simulations,
+                    this section covers every game where luck, nerve and timing are everything.
+                </p>
+            </section>
+
+            <!-- Count -->
+            <section class="ccg-section">
+                <h2 class="ccg-section-title">Total Games Available</h2>
+                <div id="genreGamesCount"></div>
+            </section>
+
+            <!-- Grid -->
+            <section class="ccg-section">
+                <h2 class="ccg-section-title">Browse Casino Games</h2>
+                <div id="genreGamesGrid"></div>
+            </section>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="ccg-footer">
+            <div class="ccg-footer-inner">
+                <p class="ccg-footer-text">&copy; 2025 Cheeky Commodore Gamer.</p>
+                <p class="ccg-footer-text ccg-footer-text--small">
+                    Not affiliated with Commodore or Amiga.
+                </p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- JS -->
+    <script src="../../js/ccg-mode-engine.js" defer></script>
+    <script src="../../js/ccj-global.js" defer></script>
+    <script src="../../js/genre-loader.js" defer></script>
+
 </body>
 </html>
