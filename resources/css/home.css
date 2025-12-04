@@ -519,19 +519,35 @@
     align-items: baseline;
     justify-content: space-between;
     gap: 0.75rem;
-    margin-bottom: 1.2rem;
+    margin-bottom: 1.25rem;
 }
 
 .ccg-section__title {
-    font-size: 1.1rem;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+
+    font-size: 1rem;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.18em;
+
+    color: #f7fbff;
+    text-shadow:
+        0 0 10px rgba(0, 240, 255, 0.9),
+        0 0 22px rgba(255, 0, 200, 0.8);
+}
+
+.ccg-section__title::before {
+    content: "▌";
+    font-size: 1.1rem;
+    color: rgba(0, 240, 255, 0.9);
 }
 
 .ccg-section__subtitle {
     max-width: 28rem;
-    font-size: 0.85rem;
-    opacity: 0.78;
+    font-size: 0.86rem;
+    color: rgba(215, 232, 255, 0.88);
 }
 
 /* -----------------------------------------
