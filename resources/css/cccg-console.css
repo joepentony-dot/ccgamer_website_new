@@ -1,0 +1,10 @@
+/* ============================================================
+   CCG-CONSOLE.CSS — SAFE PLACEHOLDER
+   Prevents 404 errors for missing console UI components.
+   This file intentionally contains minimal styling.
+   Add console window / debugging UI styles here later.
+   ============================================================ */
+
+.ccg-console {
+    display: none; /* Reserved for future retro console overlays */
+}

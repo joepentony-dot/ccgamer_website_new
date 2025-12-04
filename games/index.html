@@ -1,139 +1,187 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ccg-page="games">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Games Hub – CCG</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="stylesheet" href="../resources/css/ccg-master.css">
-    <link rel="stylesheet" href="../resources/css/genre.css">
+    <title>Cheeky Commodore Gamer | Games Library</title>
+    <meta name="description" content="Browse the full Cheeky Commodore Gamer library of Commodore 64 and Amiga games. Filter by system, search by title, or jump via A–Z.">
 
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" href="../favicon.ico" />
+
+    <!-- GLOBAL CSS -->
+    <link rel="stylesheet" href="../resources/css/ccg-master.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-mode.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-effects.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-anim.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-modal.css" />
+
+    <!-- GAMES LIBRARY LAYOUT -->
+    <link rel="stylesheet" href="../resources/css/games.css" />
 </head>
 
-<body>
-
-<header class="ccg-header">
-    <a href="../home.html" class="ccg-logo-link">
-        <img src="../resources/CCGAMER LOGO.png" class="ccg-logo">
-    </a>
-
-    <div class="ccg-header-text">
-        <h1>Cheeky Commodore Gamer</h1>
-        <p>C64 & Amiga Retro Gaming Hub</p>
+<body class="ccg-body" data-ccg-mode="c64">
+    <!-- GLOBAL BACKGROUND -->
+    <div class="ccg-bg">
+        <div class="ccg-bg-starfield"></div>
+        <div class="ccg-bg-grid"></div>
+        <div class="ccg-bg-crt-overlay"></div>
     </div>
 
-    <nav class="ccg-nav">
-        <a href="../home.html">Home</a>
-        <a href="../complete-index.html">Complete Index</a>
-        <a href="../quiz/index.html">Quiz Hub</a>
-    </nav>
-</header>
+    <div class="ccg-page-shell">
 
-<main class="genre-main">
-    <h2 class="genre-title">Games Hub</h2>
+        <!-- =====================================================
+             GLOBAL HEADER — MATCHED TO HOME PAGE OMEGA STYLE
+        ===================================================== -->
+        <header class="ccg-header">
+            <div class="ccg-header-inner">
+                
+                <!-- Brand -->
+                <div class="ccg-header-brand">
+                    <a href="../home.html" class="ccg-logo-link">
+                        <img src="../resources/ccgamer_logo.png" 
+                             alt="Cheeky Commodore Gamer logo" 
+                             class="ccg-logo-img">
+                    </a>
+                    <div class="ccg-brand-title">CHEEKY COMMODORE GAMER</div>
+                    <div class="ccg-brand-subtitle">Commodore 64 & Amiga Library</div>
+                </div>
 
-    <p class="genre-description">Choose a genre or browse all games.</p>
+                <!-- Navigation -->
+                <nav class="ccg-nav" aria-label="Main navigation">
+                    <a href="../home.html" class="nav-item">Home</a>
+                    <a href="index.html" class="nav-item nav-active">Games</a>
+                    <a href="../quiz/quiz.html" class="nav-item">Quiz</a>
+                    <a href="../complete-index.html" class="nav-item">Index</a>
+                    <a href="../about.html" class="nav-item">About</a>
+                </nav>
 
-    <div class="game-list categories-list">
+                <!-- Mode + Socials -->
+                <div class="ccg-header-right">
+                    <button id="ccg-mode-toggle" class="ccg-mode-toggle">C64 / Amiga</button>
 
-        <a class="category-card" href="genres/arcade-games.html">
-            <img src="../resources/images/genres/arcade.png">
-            <span>Arcade Games</span>
-        </a>
+                    <a class="ccg-header-social-icon" href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank">
+                        <img src="../resources/icons/youtube.svg" alt="YouTube">
+                    </a>
+                    <a class="ccg-header-social-icon" href="https://www.patreon.com/cheekycommodoregamer" target="_blank">
+                        <img src="../resources/icons/patreon.svg" alt="Patreon">
+                    </a>
+                    <a class="ccg-header-social-icon" href="https://www.paypal.me/CheekyCommodoreGamer" target="_blank">
+                        <img src="../resources/icons/paypal.svg" alt="PayPal">
+                    </a>
+                </div>
+            </div>
+        </header>
 
-        <a class="category-card" href="genres/action-adventure-games.html">
-            <img src="../resources/images/genres/action-adventure.png">
-            <span>Action Adventure</span>
-        </a>
+        <!-- =====================================================
+             MAIN CONTENT — GAMES LIBRARY
+        ===================================================== -->
+        <main class="ccg-main ccg-main--games" id="main">
 
-        <a class="category-card" href="genres/adventure-games.html">
-            <img src="../resources/images/genres/adventure.png">
-            <span>Adventure</span>
-        </a>
+            <!-- HERO -->
+            <section class="games-hero">
+                <div class="games-hero-inner">
 
-        <a class="category-card" href="genres/platform-games.html">
-            <img src="../resources/images/genres/platform.png">
-            <span>Platform</span>
-        </a>
+                    <div class="games-hero-copy">
+                        <h1 class="games-hero-title">Games Library</h1>
+                        <p class="games-hero-tagline">
+                            Every Commodore 64 & Amiga title in one neon-soaked grid. 
+                            Search, filter by system, or jump via A–Z.
+                        </p>
+                        <p class="games-hero-meta">
+                            <span id="games-total-count" class="games-count-pill">Loading games…</span>
+                        </p>
+                    </div>
 
-        <a class="category-card" href="genres/horror-games.html">
-            <img src="../resources/images/genres/horror.png">
-            <span>Horror</span>
-        </a>
+                    <div class="games-hero-aside">
+                        <div class="games-hero-note">
+                            <span class="games-hero-note-label">Tip</span>
+                            <p>
+                                Hit <strong>Random Game</strong> from the home page or use the 
+                                <span class="games-pill-inline">#random</span> link here to jump straight into discovery mode.
+                            </p>
+                        </div>
+                    </div>
 
-        <a class="category-card" href="genres/fighting-games.html">
-            <img src="../resources/images/genres/fighting.png">
-            <span>Fighting</span>
-        </a>
+                </div>
+            </section>
 
-        <a class="category-card" href="genres/shooting-games.html">
-            <img src="../resources/images/genres/shooting.png">
-            <span>Shooting</span>
-        </a>
+            <!-- CONTROLS -->
+            <section class="games-controls">
 
-        <a class="category-card" href="genres/racing-games.html">
-            <img src="../resources/images/genres/racing.png">
-            <span>Racing</span>
-        </a>
+                <!-- Search -->
+                <div class="games-search">
+                    <label for="games-search-input" class="games-search-label">Search</label>
+                    <div class="games-search-input-wrap">
+                        <input 
+                            type="search"
+                            id="games-search-input"
+                            class="games-search-input"
+                            placeholder="Search by game title…"
+                            autocomplete="off">
+                    </div>
+                </div>
 
-        <a class="category-card" href="genres/puzzle-games.html">
-            <img src="../resources/images/genres/puzzle.png">
-            <span>Puzzle</span>
-        </a>
+                <!-- System filters -->
+                <div class="games-system-filters">
+                    <span class="games-system-label">System:</span>
+                    <button type="button" class="games-system-pill is-active" data-system="all">All</button>
+                    <button type="button" class="games-system-pill games-system-pill--c64" data-system="c64">C64</button>
+                    <button type="button" class="games-system-pill games-system-pill--amiga" data-system="amiga">Amiga</button>
+                </div>
 
-        <a class="category-card" href="genres/sports-games.html">
-            <img src="../resources/images/genres/sports.png">
-            <span>Sports</span>
-        </a>
+                <!-- A–Z BAR -->
+                <div class="games-alpha-bar">
+                    <button type="button" class="games-alpha-pill is-active" data-letter="all">All</button>
+                    <button type="button" class="games-alpha-pill" data-letter="#">#</button>
+                    <div id="games-alpha-dynamic"></div>
+                </div>
 
-        <a class="category-card" href="genres/casino-games.html">
-            <img src="../resources/images/genres/casino.png">
-            <span>Casino</span>
-        </a>
+            </section>
 
-        <a class="category-card" href="genres/role-playing-games.html">
-            <img src="../resources/images/genres/role-playing.png">
-            <span>Role-Playing</span>
-        </a>
+            <!-- GRID -->
+            <section class="games-grid-section">
+                <div class="games-grid-header">
+                    <p class="games-grid-count">
+                        Showing <span id="games-visible-count">0</span> of 
+                        <span id="games-total-count-2">0</span> games
+                    </p>
+                </div>
 
-        <a class="category-card" href="genres/miscellaneous.html">
-            <img src="../resources/images/genres/miscellaneous.png">
-            <span>Miscellaneous</span>
-        </a>
+                <div id="games-grid" class="games-grid" aria-live="polite">
+                    <!-- Cards injected by JS -->
+                </div>
 
-        <a class="category-card" href="genres/top-picks.html">
-            <img src="../resources/images/genres/top-picks.png">
-            <span>Top Picks</span>
-        </a>
+                <div id="games-empty-message" class="games-empty-message" hidden>
+                    No games match your filters yet. Try clearing search or switching systems.
+                </div>
+            </section>
 
-        <a class="category-card" href="genres/bpjs-indexed-games.html">
-            <img src="../resources/images/genres/bpjs.png">
-            <span>BPJS Indexed</span>
-        </a>
+        </main>
 
-        <a class="category-card" href="genres/cartridge-games.html">
-            <img src="../resources/images/genres/cartridge.png">
-            <span>Cartridge</span>
-        </a>
+        <!-- FOOTER -->
+        <footer class="ccg-footer">
+            <div class="ccg-footer-inner">
+                <div class="ccg-footer-text">
+                    © <span id="ccg-year">2025</span> Cheeky Commodore Gamer. Commodore forever.
+                </div>
+                <div class="ccg-footer-links">
+                    <a href="../about.html">About</a>
+                    <a href="../contact.html">Contact</a>
+                    <a href="../complete-index.html">Complete Index</a>
+                </div>
+            </div>
+        </footer>
 
-        <a class="category-card" href="genres/licensed-games.html">
-            <img src="../resources/images/genres/licensed.png">
-            <span>Licensed</span>
-        </a>
-
-        <a class="category-card" href="genres/strategy-games.html">
-            <img src="../resources/images/genres/strategy.png">
-            <span>Strategy</span>
-        </a>
     </div>
-</main>
 
-<footer class="ccg-footer">
-    <p>Cheeky Commodore Gamer – Games Hub</p>
-</footer>
+    <!-- JS -->
+    <script src="../js/ccg-mode-engine.js" defer></script>
+    <script src="../js/ccg-header-auto.js" defer></script>
+    <script src="../js/ccj-global.js" defer></script>
+
+    <!-- GAMES LOADER (unchanged logic) -->
+    <script src="games-loader.js" defer></script>
 
 </body>
 </html>
