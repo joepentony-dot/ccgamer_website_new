@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en" data-ccg-page="emulation">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Emulation Hub | Cheeky Commodore Gamer</title>
+    <meta name="description" content="Set up Commodore 64 and Amiga emulation with curated downloads, quick steps and troubleshooting tips.">
+
+    <link rel="icon" href="favicon.ico">
+
+    <!-- GLOBAL CSS -->
+    <link rel="stylesheet" href="resources/css/ccg-master.css">
+    <link rel="stylesheet" href="resources/css/ccg-mode.css">
+    <link rel="stylesheet" href="resources/css/ccg-effects.css">
+    <link rel="stylesheet" href="resources/css/ccg-anim.css">
+    <link rel="stylesheet" href="resources/css/ccg-overlays.css">
+    <link rel="stylesheet" href="resources/css/ccg-modal.css">
+    <link rel="stylesheet" href="resources/css/info-pages.css">
+    <link rel="stylesheet" href="resources/css/emulation.css">
+
+    <!-- JS -->
+    <script src="js/ccg-mode-engine.js" defer></script>
+    <script src="js/ccj-global.js" defer></script>
+</head>
+
+<body class="ccg-body" data-ccg-mode="c64">
+    <!-- GLOBAL BACKGROUND -->
+    <div class="ccg-bg">
+        <div class="ccg-bg-starfield"></div>
+        <div class="ccg-bg-grid"></div>
+        <div class="ccg-bg-crt-overlay"></div>
+    </div>
+
+    <div class="ccg-page ccg-page--emulation">
+        <!-- HEADER -->
+        <header class="ccg-header">
+            <div class="ccg-header-inner">
+                <a href="home.html" class="ccg-logo-link">
+                    <img src="resources/ccgamer_logo.png" alt="Cheeky Commodore Gamer logo" class="ccg-logo-img">
+                </a>
+
+                <nav class="ccg-nav">
+                    <a href="home.html" class="nav-item">Home</a>
+                    <a href="games/index.html" class="nav-item">Games</a>
+                    <a href="games/genres/index.html" class="nav-item">Genres</a>
+                    <a href="games/collections/index.html" class="nav-item">Collections</a>
+                    <a href="emulation.html" class="nav-item nav-item--active">Emulation</a>
+                    <a href="quiz/quiz.html" class="nav-item">Quiz</a>
+                    <a href="complete-index.html" class="nav-item">Index</a>
+                    <a href="about.html" class="nav-item">About</a>
+                    <a href="contact.html" class="nav-item">Contact</a>
+                </nav>
+
+                <button
+                    class="ccg-mode-toggle"
+                    type="button"
+                    aria-label="Toggle system mode"
+                    data-ccg-mode-toggle="true"
+                >
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--c64">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="resources/icons/c64.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">C64</span>
+                    </span>
+                    <span class="ccg-mode-toggle-knob"></span>
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--amiga">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="resources/icons/amiga.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">Amiga</span>
+                    </span>
+                </button>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main class="ccg-main ccg-main--emulation">
+            <div class="ccg-info-shell">
+                <section class="ccg-info-hero" aria-labelledby="emu-title">
+                    <div class="ccg-pill-row" aria-hidden="true">
+                        <span class="ccg-pill">Plug &amp; play</span>
+                        <span class="ccg-pill">Zero fluff</span>
+                        <span class="ccg-pill">C64 + Amiga</span>
+                    </div>
+                    <h1 id="emu-title">Emulation Hub</h1>
+                    <p>
+                        Fast, clean guidance for emulating the Commodore 64 and Amiga. Download the recommended builds, follow the
+                        quick steps, and jump straight into the games list.
+                    </p>
+                    <div class="ccg-info-actions">
+                        <a class="ccg-btn-inline" href="games/index.html">Browse games</a>
+                        <a class="ccg-btn-inline" href="games/genres/top-picks.html">Top picks</a>
+                    </div>
+                </section>
+
+                <section class="ccg-info-panel" aria-label="Recommended emulators">
+                    <h2 class="ccg-section-title">Recommended Emulators</h2>
+                    <p class="ccg-section-subtitle">Stable, well-supported builds for quick setup.</p>
+                    <div class="emu-grid">
+                        <article class="emu-card">
+                            <h3>VICE (C64)</h3>
+                            <p class="emu-meta">Windows, macOS, Linux</p>
+                            <p>Accurate C64, C128 and PET support with modern UI. Great default choice.</p>
+                            <div class="emu-tags">
+                                <span class="emu-tag">Fast saves</span>
+                                <span class="emu-tag">Multi-system</span>
+                                <span class="emu-tag">Free</span>
+                            </div>
+                            <div class="emu-link-row">
+                                <a class="emu-link" href="https://vice-emu.sourceforge.io/" target="_blank" rel="noopener">
+                                    <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 4h16v2H4zm0 7h16v2H4zm0 7h16v2H4z"/></svg>
+                                    Official site
+                                </a>
+                                <a class="emu-link" href="https://vice.pokefinder.org/index.php/Builds" target="_blank" rel="noopener">
+                                    <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 2 3 6v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V6l-9-4Zm0 2.18 6 2.67v4.25c0 4.21-2.72 8.35-6 9.76-3.28-1.41-6-5.55-6-9.76V6.85l6-2.67Z"/></svg>
+                                    Latest builds
+                                </a>
+                            </div>
+                        </article>
+
+                        <article class="emu-card">
+                            <h3>Hoxs64</h3>
+                            <p class="emu-meta">Windows</p>
+                            <p>Laser-focused accuracy with cycle-exact emulation. Perfect for demo scene purists.</p>
+                            <div class="emu-tags">
+                                <span class="emu-tag">Cycle-accurate</span>
+                                <span class="emu-tag">Joystick ready</span>
+                            </div>
+                            <div class="emu-link-row">
+                                <a class="emu-link" href="https://www.hoxs64.net/" target="_blank" rel="noopener">
+                                    <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3 1 9l11 6 9-4.91V17h2V9L12 3Zm0 15-6.4-3.48L3 16.2 12 21l9-4.8-2.6-1.68Z"/></svg>
+                                    hoxs64.net
+                                </a>
+                            </div>
+                        </article>
+
+                        <article class="emu-card">
+                            <h3>WinUAE</h3>
+                            <p class="emu-meta">Windows</p>
+                            <p>Feature-packed Amiga emulator with RTG, WHDLoad and custom chipset options.</p>
+                            <div class="emu-tags">
+                                <span class="emu-tag">WHDLoad</span>
+                                <span class="emu-tag">RTG</span>
+                                <span class="emu-tag">Highly configurable</span>
+                            </div>
+                            <div class="emu-link-row">
+                                <a class="emu-link" href="https://www.winuae.net/" target="_blank" rel="noopener">
+                                    <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 4h16v2H4zm0 7h16v2H4zm0 7h16v2H4z"/></svg>
+                                    winuae.net
+                                </a>
+                            </div>
+                        </article>
+
+                        <article class="emu-card">
+                            <h3>FS-UAE</h3>
+                            <p class="emu-meta">Windows, macOS, Linux</p>
+                            <p>Friendly front-end built on UAE core with controller presets and online netplay.</p>
+                            <div class="emu-tags">
+                                <span class="emu-tag">Cross-platform</span>
+                                <span class="emu-tag">Controller friendly</span>
+                                <span class="emu-tag">Netplay</span>
+                            </div>
+                            <div class="emu-link-row">
+                                <a class="emu-link" href="https://fs-uae.net/" target="_blank" rel="noopener">
+                                    <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 2 1 7l11 5 9-4.09V11h2V7L12 2Zm0 13-7-3.27V14l7 3 7-3v-2.27L12 15Z"/></svg>
+                                    fs-uae.net
+                                </a>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="ccg-info-panel" aria-label="Quick start steps">
+                    <h2 class="ccg-section-title">Quick Start</h2>
+                    <p class="ccg-section-subtitle">Follow these steps and you&rsquo;ll be loading disk images in minutes.</p>
+                    <ol class="emu-step-list">
+                        <li class="emu-step">
+                            <strong>1) Download + install</strong>
+                            <p>Grab the latest build from the links above. On macOS, allow the app in Security &amp; Privacy if it was blocked.</p>
+                        </li>
+                        <li class="emu-step">
+                            <strong>2) Point to ROMs</strong>
+                            <p>VICE ships with what it needs; Amiga emulators require Kickstart ROMs. Place them in a clearly labelled folder and set the path in FS-UAE/WinUAE.</p>
+                        </li>
+                        <li class="emu-step">
+                            <strong>3) Load a game</strong>
+                            <p>Use <code>.d64</code>, <code>.t64</code> or <code>.prg</code> for C64. Use <code>.adf</code> or WHDLoad packages for Amiga. Then tap <em>Autostart</em> or <em>Insert Disk</em>.</p>
+                        </li>
+                        <li class="emu-step">
+                            <strong>4) Tune speed + sound</strong>
+                            <p>Enable <em>Exact Cycle Emulation</em> if games run too fast. Reduce latency or buffer size if audio crackles.</p>
+                        </li>
+                    </ol>
+                </section>
+
+                <section class="ccg-info-panel" aria-label="Troubleshooting and extras">
+                    <h2 class="ccg-section-title">Troubleshooting</h2>
+                    <div class="emu-grid">
+                        <article class="emu-card">
+                            <h3>Controls not working?</h3>
+                            <p>Map your USB controller in the emulator preferences. Some devices present as two pads — bind the one that responds.</p>
+                        </article>
+                        <article class="emu-card">
+                            <h3>CRT look &amp; feel</h3>
+                            <p>Toggle the site&rsquo;s C64/Amiga switch for instant theme changes. Most emulators include scanline and CRT filters too.</p>
+                        </article>
+                        <article class="emu-card">
+                            <h3>Where to next?</h3>
+                            <p>Try the curated <a href="games/genres/top-picks.html">Top Picks</a>, or explore <a href="games/collections/index.html">Collections</a> for themed nights.</p>
+                        </article>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <footer class="ccg-footer">
+            <div class="ccg-footer-inner">
+                <p class="ccg-footer-text">© 2025 Cheeky Commodore Gamer.</p>
+                <p class="ccg-footer-text ccg-footer-text--small">Not affiliated with Commodore or Amiga.</p>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

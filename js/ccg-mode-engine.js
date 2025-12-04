@@ -4,50 +4,51 @@
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", () => {
-
     const body = document.body;
     const toggle = document.querySelector("[data-ccg-mode-toggle]");
+    const MODE_KEY = "ccg-preferred-mode";
 
-    /* -----------------------------------------
-       1) Ensure default mode exists
-       ----------------------------------------- */
-    if (!body.dataset.ccgMode) {
-        body.dataset.ccgMode = "c64";
+    function normalize(mode) {
+        return mode === "amiga" ? "amiga" : "c64";
     }
 
-    let currentMode = body.dataset.ccgMode;
+    function readPreferredMode() {
+        const stored = localStorage.getItem(MODE_KEY);
+        if (stored) return normalize(stored);
+        if (body.dataset.ccgMode) return normalize(body.dataset.ccgMode);
+        return "c64";
+    }
 
-    /* -----------------------------------------
-       2) Sync toggle UI immediately
-       ----------------------------------------- */
     function applyToggleState(mode) {
         if (!toggle) return;
-        toggle.classList.remove("is-c64", "is-amiga");
-        toggle.classList.add(mode === "amiga" ? "is-amiga" : "is-c64");
+        toggle.classList.toggle("is-amiga", mode === "amiga");
+        toggle.classList.toggle("is-c64", mode !== "amiga");
     }
 
-    applyToggleState(currentMode);
+    function applyMode(mode, { emit = true } = {}) {
+        const current = normalize(mode);
+        body.dataset.ccgMode = current;
+        body.dataset.mode = current; // legacy hook for existing scripts
+        localStorage.setItem(MODE_KEY, current);
+        applyToggleState(current);
 
-    /* -----------------------------------------
-       3) Bind toggle click
-       ----------------------------------------- */
+        if (emit) {
+            document.dispatchEvent(
+                new CustomEvent("ccg:modeChange", { detail: { mode: current } })
+            );
+        }
+    }
+
+    const initialMode = readPreferredMode();
+    applyMode(initialMode, { emit: false });
+
+    document.dispatchEvent(new CustomEvent("ccg-mode-ready", { detail: { mode: initialMode } }));
+    document.dispatchEvent(new CustomEvent("ccg:modeChange", { detail: { mode: initialMode } }));
+
     if (toggle) {
         toggle.addEventListener("click", () => {
-            currentMode = currentMode === "c64" ? "amiga" : "c64";
-
-            // Update attribute
-            body.dataset.ccgMode = currentMode;
-
-            // Update visual UI
-            applyToggleState(currentMode);
+            const nextMode = body.dataset.ccgMode === "amiga" ? "c64" : "amiga";
+            applyMode(nextMode);
         });
     }
-
-    /* -----------------------------------------
-       4) Dispatch custom event (for pages that react)
-       ----------------------------------------- */
-    const event = new CustomEvent("ccg-mode-ready", {
-        detail: { mode: currentMode }
-    });
-    document.dispatchEvent(event);
 });

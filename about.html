@@ -5,67 +5,159 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>About | Cheeky Commodore Gamer</title>
-    <meta name="description" content="About Cheeky Commodore Gamer — a celebration of Commodore 64 and Amiga classics.">
+    <meta name="description" content="About Cheeky Commodore Gamer — celebrating Commodore 64 and Amiga classics with videos, guides and quizzes.">
 
-    <link rel="icon" href="../favicon.ico">
+    <link rel="icon" href="favicon.ico">
 
-    <!-- JS (kept for mode engine) -->
-    <script src="../js/ccg-mode-engine.js" defer></script>
-    <script src="../js/ccj-global.js" defer></script>
+    <!-- GLOBAL CSS -->
+    <link rel="stylesheet" href="resources/css/ccg-master.css">
+    <link rel="stylesheet" href="resources/css/ccg-mode.css">
+    <link rel="stylesheet" href="resources/css/ccg-effects.css">
+    <link rel="stylesheet" href="resources/css/ccg-anim.css">
+    <link rel="stylesheet" href="resources/css/ccg-overlays.css">
+    <link rel="stylesheet" href="resources/css/ccg-modal.css">
+    <link rel="stylesheet" href="resources/css/info-pages.css">
+
+    <!-- JS -->
+    <script src="js/ccg-mode-engine.js" defer></script>
+    <script src="js/ccj-global.js" defer></script>
 </head>
 
-<body data-ccg-mode="c64">
+<body class="ccg-body" data-ccg-mode="c64">
 
-<header>
-    <div>
-        <div>
-            <a href="../home.html">
-                <img src="../resources/ccgamer_logo.png" alt="Cheeky Commodore Gamer logo">
-            </a>
-        </div>
-
-        <nav>
-            <a href="../home.html">Home</a>
-            <a href="../games/index.html">Games</a>
-            <a href="../games/genres/index.html">Genres</a>
-            <a href="../games/collections/index.html">Collections</a>
-            <a href="../quiz/quiz.html">Quiz</a>
-            <a href="../about.html">About</a>
-            <a href="../contact.html">Contact</a>
-            <a href="../admin/admin.html">Admin</a>
-        </nav>
-
-        <button data-ccg-mode-toggle="true">Toggle Mode</button>
-
-        <div>
-            <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank">YouTube</a>
-            <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank">Patreon</a>
-            <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank">PayPal</a>
-            <a href="https://www.facebook.com/cheekycommodoregamer" target="_blank">Facebook</a>
-            <a href="https://twitter.com/CheekyC64Gamer" target="_blank">X</a>
-            <a href="https://discord.gg/83Xw9ktAn4" target="_blank">Discord</a>
-        </div>
+    <!-- GLOBAL BACKGROUND -->
+    <div class="ccg-bg">
+        <div class="ccg-bg-starfield"></div>
+        <div class="ccg-bg-grid"></div>
+        <div class="ccg-bg-crt-overlay"></div>
     </div>
-</header>
 
-<main>
-    <section>
-        <h1>About Cheeky Commodore Gamer</h1>
-        <p>
-            This website is a personal love letter to the Commodore 64 and Amiga — two legendary systems
-            that shaped gaming history. Here you’ll find curated lists, game pages, videos, quizzes, and
-            a celebration of retro gaming culture.
-        </p>
-        <p>
-            Every game entry, every video, and every quiz question is created to keep the retro scene alive.
-        </p>
-    </section>
-</main>
+    <div class="ccg-page ccg-page--about">
+        <!-- HEADER -->
+        <header class="ccg-header">
+            <div class="ccg-header-inner">
+                <a href="home.html" class="ccg-logo-link">
+                    <img src="resources/ccgamer_logo.png" alt="Cheeky Commodore Gamer logo" class="ccg-logo-img">
+                </a>
 
-<footer>
-    <p>&copy; 2025 Cheeky Commodore Gamer.</p>
-    <p>Not affiliated with Commodore or Amiga.</p>
-</footer>
+                <nav class="ccg-nav">
+                    <a href="home.html" class="nav-item">Home</a>
+                    <a href="games/index.html" class="nav-item">Games</a>
+                    <a href="games/genres/index.html" class="nav-item">Genres</a>
+                    <a href="games/collections/index.html" class="nav-item">Collections</a>
+                    <a href="emulation.html" class="nav-item">Emulation</a>
+                    <a href="quiz/quiz.html" class="nav-item">Quiz</a>
+                    <a href="complete-index.html" class="nav-item">Index</a>
+                    <a href="about.html" class="nav-item nav-item--active">About</a>
+                    <a href="contact.html" class="nav-item">Contact</a>
+                </nav>
+
+                <button
+                    class="ccg-mode-toggle"
+                    type="button"
+                    aria-label="Toggle system mode"
+                    data-ccg-mode-toggle="true"
+                >
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--c64">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="resources/icons/c64.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">C64</span>
+                    </span>
+                    <span class="ccg-mode-toggle-knob"></span>
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--amiga">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="resources/icons/amiga.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">Amiga</span>
+                    </span>
+                </button>
+            </div>
+        </header>
+
+        <!-- MAIN -->
+        <main class="ccg-main ccg-main--about">
+            <div class="ccg-info-shell">
+                <section class="ccg-info-hero" aria-labelledby="about-title">
+                    <div class="ccg-pill-row" aria-hidden="true">
+                        <span class="ccg-pill">C64 Nostalgia</span>
+                        <span class="ccg-pill">Amiga Workbench vibes</span>
+                        <span class="ccg-pill">Community first</span>
+                    </div>
+                    <h1 id="about-title">About Cheeky Commodore Gamer</h1>
+                    <p>
+                        A neon love letter to the Commodore 64 and Amiga. I curate games, produce longplays, write quizzes and
+                        craft emulator-friendly guides so you can jump straight into the retro goodness.
+                    </p>
+                    <div class="ccg-info-actions">
+                        <a class="ccg-btn-inline" href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener">Watch the channel</a>
+                        <a class="ccg-btn-inline" href="emulation.html">Emulation hub</a>
+                    </div>
+                </section>
+
+                <section class="ccg-info-grid" aria-label="Who I am and what to expect">
+                    <article class="ccg-info-card">
+                        <h3>Who&rsquo;s the Cheeky one?</h3>
+                        <p>
+                            A joystick wobbler who grew up with CRT glow and SID bleeps. I still chase high scores, still love a
+                            chunky manual, and still think Workbench windows look gorgeous.
+                        </p>
+                    </article>
+
+                    <article class="ccg-info-card">
+                        <h3>What you&rsquo;ll find</h3>
+                        <ul class="ccg-bullet-list">
+                            <li>Hand-picked C64 &amp; Amiga games with clean thumbnails</li>
+                            <li>Playable trivia quizzes for rainy evenings</li>
+                            <li>Collections, genres, and top picks that match my videos</li>
+                        </ul>
+                    </article>
+
+                    <article class="ccg-info-card">
+                        <h3>How I build pages</h3>
+                        <p>
+                            Everything follows the Omega layout: responsive grids, neon C64 mode, pastel Amiga mode, zero inline CSS
+                            and clear accessibility labels so the site works on any device.
+                        </p>
+                    </article>
+                </section>
+
+                <section class="ccg-info-panel" aria-label="Behind the scenes">
+                    <div class="ccg-info-grid">
+                        <article class="ccg-info-card">
+                            <h3>Hardware memories</h3>
+                            <ul class="ccg-bullet-list">
+                                <li>Commodore 64 breadbin with a trusty Action Replay cart.</li>
+                                <li>Amiga 1200 with a stack of floppy disks that never booted first time.</li>
+                            </ul>
+                        </article>
+                        <article class="ccg-info-card">
+                            <h3>Why the site exists</h3>
+                            <p>
+                                I wanted a home where games, videos, quizzes and emulator tips feel unified. Whether you browse on a
+                                phone or a hulking CRT, the goal is fast navigation and gorgeous retro polish.
+                            </p>
+                        </article>
+                        <article class="ccg-info-card">
+                            <h3>Support &amp; shout-outs</h3>
+                            <p>Big thanks to everyone who comments, shares and supports the channel. You keep the SID buzzing.</p>
+                            <div class="ccg-info-actions">
+                                <a class="ccg-btn-inline" href="https://patreon.com/CheekyCommodoreGamer" target="_blank" rel="noopener">Patreon</a>
+                                <a class="ccg-btn-inline" href="https://discord.gg/83Xw9ktAn4" target="_blank" rel="noopener">Discord</a>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <footer class="ccg-footer">
+            <div class="ccg-footer-inner">
+                <p class="ccg-footer-text">© 2025 Cheeky Commodore Gamer.</p>
+                <p class="ccg-footer-text ccg-footer-text--small">Not affiliated with Commodore or Amiga.</p>
+            </div>
+        </footer>
+    </div>
 
 </body>
 </html>

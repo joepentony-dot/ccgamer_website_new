@@ -51,6 +51,7 @@
                     <a href="../games/index.html" class="nav-item nav-item--active">Games</a>
                     <a href="../games/genres/index.html" class="nav-item">Genres</a>
                     <a href="../games/collections/index.html" class="nav-item">Collections</a>
+                    <a href="../emulation.html" class="nav-item">Emulation</a>
                     <a href="../quiz/quiz.html" class="nav-item">Quiz</a>
                     <a href="../complete-index.html" class="nav-item">Index</a>
                     <a href="../about.html" class="nav-item">About</a>
@@ -117,22 +118,39 @@
         <!-- =====================================================
              MAIN CONTENT
         ===================================================== -->
-        <main class="ccg-main">
+        <main class="ccg-main ccg-main--library">
 
             <!-- HERO SECTION -->
-            <section class="ccg-section">
-                <h1 class="ccg-section-title">All Games</h1>
-                <p class="ccg-section-subtitle">
-                    Dynamically loads all titles from <code>games.json</code>.<br>
-                    Sorting, filtering & random game features will be added in Phase 4.
-                </p>
+            <section class="ccg-section ccg-section--hero">
+                <div class="library-hero">
+                    <div class="library-hero__text">
+                        <p class="library-hero__eyebrow">Omega Library</p>
+                        <h1 class="library-hero__title">All Games</h1>
+                        <p class="library-hero__subtitle">
+                            Live data from <code>games.json</code>. Filter, jump to a random pick, or dive into a detail page with one click.
+                        </p>
+                        <div class="library-hero__actions">
+                            <button id="random-game-btn" class="ccg-btn ccg-btn-primary">Random pick</button>
+                            <a href="../games/genres/index.html" class="ccg-btn ccg-btn-secondary">Browse by genre</a>
+                            <a href="../games/collections/index.html" class="ccg-btn ccg-btn-ghost">Collections</a>
+                        </div>
+                    </div>
+                    <div class="library-hero__meta">
+                        <div class="library-stat">
+                            <span class="library-stat__label">Games loaded</span>
+                            <span id="games-count" class="library-stat__value">—</span>
+                        </div>
+                        <div class="library-search">
+                            <label for="games-search">Search titles, ids, or genres</label>
+                            <input id="games-search" type="search" placeholder="Search the vault" />
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <!-- GAME LIST GRID -->
             <section class="ccg-section">
-                <h2 class="ccg-section-title">Game List</h2>
-
-                <div id="games-list" class="ccg-grid ccg-grid-3">
+                <div id="games-list" class="games-library-grid">
                     <p class="ccg-section-subtitle">Loading games…</p>
                 </div>
             </section>
@@ -156,9 +174,7 @@
     <!-- GLOBAL JS -->
     <script src="../js/ccg-mode-engine.js" defer></script>
     <script src="../js/ccj-global.js" defer></script>
-
-    <!-- FUTURE: GAMES LOADER (PHASE 4) -->
-    <!-- <script src="../js/load-all-games.js" defer></script> -->
+    <script src="../js/games-library.js" defer></script>
 
 </body>
 </html>

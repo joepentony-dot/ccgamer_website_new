@@ -815,3 +815,65 @@ body[data-ccg-mode="amiga"] .ccg-social-icon img {
         padding-inline: 1.25rem;
     }
 }
+
+/* =============================================================
+   2025 POLISH — FEATURED + GENRE GRIDS
+   ============================================================= */
+
+.featured-game-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 14px;
+    box-shadow: 0 12px 30px rgba(var(--accent-rgb), 0.25);
+}
+
+.featured-game-art {
+    min-height: 180px;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.featured-panel-footer .ccg-btn {
+    min-width: 160px;
+}
+
+.ccg-genre-card img {
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 10px 24px rgba(var(--accent-rgb), 0.2);
+}
+
+.ccg-collections-grid .ccg-collection-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.ccg-collection-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    background: rgba(var(--accent-rgb), 0.15);
+    border: 1px solid rgba(var(--accent-rgb), 0.35);
+    box-shadow: 0 0 16px rgba(var(--accent-rgb), 0.28);
+}
+
+.ccg-collection-card::after {
+    content: "";
+    position: absolute;
+    inset: -20% 10% auto;
+    height: 120px;
+    background: radial-gradient(circle, rgba(var(--accent-rgb), 0.35), transparent 60%);
+    filter: blur(10px);
+    opacity: 0.35;
+}
+
+.ccg-collection-card:hover::after {
+    opacity: 0.6;
+}
