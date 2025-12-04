@@ -112,3 +112,62 @@ body[data-ccg-mode="amiga"] .ccg-main-nav-link:hover {
 body[data-ccg-mode="amiga"] .ccg-btn {
     color: #000 !important;
 }
+
+/* ==========================================================================
+   STAGE 3 — SOCIAL CARD UPGRADE
+   ========================================================================= */
+
+/* Base improvements */
+.ccg-social-card {
+    display: flex;
+    align-items: center;
+    padding: 1.1rem 1.3rem;
+    border-radius: 14px;
+    backdrop-filter: blur(3px);
+}
+
+/* Icon wrapper for visual clarity */
+.ccg-social-card-icon {
+    background: rgba(255,255,255,0.08);
+    padding: 0.4rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ccg-social-card-icon img {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+    opacity: 0.95;
+}
+
+/* C64 MODE — neon glow */
+body[data-ccg-mode="c64"] .ccg-social-card {
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(var(--accent-rgb), 0.4);
+    box-shadow:
+        0 0 12px rgba(var(--accent-rgb), 0.35),
+        inset 0 0 18px rgba(var(--accent-rgb), 0.15);
+}
+
+body[data-ccg-mode="c64"] .ccg-social-card-icon {
+    background: rgba(0,20,45,0.6);
+    box-shadow:
+        0 0 8px rgba(var(--accent-rgb), 0.45);
+}
+
+/* AMIGA MODE — Workbench tile */
+body[data-ccg-mode="amiga"] .ccg-social-card {
+    background: rgba(245, 247, 255, 0.96);
+    border: 1px solid rgba(0,0,0,0.25);
+    color: #000;
+    box-shadow:
+        0 2px 8px rgba(0,0,0,0.22);
+}
+
+body[data-ccg-mode="amiga"] .ccg-social-card-icon {
+    background: rgba(255,255,255,1);
+    border: 1px solid rgba(0,0,0,0.25);
+}
