@@ -1,45 +1,80 @@
 /* ============================================================
-   CCG-SOCIALS.CSS — Home Header Social Cards
+   CCG-SOCIALS.CSS — HOME HEADER SOCIAL CARDS (OMEGA BUILD)
+   Clean grid • Perfect alignment • Mode-safe spacing
    ============================================================ */
+
+/* ------------------------------------------------------------
+   SOCIAL GRID CONTAINER
+------------------------------------------------------------ */
 
 .ccg-social-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 1.1rem;
     margin-top: 1.5rem;
+    position: relative;
+    z-index: 12; /* Above hero overlays, below header logo */
 }
+
+/* ------------------------------------------------------------
+   SOCIAL CARD
+------------------------------------------------------------ */
 
 .ccg-social-card {
     display: flex;
     align-items: center;
     gap: 0.85rem;
-    padding: 0.75rem 1rem;
+
+    padding: 0.85rem 1rem;
     border-radius: 10px;
-    background: rgba(0,0,0,0.45);
-    border: 1px solid rgba(255,255,255,0.1);
-    transition: background 0.3s ease;
+
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    transition: background 0.28s ease, transform 0.2s ease;
 }
 
 .ccg-social-card:hover {
-    background: rgba(255,255,255,0.12);
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
 }
 
+/* ------------------------------------------------------------
+   ICON
+------------------------------------------------------------ */
+
 .ccg-social-card-icon img {
-    width: 28px;
+    width: 30px;
     opacity: 0.85;
+    transition: opacity 0.2s ease;
 }
+
+.ccg-social-card:hover .ccg-social-card-icon img {
+    opacity: 1;
+}
+
+/* ------------------------------------------------------------
+   TEXT BLOCK
+------------------------------------------------------------ */
 
 .ccg-social-label {
     font-weight: 700;
+    line-height: 1.2;
 }
 
 .ccg-social-tagline {
     opacity: 0.75;
     font-size: 0.8rem;
+    margin-top: 1px;
 }
+
+/* ------------------------------------------------------------
+   CALL TO ACTION (Right Aligned)
+------------------------------------------------------------ */
 
 .ccg-social-cta {
     margin-left: auto;
     font-weight: 700;
     opacity: 0.9;
+    white-space: nowrap;
 }
