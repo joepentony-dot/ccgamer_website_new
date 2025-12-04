@@ -273,28 +273,30 @@
                     <article class="featured-panel featured-panel--game">
                         <header class="featured-panel-header">
                             <h3 class="featured-panel-title">Featured Game</h3>
-                            <p class="featured-panel-system">Commodore 64 / Amiga</p>
+                            <p class="featured-panel-system" id="featured-game-meta">Commodore 64 / Amiga</p>
                         </header>
 
                         <div class="featured-panel-body">
-                            <div class="featured-game-art" aria-hidden="true"></div>
+                            <div class="featured-game-art" aria-hidden="true">
+                                <img id="featured-game-thumb" src="resources/images/genres/arcade.png" alt="Featured game artwork" loading="lazy" />
+                            </div>
 
                             <div class="featured-game-copy">
-                                <h4 class="featured-game-name">[Drop your showcase classic here]</h4>
-                                <p class="featured-game-blurb">
-                                    Perfect scrolling, outrageous SID or Paula tunes, and gameplay that screams
-                                    “just one more go”. Swap this text for whatever game you want to highlight.
+                                <h4 class="featured-game-name" id="featured-game-title">Loading a showcase classic…</h4>
+                                <p class="featured-game-blurb" id="featured-game-blurb">
+                                    Perfect scrolling, outrageous SID or Paula tunes, and gameplay that screams “just one more go”.
+                                    The system will pick a new gem each visit.
                                 </p>
                                 <ul class="featured-game-meta">
-                                    <li><span class="meta-label">System:</span> C64 / Amiga</li>
-                                    <li><span class="meta-label">Genre:</span> Whatever suits your feature</li>
-                                    <li><span class="meta-label">Video:</span> Pair it with the longplay on the right</li>
+                                    <li><span class="meta-label">System:</span> Dynamic</li>
+                                    <li><span class="meta-label">Genre:</span> Pulled from games.json</li>
+                                    <li><span class="meta-label">Video:</span> Synced with the feature on the right</li>
                                 </ul>
                             </div>
                         </div>
 
                         <footer class="featured-panel-footer">
-                            <a href="games/index.html" class="ccg-btn ccg-btn-primary">
+                            <a id="featured-game-link" href="games/index.html" class="ccg-btn ccg-btn-primary">
                                 Browse All Games
                             </a>
                             <a href="games/genres/top-picks.html" class="ccg-btn ccg-btn-ghost">
@@ -314,7 +316,8 @@
                             <div class="featured-video-frame">
                                 <iframe
                                     class="featured-video-embed"
-                                    src="https://www.youtube.com/embed/VIDEO_ID"
+                                    id="featured-video-frame"
+                                    src="https://www.youtube.com/embed/dQw4w9WgXcQ"
                                     title="Featured Cheeky Commodore Gamer video"
                                     frameborder="0"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -323,8 +326,8 @@
                             </div>
 
                             <div class="featured-video-copy">
-                                <h4 class="featured-video-title">Showcase a flagship longplay or deep dive</h4>
-                                <p class="featured-video-blurb">
+                                <h4 class="featured-video-title" id="featured-video-title">Showcase a flagship longplay or deep dive</h4>
+                                <p class="featured-video-blurb" id="featured-video-blurb">
                                     Pick a big C64 or Amiga adventure, a technical breakdown, or a pure nostalgia trip
                                     that shows people exactly why they should stick around.
                                 </p>
@@ -423,31 +426,35 @@
                  ============================================== -->
             <section class="home-section home-section--collections" aria-label="Collections and special lists">
                 <div class="home-section-header">
-                    <h2 class="home-section-title">Collections &amp; Special Lists</h2>
+                    <h2 class="home-section-title">Browse by Collection</h2>
                     <p class="home-section-subtitle">
-                        Curated chaos: favourites, cartridges and BPJS-indexed madness all live here.
+                        Hand-picked vaults: BPJS curiosities, licensed gems, chunky cartridges, and the definitive Top Picks list.
                     </p>
                 </div>
 
                 <div class="ccg-collections-grid">
-                    <a class="ccg-collection-card" href="games/index.html">
-                        <h3 class="ccg-collection-title">Full Games Library</h3>
-                        <p class="ccg-collection-text">Browse the complete C64 &amp; Amiga database.</p>
-                    </a>
-
                     <a class="ccg-collection-card" href="games/genres/top-picks.html">
+                        <div class="ccg-collection-chip">Signature Picks</div>
                         <h3 class="ccg-collection-title">Top Picks</h3>
-                        <p class="ccg-collection-text">Cheeky’s personal favourites and must-plays.</p>
-                    </a>
-
-                    <a class="ccg-collection-card" href="games/genres/cartridge-games.html">
-                        <h3 class="ccg-collection-title">Cartridge Games</h3>
-                        <p class="ccg-collection-text">C64 cartridges and special releases.</p>
+                        <p class="ccg-collection-text">The cream of Cheeky’s collection — instant recommendations.</p>
                     </a>
 
                     <a class="ccg-collection-card" href="games/genres/bpjs-indexed-games.html">
+                        <div class="ccg-collection-chip">BPJS Vault</div>
                         <h3 class="ccg-collection-title">BPJS Indexed</h3>
-                        <p class="ccg-collection-text">Curated database madness, neatly categorised.</p>
+                        <p class="ccg-collection-text">A curated list of BPJS-indexed titles, neatly catalogued.</p>
+                    </a>
+
+                    <a class="ccg-collection-card" href="games/genres/cartridge-games.html">
+                        <div class="ccg-collection-chip">Hardware Love</div>
+                        <h3 class="ccg-collection-title">Cartridge Games</h3>
+                        <p class="ccg-collection-text">Cartridge classics with instant boot swagger.</p>
+                    </a>
+
+                    <a class="ccg-collection-card" href="games/genres/licensed-games.html">
+                        <div class="ccg-collection-chip">Official Licenses</div>
+                        <h3 class="ccg-collection-title">Licensed Games</h3>
+                        <p class="ccg-collection-text">TV, film, and arcade conversions that defined the era.</p>
                     </a>
                 </div>
             </section>
@@ -541,5 +548,6 @@
          ========================================================= -->
     <script src="js/ccg-mode-engine.js" defer></script>
     <script src="js/ccj-global.js" defer></script>
+    <script src="js/home-dynamic.js" defer></script>
 </body>
 </html>

@@ -186,6 +186,7 @@ a:focus-visible, button:focus-visible {
     gap: 1rem;
     justify-content: center;
     margin-top: 0.75rem;
+    flex-wrap: wrap;
 }
 
 .ccg-header-socials a {
