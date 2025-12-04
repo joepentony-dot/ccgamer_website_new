@@ -162,6 +162,11 @@
     justify-content: flex-end;
 }
 
+/* ULTRA SAFE PATCH — header social vertical correction */
+.ccg-header-social-wrap {
+    margin-top: 0.25rem;
+}
+
 .ccg-social-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
