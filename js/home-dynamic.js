@@ -1,333 +1,173 @@
-// ============================================================================
-// HOME DYNAMIC — FEATURED GAME + VIDEO ENGINE (OMEGA V2)
-// Cheeky Commodore Gamer 😇🕹️👌
-// ============================================================================
-//
-// Behaviour:
-//  - Loads /games/games.json (repo-prefix aware for GitHub Pages).
-//  - Optionally hard-locks Featured Game and/or Featured Video by slug.
-//  - Otherwise picks a random game with a valid thumbnail + (ideally) video ID.
-//  - Populates:
-//      • Featured Game panel (title, meta line, thumbnail, link)
-//      • Featured Video panel (YouTube iframe, title, blurb)
-//  - If anything fails, leaves placeholder content intact.
-//
-// HOW TO HARD-LOCK A GAME:
-//  - Set FEATURED_CONFIG.lockFeaturedSlug = 'your-game-slug';
-//  - (Optional) FEATURED_CONFIG.lockVideoSlug for a different video source.
-// ============================================================================
+/* ============================================================
+   HOME-DYNAMIC.JS — OMEGA HOMEPAGE LOGIC
+   - Mode toggle integration (C64 / Amiga)
+   - Hero label update
+   - Random game launcher (graceful fallback)
+   - Starfield background (lightweight)
+   ============================================================ */
 
 (function () {
-    // -------------------------------
-    // CONFIG
-    // -------------------------------
-    const FEATURED_CONFIG = {
-        // For GitHub Pages project site:
-        //   https://<user>.github.io/ccgamer_website_new/
-        // Keep this as your repo folder name.
-        REPO_PREFIX: '/ccgamer_website_new',
+    "use strict";
 
-        // Hard-lock the Featured Game by slug (exact match to games.json `slug`).
-        // Example: 'sid-meiers-pirates'
-        lockFeaturedSlug: null,
+    const body = document.body;
+    const MODE_KEY = "ccg-mode";
 
-        // Optional: Hard-lock the video panel to a different game slug.
-        // If null, will use the same game as Featured Game where possible.
-        lockVideoSlug: null,
+    /* -----------------------------------------
+       MODE TOGGLE + HERO LABEL
+    ----------------------------------------- */
 
-        // Fallback YouTube video ID if chosen game has no `videoid`.
-        fallbackYouTubeId: 'dQw4w9WgXcQ'
-    };
+    const modeToggleBtn = document.querySelector("[data-ccg-mode-toggle]");
+    const heroModeLabel = document.querySelector("[data-ccg-hero-mode-label]");
 
-    // -------------------------------
-    // INIT
-    // -------------------------------
-    document.addEventListener('DOMContentLoaded', () => {
-        hydrateFeaturedFromGames();
-        updateFooterYear();
-    });
-
-    // Ensure footer year always current
-    function updateFooterYear() {
-        const yearNode = document.getElementById('ccg-year');
-        if (!yearNode) return;
-        const year = new Date().getFullYear();
-        yearNode.textContent = year;
-    }
-
-    // -------------------------------
-    // PATH HELPERS
-    // -------------------------------
-
-    function getBasePrefix() {
-        const { REPO_PREFIX } = FEATURED_CONFIG;
-        if (!REPO_PREFIX) return '';
-        // If running under /ccgamer_website_new/ (GitHub Pages project site)
-        const inRepo = window.location.pathname.startsWith(REPO_PREFIX);
-        return inRepo ? REPO_PREFIX : '';
-    }
-
-    function resolveJsonPath() {
-        const base = getBasePrefix();
-        return base + '/games/games.json';
-    }
-
-    function buildGameUrl(id) {
-        const base = getBasePrefix();
-        const path = base + '/games/game.html';
-
-        if (!id) return path;
-
+    function applyMode(mode) {
+        const safeMode = mode === "amiga" ? "amiga" : "c64";
+        body.setAttribute("data-ccg-mode", safeMode);
+        if (heroModeLabel) {
+            heroModeLabel.textContent = safeMode.toUpperCase();
+        }
         try {
-            const url = new URL(path, window.location.origin);
-            url.searchParams.set('id', id);
-            return url.pathname + url.search;
+            localStorage.setItem(MODE_KEY, safeMode);
         } catch (e) {
-            return path + '?id=' + encodeURIComponent(id);
+            // ignore
         }
     }
 
-    function normaliseThumb(raw) {
-    if (!raw) return '';
-
-    // absolute URLs remain untouched
-    if (/^https?:\/\//i.test(raw)) return raw;
-
-    const base = getBasePrefix();
-    let cleaned = raw.trim();
-
-    // If already prefixed with /ccgamer_website_new/, do NOT reapply prefix
-    if (cleaned.startsWith(base + '/')) {
-        return cleaned; 
+    function toggleMode() {
+        const current = body.getAttribute("data-ccg-mode") || "c64";
+        const next = current === "c64" ? "amiga" : "c64";
+        applyMode(next);
+        // Optional: ping global mode engine if present
+        if (window.CCGModeEngine && typeof window.CCGModeEngine.syncFromBody === "function") {
+            window.CCGModeEngine.syncFromBody();
+        }
     }
 
-    // If path starts with a leading slash, remove it for safe concatenation
-    cleaned = cleaned.replace(/^\/+/, '');
-
-    // Final resolved URL
-    return base + '/' + cleaned;
-}
-
-
-    // -------------------------------
-    // MAIN HYDRATION LOGIC
-    // -------------------------------
-
-    async function hydrateFeaturedFromGames() {
-        // DOM hooks
-        const featuredGameTitle  = document.getElementById('featured-game-title');
-        const featuredGameBlurb  = document.getElementById('featured-game-blurb');
-        const featuredGameMeta   = document.getElementById('featured-game-meta');
-        const featuredGameLink   = document.getElementById('featured-game-link');
-        const featuredGameThumb  = document.getElementById('featured-game-thumb');
-
-        const featuredVideoFrame = document.getElementById('featured-video-frame');
-        const featuredVideoTitle = document.getElementById('featured-video-title');
-        const featuredVideoBlurb = document.getElementById('featured-video-blurb');
-
-        if (!featuredGameTitle || !featuredGameThumb || !featuredVideoFrame) {
-            console.warn('[CCG HOME] Required featured elements missing. Skipping dynamic hydrate.');
-            return;
+    // Restore saved mode
+    (function initMode() {
+        let saved = null;
+        try {
+            saved = localStorage.getItem(MODE_KEY);
+        } catch (e) {
+            saved = null;
         }
+        applyMode(saved || "c64");
+    })();
+
+    if (modeToggleBtn) {
+        modeToggleBtn.addEventListener("click", toggleMode);
+    }
+
+    /* -----------------------------------------
+       RANDOM GAME BUTTON
+    ----------------------------------------- */
+
+    const randomBtn = document.querySelector("[data-ccg-random-game]");
+    const GAMES_JSON_URL = "games/games.json";
+
+    async function chooseRandomGame() {
+        // Safe fallback if anything goes wrong
+        const fallbackUrl = "games/index.html#random";
 
         try {
-            const response = await fetch(resolveJsonPath(), { cache: 'no-store' });
+            const response = await fetch(GAMES_JSON_URL, { cache: "no-store" });
             if (!response.ok) {
-                throw new Error('Failed to load games.json: ' + response.status);
+                window.location.href = fallbackUrl;
+                return;
             }
 
             const games = await response.json();
             if (!Array.isArray(games) || games.length === 0) {
-                throw new Error('games.json is empty or not an array');
+                window.location.href = fallbackUrl;
+                return;
             }
 
-            const gamePool = games.filter(g => g && typeof g.title === 'string' && g.title.trim().length);
+            const index = Math.floor(Math.random() * games.length);
+            const game = games[index];
 
-            // 1) Pick Featured Game
-            const featuredGame =
-                pickLockedGame(gamePool, FEATURED_CONFIG.lockFeaturedSlug, true) ||
-                pickRandomValidGame(gamePool, true) ||
-                pickRandomValidGame(gamePool, false) ||
-                pickRandom(gamePool);
-
-            if (!featuredGame) {
-                throw new Error('No suitable featured game candidate found');
+            // Try to infer an ID/slug field
+            const gameId = game.id || game.slug || game.title;
+            if (!gameId) {
+                window.location.href = fallbackUrl;
+                return;
             }
 
-            // 2) Pick Video Game (may be same or different lock)
-            const videoGame =
-                pickLockedGame(gamePool, FEATURED_CONFIG.lockVideoSlug, false) ||
-                featuredGame ||
-                pickRandomValidGame(gamePool, true) ||
-                pickRandom(gamePool);
+            // This assumes your game page uses ?id= style; adjust if needed
+            const targetUrl = `games/game.html?id=${encodeURIComponent(gameId)}`;
+            window.location.href = targetUrl;
+        } catch (err) {
+            window.location.href = fallbackUrl;
+        }
+    }
 
-            // ------------------------
-            // Populate Featured Game
-            // ------------------------
-            featuredGameTitle.textContent = featuredGame.title;
+    if (randomBtn) {
+        randomBtn.addEventListener("click", chooseRandomGame);
+    }
 
-            if (featuredGameBlurb) {
-                featuredGameBlurb.textContent = buildGameBlurb(featuredGame);
+    /* -----------------------------------------
+       YEAR IN FOOTER
+    ----------------------------------------- */
+
+    const yearSpan = document.querySelector("[data-ccg-year]");
+    if (yearSpan) {
+        yearSpan.textContent = new Date().getFullYear();
+    }
+
+    /* -----------------------------------------
+       SIMPLE STARFIELD
+       (Keeps it lightweight; your loader can
+        still have its own intro starfield.)
+    ----------------------------------------- */
+
+    const canvas = document.getElementById("home-starfield");
+    if (canvas && canvas.getContext) {
+        const ctx = canvas.getContext("2d");
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        let stars = [];
+
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+
+        function createStars(count) {
+            stars = [];
+            for (let i = 0; i < count; i++) {
+                stars.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    z: Math.random() * 0.8 + 0.2,
+                    speed: Math.random() * 0.2 + 0.05
+                });
             }
+        }
 
-            if (featuredGameMeta) {
-                featuredGameMeta.textContent = buildMetaLine(featuredGame);
-            }
-
-            if (featuredGameLink) {
-                featuredGameLink.href = buildGameUrl(featuredGame.id);
-            }
-
-            if (featuredGameThumb) {
-                const thumbSrc = normaliseThumb(featuredGame.thumbnail);
-                if (thumbSrc) {
-                    featuredGameThumb.src = thumbSrc;
-                    featuredGameThumb.alt = featuredGame.title + ' thumbnail';
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+            for (const star of stars) {
+                star.y += star.speed * (star.z * 2);
+                if (star.y > height) {
+                    star.y = 0;
+                    star.x = Math.random() * width;
                 }
-            }
 
-            // ------------------------
-            // Populate Featured Video
-            // ------------------------
-            const videoId = (videoGame && isValidVideo(videoGame))
-                ? String(videoGame.videoid).trim()
-                : FEATURED_CONFIG.fallbackYouTubeId;
-
-            featuredVideoFrame.src = 'https://www.youtube.com/embed/' + encodeURIComponent(videoId);
-
-            if (featuredVideoTitle && videoGame) {
-                featuredVideoTitle.textContent = `${videoGame.title} — Featured Video`;
+                const size = star.z * 1.4;
+                const alpha = 0.4 + star.z * 0.6;
+                ctx.fillStyle = `rgba(180, 230, 255, ${alpha})`;
+                ctx.fillRect(star.x, star.y, size, size);
             }
-
-            if (featuredVideoBlurb && videoGame) {
-                if (isValidVideo(videoGame)) {
-                    featuredVideoBlurb.textContent =
-                        'Captured straight from the Cheeky Commodore Gamer channel — the perfect showcase for this classic.';
-                } else {
-                    featuredVideoBlurb.textContent =
-                        'No dedicated capture yet, so here’s a highlight from the channel to keep the CRT warm.';
-                }
-            }
-        } catch (error) {
-            console.error('[CCG HOME] Error hydrating featured content:', error);
-
-            // Soft fallback: keep layout intact but with safe text
-            if (featuredGameTitle) {
-                featuredGameTitle.textContent = 'Featured game coming soon';
-            }
-            if (featuredGameBlurb) {
-                featuredGameBlurb.textContent =
-                    'We’re lining up more Commodore 64 and Amiga gems for this featured slot.';
-            }
-            if (featuredGameMeta) {
-                featuredGameMeta.textContent = 'Cheeky Commodore Gamer database';
-            }
-            if (featuredVideoTitle) {
-                featuredVideoTitle.textContent = 'Featured video coming soon';
-            }
-            if (featuredVideoBlurb) {
-                featuredVideoBlurb.textContent =
-                    'The featured video will appear here once games.json is available and wired to the channel.';
-            }
+            requestAnimationFrame(draw);
         }
-    }
 
-    // -------------------------------
-    // SELECTION HELPERS
-    // -------------------------------
+        resize();
+        createStars(160);
+        draw();
 
-    function pickLockedGame(games, slug, requireFullMedia) {
-        if (!slug) return null;
-        const target = String(slug).toLowerCase();
-
-        const match = games.find(g => {
-            if (!g) return false;
-            const gSlug = (g.slug || '').toString().toLowerCase();
-            if (!gSlug || gSlug !== target) return false;
-            if (!requireFullMedia) return true;
-            return isValidThumbnail(g) && isValidVideo(g);
+        window.addEventListener("resize", () => {
+            resize();
+            createStars(160);
         });
-
-        return match || null;
-    }
-
-    function pickRandomValidGame(games, requireVideo) {
-        if (!Array.isArray(games)) return null;
-
-        const candidates = games.filter(g => {
-            if (!isValidThumbnail(g)) return false;
-            if (requireVideo && !isValidVideo(g)) return false;
-            return true;
-        });
-
-        return pickRandom(candidates);
-    }
-
-    function pickRandom(list) {
-        if (!Array.isArray(list) || list.length === 0) return null;
-        const index = Math.floor(Math.random() * list.length);
-        return list[index];
-    }
-
-    // -------------------------------
-    // VALIDATION HELPERS
-    // -------------------------------
-
-    function isValidThumbnail(game) {
-        if (!game || typeof game.thumbnail !== 'string') return false;
-        const t = game.thumbnail.trim();
-        if (!t) return false;
-        return /\.(png|jpe?g|webp|gif)$/i.test(t);
-    }
-
-    function isValidVideo(game) {
-        if (!game) return false;
-        if (typeof game.videoid !== 'string') return false;
-        return game.videoid.trim().length > 0;
-    }
-
-    // -------------------------------
-    // TEXT HELPERS
-    // -------------------------------
-
-    function buildGameBlurb(game) {
-        const parts = [];
-
-        if (Array.isArray(game.genres) && game.genres.length) {
-            parts.push(game.genres[0]);
-        }
-
-        if (game.developer) {
-            parts.push('by ' + game.developer);
-        }
-
-        if (game.year) {
-            parts.push(String(game.year));
-        }
-
-        if (!parts.length) {
-            return 'Retro classics queued up from the Cheeky Commodore Gamer vault.';
-        }
-
-        return parts.join(' • ');
-    }
-
-    function buildMetaLine(game) {
-        const bits = [];
-
-        if (game.system) {
-            bits.push(String(game.system));
-        }
-        if (game.year) {
-            bits.push(String(game.year));
-        }
-        if (Array.isArray(game.genres) && game.genres.length) {
-            const genreLine = game.genres.slice(0, 2).join(' • ');
-            bits.push(genreLine);
-        }
-
-        return bits.length
-            ? bits.join('  ·  ')
-            : 'From the Cheeky Commodore Gamer collection';
     }
 })();
