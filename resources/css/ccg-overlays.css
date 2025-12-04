@@ -1,28 +1,43 @@
 /* ============================================================
-   CCG-OVERLAYS.CSS — Starfield + Grid Layers
+   CCG-OVERLAYS.CSS — STARFIELD + GRID BACKGROUND LAYERS
+   Omega Build — Background-only, no structural impact
    ============================================================ */
 
-/* STARFIELD */
+/* ------------------------------------------------------------
+   STARFIELD LAYER
+   (Behind everything except the grid + CRT overlay)
+------------------------------------------------------------ */
+
 .ccg-bg-starfield {
+    position: absolute;
+    inset: 0;
     background: url("../images/starfield.png") repeat;
     opacity: 0.35;
-    animation: starDrift 80s linear infinite;
+    animation: ccgStarDrift 80s linear infinite;
+    z-index: 1;
 }
 
-@keyframes starDrift {
+@keyframes ccgStarDrift {
     from { background-position: 0 0; }
-    to { background-position: -2000px 2000px; }
+    to   { background-position: -2000px 2000px; }
 }
 
-/* GRID LAYER */
+/* ------------------------------------------------------------
+   GRID LAYER
+   (Above starfield, below CRT overlay)
+------------------------------------------------------------ */
+
 .ccg-bg-grid {
+    position: absolute;
+    inset: 0;
     background: url("../images/bg-grid.png") repeat;
     opacity: 0.12;
     mix-blend-mode: screen;
-    animation: gridScroll 120s linear infinite;
+    animation: ccgGridScroll 120s linear infinite;
+    z-index: 2;
 }
 
-@keyframes gridScroll {
+@keyframes ccgGridScroll {
     from { background-position: 0 0; }
-    to { background-position: 0 2000px; }
+    to   { background-position: 0 2000px; }
 }
