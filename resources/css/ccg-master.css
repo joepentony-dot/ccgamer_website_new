@@ -1,666 +1,310 @@
 /* ============================================================
-   CHEEKY COMMODORE GAMER — MASTER CSS
-   GLOBAL SYSTEM: HEADER • NAV • CARDS • GRIDS • BASE LAYOUT
-   EPIC NEON EDITION 😇🕹️👌
+   CCG-MASTER.CSS — GLOBAL FOUNDATION LAYER
+   Restored + Clean + Omega-Compatible
+   Structural rules only — NO layout collisions
    ============================================================ */
 
-/* ------------------------------------------------------------
-   RESET & BASE
------------------------------------------------------------- */
+/* -----------------------------------------
+   ROOT VARIABLES
+----------------------------------------- */
+
+:root {
+    --c64-blue: #3ab0ff;
+    --c64-blue-dark: #0e6ab8;
+
+    --amiga-pink: #ff4fd8;
+    --amiga-purple: #cd3aff;
+
+    --text-light: #ffffff;
+    --text-dim: rgba(255,255,255,0.7);
+    --border-light: rgba(255,255,255,0.12);
+    --panel-bg: rgba(0,0,0,0.35);
+
+    --transition-fast: 0.15s ease;
+    --transition-med: 0.3s ease;
+
+    font-family: 'Inter', sans-serif;
+}
+
+/* -----------------------------------------
+   GLOBAL RESET + NORMALISE
+----------------------------------------- */
 
 *,
 *::before,
 *::after {
-    margin: 0;
-    padding: 0;
     box-sizing: border-box;
 }
 
-:root {
-    --ccg-bg-main: #01040d;
-    --ccg-bg-panel: #020618;
-    --ccg-bg-panel-soft: #020313;
-    --ccg-text-main: #daf4ff;
-    --ccg-text-soft: #a9d7ff;
-    --ccg-accent-default: #6ffcff;
-    --ccg-radius-lg: 26px;
-    --ccg-radius-md: 18px;
-    --ccg-radius-sm: 10px;
-    --ccg-shadow-strong: 0 0 40px rgba(0, 0, 0, 0.95);
-    --ccg-shadow-neon-cyan: 0 0 26px rgba(0, 255, 255, 0.75);
-    --ccg-shadow-neon-pink: 0 0 26px rgba(255, 0, 200, 0.75);
-    --ccg-header-height-desktop: 96px;
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    color: var(--text-light);
+    background: #000;
 }
 
-body.ccg-body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: radial-gradient(circle at top, #02162b 0%, var(--ccg-bg-main) 52%, #000108 100%);
-    color: var(--ccg-text-main);
-    overflow-x: hidden;
-    min-height: 100vh;
+img {
+    max-width: 100%;
+    display: block;
 }
 
-/* Main page shell used across site */
-.ccg-page-shell {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-/* General main wrapper (individual pages can override) */
-.ccg-main {
-    padding-top: 40px;
-    padding-bottom: 80px;
-}
-
-/* Links */
 a {
-    color: inherit;
+    color: var(--c64-blue);
     text-decoration: none;
+    transition: color var(--transition-fast);
 }
 
 a:hover {
-    text-decoration: none;
+    color: var(--amiga-pink);
 }
 
-/* Utility */
-.ccg-text-soft {
-    color: var(--ccg-text-soft);
-}
+/* -----------------------------------------
+   GLOBAL PAGE CONTAINERS
+----------------------------------------- */
 
-
-/* ============================================================
-   EPIC AUTO-HIDE HEADER (SLIM H2 CENTER EDITION)
-   Used on ALL main pages (home, games, quiz, etc.)
-   ============================================================ */
-
-.ccg-header {
-    position: sticky;
-    top: 0;
-    z-index: 9999;
+.ccg-page {
     width: 100%;
-    background:
-        radial-gradient(circle at top, #051e37, #010515 60%, #00040c 100%);
-    border-bottom: 1px solid rgba(0, 255, 255, 0.22);
-    box-shadow:
-        0 0 32px rgba(0, 255, 255, 0.25),
-        0 0 120px rgba(0, 0, 0, 1);
-    backdrop-filter: blur(8px);
-    transform: translateY(0);
-    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
-}
-
-/* Auto-hide driven by JS (ccg-header-auto.js) */
-.auto-header--hidden {
-    transform: translateY(-100%);
-    box-shadow: none;
-}
-
-/* Inner wrapper to keep everything aligned */
-.ccg-header-inner {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 14px 26px 16px;
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: 18px;
-}
-
-/* BRAND AREA (LEFT) */
-.ccg-header-brand {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
-}
-
-.ccg-logo {
-    width: 76px;
-    height: auto;
-    filter:
-        drop-shadow(0 0 14px #00eaff)
-        drop-shadow(0 0 26px #0088ff);
-}
-
-.ccg-brand-title {
-    font-family: "Orbitron", system-ui, sans-serif;
-    font-size: 1.25rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: #8bf0ff;
-    text-shadow:
-        0 0 18px #00e7ff,
-        0 0 40px #004cff;
-}
-
-.ccg-brand-subtitle {
-    font-size: 0.78rem;
-    letter-spacing: 0.18em;
-    opacity: 0.78;
-    color: #b7e5ff;
-}
-
-/* NAV BAR (CENTER) */
-.ccg-nav {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    gap: 26px;
-    padding: 8px 22px;
-    border-radius: 999px;
-    margin: 0 auto;
-
-    background: linear-gradient(
-        135deg,
-        rgba(0, 60, 120, 0.65),
-        rgba(0, 22, 56, 0.85)
-    );
-    box-shadow:
-        0 0 20px rgba(0, 255, 255, 0.45),
-        inset 0 0 30px rgba(0, 140, 255, 0.3);
-    border: 1px solid rgba(0, 255, 255, 0.35);
-}
-
-.nav-item {
-    font-family: "Press Start 2P", monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: #c7f4ff;
-    padding: 4px 0;
+    padding: 1.5rem;
     position: relative;
-    transition: color 0.18s ease, text-shadow 0.18s ease, transform 0.18s ease;
+    z-index: 2;
 }
 
-.nav-item:hover {
-    color: #ffffff;
-    text-shadow:
-        0 0 14px #00f2ff,
-        0 0 28px #0096ff;
-    transform: translateY(-1px);
+.ccg-main {
+    margin-top: 2rem;
 }
 
-.nav-active {
-    color: #ffffff;
-    text-shadow:
-        0 0 16px #ff00ff,
-        0 0 40px #b300ff;
+/* -----------------------------------------
+   GLOBAL BACKGROUND LAYERS
+   (Starfield, Grid, CRT overlay)
+----------------------------------------- */
+
+.ccg-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
 }
 
-/* RIGHT SIDE: MODE TOGGLE + HEADER SOCIAL ICONS */
-.ccg-header-right {
-    display: inline-flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 10px;
+.ccg-bg-starfield,
+.ccg-bg-grid,
+.ccg-bg-crt-overlay {
+    position: absolute;
+    inset: 0;
 }
 
-/* MODE TOGGLE BUTTON */
-#ccg-mode-toggle {
-    padding: 8px 18px;
-    border-radius: 999px;
-    border: none;
-    font-family: "Orbitron", system-ui;
-    font-size: 0.78rem;
-    cursor: pointer;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: #e8faff;
+/* -----------------------------------------
+   GLOBAL PANELS (used across genres, game pages, quiz)
+----------------------------------------- */
 
-    background: radial-gradient(circle at top, #0098ff, #004cff);
-    box-shadow:
-        0 0 14px #00d4ff,
-        0 0 32px #006cff;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
-}
-
-#ccg-mode-toggle:hover {
-    transform: translateY(-1px) scale(1.05);
-    filter: brightness(1.08);
-}
-
-/* AMIGA MODE STYLE (body[data-mode="amiga"]) */
-body[data-mode="amiga"] #ccg-mode-toggle {
-    background: radial-gradient(circle at top, #ff8df7, #c400ff);
-    box-shadow: 0 0 16px rgba(255, 140, 255, 0.95);
-}
-
-/* ZX MODE STYLE */
-body[data-mode="zx"] #ccg-mode-toggle {
-    background: linear-gradient(135deg, #00ff00, #ffff00, #ff0000, #0000ff);
-    box-shadow: 0 0 18px rgba(255, 255, 255, 0.9);
-}
-
-
-/* ============================================================
-   HEADER SOCIAL ICONS — NEON SVG EDITION
-============================================================ */
-
-.ccg-header-social-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 26px;
-    height: 26px;
-    padding: 6px;
-    margin-left: 10px;
-
+.ccg-panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-light);
+    padding: 1.5rem;
     border-radius: 12px;
-    background: rgba(0, 25, 45, 0.6);
-    backdrop-filter: blur(6px);
-
-    transition: transform 0.2s ease,
-                filter 0.25s ease,
-                box-shadow 0.25s ease,
-                background 0.25s ease;
 }
 
-.ccg-header-social-icon img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    filter: drop-shadow(0 0 6px rgba(0, 255, 255, 0.55));
-    transition: filter 0.25s ease;
+.ccg-section {
+    margin-bottom: 3rem;
 }
 
-/* Hover (C64 / default) */
-.ccg-header-social-icon:hover {
-    transform: translateY(-2px) scale(1.11);
-    box-shadow:
-        0 0 10px rgba(0, 255, 255, 0.65),
-        0 0 24px rgba(0, 100, 255, 0.5);
+/* Section titles */
+.ccg-section-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.35rem;
 }
 
-.ccg-header-social-icon:hover img {
-    filter: drop-shadow(0 0 12px rgba(0, 255, 255, 0.9));
+.ccg-section-subtitle {
+    opacity: 0.7;
+    margin-bottom: 1.5rem;
 }
 
-/* Amiga mode variant */
-body[data-mode="amiga"] .ccg-header-social-icon {
-    background: rgba(45, 0, 50, 0.6);
-    box-shadow:
-        0 0 10px rgba(255, 140, 255, 0.4),
-        inset 0 0 18px rgba(255, 120, 220, 0.25);
-}
-
-body[data-mode="amiga"] .ccg-header-social-icon img {
-    filter: drop-shadow(0 0 6px rgba(255, 160, 255, 0.7));
-}
-
-body[data-mode="amiga"] .ccg-header-social-icon:hover {
-    box-shadow:
-        0 0 16px rgba(255, 180, 255, 0.95),
-        0 0 30px rgba(255, 100, 240, 0.7);
-}
-
-body[data-mode="amiga"] .ccg-header-social-icon:hover img {
-    filter: drop-shadow(0 0 14px rgba(255, 210, 255, 1));
-}
-
-/* ZX mode fun variant */
-body[data-mode="zx"] .ccg-header-social-icon {
-    background: #000000;
-    box-shadow:
-        0 0 14px rgba(255, 255, 255, 0.7),
-        0 0 26px rgba(0, 0, 0, 1);
-}
-
-body[data-mode="zx"] .ccg-header-social-icon img {
-    filter: drop-shadow(0 0 8px rgba(255, 255, 0, 0.9));
-}
-
-
-/* ============================================================
-   GLOBAL CARDS / THUMBNAILS / GRIDS
-   Shared by home page, genres, and game lists
-============================================================ */
-
-/* CARD GRID (for game lists, genre pages, etc.) */
-.ccg-card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-    gap: 24px;
-}
-
-/* GENERIC CARD SHELL (used across site) */
-.ccg-card {
-    border-radius: var(--ccg-radius-lg);
-    padding: 22px 20px 20px;
-    background:
-        radial-gradient(circle at top left, rgba(0, 255, 255, 0.2), transparent 55%),
-        linear-gradient(160deg, #02071a 0%, #010412 40%, #02071e 100%);
-    box-shadow:
-        0 0 22px rgba(0, 255, 255, 0.28),
-        0 0 80px rgba(0, 0, 0, 1);
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-}
-
-.ccg-card:hover {
-    transform: translateY(-4px);
-    box-shadow:
-        0 0 24px rgba(255, 0, 200, 0.7),
-        0 0 95px rgba(0, 0, 0, 1);
-}
-
-/* CARD HEADER */
-.ccg-card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-}
-
-/* CARD TITLE */
-.ccg-card-title {
-    font-family: "Press Start 2P", monospace;
-    font-size: 0.95rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: #e8fbff;
-}
-
-/* CARD TAGS */
-.ccg-tag {
-    font-family: "Press Start 2P", monospace;
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    padding: 3px 11px;
-    border-radius: 999px;
-    border: 1px solid rgba(0, 255, 255, 0.8);
-    color: #aef4ff;
-}
-
-.ccg-tag-video {
-    border-color: rgba(255, 90, 170, 0.95);
-    color: #ffcfff;
-}
-
-.ccg-tag-manuals {
-    border-color: rgba(0, 255, 255, 0.9);
-}
-
-.ccg-tag-quiz {
-    border-color: rgba(255, 180, 0, 0.9);
-    color: #ffe4aa;
-}
-
-.ccg-tag-guide {
-    border-color: rgba(180, 255, 180, 0.9);
-    color: #e2ffe2;
-}
-
-/* CARD BODY LAYOUT UTILITY */
-.ccg-card-body {
-    display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.2fr);
-    gap: 18px;
-}
-
-/* Text content inside cards */
-.ccg-card-text {
-    font-size: 0.95rem;
-    color: var(--ccg-text-soft);
-    line-height: 1.7;
-}
-
-/* Card info block */
-.ccg-card-info {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-/* Card actions footer */
-.ccg-card-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 6px;
-}
-
-/* GAME CARDS (GENRE PAGES) */
-.ccg-game-card {
-    border-radius: 22px;
-    padding: 12px;
-    background:
-        radial-gradient(circle at top left, rgba(0, 255, 255, 0.18), transparent 55%),
-        linear-gradient(160deg, #02071a 0%, #010412 40%, #02071e 100%);
-    box-shadow:
-        0 0 18px rgba(0, 255, 255, 0.32),
-        0 0 60px rgba(0, 0, 0, 0.95);
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
-}
-
-.ccg-game-card:hover {
-    transform: translateY(-3px);
-    box-shadow:
-        0 0 26px rgba(255, 0, 200, 0.85),
-        0 0 95px rgba(0, 0, 0, 1);
-}
-
-/* THUMBNAIL FRAMES */
-.ccg-thumb-frame {
-    border-radius: 18px;
-    overflow: hidden;
-    background: #02101e;
-    box-shadow:
-        0 0 16px rgba(0, 255, 255, 0.6),
-        0 0 60px rgba(0, 0, 0, 1);
-}
-
-.ccg-thumb-frame-big {
-    aspect-ratio: 4 / 3;
-}
-
-.ccg-thumb-frame-strip {
-    aspect-ratio: 4 / 3;
-}
-
-/* THUMBNAIL IMAGE */
-.ccg-thumb-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-/* GAME TITLE TEXT */
-.ccg-game-title,
-.ccg-card-game-title {
-    margin-top: 12px;
-    font-family: "Press Start 2P", monospace;
-    font-size: 0.82rem;
-    letter-spacing: 0.1em;
-    line-height: 1.4;
-    color: #defcff;
-}
-
-
-/* ============================================================
-   BUTTONS — GLOBAL EPIC BUTTON SYSTEM
-============================================================ */
+/* -----------------------------------------
+   BUTTONS — Base Classes
+----------------------------------------- */
 
 .ccg-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 9px 20px;
-    border-radius: 999px;
-    font-family: "Press Start 2P", monospace;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
+    display: inline-block;
+    padding: 0.75rem 1.25rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
     cursor: pointer;
     border: none;
-    outline: none;
-    text-decoration: none;
-    transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+    transition: background var(--transition-med),
+                color var(--transition-fast),
+                opacity var(--transition-fast),
+                transform var(--transition-fast);
 }
 
+/* Primary (C64 blue) */
 .ccg-btn-primary {
-    background: radial-gradient(circle at top, #00d8ff, #0092ff);
-    color: #00121f;
-    box-shadow:
-        0 0 14px rgba(0, 255, 255, 0.9),
-        0 0 42px rgba(0, 0, 0, 1);
+    background: var(--c64-blue);
+    color: #000;
 }
 
 .ccg-btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow:
-        0 0 20px rgba(0, 255, 255, 1),
-        0 0 60px rgba(0, 0, 0, 1);
+    background: var(--c64-blue-dark);
 }
 
+/* Secondary (dim grey / dark panel) */
 .ccg-btn-secondary {
-    background: radial-gradient(circle at top, #ff3bbb, #ff0081);
-    color: #ffffff;
-    box-shadow:
-        0 0 12px rgba(255, 0, 150, 0.9),
-        0 0 36px rgba(0, 0, 0, 1);
+    background: rgba(255,255,255,0.12);
+    color: #fff;
 }
 
 .ccg-btn-secondary:hover {
-    transform: translateY(-2px);
-    box-shadow:
-        0 0 20px rgba(255, 0, 150, 1),
-        0 0 60px rgba(0, 0, 0, 1);
+    background: rgba(255,255,255,0.2);
 }
 
+/* Ghost (border only) */
 .ccg-btn-ghost {
-    background: rgba(0, 15, 40, 0.5);
-    border: 1px solid rgba(0, 200, 255, 0.7);
-    color: #aef5ff;
-    box-shadow:
-        0 0 8px rgba(0, 255, 255, 0.5),
-        0 0 26px rgba(0, 0, 0, 1);
+    background: transparent;
+    border: 1px solid var(--border-light);
+    color: #fff;
 }
 
 .ccg-btn-ghost:hover {
-    background: rgba(0, 35, 70, 0.9);
+    border-color: var(--text-light);
 }
 
-.ccg-btn-sm {
-    padding: 7px 16px;
-    font-size: 0.68rem;
+/* YouTube special */
+.ccg-btn--youtube {
+    background: #ff0000;
+    color: #fff;
+}
+.ccg-btn--youtube:hover {
+    opacity: 0.85;
 }
 
+/* -----------------------------------------
+   HEADERS (Universal minimal structure)
+----------------------------------------- */
 
-/* ============================================================
-   FOOTER
-============================================================ */
-
-.ccg-footer {
-    margin-top: auto;
-    padding: 26px 20px;
-    background: radial-gradient(circle at top, #011325, #00040a 60%, #000000 100%);
-    border-top: 1px solid rgba(0, 255, 255, 0.2);
-    box-shadow: 0 -10px 50px rgba(0, 0, 0, 1);
+.ccg-header {
+    text-align: center;
+    margin-bottom: 2rem;
 }
 
-.ccg-footer-inner {
-    max-width: 1240px;
-    margin: 0 auto;
+/* Updated simple social row (used across pages except home) */
+.ccg-header-socials {
+    margin-top: 1rem;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
+    gap: 1rem;
+    justify-content: center;
     flex-wrap: wrap;
 }
 
-.ccg-footer-text {
-    font-size: 0.85rem;
-    color: #9edcff;
+.ccg-header-socials a img {
+    width: 28px;
+    opacity: 0.85;
+    transition: opacity var(--transition-fast);
 }
 
-.ccg-footer-links {
-    display: flex;
-    gap: 10px;
-    font-size: 0.85rem;
-    color: #b7e7ff;
+.ccg-header-socials a:hover img {
+    opacity: 1;
 }
 
-.ccg-footer-links a:hover {
-    text-decoration: underline;
+/* -----------------------------------------
+   FOOTER
+----------------------------------------- */
+
+.ccg-footer {
+    margin-top: 4rem;
+    padding: 2rem 1rem;
+    text-align: center;
+    opacity: 0.75;
+    font-size: 0.9rem;
 }
 
-
-/* ============================================================
-   RESPONSIVE TUNING
-============================================================ */
-
-@media (max-width: 1100px) {
-    .ccg-header-inner {
-        grid-template-columns: 1fr;
-        gap: 10px;
-        text-align: center;
-    }
-
-    .ccg-header-brand {
-        align-items: center;
-    }
-
-    .ccg-header-right {
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-
-    .ccg-nav {
-        margin-top: 4px;
-    }
+.ccg-footer-text--small {
+    opacity: 0.6;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
 }
 
-@media (max-width: 768px) {
-    .ccg-header-inner {
-        padding: 10px 14px 12px;
-    }
+/* -----------------------------------------
+   GRID HELPERS (used across genres / collections)
+----------------------------------------- */
 
-    .ccg-logo {
-        width: 66px;
-    }
-
-    .ccg-brand-title {
-        font-size: 1.05rem;
-        letter-spacing: 0.12em;
-    }
-
-    .ccg-nav {
-        gap: 16px;
-        padding: 6px 14px;
-    }
-
-    .nav-item {
-        font-size: 0.6rem;
-        letter-spacing: 0.09em;
-    }
-
-    .ccg-header-social-icon {
-        width: 22px;
-        height: 22px;
-        padding: 4px;
-        margin-left: 6px;
-    }
+.ccg-grid {
+    display: grid;
+    gap: 1.5rem;
 }
 
-@media (max-width: 520px) {
-    .ccg-header-inner {
-        gap: 8px;
-    }
+.ccg-grid-2 {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
 
-    .ccg-nav {
-        flex-wrap: wrap;
-        row-gap: 4px;
-    }
+.ccg-grid-3 {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
 
-    .ccg-footer-inner {
-        flex-direction: column;
-        align-items: flex-start;
+/* -----------------------------------------
+   TABLES (Complete Index + some admin tools)
+----------------------------------------- */
+
+.ccg-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--panel-bg);
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 0.9rem;
+}
+
+.ccg-table th,
+.ccg-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.ccg-table th {
+    font-weight: 700;
+    background: rgba(255,255,255,0.05);
+    text-align: left;
+}
+
+.ccg-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* -----------------------------------------
+   FORMS (Contact page)
+----------------------------------------- */
+
+.ccg-form input,
+.ccg-form textarea,
+.ccg-form select {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid var(--border-light);
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+    font-size: 1rem;
+}
+
+.ccg-form label {
+    margin-bottom: 0.4rem;
+    display: block;
+}
+
+.ccg-form textarea {
+    height: 140px;
+}
+
+/* -----------------------------------------
+   RESPONSIVENESS
+----------------------------------------- */
+
+@media (max-width: 760px) {
+    .ccg-page {
+        padding: 1rem;
+    }
+    .ccg-section-title {
+        font-size: 1.6rem;
     }
 }
