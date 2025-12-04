@@ -5,60 +5,127 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Contact | Cheeky Commodore Gamer</title>
-    <meta name="description" content="Contact Cheeky Commodore Gamer for questions, ideas or retro requests.">
+    <meta name="description" content="Contact Cheeky Commodore Gamer with suggestions, corrections, ideas or retro requests.">
 
-    <link rel="icon" href="../favicon.ico">
+    <link rel="icon" href="favicon.ico">
 
-    <script src="../js/ccg-mode-engine.js" defer></script>
-    <script src="../js/ccj-global.js" defer></script>
+    <!-- GLOBAL CSS -->
+    <link rel="stylesheet" href="resources/css/ccg-master.css">
+    <link rel="stylesheet" href="resources/css/ccg-mode.css">
+    <link rel="stylesheet" href="resources/css/ccg-effects.css">
+    <link rel="stylesheet" href="resources/css/ccg-anim.css">
+    <link rel="stylesheet" href="resources/css/ccg-overlays.css">
+    <link rel="stylesheet" href="resources/css/ccg-modal.css">
+
+    <!-- PAGE CSS (optional, if you want specific contact styling later) -->
+    <link rel="stylesheet" href="resources/css/contact.css">
 </head>
 
-<body data-ccg-mode="c64">
+<body class="ccg-body" data-ccg-mode="c64">
 
-<header>
-    <div>
-        <div>
-            <a href="../home.html">
-                <img src="../resources/ccgamer_logo.png" alt="Cheeky Commodore Gamer logo">
-            </a>
-        </div>
-
-        <nav>
-            <a href="../home.html">Home</a>
-            <a href="../games/index.html">Games</a>
-            <a href="../games/genres/index.html">Genres</a>
-            <a href="../games/collections/index.html">Collections</a>
-            <a href="../quiz/quiz.html">Quiz</a>
-            <a href="../about.html">About</a>
-            <a href="../contact.html">Contact</a>
-            <a href="../admin/admin.html">Admin</a>
-        </nav>
-
-        <button data-ccg-mode-toggle="true">Toggle Mode</button>
-
-        <div>
-            <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank">YouTube</a>
-            <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank">Patreon</a>
-            <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank">PayPal</a>
-            <a href="https://www.facebook.com/cheekycommodoregamer" target="_blank">Facebook</a>
-            <a href="https://twitter.com/CheekyC64Gamer" target="_blank">X</a>
-            <a href="https://discord.gg/83Xw9ktAn4" target="_blank">Discord</a>
-        </div>
+    <!-- =========================================================
+         GLOBAL BACKGROUND LAYERS (STARFIELD / GRID / CRT)
+    ========================================================= -->
+    <div class="ccg-bg">
+        <div class="ccg-bg-starfield"></div>
+        <div class="ccg-bg-grid"></div>
+        <div class="ccg-bg-crt-overlay"></div>
     </div>
-</header>
 
-<main>
-    <section>
-        <h1>Contact</h1>
-        <p>If you have suggestions, corrections, ideas or retro requests, please get in touch.</p>
-        <p>You can reach me through any social link above.</p>
-    </section>
-</main>
+    <div class="ccg-page ccg-page--contact">
 
-<footer>
-    <p>&copy; 2025 Cheeky Commodore Gamer.</p>
-    <p>Not affiliated with Commodore or Amiga.</p>
-</footer>
+        <!-- =====================================================
+             UNIVERSAL OMEGA SUBPAGE HEADER
+        ===================================================== -->
+        <header class="ccg-header">
+            <div class="ccg-header-inner">
+
+                <!-- Logo -->
+                <a href="home.html" class="ccg-logo-link">
+                    <img src="resources/ccgamer_logo.png"
+                         alt="Cheeky Commodore Gamer logo"
+                         class="ccg-logo-img">
+                </a>
+
+                <!-- Navigation -->
+                <nav class="ccg-nav">
+                    <a href="home.html" class="nav-item">Home</a>
+                    <a href="games/index.html" class="nav-item">Games</a>
+                    <a href="games/genres/index.html" class="nav-item">Genres</a>
+                    <a href="games/collections/index.html" class="nav-item">Collections</a>
+                    <a href="quiz/quiz.html" class="nav-item">Quiz</a>
+                    <a href="complete-index.html" class="nav-item">Index</a>
+                    <a href="about.html" class="nav-item">About</a>
+                    <a href="contact.html" class="nav-item nav-item--active">Contact</a>
+                </nav>
+
+                <!-- Mode Toggle -->
+                <button
+                    class="ccg-mode-toggle"
+                    type="button"
+                    aria-label="Toggle system mode"
+                    data-ccg-mode-toggle="true"
+                >
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--c64">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="resources/icons/c64.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">C64</span>
+                    </span>
+
+                    <span class="ccg-mode-toggle-knob"></span>
+
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--amiga">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="resources/icons/amiga.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">Amiga</span>
+                    </span>
+                </button>
+
+            </div>
+        </header>
+
+        <!-- =====================================================
+             MAIN CONTACT CONTENT
+        ===================================================== -->
+        <main class="ccg-main ccg-main--contact">
+
+            <section class="ccg-section ccg-section--contact">
+                <h1 class="ccg-section-title">Contact</h1>
+                <p class="ccg-section-subtitle">
+                    Got suggestions, corrections, ideas or retro requests?  
+                    I'm always happy to hear from fellow C64 & Amiga fans.
+                </p>
+
+                <div class="contact-body">
+                    <p>You can reach me through any of my social links above — YouTube, Patreon, Facebook, X/Twitter, PayPal or Discord.</p>
+                    <p>I read everything even if I cannot reply instantly.</p>
+                    <p>Thanks for supporting the retro madness! 😇🕹️👌</p>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- =====================================================
+             FOOTER
+        ===================================================== -->
+        <footer class="ccg-footer">
+            <div class="ccg-footer-inner">
+                <p class="ccg-footer-text">© 2025 Cheeky Commodore Gamer.</p>
+                <p class="ccg-footer-text ccg-footer-text--small">
+                    Not affiliated with Commodore or Amiga.
+                </p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- =========================================================
+         JS
+    ========================================================= -->
+    <script src="js/ccg-mode-engine.js" defer></script>
+    <script src="js/ccj-global.js" defer></script>
 
 </body>
 </html>
