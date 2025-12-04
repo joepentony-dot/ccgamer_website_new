@@ -1,51 +1,144 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ccg-page="genre">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Fighting Games | Cheeky Commodore Gamer</title>
-    <meta name="description" content="Punch, kick and clash swords in classic Fighting games for the Commodore 64 and Amiga. From one-on-one brawlers to side-scrolling beat-em-ups.">
+    <meta name="description" content="Punch, kick and clash swords in classic Fighting games for the Commodore 64 and Amiga. From one-on-one brawlers to side-scrolling beat-'em-ups.">
     <link rel="canonical" href="fighting-games.html">
 
+    <link rel="icon" href="../../favicon.ico">
+
+    <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="../../resources/css/ccg-master.css">
     <link rel="stylesheet" href="../../resources/css/ccg-mode.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-console.css">
     <link rel="stylesheet" href="../../resources/css/ccg-effects.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-anim.css">
     <link rel="stylesheet" href="../../resources/css/ccg-overlays.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-modal.css">
+
+    <!-- PAGE CSS -->
     <link rel="stylesheet" href="../../resources/css/genre.css">
 </head>
 
-<body data-genre="Fighting Games">
-<header>
-    <a href="../../home.html">
-        <img src="../../resources/ccgamer_logo.png" alt="Cheeky Commodore Gamer Logo" class="logo">
-    </a>
-</header>
+<body class="ccg-body" data-ccg-mode="c64" data-genre="Fighting Games">
 
-<nav class="breadcrumb">
-    <a href="../../home.html">Home Hub</a> ›
-    <a href="../../games/index.html">All Games</a> ›
-    <span>Fighting Games</span>
-</nav>
+    <!-- GLOBAL BACKGROUND -->
+    <div class="ccg-bg">
+        <div class="ccg-bg-starfield"></div>
+        <div class="ccg-bg-grid"></div>
+        <div class="ccg-bg-crt-overlay"></div>
+    </div>
 
-<main class="genre-page">
-    <h1>Fighting Games</h1>
+    <div class="ccg-page ccg-page--genre">
 
-    <p>Fighting games let you settle scores with joysticks rather than bruises. On the C64 and Amiga that means everything from one-on-one arena duels to scrolling street brawlers and martial arts tournaments.</p>
-    <p>This section showcases the best punch-ups, sword fights and arena clashes, whether you prefer disciplined moves or full button-mashing chaos.</p>
+        <!-- =====================================================
+             UNIVERSAL OMEGA HEADER
+        ===================================================== -->
+        <header class="ccg-header">
+            <div class="ccg-header-inner">
 
-    <h2>Total Games Available</h2>
-    <div id="genreGamesCount"></div>
+                <!-- Logo -->
+                <a href="../../home.html" class="ccg-logo-link">
+                    <img src="../../resources/ccgamer_logo.png"
+                         alt="Cheeky Commodore Gamer logo"
+                         class="ccg-logo-img">
+                </a>
 
-    <h2>Browse Fighting Games</h2>
-    <div id="genreGamesGrid"></div>
-</main>
+                <!-- Navigation -->
+                <nav class="ccg-nav">
+                    <a href="../../home.html" class="nav-item">Home</a>
+                    <a href="../../games/index.html" class="nav-item">Games</a>
+                    <a href="../../games/genres/index.html" class="nav-item">Genres</a>
+                    <a href="../../games/collections/index.html" class="nav-item">Collections</a>
+                    <a href="../../quiz/quiz.html" class="nav-item">Quiz</a>
+                    <a href="../../complete-index.html" class="nav-item">Index</a>
+                    <a href="../../about.html" class="nav-item">About</a>
+                    <a href="../../contact.html" class="nav-item">Contact</a>
+                </nav>
 
-<footer>
-    <p>© Cheeky Commodore Gamer.</p>
-</footer>
+                <!-- Mode Toggle -->
+                <button
+                    class="ccg-mode-toggle"
+                    type="button"
+                    aria-label="Toggle system mode"
+                    data-ccg-mode-toggle="true"
+                >
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--c64">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="../../resources/icons/c64.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">C64</span>
+                    </span>
 
-<script src="../../js/genre-loader.js" defer></script>
+                    <span class="ccg-mode-toggle-knob"></span>
+
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--amiga">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="../../resources/icons/amiga.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">Amiga</span>
+                    </span>
+                </button>
+
+            </div>
+        </header>
+
+        <!-- =====================================================
+             MAIN CONTENT
+        ===================================================== -->
+        <main class="ccg-main">
+
+            <section class="ccg-section">
+                <h1 class="ccg-section-title">Fighting Games</h1>
+
+                <p class="ccg-section-subtitle">
+                    Duels, brawls, tournaments and side-scrolling smackdowns.
+                </p>
+
+                <p>
+                    Fighting games on the C64 and Amiga span one-on-one martial arts contests,  
+                    weapon-based clashes, and full side-scrolling beat-’em-ups where you clean  
+                    up the streets one punch at a time.
+                </p>
+
+                <p>
+                    Whether you favour disciplined move-sets or total mayhem, this section brings  
+                    together every retro punch-up worth your joystick’s bruised corners.
+                </p>
+            </section>
+
+            <!-- Count -->
+            <section class="ccg-section">
+                <h2 class="ccg-section-title">Total Games Available</h2>
+                <div id="genreGamesCount"></div>
+            </section>
+
+            <!-- Grid -->
+            <section class="ccg-section">
+                <h2 class="ccg-section-title">Browse Fighting Games</h2>
+                <div id="genreGamesGrid"></div>
+            </section>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="ccg-footer">
+            <div class="ccg-footer-inner">
+                <p class="ccg-footer-text">&copy; 2025 Cheeky Commodore Gamer.</p>
+                <p class="ccg-footer-text ccg-footer-text--small">
+                    Not affiliated with Commodore or Amiga.
+                </p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- JS -->
+    <script src="../../js/ccg-mode-engine.js" defer></script>
+    <script src="../../js/ccj-global.js" defer></script>
+    <script src="../../js/genre-loader.js" defer></script>
+
 </body>
 </html>
