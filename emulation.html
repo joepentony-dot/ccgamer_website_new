@@ -25,7 +25,6 @@
 </head>
 
 <body class="ccg-body" data-ccg-mode="c64">
-
     <!-- GLOBAL BACKGROUND -->
     <div class="ccg-bg">
         <div class="ccg-bg-starfield"></div>
@@ -34,9 +33,8 @@
     </div>
 
     <div class="ccg-page ccg-page--emulation">
-
         <!-- =====================================================
-             UNIFIED OMEGA HEADER (GLOBAL STYLE)
+             UNIFIED OMEGA HEADER (GLOBAL STANDARD)
         ===================================================== -->
         <header class="ccg-header">
             <div class="ccg-header-inner">
@@ -46,6 +44,7 @@
                     <img src="resources/images/CCGAMER LOGO.png"
                          alt="Cheeky Commodore Gamer Logo"
                          class="ccg-brand__logo">
+
                     <div class="ccg-brand__text">
                         <span class="ccg-brand__kicker">Cheeky Commodore Gamer</span>
                         <span class="ccg-brand__title">
@@ -74,7 +73,7 @@
                 <div class="ccg-header-actions">
 
                     <!-- Mode Toggle -->
-                    <button class="ccg-mode-toggle" id="ccg-mode-toggle" data-ccg-mode-toggle="true">
+                    <button class="ccg-mode-toggle" id="ccg-mode-toggle" data-ccg-mode-toggle="true" type="button" aria-label="Toggle system mode">
                         <div class="ccg-mode-toggle__pill">
                             <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
                             <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">Amiga</span>
@@ -84,34 +83,35 @@
 
                     <!-- Social Icons -->
                     <div class="ccg-socials">
-                        <a href="https://youtube.com/@CheekyCommodoreGamer" target="_blank" class="ccg-socials__icon-btn">
+                        <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener" class="ccg-socials__icon-btn">
                             <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
                         </a>
-                        <a href="https://patreon.com/cheekycommodoregamer" target="_blank" class="ccg-socials__icon-btn">
+                        <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank" rel="noopener" class="ccg-socials__icon-btn">
                             <span class="ccg-socials__icon ccg-socials__icon--patreon"></span>
                         </a>
-                        <a href="https://paypal.me/cheekycommodoregamer" target="_blank" class="ccg-socials__icon-btn">
+                        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" rel="noopener" class="ccg-socials__icon-btn">
                             <span class="ccg-socials__icon ccg-socials__icon--paypal"></span>
                         </a>
-                        <a href="https://twitter.com/CCGamerRetro" target="_blank" class="ccg-socials__icon-btn">
+                        <a href="https://twitter.com/CheekyC64Gamer" target="_blank" rel="noopener" class="ccg-socials__icon-btn">
                             <span class="ccg-socials__icon ccg-socials__icon--x"></span>
+                        </a>
+                        <a href="https://www.facebook.com/cheekycommodoregamer" target="_blank" rel="noopener" class="ccg-socials__icon-btn">
+                            <span class="ccg-socials__icon ccg-socials__icon--fb"></span>
+                        </a>
+                        <a href="https://discord.gg/83Xw9ktAn4" target="_blank" rel="noopener" class="ccg-socials__icon-btn">
+                            <span class="ccg-socials__icon ccg-socials__icon--discord"></span>
                         </a>
                     </div>
 
                 </div>
             </div>
 
-            <!-- Neon underline strip -->
             <div class="ccg-header-neon-strip"></div>
         </header>
 
-        <!-- =====================================================
-             MAIN CONTENT
-        ===================================================== -->
+        <!-- MAIN CONTENT -->
         <main class="ccg-main ccg-main--emulation">
             <div class="ccg-info-shell">
-
-                <!-- HERO -->
                 <section class="ccg-info-hero" aria-labelledby="emu-title">
                     <div class="ccg-pill-row" aria-hidden="true">
                         <span class="ccg-pill">Plug &amp; play</span>
@@ -129,11 +129,9 @@
                     </div>
                 </section>
 
-                <!-- Recommended Emulators -->
                 <section class="ccg-info-panel" aria-label="Recommended emulators">
                     <h2 class="ccg-section-title">Recommended Emulators</h2>
                     <p class="ccg-section-subtitle">Stable, well-supported builds for quick setup.</p>
-
                     <div class="emu-grid">
                         <article class="emu-card">
                             <h3>VICE (C64)</h3>
@@ -208,60 +206,49 @@
                     </div>
                 </section>
 
-                <!-- Quick Start Steps -->
                 <section class="ccg-info-panel" aria-label="Quick start steps">
                     <h2 class="ccg-section-title">Quick Start</h2>
-                    <p class="ccg-section-subtitle">Follow these steps and you’ll be loading disk images in minutes.</p>
-
+                    <p class="ccg-section-subtitle">Follow these steps and you&rsquo;ll be loading disk images in minutes.</p>
                     <ol class="emu-step-list">
                         <li class="emu-step">
                             <strong>1) Download + install</strong>
-                            <p>Grab the latest build from the links above. On macOS, allow the app in Security & Privacy if blocked.</p>
+                            <p>Grab the latest build from the links above. On macOS, allow the app in Security &amp; Privacy if it was blocked.</p>
                         </li>
-
                         <li class="emu-step">
                             <strong>2) Point to ROMs</strong>
-                            <p>VICE ships with what it needs; Amiga emulators require Kickstart ROMs. Place them in a folder and set the path.</p>
+                            <p>VICE ships with what it needs; Amiga emulators require Kickstart ROMs. Place them in a clearly labelled folder and set the path in FS-UAE/WinUAE.</p>
                         </li>
-
                         <li class="emu-step">
                             <strong>3) Load a game</strong>
-                            <p>Use <code>.d64</code>, <code>.t64</code>, <code>.prg</code> for C64. Use <code>.adf</code> or WHDLoad packages for Amiga.</p>
+                            <p>Use <code>.d64</code>, <code>.t64</code> or <code>.prg</code> for C64. Use <code>.adf</code> or WHDLoad packages for Amiga. Then tap <em>Autostart</em> or <em>Insert Disk</em>.</p>
                         </li>
-
                         <li class="emu-step">
                             <strong>4) Tune speed + sound</strong>
-                            <p>Enable Cycle Exact mode for accuracy; reduce audio buffer if sound crackles.</p>
+                            <p>Enable <em>Exact Cycle Emulation</em> if games run too fast. Reduce latency or buffer size if audio crackles.</p>
                         </li>
                     </ol>
                 </section>
 
-                <!-- Troubleshooting -->
-                <section class="ccg-info-panel" aria-label="Troubleshooting">
+                <section class="ccg-info-panel" aria-label="Troubleshooting and extras">
                     <h2 class="ccg-section-title">Troubleshooting</h2>
-
                     <div class="emu-grid">
                         <article class="emu-card">
                             <h3>Controls not working?</h3>
-                            <p>Map your USB controller in emulator settings. Some controllers expose multiple input devices.</p>
+                            <p>Map your USB controller in the emulator preferences. Some devices present as two pads — bind the one that responds.</p>
                         </article>
-
                         <article class="emu-card">
-                            <h3>CRT look & feel</h3>
-                            <p>Toggle the site's C64/Amiga switch for instant theme changes. Emulators include scanline filters too.</p>
+                            <h3>CRT look &amp; feel</h3>
+                            <p>Toggle the site&rsquo;s C64/Amiga switch for instant theme changes. Most emulators include scanline and CRT filters too.</p>
                         </article>
-
                         <article class="emu-card">
                             <h3>Where to next?</h3>
-                            <p>Explore the <a href="games/genres/top-picks.html">Top Picks</a> or dive into themed <a href="games/collections/index.html">Collections</a>.</p>
+                            <p>Try the curated <a href="games/genres/top-picks.html">Top Picks</a>, or explore <a href="games/collections/index.html">Collections</a> for themed nights.</p>
                         </article>
                     </div>
                 </section>
-
             </div>
         </main>
 
-        <!-- FOOTER -->
         <footer class="ccg-footer">
             <div class="ccg-footer-inner">
                 <p class="ccg-footer-text">© 2025 Cheeky Commodore Gamer.</p>
