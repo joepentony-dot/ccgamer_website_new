@@ -1,37 +1,52 @@
 /* ============================================================
-   CCG-ANIM.CSS — Subtle Page Animations
+   CCG-ANIM.CSS — SUBTLE PAGE ANIMATIONS (OMEGA BUILD)
+   These animations NEVER alter layout; visual-only.
    ============================================================ */
 
-/* Fade In */
+/* ------------------------------------------------------------
+   FADE IN
+------------------------------------------------------------ */
+
 .ccg-fade-in {
     opacity: 0;
-    animation: fadeIn 0.8s ease forwards;
+    animation: ccgFadeIn 0.8s ease forwards;
 }
 
-@keyframes fadeIn {
-    to { opacity: 1; }
+@keyframes ccgFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
-/* Slide Up */
+/* ------------------------------------------------------------
+   SLIDE UP + FADE
+------------------------------------------------------------ */
+
 .ccg-slide-up {
     opacity: 0;
     transform: translateY(20px);
-    animation: slideUp 0.6s ease forwards;
+    animation: ccgSlideUp 0.6s ease forwards;
 }
 
-@keyframes slideUp {
+@keyframes ccgSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
-/* Pulse glow */
+/* ------------------------------------------------------------
+   PULSE GLOW (for neon accents, buttons, logo flicker)
+------------------------------------------------------------ */
+
 .ccg-pulse {
-    animation: pulse 2.2s ease-in-out infinite;
+    animation: ccgPulse 2.2s ease-in-out infinite;
 }
 
-@keyframes pulse {
+@keyframes ccgPulse {
     0%, 100% { opacity: 0.7; }
-    50% { opacity: 1; }
+    50%      { opacity: 1; }
 }
