@@ -1116,6 +1116,10 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+   /* ULTRA SAFE PATCH — genre grid anti-crop alignment */
+.ccg-genre-grid {
+    padding-bottom: 1px;
+}
     .ccg-collections-grid,
     .ccg-highlights-grid,
     .ccg-utilities-grid {
