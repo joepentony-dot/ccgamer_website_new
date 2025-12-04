@@ -1,6 +1,6 @@
 /* ============================================================
-   HOME-DYNAMIC.JS — OMEGA HOMEPAGE LOGIC
-   - Mode toggle integration (C64 / Amiga)
+   HOME-DYNAMIC.JS — OMEGA HOMEPAGE LOGIC (FIXED)
+   - Listens to global mode engine (no double toggle)
    - Hero label update
    - Random game launcher (graceful fallback)
    - Starfield background (lightweight)
@@ -10,52 +10,28 @@
     "use strict";
 
     const body = document.body;
-    const MODE_KEY = "ccg-mode";
 
     /* -----------------------------------------
-       MODE TOGGLE + HERO LABEL
+       HERO MODE LABEL — FOLLOW GLOBAL ENGINE
     ----------------------------------------- */
 
-    const modeToggleBtn = document.querySelector("[data-ccg-mode-toggle]");
     const heroModeLabel = document.querySelector("[data-ccg-hero-mode-label]");
 
-    function applyMode(mode) {
+    function updateHeroLabel(mode) {
         const safeMode = mode === "amiga" ? "amiga" : "c64";
-        body.setAttribute("data-ccg-mode", safeMode);
         if (heroModeLabel) {
             heroModeLabel.textContent = safeMode.toUpperCase();
         }
-        try {
-            localStorage.setItem(MODE_KEY, safeMode);
-        } catch (e) {
-            // ignore
-        }
     }
 
-    function toggleMode() {
-        const current = body.getAttribute("data-ccg-mode") || "c64";
-        const next = current === "c64" ? "amiga" : "c64";
-        applyMode(next);
-        // Optional: ping global mode engine if present
-        if (window.CCGModeEngine && typeof window.CCGModeEngine.syncFromBody === "function") {
-            window.CCGModeEngine.syncFromBody();
-        }
-    }
+    // 1) Initial read from body (set by ccg-mode-engine)
+    updateHeroLabel(body.dataset.ccgMode || "c64");
 
-    // Restore saved mode
-    (function initMode() {
-        let saved = null;
-        try {
-            saved = localStorage.getItem(MODE_KEY);
-        } catch (e) {
-            saved = null;
-        }
-        applyMode(saved || "c64");
-    })();
-
-    if (modeToggleBtn) {
-        modeToggleBtn.addEventListener("click", toggleMode);
-    }
+    // 2) React to future changes from ccg-mode-engine.js
+    document.addEventListener("ccg:modeChange", (evt) => {
+        if (!evt.detail || !evt.detail.mode) return;
+        updateHeroLabel(evt.detail.mode);
+    });
 
     /* -----------------------------------------
        RANDOM GAME BUTTON
@@ -65,7 +41,6 @@
     const GAMES_JSON_URL = "games/games.json";
 
     async function chooseRandomGame() {
-        // Safe fallback if anything goes wrong
         const fallbackUrl = "games/index.html#random";
 
         try {
@@ -84,14 +59,12 @@
             const index = Math.floor(Math.random() * games.length);
             const game = games[index];
 
-            // Try to infer an ID/slug field
             const gameId = game.id || game.slug || game.title;
             if (!gameId) {
                 window.location.href = fallbackUrl;
                 return;
             }
 
-            // This assumes your game page uses ?id= style; adjust if needed
             const targetUrl = `games/game.html?id=${encodeURIComponent(gameId)}`;
             window.location.href = targetUrl;
         } catch (err) {
@@ -114,8 +87,6 @@
 
     /* -----------------------------------------
        SIMPLE STARFIELD
-       (Keeps it lightweight; your loader can
-        still have its own intro starfield.)
     ----------------------------------------- */
 
     const canvas = document.getElementById("home-starfield");
