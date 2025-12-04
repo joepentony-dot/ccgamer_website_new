@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Complete Index | Cheeky Commodore Gamer</title>
-    <meta name="description" content="Complete spreadsheet-style index of all C64 and Amiga games on the site." />
+    <meta name="description"
+          content="Complete index hub for all C64 and Amiga games on the site — grouped by system, genre and special collections. Phase 4 will add a full dynamic table view.">
 
     <link rel="icon" href="favicon.ico" />
 
@@ -17,7 +18,7 @@
     <link rel="stylesheet" href="resources/css/ccg-overlays.css" />
     <link rel="stylesheet" href="resources/css/ccg-modal.css" />
 
-    <!-- PAGE CSS (Complete Index) -->
+    <!-- PAGE CSS -->
     <link rel="stylesheet" href="resources/css/index-table.css" />
 </head>
 
@@ -33,105 +34,203 @@
     <div class="ccg-page ccg-page--index">
 
         <!-- =====================================================
-             UNIVERSAL SUBPAGE HEADER — OMEGA VERSION
+             OMEGA UNIFIED HEADER (MATCHES GENRE / GAMES PAGES)
         ===================================================== -->
         <header class="ccg-header">
             <div class="ccg-header-inner">
 
-                <!-- Logo -->
-                <a href="home.html" class="ccg-logo-link">
-                    <img src="resources/ccgamer_logo.png"
-                         alt="Cheeky Commodore Gamer logo"
-                         class="ccg-logo-img" />
+                <!-- Brand -->
+                <a href="home.html" class="ccg-brand">
+                    <img
+                        src="resources/images/CCGAMER LOGO.png"
+                        alt="Cheeky Commodore Gamer logo"
+                        class="ccg-brand__logo"
+                    />
+                    <div class="ccg-brand__text">
+                        <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
+                        <div class="ccg-brand__title">
+                            <span class="ccg-brand__neon-cheeky">CHEEKY</span>
+                            <span class="ccg-brand__neon-sub">COMMODORE GAMER</span>
+                        </div>
+                    </div>
                 </a>
 
-                <!-- NAV -->
-                <nav class="ccg-nav">
-                    <a href="home.html" class="nav-item">Home</a>
-                    <a href="games/index.html" class="nav-item">Games</a>
-                    <a href="games/genres/index.html" class="nav-item">Genres</a>
-                    <a href="games/collections/index.html" class="nav-item">Collections</a>
-                    <a href="emulation.html" class="nav-item">Emulation</a>
-                    <a href="quiz/quiz.html" class="nav-item">Quiz</a>
-                    <a href="complete-index.html" class="nav-item nav-item--active">Index</a>
-                    <a href="about.html" class="nav-item">About</a>
-                    <a href="contact.html" class="nav-item">Contact</a>
-                    <a href="admin/admin.html" class="nav-item">Admin</a>
+                <!-- Navigation -->
+                <nav class="ccg-nav" aria-label="Primary navigation">
+                    <ul class="ccg-nav__list">
+                        <li><a href="home.html" class="ccg-nav__link">Home</a></li>
+                        <li><a href="games/index.html" class="ccg-nav__link">Games</a></li>
+                        <li><a href="games/genres/index.html" class="ccg-nav__link">Genres</a></li>
+                        <li><a href="games/collections/index.html" class="ccg-nav__link">Collections</a></li>
+                        <li><a href="quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
+                        <li><a href="emulation.html" class="ccg-nav__link">Emulation</a></li>
+                        <li><a href="complete-index.html" class="ccg-nav__link ccg-nav__link--active">Index</a></li>
+                        <li><a href="about.html" class="ccg-nav__link">About</a></li>
+                        <li><a href="contact.html" class="ccg-nav__link">Contact</a></li>
+                        <li><a href="admin/admin.html" class="ccg-nav__link">Admin</a></li>
+                    </ul>
                 </nav>
 
-                <!-- MODE TOGGLE — FINAL OMEGA VERSION -->
-                <button
-                    class="ccg-mode-toggle is-c64"
-                    type="button"
-                    aria-label="Toggle system mode"
-                    data-ccg-mode-toggle="true"
-                >
-                    <span
-                        class="ccg-mode-toggle-pill ccg-mode-toggle-pill--c64"
-                        data-mode-target="c64"
-                        data-ccg-mode="c64"
+                <!-- Mode Toggle + Socials -->
+                <div class="ccg-header-actions">
+
+                    <!-- Mode Toggle -->
+                    <button
+                        class="ccg-mode-toggle"
+                        type="button"
+                        aria-label="Toggle between C64 and Amiga modes"
+                        data-ccg-mode-toggle
                     >
-                        <span class="ccg-mode-toggle-icon">
-                            <img src="resources/icons/c64.svg" alt="">
+                        <span class="ccg-mode-toggle__pill">
+                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
+                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">Amiga</span>
+                            <span class="ccg-mode-toggle__thumb"></span>
                         </span>
-                        <span class="ccg-mode-toggle-label">C64</span>
-                    </span>
+                    </button>
 
-                    <span class="ccg-mode-toggle-knob" aria-hidden="true"></span>
+                    <!-- Social Icons -->
+                    <div class="ccg-socials">
+                        <a href="https://www.youtube.com/@CheekyCommodoreGamer"
+                           class="ccg-socials__link"
+                           aria-label="YouTube">
+                            <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
+                            <span class="ccg-socials__label">Subscribe</span>
+                        </a>
+                        <a href="https://patreon.com/CheekyCommodoreGamer"
+                           class="ccg-socials__icon-btn"
+                           aria-label="Patreon">
+                            <span class="ccg-socials__icon ccg-socials__icon--patreon"></span>
+                        </a>
+                        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"
+                           class="ccg-socials__icon-btn"
+                           aria-label="PayPal">
+                            <span class="ccg-socials__icon ccg-socials__icon--paypal"></span>
+                        </a>
+                        <a href="https://twitter.com/CheekyC64Gamer"
+                           class="ccg-socials__icon-btn"
+                           aria-label="Twitter / X">
+                            <span class="ccg-socials__icon ccg-socials__icon--x"></span>
+                        </a>
+                        <a href="https://www.facebook.com/cheekycommodoregamer"
+                           class="ccg-socials__icon-btn"
+                           aria-label="Facebook">
+                            <span class="ccg-socials__icon ccg-socials__icon--fb"></span>
+                        </a>
+                        <a href="https://discord.gg/83Xw9ktAn4"
+                           class="ccg-socials__icon-btn"
+                           aria-label="Discord">
+                            <span class="ccg-socials__icon ccg-socials__icon--discord"></span>
+                        </a>
+                    </div>
 
-                    <span
-                        class="ccg-mode-toggle-pill ccg-mode-toggle-pill--amiga"
-                        data-mode-target="amiga"
-                        data-ccg-mode="amiga"
-                    >
-                        <span class="ccg-mode-toggle-icon">
-                            <img src="resources/icons/amiga.svg" alt="">
-                        </span>
-                        <span class="ccg-mode-toggle-label">Amiga</span>
-                    </span>
-                </button>
-
+                </div>
             </div>
 
-            <!-- SOCIAL ICONS (unified across all subpages) -->
-            <div class="ccg-header-socials">
-                <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank">
-                    <img src="resources/icons/youtube.svg" alt="YouTube">
-                </a>
-                <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank">
-                    <img src="resources/icons/patreon.svg" alt="Patreon">
-                </a>
-                <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank">
-                    <img src="resources/icons/paypal.svg" alt="PayPal">
-                </a>
-                <a href="https://www.facebook.com/cheekycommodoregamer" target="_blank">
-                    <img src="resources/icons/facebook.svg" alt="Facebook">
-                </a>
-                <a href="https://twitter.com/CheekyC64Gamer" target="_blank">
-                    <img src="resources/icons/twitter.svg" alt="Twitter / X">
-                </a>
-                <a href="https://discord.gg/83Xw9ktAn4" target="_blank">
-                    <img src="resources/icons/discord.svg" alt="Discord">
-                </a>
-            </div>
-
+            <div class="ccg-header-neon-strip"></div>
         </header>
 
         <!-- =====================================================
-             MAIN CONTENT — COMPLETE INDEX
+             MAIN CONTENT — COMPLETE INDEX HUB
         ===================================================== -->
-        <main class="ccg-main">
+        <main class="ccg-main index-main">
 
-            <section class="ccg-section">
-                <h1 class="ccg-section-title">Complete Index</h1>
-                <p class="ccg-section-subtitle">
-                    This will display the full game database in sortable, filterable table format (Phase 4).
+            <!-- Intro -->
+            <section class="ccg-section index-intro">
+                <h1 class="index-title">Complete Index</h1>
+                <p class="index-subtitle">
+                    This page will become your full spreadsheet-style, sortable index of every game in
+                    <code>games.json</code> (Phase 4).
+                </p>
+                <p class="index-subtitle">
+                    For now, use this accordion-style hub to jump quickly to key areas of the site —
+                    by system, by genre and by special collection.
                 </p>
             </section>
 
+            <!-- Accordion Hub -->
             <section class="ccg-section">
-                <div class="ccg-panel">
-                    <p>Index table loading in a future update…</p>
+                <div class="index-accordion">
+
+                    <!-- Systems (expanded by default) -->
+                    <details class="index-accordion__group index-accordion__group--systems" open>
+                        <summary class="index-accordion__summary">
+                            <span class="index-accordion__label">Systems</span>
+                            <span class="index-accordion__hint">C64 and Amiga focused entry points</span>
+                        </summary>
+                        <div class="index-accordion__body">
+                            <ul class="index-link-list">
+                                <li><a href="games/index.html?system=C64">Browse all C64 games</a></li>
+                                <li><a href="games/index.html?system=Amiga">Browse all Amiga games</a></li>
+                            </ul>
+                            <p class="index-note">
+                                Tip: use the search box on the <strong>All Games</strong> page to filter
+                                by title, year, genre or ID.
+                            </p>
+                        </div>
+                    </details>
+
+                    <!-- Genres (collapsed) -->
+                    <details class="index-accordion__group" >
+                        <summary class="index-accordion__summary">
+                            <span class="index-accordion__label">Genres</span>
+                            <span class="index-accordion__hint">Jump straight into any major genre</span>
+                        </summary>
+                        <div class="index-accordion__body">
+                            <ul class="index-link-grid">
+                                <li><a href="games/genres/arcade-games.html">Arcade Games</a></li>
+                                <li><a href="games/genres/action-adventure-games.html">Action-Adventure Games</a></li>
+                                <li><a href="games/genres/adventure-games.html">Adventure Games</a></li>
+                                <li><a href="games/genres/platform-games.html">Platform Games</a></li>
+                                <li><a href="games/genres/puzzle-games.html">Puzzle Games</a></li>
+                                <li><a href="games/genres/quiz-games.html">Quiz Games</a></li>
+                                <li><a href="games/genres/racing-games.html">Racing Games</a></li>
+                                <li><a href="games/genres/rpg-games.html">Role-Playing Games</a></li>
+                                <li><a href="games/genres/shooting-games.html">Shooting Games</a></li>
+                                <li><a href="games/genres/sports-games.html">Sports Games</a></li>
+                                <li><a href="games/genres/strategy-games.html">Strategy Games</a></li>
+                                <li><a href="games/genres/casino-games.html">Casino Games</a></li>
+                                <li><a href="games/genres/fighting-games.html">Fighting Games</a></li>
+                                <li><a href="games/genres/horror-games.html">Horror Games</a></li>
+                                <li><a href="games/genres/miscellaneous.html">Miscellaneous</a></li>
+                            </ul>
+                        </div>
+                    </details>
+
+                    <!-- Collections (collapsed) -->
+                    <details class="index-accordion__group">
+                        <summary class="index-accordion__summary">
+                            <span class="index-accordion__label">Collections</span>
+                            <span class="index-accordion__hint">Curated sets like BPJS, cartridges and licensed titles</span>
+                        </summary>
+                        <div class="index-accordion__body">
+                            <ul class="index-link-grid">
+                                <li><a href="games/genres/bpjs-indexed-games.html">BPJS Indexed Games</a></li>
+                                <li><a href="games/genres/cartridge-games.html">Cartridge Games</a></li>
+                                <li><a href="games/genres/licensed-games.html">Licensed Games</a></li>
+                                <li><a href="games/genres/top-picks.html">Top Picks</a></li>
+                            </ul>
+                            <p class="index-note">
+                                All four collections are powered by the same genre engine, but grouped here
+                                for quick deep dives.
+                            </p>
+                        </div>
+                    </details>
+
+                    <!-- Phase 4 teaser -->
+                    <details class="index-accordion__group">
+                        <summary class="index-accordion__summary">
+                            <span class="index-accordion__label">Phase 4 — Full Data Table</span>
+                            <span class="index-accordion__hint">Planned: sortable, filterable master table</span>
+                        </summary>
+                        <div class="index-accordion__body">
+                            <p class="index-note">
+                                In a future phase, this page will gain a full spreadsheet-style table view,
+                                directly driven from <code>games/games.json</code> — sortable by title, system,
+                                year, genre and more.
+                            </p>
+                        </div>
+                    </details>
+
                 </div>
             </section>
 
