@@ -64,7 +64,7 @@
 }
 
 /* ------------------------------------------------------------
-   SLIDING KNOB (the highlight track)
+   SLIDING KNOB
 ------------------------------------------------------------ */
 
 .ccg-mode-toggle-knob {
@@ -102,6 +102,55 @@
 .ccg-mode-toggle.is-amiga .ccg-mode-toggle-knob {
     left: 50%;
     background: var(--amiga-pink);
+}
+
+/* ============================================================
+   === OMEGA MODE SKINS UPGRADE (Fix 3.3) ======================
+   PETSCII neon for C64 • Workbench for Amiga • no HTML changes
+   ============================================================ */
+
+/* ---------- C64 MODE: neon blue CRT switch ---------- */
+
+body[data-ccg-mode="c64"] .ccg-mode-toggle {
+    background: radial-gradient(circle at 30% 50%, rgba(58,176,255,0.32), rgba(0,0,0,0.8));
+    border-color: rgba(58,176,255,0.6);
+
+    box-shadow:
+        0 0 8px rgba(58,176,255,0.4),
+        0 0 22px rgba(58,176,255,0.55),
+        inset 0 0 18px rgba(0,0,0,0.6);
+}
+
+body[data-ccg-mode="c64"] .ccg-mode-toggle-knob {
+    background: var(--c64-blue);
+    box-shadow:
+        0 0 10px rgba(58,176,255,0.9),
+        0 0 26px rgba(58,176,255,1);
+}
+
+/* ---------- AMIGA MODE: Workbench 2.0 pill aesthetic ---------- */
+
+body[data-ccg-mode="amiga"] .ccg-mode-toggle {
+    background: linear-gradient(to bottom, #e8ebf4, #d2d8e5);
+    border-color: rgba(0,0,0,0.25);
+
+    box-shadow:
+        0 0 0 1px rgba(255,255,255,0.7),
+        0 6px 14px rgba(0,0,0,0.45),
+        inset 0 0 6px rgba(255,255,255,0.4);
+}
+
+body[data-ccg-mode="amiga"] .ccg-mode-toggle-knob {
+    background: var(--amiga-pink);
+    box-shadow:
+        0 0 6px rgba(255,79,216,0.8),
+        0 0 14px rgba(255,79,216,0.55),
+        inset 0 0 6px rgba(255,255,255,0.6);
+}
+
+/* Softer text colour for Amiga mode */
+body[data-ccg-mode="amiga"] .ccg-mode-toggle-pill--amiga {
+    color: #1b315b;
 }
 
 /* ------------------------------------------------------------
