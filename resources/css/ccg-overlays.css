@@ -1,0 +1,13 @@
+/* ============================================================
+   CCG-OVERLAYS.CSS — SAFE PLACEHOLDER
+   Prevents 404 errors for missing overlay layers.
+   This file intentionally contains minimal styling.
+   Add scanline, CRT, glow or VFX overlays here later.
+   ============================================================ */
+
+.ccg-overlay {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+}
