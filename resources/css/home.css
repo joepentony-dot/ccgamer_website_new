@@ -345,12 +345,12 @@
 
 /* Default hero image (C64) */
 [data-ccg-mode="c64"] .ccg-hero__media {
-    background-image: url("../images/hero/home-hero-c64.jpg");
+    background-image: url("../images/hero/ccg-hero-c64.png");
 }
 
 /* Amiga hero */
 [data-ccg-mode="amiga"] .ccg-hero__media {
-    background-image: url("../images/hero/home-hero-amiga.jpg");
+    background-image: url("../images/hero/ccg-hero-amiga.png");
 }
 
 .ccg-hero__overlay {
