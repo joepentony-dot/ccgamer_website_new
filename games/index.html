@@ -23,7 +23,7 @@
 
 <body class="ccg-body" data-ccg-mode="c64">
 
-    <!-- GLOBAL BACKGROUND -->
+    <!-- BACKGROUND -->
     <div class="ccg-bg">
         <div class="ccg-bg-starfield"></div>
         <div class="ccg-bg-grid"></div>
@@ -33,12 +33,12 @@
     <div class="ccg-page ccg-page--games">
 
         <!-- =====================================================
-             UNIVERSAL OMEGA HEADER (Unified)
+             OMEGA UNIFIED HEADER
         ===================================================== -->
         <header class="ccg-header">
             <div class="ccg-header-inner">
 
-                <!-- Brand -->
+                <!-- BRAND -->
                 <a href="../home.html" class="ccg-brand">
                     <img
                         src="../resources/images/CCGAMER LOGO.png"
@@ -55,7 +55,7 @@
                     </div>
                 </a>
 
-                <!-- Navigation -->
+                <!-- NAVIGATION -->
                 <nav class="ccg-nav" aria-label="Primary navigation">
                     <ul class="ccg-nav__list">
                         <li><a href="../home.html" class="ccg-nav__link">Home</a></li>
@@ -64,15 +64,16 @@
                         <li><a href="../games/collections/index.html" class="ccg-nav__link">Collections</a></li>
                         <li><a href="../quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
                         <li><a href="../emulation.html" class="ccg-nav__link">Emulation</a></li>
+                        <li><a href="../complete-index.html" class="ccg-nav__link">Index</a></li>
                         <li><a href="../about.html" class="ccg-nav__link">About</a></li>
                         <li><a href="../contact.html" class="ccg-nav__link">Contact</a></li>
                     </ul>
                 </nav>
 
-                <!-- Mode toggle + Socials -->
+                <!-- ACTIONS: Mode Toggle + Socials -->
                 <div class="ccg-header-actions">
 
-                    <!-- Mode Toggle -->
+                    <!-- MODE TOGGLE -->
                     <button
                         class="ccg-mode-toggle"
                         type="button"
@@ -86,24 +87,29 @@
                         </span>
                     </button>
 
-                    <!-- Social Icons -->
+                    <!-- SOCIAL ICONS -->
                     <div class="ccg-socials">
                         <a href="https://www.youtube.com/@CheekyCommodoreGamer" class="ccg-socials__link" aria-label="YouTube channel">
                             <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
                             <span class="ccg-socials__label">Subscribe</span>
                         </a>
+
                         <a href="https://patreon.com/CheekyCommodoreGamer" class="ccg-socials__icon-btn" aria-label="Patreon">
                             <span class="ccg-socials__icon ccg-socials__icon--patreon"></span>
                         </a>
+
                         <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" class="ccg-socials__icon-btn" aria-label="PayPal donations">
                             <span class="ccg-socials__icon ccg-socials__icon--paypal"></span>
                         </a>
+
                         <a href="https://twitter.com/CheekyC64Gamer" class="ccg-socials__icon-btn" aria-label="X (Twitter)">
                             <span class="ccg-socials__icon ccg-socials__icon--x"></span>
                         </a>
+
                         <a href="https://www.facebook.com/cheekycommodoregamer" class="ccg-socials__icon-btn" aria-label="Facebook">
                             <span class="ccg-socials__icon ccg-socials__icon--fb"></span>
                         </a>
+
                         <a href="https://discord.gg/83Xw9ktAn4" class="ccg-socials__icon-btn" aria-label="Discord server">
                             <span class="ccg-socials__icon ccg-socials__icon--discord"></span>
                         </a>
@@ -119,41 +125,45 @@
         ===================================================== -->
         <main class="ccg-main ccg-main--library">
 
-            <!-- HERO SECTION -->
+            <!-- HERO -->
             <section class="ccg-section ccg-section--hero">
                 <div class="library-hero">
+
                     <div class="library-hero__text">
                         <p class="library-hero__eyebrow">Omega Library</p>
                         <h1 class="library-hero__title">All Games</h1>
                         <p class="library-hero__subtitle">
                             Live data from <code>games.json</code>. Filter, jump to a random pick, or dive into a detail page with one click.
                         </p>
+
                         <div class="library-hero__actions">
                             <button id="random-game-btn" class="ccg-btn ccg-btn-primary">Random pick</button>
                             <a href="../games/genres/index.html" class="ccg-btn ccg-btn-secondary">Browse by genre</a>
                             <a href="../games/collections/index.html" class="ccg-btn ccg-btn-ghost">Collections</a>
                         </div>
                     </div>
+
                     <div class="library-hero__meta">
                         <div class="library-stat">
                             <span class="library-stat__label">Games loaded</span>
                             <span id="games-count" class="library-stat__value">—</span>
                         </div>
+
                         <div class="library-search">
                             <label for="games-search">Search titles, ids, or genres</label>
-                            <input id="games-search" type="search" placeholder="Search the vault" />
+                            <input id="games-search" type="search" placeholder="Search the vault">
                         </div>
                     </div>
+
                 </div>
             </section>
 
-            <!-- GAME LIST GRID -->
+            <!-- GAME GRID -->
             <section class="ccg-section">
                 <div id="games-list" class="games-library-grid">
                     <p class="ccg-section-subtitle">Loading games…</p>
                 </div>
             </section>
-
         </main>
 
         <!-- =====================================================
@@ -170,7 +180,7 @@
 
     </div>
 
-    <!-- GLOBAL JS -->
+    <!-- JS -->
     <script src="../js/ccg-mode-engine.js" defer></script>
     <script src="../js/ccj-global.js" defer></script>
     <script src="../js/games-library.js" defer></script>
