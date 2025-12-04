@@ -1,33 +1,67 @@
 /* ============================================================
    CCG-MODE.CSS — SYSTEM THEME ENGINE (C64 / AMIGA)
-   Drives accent colours, button themes, hero crossfades.
+   Drives accent colours, button themes, hero crossfades + panel skins.
    ============================================================ */
 
 /* ------------------------------------------------------------
-   BASE ACCENT VARIABLE
-   (Default so pages never render without a theme)
+   BASE ACCENT VARIABLE (Never leave page without a theme)
 ------------------------------------------------------------ */
 :root {
     --accent: var(--c64-blue); /* fallback */
+    --accent-rgb: 58, 176, 255; /* default C64 accent as RGB */
 }
 
 /* ------------------------------------------------------------
-   C64 MODE
+   C64 MODE — PETSCII NEON + CRT CAVE
 ------------------------------------------------------------ */
 body[data-ccg-mode="c64"] {
+    /* Accent */
     --accent: var(--c64-blue);
+    --accent-rgb: 58, 176, 255;
+
+    /* Panels: darker + neon edges */
+    --panel-bg: rgba(0, 0, 0, 0.42);
+    --panel-bg-strong: rgba(0, 0, 0, 0.65);
+    --border-light: rgba(58, 176, 255, 0.28);
+
+    /* Text glows slightly stronger */
+    --text-light: #ffffff;
+    --text-dim: rgba(200, 220, 255, 0.75);
+
+    /* Shadows + glows (subtle CRT look) */
+    --panel-shadow:
+        0 0 0 1px rgba(58,176,255,0.3),
+        0 0 18px rgba(58,176,255,0.25),
+        inset 0 0 12px rgba(0,0,0,0.7);
 }
 
-/* Optional decorative header split-text behaviour */
+/* Header colour split */
 body[data-ccg-mode="c64"] .ccg-header-title-top {
     color: var(--c64-blue);
 }
 
 /* ------------------------------------------------------------
-   AMIGA MODE
+   AMIGA MODE — WORKBENCH 2.x AESTHETIC
 ------------------------------------------------------------ */
 body[data-ccg-mode="amiga"] {
+    /* Accent */
     --accent: var(--amiga-pink);
+    --accent-rgb: 255, 79, 216;
+
+    /* Workbench-style light UI */
+    --panel-bg: rgba(232, 236, 243, 0.92);     /* light grey-blue */
+    --panel-bg-strong: rgba(213, 219, 232, 0.95);
+    --border-light: rgba(0, 0, 0, 0.22);
+
+    /* Text darker for contrast on light UI */
+    --text-light: #111;
+    --text-dim: rgba(0, 0, 0, 0.55);
+
+    /* Soft window-like shadows */
+    --panel-shadow:
+        0 0 0 1px rgba(255,255,255,0.8),
+        0 6px 12px rgba(0,0,0,0.22),
+        inset 0 0 8px rgba(255,255,255,0.5);
 }
 
 body[data-ccg-mode="amiga"] .ccg-header-title-bottom {
@@ -43,7 +77,7 @@ body[data-ccg-mode="amiga"] .ccg-header-title-bottom {
 
 /* ------------------------------------------------------------
    THEME-AWARE BUTTONS
-   Only modifies .ccg-btn-primary (intentional)
+   Only modifies .ccg-btn-primary
 ------------------------------------------------------------ */
 
 body[data-ccg-mode="amiga"] .ccg-btn-primary {
@@ -56,11 +90,9 @@ body[data-ccg-mode="amiga"] .ccg-btn-primary:hover {
 }
 
 /* ------------------------------------------------------------
-   HERO IMAGE CROSSFADE (used by Home + some game pages)
+   HERO IMAGE CROSSFADE
 ------------------------------------------------------------ */
 
-/* Ensure both hero images are present but invisible by default.
-   (Defined in home.css and games.css, but reinforced here.) */
 .ccg-hero-image-c64,
 .ccg-hero-image-amiga {
     opacity: 0;
@@ -68,6 +100,5 @@ body[data-ccg-mode="amiga"] .ccg-btn-primary:hover {
     pointer-events: none;
 }
 
-/* Mode-controlled visibility */
 body[data-ccg-mode="c64"]  .ccg-hero-image-c64  { opacity: 1; }
 body[data-ccg-mode="amiga"] .ccg-hero-image-amiga { opacity: 1; }
