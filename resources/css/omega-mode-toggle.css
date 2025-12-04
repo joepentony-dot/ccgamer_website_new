@@ -1,172 +1,54 @@
 /* ============================================================
-   OMEGA MODE TOGGLE — C64 NEON ↔ AMIGA WORKBENCH HYBRID
-   Works with:
-   - .ccg-mode-toggle button in header
-   - data-mode-target="c64" / "amiga" on pills
-   - body[data-ccg-mode="..."] set by ccg-mode-engine.js
+   OMEGA MODE TOGGLE — FINAL WORKING VERSION
    ============================================================ */
 
 .ccg-mode-toggle {
     position: relative;
     display: inline-flex;
-    align-items: stretch;
-    justify-content: space-between;
-    gap: 0;
-    padding: 0;
-    border-radius: 999px;
-    border: 1px solid rgba(150, 220, 255, 0.8);
-    background: radial-gradient(circle at 0% 0%, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.98));
-    box-shadow:
-        0 0 18px rgba(0, 204, 255, 0.4),
-        0 0 32px rgba(255, 0, 200, 0.25);
+    align-items: center;
+    background: rgba(0,0,0,0.4);
+    border-radius: 40px;
+    padding: 0.4rem;
     cursor: pointer;
-    overflow: hidden;
-    min-width: 190px;
-    height: 40px;
+    border: 1px solid rgba(255,255,255,0.15);
+    transition: background 0.3s ease;
 }
 
 .ccg-mode-toggle-pill {
     position: relative;
-    flex: 1 1 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.25rem;
-    padding-inline: 0.6rem;
-    z-index: 1;
-    text-transform: uppercase;
-    font-size: 0.72rem;
-    letter-spacing: 0.15em;
-    color: #e6f6ff;
-    opacity: 0.65;
-    transition:
-        color 140ms ease-out,
-        opacity 140ms ease-out;
-}
-
-/* left/right sides */
-
-.ccg-mode-toggle-pill--c64 {
-    border-radius: 999px 0 0 999px;
-}
-
-.ccg-mode-toggle-pill--amiga {
-    border-radius: 0 999px 999px 0;
-}
-
-/* Tiny SVG icon bubble */
-
-.ccg-mode-toggle-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    padding: 0.5rem 1rem;
+    flex: 1;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0.6;
+    transition: opacity 0.3s ease, color 0.3s ease;
 }
 
 .ccg-mode-toggle-icon img {
-    display: block;
-    width: 16px;
-    height: 16px;
-    image-rendering: pixelated;
+    height: 18px;
+    margin-right: 6px;
+    vertical-align: middle;
 }
-
-/* Slider knob */
 
 .ccg-mode-toggle-knob {
     position: absolute;
-    top: 3px;
-    left: 3px;
-    width: calc(50% - 6px);
-    height: calc(100% - 6px);
-    border-radius: 999px;
-    background:
-        radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.9), transparent 65%),
-        linear-gradient(135deg, #00e2ff, #ff00ff);
-    box-shadow:
-        0 0 20px rgba(0, 224, 255, 0.8),
-        0 0 36px rgba(255, 0, 200, 0.7);
-    transition:
-        transform 200ms ease-out,
-        background 200ms ease-out,
-        box-shadow 200ms ease-out;
-    pointer-events: none;
+    width: 50%;
+    height: 100%;
+    border-radius: 40px;
+    background: var(--c64-blue);
+    top: 0;
+    left: 0;
+    z-index: -1;
+    transition: left 0.3s ease, background 0.3s ease;
 }
 
-/* Active side highlighting */
+/* Active states */
+.ccg-mode-toggle.is-c64 .ccg-mode-toggle-pill--c64 { opacity: 1; color: #fff; }
+.ccg-mode-toggle.is-amiga .ccg-mode-toggle-pill--amiga { opacity: 1; color: #fff; }
 
-body[data-ccg-mode="c64"] .ccg-mode-toggle-pill--c64,
-body[data-ccg-mode="amiga"] .ccg-mode-toggle-pill--amiga {
-    opacity: 1;
-    color: #041015;
-}
-
-/* Knob position */
-
-body[data-ccg-mode="c64"] .ccg-mode-toggle-knob {
-    transform: translateX(0);
-}
-
-body[data-ccg-mode="amiga"] .ccg-mode-toggle-knob {
-    transform: translateX(100%);
-}
-
-/* Mode-specific styling of the container */
-
-body[data-ccg-mode="c64"] .ccg-mode-toggle {
-    border-color: rgba(130, 220, 255, 0.9);
-    background:
-        radial-gradient(circle at 0% 0%, rgba(0, 255, 255, 0.25), transparent 55%),
-        linear-gradient(135deg, #02071e, #000000);
-}
-
-/* C64 neon knob */
-
-body[data-ccg-mode="c64"] .ccg-mode-toggle-knob {
-    background:
-        radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.9), transparent 65%),
-        linear-gradient(135deg, #00e2ff, #00ffa8);
-    box-shadow:
-        0 0 18px rgba(0, 224, 255, 0.85),
-        0 0 32px rgba(0, 224, 255, 0.75);
-}
-
-/* Amiga Workbench bevel look */
-
-body[data-ccg-mode="amiga"] .ccg-mode-toggle {
-    border-radius: 0;
-    border-color: #4f4f4f;
-    background: linear-gradient(145deg, #c0c0c0, #b4b4b4);
-    box-shadow:
-        1px 1px 0 #000000,
-        -1px -1px 0 #ffffff;
-}
-
-body[data-ccg-mode="amiga"] .ccg-mode-toggle-knob {
-    background: linear-gradient(145deg, #dedede, #b8b8b8);
-    box-shadow:
-        1px 1px 0 #ffffff inset,
-        -1px -1px 0 #5e5e5e inset,
-        0 0 18px rgba(40, 60, 120, 0.65);
-}
-
-/* Label colours in Amiga mode */
-
-body[data-ccg-mode="amiga"] .ccg-mode-toggle-pill {
-    color: #202020;
-}
-
-body[data-ccg-mode="amiga"] .ccg-mode-toggle-pill--c64 {
-    background: rgba(0, 70, 160, 0.18);
-}
-
-body[data-ccg-mode="amiga"] .ccg-mode-toggle-pill--amiga {
-    background: rgba(220, 150, 80, 0.22);
-}
-
-/* Small screen tweak */
-
-@media (max-width: 520px) {
-    .ccg-mode-toggle {
-        min-width: 170px;
-        height: 36px;
-    }
+/* Knob slide */
+.ccg-mode-toggle.is-amiga .ccg-mode-toggle-knob {
+    left: 50%;
+    background: var(--amiga-pink);
 }
