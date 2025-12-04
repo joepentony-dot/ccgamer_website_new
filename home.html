@@ -16,7 +16,7 @@
     <!-- Home-specific CSS -->
     <link rel="stylesheet" href="resources/css/home.css">
 </head>
-<body class="ccg-body ccg-page--home">
+<body class="ccg-body ccg-page--home" data-ccg-mode="c64" data-mode="c64">
 
     <!-- Starfield canvas (background only, styled in CSS) -->
     <canvas id="home-starfield" class="ccg-starfield" aria-hidden="true"></canvas>
@@ -29,7 +29,7 @@
             <!-- Logo + title -->
             <a href="home.html" class="ccg-brand">
                 <img
-                    src="resources/CCGAMER LOGO.png"
+                    src="resources/ccgamer_logo.png"
                     alt="Cheeky Commodore Gamer logo"
                     class="ccg-brand__logo"
                     loading="lazy"
@@ -75,18 +75,24 @@
 
                 <!-- Socials -->
                 <div class="ccg-socials">
-                    <a href="https://www.youtube.com/@CheekyCommodoreGamer" class="ccg-socials__link" aria-label="YouTube">
+                    <a href="https://www.youtube.com/@CheekyCommodoreGamer" class="ccg-socials__link" aria-label="YouTube channel">
                         <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
                         <span class="ccg-socials__label">Subscribe</span>
                     </a>
-                    <a href="https://www.patreon.com/" class="ccg-socials__icon-btn" aria-label="Patreon">
+                    <a href="https://patreon.com/CheekyCommodoreGamer" class="ccg-socials__icon-btn" aria-label="Patreon">
                         <span class="ccg-socials__icon ccg-socials__icon--patreon"></span>
                     </a>
-                    <a href="https://www.paypal.me/" class="ccg-socials__icon-btn" aria-label="PayPal">
+                    <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" class="ccg-socials__icon-btn" aria-label="PayPal donations">
                         <span class="ccg-socials__icon ccg-socials__icon--paypal"></span>
                     </a>
-                    <a href="https://x.com/" class="ccg-socials__icon-btn" aria-label="X (Twitter)">
+                    <a href="https://twitter.com/CheekyC64Gamer" class="ccg-socials__icon-btn" aria-label="X (Twitter)">
                         <span class="ccg-socials__icon ccg-socials__icon--x"></span>
+                    </a>
+                    <a href="https://www.facebook.com/cheekycommodoregamer" class="ccg-socials__icon-btn" aria-label="Facebook">
+                        <span class="ccg-socials__icon ccg-socials__icon--fb"></span>
+                    </a>
+                    <a href="https://discord.gg/83Xw9ktAn4" class="ccg-socials__icon-btn" aria-label="Discord server">
+                        <span class="ccg-socials__icon ccg-socials__icon--discord"></span>
                     </a>
                 </div>
             </div>
@@ -140,6 +146,191 @@
             </div>
         </section>
 
+        <!-- =========================
+             BROWSE BY GENRE (GRID)
+        ========================== -->
+        <section class="ccg-section ccg-section--genres">
+            <header class="ccg-section__header">
+                <h2 class="ccg-section__title">Browse by Genre</h2>
+                <p class="ccg-section__subtitle">
+                    Tap a genre tile to jump straight into a curated slice of the library.
+                </p>
+            </header>
+
+            <div class="ccg-genre-grid">
+                <!-- Action Adventure -->
+                <article class="ccg-genre-card">
+                    <a href="games/genres/action-adventure-games.html" class="ccg-genre-card__link">
+                        <div class="ccg-genre-card__thumb">
+                            <img src="resources/images/genres/action-adventure.png" alt="Action &amp; Adventure games" loading="lazy">
+                        </div>
+                    </a>
+                </article>
+
+                <!-- Adventure -->
+                <article class="ccg-genre-card">
+                    <a href="games/genres/adventure-games.html" class="ccg-genre-card__link">
+                        <div class="ccg-genre-card__thumb">
+                            <img src="resources/images/genres/adventure.png" alt="Adventure games" loading="lazy">
+                        </div>
+                    </a>
+                </article>
+
+                <!-- Arcade -->
+                <article class="ccg-genre-card">
+                    <a href="games/genres/arcade-games.html" class="ccg-genre-card__link">
+                        <div class="ccg-genre-card__thumb">
+                            <img src="resources/images/genres/arcade.png" alt="Arcade games" loading="lazy">
+                        </div>
+                    </a>
+                </article>
+
+                <!-- BPJS -->
+                <article class="ccg-genre-card">
+                    <a href="games/genres/bpjs-indexed-games.html" class="ccg-genre-card__link">
+                        <div class="ccg-genre-card__thumb">
+                            <img src="resources/images/genres/bpjs.png" alt="BPJS indexed games" loading="lazy">
+                        </div>
+                    </a>
+                </article>
+
+                <!-- Cartridge -->
+                <article class="ccg-genre-card">
+                    <a href="games/genres/cartridge-games.html" class="ccg-genre-card__link">
+                        <div class="ccg-genre-card__thumb">
+                            <img src="resources/images/genres/cartridge.png" alt="Cartridge games" loading="lazy">
+                        </div>
+                    </a>
+                </article>
+
+                <!-- Casino -->
+                <article class="ccg-genre-card">
+                    <a href="games/genres/casino-games.html" class="ccg-genre-card__link">
+                        <div class="ccg-genre-card__thumb">
+                            <img src="resources/images/genres/casino.png" alt="Casino games" loading="lazy">
+                        </div>
+                    </a>
+                </article>
+
+                <!-- Fighting -->
+                <article class="ccg-genre-card">
+                    <a href="games/genres/fighting-games.html" class="ccg-genre-card__link">
+                        <div class="ccg-genre-card__thumb">
+                            <img src="resources/images/genres/fighting.png" alt="Fighting games" loading="lazy">
+                        </div>
+                    </a>
+                </article>
+
+                <!-- Horror -->
+                <article class="ccg-genre-card">
+                    <a href="games/genres/horror-games.html" class="ccg-genre-card__link">
+                        <div class="ccg-genre-card__thumb">
+                            <img src="resources/images/genres/horror.png" alt="Horror games" loading="lazy">
+                        </div>
+                    </a>
+                </article>
+
+                <!-- Licensed -->
+                <article class="ccg-genre-card">
+                    <a href="games/genres/licensed-games.html" class="ccg-genre-card__link">
+                        <div class="ccg-genre-card__thumb">
+                            <img src="resources/images/genres/licensed.png" alt="Licensed games" loading="lazy">
+                        </div>
+                    </a>
+                </article>
+
+                <!-- Misc -->
+                <article class="ccg-genre-card">
+                    <a href="games/genres/miscellaneous.html" class="ccg-genre-card__link">
+                        <div class="ccg-genre-card__thumb">
+                            <img src="resources/images/genres/miscellaneous.png" alt="Miscellaneous games" loading="lazy">
+                        </div>
+                    </a>
+                </article>
+
+                <!-- Platform -->
+                <article class="ccg-genre-card">
+                    <a href="games/genres/platform-games.html" class="ccg-genre-card__link">
+                        <div class="ccg-genre-card__thumb">
+                            <img src="resources/images/genres/platform.png" alt="Platform games" loading="lazy">
+                        </div>
+                    </a>
+                </article>
+
+                <!-- Puzzle -->
+                <article class="ccg-genre-card">
+                    <a href="games/genres/puzzle-games.html" class="ccg-genre-card__link">
+                        <div class="ccg-genre-card__thumb">
+                            <img src="resources/images/genres/puzzle.png" alt="Puzzle games" loading="lazy">
+                        </div>
+                    </a>
+                </article>
+
+                <!-- Quiz -->
+                <article class="ccg-genre-card">
+                    <a href="games/genres/quiz-games.html" class="ccg-genre-card__link">
+                        <div class="ccg-genre-card__thumb">
+                            <img src="resources/images/genres/quiz.png" alt="Quiz games" loading="lazy">
+                        </div>
+                    </a>
+                </article>
+
+                <!-- Racing -->
+                <article class="ccg-genre-card">
+                    <a href="games/genres/racing-games.html" class="ccg-genre-card__link">
+                        <div class="ccg-genre-card__thumb">
+                            <img src="resources/images/genres/racing.png" alt="Racing games" loading="lazy">
+                        </div>
+                    </a>
+                </article>
+
+                <!-- RPG -->
+                <article class="ccg-genre-card">
+                    <a href="games/genres/rpg-games.html" class="ccg-genre-card__link">
+                        <div class="ccg-genre-card__thumb">
+                            <img src="resources/images/genres/role-playing.png" alt="Role-playing games" loading="lazy">
+                        </div>
+                    </a>
+                </article>
+
+                <!-- Shooting -->
+                <article class="ccg-genre-card">
+                    <a href="games/genres/shooting-games.html" class="ccg-genre-card__link">
+                        <div class="ccg-genre-card__thumb">
+                            <img src="resources/images/genres/shooting.png" alt="Shooting games" loading="lazy">
+                        </div>
+                    </a>
+                </article>
+
+                <!-- Sports -->
+                <article class="ccg-genre-card">
+                    <a href="games/genres/sports-games.html" class="ccg-genre-card__link">
+                        <div class="ccg-genre-card__thumb">
+                            <img src="resources/images/genres/sports.png" alt="Sports games" loading="lazy">
+                        </div>
+                    </a>
+                </article>
+
+                <!-- Strategy -->
+                <article class="ccg-genre-card">
+                    <a href="games/genres/strategy-games.html" class="ccg-genre-card__link">
+                        <div class="ccg-genre-card__thumb">
+                            <img src="resources/images/genres/strategy.png" alt="Strategy games" loading="lazy">
+                        </div>
+                    </a>
+                </article>
+
+                <!-- Top Picks -->
+                <article class="ccg-genre-card">
+                    <a href="games/genres/top-picks.html" class="ccg-genre-card__link">
+                        <div class="ccg-genre-card__thumb">
+                            <img src="resources/images/genres/top-picks.png" alt="Top picks genre" loading="lazy">
+                        </div>
+                    </a>
+                </article>
+            </div>
+        </section>
+
         <!-- FEATURED GAME + FEATURED VIDEO -->
         <section class="ccg-section ccg-section--featured">
             <header class="ccg-section__header">
@@ -154,7 +345,7 @@
                 <article class="ccg-card ccg-card--featured-game">
                     <div class="ccg-card__media">
                         <img
-                            src="resources/images/thumbnails/all/last_ninja_2.jpg"
+                            src="resources/images/thumbnails/all/last_ninja_ii.jpg"
                             alt="The Last Ninja 2 on Commodore 64"
                             loading="lazy"
                         >
@@ -170,7 +361,7 @@
                             One of the all-time greats and a must-play for any Commodore fanatic.
                         </p>
                         <div class="ccg-card__actions">
-                            <a href="games/game.html?id=the_last_ninja_2" class="ccg-btn ccg-btn--primary ccg-btn--sm">
+                            <a href="games/game.html?id=last_ninja_ii" class="ccg-btn ccg-btn--primary ccg-btn--sm">
                                 View Game Page
                             </a>
                             <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener" class="ccg-btn ccg-btn--ghost ccg-btn--sm">
@@ -232,7 +423,7 @@
                     <a href="games/collections/bpjs-indexed-games.html" class="ccg-collection-card__link">
                         <div class="ccg-collection-card__thumb-wrap">
                             <img
-                                src="resources/images/collections/bpjs-indexed.jpg"
+                                src="resources/images/genres/bpjs.png"
                                 alt="BPJS Indexed C64 games collection"
                                 loading="lazy"
                             >
@@ -253,7 +444,7 @@
                     <a href="games/collections/top-picks.html" class="ccg-collection-card__link">
                         <div class="ccg-collection-card__thumb-wrap">
                             <img
-                                src="resources/images/collections/top-picks.jpg"
+                                src="resources/images/genres/top-picks.png"
                                 alt="Cheeky Commodore Gamer top picks collection"
                                 loading="lazy"
                             >
@@ -274,7 +465,7 @@
                     <a href="games/collections/cinematic-games.html" class="ccg-collection-card__link">
                         <div class="ccg-collection-card__thumb-wrap">
                             <img
-                                src="resources/images/collections/cinematic.jpg"
+                                src="resources/images/genres/adventure.png"
                                 alt="Cinematic and story-driven Commodore games collection"
                                 loading="lazy"
                             >
@@ -295,7 +486,7 @@
                     <a href="games/collections/party-pack.html" class="ccg-collection-card__link">
                         <div class="ccg-collection-card__thumb-wrap">
                             <img
-                                src="resources/images/collections/party-pack.jpg"
+                                src="resources/images/genres/arcade.png"
                                 alt="Quick-fire party games collection"
                                 loading="lazy"
                             >
@@ -355,7 +546,7 @@
                         Help keep the tapes spinning, floppies whirring and videos coming thick and fast.
                     </p>
                     <div class="ccg-card__actions">
-                        <a href="https://www.patreon.com/" class="ccg-btn ccg-btn--primary ccg-btn--sm" target="_blank" rel="noopener">
+                        <a href="https://patreon.com/CheekyCommodoreGamer" class="ccg-btn ccg-btn--primary ccg-btn--sm" target="_blank" rel="noopener">
                             Become a Patron
                         </a>
                     </div>
@@ -373,9 +564,10 @@
         </p>
     </footer>
 
-    <!-- Global mode engine (you already have this file in the project) -->
-    <script src="resources/js/ccg-mode-engine.js" defer></script>
+    <!-- Global scripts -->
+    <script src="js/ccj-global.js" defer></script>
+    <script src="js/ccg-mode-engine.js" defer></script>
     <!-- Home-only dynamics -->
-    <script src="resources/js/home-dynamic.js" defer></script>
+    <script src="js/home-dynamic.js" defer></script>
 </body>
 </html>
