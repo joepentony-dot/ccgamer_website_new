@@ -1,168 +1,37 @@
 /* ============================================================
-   CHEEKY COMMODORE GAMER — ANIMATION STYLES
-   NEON EFFECTS • FADE-INS • GLITCH • MICRO-INTERACTIONS
-   EPIC MOTION EDITION 😇🕹️👌
+   CCG-ANIM.CSS — Subtle Page Animations
    ============================================================ */
 
-
-/* ------------------------------------------------------------
-   GLOBAL FADE-IN ON PAGE LOAD
------------------------------------------------------------- */
-
-body.ccg-body {
+/* Fade In */
+.ccg-fade-in {
     opacity: 0;
-    animation: ccg-fade-in 0.65s ease-out forwards;
+    animation: fadeIn 0.8s ease forwards;
 }
 
-@keyframes ccg-fade-in {
-    from { opacity: 0; transform: translateY(6px); }
-    to   { opacity: 1; transform: translateY(0); }
+@keyframes fadeIn {
+    to { opacity: 1; }
 }
 
-
-/* ------------------------------------------------------------
-   HEADER AUTO-HIDE SLIDE
-   (Used by ccg-header-auto.js)
------------------------------------------------------------- */
-
-@keyframes ccg-header-slide-up {
-    from { transform: translateY(0); }
-    to   { transform: translateY(-100%); }
-}
-
-@keyframes ccg-header-slide-down {
-    from { transform: translateY(-100%); }
-    to   { transform: translateY(0); }
-}
-
-
-/* ------------------------------------------------------------
-   BUTTON INTERACTION — CLICK POP
------------------------------------------------------------- */
-
-.ccg-btn:active {
-    transform: scale(0.92);
-}
-
-
-/* ------------------------------------------------------------
-   NEON PULSE (SUBTLE)
------------------------------------------------------------- */
-
-.ccg-neon-pulse {
-    animation: ccg-neon-pulse 2.5s ease-in-out infinite;
-}
-
-@keyframes ccg-neon-pulse {
-    0%   { filter: drop-shadow(0 0 6px var(--ccg-accent)); }
-    50%  { filter: drop-shadow(0 0 16px var(--ccg-accent-strong)); }
-    100% { filter: drop-shadow(0 0 6px var(--ccg-accent)); }
-}
-
-
-/* ------------------------------------------------------------
-   HERO IMAGE CROSSFADE
------------------------------------------------------------- */
-
-.ccg-hero-image {
+/* Slide Up */
+.ccg-slide-up {
     opacity: 0;
-    transform: translateY(10px);
-    animation: ccg-hero-fadein 0.8s ease forwards;
+    transform: translateY(20px);
+    animation: slideUp 0.6s ease forwards;
 }
 
-@keyframes ccg-hero-fadein {
-    from { opacity: 0; transform: translateY(10px) scale(1.03); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
+@keyframes slideUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-
-/* ------------------------------------------------------------
-   FEATURED CARDS — FLOAT ON LOAD
------------------------------------------------------------- */
-
-.ccg-card-featured-game,
-.ccg-card-featured-video {
-    animation: ccg-card-enter 0.65s ease-out forwards;
-    opacity: 0;
+/* Pulse glow */
+.ccg-pulse {
+    animation: pulse 2.2s ease-in-out infinite;
 }
 
-@keyframes ccg-card-enter {
-    from { opacity: 0; transform: translateY(16px) scale(0.96); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-
-/* ------------------------------------------------------------
-   GENRE CARDS — SMALL ZOOM ON HOVER
------------------------------------------------------------- */
-
-.ccg-genre-card {
-    transition: transform 0.22s ease, filter 0.22s ease;
-}
-
-.ccg-genre-card:hover {
-    transform: translateY(-4px) scale(1.06);
-    filter: drop-shadow(0 0 18px var(--ccg-accent-strong));
-}
-
-
-/* ------------------------------------------------------------
-   GAME STRIP — SCROLL IN VIEW
------------------------------------------------------------- */
-
-.ccg-game-strip-card {
-    opacity: 0;
-    animation: ccg-strip-in 0.55s ease-out forwards;
-}
-
-@keyframes ccg-strip-in {
-    from { opacity: 0; transform: translateX(20px); }
-    to   { opacity: 1; transform: translateX(0); }
-}
-
-
-/* ------------------------------------------------------------
-   ZX MODE GLITCH FX
------------------------------------------------------------- */
-
-body[data-mode="zx"] .ccg-hero-image {
-    animation: ccg-zx-glitch 0.35s steps(3, end) infinite;
-}
-
-@keyframes ccg-zx-glitch {
-    0%   { transform: translate(0,0) skewX(0deg); filter: hue-rotate(0deg); }
-    25%  { transform: translate(-2px,1px) skewX(3deg); filter: hue-rotate(30deg); }
-    50%  { transform: translate(1px,-1px) skewX(-2deg); filter: hue-rotate(-20deg); }
-    75%  { transform: translate(3px,0) skewX(1deg); filter: hue-rotate(50deg); }
-    100% { transform: translate(0,0) skewX(0deg); filter: hue-rotate(0deg); }
-}
-
-
-/* ------------------------------------------------------------
-   NAV PILL — SUBTLE FLOAT
------------------------------------------------------------- */
-
-.ccg-nav {
-    animation: ccg-nav-float 8s ease-in-out infinite;
-}
-
-@keyframes ccg-nav-float {
-    0%   { transform: translateY(0); }
-    50%  { transform: translateY(-3px); }
-    100% { transform: translateY(0); }
-}
-
-
-/* ------------------------------------------------------------
-   SOCIAL GRID ICON ENTRANCE
------------------------------------------------------------- */
-
-.ccg-social-btn {
-    opacity: 0;
-    animation: ccg-social-pop-in 0.55s ease forwards;
-}
-
-@keyframes ccg-social-pop-in {
-    from { opacity: 0; transform: translateY(14px) scale(0.9); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
+@keyframes pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
 }
