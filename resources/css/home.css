@@ -3,7 +3,7 @@
    Cheeky Commodore Gamer 😇🕹️👌
    - No inline styles
    - All selectors scoped to home page classes
-   - Includes: neon nav glow, hero, featured grid, collections strip
+   - Includes: neon nav glow, hero, genre grid, featured grid, collections strip
    ============================================================ */
 
 /* Root tweaks just for home */
@@ -251,6 +251,8 @@
     display: flex;
     align-items: center;
     gap: 0.45rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 .ccg-socials__link {
@@ -294,11 +296,13 @@
     background-repeat: no-repeat;
 }
 
-/* You can swap these to actual SVG backgrounds */
+/* SVG icon mappings */
 .ccg-socials__icon--yt { background-image: url("../icons/youtube.svg"); }
 .ccg-socials__icon--patreon { background-image: url("../icons/patreon.svg"); }
 .ccg-socials__icon--paypal { background-image: url("../icons/paypal.svg"); }
-.ccg-socials__icon--x { background-image: url("../icons/x.svg"); }
+.ccg-socials__icon--x { background-image: url("../icons/twitter.svg"); }
+.ccg-socials__icon--fb { background-image: url("../icons/facebook.svg"); }
+.ccg-socials__icon--discord { background-image: url("../icons/discord.svg"); }
 
 .ccg-header-neon-strip {
     height: 2px;
@@ -327,7 +331,7 @@
     grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
     gap: 2.2rem;
     align-items: center;
-    margin-bottom: 2.75rem;
+    margin-bottom: 2.5rem;
 }
 
 .ccg-hero__media {
@@ -531,6 +535,59 @@
 }
 
 /* -----------------------------------------
+   GENRE GRID (TWO-ROW STYLE)
+----------------------------------------- */
+
+.ccg-section--genres {
+    margin-bottom: 2.5rem;
+}
+
+.ccg-genre-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 0.9rem;
+}
+
+.ccg-genre-card {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    background: radial-gradient(circle at top, rgba(0, 220, 255, 0.12), rgba(4, 10, 25, 0.96));
+    border: 1px solid rgba(130, 210, 255, 0.35);
+    box-shadow:
+        0 0 18px rgba(0, 0, 0, 0.8),
+        0 0 24px rgba(0, 220, 255, 0.18);
+}
+
+.ccg-genre-card__link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.ccg-genre-card__thumb {
+    padding: 0.45rem 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ccg-genre-card__thumb img {
+    display: block;
+    width: 100%;
+    height: 70px;
+    object-fit: contain;
+    image-rendering: auto;
+    transition: transform 200ms ease-out, filter 200ms ease-out;
+}
+
+.ccg-genre-card:hover .ccg-genre-card__thumb img,
+.ccg-genre-card:focus-within .ccg-genre-card__thumb img {
+    transform: scale(1.04);
+    filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.7));
+}
+
+/* -----------------------------------------
    FEATURED GRID
 ----------------------------------------- */
 
@@ -681,15 +738,19 @@
 .ccg-collection-card__thumb-wrap {
     position: relative;
     overflow: hidden;
+    padding: 0.45rem 0.6rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle at top, rgba(0, 240, 255, 0.12), rgba(3, 8, 25, 0.96));
 }
 
 .ccg-collection-card__thumb-wrap img {
     display: block;
     width: 100%;
-    height: 120px;
-    object-fit: cover;
-    transform: scale(1.03);
-    transition: transform 220ms ease-out;
+    height: 80px;
+    object-fit: contain;
+    transition: transform 220ms ease-out, filter 220ms ease-out;
 }
 
 .ccg-collection-card__body {
@@ -710,7 +771,8 @@
 }
 
 .ccg-collection-card:hover .ccg-collection-card__thumb-wrap img {
-    transform: scale(1.06);
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.7));
 }
 
 /* Per-collection colour schemes */
@@ -766,6 +828,16 @@
    RESPONSIVE
 ----------------------------------------- */
 
+@media (max-width: 1200px) {
+    .ccg-genre-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .ccg-collection-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
 @media (max-width: 1024px) {
     .ccg-header-inner {
         flex-wrap: wrap;
@@ -774,7 +846,7 @@
 
     .ccg-header-actions {
         width: 100%;
-        justify-content: flex-end;
+        justify-content: space-between;
     }
 
     .ccg-main {
@@ -789,6 +861,10 @@
     .ccg-featured-grid {
         grid-template-columns: minmax(0, 1fr);
     }
+
+    .ccg-community-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 @media (max-width: 768px) {
@@ -799,6 +875,7 @@
 
     .ccg-header-actions {
         justify-content: space-between;
+        width: 100%;
     }
 
     .ccg-nav__list {
@@ -815,6 +892,10 @@
         min-height: 220px;
     }
 
+    .ccg-genre-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
     .ccg-collection-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -825,6 +906,10 @@
 }
 
 @media (max-width: 520px) {
+    .ccg-genre-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .ccg-collection-grid {
         grid-template-columns: minmax(0, 1fr);
     }
