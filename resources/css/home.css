@@ -111,6 +111,11 @@
     margin-bottom: 1.45rem;
 }
 
+/* ULTRA SAFE PATCH — header vertical alignment */
+.ccg-header-top {
+    align-items: flex-start;
+}
+
 .ccg-logo-link {
     display: inline-flex;
     align-items: center;
@@ -456,6 +461,12 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
     color: rgba(187, 203, 255, 0.9);
 }
 
+/* ULTRA SAFE PATCH — hero baseline alignment */
+.ccg-hero-eyebrow,
+.ccg-hero-title {
+    line-height: 1.1;
+}
+
 .ccg-hero-title {
     margin: 0;
     font-size: clamp(1.5rem, 2.2vw + 0.4rem, 2.1rem);
@@ -466,6 +477,11 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
     text-shadow:
         0 0 10px rgba(0, 255, 255, 0.6),
         0 0 22px rgba(255, 0, 200, 0.7);
+}
+
+/* ULTRA SAFE PATCH — hero title glow smoothing */
+.ccg-hero-title {
+    filter: drop-shadow(0 0 4px rgba(255, 0, 200, 0.4));
 }
 
 .ccg-hero-title span {
@@ -552,6 +568,10 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
    HOME SECTION SHARED STYLES
 ----------------------------------------- */
 
+/* ULTRA SAFE PATCH — section boundary clarity */
+.home-section + .home-section {
+    margin-top: 2.7rem;
+}
 .home-section {
     max-width: 1440px;
     margin: 0 auto 2.5rem;
@@ -599,6 +619,13 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
     text-transform: uppercase;
     letter-spacing: 0.18em;
     color: #fdfdff;
+}
+
+/* ULTRA SAFE PATCH — section header glow finesse */
+.home-section-title {
+    text-shadow:
+        0 0 6px rgba(0, 255, 255, 0.35),
+        0 0 14px rgba(255, 0, 180, 0.3);
 }
 
 .home-section-subtitle {
@@ -917,6 +944,29 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
         background 160ms ease-out;
 }
 
+/* ULTRA SAFE PATCH — rounding harmony */
+.ccg-collection-card,
+.ccg-highlight-card,
+.ccg-utility-card {
+    border-radius: 1.05rem;
+}
+
+/* ULTRA SAFE PATCH — unified card contrast */
+.ccg-collection-card,
+.ccg-highlight-card,
+.ccg-utility-card {
+    background-blend-mode: soft-light;
+}
+
+/* ULTRA SAFE PATCH — smoother hover animation */
+.ccg-btn,
+.ccg-social-card,
+.ccg-collection-card,
+.ccg-highlight-card,
+.ccg-utility-card {
+    transition-timing-function: cubic-bezier(.28,.11,.32,1);
+}
+
 .ccg-collection-card:hover,
 .ccg-highlight-card:hover,
 .ccg-utility-card:hover {
@@ -1002,6 +1052,11 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
 .ccg-footer-inner {
     font-size: 0.76rem;
     color: rgba(205, 215, 240, 0.85);
+}
+
+/* ULTRA SAFE PATCH — footer text clarity */
+.ccg-footer-inner {
+    text-rendering: optimizeLegibility;
 }
 
 .ccg-footer-text {
@@ -1098,7 +1153,16 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
         flex-direction: row;
         justify-content: space-between;
     }
-   
+
+   /* ULTRA SAFE PATCH — retina hover stabiliser */
+@media (min-width: 1200px) {
+    .ccg-collection-card:hover,
+    .ccg-highlight-card:hover,
+    .ccg-utility-card:hover {
+        transform: translateY(-1px) translateZ(0);
+    }
+}
+
 /* ULTRA SAFE PATCH — CRT shimmer softening for high DPI */
 @media (min-width: 1600px) {
     .ccg-bg-crt-overlay {
