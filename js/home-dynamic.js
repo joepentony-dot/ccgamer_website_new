@@ -295,7 +295,7 @@
         }
 
         if (!parts.length) {
-            return 'Retro goodness queued up from the Cheeky Commodore Gamer vault.';
+            return 'Retro classics queued up from the Cheeky Commodore Gamer vault.';
         }
 
         return parts.join(' • ');
