@@ -88,15 +88,26 @@
     }
 
     function normaliseThumb(raw) {
-        if (!raw) return '';
-        if (/^https?:\/\//i.test(raw)) return raw; // already absolute
+    if (!raw) return '';
 
-        const base = getBasePrefix();
+    // absolute URLs remain untouched
+    if (/^https?:\/\//i.test(raw)) return raw;
 
-        // Remove any leading slash so we can safely re-build from site root.
-        const cleaned = raw.replace(/^\/+/, '');
-        return base + '/' + cleaned;
+    const base = getBasePrefix();
+    let cleaned = raw.trim();
+
+    // If already prefixed with /ccgamer_website_new/, do NOT reapply prefix
+    if (cleaned.startsWith(base + '/')) {
+        return cleaned; 
     }
+
+    // If path starts with a leading slash, remove it for safe concatenation
+    cleaned = cleaned.replace(/^\/+/, '');
+
+    // Final resolved URL
+    return base + '/' + cleaned;
+}
+
 
     // -------------------------------
     // MAIN HYDRATION LOGIC
