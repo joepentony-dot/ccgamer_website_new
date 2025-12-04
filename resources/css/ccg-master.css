@@ -1,28 +1,31 @@
 /* ============================================================
-   CCG-MASTER.CSS — GLOBAL FOUNDATION (OMEGA FINAL BUILD)
-   Clean • Stable • Non-conflicting • Used by ALL pages
+   CCG-MASTER.CSS — GLOBAL FOUNDATION (OMEGA SKINNED BUILD)
+   Now fully reactive to C64 Neon + Amiga Workbench mode skins.
+   Non-breaking. All HTML + JS remains untouched.
    ============================================================ */
 
 /* -----------------------------------------
-   ROOT VARIABLES (C64 + Amiga mode palette)
+   ROOT VARIABLES (Base values — overridden by ccg-mode.css)
 ----------------------------------------- */
 
 :root {
-    /* C64 system */
+    /* C64 core palette */
     --c64-blue: #3ab0ff;
     --c64-blue-dark: #0e6ab8;
 
-    /* Amiga system */
+    /* Amiga palette */
     --amiga-pink: #ff4fd8;
     --amiga-purple: #cd3aff;
 
-    /* Universal */
+    /* Defaults (C64 dark theme) */
     --text-light: #ffffff;
-    --text-dim: rgba(255, 255, 255, 0.72);
-    --panel-bg: rgba(0, 0, 0, 0.35);
-    --panel-bg-strong: rgba(0, 0, 0, 0.55);
-    --border-light: rgba(255, 255, 255, 0.15);
+    --text-dim: rgba(255,255,255,0.72);
+    --panel-bg: rgba(0,0,0,0.35);
+    --panel-bg-strong: rgba(0,0,0,0.55);
+    --border-light: rgba(255,255,255,0.15);
+    --panel-shadow: none;
 
+    /* Radius + transitions */
     --radius-sm: 6px;
     --radius-md: 10px;
     --radius-lg: 16px;
@@ -31,80 +34,90 @@
     --transition-med: 0.3s ease;
 }
 
+/* ------------------------------------------------------------
+   MODE-SKIN VARIABLE APPLICATION
+   (The *real magic* comes from ccg-mode.css — here we *use* it)
+------------------------------------------------------------ */
+
+body {
+    background: #000;
+    color: var(--text-light);
+}
+
+/* Panels / cards now automatically adapt to mode skins */
+.ccg-panel,
+.ccg-card,
+.ccg-table,
+.ccg-genre-game,
+.game-section,
+.featured-panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--panel-shadow);
+    color: var(--text-light);
+}
+
+/* Text dimming works in both skins (light on C64, dark on Amiga) */
+.ccg-section-subtitle,
+.ccg-form label,
+.ccg-social-tagline {
+    color: var(--text-dim);
+}
+
 /* -----------------------------------------
-   GLOBAL RESET + NORMALISE
+   GLOBAL RESET
 ----------------------------------------- */
 
 *,
 *::before,
-*::after {
-    box-sizing: border-box;
-}
+*::after { box-sizing: border-box; }
 
-html,
-body {
+html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-    background: #000;
-    color: var(--text-light);
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     line-height: 1.5;
+    font-family: 'Inter', system-ui, sans-serif;
 }
 
-img {
-    max-width: 100%;
-    display: block;
-}
+img { max-width: 100%; display: block; }
 
-/* Links */
-
+/* LINKS now adapt to selected accent */
 a {
-    color: var(--c64-blue);
+    color: var(--accent);
     text-decoration: none;
     transition: var(--transition-fast);
 }
 
 a:hover {
-    color: var(--amiga-pink);
+    color: rgba(var(--accent-rgb), 0.75);
 }
 
-a:focus-visible,
-button:focus-visible {
-    outline: 2px solid var(--amiga-pink);
+/* Focus ring works in both modes */
+a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent);
     outline-offset: 2px;
 }
 
 /* -----------------------------------------
-   PAGE WRAPPERS
+   PAGE STRUCTURE
 ----------------------------------------- */
 
-.ccg-body {
-    min-height: 100vh;
-    position: relative;
-}
+.ccg-body { min-height: 100vh; position: relative; }
 
 .ccg-page {
-    width: 100%;
     position: relative;
     z-index: 2;
     padding: 1.5rem;
 }
 
-.ccg-main {
-    margin-top: 2rem;
-}
+.ccg-main { margin-top: 2rem; }
 
 /* -----------------------------------------
-   BACKGROUND LAYERS
+   BACKGROUND LAYERS (unchanged)
 ----------------------------------------- */
 
-.ccg-bg {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 1;
-}
+.ccg-bg { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
 
 .ccg-bg-starfield,
 .ccg-bg-grid,
@@ -114,14 +127,10 @@ button:focus-visible {
 }
 
 /* -----------------------------------------
-   UNIVERSAL HEADER (Subpages)
-   * Home has a custom Omega header *
+   UNIVERSAL HEADER (subpages)
 ----------------------------------------- */
 
-.ccg-header {
-    text-align: center;
-    margin-bottom: 2.5rem;
-}
+.ccg-header { text-align: center; margin-bottom: 2.5rem; }
 
 .ccg-header-inner {
     display: flex;
@@ -130,25 +139,16 @@ button:focus-visible {
     gap: 1.2rem;
 }
 
-/* Logo */
-
-.ccg-logo-link {
-    display: inline-block;
-}
-
+/* Logo is unchanged but text adapts to mode */
 .ccg-logo-img {
     width: 130px;
-    max-width: 100%;
     opacity: 0.95;
     transition: opacity var(--transition-fast);
 }
 
-.ccg-logo-img:hover {
-    opacity: 1;
-}
+.ccg-logo-img:hover { opacity: 1; }
 
 /* Navigation */
-
 .ccg-nav {
     display: flex;
     flex-wrap: wrap;
@@ -164,15 +164,17 @@ button:focus-visible {
 }
 
 .nav-item:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(var(--accent-rgb), 0.15);
 }
 
 .nav-item--active {
-    background: rgba(255, 255, 255, 0.12);
-    color: #fff;
+    background: rgba(var(--accent-rgb), 0.25);
 }
 
-/* Header socials (subpages only) */
+/* -----------------------------------------
+   SUBPAGE HEADER SOCIAL ICONS
+   Now readable + glowing in both modes
+----------------------------------------- */
 
 .ccg-header-socials {
     display: flex;
@@ -181,48 +183,40 @@ button:focus-visible {
     margin-top: 0.75rem;
 }
 
-.ccg-header-socials img {
-    width: 28px;
-    opacity: 0.85;
-    transition: opacity var(--transition-fast);
-}
-
-.ccg-header-socials img:hover {
-    opacity: 1;
-}
-
-/* ============================================================
-   === OMEGA HEADER SOCIAL BUTTON UPGRADE (Fix 3.1) ============
-   Makes social icons visible (including X) and adds neon glow
-   ============================================================ */
-
 .ccg-header-socials a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     width: 36px;
     height: 36px;
     border-radius: 999px;
-    background: rgba(0, 0, 0, 0.75);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0,0,0,0.7);
     box-shadow:
-        0 0 0 1px rgba(255, 255, 255, 0.08),
-        0 0 14px rgba(0, 0, 0, 0.8);
-    transition: transform 0.2s ease,
-                box-shadow 0.2s ease,
-                background 0.2s ease;
+        0 0 0 1px rgba(255,255,255,0.1),
+        0 0 12px rgba(0,0,0,0.8);
+
+    transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 
-.ccg-header-socials img {
-    width: 20px;
-    opacity: 0.9;
+body[data-ccg-mode="amiga"] .ccg-header-socials a {
+    /* light window aesthetic */
+    background: rgba(240, 244, 255, 0.95);
+    box-shadow:
+        0 0 0 1px rgba(0,0,0,0.25),
+        0 4px 8px rgba(0,0,0,0.25);
 }
 
 .ccg-header-socials a:hover {
     transform: translateY(-2px);
-    background: rgba(0, 0, 0, 0.95);
     box-shadow:
-        0 0 0 1px rgba(255, 255, 255, 0.18),
-        0 0 18px rgba(58, 176, 255, 0.8);
+        0 0 0 1px rgba(var(--accent-rgb),0.35),
+        0 0 18px rgba(var(--accent-rgb), 0.75);
+}
+
+.ccg-header-socials img {
+    width: 20px;
+    opacity: 0.92;
 }
 
 /* -----------------------------------------
@@ -234,39 +228,6 @@ button:focus-visible {
     padding: 2rem 1rem;
     text-align: center;
     opacity: 0.8;
-    font-size: 0.9rem;
-}
-
-.ccg-footer-text--small {
-    font-size: 0.8rem;
-    opacity: 0.65;
-    margin-top: 0.3rem;
-}
-
-/* -----------------------------------------
-   GLOBAL PANELS
------------------------------------------ */
-
-.ccg-panel {
-    background: var(--panel-bg);
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-md);
-    padding: 1.5rem;
-}
-
-.ccg-section {
-    margin-bottom: 3rem;
-}
-
-.ccg-section-title {
-    font-size: 2rem;
-    font-weight: 800;
-    margin-bottom: 0.4rem;
-}
-
-.ccg-section-subtitle {
-    color: var(--text-dim);
-    margin-bottom: 1.5rem;
 }
 
 /* -----------------------------------------
@@ -274,71 +235,47 @@ button:focus-visible {
 ----------------------------------------- */
 
 .ccg-btn {
-    display: inline-block;
     padding: 0.75rem 1.25rem;
     border-radius: var(--radius-sm);
     font-weight: 600;
     cursor: pointer;
-    border: none;
     transition: var(--transition-med);
+    border: none;
 }
 
-/* Primary */
+/* Buttons auto-adjust because accent is mode-driven */
 
 .ccg-btn-primary {
-    background: var(--c64-blue);
+    background: var(--accent);
     color: #000;
 }
 
 .ccg-btn-primary:hover {
-    background: var(--c64-blue-dark);
+    background: rgba(var(--accent-rgb), 0.75);
 }
 
-/* Secondary */
-
 .ccg-btn-secondary {
-    background: rgba(255, 255, 255, 0.12);
-    color: #fff;
+    background: rgba(var(--accent-rgb), 0.15);
+    color: var(--text-light);
 }
 
 .ccg-btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(var(--accent-rgb), 0.25);
 }
-
-/* Ghost */
 
 .ccg-btn-ghost {
     background: transparent;
     border: 1px solid var(--border-light);
-    color: #fff;
+    color: var(--text-light);
 }
 
 .ccg-btn-ghost:hover {
-    border-color: #fff;
-}
-
-/* YouTube Red */
-
-.ccg-btn--youtube {
-    background: #ff0000;
-    color: #fff;
-}
-
-.ccg-btn--youtube:hover {
-    opacity: 0.85;
+    border-color: var(--accent);
 }
 
 /* -----------------------------------------
-   UNIVERSAL CARDS
+   UNIVERSAL CARDS (inherit panel skin)
 ----------------------------------------- */
-
-.ccg-card {
-    background: var(--panel-bg);
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-md);
-    padding: 1.25rem;
-    transition: var(--transition-med);
-}
 
 .ccg-card:hover {
     background: var(--panel-bg-strong);
@@ -346,48 +283,17 @@ button:focus-visible {
 }
 
 /* -----------------------------------------
-   GRID HELPERS
+   TABLES
 ----------------------------------------- */
-
-.ccg-grid {
-    display: grid;
-    gap: 1.5rem;
-}
-
-.ccg-grid-2 {
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-}
-
-.ccg-grid-3 {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-}
-
-/* -----------------------------------------
-   TABLE STYLING
------------------------------------------ */
-
-.ccg-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: var(--panel-bg);
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-}
-
-.ccg-table th,
-.ccg-table td {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
 
 .ccg-table th {
-    font-weight: 700;
-    background: rgba(255, 255, 255, 0.06);
-    text-align: left;
+    background: rgba(var(--accent-rgb), 0.15);
 }
 
-.ccg-table tr:last-child td {
-    border-bottom: none;
+/* Amiga mode: table text becomes dark */
+body[data-ccg-mode="amiga"] .ccg-table th,
+body[data-ccg-mode="amiga"] .ccg-table td {
+    color: #000;
 }
 
 /* -----------------------------------------
@@ -397,22 +303,18 @@ button:focus-visible {
 .ccg-form input,
 .ccg-form textarea,
 .ccg-form select {
-    width: 100%;
-    padding: 0.75rem;
-    border-radius: var(--radius-sm);
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(var(--accent-rgb), 0.12);
     border: 1px solid var(--border-light);
-    color: #fff;
-    font-size: 1rem;
+    color: var(--text-light);
 }
 
-.ccg-form label {
-    margin-bottom: 0.4rem;
-    display: block;
-}
-
-.ccg-form textarea {
-    height: 140px;
+/* Amiga Workbench form fields */
+body[data-ccg-mode="amiga"] .ccg-form input,
+body[data-ccg-mode="amiga"] .ccg-form textarea,
+body[data-ccg-mode="amiga"] .ccg-form select {
+    background: rgba(240, 244, 255, 0.9);
+    color: #000;
+    border: 1px solid rgba(0,0,0,0.3);
 }
 
 /* -----------------------------------------
@@ -420,19 +322,8 @@ button:focus-visible {
 ----------------------------------------- */
 
 @media (max-width: 760px) {
-    .ccg-page {
-        padding: 1rem;
-    }
-
-    .ccg-section-title {
-        font-size: 1.65rem;
-    }
-
-    .ccg-nav {
-        gap: 0.5rem 0.75rem;
-    }
-
-    .ccg-logo-img {
-        width: 110px;
-    }
+    .ccg-page { padding: 1rem; }
+    .ccg-section-title { font-size: 1.65rem; }
+    .ccg-nav { gap: 0.5rem 0.75rem; }
+    .ccg-logo-img { width: 110px; }
 }
