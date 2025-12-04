@@ -1,31 +1,134 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ccg-page="quiz-leaderboard">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Leaderboard | Cheeky Commodore Gamer</title>
 
+    <title>Quiz Leaderboard | Cheeky Commodore Gamer</title>
+    <meta name="description" content="View the Retro Quiz leaderboard and see who holds the highest score this month.">
+
+    <link rel="icon" href="../favicon.ico">
+
+    <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="../resources/css/ccg-master.css">
+    <link rel="stylesheet" href="../resources/css/ccg-mode.css">
+    <link rel="stylesheet" href="../resources/css/ccg-effects.css">
+    <link rel="stylesheet" href="../resources/css/ccg-anim.css">
+    <link rel="stylesheet" href="../resources/css/ccg-overlays.css">
+    <link rel="stylesheet" href="../resources/css/ccg-modal.css">
+
+    <!-- QUIZ-SPECIFIC PAGE CSS (optional) -->
+    <link rel="stylesheet" href="../resources/css/quiz.css">
 </head>
 
-<body class="crt c64-mode">
+<body class="ccg-body" data-ccg-mode="c64">
 
-<header class="topnav">
-    <a href="../home.html">HOME</a>
-    <a href="../complete-index.html">COMPLETE INDEX</a>
-    <a href="../games/genres/index.html">GENRES</a>
-    <a href="quiz.html">QUIZ</a>
-</header>
+    <!-- =========================================================
+         GLOBAL BACKGROUND (STARFIELD / GRID / CRT)
+    ========================================================= -->
+    <div class="ccg-bg">
+        <div class="ccg-bg-starfield"></div>
+        <div class="ccg-bg-grid"></div>
+        <div class="ccg-bg-crt-overlay"></div>
+    </div>
 
-<main class="leaderboard-main">
-    <h1 class="site-title">QUIZ LEADERBOARD</h1>
-    <p class="subtitle">Fetching data…</p>
+    <div class="ccg-page ccg-page--quiz-leaderboard">
 
-    <section id="leaderboard-root"></section>
-</main>
+        <!-- =====================================================
+             UNIVERSAL OMEGA SUBPAGE HEADER
+        ===================================================== -->
+        <header class="ccg-header">
+            <div class="ccg-header-inner">
 
-<script src="../js/quiz-loader.js"></script>
-<script src="../js/ccj-global.js"></script>
+                <!-- Logo -->
+                <a href="../home.html" class="ccg-logo-link">
+                    <img src="../resources/ccgamer_logo.png"
+                         alt="Cheeky Commodore Gamer logo"
+                         class="ccg-logo-img">
+                </a>
+
+                <!-- Navigation -->
+                <nav class="ccg-nav">
+                    <a href="../home.html" class="nav-item">Home</a>
+                    <a href="../games/index.html" class="nav-item">Games</a>
+                    <a href="../games/genres/index.html" class="nav-item">Genres</a>
+                    <a href="../games/collections/index.html" class="nav-item">Collections</a>
+                    <a href="quiz.html" class="nav-item">Quiz</a>
+                    <a href="quiz-leaderboard.html" class="nav-item nav-item--active">Leaderboard</a>
+                    <a href="../complete-index.html" class="nav-item">Index</a>
+                    <a href="../about.html" class="nav-item">About</a>
+                    <a href="../contact.html" class="nav-item">Contact</a>
+                </nav>
+
+                <!-- Mode Toggle -->
+                <button
+                    class="ccg-mode-toggle"
+                    type="button"
+                    aria-label="Toggle system mode"
+                    data-ccg-mode-toggle="true"
+                >
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--c64">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="../resources/icons/c64.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">C64</span>
+                    </span>
+
+                    <span class="ccg-mode-toggle-knob"></span>
+
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--amiga">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="../resources/icons/amiga.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">Amiga</span>
+                    </span>
+                </button>
+
+            </div>
+        </header>
+
+        <!-- =====================================================
+             QUIZ LEADERBOARD CONTENT
+        ===================================================== -->
+        <main class="ccg-main ccg-main--quiz-leaderboard">
+
+            <section class="ccg-section">
+                <h1 class="ccg-section-title">Quiz Leaderboard</h1>
+                <p class="ccg-section-subtitle">
+                    See who holds the top retro brain score this month.
+                </p>
+            </section>
+
+            <section class="ccg-section">
+                <div id="leaderboard-root" class="quiz-leaderboard-container">
+                    <p class="ccg-section-subtitle">Fetching leaderboard data…</p>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- =====================================================
+             FOOTER
+        ===================================================== -->
+        <footer class="ccg-footer">
+            <div class="ccg-footer-inner">
+                <p class="ccg-footer-text">© 2025 Cheeky Commodore Gamer.</p>
+                <p class="ccg-footer-text ccg-footer-text--small">
+                    Not affiliated with Commodore or Amiga.
+                </p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- =========================================================
+         JS
+    ========================================================= -->
+    <script src="../js/ccg-mode-engine.js" defer></script>
+    <script src="../js/ccj-global.js" defer></script>
+
+    <!-- QUIZ DATA LOADER -->
+    <script src="../js/quiz-loader.js" defer></script>
 
 </body>
 </html>
