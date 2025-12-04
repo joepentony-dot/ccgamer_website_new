@@ -1,0 +1,72 @@
+/* ============================================================
+   EMULATION HUB
+   Dedicated styling for emulator cards, setup steps and helper tips.
+   ============================================================ */
+
+.emu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+}
+
+.emu-card {
+    position: relative;
+    padding: 1.25rem;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.15), rgba(0,0,0,0) 55%), var(--panel-bg);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--panel-shadow);
+    display: grid;
+    gap: 0.35rem;
+}
+
+.emu-card h3 {
+    margin: 0;
+    letter-spacing: 0.02em;
+}
+
+.emu-meta {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+}
+
+.emu-tags {
+    display: flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    margin-top: 0.35rem;
+}
+
+.emu-tag {
+    background: rgba(var(--accent-rgb), 0.14);
+    border: 1px solid rgba(var(--accent-rgb), 0.3);
+    border-radius: var(--radius-sm);
+    padding: 0.25rem 0.55rem;
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+.emu-step-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.7rem;
+}
+
+.emu-step {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.1rem;
+    display: grid;
+    gap: 0.35rem;
+}
+
+.emu-step strong {
+    letter-spacing: 0.03em;
+}
+
+@media (max-width: 640px) {
+    .emu-link-row { justify-content: center; }
+}
