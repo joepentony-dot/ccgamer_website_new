@@ -22,7 +22,7 @@
     margin: 0 auto;
 }
 
-/* ULTRA SAFE PATCH — restore CRT overlay */
+/* Global CRT overlay used on this page */
 .ccg-bg-crt-overlay {
     pointer-events: none;
     position: fixed;
@@ -32,8 +32,8 @@
     background:
         repeating-linear-gradient(
             to bottom,
-            rgba(255,255,255,0.02) 0px,
-            rgba(255,255,255,0.02) 1px,
+            rgba(255, 255, 255, 0.02) 0px,
+            rgba(255, 255, 255, 0.02) 1px,
             transparent 1px,
             transparent 3px
         );
@@ -42,25 +42,7 @@
 /* -----------------------------------------
    HEADER — OMEGA FUSION
 ----------------------------------------- */
-/* ULTRA SAFE PATCH — mode toggle alignment */
-.ccg-header-right {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
 
-/* ULTRA SAFE PATCH — balanced neon glow */
-.ccg-header--omega,
-.ccg-hero-inner {
-    backdrop-filter: saturate(1.05) brightness(1.03);
-}
-
-.ccg-mode-toggle {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
 .ccg-header--omega {
     max-width: 1440px;
     margin: 0 auto 1.8rem;
@@ -77,6 +59,7 @@
         0 0 60px rgba(255, 0, 255, 0.18);
     position: relative;
     overflow: hidden;
+    backdrop-filter: saturate(1.05) brightness(1.03);
 }
 
 .ccg-header--omega::before {
@@ -105,15 +88,17 @@
 
 .ccg-header-top {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     gap: 1.25rem;
     margin-bottom: 1.45rem;
 }
 
-/* ULTRA SAFE PATCH — header vertical alignment */
-.ccg-header-top {
-    align-items: flex-start;
+.ccg-header-left,
+.ccg-header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
 
 .ccg-logo-link {
@@ -130,6 +115,15 @@
     image-rendering: crisp-edges;
 }
 
+/* Mode toggle placement (main styling in omega-mode-toggle.css) */
+
+.ccg-mode-toggle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Header main row */
 
 .ccg-header-main {
@@ -141,9 +135,8 @@
 
 .ccg-header-title-block {
     max-width: 540px;
-    margin-bottom: 0.35rem; /* PATCH 8 */
+    margin-bottom: 0.35rem;
 }
-
 
 .ccg-header-title {
     margin: 0 0 0.35rem;
@@ -188,10 +181,6 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-}
-
-/* ULTRA SAFE PATCH — header social vertical correction */
-.ccg-header-social-wrap {
     margin-top: 0.25rem;
 }
 
@@ -273,7 +262,7 @@
     letter-spacing: 0.06em;
 }
 
-/* Card flavour tweaks */
+/* Social card flavour */
 
 .ccg-social-card--youtube {
     background: radial-gradient(
@@ -340,6 +329,7 @@
     min-height: 220px;
     display: grid;
     grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.2fr);
+    backdrop-filter: saturate(1.05) brightness(1.03);
 }
 
 /* Hero media / art */
@@ -347,10 +337,6 @@
 .ccg-hero-media {
     position: relative;
     overflow: hidden;
-}
-
-/* ULTRA SAFE PATCH — hero media height stabiliser */
-.ccg-hero-media {
     min-height: 240px;
 }
 
@@ -364,8 +350,6 @@
     transition: opacity 320ms ease-out;
     filter: saturate(1.1) contrast(1.05);
 }
-
-/* Use real hero art, with a subtle overlay baked in */
 
 .ccg-hero-image-c64 {
     background-image:
@@ -389,7 +373,7 @@
         url("../images/hero/ccg-hero-amiga.png");
 }
 
-/* Mode-based crossfade (uses data-ccg-mode on <body>) */
+/* Mode-based crossfade */
 
 body[data-ccg-mode="c64"] .ccg-hero-image-c64 {
     opacity: 1;
@@ -459,28 +443,19 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: rgba(187, 203, 255, 0.9);
-}
-
-/* ULTRA SAFE PATCH — hero baseline alignment */
-.ccg-hero-eyebrow,
-.ccg-hero-title {
     line-height: 1.1;
 }
 
 .ccg-hero-title {
     margin: 0;
     font-size: clamp(1.5rem, 2.2vw + 0.4rem, 2.1rem);
-    line-height: 1.05;
+    line-height: 1.1;
     text-transform: uppercase;
     letter-spacing: 0.12em;
     color: #fdfdff;
     text-shadow:
         0 0 10px rgba(0, 255, 255, 0.6),
         0 0 22px rgba(255, 0, 200, 0.7);
-}
-
-/* ULTRA SAFE PATCH — hero title glow smoothing */
-.ccg-hero-title {
     filter: drop-shadow(0 0 4px rgba(255, 0, 200, 0.4));
 }
 
@@ -503,10 +478,6 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.6rem;
     margin-top: 0.6rem;
-}
-
-/* ULTRA SAFE PATCH — hero buttons overflow fix */
-.ccg-hero-buttons {
     width: 100%;
     box-sizing: border-box;
 }
@@ -520,8 +491,35 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
     white-space: nowrap;
 }
 
-/* Button flavour */
+.ccg-hero-hint {
+    margin: 0.2rem 0 0;
+    font-size: 0.78rem;
+    color: rgba(190, 210, 255, 0.8);
+}
 
+/* Button flavours */
+
+.ccg-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.55rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 0.82rem;
+    transition:
+        transform 160ms ease-out,
+        box-shadow 160ms ease-out,
+        border-color 160ms ease-out,
+        background 160ms ease-out;
+}
+
+.ccg-btn-primary,
 .ccg-btn--primary {
     background: radial-gradient(circle at top, #00d8ff, #0092ff);
     color: #00121f;
@@ -531,6 +529,7 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
     border: none;
 }
 
+.ccg-btn-secondary,
 .ccg-btn--secondary {
     background: radial-gradient(circle at top, #ff3bbb, #ff0081);
     color: #ffffff;
@@ -540,6 +539,7 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
     border: none;
 }
 
+.ccg-btn-accent,
 .ccg-btn--accent {
     background: radial-gradient(circle at top, #ff9dff, #ff41f9);
     color: #ffffff;
@@ -549,6 +549,7 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
     border: none;
 }
 
+.ccg-btn-ghost,
 .ccg-btn--ghost {
     background: rgba(0, 15, 40, 0.5);
     border: 1px solid rgba(0, 200, 255, 0.7);
@@ -558,23 +559,19 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
         0 0 26px rgba(0, 0, 0, 1);
 }
 
-.ccg-hero-hint {
-    margin: 0.2rem 0 0;
-    font-size: 0.78rem;
-    color: rgba(190, 210, 255, 0.8);
+.ccg-btn--youtube {
+    background: #ff0000;
+    border-color: #ff0000;
+    color: #fff;
 }
 
 /* -----------------------------------------
    HOME SECTION SHARED STYLES
 ----------------------------------------- */
 
-/* ULTRA SAFE PATCH — section boundary clarity */
-.home-section + .home-section {
-    margin-top: 2.7rem;
-}
 .home-section {
     max-width: 1440px;
-    margin: 0 auto 2.5rem;
+    margin: 0 auto 2.6rem;
     padding: 1.6rem 1.6rem 1.7rem;
     border-radius: 1.4rem;
     background: radial-gradient(
@@ -589,9 +586,8 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
     overflow: hidden;
 }
 
-/* ULTRA SAFE PATCH — vertical rhythm correction */
-.home-section {
-    margin-bottom: 2.6rem; /* was 2.5rem */
+.home-section + .home-section {
+    margin-top: 2.7rem;
 }
 
 .home-section::before {
@@ -619,10 +615,6 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
     text-transform: uppercase;
     letter-spacing: 0.18em;
     color: #fdfdff;
-}
-
-/* ULTRA SAFE PATCH — section header glow finesse */
-.home-section-title {
     text-shadow:
         0 0 6px rgba(0, 255, 255, 0.35),
         0 0 14px rgba(255, 0, 180, 0.3);
@@ -647,9 +639,8 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
     display: grid;
     grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
     gap: 1.25rem;
-    align-items: stretch; /* ADDED */
+    align-items: stretch;
 }
-
 
 .featured-panel {
     border-radius: 1.1rem;
@@ -797,18 +788,12 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    align-items: center; /* PATCH 15 */
+    align-items: center;
 }
 
 .featured-panel-footer .ccg-btn {
     font-size: 0.8rem;
     padding-block: 0.45rem;
-}
-
-.ccg-btn--youtube {
-    background: #ff0000;
-    border-color: #ff0000;
-    color: #fff;
 }
 
 /* -----------------------------------------
@@ -825,6 +810,7 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
     );
     gap: 0.9rem;
     align-items: stretch;
+    padding-bottom: 1px;
 }
 
 .ccg-genre-card {
@@ -858,7 +844,7 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
 .ccg-genre-card img {
     display: block;
     width: 100%;
-    height: 115px;        /* ULTRA SAFE PATCH — unified height */
+    height: 115px;
     object-fit: cover;
     image-rendering: crisp-edges;
 }
@@ -923,7 +909,7 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
 .ccg-utility-card {
     position: relative;
     padding: 0.9rem 1rem;
-    border-radius: 1rem;
+    border-radius: 1.05rem;
     text-decoration: none;
     background: linear-gradient(
         145deg,
@@ -942,29 +928,7 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
         box-shadow 160ms ease-out,
         border-color 160ms ease-out,
         background 160ms ease-out;
-}
-
-/* ULTRA SAFE PATCH — rounding harmony */
-.ccg-collection-card,
-.ccg-highlight-card,
-.ccg-utility-card {
-    border-radius: 1.05rem;
-}
-
-/* ULTRA SAFE PATCH — unified card contrast */
-.ccg-collection-card,
-.ccg-highlight-card,
-.ccg-utility-card {
     background-blend-mode: soft-light;
-}
-
-/* ULTRA SAFE PATCH — smoother hover animation */
-.ccg-btn,
-.ccg-social-card,
-.ccg-collection-card,
-.ccg-highlight-card,
-.ccg-utility-card {
-    transition-timing-function: cubic-bezier(.28,.11,.32,1);
 }
 
 .ccg-collection-card:hover,
@@ -975,12 +939,6 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
     box-shadow:
         0 0 0 1px rgba(255, 255, 255, 0.35),
         0 0 26px rgba(0, 255, 255, 0.5);
-}
-
-/* ULTRA SAFE PATCH — neon hover consistency */
-.ccg-collection-card:hover,
-.ccg-highlight-card:hover,
-.ccg-utility-card:hover {
     background: linear-gradient(
         145deg,
         rgba(10, 12, 50, 0.98),
@@ -1052,10 +1010,6 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
 .ccg-footer-inner {
     font-size: 0.76rem;
     color: rgba(205, 215, 240, 0.85);
-}
-
-/* ULTRA SAFE PATCH — footer text clarity */
-.ccg-footer-inner {
     text-rendering: optimizeLegibility;
 }
 
@@ -1070,10 +1024,22 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
 }
 
 /* -----------------------------------------
+   GLOBAL INTERACTION CURVES
+----------------------------------------- */
+
+.ccg-btn,
+.ccg-social-card,
+.ccg-collection-card,
+.ccg-highlight-card,
+.ccg-utility-card {
+    transition-timing-function: cubic-bezier(.28, .11, .32, 1);
+}
+
+/* -----------------------------------------
    RESPONSIVE TWEAKS
 ----------------------------------------- */
 
-/* ULTRA SAFE PATCH — mid-width grid rounding fix */
+/* Mid-width grid rounding fix */
 @media (max-width: 1200px) and (min-width: 981px) {
     .home-featured-grid {
         align-items: start;
@@ -1133,6 +1099,7 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
 
     .ccg-hero-media {
         height: 170px;
+        min-height: 170px;
     }
 
     .ccg-hero-content {
@@ -1154,21 +1121,6 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
         justify-content: space-between;
     }
 
-   /* ULTRA SAFE PATCH — retina hover stabiliser */
-@media (min-width: 1200px) {
-    .ccg-collection-card:hover,
-    .ccg-highlight-card:hover,
-    .ccg-utility-card:hover {
-        transform: translateY(-1px) translateZ(0);
-    }
-}
-
-/* ULTRA SAFE PATCH — CRT shimmer softening for high DPI */
-@media (min-width: 1600px) {
-    .ccg-bg-crt-overlay {
-        opacity: 0.14;
-    }
-}
     .ccg-logo-img {
         height: 36px;
     }
@@ -1186,13 +1138,25 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-   /* ULTRA SAFE PATCH — genre grid anti-crop alignment */
-.ccg-genre-grid {
-    padding-bottom: 1px;
-}
     .ccg-collections-grid,
     .ccg-highlights-grid,
     .ccg-utilities-grid {
         grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* Retina hover stabiliser */
+@media (min-width: 1200px) {
+    .ccg-collection-card:hover,
+    .ccg-highlight-card:hover,
+    .ccg-utility-card:hover {
+        transform: translateY(-1px) translateZ(0);
+    }
+}
+
+/* CRT shimmer softening for large / high DPI */
+@media (min-width: 1600px) {
+    .ccg-bg-crt-overlay {
+        opacity: 0.14;
     }
 }
