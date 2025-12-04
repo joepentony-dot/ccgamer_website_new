@@ -1,237 +1,43 @@
 /* ============================================================
-   CHEEKY COMMODORE GAMER — EFFECTS & VISUAL OVERLAYS
-   CRT LAYERS • SCANLINES • GRID • STARFIELD • NEON OUTER GLOWS
-   ULTRA EPIC NEON EFFECTS 😇🕹️👌
+   CCG-EFFECTS.CSS — CRT, Neon & Bloom FX
+   Omega Standard Restore
    ============================================================ */
 
-
-/* ------------------------------------------------------------
-   GLOBAL CRT OVERLAY (used on many pages)
------------------------------------------------------------- */
-
-.crt-overlay {
-    position: fixed;
-    inset: 0;
+/* Soft CRT Overlay */
+.ccg-bg-crt-overlay {
     pointer-events: none;
-    z-index: 999;
-    opacity: 0.08;
-    background:
-        repeating-linear-gradient(
-            to bottom,
-            rgba(0, 0, 0, 0.45) 0px,
-            rgba(0, 0, 0, 0.45) 1px,
-            rgba(0, 0, 0, 0.0) 2px,
-            rgba(0, 0, 0, 0.0) 4px
-        );
-    mix-blend-mode: overlay;
-}
-
-
-/* ------------------------------------------------------------
-   STARFIELD EFFECT — Home hero background
------------------------------------------------------------- */
-
-.ccg-hero-overlay-starfield {
-    background-image:
-        radial-gradient(circle, rgba(255,255,255,0.45) 1px, transparent 1px),
-        radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px),
-        radial-gradient(circle, rgba(255,255,255,0.22) 1px, transparent 1px);
-
-    background-size: 3px 3px, 2px 2px, 1px 1px;
-    background-position:
-        0 0,
-        40px 80px,
-        120px 160px;
-
-    animation: ccg-starfield-float 38s linear infinite;
-    opacity: 0.26;
-}
-
-@keyframes ccg-starfield-float {
-    from { background-position: 0 0, 40px 80px, 120px 160px; }
-    to   { background-position: 0 -2000px, 40px -1920px, 120px -1860px; }
-}
-
-
-/* ------------------------------------------------------------
-   GRID LAYER (Home hero)
------------------------------------------------------------- */
-
-.ccg-hero-overlay-grid {
-    background:
-        linear-gradient(
-            rgba(0, 255, 255, 0.12) 1px,
-            transparent 1px
-        ),
-        linear-gradient(
-            to right,
-            rgba(0, 255, 255, 0.12) 1px,
-            transparent 1px
-        );
-    background-size: 42px 42px;
-    opacity: 0.13;
-    mix-blend-mode: screen;
-}
-
-
-/* ------------------------------------------------------------
-   SCANLINES
------------------------------------------------------------- */
-
-.ccg-hero-scanlines {
-    background:
-        repeating-linear-gradient(
-            to bottom,
-            rgba(0, 0, 0, 0.28) 0px,
-            rgba(0, 0, 0, 0.28) 1px,
-            rgba(0, 0, 0, 0.0) 3px,
-            rgba(0, 0, 0, 0.0) 5px
-        );
-    opacity: 0.10;
-    mix-blend-mode: multiply;
-}
-
-
-/* ------------------------------------------------------------
-   GLOW PANELS (Used by cards, genre images, etc.)
------------------------------------------------------------- */
-
-.ccg-glow-panel {
-    position: relative;
-}
-
-.ccg-glow-panel::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    box-shadow:
-        0 0 22px rgba(0, 255, 255, 0.4),
-        inset 0 0 36px rgba(0, 120, 255, 0.22);
-    pointer-events: none;
-    z-index: -1;
-}
-
-
-/* ------------------------------------------------------------
-   HOVER GLOW (general-purpose)
------------------------------------------------------------- */
-
-.ccg-hover-glow:hover {
-    filter: drop-shadow(0 0 20px var(--ccg-accent-strong));
-}
-
-
-/* ------------------------------------------------------------
-   NEON GLOW VARIABLES PER MODE
------------------------------------------------------------- */
-
-/* C64 (default neon cyan) */
-body[data-mode="c64"] .ccg-neon-text {
-    text-shadow:
-        0 0 14px #00f2ff,
-        0 0 26px #008cff;
-}
-
-/* AMIGA (neon magenta) */
-body[data-mode="amiga"] .ccg-neon-text {
-    text-shadow:
-        0 0 14px #ff4bff,
-        0 0 26px #c300ff;
-}
-
-/* ZX (glitch green) */
-body[data-mode="zx"] .ccg-neon-text {
-    text-shadow:
-        0 0 14px #00ff00,
-        0 0 26px #ffff00;
-}
-
-
-/* ------------------------------------------------------------
-   PANEL SHINE EFFECT
------------------------------------------------------------- */
-
-.ccg-panel-shine {
-    position: relative;
-    overflow: hidden;
-}
-
-.ccg-panel-shine::before {
-    content: "";
-    position: absolute;
-    top: -60%;
-    left: -40%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(
-        125deg,
-        rgba(255, 255, 255, 0.05) 0%,
-        rgba(255, 255, 255, 0.15) 50%,
-        rgba(255, 255, 255, 0.05) 100%
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.04) 0px,
+        rgba(255,255,255,0.04) 1px,
+        transparent 3px
     );
-    transform: rotate(12deg);
-    opacity: 0.2;
+    mix-blend-mode: soft-light;
+    opacity: 0.45;
 }
 
-
-/* ------------------------------------------------------------
-   SECTION SEPARATORS (soft neon glow)
------------------------------------------------------------- */
-
-.ccg-section::before {
-    content: "";
-    position: absolute;
-    top: -30px;
-    left: 50%;
-    width: 40%;
-    height: 2px;
-    transform: translateX(-50%);
-    background: linear-gradient(
-        to right,
-        rgba(0, 255, 255, 0) 0%,
-        var(--ccg-accent-strong) 50%,
-        rgba(0, 255, 255, 0) 100%
-    );
-    opacity: 0.28;
-    pointer-events: none;
+/* Neon glow for headers */
+.ccg-neon {
+    text-shadow:
+        0 0 6px var(--c64-blue),
+        0 0 12px var(--c64-blue),
+        0 0 24px var(--c64-blue);
 }
 
-
-/* ------------------------------------------------------------
-   LIGHT BLOOM (hero + featured section)
------------------------------------------------------------- */
-
-.ccg-bloom {
-    filter: brightness(1.15) saturate(1.2)
-            drop-shadow(0px 0px 16px var(--ccg-accent))
-            drop-shadow(0px 0px 32px var(--ccg-accent-strong));
+body[data-ccg-mode="amiga"] .ccg-neon {
+    text-shadow:
+        0 0 6px var(--amiga-pink),
+        0 0 12px var(--amiga-pink),
+        0 0 24px var(--amiga-pink);
 }
 
-
-/* ------------------------------------------------------------
-   GLOW DOTS (futuristic tiny lightpoints)
------------------------------------------------------------- */
-
-.ccg-lightpoint {
-    width: 6px;
-    height: 6px;
-    background: var(--ccg-accent-strong);
-    border-radius: 50%;
-    box-shadow:
-        0 0 18px var(--ccg-accent),
-        0 0 32px var(--ccg-accent-strong);
+/* Panel glow */
+.ccg-panel {
+    box-shadow: 0 0 18px rgba(0,0,0,0.4);
 }
 
-
-/* ------------------------------------------------------------
-   BACKDROP BLUR UTILITIES
------------------------------------------------------------- */
-
-.ccg-blur-strong {
-    backdrop-filter: blur(14px);
-}
-
-.ccg-blur-soft {
-    backdrop-filter: blur(6px);
+/* Button glow on hover */
+.ccg-btn:hover {
+    transform: translateY(-2px);
+    opacity: 1;
 }
