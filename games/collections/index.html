@@ -1,68 +1,144 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ccg-page="collections-index">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Collections – CCG</title>
 
+    <title>Collections | Cheeky Commodore Gamer</title>
+    <meta name="description" content="Curated special lists from the Cheeky Commodore Gamer library.">
+
+    <link rel="icon" href="../../favicon.ico">
+
+    <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="../../resources/css/ccg-master.css">
-    <link rel="stylesheet" href="../../resources/css/genre.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-mode.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-effects.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-anim.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-overlays.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-modal.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- PAGE CSS -->
+    <link rel="stylesheet" href="../../resources/css/genre.css">
 </head>
 
-<body>
+<body class="ccg-body" data-ccg-mode="c64">
 
-<header class="ccg-header">
-    <a href="../../home.html" class="ccg-logo-link">
-        <img src="../../resources/CCGAMER LOGO.png" class="ccg-logo">
-    </a>
-
-    <div class="ccg-header-text">
-        <h1>Cheeky Commodore Gamer</h1>
-        <p>C64 & Amiga Retro Gaming Hub</p>
+    <!-- GLOBAL BACKGROUND -->
+    <div class="ccg-bg">
+        <div class="ccg-bg-starfield"></div>
+        <div class="ccg-bg-grid"></div>
+        <div class="ccg-bg-crt-overlay"></div>
     </div>
 
-    <nav class="ccg-nav">
-        <a href="../../home.html">Home</a>
-        <a href="../../complete-index.html">Complete Index</a>
-        <a href="../../quiz/index.html">Quiz Hub</a>
-        <a href="../index.html">Games Hub</a>
-    </nav>
-</header>
+    <div class="ccg-page ccg-page--collections">
 
-<main class="genre-main">
-    <h2 class="genre-title">Collections</h2>
+        <!-- =====================================================
+             UNIVERSAL SUBPAGE HEADER
+        ===================================================== -->
+        <header class="ccg-header">
+            <div class="ccg-header-inner">
 
-    <div class="collections-list">
+                <!-- Logo -->
+                <a href="../../home.html" class="ccg-logo-link">
+                    <img src="../../resources/ccgamer_logo.png"
+                         alt="Cheeky Commodore Gamer logo"
+                         class="ccg-logo-img">
+                </a>
 
-        <a class="category-card" href="../genres/top-picks.html">
-            <img src="../../resources/images/genres/top-picks.png">
-            <span>Top Picks</span>
-        </a>
+                <!-- Navigation -->
+                <nav class="ccg-nav">
+                    <a href="../../home.html" class="nav-item">Home</a>
+                    <a href="../../games/index.html" class="nav-item">Games</a>
+                    <a href="../../games/genres/index.html" class="nav-item">Genres</a>
+                    <a href="../../games/collections/index.html" class="nav-item nav-item--active">Collections</a>
+                    <a href="../../quiz/quiz.html" class="nav-item">Quiz</a>
+                    <a href="../../complete-index.html" class="nav-item">Index</a>
+                    <a href="../../about.html" class="nav-item">About</a>
+                    <a href="../../contact.html" class="nav-item">Contact</a>
+                </nav>
 
-        <a class="category-card" href="../genres/bpjs-indexed-games.html">
-            <img src="../../resources/images/genres/bpjs.png">
-            <span>BPJS Indexed</span>
-        </a>
+                <!-- Mode Toggle -->
+                <button
+                    class="ccg-mode-toggle"
+                    type="button"
+                    aria-label="Toggle system mode"
+                    data-ccg-mode-toggle="true"
+                >
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--c64">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="../../resources/icons/c64.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">C64</span>
+                    </span>
 
-        <a class="category-card" href="../genres/cartridge-games.html">
-            <img src="../../resources/images/genres/cartridge.png">
-            <span>Cartridge Games</span>
-        </a>
+                    <span class="ccg-mode-toggle-knob"></span>
 
-        <a class="category-card" href="../genres/licensed-games.html">
-            <img src="../../resources/images/genres/licensed.png">
-            <span>Licensed Games</span>
-        </a>
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--amiga">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="../../resources/icons/amiga.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">Amiga</span>
+                    </span>
+                </button>
+
+            </div>
+        </header>
+
+        <!-- =====================================================
+             MAIN CONTENT
+        ===================================================== -->
+        <main class="ccg-main">
+
+            <section class="ccg-section">
+                <h1 class="ccg-section-title">Collections & Special Lists</h1>
+                <p class="ccg-section-subtitle">
+                    Curated categories, favourites, cartridges, and BPJS-indexed classics.
+                </p>
+            </section>
+
+            <section class="ccg-section">
+                <div class="ccg-genre-grid">
+
+                    <a class="ccg-genre-card" href="../genres/top-picks.html">
+                        <img src="../../resources/images/genres/top-picks.png" alt="Top Picks">
+                        <h2>Top Picks</h2>
+                    </a>
+
+                    <a class="ccg-genre-card" href="../genres/bpjs-indexed-games.html">
+                        <img src="../../resources/images/genres/bpjs.png" alt="BPJS Indexed Games">
+                        <h2>BPJS Indexed</h2>
+                    </a>
+
+                    <a class="ccg-genre-card" href="../genres/cartridge-games.html">
+                        <img src="../../resources/images/genres/cartridge.png" alt="Cartridge Games">
+                        <h2>Cartridge Games</h2>
+                    </a>
+
+                    <a class="ccg-genre-card" href="../genres/licensed-games.html">
+                        <img src="../../resources/images/genres/licensed.png" alt="Licensed Games">
+                        <h2>Licensed Games</h2>
+                    </a>
+
+                </div>
+            </section>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="ccg-footer">
+            <div class="ccg-footer-inner">
+                <p class="ccg-footer-text">© 2025 Cheeky Commodore Gamer.</p>
+                <p class="ccg-footer-text ccg-footer-text--small">
+                    Not affiliated with Commodore or Amiga.
+                </p>
+            </div>
+        </footer>
+
     </div>
-</main>
 
-<footer class="ccg-footer">
-    <p>Cheeky Commodore Gamer – Collections Hub</p>
-</footer>
+    <!-- GLOBAL JS -->
+    <script src="../../js/ccg-mode-engine.js" defer></script>
+    <script src="../../js/ccj-global.js" defer></script>
 
 </body>
 </html>
