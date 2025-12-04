@@ -57,7 +57,7 @@
     pointer-events: none;
 }
 
-.ccg-header-inner {
+.ccg-header--omega .ccg-header-inner {
     position: relative;
     z-index: 1;
 }
@@ -232,6 +232,14 @@
     background: radial-gradient(circle at top left, rgba(0, 114, 255, 0.35), rgba(5, 5, 40, 0.95));
 }
 
+.ccg-social-card--discord {
+    background: radial-gradient(circle at top left, rgba(88, 101, 242, 0.35), rgba(5, 5, 40, 0.95));
+}
+
+.ccg-social-card--x {
+    background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.28), rgba(5, 5, 40, 0.95));
+}
+
 /* -----------------------------------------
    HERO — CINEMATIC FUSION
 ----------------------------------------- */
@@ -401,16 +409,6 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
     font-size: 0.86rem;
     padding-inline: 0.8rem;
     white-space: nowrap;
-}
-
-/* Button flavour */
-
-.ccg-btn--secondary {
-    border-color: rgba(0, 255, 255, 0.7);
-}
-
-.ccg-btn--accent {
-    border-color: rgba(255, 0, 200, 0.7);
 }
 
 .ccg-hero-hint {
