@@ -1,7 +1,6 @@
 /* ==========================================================================
-   HOME.CSS — OMEGA CINEMATIC FUSION (FINAL BUILD)
-   Complete rebuild matching final home.html exactly
-   Beautiful neon layout • C64/Amiga reactive • Perfect alignment
+   HOME.CSS — OMEGA CINEMATIC FUSION
+   Final standardised version — precise, stable, mode-safe, WOW factor
    ========================================================================== */
 
 /* -----------------------------------------
@@ -14,19 +13,18 @@
     margin: 0 auto;
     padding: 0;
     position: relative;
-    z-index: 2;
+    z-index: 4; /* above backgrounds + CRT */
 }
 
 /* ==========================================================================
    OMEGA HEADER SYSTEM
-   Restored fully to match your final home.html
-   ========================================================================== */
+   ========================================================================= */
 
 .ccg-header--omega {
     width: 100%;
     padding: 2rem 1.5rem 3rem;
     position: relative;
-    z-index: 10;
+    z-index: 15;
     text-align: center;
 }
 
@@ -36,24 +34,21 @@
     gap: 2rem;
 }
 
-/* HEADER TOP: Logo + Mode Toggle */
+/* HEADER TOP: LOGO + MODE TOGGLE */
 .ccg-header-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.ccg-header-left {
-    flex: 1;
-    display: flex;
-    justify-content: flex-start;
-}
-
+.ccg-header-left,
 .ccg-header-right {
     flex: 1;
     display: flex;
-    justify-content: flex-end;
 }
+
+.ccg-header-left  { justify-content: flex-start; }
+.ccg-header-right { justify-content: flex-end; }
 
 /* LOGO */
 .ccg-logo-img {
@@ -67,8 +62,8 @@
 }
 
 /* ==========================================================================
-   HEADER MAIN — Title, Subtitle, Navigation, Social Grid
-   ========================================================================== */
+   HEADER MAIN — TITLE / SUBTITLE / NAV / SOCIAL GRID
+   ========================================================================= */
 
 .ccg-header-main {
     display: flex;
@@ -77,7 +72,7 @@
     align-items: center;
 }
 
-/* TITLE BLOCK */
+/* TITLE */
 .ccg-header-title-block {
     text-align: center;
 }
@@ -86,27 +81,25 @@
     font-size: clamp(3rem, 6vw, 5rem);
     font-weight: 900;
     line-height: 0.85;
-    text-transform: uppercase;
     margin: 0 0 0.3rem;
+    text-transform: uppercase;
 }
 
+/* Mode-reactive title halves */
 .ccg-header-title-top {
-    display: block;
     color: var(--c64-blue);
 }
-
 .ccg-header-title-bottom {
-    display: block;
     color: var(--amiga-pink);
 }
 
+/* Subtle mode rules (duplicated intentionally for compatibility) */
 body[data-ccg-mode="c64"] .ccg-header-title-top { color: var(--c64-blue); }
-body[data-ccg-mode="c64"] .ccg-header-title-bottom { color: #fff; }
+body[data-ccg-mode="c64"] .ccg-header-title-bottom { color: #ffffff; }
 
-body[data-ccg-mode="amiga"] .ccg-header-title-top { color: #fff; }
+body[data-ccg-mode="amiga"] .ccg-header-title-top { color: #ffffff; }
 body[data-ccg-mode="amiga"] .ccg-header-title-bottom { color: var(--amiga-pink); }
 
-/* SUBTITLE */
 .ccg-header-subtitle {
     font-size: 1.15rem;
     opacity: 0.85;
@@ -126,15 +119,15 @@ body[data-ccg-mode="amiga"] .ccg-header-title-bottom { color: var(--amiga-pink);
 .ccg-main-nav-link {
     padding: 0.45rem 1rem;
     border-radius: 6px;
-    transition: background 0.2s ease, color 0.2s ease;
+    transition: background 0.2s ease;
 }
 .ccg-main-nav-link:hover {
     background: rgba(255,255,255,0.12);
 }
 
 /* ==========================================================================
-   SOCIAL GRID (Home only)
-   ========================================================================== */
+   HOME — SOCIAL GRID (reinforced against collisions)
+   ========================================================================= */
 
 .ccg-header-social-wrap {
     width: 100%;
@@ -148,6 +141,8 @@ body[data-ccg-mode="amiga"] .ccg-header-title-bottom { color: var(--amiga-pink);
     gap: 1.25rem;
     width: 100%;
     max-width: 1200px;
+    position: relative;
+    z-index: 16; /* Above hero text but below true UI */
 }
 
 .ccg-social-card {
@@ -171,10 +166,11 @@ body[data-ccg-mode="amiga"] .ccg-header-title-bottom { color: var(--amiga-pink);
     opacity: 0.95;
 }
 
-/* Social card text */
+/* Text */
 .ccg-social-main {
     flex: 1;
 }
+
 .ccg-social-label {
     font-size: 1.15rem;
     font-weight: 700;
@@ -188,26 +184,27 @@ body[data-ccg-mode="amiga"] .ccg-header-title-bottom { color: var(--amiga-pink);
     font-weight: 700;
     font-size: 0.95rem;
     opacity: 0.9;
+    white-space: nowrap;
 }
 
 /* ==========================================================================
-   CINEMATIC HERO — C64 / AMIGA Mode
-   ========================================================================== */
+   CINEMATIC HERO — MODE REACTIVE
+   ========================================================================= */
 
 .ccg-hero {
     position: relative;
     padding: 5rem 2rem 4rem;
     margin-bottom: 4rem;
     text-align: center;
-    color: #fff;
+    z-index: 5;
 }
 
-/* HERO BACKGROUND LAYERS */
+/* HERO LAYERS */
 .ccg-hero-media {
     position: absolute;
     inset: 0;
-    z-index: -1;
     overflow: hidden;
+    z-index: -1;
 }
 
 .ccg-hero-image {
@@ -217,8 +214,10 @@ body[data-ccg-mode="amiga"] .ccg-header-title-bottom { color: var(--amiga-pink);
     background-position: center;
     opacity: 0;
     transition: opacity 1.4s ease-in-out;
+    pointer-events: none;
 }
 
+/* Image sources */
 .ccg-hero-image-c64 {
     background-image: url("resources/images/hero/ccg-hero-c64.png");
 }
@@ -226,10 +225,11 @@ body[data-ccg-mode="amiga"] .ccg-header-title-bottom { color: var(--amiga-pink);
     background-image: url("resources/images/hero/ccg-hero-amiga.png");
 }
 
-body[data-ccg-mode="c64"] .ccg-hero-image-c64 { opacity: 1; }
+/* Mode crossfade */
+body[data-ccg-mode="c64"]  .ccg-hero-image-c64  { opacity: 1; }
 body[data-ccg-mode="amiga"] .ccg-hero-image-amiga { opacity: 1; }
 
-/* SCANLINES */
+/* OVERLAYS */
 .ccg-hero-overlay--scanlines {
     position: absolute;
     inset: 0;
@@ -243,11 +243,10 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga { opacity: 1; }
     pointer-events: none;
 }
 
-/* GLOW OVERLAY */
 .ccg-hero-overlay--glow {
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at center, rgba(255,0,255,0.2), transparent 55%);
+    background: radial-gradient(circle at center, rgba(255,0,255,0.16), transparent 55%);
     mix-blend-mode: screen;
     pointer-events: none;
 }
@@ -268,7 +267,7 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga { opacity: 1; }
 
 .ccg-hero-title span {
     display: block;
-    color: var(--amiga-pink);
+    color: var(--accent);
 }
 
 .ccg-hero-tagline {
@@ -292,8 +291,8 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga { opacity: 1; }
 }
 
 /* ==========================================================================
-   HOME SECTION WRAPPERS
-   ========================================================================== */
+   HOME SECTIONS
+   ========================================================================= */
 
 .home-section {
     margin-bottom: 4rem;
@@ -315,8 +314,8 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga { opacity: 1; }
 }
 
 /* ==========================================================================
-   FEATURED GAME + VIDEO
-   ========================================================================== */
+   FEATURED GAME + FEATURED VIDEO
+   ========================================================================= */
 
 .home-featured-grid {
     display: grid;
@@ -342,6 +341,7 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga { opacity: 1; }
     margin-bottom: 0.25rem;
 }
 
+/* Video embed */
 .featured-video-frame iframe {
     width: 100%;
     height: 315px;
@@ -349,11 +349,11 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga { opacity: 1; }
 
 /* ==========================================================================
    GENRE GRID
-   ========================================================================== */
+   ========================================================================= */
 
 .ccg-genre-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 1.4rem;
     margin-top: 1.5rem;
 }
@@ -370,13 +370,13 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga { opacity: 1; }
 
 /* ==========================================================================
    COLLECTIONS / HIGHLIGHTS / UTILITIES
-   ========================================================================== */
+   ========================================================================= */
 
 .ccg-collections-grid,
 .ccg-highlights-grid,
 .ccg-utilities-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 1.5rem;
 }
 
