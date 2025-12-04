@@ -1,3 +1,51 @@
-/* Hero-specific extra tweaks (optional).
-   Core cinematic hero styles already live in home.css under .omega-hero*.
-*/
+/* ============================================================
+   OPTIONAL HERO POLISH — SAFE ENHANCEMENTS
+   Does not replace core cinematic hero rules.
+   ============================================================ */
+
+/* Slight inner shadow to improve text clarity */
+.ccg-hero-content {
+    text-shadow: 0 0 6px rgba(0,0,0,0.6), 0 0 18px rgba(0,0,0,0.4);
+}
+
+/* Increase contrast in Amiga mode */
+body[data-ccg-mode="amiga"] .ccg-hero-title span {
+    color: var(--amiga-purple);
+}
+
+/* Scanline layer strength tweak */
+.ccg-hero-overlay--scanlines {
+    opacity: 0.18;
+}
+
+/* Glow overlay subtle pulse */
+.ccg-hero-overlay--glow {
+    pointer-events: none;
+    mix-blend-mode: screen;
+    background: radial-gradient(
+        circle at center,
+        rgba(255,255,255,0.08) 0%,
+        rgba(255,0,200,0.05) 40%,
+        rgba(0,0,0,0) 70%
+    );
+    animation: heroGlowPulse 4s ease-in-out infinite;
+}
+
+@keyframes heroGlowPulse {
+    0%, 100% { opacity: 0.08; }
+    50%      { opacity: 0.16; }
+}
+
+/* Mobile spacing improvements */
+@media (max-width: 760px) {
+    .ccg-hero {
+        padding: 3rem 1rem;
+    }
+    .ccg-hero-title {
+        font-size: clamp(2rem, 6vw, 3rem);
+    }
+    .ccg-hero-tagline {
+        font-size: 0.95rem;
+        line-height: 1.45;
+    }
+}
