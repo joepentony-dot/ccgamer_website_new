@@ -13,6 +13,26 @@
     });
 
     /* -----------------------------------------------
+       OMEGA LOGO NORMALISER
+       Ensures ALL pages use the correct logo path,
+       regardless of old file paths in HTML.
+    ----------------------------------------------- */
+    document.addEventListener("DOMContentLoaded", () => {
+        const correctLogo = "resources/images/CCGAMER LOGO.png";
+
+        // Determine folder depth (root /games /genres etc.)
+        let prefix = "";
+        const depth = window.location.pathname.split("/").length - 2;
+
+        if (depth === 1) prefix = "../";
+        if (depth === 2) prefix = "../../";
+
+        document.querySelectorAll(".ccg-brand__logo").forEach(img => {
+            img.src = prefix + correctLogo;
+        });
+    });
+
+    /* -----------------------------------------------
        SCANLINE INTENSITY (SHIFT + S)
     ----------------------------------------------- */
     const scanlineOverlay = document.querySelector(".crt-overlay");
