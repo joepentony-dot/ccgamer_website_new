@@ -1,768 +1,388 @@
 /* ============================================================
-   HOME.CSS — OMEGA HOMEPAGE (DYNAMIC C64 / AMIGA)
-   Cheeky Commodore Gamer 😇🕹️👌
-   - No inline styles
-   - All selectors scoped to home page classes
-   - Includes: neon nav glow, hero, genre grid, featured grid, collections strip
+   HOME.CSS — OMEGA CINEMATIC EDITION (FINAL POLISH)
+   Polished hero • tighter spacing • glowing cards • consistent
+   grids • mobile refinements • zero logic changes.
    ============================================================ */
 
-/* Root tweaks just for home */
+/* -----------------------------------------
+   PAGE WRAPPER
+----------------------------------------- */
 .ccg-page--home {
-    position: relative;
-    min-height: 100vh;
-    color: #f5f7ff;
-    background: radial-gradient(circle at top, #050816 0, #020308 40%, #000 100%);
-    overflow-x: hidden;
-}
-
-/* Starfield canvas */
-.ccg-page--home .ccg-starfield {
-    position: fixed;
-    inset: 0;
     width: 100%;
-    height: 100%;
-    z-index: -2;
-    display: block;
+    max-width: 1680px;
+    margin-inline: auto;
+    padding-bottom: 6rem;
 }
 
 /* -----------------------------------------
-   HEADER + BRAND
+   STARFIELD LAYER
 ----------------------------------------- */
-
-.ccg-header {
-    position: sticky;
+#home-starfield {
+    position: fixed;
     top: 0;
-    z-index: 40;
-    backdrop-filter: blur(16px);
-    background: linear-gradient(90deg, rgba(2, 8, 20, 0.9), rgba(5, 10, 40, 0.9));
-    border-bottom: 1px solid rgba(120, 200, 255, 0.25);
-}
-
-.ccg-header-inner {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0.85rem 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-}
-
-/* BRAND */
-
-.ccg-brand {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    text-decoration: none;
-    color: inherit;
-    flex-shrink: 0;
-}
-
-.ccg-brand__logo {
-    width: 44px;
-    height: 44px;
-    object-fit: contain;
-    filter: drop-shadow(0 0 6px rgba(0, 190, 255, 0.65));
-}
-
-.ccg-brand__text {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-}
-
-.ccg-brand__kicker {
-    font-size: 0.7rem;
-    letter-spacing: 0.13em;
-    text-transform: uppercase;
-    opacity: 0.7;
-}
-
-.ccg-brand__title {
-    font-size: 0.95rem;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    white-space: nowrap;
-}
-
-.ccg-brand__neon-cheeky {
-    padding-inline: 0.35rem;
-    border-radius: 999px;
-    box-shadow:
-        0 0 10px rgba(108, 217, 255, 0.9),
-        0 0 30px rgba(27, 142, 255, 0.9);
-    background: radial-gradient(circle at 30% 0%, #4fd1ff, #0050ff);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-}
-
-.ccg-brand__neon-sub {
-    margin-left: 0.4rem;
-    opacity: 0.85;
-}
-
-/* HEADER ACTIONS */
-
-.ccg-header-actions {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    opacity: 0.45;
 }
 
 /* -----------------------------------------
-   NEON NAV GLOW
+   HERO — CINEMATIC PANEL
 ----------------------------------------- */
-
-.ccg-nav__list {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.ccg-nav__link {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    padding: 0.3rem 0.7rem;
-    font-size: 0.78rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    text-decoration: none;
-    color: #e8f3ff;
-    opacity: 0.85;
-    border-radius: 999px;
-    overflow: hidden;
-    transition: opacity 140ms ease-out, transform 140ms ease-out;
-}
-
-.ccg-nav__link::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background:
-        radial-gradient(circle at 0 50%, rgba(0, 240, 255, 0.25), transparent 55%),
-        radial-gradient(circle at 100% 50%, rgba(255, 0, 200, 0.18), transparent 55%);
-    box-shadow:
-        0 0 12px rgba(51, 255, 255, 0.6),
-        0 0 26px rgba(255, 0, 200, 0.55);
-    opacity: 0;
-    transition: opacity 160ms ease-out;
-    z-index: -1;
-}
-
-.ccg-nav__link:hover,
-.ccg-nav__link:focus-visible {
-    opacity: 1;
-    transform: translateY(-1px);
-}
-
-.ccg-nav__link:hover::before,
-.ccg-nav__link:focus-visible::before {
-    opacity: 1;
-}
-
-.ccg-nav__link--active {
-    opacity: 1;
-}
-
-.ccg-nav__link--active::before {
-    opacity: 0.85;
-}
-
-/* -----------------------------------------
-   MODE TOGGLE
------------------------------------------ */
-
-.ccg-mode-toggle {
-    border: none;
-    padding: 0;
-    background: transparent;
-    cursor: pointer;
-}
-
-.ccg-mode-toggle__pill {
-    display: inline-flex;
-    position: relative;
-    align-items: center;
-    padding: 0.18rem;
-    border-radius: 999px;
-    background:
-        radial-gradient(circle at 0 50%, rgba(0, 195, 255, 0.35), transparent 60%),
-        radial-gradient(circle at 100% 50%, rgba(255, 80, 190, 0.35), transparent 60%);
-    box-shadow:
-        0 0 12px rgba(0, 200, 255, 0.8),
-        0 0 24px rgba(255, 0, 180, 0.6);
-}
-
-.ccg-mode-toggle__label {
-    position: relative;
-    z-index: 1;
-    min-width: 40px;
-    padding: 0.18rem 0.4rem;
-    font-size: 0.7rem;
-    text-align: center;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #e9f5ff;
-    opacity: 0.75;
-    transition: opacity 140ms ease-out;
-}
-
-.ccg-mode-toggle__thumb {
-    position: absolute;
-    top: 2px;
-    bottom: 2px;
-    width: 40px;
-    border-radius: 999px;
-    background: linear-gradient(135deg, #64e5ff, #006bff);
-    box-shadow:
-        0 0 12px rgba(0, 230, 255, 0.9),
-        0 0 26px rgba(0, 118, 255, 0.9);
-    transform: translateX(0);
-    transition: transform 160ms ease-out, background 160ms ease-out, box-shadow 160ms ease-out;
-}
-
-[data-ccg-mode="amiga"] .ccg-mode-toggle__thumb {
-    transform: translateX(40px);
-    background: linear-gradient(135deg, #ffb6ff, #ff7a18);
-    box-shadow:
-        0 0 12px rgba(255, 152, 255, 0.9),
-        0 0 26px rgba(255, 114, 78, 0.9);
-}
-
-[data-ccg-mode="c64"] .ccg-mode-toggle__label--c64,
-[data-ccg-mode="amiga"] .ccg-mode-toggle__label--amiga {
-    opacity: 1;
-}
-
-/* -----------------------------------------
-   SOCIAL ICONS
------------------------------------------ */
-
-.ccg-socials {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-}
-
-.ccg-socials__icon-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 26px;
-    height: 26px;
-    border-radius: 999px;
-    background: radial-gradient(circle at 30% 0, #ffffff, #4a4a4a);
-    text-decoration: none;
-}
-
-.ccg-socials__icon {
-    width: 14px;
-    height: 14px;
-    display: block;
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
-.ccg-header-neon-strip {
-    height: 2px;
-    background: linear-gradient(90deg, #00f0ff, #ff00c8, #ffe600);
-    box-shadow:
-        0 0 12px rgba(0, 240, 255, 0.8),
-        0 0 20px rgba(255, 0, 200, 0.8);
-}
-
-/* -----------------------------------------
-   MAIN LAYOUT
------------------------------------------ */
-
-.ccg-main {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 1.75rem 1.5rem 3rem;
-}
-
-/* -----------------------------------------
-   HERO
------------------------------------------ */
-
 .ccg-hero {
+    position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
-    gap: 2.2rem;
+    grid-template-columns: 1.2fr 1fr;
     align-items: center;
-    margin-bottom: 2.5rem;
+    gap: 2.8rem;
+    padding: 3.2rem 2rem 4rem;
+    margin-top: 1.5rem;
 }
 
 .ccg-hero__media {
     position: relative;
-    min-height: 260px;
-    border-radius: 22px;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 18px;
     overflow: hidden;
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
     box-shadow:
-        0 0 32px rgba(0, 240, 255, 0.3),
-        0 0 72px rgba(255, 0, 180, 0.2);
+        0 0 24px rgba(0, 255, 255, 0.18),
+        inset 0 0 24px rgba(0, 255, 255, 0.12);
 }
 
-[data-ccg-mode="c64"] .ccg-hero__media {
-    background-image: url("../images/hero/ccg-hero-c64.png");
+.ccg-body[data-ccg-mode="amiga"] .ccg-hero__media {
+    box-shadow:
+        0 0 24px rgba(255, 60, 255, 0.18),
+        inset 0 0 24px rgba(255, 60, 255, 0.12);
 }
 
-[data-ccg-mode="amiga"] .ccg-hero__media {
-    background-image: url("../images/hero/ccg-hero-amiga.png");
-}
-
+/* layered cinematic feel */
 .ccg-hero__overlay {
     position: absolute;
     inset: 0;
-    background:
-        radial-gradient(circle at 10% 0, rgba(0, 255, 255, 0.32), transparent 55%),
-        radial-gradient(circle at 90% 100%, rgba(255, 0, 200, 0.3), transparent 60%),
-        linear-gradient(180deg, rgba(0, 0, 0, 0.3), rgba(4, 10, 35, 0.85));
+    background: linear-gradient(135deg, rgba(0,0,0,0.55), rgba(0,0,0,0.15));
 }
 
 .ccg-hero__scanlines {
     position: absolute;
     inset: 0;
-    background-image: repeating-linear-gradient(
+    background: repeating-linear-gradient(
         to bottom,
-        rgba(0, 0, 0, 0.35),
-        rgba(0, 0, 0, 0.35) 1px,
-        rgba(0, 0, 0, 0.1) 3px,
-        rgba(0, 0, 0, 0.1) 4px
+        rgba(255,255,255,0.04) 0px,
+        rgba(255,255,255,0.04) 1px,
+        transparent 2px,
+        transparent 4px
     );
-    mix-blend-mode: soft-light;
     pointer-events: none;
+    opacity: 0.35;
 }
 
-/* TEXT */
-
-.ccg-hero__content {
-    display: flex;
-    flex-direction: column;
-    gap: 0.9rem;
+/* Hero badge */
+.ccg-hero__mode-badge {
+    position: absolute;
+    top: 0.9rem;
+    right: 0.9rem;
+    background: rgba(0,0,0,0.55);
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    color: var(--text-light);
 }
 
+/* Content */
 .ccg-hero__title {
-    font-size: 2.1rem;
-    line-height: 1.1;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    font-size: 2.8rem;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.7rem;
+    line-height: 1.2;
 }
 
 .ccg-hero__title-accent {
-    display: block;
-    margin-top: 0.2rem;
-    font-size: 1.2rem;
-    font-weight: 600;
-    letter-spacing: 0.16em;
-    color: #8fe5ff;
+    color: var(--accent);
 }
 
 .ccg-hero__subtitle {
-    max-width: 30rem;
-    font-size: 0.95rem;
-    line-height: 1.55;
-    opacity: 0.86;
+    font-size: 1.1rem;
+    color: var(--text-dim);
+    max-width: 38rem;
+    margin-bottom: 1.6rem;
 }
 
+/* Hero buttons */
 .ccg-hero__actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.6rem;
-    margin-top: 0.2rem;
-}
-
-.ccg-hero__hint {
-    margin-top: 0.4rem;
-    font-size: 0.8rem;
-    opacity: 0.72;
-}
-
-/* -----------------------------------------
-   BUTTONS
------------------------------------------ */
-
-.ccg-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.35rem;
-    padding: 0.4rem 0.85rem;
-    border-radius: 999px;
-    border: 1px solid transparent;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    text-decoration: none;
-    cursor: pointer;
-    transition:
-        transform 100ms ease-out,
-        box-shadow 130ms ease-out,
-        background 130ms ease-out,
-        border-color 130ms ease-out,
-        color 130ms ease-out;
+    gap: 1rem;
+    margin-bottom: 1.1rem;
 }
 
 .ccg-btn--primary {
-    background: linear-gradient(120deg, #00f0ff, #0066ff);
-    color: #020816;
-    box-shadow:
-        0 0 16px rgba(0, 240, 255, 0.9),
-        0 0 40px rgba(0, 102, 255, 0.85);
+    background: var(--accent);
+    color: black;
 }
 
 .ccg-btn--secondary {
-    background: transparent;
-    color: #e9f1ff;
-    border-color: rgba(130, 210, 255, 0.8);
+    border: 1px solid var(--accent);
+    color: var(--accent);
 }
 
 .ccg-btn--ghost {
-    background: rgba(2, 12, 40, 0.6);
-    color: #e9f1ff;
-    border-color: rgba(110, 190, 255, 0.5);
+    color: var(--accent);
+    border: 1px solid rgba(var(--accent-rgb), 0.35);
 }
 
-.ccg-btn--sm {
-    padding: 0.3rem 0.7rem;
-    font-size: 0.75rem;
-}
-
-.ccg-btn:hover,
-.ccg-btn:focus-visible {
-    transform: translateY(-1px);
-    box-shadow:
-        0 0 16px rgba(0, 240, 255, 0.7),
-        0 0 36px rgba(255, 0, 200, 0.6);
+.ccg-hero__hint {
+    font-size: 0.82rem;
+    color: var(--text-dim);
 }
 
 /* -----------------------------------------
-   SECTIONS
+   SECTION WRAPPER
 ----------------------------------------- */
-
 .ccg-section {
-    margin-bottom: 2.5rem;
+    margin-top: 4rem;
 }
 
 .ccg-section__header {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 0.75rem;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.6rem;
 }
 
 .ccg-section__title {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.55rem;
-    font-size: 1rem;
+    font-size: 1.9rem;
     text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: #f7fbff;
-    text-shadow:
-        0 0 10px rgba(0, 240, 255, 0.9),
-        0 0 22px rgba(255, 0, 200, 0.8);
-}
-
-.ccg-section__title::before {
-    content: "▌";
-    font-size: 1.1rem;
-    color: rgba(0, 240, 255, 0.9);
+    letter-spacing: 0.08em;
 }
 
 .ccg-section__subtitle {
-    max-width: 28rem;
-    font-size: 0.86rem;
-    color: rgba(215, 232, 255, 0.88);
+    color: var(--text-dim);
+    max-width: 45rem;
 }
 
 /* -----------------------------------------
    GENRE GRID
 ----------------------------------------- */
-
-.ccg-section--genres {
-    margin-bottom: 2.5rem;
-}
-
 .ccg-genre-grid {
     display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 0.9rem;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1.3rem;
 }
 
-.ccg-genre-card {
-    position: relative;
-    border-radius: 16px;
+.ccg-genre-card__thumb {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 14px;
     overflow: hidden;
-    background:
-        radial-gradient(circle at top, rgba(0, 220, 255, 0.12), rgba(4, 10, 25, 0.96));
-    border: 1px solid rgba(130, 210, 255, 0.35);
     box-shadow:
-        0 0 18px rgba(0, 0, 0, 0.8),
-        0 0 24px rgba(0, 220, 255, 0.18);
+        0 0 12px rgba(0,0,0,0.25),
+        inset 0 0 22px rgba(0,255,255,0.08);
+}
+
+.ccg-body[data-ccg-mode="amiga"] .ccg-genre-card__thumb {
+    box-shadow:
+        0 0 12px rgba(0,0,0,0.25),
+        inset 0 0 22px rgba(255,60,255,0.08);
 }
 
 .ccg-genre-card__thumb img {
     width: 100%;
-    height: 70px;
-    object-fit: contain;
-    transition: transform 200ms ease-out, filter 200ms ease-out;
-}
-
-.ccg-genre-card:hover .ccg-genre-card__thumb img {
-    transform: scale(1.04);
-    filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.7));
+    height: 100%;
+    object-fit: cover;
 }
 
 /* -----------------------------------------
-   FEATURED GRID
+   FEATURED HIGHLIGHTS
 ----------------------------------------- */
-
 .ccg-featured-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-    gap: 1.6rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.2rem;
+}
+
+/* Featured game/video cards */
+.ccg-card {
+    background: rgba(0,0,0,0.55);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow:
+        0 0 26px rgba(0,0,0,0.45),
+        inset 0 0 18px rgba(0,255,255,0.08);
+    display: flex;
+    flex-direction: column;
+}
+
+.ccg-body[data-ccg-mode="amiga"] .ccg-card {
+    box-shadow:
+        0 0 26px rgba(0,0,0,0.45),
+        inset 0 0 18px rgba(255,60,255,0.08);
+}
+
+.ccg-card__media {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    position: relative;
+}
+
+.ccg-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ccg-card__video-frame iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 0;
+}
+
+.ccg-card__body {
+    padding: 1.4rem 1.3rem 1.6rem;
+}
+
+.ccg-card__title {
+    font-size: 1.3rem;
+    margin-bottom: 0.3rem;
+}
+
+.ccg-card__meta {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 0.7rem;
+}
+
+.ccg-card__text {
+    font-size: 0.95rem;
+    color: var(--text-light);
+    margin-bottom: 1.2rem;
+    line-height: 1.5;
+}
+
+.ccg-card__actions {
+    display: flex;
+    gap: 0.7rem;
 }
 
 /* -----------------------------------------
    COLLECTION CARDS
 ----------------------------------------- */
-
 .ccg-collection-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1.3rem;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.7rem;
 }
 
 .ccg-collection-card {
+    position: relative;
+    background: rgba(0,0,0,0.5);
     border-radius: 18px;
-    background:
-        radial-gradient(circle at top, rgba(0, 230, 255, 0.08), rgba(2, 6, 20, 0.96));
-    border: 1px solid rgba(125, 205, 255, 0.45);
+    overflow: hidden;
+    box-shadow:
+        0 0 18px rgba(0,0,0,0.45),
+        inset 0 0 14px rgba(0,255,255,0.08);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.ccg-body[data-ccg-mode="amiga"] .ccg-collection-card {
+    box-shadow:
+        0 0 18px rgba(0,0,0,0.45),
+        inset 0 0 14px rgba(255,60,255,0.08);
+}
+
+.ccg-collection-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 0 28px rgba(var(--accent-rgb), 0.4),
+        inset 0 0 20px rgba(var(--accent-rgb), 0.15);
+}
+
+.ccg-collection-card__thumb-wrap {
+    width: 100%;
+    aspect-ratio: 16 / 9;
     overflow: hidden;
 }
 
-/* strips */
-.ccg-collection-card__strip {
-    height: 4px;
+.ccg-collection-card__thumb-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-.ccg-collection-card__strip--top {
-    box-shadow: 0 0 18px rgba(255, 255, 255, 0.5);
+.ccg-collection-card__body {
+    padding: 1.2rem 1.2rem 1.5rem;
 }
 
-/* Per collection colours */
-.ccg-collection-card--bpjs .ccg-collection-card__strip--top,
-.ccg-collection-card--bpjs .ccg-collection-card__strip--bottom {
-    background: linear-gradient(90deg, #00f0ff, #00ff88);
+.ccg-collection-card__title {
+    font-size: 1.25rem;
+    margin-bottom: 0.35rem;
 }
 
-.ccg-collection-card--top-picks .ccg-collection-card__strip--top,
-.ccg-collection-card--top-picks .ccg-collection-card__strip--bottom {
-    background: linear-gradient(90deg, #ff00c8, #ffe600);
-}
-
-.ccg-collection-card--cinematic .ccg-collection-card__strip--top,
-.ccg-collection-card--cinematic .ccg-collection-card__strip--bottom {
-    background: linear-gradient(90deg, #9f7bff, #00f0ff);
-}
-
-.ccg-collection-card--party .ccg-collection-card__strip--top,
-.ccg-collection-card--party .ccg-collection-card__strip--bottom {
-    background: linear-gradient(90deg, #ff6b6b, #ffb347);
+.ccg-collection-card__text {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    line-height: 1.45;
 }
 
 /* -----------------------------------------
-   🔥 NEON TRAYS BEHIND BUTTON GROUPS (3B)
-   (Inserted in correct cascade position)
+   COMMUNITY CARDS
 ----------------------------------------- */
-
-.ccg-hero__actions,
-.ccg-card__actions {
-    position: relative;
-    padding: 0.35rem;
-    border-radius: 999px;
-    background:
-        radial-gradient(circle at 0 0, rgba(0, 240, 255, 0.16), transparent 55%),
-        radial-gradient(circle at 100% 100%, rgba(255, 0, 200, 0.16), transparent 55%),
-        linear-gradient(120deg, rgba(2, 10, 35, 0.96), rgba(0, 4, 18, 0.96));
-    border: 1px solid rgba(132, 218, 255, 0.65);
-    box-shadow:
-        0 0 18px rgba(0, 240, 255, 0.45),
-        0 0 24px rgba(255, 0, 200, 0.4);
-}
-
-.ccg-card__actions {
-    border-radius: 16px;
-}
-
-/* -----------------------------------------
-   COMMUNITY GRID
------------------------------------------ */
-
 .ccg-community-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1.1rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.8rem;
+}
+
+.ccg-card--community {
+    background: rgba(0,0,0,0.55);
+    border-radius: 16px;
+    padding: 1.5rem 1.4rem 1.8rem;
+    box-shadow:
+        0 0 18px rgba(0,0,0,0.35),
+        inset 0 0 16px rgba(var(--accent-rgb), 0.06);
 }
 
 /* -----------------------------------------
    FOOTER
 ----------------------------------------- */
-
 .ccg-footer {
-    border-top: 1px solid rgba(130, 210, 255, 0.3);
-    padding: 0.9rem 1.5rem 1.5rem;
-    margin-top: 1rem;
+    margin-top: 5rem;
     text-align: center;
-    font-size: 0.78rem;
-    opacity: 0.75;
+    color: var(--text-dim);
+    font-size: 0.85rem;
 }
 
 /* -----------------------------------------
-   RESPONSIVE
+   RESPONSIVE (MOBILE)
 ----------------------------------------- */
-
-@media (max-width: 1200px) {
-    .ccg-genre-grid {
-        grid-template-columns: repeat(5, 1fr);
+@media (max-width: 980px) {
+    .ccg-hero {
+        grid-template-columns: 1fr;
+        padding-top: 2.2rem;
+        gap: 2rem;
     }
 }
 
-@media (max-width: 1024px) {
-    .ccg-header-inner {
-        flex-wrap: wrap;
+@media (max-width: 640px) {
+    .ccg-hero__title {
+        font-size: 2.1rem;
+    }
+
+    .ccg-hero__subtitle {
+        font-size: 1rem;
     }
 
     .ccg-featured-grid {
         grid-template-columns: 1fr;
     }
 
-    .ccg-community-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .ccg-header-inner {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .ccg-hero {
+    .ccg-collection-grid {
         grid-template-columns: 1fr;
     }
 
     .ccg-genre-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     }
-
-    .ccg-collection-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .ccg-community-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 520px) {
-    .ccg-genre-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .ccg-collection-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* ============================================================
-   MODE-SPECIFIC SKINS — HOME (C64 NEON vs AMIGA)
-   ============================================================ */
-
-body[data-ccg-mode="amiga"] .ccg-page--home {
-    color: #101425;
-    background:
-        radial-gradient(circle at top, #f7f8ff 0, #dde4f7 42%, #c5d0eb 100%);
-}
-
-/* Amiga Header */
-body[data-ccg-mode="amiga"] .ccg-header {
-    background: linear-gradient(90deg, #c9d3f2, #e2e8ff);
-    border-bottom: 2px solid rgba(0,0,0,0.4);
-    box-shadow:
-        0 3px 0 #fff,
-        0 6px 0 rgba(0,0,0,0.35);
-}
-
-body[data-ccg-mode="amiga"] .ccg-brand__title,
-body[data-ccg-mode="amiga"] .ccg-hero__title,
-body[data-ccg-mode="amiga"] .ccg-hero__subtitle {
-    color: #101425 !important;
-    text-shadow: none;
-}
-
-/* Nav tabs */
-body[data-ccg-mode="amiga"] .ccg-nav__link {
-    color: #101425;
-    opacity: 0.95;
-}
-
-body[data-ccg-mode="amiga"] .ccg-nav__link::before {
-    background: linear-gradient(180deg, #fff, #d3daf4);
-    box-shadow:
-        0 0 0 1px rgba(0,0,0,0.35),
-        0 2px 0 rgba(255,255,255,0.9);
-}
-
-/* Cards/windows */
-body[data-ccg-mode="amiga"] .ccg-card,
-body[data-ccg-mode="amiga"] .ccg-collection-card,
-body[data-ccg-mode="amiga"] .ccg-card--community,
-body[data-ccg-mode="amiga"] .ccg-hero {
-    background: linear-gradient(135deg, #f4f6ff, #dde4f7);
-    border-color: rgba(0,0,0,0.28);
-    box-shadow:
-        0 3px 0 #fff,
-        0 7px 16px rgba(0,0,0,0.22);
-    color: #101425;
-}
-
-/* Buttons */
-body[data-ccg-mode="amiga"] .ccg-btn--primary {
-    background: linear-gradient(120deg, #ffb8ff, #ff7a18);
-    color: #2b0a16;
-    box-shadow:
-        0 0 10px rgba(255, 180, 255, 0.8),
-        0 0 26px rgba(255, 122, 24, 0.7);
-}
-
-body[data-ccg-mode="amiga"] .ccg-btn--secondary,
-body[data-ccg-mode="amiga"] .ccg-btn--ghost {
-    background: rgba(255,255,255,0.85);
-    border-color: rgba(0,0,0,0.35);
-    color: #101425;
-}
-
-/* Footer */
-body[data-ccg-mode="amiga"] .ccg-footer {
-    border-top: 1px solid rgba(0,0,0,0.22);
-    opacity: 0.9;
-    color: #101425;
 }
