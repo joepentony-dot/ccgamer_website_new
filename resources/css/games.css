@@ -1,0 +1,573 @@
+/* ============================================================
+   GAMES.CSS — OMEGA GRID LIBRARY
+   Search • System filter • A–Z • Neon C64/Amiga badges
+   Cheeky Commodore Gamer 😇🕹️👌
+   ============================================================ */
+
+/* -----------------------------------------
+   PAGE WRAPPER
+----------------------------------------- */
+
+.ccg-main--games {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 36px 20px 80px;
+}
+
+/* -----------------------------------------
+   HERO / INTRO PANEL
+----------------------------------------- */
+
+.games-hero {
+    margin-bottom: 22px;
+}
+
+.games-hero-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.1fr);
+    gap: 18px;
+    padding: 18px 18px 16px;
+    border-radius: 18px;
+    background:
+        radial-gradient(circle at top left, rgba(0, 255, 255, 0.22), transparent 60%),
+        linear-gradient(145deg, rgba(6, 8, 32, 0.98), rgba(8, 4, 32, 0.98));
+    box-shadow:
+        0 0 0 1px rgba(0, 255, 255, 0.16),
+        0 0 30px rgba(0, 255, 255, 0.3),
+        0 0 80px rgba(0, 0, 0, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.games-hero-inner::before {
+    content: "";
+    position: absolute;
+    inset: -40%;
+    background: conic-gradient(
+        from 210deg,
+        rgba(0, 255, 255, 0.18),
+        rgba(255, 0, 255, 0.18),
+        rgba(0, 255, 190, 0.18),
+        rgba(0, 255, 255, 0.18)
+    );
+    opacity: 0.35;
+    mix-blend-mode: screen;
+    filter: blur(28px);
+    pointer-events: none;
+}
+
+.games-hero-copy,
+.games-hero-aside {
+    position: relative;
+    z-index: 1;
+}
+
+.games-hero-title {
+    margin: 0 0 6px;
+    font-family: "Press Start 2P", monospace;
+    font-size: 1.2rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #fdfdff;
+}
+
+.games-hero-tagline {
+    margin: 0 0 8px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: rgba(220, 234, 255, 0.9);
+}
+
+.games-hero-meta {
+    margin: 0;
+    font-size: 0.8rem;
+    color: rgba(185, 215, 255, 0.9);
+}
+
+.games-count-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 255, 255, 0.65);
+    font-size: 0.78rem;
+    background: rgba(0, 20, 40, 0.85);
+    box-shadow:
+        0 0 12px rgba(0, 255, 255, 0.5),
+        0 0 36px rgba(0, 0, 0, 1);
+}
+
+.games-hero-aside {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.games-hero-note {
+    max-width: 360px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.12), transparent 60%),
+        linear-gradient(145deg, rgba(6, 10, 36, 0.96), rgba(12, 6, 36, 0.98));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.82rem;
+    color: rgba(210, 224, 255, 0.92);
+}
+
+.games-hero-note-label {
+    display: inline-block;
+    margin-bottom: 3px;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: #001018;
+    background: #00eaff;
+    box-shadow:
+        0 0 12px rgba(0, 255, 255, 0.9),
+        0 0 34px rgba(0, 0, 0, 1);
+}
+
+.games-pill-inline {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 8px;
+    margin-left: 2px;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid rgba(0, 255, 255, 0.5);
+}
+
+/* -----------------------------------------
+   CONTROLS: SEARCH + SYSTEM FILTER + A–Z
+----------------------------------------- */
+
+.games-controls {
+    margin: 18px 0 16px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background:
+        radial-gradient(circle at top, rgba(0, 255, 255, 0.14), transparent 60%),
+        linear-gradient(135deg, rgba(3, 6, 24, 0.98), rgba(2, 4, 20, 0.98));
+    box-shadow:
+        0 0 0 1px rgba(0, 255, 255, 0.14),
+        0 0 20px rgba(0, 255, 255, 0.25),
+        0 0 50px rgba(0, 0, 0, 1);
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.4fr);
+    grid-template-rows: auto auto;
+    gap: 10px 16px;
+}
+
+/* Search */
+
+.games-search {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.games-search-label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: rgba(190, 215, 255, 0.9);
+}
+
+.games-search-input-wrap {
+    position: relative;
+}
+
+.games-search-input {
+    width: 100%;
+    padding: 9px 11px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 255, 255, 0.6);
+    background: radial-gradient(circle at top, rgba(0, 255, 255, 0.09), #020514);
+    color: #e6f6ff;
+    font-size: 0.9rem;
+    outline: none;
+    box-shadow:
+        0 0 12px rgba(0, 255, 255, 0.4),
+        0 0 30px rgba(0, 0, 0, 1);
+}
+
+.games-search-input::placeholder {
+    color: rgba(160, 190, 225, 0.8);
+}
+
+/* System filter */
+
+.games-system-filters {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.games-system-label {
+    font-size: 0.8rem;
+    color: rgba(185, 210, 245, 0.9);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+
+.games-system-pill {
+    border: 1px solid rgba(120, 180, 240, 0.8);
+    background: rgba(4, 10, 26, 0.95);
+    color: #cfe6ff;
+    border-radius: 999px;
+    padding: 5px 11px;
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    box-shadow:
+        0 0 8px rgba(0, 0, 0, 1),
+        0 0 16px rgba(0, 255, 255, 0.25);
+    transition:
+        transform 0.16s ease,
+        box-shadow 0.16s ease,
+        background 0.16s ease,
+        color 0.16s ease,
+        border-color 0.16s ease;
+}
+
+.games-system-pill.is-active {
+    transform: translateY(-1px);
+    background: radial-gradient(circle at top, #00eaff, #0096ff);
+    color: #001018;
+    border-color: rgba(0, 255, 255, 1);
+    box-shadow:
+        0 0 12px rgba(0, 255, 255, 0.95),
+        0 0 32px rgba(0, 0, 0, 1);
+}
+
+/* Colour-coded system variants */
+
+.games-system-pill--c64.is-active {
+    background: radial-gradient(circle at top, #00eaff, #00b3ff);
+}
+
+.games-system-pill--amiga.is-active {
+    background: radial-gradient(circle at top, #ff6bf6, #d800ff);
+}
+
+/* A–Z bar */
+
+.games-alpha-bar {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 2px;
+}
+
+.games-alpha-pill {
+    border-radius: 999px;
+    border: 1px solid rgba(0, 255, 255, 0.4);
+    background: rgba(3, 10, 26, 0.9);
+    color: #cfe6ff;
+    padding: 3px 8px;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow:
+        0 0 6px rgba(0, 0, 0, 1),
+        0 0 12px rgba(0, 255, 255, 0.25);
+    transition:
+        background 0.15s ease,
+        color 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.15s ease;
+}
+
+.games-alpha-pill.is-active {
+    background: radial-gradient(circle at top, #00eaff, #0080ff);
+    color: #001018;
+    border-color: rgba(0, 255, 255, 1);
+    transform: translateY(-1px);
+    box-shadow:
+        0 0 10px rgba(0, 255, 255, 0.9),
+        0 0 24px rgba(0, 0, 0, 1);
+}
+
+/* Container for dynamic A–Z buttons */
+#games-alpha-dynamic {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+/* -----------------------------------------
+   GRID & CARDS
+----------------------------------------- */
+
+.games-grid-section {
+    margin-top: 10px;
+}
+
+.games-grid-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 8px;
+}
+
+.games-grid-count {
+    font-size: 0.8rem;
+    color: rgba(190, 215, 245, 0.9);
+}
+
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 16px;
+}
+
+/* Game card */
+
+.game-card {
+    border-radius: 20px;
+    background:
+        radial-gradient(circle at top left, rgba(0, 255, 255, 0.22), transparent 60%),
+        linear-gradient(160deg, #02071a, #010412 45%, #02061e);
+    box-shadow:
+        0 0 18px rgba(0, 255, 255, 0.3),
+        0 0 70px rgba(0, 0, 0, 1);
+    overflow: hidden;
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        border-color 0.18s ease;
+    border: 1px solid rgba(0, 255, 255, 0.18);
+}
+
+.game-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 0 22px rgba(255, 0, 200, 0.8),
+        0 0 96px rgba(0, 0, 0, 1);
+    border-color: rgba(255, 255, 255, 0.38);
+}
+
+.game-card-link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Thumbnail */
+
+.game-thumb-wrap {
+    border-radius: 16px;
+    overflow: hidden;
+    background: #020d18;
+}
+
+.game-thumb {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Content */
+
+.game-card-content {
+    padding: 10px 11px 11px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.game-card-title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.game-card-title {
+    margin: 0;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #e8fbff;
+    line-height: 1.4;
+}
+
+.game-card-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: flex-end;
+}
+
+/* Badges */
+
+.game-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #e4f6ff;
+    background: rgba(0, 20, 36, 0.9);
+}
+
+/* System badge = colour-coded chip (Option A) */
+
+.game-badge--system {
+    border-width: 1px;
+}
+
+.game-badge--c64 {
+    border-color: rgba(0, 255, 255, 0.9);
+    background: radial-gradient(circle at top, #00eaff, #0074ff);
+    color: #001018;
+    box-shadow:
+        0 0 10px rgba(0, 255, 255, 0.9),
+        0 0 20px rgba(0, 0, 0, 1);
+}
+
+.game-badge--amiga {
+    border-color: rgba(255, 120, 255, 0.95);
+    background: radial-gradient(circle at top, #ff6bf6, #d800ff);
+    color: #1a0018;
+    box-shadow:
+        0 0 10px rgba(255, 120, 255, 0.95),
+        0 0 20px rgba(0, 0, 0, 1);
+}
+
+/* Year badge */
+
+.game-badge--year {
+    border-color: rgba(200, 220, 255, 0.8);
+    background: rgba(4, 10, 26, 0.95);
+    color: #d2e0ff;
+}
+
+/* Meta row */
+
+.game-card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 2px;
+}
+
+.game-card-genres {
+    margin: 0;
+    font-size: 0.78rem;
+    color: rgba(200, 218, 248, 0.92);
+}
+
+/* Flags (video / manual) */
+
+.game-card-flags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 3px;
+}
+
+.game-flag {
+    padding: 1px 7px;
+    border-radius: 999px;
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: #f2f7ff;
+}
+
+.game-flag--video {
+    border-color: rgba(255, 80, 150, 0.95);
+    background: rgba(80, 0, 40, 0.85);
+}
+
+.game-flag--manual {
+    border-color: rgba(0, 255, 255, 0.9);
+    background: rgba(0, 40, 60, 0.85);
+}
+
+/* Empty state */
+
+.games-empty-message {
+    margin-top: 24px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.08), transparent 60%),
+        linear-gradient(145deg, rgba(6, 8, 24, 0.96), rgba(4, 6, 20, 0.98));
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    font-size: 0.86rem;
+    color: rgba(210, 222, 255, 0.9);
+}
+
+/* -----------------------------------------
+   RESPONSIVE
+----------------------------------------- */
+
+@media (max-width: 1100px) {
+    .games-hero-inner {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .games-hero-aside {
+        justify-content: flex-start;
+    }
+
+    .games-controls {
+        grid-template-columns: 1fr;
+    }
+
+    .games-system-filters {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .games-grid {
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .ccg-main--games {
+        padding-inline: 14px;
+    }
+
+    .games-hero-inner {
+        padding-inline: 14px;
+    }
+
+    .games-controls {
+        padding-inline: 10px;
+    }
+}
+
+@media (max-width: 520px) {
+    .games-hero-title {
+        font-size: 1.05rem;
+        letter-spacing: 0.12em;
+    }
+
+    .games-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .game-card-content {
+        padding-inline: 9px;
+    }
+}
