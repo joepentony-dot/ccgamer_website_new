@@ -576,12 +576,12 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
 }
 
 .home-featured-grid {
-    position: relative;
-    z-index: 1;
     display: grid;
     grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
     gap: 1.25rem;
+    align-items: stretch; /* ADDED */
 }
+
 
 .featured-panel {
     border-radius: 1.1rem;
