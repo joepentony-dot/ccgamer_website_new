@@ -15,7 +15,7 @@
     overflow-x: hidden;
 }
 
-/* Starfield canvas behind everything */
+/* Starfield canvas */
 .ccg-page--home .ccg-starfield {
     position: fixed;
     inset: 0;
@@ -47,7 +47,7 @@
     gap: 1.25rem;
 }
 
-/* Brand */
+/* BRAND */
 
 .ccg-brand {
     display: flex;
@@ -103,7 +103,7 @@
     opacity: 0.85;
 }
 
-/* Header actions (nav + mode + socials layout) */
+/* HEADER ACTIONS */
 
 .ccg-header-actions {
     margin-left: auto;
@@ -113,7 +113,7 @@
 }
 
 /* -----------------------------------------
-   NEON NAVIGATION GLOW
+   NEON NAV GLOW
 ----------------------------------------- */
 
 .ccg-nav__list {
@@ -138,9 +138,7 @@
     opacity: 0.85;
     border-radius: 999px;
     overflow: hidden;
-    transition:
-        opacity 140ms ease-out,
-        transform 140ms ease-out;
+    transition: opacity 140ms ease-out, transform 140ms ease-out;
 }
 
 .ccg-nav__link::before {
@@ -148,8 +146,9 @@
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: radial-gradient(circle at 0 50%, rgba(0, 240, 255, 0.25), transparent 55%),
-                radial-gradient(circle at 100% 50%, rgba(255, 0, 200, 0.18), transparent 55%);
+    background:
+        radial-gradient(circle at 0 50%, rgba(0, 240, 255, 0.25), transparent 55%),
+        radial-gradient(circle at 100% 50%, rgba(255, 0, 200, 0.18), transparent 55%);
     box-shadow:
         0 0 12px rgba(51, 255, 255, 0.6),
         0 0 26px rgba(255, 0, 200, 0.55);
@@ -189,13 +188,14 @@
 }
 
 .ccg-mode-toggle__pill {
-    position: relative;
     display: inline-flex;
+    position: relative;
     align-items: center;
     padding: 0.18rem;
     border-radius: 999px;
-    background: radial-gradient(circle at 0 50%, rgba(0, 195, 255, 0.35), transparent 60%),
-                radial-gradient(circle at 100% 50%, rgba(255, 80, 190, 0.35), transparent 60%);
+    background:
+        radial-gradient(circle at 0 50%, rgba(0, 195, 255, 0.35), transparent 60%),
+        radial-gradient(circle at 100% 50%, rgba(255, 80, 190, 0.35), transparent 60%);
     box-shadow:
         0 0 12px rgba(0, 200, 255, 0.8),
         0 0 24px rgba(255, 0, 180, 0.6);
@@ -229,7 +229,6 @@
     transition: transform 160ms ease-out, background 160ms ease-out, box-shadow 160ms ease-out;
 }
 
-/* Amiga state, controlled via data-ccg-mode on body */
 [data-ccg-mode="amiga"] .ccg-mode-toggle__thumb {
     transform: translateX(40px);
     background: linear-gradient(135deg, #ffb6ff, #ff7a18);
@@ -255,27 +254,6 @@
     justify-content: flex-end;
 }
 
-.ccg-socials__link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.2rem 0.65rem;
-    border-radius: 999px;
-    text-decoration: none;
-    background: radial-gradient(circle at 30% -20%, #ff4b4b, #b00000);
-    box-shadow:
-        0 0 12px rgba(255, 0, 0, 0.75),
-        0 0 26px rgba(255, 80, 80, 0.8);
-    font-size: 0.72rem;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: #fff2f2;
-}
-
-.ccg-socials__label {
-    margin-top: 1px;
-}
-
 .ccg-socials__icon-btn {
     display: inline-flex;
     align-items: center;
@@ -295,14 +273,6 @@
     background-position: center;
     background-repeat: no-repeat;
 }
-
-/* SVG icon mappings */
-.ccg-socials__icon--yt { background-image: url("../icons/youtube.svg"); }
-.ccg-socials__icon--patreon { background-image: url("../icons/patreon.svg"); }
-.ccg-socials__icon--paypal { background-image: url("../icons/paypal.svg"); }
-.ccg-socials__icon--x { background-image: url("../icons/twitter.svg"); }
-.ccg-socials__icon--fb { background-image: url("../icons/facebook.svg"); }
-.ccg-socials__icon--discord { background-image: url("../icons/discord.svg"); }
 
 .ccg-header-neon-strip {
     height: 2px;
@@ -347,12 +317,10 @@
         0 0 72px rgba(255, 0, 180, 0.2);
 }
 
-/* Default hero image (C64) */
 [data-ccg-mode="c64"] .ccg-hero__media {
     background-image: url("../images/hero/ccg-hero-c64.png");
 }
 
-/* Amiga hero */
 [data-ccg-mode="amiga"] .ccg-hero__media {
     background-image: url("../images/hero/ccg-hero-amiga.png");
 }
@@ -380,32 +348,7 @@
     pointer-events: none;
 }
 
-/* Mode badge */
-
-.ccg-hero__mode-badge {
-    position: absolute;
-    left: 1.1rem;
-    top: 1rem;
-    padding: 0.2rem 0.75rem;
-    border-radius: 999px;
-    font-size: 0.68rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    backdrop-filter: blur(10px);
-    background: linear-gradient(90deg, rgba(0, 225, 255, 0.5), rgba(255, 0, 188, 0.5));
-    border: 1px solid rgba(200, 245, 255, 0.7);
-}
-
-.ccg-hero__mode-prefix {
-    opacity: 0.8;
-    margin-right: 0.35rem;
-}
-
-.ccg-hero__mode-label {
-    font-weight: 700;
-}
-
-/* Hero text */
+/* TEXT */
 
 .ccg-hero__content {
     display: flex;
@@ -449,7 +392,9 @@
     opacity: 0.72;
 }
 
-/* Buttons */
+/* -----------------------------------------
+   BUTTONS
+----------------------------------------- */
 
 .ccg-btn {
     display: inline-flex;
@@ -519,23 +464,36 @@
     align-items: baseline;
     justify-content: space-between;
     gap: 0.75rem;
-    margin-bottom: 1.2rem;
+    margin-bottom: 1.25rem;
 }
 
 .ccg-section__title {
-    font-size: 1.1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 1rem;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.18em;
+    color: #f7fbff;
+    text-shadow:
+        0 0 10px rgba(0, 240, 255, 0.9),
+        0 0 22px rgba(255, 0, 200, 0.8);
+}
+
+.ccg-section__title::before {
+    content: "▌";
+    font-size: 1.1rem;
+    color: rgba(0, 240, 255, 0.9);
 }
 
 .ccg-section__subtitle {
     max-width: 28rem;
-    font-size: 0.85rem;
-    opacity: 0.78;
+    font-size: 0.86rem;
+    color: rgba(215, 232, 255, 0.88);
 }
 
 /* -----------------------------------------
-   GENRE GRID (TWO-ROW STYLE)
+   GENRE GRID
 ----------------------------------------- */
 
 .ccg-section--genres {
@@ -552,37 +510,22 @@
     position: relative;
     border-radius: 16px;
     overflow: hidden;
-    background: radial-gradient(circle at top, rgba(0, 220, 255, 0.12), rgba(4, 10, 25, 0.96));
+    background:
+        radial-gradient(circle at top, rgba(0, 220, 255, 0.12), rgba(4, 10, 25, 0.96));
     border: 1px solid rgba(130, 210, 255, 0.35);
     box-shadow:
         0 0 18px rgba(0, 0, 0, 0.8),
         0 0 24px rgba(0, 220, 255, 0.18);
 }
 
-.ccg-genre-card__link {
-    display: block;
-    text-decoration: none;
-    color: inherit;
-}
-
-.ccg-genre-card__thumb {
-    padding: 0.45rem 0.6rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .ccg-genre-card__thumb img {
-    display: block;
     width: 100%;
     height: 70px;
     object-fit: contain;
-    image-rendering: auto;
     transition: transform 200ms ease-out, filter 200ms ease-out;
 }
 
-.ccg-genre-card:hover .ccg-genre-card__thumb img,
-.ccg-genre-card:focus-within .ccg-genre-card__thumb img {
+.ccg-genre-card:hover .ccg-genre-card__thumb img {
     transform: scale(1.04);
     filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.7));
 }
@@ -597,186 +540,34 @@
     gap: 1.6rem;
 }
 
-/* Cards */
-
-.ccg-card {
-    position: relative;
-    border-radius: 20px;
-    background: radial-gradient(circle at top left, rgba(0, 240, 255, 0.06), rgba(4, 8, 30, 0.96));
-    border: 1px solid rgba(130, 210, 255, 0.4);
-    overflow: hidden;
-    box-shadow:
-        0 0 24px rgba(0, 0, 0, 0.8),
-        0 0 40px rgba(0, 240, 255, 0.16);
-    display: flex;
-    flex-direction: column;
-}
-
-.ccg-card__media {
-    position: relative;
-    overflow: hidden;
-}
-
-.ccg-card__media img {
-    display: block;
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    transform: scale(1.02);
-    transition: transform 250ms ease-out;
-}
-
-.ccg-card__media-gradient {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0.05), rgba(1, 7, 24, 0.86));
-}
-
-.ccg-card__body {
-    padding: 0.9rem 1rem 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-}
-
-.ccg-card__title {
-    font-size: 0.95rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-}
-
-.ccg-card__meta {
-    font-size: 0.8rem;
-    opacity: 0.78;
-}
-
-.ccg-card__text {
-    font-size: 0.85rem;
-    line-height: 1.55;
-    opacity: 0.86;
-}
-
-.ccg-card__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    margin-top: 0.5rem;
-}
-
-.ccg-card:hover .ccg-card__media img {
-    transform: scale(1.05);
-}
-
-/* Featured video card */
-
-.ccg-card__media--video {
-    padding: 0.65rem 0.65rem 0;
-}
-
-.ccg-card__video-frame {
-    position: relative;
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow:
-        0 0 20px rgba(0, 0, 0, 0.9),
-        0 0 36px rgba(255, 0, 200, 0.4);
-}
-
-.ccg-card__video-frame::before {
-    content: "";
-    display: block;
-    padding-top: 56.25%;
-}
-
-.ccg-card__video-frame iframe {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-}
-
 /* -----------------------------------------
-   COLLECTION CARDS — THUMBS + COLOUR STRIPS
+   COLLECTION CARDS
 ----------------------------------------- */
 
 .ccg-collection-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 1.1rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.3rem;
 }
 
 .ccg-collection-card {
-    position: relative;
     border-radius: 18px;
-    overflow: hidden;
-    background: radial-gradient(circle at top, rgba(0, 230, 255, 0.08), rgba(2, 6, 20, 0.96));
+    background:
+        radial-gradient(circle at top, rgba(0, 230, 255, 0.08), rgba(2, 6, 20, 0.96));
     border: 1px solid rgba(125, 205, 255, 0.45);
-    box-shadow:
-        0 0 18px rgba(0, 0, 0, 0.85),
-        0 0 32px rgba(0, 230, 255, 0.16);
-    display: flex;
-    flex-direction: column;
+    overflow: hidden;
 }
 
+/* strips */
 .ccg-collection-card__strip {
     height: 4px;
 }
 
-/* Top strip glows more */
 .ccg-collection-card__strip--top {
     box-shadow: 0 0 18px rgba(255, 255, 255, 0.5);
 }
 
-.ccg-collection-card__link {
-    display: flex;
-    flex-direction: column;
-    text-decoration: none;
-    color: inherit;
-}
-
-.ccg-collection-card__thumb-wrap {
-    position: relative;
-    overflow: hidden;
-    padding: 0.45rem 0.6rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: radial-gradient(circle at top, rgba(0, 240, 255, 0.12), rgba(3, 8, 25, 0.96));
-}
-
-.ccg-collection-card__thumb-wrap img {
-    display: block;
-    width: 100%;
-    height: 80px;
-    object-fit: contain;
-    transition: transform 220ms ease-out, filter 220ms ease-out;
-}
-
-.ccg-collection-card__body {
-    padding: 0.7rem 0.8rem 0.85rem;
-}
-
-.ccg-collection-card__title {
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.11em;
-    margin-bottom: 0.25rem;
-}
-
-.ccg-collection-card__text {
-    font-size: 0.78rem;
-    line-height: 1.45;
-    opacity: 0.85;
-}
-
-.ccg-collection-card:hover .ccg-collection-card__thumb-wrap img {
-    transform: scale(1.05);
-    filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.7));
-}
-
-/* Per-collection colour schemes */
-
+/* Per collection colours */
 .ccg-collection-card--bpjs .ccg-collection-card__strip--top,
 .ccg-collection-card--bpjs .ccg-collection-card__strip--bottom {
     background: linear-gradient(90deg, #00f0ff, #00ff88);
@@ -798,6 +589,30 @@
 }
 
 /* -----------------------------------------
+   🔥 NEON TRAYS BEHIND BUTTON GROUPS (3B)
+   (Inserted in correct cascade position)
+----------------------------------------- */
+
+.ccg-hero__actions,
+.ccg-card__actions {
+    position: relative;
+    padding: 0.35rem;
+    border-radius: 999px;
+    background:
+        radial-gradient(circle at 0 0, rgba(0, 240, 255, 0.16), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(255, 0, 200, 0.16), transparent 55%),
+        linear-gradient(120deg, rgba(2, 10, 35, 0.96), rgba(0, 4, 18, 0.96));
+    border: 1px solid rgba(132, 218, 255, 0.65);
+    box-shadow:
+        0 0 18px rgba(0, 240, 255, 0.45),
+        0 0 24px rgba(255, 0, 200, 0.4);
+}
+
+.ccg-card__actions {
+    border-radius: 16px;
+}
+
+/* -----------------------------------------
    COMMUNITY GRID
 ----------------------------------------- */
 
@@ -805,10 +620,6 @@
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1.1rem;
-}
-
-.ccg-card--community {
-    min-height: 0;
 }
 
 /* -----------------------------------------
@@ -830,40 +641,21 @@
 
 @media (max-width: 1200px) {
     .ccg-genre-grid {
-        grid-template-columns: repeat(5, minmax(0, 1fr));
-    }
-
-    .ccg-collection-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(5, 1fr);
     }
 }
 
 @media (max-width: 1024px) {
     .ccg-header-inner {
         flex-wrap: wrap;
-        gap: 0.75rem;
-    }
-
-    .ccg-header-actions {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    .ccg-main {
-        padding-inline: 1.1rem;
-    }
-
-    .ccg-hero {
-        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-        gap: 1.5rem;
     }
 
     .ccg-featured-grid {
-        grid-template-columns: minmax(0, 1fr);
+        grid-template-columns: 1fr;
     }
 
     .ccg-community-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
@@ -873,44 +665,104 @@
         align-items: flex-start;
     }
 
-    .ccg-header-actions {
-        justify-content: space-between;
-        width: 100%;
-    }
-
-    .ccg-nav__list {
-        flex-wrap: wrap;
-        row-gap: 0.4rem;
-    }
-
     .ccg-hero {
-        grid-template-columns: minmax(0, 1fr);
-    }
-
-    .ccg-hero__media {
-        order: -1;
-        min-height: 220px;
+        grid-template-columns: 1fr;
     }
 
     .ccg-genre-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(3, 1fr);
     }
 
     .ccg-collection-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .ccg-community-grid {
-        grid-template-columns: minmax(0, 1fr);
+        grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 520px) {
     .ccg-genre-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .ccg-collection-grid {
-        grid-template-columns: minmax(0, 1fr);
+        grid-template-columns: 1fr;
     }
+}
+
+/* ============================================================
+   MODE-SPECIFIC SKINS — HOME (C64 NEON vs AMIGA)
+   ============================================================ */
+
+body[data-ccg-mode="amiga"] .ccg-page--home {
+    color: #101425;
+    background:
+        radial-gradient(circle at top, #f7f8ff 0, #dde4f7 42%, #c5d0eb 100%);
+}
+
+/* Amiga Header */
+body[data-ccg-mode="amiga"] .ccg-header {
+    background: linear-gradient(90deg, #c9d3f2, #e2e8ff);
+    border-bottom: 2px solid rgba(0,0,0,0.4);
+    box-shadow:
+        0 3px 0 #fff,
+        0 6px 0 rgba(0,0,0,0.35);
+}
+
+body[data-ccg-mode="amiga"] .ccg-brand__title,
+body[data-ccg-mode="amiga"] .ccg-hero__title,
+body[data-ccg-mode="amiga"] .ccg-hero__subtitle {
+    color: #101425 !important;
+    text-shadow: none;
+}
+
+/* Nav tabs */
+body[data-ccg-mode="amiga"] .ccg-nav__link {
+    color: #101425;
+    opacity: 0.95;
+}
+
+body[data-ccg-mode="amiga"] .ccg-nav__link::before {
+    background: linear-gradient(180deg, #fff, #d3daf4);
+    box-shadow:
+        0 0 0 1px rgba(0,0,0,0.35),
+        0 2px 0 rgba(255,255,255,0.9);
+}
+
+/* Cards/windows */
+body[data-ccg-mode="amiga"] .ccg-card,
+body[data-ccg-mode="amiga"] .ccg-collection-card,
+body[data-ccg-mode="amiga"] .ccg-card--community,
+body[data-ccg-mode="amiga"] .ccg-hero {
+    background: linear-gradient(135deg, #f4f6ff, #dde4f7);
+    border-color: rgba(0,0,0,0.28);
+    box-shadow:
+        0 3px 0 #fff,
+        0 7px 16px rgba(0,0,0,0.22);
+    color: #101425;
+}
+
+/* Buttons */
+body[data-ccg-mode="amiga"] .ccg-btn--primary {
+    background: linear-gradient(120deg, #ffb8ff, #ff7a18);
+    color: #2b0a16;
+    box-shadow:
+        0 0 10px rgba(255, 180, 255, 0.8),
+        0 0 26px rgba(255, 122, 24, 0.7);
+}
+
+body[data-ccg-mode="amiga"] .ccg-btn--secondary,
+body[data-ccg-mode="amiga"] .ccg-btn--ghost {
+    background: rgba(255,255,255,0.85);
+    border-color: rgba(0,0,0,0.35);
+    color: #101425;
+}
+
+/* Footer */
+body[data-ccg-mode="amiga"] .ccg-footer {
+    border-top: 1px solid rgba(0,0,0,0.22);
+    opacity: 0.9;
+    color: #101425;
 }

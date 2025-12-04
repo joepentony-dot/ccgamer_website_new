@@ -34,81 +34,83 @@
     <div class="ccg-page ccg-page--collections">
 
         <!-- =====================================================
-             UNIVERSAL SUBPAGE HEADER (OMEGA VERSION)
+             UNIVERSAL OMEGA HEADER — FULLY UNIFIED VERSION
         ===================================================== -->
         <header class="ccg-header">
             <div class="ccg-header-inner">
 
-                <!-- Logo -->
-                <a href="../../home.html" class="ccg-logo-link">
+                <!-- Brand -->
+                <a href="../../home.html" class="ccg-brand">
                     <img
-                        src="../../resources/ccgamer_logo.png"
+                        src="../../resources/images/CCGAMER LOGO.png"
                         alt="Cheeky Commodore Gamer logo"
-                        class="ccg-logo-img"
+                        class="ccg-brand__logo"
                     >
+                    <div class="ccg-brand__text">
+                        <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
+                        <div class="ccg-brand__title">
+                            <span class="ccg-brand__neon-cheeky">CHEEKY</span>
+                            <span class="ccg-brand__neon-sub">COMMODORE GAMER</span>
+                        </div>
+                    </div>
                 </a>
 
                 <!-- Navigation -->
-                <nav class="ccg-nav">
-                    <a href="../../home.html" class="nav-item">Home</a>
-                    <a href="../../games/index.html" class="nav-item">Games</a>
-                    <a href="../../games/genres/index.html" class="nav-item">Genres</a>
-                    <a href="../../games/collections/index.html" class="nav-item nav-item--active">Collections</a>
-                    <a href="../../emulation.html" class="nav-item">Emulation</a>
-                    <a href="../../quiz/quiz.html" class="nav-item">Quiz</a>
-                    <a href="../../complete-index.html" class="nav-item">Index</a>
-                    <a href="../../about.html" class="nav-item">About</a>
-                    <a href="../../contact.html" class="nav-item">Contact</a>
+                <nav class="ccg-nav" aria-label="Primary navigation">
+                    <ul class="ccg-nav__list">
+                        <li><a href="../../home.html" class="ccg-nav__link">Home</a></li>
+                        <li><a href="../../games/index.html" class="ccg-nav__link">Games</a></li>
+                        <li><a href="../../games/genres/index.html" class="ccg-nav__link">Genres</a></li>
+                        <li><a href="../../games/collections/index.html" class="ccg-nav__link ccg-nav__link--active">Collections</a></li>
+                        <li><a href="../../quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
+                        <li><a href="../../emulation.html" class="ccg-nav__link">Emulation</a></li>
+                        <li><a href="../../complete-index.html" class="ccg-nav__link">Index</a></li>
+                        <li><a href="../../about.html" class="ccg-nav__link">About</a></li>
+                        <li><a href="../../contact.html" class="ccg-nav__link">Contact</a></li>
+                    </ul>
                 </nav>
 
-                <!-- Mode Toggle (Omega) -->
-                <button
-                    class="ccg-mode-toggle is-c64"
-                    type="button"
-                    aria-label="Toggle system mode"
-                    data-ccg-mode-toggle="true"
-                >
-                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--c64" data-mode-target="c64" data-ccg-mode="c64">
-                        <span class="ccg-mode-toggle-icon">
-                            <img src="../../resources/icons/c64.svg" alt="">
+                <!-- Mode Toggle -->
+                <div class="ccg-header-actions">
+                    <button
+                        class="ccg-mode-toggle"
+                        type="button"
+                        aria-label="Toggle between C64 and Amiga modes"
+                        data-ccg-mode-toggle
+                    >
+                        <span class="ccg-mode-toggle__pill">
+                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
+                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">Amiga</span>
+                            <span class="ccg-mode-toggle__thumb"></span>
                         </span>
-                        <span class="ccg-mode-toggle-label">C64</span>
-                    </span>
+                    </button>
 
-                    <span class="ccg-mode-toggle-knob" aria-hidden="true"></span>
-
-                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--amiga" data-mode-target="amiga" data-ccg-mode="amiga">
-                        <span class="ccg-mode-toggle-icon">
-                            <img src="../../resources/icons/amiga.svg" alt="">
-                        </span>
-                        <span class="ccg-mode-toggle-label">Amiga</span>
-                    </span>
-                </button>
-
+                    <!-- SOCIAL ICONS (Unifed Omega block) -->
+                    <div class="ccg-socials">
+                        <a href="https://www.youtube.com/@CheekyCommodoreGamer" class="ccg-socials__link" aria-label="YouTube channel">
+                            <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
+                            <span class="ccg-socials__label">Subscribe</span>
+                        </a>
+                        <a href="https://patreon.com/CheekyCommodoreGamer" class="ccg-socials__icon-btn" aria-label="Patreon">
+                            <span class="ccg-socials__icon ccg-socials__icon--patreon"></span>
+                        </a>
+                        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" class="ccg-socials__icon-btn" aria-label="PayPal donations">
+                            <span class="ccg-socials__icon ccg-socials__icon--paypal"></span>
+                        </a>
+                        <a href="https://twitter.com/CheekyC64Gamer" class="ccg-socials__icon-btn" aria-label="X (Twitter)">
+                            <span class="ccg-socials__icon ccg-socials__icon--x"></span>
+                        </a>
+                        <a href="https://www.facebook.com/cheekycommodoregamer" class="ccg-socials__icon-btn" aria-label="Facebook">
+                            <span class="ccg-socials__icon ccg-socials__icon--fb"></span>
+                        </a>
+                        <a href="https://discord.gg/83Xw9ktAn4" class="ccg-socials__icon-btn" aria-label="Discord server">
+                            <span class="ccg-socials__icon ccg-socials__icon--discord"></span>
+                        </a>
+                    </div>
+                </div>
             </div>
 
-            <!-- SOCIAL ICONS ROW (matches other subpages) -->
-            <div class="ccg-header-socials">
-                <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank">
-                    <img src="../../resources/icons/youtube.svg" alt="YouTube">
-                </a>
-                <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank">
-                    <img src="../../resources/icons/patreon.svg" alt="Patreon">
-                </a>
-                <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank">
-                    <img src="../../resources/icons/paypal.svg" alt="PayPal">
-                </a>
-                <a href="https://www.facebook.com/cheekycommodoregamer" target="_blank">
-                    <img src="../../resources/icons/facebook.svg" alt="Facebook">
-                </a>
-                <a href="https://twitter.com/CheekyC64Gamer" target="_blank">
-                    <img src="../../resources/icons/twitter.svg" alt="Twitter / X">
-                </a>
-                <a href="https://discord.gg/83Xw9ktAn4" target="_blank">
-                    <img src="../../resources/icons/discord.svg" alt="Discord">
-                </a>
-            </div>
-
+            <div class="ccg-header-neon-strip"></div>
         </header>
 
         <!-- =====================================================
@@ -116,7 +118,7 @@
         ===================================================== -->
         <main class="ccg-main">
 
-            <!-- Hero / Intro -->
+            <!-- Hero -->
             <section class="ccg-section">
                 <h1 class="ccg-section-title">Collections &amp; Special Lists</h1>
                 <p class="ccg-section-subtitle">
@@ -125,12 +127,12 @@
                 </p>
             </section>
 
-            <!-- Collection Grid (reuses genre grid styling) -->
+            <!-- Collection Tiles (reuse genre grid layout) -->
             <section class="ccg-section">
                 <div class="ccg-genre-grid">
 
                     <!-- Top Picks -->
-                    <a class="ccg-genre-card" href="../genres/top-picks.html">
+                    <a class="ccg-genre-card" href="../collections/top-picks.html">
                         <img
                             src="../../resources/images/genres/top-picks.png"
                             alt="Top Picks collection"
@@ -140,7 +142,7 @@
                     </a>
 
                     <!-- BPJS Indexed -->
-                    <a class="ccg-genre-card" href="../genres/bpjs-indexed-games.html">
+                    <a class="ccg-genre-card" href="../collections/bpjs-indexed-games.html">
                         <img
                             src="../../resources/images/genres/bpjs.png"
                             alt="BPJS Indexed collection"
@@ -150,7 +152,7 @@
                     </a>
 
                     <!-- Cartridge Games -->
-                    <a class="ccg-genre-card" href="../genres/cartridge-games.html">
+                    <a class="ccg-genre-card" href="../collections/cartridge-games.html">
                         <img
                             src="../../resources/images/genres/cartridge.png"
                             alt="Cartridge Games collection"
@@ -160,7 +162,7 @@
                     </a>
 
                     <!-- Licensed Games -->
-                    <a class="ccg-genre-card" href="../genres/licensed-games.html">
+                    <a class="ccg-genre-card" href="../collections/licensed-games.html">
                         <img
                             src="../../resources/images/genres/licensed.png"
                             alt="Licensed Games collection"
