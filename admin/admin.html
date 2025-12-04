@@ -1,28 +1,142 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ccg-page="admin">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel | CCG</title>
 
+    <title>Admin Panel | Cheeky Commodore Gamer</title>
+    <meta name="description" content="Internal administration tools for managing games, thumbnails, and site data.">
+
+    <link rel="icon" href="../favicon.ico">
+
+    <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="../resources/css/ccg-master.css">
+    <link rel="stylesheet" href="../resources/css/ccg-mode.css">
+    <link rel="stylesheet" href="../resources/css/ccg-effects.css">
+    <link rel="stylesheet" href="../resources/css/ccg-anim.css">
+    <link rel="stylesheet" href="../resources/css/ccg-overlays.css">
+    <link rel="stylesheet" href="../resources/css/ccg-modal.css">
+
+    <!-- PAGE CSS (Optional future styling) -->
+    <link rel="stylesheet" href="../resources/css/admin.css">
 </head>
 
-<body class="crt c64-mode">
+<body class="ccg-body" data-ccg-mode="c64">
 
-<header class="topnav">
-    <a href="../home.html">HOME</a>
-    <a href="../complete-index.html">COMPLETE INDEX</a>
-    <a href="../games/genres/index.html">GENRES</a>
-    <a href="../quiz/quiz.html">QUIZ</a>
-</header>
+    <!-- =========================================================
+         GLOBAL BACKGROUND (STARFIELD / GRID / CRT)
+    ========================================================= -->
+    <div class="ccg-bg">
+        <div class="ccg-bg-starfield"></div>
+        <div class="ccg-bg-grid"></div>
+        <div class="ccg-bg-crt-overlay"></div>
+    </div>
 
-<main class="admin-main">
-    <h1 class="site-title">ADMIN PANEL</h1>
-    <p class="subtitle">This section will later include tools for maintaining the site.</p>
-</main>
+    <div class="ccg-page ccg-page--admin">
 
-<script src="../js/ccj-global.js"></script>
+        <!-- =====================================================
+             UNIVERSAL SUBPAGE HEADER — MATCHES ALL OTHER PAGES
+        ===================================================== -->
+        <header class="ccg-header">
+            <div class="ccg-header-inner">
+
+                <!-- Logo -->
+                <a href="../home.html" class="ccg-logo-link">
+                    <img src="../resources/ccgamer_logo.png"
+                         alt="Cheeky Commodore Gamer logo"
+                         class="ccg-logo-img">
+                </a>
+
+                <!-- Navigation -->
+                <nav class="ccg-nav">
+                    <a href="../home.html" class="nav-item">Home</a>
+                    <a href="../games/index.html" class="nav-item">Games</a>
+                    <a href="../games/genres/index.html" class="nav-item">Genres</a>
+                    <a href="../games/collections/index.html" class="nav-item">Collections</a>
+                    <a href="../quiz/quiz.html" class="nav-item">Quiz</a>
+                    <a href="../complete-index.html" class="nav-item">Index</a>
+                    <a href="../about.html" class="nav-item">About</a>
+                    <a href="../contact.html" class="nav-item">Contact</a>
+                    <a href="admin.html" class="nav-item nav-item--active">Admin</a>
+                </nav>
+
+                <!-- Mode Toggle -->
+                <button
+                    class="ccg-mode-toggle"
+                    type="button"
+                    aria-label="Toggle system mode"
+                    data-ccg-mode-toggle="true"
+                >
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--c64">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="../resources/icons/c64.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">C64</span>
+                    </span>
+
+                    <span class="ccg-mode-toggle-knob"></span>
+
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--amiga">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="../resources/icons/amiga.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">Amiga</span>
+                    </span>
+                </button>
+
+            </div>
+        </header>
+
+        <!-- =====================================================
+             MAIN ADMIN CONTENT
+        ===================================================== -->
+        <main class="ccg-main ccg-main--admin">
+
+            <section class="ccg-section">
+                <h1 class="ccg-section-title">Admin Panel</h1>
+                <p class="ccg-section-subtitle">
+                    Internal tools for managing your site.  
+                    This area will later include:
+                </p>
+                <ul class="ccg-list">
+                    <li>✔ Add new games to <code>games.json</code></li>
+                    <li>✔ Run thumbnail scanners / repair tools</li>
+                    <li>✔ Manage featured games</li>
+                    <li>✔ Refresh quiz sets</li>
+                </ul>
+            </section>
+
+            <section class="ccg-section">
+                <div class="ccg-panel">
+                    <h2>Coming Soon</h2>
+                    <p>
+                        This page will evolve with automatic tools, uploaders, validators and more once
+                        your main site functionality is locked in.
+                    </p>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- =====================================================
+             FOOTER
+        ===================================================== -->
+        <footer class="ccg-footer">
+            <div class="ccg-footer-inner">
+                <p class="ccg-footer-text">&copy; 2025 Cheeky Commodore Gamer.</p>
+                <p class="ccg-footer-text ccg-footer-text--small">
+                    Not affiliated with Commodore or Amiga.
+                </p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- =========================================================
+         JS
+    ========================================================= -->
+    <script src="../js/ccg-mode-engine.js" defer></script>
+    <script src="../js/ccj-global.js" defer></script>
 
 </body>
 </html>
