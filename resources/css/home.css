@@ -113,7 +113,9 @@
 
 .ccg-header-title-block {
     max-width: 540px;
+    margin-bottom: 0.35rem; /* PATCH 8 */
 }
+
 
 .ccg-header-title {
     margin: 0 0 0.35rem;
