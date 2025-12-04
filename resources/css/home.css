@@ -1098,7 +1098,13 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
         flex-direction: row;
         justify-content: space-between;
     }
-
+   
+/* ULTRA SAFE PATCH — CRT shimmer softening for high DPI */
+@media (min-width: 1600px) {
+    .ccg-bg-crt-overlay {
+        opacity: 0.14;
+    }
+}
     .ccg-logo-img {
         height: 36px;
     }
