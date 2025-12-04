@@ -466,6 +466,12 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
     margin-top: 0.6rem;
 }
 
+/* ULTRA SAFE PATCH — hero buttons overflow fix */
+.ccg-hero-buttons {
+    width: 100%;
+    box-sizing: border-box;
+}
+
 .ccg-hero-btn {
     width: 100%;
     justify-content: center;
