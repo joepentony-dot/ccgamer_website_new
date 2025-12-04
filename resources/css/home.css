@@ -1,4 +1,433 @@
 /* ==========================================================================
+   HOME.CSS — OMEGA CINEMATIC FUSION
+   Final standardised version — precise, stable, mode-safe, WOW factor
+   ========================================================================== */
+
+/* -----------------------------------------
+   PAGE CONTAINER
+----------------------------------------- */
+
+.ccg-page--home {
+    width: 100%;
+    max-width: 1680px;
+    margin: 0 auto;
+    padding: 0;
+    position: relative;
+    z-index: 4; /* above backgrounds + CRT */
+}
+
+/* ==========================================================================
+   OMEGA HEADER SYSTEM
+   ========================================================================= */
+
+.ccg-header--omega {
+    width: 100%;
+    padding: 2rem 1.5rem 3rem;
+    position: relative;
+    z-index: 15;
+    text-align: center;
+}
+
+.ccg-header-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* HEADER TOP: LOGO + MODE TOGGLE */
+.ccg-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ccg-header-left,
+.ccg-header-right {
+    flex: 1;
+    display: flex;
+}
+
+.ccg-header-left  { justify-content: flex-start; }
+.ccg-header-right { justify-content: flex-end; }
+
+/* LOGO */
+.ccg-logo-img {
+    width: 85px;
+    height: auto;
+    opacity: 0.95;
+    transition: opacity 0.2s ease;
+}
+.ccg-logo-img:hover {
+    opacity: 1;
+}
+
+/* ==========================================================================
+   HEADER MAIN — TITLE / SUBTITLE / NAV / SOCIAL GRID
+   ========================================================================= */
+
+.ccg-header-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    align-items: center;
+}
+
+/* TITLE */
+.ccg-header-title-block {
+    text-align: center;
+}
+
+.ccg-header-title {
+    font-size: clamp(3rem, 6vw, 5rem);
+    font-weight: 900;
+    line-height: 0.85;
+    margin: 0 0 0.3rem;
+    text-transform: uppercase;
+}
+
+/* Mode-reactive title halves */
+.ccg-header-title-top {
+    color: var(--c64-blue);
+}
+.ccg-header-title-bottom {
+    color: var(--amiga-pink);
+}
+
+/* Subtle mode rules (duplicated intentionally for compatibility) */
+body[data-ccg-mode="c64"] .ccg-header-title-top { color: var(--c64-blue); }
+body[data-ccg-mode="c64"] .ccg-header-title-bottom { color: #ffffff; }
+
+body[data-ccg-mode="amiga"] .ccg-header-title-top { color: #111111; }
+body[data-ccg-mode="amiga"] .ccg-header-title-bottom { color: var(--amiga-pink); }
+
+.ccg-header-subtitle {
+    font-size: 1.15rem;
+    opacity: 0.85;
+    max-width: 820px;
+    margin: 0.5rem auto 0;
+}
+
+/* NAVIGATION */
+.ccg-main-nav {
+    display: flex;
+    gap: 1rem 1.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    font-size: 1.05rem;
+}
+
+.ccg-main-nav-link {
+    padding: 0.45rem 1rem;
+    border-radius: 6px;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+.ccg-main-nav-link:hover {
+    background: rgba(255,255,255,0.12);
+}
+
+/* ==========================================================================
+   HOME — SOCIAL GRID (reinforced against collisions)
+   ========================================================================= */
+
+.ccg-header-social-wrap {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.ccg-social-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+    width: 100%;
+    max-width: 1200px;
+    position: relative;
+    z-index: 16; /* Above hero text but below true UI */
+}
+
+.ccg-social-card {
+    background: rgba(0,0,0,0.4);
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.ccg-social-card:hover {
+    background: rgba(0,0,0,0.55);
+    transform: translateY(-4px);
+}
+
+.ccg-social-card-icon img {
+    width: 38px;
+    opacity: 0.95;
+}
+
+/* Text */
+.ccg-social-main {
+    flex: 1;
+}
+
+.ccg-social-label {
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+.ccg-social-tagline {
+    font-size: 0.85rem;
+    opacity: 0.75;
+}
+
+.ccg-social-cta {
+    font-weight: 700;
+    font-size: 0.95rem;
+    opacity: 0.9;
+    white-space: nowrap;
+}
+
+/* ==========================================================================
+   CINEMATIC HERO — MODE REACTIVE
+   ========================================================================= */
+
+.ccg-hero {
+    position: relative;
+    padding: 5rem 2rem 4rem;
+    margin-bottom: 4rem;
+    text-align: center;
+    z-index: 5;
+}
+
+/* HERO LAYERS */
+.ccg-hero-media {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.ccg-hero-image {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 1.4s ease-in-out;
+    pointer-events: none;
+}
+
+/* Image sources */
+.ccg-hero-image-c64 {
+    background-image: url("resources/images/hero/ccg-hero-c64.png");
+}
+.ccg-hero-image-amiga {
+    background-image: url("resources/images/hero/ccg-hero-amiga.png");
+}
+
+/* Mode crossfade */
+body[data-ccg-mode="c64"]  .ccg-hero-image-c64  { opacity: 1; }
+body[data-ccg-mode="amiga"] .ccg-hero-image-amiga { opacity: 1; }
+
+/* OVERLAYS */
+.ccg-hero-overlay--scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.06) 0px,
+        rgba(255,255,255,0.06) 1px,
+        rgba(0,0,0,0) 2px
+    );
+    mix-blend-mode: soft-light;
+    pointer-events: none;
+}
+
+.ccg-hero-overlay--glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(255,0,255,0.16), transparent 55%);
+    mix-blend-mode: screen;
+    pointer-events: none;
+}
+
+/* HERO TEXT */
+.ccg-hero-eyebrow {
+    opacity: 0.75;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+}
+
+.ccg-hero-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    margin: 0.5rem 0 1rem;
+}
+
+.ccg-hero-title span {
+    display: block;
+    color: var(--accent);
+}
+
+.ccg-hero-tagline {
+    max-width: 780px;
+    margin: 0 auto;
+    font-size: 1.05rem;
+    opacity: 0.85;
+}
+
+.ccg-hero-buttons {
+    margin-top: 1.9rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.ccg-hero-hint {
+    margin-top: 2rem;
+    opacity: 0.65;
+}
+
+/* ==========================================================================
+   HOME SECTIONS
+   ========================================================================= */
+
+.home-section {
+    margin-bottom: 4rem;
+}
+
+.home-section-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.home-section-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.25rem;
+}
+
+.home-section-subtitle {
+    opacity: 0.75;
+}
+
+/* ==========================================================================
+   FEATURED GAME + FEATURED VIDEO
+   ========================================================================= */
+
+.home-featured-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+@media (max-width: 900px) {
+    .home-featured-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.featured-panel {
+    background: rgba(0,0,0,0.35);
+    padding: 1.75rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.featured-panel-title {
+    font-size: 1.75rem;
+    margin-bottom: 0.25rem;
+}
+
+/* Video embed */
+.featured-video-frame iframe {
+    width: 100%;
+    height: 315px;
+}
+
+/* ==========================================================================
+   GENRE GRID
+   ========================================================================= */
+
+.ccg-genre-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.4rem;
+    margin-top: 1.5rem;
+}
+
+.ccg-genre-card img {
+    width: 100%;
+    border-radius: 10px;
+    opacity: 0.92;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.ccg-genre-card:hover img {
+    opacity: 1;
+    transform: translateY(-2px);
+}
+
+/* View all genres “card” */
+.ccg-genre-card--all {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 1.5rem;
+    border-radius: 10px;
+    background: rgba(0,0,0,0.4);
+    border: 1px dashed rgba(255,255,255,0.25);
+    transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.ccg-genre-card--all:hover {
+    background: rgba(0,0,0,0.6);
+    border-color: rgba(255,255,255,0.6);
+    transform: translateY(-3px);
+}
+
+.ccg-genre-all-label {
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+}
+.ccg-genre-all-tagline {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* ==========================================================================
+   COLLECTIONS / HIGHLIGHTS / UTILITIES
+   ========================================================================= */
+
+.ccg-collections-grid,
+.ccg-highlights-grid,
+.ccg-utilities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+.ccg-collection-card,
+.ccg-highlight-card,
+.ccg-utility-card {
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 1.5rem;
+    border-radius: 12px;
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ccg-collection-card:hover,
+.ccg-highlight-card:hover,
+.ccg-utility-card:hover {
+    transform: translateY(-4px);
+    background: rgba(0,0,0,0.55);
+    box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.35);
+}
+
+/* ==========================================================================
    OMEGA MODE SKIN EXTENSIONS
    Adds C64 Neon + Amiga Workbench theming to HOME PAGE ONLY
    Without altering existing structure.
@@ -7,27 +436,28 @@
 /* ------------------------------------------------------------
    C64 MODE — PETSCII NEON + CRT Glow
    ------------------------------------------------------------ */
+
 body[data-ccg-mode="c64"] .ccg-header--omega,
 body[data-ccg-mode="c64"] .ccg-hero,
 body[data-ccg-mode="c64"] .featured-panel,
 body[data-ccg-mode="c64"] .ccg-collection-card,
 body[data-ccg-mode="c64"] .ccg-highlight-card,
 body[data-ccg-mode="c64"] .ccg-utility-card {
-    background: rgba(0, 0, 0, 0.55);
+    background: radial-gradient(circle at top, rgba(0,40,80,0.65), rgba(0,0,0,0.9));
     border: 1px solid rgba(58,176,255,0.25);
     box-shadow:
         0 0 12px rgba(58,176,255,0.35),
-        inset 0 0 18px rgba(58,176,255,0.15);
+        inset 0 0 18px rgba(0,0,0,0.85);
 }
 
 /* Social cards glow blue in C64 mode */
 body[data-ccg-mode="c64"] .ccg-social-card {
     border-color: rgba(58,176,255,0.28);
-    background: rgba(0,0,20,0.55);
+    background: radial-gradient(circle at top, rgba(0,40,80,0.85), rgba(0,0,0,0.95));
     box-shadow: 0 0 14px rgba(58,176,255,0.25);
 }
 body[data-ccg-mode="c64"] .ccg-social-card:hover {
-    background: rgba(0,0,30,0.75);
+    background: radial-gradient(circle at top, rgba(0,60,110,0.95), rgba(0,0,0,1));
 }
 
 /* Hero text glow */
@@ -60,7 +490,7 @@ body[data-ccg-mode="amiga"] .featured-panel,
 body[data-ccg-mode="amiga"] .ccg-collection-card,
 body[data-ccg-mode="amiga"] .ccg-highlight-card,
 body[data-ccg-mode="amiga"] .ccg-utility-card {
-    background: rgba(240, 244, 255, 0.92);
+    background: rgba(240, 244, 255, 0.96);
     border: 1px solid rgba(0,0,0,0.3);
     color: #000;
     box-shadow:
@@ -104,7 +534,7 @@ body[data-ccg-mode="amiga"] .featured-video-frame iframe {
 
 /* NAV links (light UI hover) */
 body[data-ccg-mode="amiga"] .ccg-main-nav-link:hover {
-    background: rgba(0,0,0,0.1);
+    background: rgba(0,0,0,0.08);
     color: #000;
 }
 
@@ -198,12 +628,6 @@ body[data-ccg-mode="amiga"] .ccg-social-card-icon {
    ========================================================================= */
 
 /* Amiga: lighten text + soften glow */
-body[data-ccg-mode="amiga"] .ccg-hero-title,
-body[data-ccg-mode="amiga"] .ccg-hero-tagline {
-    color: #000;
-    text-shadow: none;
-}
-
 body[data-ccg-mode="amiga"] .ccg-hero {
     background: rgba(245,245,255,0.35);
 }
@@ -267,4 +691,17 @@ body[data-ccg-mode="amiga"] .ccg-mode-toggle {
 
 body[data-ccg-mode="amiga"] .ccg-mode-toggle-pill {
     color: #000;
+}
+
+/* ==========================================================================
+   RESPONSIVE TWEAKS
+   ========================================================================= */
+
+@media (max-width: 760px) {
+    .ccg-header--omega {
+        padding-inline: 1rem;
+    }
+    .ccg-hero {
+        padding-inline: 1.25rem;
+    }
 }
