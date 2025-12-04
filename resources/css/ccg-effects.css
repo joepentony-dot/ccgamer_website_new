@@ -1,42 +1,58 @@
 /* ============================================================
-   CCG-EFFECTS.CSS — CRT, Neon & Bloom FX
-   Omega Standard Restore
+   CCG-EFFECTS.CSS — CRT • Neon • Bloom FX
+   Omega Build — Visual-only layer (non-structural)
    ============================================================ */
 
-/* Soft CRT Overlay */
+/* ------------------------------------------------------------
+   CRT SOFT SCAN OVERLAY
+   Applied globally via <div class="ccg-bg-crt-overlay">
+------------------------------------------------------------ */
+
 .ccg-bg-crt-overlay {
     pointer-events: none;
+    position: absolute;
+    inset: 0;
     background: repeating-linear-gradient(
         to bottom,
-        rgba(255,255,255,0.04) 0px,
-        rgba(255,255,255,0.04) 1px,
+        rgba(255, 255, 255, 0.04) 0px,
+        rgba(255, 255, 255, 0.04) 1px,
         transparent 3px
     );
     mix-blend-mode: soft-light;
     opacity: 0.45;
+    z-index: 3; /* above grid + starfield but below content */
 }
 
-/* Neon glow for headers */
+/* ------------------------------------------------------------
+   NEON HEADERS
+   Theme-reactive glow tied to current --accent
+------------------------------------------------------------ */
+
 .ccg-neon {
     text-shadow:
-        0 0 6px var(--c64-blue),
-        0 0 12px var(--c64-blue),
-        0 0 24px var(--c64-blue);
+        0 0 6px   var(--accent),
+        0 0 12px  var(--accent),
+        0 0 24px  var(--accent),
+        0 0 36px  var(--accent);
 }
 
-body[data-ccg-mode="amiga"] .ccg-neon {
-    text-shadow:
-        0 0 6px var(--amiga-pink),
-        0 0 12px var(--amiga-pink),
-        0 0 24px var(--amiga-pink);
-}
+/* (Optional stronger Amiga glow handled automatically by --accent;
+   original code had separate rules but they are redundant now.) */
 
-/* Panel glow */
+/* ------------------------------------------------------------
+   PANEL AMBIENT SHADOW
+   Kept subtle so cards do not “float off the page”
+------------------------------------------------------------ */
+
 .ccg-panel {
-    box-shadow: 0 0 18px rgba(0,0,0,0.4);
+    box-shadow: 0 0 18px rgba(0, 0, 0, 0.40);
 }
 
-/* Button glow on hover */
+/* ------------------------------------------------------------
+   BUTTON GLOW / LIFT ON HOVER
+   Applies to all .ccg-btn variations
+------------------------------------------------------------ */
+
 .ccg-btn:hover {
     transform: translateY(-2px);
     opacity: 1;
