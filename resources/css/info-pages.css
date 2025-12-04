@@ -1,0 +1,198 @@
+/* ============================================================
+   INFO PAGES LAYOUT
+   Shared structure for About, Contact, Emulation hub pages.
+   Uses Omega panels and accent tokens from ccg-master + ccg-mode.
+   ============================================================ */
+
+.ccg-info-shell {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.ccg-info-hero {
+    background: var(--panel-bg-strong);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--panel-shadow);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.ccg-info-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 20% 20%, rgba(var(--accent-rgb), 0.12), transparent 35%),
+                radial-gradient(circle at 80% 80%, rgba(var(--accent-rgb), 0.08), transparent 38%);
+    pointer-events: none;
+    mix-blend-mode: screen;
+}
+
+.ccg-info-hero h1 {
+    font-size: clamp(1.9rem, 2.5vw, 2.4rem);
+    letter-spacing: 0.04em;
+    margin: 0 0 0.5rem;
+}
+
+.ccg-info-hero p {
+    margin: 0 auto 1.2rem;
+    max-width: 850px;
+    color: var(--text-dim);
+}
+
+.ccg-pill-row {
+    display: inline-flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.ccg-pill {
+    background: rgba(var(--accent-rgb), 0.14);
+    color: var(--accent);
+    border: 1px solid rgba(var(--accent-rgb), 0.4);
+    border-radius: 999px;
+    padding: 0.35rem 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.ccg-info-grid {
+    display: grid;
+    gap: 1.2rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.ccg-info-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--panel-shadow);
+    border-radius: var(--radius-md);
+    padding: 1.35rem;
+    display: grid;
+    gap: 0.5rem;
+}
+
+.ccg-info-card h3 {
+    margin: 0;
+    letter-spacing: 0.02em;
+}
+
+.ccg-info-card p {
+    margin: 0;
+    color: var(--text-dim);
+}
+
+.ccg-bullet-list {
+    list-style: none;
+    padding: 0;
+    margin: 0.2rem 0 0;
+    display: grid;
+    gap: 0.35rem;
+}
+
+.ccg-bullet-list li {
+    position: relative;
+    padding-left: 1.2rem;
+    color: var(--text-dim);
+}
+
+.ccg-bullet-list li::before {
+    content: "✦";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+}
+
+.ccg-info-panel {
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    background: var(--panel-bg-strong);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--panel-shadow);
+    display: grid;
+    gap: 1rem;
+}
+
+.ccg-kv {
+    display: grid;
+    gap: 0.25rem;
+}
+
+.ccg-kv-label {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+.ccg-kv-value {
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.ccg-info-actions {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.ccg-btn-inline {
+    padding: 0.55rem 0.95rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(var(--accent-rgb), 0.35);
+    color: var(--text-light);
+    background: rgba(var(--accent-rgb), 0.12);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.ccg-btn-inline:hover {
+    transform: translateY(-1px);
+    color: var(--accent);
+}
+
+.emu-link-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.emu-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--accent);
+    padding: 0.45rem 0.7rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(var(--accent-rgb), 0.35);
+    background: rgba(var(--accent-rgb), 0.12);
+}
+
+.emu-link svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
+.emu-tip {
+    border-left: 4px solid var(--accent);
+    padding-left: 0.75rem;
+}
+
+.emu-note {
+    font-size: 0.95rem;
+    color: var(--text-dim);
+}
+
+@media (max-width: 720px) {
+    .ccg-info-hero { padding: 2rem 1.25rem; }
+    .ccg-info-card { padding: 1.1rem; }
+}
