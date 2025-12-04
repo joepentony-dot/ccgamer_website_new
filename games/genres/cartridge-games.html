@@ -1,51 +1,143 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ccg-page="genre">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Cartridge Games | Cheeky Commodore Gamer</title>
-    <meta name="description" content="Instant-load cartridge games for the Commodore 64 and Amiga. Explore fast-starting arcade conversions, compilations and special releases designed for plug-in convenience.">
+    <meta name="description" content="Instant-load cartridge games for the Commodore 64 and Amiga. Fast-start arcade conversions, plug-in releases and console-style convenience.">
     <link rel="canonical" href="cartridge-games.html">
 
+    <link rel="icon" href="../../favicon.ico">
+
+    <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="../../resources/css/ccg-master.css">
     <link rel="stylesheet" href="../../resources/css/ccg-mode.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-console.css">
     <link rel="stylesheet" href="../../resources/css/ccg-effects.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-anim.css">
     <link rel="stylesheet" href="../../resources/css/ccg-overlays.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-modal.css">
+
+    <!-- PAGE CSS -->
     <link rel="stylesheet" href="../../resources/css/genre.css">
 </head>
 
-<body data-genre="Cartridge Games">
-<header>
-    <a href="../../home.html">
-        <img src="../../resources/ccgamer_logo.png" alt="Cheeky Commodore Gamer Logo" class="logo">
-    </a>
-</header>
+<body class="ccg-body" data-ccg-mode="c64" data-genre="Cartridge Games">
 
-<nav class="breadcrumb">
-    <a href="../../home.html">Home Hub</a> ›
-    <a href="../../games/index.html">All Games</a> ›
-    <span>Cartridge Games</span>
-</nav>
+    <!-- GLOBAL BACKGROUND -->
+    <div class="ccg-bg">
+        <div class="ccg-bg-starfield"></div>
+        <div class="ccg-bg-grid"></div>
+        <div class="ccg-bg-crt-overlay"></div>
+    </div>
 
-<main class="genre-page">
-    <h1>Cartridge Games</h1>
+    <div class="ccg-page ccg-page--genre">
 
-    <p>Cartridge games remove the waiting and drop you straight into the action. On the C64 and Amiga, cartridges meant instant loading, built-in menus and sometimes enhanced features over the tape or disk versions.</p>
-    <p>This section gathers fast-start arcade conversions, special editions and other plug-in releases that gave your 8-bit or 16-bit system a console feel.</p>
+        <!-- =====================================================
+             UNIVERSAL OMEGA HEADER
+        ===================================================== -->
+        <header class="ccg-header">
+            <div class="ccg-header-inner">
 
-    <h2>Total Games Available</h2>
-    <div id="genreGamesCount"></div>
+                <!-- Logo -->
+                <a href="../../home.html" class="ccg-logo-link">
+                    <img src="../../resources/ccgamer_logo.png"
+                         alt="Cheeky Commodore Gamer logo"
+                         class="ccg-logo-img">
+                </a>
 
-    <h2>Browse Cartridge Games</h2>
-    <div id="genreGamesGrid"></div>
-</main>
+                <!-- Navigation -->
+                <nav class="ccg-nav">
+                    <a href="../../home.html" class="nav-item">Home</a>
+                    <a href="../../games/index.html" class="nav-item">Games</a>
+                    <a href="../../games/genres/index.html" class="nav-item">Genres</a>
+                    <a href="../../games/collections/index.html" class="nav-item">Collections</a>
+                    <a href="../../quiz/quiz.html" class="nav-item">Quiz</a>
+                    <a href="../../complete-index.html" class="nav-item">Index</a>
+                    <a href="../../about.html" class="nav-item">About</a>
+                    <a href="../../contact.html" class="nav-item">Contact</a>
+                </nav>
 
-<footer>
-    <p>© Cheeky Commodore Gamer.</p>
-</footer>
+                <!-- Mode Toggle -->
+                <button
+                    class="ccg-mode-toggle"
+                    type="button"
+                    aria-label="Toggle system mode"
+                    data-ccg-mode-toggle="true"
+                >
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--c64">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="../../resources/icons/c64.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">C64</span>
+                    </span>
 
-<script src="../../js/genre-loader.js" defer></script>
+                    <span class="ccg-mode-toggle-knob"></span>
+
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--amiga">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="../../resources/icons/amiga.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">Amiga</span>
+                    </span>
+                </button>
+
+            </div>
+        </header>
+
+        <!-- =====================================================
+             MAIN CONTENT
+        ===================================================== -->
+        <main class="ccg-main">
+
+            <section class="ccg-section">
+                <h1 class="ccg-section-title">Cartridge Games</h1>
+
+                <p class="ccg-section-subtitle">
+                    Fast-load plug-in titles for the C64 and Amiga.
+                </p>
+
+                <p>
+                    Cartridge games removed the waiting and launched instantly into gameplay, offering
+                    quicker access, built-in menus, and sometimes enhanced versions of tape or disk titles.
+                </p>
+
+                <p>
+                    This collection highlights the fastest-loading arcade conversions, special editions and
+                    plug-in releases that gave your retro machine a console-like feel.
+                </p>
+            </section>
+
+            <!-- Count -->
+            <section class="ccg-section">
+                <h2 class="ccg-section-title">Total Games Available</h2>
+                <div id="genreGamesCount"></div>
+            </section>
+
+            <!-- Grid -->
+            <section class="ccg-section">
+                <h2 class="ccg-section-title">Browse Cartridge Games</h2>
+                <div id="genreGamesGrid"></div>
+            </section>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="ccg-footer">
+            <div class="ccg-footer-inner">
+                <p class="ccg-footer-text">&copy; 2025 Cheeky Commodore Gamer.</p>
+                <p class="ccg-footer-text ccg-footer-text--small">
+                    Not affiliated with Commodore or Amiga.
+                </p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- JS -->
+    <script src="../../js/ccg-mode-engine.js" defer></script>
+    <script src="../../js/ccj-global.js" defer></script>
+    <script src="../../js/genre-loader.js" defer></script>
+
 </body>
 </html>
