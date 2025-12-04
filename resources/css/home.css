@@ -915,6 +915,17 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
         0 0 26px rgba(0, 255, 255, 0.5);
 }
 
+/* ULTRA SAFE PATCH — neon hover consistency */
+.ccg-collection-card:hover,
+.ccg-highlight-card:hover,
+.ccg-utility-card:hover {
+    background: linear-gradient(
+        145deg,
+        rgba(10, 12, 50, 0.98),
+        rgba(10, 7, 60, 0.99)
+    );
+}
+
 /* Titles & text */
 
 .ccg-collection-title,
