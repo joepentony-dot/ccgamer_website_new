@@ -1,200 +1,46 @@
 /* ============================================================
-   CHEEKY COMMODORE GAMER — MODAL & OVERLAY SYSTEM
-   UNIVERSAL POPUPS • LIGHTBOXES • VIEWERS • ESC CLOSE
-   EPIC RETRO WINDOW SYSTEM 😇🕹️👌
+   CCG-MODAL.CSS — Image + PDF Modal Viewer
    ============================================================ */
-
-
-/* ------------------------------------------------------------
-   OVERLAY BACKDROP
------------------------------------------------------------- */
-
-.ccg-modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 12, 0.78);
-    backdrop-filter: blur(12px);
-    z-index: 9000;
-    display: none;
-    opacity: 0;
-    transition: opacity 0.35s ease;
-}
-
-.ccg-modal-overlay.active {
-    display: block;
-    opacity: 1;
-}
-
-
-/* ------------------------------------------------------------
-   MODAL WRAPPER
------------------------------------------------------------- */
 
 .ccg-modal {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.85);
-    background: rgba(0, 0, 20, 0.78);
-    border: 2px solid var(--ccg-accent-strong);
-    border-radius: 16px;
-    box-shadow:
-        0 0 22px var(--ccg-accent),
-        inset 0 0 26px rgba(255, 255, 255, 0.12),
-        0 0 80px #000;
-    width: min(90%, 800px);
-    max-height: 86vh;
-    overflow: hidden;
-    z-index: 9990;
-
-    opacity: 0;
-    transition:
-        opacity 0.35s ease,
-        transform 0.35s ease;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
 }
 
 .ccg-modal.active {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-}
-
-
-/* ------------------------------------------------------------
-   MODAL HEADER
------------------------------------------------------------- */
-
-.ccg-modal-header {
-    padding: 18px 26px;
-    background: rgba(255, 255, 255, 0.04);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     display: flex;
-    justify-content: space-between;
-    align-items: center;
 }
 
-.ccg-modal-title {
-    font-family: "Press Start 2P";
-    color: var(--ccg-accent);
-    font-size: 1.2rem;
-    letter-spacing: 0.06em;
+.ccg-modal-content {
+    max-width: 90%;
+    max-height: 90%;
+    background: #111;
+    padding: 1rem;
+    border-radius: 8px;
+    overflow: auto;
 }
 
 .ccg-modal-close {
-    font-size: 1.5rem;
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
+    font-size: 2rem;
     cursor: pointer;
-    color: #ffffff;
-    text-shadow: 0 0 12px var(--ccg-accent-strong);
-    transition: transform 0.18s ease;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
 }
 
 .ccg-modal-close:hover {
-    transform: scale(1.2);
+    opacity: 1;
 }
 
-
-/* ------------------------------------------------------------
-   MODAL BODY
------------------------------------------------------------- */
-
-.ccg-modal-body {
-    padding: 26px;
-    overflow-y: auto;
-    max-height: calc(86vh - 70px);
-    color: #d8ecff;
-    line-height: 1.65;
-}
-
-
-/* ------------------------------------------------------------
-   MODAL FOOTER (optional)
------------------------------------------------------------- */
-
-.ccg-modal-footer {
-    padding: 16px 26px;
-    background: rgba(255, 255, 255, 0.03);
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    text-align: right;
-}
-
-.ccg-modal-footer .ccg-btn {
-    margin-left: 12px;
-}
-
-
-/* ------------------------------------------------------------
-   ESC HINT
------------------------------------------------------------- */
-
-.ccg-modal-esc-hint {
-    font-size: 0.8rem;
-    color: #a8d9ff;
-    opacity: 0.8;
-    margin-top: 6px;
-    text-align: right;
-}
-
-
-/* ------------------------------------------------------------
-   IMAGE LIGHTBOX MODE
------------------------------------------------------------- */
-
-.ccg-lightbox-image {
-    width: 100%;
-    height: auto;
-    display: block;
-    border-radius: 10px;
-    box-shadow:
-        0 0 26px rgba(255, 255, 255, 0.25),
-        0 0 60px rgba(0, 0, 0, 1);
-}
-
-.ccg-modal.lightbox .ccg-modal-body {
-    padding: 0;
-}
-
-
-/* ------------------------------------------------------------
-   MODE-SPECIFIC GLOWS
------------------------------------------------------------- */
-
-body[data-mode="amiga"] .ccg-modal {
-    border-color: #ff41f9;
-    box-shadow:
-        0 0 26px rgba(255, 0, 200, 0.8),
-        inset 0 0 32px rgba(255, 100, 255, 0.25),
-        0 0 80px #000;
-}
-
-body[data-mode="zx"] .ccg-modal {
-    border-color: #00ff00;
-    box-shadow:
-        0 0 26px #00ff00,
-        inset 0 0 32px rgba(0, 255, 0, 0.25),
-        0 0 80px #000;
-}
-
-
-/* ------------------------------------------------------------
-   RESPONSIVE IMPROVEMENTS
------------------------------------------------------------- */
-
-@media (max-width: 600px) {
-
-    .ccg-modal {
-        width: 94%;
-        max-height: 90vh;
-        border-radius: 12px;
-    }
-
-    .ccg-modal-header {
-        padding: 14px 20px;
-    }
-
-    .ccg-modal-title {
-        font-size: 1rem;
-    }
-
-    .ccg-modal-body {
-        padding: 20px;
-    }
+.ccg-pdf-frame {
+    width: 80vw;
+    height: 80vh;
+    border: none;
 }
