@@ -25,7 +25,19 @@
 /* -----------------------------------------
    HEADER — OMEGA FUSION
 ----------------------------------------- */
+/* ULTRA SAFE PATCH — mode toggle alignment */
+.ccg-header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
 
+.ccg-mode-toggle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 .ccg-header--omega {
     max-width: 1440px;
     margin: 0 auto 1.8rem;
