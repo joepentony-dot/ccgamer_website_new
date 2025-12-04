@@ -1,7 +1,6 @@
 /* ============================================================
-   GAME.CSS — OMEGA FUSION EDITION
+   GAME.CSS — OMEGA FUSION EDITION (STANDARDISED FINAL)
    Single Game Page • Neon CRT overlays • Clean hero + sections
-   Cheeky Commodore Gamer 😇🕹️👌
    ============================================================ */
 
 /* ------------------------------------------------------------
@@ -13,32 +12,38 @@
     margin: 0 auto;
     padding: 1.6rem 1.4rem 2.6rem;
     position: relative;
-    z-index: 2;
+    z-index: 4; /* Above backgrounds + CRT */
 }
 
 /* ------------------------------------------------------------
-   HERO PANEL
+   GAME HERO PANEL
 ------------------------------------------------------------ */
 
 .game-hero {
     max-width: 1440px;
     margin: 0 auto 2.3rem;
+    position: relative;
+    z-index: 5;
 }
 
 .game-hero-inner {
     display: grid;
     grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
     gap: 1.6rem;
+
     padding: 1.8rem 1.8rem 1.9rem;
     border-radius: 1.5rem;
+
     background: radial-gradient(
         circle at top,
-        rgba(0,255,255,0.12),
+        rgba(var(--accent-rgb), 0.12),
         rgba(5,5,24,0.96)
     );
+
     box-shadow:
-        0 0 0 1px rgba(0,255,255,0.18),
-        0 0 30px rgba(0,255,255,0.25);
+        0 0 0 1px rgba(var(--accent-rgb), 0.18),
+        0 0 30px rgba(var(--accent-rgb), 0.28);
+    
     position: relative;
     overflow: hidden;
 }
@@ -49,17 +54,20 @@
     inset: -30%;
     background: conic-gradient(
         from 200deg,
-        rgba(0,255,255,0.16),
+        rgba(var(--accent-rgb), 0.16),
         rgba(255,0,255,0.25),
         rgba(0,255,180,0.12),
-        rgba(0,255,255,0.16)
+        rgba(var(--accent-rgb), 0.16)
     );
     opacity: 0.22;
     filter: blur(30px);
     mix-blend-mode: screen;
+    pointer-events: none;
 }
 
-/* HERO IMAGE */
+/* ------------------------------------------------------------
+   HERO IMAGE
+------------------------------------------------------------ */
 
 .game-hero-media {
     position: relative;
@@ -69,17 +77,15 @@
 }
 
 .game-hero-img {
-    display: block;
     width: 100%;
     height: 100%;
     max-height: 320px;
     object-fit: cover;
     image-rendering: crisp-edges;
-    filter: saturate(1.1) contrast(1.1);
+    filter: saturate(1.06) contrast(1.1);
 }
 
-/* Overlays */
-
+/* Scanlines */
 .game-hero-overlay-scan {
     position: absolute;
     inset: 0;
@@ -93,26 +99,21 @@
     pointer-events: none;
 }
 
+/* Glow */
 .game-hero-overlay-glow {
     position: absolute;
     inset: 0;
     background:
-        radial-gradient(
-            circle at 10% 0,
-            rgba(0,255,255,0.4),
-            transparent 55%
-        ),
-        radial-gradient(
-            circle at 100% 100%,
-            rgba(255,0,255,0.5),
-            transparent 45%
-        );
+        radial-gradient(circle at 10% 0, rgba(var(--accent-rgb), 0.40), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(255,0,255,0.50), transparent 45%);
     mix-blend-mode: screen;
     pointer-events: none;
     opacity: 0.55;
 }
 
-/* HERO CONTENT */
+/* ------------------------------------------------------------
+   HERO CONTENT
+------------------------------------------------------------ */
 
 .game-hero-content {
     display: flex;
@@ -128,14 +129,13 @@
     font-size: clamp(1.7rem, 2.3vw + 0.5rem, 2.25rem);
     letter-spacing: 0.1em;
     text-transform: uppercase;
+    line-height: 1.1;
+
     color: #fdfdff;
     text-shadow:
-        0 0 10px rgba(0,255,255,0.7),
+        0 0 10px rgba(var(--accent-rgb), 0.7),
         0 0 22px rgba(255,0,160,0.55);
-    line-height: 1.1;
 }
-
-/* META PILL GROUP */
 
 .game-meta {
     display: flex;
@@ -147,13 +147,16 @@
     padding: 0.28rem 0.75rem;
     border-radius: 999px;
     font-size: 0.82rem;
-    background: rgba(0,255,255,0.15);
-    border: 1px solid rgba(0,255,255,0.4);
+
+    background: rgba(var(--accent-rgb), 0.15);
+    border: 1px solid rgba(var(--accent-rgb), 0.4);
     color: #dfffff;
+
     font-weight: 600;
     letter-spacing: 0.05em;
 }
 
+/* Genres text */
 .game-genres {
     margin: 0.3rem 0 0;
     font-size: 0.9rem;
@@ -162,7 +165,6 @@
 }
 
 /* HERO BUTTONS */
-
 .game-hero-buttons {
     margin-top: 0.5rem;
     display: grid;
@@ -183,16 +185,20 @@
 .game-section {
     max-width: 1440px;
     margin: 0 auto 2.3rem;
+
     padding: 1.6rem 1.6rem 1.7rem;
     border-radius: 1.4rem;
+
     background: radial-gradient(
         circle at top,
         rgba(10,5,40,0.9),
         rgba(3,3,20,0.96)
     );
+
     box-shadow:
-        0 0 0 1px rgba(0,255,255,0.12),
-        0 0 26px rgba(0,255,255,0.22);
+        0 0 0 1px rgba(var(--accent-rgb), 0.12),
+        0 0 26px rgba(var(--accent-rgb), 0.22);
+
     position: relative;
     overflow: hidden;
 }
@@ -203,7 +209,7 @@
     inset: -25%;
     background: radial-gradient(
         circle at 0 0,
-        rgba(0,255,255,0.16),
+        rgba(var(--accent-rgb), 0.16),
         transparent 55%
     );
     opacity: 0.5;
@@ -216,8 +222,9 @@
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: #fdfdff;
+
     text-shadow:
-        0 0 6px rgba(0,255,255,0.35),
+        0 0 6px rgba(var(--accent-rgb), 0.35),
         0 0 14px rgba(255,0,180,0.3);
 }
 
@@ -238,9 +245,10 @@
     border-radius: 1rem;
     overflow: hidden;
     background: #000;
+
     box-shadow:
         0 0 0 1px rgba(255,255,255,0.15),
-        0 0 26px rgba(0,255,255,0.3);
+        0 0 26px rgba(var(--accent-rgb), 0.3);
 }
 
 .game-video-frame::before {
@@ -257,7 +265,7 @@
 }
 
 /* ------------------------------------------------------------
-   MANUAL SECTION
+   MANUAL LINK
 ------------------------------------------------------------ */
 
 #game-manual-link {
