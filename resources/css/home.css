@@ -563,6 +563,11 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
     overflow: hidden;
 }
 
+/* ULTRA SAFE PATCH — vertical rhythm correction */
+.home-section {
+    margin-bottom: 2.6rem; /* was 2.5rem */
+}
+
 .home-section::before {
     content: "";
     position: absolute;
