@@ -17,6 +17,16 @@
     --amiga-pink: #ff4fd8;
     --amiga-purple: #cd3aff;
 
+    /* =======================================================
+       RGB equivalents for glow / neon / panel effects
+       ======================================================= */
+    --c64-blue-rgb: 58,176,255;
+    --amiga-pink-rgb: 255,79,216;
+
+    /* Default (C64 fallback) */
+    --accent: var(--c64-blue);
+    --accent-rgb: var(--c64-blue-rgb);
+
     /* Defaults (C64 dark theme) */
     --text-light: #ffffff;
     --text-dim: rgba(255,255,255,0.72);
@@ -44,7 +54,7 @@ body {
     color: var(--text-light);
 }
 
-/* Panels / cards now automatically adapt to mode skins */
+/* Panels / cards adapt to mode skins automatically */
 .ccg-panel,
 .ccg-card,
 .ccg-table,
@@ -57,7 +67,6 @@ body {
     color: var(--text-light);
 }
 
-/* Text dimming works in both skins (light on C64, dark on Amiga) */
 .ccg-section-subtitle,
 .ccg-form label,
 .ccg-social-tagline {
@@ -93,7 +102,6 @@ a:hover {
     color: rgba(var(--accent-rgb), 0.75);
 }
 
-/* Focus ring works in both modes */
 a:focus-visible, button:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
@@ -114,7 +122,7 @@ a:focus-visible, button:focus-visible {
 .ccg-main { margin-top: 2rem; }
 
 /* -----------------------------------------
-   BACKGROUND LAYERS (unchanged)
+   BACKGROUND LAYERS
 ----------------------------------------- */
 
 .ccg-bg { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
@@ -127,7 +135,7 @@ a:focus-visible, button:focus-visible {
 }
 
 /* -----------------------------------------
-   UNIVERSAL HEADER (subpages)
+   UNIVERSAL HEADER
 ----------------------------------------- */
 
 .ccg-header { text-align: center; margin-bottom: 2.5rem; }
@@ -139,16 +147,14 @@ a:focus-visible, button:focus-visible {
     gap: 1.2rem;
 }
 
-/* Logo is unchanged but text adapts to mode */
 .ccg-logo-img {
     width: 130px;
     opacity: 0.95;
     transition: opacity var(--transition-fast);
 }
-
 .ccg-logo-img:hover { opacity: 1; }
 
-/* Navigation */
+/* NAVIGATION */
 .ccg-nav {
     display: flex;
     flex-wrap: wrap;
@@ -172,8 +178,7 @@ a:focus-visible, button:focus-visible {
 }
 
 /* -----------------------------------------
-   SUBPAGE HEADER SOCIAL ICONS
-   Now readable + glowing in both modes
+   SUBPAGE HEADER SOCIALS
 ----------------------------------------- */
 
 .ccg-header-socials {
@@ -199,9 +204,9 @@ a:focus-visible, button:focus-visible {
     transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 
+/* Amiga Workbench social style */
 body[data-ccg-mode="amiga"] .ccg-header-socials a {
-    /* light window aesthetic */
-    background: rgba(240, 244, 255, 0.95);
+    background: rgba(240,244,255,0.95);
     box-shadow:
         0 0 0 1px rgba(0,0,0,0.25),
         0 4px 8px rgba(0,0,0,0.25);
@@ -231,7 +236,7 @@ body[data-ccg-mode="amiga"] .ccg-header-socials a {
 }
 
 /* -----------------------------------------
-   BUTTON LIBRARY
+   BUTTON LIBRARY (accent-driven)
 ----------------------------------------- */
 
 .ccg-btn {
@@ -243,13 +248,10 @@ body[data-ccg-mode="amiga"] .ccg-header-socials a {
     border: none;
 }
 
-/* Buttons auto-adjust because accent is mode-driven */
-
 .ccg-btn-primary {
     background: var(--accent);
     color: #000;
 }
-
 .ccg-btn-primary:hover {
     background: rgba(var(--accent-rgb), 0.75);
 }
@@ -258,7 +260,6 @@ body[data-ccg-mode="amiga"] .ccg-header-socials a {
     background: rgba(var(--accent-rgb), 0.15);
     color: var(--text-light);
 }
-
 .ccg-btn-secondary:hover {
     background: rgba(var(--accent-rgb), 0.25);
 }
@@ -268,13 +269,12 @@ body[data-ccg-mode="amiga"] .ccg-header-socials a {
     border: 1px solid var(--border-light);
     color: var(--text-light);
 }
-
 .ccg-btn-ghost:hover {
     border-color: var(--accent);
 }
 
 /* -----------------------------------------
-   UNIVERSAL CARDS (inherit panel skin)
+   UNIVERSAL CARDS
 ----------------------------------------- */
 
 .ccg-card:hover {
@@ -290,7 +290,6 @@ body[data-ccg-mode="amiga"] .ccg-header-socials a {
     background: rgba(var(--accent-rgb), 0.15);
 }
 
-/* Amiga mode: table text becomes dark */
 body[data-ccg-mode="amiga"] .ccg-table th,
 body[data-ccg-mode="amiga"] .ccg-table td {
     color: #000;
@@ -308,11 +307,11 @@ body[data-ccg-mode="amiga"] .ccg-table td {
     color: var(--text-light);
 }
 
-/* Amiga Workbench form fields */
+/* Amiga Workbench fields */
 body[data-ccg-mode="amiga"] .ccg-form input,
 body[data-ccg-mode="amiga"] .ccg-form textarea,
 body[data-ccg-mode="amiga"] .ccg-form select {
-    background: rgba(240, 244, 255, 0.9);
+    background: rgba(240,244,255,0.9);
     color: #000;
     border: 1px solid rgba(0,0,0,0.3);
 }
