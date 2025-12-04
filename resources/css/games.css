@@ -579,3 +579,95 @@ body[data-ccg-mode="amiga"] .game-video-frame {
 body[data-ccg-mode="amiga"] .game-hero-img {
     filter: saturate(0.9) brightness(1.1);
 }
+
+/* ============================================================
+   OMEGA HEADER FIX — GAMES INDEX PAGE
+   Makes header identical to genres / collections
+   ============================================================ */
+
+/* Scope only to the Games index page */
+[data-ccg-page="games-index"] .ccg-header-inner {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+
+    max-width: 1600px;
+    margin-inline: auto;
+    padding: 1.2rem 1.6rem;
+}
+
+/* Brand area */
+[data-ccg-page="games-index"] .ccg-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    text-decoration: none;
+}
+
+[data-ccg-page="games-index"] .ccg-brand__logo {
+    width: 58px;
+    height: auto;
+    filter: drop-shadow(0 0 6px rgba(112,255,240,0.5));
+}
+
+[data-ccg-page="games-index"] .ccg-brand__text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+/* Navigation */
+[data-ccg-page="games-index"] .ccg-nav__list {
+    display: flex;
+    flex-direction: row;
+    gap: 1.2rem;
+    padding: 0;
+    margin: 0;
+}
+
+[data-ccg-page="games-index"] .ccg-nav__link {
+    color: var(--text-light);
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    position: relative;
+}
+
+[data-ccg-page="games-index"] .ccg-nav__link:hover {
+    color: var(--accent);
+}
+
+/* Actions block (mode toggle + socials) */
+[data-ccg-page="games-index"] .ccg-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+/* Mode toggle alignment fix */
+[data-ccg-page="games-index"] .ccg-mode-toggle {
+    transform: scale(1.05);
+}
+
+/* Socials row */
+[data-ccg-page="games-index"] .ccg-socials {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+/* Header spacing bottom neon strip */
+[data-ccg-page="games-index"] .ccg-header-neon-strip {
+    height: 3px;
+    background: linear-gradient(
+        to right,
+        rgba(var(--accent-rgb), 0) 0%,
+        rgba(var(--accent-rgb), 0.7) 30%,
+        rgba(var(--accent-rgb), 0.7) 70%,
+        rgba(var(--accent-rgb), 0) 100%
+    );
+    margin-top: 0.3rem;
+    border-radius: 40px;
+}
