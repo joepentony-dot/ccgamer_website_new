@@ -16,51 +16,43 @@
 
     <link rel="icon" href="favicon.ico" />
 
-    <!-- GLOBAL CSS (external only) -->
+    <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="resources/css/ccg-master.css" />
     <link rel="stylesheet" href="resources/css/ccg-mode.css" />
     <link rel="stylesheet" href="resources/css/ccg-effects.css" />
     <link rel="stylesheet" href="resources/css/ccg-anim.css" />
     <link rel="stylesheet" href="resources/css/ccg-modal.css" />
     <link rel="stylesheet" href="resources/css/ccg-overlays.css" />
-    <link rel="stylesheet" href="resources/css/ccg-socials.css" />
     <link rel="stylesheet" href="resources/css/hero.css" />
 
-    <!-- OMEGA CINEMATIC FUSION HOME LAYOUT -->
+    <!-- HOME LAYOUT -->
     <link rel="stylesheet" href="resources/css/home.css" />
     <link rel="stylesheet" href="resources/css/omega-mode-toggle.css" />
 </head>
 
 <body class="ccg-body" data-ccg-mode="c64">
-    <!-- =========================================================
-         GLOBAL BACKGROUND LAYERS (STARFIELD / GRID / CRT)
-         ========================================================= -->
+    <!-- BACKGROUND LAYERS -->
     <div class="ccg-bg">
         <div class="ccg-bg-starfield"></div>
         <div class="ccg-bg-grid"></div>
         <div class="ccg-bg-crt-overlay"></div>
     </div>
 
-    <!-- =========================================================
-         PAGE WRAPPER
-         ========================================================= -->
     <div class="ccg-page ccg-page--home">
         <!-- =====================================================
-             OMEGA FUSION HEADER
+             HEADER
              ===================================================== -->
         <header class="ccg-header ccg-header--omega" aria-label="Cheeky Commodore Gamer main header">
             <div class="ccg-header-inner">
-                <!-- TOP BAR: Logo + mode toggle -->
+                <!-- TOP BAR: logo + toggle -->
                 <div class="ccg-header-top">
                     <div class="ccg-header-left">
-                        <!-- Small, non-imposing logo -->
-                        <a href="index.html" class="ccg-logo-link" aria-label="Return to C64 intro">
+                        <a href="index.html" class="ccg-logo-link" aria-label="Return to intro">
                             <img src="resources/ccgamer_logo.png" alt="Cheeky Commodore Gamer logo" class="ccg-logo-img" />
                         </a>
                     </div>
 
                     <div class="ccg-header-right">
-                        <!-- System mode toggle (C64 ↔ Amiga) -->
                         <button
                             class="ccg-mode-toggle"
                             type="button"
@@ -79,7 +71,7 @@
                             </span>
                             <span class="ccg-mode-toggle-knob" aria-hidden="true"></span>
                             <span
-                                classclass="ccg-mode-toggle-pill ccg-mode-toggle-pill--amiga"
+                                class="ccg-mode-toggle-pill ccg-mode-toggle-pill--amiga"
                                 data-mode-target="amiga"
                                 data-ccg-mode="amiga"
                             >
@@ -92,10 +84,10 @@
                     </div>
                 </div>
 
-                <!-- HERO TITLE FUSED INTO HEADER PANEL -->
+                <!-- TITLE + NAV + SOCIALS -->
                 <div class="ccg-header-main">
                     <div class="ccg-header-title-block">
-                        <h1 class="ccg-header-title home-heading-neon">
+                        <h1 class="ccg-header-title ccg-neon-heading">
                             <span class="ccg-header-title-top">CHEEKY</span>
                             <span class="ccg-header-title-bottom">COMMODORE GAMER</span>
                         </h1>
@@ -104,8 +96,7 @@
                         </p>
                     </div>
 
-                    <!-- PRIMARY NAVIGATION -->
-                    <nav class="ccg-main-nav" aria-label="Primary site navigation">
+                    <nav class="ccg-main-nav" aria-label="Primary navigation">
                         <a href="home.html" class="ccg-main-nav-link">Home</a>
                         <a href="games/index.html" class="ccg-main-nav-link">Games</a>
                         <a href="games/genres/index.html" class="ccg-main-nav-link">Genres</a>
@@ -117,58 +108,58 @@
                         <a href="admin/admin.html" class="ccg-main-nav-link">Admin</a>
                     </nav>
 
-                    <!-- SOCIAL ORB STRIP (ICONS ONLY) -->
-                    <div class="ccg-header-social-wrap">
-                        <div class="ccg-social-orbit" aria-label="Cheeky Commodore Gamer social links">
+                    <!-- ICON-ONLY SOCIAL STRIP -->
+                    <div class="ccg-social-strip-wrap">
+                        <nav class="ccg-social-strip" aria-label="Cheeky Commodore Gamer socials">
                             <a class="ccg-social-orb ccg-social-orb--youtube"
                                href="https://www.youtube.com/@CheekyCommodoreGamer"
-                               target="_blank" rel="noopener">
-                                <span class="home-sr-only">YouTube</span>
+                               target="_blank" rel="noopener"
+                               aria-label="YouTube">
                                 <img src="resources/icons/youtube.svg" alt="" />
                             </a>
 
                             <a class="ccg-social-orb ccg-social-orb--patreon"
                                href="https://patreon.com/CheekyCommodoreGamer"
-                               target="_blank" rel="noopener">
-                                <span class="home-sr-only">Patreon</span>
+                               target="_blank" rel="noopener"
+                               aria-label="Patreon">
                                 <img src="resources/icons/patreon.svg" alt="" />
                             </a>
 
                             <a class="ccg-social-orb ccg-social-orb--paypal"
                                href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"
-                               target="_blank" rel="noopener">
-                                <span class="home-sr-only">PayPal</span>
+                               target="_blank" rel="noopener"
+                               aria-label="PayPal">
                                 <img src="resources/icons/paypal.svg" alt="" />
                             </a>
 
                             <a class="ccg-social-orb ccg-social-orb--facebook"
                                href="https://www.facebook.com/cheekycommodoregamer"
-                               target="_blank" rel="noopener">
-                                <span class="home-sr-only">Facebook</span>
+                               target="_blank" rel="noopener"
+                               aria-label="Facebook">
                                 <img src="resources/icons/facebook.svg" alt="" />
                             </a>
 
                             <a class="ccg-social-orb ccg-social-orb--discord"
                                href="https://discord.gg/83Xw9ktAn4"
-                               target="_blank" rel="noopener">
-                                <span class="home-sr-only">Discord</span>
+                               target="_blank" rel="noopener"
+                               aria-label="Discord">
                                 <img src="resources/icons/discord.svg" alt="" />
                             </a>
 
                             <a class="ccg-social-orb ccg-social-orb--x"
                                href="https://twitter.com/CheekyC64Gamer"
-                               target="_blank" rel="noopener">
-                                <span class="home-sr-only">Twitter / X</span>
+                               target="_blank" rel="noopener"
+                               aria-label="Twitter / X">
                                 <img src="resources/icons/twitter.svg" alt="" />
                             </a>
-                        </div>
+                        </nav>
                     </div>
                 </div>
             </div>
         </header>
 
         <!-- =====================================================
-             OMEGA CINEMATIC HERO
+             HERO
              ===================================================== -->
         <section class="ccg-hero" aria-label="Featured retro highlights">
             <div class="ccg-hero-inner">
@@ -181,16 +172,16 @@
 
                 <div class="ccg-hero-content">
                     <p class="ccg-hero-eyebrow">Another Visitor…</p>
-                    <h2 class="ccg-hero-title home-heading-neon">
-                        Stay a While,
-                        <span>Stay Forever!</span>
+                    <h2 class="ccg-hero-title ccg-neon-heading">
+                        STAY A WHILE,
+                        <span>STAY FOREVER!</span>
                     </h2>
                     <p class="ccg-hero-tagline">
                         Power up your CRT, pick your system, and dive into hand-picked Commodore 64 and Amiga classics —
                         games, videos, quizzes and pure retro nonsense.
                     </p>
 
-                    <div class="ccg-hero-buttons" aria-label="Primary navigation">
+                    <div class="ccg-hero-buttons" aria-label="Primary actions">
                         <a href="games/index.html" class="ccg-btn ccg-btn-primary ccg-hero-btn">
                             Browse All Games
                         </a>
@@ -213,39 +204,62 @@
         </section>
 
         <!-- =====================================================
-             MAIN CONTENT
+             MAIN
              ===================================================== -->
         <main id="main" class="ccg-main">
-            <!-- ==============================================
-                 FEATURED GAME + FEATURED VIDEO
-                 ============================================== -->
+            <!-- FEATURED GAME + VIDEO -->
             <section class="home-section home-section--featured" aria-label="Featured game and video">
                 <div class="home-section-header">
-                    <h2 class="home-section-title home-heading-neon">Featured Game &amp; Video</h2>
+                    <h2 class="home-section-title ccg-neon-heading">Featured Game &amp; Video</h2>
                     <p class="home-section-subtitle">
                         One legendary game, one juicy longplay — pulled straight from your master database.
                     </p>
                 </div>
 
                 <div class="home-featured-grid">
-                    <!-- FEATURED GAME PANEL -->
+                    <!-- Featured Game -->
                     <article class="featured-panel featured-panel--game">
                         <header class="featured-panel-header">
                             <h3 class="featured-panel-title">Featured Game</h3>
-                            <p class="featured-panel-meta" id="featured-game-meta">Loading metadata…</p>
+                            <p class="featured-panel-system" id="featured-game-tagline">
+                                Loading a showcase classic…
+                            </p>
                         </header>
 
                         <div class="featured-panel-body">
                             <div class="featured-game-art" aria-hidden="true">
-                                <img id="featured-game-thumb" src="resources/images/genres/arcade.png" alt="Featured game artwork" loading="lazy" />
+                                <img id="featured-game-thumb"
+                                     src="resources/images/genres/arcade.png"
+                                     alt="Featured game artwork"
+                                     loading="lazy" />
                             </div>
 
                             <div class="featured-game-copy">
-                                <h4 class="featured-game-name" id="featured-game-title">Loading a showcase classic…</h4>
+                                <h4 class="featured-game-name" id="featured-game-title">
+                                    Picking something special for you…
+                                </h4>
                                 <p class="featured-game-blurb" id="featured-game-blurb">
                                     Perfect scrolling, outrageous SID or Paula tunes, and gameplay that screams “just one more go”.
-                                    The system will pick a new gem each visit.
                                 </p>
+
+                                <ul class="featured-game-meta">
+                                    <li>
+                                        <span class="meta-label">System:</span>
+                                        <span id="featured-game-system">–</span>
+                                    </li>
+                                    <li>
+                                        <span class="meta-label">Year:</span>
+                                        <span id="featured-game-year">–</span>
+                                    </li>
+                                    <li>
+                                        <span class="meta-label">Genre:</span>
+                                        <span id="featured-game-genres">–</span>
+                                    </li>
+                                    <li>
+                                        <span class="meta-label">Developer:</span>
+                                        <span id="featured-game-developer">–</span>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
 
@@ -259,14 +273,16 @@
                         </footer>
                     </article>
 
-                    <!-- FEATURED VIDEO PANEL -->
+                    <!-- Featured Video -->
                     <article class="featured-panel featured-panel--video">
                         <header class="featured-panel-header">
                             <h3 class="featured-panel-title">Featured Video</h3>
-                            <p class="featured-panel-meta">From the Cheeky Commodore Gamer channel</p>
+                            <p class="featured-panel-system">
+                                From the Cheeky Commodore Gamer channel
+                            </p>
                         </header>
 
-                        <div class="featured-panel-body featured-panel-body--video">
+                        <div class="featured-panel-body">
                             <div class="featured-video-frame">
                                 <iframe
                                     class="featured-video-embed"
@@ -280,7 +296,9 @@
                             </div>
 
                             <div class="featured-video-copy">
-                                <h4 class="featured-video-title" id="featured-video-title">Showcase a flagship longplay or deep dive</h4>
+                                <h4 class="featured-video-title" id="featured-video-title">
+                                    Showcase a flagship longplay or deep dive
+                                </h4>
                                 <p class="featured-video-blurb" id="featured-video-blurb">
                                     The video panel locks to the same game as the feature on the left whenever a YouTube ID is available.
                                 </p>
@@ -299,12 +317,10 @@
                 </div>
             </section>
 
-            <!-- ==============================================
-                 GENRES — IMAGE THUMBNAIL GRID
-                 ============================================== -->
+            <!-- BROWSE BY GENRE -->
             <section class="home-section home-section--genres" aria-label="Browse by genre">
                 <div class="home-section-header">
-                    <h2 class="home-section-title home-heading-neon">Browse by Genre</h2>
+                    <h2 class="home-section-title ccg-neon-heading">Browse by Genre</h2>
                     <p class="home-section-subtitle">
                         Quick blast, puzzle session, or deep RPG night — jump in by gameplay style.
                     </p>
@@ -314,55 +330,42 @@
                     <a class="ccg-genre-card" href="games/genres/arcade-games.html">
                         <img src="resources/images/genres/arcade.png" alt="Arcade games" loading="lazy" />
                     </a>
-
                     <a class="ccg-genre-card" href="games/genres/platform-games.html">
                         <img src="resources/images/genres/platform.png" alt="Platform games" loading="lazy" />
                     </a>
-
                     <a class="ccg-genre-card" href="games/genres/action-adventure-games.html">
                         <img src="resources/images/genres/action-adventure.png" alt="Action adventure games" loading="lazy" />
                     </a>
-
                     <a class="ccg-genre-card" href="games/genres/adventure-games.html">
                         <img src="resources/images/genres/adventure.png" alt="Adventure games" loading="lazy" />
                     </a>
-
                     <a class="ccg-genre-card" href="games/genres/shooting-games.html">
                         <img src="resources/images/genres/shooting.png" alt="Shoot ’em up games" loading="lazy" />
                     </a>
-
                     <a class="ccg-genre-card" href="games/genres/rpg-games.html">
                         <img src="resources/images/genres/role-playing.png" alt="Role-playing games" loading="lazy" />
                     </a>
-
                     <a class="ccg-genre-card" href="games/genres/puzzle-games.html">
                         <img src="resources/images/genres/puzzle.png" alt="Puzzle games" loading="lazy" />
                     </a>
-
                     <a class="ccg-genre-card" href="games/genres/sports-games.html">
                         <img src="resources/images/genres/sports.png" alt="Sports games" loading="lazy" />
                     </a>
-
                     <a class="ccg-genre-card" href="games/genres/racing-games.html">
                         <img src="resources/images/genres/racing.png" alt="Racing games" loading="lazy" />
                     </a>
-
                     <a class="ccg-genre-card" href="games/genres/fighting-games.html">
                         <img src="resources/images/genres/fighting.png" alt="Fighting games" loading="lazy" />
                     </a>
-
                     <a class="ccg-genre-card" href="games/genres/horror-games.html">
                         <img src="resources/images/genres/horror.png" alt="Horror games" loading="lazy" />
                     </a>
-
                     <a class="ccg-genre-card" href="games/genres/strategy-games.html">
-                        <img src="resources/images/genres/strategy.png" alt="Strategy & simulation games" loading="lazy" />
+                        <img src="resources/images/genres/strategy.png" alt="Strategy &amp; simulation games" loading="lazy" />
                     </a>
-
                     <a class="ccg-genre-card" href="games/genres/casino-games.html">
                         <img src="resources/images/genres/casino.png" alt="Casino games" loading="lazy" />
                     </a>
-
                     <a class="ccg-genre-card" href="games/genres/quiz-games.html">
                         <img src="resources/images/genres/quiz.png" alt="Quiz games" loading="lazy" />
                     </a>
@@ -374,56 +377,46 @@
                 </div>
             </section>
 
-            <!-- ==============================================
-                 COLLECTIONS / SPECIAL LISTS
-                 ============================================== -->
-            <section class="home-section home-section--collections" aria-label="Collections and special lists">
+            <!-- BROWSE BY COLLECTION -->
+            <section class="home-section home-section--collections" aria-label="Browse by collection">
                 <div class="home-section-header">
-                    <h2 class="home-section-title home-heading-neon">Browse by Collection</h2>
+                    <h2 class="home-section-title ccg-neon-heading">Browse by Collection</h2>
                     <p class="home-section-subtitle">
-                        Signature Top Picks, BPJS curiosities, chunky cartridges and official licences.
+                        Hand-picked vaults: signature Top Picks, BPJS curiosities, chunky cartridges and official licences.
                     </p>
                 </div>
 
                 <div class="ccg-collections-grid">
-                    <a class="ccg-collection-card" href="games/genres/top-picks.html">
-                        <div class="ccg-collection-thumb">
-                            <img src="resources/images/genres/top-picks.png" alt="Top Picks" loading="lazy" />
-                        </div>
-                        <div class="ccg-collection-overlay">
+                    <a class="ccg-collection-card ccg-collection-card--top" href="games/genres/top-picks.html">
+                        <div class="ccg-collection-image-band"></div>
+                        <div class="ccg-collection-content">
                             <div class="ccg-collection-chip">Signature Picks</div>
                             <h3 class="ccg-collection-title">Top Picks</h3>
                             <p class="ccg-collection-text">Instant recommendations when you just want something great.</p>
                         </div>
                     </a>
 
-                    <a class="ccg-collection-card" href="games/genres/bpjs-indexed-games.html">
-                        <div class="ccg-collection-thumb">
-                            <img src="resources/images/genres/bpjs-indexed-games.png" alt="BPJS Indexed" loading="lazy" />
-                        </div>
-                        <div class="ccg-collection-overlay">
+                    <a class="ccg-collection-card ccg-collection-card--bpjs" href="games/genres/bpjs-indexed-games.html">
+                        <div class="ccg-collection-image-band"></div>
+                        <div class="ccg-collection-content">
                             <div class="ccg-collection-chip">BPJS Vault</div>
                             <h3 class="ccg-collection-title">BPJS Indexed</h3>
                             <p class="ccg-collection-text">A curated list of BPJS-indexed titles, neatly catalogued.</p>
                         </div>
                     </a>
 
-                    <a class="ccg-collection-card" href="games/genres/cartridge-games.html">
-                        <div class="ccg-collection-thumb">
-                            <img src="resources/images/genres/cartridge-games.png" alt="Cartridge Games" loading="lazy" />
-                        </div>
-                        <div class="ccg-collection-overlay">
+                    <a class="ccg-collection-card ccg-collection-card--cart" href="games/genres/cartridge-games.html">
+                        <div class="ccg-collection-image-band"></div>
+                        <div class="ccg-collection-content">
                             <div class="ccg-collection-chip">Hardware Love</div>
                             <h3 class="ccg-collection-title">Cartridge Games</h3>
                             <p class="ccg-collection-text">Cartridge classics with instant boot swagger.</p>
                         </div>
                     </a>
 
-                    <a class="ccg-collection-card" href="games/genres/licensed-games.html">
-                        <div class="ccg-collection-thumb">
-                            <img src="resources/images/genres/licensed-games.png" alt="Licensed Games" loading="lazy" />
-                        </div>
-                        <div class="ccg-collection-overlay">
+                    <a class="ccg-collection-card ccg-collection-card--licensed" href="games/genres/licensed-games.html">
+                        <div class="ccg-collection-image-band"></div>
+                        <div class="ccg-collection-content">
                             <div class="ccg-collection-chip">Official Licences</div>
                             <h3 class="ccg-collection-title">Licensed Games</h3>
                             <p class="ccg-collection-text">TV, film, and arcade conversions that defined the era.</p>
@@ -432,68 +425,100 @@
                 </div>
             </section>
 
-            <!-- ==============================================
-                 HIGHLIGHTS & UTILITIES — ICON TILES
-                 ============================================== -->
-            <section class="home-section home-section--highlights" aria-label="Highlights and utilities">
+            <!-- HIGHLIGHTS -->
+            <section class="home-section home-section--highlights" aria-label="Highlights">
                 <div class="home-section-header">
-                    <h2 class="home-section-title home-heading-neon">Highlights &amp; Utilities</h2>
+                    <h2 class="home-section-title ccg-neon-heading">Highlights</h2>
                     <p class="home-section-subtitle">
-                        Play quizzes, pick a random game, browse the full index or reach out — all from one strip.
+                        Test your brain, let the machine pick a game, or plug into the wider CCG community.
                     </p>
                 </div>
 
-                <div class="ccg-mini-tiles-grid">
-                    <a class="ccg-mini-tile" href="quiz/quiz.html">
-                        <span class="ccg-mini-icon">❓</span>
-                        <span class="ccg-mini-label">Play the Quiz</span>
+                <div class="ccg-feature-tiles">
+                    <a class="ccg-feature-tile" href="quiz/quiz.html">
+                        <span class="ccg-feature-icon">❓</span>
+                        <span class="ccg-feature-text">
+                            <span class="ccg-feature-title">Play the Quiz</span>
+                            <span class="ccg-feature-sub">Image rounds, music rounds, brutal trivia.</span>
+                        </span>
                     </a>
 
-                    <a class="ccg-mini-tile" href="quiz/quiz-leaderboard.html">
-                        <span class="ccg-mini-icon">🏆</span>
-                        <span class="ccg-mini-label">Leaderboard</span>
+                    <a class="ccg-feature-tile" href="quiz/quiz-leaderboard.html">
+                        <span class="ccg-feature-icon">🏆</span>
+                        <span class="ccg-feature-text">
+                            <span class="ccg-feature-title">Leaderboard</span>
+                            <span class="ccg-feature-sub">See who’s flexing the biggest retro brain.</span>
+                        </span>
                     </a>
 
-                    <a class="ccg-mini-tile" href="games/index.html#random">
-                        <span class="ccg-mini-icon">🎲</span>
-                        <span class="ccg-mini-label">Random Game</span>
+                    <a class="ccg-feature-tile" href="games/index.html#random">
+                        <span class="ccg-feature-icon">🎲</span>
+                        <span class="ccg-feature-text">
+                            <span class="ccg-feature-title">Random Game</span>
+                            <span class="ccg-feature-sub">Let the site pick your next obsession.</span>
+                        </span>
                     </a>
 
-                    <a class="ccg-mini-tile" href="https://patreon.com/CheekyCommodoreGamer" target="_blank" rel="noopener">
-                        <span class="ccg-mini-icon">❤️</span>
-                        <span class="ccg-mini-label">Support the Channel</span>
+                    <a class="ccg-feature-tile" href="https://patreon.com/CheekyCommodoreGamer" target="_blank" rel="noopener">
+                        <span class="ccg-feature-icon">💾</span>
+                        <span class="ccg-feature-text">
+                            <span class="ccg-feature-title">Support the Channel</span>
+                            <span class="ccg-feature-sub">Help keep the CRT glowing and the SID tunes blasting.</span>
+                        </span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- UTILITIES -->
+            <section class="home-section home-section--utilities" aria-label="Utilities and info">
+                <div class="home-section-header">
+                    <h2 class="home-section-title ccg-neon-heading">Utilities &amp; Info</h2>
+                    <p class="home-section-subtitle">
+                        Need more detail, want to get in touch, or planning to dive into the raw lists?
+                    </p>
+                </div>
+
+                <div class="ccg-feature-tiles ccg-feature-tiles--utilities">
+                    <a class="ccg-feature-tile" href="about.html">
+                        <span class="ccg-feature-icon">📖</span>
+                        <span class="ccg-feature-text">
+                            <span class="ccg-feature-title">About</span>
+                            <span class="ccg-feature-sub">How Cheeky Commodore Gamer started.</span>
+                        </span>
                     </a>
 
-                    <a class="ccg-mini-tile" href="about.html">
-                        <span class="ccg-mini-icon">ℹ️</span>
-                        <span class="ccg-mini-label">About</span>
+                    <a class="ccg-feature-tile" href="contact.html">
+                        <span class="ccg-feature-icon">✉️</span>
+                        <span class="ccg-feature-text">
+                            <span class="ccg-feature-title">Contact</span>
+                            <span class="ccg-feature-sub">Suggestions, requests, corrections — say hello.</span>
+                        </span>
                     </a>
 
-                    <a class="ccg-mini-tile" href="contact.html">
-                        <span class="ccg-mini-icon">✉️</span>
-                        <span class="ccg-mini-label">Contact</span>
+                    <a class="ccg-feature-tile" href="complete-index.html">
+                        <span class="ccg-feature-icon">📊</span>
+                        <span class="ccg-feature-text">
+                            <span class="ccg-feature-title">Complete Index</span>
+                            <span class="ccg-feature-sub">Spreadsheet-style master list of everything.</span>
+                        </span>
                     </a>
 
-                    <a class="ccg-mini-tile" href="complete-index.html">
-                        <span class="ccg-mini-icon">📊</span>
-                        <span class="ccg-mini-label">Complete Index</span>
-                    </a>
-
-                    <a class="ccg-mini-tile" href="admin/admin.html">
-                        <span class="ccg-mini-icon">🛠️</span>
-                        <span class="ccg-mini-label">Admin</span>
+                    <a class="ccg-feature-tile" href="admin/admin.html">
+                        <span class="ccg-feature-icon">🛠️</span>
+                        <span class="ccg-feature-text">
+                            <span class="ccg-feature-title">Admin</span>
+                            <span class="ccg-feature-sub">Private tools for adding and tweaking games.</span>
+                        </span>
                     </a>
                 </div>
             </section>
         </main>
 
-        <!-- =====================================================
-             FOOTER
-             ===================================================== -->
+        <!-- FOOTER -->
         <footer class="ccg-footer">
             <div class="ccg-footer-inner">
                 <p class="ccg-footer-text">
-                    &copy; <span id="ccg-year">2025</span> Cheeky Commodore Gamer.
+                    © <span id="ccg-year">2025</span> Cheeky Commodore Gamer.
                 </p>
                 <p class="ccg-footer-text ccg-footer-text--small">
                     Stay Retro
@@ -502,9 +527,7 @@
         </footer>
     </div>
 
-    <!-- =========================================================
-         JS LOADER (mode engine + global + home dynamic)
-         ========================================================= -->
+    <!-- JS -->
     <script src="js/ccg-mode-engine.js" defer></script>
     <script src="js/ccj-global.js" defer></script>
     <script src="js/home-dynamic.js" defer></script>
