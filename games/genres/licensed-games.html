@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ccg-page="genre-single">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,44 +8,144 @@
     <meta name="description" content="Film, TV, comic and celebrity Licensed games for the Commodore 64 and Amiga. Relive big-name tie-ins from the 80s and 90s.">
     <link rel="canonical" href="licensed-games.html">
 
+    <link rel="icon" href="../../favicon.ico">
+
+    <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="../../resources/css/ccg-master.css">
     <link rel="stylesheet" href="../../resources/css/ccg-mode.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-console.css">
     <link rel="stylesheet" href="../../resources/css/ccg-effects.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-anim.css">
     <link rel="stylesheet" href="../../resources/css/ccg-overlays.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-modal.css">
+
+    <!-- PAGE CSS -->
     <link rel="stylesheet" href="../../resources/css/genre.css">
 </head>
 
-<body data-genre="Licensed Games">
-<header>
-    <a href="../../home.html">
-        <img src="../../resources/ccgamer_logo.png" alt="Cheeky Commodore Gamer Logo" class="logo">
-    </a>
-</header>
+<body class="ccg-body" data-ccg-mode="c64" data-genre="Licensed Games">
 
-<nav class="breadcrumb">
-    <a href="../../home.html">Home Hub</a> ›
-    <a href="../../games/index.html">All Games</a> ›
-    <span>Licensed Games</span>
-</nav>
+    <!-- BACKGROUND -->
+    <div class="ccg-bg">
+        <div class="ccg-bg-starfield"></div>
+        <div class="ccg-bg-grid"></div>
+        <div class="ccg-bg-crt-overlay"></div>
+    </div>
 
-<main class="genre-page">
-    <h1>Licensed Games</h1>
+    <div class="ccg-page ccg-page--genre">
 
-    <p>Licensed games bring films, TV shows, comics and famous faces onto your home computer. On the C64 and Amiga that meant everything from Hollywood blockbusters to British game show tie-ins.</p>
-    <p>This section gathers the best and most interesting licences, whether they nailed the source material or went in a wonderfully odd direction of their own.</p>
+        <!-- =====================================================
+             UNIVERSAL SUBPAGE HEADER (OMEGA VERSION)
+        ===================================================== -->
+        <header class="ccg-header">
+            <div class="ccg-header-inner">
 
-    <h2>Total Games Available</h2>
-    <div id="genreGamesCount"></div>
+                <!-- Logo -->
+                <a href="../../home.html" class="ccg-logo-link">
+                    <img src="../../resources/ccgamer_logo.png" alt="Cheeky Commodore Gamer Logo" class="ccg-logo-img">
+                </a>
 
-    <h2>Browse Licensed Games</h2>
-    <div id="genreGamesGrid"></div>
-</main>
+                <!-- Navigation -->
+                <nav class="ccg-nav">
+                    <a href="../../home.html" class="nav-item">Home</a>
+                    <a href="../../games/index.html" class="nav-item">Games</a>
+                    <a href="../../games/genres/index.html" class="nav-item">Genres</a>
+                    <a href="../../games/collections/index.html" class="nav-item">Collections</a>
+                    <a href="../../quiz/quiz.html" class="nav-item">Quiz</a>
+                    <a href="../../complete-index.html" class="nav-item">Index</a>
+                    <a href="../../about.html" class="nav-item">About</a>
+                    <a href="../../contact.html" class="nav-item">Contact</a>
+                </nav>
 
-<footer>
-    <p>© Cheeky Commodore Gamer.</p>
-</footer>
+                <!-- Mode Toggle -->
+                <button
+                    class="ccg-mode-toggle is-c64"
+                    type="button"
+                    aria-label="Toggle system mode"
+                    data-ccg-mode-toggle="true"
+                >
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--c64">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="../../resources/icons/c64.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">C64</span>
+                    </span>
 
-<script src="../../js/genre-loader.js" defer></script>
+                    <span class="ccg-mode-toggle-knob"></span>
+
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--amiga">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="../../resources/icons/amiga.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">Amiga</span>
+                    </span>
+                </button>
+
+            </div>
+
+            <!-- SOCIAL ROW — OMEGA VERSION -->
+            <div class="ccg-header-socials">
+                <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank">
+                    <img src="../../resources/icons/youtube.svg" alt="YouTube">
+                </a>
+                <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank">
+                    <img src="../../resources/icons/patreon.svg" alt="Patreon">
+                </a>
+                <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank">
+                    <img src="../../resources/icons/paypal.svg" alt="PayPal">
+                </a>
+                <a href="https://www.facebook.com/cheekycommodoregamer" target="_blank">
+                    <img src="../../resources/icons/facebook.svg" alt="Facebook">
+                </a>
+                <a href="https://twitter.com/CheekyC64Gamer" target="_blank">
+                    <img src="../../resources/icons/twitter.svg" alt="Twitter / X">
+                </a>
+                <a href="https://discord.gg/83Xw9ktAn4" target="_blank">
+                    <img src="../../resources/icons/discord.svg" alt="Discord">
+                </a>
+            </div>
+        </header>
+
+        <!-- =====================================================
+             MAIN GENRE CONTENT
+        ===================================================== -->
+        <main class="ccg-main genre-main">
+
+            <section class="ccg-section">
+                <h1 class="genre-title">Licensed Games</h1>
+                <p class="genre-description">
+                    Licensed games bring films, TV shows, comics and famous faces onto your home computer.
+                    From Hollywood blockbusters to British TV tie-ins, this section showcases the best and most iconic adaptations.
+                </p>
+            </section>
+
+            <section class="ccg-section">
+                <h2 class="genre-subtitle">Total Games Available</h2>
+                <div id="genreGamesCount"></div>
+            </section>
+
+            <section class="ccg-section">
+                <h2 class="genre-subtitle">Browse Licensed Games</h2>
+                <div id="genreGamesGrid" class="ccg-genre-games-grid"></div>
+            </section>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="ccg-footer">
+            <div class="ccg-footer-inner">
+                <p class="ccg-footer-text">© 2025 Cheeky Commodore Gamer.</p>
+                <p class="ccg-footer-text ccg-footer-text--small">
+                    Not affiliated with Commodore or Amiga.
+                </p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- JS -->
+    <script src="../../js/ccg-mode-engine.js" defer></script>
+    <script src="../../js/ccj-global.js" defer></script>
+    <script src="../../js/genre-loader.js" defer></script>
+
 </body>
 </html>
