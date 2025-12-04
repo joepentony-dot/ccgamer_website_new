@@ -1,46 +1,69 @@
 /* ============================================================
-   CCG-MODAL.CSS — Image + PDF Modal Viewer
+   CCG-MODAL.CSS — IMAGE + PDF MODAL VIEWER (OMEGA BUILD)
+   High z-index / clean separation / non-interfering overlays
    ============================================================ */
+
+/* ------------------------------------------------------------
+   MODAL WRAPPER
+------------------------------------------------------------ */
 
 .ccg-modal {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.85);
+    background: rgba(0, 0, 0, 0.85);
     display: none;
     align-items: center;
     justify-content: center;
-    z-index: 9999;
+    z-index: 9999; /* Must sit above CRT + hero + UI */
+    backdrop-filter: blur(2px); /* Subtle Omega enhancement */
 }
 
 .ccg-modal.active {
     display: flex;
 }
 
+/* ------------------------------------------------------------
+   MODAL CONTENT
+------------------------------------------------------------ */
+
 .ccg-modal-content {
-    max-width: 90%;
-    max-height: 90%;
+    max-width: 92vw;
+    max-height: 92vh;
     background: #111;
     padding: 1rem;
     border-radius: 8px;
     overflow: auto;
+    box-shadow: 0 0 20px rgba(0,0,0,0.6);
 }
+
+/* ------------------------------------------------------------
+   CLOSE BUTTON
+------------------------------------------------------------ */
 
 .ccg-modal-close {
     position: absolute;
-    top: 1.5rem;
-    right: 2rem;
+    top: 1.2rem;
+    right: 1.8rem;
     font-size: 2rem;
     cursor: pointer;
     opacity: 0.6;
     transition: opacity 0.2s ease;
+    user-select: none;
+    line-height: 1;
 }
 
 .ccg-modal-close:hover {
     opacity: 1;
 }
 
+/* ------------------------------------------------------------
+   PDF FRAME
+------------------------------------------------------------ */
+
 .ccg-pdf-frame {
     width: 80vw;
     height: 80vh;
     border: none;
+    display: block;
+    background: #000;
 }
