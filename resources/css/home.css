@@ -314,6 +314,11 @@
     overflow: hidden;
 }
 
+/* ULTRA SAFE PATCH — hero media height stabiliser */
+.ccg-hero-media {
+    min-height: 240px;
+}
+
 .ccg-hero-image {
     position: absolute;
     inset: 0;
