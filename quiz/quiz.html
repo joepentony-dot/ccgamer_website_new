@@ -1,34 +1,129 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ccg-page="quiz">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz | Cheeky Commodore Gamer</title>
 
+    <title>Retro Quiz | Cheeky Commodore Gamer</title>
+    <meta name="description" content="Test your knowledge with the Cheeky Commodore Gamer retro quiz — image rounds, SID music rounds, trivia and more.">
+
+    <link rel="icon" href="../favicon.ico">
+
+    <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="../resources/css/ccg-master.css">
+    <link rel="stylesheet" href="../resources/css/ccg-mode.css">
+    <link rel="stylesheet" href="../resources/css/ccg-effects.css">
+    <link rel="stylesheet" href="../resources/css/ccg-anim.css">
+    <link rel="stylesheet" href="../resources/css/ccg-overlays.css">
+    <link rel="stylesheet" href="../resources/css/ccg-modal.css">
+
+    <!-- QUIZ PAGE CSS -->
+    <link rel="stylesheet" href="../resources/css/quiz.css">
 </head>
 
-<body class="crt c64-mode">
+<body class="ccg-body" data-ccg-mode="c64">
 
-<header class="topnav">
-    <a href="../home.html">HOME</a>
-    <a href="../complete-index.html">COMPLETE INDEX</a>
-    <a href="../games/genres/index.html">GENRES</a>
-    <a href="quiz.html">QUIZ</a>
-</header>
+    <!-- =========================================================
+         GLOBAL BACKGROUND (STARFIELD + GRID + CRT)
+    ========================================================= -->
+    <div class="ccg-bg">
+        <div class="ccg-bg-starfield"></div>
+        <div class="ccg-bg-grid"></div>
+        <div class="ccg-bg-crt-overlay"></div>
+    </div>
 
-<main id="quiz-container" class="quiz-main">
-    <h1 class="site-title">RETRO GAMING QUIZ</h1>
-    <p class="subtitle">Loading questions…</p>
+    <div class="ccg-page ccg-page--quiz">
 
-    <section id="quiz-root">
-        <!-- All quiz content injected by quiz-loader.js / quiz-engine.js -->
-    </section>
-</main>
+        <!-- =====================================================
+             UNIVERSAL SUBPAGE HEADER — OMEGA VERSION
+        ===================================================== -->
+        <header class="ccg-header">
+            <div class="ccg-header-inner">
 
-<script src="../js/quiz-loader.js"></script>
-<script src="../js/quiz-engine.js"></script>
-<script src="../js/ccj-global.js"></script>
+                <!-- Logo -->
+                <a href="../home.html" class="ccg-logo-link">
+                    <img src="../resources/ccgamer_logo.png"
+                         alt="Cheeky Commodore Gamer logo"
+                         class="ccg-logo-img">
+                </a>
+
+                <!-- Navigation -->
+                <nav class="ccg-nav">
+                    <a href="../home.html" class="nav-item">Home</a>
+                    <a href="../games/index.html" class="nav-item">Games</a>
+                    <a href="../games/genres/index.html" class="nav-item">Genres</a>
+                    <a href="../games/collections/index.html" class="nav-item">Collections</a>
+                    <a href="quiz.html" class="nav-item nav-item--active">Quiz</a>
+                    <a href="../complete-index.html" class="nav-item">Index</a>
+                    <a href="../about.html" class="nav-item">About</a>
+                    <a href="../contact.html" class="nav-item">Contact</a>
+                </nav>
+
+                <!-- Mode Toggle -->
+                <button
+                    class="ccg-mode-toggle"
+                    type="button"
+                    aria-label="Toggle system mode"
+                    data-ccg-mode-toggle="true"
+                >
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--c64">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="../resources/icons/c64.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">C64</span>
+                    </span>
+
+                    <span class="ccg-mode-toggle-knob"></span>
+
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--amiga">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="../resources/icons/amiga.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">Amiga</span>
+                    </span>
+                </button>
+
+            </div>
+        </header>
+
+        <!-- =====================================================
+             MAIN QUIZ CONTENT
+        ===================================================== -->
+        <main class="ccg-main ccg-main--quiz" id="main">
+
+            <section class="quiz-section quiz-section--intro">
+                <h1 class="quiz-title">Retro Gaming Quiz</h1>
+                <p class="quiz-subtitle">Loading questions…</p>
+            </section>
+
+            <!-- Reactively injected by quiz-loader.js / quiz-engine.js -->
+            <section id="quiz-root" class="quiz-root"></section>
+
+        </main>
+
+        <!-- =====================================================
+             FOOTER
+        ===================================================== -->
+        <footer class="ccg-footer">
+            <div class="ccg-footer-inner">
+                <p class="ccg-footer-text">© 2025 Cheeky Commodore Gamer.</p>
+                <p class="ccg-footer-text ccg-footer-text--small">
+                    Powered by your legendary Google Sheet. 😇🕹️👌
+                </p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- =========================================================
+         JS
+    ========================================================= -->
+    <script src="../js/ccg-mode-engine.js" defer></script>
+    <script src="../js/ccj-global.js" defer></script>
+
+    <!-- QUIZ ENGINE -->
+    <script src="../js/quiz-loader.js" defer></script>
+    <script src="../js/quiz-engine.js" defer></script>
 
 </body>
 </html>
