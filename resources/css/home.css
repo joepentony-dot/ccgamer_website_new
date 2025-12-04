@@ -764,6 +764,7 @@ body[data-ccg-mode="amiga"] .ccg-hero-image-amiga {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+    align-items: center; /* PATCH 15 */
 }
 
 .featured-panel-footer .ccg-btn {
