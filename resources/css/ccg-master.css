@@ -1,24 +1,31 @@
 /* ============================================================
-   CCG-MASTER.CSS — GLOBAL FOUNDATION LAYER
-   Restored + Clean + Omega-Compatible
-   Structural rules only — NO layout collisions
+   CCG-MASTER.CSS — GLOBAL FOUNDATION (OMEGA FINAL BUILD)
+   Clean • Stable • Non-conflicting • Used by ALL pages
    ============================================================ */
 
 /* -----------------------------------------
-   ROOT VARIABLES
+   ROOT VARIABLES (C64 + Amiga mode palette)
 ----------------------------------------- */
 
 :root {
+    /* C64 system */
     --c64-blue: #3ab0ff;
     --c64-blue-dark: #0e6ab8;
 
+    /* Amiga system */
     --amiga-pink: #ff4fd8;
     --amiga-purple: #cd3aff;
 
+    /* Universal */
     --text-light: #ffffff;
-    --text-dim: rgba(255,255,255,0.7);
-    --border-light: rgba(255,255,255,0.12);
+    --text-dim: rgba(255,255,255,0.72);
     --panel-bg: rgba(0,0,0,0.35);
+    --panel-bg-strong: rgba(0,0,0,0.55);
+    --border-light: rgba(255,255,255,0.15);
+
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
 
     --transition-fast: 0.15s ease;
     --transition-med: 0.3s ease;
@@ -52,22 +59,26 @@ img {
 a {
     color: var(--c64-blue);
     text-decoration: none;
-    transition: color var(--transition-fast);
+    transition: var(--transition-fast);
 }
-
 a:hover {
     color: var(--amiga-pink);
 }
 
 /* -----------------------------------------
-   GLOBAL PAGE CONTAINERS
+   PAGE WRAPPERS
 ----------------------------------------- */
+
+.ccg-body {
+    min-height: 100vh;
+    position: relative;
+}
 
 .ccg-page {
     width: 100%;
-    padding: 1.5rem;
     position: relative;
     z-index: 2;
+    padding: 1.5rem;
 }
 
 .ccg-main {
@@ -75,15 +86,14 @@ a:hover {
 }
 
 /* -----------------------------------------
-   GLOBAL BACKGROUND LAYERS
-   (Starfield, Grid, CRT overlay)
+   BACKGROUND LAYERS
 ----------------------------------------- */
 
 .ccg-bg {
     position: fixed;
     inset: 0;
-    z-index: 1;
     pointer-events: none;
+    z-index: 1;
 }
 
 .ccg-bg-starfield,
@@ -94,116 +104,71 @@ a:hover {
 }
 
 /* -----------------------------------------
-   GLOBAL PANELS (used across genres, game pages, quiz)
------------------------------------------ */
-
-.ccg-panel {
-    background: var(--panel-bg);
-    border: 1px solid var(--border-light);
-    padding: 1.5rem;
-    border-radius: 12px;
-}
-
-.ccg-section {
-    margin-bottom: 3rem;
-}
-
-/* Section titles */
-.ccg-section-title {
-    font-size: 2rem;
-    font-weight: 800;
-    margin-bottom: 0.35rem;
-}
-
-.ccg-section-subtitle {
-    opacity: 0.7;
-    margin-bottom: 1.5rem;
-}
-
-/* -----------------------------------------
-   BUTTONS — Base Classes
------------------------------------------ */
-
-.ccg-btn {
-    display: inline-block;
-    padding: 0.75rem 1.25rem;
-    border-radius: 6px;
-    font-size: 1rem;
-    font-weight: 600;
-    text-align: center;
-    cursor: pointer;
-    border: none;
-    transition: background var(--transition-med),
-                color var(--transition-fast),
-                opacity var(--transition-fast),
-                transform var(--transition-fast);
-}
-
-/* Primary (C64 blue) */
-.ccg-btn-primary {
-    background: var(--c64-blue);
-    color: #000;
-}
-
-.ccg-btn-primary:hover {
-    background: var(--c64-blue-dark);
-}
-
-/* Secondary (dim grey / dark panel) */
-.ccg-btn-secondary {
-    background: rgba(255,255,255,0.12);
-    color: #fff;
-}
-
-.ccg-btn-secondary:hover {
-    background: rgba(255,255,255,0.2);
-}
-
-/* Ghost (border only) */
-.ccg-btn-ghost {
-    background: transparent;
-    border: 1px solid var(--border-light);
-    color: #fff;
-}
-
-.ccg-btn-ghost:hover {
-    border-color: var(--text-light);
-}
-
-/* YouTube special */
-.ccg-btn--youtube {
-    background: #ff0000;
-    color: #fff;
-}
-.ccg-btn--youtube:hover {
-    opacity: 0.85;
-}
-
-/* -----------------------------------------
-   HEADERS (Universal minimal structure)
+   UNIVERSAL HEADER (Subpages)
+   * Home has a custom Omega header *
 ----------------------------------------- */
 
 .ccg-header {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
 }
 
-/* Updated simple social row (used across pages except home) */
+.ccg-header-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+/* LOGO */
+.ccg-logo-link {
+    display: inline-block;
+}
+.ccg-logo-img {
+    width: 130px;
+    max-width: 100%;
+    opacity: 0.95;
+    transition: opacity var(--transition-fast);
+}
+.ccg-logo-img:hover {
+    opacity: 1;
+}
+
+/* NAVIGATION */
+.ccg-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem 1.25rem;
+}
+
+.nav-item {
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+}
+.nav-item:hover {
+    background: rgba(255,255,255,0.08);
+}
+.nav-item--active {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+}
+
+/* Header socials (subpages only) */
 .ccg-header-socials {
-    margin-top: 1rem;
     display: flex;
     gap: 1rem;
     justify-content: center;
-    flex-wrap: wrap;
+    margin-top: 0.75rem;
 }
-
-.ccg-header-socials a img {
+.ccg-header-socials img {
     width: 28px;
     opacity: 0.85;
     transition: opacity var(--transition-fast);
 }
-
-.ccg-header-socials a:hover img {
+.ccg-header-socials img:hover {
     opacity: 1;
 }
 
@@ -215,18 +180,111 @@ a:hover {
     margin-top: 4rem;
     padding: 2rem 1rem;
     text-align: center;
-    opacity: 0.75;
+    opacity: 0.8;
     font-size: 0.9rem;
 }
 
 .ccg-footer-text--small {
-    opacity: 0.6;
     font-size: 0.8rem;
-    margin-top: 0.5rem;
+    opacity: 0.65;
+    margin-top: 0.3rem;
 }
 
 /* -----------------------------------------
-   GRID HELPERS (used across genres / collections)
+   GLOBAL PANELS (used across many pages)
+----------------------------------------- */
+
+.ccg-panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+}
+
+.ccg-section {
+    margin-bottom: 3rem;
+}
+
+.ccg-section-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.4rem;
+}
+
+.ccg-section-subtitle {
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+}
+
+/* -----------------------------------------
+   BUTTON LIBRARY
+----------------------------------------- */
+
+.ccg-btn {
+    display: inline-block;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: var(--transition-med);
+}
+
+/* Primary */
+.ccg-btn-primary {
+    background: var(--c64-blue);
+    color: #000;
+}
+.ccg-btn-primary:hover {
+    background: var(--c64-blue-dark);
+}
+
+/* Secondary */
+.ccg-btn-secondary {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+}
+.ccg-btn-secondary:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* Ghost */
+.ccg-btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border-light);
+    color: #fff;
+}
+.ccg-btn-ghost:hover {
+    border-color: #fff;
+}
+
+/* YouTube Red */
+.ccg-btn--youtube {
+    background: #ff0000;
+    color: #fff;
+}
+.ccg-btn--youtube:hover {
+    opacity: 0.85;
+}
+
+/* -----------------------------------------
+   UNIVERSAL CARDS (collections, genres, utilities)
+----------------------------------------- */
+
+.ccg-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    transition: var(--transition-med);
+}
+.ccg-card:hover {
+    background: var(--panel-bg-strong);
+    transform: translateY(-3px);
+}
+
+/* -----------------------------------------
+   GRID HELPERS
 ----------------------------------------- */
 
 .ccg-grid {
@@ -237,22 +295,20 @@ a:hover {
 .ccg-grid-2 {
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
-
 .ccg-grid-3 {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
 /* -----------------------------------------
-   TABLES (Complete Index + some admin tools)
+   TABLE STYLING (Complete Index)
 ----------------------------------------- */
 
 .ccg-table {
     width: 100%;
     border-collapse: collapse;
     background: var(--panel-bg);
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     overflow: hidden;
-    font-size: 0.9rem;
 }
 
 .ccg-table th,
@@ -263,7 +319,7 @@ a:hover {
 
 .ccg-table th {
     font-weight: 700;
-    background: rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.06);
     text-align: left;
 }
 
@@ -280,9 +336,9 @@ a:hover {
 .ccg-form select {
     width: 100%;
     padding: 0.75rem;
-    border-radius: 6px;
-    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
     background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border-light);
     color: #fff;
     font-size: 1rem;
 }
@@ -297,7 +353,7 @@ a:hover {
 }
 
 /* -----------------------------------------
-   RESPONSIVENESS
+   RESPONSIVE TWEAKS
 ----------------------------------------- */
 
 @media (max-width: 760px) {
@@ -305,6 +361,12 @@ a:hover {
         padding: 1rem;
     }
     .ccg-section-title {
-        font-size: 1.6rem;
+        font-size: 1.65rem;
+    }
+    .ccg-nav {
+        gap: 0.5rem 0.75rem;
+    }
+    .ccg-logo-img {
+        width: 110px;
     }
 }
