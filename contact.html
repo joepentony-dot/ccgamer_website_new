@@ -37,56 +37,74 @@
     <div class="ccg-page ccg-page--contact">
 
         <!-- =====================================================
-             UNIVERSAL OMEGA SUBPAGE HEADER
+             UNIFIED OMEGA HEADER (GLOBAL STANDARD)
         ===================================================== -->
         <header class="ccg-header">
             <div class="ccg-header-inner">
 
-                <!-- Logo -->
-                <a href="home.html" class="ccg-logo-link">
-                    <img src="resources/ccgamer_logo.png"
-                         alt="Cheeky Commodore Gamer logo"
-                         class="ccg-logo-img">
+                <!-- Brand -->
+                <a href="home.html" class="ccg-brand">
+                    <img src="resources/images/CCGAMER LOGO.png"
+                         alt="Cheeky Commodore Gamer Logo"
+                         class="ccg-brand__logo">
+
+                    <div class="ccg-brand__text">
+                        <span class="ccg-brand__kicker">Cheeky Commodore Gamer</span>
+                        <span class="ccg-brand__title">
+                            <span class="ccg-brand__neon-cheeky">CHEEKY</span>
+                            <span class="ccg-brand__neon-sub">COMMODORE GAMER</span>
+                        </span>
+                    </div>
                 </a>
 
                 <!-- Navigation -->
                 <nav class="ccg-nav">
-                    <a href="home.html" class="nav-item">Home</a>
-                    <a href="games/index.html" class="nav-item">Games</a>
-                    <a href="games/genres/index.html" class="nav-item">Genres</a>
-                    <a href="games/collections/index.html" class="nav-item">Collections</a>
-                    <a href="emulation.html" class="nav-item">Emulation</a>
-                    <a href="quiz/quiz.html" class="nav-item">Quiz</a>
-                    <a href="complete-index.html" class="nav-item">Index</a>
-                    <a href="about.html" class="nav-item">About</a>
-                    <a href="contact.html" class="nav-item nav-item--active">Contact</a>
+                    <ul class="ccg-nav__list">
+                        <li><a href="home.html" class="ccg-nav__link">Home</a></li>
+                        <li><a href="games/index.html" class="ccg-nav__link">Games</a></li>
+                        <li><a href="games/genres/index.html" class="ccg-nav__link">Genres</a></li>
+                        <li><a href="games/collections/index.html" class="ccg-nav__link">Collections</a></li>
+                        <li><a href="emulation.html" class="ccg-nav__link">Emulation</a></li>
+                        <li><a href="quiz/quiz.html" class="ccg-nav__link">Quiz</a></li>
+                        <li><a href="complete-index.html" class="ccg-nav__link">Index</a></li>
+                        <li><a href="about.html" class="ccg-nav__link">About</a></li>
+                        <li><a href="contact.html" class="ccg-nav__link ccg-nav__link--active">Contact</a></li>
+                    </ul>
                 </nav>
 
-                <!-- Mode Toggle -->
-                <button
-                    class="ccg-mode-toggle"
-                    type="button"
-                    aria-label="Toggle system mode"
-                    data-ccg-mode-toggle="true"
-                >
-                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--c64">
-                        <span class="ccg-mode-toggle-icon">
-                            <img src="resources/icons/c64.svg" alt="">
-                        </span>
-                        <span class="ccg-mode-toggle-label">C64</span>
-                    </span>
+                <!-- Header Actions (Mode Toggle + Socials) -->
+                <div class="ccg-header-actions">
 
-                    <span class="ccg-mode-toggle-knob"></span>
+                    <!-- Mode Toggle -->
+                    <button class="ccg-mode-toggle" id="ccg-mode-toggle" data-ccg-mode-toggle="true">
+                        <div class="ccg-mode-toggle__pill">
+                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
+                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">Amiga</span>
+                            <div class="ccg-mode-toggle__thumb"></div>
+                        </div>
+                    </button>
 
-                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--amiga">
-                        <span class="ccg-mode-toggle-icon">
-                            <img src="resources/icons/amiga.svg" alt="">
-                        </span>
-                        <span class="ccg-mode-toggle-label">Amiga</span>
-                    </span>
-                </button>
+                    <!-- Social Icons -->
+                    <div class="ccg-socials">
+                        <a href="https://youtube.com/@CheekyCommodoreGamer" target="_blank" class="ccg-socials__icon-btn">
+                            <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
+                        </a>
+                        <a href="https://patreon.com/cheekycommodoregamer" target="_blank" class="ccg-socials__icon-btn">
+                            <span class="ccg-socials__icon ccg-socials__icon--patreon"></span>
+                        </a>
+                        <a href="https://paypal.me/cheekycommodoregamer" target="_blank" class="ccg-socials__icon-btn">
+                            <span class="ccg-socials__icon ccg-socials__icon--paypal"></span>
+                        </a>
+                        <a href="https://twitter.com/CCGamerRetro" target="_blank" class="ccg-socials__icon-btn">
+                            <span class="ccg-socials__icon ccg-socials__icon--x"></span>
+                        </a>
+                    </div>
 
+                </div>
             </div>
+
+            <!-- Neon underline strip -->
+            <div class="ccg-header-neon-strip"></div>
         </header>
 
         <!-- =====================================================
@@ -103,7 +121,7 @@
                     </div>
                     <h1 id="contact-title">Contact Cheeky Commodore Gamer</h1>
                     <p>
-                        Got suggestions, corrections, ideas or retro requests? I'm always happy to hear from fellow C64 &amp; Amiga
+                        Got suggestions, corrections, ideas or retro requests? I'm always happy to hear from fellow C64 & Amiga
                         fans. Pick whichever channel suits you best and I'll do my best to respond.
                     </p>
                     <div class="ccg-info-actions">
@@ -163,7 +181,10 @@
                             <span class="ccg-kv-label">Response Time</span>
                             <span class="ccg-kv-value">Usually within 48 hours</span>
                         </div>
-                        <p class="emu-note">I read every message even if I can't reply instantly. Thanks for keeping the retro flame alive! 😇🕹️👌</p>
+                        <p class="emu-note">
+                            I read every message even if I can't reply instantly.
+                            Thanks for keeping the retro flame alive! 😇🕹️👌
+                        </p>
                     </div>
                 </section>
 
