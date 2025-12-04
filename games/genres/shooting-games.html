@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ccg-page="genre-single">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,45 +8,151 @@
     <meta name="description" content="Blast through the greatest shooting games on the Commodore 64 and Amiga. From arcade blasters to strategic shoot-em-ups, discover high-octane retro action.">
     <link rel="canonical" href="shooting-games.html">
 
+    <link rel="icon" href="../../favicon.ico">
+
+    <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="../../resources/css/ccg-master.css">
     <link rel="stylesheet" href="../../resources/css/ccg-mode.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-console.css">
     <link rel="stylesheet" href="../../resources/css/ccg-effects.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-anim.css">
     <link rel="stylesheet" href="../../resources/css/ccg-overlays.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-modal.css">
+
+    <!-- PAGE CSS -->
     <link rel="stylesheet" href="../../resources/css/genre.css">
 </head>
 
-<body data-genre="Shooting Games">
-<header>
-    <a href="../../home.html">
-        <img src="../../resources/ccgamer_logo.png" alt="Cheeky Commodore Gamer Logo" class="logo">
-    </a>
-</header>
+<body class="ccg-body" data-ccg-mode="c64" data-genre="Shooting Games">
 
-<nav class="breadcrumb">
-    <a href="../../home.html">Home Hub</a> ›
-    <a href="../index.html">All Games</a> ›
-    <span>Shooting Games</span>
-</nav>
+    <!-- BACKGROUND -->
+    <div class="ccg-bg">
+        <div class="ccg-bg-starfield"></div>
+        <div class="ccg-bg-grid"></div>
+        <div class="ccg-bg-crt-overlay"></div>
+    </div>
 
-<main class="genre-page">
-    <h1>Shooting Games</h1>
+    <div class="ccg-page ccg-page--genre">
 
-    <p>Shooting games on the Commodore 64 and Amiga deliver pure adrenaline: fast reflexes, split-second dodging, scrolling battlefields and explosive retro firepower. Whether you're taking down alien armadas or blasting through military missions, these classics defined home-computer action gaming.</p>
+        <!-- =====================================================
+             UNIVERSAL SUBPAGE HEADER — OMEGA VERSION
+        ===================================================== -->
+        <header class="ccg-header">
+            <div class="ccg-header-inner">
 
-    <p>From iconic arcade conversions to inventive home-grown shooters, this collection showcases the very best trigger-happy adventures from the golden age of 8-bit and 16-bit gaming.</p>
+                <!-- Logo -->
+                <a href="../../home.html" class="ccg-logo-link">
+                    <img src="../../resources/ccgamer_logo.png"
+                         alt="Cheeky Commodore Gamer logo"
+                         class="ccg-logo-img">
+                </a>
 
-    <h2>Total Games Available</h2>
-    <div id="genreGamesCount"></div>
+                <!-- Navigation -->
+                <nav class="ccg-nav">
+                    <a href="../../home.html" class="nav-item">Home</a>
+                    <a href="../../games/index.html" class="nav-item">Games</a>
+                    <a href="../../games/genres/index.html" class="nav-item">Genres</a>
+                    <a href="../../games/collections/index.html" class="nav-item">Collections</a>
+                    <a href="../../quiz/quiz.html" class="nav-item">Quiz</a>
+                    <a href="../../complete-index.html" class="nav-item">Index</a>
+                    <a href="../../about.html" class="nav-item">About</a>
+                    <a href="../../contact.html" class="nav-item">Contact</a>
+                </nav>
 
-    <h2>Browse Shooting Games</h2>
-    <div id="genreGamesGrid"></div>
-</main>
+                <!-- Mode Toggle -->
+                <button
+                    class="ccg-mode-toggle is-c64"
+                    type="button"
+                    aria-label="Toggle system mode"
+                    data-ccg-mode-toggle="true"
+                >
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--c64">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="../../resources/icons/c64.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">C64</span>
+                    </span>
 
-<footer>
-    <p>© Cheeky Commodore Gamer.</p>
-</footer>
+                    <span class="ccg-mode-toggle-knob"></span>
 
-<script src="../../js/genre-loader.js" defer></script>
+                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--amiga">
+                        <span class="ccg-mode-toggle-icon">
+                            <img src="../../resources/icons/amiga.svg" alt="">
+                        </span>
+                        <span class="ccg-mode-toggle-label">Amiga</span>
+                    </span>
+                </button>
+
+            </div>
+
+            <!-- SOCIAL ROW -->
+            <div class="ccg-header-socials">
+                <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank">
+                    <img src="../../resources/icons/youtube.svg" alt="YouTube">
+                </a>
+                <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank">
+                    <img src="../../resources/icons/patreon.svg" alt="Patreon">
+                </a>
+                <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank">
+                    <img src="../../resources/icons/paypal.svg" alt="PayPal">
+                </a>
+                <a href="https://www.facebook.com/cheekycommodoregamer" target="_blank">
+                    <img src="../../resources/icons/facebook.svg" alt="Facebook">
+                </a>
+                <a href="https://twitter.com/CheekyC64Gamer" target="_blank">
+                    <img src="../../resources/icons/twitter.svg" alt="Twitter / X">
+                </a>
+                <a href="https://discord.gg/83Xw9ktAn4" target="_blank">
+                    <img src="../../resources/icons/discord.svg" alt="Discord">
+                </a>
+            </div>
+        </header>
+
+        <!-- =====================================================
+             GENRE CONTENT
+        ===================================================== -->
+        <main class="ccg-main genre-main">
+
+            <section class="ccg-section">
+                <h1 class="genre-title">Shooting Games</h1>
+                <p class="genre-description">
+                    Shooting games on the Commodore 64 and Amiga deliver pure adrenaline — rapid dodging, high-speed 
+                    scrolling, explosive firepower and intense arcade action. Whether blasting alien fleets or tackling 
+                    gritty military missions, these classics defined fast-paced home computer gaming.
+                </p>
+                <p class="genre-description">
+                    From iconic coin-op conversions to inventive home-grown blasters, this collection celebrates the 
+                    finest shoot-em-ups of the 8-bit and 16-bit golden age.
+                </p>
+            </section>
+
+            <section class="ccg-section">
+                <h2 class="genre-subtitle">Total Games Available</h2>
+                <div id="genreGamesCount"></div>
+            </section>
+
+            <section class="ccg-section">
+                <h2 class="genre-subtitle">Browse Shooting Games</h2>
+                <div id="genreGamesGrid" class="ccg-genre-games-grid"></div>
+            </section>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="ccg-footer">
+            <div class="ccg-footer-inner">
+                <p class="ccg-footer-text">© 2025 Cheeky Commodore Gamer.</p>
+                <p class="ccg-footer-text ccg-footer-text--small">
+                    Not affiliated with Commodore or Amiga.
+                </p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- JS -->
+    <script src="../../js/ccg-mode-engine.js" defer></script>
+    <script src="../../js/ccj-global.js" defer></script>
+    <script src="../../js/genre-loader.js" defer></script>
+
 </body>
 </html>
