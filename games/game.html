@@ -51,17 +51,21 @@
                     <a href="../quiz/quiz.html" class="nav-item">Quiz</a>
                     <a href="../complete-index.html" class="nav-item">Index</a>
                     <a href="../about.html" class="nav-item">About</a>
+                    <a href="../contact.html" class="nav-item">Contact</a>
                 </nav>
 
                 <!-- Mode Toggle -->
                 <button
-    class="ccg-mode-toggle is-c64"
-    type="button"
-    aria-label="Toggle system mode"
-    data-ccg-mode-toggle="true"
->
-
-                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--c64">
+                    class="ccg-mode-toggle is-c64"
+                    type="button"
+                    aria-label="Toggle system mode"
+                    data-ccg-mode-toggle="true"
+                >
+                    <span
+                        class="ccg-mode-toggle-pill ccg-mode-toggle-pill--c64"
+                        data-mode-target="c64"
+                        data-ccg-mode="c64"
+                    >
                         <span class="ccg-mode-toggle-icon">
                             <img src="../resources/icons/c64.svg" alt="">
                         </span>
@@ -70,7 +74,11 @@
 
                     <span class="ccg-mode-toggle-knob" aria-hidden="true"></span>
 
-                    <span class="ccg-mode-toggle-pill ccg-mode-toggle-pill--amiga">
+                    <span
+                        class="ccg-mode-toggle-pill ccg-mode-toggle-pill--amiga"
+                        data-mode-target="amiga"
+                        data-ccg-mode="amiga"
+                    >
                         <span class="ccg-mode-toggle-icon">
                             <img src="../resources/icons/amiga.svg" alt="">
                         </span>
@@ -78,6 +86,28 @@
                     </span>
                 </button>
 
+            </div>
+
+            <!-- Social Icons (Subpage Compact Row) -->
+            <div class="ccg-header-socials">
+                <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank">
+                    <img src="../resources/icons/youtube.svg" alt="YouTube">
+                </a>
+                <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank">
+                    <img src="../resources/icons/patreon.svg" alt="Patreon">
+                </a>
+                <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank">
+                    <img src="../resources/icons/paypal.svg" alt="PayPal">
+                </a>
+                <a href="https://www.facebook.com/cheekycommodoregamer" target="_blank">
+                    <img src="../resources/icons/facebook.svg" alt="Facebook">
+                </a>
+                <a href="https://twitter.com/CheekyC64Gamer" target="_blank">
+                    <img src="../resources/icons/twitter.svg" alt="X / Twitter">
+                </a>
+                <a href="https://discord.gg/83Xw9ktAn4" target="_blank">
+                    <img src="../resources/icons/discord.svg" alt="Discord">
+                </a>
             </div>
         </header>
 
