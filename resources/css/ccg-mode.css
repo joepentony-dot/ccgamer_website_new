@@ -1,17 +1,31 @@
 /* ============================================================
-   CCG-MODE.CSS — System Theme Engine (C64 / Amiga)
+   CCG-MODE.CSS — SYSTEM THEME ENGINE (C64 / AMIGA)
+   Drives accent colours, button themes, hero crossfades.
    ============================================================ */
 
-/* C64 Mode */
+/* ------------------------------------------------------------
+   BASE ACCENT VARIABLE
+   (Default so pages never render without a theme)
+------------------------------------------------------------ */
+:root {
+    --accent: var(--c64-blue); /* fallback */
+}
+
+/* ------------------------------------------------------------
+   C64 MODE
+------------------------------------------------------------ */
 body[data-ccg-mode="c64"] {
     --accent: var(--c64-blue);
 }
 
+/* Optional decorative header split-text behaviour */
 body[data-ccg-mode="c64"] .ccg-header-title-top {
     color: var(--c64-blue);
 }
 
-/* Amiga Mode */
+/* ------------------------------------------------------------
+   AMIGA MODE
+------------------------------------------------------------ */
 body[data-ccg-mode="amiga"] {
     --accent: var(--amiga-pink);
 }
@@ -20,20 +34,40 @@ body[data-ccg-mode="amiga"] .ccg-header-title-bottom {
     color: var(--amiga-pink);
 }
 
-/* Accent usage */
+/* ------------------------------------------------------------
+   ACCENT UTILITY
+------------------------------------------------------------ */
 .ccg-accent {
     color: var(--accent);
 }
 
-/* Buttons become theme-aware */
+/* ------------------------------------------------------------
+   THEME-AWARE BUTTONS
+   Only modifies .ccg-btn-primary (intentional)
+------------------------------------------------------------ */
+
 body[data-ccg-mode="amiga"] .ccg-btn-primary {
     background: var(--amiga-pink);
     color: #000;
 }
+
 body[data-ccg-mode="amiga"] .ccg-btn-primary:hover {
     background: var(--amiga-purple);
 }
 
-/* Hero image crossfade (matches home.css rules) */
-body[data-ccg-mode="c64"] .ccg-hero-image-c64 { opacity: 1; }
+/* ------------------------------------------------------------
+   HERO IMAGE CROSSFADE (used by Home + some game pages)
+------------------------------------------------------------ */
+
+/* Ensure both hero images are present but invisible by default.
+   (Defined in home.css and games.css, but reinforced here.) */
+.ccg-hero-image-c64,
+.ccg-hero-image-amiga {
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    pointer-events: none;
+}
+
+/* Mode-controlled visibility */
+body[data-ccg-mode="c64"]  .ccg-hero-image-c64  { opacity: 1; }
 body[data-ccg-mode="amiga"] .ccg-hero-image-amiga { opacity: 1; }
