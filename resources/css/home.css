@@ -693,6 +693,116 @@ body[data-ccg-mode="amiga"] .ccg-mode-toggle-pill {
     color: #000;
 }
 
+/* ========================================================================== */
+/* SUPERB MODE SOCIAL CARDS — ORB EDITION (EPIC VERSION)                      */
+/* ========================================================================== */
+
+/* Base layout – icon + label under or beside */
+.ccg-social-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.2rem 1.4rem;
+    border-radius: 16px;
+    text-decoration: none;
+    transition: transform 0.25s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+/* Icon orb wrapper */
+.ccg-social-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(4px);
+    transition: 0.3s ease;
+}
+
+.ccg-social-icon img {
+    width: 28px;
+    height: 28px;
+    opacity: 0.95;
+}
+
+/* Label */
+.ccg-social-label {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+
+/* ========================================================================== */
+/* C64 MODE — NEON ORBS, BLUE GLOW, CRT BURN                                  */
+/* ========================================================================== */
+
+body[data-ccg-mode="c64"] .ccg-social-card {
+    background: rgba(0, 10, 25, 0.55);
+    border: 1px solid rgba(var(--accent-rgb),0.45);
+    box-shadow:
+        0 0 10px rgba(var(--accent-rgb), 0.35),
+        0 0 22px rgba(var(--accent-rgb), 0.25),
+        inset 0 0 12px rgba(0,0,0,0.6);
+}
+
+body[data-ccg-mode="c64"] .ccg-social-card:hover {
+    background: rgba(0, 18, 45, 0.65);
+    transform: translateY(-4px);
+    box-shadow:
+        0 0 14px rgba(var(--accent-rgb), 0.6),
+        0 0 32px rgba(var(--accent-rgb), 0.45),
+        inset 0 0 16px rgba(var(--accent-rgb), 0.2);
+}
+
+/* C64 orb glow */
+body[data-ccg-mode="c64"] .ccg-social-icon {
+    background: rgba(0,40,80,0.7);
+    box-shadow:
+        0 0 12px rgba(var(--accent-rgb), 0.55),
+        inset 0 0 10px rgba(var(--accent-rgb), 0.25);
+}
+
+/* Fix X / Twitter visibility */
+body[data-ccg-mode="c64"] .ccg-social--x img {
+    filter: invert(1) brightness(1.6);
+}
+
+
+/* ========================================================================== */
+/* AMIGA MODE — WORKBENCH PASTEL ORBS                                         */
+/* ========================================================================== */
+
+body[data-ccg-mode="amiga"] .ccg-social-card {
+    background: rgba(245,246,255,0.96);
+    border: 1px solid rgba(0,0,0,0.25);
+    box-shadow:
+        0 3px 10px rgba(0,0,0,0.18),
+        inset 0 0 0 rgba(255,255,255,0);
+    color: #000;
+}
+
+body[data-ccg-mode="amiga"] .ccg-social-card:hover {
+    transform: translateY(-3px);
+    background: rgba(255,255,255,1);
+    box-shadow:
+        0 5px 14px rgba(0,0,0,0.25);
+}
+
+/* Amiga pastel orb */
+body[data-ccg-mode="amiga"] .ccg-social-icon {
+    background: rgba(255,255,255,0.9);
+    border: 1px solid rgba(0,0,0,0.25);
+    box-shadow:
+        0 2px 6px rgba(0,0,0,0.15);
+}
+
+body[data-ccg-mode="amiga"] .ccg-social-icon img {
+    filter: none;
+}
+
+
 /* ==========================================================================
    RESPONSIVE TWEAKS
    ========================================================================= */
