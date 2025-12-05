@@ -1,13 +1,33 @@
 /* ============================================================
-   GENRE PAGE — OMEGA CINEMATIC MINI-HERO EDITION
-   Unified with Genre Index • Mode-aware neon • Premium layout
-   Safe: Additive + replaces only genre-page selectors
+   GENRE.CSS — OMEGA CINEMATIC EDITION (UNIFIED)
+   Covers:
+     • games/genres/index.html          (Genres Index)
+     • games/collections/index.html     (Collections Index)
+     • games/genres/* (single genre pages)
+   Safe: Additive only, no JS or ID changes.
 ============================================================ */
 
 /* ------------------------------------------------------------
-   PAGE WRAPPER
+   PAGE WRAPPERS
 ------------------------------------------------------------ */
 
+/* Index pages (Genres + Collections) */
+[data-ccg-page="genre-index"] .ccg-page--genre-index,
+[data-ccg-page="collections-index"] .ccg-page--collections-index {
+    width: 100%;
+    max-width: 1680px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 4rem;
+}
+
+@media (min-width: 1024px) {
+    [data-ccg-page="genre-index"] .ccg-page--genre-index,
+    [data-ccg-page="collections-index"] .ccg-page--collections-index {
+        padding: 4rem 2.5rem 4.5rem;
+    }
+}
+
+/* Single-genre pages */
 .ccg-page--genre {
     padding-top: 130px;
     width: 100%;
@@ -17,10 +37,424 @@
 }
 
 /* ------------------------------------------------------------
-   OMEGA MINI-HERO CINEMATIC STRIP
-   (Replaces old 160px centered image strip with modern hero)
+   CINEMATIC HERO (Genres / Collections Index)
+   Used by: .ccg-hero-banner on index pages
 ------------------------------------------------------------ */
 
+.ccg-hero-banner {
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+    margin-bottom: 3.5rem;
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.5rem;
+    padding: 1.75rem;
+    isolation: isolate;
+    background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.09), transparent 55%),
+                radial-gradient(circle at bottom right, rgba(0, 0, 0, 0.8), transparent 60%);
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        0 30px 80px rgba(0, 0, 0, 0.85);
+}
+
+@media (min-width: 900px) {
+    .ccg-hero-banner {
+        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.8fr);
+        padding: 2.5rem;
+        margin-bottom: 4rem;
+    }
+}
+
+.ccg-hero-media {
+    position: relative;
+    min-height: 180px;
+}
+
+.ccg-hero-image-frame {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 1.25rem;
+    transform: translateZ(0);
+}
+
+.ccg-hero-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-height: 320px;
+    object-fit: cover;
+    filter: saturate(1.2) contrast(1.1);
+    transform-origin: center;
+    transform: scale(1.02);
+}
+
+.ccg-hero-vignette {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.12), transparent 55%),
+        radial-gradient(circle at 80% 100%, rgba(0, 0, 0, 0.9), transparent 60%),
+        radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.6), transparent 65%);
+    mix-blend-mode: multiply;
+    pointer-events: none;
+}
+
+/* Medium-intensity glow ring (mode-aware) */
+.ccg-hero-banner::before {
+    content: "";
+    position: absolute;
+    inset: 0.35rem;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0.9;
+}
+
+body.mode-c64 .ccg-hero-banner::before,
+.ccg-body[data-ccg-mode="c64"] .ccg-hero-banner::before {
+    box-shadow: 0 0 40px rgba(0, 174, 255, 0.35),
+                0 0 0 1px rgba(0, 174, 255, 0.55);
+}
+
+body.mode-amiga .ccg-hero-banner::before,
+.ccg-body[data-ccg-mode="amiga"] .ccg-hero-banner::before {
+    box-shadow: 0 0 40px rgba(255, 0, 190, 0.35),
+                0 0 0 1px rgba(255, 0, 190, 0.55);
+}
+
+.ccg-hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+.ccg-hero-kicker {
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.75rem;
+    opacity: 0.8;
+    margin-bottom: 0.6rem;
+}
+
+.ccg-hero-title {
+    font-size: clamp(1.7rem, 2.1vw + 1.4rem, 2.4rem);
+    margin-bottom: 0.8rem;
+    line-height: 1.15;
+}
+
+.ccg-hero-tagline {
+    font-size: 0.95rem;
+    max-width: 34rem;
+    opacity: 0.9;
+    margin-bottom: 1.3rem;
+}
+
+.ccg-hero-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.ccg-hero-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(6px);
+}
+
+.ccg-hero-pill strong {
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+/* ------------------------------------------------------------
+   SECTION HEADER (shared)
+------------------------------------------------------------ */
+
+.ccg-section {
+    margin-bottom: 3rem;
+}
+
+.ccg-section-header {
+    margin-bottom: 1.5rem;
+}
+
+.ccg-section-title {
+    font-size: 1.2rem;
+    margin-bottom: 0.4rem;
+}
+
+.ccg-section-subtitle {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    max-width: 32rem;
+}
+
+/* ------------------------------------------------------------
+   GENRES INDEX GRID (15 tiles)
+------------------------------------------------------------ */
+
+.ccg-genre-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+}
+
+@media (min-width: 1024px) {
+    .ccg-genre-grid {
+        gap: 1.4rem;
+    }
+}
+
+.ccg-genre-tile {
+    position: relative;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 1rem;
+    overflow: hidden;
+    background: linear-gradient(
+        145deg,
+        rgba(10, 10, 10, 0.94),
+        rgba(26, 26, 32, 0.96)
+    );
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow:
+        0 14px 28px rgba(0, 0, 0, 0.65),
+        0 0 0 0 rgba(255, 255, 255, 0);
+    transform: translateY(0);
+    transition:
+        transform 140ms ease-out,
+        box-shadow 140ms ease-out,
+        border-color 140ms ease-out,
+        background 140ms ease-out;
+}
+
+.ccg-genre-tile-inner {
+    padding: 1rem 1.1rem 0.95rem;
+}
+
+.ccg-genre-heading-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin-bottom: 0.4rem;
+}
+
+.ccg-genre-name {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.ccg-genre-tag {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    opacity: 0.8;
+    white-space: nowrap;
+}
+
+.ccg-genre-desc {
+    font-size: 0.82rem;
+    opacity: 0.85;
+    margin-bottom: 0.75rem;
+}
+
+.ccg-genre-cta {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    opacity: 0.9;
+}
+
+/* Hover glow layer */
+.ccg-genre-tile::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 160ms ease-out;
+}
+
+/* Mode-aware border / glow */
+body.mode-c64 .ccg-genre-tile,
+.ccg-body[data-ccg-mode="c64"] .ccg-genre-tile {
+    border-color: rgba(0, 174, 255, 0.25);
+}
+
+body.mode-amiga .ccg-genre-tile,
+.ccg-body[data-ccg-mode="amiga"] .ccg-genre-tile {
+    border-color: rgba(255, 0, 190, 0.25);
+}
+
+body.mode-c64 .ccg-genre-tile::before,
+.ccg-body[data-ccg-mode="c64"] .ccg-genre-tile::before {
+    box-shadow: 0 0 22px rgba(0, 174, 255, 0.45);
+}
+
+body.mode-amiga .ccg-genre-tile::before,
+.ccg-body[data-ccg-mode="amiga"] .ccg-genre-tile::before {
+    box-shadow: 0 0 22px rgba(255, 0, 190, 0.45);
+}
+
+/* Interactive state */
+.ccg-genre-tile:hover,
+.ccg-genre-tile:focus-visible {
+    transform: translateY(-3px);
+    box-shadow:
+        0 18px 40px rgba(0, 0, 0, 0.85),
+        0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.ccg-genre-tile:hover::before,
+.ccg-genre-tile:focus-visible::before {
+    opacity: 1;
+}
+
+/* ------------------------------------------------------------
+   COLLECTIONS INDEX GRID (4 tiles)
+------------------------------------------------------------ */
+
+.ccg-collection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.4rem;
+}
+
+.ccg-collection-tile {
+    position: relative;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 1.2rem;
+    overflow: hidden;
+    background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.95));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+        0 18px 45px rgba(0, 0, 0, 0.85),
+        0 0 0 0 rgba(255, 255, 255, 0);
+    transform: translateY(0);
+    transition:
+        transform 150ms ease-out,
+        box-shadow 150ms ease-out,
+        border-color 150ms ease-out,
+        background 150ms ease-out;
+}
+
+.ccg-collection-tile-inner {
+    padding: 1.3rem 1.3rem 1.1rem;
+}
+
+.ccg-collection-kicker {
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.72rem;
+    opacity: 0.78;
+    margin-bottom: 0.3rem;
+}
+
+.ccg-collection-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+}
+
+.ccg-collection-desc {
+    font-size: 0.83rem;
+    opacity: 0.88;
+    margin-bottom: 0.6rem;
+}
+
+.ccg-collection-meta-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 0.8rem;
+    font-size: 0.8rem;
+    opacity: 0.86;
+}
+
+.ccg-collection-meta-list li::before {
+    content: "• ";
+    opacity: 0.7;
+}
+
+.ccg-collection-cta {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+}
+
+/* Glow layer */
+.ccg-collection-tile::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 160ms ease-out;
+}
+
+body.mode-c64 .ccg-collection-tile,
+.ccg-body[data-ccg-mode="c64"] .ccg-collection-tile {
+    border-color: rgba(0, 174, 255, 0.35);
+}
+
+body.mode-amiga .ccg-collection-tile,
+.ccg-body[data-ccg-mode="amiga"] .ccg-collection-tile {
+    border-color: rgba(255, 0, 190, 0.35);
+}
+
+body.mode-c64 .ccg-collection-tile::before,
+.ccg-body[data-ccg-mode="c64"] .ccg-collection-tile::before {
+    box-shadow: 0 0 28px rgba(0, 174, 255, 0.55);
+}
+
+body.mode-amiga .ccg-collection-tile::before,
+.ccg-body[data-ccg-mode="amiga"] .ccg-collection-tile::before {
+    box-shadow: 0 0 28px rgba(255, 0, 190, 0.55);
+}
+
+.ccg-collection-tile:hover,
+.ccg-collection-tile:focus-visible {
+    transform: translateY(-4px);
+    box-shadow:
+        0 22px 50px rgba(0, 0, 0, 0.9),
+        0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.ccg-collection-tile:hover::before,
+.ccg-collection-tile:focus-visible::before {
+    opacity: 1;
+}
+
+/* ------------------------------------------------------------
+   FOOTER TWEAK (index pages only)
+------------------------------------------------------------ */
+
+[data-ccg-page="genre-index"] .ccg-footer,
+[data-ccg-page="collections-index"] .ccg-footer {
+    padding: 1.5rem 1.5rem 2rem;
+    text-align: center;
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+/* ============================================================
+   SINGLE GENRE PAGES (Omega MINI-HERO + Tiles)
+   Used by: arcade, bpjs-indexed, cartridge, casino, fighting,
+            horror, etc. 
+============================================================ */
+
+/* Mini cinematic hero strip, replaces old flat banner image */
 .genre-hero-strip {
     position: relative;
     width: 100%;
@@ -44,7 +478,8 @@
 }
 
 /* Amiga mode override */
-body.mode-amiga .genre-hero-strip {
+body.mode-amiga .genre-hero-strip,
+.ccg-body[data-ccg-mode="amiga"] .genre-hero-strip {
     border-color: rgba(255,0,190,0.55);
     box-shadow:
         0 22px 48px rgba(0,0,0,0.7),
@@ -74,17 +509,22 @@ body.mode-amiga .genre-hero-strip {
     opacity: 0.75;
 }
 
-/* OPTIONAL (remove old strip image entirely) */
+/* Hide old static genre strip images (arcade.png, bpjs.png, etc.) */
 .genre-hero-img {
     display: none !important;
 }
 
-/* ------------------------------------------------------------
-   INTRO SECTION
------------------------------------------------------------- */
+/* Intro text */
+.genre-main {
+    margin-top: 2.2rem;
+}
+
+.genre-intro {
+    text-align: center;
+    margin-bottom: 2rem;
+}
 
 .genre-title {
-    text-align: center;
     font-size: clamp(2rem, 1.4vw + 1.2rem, 2.6rem);
     text-transform: uppercase;
     letter-spacing: 0.14em;
@@ -92,9 +532,8 @@ body.mode-amiga .genre-hero-strip {
 }
 
 .genre-description {
-    text-align: center;
     max-width: 900px;
-    margin: 0.5rem auto 1.2rem auto;
+    margin: 0.5rem auto 0.4rem auto;
     opacity: 0.92;
     font-size: 1.05rem;
     line-height: 1.55;
@@ -108,11 +547,15 @@ body.mode-amiga .genre-hero-strip {
     letter-spacing: 0.12em;
 }
 
-/* ------------------------------------------------------------
-   GAME GRID — Omega Tile System
-   Matching Genre Index / Collections Index
------------------------------------------------------------- */
+/* Section titles inside genre pages */
+.genre-subtitle {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    margin: 0 0 0.8rem;
+}
 
+/* Game grid powered by genre-loader.js (do not rename) */
 .ccg-genre-games-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
@@ -120,7 +563,7 @@ body.mode-amiga .genre-hero-strip {
     padding: 0.6rem 0 2rem 0;
 }
 
-/* Tile */
+/* Individual game card (injected by JS) */
 .genre-game-card {
     position: relative;
     background: rgba(10, 10, 20, 0.75);
@@ -131,7 +574,6 @@ body.mode-amiga .genre-hero-strip {
     box-shadow:
         0 12px 32px rgba(0,0,0,0.65),
         0 0 0 0 rgba(0,0,0,0);
-
     transition:
         transform 160ms ease-out,
         box-shadow 160ms ease-out,
@@ -139,34 +581,38 @@ body.mode-amiga .genre-hero-strip {
 }
 
 /* Mode-aware accents */
-body.mode-c64 .genre-game-card {
+body.mode-c64 .genre-game-card,
+.ccg-body[data-ccg-mode="c64"] .genre-game-card {
     border-color: rgba(0,174,255,0.28);
 }
-body.mode-amiga .genre-game-card {
+
+body.mode-amiga .genre-game-card,
+.ccg-body[data-ccg-mode="amiga"] .genre-game-card {
     border-color: rgba(255,0,190,0.28);
 }
 
-/* Hover state */
+/* Hover elevation & glow */
 .genre-game-card:hover {
     transform: translateY(-4px);
 }
 
-/* Hover glow mode-specific */
-body.mode-c64 .genre-game-card:hover {
+body.mode-c64 .genre-game-card:hover,
+.ccg-body[data-ccg-mode="c64"] .genre-game-card:hover {
     border-color: rgba(0,174,255,0.55);
     box-shadow:
         0 18px 44px rgba(0,0,0,0.8),
         0 0 22px rgba(0,174,255,0.45);
 }
 
-body.mode-amiga .genre-game-card:hover {
+body.mode-amiga .genre-game-card:hover,
+.ccg-body[data-ccg-mode="amiga"] .genre-game-card:hover {
     border-color: rgba(255,0,190,0.55);
     box-shadow:
         0 18px 44px rgba(0,0,0,0.8),
         0 0 22px rgba(255,0,190,0.45);
 }
 
-/* Thumbnail */
+/* Thumbnail inside card */
 .genre-game-card img {
     display: block;
     width: 100%;
@@ -177,7 +623,7 @@ body.mode-amiga .genre-game-card:hover {
     box-shadow: 0 6px 14px rgba(0,0,0,0.4);
 }
 
-/* Title */
+/* Title text inside card */
 .genre-game-title {
     font-size: 0.92rem;
     text-transform: uppercase;
@@ -187,7 +633,7 @@ body.mode-amiga .genre-game-card:hover {
 }
 
 /* ------------------------------------------------------------
-   RESPONSIVE
+   RESPONSIVE (single genre pages)
 ------------------------------------------------------------ */
 
 @media (max-width: 900px) {
