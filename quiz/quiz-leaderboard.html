@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" data-ccg-page="quiz-leaderboard">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Quiz Leaderboard | Cheeky Commodore Gamer</title>
@@ -33,16 +33,15 @@
     <div class="ccg-page ccg-page--quiz-leaderboard">
 
         <!-- =====================================================
-             OMEGA UNIFIED HEADER
+             OMEGA HEADER (FULL MATCH)
         ===================================================== -->
         <header class="ccg-header">
             <div class="ccg-header-inner">
 
-                <!-- Brand -->
                 <a href="../home.html" class="ccg-brand">
                     <img src="../resources/images/ccgamer-logo.png"
-                         alt="Cheeky Commodore Gamer Logo"
-                         class="ccg-brand__logo">
+                         class="ccg-brand__logo"
+                         alt="Cheeky Commodore Gamer Logo">
 
                     <div class="ccg-brand__text">
                         <span class="ccg-brand__kicker">Stay a while, stay forever!</span>
@@ -53,8 +52,7 @@
                     </div>
                 </a>
 
-                <!-- Navigation -->
-                <nav class="ccg-nav" aria-label="Primary navigation">
+                <nav class="ccg-nav">
                     <ul class="ccg-nav__list">
                         <li><a href="../home.html" class="ccg-nav__link">Home</a></li>
                         <li><a href="../games/index.html" class="ccg-nav__link">Games</a></li>
@@ -67,53 +65,23 @@
                     </ul>
                 </nav>
 
-                <!-- Header Actions -->
                 <div class="ccg-header-actions">
 
-                    <!-- Mode Toggle -->
-                    <button class="ccg-mode-toggle"
-                            type="button"
-                            aria-label="Toggle system mode"
-                            data-ccg-mode-toggle>
-                        <div class="ccg-mode-toggle__pill">
+                    <button class="ccg-mode-toggle" data-ccg-mode-toggle type="button" aria-label="Toggle system mode">
+                        <span class="ccg-mode-toggle__pill">
                             <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
                             <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">Amiga</span>
-                            <div class="ccg-mode-toggle__thumb"></div>
-                        </div>
+                            <span class="ccg-mode-toggle__thumb"></span>
+                        </span>
                     </button>
 
-                    <!-- Social Icons -->
                     <div class="ccg-socials">
-                        <a class="ccg-socials__icon-btn"
-                           href="https://www.youtube.com/@CheekyCommodoreGamer"
-                           target="_blank" rel="noopener">
-                            <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
-                        </a>
-                        <a class="ccg-socials__icon-btn"
-                           href="https://patreon.com/CheekyCommodoreGamer"
-                           target="_blank" rel="noopener">
-                            <span class="ccg-socials__icon ccg-socials__icon--patreon"></span>
-                        </a>
-                        <a class="ccg-socials__icon-btn"
-                           href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"
-                           target="_blank" rel="noopener">
-                            <span class="ccg-socials__icon ccg-socials__icon--paypal"></span>
-                        </a>
-                        <a class="ccg-socials__icon-btn"
-                           href="https://twitter.com/CheekyC64Gamer"
-                           target="_blank" rel="noopener">
-                            <span class="ccg-socials__icon ccg-socials__icon--x"></span>
-                        </a>
-                        <a class="ccg-socials__icon-btn"
-                           href="https://www.facebook.com/cheekycommodoregamer"
-                           target="_blank" rel="noopener">
-                            <span class="ccg-socials__icon ccg-socials__icon--fb"></span>
-                        </a>
-                        <a class="ccg-socials__icon-btn"
-                           href="https://discord.gg/83Xw9ktAn4"
-                           target="_blank" rel="noopener">
-                            <span class="ccg-socials__icon ccg-socials__icon--discord"></span>
-                        </a>
+                        <a href="https://www.youtube.com/@CheekyCommodoreGamer" class="ccg-socials__icon-btn" target="_blank"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>
+                        <a href="https://patreon.com/CheekyCommodoreGamer" class="ccg-socials__icon-btn" target="_blank"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>
+                        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" class="ccg-socials__icon-btn" target="_blank"><span class="ccg-socials__icon ccg-socials__icon--paypal"></span></a>
+                        <a href="https://twitter.com/CheekyC64Gamer" class="ccg-socials__icon-btn" target="_blank"><span class="ccg-socials__icon ccg-socials__icon--x"></span></a>
+                        <a href="https://www.facebook.com/cheekycommodoregamer" class="ccg-socials__icon-btn" target="_blank"><span class="ccg-socials__icon ccg-socials__icon--fb"></span></a>
+                        <a href="https://discord.gg/83Xw9ktAn4" class="ccg-socials__icon-btn" target="_blank"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
                     </div>
 
                 </div>
@@ -123,79 +91,76 @@
         </header>
 
         <!-- =====================================================
-             HERO + CABINET
+             HERO
         ===================================================== -->
         <main class="quiz-main quiz-main--leaderboard">
 
             <section class="quiz-leaderboard-hero">
                 <h1 class="quiz-title">Quiz Leaderboard</h1>
-                <p class="quiz-tagline">
-                    The retro brain trust. These are the runs that made the SID sing and the joystick squeak.
-                </p>
+                <p class="quiz-tagline">Your retro-score destiny awaits. Only the sharpest SID minds make this board.</p>
+
                 <div class="quiz-leaderboard-actions">
                     <a href="quiz.html" class="ccg-btn ccg-btn-primary">Play Another Quiz</a>
                     <a href="../home.html" class="ccg-btn ccg-btn-ghost">Back to Home</a>
                 </div>
             </section>
 
+            <!-- =====================================================
+                 NEON CABINET + LIVE SCORE TABLE
+            ===================================================== -->
             <section class="quiz-leaderboard-panel">
                 <div class="quiz-leaderboard-cabinet">
+
                     <header class="quiz-leaderboard-header">
                         <h2 class="quiz-score-title">High Score Cabinet</h2>
                         <p class="quiz-leaderboard-subtitle">
-                            Future phases will pull live scores directly from your quiz backend.
-                            For now, enjoy the cabinet FX and imagine your name in lights.
+                            Live results from the Omega Quiz Engine. Updated instantly from the cloud.
                         </p>
                     </header>
 
-                    <!-- Mount point for future dynamic scores -->
-                    <div id="leaderboard-root" class="quiz-leaderboard-table">
+                    <div class="quiz-leaderboard-table">
+
+                        <!-- HEADER ROW -->
                         <div class="quiz-leaderboard-row quiz-leaderboard-row--head">
                             <span class="quiz-leaderboard-cell quiz-leaderboard-cell--rank">#</span>
                             <span class="quiz-leaderboard-cell quiz-leaderboard-cell--name">Player</span>
                             <span class="quiz-leaderboard-cell quiz-leaderboard-cell--score">Score</span>
                         </div>
 
-                        <!-- Placeholder rows (static for now, can be replaced later by JS) -->
-                        <div class="quiz-leaderboard-row quiz-leaderboard-row--placeholder">
-                            <span class="quiz-leaderboard-cell quiz-leaderboard-cell--rank">—</span>
-                            <span class="quiz-leaderboard-cell quiz-leaderboard-cell--name">
-                                Scores will appear here in a future phase.
-                            </span>
-                            <span class="quiz-leaderboard-cell quiz-leaderboard-cell--score">—</span>
-                        </div>
+                        <!-- LIVE TABLE BODY (POPULATED BY JS) -->
+                        <div id="leaderboard-table-body"></div>
+
+                        <!-- EMPTY STATE -->
+                        <p id="leaderboard-empty" class="lb-empty" hidden>No scores yet — be the first!</p>
+
                     </div>
                 </div>
             </section>
 
         </main>
 
-        <!-- =====================================================
-             FOOTER
-        ===================================================== -->
+        <!-- FOOTER -->
         <footer class="ccg-footer">
             <div class="ccg-footer-inner">
-                <p class="ccg-footer-text">
-                    © <span id="ccg-footer-year"></span> Cheeky Commodore Gamer.
-                </p>
-                <p class="ccg-footer-text ccg-footer-text--small">
-                    Not affiliated with Commodore or Amiga.
-                </p>
+                <p class="ccg-footer-text">© <span id="ccg-footer-year"></span> Cheeky Commodore Gamer.</p>
+                <p class="ccg-footer-text ccg-footer-text--small">Not affiliated with Commodore or Amiga.</p>
             </div>
         </footer>
-
     </div>
 
     <!-- JS -->
     <script src="../js/ccg-mode-engine.js" defer></script>
     <script src="../js/ccj-global.js" defer></script>
 
+    <!-- LIVE LEADERBOARD MODULE -->
+    <script type="module" src="../js/leaderboard-loader.js"></script>
+    <script type="module">
+        import { renderLeaderboard } from "../js/leaderboard-loader.js";
+        document.addEventListener("DOMContentLoaded", renderLeaderboard);
+    </script>
+
     <script>
-        // Footer year only — no leaderboard logic yet (future phase)
-        document.addEventListener("DOMContentLoaded", () => {
-            const y = document.getElementById("ccg-footer-year");
-            if (y) y.textContent = new Date().getFullYear().toString();
-        });
+        document.getElementById("ccg-footer-year").textContent = new Date().getFullYear();
     </script>
 
 </body>
