@@ -8,6 +8,7 @@
 //     * Animated score counter
 //     * SID-wave ambient bar intensity control
 //     * Button SFX with toggle (no external audio files required)
+//     * Best-score-per-set tracking (for leaderboard highlight)
 // ======================================================================
 
 (function () {
@@ -17,6 +18,7 @@
     // STATE
     // --------------------------------------------------
     const SFX_STORAGE_KEY = "ccg_quiz_sfx_enabled";
+    const BEST_SCORE_STORAGE_KEY = "ccg_quiz_best_scores";
 
     const quizState = {
         sets: [],
@@ -52,6 +54,49 @@
         } catch (e) {
             // tracking must never break the quiz
             console.warn("quiz track error:", e);
+        }
+    }
+
+    // --------------------------------------------------
+    // BEST SCORE STORAGE (per set, for leaderboard highlight)
+    // --------------------------------------------------
+    function updateBestScoreStorage(setId, score, total) {
+        if (!setId) return;
+        const safeSetId = String(setId);
+
+        let map = {};
+        try {
+            const raw = localStorage.getItem(BEST_SCORE_STORAGE_KEY);
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (parsed && typeof parsed === "object") {
+                    map = parsed;
+                }
+            }
+        } catch (e) {
+            map = {};
+        }
+
+        const existing = map[safeSetId];
+        const newScore = Number(score) || 0;
+        const newTotal = Number(total) || 0;
+
+        // Only overwrite if new score is higher than existing
+        if (!existing || newScore > Number(existing.score || 0)) {
+            map[safeSetId] = {
+                score: newScore,
+                total: newTotal
+            };
+        }
+
+        try {
+            localStorage.setItem(
+                BEST_SCORE_STORAGE_KEY,
+                JSON.stringify(map)
+            );
+        } catch (e) {
+            // Storage errors must never break the quiz
+            console.warn("Failed to persist best score:", e);
         }
     }
 
@@ -309,6 +354,13 @@
             score: quizState.score,
             total: quizState.questions.length
         });
+
+        // Update best-score-per-set for leaderboard highlighting
+        updateBestScoreStorage(
+            quizState.currentSetId || getDefaultSetId(),
+            quizState.score,
+            quizState.questions.length
+        );
 
         if (container) {
             container.innerHTML = "";
