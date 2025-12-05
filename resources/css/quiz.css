@@ -265,3 +265,85 @@
 .leaderboard-score.score-animate {
     animation: ccg-score-count 0.8s ease-out;
 }
+
+/* ============================================================
+   QUIZ FX — OMEGA EDITION
+   SID Waves • Neon Cabinet • Animated Scores • SFX Toggle
+===============================================================*/
+
+/* SID WAVE HERO BACKGROUND */
+.quiz-hero {
+    position: relative;
+    overflow: hidden;
+}
+
+.quiz-hero::before,
+.quiz-hero::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(
+        90deg,
+        var(--c64-cyan),
+        transparent,
+        var(--amiga-pink)
+    );
+    animation: sidwave 2.4s linear infinite;
+}
+
+.quiz-hero::before { top: 10px; }
+.quiz-hero::after { bottom: 10px; animation-delay: 1s; }
+
+@keyframes sidwave {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+
+/* NEON HIGH SCORE CABINET */
+.quiz-cabinet {
+    border: 3px solid var(--neon-primary);
+    box-shadow:
+        0 0 12px var(--neon-primary),
+        inset 0 0 8px var(--neon-primary);
+    padding: 1rem;
+    border-radius: 10px;
+    background: rgba(0,0,0,0.55);
+}
+
+.board-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-family: var(--font-mono);
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+
+.board-row:last-child {
+    border-bottom: none;
+}
+
+
+/* ANIMATED SCORE COUNTER */
+.score-animate {
+    font-size: 3rem;
+    font-weight: bold;
+    color: var(--neon-primary);
+    text-shadow: 0 0 12px var(--neon-primary);
+}
+
+
+/* SFX TOGGLE BUTTON */
+#quiz-sfx-toggle {
+    border: 2px solid var(--neon-primary);
+    background: rgba(0,0,0,0.65);
+    padding: 0.4rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+}
+
+#quiz-sfx-toggle:hover {
+    box-shadow: 0 0 12px var(--neon-primary);
+}
