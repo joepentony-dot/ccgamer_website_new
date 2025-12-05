@@ -250,3 +250,18 @@
         font-size: 2.1rem;
     }
 }
+
+/* ============================================================
+   ANIMATED SCORE COUNTER
+   (applies only when JS adds .score-animate)
+============================================================ */
+
+@keyframes ccg-score-count {
+    0% { opacity: 0; transform: translateY(6px); }
+    40% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 1; }
+}
+
+.leaderboard-score.score-animate {
+    animation: ccg-score-count 0.8s ease-out;
+}
