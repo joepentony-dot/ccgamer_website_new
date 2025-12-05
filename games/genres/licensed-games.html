@@ -1,26 +1,28 @@
 <!DOCTYPE html>
-<html lang="en" data-ccg-page="genre-single">
+<html lang="en" data-ccg-page="collection-single">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Licensed Games | Cheeky Commodore Gamer</title>
     <meta name="description"
-          content="From blockbuster films to TV and comic tie-ins — explore every major Licensed game released for the Commodore 64 and Amiga.">
+          content="Movie tie-ins, TV adaptations, comic heroes and official brand releases — explore the world of Licensed Games on C64 & Amiga." />
 
-    <link rel="icon" href="../../favicon.ico">
+    <link rel="icon" href="../../favicon.ico" />
 
     <!-- GLOBAL CSS -->
-    <link rel="stylesheet" href="../../resources/css/ccg-master.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-mode.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-effects.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-anim.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-overlays.css">
-    <link rel="stylesheet" href="../../resources/css/ccg-modal.css">
-    <link rel="stylesheet" href="../../resources/css/genre.css">
+    <link rel="stylesheet" href="../../resources/css/ccg-master.css" />
+    <link rel="stylesheet" href="../../resources/css/ccg-mode.css" />
+    <link rel="stylesheet" href="../../resources/css/ccg-effects.css" />
+    <link rel="stylesheet" href="../../resources/css/ccg-anim.css" />
+    <link rel="stylesheet" href="../../resources/css/ccg-overlays.css" />
+    <link rel="stylesheet" href="../../resources/css/ccg-modal.css" />
+
+    <!-- COLLECTION / GENRE CSS -->
+    <link rel="stylesheet" href="../../resources/css/genre.css" />
 </head>
 
-<body class="ccg-body" data-ccg-mode="c64" data-genre="Licensed Games">
+<body class="ccg-body" data-ccg-mode="c64" data-collection="Licensed Games">
 
     <!-- BACKGROUND -->
     <div class="ccg-bg">
@@ -31,19 +33,15 @@
 
     <div class="ccg-page ccg-page--genre">
 
-        <!-- =====================================================
-             OMEGA GLOBAL HEADER (FULLY UNIFIED)
-        ===================================================== -->
+        <!-- HEADER -->
         <header class="ccg-header">
             <div class="ccg-header-inner">
 
                 <!-- Brand -->
                 <a href="../../home.html" class="ccg-brand">
-                    <img
-                        src="../../resources/images/CCGAMER LOGO.png"
-                        alt="Cheeky Commodore Gamer Logo"
-                        class="ccg-brand__logo"
-                    >
+                    <img src="../../resources/CCGAMER LOGO.png"
+                         class="ccg-brand__logo"
+                         alt="Cheeky Commodore Gamer Logo" />
                     <div class="ccg-brand__text">
                         <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
                         <div class="ccg-brand__title">
@@ -53,14 +51,14 @@
                     </div>
                 </a>
 
-                <!-- Navigation -->
-                <nav class="ccg-nav" aria-label="Primary Navigation">
+                <!-- Nav -->
+                <nav class="ccg-nav">
                     <ul class="ccg-nav__list">
                         <li><a href="../../home.html" class="ccg-nav__link">Home</a></li>
                         <li><a href="../../games/index.html" class="ccg-nav__link">Games</a></li>
-                        <li><a href="../../games/genres/index.html" class="ccg-nav__link ccg-nav__link--active">Genres</a></li>
-                        <li><a href="../../games/collections/index.html" class="ccg-nav__link">Collections</a></li>
-                        <li><a href="../../quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
+                        <li><a href="../../games/genres/index.html" class="ccg-nav__link">Genres</a></li>
+                        <li><a href="../../games/collections/index.html" class="ccg-nav__link is-active">Collections</a></li>
+                        <li><a href="../../quiz/quiz.html" class="ccg-nav__link">Trivia</a></li>
                         <li><a href="../../emulation.html" class="ccg-nav__link">Emulation</a></li>
                         <li><a href="../../complete-index.html" class="ccg-nav__link">Index</a></li>
                         <li><a href="../../about.html" class="ccg-nav__link">About</a></li>
@@ -68,11 +66,13 @@
                     </ul>
                 </nav>
 
-                <!-- Actions: Mode toggle + Social icons -->
+                <!-- Actions -->
                 <div class="ccg-header-actions">
 
                     <!-- Mode Toggle -->
-                    <button class="ccg-mode-toggle" data-ccg-mode-toggle aria-label="Toggle C64/Amiga mode">
+                    <button class="ccg-mode-toggle"
+                            data-ccg-mode-toggle
+                            aria-label="Toggle C64/Amiga mode">
                         <span class="ccg-mode-toggle__pill">
                             <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
                             <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">Amiga</span>
@@ -80,69 +80,67 @@
                         </span>
                     </button>
 
-                    <!-- Social Icons -->
+                    <!-- Socials -->
                     <div class="ccg-socials">
                         <a href="https://www.youtube.com/@CheekyCommodoreGamer"
                            class="ccg-socials__link"
-                           aria-label="YouTube">
+                           target="_blank">
                             <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
                             <span class="ccg-socials__label">Subscribe</span>
                         </a>
                         <a href="https://patreon.com/CheekyCommodoreGamer"
                            class="ccg-socials__icon-btn"
-                           aria-label="Patreon">
+                           target="_blank">
                             <span class="ccg-socials__icon ccg-socials__icon--patreon"></span>
                         </a>
                         <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"
                            class="ccg-socials__icon-btn"
-                           aria-label="PayPal">
+                           target="_blank">
                             <span class="ccg-socials__icon ccg-socials__icon--paypal"></span>
                         </a>
                         <a href="https://twitter.com/CheekyC64Gamer"
                            class="ccg-socials__icon-btn"
-                           aria-label="Twitter / X">
+                           target="_blank">
                             <span class="ccg-socials__icon ccg-socials__icon--x"></span>
                         </a>
                         <a href="https://www.facebook.com/cheekycommodoregamer"
                            class="ccg-socials__icon-btn"
-                           aria-label="Facebook">
+                           target="_blank">
                             <span class="ccg-socials__icon ccg-socials__icon--fb"></span>
                         </a>
                         <a href="https://discord.gg/83Xw9ktAn4"
                            class="ccg-socials__icon-btn"
-                           aria-label="Discord">
+                           target="_blank">
                             <span class="ccg-socials__icon ccg-socials__icon--discord"></span>
                         </a>
                     </div>
 
                 </div>
-            </div>
 
+            </div>
             <div class="ccg-header-neon-strip"></div>
         </header>
 
-        <!-- HERO -->
+        <!-- HERO STRIP -->
         <section class="genre-hero-strip">
-            <img src="../../resources/images/genres/licensed.png"
-                 alt="Licensed games hero artwork"
-                 class="genre-hero-img">
+            <h1 class="genre-title">Licensed Games</h1>
         </section>
 
         <!-- MAIN -->
         <main class="ccg-main genre-main">
 
             <section class="ccg-section genre-intro">
-                <h1 class="genre-title">Licensed Games</h1>
                 <p class="genre-description">
-                    Film, TV, comics and celebrity tie-ins — the licensed greats (and infamous oddities!) of the 8-bit and 16-bit era.
+                    From blockbuster films to Saturday morning cartoons, Licensed Games brought familiar worlds onto your
+                    home computer.
                 </p>
                 <p class="genre-description">
-                    A fascinating slice of retro pop culture history.
+                    This collection celebrates the tie-ins, crossovers and big-name brands that defined many childhoods.
                 </p>
             </section>
 
             <section class="ccg-section">
-                <h2 class="genre-subtitle">Total Games Available</h2>
+                <h2 class="genre-subtitle">Total Games in Collection</h2>
                 <div id="genreGamesCount" class="genre-count"></div>
             </section>
 
@@ -157,16 +155,18 @@
         <footer class="ccg-footer">
             <div class="ccg-footer-inner">
                 <p class="ccg-footer-text">© 2025 Cheeky Commodore Gamer.</p>
-                <p class="ccg-footer-text ccg-footer-text--small">Not affiliated with Commodore or Amiga.</p>
+                <p class="ccg-footer-text ccg-footer-text--small">
+                    Not affiliated with Commodore or Amiga.
+                </p>
             </div>
         </footer>
 
     </div>
 
-    <!-- SCRIPTS -->
+    <!-- JS -->
     <script src="../../js/ccg-mode-engine.js" defer></script>
     <script src="../../js/ccj-global.js" defer></script>
-    <script src="../../js/genre-loader.js" defer></script>
+    <script src="../../js/collection-loader.js" defer></script>
 
 </body>
 </html>
