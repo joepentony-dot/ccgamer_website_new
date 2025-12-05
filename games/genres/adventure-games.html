@@ -6,7 +6,7 @@
 
     <title>Adventure Games | Cheeky Commodore Gamer</title>
     <meta name="description"
-          content="Explore rich worlds and unforgettable stories — discover the greatest Adventure games on the C64 and Amiga." />
+          content="Classic Adventure Games on Commodore 64 and Amiga — text, graphic and point-and-click adventures packed with puzzles and atmosphere." />
 
     <link rel="icon" href="../../favicon.ico" />
 
@@ -17,6 +17,8 @@
     <link rel="stylesheet" href="../../resources/css/ccg-anim.css" />
     <link rel="stylesheet" href="../../resources/css/ccg-overlays.css" />
     <link rel="stylesheet" href="../../resources/css/ccg-modal.css" />
+
+    <!-- GENRE / COLLECTION CSS -->
     <link rel="stylesheet" href="../../resources/css/genre.css" />
 </head>
 
@@ -31,17 +33,16 @@
 
     <div class="ccg-page ccg-page--genre">
 
-        <!-- =====================================================
-             OMEGA UNIFIED HEADER
-        ===================================================== -->
+        <!-- HEADER -->
         <header class="ccg-header">
             <div class="ccg-header-inner">
 
-                <!-- BRAND -->
+                <!-- Brand -->
                 <a href="../../home.html" class="ccg-brand">
-                    <img src="../../resources/images/CCGAMER LOGO.png"
+                    <img src="../../resources/CCGAMER LOGO.png"
                          alt="Cheeky Commodore Gamer Logo"
                          class="ccg-brand__logo" />
+
                     <div class="ccg-brand__text">
                         <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
                         <div class="ccg-brand__title">
@@ -51,14 +52,14 @@
                     </div>
                 </a>
 
-                <!-- NAVIGATION -->
+                <!-- Navigation -->
                 <nav class="ccg-nav">
                     <ul class="ccg-nav__list">
                         <li><a href="../../home.html" class="ccg-nav__link">Home</a></li>
                         <li><a href="../../games/index.html" class="ccg-nav__link">Games</a></li>
-                        <li><a href="../../games/genres/index.html" class="ccg-nav__link">Genres</a></li>
+                        <li><a href="../../games/genres/index.html" class="ccg-nav__link is-active">Genres</a></li>
                         <li><a href="../../games/collections/index.html" class="ccg-nav__link">Collections</a></li>
-                        <li><a href="../../quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
+                        <li><a href="../../quiz/quiz.html" class="ccg-nav__link">Trivia</a></li>
                         <li><a href="../../emulation.html" class="ccg-nav__link">Emulation</a></li>
                         <li><a href="../../complete-index.html" class="ccg-nav__link">Index</a></li>
                         <li><a href="../../about.html" class="ccg-nav__link">About</a></li>
@@ -66,10 +67,9 @@
                     </ul>
                 </nav>
 
-                <!-- RIGHT SIDE: MODE TOGGLE + SOCIALS -->
+                <!-- Mode Toggle + Socials -->
                 <div class="ccg-header-actions">
 
-                    <!-- MODE TOGGLE -->
                     <button class="ccg-mode-toggle"
                             data-ccg-mode-toggle
                             aria-label="Toggle C64/Amiga mode">
@@ -80,29 +80,39 @@
                         </span>
                     </button>
 
-                    <!-- SOCIALS -->
                     <div class="ccg-socials">
-                        <a href="https://www.youtube.com/@CheekyCommodoreGamer" class="ccg-socials__link">
+
+                        <a href="https://www.youtube.com/@CheekyCommodoreGamer" class="ccg-socials__link" target="_blank">
                             <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
                             <span class="ccg-socials__label">Subscribe</span>
                         </a>
-                        <a href="https://patreon.com/CheekyCommodoreGamer" class="ccg-socials__icon-btn">
+
+                        <a href="https://patreon.com/CheekyCommodoreGamer"
+                           class="ccg-socials__icon-btn" target="_blank">
                             <span class="ccg-socials__icon ccg-socials__icon--patreon"></span>
                         </a>
-                        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" class="ccg-socials__icon-btn">
+
+                        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"
+                           class="ccg-socials__icon-btn" target="_blank">
                             <span class="ccg-socials__icon ccg-socials__icon--paypal"></span>
                         </a>
-                        <a href="https://twitter.com/CheekyC64Gamer" class="ccg-socials__icon-btn">
+
+                        <a href="https://twitter.com/CheekyC64Gamer"
+                           class="ccg-socials__icon-btn" target="_blank">
                             <span class="ccg-socials__icon ccg-socials__icon--x"></span>
                         </a>
-                        <a href="https://www.facebook.com/cheekycommodoregamer" class="ccg-socials__icon-btn">
+
+                        <a href="https://www.facebook.com/cheekycommodoregamer"
+                           class="ccg-socials__icon-btn" target="_blank">
                             <span class="ccg-socials__icon ccg-socials__icon--fb"></span>
                         </a>
-                        <a href="https://discord.gg/83Xw9ktAn4" class="ccg-socials__icon-btn">
+
+                        <a href="https://discord.gg/83Xw9ktAn4"
+                           class="ccg-socials__icon-btn" target="_blank">
                             <span class="ccg-socials__icon ccg-socials__icon--discord"></span>
                         </a>
-                    </div>
 
+                    </div>
                 </div>
 
             </div>
@@ -110,23 +120,22 @@
             <div class="ccg-header-neon-strip"></div>
         </header>
 
-        <!-- HERO -->
+        <!-- MINI HERO STRIP WITH TITLE -->
         <section class="genre-hero-strip">
-            <img src="../../resources/images/genres/adventure.png"
-                 alt="Adventure Games"
-                 class="genre-hero-img" />
+            <h1 class="genre-title">Adventure Games</h1>
         </section>
 
-        <!-- MAIN -->
+        <!-- MAIN CONTENT -->
         <main class="ccg-main genre-main">
 
             <section class="ccg-section genre-intro">
-                <h1 class="genre-title">Adventure Games</h1>
                 <p class="genre-description">
-                    These are the journeys that defined home-computer storytelling.
+                    Text adventures, graphic adventures and point-and-click classics — the Adventure genre is all about
+                    story, puzzles and atmosphere.
                 </p>
                 <p class="genre-description">
-                    Explore lost lands, mysterious realms and unforgettable worlds.
+                    On C64 and Amiga, these games turned your computer into a portal for mystery, humour, horror and
+                    everything in between.
                 </p>
             </section>
 
