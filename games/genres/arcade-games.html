@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="../../resources/css/ccg-overlays.css" />
     <link rel="stylesheet" href="../../resources/css/ccg-modal.css" />
 
-    <!-- PAGE CSS -->
+    <!-- GENRE / COLLECTION CSS -->
     <link rel="stylesheet" href="../../resources/css/genre.css" />
 </head>
 
@@ -34,16 +34,17 @@
     <div class="ccg-page ccg-page--genre">
 
         <!-- =====================================================
-             OMEGA UNIFIED HEADER (ALL GENRE PAGES)
+             OMEGA UNIFIED HEADER — FINAL VERSION
         ===================================================== -->
         <header class="ccg-header">
             <div class="ccg-header-inner">
 
                 <!-- Brand -->
                 <a href="../../home.html" class="ccg-brand">
-                    <img src="../../resources/images/CCGAMER LOGO.png"
+                    <img src="../../resources/CCGAMER LOGO.png"
                          alt="Cheeky Commodore Gamer Logo"
                          class="ccg-brand__logo" />
+
                     <div class="ccg-brand__text">
                         <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
                         <div class="ccg-brand__title">
@@ -58,9 +59,9 @@
                     <ul class="ccg-nav__list">
                         <li><a href="../../home.html" class="ccg-nav__link">Home</a></li>
                         <li><a href="../../games/index.html" class="ccg-nav__link">Games</a></li>
-                        <li><a href="../../games/genres/index.html" class="ccg-nav__link">Genres</a></li>
+                        <li><a href="../../games/genres/index.html" class="ccg-nav__link is-active">Genres</a></li>
                         <li><a href="../../games/collections/index.html" class="ccg-nav__link">Collections</a></li>
-                        <li><a href="../../quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
+                        <li><a href="../../quiz/quiz.html" class="ccg-nav__link">Trivia</a></li>
                         <li><a href="../../emulation.html" class="ccg-nav__link">Emulation</a></li>
                         <li><a href="../../complete-index.html" class="ccg-nav__link">Index</a></li>
                         <li><a href="../../about.html" class="ccg-nav__link">About</a></li>
@@ -68,7 +69,7 @@
                     </ul>
                 </nav>
 
-                <!-- Header Right: Mode Toggle + Socials -->
+                <!-- Mode Toggle + Socials -->
                 <div class="ccg-header-actions">
 
                     <!-- Mode Toggle -->
@@ -84,27 +85,38 @@
 
                     <!-- Socials -->
                     <div class="ccg-socials">
-                        <a href="https://www.youtube.com/@CheekyCommodoreGamer" class="ccg-socials__link">
+
+                        <a href="https://www.youtube.com/@CheekyCommodoreGamer" class="ccg-socials__link" target="_blank">
                             <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
                             <span class="ccg-socials__label">Subscribe</span>
                         </a>
-                        <a href="https://patreon.com/CheekyCommodoreGamer" class="ccg-socials__icon-btn">
+
+                        <a href="https://patreon.com/CheekyCommodoreGamer"
+                           class="ccg-socials__icon-btn" target="_blank">
                             <span class="ccg-socials__icon ccg-socials__icon--patreon"></span>
                         </a>
-                        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" class="ccg-socials__icon-btn">
+
+                        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"
+                           class="ccg-socials__icon-btn" target="_blank">
                             <span class="ccg-socials__icon ccg-socials__icon--paypal"></span>
                         </a>
-                        <a href="https://twitter.com/CheekyC64Gamer" class="ccg-socials__icon-btn">
+
+                        <a href="https://twitter.com/CheekyC64Gamer"
+                           class="ccg-socials__icon-btn" target="_blank">
                             <span class="ccg-socials__icon ccg-socials__icon--x"></span>
                         </a>
-                        <a href="https://www.facebook.com/cheekycommodoregamer" class="ccg-socials__icon-btn">
+
+                        <a href="https://www.facebook.com/cheekycommodoregamer"
+                           class="ccg-socials__icon-btn" target="_blank">
                             <span class="ccg-socials__icon ccg-socials__icon--fb"></span>
                         </a>
-                        <a href="https://discord.gg/83Xw9ktAn4" class="ccg-socials__icon-btn">
+
+                        <a href="https://discord.gg/83Xw9ktAn4"
+                           class="ccg-socials__icon-btn" target="_blank">
                             <span class="ccg-socials__icon ccg-socials__icon--discord"></span>
                         </a>
-                    </div>
 
+                    </div>
                 </div>
 
             </div>
@@ -112,18 +124,20 @@
             <div class="ccg-header-neon-strip"></div>
         </header>
 
-        <!-- HERO STRIP -->
-        <section class="genre-hero-strip">
-            <img src="../../resources/images/genres/arcade.png"
-                 alt="Arcade Games"
-                 class="genre-hero-img" />
-        </section>
+        <!-- =====================================================
+             OMEGA MINI CINEMATIC HERO — replaces old image
+        ===================================================== -->
+        <section class="genre-hero-strip"></section>
 
-        <!-- MAIN -->
+        <!-- =====================================================
+             MAIN CONTENT
+        ===================================================== -->
         <main class="ccg-main genre-main">
 
+            <!-- Intro -->
             <section class="ccg-section genre-intro">
                 <h1 class="genre-title">Arcade Games</h1>
+
                 <p class="genre-description">
                     High-speed, high-score action inspired by the golden age of arcades.
                 </p>
@@ -132,11 +146,13 @@
                 </p>
             </section>
 
+            <!-- Count -->
             <section class="ccg-section">
                 <h2 class="genre-subtitle">Total Games Available</h2>
                 <div id="genreGamesCount" class="genre-count"></div>
             </section>
 
+            <!-- Game Grid -->
             <section class="ccg-section">
                 <h2 class="genre-subtitle">Browse Arcade Games</h2>
                 <div id="genreGamesGrid" class="ccg-genre-games-grid"></div>
