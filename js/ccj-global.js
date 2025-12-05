@@ -18,7 +18,7 @@
        regardless of old file paths in HTML.
     ----------------------------------------------- */
     document.addEventListener("DOMContentLoaded", () => {
-        const correctLogo = "resources/images/CCGAMER LOGO.png";
+        const correctLogo = "resources/images/ccgamer-logo.png";
 
         // Determine folder depth (root /games /genres etc.)
         let prefix = "";
