@@ -97,7 +97,9 @@
 
             <section class="quiz-leaderboard-hero">
                 <h1 class="quiz-title">Quiz Leaderboard</h1>
-                <p class="quiz-tagline">Your retro-score destiny awaits. Only the sharpest SID minds make this board.</p>
+                <p class="quiz-tagline">
+                    Your retro-score destiny awaits. Only the sharpest SID minds make this board.
+                </p>
 
                 <div class="quiz-leaderboard-actions">
                     <a href="quiz.html" class="ccg-btn ccg-btn-primary">Play Another Quiz</a>
@@ -118,6 +120,40 @@
                         </p>
                     </header>
 
+                    <!-- FILTER BAR: SET SELECTOR + TIME RANGE -->
+                    <div class="quiz-leaderboard-filters">
+                        <div class="lb-filter-group">
+                            <label for="leaderboard-set-filter" class="lb-filter-label">
+                                Quiz Pack
+                            </label>
+                            <select id="leaderboard-set-filter" class="lb-select">
+                                <option value="all">All packs</option>
+                                <!-- Options injected by JS -->
+                            </select>
+                        </div>
+
+                        <div class="lb-filter-group lb-filter-group--time">
+                            <span class="lb-filter-label">Time Range</span>
+                            <div class="lb-filter-time-buttons">
+                                <button type="button"
+                                        class="lb-range-btn lb-range-btn--active"
+                                        data-range="all">
+                                    All time
+                                </button>
+                                <button type="button"
+                                        class="lb-range-btn"
+                                        data-range="7">
+                                    Last 7 days
+                                </button>
+                                <button type="button"
+                                        class="lb-range-btn"
+                                        data-range="30">
+                                    Last 30 days
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="quiz-leaderboard-table">
 
                         <!-- HEADER ROW -->
@@ -125,13 +161,17 @@
                             <span class="quiz-leaderboard-cell quiz-leaderboard-cell--rank">#</span>
                             <span class="quiz-leaderboard-cell quiz-leaderboard-cell--name">Player</span>
                             <span class="quiz-leaderboard-cell quiz-leaderboard-cell--score">Score</span>
+                            <span class="quiz-leaderboard-cell quiz-leaderboard-cell--total">Total</span>
+                            <span class="quiz-leaderboard-cell quiz-leaderboard-cell--set">Quiz Pack</span>
                         </div>
 
                         <!-- LIVE TABLE BODY (POPULATED BY JS) -->
                         <div id="leaderboard-table-body"></div>
 
                         <!-- EMPTY STATE -->
-                        <p id="leaderboard-empty" class="lb-empty" hidden>No scores yet — be the first!</p>
+                        <p id="leaderboard-empty" class="lb-empty" hidden>
+                            No scores yet for this view — be the first!
+                        </p>
 
                     </div>
                 </div>
