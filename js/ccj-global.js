@@ -1,50 +1,101 @@
-/* ============================================================
-   CCG GLOBAL HEADER / AUTO FIXES
-   Safe, non-destructive version for OMEGA build
-   ============================================================ */
+/* ==========================================================
+   CCG GLOBAL SCRIPT — UNIVERSAL EFFECTS + OMEGA MODE SUPPORT
+   FINAL CLEAN BUILD — LOGO FIX FIXED + NO OVERRIDES
+   ========================================================== */
 
-/* ------------------------------------------------------------
-   1) FIXED LOGO HANDLING (ABSOLUTE PATH — FINAL SOLUTION)
-   ------------------------------------------------------------ */
+(function () {
+    const body = document.body;
 
-// ALWAYS correct logo path regardless of directory depth
-// This avoids the dynamic prefix issues that broke the homepage logo.
-//
-// NOTE: Do not change this unless your repo name changes.
-//
-const ABSOLUTE_LOGO = "/ccgamer_website_new/resources/images/CCGAMER LOGO.png";
+    /* -----------------------------------------------
+       PAGE FADE-IN
+    ----------------------------------------------- */
+    document.addEventListener("DOMContentLoaded", () => {
+        body.classList.add("ccg-fade-in");
+    });
 
-// Apply corrected logo to every element using the logo class
-document.querySelectorAll(".ccg-brand__logo").forEach(img => {
-    img.src = ABSOLUTE_LOGO;
-});
+    /* -----------------------------------------------
+       OMEGA LOGO NORMALISER — FINAL FIX
+       Forces all logo elements to use the correct file,
+       preventing 404 errors from legacy filenames.
+    ----------------------------------------------- */
+    document.addEventListener("DOMContentLoaded", () => {
+        const correctLogo = "resources/images/ccgamer-logo.png";
 
+        document.querySelectorAll(".ccg-brand__logo").forEach(img => {
+            img.src = correctLogo;
+        });
+    });
 
-/* ------------------------------------------------------------
-   2) AUTO YEAR IN FOOTER
-   ------------------------------------------------------------ */
-const yearSpan = document.querySelector("[data-ccg-year]");
-if (yearSpan) {
-    yearSpan.textContent = new Date().getFullYear();
-}
+    /* -----------------------------------------------
+       SCANLINE INTENSITY (SHIFT + S)
+    ----------------------------------------------- */
+    const scanlineOverlay = document.querySelector(".crt-overlay");
+    let scanlineStrength = 0.05;
 
-
-/* ------------------------------------------------------------
-   3) HEADER BEHAVIOUR (SAFE & UNCHANGED)
-   ------------------------------------------------------------ */
-const header = document.querySelector(".ccg-header");
-let lastScroll = 0;
-
-window.addEventListener("scroll", () => {
-    const currentScroll = window.scrollY;
-
-    if (!header) return;
-
-    if (currentScroll > lastScroll && currentScroll > 60) {
-        header.classList.add("ccg-header--hidden");
-    } else {
-        header.classList.remove("ccg-header--hidden");
+    function updateScanlines() {
+        if (scanlineOverlay) scanlineOverlay.style.opacity = scanlineStrength;
     }
 
-    lastScroll = currentScroll;
-});
+    updateScanlines();
+
+    window.addEventListener("keydown", (e) => {
+        if (e.key.toLowerCase() === "s" && e.shiftKey) {
+            scanlineStrength += 0.1;
+            if (scanlineStrength > 0.45) scanlineStrength = 0.05;
+            updateScanlines();
+        }
+    });
+
+    /* -----------------------------------------------
+       GLOBAL MODE CHANGE EVENT
+       Fired by ccg-mode-engine.js
+    ----------------------------------------------- */
+    document.addEventListener("ccg:modeChange", (event) => {
+        const mode = event.detail.mode;
+
+        console.log("GLOBAL MODE UPDATE →", mode);
+
+        // Update accent colour system-wide
+        if (mode === "c64") {
+            body.style.setProperty("--ccg-accent", "#70fff0");   // cyan glow
+        } else if (mode === "amiga") {
+            body.style.setProperty("--ccg-accent", "#f432ff");   // neon magenta
+        }
+
+        updateModeToggleLabel();
+        updateOmegaSwitchVisual();
+    });
+
+    /* -----------------------------------------------
+       MODE LABEL HANDLER
+    ----------------------------------------------- */
+    function updateModeToggleLabel() {
+        const label = document.getElementById("ccg-mode-label");
+        if (!label) return;
+
+        const mode = document.body.dataset.mode;
+        label.textContent = mode === "amiga" ? "Amiga Mode" : "C64 Mode";
+    }
+
+    /* -----------------------------------------------
+       OMEGA SWITCH HANDLE POSITION
+    ----------------------------------------------- */
+    function updateOmegaSwitchVisual() {
+        const switchEl = document.querySelector(".ccg-omega-toggle");
+        if (!switchEl) return;
+
+        const mode = body.dataset.mode;
+
+        switchEl.classList.toggle("omega-amiga", mode === "amiga");
+        switchEl.classList.toggle("omega-c64", mode === "c64");
+    }
+
+    /* -----------------------------------------------
+       INITIALISE ON LOAD
+    ----------------------------------------------- */
+    document.addEventListener("DOMContentLoaded", () => {
+        updateModeToggleLabel();
+        updateOmegaSwitchVisual();
+    });
+
+})();
