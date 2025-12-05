@@ -17,240 +17,226 @@
     <link rel="stylesheet" href="resources/css/ccg-anim.css" />
     <link rel="stylesheet" href="resources/css/ccg-overlays.css" />
     <link rel="stylesheet" href="resources/css/ccg-modal.css" />
+    <link rel="stylesheet" href="resources/css/ccg-hero.css" />
+    <link rel="stylesheet" href="resources/css/ccg-socials.css" />
+    <link rel="stylesheet" href="resources/css/omega-mode-toggle.css" />
 
     <!-- PAGE CSS -->
-    <link rel="stylesheet" href="resources/css/index-table.css" />
+    <link rel="stylesheet" href="resources/css/complete-index.css" />
 </head>
 
-<body class="ccg-body" data-ccg-mode="c64">
+<body class="ccg-body">
 
-    <!-- GLOBAL BACKGROUND -->
-    <div class="ccg-bg">
-        <div class="ccg-bg-starfield"></div>
-        <div class="ccg-bg-grid"></div>
-        <div class="ccg-bg-crt-overlay"></div>
-    </div>
+<div class="ccg-page ccg-page--index">
 
-    <div class="ccg-page ccg-page--index">
+    <!-- ============================================================
+         OMEGA GLOBAL HEADER (MATCHES HOME / GAMES / INFO PAGES)
+    ============================================================ -->
+    <header class="ccg-header epic-header ccg-site-header">
+        <div class="ccg-header-inner ccg-site-header__inner">
 
-        <!-- =====================================================
-             OMEGA UNIFIED HEADER (MATCHES GENRE / GAMES PAGES)
-        ===================================================== -->
-        <header class="ccg-header">
-            <div class="ccg-header-inner">
-
-                <!-- Brand -->
-                <a href="home.html" class="ccg-brand">
+            <!-- Brand -->
+            <a href="home.html" class="ccg-header-brand ccg-brand">
+                <div class="ccg-brand-logo-wrap">
                     <img
-                        src="resources/images/CCGAMER LOGO.png"
+                        src="resources/images/ccgamer-logo.png"
                         alt="Cheeky Commodore Gamer logo"
-                        class="ccg-brand__logo"
+                        class="ccg-brand__logo ccg-header-logo-img"
                     />
-                    <div class="ccg-brand__text">
-                        <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
-                        <div class="ccg-brand__title">
-                            <span class="ccg-brand__neon-cheeky">CHEEKY</span>
-                            <span class="ccg-brand__neon-sub">COMMODORE GAMER</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Navigation -->
-                <nav class="ccg-nav" aria-label="Primary navigation">
-                    <ul class="ccg-nav__list">
-                        <li><a href="home.html" class="ccg-nav__link">Home</a></li>
-                        <li><a href="games/index.html" class="ccg-nav__link">Games</a></li>
-                        <li><a href="games/genres/index.html" class="ccg-nav__link">Genres</a></li>
-                        <li><a href="games/collections/index.html" class="ccg-nav__link">Collections</a></li>
-                        <li><a href="quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
-                        <li><a href="emulation.html" class="ccg-nav__link">Emulation</a></li>
-                        <li><a href="complete-index.html" class="ccg-nav__link ccg-nav__link--active">Index</a></li>
-                        <li><a href="about.html" class="ccg-nav__link">About</a></li>
-                        <li><a href="contact.html" class="ccg-nav__link">Contact</a></li>
-                        <li><a href="admin/admin.html" class="ccg-nav__link">Admin</a></li>
-                    </ul>
-                </nav>
-
-                <!-- Mode Toggle + Socials -->
-                <div class="ccg-header-actions">
-
-                    <!-- Mode Toggle -->
-                    <button
-                        class="ccg-mode-toggle"
-                        type="button"
-                        aria-label="Toggle between C64 and Amiga modes"
-                        data-ccg-mode-toggle
-                    >
-                        <span class="ccg-mode-toggle__pill">
-                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
-                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">Amiga</span>
-                            <span class="ccg-mode-toggle__thumb"></span>
-                        </span>
-                    </button>
-
-                    <!-- Social Icons -->
-                    <div class="ccg-socials">
-                        <a href="https://www.youtube.com/@CheekyCommodoreGamer"
-                           class="ccg-socials__link"
-                           aria-label="YouTube">
-                            <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
-                            <span class="ccg-socials__label">Subscribe</span>
-                        </a>
-                        <a href="https://patreon.com/CheekyCommodoreGamer"
-                           class="ccg-socials__icon-btn"
-                           aria-label="Patreon">
-                            <span class="ccg-socials__icon ccg-socials__icon--patreon"></span>
-                        </a>
-                        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"
-                           class="ccg-socials__icon-btn"
-                           aria-label="PayPal">
-                            <span class="ccg-socials__icon ccg-socials__icon--paypal"></span>
-                        </a>
-                        <a href="https://twitter.com/CheekyC64Gamer"
-                           class="ccg-socials__icon-btn"
-                           aria-label="Twitter / X">
-                            <span class="ccg-socials__icon ccg-socials__icon--x"></span>
-                        </a>
-                        <a href="https://www.facebook.com/cheekycommodoregamer"
-                           class="ccg-socials__icon-btn"
-                           aria-label="Facebook">
-                            <span class="ccg-socials__icon ccg-socials__icon--fb"></span>
-                        </a>
-                        <a href="https://discord.gg/83Xw9ktAn4"
-                           class="ccg-socials__icon-btn"
-                           aria-label="Discord">
-                            <span class="ccg-socials__icon ccg-socials__icon--discord"></span>
-                        </a>
-                    </div>
-
                 </div>
-            </div>
-
-            <div class="ccg-header-neon-strip"></div>
-        </header>
-
-        <!-- =====================================================
-             MAIN CONTENT — COMPLETE INDEX HUB
-        ===================================================== -->
-        <main class="ccg-main index-main">
-
-            <!-- Intro -->
-            <section class="ccg-section index-intro">
-                <h1 class="index-title">Complete Index</h1>
-                <p class="index-subtitle">
-                    This page will become your full spreadsheet-style, sortable index of every game in
-                    <code>games.json</code> (Phase 4).
-                </p>
-                <p class="index-subtitle">
-                    For now, use this accordion-style hub to jump quickly to key areas of the site —
-                    by system, by genre and by special collection.
-                </p>
-            </section>
-
-            <!-- Accordion Hub -->
-            <section class="ccg-section">
-                <div class="index-accordion">
-
-                    <!-- Systems (expanded by default) -->
-                    <details class="index-accordion__group index-accordion__group--systems" open>
-                        <summary class="index-accordion__summary">
-                            <span class="index-accordion__label">Systems</span>
-                            <span class="index-accordion__hint">C64 and Amiga focused entry points</span>
-                        </summary>
-                        <div class="index-accordion__body">
-                            <ul class="index-link-list">
-                                <li><a href="games/index.html?system=C64">Browse all C64 games</a></li>
-                                <li><a href="games/index.html?system=Amiga">Browse all Amiga games</a></li>
-                            </ul>
-                            <p class="index-note">
-                                Tip: use the search box on the <strong>All Games</strong> page to filter
-                                by title, year, genre or ID.
-                            </p>
-                        </div>
-                    </details>
-
-                    <!-- Genres (collapsed) -->
-                    <details class="index-accordion__group" >
-                        <summary class="index-accordion__summary">
-                            <span class="index-accordion__label">Genres</span>
-                            <span class="index-accordion__hint">Jump straight into any major genre</span>
-                        </summary>
-                        <div class="index-accordion__body">
-                            <ul class="index-link-grid">
-                                <li><a href="games/genres/arcade-games.html">Arcade Games</a></li>
-                                <li><a href="games/genres/action-adventure-games.html">Action-Adventure Games</a></li>
-                                <li><a href="games/genres/adventure-games.html">Adventure Games</a></li>
-                                <li><a href="games/genres/platform-games.html">Platform Games</a></li>
-                                <li><a href="games/genres/puzzle-games.html">Puzzle Games</a></li>
-                                <li><a href="games/genres/quiz-games.html">Quiz Games</a></li>
-                                <li><a href="games/genres/racing-games.html">Racing Games</a></li>
-                                <li><a href="games/genres/rpg-games.html">Role-Playing Games</a></li>
-                                <li><a href="games/genres/shooting-games.html">Shooting Games</a></li>
-                                <li><a href="games/genres/sports-games.html">Sports Games</a></li>
-                                <li><a href="games/genres/strategy-games.html">Strategy Games</a></li>
-                                <li><a href="games/genres/casino-games.html">Casino Games</a></li>
-                                <li><a href="games/genres/fighting-games.html">Fighting Games</a></li>
-                                <li><a href="games/genres/horror-games.html">Horror Games</a></li>
-                                <li><a href="games/genres/miscellaneous.html">Miscellaneous</a></li>
-                            </ul>
-                        </div>
-                    </details>
-
-                    <!-- Collections (collapsed) -->
-                    <details class="index-accordion__group">
-                        <summary class="index-accordion__summary">
-                            <span class="index-accordion__label">Collections</span>
-                            <span class="index-accordion__hint">Curated sets like BPJS, cartridges and licensed titles</span>
-                        </summary>
-                        <div class="index-accordion__body">
-                            <ul class="index-link-grid">
-                                <li><a href="games/genres/bpjs-indexed-games.html">BPJS Indexed Games</a></li>
-                                <li><a href="games/genres/cartridge-games.html">Cartridge Games</a></li>
-                                <li><a href="games/genres/licensed-games.html">Licensed Games</a></li>
-                                <li><a href="games/genres/top-picks.html">Top Picks</a></li>
-                            </ul>
-                            <p class="index-note">
-                                All four collections are powered by the same genre engine, but grouped here
-                                for quick deep dives.
-                            </p>
-                        </div>
-                    </details>
-
-                    <!-- Phase 4 teaser -->
-                    <details class="index-accordion__group">
-                        <summary class="index-accordion__summary">
-                            <span class="index-accordion__label">Phase 4 — Full Data Table</span>
-                            <span class="index-accordion__hint">Planned: sortable, filterable master table</span>
-                        </summary>
-                        <div class="index-accordion__body">
-                            <p class="index-note">
-                                In a future phase, this page will gain a full spreadsheet-style table view,
-                                directly driven from <code>games/games.json</code> — sortable by title, system,
-                                year, genre and more.
-                            </p>
-                        </div>
-                    </details>
-
+                <div class="ccg-header-title-wrap">
+                    <span class="ccg-header-title-main">Cheeky Commodore Gamer</span>
+                    <span class="ccg-header-title-sub">C64 &amp; Amiga Archive</span>
                 </div>
-            </section>
+            </a>
 
-        </main>
+            <!-- Navigation -->
+            <nav class="ccg-main-nav" aria-label="Primary navigation">
+                <a href="home.html" class="ccg-main-nav-link">Home</a>
+                <a href="games/index.html" class="ccg-main-nav-link">All Games</a>
+                <a href="games/genres/index.html" class="ccg-main-nav-link">Genres</a>
+                <a href="games/collections/index.html" class="ccg-main-nav-link">Collections</a>
+                <a href="quiz/quiz.html" class="ccg-main-nav-link">Trivia</a>
+                <a href="emulation.html" class="ccg-main-nav-link">Emulation</a>
+                <a href="complete-index.html" class="ccg-main-nav-link is-active">Index</a>
+                <a href="about.html" class="ccg-main-nav-link">About</a>
+                <a href="contact.html" class="ccg-main-nav-link">Contact</a>
+            </nav>
 
-        <!-- FOOTER -->
-        <footer class="ccg-footer">
-            <div class="ccg-footer-inner">
-                <p class="ccg-footer-text">© 2025 Cheeky Commodore Gamer.</p>
-                <p class="ccg-footer-text ccg-footer-text--small">
-                    Not affiliated with Commodore or Amiga.
-                </p>
+            <!-- Mode Toggle + Socials -->
+            <div class="ccg-header-side">
+
+                <!-- Mode Toggle -->
+                <button
+                    id="ccg-mode-toggle"
+                    class="ccg-mode-toggle ccg-mode-toggle-pill"
+                    type="button"
+                    aria-label="Toggle between C64 and Amiga modes">
+                </button>
+
+                <!-- Social Icons -->
+                <div class="ccg-header-socials ccg-socials">
+                    <a href="https://www.youtube.com/@CheekyCommodoreGamer"
+                       class="ccg-social-link ccg-social-link--yt"
+                       target="_blank" rel="noopener">
+                        YouTube
+                    </a>
+                    <a href="https://patreon.com/CheekyCommodoreGamer"
+                       class="ccg-social-link ccg-social-link--patreon"
+                       target="_blank" rel="noopener">
+                        Patreon
+                    </a>
+                    <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"
+                       class="ccg-social-link ccg-social-link--donate"
+                       target="_blank" rel="noopener">
+                        Donate
+                    </a>
+                    <a href="https://twitter.com/CheekyC64Gamer"
+                       class="ccg-social-link ccg-social-link--twitter"
+                       target="_blank" rel="noopener">
+                        Twitter
+                    </a>
+                    <a href="https://www.facebook.com/cheekycommodoregamer"
+                       class="ccg-social-link ccg-social-link--facebook"
+                       target="_blank" rel="noopener">
+                        Facebook
+                    </a>
+                    <a href="https://discord.gg/83Xw9ktAn4"
+                       class="ccg-social-link ccg-social-link--discord"
+                       target="_blank" rel="noopener">
+                        Discord
+                    </a>
+                </div>
+
             </div>
-        </footer>
+        </div>
+    </header>
 
-    </div>
+    <!-- =====================================================
+         MAIN CONTENT — COMPLETE INDEX HUB
+    ===================================================== -->
+    <main class="ccg-main index-main">
 
-    <!-- JS -->
-    <script src="js/ccg-mode-engine.js" defer></script>
-    <script src="js/ccj-global.js" defer></script>
+        <!-- Intro -->
+        <section class="ccg-section index-intro">
+            <h1 class="index-title">Complete Index</h1>
+            <p class="index-subtitle">
+                This page will become your full spreadsheet-style, sortable index of every game in
+                <code>games.json</code> (Phase 4).
+            </p>
+            <p class="index-subtitle">
+                For now, use this accordion-style hub to jump quickly to key areas of the site —
+                by system, by genre and by special collection.
+            </p>
+        </section>
+
+        <!-- Accordion Hub -->
+        <section class="ccg-section">
+            <div class="index-accordion">
+
+                <!-- Systems (expanded by default) -->
+                <details class="index-accordion__group index-accordion__group--systems" open>
+                    <summary class="index-accordion__summary">
+                        <span class="index-accordion__label">Systems</span>
+                        <span class="index-accordion__hint">C64 and Amiga focused entry points</span>
+                    </summary>
+                    <div class="index-accordion__body">
+                        <ul class="index-link-list">
+                            <li><a href="games/index.html?system=C64">Browse all C64 games</a></li>
+                            <li><a href="games/index.html?system=Amiga">Browse all Amiga games</a></li>
+                        </ul>
+                        <p class="index-note">
+                            Tip: use the search box on the <strong>All Games</strong> page to filter
+                            by title, year, genre or ID.
+                        </p>
+                    </div>
+                </details>
+
+                <!-- Genres (collapsed) -->
+                <details class="index-accordion__group">
+                    <summary class="index-accordion__summary">
+                        <span class="index-accordion__label">Genres</span>
+                        <span class="index-accordion__hint">Jump straight into any major genre</span>
+                    </summary>
+                    <div class="index-accordion__body">
+                        <ul class="index-link-grid">
+                            <li><a href="games/genres/arcade-games.html">Arcade Games</a></li>
+                            <li><a href="games/genres/action-adventure-games.html">Action-Adventure Games</a></li>
+                            <li><a href="games/genres/adventure-games.html">Adventure Games</a></li>
+                            <li><a href="games/genres/platform-games.html">Platform Games</a></li>
+                            <li><a href="games/genres/puzzle-games.html">Puzzle Games</a></li>
+                            <li><a href="games/genres/quiz-games.html">Quiz Games</a></li>
+                            <li><a href="games/genres/racing-games.html">Racing Games</a></li>
+                            <li><a href="games/genres/role-playing-games.html">Role-Playing Games</a></li>
+                            <li><a href="games/genres/shooting-games.html">Shooting Games</a></li>
+                            <li><a href="games/genres/sports-games.html">Sports Games</a></li>
+                            <li><a href="games/genres/strategy-games.html">Strategy Games</a></li>
+                            <li><a href="games/genres/casino-games.html">Casino Games</a></li>
+                            <li><a href="games/genres/fighting-games.html">Fighting Games</a></li>
+                            <li><a href="games/genres/horror-games.html">Horror Games</a></li>
+                            <li><a href="games/genres/miscellaneous.html">Miscellaneous</a></li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- Collections (collapsed) -->
+                <details class="index-accordion__group">
+                    <summary class="index-accordion__summary">
+                        <span class="index-accordion__label">Collections</span>
+                        <span class="index-accordion__hint">Curated sets like BPJS, cartridges and licensed titles</span>
+                    </summary>
+                    <div class="index-accordion__body">
+                        <ul class="index-link-grid">
+                            <li><a href="games/genres/bpjs-indexed-games.html">BPJS Indexed Games</a></li>
+                            <li><a href="games/genres/cartridge-games.html">Cartridge Games</a></li>
+                            <li><a href="games/genres/licensed-games.html">Licensed Games</a></li>
+                            <li><a href="games/genres/top-picks.html">Top Picks</a></li>
+                        </ul>
+                        <p class="index-note">
+                            All four collections are powered by the same genre engine, but grouped here
+                            for quick deep dives.
+                        </p>
+                    </div>
+                </details>
+
+                <!-- Phase 4 teaser -->
+                <details class="index-accordion__group">
+                    <summary class="index-accordion__summary">
+                        <span class="index-accordion__label">Phase 4 — Full Data Table</span>
+                        <span class="index-accordion__hint">Planned: sortable, filterable master table</span>
+                    </summary>
+                    <div class="index-accordion__body">
+                        <p class="index-note">
+                            In a future phase, this page will gain a full spreadsheet-style table view,
+                            directly driven from <code>games/games.json</code> — sortable by title, system,
+                            year, genre and more.
+                        </p>
+                    </div>
+                </details>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="ccg-footer">
+        <div class="ccg-footer-inner">
+            <p>&copy; <span id="ccg-footer-year"></span> Cheeky Commodore Gamer.</p>
+            <p class="ccg-footer-note">
+                Not affiliated with Commodore or Amiga.
+            </p>
+        </div>
+    </footer>
+
+</div>
+
+<!-- JS -->
+<script src="js/ccg-mode-engine.js" defer></script>
+<script src="js/ccj-global.js" defer></script>
+<script>
+    document.getElementById("ccg-footer-year").textContent = new Date().getFullYear();
+</script>
 
 </body>
 </html>
