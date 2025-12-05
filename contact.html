@@ -16,6 +16,9 @@
     <link rel="stylesheet" href="resources/css/ccg-anim.css">
     <link rel="stylesheet" href="resources/css/ccg-overlays.css">
     <link rel="stylesheet" href="resources/css/ccg-modal.css">
+    <link rel="stylesheet" href="resources/css/ccg-hero.css">
+    <link rel="stylesheet" href="resources/css/ccg-socials.css">
+    <link rel="stylesheet" href="resources/css/omega-mode-toggle.css">
     <link rel="stylesheet" href="resources/css/info-pages.css">
 
     <!-- JS -->
@@ -23,189 +26,179 @@
     <script src="js/ccj-global.js" defer></script>
 </head>
 
-<body class="ccg-body" data-ccg-mode="c64">
+<body class="ccg-body">
 
-    <!-- =========================================================
-         GLOBAL BACKGROUND LAYERS (STARFIELD / GRID / CRT)
-    ========================================================= -->
-    <div class="ccg-bg">
-        <div class="ccg-bg-starfield"></div>
-        <div class="ccg-bg-grid"></div>
-        <div class="ccg-bg-crt-overlay"></div>
-    </div>
+<div class="ccg-page ccg-page--contact">
 
-    <div class="ccg-page ccg-page--contact">
+    <!-- ============================================================
+         OMEGA GLOBAL HEADER (UNIFORM ACROSS WHOLE SITE)
+    ============================================================ -->
+    <header class="ccg-header epic-header ccg-site-header">
+        <div class="ccg-header-inner ccg-site-header__inner">
 
-        <!-- =====================================================
-             UNIFIED OMEGA HEADER (GLOBAL STANDARD)
-        ===================================================== -->
-        <header class="ccg-header">
-            <div class="ccg-header-inner">
-
-                <!-- Brand -->
-                <a href="home.html" class="ccg-brand">
-                    <img src="resources/images/CCGAMER LOGO.png"
+            <!-- BRAND -->
+            <a href="home.html" class="ccg-header-brand ccg-brand">
+                <div class="ccg-brand-logo-wrap">
+                    <img src="resources/images/ccgamer-logo.png"
                          alt="Cheeky Commodore Gamer Logo"
-                         class="ccg-brand__logo">
+                         class="ccg-brand__logo ccg-header-logo-img">
+                </div>
+                <div class="ccg-header-title-wrap">
+                    <span class="ccg-header-title-main">Cheeky Commodore Gamer</span>
+                    <span class="ccg-header-title-sub">C64 & Amiga Archive</span>
+                </div>
+            </a>
 
-                    <div class="ccg-brand__text">
-                        <span class="ccg-brand__kicker">Cheeky Commodore Gamer</span>
-                        <span class="ccg-brand__title">
-                            <span class="ccg-brand__neon-cheeky">CHEEKY</span>
-                            <span class="ccg-brand__neon-sub">COMMODORE GAMER</span>
-                        </span>
-                    </div>
-                </a>
+            <!-- NAVIGATION -->
+            <nav class="ccg-main-nav">
+                <a href="home.html" class="ccg-main-nav-link">Home</a>
+                <a href="games/index.html" class="ccg-main-nav-link">All Games</a>
+                <a href="games/genres/index.html" class="ccg-main-nav-link">Genres</a>
+                <a href="games/collections/index.html" class="ccg-main-nav-link">Collections</a>
+                <a href="quiz/quiz.html" class="ccg-main-nav-link">Trivia</a>
+                <a href="emulation.html" class="ccg-main-nav-link">Emulation</a>
+                <a href="complete-index.html" class="ccg-main-nav-link">Index</a>
+                <a href="about.html" class="ccg-main-nav-link">About</a>
+                <a href="contact.html" class="ccg-main-nav-link is-active">Contact</a>
+            </nav>
 
-                <!-- Navigation -->
-                <nav class="ccg-nav">
-                    <ul class="ccg-nav__list">
-                        <li><a href="home.html" class="ccg-nav__link">Home</a></li>
-                        <li><a href="games/index.html" class="ccg-nav__link">Games</a></li>
-                        <li><a href="games/genres/index.html" class="ccg-nav__link">Genres</a></li>
-                        <li><a href="games/collections/index.html" class="ccg-nav__link">Collections</a></li>
-                        <li><a href="emulation.html" class="ccg-nav__link">Emulation</a></li>
-                        <li><a href="quiz/quiz.html" class="ccg-nav__link">Quiz</a></li>
-                        <li><a href="complete-index.html" class="ccg-nav__link">Index</a></li>
-                        <li><a href="about.html" class="ccg-nav__link">About</a></li>
-                        <li><a href="contact.html" class="ccg-nav__link ccg-nav__link--active">Contact</a></li>
-                    </ul>
-                </nav>
+            <!-- RIGHT-SIDE ACTIONS -->
+            <div class="ccg-header-side">
 
-                <!-- Header Actions (Mode Toggle + Socials) -->
-                <div class="ccg-header-actions">
+                <!-- Mode Toggle -->
+                <button id="ccg-mode-toggle"
+                        class="ccg-mode-toggle ccg-mode-toggle-pill"
+                        type="button"
+                        aria-label="Toggle C64/Amiga mode"></button>
 
-                    <!-- Mode Toggle -->
-                    <button class="ccg-mode-toggle" id="ccg-mode-toggle" data-ccg-mode-toggle="true" type="button" aria-label="Toggle system mode">
-                        <div class="ccg-mode-toggle__pill">
-                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
-                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">Amiga</span>
-                            <div class="ccg-mode-toggle__thumb"></div>
-                        </div>
-                    </button>
+                <!-- Social Icons -->
+                <div class="ccg-header-socials ccg-socials">
+                    <a href="https://www.youtube.com/@CheekyCommodoreGamer"
+                       target="_blank"
+                       class="ccg-social-link ccg-social-link--yt">YouTube</a>
 
-                    <!-- Social Icons -->
-                    <div class="ccg-socials">
-                        <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener" class="ccg-socials__icon-btn">
-                            <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
-                        </a>
-                        <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank" rel="noopener" class="ccg-socials__icon-btn">
-                            <span class="ccg-socials__icon ccg-socials__icon--patreon"></span>
-                        </a>
-                        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" rel="noopener" class="ccg-socials__icon-btn">
-                            <span class="ccg-socials__icon ccg-socials__icon--paypal"></span>
-                        </a>
-                        <a href="https://twitter.com/CheekyC64Gamer" target="_blank" rel="noopener" class="ccg-socials__icon-btn">
-                            <span class="ccg-socials__icon ccg-socials__icon--x"></span>
-                        </a>
-                        <a href="https://www.facebook.com/cheekycommodoregamer" target="_blank" rel="noopener" class="ccg-socials__icon-btn">
-                            <span class="ccg-socials__icon ccg-socials__icon--fb"></span>
-                        </a>
-                        <a href="https://discord.gg/83Xw9ktAn4" target="_blank" rel="noopener" class="ccg-socials__icon-btn">
-                            <span class="ccg-socials__icon ccg-socials__icon--discord"></span>
-                        </a>
-                    </div>
+                    <a href="https://patreon.com/CheekyCommodoreGamer"
+                       target="_blank"
+                       class="ccg-social-link ccg-social-link--patreon">Patreon</a>
 
+                    <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"
+                       target="_blank"
+                       class="ccg-social-link ccg-social-link--donate">Donate</a>
+
+                    <a href="https://twitter.com/CheekyC64Gamer"
+                       target="_blank"
+                       class="ccg-social-link ccg-social-link--twitter">Twitter</a>
+
+                    <a href="https://www.facebook.com/cheekycommodoregamer"
+                       target="_blank"
+                       class="ccg-social-link ccg-social-link--facebook">Facebook</a>
+
+                    <a href="https://discord.gg/83Xw9ktAn4"
+                       target="_blank"
+                       class="ccg-social-link ccg-social-link--discord">Discord</a>
                 </div>
             </div>
+        </div>
+    </header>
 
-            <div class="ccg-header-neon-strip"></div>
-        </header>
+    <!-- ============================================================
+         CONTACT PAGE CONTENT (PRESERVED EXACTLY)
+    ============================================================ -->
+    <main class="ccg-main ccg-main--contact">
+        <div class="ccg-info-shell">
 
-        <!-- =====================================================
-             MAIN CONTACT CONTENT
-        ===================================================== -->
-        <main class="ccg-main ccg-main--contact">
-            <div class="ccg-info-shell">
+            <section class="ccg-info-hero" aria-labelledby="contact-title">
+                <div class="ccg-pill-row" aria-hidden="true">
+                    <span class="ccg-pill">Retro hotline</span>
+                    <span class="ccg-pill">Friendly feedback</span>
+                    <span class="ccg-pill">Video requests</span>
+                </div>
 
-                <section class="ccg-info-hero" aria-labelledby="contact-title">
-                    <div class="ccg-pill-row" aria-hidden="true">
-                        <span class="ccg-pill">Retro hotline</span>
-                        <span class="ccg-pill">Friendly feedback</span>
-                        <span class="ccg-pill">Video requests</span>
-                    </div>
-                    <h1 id="contact-title">Contact Cheeky Commodore Gamer</h1>
-                    <p>
-                        Got suggestions, corrections, ideas or retro requests? I'm always happy to hear from fellow C64 &amp; Amiga
-                        fans. Pick whichever channel suits you best and I'll do my best to respond.
-                    </p>
-                    <div class="ccg-info-actions">
-                        <a class="ccg-btn-inline" href="https://discord.gg/83Xw9ktAn4" target="_blank" rel="noopener">Join the Discord</a>
-                        <a class="ccg-btn-inline" href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener">YouTube comments</a>
-                        <a class="ccg-btn-inline" href="https://twitter.com/CheekyC64Gamer" target="_blank" rel="noopener">Ping on X / Twitter</a>
-                    </div>
-                </section>
+                <h1 id="contact-title">Contact Cheeky Commodore Gamer</h1>
 
-                <section class="ccg-info-panel" aria-label="Ways to reach out">
-                    <div class="ccg-info-grid">
-                        <article class="ccg-info-card">
-                            <h3>Discord</h3>
-                            <p>Join the chat, share screenshots, and swap retro stories with the community.</p>
-                            <div class="emu-link-row">
-                                <a class="emu-link" href="https://discord.gg/83Xw9ktAn4" target="_blank" rel="noopener">
-                                    <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M19.66 5.63A17.68 17.68 0 0 0 15.71 4l-.2.4a16.51 16.51 0 0 1 3.24 1.57 11.55 11.55 0 0 0-10.5 0A16.61 16.61 0 0 1 11.49 4l-.2-.4a17.68 17.68 0 0 0-3.95 1.6 17.79 17.79 0 0 0-3 12.95A17.91 17.91 0 0 0 8.1 20l.6-.8a11.12 11.12 0 0 1-2.9-1.5l.73-.55a11 11 0 0 0 9 0l.74.54a11.17 11.17 0 0 1-2.91 1.51l.6.8a17.91 17.91 0 0 0 7.76-1.44 17.79 17.79 0 0 0-3-12.95ZM9.5 14.6c-.68 0-1.23-.62-1.23-1.37s.55-1.37 1.23-1.37S10.73 12.49 10.73 13.24 10.18 14.6 9.5 14.6Zm5 0c-.68 0-1.23-.62-1.23-1.37s.55-1.37 1.23-1.37 1.23.62 1.23 1.37-.55 1.37-1.23 1.37Z"/></svg>
-                                    Discord.gg/83Xw9ktAn4
-                                </a>
-                            </div>
-                        </article>
-
-                        <article class="ccg-info-card">
-                            <h3>Patreon / Support</h3>
-                            <p>Support the channel, suggest features and unlock behind-the-scenes goodies.</p>
-                            <ul class="ccg-bullet-list">
-                                <li>Priority feedback on new videos</li>
-                                <li>Exclusive polls for future showcases</li>
-                                <li>Shout-outs for long-time supporters</li>
-                            </ul>
-                            <div class="ccg-info-actions">
-                                <a class="ccg-btn-inline" href="https://patreon.com/CheekyCommodoreGamer" target="_blank" rel="noopener">Patreon</a>
-                                <a class="ccg-btn-inline" href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" rel="noopener">PayPal</a>
-                            </div>
-                        </article>
-
-                        <article class="ccg-info-card">
-                            <h3>Social Posts</h3>
-                            <p>Need a quick response? Drop a message on X/Twitter or Facebook and tag @CheekyC64Gamer.</p>
-                            <div class="ccg-info-actions">
-                                <a class="ccg-btn-inline" href="https://twitter.com/CheekyC64Gamer" target="_blank" rel="noopener">X / Twitter</a>
-                                <a class="ccg-btn-inline" href="https://www.facebook.com/cheekycommodoregamer" target="_blank" rel="noopener">Facebook</a>
-                            </div>
-                        </article>
-
-                        <article class="ccg-info-card">
-                            <h3>Video Comments</h3>
-                            <p>Every longplay and review has a comment thread. Drop requests, corrections or your own tips.</p>
-                            <div class="ccg-info-actions">
-                                <a class="ccg-btn-inline" href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener">Visit YouTube</a>
-                            </div>
-                        </article>
-                    </div>
-
-                    <div class="ccg-info-panel emu-tip">
-                        <div class="ccg-kv">
-                            <span class="ccg-kv-label">Response Time</span>
-                            <span class="ccg-kv-value">Usually within 48 hours</span>
-                        </div>
-                        <p class="emu-note">I read every message even if I can't reply instantly. Thanks for keeping the retro flame alive! 😇🕹️👌</p>
-                    </div>
-                </section>
-
-            </div>
-        </main>
-
-        <!-- =====================================================
-             FOOTER
-        ===================================================== -->
-        <footer class="ccg-footer">
-            <div class="ccg-footer-inner">
-                <p class="ccg-footer-text">© 2025 Cheeky Commodore Gamer.</p>
-                <p class="ccg-footer-text ccg-footer-text--small">
-                    Not affiliated with Commodore or Amiga.
+                <p>
+                    Got suggestions, corrections, ideas or retro requests? I'm always happy to hear from fellow C64 &amp; Amiga
+                    fans. Pick whichever channel suits you best and I'll do my best to respond.
                 </p>
-            </div>
-        </footer>
 
-    </div>
+                <div class="ccg-info-actions">
+                    <a class="ccg-btn-inline" href="https://discord.gg/83Xw9ktAn4" target="_blank" rel="noopener">Join the Discord</a>
+                    <a class="ccg-btn-inline" href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener">YouTube comments</a>
+                    <a class="ccg-btn-inline" href="https://twitter.com/CheekyC64Gamer" target="_blank" rel="noopener">Ping on X / Twitter</a>
+                </div>
+            </section>
+
+            <section class="ccg-info-panel" aria-label="Ways to reach out">
+                <div class="ccg-info-grid">
+
+                    <article class="ccg-info-card">
+                        <h3>Discord</h3>
+                        <p>Join the chat, share screenshots, and swap retro stories with the community.</p>
+                        <div class="emu-link-row">
+                            <a class="emu-link" href="https://discord.gg/83Xw9ktAn4" target="_blank" rel="noopener">
+                                <svg viewBox="0 0 24 24"><path d="M19.66 5.63A17.68 17.68 0 0 0 15.71 4l-.2.4a16.51 16.51 0 0 1 3.24 1.57 11.55 11.55 0 0 0-10.5 0A16.61 16.61 0 0 1 11.49 4l-.2-.4a17.68 17.68 0 0 0-3.95 1.6 17.79 17.79 0 0 0-3 12.95A17.91 17.91 0 0 0 8.1 20l.6-.8a11.12 11.12 0 0 1-2.9-1.5l.73-.55a11 11 0 0 0 9 0l.74.54a11.17 11.17 0 0 1-2.91 1.51l.6.8a17.91 17.91 0 0 0 7.76-1.44 17.79 17.79 0 0 0-3-12.95ZM9.5 14.6c-.68 0-1.23-.62-1.23-1.37s.55-1.37 1.23-1.37S10.73 12.49 10.73 13.24 10.18 14.6 9.5 14.6Zm5 0c-.68 0-1.23-.62-1.23-1.37s.55-1.37 1.23-1.37 1.23.62 1.23 1.37-.55 1.37-1.23 1.37Z"/></svg>
+                                Discord.gg/83Xw9ktAn4
+                            </a>
+                        </div>
+                    </article>
+
+                    <article class="ccg-info-card">
+                        <h3>Patreon / Support</h3>
+                        <p>Support the channel, suggest features and unlock behind-the-scenes goodies.</p>
+                        <ul class="ccg-bullet-list">
+                            <li>Priority feedback on new videos</li>
+                            <li>Exclusive polls for future showcases</li>
+                            <li>Shout-outs for long-time supporters</li>
+                        </ul>
+                        <div class="ccg-info-actions">
+                            <a class="ccg-btn-inline" href="https://patreon.com/CheekyCommodoreGamer" target="_blank" rel="noopener">Patreon</a>
+                            <a class="ccg-btn-inline" href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" rel="noopener">PayPal</a>
+                        </div>
+                    </article>
+
+                    <article class="ccg-info-card">
+                        <h3>Social Posts</h3>
+                        <p>Need a quick response? Drop a message on X/Twitter or Facebook and tag @CheekyC64Gamer.</p>
+                        <div class="ccg-info-actions">
+                            <a class="ccg-btn-inline" href="https://twitter.com/CheekyC64Gamer" target="_blank" rel="noopener">X / Twitter</a>
+                            <a class="ccg-btn-inline" href="https://www.facebook.com/cheekycommodoregamer" target="_blank" rel="noopener">Facebook</a>
+                        </div>
+                    </article>
+
+                    <article class="ccg-info-card">
+                        <h3>Video Comments</h3>
+                        <p>Every longplay and review has a comment thread. Drop requests, corrections or your own tips.</p>
+                        <div class="ccg-info-actions">
+                            <a class="ccg-btn-inline" href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener">Visit YouTube</a>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="ccg-info-panel emu-tip">
+                    <div class="ccg-kv">
+                        <span class="ccg-kv-label">Response Time</span>
+                        <span class="ccg-kv-value">Usually within 48 hours</span>
+                    </div>
+                    <p class="emu-note">I read every message even if I can't reply instantly. Thanks for keeping the retro flame alive! 😇🕹️👌</p>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="ccg-footer">
+        <div class="ccg-footer-inner">
+            <p>&copy; <span id="ccg-footer-year"></span> Cheeky Commodore Gamer.</p>
+            <p class="ccg-footer-note">Not affiliated with Commodore or Amiga.</p>
+        </div>
+    </footer>
+
+</div>
+
+<script>
+    document.getElementById("ccg-footer-year").textContent = new Date().getFullYear();
+</script>
 
 </body>
 </html>
