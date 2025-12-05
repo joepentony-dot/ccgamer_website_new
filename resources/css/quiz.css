@@ -1,349 +1,224 @@
-/* =====================================================================
-   QUIZ.CSS — OMEGA NEO-ARCADE POLISH PASS
-   Visual-only improvements • No JS disruptions • Zero layout breaks
-   Cheeky Commodore Gamer 😇🕹️👌
-   ===================================================================== */
+/* ==========================================================================
+   QUIZ.CSS — OMEGA FX EDITION
+   Cinematic Quiz Hero • SID Bars • Neon Cabinet • Anim Score Counter
+   ========================================================================== */
 
-/* -----------------------------------------------------------
-   GENERAL QUIZ PAGE WRAPPER
------------------------------------------------------------ */
+/* ----------------------------------------------
+   GENERAL LAYOUT
+---------------------------------------------- */
 
-.ccg-page--quiz,
-.ccg-page--quiz-leaderboard {
+.ccg-page--quiz {
     position: relative;
     padding-bottom: 4rem;
+    z-index: 2;
 }
 
-.quiz-section {
-    padding: 2.5rem 1.5rem;
+.quiz-main {
+    width: 100%;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 6rem;
+    position: relative;
+    z-index: 5;
+}
+
+/* ----------------------------------------------
+   QUIZ HERO SECTION
+---------------------------------------------- */
+
+.quiz-hero {
+    padding: 6rem 2rem 4rem;
     text-align: center;
+    position: relative;
+    overflow: visible;
 }
 
 .quiz-title {
-    font-size: 2.75rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    margin-bottom: 0.5rem;
-    text-shadow: 0 0 14px var(--ccg-accent-glow), 0 0 32px var(--ccg-accent-glow);
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #fff;
+    text-shadow: 0 0 25px var(--ccg-neon-hero, #28e1ff);
 }
 
-.quiz-subtitle {
-    font-size: 1.15rem;
-    opacity: 0.85;
-    margin-bottom: 2rem;
-    max-width: 860px;
-    margin-left: auto;
-    margin-right: auto;
+.quiz-tagline {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 2.2rem;
 }
 
-/* -----------------------------------------------------------
-   PILL ROWS (used in hero sections)
------------------------------------------------------------ */
+/* SID FX BARS */
+.quiz-sid-bars {
+    position: absolute;
+    inset: 0;
+    opacity: 0.20;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        90deg,
+        rgba(255,255,255,0.03) 0px,
+        rgba(255,255,255,0.03) 2px,
+        transparent 2px,
+        transparent 8px
+    );
+    animation: sidSweep 8s infinite linear;
+    z-index: 1;
+}
 
-.quiz-pill-row,
-.ccg-pill-row {
+@keyframes sidSweep {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-200px); }
+}
+
+/* ----------------------------------------------
+   QUIZ CONTROLS
+---------------------------------------------- */
+
+.quiz-controls {
     display: flex;
     justify-content: center;
+    gap: 1rem;
     flex-wrap: wrap;
-    gap: 0.6rem;
-    margin-bottom: 1.5rem;
 }
 
-.ccg-pill {
-    padding: 0.35rem 1rem;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(4px);
-    font-size: 0.8rem;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    opacity: 0.9;
-}
-
-/* -----------------------------------------------------------
-   QUIZ ROOT + QUESTION AREA
------------------------------------------------------------ */
-
-.quiz-root,
-.quiz-container,
-#quiz-root {
-    max-width: 900px;
-    margin: 0 auto;
-    padding-bottom: 3rem;
-}
-
-.quiz-question {
-    font-size: 1.4rem;
-    font-weight: 600;
-    margin-bottom: 1.25rem;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.25);
-}
-
-/* -----------------------------------------------------------
-   ANSWER BUTTONS
------------------------------------------------------------ */
-
-.quiz-answer {
-    display: block;
-    width: 100%;
-    text-align: left;
-    padding: 0.9rem 1.2rem;
-    margin-bottom: 0.75rem;
-    border-radius: 0.6rem;
-    background: rgba(0, 0, 0, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-
-    transition: all 0.18s ease;
-    cursor: pointer;
-}
-
-.quiz-answer:hover {
-    background: rgba(255, 255, 255, 0.08);
-    transform: translateY(-2px);
-    border-color: rgba(255, 255, 255, 0.25);
-}
-
-.quiz-answer.correct {
-    background: rgba(0, 255, 150, 0.25);
-    border-color: rgba(0, 255, 150, 0.5);
-    box-shadow: 0 0 12px rgba(0, 255, 150, 0.4);
-}
-
-.quiz-answer.incorrect {
-    background: rgba(255, 0, 75, 0.25);
-    border-color: rgba(255, 0, 75, 0.5);
-    box-shadow: 0 0 12px rgba(255, 0, 75, 0.4);
-}
-
-/* -----------------------------------------------------------
-   NEXT BUTTON / START BUTTON
------------------------------------------------------------ */
-
-.quiz-next-btn,
-.quiz-start-btn {
-    display: inline-block;
-    margin-top: 1.7rem;
-    padding: 0.85rem 1.8rem;
-    border-radius: 0.5rem;
-
-    background: var(--ccg-btn-primary-bg);
-    color: var(--ccg-btn-primary-text);
-    border: 1px solid var(--ccg-btn-primary-border);
-
-    font-size: 1rem;
-    letter-spacing: 0.04em;
-    cursor: pointer;
-
-    transition: all 0.2s ease;
-}
-
-.quiz-next-btn:hover,
-.quiz-start-btn:hover {
-    filter: brightness(1.18);
-    transform: translateY(-2px);
-}
-
-/* -----------------------------------------------------------
-   LEADERBOARD — NEO ARCADE MODE
------------------------------------------------------------ */
-
-.quiz-section--leaderboard-hero {
-    padding-top: 4rem;
-    padding-bottom: 2.5rem;
-}
-
-.quiz-leaderboard-container {
-    max-width: 950px;
-    margin: 0 auto;
-    margin-top: 2.5rem;
-    padding: 1.5rem;
-
-    border-radius: 1rem;
-    background: rgba(0, 0, 0, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(6px);
-
-    box-shadow:
-        0 0 20px rgba(0, 0, 0, 0.5),
-        0 0 18px rgba(255, 255, 255, 0.05),
-        0 0 28px var(--ccg-accent-glow);
-}
-
-.leaderboard-row {
-    display: grid;
-    grid-template-columns: 70px 1fr 120px;
-    align-items: center;
-
-    padding: 0.8rem 1rem;
-    margin-bottom: 0.5rem;
-
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 0.6rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-
-    transition: all 0.2s ease;
-}
-
-.leaderboard-row:hover {
-    background: rgba(255, 255, 255, 0.12);
-}
-
-.leaderboard-rank {
-    font-size: 1.6rem;
-    font-weight: 800;
-    letter-spacing: 0.03em;
-    opacity: 0.9;
-    text-shadow: 0 0 8px var(--ccg-accent-glow);
-}
-
-.leaderboard-name {
-    font-size: 1.05rem;
-    font-weight: 500;
-    opacity: 0.95;
-}
-
-.leaderboard-score {
-    font-size: 1.15rem;
-    text-align: right;
-    font-weight: 600;
-}
-
-/* TOP 3 SPECIAL FX */
-.leaderboard-row.rank-1 {
-    background: rgba(255, 215, 0, 0.15);
-    border-color: rgba(255, 215, 0, 0.6);
-    box-shadow: 0 0 16px rgba(255, 215, 0, 0.45);
-}
-
-.leaderboard-row.rank-2 {
-    background: rgba(200, 200, 200, 0.15);
-    border-color: rgba(200, 200, 200, 0.5);
-    box-shadow: 0 0 12px rgba(200, 200, 200, 0.35);
-}
-
-.leaderboard-row.rank-3 {
-    background: rgba(255, 165, 0, 0.15);
-    border-color: rgba(255, 165, 0, 0.5);
-    box-shadow: 0 0 12px rgba(255, 165, 0, 0.35);
-}
-
-/* -----------------------------------------------------------
-   RESPONSIVE
------------------------------------------------------------ */
-
-@media (max-width: 600px) {
-    .leaderboard-row {
-        grid-template-columns: 50px 1fr 80px;
-        padding: 0.65rem 0.8rem;
-    }
-
-    .leaderboard-rank {
-        font-size: 1.3rem;
-    }
-
-    .leaderboard-score {
-        font-size: 1rem;
-    }
-
-    .quiz-title {
-        font-size: 2.1rem;
-    }
-}
-
-/* ============================================================
-   ANIMATED SCORE COUNTER
-   (applies only when JS adds .score-animate)
-============================================================ */
-
-@keyframes ccg-score-count {
-    0% { opacity: 0; transform: translateY(6px); }
-    40% { opacity: 1; transform: translateY(0); }
-    100% { opacity: 1; }
-}
-
-.leaderboard-score.score-animate {
-    animation: ccg-score-count 0.8s ease-out;
-}
-
-/* ============================================================
-   QUIZ FX — OMEGA EDITION
-   SID Waves • Neon Cabinet • Animated Scores • SFX Toggle
-===============================================================*/
-
-/* SID WAVE HERO BACKGROUND */
-.quiz-hero {
+.quiz-sfx-toggle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.3);
     position: relative;
-    overflow: hidden;
-}
-
-.quiz-hero::before,
-.quiz-hero::after {
-    content: "";
-    position: absolute;
-    left: 0; right: 0;
-    height: 4px;
-    background: linear-gradient(
-        90deg,
-        var(--c64-cyan),
-        transparent,
-        var(--amiga-pink)
-    );
-    animation: sidwave 2.4s linear infinite;
-}
-
-.quiz-hero::before { top: 10px; }
-.quiz-hero::after { bottom: 10px; animation-delay: 1s; }
-
-@keyframes sidwave {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-}
-
-
-/* NEON HIGH SCORE CABINET */
-.quiz-cabinet {
-    border: 3px solid var(--neon-primary);
-    box-shadow:
-        0 0 12px var(--neon-primary),
-        inset 0 0 8px var(--neon-primary);
-    padding: 1rem;
-    border-radius: 10px;
-    background: rgba(0,0,0,0.55);
-}
-
-.board-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 6px 0;
-    font-family: var(--font-mono);
-    border-bottom: 1px solid rgba(255,255,255,0.15);
-}
-
-.board-row:last-child {
-    border-bottom: none;
-}
-
-
-/* ANIMATED SCORE COUNTER */
-.score-animate {
-    font-size: 3rem;
-    font-weight: bold;
-    color: var(--neon-primary);
-    text-shadow: 0 0 12px var(--neon-primary);
-}
-
-
-/* SFX TOGGLE BUTTON */
-#quiz-sfx-toggle {
-    border: 2px solid var(--neon-primary);
-    background: rgba(0,0,0,0.65);
-    padding: 0.4rem 1rem;
-    border-radius: 8px;
     cursor: pointer;
-    transition: box-shadow 0.2s;
+    transition: all 0.2s ease;
 }
 
-#quiz-sfx-toggle:hover {
-    box-shadow: 0 0 12px var(--neon-primary);
+.quiz-sfx-toggle:hover {
+    border-color: var(--ccg-accent);
+}
+
+.quiz-sfx-toggle__icon::before {
+    content: "🔊";
+    font-size: 1.2rem;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quiz-sfx-toggle.muted .quiz-sfx-toggle__icon::before {
+    content: "🔈";
+}
+
+/* ----------------------------------------------
+   QUESTION AREA
+---------------------------------------------- */
+
+.quiz-container {
+    margin-top: 3rem;
+    padding: 2rem;
+    border-radius: 1.2rem;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.quiz-question-title {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    text-shadow: 0 0 12px var(--ccg-accent);
+}
+
+.quiz-options {
+    margin-top: 1.8rem;
+    display: grid;
+    gap: 1rem;
+}
+
+.quiz-option-btn {
+    padding: 1rem 1.2rem;
+    border-radius: 0.8rem;
+    cursor: pointer;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.2);
+    transition: all 0.2s ease;
+    backdrop-filter: blur(4px);
+    font-size: 1.1rem;
+}
+
+.quiz-option-btn:hover {
+    border-color: var(--ccg-accent);
+    background: rgba(255,255,255,0.12);
+}
+
+.quiz-option-btn.correct {
+    border-color: #4eff75;
+    background: rgba(78,255,117,0.2);
+}
+
+.quiz-option-btn.wrong {
+    border-color: #ff4e4e;
+    background: rgba(255,78,78,0.2);
+}
+
+/* ----------------------------------------------
+   NEON SCORE CABINET
+---------------------------------------------- */
+
+.quiz-score-cabinet {
+    margin-top: 4rem;
+    display: flex;
+    justify-content: center;
+}
+
+.quiz-score-cabinet-inner {
+    padding: 3rem 2rem;
+    border-radius: 1.8rem;
+    width: 100%;
+    max-width: 560px;
+    text-align: center;
+    background: radial-gradient(circle at center,
+                rgba(0,0,0,0.7) 0%,
+                rgba(0,0,0,0.45) 100%);
+    border: 3px solid var(--ccg-accent);
+    box-shadow:
+        0 0 25px var(--ccg-accent),
+        inset 0 0 25px rgba(255,255,255,0.1);
+}
+
+.quiz-score-title {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    letter-spacing: 1px;
+}
+
+/* Animated Score Counter */
+.quiz-score-animated {
+    font-size: 4rem;
+    font-weight: 900;
+    margin-bottom: 2rem;
+    color: #fff;
+    text-shadow: 0 0 25px var(--ccg-accent);
+    transition: transform 0.15s ease-out;
+}
+
+/* Pulse effect as score animates */
+.quiz-score-animated.pulse {
+    transform: scale(1.15);
+}
+
+/* ----------------------------------------------
+   MODE-SPECIFIC ACCENTS
+---------------------------------------------- */
+
+body[data-ccg-mode="c64"] {
+    --ccg-accent: #28e1ff;
+    --ccg-neon-hero: #28e1ff;
+}
+
+body[data-ccg-mode="amiga"] {
+    --ccg-accent: #ff4fe8;
+    --ccg-neon-hero: #ff4fe8;
 }
