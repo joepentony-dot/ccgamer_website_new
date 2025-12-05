@@ -17,7 +17,6 @@
     <link rel="stylesheet" href="../../resources/css/ccg-modal.css">
     <link rel="stylesheet" href="../../resources/css/home.css">
 
-    <!-- COLLECTION / GENRE STYLES -->
     <link rel="stylesheet" href="../../resources/css/genre.css">
 </head>
 <body>
@@ -26,7 +25,7 @@
     <div class="ccg-header-inner">
 
         <a href="../../home.html" class="ccg-header-brand">
-            <img src="../../resources/CCGAMER LOGO.png" class="ccg-header-logo-img">
+            <img src="../../resources/CCGAMER LOGO.png" class="ccg-header-logo-img" alt="CCG Logo">
             <div class="ccg-header-title-wrap">
                 <span class="ccg-header-title-main">Cheeky Commodore Gamer</span>
                 <span class="ccg-header-title-sub">C64 & Amiga Archive</span>
@@ -54,7 +53,6 @@
                 <a href="https://twitter.com/CheekyC64Gamer" target="_blank" class="ccg-social-link">Twitter</a>
                 <a href="https://discord.gg/83Xw9ktAn4" target="_blank" class="ccg-social-link">Discord</a>
             </div>
-
         </div>
     </div>
 </header>
@@ -89,37 +87,36 @@
 
         <div class="ccg-collection-grid">
 
-            <a href="../genres/top-picks.html" class="ccg-collection-tile">
+            <a href="top-picks.html" class="ccg-collection-tile">
                 <div class="ccg-collection-tile-inner">
                     <h3 class="ccg-collection-name">Top Picks</h3>
                     <p class="ccg-collection-desc">CCG’s all-time favourites — essential retro classics.</p>
                 </div>
             </a>
 
-            <a href="../genres/bpjs-indexed-games.html" class="ccg-collection-tile">
+            <a href="bpjs-indexed-games.html" class="ccg-collection-tile">
                 <div class="ccg-collection-tile-inner">
                     <h3 class="ccg-collection-name">BPJS Indexed</h3>
-                    <p class="ccg-collection-desc">A quirky and fascinating curated list indexed by CCG.</p>
+                    <p class="ccg-collection-desc">A fascinating hand-indexed set curated by Cheeky.</p>
                 </div>
             </a>
 
-            <a href="../genres/cartridge-games.html" class="ccg-collection-tile">
+            <a href="cartridge-games.html" class="ccg-collection-tile">
                 <div class="ccg-collection-tile-inner">
                     <h3 class="ccg-collection-name">Cartridge Games</h3>
                     <p class="ccg-collection-desc">Fast loaders and instant gratification — the cart era.</p>
                 </div>
             </a>
 
-            <a href="../genres/licensed-games.html" class="ccg-collection-tile">
+            <a href="licensed-games.html" class="ccg-collection-tile">
                 <div class="ccg-collection-tile-inner">
                     <h3 class="ccg-collection-name">Licensed Games</h3>
-                    <p class="ccg-collection-desc">Film tie-ins, superheroes, TV specials & franchise titles.</p>
+                    <p class="ccg-collection-desc">Film tie-ins, superheroes, TV specials & more.</p>
                 </div>
             </a>
 
         </div>
     </section>
-
 </main>
 
 <footer class="ccg-footer">
@@ -128,7 +125,9 @@
 
 <script src="../../resources/js/ccg-global.js"></script>
 <script src="../../resources/js/ccg-mode.js"></script>
-<script>document.getElementById("ccg-footer-year").textContent = new Date().getFullYear();</script>
+<script>
+document.getElementById("ccg-footer-year").textContent = new Date().getFullYear();
+</script>
 
 </body>
 </html>
