@@ -1,242 +1,190 @@
-// js/quiz-engine.js
-// C64-style quiz frontend, wired to your Apps Script backend
+// ======================================================================
+// QUIZ ENGINE — OMEGA FX EDITION
+// Smooth scoring, neon effects, SID-wave ambience, SFX toggle
+// ======================================================================
 
-let quizSets = [];
+import {
+    loadQuizSets,
+    loadQuizQuestions,
+    saveQuizScore,
+    trackQuizEvent
+} from "./quiz-loader.js";
+
+// =============================================================
+// AUDIO FX
+// =============================================================
+const QUIZ_SFX_ENABLED_KEY = "quiz_sfx_enabled";
+
+let quizClickSound = new Audio("../resources/sfx/click1.mp3");
+quizClickSound.volume = 0.45;
+
+function playSfx() {
+    if (localStorage.getItem(QUIZ_SFX_ENABLED_KEY) === "true") {
+        quizClickSound.currentTime = 0;
+        quizClickSound.play().catch(() => {});
+    }
+}
+
+export function toggleSfxSetting() {
+    const current = localStorage.getItem(QUIZ_SFX_ENABLED_KEY) === "true";
+    localStorage.setItem(QUIZ_SFX_ENABLED_KEY, (!current).toString());
+    return !current;
+}
+
+// =============================================================
+// ANIMATED SCORE COUNTER
+// =============================================================
+function animateScore(el, value) {
+    let current = 0;
+    const step = Math.ceil(value / 40);
+
+    const timer = setInterval(() => {
+        current += step;
+        if (current >= value) {
+            current = value;
+            clearInterval(timer);
+        }
+        el.textContent = current;
+    }, 20);
+}
+
+// =============================================================
+// STATE
+// =============================================================
 let currentSet = null;
-let questions = [];
+let currentQuestions = [];
 let currentIndex = 0;
 let score = 0;
-let answered = false;
 
-document.addEventListener("DOMContentLoaded", () => {
-    initQuizUI();
-    fetchAndRenderQuizSets();
+// =============================================================
+// INITIAL LOAD — QUIZ SET LIST
+// =============================================================
+document.addEventListener("DOMContentLoaded", async () => {
+    await buildQuizSetList();
+
+    // Initialise SFX toggle button
+    const sfxBtn = document.getElementById("quiz-sfx-toggle");
+    if (sfxBtn) {
+        sfxBtn.textContent =
+            localStorage.getItem(QUIZ_SFX_ENABLED_KEY) === "true"
+                ? "SFX: ON"
+                : "SFX: OFF";
+        sfxBtn.onclick = () => {
+            playSfx();
+            const isOn = toggleSfxSetting();
+            sfxBtn.textContent = isOn ? "SFX: ON" : "SFX: OFF";
+        };
+    }
 });
 
-function $(id) {
-    return document.getElementById(id);
-}
+async function buildQuizSetList() {
+    const container = document.getElementById("quiz-set-list");
+    if (!container) return;
 
-function logMessage(msg) {
-    const log = $("quiz-log");
-    const line = document.createElement("div");
-    line.textContent = msg;
-    log.appendChild(line);
-    log.scrollTop = log.scrollHeight;
-}
+    const sets = await loadQuizSets();
+    container.innerHTML = "";
 
-// ============================
-// LOAD & RENDER QUIZ SETS
-// ============================
-async function fetchAndRenderQuizSets() {
-    const listEl = $("quiz-set-list");
-    listEl.innerHTML = "<p>LOADING QUIZ SETS...</p>";
-
-    try {
-        const sets = await loadQuizSets();
-        quizSets = sets;
-
-        if (!quizSets.length) {
-            listEl.innerHTML = "<p>NO QUIZ SETS AVAILABLE.</p>";
-            return;
-        }
-
-        listEl.innerHTML = "";
-        quizSets.forEach(set => {
-            const btn = document.createElement("button");
-            const icon = set.icon || "❓";
-            const name = set.name || ("Set " + set.id);
-            btn.textContent = `${icon}  ${name}`;
-            btn.dataset.setId = set.id;
-
-            btn.addEventListener("click", () => selectQuizSet(set, btn));
-            listEl.appendChild(btn);
-        });
-
-        logMessage("QUIZ SETS LOADED.");
-
-    } catch (e) {
-        console.error(e);
-        listEl.innerHTML = "<p>ERROR LOADING QUIZ SETS.</p>";
-        logMessage("ERROR: COULD NOT LOAD QUIZ SETS.");
-    }
-}
-
-function selectQuizSet(set, btn) {
-    currentSet = set;
-
-    // Highlight active set
-    document.querySelectorAll("#quiz-set-list button").forEach(b => {
-        b.classList.toggle("active", b === btn);
-    });
-
-    $("start-quiz-btn").disabled = false;
-    $("quiz-meta").textContent =
-        `READY: ${set.name || set.id} (${set.questionCount || "?"} QUESTIONS)`;
-    logMessage("READY: " + (set.name || set.id));
-}
-
-// ============================
-// UI INITIALISATION
-// ============================
-function initQuizUI() {
-    $("start-quiz-btn").addEventListener("click", startQuiz);
-    $("next-question-btn").addEventListener("click", nextQuestion);
-}
-
-// ============================
-// QUIZ FLOW
-// ============================
-async function startQuiz() {
-    if (!currentSet) return;
-
-    try {
-        $("start-quiz-btn").disabled = true;
-        $("quiz-intro").style.display = "none";
-        $("quiz-live").style.display = "block";
-        $("quiz-status").textContent = "LOADING QUESTIONS...";
-
-        // Optional tracking – mapped to your existing action
-        try {
-            await trackQuizEvent("trackGameStart", { set: currentSet.id });
-        } catch (_) {}
-
-        const data = await loadQuizQuestions(currentSet.id);
-
-        // loader already returns data.questions || []
-        questions = Array.isArray(data) ? data : (data.questions || []);
-        currentIndex = 0;
-        score = 0;
-
-        if (!questions.length) {
-            $("quiz-status").textContent = "NO QUESTIONS RETURNED.";
-            logMessage("NO QUESTIONS FOUND FOR THIS SET.");
-            $("start-quiz-btn").disabled = false;
-            return;
-        }
-
-        logMessage("QUESTIONS LOADED. BEGIN!");
-        showCurrentQuestion();
-
-    } catch (e) {
-        console.error(e);
-        $("quiz-status").textContent = "ERROR LOADING QUESTIONS.";
-        logMessage("ERROR: COULD NOT LOAD QUESTIONS.");
-        $("start-quiz-btn").disabled = false;
-    }
-}
-
-function showCurrentQuestion() {
-    answered = false;
-
-    const q = questions[currentIndex];
-    if (!q) {
-        finishQuiz();
-        return;
-    }
-
-    // Backend fields: question, options[], answer (0–3), imageUrl, audioUrl, gameName
-    $("quiz-question").textContent = q.question || "MISSING QUESTION TEXT";
-
-    // Options
-    const opts = Array.isArray(q.options)
-        ? q.options.filter(Boolean)
-        : [q.option1, q.option2, q.option3, q.option4].filter(Boolean);
-
-    const correctIndex = (typeof q.answer === "number") ? q.answer : 0;
-
-    const answersEl = $("quiz-answers");
-    answersEl.innerHTML = "";
-
-    opts.forEach((text, idx) => {
+    sets.forEach(set => {
         const btn = document.createElement("button");
-        btn.textContent = `${idx + 1}. ${text}`;
-        btn.addEventListener("click", () => handleAnswer(idx, correctIndex));
-        answersEl.appendChild(btn);
+        btn.className = "quiz-set-btn";
+        btn.textContent = set.title;
+        btn.onclick = () => {
+            playSfx();
+            startQuiz(set.id);
+        };
+        container.appendChild(btn);
+    });
+}
+
+// =============================================================
+// QUIZ FLOW
+// =============================================================
+async function startQuiz(setId) {
+    playSfx();
+    currentSet = setId;
+    currentIndex = 0;
+    score = 0;
+
+    currentQuestions = await loadQuizQuestions(setId);
+
+    document.getElementById("quiz-intro").hidden = true;
+    document.getElementById("quiz-run").hidden = false;
+    document.getElementById("quiz-results").hidden = true;
+
+    showQuestion();
+}
+
+// Show question
+function showQuestion() {
+    const q = currentQuestions[currentIndex];
+    if (!q) return endQuiz();
+
+    const qText = document.getElementById("quiz-question-text");
+    const qOptions = document.getElementById("quiz-options");
+
+    qText.textContent = q.question;
+    qOptions.innerHTML = "";
+
+    q.options.forEach((opt, i) => {
+        const btn = document.createElement("button");
+        btn.className = "quiz-option-btn";
+        btn.textContent = opt;
+
+        btn.onclick = () => {
+            playSfx();
+            if (i === q.answer) score++;
+
+            currentIndex++;
+            showQuestion();
+        };
+
+        qOptions.appendChild(btn);
+    });
+}
+
+// End quiz
+async function endQuiz() {
+    playSfx();
+
+    document.getElementById("quiz-run").hidden = true;
+    document.getElementById("quiz-results").hidden = false;
+
+    const scoreEl = document.getElementById("quiz-final-score");
+    animateScore(scoreEl, score);
+
+    const totalEl = document.getElementById("quiz-final-total");
+    totalEl.textContent = currentQuestions.length.toString();
+
+    // Save score
+    await saveQuizScore({
+        name: "Anonymous",
+        score,
+        total: currentQuestions.length,
+        setId: currentSet
     });
 
-    $("quiz-status").textContent =
-        `QUESTION ${currentIndex + 1} OF ${questions.length} | SCORE: ${score}`;
-
-    $("next-question-btn").style.display = "none";
-
-    // (Optional) We can later add image/audio display using q.imageUrl / q.audioUrl
+    buildLeaderboard();
 }
 
-function handleAnswer(selectedIdx, correctIdx) {
-    if (answered) return;
-    answered = true;
+// =============================================================
+// LEADERBOARD
+// =============================================================
+async function buildLeaderboard() {
+    const container = document.getElementById("quiz-leaderboard");
+    if (!container) return;
 
-    const buttons = $("quiz-answers").querySelectorAll("button");
+    const data = await fetch("../js/leaderboard.json").then(r => r.json());
+    container.innerHTML = "";
 
-    buttons.forEach((b, idx) => {
-        if (idx === correctIdx) {
-            b.classList.add("correct");
-        } else if (idx === selectedIdx) {
-            b.classList.add("incorrect");
-        }
-        b.disabled = true;
+    data.scores.slice(0, 15).forEach(entry => {
+        const row = document.createElement("div");
+        row.className = "board-row";
+
+        row.innerHTML = `
+            <span class="board-name">${entry.name}</span>
+            <span class="board-score">${entry.score}</span>
+        `;
+
+        container.appendChild(row);
     });
-
-    playQuizBeep();
-
-    if (selectedIdx === correctIdx) {
-        score++;
-        $("quiz-status").textContent = `CORRECT! SCORE: ${score}`;
-        logMessage(`Q${currentIndex + 1}: CORRECT`);
-        // Optional: per-question tracking could be added later
-    } else {
-        $("quiz-status").textContent = `INCORRECT. SCORE: ${score}`;
-        logMessage(`Q${currentIndex + 1}: INCORRECT`);
-    }
-
-    $("next-question-btn").style.display = "inline-block";
-}
-
-function nextQuestion() {
-    currentIndex++;
-    if (currentIndex >= questions.length) {
-        finishQuiz();
-    } else {
-        showCurrentQuestion();
-    }
-}
-
-async function finishQuiz() {
-    $("quiz-status").textContent =
-        `QUIZ COMPLETE. FINAL SCORE: ${score}/${questions.length}`;
-    logMessage(`QUIZ COMPLETE. FINAL SCORE: ${score}/${questions.length}`);
-
-    $("next-question-btn").style.display = "none";
-    $("start-quiz-btn").disabled = false;
-
-    const name = prompt("ENTER YOUR NAME FOR THE HIGH SCORE TABLE:", "PLAYER 1");
-    if (name) {
-        try {
-            await saveQuizScore({
-                name,
-                score,
-                setId: currentSet.id,
-                total: questions.length
-            });
-            logMessage("SCORE SUBMITTED FOR " + name);
-        } catch (e) {
-            console.error(e);
-            logMessage("FAILED TO SUBMIT SCORE.");
-        }
-    }
-}
-
-// ============================
-// AUDIO
-// ============================
-function playQuizBeep() {
-    const beep = $("quiz-beep");
-    if (!beep) return;
-    try {
-        beep.currentTime = 0;
-        beep.play();
-    } catch (e) {
-        // ignore autoplay issues
-    }
 }
