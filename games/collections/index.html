@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Curated Collections | Cheeky Commodore Gamer</title>
-    <meta name="description"
-          content="Browse 4 curated retro collections from Cheeky Commodore Gamer. Hand-picked sets like Top Picks, comfort games and more across C64 and Amiga.">
+    <meta name="description" content="Hand-picked retro game collections: Top Picks, BPJS Indexed, Licensed, and Cartridge Games.">
 
     <link rel="icon" href="../../favicon.ico">
 
-    <!-- GLOBAL CSS (existing) -->
+    <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="../../resources/css/ccg-master.css">
     <link rel="stylesheet" href="../../resources/css/ccg-mode.css">
     <link rel="stylesheet" href="../../resources/css/ccg-effects.css">
@@ -18,198 +17,118 @@
     <link rel="stylesheet" href="../../resources/css/ccg-modal.css">
     <link rel="stylesheet" href="../../resources/css/home.css">
 
-    <!-- NEW: Omega Genre / Collection unified styling -->
+    <!-- COLLECTION / GENRE STYLES -->
     <link rel="stylesheet" href="../../resources/css/genre.css">
 </head>
 <body>
-    <header class="ccg-header epic-header">
-        <div class="ccg-header-inner">
-            <a href="../../home.html" class="ccg-header-brand">
-                <div class="ccg-header-logo">
-                    <img src="../../resources/CCGAMER LOGO.png"
-                         alt="Cheeky Commodore Gamer logo"
-                         class="ccg-header-logo-img">
-                </div>
-                <div class="ccg-header-title-wrap">
-                    <span class="ccg-header-title-main">Cheeky Commodore Gamer</span>
-                    <span class="ccg-header-title-sub">C64 &amp; Amiga Archive</span>
+
+<header class="ccg-header epic-header">
+    <div class="ccg-header-inner">
+
+        <a href="../../home.html" class="ccg-header-brand">
+            <img src="../../resources/CCGAMER LOGO.png" class="ccg-header-logo-img">
+            <div class="ccg-header-title-wrap">
+                <span class="ccg-header-title-main">Cheeky Commodore Gamer</span>
+                <span class="ccg-header-title-sub">C64 & Amiga Archive</span>
+            </div>
+        </a>
+
+        <nav class="ccg-main-nav">
+            <a href="../../home.html" class="ccg-main-nav-link">Home</a>
+            <a href="../index.html" class="ccg-main-nav-link">All Games</a>
+            <a href="../genres/index.html" class="ccg-main-nav-link">Genres</a>
+            <a href="index.html" class="ccg-main-nav-link is-active">Collections</a>
+            <a href="../../quiz/quiz.html" class="ccg-main-nav-link">Trivia</a>
+            <a href="../../community.html" class="ccg-main-nav-link">Community</a>
+            <a href="../../extras.html" class="ccg-main-nav-link">Extras</a>
+        </nav>
+
+        <div class="ccg-header-side">
+            <button id="ccg-mode-toggle" class="ccg-mode-toggle" type="button"></button>
+
+            <div class="ccg-header-socials">
+                <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" class="ccg-social-link">YouTube</a>
+                <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank" class="ccg-social-link">Patreon</a>
+                <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" class="ccg-social-link">Donate</a>
+                <a href="https://www.facebook.com/cheekycommodoregamer" target="_blank" class="ccg-social-link">Facebook</a>
+                <a href="https://twitter.com/CheekyC64Gamer" target="_blank" class="ccg-social-link">Twitter</a>
+                <a href="https://discord.gg/83Xw9ktAn4" target="_blank" class="ccg-social-link">Discord</a>
+            </div>
+
+        </div>
+    </div>
+</header>
+
+<main class="ccg-page ccg-page--collections-index">
+
+    <!-- HERO -->
+    <section class="ccg-hero-banner">
+        <div class="ccg-hero-media">
+            <div class="ccg-hero-image-frame">
+                <img src="../../resources/images/headers/ccg-hero-c64.png" alt="Collections Hero" class="ccg-hero-image">
+                <div class="ccg-hero-vignette"></div>
+            </div>
+        </div>
+
+        <div class="ccg-hero-content">
+            <p class="ccg-hero-kicker">Curated Collections</p>
+            <h1 class="ccg-hero-title">Hand-picked Retro Playlists</h1>
+            <p class="ccg-hero-tagline">Four themed sets celebrating classics, curiosities and hidden gems.</p>
+            <div class="ccg-hero-meta-row">
+                <span class="ccg-hero-pill"><strong>4</strong> Collections</span>
+                <span class="ccg-hero-pill">C64 & Amiga Compatible</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- COLLECTION GRID -->
+    <section class="ccg-section">
+        <header class="ccg-section-header">
+            <h2 class="ccg-section-title">Pick a Collection</h2>
+        </header>
+
+        <div class="ccg-collection-grid">
+
+            <a href="../genres/top-picks.html" class="ccg-collection-tile">
+                <div class="ccg-collection-tile-inner">
+                    <h3 class="ccg-collection-name">Top Picks</h3>
+                    <p class="ccg-collection-desc">CCG’s all-time favourites — essential retro classics.</p>
                 </div>
             </a>
 
-            <nav class="ccg-main-nav">
-                <a href="../../home.html" class="ccg-main-nav-link">Home</a>
-                <a href="../index.html" class="ccg-main-nav-link">All Games</a>
-                <a href="../genres/index.html" class="ccg-main-nav-link">Genres</a>
-                <a href="index.html" class="ccg-main-nav-link is-active">Collections</a>
-                <a href="../../quiz/quiz.html" class="ccg-main-nav-link">Trivia</a>
-                <a href="../../community.html" class="ccg-main-nav-link">Community</a>
-                <a href="../../extras.html" class="ccg-main-nav-link">Extras</a>
-            </nav>
-
-            <div class="ccg-header-side">
-                <button id="ccg-mode-toggle" class="ccg-mode-toggle" type="button" aria-label="Toggle system mode">
-                    <span class="ccg-mode-toggle-pill">
-                        <span class="ccg-mode-toggle-pill-inner">
-                            <span class="ccg-mode-toggle-label ccg-mode-toggle-label-c64">C64</span>
-                            <span class="ccg-mode-toggle-label ccg-mode-toggle-label-amiga">Amiga</span>
-                        </span>
-                    </span>
-                </button>
-
-                <div class="ccg-header-socials">
-                    <a href="https://www.youtube.com/@CheekyCommodoreGamer" class="ccg-social-link ccg-social-youtube" target="_blank" rel="noopener">
-                        <span class="ccg-social-label">YouTube</span>
-                    </a>
-                    <a href="https://www.patreon.com/CheekyCommodoreGamer" class="ccg-social-link ccg-social-patreon" target="_blank" rel="noopener">
-                        <span class="ccg-social-label">Patreon</span>
-                    </a>
-                    <a href="https://www.paypal.me/CheekyCommodoreGamer" class="ccg-social-link ccg-social-paypal" target="_blank" rel="noopener">
-                        <span class="ccg-social-label">Tip Jar</span>
-                    </a>
+            <a href="../genres/bpjs-indexed-games.html" class="ccg-collection-tile">
+                <div class="ccg-collection-tile-inner">
+                    <h3 class="ccg-collection-name">BPJS Indexed</h3>
+                    <p class="ccg-collection-desc">A quirky and fascinating curated list indexed by CCG.</p>
                 </div>
-            </div>
+            </a>
+
+            <a href="../genres/cartridge-games.html" class="ccg-collection-tile">
+                <div class="ccg-collection-tile-inner">
+                    <h3 class="ccg-collection-name">Cartridge Games</h3>
+                    <p class="ccg-collection-desc">Fast loaders and instant gratification — the cart era.</p>
+                </div>
+            </a>
+
+            <a href="../genres/licensed-games.html" class="ccg-collection-tile">
+                <div class="ccg-collection-tile-inner">
+                    <h3 class="ccg-collection-name">Licensed Games</h3>
+                    <p class="ccg-collection-desc">Film tie-ins, superheroes, TV specials & franchise titles.</p>
+                </div>
+            </a>
+
         </div>
-    </header>
+    </section>
 
-    <main class="ccg-page ccg-page--collections-index">
-        <section class="ccg-hero-banner collections-hero">
-            <div class="ccg-hero-media">
-                <div class="ccg-hero-image-frame">
-                    <img src="../../resources/images/headers/ccg-hero-c64.png"
-                         alt="Cinematic retro collections hero artwork"
-                         class="ccg-hero-image">
-                    <div class="ccg-hero-vignette"></div>
-                </div>
-            </div>
-            <div class="ccg-hero-content">
-                <p class="ccg-hero-kicker">Curated Collections</p>
-                <h1 class="ccg-hero-title">Cheeky hand-picked playlists</h1>
-                <p class="ccg-hero-tagline">
-                    4 themed sets of games for when you don’t want to scroll — you just want a vibe:
-                    essential favourites, comfort games, two-player nights and more.
-                </p>
-                <div class="ccg-hero-meta-row">
-                    <span class="ccg-hero-pill ccg-hero-pill--count">
-                        <strong>4</strong> Curated Collections
-                    </span>
-                    <span class="ccg-hero-pill ccg-hero-pill--systems">
-                        C64 &amp; Amiga • Omega Layout
-                    </span>
-                </div>
-            </div>
-        </section>
+</main>
 
-        <!-- COLLECTION GRID -->
-        <section class="ccg-section ccg-section--collections">
-            <header class="ccg-section-header">
-                <h2 class="ccg-section-title">Pick a Collection</h2>
-                <p class="ccg-section-subtitle">
-                    Each tile jumps to a dedicated page under <code>games/genres/</code> so there’s no extra JS to maintain.
-                </p>
-            </header>
+<footer class="ccg-footer">
+    <p>&copy; <span id="ccg-footer-year"></span> Cheeky Commodore Gamer</p>
+</footer>
 
-            <div class="ccg-collection-grid">
+<script src="../../resources/js/ccg-global.js"></script>
+<script src="../../resources/js/ccg-mode.js"></script>
+<script>document.getElementById("ccg-footer-year").textContent = new Date().getFullYear();</script>
 
-                <!--
-                    IMPORTANT:
-                    Top Picks filename is known and wired correctly.
-                    The other three use "#" so I don’t invent wrong filenames.
-                    Replace "#" with the real existing HTML filenames in games/genres/.
-                -->
-
-                <!-- 1. Top Picks (known: top-picks.html) -->
-                <a href="../genres/top-picks.html"
-                   class="ccg-collection-tile"
-                   data-collection-key="Top Picks">
-                    <div class="ccg-collection-tile-inner">
-                        <p class="ccg-collection-kicker">Signature Set</p>
-                        <h3 class="ccg-collection-name">Top Picks</h3>
-                        <p class="ccg-collection-desc">
-                            My personal must-play list across C64 and Amiga — the ones I keep coming back to.
-                        </p>
-                        <ul class="ccg-collection-meta-list">
-                            <li>Essential classics</li>
-                            <li>Showpiece titles</li>
-                            <li>Perfect for newcomers</li>
-                        </ul>
-                        <span class="ccg-collection-cta">Open Top Picks</span>
-                    </div>
-                </a>
-
-                <!-- 2. Comfort Evenings -->
-                <a href="#"
-                   class="ccg-collection-tile"
-                   data-collection-key="Comfort Evenings">
-                    <div class="ccg-collection-tile-inner">
-                        <p class="ccg-collection-kicker">Laid-back Sessions</p>
-                        <h3 class="ccg-collection-name">Comfort Evenings</h3>
-                        <p class="ccg-collection-desc">
-                            Low-stress, cosy games for when you just want to unwind with a brew and some SID.
-                        </p>
-                        <ul class="ccg-collection-meta-list">
-                            <li>Gentle learning curve</li>
-                            <li>Relaxed pacing</li>
-                            <li>Warm nostalgia hit</li>
-                        </ul>
-                        <span class="ccg-collection-cta">Open Comfort set</span>
-                    </div>
-                </a>
-
-                <!-- 3. Two-Player Nights -->
-                <a href="#"
-                   class="ccg-collection-tile"
-                   data-collection-key="Two-Player Nights">
-                    <div class="ccg-collection-tile-inner">
-                        <p class="ccg-collection-kicker">Couch Battles</p>
-                        <h3 class="ccg-collection-name">Two-Player Nights</h3>
-                        <p class="ccg-collection-desc">
-                            Competitive and co-op picks built for passing the joystick and shouting at the telly.
-                        </p>
-                        <ul class="ccg-collection-meta-list">
-                            <li>Versus &amp; co-op fun</li>
-                            <li>Quick to learn</li>
-                            <li>Perfect for mates</li>
-                        </ul>
-                        <span class="ccg-collection-cta">Open 2-player set</span>
-                    </div>
-                </a>
-
-                <!-- 4. Deep Dives -->
-                <a href="#"
-                   class="ccg-collection-tile"
-                   data-collection-key="Deep Dives">
-                    <div class="ccg-collection-tile-inner">
-                        <p class="ccg-collection-kicker">Long-form Sessions</p>
-                        <h3 class="ccg-collection-name">Deep Dives</h3>
-                        <p class="ccg-collection-desc">
-                            Games that deserve a full evening to themselves — adventures, sims and strategy epics.
-                        </p>
-                        <ul class="ccg-collection-meta-list">
-                            <li>Bigger time commitment</li>
-                            <li>Richer systems</li>
-                            <li>Great for weekend marathons</li>
-                        </ul>
-                        <span class="ccg-collection-cta">Open Deep Dives</span>
-                    </div>
-                </a>
-            </div>
-        </section>
-    </main>
-
-    <footer class="ccg-footer">
-        <p class="ccg-footer-text">
-            Cheeky Commodore Gamer &copy; <span id="ccg-footer-year"></span> — Curated with care.
-        </p>
-    </footer>
-
-    <!-- GLOBAL JS (existing, not renamed) -->
-    <script src="../../resources/js/ccg-global.js"></script>
-    <script src="../../resources/js/ccg-mode.js"></script>
-    <script>
-        (function () {
-            var el = document.getElementById("ccg-footer-year");
-            if (el) el.textContent = new Date().getFullYear();
-        })();
-    </script>
 </body>
 </html>
