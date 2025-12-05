@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Browse by Genre | Cheeky Commodore Gamer</title>
-    <meta name="description"
-          content="Browse 15 hand-picked C64 & Amiga genres on Cheeky Commodore Gamer. From arcade blasters to deep strategy epics, jump straight into the style of games you love.">
+    <meta name="description" content="Browse 15 C64 & Amiga game genres across the Cheeky Commodore Gamer archive.">
 
     <link rel="icon" href="../../favicon.ico">
 
-    <!-- GLOBAL CSS (existing) -->
+    <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="../../resources/css/ccg-master.css">
     <link rel="stylesheet" href="../../resources/css/ccg-mode.css">
     <link rel="stylesheet" href="../../resources/css/ccg-effects.css">
@@ -18,371 +17,106 @@
     <link rel="stylesheet" href="../../resources/css/ccg-modal.css">
     <link rel="stylesheet" href="../../resources/css/home.css">
 
-    <!-- NEW: Omega Genre / Collection unified styling -->
+    <!-- GENRE / COLLECTION STYLE -->
     <link rel="stylesheet" href="../../resources/css/genre.css">
 </head>
 <body>
-    <!-- 
-        NOTE:
-        Header + mode toggle follow the same Omega structure
-        used on home.html and games/index.html.
-        Make sure IDs like `ccg-mode-toggle` remain unchanged
-        so the existing JS keeps working.
-    -->
-    <header class="ccg-header epic-header">
-        <div class="ccg-header-inner">
-            <a href="../../home.html" class="ccg-header-brand">
-                <div class="ccg-header-logo">
-                    <img src="../../resources/CCGAMER LOGO.png"
-                         alt="Cheeky Commodore Gamer logo"
-                         class="ccg-header-logo-img">
-                </div>
-                <div class="ccg-header-title-wrap">
-                    <span class="ccg-header-title-main">Cheeky Commodore Gamer</span>
-                    <span class="ccg-header-title-sub">C64 &amp; Amiga Archive</span>
-                </div>
-            </a>
 
-            <nav class="ccg-main-nav">
-                <a href="../../home.html" class="ccg-main-nav-link">Home</a>
-                <a href="../index.html" class="ccg-main-nav-link">All Games</a>
-                <a href="index.html" class="ccg-main-nav-link is-active">Genres</a>
-                <a href="../collections/index.html" class="ccg-main-nav-link">Collections</a>
-                <a href="../../quiz/quiz.html" class="ccg-main-nav-link">Trivia</a>
-                <a href="../../community.html" class="ccg-main-nav-link">Community</a>
-                <a href="../../extras.html" class="ccg-main-nav-link">Extras</a>
-            </nav>
+<header class="ccg-header epic-header">
+    <div class="ccg-header-inner">
 
-            <div class="ccg-header-side">
-                <button id="ccg-mode-toggle" class="ccg-mode-toggle" type="button" aria-label="Toggle system mode">
-                    <span class="ccg-mode-toggle-pill">
-                        <span class="ccg-mode-toggle-pill-inner">
-                            <span class="ccg-mode-toggle-label ccg-mode-toggle-label-c64">C64</span>
-                            <span class="ccg-mode-toggle-label ccg-mode-toggle-label-amiga">Amiga</span>
-                        </span>
-                    </span>
-                </button>
+        <a href="../../home.html" class="ccg-header-brand">
+            <img src="../../resources/CCGAMER LOGO.png" class="ccg-header-logo-img" alt="CCG Logo">
+            <div class="ccg-header-title-wrap">
+                <span class="ccg-header-title-main">Cheeky Commodore Gamer</span>
+                <span class="ccg-header-title-sub">C64 & Amiga Archive</span>
+            </div>
+        </a>
 
-                <div class="ccg-header-socials">
-                    <a href="https://www.youtube.com/@CheekyCommodoreGamer" class="ccg-social-link ccg-social-youtube" target="_blank" rel="noopener">
-                        <span class="ccg-social-label">YouTube</span>
-                    </a>
-                    <a href="https://www.patreon.com/CheekyCommodoreGamer" class="ccg-social-link ccg-social-patreon" target="_blank" rel="noopener">
-                        <span class="ccg-social-label">Patreon</span>
-                    </a>
-                    <a href="https://www.paypal.me/CheekyCommodoreGamer" class="ccg-social-link ccg-social-paypal" target="_blank" rel="noopener">
-                        <span class="ccg-social-label">Tip Jar</span>
-                    </a>
-                </div>
+        <nav class="ccg-main-nav">
+            <a href="../../home.html" class="ccg-main-nav-link">Home</a>
+            <a href="../index.html" class="ccg-main-nav-link">All Games</a>
+            <a href="index.html" class="ccg-main-nav-link is-active">Genres</a>
+            <a href="../collections/index.html" class="ccg-main-nav-link">Collections</a>
+            <a href="../../quiz/quiz.html" class="ccg-main-nav-link">Trivia</a>
+            <a href="../../community.html" class="ccg-main-nav-link">Community</a>
+            <a href="../../extras.html" class="ccg-main-nav-link">Extras</a>
+        </nav>
+
+        <div class="ccg-header-side">
+            <button id="ccg-mode-toggle" class="ccg-mode-toggle" type="button"></button>
+
+            <div class="ccg-header-socials">
+                <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" class="ccg-social-link">YouTube</a>
+                <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank" class="ccg-social-link">Patreon</a>
+                <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" class="ccg-social-link">Donate</a>
+                <a href="https://www.facebook.com/cheekycommodoregamer" target="_blank" class="ccg-social-link">Facebook</a>
+                <a href="https://twitter.com/CheekyC64Gamer" target="_blank" class="ccg-social-link">Twitter</a>
+                <a href="https://discord.gg/83Xw9ktAn4" target="_blank" class="ccg-social-link">Discord</a>
             </div>
         </div>
-    </header>
 
-    <!-- HERO: matches Games Index cinematic hero layout -->
-    <main class="ccg-page ccg-page--genre-index">
-        <section class="ccg-hero-banner genre-hero">
-            <div class="ccg-hero-media">
-                <div class="ccg-hero-image-frame">
-                    <img src="../../resources/images/headers/ccg-hero-c64.png"
-                         alt="Cinematic C64 &amp; Amiga hero artwork"
-                         class="ccg-hero-image">
-                    <div class="ccg-hero-vignette"></div>
-                </div>
+    </div>
+</header>
+
+<main class="ccg-page ccg-page--genre-index">
+
+    <!-- CINEMATIC HERO -->
+    <section class="ccg-hero-banner">
+        <div class="ccg-hero-media">
+            <div class="ccg-hero-image-frame">
+                <img src="../../resources/images/headers/ccg-hero-c64.png" alt="Genre Hero" class="ccg-hero-image">
+                <div class="ccg-hero-vignette"></div>
             </div>
-            <div class="ccg-hero-content">
-                <p class="ccg-hero-kicker">Browse by Genre</p>
-                <h1 class="ccg-hero-title">Dial into your perfect retro fix</h1>
-                <p class="ccg-hero-tagline">
-                    15 genres spanning arcade blasters, puzzlers, adventures and beyond.
-                    Pick a mood, pick a style, and I’ll serve up the classics.
-                </p>
-                <div class="ccg-hero-meta-row">
-                    <span class="ccg-hero-pill ccg-hero-pill--count">
-                        <strong>15</strong> Genres Available
-                    </span>
-                    <span class="ccg-hero-pill ccg-hero-pill--systems">
-                        C64 &amp; Amiga • Omega Layout
-                    </span>
-                </div>
+        </div>
+
+        <div class="ccg-hero-content">
+            <p class="ccg-hero-kicker">Browse by Genre</p>
+            <h1 class="ccg-hero-title">Find Your Perfect Retro Fix</h1>
+            <p class="ccg-hero-tagline">15 genres spanning adventures, shooters, RPGs, sports, puzzles, racing, and more.</p>
+            <div class="ccg-hero-meta-row">
+                <span class="ccg-hero-pill"><strong>15</strong> Genres Available</span>
+                <span class="ccg-hero-pill">C64 & Amiga Compatible</span>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- GENRE GRID -->
-        <section class="ccg-section ccg-section--genres">
-            <header class="ccg-section-header">
-                <h2 class="ccg-section-title">Choose a Genre</h2>
-                <p class="ccg-section-subtitle">
-                    Tiles are fully mode-aware — flip between C64 and Amiga to change the glow and accent feel.
-                </p>
-            </header>
+    <section class="ccg-section">
+        <header class="ccg-section-header">
+            <h2 class="ccg-section-title">Choose a Genre</h2>
+        </header>
 
-            <div class="ccg-genre-grid">
+        <div class="ccg-genre-grid">
 
-                <!--
-                    IMPORTANT:
-                    HREFs are set to "#" so I don't invent the wrong filenames.
-                    Replace each "#" with the EXACT filename in games/genres/
-                    e.g. "arcade-games.html", "shooting-games.html", etc.
-                -->
+            <!-- 15 Genres -->
+            <a href="action-adventure-games.html" class="ccg-genre-tile"><div class="ccg-genre-tile-inner"><h3 class="ccg-genre-name">Action Adventure</h3></div></a>
+            <a href="adventure-games.html" class="ccg-genre-tile"><div class="ccg-genre-tile-inner"><h3 class="ccg-genre-name">Adventure Games</h3></div></a>
+            <a href="arcade-games.html" class="ccg-genre-tile"><div class="ccg-genre-tile-inner"><h3 class="ccg-genre-name">Arcade Games</h3></div></a>
+            <a href="casino-games.html" class="ccg-genre-tile"><div class="ccg-genre-tile-inner"><h3 class="ccg-genre-name">Casino Games</h3></div></a>
+            <a href="fighting-games.html" class="ccg-genre-tile"><div class="ccg-genre-tile-inner"><h3 class="ccg-genre-name">Fighting Games</h3></div></a>
+            <a href="horror-games.html" class="ccg-genre-tile"><div class="ccg-genre-tile-inner"><h3 class="ccg-genre-name">Horror Games</h3></div></a>
+            <a href="miscellaneous.html" class="ccg-genre-tile"><div class="ccg-genre-tile-inner"><h3 class="ccg-genre-name">Miscellaneous</h3></div></a>
+            <a href="platform-games.html" class="ccg-genre-tile"><div class="ccg-genre-tile-inner"><h3 class="ccg-genre-name">Platform Games</h3></div></a>
+            <a href="puzzle-games.html" class="ccg-genre-tile"><div class="ccg-genre-tile-inner"><h3 class="ccg-genre-name">Puzzle Games</h3></div></a>
+            <a href="quiz-games.html" class="ccg-genre-tile"><div class="ccg-genre-tile-inner"><h3 class="ccg-genre-name">Quiz Games</h3></div></a>
+            <a href="racing-games.html" class="ccg-genre-tile"><div class="ccg-genre-tile-inner"><h3 class="ccg-genre-name">Racing Games</h3></div></a>
+            <a href="rpg-games.html" class="ccg-genre-tile"><div class="ccg-genre-tile-inner"><h3 class="ccg-genre-name">RPG Games</h3></div></a>
+            <a href="shooting-games.html" class="ccg-genre-tile"><div class="ccg-genre-tile-inner"><h3 class="ccg-genre-name">Shooting Games</h3></div></a>
+            <a href="sports-games.html" class="ccg-genre-tile"><div class="ccg-genre-tile-inner"><h3 class="ccg-genre-name">Sports Games</h3></div></a>
+            <a href="strategy-games.html" class="ccg-genre-tile"><div class="ccg-genre-tile-inner"><h3 class="ccg-genre-name">Strategy Games</h3></div></a>
 
-                <!-- 1. Arcade Games -->
-                <a href="#"
-                   class="ccg-genre-tile"
-                   data-genre-key="Arcade Games">
-                    <div class="ccg-genre-tile-inner">
-                        <div class="ccg-genre-heading-row">
-                            <h3 class="ccg-genre-name">Arcade Games</h3>
-                            <span class="ccg-genre-tag">Quick-fire action</span>
-                        </div>
-                        <p class="ccg-genre-desc">
-                            Pure joystick punishment: short, sharp, score-chasing blasts just like the arcades.
-                        </p>
-                        <span class="ccg-genre-cta">View arcade titles</span>
-                    </div>
-                </a>
+        </div>
+    </section>
 
-                <!-- 2. Shooting Games -->
-                <a href="#"
-                   class="ccg-genre-tile"
-                   data-genre-key="Shooting Games">
-                    <div class="ccg-genre-tile-inner">
-                        <div class="ccg-genre-heading-row">
-                            <h3 class="ccg-genre-name">Shooting Games</h3>
-                            <span class="ccg-genre-tag">Shmups &amp; blasters</span>
-                        </div>
-                        <p class="ccg-genre-desc">
-                            Horizontal, vertical and everything in between — shooters that fill the screen with incoming fire.
-                        </p>
-                        <span class="ccg-genre-cta">View shooting titles</span>
-                    </div>
-                </a>
+</main>
 
-                <!-- 3. Platform Games -->
-                <a href="#"
-                   class="ccg-genre-tile"
-                   data-genre-key="Platform Games">
-                    <div class="ccg-genre-tile-inner">
-                        <div class="ccg-genre-heading-row">
-                            <h3 class="ccg-genre-name">Platform Games</h3>
-                            <span class="ccg-genre-tag">Leaps of faith</span>
-                        </div>
-                        <p class="ccg-genre-desc">
-                            Precision jumps, ladders, lifts and the odd dodgy collision box. Old-school timing tests.
-                        </p>
-                        <span class="ccg-genre-cta">View platform titles</span>
-                    </div>
-                </a>
+<footer class="ccg-footer">
+    <p>&copy; <span id="ccg-footer-year"></span> Cheeky Commodore Gamer</p>
+</footer>
 
-                <!-- 4. Adventure Games -->
-                <a href="#"
-                   class="ccg-genre-tile"
-                   data-genre-key="Adventure Games">
-                    <div class="ccg-genre-tile-inner">
-                        <div class="ccg-genre-heading-row">
-                            <h3 class="ccg-genre-name">Adventure Games</h3>
-                            <span class="ccg-genre-tag">Stories &amp; quests</span>
-                        </div>
-                        <p class="ccg-genre-desc">
-                            Text adventures, graphic adventures and hybrids where every screen hides another puzzle.
-                        </p>
-                        <span class="ccg-genre-cta">View adventure titles</span>
-                    </div>
-                </a>
+<script src="../../resources/js/ccg-global.js"></script>
+<script src="../../resources/js/ccg-mode.js"></script>
+<script>document.getElementById("ccg-footer-year").textContent = new Date().getFullYear();</script>
 
-                <!-- 5. Sports Games -->
-                <a href="#"
-                   class="ccg-genre-tile"
-                   data-genre-key="Sports Games">
-                    <div class="ccg-genre-tile-inner">
-                        <div class="ccg-genre-heading-row">
-                            <h3 class="ccg-genre-name">Sports Games</h3>
-                            <span class="ccg-genre-tag">Track, field &amp; more</span>
-                        </div>
-                        <p class="ccg-genre-desc">
-                            Joystick-wobbling decathlons, footy knockabouts and impossible world records.
-                        </p>
-                        <span class="ccg-genre-cta">View sports titles</span>
-                    </div>
-                </a>
-
-                <!-- 6. Racing & Driving -->
-                <a href="#"
-                   class="ccg-genre-tile"
-                   data-genre-key="Racing &amp; Driving">
-                    <div class="ccg-genre-tile-inner">
-                        <div class="ccg-genre-heading-row">
-                            <h3 class="ccg-genre-name">Racing &amp; Driving</h3>
-                            <span class="ccg-genre-tag">On the road</span>
-                        </div>
-                        <p class="ccg-genre-desc">
-                            Over-the-top racers, rally stages and highway battles that push the 8-bit engines hard.
-                        </p>
-                        <span class="ccg-genre-cta">View racing titles</span>
-                    </div>
-                </a>
-
-                <!-- 7. Puzzle & Logic -->
-                <a href="#"
-                   class="ccg-genre-tile"
-                   data-genre-key="Puzzle &amp; Logic">
-                    <div class="ccg-genre-tile-inner">
-                        <div class="ccg-genre-heading-row">
-                            <h3 class="ccg-genre-name">Puzzle &amp; Logic</h3>
-                            <span class="ccg-genre-tag">Brain workout</span>
-                        </div>
-                        <p class="ccg-genre-desc">
-                            One-more-go puzzlers, falling blocks and logic tests that quietly eat entire evenings.
-                        </p>
-                        <span class="ccg-genre-cta">View puzzle titles</span>
-                    </div>
-                </a>
-
-                <!-- 8. Strategy & Tactics -->
-                <a href="#"
-                   class="ccg-genre-tile"
-                   data-genre-key="Strategy &amp; Tactics">
-                    <div class="ccg-genre-tile-inner">
-                        <div class="ccg-genre-heading-row">
-                            <h3 class="ccg-genre-name">Strategy &amp; Tactics</h3>
-                            <span class="ccg-genre-tag">Think before you move</span>
-                        </div>
-                        <p class="ccg-genre-desc">
-                            Turn-based planning, map-pushing and long-form campaigns for the armchair generals.
-                        </p>
-                        <span class="ccg-genre-cta">View strategy titles</span>
-                    </div>
-                </a>
-
-                <!-- 9. Role-Playing Games -->
-                <a href="#"
-                   class="ccg-genre-tile"
-                   data-genre-key="Role-Playing Games">
-                    <div class="ccg-genre-tile-inner">
-                        <div class="ccg-genre-heading-row">
-                            <h3 class="ccg-genre-name">Role-Playing Games</h3>
-                            <span class="ccg-genre-tag">Stats &amp; stories</span>
-                        </div>
-                        <p class="ccg-genre-desc">
-                            Dungeon crawls, overworld epics and stat sheets that could fill a school exercise book.
-                        </p>
-                        <span class="ccg-genre-cta">View RPG titles</span>
-                    </div>
-                </a>
-
-                <!-- 10. Simulation -->
-                <a href="#"
-                   class="ccg-genre-tile"
-                   data-genre-key="Simulation">
-                    <div class="ccg-genre-tile-inner">
-                        <div class="ccg-genre-heading-row">
-                            <h3 class="ccg-genre-name">Simulation</h3>
-                            <span class="ccg-genre-tag">Serious(ish) detail</span>
-                        </div>
-                        <p class="ccg-genre-desc">
-                            Flight decks, trading runs and everyday jobs turned into surprisingly gripping sims.
-                        </p>
-                        <span class="ccg-genre-cta">View simulation titles</span>
-                    </div>
-                </a>
-
-                <!-- 11. Beat ’em Ups -->
-                <a href="#"
-                   class="ccg-genre-tile"
-                   data-genre-key="Beat 'em Ups">
-                    <div class="ccg-genre-tile-inner">
-                        <div class="ccg-genre-heading-row">
-                            <h3 class="ccg-genre-name">Beat ’em Ups</h3>
-                            <span class="ccg-genre-tag">Side-scrolling scraps</span>
-                        </div>
-                        <p class="ccg-genre-desc">
-                            Street brawlers, dojo showdowns and alleyway punch-ups — gloves very much off.
-                        </p>
-                        <span class="ccg-genre-cta">View beat ’em ups</span>
-                    </div>
-                </a>
-
-                <!-- 12. Fighting & One-on-One -->
-                <a href="#"
-                   class="ccg-genre-tile"
-                   data-genre-key="Fighting">
-                    <div class="ccg-genre-tile-inner">
-                        <div class="ccg-genre-heading-row">
-                            <h3 class="ccg-genre-name">Fighting &amp; One-on-One</h3>
-                            <span class="ccg-genre-tag">Duel to the KO</span>
-                        </div>
-                        <p class="ccg-genre-desc">
-                            Mano-a-mano showdowns, from martial arts to wild special-move blowouts.
-                        </p>
-                        <span class="ccg-genre-cta">View fighting titles</span>
-                    </div>
-                </a>
-
-                <!-- 13. Party & Multi-Event -->
-                <a href="#"
-                   class="ccg-genre-tile"
-                   data-genre-key="Party &amp; Multi-Event">
-                    <div class="ccg-genre-tile-inner">
-                        <div class="ccg-genre-heading-row">
-                            <h3 class="ccg-genre-name">Party &amp; Multi-Event</h3>
-                            <span class="ccg-genre-tag">Pass-the-joystick</span>
-                        </div>
-                        <p class="ccg-genre-desc">
-                            Compilations, mini-game marathons and couch-competitive chaos for mates nights.
-                        </p>
-                        <span class="ccg-genre-cta">View party titles</span>
-                    </div>
-                </a>
-
-                <!-- 14. Budget & BPJS -->
-                <a href="#"
-                   class="ccg-genre-tile"
-                   data-genre-key="BPJS Games">
-                    <div class="ccg-genre-tile-inner">
-                        <div class="ccg-genre-heading-row">
-                            <h3 class="ccg-genre-name">Budget &amp; BPJS</h3>
-                            <span class="ccg-genre-tag">Cheeky bargains</span>
-                        </div>
-                        <p class="ccg-genre-desc">
-                            The legendary BPJS curios and low-cost wonders that punched above their price tag.
-                        </p>
-                        <span class="ccg-genre-cta">View budget titles</span>
-                    </div>
-                </a>
-
-                <!-- 15. Oddities & Cult Classics -->
-                <a href="#"
-                   class="ccg-genre-tile"
-                   data-genre-key="Cult &amp; Oddities">
-                    <div class="ccg-genre-tile-inner">
-                        <div class="ccg-genre-heading-row">
-                            <h3 class="ccg-genre-name">Oddities &amp; Cult Classics</h3>
-                            <span class="ccg-genre-tag">So wrong it’s right</span>
-                        </div>
-                        <p class="ccg-genre-desc">
-                            Strange, experimental and hard-to-categorise games that somehow completely work.
-                        </p>
-                        <span class="ccg-genre-cta">View cult titles</span>
-                    </div>
-                </a>
-            </div>
-        </section>
-    </main>
-
-    <footer class="ccg-footer">
-        <p class="ccg-footer-text">
-            Cheeky Commodore Gamer &copy; <span id="ccg-footer-year"></span> — C64 &amp; Amiga memories preserved.
-        </p>
-    </footer>
-
-    <!-- GLOBAL JS (existing, not renamed) -->
-    <script src="../../resources/js/ccg-global.js"></script>
-    <script src="../../resources/js/ccg-mode.js"></script>
-    <script>
-        // Simple footer year helper, non-breaking
-        (function () {
-            var el = document.getElementById("ccg-footer-year");
-            if (el) el.textContent = new Date().getFullYear();
-        })();
-    </script>
 </body>
 </html>
