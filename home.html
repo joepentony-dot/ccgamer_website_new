@@ -18,7 +18,7 @@
 </head>
 <body class="ccg-body ccg-page--home" data-ccg-mode="c64" data-mode="c64">
 
-    <!-- Starfield canvas (background only, styled in CSS) -->
+    <!-- Starfield canvas -->
     <canvas id="home-starfield" class="ccg-starfield" aria-hidden="true"></canvas>
 
     <!-- =========================
@@ -85,20 +85,20 @@
                     <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" class="ccg-socials__icon-btn" aria-label="PayPal donations">
                         <span class="ccg-socials__icon ccg-socials__icon--paypal"></span>
                     </a>
-                    <a href="https://twitter.com/CheekyC64Gamer" class="ccg-socials__icon-btn" aria-label="X (Twitter)">
+                    <a href="https://twitter.com/CheekyC64Gamer" class="ccg-socials__icon-btn" aria-label="Twitter">
                         <span class="ccg-socials__icon ccg-socials__icon--x"></span>
                     </a>
                     <a href="https://www.facebook.com/cheekycommodoregamer" class="ccg-socials__icon-btn" aria-label="Facebook">
                         <span class="ccg-socials__icon ccg-socials__icon--fb"></span>
                     </a>
-                    <a href="https://discord.gg/83Xw9ktAn4" class="ccg-socials__icon-btn" aria-label="Discord server">
+                    <a href="https://discord.gg/83Xw9ktAn4" class="ccg-socials__icon-btn" aria-label="Discord">
                         <span class="ccg-socials__icon ccg-socials__icon--discord"></span>
                     </a>
                 </div>
             </div>
         </div>
 
-        <!-- Thin neon strip under header -->
+        <!-- Thin neon strip -->
         <div class="ccg-header-neon-strip"></div>
     </header>
 
@@ -107,7 +107,7 @@
     ========================== -->
     <main class="ccg-main">
 
-        <!-- HERO: dynamic per-mode -->
+        <!-- HERO -->
         <section class="ccg-hero" aria-labelledby="home-hero-title">
             <div class="ccg-hero__media">
                 <div class="ccg-hero__overlay"></div>
@@ -129,35 +129,35 @@
                 </p>
 
                 <div class="ccg-hero__actions">
-                    <a href="games/index.html" class="ccg-btn ccg-btn--primary">
-                        Browse All Games
-                    </a>
-                    <button type="button" class="ccg-btn ccg-btn--secondary" data-ccg-random-game>
-                        Random Game
-                    </button>
-                    <a href="games/collections/top-picks.html" class="ccg-btn ccg-btn--ghost">
-                        CCG Top Picks
-                    </a>
+                    <a href="games/index.html" class="ccg-btn ccg-btn--primary">Browse All Games</a>
+                    <button type="button" class="ccg-btn ccg-btn--secondary" data-ccg-random-game>Random Game</button>
+                    <a href="games/collections/top-picks.html" class="ccg-btn ccg-btn--ghost">CCG Top Picks</a>
                 </div>
 
-                <p class="ccg-hero__hint">
-                    Tip: Flick the C64/Amiga switch in the corner for a different flavour of neon.
-                </p>
+                <p class="ccg-hero__hint">Tip: Flick the C64/Amiga switch in the corner for a different flavour of neon.</p>
             </div>
         </section>
 
         <!-- =========================
-             BROWSE BY GENRE (GRID)
+             BROWSE BY GENRE
         ========================== -->
         <section class="ccg-section ccg-section--genres">
             <header class="ccg-section__header">
                 <h2 class="ccg-section__title">Browse by Genre</h2>
-                <p class="ccg-section__subtitle">
-                    Tap a genre tile to jump straight into a curated slice of the library.
-                </p>
+                <p class="ccg-section__subtitle">Tap a genre tile to jump straight into a curated slice of the library.</p>
             </header>
 
             <div class="ccg-genre-grid">
+
+                <!-- Arcade -->
+                <article class="ccg-genre-card">
+                    <a href="games/genres/arcade-games.html" class="ccg-genre-card__link">
+                        <div class="ccg-genre-card__thumb">
+                            <img src="resources/images/genres/arcade.png" alt="Arcade games" loading="lazy">
+                        </div>
+                    </a>
+                </article>
+
                 <!-- Action Adventure -->
                 <article class="ccg-genre-card">
                     <a href="games/genres/action-adventure-games.html" class="ccg-genre-card__link">
@@ -172,15 +172,6 @@
                     <a href="games/genres/adventure-games.html" class="ccg-genre-card__link">
                         <div class="ccg-genre-card__thumb">
                             <img src="resources/images/genres/adventure.png" alt="Adventure games" loading="lazy">
-                        </div>
-                    </a>
-                </article>
-
-                <!-- Arcade -->
-                <article class="ccg-genre-card">
-                    <a href="games/genres/arcade-games.html" class="ccg-genre-card__link">
-                        <div class="ccg-genre-card__thumb">
-                            <img src="resources/images/genres/arcade.png" alt="Arcade games" loading="lazy">
                         </div>
                     </a>
                 </article>
@@ -214,7 +205,7 @@
 
                 <!-- Misc -->
                 <article class="ccg-genre-card">
-                    <a href="games/genres/miscellaneous.html" class="ccg-genre-card__link">
+                    <a href="games/genres/miscellaneous-games.html" class="ccg-genre-card__link">
                         <div class="ccg-genre-card__thumb">
                             <img src="resources/images/genres/miscellaneous.png" alt="Miscellaneous games" loading="lazy">
                         </div>
@@ -257,9 +248,9 @@
                     </a>
                 </article>
 
-                <!-- RPG -->
+                <!-- Role Playing -->
                 <article class="ccg-genre-card">
-                    <a href="games/genres/rpg-games.html" class="ccg-genre-card__link">
+                    <a href="games/genres/role-playing-games.html" class="ccg-genre-card__link">
                         <div class="ccg-genre-card__thumb">
                             <img src="resources/images/genres/role-playing.png" alt="Role-playing games" loading="lazy">
                         </div>
@@ -292,50 +283,44 @@
                         </div>
                     </a>
                 </article>
+
             </div>
         </section>
 
-        <!-- FEATURED GAME + FEATURED VIDEO -->
+        <!-- =========================
+             FEATURED HIGHLIGHTS
+        ========================== -->
         <section class="ccg-section ccg-section--featured">
             <header class="ccg-section__header">
                 <h2 class="ccg-section__title">Featured Highlights</h2>
-                <p class="ccg-section__subtitle">
-                    One essential game and one video to dive into right now.
-                </p>
+                <p class="ccg-section__subtitle">One essential game and one video to dive into right now.</p>
             </header>
 
             <div class="ccg-featured-grid">
-                <!-- Featured game card -->
+                
+                <!-- Featured Game -->
                 <article class="ccg-card ccg-card--featured-game">
                     <div class="ccg-card__media">
-                        <img
-                            src="resources/images/thumbnails/all/last_ninja_ii.jpg"
-                            alt="The Last Ninja 2 on Commodore 64"
-                            loading="lazy"
-                        >
+                        <img src="resources/images/thumbnails/all/last_ninja_ii.jpg"
+                             alt="The Last Ninja 2 on Commodore 64"
+                             loading="lazy">
                         <div class="ccg-card__media-gradient"></div>
                     </div>
                     <div class="ccg-card__body">
                         <h3 class="ccg-card__title">Featured Game: The Last Ninja 2 (C64)</h3>
-                        <p class="ccg-card__meta">
-                            System: <span>C64</span> • Year: <span>1988</span> • Publisher: <span>System 3</span>
-                        </p>
+                        <p class="ccg-card__meta">System: <span>C64</span> • Year: <span>1988</span> • Publisher: <span>System 3</span></p>
                         <p class="ccg-card__text">
                             Iconic streets of New York, crunchy SID tunes and brutal difficulty.
                             One of the all-time greats and a must-play for any Commodore fanatic.
                         </p>
                         <div class="ccg-card__actions">
-                            <a href="games/game.html?id=last_ninja_ii" class="ccg-btn ccg-btn--primary ccg-btn--sm">
-                                View Game Page
-                            </a>
-                            <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener" class="ccg-btn ccg-btn--ghost ccg-btn--sm">
-                                Watch Longplay
-                            </a>
+                            <a href="games/game.html?id=last_ninja_ii" class="ccg-btn ccg-btn--primary ccg-btn--sm">View Game Page</a>
+                            <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="ccg-btn ccg-btn--ghost ccg-btn--sm">Watch Longplay</a>
                         </div>
                     </div>
                 </article>
 
-                <!-- Featured video card -->
+                <!-- Featured Video -->
                 <article class="ccg-card ccg-card--featured-video">
                     <div class="ccg-card__media ccg-card__media--video">
                         <div class="ccg-card__video-frame">
@@ -343,135 +328,116 @@
                                 src="https://www.youtube.com/embed/oi-AwIG7MYg"
                                 title="Featured Cheeky Commodore Gamer video"
                                 loading="lazy"
-                                allowfullscreen
-                            ></iframe>
+                                allowfullscreen></iframe>
                         </div>
                     </div>
                     <div class="ccg-card__body">
                         <h3 class="ccg-card__title">Featured Video: 1942 (C64) Deep Dive</h3>
-                        <p class="ccg-card__meta">
-                            Arcade conversion, chunky sprites, and that classic Elite energy.
-                        </p>
+                        <p class="ccg-card__meta">Arcade conversion, chunky sprites, and that classic Elite energy.</p>
                         <p class="ccg-card__text">
-                            A proper look at the home computer take on Capcom’s shooter — quirks,
-                            highlights and why it still feels so good to blast through today.
+                            A proper look at the home computer take on Capcom’s shooter —
+                            quirks, highlights and why it still feels so good to blast through.
                         </p>
                         <div class="ccg-card__actions">
-                            <a
-                                href="https://www.youtube.com/watch?v=oi-AwIG7MYg"
-                                target="_blank"
-                                rel="noopener"
-                                class="ccg-btn ccg-btn--primary ccg-btn--sm"
-                            >
+                            <a href="https://www.youtube.com/watch?v=oi-AwIG7MYg"
+                               target="_blank"
+                               class="ccg-btn ccg-btn--primary ccg-btn--sm">
                                 Watch on YouTube
                             </a>
                         </div>
                     </div>
                 </article>
+
             </div>
         </section>
 
-        <!-- BROWSE BY COLLECTION (thumbs + colour strips) -->
+        <!-- =========================
+             BROWSE BY COLLECTION
+        ========================== -->
         <section class="ccg-section ccg-section--collections">
-    <header class="ccg-section__header">
-        <h2 class="ccg-section__title">Browse by Collection</h2>
-        <p class="ccg-section__subtitle">
-            Curated sets for quick hits of nostalgia — special playlists built on top of the main genres.
-        </p>
-    </header>
+            <header class="ccg-section__header">
+                <h2 class="ccg-section__title">Browse by Collection</h2>
+                <p class="ccg-section__subtitle">
+                    Curated sets for quick hits of nostalgia — special playlists built on top of the main genres.
+                </p>
+            </header>
 
-    <div class="ccg-collection-grid">
-        <!-- BPJS Indexed -->
-        <article class="ccg-collection-card ccg-collection-card--bpjs">
-            <div class="ccg-collection-card__strip ccg-collection-card__strip--top"></div>
-            <a href="games/genres/bpjs-indexed-games.html" class="ccg-collection-card__link">
-                <div class="ccg-collection-card__thumb-wrap">
-                    <img
-                        src="resources/images/genres/bpjs.png"
-                        alt="BPJS indexed games collection"
-                        loading="lazy"
-                    >
-                </div>
-                <div class="ccg-collection-card__body">
-                    <h3 class="ccg-collection-card__title">BPJS Indexed Games</h3>
-                    <p class="ccg-collection-card__text">
-                        A unique snapshot of games that appeared on the BPJS index — culturally important,
-                        controversial and fascinating to explore.
-                    </p>
-                </div>
-            </a>
-            <div class="ccg-collection-card__strip ccg-collection-card__strip--bottom"></div>
-        </article>
+            <div class="ccg-collection-grid">
 
-        <!-- Cartridge Games -->
-        <article class="ccg-collection-card ccg-collection-card--cartridge">
-            <div class="ccg-collection-card__strip ccg-collection-card__strip--top"></div>
-            <a href="games/genres/cartridge-games.html" class="ccg-collection-card__link">
-                <div class="ccg-collection-card__thumb-wrap">
-                    <img
-                        src="resources/images/genres/cartridge.png"
-                        alt="Cartridge games collection"
-                        loading="lazy"
-                    >
-                </div>
-                <div class="ccg-collection-card__body">
-                    <h3 class="ccg-collection-card__title">Cartridge Games</h3>
-                    <p class="ccg-collection-card__text">
-                        Fast-loading, plug-in-and-play titles that showed what cartridges could do — no tape delays,
-                        just instant action.
-                    </p>
-                </div>
-            </a>
-            <div class="ccg-collection-card__strip ccg-collection-card__strip--bottom"></div>
-        </article>
+                <!-- Top Picks -->
+                <article class="ccg-collection-card ccg-collection-card--top-picks">
+                    <div class="ccg-collection-card__strip ccg-collection-card__strip--top"></div>
+                    <a href="games/collections/top-picks.html" class="ccg-collection-card__link">
+                        <div class="ccg-collection-card__thumb-wrap">
+                            <img src="resources/images/genres/top-picks.png" alt="Top picks collection" loading="lazy">
+                        </div>
+                        <div class="ccg-collection-card__body">
+                            <h3 class="ccg-collection-card__title">Top Picks</h3>
+                            <p class="ccg-collection-card__text">
+                                Cheeky Commodore Gamer’s personal hall-of-fame — must-play classics across C64 and Amiga.
+                            </p>
+                        </div>
+                    </a>
+                    <div class="ccg-collection-card__strip ccg-collection-card__strip--bottom"></div>
+                </article>
 
-        <!-- Licensed Games -->
-        <article class="ccg-collection-card ccg-collection-card--licensed">
-            <div class="ccg-collection-card__strip ccg-collection-card__strip--top"></div>
-            <a href="games/genres/licensed-games.html" class="ccg-collection-card__link">
-                <div class="ccg-collection-card__thumb-wrap">
-                    <img
-                        src="resources/images/genres/licensed.png"
-                        alt="Licensed games collection"
-                        loading="lazy"
-                    >
-                </div>
-                <div class="ccg-collection-card__body">
-                    <h3 class="ccg-collection-card__title">Licensed Games</h3>
-                    <p class="ccg-collection-card__text">
-                        Film tie-ins, TV favourites and brand crossovers — from guilty pleasures to genuinely
-                        brilliant adaptations.
-                    </p>
-                </div>
-            </a>
-            <div class="ccg-collection-card__strip ccg-collection-card__strip--bottom"></div>
-        </article>
+                <!-- BPJS -->
+                <article class="ccg-collection-card ccg-collection-card--bpjs">
+                    <div class="ccg-collection-card__strip ccg-collection-card__strip--top"></div>
+                    <a href="games/collections/bpjs-indexed-games.html" class="ccg-collection-card__link">
+                        <div class="ccg-collection-card__thumb-wrap">
+                            <img src="resources/images/genres/bpjs.png" alt="BPJS indexed collection" loading="lazy">
+                        </div>
+                        <div class="ccg-collection-card__body">
+                            <h3 class="ccg-collection-card__title">BPJS Indexed Games</h3>
+                            <p class="ccg-collection-card__text">
+                                Family-friendly, classroom-ready and carefully indexed — perfect for younger players and shared setups.
+                            </p>
+                        </div>
+                    </a>
+                    <div class="ccg-collection-card__strip ccg-collection-card__strip--bottom"></div>
+                </article>
 
-        <!-- Top Picks -->
-        <article class="ccg-collection-card ccg-collection-card--top-picks">
-            <div class="ccg-collection-card__strip ccg-collection-card__strip--top"></div>
-            <a href="games/genres/top-picks.html" class="ccg-collection-card__link">
-                <div class="ccg-collection-card__thumb-wrap">
-                    <img
-                        src="resources/images/genres/top-picks.png"
-                        alt="Top picks collection"
-                        loading="lazy"
-                    >
-                </div>
-                <div class="ccg-collection-card__body">
-                    <h3 class="ccg-collection-card__title">Top Picks</h3>
-                    <p class="ccg-collection-card__text">
-                        Cheeky Commodore Gamer’s personal hall-of-fame — must-play classics across C64 and Amiga.
-                    </p>
-                </div>
-            </a>
-            <div class="ccg-collection-card__strip ccg-collection-card__strip--bottom"></div>
-        </article>
-    </div>
-</section>
+                <!-- Cartridge -->
+                <article class="ccg-collection-card ccg-collection-card--cartridge">
+                    <div class="ccg-collection-card__strip ccg-collection-card__strip--top"></div>
+                    <a href="games/collections/cartridge-games.html" class="ccg-collection-card__link">
+                        <div class="ccg-collection-card__thumb-wrap">
+                            <img src="resources/images/genres/cartridge.png" alt="Cartridge games collection" loading="lazy">
+                        </div>
+                        <div class="ccg-collection-card__body">
+                            <h3 class="ccg-collection-card__title">Cartridge Games</h3>
+                            <p class="ccg-collection-card__text">
+                                Fast-loading, plug-in-and-play titles — instant action without the tape delays.
+                            </p>
+                        </div>
+                    </a>
+                    <div class="ccg-collection-card__strip ccg-collection-card__strip--bottom"></div>
+                </article>
 
+                <!-- Licensed -->
+                <article class="ccg-collection-card ccg-collection-card--licensed">
+                    <div class="ccg-collection-card__strip ccg-collection-card__strip--top"></div>
+                    <a href="games/collections/licensed-games.html" class="ccg-collection-card__link">
+                        <div class="ccg-collection-card__thumb-wrap">
+                            <img src="resources/images/genres/licensed.png" alt="Licensed games collection" loading="lazy">
+                        </div>
+                        <div class="ccg-collection-card__body">
+                            <h3 class="ccg-collection-card__title">Licensed Games</h3>
+                            <p class="ccg-collection-card__text">
+                                Film, TV and comic tie-ins — the good, the bad and the brilliantly odd.
+                            </p>
+                        </div>
+                    </a>
+                    <div class="ccg-collection-card__strip ccg-collection-card__strip--bottom"></div>
+                </article>
 
-        <!-- TRIVIA / COMMUNITY CTA -->
+            </div>
+        </section>
+
+        <!-- =========================
+             COMMUNITY SECTION
+        ========================== -->
         <section class="ccg-section ccg-section--community">
             <header class="ccg-section__header">
                 <h2 class="ccg-section__title">Trivia, Community &amp; Extras</h2>
@@ -481,18 +447,15 @@
             </header>
 
             <div class="ccg-community-grid">
+
                 <article class="ccg-card ccg-card--community">
                     <h3 class="ccg-card__title">CCG Trivia League</h3>
                     <p class="ccg-card__text">
                         Test your knowledge across multiple quiz sets and climb the monthly leaderboard.
                     </p>
                     <div class="ccg-card__actions">
-                        <a href="quiz/quiz.html" class="ccg-btn ccg-btn--primary ccg-btn--sm">
-                            Play the Quiz
-                        </a>
-                        <a href="quiz/quiz-leaderboard.html" class="ccg-btn ccg-btn--ghost ccg-btn--sm">
-                            View Leaderboard
-                        </a>
+                        <a href="quiz/quiz.html" class="ccg-btn ccg-btn--primary ccg-btn--sm">Play the Quiz</a>
+                        <a href="quiz/quiz-leaderboard.html" class="ccg-btn ccg-btn--ghost ccg-btn--sm">Leaderboard</a>
                     </div>
                 </article>
 
@@ -502,9 +465,8 @@
                         Longplays, breakdowns and retrospectives — all synced with the site’s game pages.
                     </p>
                     <div class="ccg-card__actions">
-                        <a href="https://www.youtube.com/@CheekyCommodoreGamer" class="ccg-btn ccg-btn--primary ccg-btn--sm" target="_blank" rel="noopener">
-                            Open Channel
-                        </a>
+                        <a href="https://www.youtube.com/@CheekyCommodoreGamer"
+                           class="ccg-btn ccg-btn--primary ccg-btn--sm" target="_blank">Open Channel</a>
                     </div>
                 </article>
 
@@ -514,11 +476,11 @@
                         Help keep the tapes spinning, floppies whirring and videos coming thick and fast.
                     </p>
                     <div class="ccg-card__actions">
-                        <a href="https://patreon.com/CheekyCommodoreGamer" class="ccg-btn ccg-btn--primary ccg-btn--sm" target="_blank" rel="noopener">
-                            Become a Patron
-                        </a>
+                        <a href="https://patreon.com/CheekyCommodoreGamer"
+                           class="ccg-btn ccg-btn--primary ccg-btn--sm" target="_blank">Become a Patron</a>
                     </div>
                 </article>
+
             </div>
         </section>
     </main>
@@ -528,14 +490,15 @@
     ========================== -->
     <footer class="ccg-footer">
         <p class="ccg-footer__text">
-            &copy; <span data-ccg-year></span> Cheeky Commodore Gamer. Not affiliated with Commodore, Amiga or any publishers.
+            &copy; <span data-ccg-year></span> Cheeky Commodore Gamer.
+            Not affiliated with Commodore, Amiga or any publishers.
         </p>
     </footer>
 
-    <!-- Global scripts -->
+    <!-- Scripts -->
     <script src="js/ccj-global.js" defer></script>
     <script src="js/ccg-mode-engine.js" defer></script>
-    <!-- Home-only dynamics -->
     <script src="js/home-dynamic.js" defer></script>
+
 </body>
 </html>
