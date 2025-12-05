@@ -1,5 +1,5 @@
 /* ============================================================
-   HOME.CSS — OMEGA CINEMATIC EDITION (FINAL POLISH)
+   HOME.CSS — OMEGA CINEMATIC EDITION (FINAL POLISH v2)
    Hero crossfade • tighter header • glowing cards • consistent
    grids • mobile refinements • zero logic changes.
    ============================================================ */
@@ -39,6 +39,13 @@
     position: relative;
     z-index: 5;
     padding: 0.85rem 2rem 0.35rem;
+    backdrop-filter: blur(6px);
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.85),
+        rgba(0, 0, 0, 0.4),
+        transparent
+    );
 }
 
 .ccg-header-inner {
@@ -62,8 +69,10 @@
     height: 52px;
     width: auto;
     flex-shrink: 0;
-    filter: drop-shadow(0 0 10px rgba(var(--accent-rgb), 0.4));
+    filter: drop-shadow(0 0 10px rgba(var(--accent-rgb), 0.45));
     border-radius: 10px;
+    opacity: 0.94;
+    transform: translateY(1px);
 }
 
 .ccg-brand__text {
@@ -77,7 +86,7 @@
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--text-dim);
-    opacity: 0.9;
+    opacity: 0.95;
 }
 
 .ccg-brand__title {
@@ -94,8 +103,8 @@
 .ccg-brand__neon-cheeky {
     color: var(--accent);
     text-shadow:
-        0 0 10px rgba(var(--accent-rgb), 0.9),
-        0 0 20px rgba(var(--accent-rgb), 0.6);
+        0 0 8px rgba(var(--accent-rgb), 0.9),
+        0 0 18px rgba(var(--accent-rgb), 0.6);
 }
 
 .ccg-brand__neon-sub {
@@ -137,7 +146,9 @@
         background var(--transition-fast),
         border-color var(--transition-fast),
         transform var(--transition-fast),
-        box-shadow var(--transition-fast);
+        box-shadow var(--transition-fast),
+        color 0.25s ease,
+        text-shadow 0.25s ease;
 }
 
 .ccg-nav__link:hover {
@@ -145,6 +156,8 @@
     border-color: rgba(var(--accent-rgb), 0.6);
     box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.5);
     transform: translateY(-1px);
+    color: #00c8ff;
+    text-shadow: 0 0 6px #00c8ff;
 }
 
 .ccg-nav__link--active {
@@ -179,8 +192,17 @@
     background: rgba(0, 0, 0, 0.7);
     box-shadow:
         0 0 0 1px rgba(255, 255, 255, 0.16),
-        0 0 16px rgba(var(--accent-rgb), 0.45);
+        0 0 18px rgba(var(--accent-rgb), 0.45),
+        inset 0 0 10px rgba(0, 0, 0, 0.9);
     min-width: 80px;
+    transition: box-shadow 0.3s ease;
+}
+
+.ccg-body[data-ccg-mode="amiga"] .ccg-mode-toggle__pill {
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.18),
+        0 0 18px rgba(255, 60, 255, 0.45),
+        inset 0 0 10px rgba(0, 0, 0, 0.9);
 }
 
 .ccg-mode-toggle__label {
@@ -203,7 +225,7 @@
     box-shadow:
         0 0 10px rgba(var(--accent-rgb), 0.9),
         0 0 20px rgba(var(--accent-rgb), 0.7);
-    transition: transform 0.25s ease;
+    transition: transform 0.25s ease, background 0.25s ease;
 }
 
 /* Thumb position based on mode */
@@ -404,6 +426,11 @@
     letter-spacing: 0.03em;
     margin-bottom: 0.7rem;
     line-height: 1.2;
+    text-shadow: 0 0 8px rgba(0, 200, 255, 0.35);
+}
+
+.ccg-body[data-ccg-mode="amiga"] .ccg-hero__title {
+    text-shadow: 0 0 8px rgba(255, 80, 200, 0.35);
 }
 
 .ccg-hero__title-accent {
@@ -433,6 +460,16 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.12em;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.ccg-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 14px rgba(0, 200, 255, 0.4);
+}
+
+.ccg-body[data-ccg-mode="amiga"] .ccg-btn:hover {
+    box-shadow: 0 0 14px rgba(255, 80, 200, 0.4);
 }
 
 /* Size variant */
@@ -612,6 +649,14 @@
         inset 0 0 18px rgba(0, 255, 255, 0.08);
     display: flex;
     flex-direction: column;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.ccg-card:hover {
+    transform: translateY(-6px);
+    box-shadow:
+        0 0 26px rgba(var(--accent-rgb), 0.6),
+        inset 0 0 18px rgba(var(--accent-rgb), 0.16);
 }
 
 .ccg-body[data-ccg-mode="amiga"] .ccg-card {
@@ -841,6 +886,10 @@
     .ccg-header {
         padding-inline: 1.25rem;
     }
+
+    .ccg-featured-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 760px) {
@@ -875,6 +924,10 @@
     .ccg-section {
         margin-top: 3rem;
     }
+
+    .ccg-collection-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 640px) {
@@ -884,14 +937,6 @@
 
     .ccg-hero__subtitle {
         font-size: 1rem;
-    }
-
-    .ccg-featured-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .ccg-collection-grid {
-        grid-template-columns: 1fr;
     }
 
     .ccg-genre-grid {
