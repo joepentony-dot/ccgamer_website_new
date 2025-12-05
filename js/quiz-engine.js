@@ -1,210 +1,388 @@
-// ====================================================================
+// ======================================================================
 // QUIZ ENGINE — OMEGA FX EDITION
-// Handles: Questions, Flow, Score Logic, Animations, SFX, SID Bars
-// ====================================================================
+// Cheeky Commodore Gamer 😇🕹️👌
+// ----------------------------------------------------------------------
+// - Drives the quiz flow on quiz/quiz.html
+// - Talks to quiz-loader.js (loadQuizSets, loadQuizQuestions, saveQuizScore, trackQuizEvent)
+// - Adds:
+//     * Animated score counter
+//     * SID-wave ambient bar intensity control
+//     * Button SFX with toggle (no external audio files required)
+// ======================================================================
 
-let quizState = {
-    setId: null,
-    questions: [],
-    index: 0,
-    score: 0,
-    sfxEnabled: true
-};
+(function () {
+    "use strict";
 
-// -------------------------------------------------------------
-// SOUND FX
-// -------------------------------------------------------------
-const quizSFX = {
-    click: new Audio("../resources/sfx/click.wav"),
-    correct: new Audio("../resources/sfx/correct.wav"),
-    wrong: new Audio("../resources/sfx/wrong.wav")
-};
+    // --------------------------------------------------
+    // STATE
+    // --------------------------------------------------
+    const SFX_STORAGE_KEY = "ccg_quiz_sfx_enabled";
 
-function playSFX(type) {
-    if (!quizState.sfxEnabled) return;
-    let sound = quizSFX[type];
-    if (sound) {
-        sound.currentTime = 0;
-        sound.play().catch(() => {});
-    }
-}
+    const quizState = {
+        sets: [],
+        currentSetId: null,
+        questions: [],
+        currentIndex: 0,
+        score: 0,
+        sfxEnabled: true
+    };
 
-// -------------------------------------------------------------
-// SFX TOGGLE BUTTON
-// -------------------------------------------------------------
-function initSfxToggle() {
-    const btn = document.getElementById("quiz-sfx-toggle");
-    if (!btn) return;
+    let audioCtx = null;
 
-    // Load saved preference
-    quizState.sfxEnabled = localStorage.getItem("quizSfx") !== "off";
-    if (!quizState.sfxEnabled) btn.classList.add("muted");
+    // --------------------------------------------------
+    // UTILITIES
+    // --------------------------------------------------
+    const $ = (id) => document.getElementById(id);
 
-    btn.addEventListener("click", () => {
-        quizState.sfxEnabled = !quizState.sfxEnabled;
-        localStorage.setItem("quizSfx", quizState.sfxEnabled ? "on" : "off");
-
-        btn.classList.toggle("muted", !quizState.sfxEnabled);
-        playSFX("click");
-    });
-}
-
-// -------------------------------------------------------------
-// INITIALISE SID BARS
-// -------------------------------------------------------------
-function activateSidBars() {
-    const bars = document.getElementById("quiz-sid-bars");
-    if (bars) bars.style.opacity = "0.25";
-}
-
-function reduceSidBars() {
-    const bars = document.getElementById("quiz-sid-bars");
-    if (bars) bars.style.opacity = "0.10";
-}
-
-// -------------------------------------------------------------
-// RENDER QUESTION
-// -------------------------------------------------------------
-function renderQuestion() {
-    const c = document.getElementById("quiz-container");
-    const q = quizState.questions[quizState.index];
-    if (!q) return;
-
-    activateSidBars();
-    playSFX("click");
-
-    c.innerHTML = `
-        <h2 class="quiz-question-title">${q.question}</h2>
-
-        <div class="quiz-options">
-            ${q.options.map((opt, i) => `
-                <button class="quiz-option-btn quiz-sfx" data-idx="${i}">
-                    ${opt}
-                </button>
-            `).join("")}
-        </div>
-    `;
-
-    document.querySelectorAll(".quiz-option-btn").forEach(btn => {
-        btn.addEventListener("click", () => handleAnswer(btn));
-    });
-}
-
-// -------------------------------------------------------------
-// ANSWER HANDLER
-// -------------------------------------------------------------
-function handleAnswer(btn) {
-    const idx = Number(btn.dataset.idx);
-    const q = quizState.questions[quizState.index];
-
-    const correct = idx === q.answer;
-
-    if (correct) {
-        btn.classList.add("correct");
-        quizState.score++;
-        playSFX("correct");
-    } else {
-        btn.classList.add("wrong");
-        playSFX("wrong");
+    function escapeHtml(str) {
+        if (typeof str !== "string") return "";
+        return str
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
     }
 
-    reduceSidBars();
+    function safeTrack(eventType, data) {
+        try {
+            if (typeof trackQuizEvent === "function") {
+                trackQuizEvent(eventType, data || {});
+            }
+        } catch (e) {
+            // tracking must never break the quiz
+            console.warn("quiz track error:", e);
+        }
+    }
 
-    // Disable other buttons
-    document.querySelectorAll(".quiz-option-btn").forEach(b => b.disabled = true);
+    // --------------------------------------------------
+    // SID BAR INTENSITY (FX only)
+    // --------------------------------------------------
+    function setSidBarsIntensity(opacity) {
+        const bars = $("quiz-sid-bars");
+        if (!bars) return;
+        bars.style.opacity = String(opacity);
+    }
 
-    setTimeout(nextQuestion, 900);
-}
+    // --------------------------------------------------
+    // SOUND FX (Web Audio — no external files required)
+    // --------------------------------------------------
+    function ensureAudioContext() {
+        if (audioCtx) return audioCtx;
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return null;
+        audioCtx = new Ctx();
+        return audioCtx;
+    }
 
-// -------------------------------------------------------------
-// PROCEED TO NEXT QUESTION
-// -------------------------------------------------------------
-function nextQuestion() {
-    quizState.index++;
+    function playBeep(kind) {
+        if (!quizState.sfxEnabled) return;
 
-    if (quizState.index >= quizState.questions.length) {
-        finishQuiz();
-    } else {
+        const ctx = ensureAudioContext();
+        if (!ctx) return;
+
+        try {
+            const now = ctx.currentTime;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            let freq = 660; // default click
+            if (kind === "correct") freq = 1200;
+            else if (kind === "wrong") freq = 240;
+
+            osc.type = "square";
+            osc.frequency.setValueAtTime(freq, now);
+
+            gain.gain.setValueAtTime(0.001, now);
+            gain.gain.exponentialRampToValueAtTime(0.3, now + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start(now);
+            osc.stop(now + 0.22);
+        } catch (e) {
+            // ignore audio issues
+        }
+    }
+
+    // --------------------------------------------------
+    // SFX TOGGLE
+    // --------------------------------------------------
+    function initSfxToggle() {
+        const btn = $("quiz-sfx-toggle");
+        if (!btn) return;
+
+        // Load saved preference
+        const stored = localStorage.getItem(SFX_STORAGE_KEY);
+        quizState.sfxEnabled = stored !== "off";
+
+        if (!quizState.sfxEnabled) {
+            btn.classList.add("muted");
+        }
+
+        btn.addEventListener("click", () => {
+            quizState.sfxEnabled = !quizState.sfxEnabled;
+            localStorage.setItem(
+                SFX_STORAGE_KEY,
+                quizState.sfxEnabled ? "on" : "off"
+            );
+            btn.classList.toggle("muted", !quizState.sfxEnabled);
+            playBeep("click");
+        });
+    }
+
+    // --------------------------------------------------
+    // QUIZ INITIALISATION
+    // --------------------------------------------------
+    async function initQuiz() {
+        // Pre-load quiz sets if backend supports them
+        try {
+            if (typeof loadQuizSets === "function") {
+                const sets = await loadQuizSets();
+                if (Array.isArray(sets)) {
+                    quizState.sets = sets;
+                }
+            }
+        } catch (e) {
+            console.warn("Failed to load quiz sets:", e);
+        }
+
+        // Start button
+        const startBtn = $("quiz-start-btn");
+        if (startBtn) {
+            startBtn.addEventListener("click", () => {
+                playBeep("click");
+                startQuiz();
+            });
+        }
+    }
+
+    function getDefaultSetId() {
+        if (quizState.currentSetId) return quizState.currentSetId;
+
+        if (Array.isArray(quizState.sets) && quizState.sets.length > 0) {
+            const first = quizState.sets[0];
+            return first.id || first.set || "default";
+        }
+
+        return "default";
+    }
+
+    // --------------------------------------------------
+    // QUIZ FLOW
+    // --------------------------------------------------
+    async function startQuiz() {
+        quizState.currentIndex = 0;
+        quizState.score = 0;
+        quizState.currentSetId = getDefaultSetId();
+        setSidBarsIntensity(0.25);
+
+        const container = $("quiz-container");
+        const cabinet = $("quiz-score-cabinet");
+
+        if (cabinet) {
+            cabinet.hidden = true;
+        }
+        if (container) {
+            container.innerHTML =
+                '<p class="quiz-status">Loading questions…</p>';
+        }
+
+        safeTrack("quizStart", { set: quizState.currentSetId });
+
+        try {
+            let qs = [];
+            if (typeof loadQuizQuestions === "function") {
+                qs = await loadQuizQuestions(quizState.currentSetId);
+            }
+            quizState.questions = Array.isArray(qs) ? qs : [];
+        } catch (e) {
+            console.error("Failed to load questions:", e);
+            quizState.questions = [];
+        }
+
+        if (!quizState.questions.length) {
+            if (container) {
+                container.innerHTML =
+                    '<p class="quiz-status">No questions available for this quiz set yet.</p>';
+            }
+            return;
+        }
+
         renderQuestion();
     }
-}
 
-// -------------------------------------------------------------
-// FINAL SCORE — ANIMATED COUNTER + CABINET DISPLAY
-// -------------------------------------------------------------
-function finishQuiz() {
-    const container = document.getElementById("quiz-container");
-    const cabinet = document.getElementById("quiz-score-cabinet");
-    const animScore = document.getElementById("quiz-score-animated");
+    function renderQuestion() {
+        const container = $("quiz-container");
+        if (!container) return;
 
-    container.innerHTML = "";
-    cabinet.hidden = false;
+        if (
+            !Array.isArray(quizState.questions) ||
+            quizState.currentIndex >= quizState.questions.length
+        ) {
+            finishQuiz();
+            return;
+        }
 
-    let current = 0;
-    let target = quizState.score;
+        const q = quizState.questions[quizState.currentIndex];
+        const qText = escapeHtml(q.question || "");
+        const options = Array.isArray(q.options) ? q.options : [];
 
-    const interval = setInterval(() => {
-        current++;
-        animScore.textContent = current;
-        animScore.classList.add("pulse");
-        setTimeout(() => animScore.classList.remove("pulse"), 120);
+        setSidBarsIntensity(0.35);
 
-        if (current >= target) clearInterval(interval);
-    }, 45);
+        container.innerHTML = `
+            <div class="quiz-question-block">
+                <h2 class="quiz-question-title">
+                    Q${quizState.currentIndex + 1}. ${qText}
+                </h2>
+                <div class="quiz-options">
+                    ${options
+                        .map(
+                            (opt, idx) => `
+                        <button class="quiz-option-btn"
+                                data-index="${idx}">
+                            ${escapeHtml(String(opt))}
+                        </button>`
+                        )
+                        .join("")}
+                </div>
+            </div>
+        `;
 
-    playSFX("click");
-
-    document.getElementById("quiz-save-btn").onclick = async () => {
-        const username = prompt("Enter your name for the leaderboard:");
-        if (!username) return;
-
-        await saveQuizScore({
-            name: username,
-            score: quizState.score,
-            total: quizState.questions.length,
-            setId: quizState.setId
-        });
-
-        playSFX("click");
-        window.location.href = "quiz-leaderboard.html";
-    };
-
-    document.getElementById("quiz-restart-btn").onclick = () => {
-        playSFX("click");
-        startQuiz(quizState.setId);
-    };
-}
-
-// -------------------------------------------------------------
-// LOAD A QUIZ SET & START
-// -------------------------------------------------------------
-async function startQuiz(setId = "default") {
-    quizState = {
-        setId,
-        index: 0,
-        score: 0,
-        sfxEnabled: quizState.sfxEnabled
-    };
-
-    const set = await loadQuizQuestions(setId);
-    quizState.questions = set;
-
-    document.getElementById("quiz-score-cabinet").hidden = true;
-    renderQuestion();
-}
-
-// -------------------------------------------------------------
-// INITIALISE PAGE
-// -------------------------------------------------------------
-document.addEventListener("DOMContentLoaded", async () => {
-    initSfxToggle();
-    activateSidBars();
-
-    const startBtn = document.getElementById("quiz-start-btn");
-    if (startBtn) {
-        startBtn.addEventListener("click", () => {
-            playSFX("click");
-            startQuiz("default");
+        const buttons = container.querySelectorAll(".quiz-option-btn");
+        buttons.forEach((btn) => {
+            btn.addEventListener("click", () =>
+                handleAnswerClick(btn, q)
+            );
         });
     }
-});
+
+    function handleAnswerClick(btn, question) {
+        const container = $("quiz-container");
+        if (!container) return;
+
+        const indexAttr = btn.getAttribute("data-index");
+        const chosenIndex = Number(indexAttr);
+        const correctIndex = Number(question.answer);
+
+        const allButtons = container.querySelectorAll(".quiz-option-btn");
+        allButtons.forEach((b) => (b.disabled = true));
+
+        if (chosenIndex === correctIndex) {
+            quizState.score++;
+            btn.classList.add("correct");
+            playBeep("correct");
+        } else {
+            btn.classList.add("wrong");
+            playBeep("wrong");
+
+            // Highlight correct answer if available
+            allButtons.forEach((b) => {
+                const idx = Number(b.getAttribute("data-index"));
+                if (idx === correctIndex) {
+                    b.classList.add("correct");
+                }
+            });
+        }
+
+        setSidBarsIntensity(0.2);
+
+        setTimeout(() => {
+            quizState.currentIndex += 1;
+            renderQuestion();
+        }, 900);
+    }
+
+    // --------------------------------------------------
+    // FINISH + SCORE CABINET
+    // --------------------------------------------------
+    function finishQuiz() {
+        const container = $("quiz-container");
+        const cabinet = $("quiz-score-cabinet");
+        const animScore = $("quiz-score-animated");
+
+        setSidBarsIntensity(0.1);
+        safeTrack("quizComplete", {
+            set: quizState.currentSetId,
+            score: quizState.score,
+            total: quizState.questions.length
+        });
+
+        if (container) {
+            container.innerHTML = "";
+        }
+        if (!cabinet || !animScore) return;
+
+        cabinet.hidden = false;
+
+        // Animated score counter
+        let current = 0;
+        const finalScore = quizState.score;
+        animScore.textContent = "0";
+
+        const step = Math.max(1, Math.ceil(finalScore / 40));
+        const timer = setInterval(() => {
+            current += step;
+            if (current >= finalScore) {
+                current = finalScore;
+                clearInterval(timer);
+            }
+            animScore.textContent = String(current);
+            animScore.classList.add("pulse");
+            setTimeout(() => animScore.classList.remove("pulse"), 120);
+        }, 45);
+
+        // Wire buttons
+        const saveBtn = $("quiz-save-btn");
+        const restartBtn = $("quiz-restart-btn");
+
+        if (saveBtn) {
+            saveBtn.onclick = async () => {
+                playBeep("click");
+                const name = window.prompt(
+                    "Enter your name for the leaderboard:"
+                );
+                if (!name) return;
+
+                try {
+                    if (typeof saveQuizScore === "function") {
+                        await saveQuizScore({
+                            name,
+                            score: quizState.score,
+                            total: quizState.questions.length,
+                            setId: quizState.currentSetId
+                        });
+                    }
+                    safeTrack("quizScoreSaved", {
+                        set: quizState.currentSetId,
+                        score: quizState.score
+                    });
+                    window.location.href = "quiz-leaderboard.html";
+                } catch (e) {
+                    console.error("Failed to save score:", e);
+                    window.alert(
+                        "Score could not be saved just now. Please try again later."
+                    );
+                }
+            };
+        }
+
+        if (restartBtn) {
+            restartBtn.onclick = () => {
+                playBeep("click");
+                startQuiz();
+            };
+        }
+    }
+
+    // --------------------------------------------------
+    // DOM READY
+    // --------------------------------------------------
+    document.addEventListener("DOMContentLoaded", () => {
+        initSfxToggle();
+        initQuiz();
+        setSidBarsIntensity(0.25);
+    });
+})();
