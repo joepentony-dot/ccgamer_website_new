@@ -33,10 +33,10 @@
             <source src="resources/videos/c64_loader.mp4" type="video/mp4">
         </video>
 
-        <!-- OVERLAY LAYERS -->
+        <!-- INTRO OVERLAY -->
         <div id="introOverlay" class="intro-overlay intro-click-area">
 
-            <!-- LOGO (visual only, not a link so clicks still start intro) -->
+            <!-- LOGO (fixed, non-clickable to preserve click-anywhere start) -->
             <div class="intro-logo">
                 <img src="resources/images/ccgamer-logo.png"
                      alt="Cheeky Commodore Gamer logo">
@@ -47,7 +47,7 @@
                 SKIP INTRO
             </button>
 
-            <!-- FADE LAYER -->
+            <!-- BLACK FADER -->
             <div id="introFade" class="intro-fade"></div>
 
             <!-- IDLE POWER ON PROMPT -->
@@ -56,8 +56,10 @@
                 <div class="intro-idle-sub">Press fire to boot the system...</div>
             </div>
 
-            <!-- C64 READY / LOAD TEXT -->
+            <!-- C64 READY + TYPED COMMANDS -->
             <div id="introC64" class="intro-c64-screen" aria-hidden="true">
+
+                <!-- STATIC C64 HEADER -->
                 <div class="intro-c64-line intro-c64-line--header">
                     **** COMMODORE 64 BASIC V2 ****
                 </div>
@@ -68,22 +70,23 @@
                     READY.
                 </div>
 
-                <!-- Typed lines appear here -->
+                <!-- TYPED LINES INSERT HERE -->
                 <div id="typedLines"></div>
             </div>
 
             <!-- BIG NEON SPEECH TEXT -->
             <div id="speechText" class="intro-speech-text" aria-hidden="true">
-                <!-- JS injects:
+                <!-- Populated dynamically:
                      ANOTHER VISITOR
                      STAY A WHILE
                      STAY FOREVER... -->
             </div>
-        </div>
 
-    </div>
+        </div> <!-- end overlay -->
 
-    <!-- JS -->
+    </div> <!-- end root -->
+
+    <!-- INTRO CONTROLLER -->
     <script src="js/index-intro.js" defer></script>
 </body>
 </html>
