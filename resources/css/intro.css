@@ -1,287 +1,263 @@
 /* ============================================================
-   Cheeky Commodore Gamer — EPIC C64 INTRO
-   Blue BASIC screen + raster bars + SID text
-============================================================ */
+   INTRO.CSS — Omega C64 Loading Intro
+   - Fullscreen video background
+   - Static C64 BASIC header
+   - Typed commands under READY
+   - Blinking cursor
+   - Neon cyan speech text
+   - Skip Intro button
+   - Fade in / out
+   ============================================================ */
 
-/* Base layout */
-html, body {
+:root {
+    --intro-bg: #000716;
+    --intro-blue-deep: #020b1f;
+    --intro-blue-panel: #071a3e;
+    --intro-cyan: #5fffd4;
+    --intro-white: #f5f7ff;
+}
+
+/* Body / root */
+.intro-body {
     margin: 0;
     padding: 0;
-    height: 100%;
+    background: radial-gradient(circle at center, #021534 0%, #000000 60%, #000000 100%);
+    color: var(--intro-white);
+    height: 100vh;
+    overflow: hidden;
+    font-family: "IBM Plex Mono", "Consolas", "Courier New", monospace;
 }
 
-body.intro-body {
-    background: #000;
-    color: #5fffff;
-    font-family: monospace;
-    overflow: hidden;
+.intro-root {
     position: relative;
-}
-
-.hidden {
-    display: none !important;
-}
-
-/* ============================================================
-   SKIP BUTTON — ALWAYS FRONT
-============================================================ */
-
-#skipIntroBtn {
-    position: fixed;
-    top: 14px;
-    right: 14px;
-    z-index: 999999 !important;
-    background: #b0002a;
-    color: #ffffff;
-    border: 2px solid #ffffff;
-    font-family: monospace;
-    font-size: 13px;
-    padding: 7px 14px;
-    cursor: pointer;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-}
-
-#skipIntroBtn:hover {
-    box-shadow: 0 0 12px rgba(255,140,140,0.9);
-}
-
-/* ============================================================
-   POWER ON OVERLAY
-============================================================ */
-
-#powerOverlay {
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    background:
-        radial-gradient(circle at center,
-            rgba(0, 60, 120, 0.75) 0%,
-            rgba(0, 0, 0, 1) 70%);
-}
-
-.intro-logo {
-    width: 320px;
-    max-width: 85vw;
-    margin-bottom: 32px;
-
-    image-rendering: crisp-edges;
-    image-rendering: pixelated;
-
-    filter:
-        drop-shadow(0 0 26px rgba(0,255,255,0.95))
-        drop-shadow(0 0 60px rgba(0,180,255,0.9));
-}
-
-#powerText {
-    font-size: clamp(22px, 5vw, 32px);
-    letter-spacing: 0.18em;
-    text-shadow: 0 0 8px rgba(95,255,255,1);
-    cursor: pointer;
-    animation: powerPulse 1.25s infinite ease-in-out;
-}
-
-@keyframes powerPulse {
-    0%   { opacity: 0.35; transform: scale(1);   }
-    50%  { opacity: 1;    transform: scale(1.09);}
-    100% { opacity: 0.35; transform: scale(1);   }
-}
-
-/* ============================================================
-   C64 BLUE SCREEN
-============================================================ */
-
-#c64Wrapper {
-    position: fixed;
-    inset: 0;
-    z-index: 500;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: #000;
-}
-
-.c64-border {
-    background: #000e78;
-    padding: clamp(10px, 3vw, 26px);
-    box-shadow:
-        0 0 25px rgba(0,0,0,0.9),
-        0 0 60px rgba(0, 80, 255, 0.55);
-}
-
-.c64-inner {
-    background: #3c31ff;
-    padding: clamp(22px, 4vw, 40px);
-    width: 900px;
-    max-width: 92vw;
-    height: 520px;
-    max-height: 70vh;
+    width: 100%;
+    height: 100vh;
     overflow: hidden;
-    border: 3px solid rgba(0,0,0,0.5);
-
-    box-shadow:
-        inset 0 0 40px rgba(0,0,0,0.7),
-        0 0 45px rgba(95,140,255,0.7);
 }
 
-#c64Text {
-    white-space: pre;
-    color: #5fffff;
-    font-size: clamp(13px, 2vw, 18px);
-    line-height: 1.33;
-    letter-spacing: 0.05em;
-    text-shadow:
-        0 0 6px rgba(95,255,255,0.8),
-        0 0 12px rgba(95,255,255,0.5);
-}
-
-/* ============================================================
-   MICRO FLASH BETWEEN C64 AND RASTER
-============================================================ */
-
-#flashOverlay {
-    position: fixed;
+/* Background video */
+.intro-video {
+    position: absolute;
     inset: 0;
-    z-index: 5500;
-    pointer-events: none;
-    opacity: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(1.2) contrast(1.25) brightness(0.9);
+    opacity: 0.9;
+}
 
+/* Dark gradient overlay & content container */
+.intro-overlay {
+    position: relative;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
     background:
         radial-gradient(circle at center,
-            #ffffff 0%,
-            #b0d9ff 35%,
-            #000000 80%);
+            rgba(0,0,0,0.35) 0%,
+            rgba(0,0,0,0.9) 70%,
+            #000000 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.flash-active {
-    animation: flashBurst 0.09s ease-out forwards;
+/* Make whole screen clickable for power on */
+.intro-click-area {
+    cursor: pointer;
 }
 
-@keyframes flashBurst {
-    0%   { opacity: 1; }
-    100% { opacity: 0; }
+/* Idle "POWER ON" prompt */
+.intro-idle {
+    text-align: center;
+    animation: intro-idle-fade 1.4s ease-in-out infinite alternate;
 }
 
-/* ============================================================
-   FULL-SCREEN RASTER BARS
-============================================================ */
+.intro-idle-title {
+    font-size: clamp(2.2rem, 4vw, 3rem);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--intro-cyan);
+    text-shadow:
+        0 0 14px rgba(95,255,212,0.95),
+        0 0 30px rgba(95,255,212,0.7);
+    margin-bottom: 0.7rem;
+}
 
-#rasterOverlay {
-    position: fixed;
+.intro-idle-sub {
+    font-size: 1.05rem;
+    opacity: 0.9;
+}
+
+@keyframes intro-idle-fade {
+    from { opacity: 0.55; transform: translateY(0); }
+    to   { opacity: 1; transform: translateY(-3px); }
+}
+
+/* Skip Intro button (top-right, always visible) */
+.intro-skip {
+    position: absolute;
+    top: 1.2rem;
+    right: 1.4rem;
+    z-index: 5;
+    padding: 0.5rem 1.2rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.6);
+    background: rgba(0,0,0,0.65);
+    color: var(--intro-white);
+    font-size: 0.85rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+
+    box-shadow:
+        0 0 10px rgba(0,0,0,0.6),
+        0 0 14px rgba(95,255,212,0.7);
+    transition: all 0.2s ease;
+}
+
+.intro-skip:hover {
+    background: rgba(95,255,212,0.18);
+    box-shadow:
+        0 0 18px rgba(95,255,212,0.8),
+        0 0 26px rgba(95,255,212,0.7);
+}
+
+/* Fade overlay */
+.intro-fade {
+    position: absolute;
     inset: 0;
-    z-index: 6000;
-    display: none;
-
-    background-color: #000;
-
-    /* Soft CRT diffusion */
-    filter: blur(4px);
-
-    /* GIF-based 30-colour palette, chunky stripes */
-    background-image:
-        repeating-linear-gradient(
-            180deg,
-
-            #000000 0px, #000000 4px,
-            #7c2cff 4px,  #7c2cff 14px,
-            #00e0ff 14px, #00e0ff 24px,
-            #3cff54 24px, #3cff54 34px,
-            #ff3535 34px, #ff3535 44px,
-            #ff7f27 44px, #ff7f27 54px,
-            #ffd38c 54px, #ffd38c 64px,
-            #fff23c 64px, #fff23c 74px,
-            #c4c4c4 74px, #c4c4c4 84px,
-            #384aff 84px, #384aff 94px,
-            #8e00ff 94px, #8e00ff 104px,
-            #00ffe0 104px, #00ffe0 114px,
-            #39ff3c 114px, #39ff3c 124px,
-            #ff4545 124px, #ff4545 134px,
-            #ffa03d 134px,#ffa03d 144px,
-            #ffe6a8 144px,#ffe6a8 154px,
-            #fff870 154px,#fff870 164px,
-            #d2d2d2 164px,#d2d2d2 174px,
-            #2f40ff 174px,#2f40ff 184px,
-            #000000 184px,#000000 188px
-        );
-
-    background-size: 100% 188px;
-
-    /* Smooth continuous scroll, no jitter */
-    animation: rasterScroll 0.32s linear infinite;
+    background: #000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.7s ease;
+    z-index: 4;
 }
 
-#rasterOverlay.raster-active {
+.intro-fade--active {
+    opacity: 1;
+}
+
+/* C64 READY / LOAD text block */
+.intro-c64-screen {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: min(720px, 95vw);
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle at top,
+        rgba(7,26,62,0.95),
+        rgba(3,12,35,0.98));
+    border-radius: 14px;
+    padding: 1.4rem 1.8rem;
+    border: 1px solid rgba(150,176,255,0.8);
+    box-shadow:
+        0 0 26px rgba(0,0,0,0.9),
+        0 0 32px rgba(37,112,255,0.7),
+        0 0 60px rgba(95,255,212,0.65);
+    color: #e7ebff;
+    font-size: 1rem;
+    line-height: 1.5;
+    display: none;
+}
+
+.intro-c64-screen--visible {
     display: block;
 }
 
-@keyframes rasterScroll {
-    0%   { background-position-y: 0; }
-    100% { background-position-y: 188px; }
+.intro-c64-line {
+    min-height: 1.3em;
+    white-space: pre-wrap;
 }
 
-/* ============================================================
-   SID BIG TEXT ("ANOTHER VISITOR...")
-============================================================ */
-
-#sidText {
-    position: fixed;
-    top: 38%;
-    width: 100%;
-    text-align: center;
-
-    font-family: "Press Start 2P", monospace;
-    font-size: clamp(26px, 6.5vw, 52px);
-
-    opacity: 0;
-    letter-spacing: 0.15em;
-    color: #00eaff;
-
+/* Header lines slightly dimmer */
+.intro-c64-line--header {
+    color: rgba(232,239,255,0.94);
     text-shadow:
-        0 0 14px #00eaff,
-        0 0 34px #00bbff,
-        0 0 64px #0077ff,
-        0 0 140px #0050ff;
+        0 0 6px rgba(95,255,212,0.35),
+        0 0 14px rgba(37,112,255,0.45);
+}
 
-    z-index: 6500;
+/* Typed lines neon accent */
+#typedLines .intro-c64-line {
+    color: var(--intro-cyan);
+    text-shadow:
+        0 0 8px rgba(95,255,212,0.9),
+        0 0 18px rgba(95,255,212,0.8);
+}
+
+/* Blinking cursor */
+.intro-c64-screen--cursor-on .intro-c64-line--cursor::after {
+    content: "█";
+    margin-left: 0.15em;
+    animation: cursor-blink 0.8s steps(1) infinite;
+}
+
+@keyframes cursor-blink {
+    0%, 50% { opacity: 1; }
+    50.01%, 100% { opacity: 0; }
+}
+
+/* Big neon speech text */
+.intro-speech-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(0.96);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    z-index: 3;
+}
+
+.intro-speech-text--visible {
+    opacity: 1;
     transform: scale(1);
-    transition: opacity 1s ease, transform 1s ease;
 }
 
-.sidTextVisible {
-    opacity: 1 !important;
-    transform: scale(1.12);
+.intro-speech-text span {
+    display: block;
+    font-size: clamp(2.4rem, 5vw, 3.5rem);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--intro-cyan);
+    text-shadow:
+        0 0 14px rgba(95,255,212,1),
+        0 0 28px rgba(95,255,212,0.9),
+        0 0 44px rgba(95,255,212,0.8);
 }
 
-/* ============================================================
-   MOBILE TWEAKS
-============================================================ */
+.intro-speech-text span.intro-forever {
+    color: #ffffff;
+    text-shadow:
+        0 0 16px rgba(95,255,212,1),
+        0 0 34px rgba(95,255,212,1),
+        0 0 60px rgba(95,255,212,1);
+}
 
-@media (max-width: 600px) {
-    .c64-inner {
-        padding: 20px;
-        height: 380px;
-        max-height: 55vh;
+/* When intro has started, hide idle prompt */
+.intro-body.intro-started #introIdle {
+    display: none;
+}
+
+/* Small screens */
+@media (max-width: 640px) {
+    .intro-c64-screen {
+        font-size: 0.9rem;
+        padding: 1rem 1.1rem;
+        border-radius: 10px;
     }
 
-    #c64Text {
-        font-size: 12px;
+    .intro-idle-title {
+        letter-spacing: 0.18em;
     }
 
-    .intro-logo {
-        width: 240px;
-        margin-bottom: 24px;
-    }
-
-    #skipIntroBtn {
-        font-size: 11px;
-        padding: 6px 10px;
+    .intro-skip {
+        padding: 0.45rem 0.9rem;
+        font-size: 0.75rem;
     }
 }
