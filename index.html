@@ -1,165 +1,83 @@
-// ============================================================
-// index-intro.js — Omega C64 Loading Intro Controller
-// - Controls READY/LOAD text sequence
-// - Syncs big neon text with SID speech
-// - Handles Skip Intro + fade-out to home.html
-// ============================================================
+<!DOCTYPE html>
+<html lang="en" data-ccg-page="intro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheeky Commodore Gamer | Booting System...</title>
 
-(function () {
-    const overlay = document.getElementById("introOverlay");
-    const idle = document.getElementById("introIdle");
-    const c64Screen = document.getElementById("introC64");
-    const fadeLayer = document.getElementById("introFade");
-    const skipBtn = document.getElementById("skipIntro");
-    const speechText = document.getElementById("speechText");
-    const loaderVideo = document.getElementById("loaderVideo");
+    <meta name="description"
+          content="Cinematic Commodore 64 style boot sequence for Cheeky Commodore Gamer. Another visitor... Stay a while, stay forever.">
 
-    const lineLoad = document.getElementById("c64-line-load");
-    const linePress = document.getElementById("c64-line-press");
-    const lineLoading = document.getElementById("c64-line-loading");
-    const lineFound = document.getElementById("c64-line-found");
+    <link rel="icon" href="favicon.ico">
 
-    // SID speech audio
-    const speechAudio = new Audio("resources/css/audio/c64_speech_stayawhile.mp3");
-    speechAudio.preload = "auto";
+    <!-- GLOBAL (LIGHT) -->
+    <link rel="stylesheet" href="resources/css/ccg-master.css">
+    <link rel="stylesheet" href="resources/css/ccg-mode.css">
+    <link rel="stylesheet" href="resources/css/ccg-effects.css">
 
-    let introStarted = false;
-    let finished = false;
-    let timers = [];
-    let speechStage = 0;
+    <!-- INTRO SPECIFIC -->
+    <link rel="stylesheet" href="resources/css/intro.css">
+</head>
 
-    function addTimer(fn, delay) {
-        const id = window.setTimeout(fn, delay);
-        timers.push(id);
-        return id;
-    }
+<body class="intro-body" data-ccg-mode="c64">
 
-    function clearTimers() {
-        timers.forEach(id => window.clearTimeout(id));
-        timers = [];
-    }
+    <div class="intro-root">
 
-    function showC64Screen() {
-        c64Screen.classList.add("intro-c64-screen--visible", "intro-c64-screen--cursor-on");
-    }
+        <!-- BACKGROUND VIDEO -->
+        <video id="loaderVideo"
+               class="intro-video"
+               autoplay
+               muted
+               loop
+               playsinline>
+            <source src="resources/videos/c64_loader.mp4" type="video/mp4">
+        </video>
 
-    function updateSpeechText(text, isForever) {
-        speechText.innerHTML = "";
-        const span = document.createElement("span");
-        span.textContent = text;
-        if (isForever) {
-            span.classList.add("intro-forever");
-        }
-        speechText.appendChild(span);
-        speechText.classList.add("intro-speech-text--visible");
-    }
+        <!-- OVERLAY LAYERS -->
+        <div id="introOverlay" class="intro-overlay intro-click-area">
 
-    function clearSpeechText() {
-        speechText.classList.remove("intro-speech-text--visible");
-    }
+            <!-- SKIP INTRO -->
+            <button id="skipIntro" class="intro-skip" type="button">
+                SKIP INTRO
+            </button>
 
-    function startSpeechSync() {
-        try {
-            speechAudio.currentTime = 0;
-            speechAudio.play().catch(() => { /* ignore autoplay issues */ });
-        } catch (e) {
-            console.warn("Speech audio error:", e);
-        }
+            <!-- FADE LAYER -->
+            <div id="introFade" class="intro-fade"></div>
 
-        // Basic timing based on typical sample:
-        // Another Visitor ~1s, Stay a while ~3s, Stay Forever ~5s
-        speechStage = 0;
+            <!-- IDLE POWER ON PROMPT -->
+            <div id="introIdle" class="intro-idle">
+                <div class="intro-idle-title">CLICK TO POWER ON</div>
+                <div class="intro-idle-sub">Press fire to boot the system...</div>
+            </div>
 
-        const sync = () => {
-            const t = speechAudio.currentTime;
+            <!-- C64 READY / LOAD TEXT -->
+            <div id="introC64" class="intro-c64-screen" aria-hidden="true">
+                <div class="intro-c64-line intro-c64-line--header">
+                    **** COMMODORE 64 BASIC V2 ****
+                </div>
+                <div class="intro-c64-line intro-c64-line--header">
+                    64K RAM SYSTEM  38911 BASIC BYTES FREE
+                </div>
+                <div class="intro-c64-line intro-c64-line--header">
+                    READY.
+                </div>
 
-            if (speechStage === 0 && t >= 0.8) {
-                speechStage = 1;
-                updateSpeechText("ANOTHER VISITOR", false);
-            } else if (speechStage === 1 && t >= 2.8) {
-                speechStage = 2;
-                updateSpeechText("STAY A WHILE", false);
-            } else if (speechStage === 2 && t >= 4.8) {
-                speechStage = 3;
-                updateSpeechText("STAY FOREVER...", true);
-            }
-        };
+                <!-- Typed lines appear here -->
+                <div id="typedLines"></div>
+            </div>
 
-        speechAudio.addEventListener("timeupdate", sync);
+            <!-- BIG NEON SPEECH TEXT -->
+            <div id="speechText" class="intro-speech-text" aria-hidden="true">
+                <!-- JS injects:
+                     ANOTHER VISITOR
+                     STAY A WHILE
+                     STAY FOREVER... -->
+            </div>
+        </div>
 
-        speechAudio.addEventListener("ended", () => {
-            clearSpeechText();
-            addTimer(finishIntro, 1000);
-        });
-    }
+    </div>
 
-    function finishIntro(skip) {
-        if (finished) return;
-        finished = true;
-
-        clearTimers();
-        try { speechAudio.pause(); } catch (e) {}
-        speechAudio.currentTime = 0;
-
-        fadeLayer.classList.add("intro-fade--active");
-
-        const delay = skip ? 300 : 800;
-        window.setTimeout(() => {
-            window.location.href = "home.html";
-        }, delay);
-    }
-
-    function startIntroSequence() {
-        if (introStarted || finished) return;
-        introStarted = true;
-
-        document.body.classList.add("intro-started");
-
-        // Ensure video is playing
-        if (loaderVideo && loaderVideo.paused) {
-            loaderVideo.play().catch(() => {});
-        }
-
-        // Show C64 READY screen
-        showC64Screen();
-
-        // Sequence the text lines
-        addTimer(() => {
-            lineLoad.textContent = 'LOAD"*",8,1';
-        }, 700);
-
-        addTimer(() => {
-            linePress.textContent = "PRESS PLAY ON TAPE";
-        }, 2000);
-
-        addTimer(() => {
-            lineLoading.textContent = "LOADING";
-        }, 3200);
-
-        addTimer(() => {
-            lineFound.textContent = 'FOUND "CHEEKY COMMODORE GAMER"';
-        }, 4400);
-
-        // Start speech & big neon text slightly after FOUND line
-        addTimer(() => {
-            startSpeechSync();
-        }, 5200);
-    }
-
-    // Handle click to power on (anywhere on overlay except skip button)
-    if (overlay) {
-        overlay.addEventListener("click", (e) => {
-            // If click was on Skip button, don't start intro again
-            if (e.target === skipBtn) return;
-            startIntroSequence();
-        });
-    }
-
-    // Skip Intro button
-    if (skipBtn) {
-        skipBtn.addEventListener("click", (e) => {
-            e.stopPropagation(); // prevent triggering startIntroSequence
-            finishIntro(true);
-        });
-    }
-})();
+    <!-- JS -->
+    <script src="js/index-intro.js" defer></script>
+</body>
+</html>
