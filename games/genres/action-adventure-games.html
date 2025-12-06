@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Adventure Games | Cheeky Commodore Gamer</title>
+    <title>Action-Adventure Games | Cheeky Commodore Gamer</title>
 
     <meta name="description"
-          content="This is where text parsers, point & click and narrative-heavy quests live together — timeless adventure experiences across C64 & Amiga." />
+          content="Hybrid adventures mixing exploration, combat, puzzling and questing — the iconic Action-Adventure experience on C64 & Amiga." />
 
     <link rel="icon" href="../../favicon.ico" />
 
@@ -20,8 +20,9 @@
     <link rel="stylesheet" href="../../resources/css/genre.css" />
 </head>
 
-<body class="ccg-body" data-ccg-mode="c64" data-genre="Adventure">
+<body class="ccg-body" data-ccg-mode="c64" data-genre="Action Adventure">
 
+    <!-- BACKGROUND -->
     <div class="ccg-bg">
         <div class="ccg-bg-starfield"></div>
         <div class="ccg-bg-grid"></div>
@@ -54,7 +55,8 @@
                     <ul class="ccg-nav__list">
                         <li><a href="../../home.html" class="ccg-nav__link">Home</a></li>
                         <li><a href="../../games/index.html" class="ccg-nav__link">Browse Games</a></li>
-                        <li><a href="../../games/genres/index.html" class="ccg-nav__link ccg-nav__link--active">Browse by Genre</a></li>
+                        <li><a href="../../games/genres/index.html"
+                               class="ccg-nav__link ccg-nav__link--active">Browse by Genre</a></li>
                         <li><a href="../../games/collections/index.html" class="ccg-nav__link">Collections</a></li>
                         <li><a href="../../quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
                         <li><a href="../../emulation.html" class="ccg-nav__link">Emulation</a></li>
@@ -76,7 +78,7 @@
                         </span>
                     </button>
 
-                    <!-- SOCIALS -->
+                    <!-- SOCIAL ICONS -->
                     <div class="ccg-socials">
                         <a href="https://www.youtube.com/@CheekyCommodoreGamer"
                            class="ccg-socials__link" aria-label="YouTube">
@@ -119,44 +121,43 @@
         <!-- ░░ GENRE RIBBON ░░ -->
         <section class="ccg-genre-ribbon">
             <div class="ccg-genre-ribbon__inner">
-
-                <img src="../../resources/images/genres/adventure.png"
-                     alt="Adventure Games Icon"
+                <img src="../../resources/images/genres/action-adventure.png"
+                     alt="Action-Adventure Icon"
                      class="ccg-genre-ribbon__icon" />
 
                 <div class="ccg-genre-ribbon__text">
-                    <h1 class="ccg-genre-ribbon__title">Adventure Games</h1>
+                    <h1 class="ccg-genre-ribbon__title">Action-Adventure Games</h1>
                     <p class="ccg-genre-ribbon__subtitle">
-                        This is where text parsers, point &amp; click
-                        and narrative-heavy quests live together.
+                        Exploration, combat, story and puzzling blended into one joystick workout.
                     </p>
                 </div>
-
             </div>
         </section>
 
         <!-- ░░ HERO SECTION ░░ -->
         <main class="ccg-main">
             <section class="ccg-section hero hero--genre">
-
                 <div class="ccg-hero-grid">
 
+                    <!-- thumbnail -->
                     <div class="ccg-hero-media">
                         <div class="ccg-hero-frame">
-                            <img src="../../resources/images/genres/adventure.png"
-                                 alt="Adventure Games Hero Artwork"
+                            <img src="../../resources/images/genres/action-adventure.png"
+                                 alt="Action-Adventure Hero Artwork"
                                  class="ccg-hero-image" />
                         </div>
                     </div>
 
+                    <!-- copy -->
                     <div class="ccg-hero-copy">
 
-                        <p class="ccg-hero-kicker">Adventure action on classic hardware.</p>
+                        <p class="ccg-hero-kicker">Questing, fighting, exploring — all at once.</p>
 
-                        <h2 class="ccg-section-title">Adventure Games</h2>
+                        <h2 class="ccg-section-title">Action-Adventure Games</h2>
 
                         <p class="ccg-section-subtitle">
-                            This is where text parsers, point &amp; click and narrative-heavy quests live together.
+                            A fusion of arcade energy and adventure depth — sprawling quests,
+                            character-driven stories and plenty of joystick-bending moments.
                         </p>
 
                         <div class="ccg-hero-meta-pills">
@@ -170,10 +171,10 @@
                 </div>
             </section>
 
-            <!-- GRID -->
+            <!-- ░░ GRID ░░ -->
             <section class="ccg-section">
                 <div id="genreGamesGrid" class="ccg-game-listing-grid">
-                    <!-- JS injects matching games -->
+                    <!-- genre-loader injects games -->
                 </div>
             </section>
 
