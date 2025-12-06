@@ -1,84 +1,60 @@
 <!DOCTYPE html>
-<html lang="en" data-ccg-page="index">
+<html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cheeky Commodore Gamer | Gateway</title>
-    <meta name="description" content="Cheeky Commodore Gamer — home of curated C64 and Amiga reviews, longplays, trivia and deep dives." />
-    <link rel="icon" href="favicon.ico" />
-    <link rel="stylesheet" href="resources/css/ccg-master.css" />
-    <link rel="stylesheet" href="resources/css/ccg-mode.css" />
-    <link rel="stylesheet" href="resources/css/ccg-effects.css" />
-    <link rel="stylesheet" href="resources/css/ccg-anim.css" />
-    <link rel="stylesheet" href="resources/css/ccg-overlays.css" />
-    <link rel="stylesheet" href="resources/css/ccg-modal.css" />
 
+    <title>Cheeky Commodore Gamer — Loading…</title>
+    <meta name="description" content="Power-on intro for Cheeky Commodore Gamer.">
+
+    <!-- INTRO-ONLY CSS -->
     <link rel="stylesheet" href="resources/css/intro.css" />
+
+    <!-- GLOBAL (needed for fonts + base resets) -->
+    <link rel="stylesheet" href="resources/css/ccg-master.css" />
+    <link rel="stylesheet" href="resources/css/ccg-effects.css" />
 </head>
-<body class="ccg-body" data-ccg-mode="c64">
-    <div class="ccg-bg">
-        <div class="ccg-bg-starfield"></div>
-        <div class="ccg-bg-grid"></div>
-        <div class="ccg-bg-crt-overlay"></div>
+
+<body class="ccg-intro-body">
+
+    <!-- POWER FLASH -->
+    <div id="flashOverlay"></div>
+
+    <!-- CLICK-TO-START COVER -->
+    <div id="powerOverlay">
+        <div class="power-text">CLICK TO START</div>
+        <div class="power-sub">Press fire to boot the system…</div>
     </div>
 
-    <div class="ccg-page ccg-page--intro">
-        <header class="ccg-header">
-            <div class="ccg-header-inner">
-                <a href="home.html" class="ccg-logo-link">
-                    <img src="resources/images/ccgamer-logo.png" alt="Cheeky Commodore Gamer logo" class="ccg-brand__logo ccg-logo-img" />
-                </a>
-                <div class="ccg-header-text">
-                    <p class="ccg-tagline">Stay a while, stay forever!</p>
-                    <h1 class="ccg-site-title">CHEEKY COMMODORE GAMER</h1>
-                </div>
-                <nav class="ccg-nav">
-                    <a href="home.html" class="nav-item nav-item--active">Home</a>
-                    <a href="games/index.html" class="nav-item">Games</a>
-                    <a href="games/genres/index.html" class="nav-item">Genres</a>
-                    <a href="games/collections/index.html" class="nav-item">Collections</a>
-                    <a href="quiz/quiz.html" class="nav-item">Trivia</a>
-                    <a href="emulation.html" class="nav-item">Emulation</a>
-                    <a href="complete-index.html" class="nav-item">Index</a>
-                    <a href="about.html" class="nav-item">About</a>
-                    <a href="contact.html" class="nav-item">Contact</a>
-                </nav>
-                <button class="ccg-mode-toggle" type="button" data-ccg-mode-toggle>
-                    <span class="ccg-mode-toggle-label ccg-mode-toggle-label--c64">C64</span>
-                    <span class="ccg-mode-toggle-label ccg-mode-toggle-label--amiga">Amiga</span>
-                </button>
-                <div class="ccg-header-socials">
-                    <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer" class="ccg-header-social-link">YouTube</a>
-                    <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer" class="ccg-header-social-link">Patreon</a>
-                    <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" rel="noopener noreferrer" class="ccg-header-social-link">Donate</a>
-                    <a href="https://discord.gg/83Xw9ktAn4" target="_blank" rel="noopener noreferrer" class="ccg-header-social-link">Discord</a>
-                </div>
-            </div>
-        </header>
-        <main class="ccg-main">
-            <section class="ccg-hero hero--intro">
-                <h2 class="ccg-section-title">Loading the Omega Experience…</h2>
-                <p class="ccg-section-subtitle">
-                    Jump straight into the full cinematic homepage, or dive into games, genres and trivia.
-                </p>
-                <div class="ccg-button-row">
-                    <a href="home.html" class="btn btn-primary">Enter Main Site</a>
-                    <a href="games/index.html" class="btn btn-secondary">Browse Games</a>
-                    <a href="quiz/quiz.html" class="btn btn-secondary">Play the Quiz</a>
-                </div>
-            </section>
-        </main>
-        <footer class="ccg-footer">
-            <div class="ccg-footer-inner">
-                <p class="ccg-footer-text">© 2025 Cheeky Commodore Gamer.</p>
-                <p class="ccg-footer-text ccg-footer-text--small">
-                    Not affiliated with Commodore, Amiga or any publishers.
-                </p>
-            </div>
-        </footer>
+    <!-- MAIN C64 INTRO WRAPPER -->
+    <div id="c64Wrapper">
 
+        <!-- CRT SCREEN BORDER -->
+        <div id="crtBorder"></div>
+
+        <!-- TYPEWRITER OUTPUT -->
+        <div id="c64Screen">
+            <div id="typedText"></div>
+            <div id="cursor">█</div>
+        </div>
+
+        <!-- RASTER BARS OVERLAY -->
+        <canvas id="rasterOverlay"></canvas>
+
+        <!-- SID SPEECH SUBTITLE -->
+        <div id="sidText"></div>
+
+        <!-- SKIP INTRO BUTTON -->
+        <button id="skipIntroBtn" class="skip-btn">Skip Intro</button>
+
+        <!-- SID AUDIO -->
+        <audio id="sidAudio"
+               src="resources/css/audio/c64_speech_stayawhile.mp3"
+               preload="auto"></audio>
     </div>
-    <script src="js/ccj-global.js" defer></script>
-    <script src="js/ccg-mode-engine.js" defer></script>
+
+    <!-- INTRO SCRIPT -->
+    <script src="js/index-intro.js" defer></script>
+
 </body>
 </html>
