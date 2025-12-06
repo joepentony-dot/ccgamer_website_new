@@ -1,15 +1,16 @@
 /* ============================================================
-   COMPLETE-INDEX.CSS — Full Games Database Table
+   COMPLETE-INDEX.CSS — Omega A2 Thumbnail-Compatible Edition
    ============================================================ */
 
 .ccg-index-wrapper {
     margin-top: 2rem;
 }
 
+/* Table formatting */
 .ccg-index-table {
     width: 100%;
     border-collapse: collapse;
-    background: var(--panel-bg);
+    background: rgba(0,0,0,0.6);
     border-radius: 8px;
     overflow: hidden;
 }
@@ -24,27 +25,24 @@
 .ccg-index-table th {
     background: rgba(255,255,255,0.05);
     font-weight: 700;
-    text-align: left;
 }
 
 .ccg-index-table tr:hover td {
-    background: rgba(255,255,255,0.06);
-}
-
-.ccg-index-table tr:last-child td {
-    border-bottom: none;
+    background: rgba(255,255,255,0.05);
 }
 
 /* Column helpers */
-.ccg-col-title {
-    width: 32%;
-}
-.ccg-col-genre {
-    width: 18%;
-}
-.ccg-col-system {
-    width: 12%;
-}
-.ccg-col-video {
-    width: 10%;
+.ccg-col-title { width: 32%; }
+.ccg-col-genre { width: 18%; }
+.ccg-col-system { width: 12%; }
+.ccg-col-video { width: 10%; }
+
+/* Thumbnail inside table (if ever added) */
+.ccg-thumb {
+    width: 60px;
+    aspect-ratio: 1 / 1;
+    border-radius: 6px;
+
+    object-fit: contain;
+    object-position: center;
 }
