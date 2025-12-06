@@ -1,107 +1,170 @@
 /* ============================================================
-   CCG-MODE.CSS — SYSTEM THEME ENGINE (C64 / AMIGA)
-   Controls accent colours, RGB glows, UI skins, hero crossfade.
-   Fully synchronised with ccg-master.css + home.css
+   CCG-MODE.CSS — Omega Mode Engine Skin
+   Controls global theme variables for C64 + Amiga presets.
+   Non-destructive. All JS + HTML remain fully compatible.
    ============================================================ */
 
 /* ------------------------------------------------------------
-   BASE ACCENT VARIABLES (always defined)
-   These are safe fallback values used before JS applies mode.
+   BASE VALUES (fallback) — overridable by data-ccg-mode
 ------------------------------------------------------------ */
+
 :root {
-    --accent: var(--c64-blue);
-    --accent-rgb: 58, 176, 255; /* C64 fallback RGB */
-}
+    /* Neutral defaults (C64-style bias) */
+    --accent: #3ab0ff;
+    --accent-rgb: 58,176,255;
 
-/* ============================================================
-   C64 MODE — PETSCII NEON / CRT DARK THEME
-   ============================================================ */
-body[data-ccg-mode="c64"] {
-    /* Accent + RGB */
-    --accent: var(--c64-blue);
-    --accent-rgb: 58, 176, 255;
-
-    /* Dark neon card theme */
-    --panel-bg: rgba(0, 0, 0, 0.42);
-    --panel-bg-strong: rgba(0, 0, 0, 0.65);
-    --border-light: rgba(58, 176, 255, 0.28);
-
-    /* Text contrast (light on dark) */
     --text-light: #ffffff;
-    --text-dim: rgba(200,220,255,0.75);
+    --text-dim: rgba(255,255,255,0.72);
 
-    /* Neon shadow profile */
-    --panel-shadow:
-        0 0 0 1px rgba(58,176,255,0.3),
-        0 0 18px rgba(58,176,255,0.25),
-        inset 0 0 12px rgba(0,0,0,0.7);
-}
+    --panel-bg: rgba(0,0,0,0.35);
+    --panel-bg-strong: rgba(0,0,0,0.55);
 
-/* C64 header split text */
-body[data-ccg-mode="c64"] .ccg-header-title-top {
-    color: var(--c64-blue);
+    --border-light: rgba(255,255,255,0.15);
+
+    /* Glow defaults */
+    --glow-soft: 0 0 12px rgba(var(--accent-rgb), 0.5);
+    --glow-medium: 0 0 22px rgba(var(--accent-rgb), 0.6);
+    --glow-strong: 0 0 36px rgba(var(--accent-rgb), 0.75);
 }
 
 /* ============================================================
-   AMIGA MODE — WORKBENCH 2.x LIGHT UI
-   ============================================================ */
+   MODE: C64 (default)
+   Bright blue / cyan glow, dark neon sci-fi look
+============================================================ */
+
+body[data-ccg-mode="c64"] {
+    --accent: #28e1ff;
+    --accent-rgb: 40,225,255;
+
+    --text-light: #ffffff;
+    --text-dim: rgba(255,255,255,0.72);
+
+    /* Panels */
+    --panel-bg: rgba(0,0,0,0.38);
+    --panel-bg-strong: rgba(0,0,0,0.6);
+    --border-light: rgba(255,255,255,0.15);
+
+    /* Glow tiering */
+    --glow-soft: 0 0 10px rgba(40,225,255,0.45);
+    --glow-medium: 0 0 20px rgba(40,225,255,0.55);
+    --glow-strong: 0 0 32px rgba(40,225,255,0.70);
+
+    /* Header & hero */
+    --hero-title-shadow:
+        0 0 12px rgba(40,225,255,0.55),
+        0 0 26px rgba(40,225,255,0.35);
+
+    /* Buttons */
+    --btn-primary-shadow:
+        0 0 14px rgba(40,225,255,0.55);
+
+    /* STARFIELD + CRT INTENSITY */
+    --crt-opacity: 0.42;
+    --scanline-strength: 0.08;
+    --starfield-opacity: 0.62;
+}
+
+/* ============================================================
+   MODE: AMIGA — Omega Workbench Skin
+   Softer contrast • Cleaner UI • Crystal neon edge
+============================================================ */
+
 body[data-ccg-mode="amiga"] {
-    /* Accent + RGB */
-    --accent: var(--amiga-pink);
-    --accent-rgb: 255, 79, 216;
+    /* Accent becomes magenta/pink */
+    --accent: #ff4fe8;
+    --accent-rgb: 255,79,232;
 
-    /* Workbench-like panel background */
-    --panel-bg: rgba(232,236,243,0.92); /* light ceramic blue */
-    --panel-bg-strong: rgba(213,219,232,0.95);
-    --border-light: rgba(0,0,0,0.22);
+    /* Amiga text hierarchy */
+    --text-light: #000000;
+    --text-dim: rgba(0,0,0,0.6);
 
-    /* Dark text for light UI */
-    --text-light: #111;
-    --text-dim: rgba(0,0,0,0.55);
+    /* Panels adopt Workbench-like lightness */
+    --panel-bg: rgba(245,245,255,0.75);
+    --panel-bg-strong: rgba(255,255,255,0.92);
+    --border-light: rgba(0,0,0,0.25);
 
-    /* Soft drop-shadow edges (window-like) */
-    --panel-shadow:
-        0 0 0 1px rgba(255,255,255,0.8),
-        0 6px 12px rgba(0,0,0,0.22),
-        inset 0 0 8px rgba(255,255,255,0.5);
-}
+    /* Controlled neon (to avoid blinding) */
+    --glow-soft: 0 0 6px rgba(255,79,232,0.35);
+    --glow-medium: 0 0 14px rgba(255,79,232,0.42);
+    --glow-strong: 0 0 22px rgba(255,79,232,0.55);
 
-body[data-ccg-mode="amiga"] .ccg-header-title-bottom {
-    color: var(--amiga-pink);
+    /* Hero */
+    --hero-title-shadow:
+        0 0 8px rgba(255,79,232,0.45),
+        0 0 16px rgba(255,79,232,0.30);
+
+    /* Buttons */
+    --btn-primary-shadow:
+        0 0 12px rgba(255,79,232,0.40);
+
+    /* CRT + starfield toned down for brighter UI */
+    --crt-opacity: 0.25;
+    --scanline-strength: 0.04;
+    --starfield-opacity: 0.40;
 }
 
 /* ============================================================
-   ACCENT UTILITY CLASS (theming helper)
-   ============================================================ */
-.ccg-accent {
+   UNIVERSAL APPLICATION LAYER
+   These rules apply to both themes using variables above.
+============================================================ */
+
+.ccg-accent-text {
     color: var(--accent);
+    text-shadow: var(--glow-soft);
 }
 
-/* ============================================================
-   THEMED BUTTONS
-   Only overrides .ccg-btn-primary when in Amiga mode.
-   (C64 uses base master styling.)
-   ============================================================ */
+.ccg-accent-border {
+    border-color: var(--accent) !important;
+}
 
-body[data-ccg-mode="amiga"] .ccg-btn-primary {
-    background: var(--amiga-pink);
+.ccg-accent-bg {
+    background: var(--accent);
     color: #000;
 }
 
-body[data-ccg-mode="amiga"] .ccg-btn-primary:hover {
-    background: var(--amiga-purple);
+/* HERO TITLES */
+.ccg-hero-title,
+.ccg-section-title {
+    text-shadow: var(--hero-title-shadow);
 }
 
-/* ============================================================
-   HERO IMAGE CROSSFADE (used in home + games)
-   ============================================================ */
-
-.ccg-hero-image-c64,
-.ccg-hero-image-amiga {
-    opacity: 0;
-    transition: opacity 0.6s ease;
-    pointer-events: none;
+/* BUTTONS */
+.ccg-btn-primary {
+    background: var(--accent);
+    color: #000;
+    box-shadow: var(--btn-primary-shadow);
+}
+.ccg-btn-primary:hover {
+    background: rgba(var(--accent-rgb), 0.75);
 }
 
-body[data-ccg-mode="c64"]  .ccg-hero-image-c64  { opacity: 1; }
-body[data-ccg-mode="amiga"] .ccg-hero-image-amiga { opacity: 1; }
+/* PANELS */
+.ccg-panel,
+.ccg-card,
+.ccg-genre-tile,
+.ccg-collection-tile {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-light);
+    color: var(--text-light);
+}
+
+/* TEXT */
+.ccg-panel p,
+.ccg-panel span,
+.ccg-panel li {
+    color: var(--text-light);
+    opacity: 0.95;
+}
+
+/* STARFIELD + CRT INTENSITY SYNC */
+.ccg-bg-crt-overlay {
+    opacity: var(--crt-opacity);
+}
+
+.ccg-scanlines {
+    opacity: var(--scanline-strength);
+}
+
+#ccg-starfield {
+    opacity: var(--starfield-opacity);
+}
