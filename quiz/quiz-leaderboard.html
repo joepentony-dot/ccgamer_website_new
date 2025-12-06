@@ -2,28 +2,19 @@
 <html lang="en" data-ccg-page="quiz-leaderboard">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Quiz Leaderboard | Cheeky Commodore Gamer</title>
-    <meta name="description" content="See who’s sitting at the top of the Cheeky Commodore Gamer retro quiz cabinet.">
-
-    <link rel="icon" href="../favicon.ico">
-
-    <!-- GLOBAL CSS -->
-    <link rel="stylesheet" href="../resources/css/ccg-master.css">
-    <link rel="stylesheet" href="../resources/css/ccg-mode.css">
-    <link rel="stylesheet" href="../resources/css/ccg-effects.css">
-    <link rel="stylesheet" href="../resources/css/ccg-anim.css">
-    <link rel="stylesheet" href="../resources/css/ccg-overlays.css">
-    <link rel="stylesheet" href="../resources/css/ccg-modal.css">
-
-    <!-- QUIZ CSS -->
-    <link rel="stylesheet" href="../resources/css/quiz.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trivia Leaderboard | Cheeky Commodore Gamer</title>
+    <meta name="description" content="Live leaderboard for the CCG Trivia League quiz sets." />
+    <link rel="icon" href="../favicon.ico" />
+    <link rel="stylesheet" href="../resources/css/ccg-master.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-mode.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-effects.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-anim.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-overlays.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-modal.css" />
+    <link rel="stylesheet" href="../resources/css/quiz.css" />
 </head>
-
 <body class="ccg-body" data-ccg-mode="c64">
-
-    <!-- GLOBAL BACKGROUND -->
     <div class="ccg-bg">
         <div class="ccg-bg-starfield"></div>
         <div class="ccg-bg-grid"></div>
@@ -31,177 +22,91 @@
     </div>
 
     <div class="ccg-page ccg-page--quiz-leaderboard">
-
-        <!-- =====================================================
-             OMEGA HEADER (FULL MATCH)
-        ===================================================== -->
         <header class="ccg-header">
             <div class="ccg-header-inner">
-
-                <a href="../home.html" class="ccg-brand">
-                    <img src="../resources/images/ccgamer-logo.png"
-                         class="ccg-brand__logo"
-                         alt="Cheeky Commodore Gamer Logo">
-
-                    <div class="ccg-brand__text">
-                        <span class="ccg-brand__kicker">Stay a while, stay forever!</span>
-                        <span class="ccg-brand__title">
-                            <span class="ccg-brand__neon-cheeky">CHEEKY</span>
-                            <span class="ccg-brand__neon-sub">COMMODORE GAMER</span>
-                        </span>
-                    </div>
+                <a href="../home.html" class="ccg-logo-link">
+                    <img src="../resources/images/ccgamer-logo.png" alt="Cheeky Commodore Gamer logo" class="ccg-brand__logo ccg-logo-img" />
                 </a>
-
+                <div class="ccg-header-text">
+                    <p class="ccg-tagline">Stay a while, stay forever!</p>
+                    <h1 class="ccg-site-title">TRIVIA LEADERBOARD</h1>
+                </div>
                 <nav class="ccg-nav">
-                    <ul class="ccg-nav__list">
-                        <li><a href="../home.html" class="ccg-nav__link">Home</a></li>
-                        <li><a href="../games/index.html" class="ccg-nav__link">Games</a></li>
-                        <li><a href="../games/genres/index.html" class="ccg-nav__link">Genres</a></li>
-                        <li><a href="../games/collections/index.html" class="ccg-nav__link">Collections</a></li>
-                        <li><a href="../quiz/quiz.html" class="ccg-nav__link ccg-nav__link--active">Trivia</a></li>
-                        <li><a href="../complete-index.html" class="ccg-nav__link">Index</a></li>
-                        <li><a href="../about.html" class="ccg-nav__link">About</a></li>
-                        <li><a href="../contact.html" class="ccg-nav__link">Contact</a></li>
-                    </ul>
+                    <a href="../home.html" class="nav-item">Home</a>
+                    <a href="../games/index.html" class="nav-item">Games</a>
+                    <a href="../games/genres/index.html" class="nav-item">Genres</a>
+                    <a href="../games/collections/index.html" class="nav-item">Collections</a>
+                    <a href="../quiz/quiz.html" class="nav-item nav-item--active">Trivia</a>
+                    <a href="../emulation.html" class="nav-item">Emulation</a>
+                    <a href="../complete-index.html" class="nav-item">Index</a>
+                    <a href="../about.html" class="nav-item">About</a>
+                    <a href="../contact.html" class="nav-item">Contact</a>
                 </nav>
-
-                <div class="ccg-header-actions">
-
-                    <button class="ccg-mode-toggle" data-ccg-mode-toggle type="button" aria-label="Toggle system mode">
-                        <span class="ccg-mode-toggle__pill">
-                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
-                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">Amiga</span>
-                            <span class="ccg-mode-toggle__thumb"></span>
-                        </span>
-                    </button>
-
-                    <div class="ccg-socials">
-                        <a href="https://www.youtube.com/@CheekyCommodoreGamer" class="ccg-socials__icon-btn" target="_blank"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>
-                        <a href="https://patreon.com/CheekyCommodoreGamer" class="ccg-socials__icon-btn" target="_blank"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>
-                        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" class="ccg-socials__icon-btn" target="_blank"><span class="ccg-socials__icon ccg-socials__icon--paypal"></span></a>
-                        <a href="https://twitter.com/CheekyC64Gamer" class="ccg-socials__icon-btn" target="_blank"><span class="ccg-socials__icon ccg-socials__icon--x"></span></a>
-                        <a href="https://www.facebook.com/cheekycommodoregamer" class="ccg-socials__icon-btn" target="_blank"><span class="ccg-socials__icon ccg-socials__icon--fb"></span></a>
-                        <a href="https://discord.gg/83Xw9ktAn4" class="ccg-socials__icon-btn" target="_blank"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
-                    </div>
-
+                <button class="ccg-mode-toggle" type="button" data-ccg-mode-toggle>
+                    <span class="ccg-mode-toggle-label ccg-mode-toggle-label--c64">C64</span>
+                    <span class="ccg-mode-toggle-label ccg-mode-toggle-label--amiga">Amiga</span>
+                </button>
+                <div class="ccg-header-socials">
+                    <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer" class="ccg-header-social-link">YouTube</a>
+                    <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer" class="ccg-header-social-link">Patreon</a>
+                    <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" rel="noopener noreferrer" class="ccg-header-social-link">Donate</a>
+                    <a href="https://discord.gg/83Xw9ktAn4" target="_blank" rel="noopener noreferrer" class="ccg-header-social-link">Discord</a>
                 </div>
             </div>
-
-            <div class="ccg-header-neon-strip"></div>
         </header>
-
-        <!-- =====================================================
-             HERO
-        ===================================================== -->
-        <main class="quiz-main quiz-main--leaderboard">
-
-            <section class="quiz-leaderboard-hero">
-                <h1 class="quiz-title">Quiz Leaderboard</h1>
-                <p class="quiz-tagline">
-                    Your retro-score destiny awaits. Only the sharpest SID minds make this board.
+        <main class="ccg-main">
+            <section class="ccg-section hero hero--quiz">
+                <h2 class="ccg-section-title">CCG Trivia League Leaderboard</h2>
+                <p class="ccg-section-subtitle">
+                    Filter by quiz pack and time range to see who’s currently on top.
                 </p>
-
-                <div class="quiz-leaderboard-actions">
-                    <a href="quiz.html" class="ccg-btn ccg-btn-primary">Play Another Quiz</a>
-                    <a href="../home.html" class="ccg-btn ccg-btn-ghost">Back to Home</a>
+                <div class="quiz-leaderboard-filters">
+                    <div class="lb-filter-group">
+                        <label for="lb-set-filter" class="ccg-form-label">Quiz Pack</label>
+                        <select id="lb-set-filter" class="lb-select"></select>
+                    </div>
+                    <div class="lb-filter-group">
+                        <span class="ccg-form-label">Range</span>
+                        <div class="lb-range-buttons">
+                            <button class="lb-range-btn is-active" data-range="all" type="button">All Time</button>
+                            <button class="lb-range-btn" data-range="7" type="button">Last 7 Days</button>
+                            <button class="lb-range-btn" data-range="30" type="button">Last 30 Days</button>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <!-- =====================================================
-                 NEON CABINET + LIVE SCORE TABLE
-            ===================================================== -->
-            <section class="quiz-leaderboard-panel">
+            <section class="ccg-section">
                 <div class="quiz-leaderboard-cabinet">
-
-                    <header class="quiz-leaderboard-header">
-                        <h2 class="quiz-score-title">High Score Cabinet</h2>
-                        <p class="quiz-leaderboard-subtitle">
-                            Live results from the Omega Quiz Engine. Updated instantly from the cloud.
-                        </p>
-                    </header>
-
-                    <!-- FILTER BAR: SET SELECTOR + TIME RANGE -->
-                    <div class="quiz-leaderboard-filters">
-                        <div class="lb-filter-group">
-                            <label for="leaderboard-set-filter" class="lb-filter-label">
-                                Quiz Pack
-                            </label>
-                            <select id="leaderboard-set-filter" class="lb-select">
-                                <option value="all">All packs</option>
-                                <!-- Options injected by JS -->
-                            </select>
-                        </div>
-
-                        <div class="lb-filter-group lb-filter-group--time">
-                            <span class="lb-filter-label">Time Range</span>
-                            <div class="lb-filter-time-buttons">
-                                <button type="button"
-                                        class="lb-range-btn lb-range-btn--active"
-                                        data-range="all">
-                                    All time
-                                </button>
-                                <button type="button"
-                                        class="lb-range-btn"
-                                        data-range="7">
-                                    Last 7 days
-                                </button>
-                                <button type="button"
-                                        class="lb-range-btn"
-                                        data-range="30">
-                                    Last 30 days
-                                </button>
-                            </div>
-                        </div>
+                    <div class="quiz-leaderboard-row quiz-leaderboard-row--head">
+                        <div class="lb-col-rank">Rank</div>
+                        <div class="lb-col-name">Name</div>
+                        <div class="lb-col-score">Score</div>
+                        <div class="lb-col-set">Quiz Pack</div>
+                        <div class="lb-col-date">Date</div>
                     </div>
-
-                    <div class="quiz-leaderboard-table">
-
-                        <!-- HEADER ROW -->
-                        <div class="quiz-leaderboard-row quiz-leaderboard-row--head">
-                            <span class="quiz-leaderboard-cell quiz-leaderboard-cell--rank">#</span>
-                            <span class="quiz-leaderboard-cell quiz-leaderboard-cell--name">Player</span>
-                            <span class="quiz-leaderboard-cell quiz-leaderboard-cell--score">Score</span>
-                            <span class="quiz-leaderboard-cell quiz-leaderboard-cell--total">Total</span>
-                            <span class="quiz-leaderboard-cell quiz-leaderboard-cell--set">Quiz Pack</span>
-                        </div>
-
-                        <!-- LIVE TABLE BODY (POPULATED BY JS) -->
-                        <div id="leaderboard-table-body"></div>
-
-                        <!-- EMPTY STATE -->
-                        <p id="leaderboard-empty" class="lb-empty" hidden>
-                            No scores yet for this view — be the first!
-                        </p>
-
-                    </div>
+                    <div id="leaderboard-table-body"></div>
+                    <p id="leaderboard-empty" class="lb-empty" hidden>No scores found for this filter yet.</p>
+                </div>
+                <div class="quiz-leaderboard-actions">
+                    <a href="quiz.html" class="btn btn-primary">Play Another Quiz</a>
+                    <a href="../home.html" class="btn btn-ghost">Back to Home</a>
                 </div>
             </section>
-
         </main>
-
-        <!-- FOOTER -->
         <footer class="ccg-footer">
             <div class="ccg-footer-inner">
-                <p class="ccg-footer-text">© <span id="ccg-footer-year"></span> Cheeky Commodore Gamer.</p>
-                <p class="ccg-footer-text ccg-footer-text--small">Not affiliated with Commodore or Amiga.</p>
+                <p class="ccg-footer-text">© 2025 Cheeky Commodore Gamer.</p>
+                <p class="ccg-footer-text ccg-footer-text--small">
+                    Not affiliated with Commodore, Amiga or any publishers.
+                </p>
             </div>
         </footer>
+
     </div>
-
-    <!-- JS -->
-    <script src="../js/ccg-mode-engine.js" defer></script>
     <script src="../js/ccj-global.js" defer></script>
-
-    <!-- LIVE LEADERBOARD MODULE -->
+    <script src="../js/ccg-mode-engine.js" defer></script>
+    <script src="../js/quiz-loader.js" defer></script>
     <script type="module" src="../js/leaderboard-loader.js"></script>
-    <script type="module">
-        import { renderLeaderboard } from "../js/leaderboard-loader.js";
-        document.addEventListener("DOMContentLoaded", renderLeaderboard);
-    </script>
-
-    <script>
-        document.getElementById("ccg-footer-year").textContent = new Date().getFullYear();
-    </script>
-
 </body>
 </html>

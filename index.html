@@ -1,51 +1,84 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ccg-page="index">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheeky Commodore Gamer – Intro</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cheeky Commodore Gamer | Gateway</title>
+    <meta name="description" content="Cheeky Commodore Gamer — home of curated C64 and Amiga reviews, longplays, trivia and deep dives." />
+    <link rel="icon" href="favicon.ico" />
+    <link rel="stylesheet" href="resources/css/ccg-master.css" />
+    <link rel="stylesheet" href="resources/css/ccg-mode.css" />
+    <link rel="stylesheet" href="resources/css/ccg-effects.css" />
+    <link rel="stylesheet" href="resources/css/ccg-anim.css" />
+    <link rel="stylesheet" href="resources/css/ccg-overlays.css" />
+    <link rel="stylesheet" href="resources/css/ccg-modal.css" />
 
-    <!-- Global + intro CSS -->
-    <link rel="stylesheet" href="resources/css/ccg-master.css">
-    <link rel="stylesheet" href="resources/css/intro.css">
-
-    <!-- SID big text font -->
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="resources/css/intro.css" />
 </head>
-
-<body class="intro-body">
-
-    <!-- SKIP BUTTON (ALWAYS ON TOP) -->
-    <button id="skipIntroBtn">[ ESC ] SKIP INTRO</button>
-
-    <!-- POWER-ON OVERLAY -->
-    <div id="powerOverlay">
-        <img src="resources/c64_neon.png" class="intro-logo" alt="Cheeky Commodore Gamer C64 Neon Logo">
-        <p id="powerText">CLICK TO POWER ON</p>
+<body class="ccg-body" data-ccg-mode="c64">
+    <div class="ccg-bg">
+        <div class="ccg-bg-starfield"></div>
+        <div class="ccg-bg-grid"></div>
+        <div class="ccg-bg-crt-overlay"></div>
     </div>
 
-    <!-- C64 BLUE SCREEN / BASIC -->
-    <div id="c64Wrapper" class="hidden">
-        <div class="c64-border">
-            <div class="c64-inner">
-                <pre id="c64Text"></pre>
+    <div class="ccg-page ccg-page--intro">
+        <header class="ccg-header">
+            <div class="ccg-header-inner">
+                <a href="home.html" class="ccg-logo-link">
+                    <img src="resources/images/ccgamer-logo.png" alt="Cheeky Commodore Gamer logo" class="ccg-brand__logo ccg-logo-img" />
+                </a>
+                <div class="ccg-header-text">
+                    <p class="ccg-tagline">Stay a while, stay forever!</p>
+                    <h1 class="ccg-site-title">CHEEKY COMMODORE GAMER</h1>
+                </div>
+                <nav class="ccg-nav">
+                    <a href="home.html" class="nav-item nav-item--active">Home</a>
+                    <a href="games/index.html" class="nav-item">Games</a>
+                    <a href="games/genres/index.html" class="nav-item">Genres</a>
+                    <a href="games/collections/index.html" class="nav-item">Collections</a>
+                    <a href="quiz/quiz.html" class="nav-item">Trivia</a>
+                    <a href="emulation.html" class="nav-item">Emulation</a>
+                    <a href="complete-index.html" class="nav-item">Index</a>
+                    <a href="about.html" class="nav-item">About</a>
+                    <a href="contact.html" class="nav-item">Contact</a>
+                </nav>
+                <button class="ccg-mode-toggle" type="button" data-ccg-mode-toggle>
+                    <span class="ccg-mode-toggle-label ccg-mode-toggle-label--c64">C64</span>
+                    <span class="ccg-mode-toggle-label ccg-mode-toggle-label--amiga">Amiga</span>
+                </button>
+                <div class="ccg-header-socials">
+                    <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer" class="ccg-header-social-link">YouTube</a>
+                    <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer" class="ccg-header-social-link">Patreon</a>
+                    <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" rel="noopener noreferrer" class="ccg-header-social-link">Donate</a>
+                    <a href="https://discord.gg/83Xw9ktAn4" target="_blank" rel="noopener noreferrer" class="ccg-header-social-link">Discord</a>
+                </div>
             </div>
-        </div>
+        </header>
+        <main class="ccg-main">
+            <section class="ccg-hero hero--intro">
+                <h2 class="ccg-section-title">Loading the Omega Experience…</h2>
+                <p class="ccg-section-subtitle">
+                    Jump straight into the full cinematic homepage, or dive into games, genres and trivia.
+                </p>
+                <div class="ccg-button-row">
+                    <a href="home.html" class="btn btn-primary">Enter Main Site</a>
+                    <a href="games/index.html" class="btn btn-secondary">Browse Games</a>
+                    <a href="quiz/quiz.html" class="btn btn-secondary">Play the Quiz</a>
+                </div>
+            </section>
+        </main>
+        <footer class="ccg-footer">
+            <div class="ccg-footer-inner">
+                <p class="ccg-footer-text">© 2025 Cheeky Commodore Gamer.</p>
+                <p class="ccg-footer-text ccg-footer-text--small">
+                    Not affiliated with Commodore, Amiga or any publishers.
+                </p>
+            </div>
+        </footer>
+
     </div>
-
-    <!-- MICRO FLASH BETWEEN C64 SCREEN AND RASTER -->
-    <div id="flashOverlay"></div>
-
-    <!-- FULL-SCREEN RASTER BARS -->
-    <div id="rasterOverlay"></div>
-
-    <!-- BIG SID QUOTE TEXT -->
-    <div id="sidText"></div>
-
-    <!-- ONLY AUDIO: STAY A WHILE, STAY FOREVER -->
-    <audio id="sidAudio" src="resources/audio/c64_speech_stayawhile.mp3"></audio>
-
-    <!-- INTRO LOGIC -->
-    <script src="js/index-intro.js" defer></script>
+    <script src="js/ccj-global.js" defer></script>
+    <script src="js/ccg-mode-engine.js" defer></script>
 </body>
 </html>
