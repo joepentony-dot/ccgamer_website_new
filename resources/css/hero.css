@@ -3,7 +3,208 @@
    Does not replace core cinematic hero rules.
    ============================================================ */
 
-/* Slight inner shadow to improve text clarity */
+/* Slight inner shadow to improve text clarity *//* ============================================================
+   HERO.CSS — OMEGA CINEMATIC MERGE (FINAL EDITION)
+   Purpose:
+   • Normalise hero visuals across the entire site
+   • Provide unified scaffolding for:
+       - Home Hero (A1)
+       - Genre Hero (G1)
+       - Games Index Hero (G3)
+       - Single Game Hero
+       - Collections Hero
+   • Ensure mode-toggle compatibility (C64 / Amiga)
+   ============================================================ */
+
+
+/* ============================================================
+   UNIVERSAL HERO BASE
+============================================================ */
+.ccg-section.hero {
+    position: relative;
+    overflow: hidden;
+}
+
+.ccg-section.hero::before,
+.ccg-section.hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+/* Universal vignette (applied lightly) */
+.ccg-section.hero::before {
+    background: radial-gradient(
+        circle at center,
+        rgba(0,0,0,0) 30%,
+        rgba(0,0,0,0.65) 90%
+    );
+    mix-blend-mode: multiply;
+    opacity: 0.45;
+    z-index: 1;
+}
+
+/* Universal bloom layer (tinted via mode colours) */
+.ccg-section.hero::after {
+    background: radial-gradient(
+        circle at top center,
+        rgba(var(--accent-rgb), 0.35),
+        transparent 65%
+    );
+    mix-blend-mode: screen;
+    opacity: 0.35;
+    z-index: 1;
+}
+
+
+/* ============================================================
+   HERO SCANLINES (optional global overlay)
+============================================================ */
+.hero-scanlines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.05) 0px,
+        rgba(255,255,255,0.05) 1px,
+        transparent 3px,
+        transparent 4px
+    );
+    opacity: 0.45;
+}
+
+
+/* ============================================================
+   HOME HERO (A1 — controlled entirely by home.css)
+   Only ensure stacking consistency here.
+============================================================ */
+
+[data-ccg-page="home"] .ccg-section.hero {
+    z-index: 3;
+}
+
+
+/* ============================================================
+   GENRE HERO (G1)
+   Controlled by genre.css; here we ensure consistent layer order.
+============================================================ */
+
+.hero.hero--genre {
+    z-index: 2;
+}
+
+.hero.hero--genre .ccg-hero-grid {
+    position: relative;
+    z-index: 4;
+}
+
+
+/* ============================================================
+   COLLECTIONS HERO
+   Also controlled by genre.css. Small normalisation only.
+============================================================ */
+.hero.hero--subpage {
+    position: relative;
+    z-index: 2;
+}
+
+
+/* ============================================================
+   GAMES INDEX HERO (G3 Mid-Cinematic)
+   Main styling is in games.css — this file ensures stack + compatibility.
+============================================================ */
+
+.hero--games-index {
+    z-index: 2;
+}
+
+.hero--games-index .hero-g3-bg,
+.hero--games-index .hero-g3-overlay,
+.hero--games-index .hero-g3-content {
+    position: relative;
+}
+
+
+/* ============================================================
+   SINGLE GAME HERO (Omega Cinematic Panel)
+   Controlled by games.css — this file ensures panel priority.
+============================================================ */
+
+.hero--single-game {
+    z-index: 2;
+}
+
+.hero--single-game .game-hero-inner {
+    position: relative;
+    z-index: 4;
+}
+
+.hero--single-game .game-hero-bg,
+.hero--single-game .game-hero-overlay {
+    z-index: 1;
+}
+
+
+/* ============================================================
+   MODE-AWARE COLOUR BALANCING (C64 / AMIGA)
+============================================================ */
+
+/* C64 Mode — cyan/blue glow */
+body[data-ccg-mode="c64"] .ccg-section.hero::after {
+    background: radial-gradient(
+        circle at top center,
+        rgba(var(--accent-rgb), 0.40),
+        transparent 70%
+    );
+}
+
+/* Amiga Mode — pink/magenta glow */
+body[data-ccg-mode="amiga"] .ccg-section.hero::after {
+    background: radial-gradient(
+        circle at top center,
+        rgba(255,60,255,0.45),
+        transparent 70%
+    );
+}
+
+/* Additional Amiga tint for cinematic panels */
+body[data-ccg-mode="amiga"] .game-hero-bg {
+    background: radial-gradient(
+        circle at top center,
+        rgba(255,60,255,0.35),
+        rgba(15,15,30,0.92)
+    );
+}
+
+/* Ensure text reads correctly across modes */
+body[data-ccg-mode="amiga"] .hero-g3-title,
+body[data-ccg-mode="amiga"] .game-hero-title {
+    text-shadow: none;
+    color: #000;
+}
+
+
+/* ============================================================
+   RESPONSIVE — UNIVERSAL HERO SAFETY
+============================================================ */
+
+@media (max-width: 760px) {
+    .ccg-section.hero {
+        padding: 2.2rem 1rem 2.6rem;
+    }
+
+    .hero--single-game {
+        padding: 2rem 1.1rem 2.4rem;
+    }
+
+    .hero--games-index {
+        padding: 2.8rem 1rem 2.4rem;
+    }
+}
+
 .ccg-hero-content {
     text-shadow: 0 0 6px rgba(0,0,0,0.6), 0 0 18px rgba(0,0,0,0.4);
 }
