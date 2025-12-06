@@ -1,33 +1,41 @@
-// ============================================================
-// index-intro.js — Omega C64 Loading Intro Controller
-// - Static C64 header
-// - Typed commands under READY with blinking cursor
-// - Syncs big neon text with SID speech
-// - Handles Skip Intro + fade-out to home.html
-// Target total runtime: ~8 seconds
-// ============================================================
+// ======================================================================
+// index-intro.js — Omega C64 Cinematic Intro (FINAL)
+// ----------------------------------------------------------------------
+// Sequence:
+// 1) User clicks → Start intro
+// 2) Show static C64 header
+// 3) Type LOAD, PRESS PLAY, LOADING, FOUND lines (fast)
+// 4) On speech start → fade out C64 panel
+// 5) Fade IN "ANOTHER VISITOR", fade OUT
+// 6) Fade IN "STAY A WHILE", fade OUT
+// 7) Fade IN "STAY FOREVER...", HOLD, fade OUT
+// 8) Fade to home.html
+// ======================================================================
 
 (function () {
-    const overlay = document.getElementById("introOverlay");
-    const idle = document.getElementById("introIdle");
-    const c64Screen = document.getElementById("introC64");
-    const fadeLayer = document.getElementById("introFade");
-    const skipBtn = document.getElementById("skipIntro");
-    const speechText = document.getElementById("speechText");
-    const loaderVideo = document.getElementById("loaderVideo");
-    const typedLinesContainer = document.getElementById("typedLines");
+
+    // DOM refs
+    const overlay        = document.getElementById("introOverlay");
+    const idle           = document.getElementById("introIdle");
+    const c64Screen      = document.getElementById("introC64");
+    const typedLinesWrap = document.getElementById("typedLines");
+    const fadeLayer      = document.getElementById("introFade");
+    const skipBtn        = document.getElementById("skipIntro");
+    const speechBox      = document.getElementById("speechText");
+    const loaderVideo    = document.getElementById("loaderVideo");
 
     // SID speech audio
     const speechAudio = new Audio("resources/css/audio/c64_speech_stayawhile.mp3");
     speechAudio.preload = "auto";
-    speechAudio.volume = 0.55; // softer so neon text dominates
+    speechAudio.volume  = 0.55;  // Subtle, letting neon dominate
 
     let introStarted = false;
-    let finished = false;
-    let timers = [];
-    let speechStage = 0;
+    let finished     = false;
+    let timers       = [];
 
-    // Lines to type under READY (in order)
+    // --------------------------------------------------------------
+    // Typed lines under READY
+    // --------------------------------------------------------------
     const typedLines = [
         'LOAD"*",8,1',
         'PRESS PLAY ON TAPE',
@@ -35,163 +43,182 @@
         'FOUND "CHEEKY COMMODORE GAMER"'
     ];
 
-    // Approx typing speed (ms per character)
-    const TYPE_SPEED = 70; // fast but readable
+    const TYPE_SPEED = 70;  // Fast typing
 
     function addTimer(fn, delay) {
-        const id = window.setTimeout(fn, delay);
+        const id = setTimeout(fn, delay);
         timers.push(id);
         return id;
     }
 
     function clearTimers() {
-        timers.forEach(id => window.clearTimeout(id));
+        for (const id of timers) clearTimeout(id);
         timers = [];
     }
 
-    function showC64Screen() {
-        c64Screen.classList.add("intro-c64-screen--visible", "intro-c64-screen--cursor-on");
-    }
+    // --------------------------------------------------------------
+    // Fade-in/out neon speech phrases
+    // --------------------------------------------------------------
+    function showSpeech(text, isForeverLine = false) {
+        speechBox.innerHTML = "";
 
-    function updateSpeechText(text, isForever) {
-        speechText.innerHTML = "";
         const span = document.createElement("span");
         span.textContent = text;
-        if (isForever) {
-            span.classList.add("intro-forever");
-        }
-        speechText.appendChild(span);
-        speechText.classList.add("intro-speech-text--visible");
+        if (isForeverLine) span.classList.add("intro-forever");
+        speechBox.appendChild(span);
+
+        // Fade IN
+        speechBox.classList.remove("intro-speech-text--hidden");
+        speechBox.classList.add("intro-speech-text--visible");
     }
 
-    function clearSpeechText() {
-        speechText.classList.remove("intro-speech-text--visible");
+    function hideSpeech() {
+        speechBox.classList.remove("intro-speech-text--visible");
+        speechBox.classList.add("intro-speech-text--hidden");
     }
 
-    function startSpeechSync() {
-        try {
-            speechAudio.currentTime = 0;
-            speechAudio.play().catch(() => { /* ignore autoplay issues */ });
-        } catch (e) {
-            console.warn("Speech audio error:", e);
-        }
+    // --------------------------------------------------------------
+    // Begin speech audio + fade-out of C64 panel
+    // --------------------------------------------------------------
+    function startSpeech() {
+        if (!speechAudio) return;
 
-        // Basic timing based on typical sample:
-        // Another Visitor ~0.8s, Stay a while ~2.0-3.0s, Stay Forever ~4.0-5.0s
-        speechStage = 0;
+        // Fade out C64 panel instantly as speech begins
+        c64Screen.classList.add("intro-c64-screen--fadeout");
 
-        const sync = () => {
-            const t = speechAudio.currentTime;
+        speechAudio.currentTime = 0;
+        speechAudio.play().catch(() => {});
 
-            if (speechStage === 0 && t >= 0.8) {
-                speechStage = 1;
-                updateSpeechText("ANOTHER VISITOR", false);
-            } else if (speechStage === 1 && t >= 2.4) {
-                speechStage = 2;
-                updateSpeechText("STAY A WHILE", false);
-            } else if (speechStage === 2 && t >= 4.2) {
-                speechStage = 3;
-                updateSpeechText("STAY FOREVER...", true);
-            }
-        };
+        // TIMING OF PHRASES:
+        // Another Visitor: 0.8s
+        // Stay A While:    ~2.4s
+        // Stay Forever:    ~4.2s
 
-        speechAudio.addEventListener("timeupdate", sync);
+        // "ANOTHER VISITOR"
+        addTimer(() => {
+            showSpeech("ANOTHER VISITOR");
+        }, 800);
 
-        speechAudio.addEventListener("ended", () => {
-            clearSpeechText();
-            addTimer(finishIntro, 900);
-        });
+        addTimer(() => {
+            hideSpeech();
+        }, 800 + 900); // fade out after ~0.9s hold
+
+        // "STAY A WHILE"
+        addTimer(() => {
+            showSpeech("STAY A WHILE");
+        }, 2400);
+
+        addTimer(() => {
+            hideSpeech();
+        }, 2400 + 900);
+
+        // "STAY FOREVER..."
+        addTimer(() => {
+            showSpeech("STAY FOREVER...", true);
+        }, 4200);
+
+        // Hold final phrase, then fade out + leave intro
+        addTimer(() => {
+            hideSpeech();
+        }, 4200 + 1500); // hold for 1.5s
+
+        // After final fade, go to homepage
+        addTimer(() => {
+            finishIntro();
+        }, 4200 + 1500 + 400);
     }
 
-    function finishIntro(skip) {
+    // --------------------------------------------------------------
+    // Finish intro (skip or auto)
+    // --------------------------------------------------------------
+    function finishIntro(skip = false) {
         if (finished) return;
         finished = true;
 
         clearTimers();
+
         try { speechAudio.pause(); } catch (e) {}
         speechAudio.currentTime = 0;
 
         fadeLayer.classList.add("intro-fade--active");
 
-        const delay = skip ? 250 : 750;
-        window.setTimeout(() => {
+        setTimeout(() => {
             window.location.href = "home.html";
-        }, delay);
+        }, skip ? 250 : 700);
     }
 
-    // Type lines under READY, then start speech
-    function startTypingSequence() {
-        if (!typedLinesContainer) return;
-
+    // --------------------------------------------------------------
+    // Typing engine
+    // --------------------------------------------------------------
+    function beginTyping() {
         let lineIndex = 0;
 
-        const typeNextLine = () => {
+        function typeNextLine() {
             if (lineIndex >= typedLines.length) {
-                // Slight pause, then start speech
-                addTimer(startSpeechSync, 500);
+                // After typed lines complete, small pause then start speech
+                addTimer(startSpeech, 300);
                 return;
             }
 
             const text = typedLines[lineIndex];
-            const lineEl = document.createElement("div");
-            lineEl.className = "intro-c64-line intro-c64-line--cursor";
-            typedLinesContainer.appendChild(lineEl);
+            const el = document.createElement("div");
+            el.className = "intro-c64-line intro-c64-line--cursor";
+            typedLinesWrap.appendChild(el);
 
             let charIndex = 0;
 
-            const typeChar = () => {
-                if (finished) return; // safety
+            function typeChar() {
+                if (finished) return;
 
                 if (charIndex <= text.length) {
-                    lineEl.textContent = text.slice(0, charIndex);
+                    el.textContent = text.slice(0, charIndex);
                     charIndex++;
                     addTimer(typeChar, TYPE_SPEED);
                 } else {
-                    // Line finished; stop cursor on this line after short delay
-                    lineEl.classList.remove("intro-c64-line--cursor");
+                    // End of line
+                    el.classList.remove("intro-c64-line--cursor");
                     lineIndex++;
                     addTimer(typeNextLine, 200);
                 }
-            };
+            }
 
             typeChar();
-        };
+        }
 
         typeNextLine();
     }
 
-    function startIntroSequence() {
+    // --------------------------------------------------------------
+    // Start the intro
+    // --------------------------------------------------------------
+    function startIntro() {
         if (introStarted || finished) return;
         introStarted = true;
 
         document.body.classList.add("intro-started");
 
-        // Ensure video is playing
         if (loaderVideo && loaderVideo.paused) {
             loaderVideo.play().catch(() => {});
         }
 
-        // Show C64 READY screen immediately
-        showC64Screen();
+        // Show C64 panel
+        c64Screen.classList.add("intro-c64-screen--visible", "intro-c64-screen--cursor-on");
 
-        // Short delay, then start typing under READY
-        addTimer(startTypingSequence, 250);
+        // Begin typing after slight delay
+        addTimer(beginTyping, 250);
     }
 
-    // Handle click to power on (anywhere on overlay except skip button)
-    if (overlay) {
-        overlay.addEventListener("click", (e) => {
-            // If click was on Skip button, don't start intro again
-            if (e.target === skipBtn) return;
-            startIntroSequence();
-        });
-    }
+    // --------------------------------------------------------------
+    // Event Listeners
+    // --------------------------------------------------------------
+    overlay.addEventListener("click", (e) => {
+        if (e.target === skipBtn) return;
+        startIntro();
+    });
 
-    // Skip Intro button
-    if (skipBtn) {
-        skipBtn.addEventListener("click", (e) => {
-            e.stopPropagation(); // prevent triggering startIntroSequence
-            finishIntro(true);
-        });
-    }
+    skipBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        finishIntro(true);
+    });
+
 })();
