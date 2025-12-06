@@ -1,31 +1,40 @@
 /* ============================================================
-   INTRO.CSS — Omega C64 Loading Intro
-   - Fullscreen video background
-   - Static C64 BASIC header
-   - Typed commands under READY
-   - Blinking cursor
-   - Neon cyan/blue speech text
-   - Skip Intro button
-   - Fade in / out
+   INTRO.CSS — Omega C64 Cinematic Intro (FINAL)
+   - Fullscreen loader video
+   - Static C64 header
+   - Typed commands under READY with blinking cursor
+   - Electric blue neon speech text (fade in/out)
+   - Skip Intro neon red button
+   - C64 panel fade-out on speech start
    ============================================================ */
 
 :root {
     --intro-bg: #000716;
-    --intro-blue-deep: #020b1f;
     --intro-blue-panel: #071a3e;
     --intro-cyan: #5fffd4;
     --intro-white: #f5f7ff;
+
+    --neon-blue: #6ad0ff;
+    --neon-blue-glow1: rgba(106,208,255,1);
+    --neon-blue-glow2: rgba(106,208,255,0.9);
+    --neon-blue-glow3: rgba(106,208,255,0.7);
+
+    --neon-red: #ff4c4c;
+    --neon-red-glow1: rgba(255,76,76,1);
+    --neon-red-glow2: rgba(255,50,50,0.9);
 }
 
-/* Body / root */
+/* ------------------------------------------------------------
+   GLOBAL BODY
+------------------------------------------------------------ */
 .intro-body {
     margin: 0;
     padding: 0;
-    background: radial-gradient(circle at center, #021534 0%, #000000 60%, #000000 100%);
+    background: radial-gradient(circle at center, #021534 0%, #000000 70%, #000000 100%);
     color: var(--intro-white);
     height: 100vh;
     overflow: hidden;
-    font-family: "IBM Plex Mono", "Consolas", "Courier New", monospace;
+    font-family: "C64 Pro Mono", "IBM Plex Mono", "Consolas", "Courier New", monospace;
 }
 
 .intro-root {
@@ -35,55 +44,96 @@
     overflow: hidden;
 }
 
-/* Background video */
+/* ------------------------------------------------------------
+   BACKGROUND VIDEO
+------------------------------------------------------------ */
 .intro-video {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: saturate(1.2) contrast(1.25) brightness(0.9);
+    filter: saturate(1.2) contrast(1.2) brightness(0.9);
     opacity: 0.9;
 }
 
-/* Dark gradient overlay & content container */
+/* DARK OVERLAY */
 .intro-overlay {
     position: relative;
     inset: 0;
     width: 100%;
     height: 100%;
     z-index: 2;
-    background:
-        radial-gradient(circle at center,
-            rgba(0,0,0,0.35) 0%,
-            rgba(0,0,0,0.9) 70%,
+    background: radial-gradient(circle at center,
+            rgba(0,0,0,0.3) 0%,
+            rgba(0,0,0,0.85) 70%,
             #000000 100%);
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* Whole screen clickable for POWER ON */
+/* Entire screen clickable to start intro */
 .intro-click-area {
     cursor: pointer;
 }
 
-/* Logo (top-left) */
+/* ------------------------------------------------------------
+   LOGO (top-left)
+------------------------------------------------------------ */
 .intro-logo {
     position: absolute;
-    top: 0.9rem;
-    left: 1.1rem;
+    top: 1rem;
+    left: 1rem;
     z-index: 5;
 }
 
 .intro-logo img {
-    display: block;
-    height: 46px;
+    height: 48px;
     width: auto;
-    filter: drop-shadow(0 0 10px rgba(95,255,212,0.6));
+    filter: drop-shadow(0 0 12px var(--neon-blue-glow1));
 }
 
-/* Idle "POWER ON" prompt */
+/* ------------------------------------------------------------
+   SKIP INTRO BUTTON — NEON RED
+------------------------------------------------------------ */
+.intro-skip {
+    position: absolute;
+    top: 1.2rem;
+    right: 1.4rem;
+    z-index: 5;
+
+    padding: 0.7rem 1.6rem;
+    border-radius: 999px;
+    border: 2px solid var(--neon-red-glow1);
+    background: rgba(0, 0, 0, 0.6);
+
+    color: var(--neon-red);
+    font-size: 1rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 0 10px var(--neon-red-glow2),
+        0 0 20px var(--neon-red-glow1),
+        0 0 40px rgba(255,0,0,0.7);
+
+    transition: all 0.2s ease;
+}
+
+.intro-skip:hover {
+    background: rgba(255,30,30,0.25);
+    box-shadow:
+        0 0 14px var(--neon-red-glow1),
+        0 0 30px rgba(255,0,0,1);
+}
+
+/* ------------------------------------------------------------
+   POWER ON IDLE PROMPT
+------------------------------------------------------------ */
 .intro-idle {
     text-align: center;
     animation: intro-idle-fade 1.4s ease-in-out infinite alternate;
@@ -93,103 +143,88 @@
     font-size: clamp(2.2rem, 4vw, 3rem);
     letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: var(--intro-cyan);
+    color: var(--neon-blue);
     text-shadow:
-        0 0 14px rgba(95,255,212,0.95),
-        0 0 30px rgba(95,255,212,0.7);
-    margin-bottom: 0.7rem;
+        0 0 14px var(--neon-blue-glow1),
+        0 0 28px var(--neon-blue-glow2);
 }
 
 .intro-idle-sub {
-    font-size: 1.05rem;
+    margin-top: 0.6rem;
     opacity: 0.9;
 }
 
 @keyframes intro-idle-fade {
-    from { opacity: 0.55; transform: translateY(0); }
-    to   { opacity: 1; transform: translateY(-3px); }
+    from { opacity: 0.55; }
+    to   { opacity: 1; }
 }
 
-/* Skip Intro button (top-right, always visible) */
-.intro-skip {
-    position: absolute;
-    top: 1.2rem;
-    right: 1.4rem;
-    z-index: 5;
-    padding: 0.5rem 1.2rem;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,0.6);
-    background: rgba(0,0,0,0.65);
-    color: var(--intro-white);
-    font-size: 0.85rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    cursor: pointer;
-
-    box-shadow:
-        0 0 10px rgba(0,0,0,0.6),
-        0 0 14px rgba(95,255,212,0.7);
-    transition: all 0.2s ease;
-}
-
-.intro-skip:hover {
-    background: rgba(95,255,212,0.18);
-    box-shadow:
-        0 0 18px rgba(95,255,212,0.8),
-        0 0 26px rgba(95,255,212,0.7);
-}
-
-/* Fade overlay */
+/* ------------------------------------------------------------
+   FADE OVERLAY
+------------------------------------------------------------ */
 .intro-fade {
     position: absolute;
     inset: 0;
     background: #000;
     opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.7s ease;
-    z-index: 4;
+    transition: opacity 0.8s ease;
+    z-index: 6;
 }
 
 .intro-fade--active {
     opacity: 1;
 }
 
-/* C64 READY / LOAD text block */
+/* ------------------------------------------------------------
+   C64 SCREEN (STATIC HEADER + TYPED LINES)
+------------------------------------------------------------ */
 .intro-c64-screen {
     position: absolute;
     left: 50%;
-    top: 50%;
-    width: min(720px, 95vw);
-    transform: translate(-50%, -50%);
-    background: radial-gradient(circle at top,
-        rgba(7,26,62,0.95),
-        rgba(3,12,35,0.98));
-    border-radius: 14px;
+    top: 42%; /* moved higher to match authentic C64 layout */
+    transform: translate(-50%, -42%);
+    width: min(700px, 95vw);
+
+    background: linear-gradient(to bottom,
+        rgba(10,25,55,0.95),
+        rgba(5,10,25,0.97));
+
+    border-radius: 12px;
     padding: 1.4rem 1.8rem;
+
     border: 1px solid rgba(150,176,255,0.8);
+
     box-shadow:
-        0 0 26px rgba(0,0,0,0.9),
-        0 0 32px rgba(37,112,255,0.7),
-        0 0 60px rgba(95,255,212,0.65);
-    color: #e7ebff;
-    font-size: 0.95rem;              /* slightly smaller for C64 feel */
-    line-height: 1.45;
-    letter-spacing: 0.05em;          /* more grid-like */
+        0 0 24px rgba(0,0,0,0.8),
+        0 0 36px rgba(60,120,255,0.55),
+        0 0 60px rgba(95,255,212,0.35);
+
+    color: #e8edff;
+    font-size: 0.92rem;
+    line-height: 1.4;
+    letter-spacing: 0.05em;
+
+    text-align: left;
     display: none;
-    font-family: "C64 Pro Mono", "Press Start 2P", "IBM Plex Mono",
-                 "Consolas", "Courier New", monospace;
 }
 
 .intro-c64-screen--visible {
     display: block;
 }
 
+/* Fade-out when neon speech begins */
+.intro-c64-screen--fadeout {
+    opacity: 0;
+    transform: translate(-50%, -42%) scale(0.97);
+    filter: blur(3px);
+    transition: opacity 0.7s ease, transform 0.7s ease, filter 0.7s ease;
+}
+
 .intro-c64-line {
-    min-height: 1.3em;
+    min-height: 1.2em;
     white-space: pre-wrap;
 }
 
-/* Header lines slightly dimmer */
 .intro-c64-line--header {
     color: rgba(232,239,255,0.94);
     text-shadow:
@@ -197,12 +232,11 @@
         0 0 14px rgba(37,112,255,0.45);
 }
 
-/* Typed lines neon accent */
 #typedLines .intro-c64-line {
     color: var(--intro-cyan);
     text-shadow:
         0 0 8px rgba(95,255,212,0.9),
-        0 0 18px rgba(95,255,212,0.8);
+        0 0 16px rgba(95,255,212,0.7);
 }
 
 /* Blinking cursor */
@@ -217,19 +251,27 @@
     50.01%, 100% { opacity: 0; }
 }
 
-/* Big neon speech text (FULL SCREEN, press-2-play style) */
+/* ------------------------------------------------------------
+   BIG NEON SPEECH TEXT (Center screen, fades IN and OUT)
+------------------------------------------------------------ */
 .intro-speech-text {
     position: absolute;
     inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+
     text-align: center;
     pointer-events: none;
+
     opacity: 0;
-    transform: scale(0.96);
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    z-index: 3;
+    transform: scale(0.95);
+
+    transition:
+        opacity 0.45s ease,
+        transform 0.45s ease;
+
+    z-index: 8;
 }
 
 .intro-speech-text--visible {
@@ -237,50 +279,49 @@
     transform: scale(1);
 }
 
+.intro-speech-text--hidden {
+    opacity: 0;
+    transform: scale(0.95);
+}
+
 .intro-speech-text span {
     display: block;
-    font-size: clamp(2.8rem, 6vw, 4.8rem); /* larger, full screen */
-    letter-spacing: 0.32em;
+    font-size: clamp(3rem, 10vw, 8rem);
+    font-weight: 900;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: #68c5ff; /* neon blue */
+    color: var(--neon-blue);
+
     text-shadow:
-        0 0 18px rgba(104,197,255,1),
-        0 0 36px rgba(104,197,255,0.95),
-        0 0 64px rgba(104,197,255,0.9);
+        0 0 24px var(--neon-blue-glow1),
+        0 0 48px var(--neon-blue-glow2),
+        0 0 96px var(--neon-blue-glow1),
+        0 0 160px var(--neon-blue-glow3);
 }
 
-/* FOREVER still slightly brighter */
 .intro-speech-text span.intro-forever {
-    color: #b9e3ff;
+    color: #bfe9ff;
     text-shadow:
-        0 0 22px rgba(104,197,255,1),
-        0 0 44px rgba(104,197,255,1),
-        0 0 78px rgba(104,197,255,1);
+        0 0 28px rgba(176,230,255,1),
+        0 0 60px rgba(150,215,255,1),
+        0 0 140px rgba(150,215,255,1);
 }
 
-/* When intro has started, hide idle prompt */
-.intro-body.intro-started #introIdle {
-    display: none;
-}
-
-/* Small screens */
+/* ------------------------------------------------------------
+   RESPONSIVE
+------------------------------------------------------------ */
 @media (max-width: 640px) {
     .intro-c64-screen {
-        font-size: 0.85rem;
+        font-size: 0.82rem;
         padding: 1rem 1.1rem;
-        border-radius: 10px;
-    }
-
-    .intro-idle-title {
-        letter-spacing: 0.18em;
-    }
-
-    .intro-skip {
-        padding: 0.45rem 0.9rem;
-        font-size: 0.75rem;
     }
 
     .intro-logo img {
         height: 40px;
+    }
+
+    .intro-skip {
+        padding: 0.55rem 1.4rem;
+        font-size: 0.85rem;
     }
 }
