@@ -1,30 +1,57 @@
 /* ============================================================
-   GAMES.CSS — OMEGA CINEMATIC EDITION
+   GAMES.CSS — OMEGA CINEMATIC EDITION (Thumbnail Upgrade A2)
    Applies ONLY to:
    - All Games index (games/index.html)
    - Game cards rendered by games-library.js
-
-   DO NOT REMOVE OR RENAME:
-   .ccg-game-card
-   .games-library-grid
-   #games-list
-   These are required by JS and remain untouched.
    ============================================================ */
 
-
 /* -----------------------------------------
-   GRID LAYOUT
+   GRID LAYOUT (Upgraded to 220px squares)
 ----------------------------------------- */
 
 .games-library-grid,
-.ccg-game-listing-grid {
+.ccg-game-listing-grid,
+#games-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 1.75rem;
     padding: 0 1.5rem 3rem;
 }
 
+/* -----------------------------------------
+   UNIVERSAL THUMBNAIL (A2 — 220px square)
+----------------------------------------- */
 
+.ccg-thumb,
+.ccg-game-thumb {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    display: block;
+    background: #000;
+    border-radius: 14px;
+    overflow: hidden;
+
+    object-fit: contain;
+    object-position: center;
+
+    box-shadow:
+        0 0 12px rgba(0,0,0,0.35),
+        inset 0 0 22px rgba(0,255,255,0.08);
+}
+
+body[data-ccg-mode="amiga"] .ccg-thumb,
+body[data-ccg-mode="amiga"] .ccg-game-thumb {
+    box-shadow:
+        0 0 12px rgba(0,0,0,0.35),
+        inset 0 0 22px rgba(255,60,255,0.08);
+}
+
+.ccg-thumb img,
+.ccg-game-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
 
 /* -----------------------------------------
    CINEMATIC GAME CARD BASE
@@ -37,6 +64,7 @@
     backdrop-filter: blur(6px);
     border-radius: 14px;
     overflow: hidden;
+
     border: 2px solid var(--ccg-accent-default);
 
     transition:
@@ -44,29 +72,11 @@
         box-shadow 0.25s ease,
         border-color 0.25s ease;
 
-    box-shadow: 0 0 0 rgba(0,0,0,0);
     text-decoration: none;
 }
 
-
-
-/* -----------------------------------------
-   MODE-AWARE BORDERS
------------------------------------------ */
-
-body[data-ccg-mode="c64"] .ccg-game-card {
-    border-color: #00e0ff;
-}
-
-body[data-ccg-mode="amiga"] .ccg-game-card {
-    border-color: #ff4ce6;
-}
-
-
-
-/* -----------------------------------------
-   HOVER EFFECT (LIFT + GLOW)
------------------------------------------ */
+body[data-ccg-mode="c64"] .ccg-game-card { border-color: #00e0ff; }
+body[data-ccg-mode="amiga"] .ccg-game-card { border-color: #ff4ce6; }
 
 .ccg-game-card:hover {
     transform: translateY(-6px);
@@ -74,29 +84,13 @@ body[data-ccg-mode="amiga"] .ccg-game-card {
 
 body[data-ccg-mode="c64"] .ccg-game-card:hover {
     border-color: #4cffff;
-    box-shadow: 0 0 22px rgba(0, 224, 255, 0.55);
+    box-shadow: 0 0 22px rgba(0,224,255,0.55);
 }
 
 body[data-ccg-mode="amiga"] .ccg-game-card:hover {
     border-color: #ff9ef8;
-    box-shadow: 0 0 22px rgba(255, 76, 230, 0.55);
+    box-shadow: 0 0 22px rgba(255,76,230,0.55);
 }
-
-
-
-/* -----------------------------------------
-   THUMBNAIL IMAGE FIXES
------------------------------------------ */
-
-.ccg-game-thumb {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    display: block;
-    background: #000;
-}
-
-
 
 /* -----------------------------------------
    CARD CONTENT
@@ -120,73 +114,49 @@ body[data-ccg-mode="amiga"] .ccg-game-card:hover {
     opacity: 0.75;
 }
 
-
-
 /* -----------------------------------------
-   EMPTY / LOADING MESSAGE STYLE
+   SINGLE GAME PAGE — HERO IMAGE FIX
 ----------------------------------------- */
 
-.ccg-section-subtitle {
-    text-align: center;
-    opacity: 0.75;
-    padding: 2rem 0;
-}
-
-
-
-/* -----------------------------------------
-   SEARCH BAR POLISH (MATCH HERO)
------------------------------------------ */
-
-.ccg-search-bar {
-    display: flex;
-    justify-content: center;
-    padding: 0 1.5rem 2rem;
-}
-
-.ccg-search-input {
+#game-hero-image {
+    display: block;
     width: 100%;
     max-width: 460px;
-    padding: 0.85rem 1rem;
-    font-size: 1rem;
-    border-radius: 10px;
-    border: 2px solid var(--ccg-accent-default);
-    background: rgba(0,0,0,0.45);
-    color: #fff;
+    height: 300px;
 
-    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    object-fit: contain;
+    object-position: center;
+
+    margin-bottom: 1.4rem;
+    border-radius: 16px;
+
+    background: radial-gradient(circle at 50% 0,
+        rgba(0,255,255,0.15),
+        rgba(0,0,0,0.9)
+    );
+
+    box-shadow:
+        0 0 25px rgba(0,255,255,0.35),
+        0 0 0 1px rgba(0,255,255,0.4);
 }
 
-.ccg-search-input:focus {
-    outline: none;
+body[data-ccg-mode="amiga"] #game-hero-image {
+    box-shadow:
+        0 0 25px rgba(255,60,255,0.35),
+        0 0 0 1px rgba(255,60,255,0.4);
 }
 
-body[data-ccg-mode="c64"] .ccg-search-input:focus {
-    border-color: #00e0ff;
-    box-shadow: 0 0 14px rgba(0, 224, 255, 0.45);
+@media (max-width: 768px) {
+    #game-hero-image { height: 220px; }
 }
-
-body[data-ccg-mode="amiga"] .ccg-search-input:focus {
-    border-color: #ff4ce6;
-    box-shadow: 0 0 14px rgba(255, 76, 230, 0.45);
-}
-
-
 
 /* -----------------------------------------
-   RESPONSIVE TWEAKS
+   RESPONSIVE
 ----------------------------------------- */
 
 @media (max-width: 600px) {
-    .games-library-grid {
+    .games-library-grid,
+    #games-list {
         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    }
-
-    .ccg-game-thumb {
-        height: 140px;
-    }
-
-    .ccg-game-card-title {
-        font-size: 1rem;
     }
 }
