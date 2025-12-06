@@ -4,7 +4,7 @@
    - Static C64 BASIC header
    - Typed commands under READY
    - Blinking cursor
-   - Neon cyan speech text
+   - Neon cyan/blue speech text
    - Skip Intro button
    - Fade in / out
    ============================================================ */
@@ -63,9 +63,24 @@
     justify-content: center;
 }
 
-/* Make whole screen clickable for power on */
+/* Whole screen clickable for POWER ON */
 .intro-click-area {
     cursor: pointer;
+}
+
+/* Logo (top-left) */
+.intro-logo {
+    position: absolute;
+    top: 0.9rem;
+    left: 1.1rem;
+    z-index: 5;
+}
+
+.intro-logo img {
+    display: block;
+    height: 46px;
+    width: auto;
+    filter: drop-shadow(0 0 10px rgba(95,255,212,0.6));
 }
 
 /* Idle "POWER ON" prompt */
@@ -157,9 +172,12 @@
         0 0 32px rgba(37,112,255,0.7),
         0 0 60px rgba(95,255,212,0.65);
     color: #e7ebff;
-    font-size: 1rem;
-    line-height: 1.5;
+    font-size: 0.95rem;              /* slightly smaller for C64 feel */
+    line-height: 1.45;
+    letter-spacing: 0.05em;          /* more grid-like */
     display: none;
+    font-family: "C64 Pro Mono", "Press Start 2P", "IBM Plex Mono",
+                 "Consolas", "Courier New", monospace;
 }
 
 .intro-c64-screen--visible {
@@ -199,7 +217,7 @@
     50.01%, 100% { opacity: 0; }
 }
 
-/* Big neon speech text */
+/* Big neon speech text (FULL SCREEN, press-2-play style) */
 .intro-speech-text {
     position: absolute;
     inset: 0;
@@ -221,22 +239,23 @@
 
 .intro-speech-text span {
     display: block;
-    font-size: clamp(2.4rem, 5vw, 3.5rem);
-    letter-spacing: 0.3em;
+    font-size: clamp(2.8rem, 6vw, 4.8rem); /* larger, full screen */
+    letter-spacing: 0.32em;
     text-transform: uppercase;
-    color: var(--intro-cyan);
+    color: #68c5ff; /* neon blue */
     text-shadow:
-        0 0 14px rgba(95,255,212,1),
-        0 0 28px rgba(95,255,212,0.9),
-        0 0 44px rgba(95,255,212,0.8);
+        0 0 18px rgba(104,197,255,1),
+        0 0 36px rgba(104,197,255,0.95),
+        0 0 64px rgba(104,197,255,0.9);
 }
 
+/* FOREVER still slightly brighter */
 .intro-speech-text span.intro-forever {
-    color: #ffffff;
+    color: #b9e3ff;
     text-shadow:
-        0 0 16px rgba(95,255,212,1),
-        0 0 34px rgba(95,255,212,1),
-        0 0 60px rgba(95,255,212,1);
+        0 0 22px rgba(104,197,255,1),
+        0 0 44px rgba(104,197,255,1),
+        0 0 78px rgba(104,197,255,1);
 }
 
 /* When intro has started, hide idle prompt */
@@ -247,7 +266,7 @@
 /* Small screens */
 @media (max-width: 640px) {
     .intro-c64-screen {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         padding: 1rem 1.1rem;
         border-radius: 10px;
     }
@@ -259,5 +278,9 @@
     .intro-skip {
         padding: 0.45rem 0.9rem;
         font-size: 0.75rem;
+    }
+
+    .intro-logo img {
+        height: 40px;
     }
 }
