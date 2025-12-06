@@ -1,9 +1,395 @@
 /* ============================================================
    GAMES.CSS — OMEGA CINEMATIC EDITION (Thumbnail Upgrade A2)
-   Applies ONLY to:
+   Applies to:
    - All Games index (games/index.html)
    - Game cards rendered by games-library.js
+   - Single-game hero thumbnail
    ============================================================ */
+
+/* -----------------------------------------
+   GAMES INDEX PAGE WRAPPER
+   (Scoped by data-ccg-page="games-index")
+----------------------------------------- */
+
+html[data-ccg-page="games-index"] .ccg-page--games-index {
+    max-width: 1680px;
+    margin-inline: auto;
+    position: relative;
+    z-index: 2;
+}
+
+/* -----------------------------------------
+   OMEGA HEADER CLONE (MATCH HOME, BUT LOCAL)
+----------------------------------------- */
+
+html[data-ccg-page="games-index"] .ccg-header {
+    position: relative;
+    z-index: 5;
+    padding: 0.85rem 2rem 0.35rem;
+    backdrop-filter: blur(6px);
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.85),
+        rgba(0, 0, 0, 0.4),
+        transparent
+    );
+}
+
+html[data-ccg-page="games-index"] .ccg-header-inner {
+    max-width: 1680px;
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+/* Brand */
+
+html[data-ccg-page="games-index"] .ccg-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.85rem;
+    text-decoration: none;
+}
+
+html[data-ccg-page="games-index"] .ccg-brand__logo {
+    height: 52px;
+    width: auto;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 10px rgba(var(--accent-rgb), 0.45));
+    border-radius: 10px;
+    opacity: 0.94;
+    transform: translateY(1px);
+}
+
+html[data-ccg-page="games-index"] .ccg-brand__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+html[data-ccg-page="games-index"] .ccg-brand__kicker {
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    opacity: 0.95;
+}
+
+html[data-ccg-page="games-index"] .ccg-brand__title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: baseline;
+}
+
+html[data-ccg-page="games-index"] .ccg-brand__neon-cheeky {
+    color: var(--accent);
+    text-shadow:
+        0 0 8px rgba(var(--accent-rgb), 0.9),
+        0 0 18px rgba(var(--accent-rgb), 0.6);
+}
+
+html[data-ccg-page="games-index"] .ccg-brand__neon-sub {
+    color: var(--text-light);
+    opacity: 0.9;
+}
+
+/* Navigation */
+
+html[data-ccg-page="games-index"] .ccg-nav {
+    flex: 1;
+}
+
+html[data-ccg-page="games-index"] .ccg-nav__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem 1.1rem;
+}
+
+html[data-ccg-page="games-index"] .ccg-nav__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    border: 1px solid transparent;
+    background: rgba(0, 0, 0, 0.45);
+    color: var(--text-light);
+    text-decoration: none;
+    transition:
+        background var(--transition-fast),
+        border-color var(--transition-fast),
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast),
+        color 0.25s ease,
+        text-shadow 0.25s ease;
+}
+
+html[data-ccg-page="games-index"] .ccg-nav__link:hover {
+    background: rgba(var(--accent-rgb), 0.18);
+    border-color: rgba(var(--accent-rgb), 0.6);
+    box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.5);
+    transform: translateY(-1px);
+    color: #00c8ff;
+    text-shadow: 0 0 6px #00c8ff;
+}
+
+html[data-ccg-page="games-index"] .ccg-nav__link--active {
+    background: rgba(var(--accent-rgb), 0.26);
+    border-color: rgba(var(--accent-rgb), 0.9);
+}
+
+/* Header actions: mode toggle + socials */
+
+html[data-ccg-page="games-index"] .ccg-header-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9rem;
+}
+
+/* Mode toggle pill (reuses global JS data-ccg-mode-toggle) */
+
+html[data-ccg-page="games-index"] .ccg-mode-toggle {
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+}
+
+html[data-ccg-page="games-index"] .ccg-mode-toggle__pill {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.16rem;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.7);
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.16),
+        0 0 18px rgba(var(--accent-rgb), 0.45),
+        inset 0 0 10px rgba(0, 0, 0, 0.9);
+    min-width: 80px;
+    transition: box-shadow 0.3s ease;
+}
+
+html[data-ccg-page="games-index"] .ccg-mode-toggle__label {
+    position: relative;
+    z-index: 2;
+    padding: 0.16rem 0.5rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--text-dim);
+}
+
+html[data-ccg-page="games-index"] .ccg-mode-toggle__thumb {
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    width: 50%;
+    border-radius: 999px;
+    background: var(--accent);
+    box-shadow:
+        0 0 10px rgba(var(--accent-rgb), 0.9),
+        0 0 20px rgba(var(--accent-rgb), 0.7);
+    transition: transform 0.25s ease, background 0.25s ease;
+}
+
+/* Thumb based on mode */
+
+body[data-ccg-mode="c64"] .ccg-mode-toggle__thumb {
+    transform: translateX(0%);
+}
+
+body[data-ccg-mode="amiga"] .ccg-mode-toggle__thumb {
+    transform: translateX(100%);
+}
+
+body[data-ccg-mode="c64"] .ccg-mode-toggle__label--c64,
+body[data-ccg-mode="amiga"] .ccg-mode-toggle__label--amiga {
+    color: #000;
+    font-weight: 700;
+}
+
+/* Socials (icon buttons, same pattern as home) */
+
+html[data-ccg-page="games-index"] .ccg-socials {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+html[data-ccg-page="games-index"] .ccg-socials__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+html[data-ccg-page="games-index"] .ccg-socials__label {
+    color: var(--text-light);
+    opacity: 0.9;
+}
+
+html[data-ccg-page="games-index"] .ccg-socials__icon-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    transition:
+        background var(--transition-fast),
+        box-shadow var(--transition-fast),
+        transform var(--transition-fast);
+}
+
+html[data-ccg-page="games-index"] .ccg-socials__icon-btn:hover,
+html[data-ccg-page="games-index"] .ccg-socials__link:hover {
+    transform: translateY(-1px);
+    box-shadow:
+        0 0 0 1px rgba(var(--accent-rgb), 0.4),
+        0 0 14px rgba(var(--accent-rgb), 0.7);
+}
+
+/* Generic icon box so SVG sprites line up */
+
+html[data-ccg-page="games-index"] .ccg-socials__icon {
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+}
+
+/* Thin neon strip under header */
+
+html[data-ccg-page="games-index"] .ccg-header-neon-strip {
+    height: 3px;
+    margin-top: 0.55rem;
+    background: linear-gradient(
+        90deg,
+        rgba(var(--accent-rgb), 0.15),
+        rgba(255, 255, 255, 0.85),
+        rgba(var(--accent-rgb), 0.45)
+    );
+    box-shadow:
+        0 0 16px rgba(var(--accent-rgb), 0.6),
+        0 0 30px rgba(var(--accent-rgb), 0.4);
+}
+
+/* -----------------------------------------
+   GAMES INDEX HERO + SEARCH
+----------------------------------------- */
+
+html[data-ccg-page="games-index"] .games-hero {
+    margin-top: 1.6rem;
+    padding: 2.2rem 2rem 2.6rem;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 18px;
+    box-shadow:
+        0 0 24px rgba(0, 0, 0, 0.8),
+        0 0 22px rgba(var(--accent-rgb), 0.18);
+}
+
+body[data-ccg-mode="amiga"] .games-hero {
+    background: rgba(236, 240, 252, 0.96);
+    box-shadow:
+        0 0 22px rgba(0, 0, 0, 0.3),
+        0 0 18px rgba(255, 79, 232, 0.16);
+}
+
+html[data-ccg-page="games-index"] .games-hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.2rem;
+    margin-top: 1.3rem;
+    margin-bottom: 1.3rem;
+}
+
+html[data-ccg-page="games-index"] .games-count-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(var(--accent-rgb), 0.55);
+    font-size: 0.82rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    box-shadow:
+        0 0 12px rgba(var(--accent-rgb), 0.45),
+        0 0 24px rgba(var(--accent-rgb), 0.35);
+}
+
+body[data-ccg-mode="amiga"] .games-count-pill {
+    background: rgba(255, 255, 255, 0.98);
+    color: #000;
+}
+
+html[data-ccg-page="games-index"] .games-count-pill span {
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+html[data-ccg-page="games-index"] .games-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+}
+
+/* Search row */
+
+html[data-ccg-page="games-index"] .games-search-row {
+    margin-top: 0.6rem;
+}
+
+html[data-ccg-page="games-index"] .ccg-input {
+    width: 100%;
+    max-width: 480px;
+    padding: 0.75rem 1rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.78);
+    color: var(--text-light);
+    font-size: 0.95rem;
+    box-shadow:
+        0 0 14px rgba(0, 0, 0, 0.9),
+        0 0 16px rgba(var(--accent-rgb), 0.18);
+}
+
+html[data-ccg-page="games-index"] .ccg-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+body[data-ccg-mode="amiga"] .ccg-input {
+    background: rgba(245, 248, 255, 0.98);
+    color: #000;
+    border-color: rgba(0, 0, 0, 0.25);
+}
 
 /* -----------------------------------------
    GRID LAYOUT (Upgraded to 220px squares)
@@ -15,7 +401,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 1.75rem;
-    padding: 0 1.5rem 3rem;
+    padding: 2.2rem 1.5rem 3rem;
 }
 
 /* -----------------------------------------
@@ -65,7 +451,7 @@ body[data-ccg-mode="amiga"] .ccg-game-thumb {
     border-radius: 14px;
     overflow: hidden;
 
-    border: 2px solid var(--ccg-accent-default);
+    border: 2px solid var(--accent);
 
     transition:
         transform 0.25s ease,
@@ -153,6 +539,58 @@ body[data-ccg-mode="amiga"] #game-hero-image {
 /* -----------------------------------------
    RESPONSIVE
 ----------------------------------------- */
+
+@media (max-width: 1200px) {
+    html[data-ccg-page="games-index"] .ccg-header-inner {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    html[data-ccg-page="games-index"] .ccg-header-actions {
+        margin-left: auto;
+    }
+
+    html[data-ccg-page="games-index"] .games-hero {
+        padding-inline: 1.5rem;
+    }
+}
+
+@media (max-width: 980px) {
+    .games-library-grid,
+    #games-list {
+        padding-inline: 1.2rem;
+    }
+}
+
+@media (max-width: 760px) {
+    html[data-ccg-page="games-index"] .ccg-header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    html[data-ccg-page="games-index"] .ccg-nav {
+        width: 100%;
+    }
+
+    html[data-ccg-page="games-index"] .ccg-nav__list {
+        justify-content: flex-start;
+    }
+
+    html[data-ccg-page="games-index"] .ccg-header-actions {
+        align-self: stretch;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    html[data-ccg-page="games-index"] .ccg-brand__logo {
+        height: 46px;
+    }
+
+    html[data-ccg-page="games-index"] .games-hero {
+        padding-inline: 1.2rem;
+    }
+}
 
 @media (max-width: 600px) {
     .games-library-grid,
