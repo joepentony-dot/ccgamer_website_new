@@ -1,248 +1,326 @@
 /* ============================================================
-   GENRE.CSS — OMEGA CINEMATIC EDITION (FINAL BUILD)
+   GENRE.CSS — OMEGA CINEMATIC HEAVY GLOW EDITION (FINAL BUILD)
    Applies to:
-   • Genre pages
-   • Collection pages
-   • Game lists within genres/collections
+   • Genre hub (genres/index.html)
+   • All individual genre pages
+   • Collections hub & pages
+   • Game list grids
    • Hero banners
-   • Single game hero thumbnail normaliser
+   • Omega header visual alignment
    Fully mode-aware (C64 + Amiga)
    Non-breaking. JS compatibility guaranteed.
    ============================================================ */
 
-/* -----------------------------------------
-   PAGE LAYOUT WRAPPER
------------------------------------------ */
 
+/* ============================================================
+   PAGE WRAPPERS
+============================================================ */
+
+.ccg-page--genres-index,
 .ccg-genre-page,
 .ccg-collection-page {
-    max-width: 1280px;
+    max-width: 1480px;
     margin: 0 auto;
-    padding: 1.5rem;
+    padding: 2rem 2rem 3rem;
     position: relative;
     z-index: 2;
 }
 
-@media (max-width: 780px) {
+@media (max-width: 820px) {
+    .ccg-page--genres-index,
     .ccg-genre-page,
     .ccg-collection-page {
-        padding: 1rem;
+        padding: 1.25rem 1rem 2rem;
     }
 }
 
-/* -----------------------------------------
-   HERO BANNER WRAPPER
------------------------------------------ */
 
+/* ============================================================
+   HERO SECTION (Hub & Individual Pages)
+============================================================ */
+
+.genres-hero,
 .ccg-hero-banner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.25rem;
-    margin-bottom: 2.5rem;
+    margin-top: 2.2rem;
+    padding: 2.6rem 2.2rem 2.8rem;
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: 22px;
     text-align: center;
-}
-
-@media (max-width: 780px) {
-    .ccg-hero-banner {
-        margin-bottom: 2rem;
-    }
-}
-
-/* -----------------------------------------
-   HERO IMAGE FRAME (cinematic)
------------------------------------------ */
-
-.ccg-hero-image-frame {
-    position: relative;
-    width: 100%;
-    max-width: 620px;
-    border-radius: 16px;
-    overflow: hidden;
-    background: rgba(var(--accent-rgb), 0.08);
-    border: 1px solid rgba(var(--accent-rgb), 0.25);
 
     box-shadow:
-        0 0 12px rgba(var(--accent-rgb), 0.35),
-        0 0 32px rgba(var(--accent-rgb), 0.22),
-        inset 0 0 12px rgba(var(--accent-rgb), 0.20);
+        0 0 40px rgba(0,0,0,0.85),
+        0 0 38px rgba(var(--accent-rgb), 0.22),
+        inset 0 0 60px rgba(var(--accent-rgb), 0.08);
 }
 
-.ccg-hero-image {
-    width: 100%;
-    height: auto;
-    display: block;
-    object-fit: cover;
+body[data-ccg-mode="amiga"] .genres-hero,
+body[data-ccg-mode="amiga"] .ccg-hero-banner {
+    background: rgba(245,245,255,0.98);
+    box-shadow:
+        0 0 34px rgba(0,0,0,0.4),
+        0 0 26px rgba(255,60,255,0.18),
+        inset 0 0 40px rgba(255,60,255,0.10);
 }
 
-.ccg-hero-vignette {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: radial-gradient(
-        circle at center,
-        transparent 45%,
-        rgba(0,0,0,0.45) 100%
-    );
-}
-
-/* -----------------------------------------
-   HERO TITLE / META
------------------------------------------ */
-
-.ccg-hero-title {
-    font-size: 2.1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
+.genres-hero .ccg-section__title,
+.ccg-hero-banner .ccg-hero-title {
     margin: 0;
-    text-shadow: var(--hero-title-shadow);
-}
-
-@media (max-width: 760px) {
-    .ccg-hero-title {
-        font-size: 1.65rem;
-    }
-}
-
-.ccg-hero-kicker {
-    font-size: 0.9rem;
-    opacity: 0.9;
-    letter-spacing: 0.12em;
+    font-size: 2.4rem;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
-    margin-bottom: 0.25rem;
-    color: var(--text-dim);
-}
 
-/* -----------------------------------------
-   META LINE
------------------------------------------ */
-
-.ccg-hero-meta-row {
-    display: flex;
-    gap: 0.6rem;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 0.3rem;
-}
-
-.ccg-hero-pill {
-    padding: 0.35rem 0.75rem;
-    border-radius: 999px;
-    background: rgba(var(--accent-rgb), 0.18);
-    border: 1px solid rgba(var(--accent-rgb), 0.4);
-    font-size: 0.8rem;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
     color: var(--text-light);
+    text-shadow:
+        0 0 12px rgba(var(--accent-rgb), 0.9),
+        0 0 24px rgba(var(--accent-rgb), 0.55);
 }
 
-/* Amiga mode refinement */
-body[data-ccg-mode="amiga"] .ccg-hero-pill {
-    background: #ffffff;
-    color: #000;
-    border: 1px solid rgba(0,0,0,0.3);
+body[data-ccg-mode="amiga"] .ccg-hero-banner .ccg-hero-title,
+body[data-ccg-mode="amiga"] .genres-hero .ccg-section__title {
+    text-shadow:
+        0 0 12px rgba(255,60,255,0.9),
+        0 0 24px rgba(255,60,255,0.55);
 }
 
-/* -----------------------------------------
-   HERO INTRO TEXT (Option 2C original)
------------------------------------------ */
+.genres-hero .ccg-section__subtitle,
+.ccg-hero-banner .genre-intro {
+    margin-top: 0.8rem;
+    max-width: 860px;
+    margin-inline: auto;
 
-.genre-intro {
-    max-width: 820px;
-    margin: 0 auto;
-    margin-top: 0.75rem;
-    font-size: 1rem;
-    line-height: 1.58;
-    color: var(--text-light);
+    font-size: 1.05rem;
     opacity: 0.92;
+    line-height: 1.55;
 }
 
 .genre-description {
-    margin-top: 0.5rem;
+    margin-top: 0.45rem;
     color: var(--text-dim);
     font-size: 0.95rem;
     line-height: 1.55;
 }
 
 @media (max-width: 760px) {
-    .genre-intro { font-size: 0.95rem; }
-    .genre-description { font-size: 0.9rem; }
+    .genres-hero,
+    .ccg-hero-banner {
+        padding: 1.6rem 1.3rem 1.9rem;
+    }
+    .genres-hero .ccg-section__title,
+    .ccg-hero-banner .ccg-hero-title {
+        font-size: 1.85rem;
+    }
 }
 
-/* -----------------------------------------
-   GENRE / COLLECTION COUNT TEXT
------------------------------------------ */
 
-.genre-count,
-.collection-count {
-    margin-top: 0.6rem;
-    font-size: 0.9rem;
+/* ============================================================
+   GENRE HUB GRID — Omega Tile System
+============================================================ */
+
+.ccg-genre-grid {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1.6rem;
+}
+
+@media (max-width: 760px) {
+    .ccg-genre-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1.1rem;
+    }
+}
+
+
+/* ============================================================
+   GENRE TILE — HEAVY GLOW VERSION
+============================================================ */
+
+.ccg-genre-tile {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    border-radius: 18px;
+
+    background: rgba(0,0,0,0.65);
+    padding: 1rem;
+
+    border: 1px solid rgba(var(--accent-rgb), 0.35);
+
+    box-shadow:
+        0 0 24px rgba(0,0,0,0.85),
+        0 0 26px rgba(var(--accent-rgb), 0.22),
+        inset 0 0 28px rgba(var(--accent-rgb), 0.10);
+
+    transition: all 0.28s ease;
+}
+
+body[data-ccg-mode="amiga"] .ccg-genre-tile {
+    background: rgba(255,255,255,0.96);
+    border-color: rgba(255,60,255,0.35);
+    box-shadow:
+        0 0 26px rgba(0,0,0,0.35),
+        0 0 22px rgba(255,60,255,0.20),
+        inset 0 0 22px rgba(255,60,255,0.08);
+}
+
+.ccg-genre-tile:hover {
+    transform: translateY(-6px);
+    box-shadow:
+        0 0 38px rgba(var(--accent-rgb), 0.6),
+        0 0 55px rgba(var(--accent-rgb), 0.45),
+        inset 0 0 55px rgba(var(--accent-rgb), 0.22);
+}
+
+body[data-ccg-mode="amiga"] .ccg-genre-tile:hover {
+    box-shadow:
+        0 0 32px rgba(255,60,255,0.55),
+        0 0 45px rgba(255,60,255,0.45),
+        inset 0 0 38px rgba(255,60,255,0.18);
+}
+
+
+/* ============================================================
+   TILE THUMB — Deep Glow Box
+============================================================ */
+
+.ccg-genre-tile-thumb-wrap {
+    width: 100%;
+    border-radius: 14px;
+    overflow: hidden;
+
+    background: rgba(var(--accent-rgb), 0.20);
+    border: 1px solid rgba(var(--accent-rgb), 0.40);
+
+    box-shadow:
+        0 0 22px rgba(var(--accent-rgb), 0.45),
+        inset 0 0 28px rgba(var(--accent-rgb), 0.15);
+}
+
+body[data-ccg-mode="amiga"] .ccg-genre-tile-thumb-wrap {
+    background: rgba(255,60,255,0.10);
+    border-color: rgba(255,60,255,0.40);
+    box-shadow:
+        0 0 22px rgba(255,60,255,0.35),
+        inset 0 0 24px rgba(255,60,255,0.15);
+}
+
+.ccg-genre-tile-thumb {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+
+/* ============================================================
+   TILE BODY
+============================================================ */
+
+.ccg-genre-tile-body {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.ccg-genre-tile-title {
+    font-size: 1.2rem;
+    margin: 0;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    opacity: 0.85;
+    letter-spacing: 0.12em;
+
+    color: var(--text-light);
+    text-shadow:
+        0 0 8px rgba(var(--accent-rgb), 0.75),
+        0 0 18px rgba(var(--accent-rgb), 0.45);
 }
 
-/* -----------------------------------------
-   GAME GRID (Genre / Collection)
------------------------------------------ */
+body[data-ccg-mode="amiga"] .ccg-genre-tile-title {
+    color: #000;
+    text-shadow:
+        0 0 8px rgba(255,60,255,0.75),
+        0 0 18px rgba(255,60,255,0.45);
+}
+
+.ccg-genre-tile-text {
+    margin-top: 0.45rem;
+    font-size: 0.92rem;
+    opacity: 0.88;
+}
+
+
+/* ============================================================
+   GAME GRIDS (Used inside individual genres/collections)
+============================================================ */
 
 .ccg-genre-games-grid,
 .ccg-collection-games-grid,
 .ccg-game-listing-grid {
-    --min-tile: 170px;
-
+    margin-top: 2.2rem;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(var(--min-tile), 1fr));
-    gap: 1rem;
-    margin-top: 1.5rem;
-    margin-bottom: 2.25rem;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 1.2rem;
 }
 
 @media (max-width: 760px) {
     .ccg-genre-games-grid,
     .ccg-collection-games-grid,
     .ccg-game-listing-grid {
-        --min-tile: 150px;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
         gap: 0.85rem;
     }
 }
 
-/* -----------------------------------------
-   GAME TILE CARD
------------------------------------------ */
+
+/* ============================================================
+   GAME CARD (Used inside genres)
+============================================================ */
 
 .ccg-game-card {
-    background: var(--panel-bg);
-    border: 1px solid var(--border-light);
-    border-radius: 12px;
-    padding: 0.5rem;
+    background: rgba(0,0,0,0.65);
+    border-radius: 14px;
+    padding: 0.6rem;
+
+    border: 1px solid rgba(var(--accent-rgb), 0.30);
+
+    box-shadow:
+        0 0 20px rgba(0,0,0,0.8),
+        0 0 24px rgba(var(--accent-rgb), 0.18);
+
     transition: 0.25s ease;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
 }
 
 .ccg-game-card:hover {
-    background: var(--panel-bg-strong);
-    transform: translateY(-3px);
+    transform: translateY(-4px);
     border-color: var(--accent);
     box-shadow:
-        0 0 14px rgba(var(--accent-rgb), 0.45),
-        0 0 28px rgba(var(--accent-rgb), 0.25);
+        0 0 18px rgba(var(--accent-rgb), 0.5),
+        0 0 40px rgba(var(--accent-rgb), 0.35);
 }
 
-/* -----------------------------------------
-   TILE THUMBNAIL WRAPPER (A2 square system)
------------------------------------------ */
+body[data-ccg-mode="amiga"] .ccg-game-card {
+    background: rgba(255,255,255,0.96);
+    border-color: rgba(255,60,255,0.3);
+    box-shadow:
+        0 0 16px rgba(0,0,0,0.35),
+        0 0 24px rgba(255,60,255,0.18);
+}
+
+
+/* ============================================================
+   GAME CARD THUMB
+============================================================ */
 
 .ccg-thumb-wrapper {
     position: relative;
     width: 100%;
     aspect-ratio: 1 / 1;
-    border-radius: 10px;
+    border-radius: 12px;
     overflow: hidden;
+
     background: rgba(var(--accent-rgb), 0.12);
     border: 1px solid rgba(var(--accent-rgb), 0.25);
+
+    box-shadow:
+        0 0 18px rgba(var(--accent-rgb), 0.28),
+        inset 0 0 20px rgba(var(--accent-rgb), 0.15);
 }
 
 .ccg-thumb {
@@ -251,27 +329,27 @@ body[data-ccg-mode="amiga"] .ccg-hero-pill {
     object-fit: cover;
 }
 
-/* -----------------------------------------
-   TILE TITLE
------------------------------------------ */
+
+/* ============================================================
+   GAME CARD TITLE
+============================================================ */
 
 .ccg-game-title {
     margin-top: 0.55rem;
-    font-size: 0.95rem;
     text-align: center;
+    font-size: 0.92rem;
     color: var(--text-light);
     opacity: 0.92;
 }
 
-/* -----------------------------------------
-   SINGLE GAME HERO THUMBNAIL NORMALISER
-   (Used by games/game.html)
------------------------------------------ */
+
+/* ============================================================
+   SINGLE GAME HERO NORMALISER (kept for safety)
+============================================================ */
 
 #game-hero-image {
     width: 100%;
     max-width: 480px;
-    height: auto;
     margin: 0 auto;
     display: block;
 
@@ -286,20 +364,13 @@ body[data-ccg-mode="amiga"] .ccg-hero-pill {
         0 0 32px rgba(var(--accent-rgb), 0.20);
 }
 
-/* -----------------------------------------
-   RESPONSIVE IMPROVEMENTS
------------------------------------------ */
+
+/* ============================================================
+   RESPONSIVE — SMALL SCREENS
+============================================================ */
 
 @media (max-width: 480px) {
-
-    .ccg-hero-image-frame {
-        border-radius: 12px;
-    }
-
-    .ccg-hero-title {
-        font-size: 1.45rem;
-        letter-spacing: 0.08em;
-    }
+    .ccg-hero-title { font-size: 1.5rem; }
 
     .genre-intro,
     .genre-description {
@@ -307,12 +378,7 @@ body[data-ccg-mode="amiga"] .ccg-hero-pill {
         padding: 0 0.25rem;
     }
 
-    .ccg-hero-meta-row {
-        gap: 0.4rem;
-    }
-
-    .ccg-hero-pill {
-        font-size: 0.75rem;
-        padding: 0.3rem 0.65rem;
+    .ccg-genre-grid {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     }
 }
