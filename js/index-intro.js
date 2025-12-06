@@ -1,15 +1,5 @@
 // ======================================================================
-// index-intro.js — Omega C64 Cinematic Intro (FINAL)
-// ----------------------------------------------------------------------
-// Sequence:
-// 1) User clicks → Start intro
-// 2) Show static C64 header
-// 3) Type LOAD, PRESS PLAY, LOADING, FOUND lines (fast)
-// 4) On speech start → fade out C64 panel
-// 5) Fade IN "ANOTHER VISITOR", fade OUT
-// 6) Fade IN "STAY A WHILE", fade OUT
-// 7) Fade IN "STAY FOREVER...", HOLD, fade OUT
-// 8) Fade to home.html
+// index-intro.js — Omega C64 Cinematic Intro (TUNED)
 // ======================================================================
 
 (function () {
@@ -33,9 +23,7 @@
     let finished     = false;
     let timers       = [];
 
-    // --------------------------------------------------------------
     // Typed lines under READY
-    // --------------------------------------------------------------
     const typedLines = [
         'LOAD"*",8,1',
         'PRESS PLAY ON TAPE',
@@ -67,7 +55,6 @@
         if (isForeverLine) span.classList.add("intro-forever");
         speechBox.appendChild(span);
 
-        // Fade IN
         speechBox.classList.remove("intro-speech-text--hidden");
         speechBox.classList.add("intro-speech-text--visible");
     }
@@ -83,13 +70,13 @@
     function startSpeech() {
         if (!speechAudio) return;
 
-        // Fade out C64 panel instantly as speech begins
+        // Fade out C64 panel as speech begins
         c64Screen.classList.add("intro-c64-screen--fadeout");
 
         speechAudio.currentTime = 0;
         speechAudio.play().catch(() => {});
 
-        // TIMING OF PHRASES:
+        // Timings (approx)
         // Another Visitor: 0.8s
         // Stay A While:    ~2.4s
         // Stay Forever:    ~4.2s
@@ -101,7 +88,7 @@
 
         addTimer(() => {
             hideSpeech();
-        }, 800 + 900); // fade out after ~0.9s hold
+        }, 800 + 900);
 
         // "STAY A WHILE"
         addTimer(() => {
@@ -120,9 +107,8 @@
         // Hold final phrase, then fade out + leave intro
         addTimer(() => {
             hideSpeech();
-        }, 4200 + 1500); // hold for 1.5s
+        }, 4200 + 1500);
 
-        // After final fade, go to homepage
         addTimer(() => {
             finishIntro();
         }, 4200 + 1500 + 400);
@@ -155,7 +141,6 @@
 
         function typeNextLine() {
             if (lineIndex >= typedLines.length) {
-                // After typed lines complete, small pause then start speech
                 addTimer(startSpeech, 300);
                 return;
             }
@@ -175,7 +160,6 @@
                     charIndex++;
                     addTimer(typeChar, TYPE_SPEED);
                 } else {
-                    // End of line
                     el.classList.remove("intro-c64-line--cursor");
                     lineIndex++;
                     addTimer(typeNextLine, 200);
@@ -197,6 +181,10 @@
 
         document.body.classList.add("intro-started");
 
+        if (idle) {
+            idle.style.display = "none";
+        }
+
         if (loaderVideo && loaderVideo.paused) {
             loaderVideo.play().catch(() => {});
         }
@@ -211,14 +199,21 @@
     // --------------------------------------------------------------
     // Event Listeners
     // --------------------------------------------------------------
-    overlay.addEventListener("click", (e) => {
-        if (e.target === skipBtn) return;
-        startIntro();
-    });
+    if (overlay) {
+        overlay.addEventListener("click", (e) => {
+            // If click was on Skip Intro or inside it, don't start intro
+            if (e.target && e.target.closest && e.target.closest("#skipIntro")) {
+                return;
+            }
+            startIntro();
+        });
+    }
 
-    skipBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        finishIntro(true);
-    });
+    if (skipBtn) {
+        skipBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            finishIntro(true);
+        });
+    }
 
 })();
