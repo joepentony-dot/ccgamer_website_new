@@ -1,31 +1,41 @@
-/* =====================================================================
-   OMEGA INTRO SEQUENCE — FINAL STABLE BUILD
-   Smooth C64 boot → typing → SID speech → fade → homepage
-   ===================================================================== */
-
 document.addEventListener("DOMContentLoaded", () => {
 
-    /* --------------------------------------------------------------
-       ELEMENT REFERENCES
-    -------------------------------------------------------------- */
     const introIdle = document.getElementById("introIdle");
     const introC64 = document.getElementById("introC64");
     const typedLines = document.getElementById("typedLines");
     const skipBtn = document.getElementById("skipIntro");
-    const overlay = document.getElementById("introOverlay");
-    const speechText = document.getElementById("speechText");
     const fadeLayer = document.getElementById("introFade");
+    const speechText = document.getElementById("speechText");
 
-    /* --------------------------------------------------------------
-       AUDIO (lazy-loaded after user gesture)
-    -------------------------------------------------------------- */
-    let speechAudio = new Audio("resources/audio/another_visitor.mp3");
+    // C64 audio speech
+    const speechAudio = new Audio("resources/audio/another_visitor.mp3");
     speechAudio.preload = "auto";
 
-    /* --------------------------------------------------------------
-       TYPED COMMAND SEQUENCE
-       Appears AFTER READY line.
-    -------------------------------------------------------------- */
+    // Completely hide the C64 panel on load
+    introC64.classList.remove("intro-c64-screen--visible");
+    introC64.classList.add("intro-c64-screen--hidden");
+
+    /* ----------------------------------------------------------
+       CLICK TO POWER ON → START BOOT
+    ---------------------------------------------------------- */
+    introIdle.addEventListener("click", () => {
+
+        // Hide idle text
+        introIdle.classList.add("intro-idle--hidden");
+
+        // Show C64 panel after fade
+        setTimeout(() => {
+            introC64.classList.remove("intro-c64-screen--hidden");
+            introC64.classList.add("intro-c64-screen--visible");
+        }, 600);
+
+        // Start typing sequence AFTER panel appears
+        setTimeout(startTyping, 1500);
+    });
+
+    /* ----------------------------------------------------------
+       TYPEWRITER SEQUENCE
+    ---------------------------------------------------------- */
     const commandLines = [
         `LOAD"*",8,1`,
         `PRESS PLAY ON TAPE`,
@@ -34,98 +44,74 @@ document.addEventListener("DOMContentLoaded", () => {
     ];
 
     let currentLine = 0;
-    let typingActive = false;
 
-    /* --------------------------------------------------------------
-       START INTRO — triggered by click anywhere on idle area
-    -------------------------------------------------------------- */
-    introIdle.addEventListener("click", startBootSequence);
-
-    function startBootSequence() {
-        introIdle.classList.add("intro-idle--hidden");
-
-        // Reveal the blue panel
-        setTimeout(() => {
-            introC64.classList.add("intro-c64-screen--visible");
-        }, 400);
-
-        // Start typing after headers settle
-        setTimeout(() => {
-            typingActive = true;
-            typeNextLine();
-        }, 1500);
+    function startTyping() {
+        typeLine();
     }
 
-    /* --------------------------------------------------------------
-       TYPEWRITER EFFECT (LEFT-ALIGNED)
-    -------------------------------------------------------------- */
-    function typeNextLine() {
-        if (!typingActive) return;
+    function typeLine() {
         if (currentLine >= commandLines.length) {
             revealSpeech();
             return;
         }
 
-        let line = commandLines[currentLine];
+        let text = commandLines[currentLine];
+        let charIndex = 0;
+
         let div = document.createElement("div");
         div.className = "intro-c64-line intro-c64-line--typed";
         typedLines.appendChild(div);
 
-        let i = 0;
-
         const typer = setInterval(() => {
-            div.textContent = line.substring(0, i);
-            i++;
+            div.textContent = text.substring(0, charIndex);
+            charIndex++;
 
-            if (i > line.length) {
+            if (charIndex > text.length) {
                 clearInterval(typer);
                 currentLine++;
-                setTimeout(typeNextLine, 300);
+                setTimeout(typeLine, 250);
             }
         }, 45);
     }
 
-    /* --------------------------------------------------------------
-       SID SPEECH + NEON TEXT SEQUENCE
-    -------------------------------------------------------------- */
+    /* ----------------------------------------------------------
+       SID SPEECH SEQUENCE
+    ---------------------------------------------------------- */
     function revealSpeech() {
-        setTimeout(() => {
-            speechAudio.play().catch(() => {});
-        }, 300);
+        speechAudio.play().catch(() => {});
 
-        // Sequence: Another visitor... Stay awhile... Stay forever!
-        const speechLines = [
+        const lines = [
             "ANOTHER VISITOR...",
             "STAY AWHILE...",
             "STAY FOREVER!"
         ];
 
-        let idx = 0;
+        let i = 0;
 
-        function showLine() {
-            if (idx >= speechLines.length) {
+        function nextLine() {
+            if (i >= lines.length) {
                 fadeOutToHome();
                 return;
             }
 
-            speechText.textContent = speechLines[idx];
+            speechText.textContent = lines[i];
             speechText.classList.add("intro-speech-text--visible");
 
             setTimeout(() => {
                 speechText.classList.remove("intro-speech-text--visible");
                 setTimeout(() => {
-                    idx++;
-                    showLine();
-                }, 300);
+                    i++;
+                    nextLine();
+                }, 250);
             }, 1600);
         }
 
-        setTimeout(showLine, 600);
+        setTimeout(nextLine, 400);
     }
 
-    /* --------------------------------------------------------------
-       FINAL TRANSITION TO HOME PAGE
-    -------------------------------------------------------------- */
+    /* ----------------------------------------------------------
+       FADE TO HOME
+    ---------------------------------------------------------- */
     function fadeOutToHome() {
         fadeLayer.classList.add("intro-fade--active");
 
@@ -134,20 +120,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 700);
     }
 
-    /* --------------------------------------------------------------
-       SKIP BUTTON — INSTANT EXIT
-    -------------------------------------------------------------- */
+    /* ----------------------------------------------------------
+       SKIP BUTTON
+    ---------------------------------------------------------- */
     skipBtn.addEventListener("click", () => {
-        typingActive = false;
-
         speechAudio.pause();
-        speechAudio.currentTime = 0;
-
         fadeLayer.classList.add("intro-fade--active");
 
         setTimeout(() => {
             window.location.href = "home.html";
         }, 300);
     });
-
 });
