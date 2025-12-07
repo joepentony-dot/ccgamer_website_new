@@ -110,7 +110,6 @@ body.intro-body {
 
 /* IDLE (“CLICK TO POWER ON”) --------------------------------- */
 
-/* Make this full-width and centre purely with text-align */
 .intro-idle {
     position: absolute;
     top: 50%;
@@ -144,28 +143,9 @@ body.intro-body {
 }
 
 @keyframes introIdlePulse {
-    0% {
-        opacity: 0.55;
-        text-shadow:
-            0 0 12px var(--intro-cyan-deep),
-            0 0 30px rgba(0, 190, 255, 0.8);
-        transform: scale(0.97);
-    }
-    50% {
-        opacity: 1;
-        text-shadow:
-            0 0 22px var(--intro-cyan-deep),
-            0 0 60px rgba(0, 220, 255, 1),
-            0 0 110px rgba(0, 220, 255, 0.9);
-        transform: scale(1.02);
-    }
-    100% {
-        opacity: 0.7;
-        text-shadow:
-            0 0 16px var(--intro-cyan-deep),
-            0 0 40px rgba(0, 200, 255, 0.8);
-        transform: scale(1);
-    }
+    0% { opacity: 0.55; transform: scale(0.97); }
+    50% { opacity: 1; transform: scale(1.02); }
+    100% { opacity: 0.7; transform: scale(1); }
 }
 
 /* C64 PANEL --------------------------------------------------- */
@@ -187,25 +167,17 @@ body.intro-body {
         0 0 24px rgba(90, 140, 255, 0.9),
         0 0 40px rgba(30, 80, 220, 0.9);
     color: var(--intro-cyan);
-    font-size: 1.2rem;          /* slightly smaller so headers fit */
-    letter-spacing: 0.06em;     /* slightly tighter for perfect centering */
+    font-size: 1.2rem;
+    letter-spacing: 0.06em;
     text-shadow: 0 0 6px rgba(120, 170, 255, 0.9);
     opacity: 0;
-    transition: opacity 0.45s ease, transform 0.45s ease, visibility 0.45s ease;
-    z-index: 8;
     visibility: hidden;
+    transition: opacity 0.45s ease, transform 0.45s ease;
 }
 
 .intro-c64-screen--visible {
     opacity: 1;
     visibility: visible;
-    transform: translate(-50%, -50%);
-}
-
-.intro-c64-screen--hidden {
-    opacity: 0;
-    visibility: hidden;
-    transform: translate(-50%, -50%) scale(0.97);
 }
 
 /* BASIC TEXT -------------------------------------------------- */
@@ -219,16 +191,43 @@ body.intro-body {
 }
 
 .intro-c64-line--header {
-    text-align: center;
+    text-align: center !important;
+    transform: translateX(-0.5%);
+    margin: 0.25rem 0;
 }
 
-.intro-c64-line--ready {
-    margin-top: 0.25rem;
-    margin-bottom: 0.35rem;
+/* tighter gap between header 1 + header 2 */
+.intro-c64-line--header + .intro-c64-line--header {
+    margin-top: 0.15rem;
 }
+
+/* READY ------------------------------------------------------- */
+
+.intro-ready-line {
+    display: inline-block;
+    margin-top: 1.1rem;
+    margin-bottom: 0.8rem;
+    white-space: pre;
+}
+
+.intro-ready-line::after {
+    content: "█";
+    margin-left: 0.3rem;
+    animation: c64cursorBlink 0.8s steps(1) infinite;
+    color: var(--intro-cyan);
+}
+
+@keyframes c64cursorBlink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* LOADER LINES ------------------------------------------------ */
 
 .intro-c64-line--typed {
     text-align: left;
+    white-space: pre;
     color: var(--intro-cyan);
     text-shadow:
         0 0 8px rgba(120, 170, 255, 0.9),
@@ -250,7 +249,6 @@ body.intro-body {
     width: 100%;
     max-width: 1200px;
     text-align: center;
-    font-family: "C64 Pro Mono", monospace;
     font-size: clamp(3rem, 5vw, 4.2rem);
     letter-spacing: 0.25em;
     color: var(--intro-cyan);
@@ -260,7 +258,6 @@ body.intro-body {
         0 0 12px var(--intro-cyan-deep),
         0 0 35px rgba(0, 200, 255, 0.9),
         0 0 70px rgba(0, 200, 255, 0.85);
-    z-index: 30;
     transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
@@ -271,48 +268,16 @@ body.intro-body {
 }
 
 @keyframes introSpeechPulse {
-    0% {
-        text-shadow:
-            0 0 14px var(--intro-cyan-deep),
-            0 0 40px rgba(0, 200, 255, 0.8),
-            0 0 80px rgba(0, 200, 255, 0.7);
-        letter-spacing: 0.22em;
-    }
-    50% {
-        text-shadow:
-            0 0 24px var(--intro-cyan-deep),
-            0 0 75px rgba(0, 230, 255, 1),
-            0 0 130px rgba(0, 230, 255, 0.95);
-        letter-spacing: 0.27em;
-    }
-    100% {
-        text-shadow:
-            0 0 14px var(--intro-cyan-deep),
-            0 0 40px rgba(0, 200, 255, 0.8),
-            0 0 80px rgba(0, 200, 255, 0.7);
-        letter-spacing: 0.23em;
-    }
+    0% { opacity: 0.9; }
+    50% { opacity: 1; }
+    100% { opacity: 0.9; }
 }
 
 /* RESPONSIVE -------------------------------------------------- */
 
 @media (max-width: 768px) {
-    .intro-logo img {
-        height: 44px;
-    }
-
-    .intro-skip {
-        padding: 0.55rem 1.3rem;
-        font-size: 0.8rem;
-    }
-
-    .intro-c64-screen {
-        font-size: 1rem;
-        padding: 1.4rem 1.6rem;
-    }
-
-    .intro-speech-text {
-        font-size: clamp(2.3rem, 6vw, 3rem);
-        letter-spacing: 0.18em;
-    }
+    .intro-logo img { height: 44px; }
+    .intro-skip { padding: 0.55rem 1.3rem; font-size: 0.8rem; }
+    .intro-c64-screen { font-size: 1rem; padding: 1.4rem 1.6rem; }
+    .intro-speech-text { font-size: clamp(2.3rem, 6vw, 3rem); letter-spacing: 0.18em; }
 }
