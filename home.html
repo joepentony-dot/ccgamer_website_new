@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="resources/css/ccg-master.css">
     <link rel="stylesheet" href="resources/css/ccg-mode.css">
     <link rel="stylesheet" href="resources/css/ccg-effects.css">
+    <link rel="stylesheet" href="resources/css/ccg-socials.css">
 
     <!-- Home-specific CSS -->
     <link rel="stylesheet" href="resources/css/home.css">
@@ -79,7 +80,7 @@
 
                     <!-- Socials -->
                     <div class="ccg-socials">
-                        <a href="https://www.youtube.com/@CheekyCommodoreGamer" class="ccg-socials__link" aria-label="YouTube channel">
+                        <a href="https://www.youtube.com/c/CheekyCommodoreGamer" class="ccg-socials__link" aria-label="YouTube channel">
                             <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
                             <span class="ccg-socials__label">Subscribe</span>
                         </a>
@@ -112,7 +113,7 @@
         <main class="ccg-main">
 
             <!-- HERO: dynamic per-mode -->
-            <section class="ccg-hero" aria-labelledby="home-hero-title" data-ccg-hero>
+            <section class="ccg-hero" aria-labelledby="home-hero-title">
                 <div class="ccg-hero__media">
                     <div class="ccg-hero__overlay"></div>
                     <div class="ccg-hero__scanlines"></div>
@@ -139,7 +140,7 @@
                         <button type="button" class="ccg-btn ccg-btn--secondary" data-ccg-random-game>
                             Random Game
                         </button>
-                        <a href="games/collections/top-picks.html" class="ccg-btn ccg-btn--ghost">
+                        <a href="games/genres/top-picks.html" class="ccg-btn ccg-btn--ghost">
                             CCG Top Picks
                         </a>
                     </div>
@@ -218,7 +219,7 @@
 
                     <!-- Misc -->
                     <article class="ccg-genre-card">
-                        <a href="games/genres/miscellaneous-games.html" class="ccg-genre-card__link">
+                        <a href="games/genres/miscellaneous.html" class="ccg-genre-card__link">
                             <div class="ccg-genre-card__thumb">
                                 <img src="resources/images/genres/miscellaneous.png" alt="Miscellaneous games" loading="lazy">
                             </div>
@@ -263,7 +264,7 @@
 
                     <!-- RPG -->
                     <article class="ccg-genre-card">
-                        <a href="games/genres/rpg-games.html" class="ccg-genre-card__link">
+                        <a href="games/genres/role-playing-games.html" class="ccg-genre-card__link">
                             <div class="ccg-genre-card__thumb">
                                 <img src="resources/images/genres/role-playing.png" alt="Role-playing games" loading="lazy">
                             </div>
@@ -313,6 +314,7 @@
                     <article class="ccg-card ccg-card--featured-game">
                         <div class="ccg-card__media">
                             <img
+                                id="featured-game-thumb"
                                 src="resources/images/thumbnails/all/last_ninja_ii.jpg"
                                 alt="The Last Ninja 2 on Commodore 64"
                                 loading="lazy"
@@ -320,20 +322,28 @@
                             <div class="ccg-card__media-gradient"></div>
                         </div>
                         <div class="ccg-card__body">
-                            <h3 class="ccg-card__title">Featured Game: The Last Ninja 2 (C64)</h3>
-                            <p class="ccg-card__meta">
-                                System: <span>C64</span> • Year: <span>1988</span> • Publisher: <span>System 3</span>
+                            <h3 id="featured-game-title" class="ccg-card__title">
+                                Featured Game: The Last Ninja 2 (C64)
+                            </h3>
+                            <p id="featured-game-meta" class="ccg-card__meta">
+                                System: <span>C64</span> • Year: <span>1988</span> • Developer: <span>System 3</span>
                             </p>
-                            <p class="ccg-card__text">
+                            <p id="featured-game-text" class="ccg-card__text">
                                 Iconic streets of New York, crunchy SID tunes and brutal difficulty.
                                 One of the all-time greats and a must-play for any Commodore fanatic.
                             </p>
                             <div class="ccg-card__actions">
-                                <a href="games/game.html?id=last_ninja_ii" class="ccg-btn ccg-btn--primary ccg-btn--sm">
+                                <a id="featured-game-link-page" href="games/game.html?id=last_ninja_ii" class="ccg-btn ccg-btn--primary ccg-btn--sm">
                                     View Game Page
                                 </a>
-                                <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener" class="ccg-btn ccg-btn--ghost ccg-btn--sm">
-                                    Watch Longplay
+                                <a
+                                    id="featured-game-link-video"
+                                    href="https://www.youtube.com/watch?v=oi-AwIG7MYg"
+                                    target="_blank"
+                                    rel="noopener"
+                                    class="ccg-btn ccg-btn--ghost ccg-btn--sm"
+                                >
+                                    Watch Review
                                 </a>
                             </div>
                         </div>
@@ -344,6 +354,7 @@
                         <div class="ccg-card__media ccg-card__media--video">
                             <div class="ccg-card__video-frame">
                                 <iframe
+                                    id="featured-video-iframe"
                                     src="https://www.youtube.com/embed/oi-AwIG7MYg"
                                     title="Featured Cheeky Commodore Gamer video"
                                     loading="lazy"
@@ -352,16 +363,19 @@
                             </div>
                         </div>
                         <div class="ccg-card__body">
-                            <h3 class="ccg-card__title">Featured Video: 1942 (C64) Deep Dive</h3>
-                            <p class="ccg-card__meta">
+                            <h3 id="featured-video-title" class="ccg-card__title">
+                                Featured Video: 1942 (C64) Deep Dive
+                            </h3>
+                            <p id="featured-video-meta" class="ccg-card__meta">
                                 Arcade conversion, chunky sprites, and that classic Elite energy.
                             </p>
-                            <p class="ccg-card__text">
+                            <p id="featured-video-text" class="ccg-card__text">
                                 A proper look at the home computer take on Capcom’s shooter — quirks,
                                 highlights and why it still feels so good to blast through today.
                             </p>
                             <div class="ccg-card__actions">
                                 <a
+                                    id="featured-video-button"
                                     href="https://www.youtube.com/watch?v=oi-AwIG7MYg"
                                     target="_blank"
                                     rel="noopener"
@@ -505,7 +519,7 @@
                             Longplays, breakdowns and retrospectives — all synced with the site’s game pages.
                         </p>
                         <div class="ccg-card__actions">
-                            <a href="https://www.youtube.com/@CheekyCommodoreGamer" class="ccg-btn ccg-btn--primary ccg-btn--sm" target="_blank" rel="noopener">
+                            <a href="https://www.youtube.com/c/CheekyCommodoreGamer" class="ccg-btn ccg-btn--primary ccg-btn--sm" target="_blank" rel="noopener">
                                 Open Channel
                             </a>
                         </div>
