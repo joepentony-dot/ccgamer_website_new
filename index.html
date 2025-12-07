@@ -13,11 +13,11 @@
     <!-- GLOBAL SITE STYLES -->
     <link rel="stylesheet" href="resources/css/ccg-master.css" />
 
-    <!-- C64 BLOCKY FONT (WORKING VERSION) -->
+    <!-- C64 BLOCKY FONT -->
     <link rel="stylesheet" href="https://unpkg.com/@fontsource/c64-pro-mono/index.css" />
 
     <!-- INTRO STYLES -->
-    <link rel="stylesheet" href="resources/css/intro.css?v=4" />
+    <link rel="stylesheet" href="resources/css/intro.css?v=5" />
 </head>
 
 <body class="intro-body">
@@ -55,12 +55,12 @@
                 **** COMMODORE 64 BASIC V2 ****
             </div>
 
-            <div class="intro-c64-line intro-c64-line--header">
+            <div class="intro-c64-line intro-c64-line--header intro-c64-line--ram">
                 64K RAM SYSTEM  38911 BASIC BYTES FREE
             </div>
 
             <div class="intro-c64-line intro-c64-line--ready">
-                READY.
+                READY<span class="intro-ready-cursor"></span>
             </div>
 
             <!-- TYPED COMMAND LINES -->
@@ -74,7 +74,7 @@
 </div> <!-- /intro-root -->
 
 <!-- INTRO SCRIPT -->
-<script src="js/index-intro.js?v=4" defer></script>
+<script src="js/index-intro.js?v=5" defer></script>
 
 </body>
 </html>
