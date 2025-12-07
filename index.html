@@ -1,91 +1,53 @@
 <!DOCTYPE html>
 <html lang="en" data-ccg-page="intro">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheeky Commodore Gamer | Booting System...</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Booting System...</title>
 
-    <meta name="description"
-          content="Cinematic Commodore 64 style boot sequence for Cheeky Commodore Gamer. Another visitor... Stay a while, stay forever.">
-
-    <link rel="icon" href="favicon.ico">
-
-    <!-- GLOBAL (LIGHT) -->
     <link rel="stylesheet" href="resources/css/ccg-master.css">
-    <link rel="stylesheet" href="resources/css/ccg-mode.css">
-    <link rel="stylesheet" href="resources/css/ccg-effects.css">
-
-    <!-- INTRO SPECIFIC -->
     <link rel="stylesheet" href="resources/css/intro.css">
 </head>
 
-<body class="intro-body" data-ccg-mode="c64">
+<body class="intro-body">
 
-    <div class="intro-root">
+<div class="intro-root">
 
-        <!-- BACKGROUND VIDEO -->
-        <video id="loaderVideo"
-               class="intro-video"
-               autoplay
-               muted
-               loop
-               playsinline>
-            <source src="resources/videos/c64_loader.mp4" type="video/mp4">
-        </video>
+    <!-- Raster background video -->
+    <video id="loaderVideo" class="intro-video" autoplay muted loop playsinline>
+        <source src="resources/videos/c64_loader.mp4" type="video/mp4">
+    </video>
 
-        <!-- INTRO OVERLAY -->
-        <div id="introOverlay" class="intro-overlay">
+    <div id="introOverlay" class="intro-overlay">
 
-            <!-- LOGO (non-interactive, sits behind click area) -->
-            <div class="intro-logo">
-                <img src="resources/images/ccgamer-logo.png"
-                     alt="Cheeky Commodore Gamer logo">
-            </div>
+        <div class="intro-logo">
+            <img src="resources/images/ccgamer-logo.png">
+        </div>
 
-            <!-- SKIP INTRO BUTTON -->
-            <button id="skipIntro" class="intro-skip" type="button">
-                SKIP INTRO
-            </button>
+        <button id="skipIntro" class="intro-skip">SKIP INTRO</button>
 
-            <!-- FADE LAYER -->
-            <div id="introFade" class="intro-fade"></div>
+        <div id="introFade" class="intro-fade"></div>
 
-            <!-- IDLE "CLICK TO POWER ON" STATE -->
-            <div id="introIdle" class="intro-idle intro-click-area">
-                <div class="intro-idle-title">CLICK TO POWER ON</div>
-                <!-- OPTIONAL: remove this line if not needed -->
-                <div class="intro-idle-sub">Press fire to boot the system...</div>
-            </div>
+        <div id="introIdle" class="intro-idle intro-click-area">
+            <div class="intro-idle-title">CLICK TO POWER ON</div>
+            <div class="intro-idle-sub">Press fire to boot the system...</div>
+        </div>
 
-            <!-- C64 READY SCREEN (static + typed commands) -->
-            <div id="introC64" class="intro-c64-screen" aria-hidden="true">
+        <div id="introC64" class="intro-c64-screen">
 
-                <!-- STATIC HEADER -->
-                <div class="intro-c64-line intro-c64-line--header">
-                    **** COMMODORE 64 BASIC V2 ****
-                </div>
-                <div class="intro-c64-line intro-c64-line--header">
-                    64K RAM SYSTEM  38911 BASIC BYTES FREE
-                </div>
-                <div class="intro-c64-line intro-c64-line--header">
-                    READY.
-                </div>
+            <div class="intro-c64-line intro-c64-line--header">**** COMMODORE 64 BASIC V2 ****</div>
+            <div class="intro-c64-line intro-c64-line--header">64K RAM SYSTEM  38911 BASIC BYTES FREE</div>
+            <div class="intro-c64-line intro-c64-line--ready">READY.</div>
 
-                <!-- JS inserts typing here -->
-                <div id="typedLines"></div>
-            </div>
+            <div id="typedLines"></div>
+        </div>
 
-            <!-- SID SPEECH TEXT -->
-            <div id="speechText" class="intro-speech-text intro-speech-text--hidden"
-                 aria-hidden="true">
-            </div>
+        <div id="speechText" class="intro-speech-text"></div>
 
-        </div> <!-- /introOverlay -->
+    </div>
+</div>
 
-    </div> <!-- /intro-root -->
-
-    <!-- IMPORTANT: removed "defer" so click binding works instantly -->
-    <script src="js/index-intro.js"></script>
+<script src="js/index-intro.js"></script>
 
 </body>
 </html>
