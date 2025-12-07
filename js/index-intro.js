@@ -1,252 +1,87 @@
-// ======================================================================
-// index-intro.js — Omega C64 Cinematic Intro (stable version)
-// - Click anywhere to start (except Skip button)
-// - Skip always works
-// - BASIC header + typed lines
-// - Speech: Another Visitor / Stay A While / Stay Forever...
-// ======================================================================
+document.addEventListener("DOMContentLoaded", () => {
 
-(function () {
-    // --------------------------------------------------------------
-    // DOM references
-    // --------------------------------------------------------------
-    const overlay        = document.getElementById("introOverlay");
-    const idle           = document.getElementById("introIdle");
-    const c64Screen      = document.getElementById("introC64");
-    const typedLinesWrap = document.getElementById("typedLines");
-    const fadeLayer      = document.getElementById("introFade");
-    const skipBtn        = document.getElementById("skipIntro");
-    const speechBox      = document.getElementById("speechText");
-    const loaderVideo    = document.getElementById("loaderVideo");
+    const idle = document.getElementById("introIdle");
+    const c64Screen = document.getElementById("introC64");
+    const typedLines = document.getElementById("typedLines");
+    const speechText = document.getElementById("speechText");
+    const skipBtn = document.getElementById("skipIntro");
 
-    if (!overlay || !c64Screen || !typedLinesWrap || !fadeLayer) {
-        // If these are missing, bail silently (nothing will break visually).
-        return;
+    let introStarted = false;
+
+    /* CLICK ANYWHERE TO START ------------------------------------------- */
+    idle.addEventListener("click", startIntro);
+    skipBtn.addEventListener("click", finishIntro);
+
+    function startIntro() {
+        if (introStarted) return;
+        introStarted = true;
+
+        idle.style.display = "none";
+
+        c64Screen.classList.add("intro-c64-screen--visible");
+
+        setTimeout(typeBootSequence, 900);
     }
 
-    // --------------------------------------------------------------
-    // State
-    // --------------------------------------------------------------
-    let introStarted = false;
-    let finished     = false;
-    let timers       = [];
-
-    // Typed lines that appear under READY.
-    const typedLines = [
+    /* TYPING SEQUENCE --------------------------------------------------- */
+    const lines = [
         'LOAD"*",8,1',
-        'PRESS PLAY ON TAPE',
-        'LOADING',
+        "PRESS PLAY ON TAPE",
+        "LOADING",
         'FOUND "CHEEKY COMMODORE GAMER"'
     ];
 
-    const TYPE_SPEED = 70;  // ms per character
+    let i = 0;
 
-    // SID speech audio
-    const speechAudio = new Audio("resources/css/audio/c64_speech_stayawhile.mp3");
-    speechAudio.preload = "auto";
-    speechAudio.volume  = 0.55;
+    function typeBootSequence() {
+        if (i >= lines.length) {
+            startSpeech();
+            return;
+        }
 
-    // --------------------------------------------------------------
-    // Timer helpers (for easy cleanup when skipping)
-    // --------------------------------------------------------------
-    function addTimer(fn, delay) {
-        const id = setTimeout(fn, delay);
-        timers.push(id);
+        const lineDiv = document.createElement("div");
+        lineDiv.className = "intro-c64-line";
+
+        typedLines.appendChild(lineDiv);
+
+        typeLine(lines[i], lineDiv, () => {
+            i++;
+            setTimeout(typeBootSequence, 350);
+        });
     }
 
-    function clearTimers() {
-        timers.forEach(id => clearTimeout(id));
-        timers = [];
+    function typeLine(text, el, callback) {
+        let idx = 0;
+
+        function tick() {
+            el.textContent = text.slice(0, idx);
+            idx++;
+            if (idx <= text.length) {
+                setTimeout(tick, 40);
+            } else {
+                callback();
+            }
+        }
+        tick();
     }
 
-    // --------------------------------------------------------------
-    // Speech helpers
-    // --------------------------------------------------------------
-    function showSpeech(text, isForeverLine = false) {
-        if (!speechBox) return;
-
-        speechBox.innerHTML = "";
-        const span = document.createElement("span");
-        span.textContent = text;
-        if (isForeverLine) span.classList.add("intro-forever");
-        speechBox.appendChild(span);
-
-        speechBox.classList.remove("intro-speech-text--hidden");
-        speechBox.classList.add("intro-speech-text--visible");
-    }
-
-    function hideSpeech() {
-        if (!speechBox) return;
-        speechBox.classList.remove("intro-speech-text--visible");
-        speechBox.classList.add("intro-speech-text--hidden");
-    }
-
-    // --------------------------------------------------------------
-    // Speech sequence
-    // --------------------------------------------------------------
+    /* SPEECH SEQUENCE --------------------------------------------------- */
     function startSpeech() {
-        if (!speechAudio || finished) return;
+        c64Screen.classList.add("intro-c64-screen--hidden");
 
-        // Fade out C64 panel slightly as speech begins
-        c64Screen.classList.add("intro-c64-screen--fadeout");
-
-        speechAudio.currentTime = 0;
-        speechAudio.play().catch(() => {});
-
-        // Rough timings on the audio:
-        // "Another visitor"   ~ 0.8s
-        // "Stay a while"      ~ 2.4s
-        // "Stay forever..."   ~ 4.2s
-
-        // ANOTHER VISITOR
-        addTimer(() => {
-            showSpeech("ANOTHER VISITOR");
-        }, 800);
-
-        addTimer(() => {
-            hideSpeech();
-        }, 800 + 900);
-
-        // STAY A WHILE
-        addTimer(() => {
-            showSpeech("STAY A WHILE");
-        }, 800 + 900 + 400);
-
-        addTimer(() => {
-            hideSpeech();
-        }, 800 + 900 + 400 + 900);
-
-        // STAY FOREVER...
-        addTimer(() => {
-            showSpeech("STAY FOREVER...", true);
-        }, 800 + 900 + 400 + 900 + 400);
-
-        // Hold final line, then fade out & finish
-        addTimer(() => {
-            hideSpeech();
-        }, 4200 + 1500);
-
-        addTimer(() => {
-            finishIntro();
-        }, 4200 + 1500 + 400);
+        setTimeout(() => showSpeech("ANOTHER VISITOR..."), 300);
+        setTimeout(() => showSpeech("STAY AWHILE..."), 1800);
+        setTimeout(() => showSpeech('<span class="intro-forever">STAY FOREVER...</span>'), 3300);
+        setTimeout(finishIntro, 5200);
     }
 
-    // --------------------------------------------------------------
-    // Finish intro (skip or auto)
-    // --------------------------------------------------------------
-    function finishIntro(skip = false) {
-        if (finished) return;
-        finished = true;
-
-        clearTimers();
-        try { speechAudio.pause(); } catch (e) {}
-        speechAudio.currentTime = 0;
-
-        fadeLayer.classList.add("intro-fade--active");
-
-        setTimeout(() => {
-            window.location.href = "home.html";
-        }, skip ? 250 : 700);
+    function showSpeech(text) {
+        speechText.innerHTML = text;
+        speechText.classList.add("intro-speech-text--visible");
     }
 
-    // --------------------------------------------------------------
-    // Typing engine (under READY.)
-    // --------------------------------------------------------------
-    function beginTyping() {
-        let lineIndex = 0;
-
-        function typeNextLine() {
-            if (finished) return;
-
-            if (lineIndex >= typedLines.length) {
-                // All lines typed → small pause → speech
-                addTimer(startSpeech, 300);
-                return;
-            }
-
-            const text = typedLines[lineIndex];
-            const el = document.createElement("div");
-            el.className = "intro-c64-line intro-c64-line--cursor";
-            typedLinesWrap.appendChild(el);
-
-            let charIndex = 0;
-
-            function typeChar() {
-                if (finished) return;
-
-                if (charIndex <= text.length) {
-                    el.textContent = text.slice(0, charIndex);
-                    charIndex++;
-                    addTimer(typeChar, TYPE_SPEED);
-                } else {
-                    el.classList.remove("intro-c64-line--cursor");
-                    lineIndex++;
-                    addTimer(typeNextLine, 200);
-                }
-            }
-
-            typeChar();
-        }
-
-        typeNextLine();
+    /* EXIT INTRO -------------------------------------------------------- */
+    function finishIntro() {
+        window.location.href = "home.html";
     }
-
-    // --------------------------------------------------------------
-    // Start intro (from idle)
-    // --------------------------------------------------------------
-    function startIntro() {
-        if (introStarted || finished) return;
-        introStarted = true;
-
-        document.body.classList.add("intro-started");
-
-        if (idle) {
-            idle.style.display = "none";
-        }
-
-        if (loaderVideo && loaderVideo.paused) {
-            loaderVideo.play().catch(() => {});
-        }
-
-        // Show C64 panel
-        c64Screen.classList.add("intro-c64-screen--visible", "intro-c64-screen--cursor-on");
-
-        // Begin typing after a small delay
-        addTimer(beginTyping, 250);
-    }
-
-    // --------------------------------------------------------------
-    // Event listeners (robust)
-    // --------------------------------------------------------------
-
-    // 1) Click ANYWHERE on the document to start intro,
-    //    except if clicking the Skip Intro button.
-    document.addEventListener("click", (e) => {
-        if (introStarted || finished) return;
-
-        if (skipBtn && e.target && e.target.closest && e.target.closest("#skipIntro")) {
-            return; // ignore clicks on skip button here
-        }
-
-        startIntro();
-    });
-
-    // 2) Extra safety: clicking directly on overlay also starts intro
-    if (overlay) {
-        overlay.addEventListener("click", (e) => {
-            if (introStarted || finished) return;
-            if (skipBtn && e.target && e.target.closest && e.target.closest("#skipIntro")) {
-                return;
-            }
-            startIntro();
-        });
-    }
-
-    // 3) Skip Intro button
-    if (skipBtn) {
-        skipBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            finishIntro(true);
-        });
-    }
-})();
+});
