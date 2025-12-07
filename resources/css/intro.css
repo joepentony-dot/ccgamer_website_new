@@ -1,5 +1,5 @@
 /* ============================================================
-   intro.css — Omega C64 Cinematic Intro (Stable Edition)
+   intro.css — Omega C64 Cinematic Intro (Stable + Neon FX)
    ============================================================ */
 
 :root {
@@ -49,6 +49,10 @@ body.intro-body {
     width: 100%;
     height: 100%;
     z-index: 2;
+    background: radial-gradient(circle at center,
+        rgba(0, 0, 0, 0.25) 0%,
+        rgba(0, 0, 0, 0.9) 70%,
+        #000 100%);
 }
 
 /* LOGO -------------------------------------------------------- */
@@ -80,9 +84,15 @@ body.intro-body {
     text-transform: uppercase;
     cursor: pointer;
     z-index: 20;
+    box-shadow:
+        0 0 20px rgba(255, 60, 90, 0.75),
+        0 0 6px rgba(255, 255, 255, 0.6);
+    text-shadow:
+        0 0 5px #ffffff,
+        0 0 14px #ff324f;
 }
 
-/* IDLE -------------------------------------------------------- */
+/* IDLE (“CLICK TO POWER ON”) --------------------------------- */
 
 .intro-idle {
     position: absolute;
@@ -92,6 +102,7 @@ body.intro-body {
     text-align: center;
     cursor: pointer;
     z-index: 5;
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .intro-idle-title {
@@ -99,6 +110,30 @@ body.intro-body {
     letter-spacing: 0.32em;
     text-transform: uppercase;
     color: var(--intro-cyan);
+    text-shadow:
+        0 0 18px var(--intro-cyan-deep),
+        0 0 45px rgba(0, 190, 255, 1),
+        0 0 85px rgba(0, 190, 255, 0.85),
+        0 0 120px rgba(0, 190, 255, 0.75);
+    animation: introIdlePulse 2s ease-in-out infinite alternate;
+}
+
+/* this is what the JS adds when you click – it must actually hide it */
+.intro-idle--hidden {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.96);
+    pointer-events: none;
+}
+
+@keyframes introIdlePulse {
+    from {
+        opacity: 0.55;
+        transform: translate(-50%, -50%) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.03);
+    }
 }
 
 /* C64 PANEL --------------------------------------------------- */
@@ -112,43 +147,61 @@ body.intro-body {
     padding: 2.2rem 3rem;
     border-radius: 18px;
     background: radial-gradient(circle at top,
-        rgba(40,70,150,.85),
-        rgba(7,15,38,.98) 45%,
-        rgba(3,8,20,.98));
+        rgba(40, 70, 150, 0.85),
+        rgba(7, 15, 38, 0.98) 45%,
+        rgba(3, 8, 20, 0.98));
     border: 2px solid var(--intro-border);
     color: var(--intro-cyan);
     font-size: 1.35rem;
     letter-spacing: 0.08em;
+    text-shadow: 0 0 6px rgba(120, 170, 255, 0.9);
     opacity: 0;
     transition: opacity 0.45s ease, transform 0.45s ease;
     z-index: 8;
 }
 
-.intro-c64-screen--visible { opacity: 1; }
-.intro-c64-screen--hidden { opacity: 0; }
+.intro-c64-screen--visible {
+    opacity: 1;
+}
 
-/* BASIC TEXT --------------------------------------------------- */
+.intro-c64-screen--hidden {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.97);
+}
+
+/* BASIC TEXT -------------------------------------------------- */
 
 .intro-c64-line {
     display: block;
     white-space: pre;
-    margin: 0.1rem 0;
+    min-height: 1em;
+    line-height: 1.05;
+    margin: 0.05rem 0.05rem;
 }
 
-.intro-c64-line--header { text-align: center; }
+.intro-c64-line--header {
+    text-align: center;
+}
 
-/* TYPED -------------------------------------------------------- */
+.intro-c64-line--ready {
+    margin-top: 0.25rem;
+    margin-bottom: 0.35rem;
+}
 
 .intro-c64-line--typed {
     text-align: left;
     color: var(--intro-cyan);
     text-shadow:
-        0 0 8px rgba(120,170,255,.9),
-        0 0 16px rgba(80,140,255,.9),
-        0 0 32px rgba(40,100,255,.85);
+        0 0 8px rgba(120, 170, 255, 0.9),
+        0 0 16px rgba(80, 140, 255, 0.9),
+        0 0 32px rgba(40, 100, 255, 0.85);
 }
 
-/* SPEECH ------------------------------------------------------- */
+#typedLines {
+    margin-top: 0.35rem;
+}
+
+/* SPEECH (“ANOTHER VISITOR…”) ------------------------------- */
 
 .intro-speech-text {
     position: absolute;
@@ -156,25 +209,89 @@ body.intro-body {
     left: 50%;
     transform: translate(-50%, -60%) scale(0.9);
     width: 100%;
+    max-width: 1200px;
     text-align: center;
+    font-family: "C64 Pro Mono", monospace;
     font-size: clamp(3rem, 5vw, 4.2rem);
     letter-spacing: 0.25em;
     color: var(--intro-cyan);
     opacity: 0;
-    transition: opacity 0.45s ease, transform 0.45s ease;
+    pointer-events: none;
+    text-shadow:
+        0 0 15px var(--intro-cyan-deep),
+        0 0 40px rgba(0, 200, 255, 0.95),
+        0 0 70px rgba(0, 200, 255, 0.85),
+        0 0 110px rgba(0, 200, 255, 0.8);
     z-index: 30;
+    transition: opacity 0.45s ease, transform 0.45s ease;
 }
 
+/* JS toggles this class during the SID speech */
 .intro-speech-text--visible {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
+    animation: introSpeechPulse 1.6s ease-in-out infinite alternate;
 }
 
-/* RESPONSIVE --------------------------------------------------- */
+@keyframes introSpeechPulse {
+    0% {
+        text-shadow:
+            0 0 15px var(--intro-cyan-deep),
+            0 0 40px rgba(0, 200, 255, 0.7),
+            0 0 70px rgba(0, 200, 255, 0.7);
+        opacity: 0.9;
+    }
+    50% {
+        text-shadow:
+            0 0 25px var(--intro-cyan-deep),
+            0 0 70px rgba(0, 220, 255, 1),
+            0 0 120px rgba(0, 220, 255, 0.9);
+        opacity: 1;
+    }
+    100% {
+        text-shadow:
+            0 0 15px var(--intro-cyan-deep),
+            0 0 40px rgba(0, 200, 255, 0.7),
+            0 0 70px rgba(0, 200, 255, 0.7);
+        opacity: 0.9;
+    }
+}
+
+/* FADE TO BLACK ------------------------------------------------ */
+
+#introFade {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.45s ease;
+    z-index: 50;
+}
+
+#introFade.intro-fade--active {
+    opacity: 1;
+}
+
+/* RESPONSIVE -------------------------------------------------- */
 
 @media (max-width: 768px) {
-    .intro-logo img { height: 44px; }
-    .intro-skip { padding: 0.55rem 1.3rem; font-size: 0.8rem; }
-    .intro-c64-screen { font-size: 1rem; padding: 1.4rem 1.6rem; }
-    .intro-speech-text { font-size: clamp(2.3rem, 6vw, 3rem); }
+    .intro-logo img {
+        height: 44px;
+    }
+
+    .intro-skip {
+        padding: 0.55rem 1.3rem;
+        font-size: 0.8rem;
+    }
+
+    .intro-c64-screen {
+        font-size: 1rem;
+        padding: 1.4rem 1.6rem;
+    }
+
+    .intro-speech-text {
+        font-size: clamp(2.3rem, 6vw, 3rem);
+        letter-spacing: 0.18em;
+    }
 }
