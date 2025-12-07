@@ -1,87 +1,152 @@
+// Omega C64 Intro Controller — FINAL
+
 document.addEventListener("DOMContentLoaded", () => {
+  const overlay = document.getElementById("introOverlay");
+  const idle = document.getElementById("introIdle");
+  const c64Screen = document.getElementById("introC64");
+  const typedLinesWrap = document.getElementById("typedLines");
+  const fadeLayer = document.getElementById("introFade");
+  const skipBtn = document.getElementById("skipIntro");
+  const speechBox = document.getElementById("speechText");
+  const loaderVideo = document.getElementById("loaderVideo");
 
-    const idle = document.getElementById("introIdle");
-    const c64Screen = document.getElementById("introC64");
-    const typedLines = document.getElementById("typedLines");
-    const speechText = document.getElementById("speechText");
-    const skipBtn = document.getElementById("skipIntro");
+  let introStarted = false;
+  let finished = false;
+  const timers = [];
 
-    let introStarted = false;
+  const typedLines = [
+    'LOAD"*",8,1',
+    "PRESS PLAY ON TAPE",
+    "LOADING",
+    'FOUND "CHEEKY COMMODORE GAMER"'
+  ];
 
-    /* CLICK ANYWHERE TO START ------------------------------------------- */
-    idle.addEventListener("click", startIntro);
-    skipBtn.addEventListener("click", finishIntro);
+  const speechAudio = new Audio("resources/css/audio/c64_speech_stayawhile.mp3");
+  speechAudio.preload = "auto";
+  speechAudio.volume = 0.6;
 
-    function startIntro() {
-        if (introStarted) return;
-        introStarted = true;
+  function addTimer(fn, delay) {
+    const id = window.setTimeout(fn, delay);
+    timers.push(id);
+  }
 
-        idle.style.display = "none";
+  function clearTimers() {
+    timers.forEach(id => clearTimeout(id));
+    timers.length = 0;
+  }
 
-        c64Screen.classList.add("intro-c64-screen--visible");
+  function startIntro() {
+    if (introStarted || finished) return;
+    introStarted = true;
 
-        setTimeout(typeBootSequence, 900);
+    if (idle) idle.classList.add("intro-idle--hidden");
+    if (c64Screen) c64Screen.classList.add("intro-c64-screen--visible");
+    if (loaderVideo && loaderVideo.paused) {
+      loaderVideo.play().catch(() => {});
     }
 
-    /* TYPING SEQUENCE --------------------------------------------------- */
-    const lines = [
-        'LOAD"*",8,1',
-        "PRESS PLAY ON TAPE",
-        "LOADING",
-        'FOUND "CHEEKY COMMODORE GAMER"'
-    ];
+    addTimer(beginTyping, 600);
+  }
 
-    let i = 0;
+  function beginTyping() {
+    let lineIndex = 0;
 
-    function typeBootSequence() {
-        if (i >= lines.length) {
-            startSpeech();
-            return;
+    function typeNextLine() {
+      if (finished) return;
+      if (lineIndex >= typedLines.length) {
+        addTimer(startSpeech, 400);
+        return;
+      }
+
+      const text = typedLines[lineIndex];
+      const lineEl = document.createElement("div");
+      lineEl.className = "intro-c64-line intro-c64-line--typed";
+      typedLinesWrap.appendChild(lineEl);
+
+      let charIndex = 0;
+      function step() {
+        if (finished) return;
+        lineEl.textContent = text.slice(0, charIndex);
+        charIndex++;
+        if (charIndex <= text.length) {
+          addTimer(step, 55);
+        } else {
+          lineIndex++;
+          addTimer(typeNextLine, 220);
         }
-
-        const lineDiv = document.createElement("div");
-        lineDiv.className = "intro-c64-line";
-
-        typedLines.appendChild(lineDiv);
-
-        typeLine(lines[i], lineDiv, () => {
-            i++;
-            setTimeout(typeBootSequence, 350);
-        });
+      }
+      step();
     }
 
-    function typeLine(text, el, callback) {
-        let idx = 0;
+    typeNextLine();
+  }
 
-        function tick() {
-            el.textContent = text.slice(0, idx);
-            idx++;
-            if (idx <= text.length) {
-                setTimeout(tick, 40);
-            } else {
-                callback();
-            }
-        }
-        tick();
+  function showSpeech(text) {
+    if (!speechBox) return;
+    speechBox.innerHTML = text;
+    speechBox.classList.add("intro-speech-text--visible");
+  }
+
+  function hideSpeech() {
+    if (!speechBox) return;
+    speechBox.classList.remove("intro-speech-text--visible");
+  }
+
+  function startSpeech() {
+    if (finished) return;
+
+    if (c64Screen) {
+      c64Screen.classList.add("intro-c64-screen--hidden");
     }
 
-    /* SPEECH SEQUENCE --------------------------------------------------- */
-    function startSpeech() {
-        c64Screen.classList.add("intro-c64-screen--hidden");
+    try {
+      speechAudio.currentTime = 0;
+      speechAudio.play().catch(() => {});
+    } catch (e) {}
 
-        setTimeout(() => showSpeech("ANOTHER VISITOR..."), 300);
-        setTimeout(() => showSpeech("STAY AWHILE..."), 1800);
-        setTimeout(() => showSpeech('<span class="intro-forever">STAY FOREVER...</span>'), 3300);
-        setTimeout(finishIntro, 5200);
+    hideSpeech();
+    addTimer(() => showSpeech("ANOTHER VISITOR..."), 400);
+    addTimer(() => showSpeech("STAY A WHILE..."), 2000);
+    addTimer(() => showSpeech("STAY FOREVER..."), 3600);
+    addTimer(finishIntro, 5600);
+  }
+
+  function finishIntro(skipInstant) {
+    if (finished) return;
+    finished = true;
+    clearTimers();
+
+    try {
+      speechAudio.pause();
+      speechAudio.currentTime = 0;
+    } catch (e) {}
+
+    if (fadeLayer) {
+      fadeLayer.classList.add("intro-fade--active");
     }
 
-    function showSpeech(text) {
-        speechText.innerHTML = text;
-        speechText.classList.add("intro-speech-text--visible");
-    }
+    const delay = skipInstant ? 200 : 500;
+    addTimer(() => {
+      window.location.href = "home.html";
+    }, delay);
+  }
 
-    /* EXIT INTRO -------------------------------------------------------- */
-    function finishIntro() {
-        window.location.href = "home.html";
-    }
+  function handleGlobalClick(event) {
+    if (finished || introStarted) return;
+    if (skipBtn && event.target.closest && event.target.closest("#skipIntro")) return;
+    startIntro();
+  }
+
+  if (overlay) {
+    overlay.addEventListener("click", handleGlobalClick);
+  } else {
+    document.addEventListener("click", handleGlobalClick);
+  }
+
+  if (skipBtn) {
+    skipBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      finishIntro(true);
+    });
+  }
 });
