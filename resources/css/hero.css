@@ -1,74 +1,71 @@
 /* ============================================================
-   HERO.CSS — OMEGA CINEMATIC MERGE (FINAL SAFE EDITION)
-   Purpose:
-   • Unify all hero sections site-wide
-   • Preserve loader functionality (NO conflicts)
-   • Support C64 / Amiga mode-aware colouring
-   • Support Home Hero (H1-C-2), Genre Heroes, Collections,
-     Games Index Hero (G3), and Single Game Heroes
+   HERO.CSS — OMEGA GLOBAL SYNC (FINAL SAFE EDITION)
+   ------------------------------------------------------------
+   • Unifies all hero layouts (Home, Genre, Games, Single Game)
+   • Fixes missing backgrounds / black gap at top
+   • Ensures header never overlaps content
+   • Mode-aware glow layers (C64 / Amiga)
+   • 100% SAFE — does not touch intro system
    ============================================================ */
 
-
-
-/* ============================================================
+/* ==========================
    UNIVERSAL HERO WRAPPER
-============================================================ */
-.ccg-section.hero,
+   ========================== */
 .ccg-hero,
-.hero {
+.ccg-section.hero {
     position: relative;
-    overflow: hidden;
     width: 100%;
+    overflow: hidden;
+    background: #000;
+    padding: 6rem 0 5rem;
+    z-index: 1; /* Prevent header overlap */
 }
 
-
-
 /* ============================================================
-   UNIVERSAL VIGNETTE + BLOOM (SAFE, NON-ANIMATED)
-============================================================ */
-.ccg-section.hero::before,
-.ccg-section.hero::after {
-    content: "";
+   HERO BACKGROUND IMAGE LAYER
+   ============================================================ */
+.ccg-hero__media,
+.hero-bg {
     position: absolute;
     inset: 0;
-    pointer-events: none;
+    z-index: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* C64 mode */
+body[data-ccg-mode="c64"] .ccg-hero__media,
+body[data-mode="c64"] .ccg-hero__media {
+    background-image: url("../images/hero/ccg-hero-c64.png");
+}
+
+/* Amiga mode */
+body[data-ccg-mode="amiga"] .ccg-hero__media,
+body[data-mode="amiga"] .ccg-hero__media {
+    background-image: url("../images/hero/ccg-hero-amiga.png");
+}
+
+/* ============================================================
+   DARK OVERLAY
+   ============================================================ */
+.ccg-hero__overlay,
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
     z-index: 1;
 }
 
-/* Dark vignette */
-.ccg-section.hero::before {
-    background: radial-gradient(
-        circle at center,
-        rgba(0,0,0,0) 40%,
-        rgba(0,0,0,0.65) 95%
-    );
-    mix-blend-mode: multiply;
-    opacity: 0.45;
-}
-
-/* Accent bloom (re-tinted by mode below) */
-.ccg-section.hero::after {
-    background: radial-gradient(
-        circle at top center,
-        rgba(0,180,255,0.35),
-        transparent 70%
-    );
-    mix-blend-mode: screen;
-    opacity: 0.32;
-}
-
-
-
 /* ============================================================
-   SCANLINES (STATIC)
-============================================================ */
-.hero-scanlines,
-.ccg-hero__scanlines {
+   SCANLINES
+   ============================================================ */
+.ccg-hero__scanlines,
+.hero-scanlines {
     position: absolute;
     inset: 0;
     z-index: 2;
     pointer-events: none;
-
     background: repeating-linear-gradient(
         to bottom,
         rgba(255,255,255,0.05) 0px,
@@ -79,140 +76,64 @@
     opacity: 0.35;
 }
 
-
-
 /* ============================================================
-   MODE AWARE — COLOUR SHIFT
-============================================================ */
-
-/* C64 = cyan glow */
-body[data-mode="c64"] .ccg-section.hero::after {
-    background: radial-gradient(
-        circle at top center,
-        rgba(0,200,255,0.40),
-        transparent 70%
-    );
-}
-
-/* Amiga = magenta glow */
-body[data-mode="amiga"] .ccg-section.hero::after {
-    background: radial-gradient(
-        circle at top center,
-        rgba(255,65,200,0.45),
-        transparent 70%
-    );
-}
-
-
-
-/* ============================================================
-   HERO STACK NORMALISATION FOR ALL PAGE TYPES
-============================================================ */
-
-/* Home Hero */
-[data-ccg-page="home"] .ccg-hero {
-    z-index: 3;
-}
-
-/* Genre Hero */
-.hero.hero--genre {
-    z-index: 2;
-}
-.hero.hero--genre .ccg-hero-grid {
-    position: relative;
-    z-index: 4;
-}
-
-/* Collections Hero */
-.hero.hero--subpage {
-    z-index: 2;
-}
-
-/* Games Index Hero */
-.hero--games-index {
-    z-index: 2;
-}
-.hero--games-index .hero-g3-bg,
-.hero--games-index .hero-g3-overlay,
-.hero--games-index .hero-g3-content {
-    position: relative;
-}
-
-/* Single Game Hero */
-.hero--single-game {
-    z-index: 2;
-}
-.hero--single-game .game-hero-inner {
-    position: relative;
-    z-index: 4;
-}
-.hero--single-game .game-hero-bg,
-.hero--single-game .game-hero-overlay {
-    z-index: 1;
-}
-
-
-
-/* ============================================================
-   UNIVERSAL TEXT CONTRAST
-============================================================ */
-
-.ccg-hero-content,
+   HERO CONTENT WRAPPER (Safe, Never Overlaps Header)
+   ============================================================ */
 .ccg-hero__content,
 .hero-content {
+    position: relative;
+    z-index: 10;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* ============================================================
+   HERO TITLES (universal glow)
+   ============================================================ */
+.ccg-hero__title,
+.hero-title {
+    font-size: 3.6rem;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #fff;
     text-shadow:
-        0 0 6px rgba(0,0,0,0.6),
-        0 0 18px rgba(0,0,0,0.45);
+        0 0 12px rgba(0, 200, 255, 0.6),
+        0 0 32px rgba(0, 200, 255, 0.35);
 }
 
-/* Amiga mode — adjust bright text */
-body[data-mode="amiga"] .ccg-hero-title span,
-body[data-mode="amiga"] .ccg-hero__title span {
-    color: #e27bff;
+.ccg-hero__title-accent {
+    color: #7fe9ff;
+    text-shadow: 0 0 25px rgba(0, 200, 255, 0.6);
 }
-
-
 
 /* ============================================================
-   OPTIONAL GLOW OVERLAY (DISABLED — NO ANIMATION)
-   Left here for future cinematics; remains inert.
-============================================================ */
-
-.ccc-hero-overlay--glow {
-    /* unused in this build, intentionally disabled */
-    display: none;
+   MODE BADGE
+   ============================================================ */
+.ccg-hero__mode-badge {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    z-index: 12;
+    padding: 0.4rem 0.85rem;
+    font-size: 0.85rem;
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: white;
+    backdrop-filter: blur(4px);
 }
 
-
-
 /* ============================================================
-   RESPONSIVE HERO SAFETY
-============================================================ */
+   RESPONSIVE CLEANUP
+   ============================================================ */
 @media (max-width: 760px) {
-
-    .ccg-section.hero,
     .ccg-hero,
-    .hero {
-        padding: 2.2rem 1.2rem 2.4rem;
+    .ccg-section.hero {
+        padding: 4rem 0 3rem;
     }
 
-    .ccg-hero-title,
-    .ccg-hero__title,
-    .hero-title {
-        font-size: clamp(2rem, 7vw, 3rem);
-    }
-
-    .ccg-hero-tagline,
-    .ccg-hero__subtitle {
-        font-size: 0.95rem;
-        line-height: 1.45;
-    }
-
-    .hero--single-game {
-        padding: 2rem 1rem 2.2rem;
-    }
-
-    .hero--games-index {
-        padding: 2.6rem 1.1rem 2.2rem;
+    .ccg-hero__title {
+        font-size: 2.4rem;
     }
 }
