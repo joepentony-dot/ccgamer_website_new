@@ -1,219 +1,164 @@
-// ======================================================================
-// index-intro.js — Omega C64 Cinematic Intro (TUNED)
-// ======================================================================
+/* ==========================================================
+   OMEGA INTRO SEQUENCE — FINAL PATCHED VERSION
+   Cheeky Commodore Gamer 😇🕹️👌
+   Fixes included:
+   - Skip Intro works instantly at all stages
+   - Click-anywhere progression for ALL phases
+   - C64 typing stage now continues properly
+   - Unified stage controller
+   - No stuck states
+   - No blocked events
+   ========================================================== */
 
-(function () {
+document.addEventListener("DOMContentLoaded", () => {
 
-    // DOM refs
-    const overlay        = document.getElementById("introOverlay");
-    const idle           = document.getElementById("introIdle");
-    const c64Screen      = document.getElementById("introC64");
-    const typedLinesWrap = document.getElementById("typedLines");
-    const fadeLayer      = document.getElementById("introFade");
-    const skipBtn        = document.getElementById("skipIntro");
-    const speechBox      = document.getElementById("speechText");
-    const loaderVideo    = document.getElementById("loaderVideo");
+    /* -------------------------------------------------------
+       ELEMENT HOOKS
+    ------------------------------------------------------- */
+    const overlay = document.getElementById("intro-overlay");
+    const powerOnText = document.getElementById("power-on-text");
+    const skipIntroBtn = document.getElementById("skip-intro-btn");
+    const c64Container = document.getElementById("c64-container");
+    const c64TextArea = document.getElementById("c64-text");
+    const c64Cursor = document.getElementById("c64-cursor");
 
-    // SID speech audio
-    const speechAudio = new Audio("resources/css/audio/c64_speech_stayawhile.mp3");
-    speechAudio.preload = "auto";
-    speechAudio.volume  = 0.55;  // Subtle, letting neon dominate
+    /* -------------------------------------------------------
+       STATE CONTROL
+    ------------------------------------------------------- */
+    let stage = 0;
+    let typingDone = false;
+    let typingIndex = 0;
+    let typingTimer = null;
 
-    let introStarted = false;
-    let finished     = false;
-    let timers       = [];
-
-    // Typed lines under READY
-    const typedLines = [
-        'LOAD"*",8,1',
-        'PRESS PLAY ON TAPE',
-        'LOADING',
-        'FOUND "CHEEKY COMMODORE GAMER"'
+    /* C64 BASIC lines (EDITABLE) */
+    const basicLines = [
+        "**** COMMODORE 64 BASIC V2 ****",
+        "64K RAM SYSTEM  38911 BASIC BYTES FREE",
+        "READY.",
+        "",
+        "LOAD\"*\",8,1",
+        "PRESS PLAY ON TAPE"
     ];
 
-    const TYPE_SPEED = 70;  // Fast typing
-
-    function addTimer(fn, delay) {
-        const id = setTimeout(fn, delay);
-        timers.push(id);
-        return id;
+    /* -------------------------------------------------------
+       UNIVERSAL CLICK HANDLER
+       - Moves through ALL stages
+       - Never traps the user
+    ------------------------------------------------------- */
+    function globalClickAdvance() {
+        switch (stage) {
+            case 0:
+                beginBootSequence();
+                break;
+            case 1:
+                if (typingDone) {
+                    proceedToSpeechPhase();
+                }
+                break;
+            case 2:
+                finishIntro();
+                break;
+            default:
+                finishIntro();
+                break;
+        }
     }
 
-    function clearTimers() {
-        for (const id of timers) clearTimeout(id);
-        timers = [];
-    }
+    document.addEventListener("click", globalClickAdvance);
 
-    // --------------------------------------------------------------
-    // Fade-in/out neon speech phrases
-    // --------------------------------------------------------------
-    function showSpeech(text, isForeverLine = false) {
-        speechBox.innerHTML = "";
 
-        const span = document.createElement("span");
-        span.textContent = text;
-        if (isForeverLine) span.classList.add("intro-forever");
-        speechBox.appendChild(span);
+    /* -------------------------------------------------------
+       SKIP INTRO — ALWAYS WORKS IMMEDIATELY
+    ------------------------------------------------------- */
+    skipIntroBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        finishIntro();
+    });
 
-        speechBox.classList.remove("intro-speech-text--hidden");
-        speechBox.classList.add("intro-speech-text--visible");
-    }
+    /* -------------------------------------------------------
+       START — CLICK TO POWER ON
+    ------------------------------------------------------- */
+    function beginBootSequence() {
+        stage = 1;
 
-    function hideSpeech() {
-        speechBox.classList.remove("intro-speech-text--visible");
-        speechBox.classList.add("intro-speech-text--hidden");
-    }
+        // Hide "Click to Power On"
+        powerOnText.classList.add("fade-out");
 
-    // --------------------------------------------------------------
-    // Begin speech audio + fade-out of C64 panel
-    // --------------------------------------------------------------
-    function startSpeech() {
-        if (!speechAudio) return;
-
-        // Fade out C64 panel as speech begins
-        c64Screen.classList.add("intro-c64-screen--fadeout");
-
-        speechAudio.currentTime = 0;
-        speechAudio.play().catch(() => {});
-
-        // Timings (approx)
-        // Another Visitor: 0.8s
-        // Stay A While:    ~2.4s
-        // Stay Forever:    ~4.2s
-
-        // "ANOTHER VISITOR"
-        addTimer(() => {
-            showSpeech("ANOTHER VISITOR");
+        // Delay then reveal C64 screen
+        setTimeout(() => {
+            overlay.classList.add("fade-out");
+            c64Container.classList.add("visible");
+            startTyping();
         }, 800);
-
-        addTimer(() => {
-            hideSpeech();
-        }, 800 + 900);
-
-        // "STAY A WHILE"
-        addTimer(() => {
-            showSpeech("STAY A WHILE");
-        }, 2400);
-
-        addTimer(() => {
-            hideSpeech();
-        }, 2400 + 900);
-
-        // "STAY FOREVER..."
-        addTimer(() => {
-            showSpeech("STAY FOREVER...", true);
-        }, 4200);
-
-        // Hold final phrase, then fade out + leave intro
-        addTimer(() => {
-            hideSpeech();
-        }, 4200 + 1500);
-
-        addTimer(() => {
-            finishIntro();
-        }, 4200 + 1500 + 400);
     }
 
-    // --------------------------------------------------------------
-    // Finish intro (skip or auto)
-    // --------------------------------------------------------------
-    function finishIntro(skip = false) {
-        if (finished) return;
-        finished = true;
 
-        clearTimers();
+    /* -------------------------------------------------------
+       TYPING ENGINE — C64 ACCURATE
+    ------------------------------------------------------- */
+    function startTyping() {
+        let output = "";
+        typingDone = false;
+        typingIndex = 0;
 
-        try { speechAudio.pause(); } catch (e) {}
-        speechAudio.currentTime = 0;
+        function typeLine() {
+            if (typingIndex >= basicLines.length) {
+                typingDone = true;
+                c64Cursor.classList.add("blink");
+                return;
+            }
 
-        fadeLayer.classList.add("intro-fade--active");
+            // Add line
+            output += basicLines[typingIndex] + "\n";
+            c64TextArea.textContent = output;
 
+            typingIndex++;
+
+            typingTimer = setTimeout(typeLine, 300);
+        }
+
+        typeLine();
+    }
+
+    /* -------------------------------------------------------
+       PROCEED TO SPEECH PHASE
+       (Another Visitor / Stay A While / Stay Forever)
+    ------------------------------------------------------- */
+    function proceedToSpeechPhase() {
+        if (!typingDone) return;
+
+        stage = 2;
+        c64Cursor.classList.remove("blink");
+
+        // Fade out C64 block
+        c64Container.classList.add("fade-out");
+
+        // Play the speech MP3 after fade
+        setTimeout(() => {
+            const audio = new Audio("resources/css/audio/c64_speech_stayawhile.mp3");
+            audio.volume = 0.55;
+            audio.play();
+
+            // After speech: finish intro
+            audio.onended = () => {
+                finishIntro();
+            };
+        }, 1200);
+    }
+
+    /* -------------------------------------------------------
+       FINAL EXIT TO HOME PAGE
+    ------------------------------------------------------- */
+    function finishIntro() {
+        stage = 3;
+
+        // Remove all intro content gracefully
+        document.body.classList.add("intro-complete");
+
+        // Small delay then redirect
         setTimeout(() => {
             window.location.href = "home.html";
-        }, skip ? 250 : 700);
+        }, 700);
     }
 
-    // --------------------------------------------------------------
-    // Typing engine
-    // --------------------------------------------------------------
-    function beginTyping() {
-        let lineIndex = 0;
-
-        function typeNextLine() {
-            if (lineIndex >= typedLines.length) {
-                addTimer(startSpeech, 300);
-                return;
-            }
-
-            const text = typedLines[lineIndex];
-            const el = document.createElement("div");
-            el.className = "intro-c64-line intro-c64-line--cursor";
-            typedLinesWrap.appendChild(el);
-
-            let charIndex = 0;
-
-            function typeChar() {
-                if (finished) return;
-
-                if (charIndex <= text.length) {
-                    el.textContent = text.slice(0, charIndex);
-                    charIndex++;
-                    addTimer(typeChar, TYPE_SPEED);
-                } else {
-                    el.classList.remove("intro-c64-line--cursor");
-                    lineIndex++;
-                    addTimer(typeNextLine, 200);
-                }
-            }
-
-            typeChar();
-        }
-
-        typeNextLine();
-    }
-
-    // --------------------------------------------------------------
-    // Start the intro
-    // --------------------------------------------------------------
-    function startIntro() {
-        if (introStarted || finished) return;
-        introStarted = true;
-
-        document.body.classList.add("intro-started");
-
-        if (idle) {
-            idle.style.display = "none";
-        }
-
-        if (loaderVideo && loaderVideo.paused) {
-            loaderVideo.play().catch(() => {});
-        }
-
-        // Show C64 panel
-        c64Screen.classList.add("intro-c64-screen--visible", "intro-c64-screen--cursor-on");
-
-        // Begin typing after slight delay
-        addTimer(beginTyping, 250);
-    }
-
-    // --------------------------------------------------------------
-    // Event Listeners
-    // --------------------------------------------------------------
-    if (overlay) {
-        overlay.addEventListener("click", (e) => {
-            // If click was on Skip Intro or inside it, don't start intro
-            if (e.target && e.target.closest && e.target.closest("#skipIntro")) {
-                return;
-            }
-            startIntro();
-        });
-    }
-
-    if (skipBtn) {
-        skipBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            finishIntro(true);
-        });
-    }
-
-})();
+});
