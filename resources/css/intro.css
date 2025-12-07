@@ -166,7 +166,8 @@ body.intro-body {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%) translateY(20px);
+    /* PERFECT CENTER ON ALL SCREENS */
+    transform: translate(-50%, -50%);
     width: min(780px, 92vw);
     padding: 2.2rem 3rem;
     border-radius: 18px;
@@ -190,12 +191,12 @@ body.intro-body {
 
 .intro-c64-screen--visible {
     opacity: 1;
-    transform: translate(-50%, -50%) translateY(0);
+    transform: translate(-50%, -50%);
 }
 
 .intro-c64-screen--hidden {
     opacity: 0;
-    transform: translate(-50%, -50%) translateY(10px) scale(0.97);
+    transform: translate(-50%, -50%) scale(0.97);
 }
 
 /* BASIC TEXT SPACING ---------------------------------------------------- */
@@ -215,11 +216,17 @@ body.intro-body {
 
 .intro-c64-line--ready {
     margin-top: 0.25rem;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.35rem;
 }
 
 .intro-c64-line--typed {
     text-align: left;
+    color: var(--intro-cyan);
+    /* GLOWING NEON BLUE TYPED TEXT */
+    text-shadow:
+        0 0 8px rgba(120, 170, 255, 0.9),
+        0 0 16px rgba(80, 140, 255, 0.9),
+        0 0 32px rgba(40, 100, 255, 0.85);
 }
 
 #typedLines {
