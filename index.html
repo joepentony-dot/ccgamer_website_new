@@ -10,56 +10,72 @@
 
     <link rel="icon" href="favicon.ico" />
 
-    <!-- Global styles -->
+    <!-- GLOBAL SITE STYLES (unchanged) -->
     <link rel="stylesheet" href="resources/css/ccg-master.css" />
-    <!-- Intro-only styles -->
+
+    <!-- C64 BLOCKY FONT -->
+    <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/c64-pro-mono" />
+
+    <!-- INTRO STYLES -->
     <link rel="stylesheet" href="resources/css/intro.css" />
 </head>
+
 <body class="intro-body">
 
 <div class="intro-root">
-    <!-- Raster background video -->
+
+    <!-- RASTER VIDEO BACKGROUND -->
     <video id="loaderVideo" class="intro-video" autoplay muted loop playsinline>
         <source src="resources/videos/c64_loader.mp4" type="video/mp4" />
     </video>
 
-    <!-- Main overlay -->
+    <!-- EVERYTHING LIVES INSIDE THIS OVERLAY -->
     <div id="introOverlay" class="intro-overlay">
 
-        <!-- Logo -->
+        <!-- TOP LEFT LOGO -->
         <div class="intro-logo">
             <img src="resources/images/ccgamer-logo.png" alt="Cheeky Commodore Gamer" />
         </div>
 
-        <!-- Skip Intro -->
-        <button id="skipIntro" class="intro-skip" type="button">
-            SKIP INTRO
-        </button>
+        <!-- TOP RIGHT SKIP BUTTON -->
+        <button id="skipIntro" class="intro-skip" type="button">SKIP INTRO</button>
 
-        <!-- Fade to black -->
+        <!-- FADE LAYER -->
         <div id="introFade"></div>
 
-        <!-- Idle / click-to-start state -->
+        <!-- IDLE STATE (WAITING FOR USER CLICK) -->
         <div id="introIdle" class="intro-idle">
             <div class="intro-idle-title">CLICK TO POWER ON</div>
-            <div class="intro-idle-sub">Press fire to boot the system...</div>
+            <!-- REMOVED THE LINE YOU REQUESTED -->
         </div>
 
-        <!-- C64 BASIC screen -->
+        <!-- C64 BASIC PANEL -->
         <div id="introC64" class="intro-c64-screen">
-            <div class="intro-c64-line intro-c64-line--header">**** COMMODORE 64 BASIC V2 ****</div>
-            <div class="intro-c64-line intro-c64-line--header">64K RAM SYSTEM  38911 BASIC BYTES FREE</div>
-            <div class="intro-c64-line intro-c64-line--ready">READY.</div>
 
+            <div class="intro-c64-line intro-c64-line--header">
+                **** COMMODORE 64 BASIC V2 ****
+            </div>
+
+            <div class="intro-c64-line intro-c64-line--header">
+                64K RAM SYSTEM  38911 BASIC BYTES FREE
+            </div>
+
+            <div class="intro-c64-line intro-c64-line--ready">
+                READY.
+            </div>
+
+            <!-- TYPED COMMAND LINES -->
             <div id="typedLines"></div>
         </div>
 
-        <!-- Neon speech text -->
+        <!-- HUGE NEON SPEECH TEXT APPEARS HERE -->
         <div id="speechText" class="intro-speech-text"></div>
 
     </div><!-- /introOverlay -->
 </div><!-- /intro-root -->
 
+<!-- INTRO SCRIPT -->
 <script src="js/index-intro.js" defer></script>
+
 </body>
 </html>
