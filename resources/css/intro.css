@@ -334,3 +334,22 @@
         font-size: 0.85rem;
     }
 }
+
+/* ============================================================
+   PATCH: Tighter C64 BASIC spacing for typed lines
+   ============================================================ */
+
+#typedLines .intro-c64-line {
+    line-height: 1.2;
+    margin-top: 0.15rem;
+    margin-bottom: 0.15rem;
+}
+
+#typedLines .intro-c64-line--header {
+    margin-bottom: 0.1rem;
+}
+
+#typedLines .intro-c64-line--ready {
+    margin-top: 0.25rem;
+    margin-bottom: 0.35rem;
+}
