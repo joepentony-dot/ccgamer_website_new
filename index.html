@@ -1,53 +1,67 @@
 <!DOCTYPE html>
 <html lang="en" data-ccg-page="intro">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Booting System...</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cheeky Commodore Gamer | Booting System...</title>
 
-    <link rel="stylesheet" href="resources/css/ccg-master.css">
-    <link rel="stylesheet" href="resources/css/intro.css">
+  <meta name="description"
+        content="Cinematic Commodore 64-style boot sequence for the Cheeky Commodore Gamer website. Another visitor... stay awhile, stay forever.">
+
+  <link rel="icon" href="favicon.ico">
+
+  <!-- Global base styles -->
+  <link rel="stylesheet" href="resources/css/ccg-master.css">
+  <!-- Intro specific styles -->
+  <link rel="stylesheet" href="resources/css/intro.css">
 </head>
-
 <body class="intro-body">
 
 <div class="intro-root">
 
-    <!-- Raster background video -->
-    <video id="loaderVideo" class="intro-video" autoplay muted loop playsinline>
-        <source src="resources/videos/c64_loader.mp4" type="video/mp4">
-    </video>
+  <!-- Raster loader video background -->
+  <video id="loaderVideo" class="intro-video" autoplay muted loop playsinline>
+    <source src="resources/videos/c64_loader.mp4" type="video/mp4">
+  </video>
 
-    <div id="introOverlay" class="intro-overlay">
+  <!-- Main overlay -->
+  <div id="introOverlay" class="intro-overlay">
 
-        <div class="intro-logo">
-            <img src="resources/images/ccgamer-logo.png">
-        </div>
-
-        <button id="skipIntro" class="intro-skip">SKIP INTRO</button>
-
-        <div id="introFade" class="intro-fade"></div>
-
-        <div id="introIdle" class="intro-idle intro-click-area">
-            <div class="intro-idle-title">CLICK TO POWER ON</div>
-            <div class="intro-idle-sub">Press fire to boot the system...</div>
-        </div>
-
-        <div id="introC64" class="intro-c64-screen">
-
-            <div class="intro-c64-line intro-c64-line--header">**** COMMODORE 64 BASIC V2 ****</div>
-            <div class="intro-c64-line intro-c64-line--header">64K RAM SYSTEM  38911 BASIC BYTES FREE</div>
-            <div class="intro-c64-line intro-c64-line--ready">READY.</div>
-
-            <div id="typedLines"></div>
-        </div>
-
-        <div id="speechText" class="intro-speech-text"></div>
-
+    <!-- Logo -->
+    <div class="intro-logo">
+      <img src="resources/images/ccgamer-logo.png" alt="Cheeky Commodore Gamer logo">
     </div>
-</div>
 
-<script src="js/index-intro.js"></script>
+    <!-- Skip button -->
+    <button id="skipIntro" class="intro-skip" type="button">
+      SKIP INTRO
+    </button>
 
+    <!-- Fade layer -->
+    <div id="introFade"></div>
+
+    <!-- Idle click-to-start state -->
+    <div id="introIdle" class="intro-idle">
+      <div class="intro-idle-title">CLICK TO POWER ON</div>
+      <div class="intro-idle-sub">Press fire to boot the system...</div>
+    </div>
+
+    <!-- C64 BASIC screen -->
+    <div id="introC64" class="intro-c64-screen">
+      <div class="intro-c64-line intro-c64-line--header">**** COMMODORE 64 BASIC V2 ****</div>
+      <div class="intro-c64-line intro-c64-line--header">64K RAM SYSTEM  38911 BASIC BYTES FREE</div>
+      <div class="intro-c64-line intro-c64-line--ready">READY.</div>
+
+      <div id="typedLines"></div>
+    </div>
+
+    <!-- Neon speech text ("Another visitor..." etc) -->
+    <div id="speechText" class="intro-speech-text"></div>
+
+  </div> <!-- /introOverlay -->
+
+</div> <!-- /intro-root -->
+
+<script src="js/index-intro.js" defer></script>
 </body>
 </html>
