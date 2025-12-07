@@ -1,4 +1,6 @@
-// Omega C64 Intro Controller — Centered & Neon Speech Edition
+// ======================================================================
+// Omega C64 Intro Controller — Centered & Neon Speech, Audio-Synced
+// ======================================================================
 
 document.addEventListener("DOMContentLoaded", () => {
     const overlay        = document.getElementById("introOverlay");
@@ -10,11 +12,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const speechBox      = document.getElementById("speechText");
     const loaderVideo    = document.getElementById("loaderVideo");
 
-    let introStarted = false;
-    let finished     = false;
-    const timers     = [];
+    let introStarted      = false;
+    let finished          = false;
+    const timers          = [];
+    let speechDurationMs  = 0;
 
-    // BASIC typed lines (left aligned)
+    // BASIC typed lines (left aligned, neon blue in CSS)
     const typedLines = [
         'LOAD"*",8,1',
         "PRESS PLAY ON TAPE",
@@ -27,15 +30,27 @@ document.addEventListener("DOMContentLoaded", () => {
     speechAudio.preload = "auto";
     speechAudio.volume = 0.7;
 
-    // Prime audio once so browser allows playback
-    document.body.addEventListener("click", () => {
-        speechAudio.play()
-            .then(() => {
-                speechAudio.pause();
-                speechAudio.currentTime = 0;
-            })
-            .catch(() => {});
-    }, { once: true });
+    // Capture actual audio duration once metadata is ready
+    speechAudio.addEventListener("loadedmetadata", () => {
+        if (!isNaN(speechAudio.duration) && speechAudio.duration > 0) {
+            speechDurationMs = speechAudio.duration * 1000;
+        }
+    });
+
+    // Prime audio once so browser allows playback (mobile gesture requirement)
+    document.body.addEventListener(
+        "click",
+        () => {
+            speechAudio
+                .play()
+                .then(() => {
+                    speechAudio.pause();
+                    speechAudio.currentTime = 0;
+                })
+                .catch(() => {});
+        },
+        { once: true }
+    );
 
     function addTimer(fn, delay) {
         const id = window.setTimeout(fn, delay);
@@ -78,6 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (finished) return;
 
             if (lineIndex >= typedLines.length) {
+                // After typing finishes, move into SID speech
                 addTimer(startSpeech, 450);
                 return;
             }
@@ -96,10 +112,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 charIndex++;
 
                 if (charIndex <= text.length) {
-                    addTimer(step, 55);
+                    addTimer(step, 55); // typing speed
                 } else {
                     lineIndex++;
-                    addTimer(typeNextLine, 230);
+                    addTimer(typeNextLine, 230); // pause between lines
                 }
             }
 
@@ -113,10 +129,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function showSpeech(text) {
         if (!speechBox) return;
-        speechBox.textContent = text;
-        // Reset animation by toggling class
+        // Slight fade between phrases
         speechBox.classList.remove("intro-speech-text--visible");
-        void speechBox.offsetWidth; // force reflow
+        void speechBox.offsetWidth; // force reflow to restart animation
+        speechBox.textContent = text;
         speechBox.classList.add("intro-speech-text--visible");
     }
 
@@ -130,20 +146,24 @@ document.addEventListener("DOMContentLoaded", () => {
     function startSpeech() {
         if (finished) return;
 
-        // Fade / drop the C64 panel so only raster + neon remain
+        // Fade / drop the C64 panel so only raster + neon speech remain
         if (c64Screen) {
             c64Screen.classList.add("intro-c64-screen--hidden");
         }
 
-        // Start SID speech
+        // Start SID speech (full playback)
         try {
             speechAudio.currentTime = 0;
             speechAudio.play().catch(() => {});
         } catch (e) {}
 
-        // Phrase timings (millis) tuned to the SID sample
+        // Use real duration if available, otherwise safe fallback (~8s)
+        const duration = speechDurationMs && speechDurationMs > 0 ? speechDurationMs : 8000;
+
+        // Clear any previous text
         hideSpeech();
 
+        // Phrase timings (ms) tuned to the sample
         // ANOTHER VISITOR...
         addTimer(() => {
             if (!finished) showSpeech("ANOTHER VISITOR...");
@@ -159,20 +179,28 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!finished) showSpeech("STAY FOREVER...");
         }, 3600);
 
-        // Gently fade out text a bit before audio end
+        // Fade out speech a fraction before or right at audio end,
+        // but only after a sensible minimum time
+        const fadeOutAt = Math.max(duration - 400, 4800);
         addTimer(() => {
-            if (!finished) hideSpeech();
-        }, 6400);
+            if (!finished) {
+                hideSpeech();
+            }
+        }, fadeOutAt);
 
-        // When audio actually ends, finish intro (safety net)
+        // When audio actually ends, finish intro cleanly
         speechAudio.onended = () => {
-            if (!finished) finishIntro(false);
+            if (!finished) {
+                finishIntro(false);
+            }
         };
 
-        // Additional hard fallback in case onended never fires
+        // Additional hard fallback if onended never fires
         addTimer(() => {
-            if (!finished) finishIntro(false);
-        }, 7600);
+            if (!finished) {
+                finishIntro(false);
+            }
+        }, duration + 600);
     }
 
     /* FINISH INTRO ------------------------------------------------------ */
@@ -184,13 +212,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             speechAudio.pause();
+            speechAudio.currentTime = 0;
         } catch (e) {}
+
+        hideSpeech();
+
+        if (c64Screen) {
+            c64Screen.classList.add("intro-c64-screen--hidden");
+        }
 
         if (fadeLayer) {
             fadeLayer.classList.add("intro-fade--active");
         }
 
-        const delay = skipInstant ? 220 : 550;
+        const delay = skipInstant ? 120 : 550;
+
         addTimer(() => {
             window.location.href = "home.html";
         }, delay);
@@ -217,6 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (skipBtn) {
         skipBtn.addEventListener("click", (e) => {
             e.stopPropagation();
+            // Instant escape: stop everything, fade quickly, jump to home
             finishIntro(true);
         });
     }
