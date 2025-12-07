@@ -1,5 +1,5 @@
 /* ============================================================
-   intro.css — Omega C64 Cinematic Intro (Centered Panel Edition)
+   intro.css — Omega C64 Cinematic Intro (Final Alignment Edition)
    ============================================================ */
 
 :root {
@@ -175,7 +175,9 @@ body.intro-body {
     }
 }
 
-/* C64 PANEL --------------------------------------------------- */
+/* ============================================================
+   C64 PANEL (with absolute override against global flex rules)
+   ============================================================ */
 
 .intro-c64-screen {
     position: absolute;
@@ -184,6 +186,7 @@ body.intro-body {
     transform: translate(-50%, -50%);
     width: min(820px, 92vw);
     padding: 2.2rem 3rem;
+
     border-radius: 18px;
     background: radial-gradient(circle at top,
         rgba(40, 70, 150, 0.85),
@@ -193,15 +196,25 @@ body.intro-body {
     box-shadow:
         0 0 24px rgba(90, 140, 255, 0.9),
         0 0 40px rgba(30, 80, 220, 0.9);
+
     color: var(--intro-cyan);
     font-family: "C64 Pro Mono", monospace;
     font-size: 1.2rem;
     letter-spacing: 0.06em;
     text-shadow: 0 0 6px rgba(120, 170, 255, 0.9);
+
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.45s ease, transform 0.45s ease, visibility 0.45s ease;
     z-index: 8;
+
+    /* ABSOLUTE OVERRIDE: remove global flex/align interference */
+    display: block !important;
+}
+
+.intro-c64-screen * {
+    text-align: left !important;
+    display: block !important;
 }
 
 .intro-c64-screen--visible {
@@ -216,27 +229,25 @@ body.intro-body {
     transform: translate(-50%, -50%) scale(0.97);
 }
 
-/* ⭐ INTERNAL PANEL ALIGNMENT FIX --------------------------------- */
+/* INTERNAL ALIGNMENT WRAPPER ------------------------------- */
 
 .intro-c64-inner {
     width: 100%;
-    max-width: 760px;      /* Keeps headers perfectly centred */
-    margin: 0 auto;        /* TRUE centering of the BASIC content */
+    max-width: 760px;
+    margin: 0 auto;
 }
 
 /* BASIC TEXT -------------------------------------------------- */
 
 .intro-c64-line {
-    display: block;
     white-space: pre;
     min-height: 1em;
     line-height: 1.1;
     margin: 0.1rem 0;
-    text-align: left; /* default for BASIC text */
 }
 
 .intro-c64-line--header {
-    text-align: center;
+    text-align: center !important;
 }
 
 .intro-c64-line--ram {
@@ -248,6 +259,8 @@ body.intro-body {
     margin-top: 0.3rem;
     margin-bottom: 0.45rem;
 }
+
+/* CURSOR ------------------------------------------------------ */
 
 .intro-ready-cursor {
     display: inline-block;
@@ -265,8 +278,9 @@ body.intro-body {
     50%, 100% { opacity: 0; }
 }
 
+/* TYPED TEXT -------------------------------------------------- */
+
 .intro-c64-line--typed {
-    text-align: left;
     color: var(--intro-cyan);
     text-shadow:
         0 0 8px rgba(120, 170, 255, 0.9),
@@ -288,16 +302,20 @@ body.intro-body {
     width: 100%;
     max-width: 1200px;
     text-align: center;
+
     font-family: "C64 Pro Mono", monospace;
     font-size: clamp(3rem, 5vw, 4.2rem);
     letter-spacing: 0.25em;
+
     color: var(--intro-cyan);
     opacity: 0;
     pointer-events: none;
+
     text-shadow:
         0 0 12px var(--intro-cyan-deep),
         0 0 35px rgba(0, 200, 255, 0.9),
         0 0 70px rgba(0, 200, 255, 0.85);
+
     z-index: 30;
     transition: opacity 0.5s ease, transform 0.5s ease;
 }
