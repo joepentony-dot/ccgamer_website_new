@@ -1,5 +1,6 @@
 /* ============================================================
-   intro.css — Omega C64 Cinematic Intro (Final Alignment Edition)
+   intro.css — Omega Cinematic Intro (Isolation Edition)
+   Purpose: Completely isolate intro panel from global CSS
    ============================================================ */
 
 :root {
@@ -11,25 +12,40 @@
     --intro-skip-red: #ff2440;
 }
 
-/* BODY / ROOT ------------------------------------------------- */
+/* ============================================================
+   HARD SANDBOX — KILLS all global flex/text-align overrides
+   ============================================================ */
+
+#introC64,
+#introC64 * {
+    all: unset;
+    display: block;
+    box-sizing: border-box;
+    font-family: "C64 Pro Mono", monospace;
+    color: var(--intro-cyan);
+    text-shadow: 0 0 6px rgba(120,170,255,0.9);
+    white-space: pre;
+}
+
+/* ============================================================
+   BACKGROUND VIDEO + ROOT
+   ============================================================ */
 
 body.intro-body {
     margin: 0;
-    background: #000;
-    color: var(--intro-cyan);
     overflow: hidden;
-    font-family: "C64 Pro Mono", monospace;
+    background: #000;
 }
 
 .intro-root {
     position: relative;
     width: 100vw;
     height: 100vh;
-    overflow: hidden;
-    background: radial-gradient(circle at top, #050b1a 0%, #000 70%);
 }
 
-/* RASTER VIDEO ------------------------------------------------ */
+/* ============================================================
+   VIDEO
+   ============================================================ */
 
 .intro-video {
     position: absolute;
@@ -38,85 +54,25 @@ body.intro-body {
     height: 100%;
     object-fit: cover;
     opacity: 0.35;
-    mix-blend-mode: screen;
     pointer-events: none;
 }
 
-/* OVERLAY ----------------------------------------------------- */
+/* ============================================================
+   OVERLAY
+   ============================================================ */
 
 .intro-overlay {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    z-index: 2;
-    background: radial-gradient(
-        circle at center,
-        rgba(0, 0, 0, 0.25) 0%,
-        rgba(0, 0, 0, 0.9) 70%,
-        #000 100%
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle,
+        rgba(0,0,0,0.1),
+        rgba(0,0,0,0.85)
     );
 }
 
-/* LOGO -------------------------------------------------------- */
-
-.intro-logo {
-    position: absolute;
-    top: 24px;
-    left: 24px;
-    z-index: 10;
-}
-
-.intro-logo img {
-    height: 64px;
-}
-
-/* SKIP BUTTON ------------------------------------------------- */
-
-.intro-skip {
-    position: absolute;
-    top: 24px;
-    right: 32px;
-    padding: 0.7rem 1.9rem;
-    border-radius: 999px;
-    border: 2px solid var(--intro-skip-red);
-    background: radial-gradient(circle at 30% 20%, #ff647f, #4a000a 55%, #000);
-    color: #fff;
-    font-size: 0.9rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    cursor: pointer;
-    z-index: 20;
-    box-shadow:
-        0 0 20px rgba(255, 60, 90, 0.75),
-        0 0 6px rgba(255, 255, 255, 0.6);
-    text-shadow:
-        0 0 5px #ffffff,
-        0 0 14px #ff324f;
-}
-
-.intro-skip:hover {
-    box-shadow:
-        0 0 26px rgba(255, 120, 140, 0.9),
-        0 0 10px rgba(255, 255, 255, 0.75);
-}
-
-/* FADE TO BLACK ----------------------------------------------- */
-
-#introFade {
-    position: absolute;
-    inset: 0;
-    background: #000;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.45s ease;
-    z-index: 50;
-}
-
-#introFade.intro-fade--active {
-    opacity: 1;
-}
-
-/* IDLE (“CLICK TO POWER ON”) --------------------------------- */
+/* ============================================================
+   POWER-ON IDLE
+   ============================================================ */
 
 .intro-idle {
     position: absolute;
@@ -126,250 +82,168 @@ body.intro-body {
     transform: translateY(-50%);
     text-align: center;
     cursor: pointer;
-    z-index: 5;
-    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .intro-idle-title {
-    display: inline-block;
-    font-size: clamp(2.6rem, 4vw, 3.6rem);
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
+    font-size: clamp(2.6rem,4vw,3.6rem);
+    letter-spacing: 0.25em;
     color: var(--intro-cyan);
     text-shadow:
-        0 0 18px var(--intro-cyan-deep),
-        0 0 45px rgba(0, 190, 255, 1),
-        0 0 85px rgba(0, 190, 255, 0.85),
-        0 0 120px rgba(0, 190, 255, 0.75);
-    animation: introIdlePulse 1.8s ease-in-out infinite alternate;
-}
-
-.intro-idle--hidden {
-    opacity: 0;
-    transform: translateY(-50%) scale(0.96);
-    pointer-events: none;
-}
-
-@keyframes introIdlePulse {
-    0% {
-        opacity: 0.55;
-        text-shadow:
-            0 0 12px var(--intro-cyan-deep),
-            0 0 30px rgba(0, 190, 255, 0.8);
-        transform: scale(0.97);
-    }
-    50% {
-        opacity: 1;
-        text-shadow:
-            0 0 22px var(--intro-cyan-deep),
-            0 0 60px rgba(0, 220, 255, 1),
-            0 0 110px rgba(0, 220, 255, 0.9);
-        transform: scale(1.02);
-    }
-    100% {
-        opacity: 0.7;
-        text-shadow:
-            0 0 16px var(--intro-cyan-deep),
-            0 0 40px rgba(0, 200, 255, 0.8);
-        transform: scale(1);
-    }
+        0 0 14px var(--intro-cyan-deep),
+        0 0 26px rgba(0,200,255,0.85);
 }
 
 /* ============================================================
-   C64 PANEL (with absolute override against global flex rules)
+   SKIP BUTTON
    ============================================================ */
 
-.intro-c64-screen {
+.intro-skip {
+    all: initial;
+    position: absolute;
+    top: 24px;
+    right: 32px;
+    font-family: "C64 Pro Mono", monospace;
+    padding: 0.6rem 1.4rem;
+    border-radius: 999px;
+    border: 2px solid var(--intro-skip-red);
+    color: white;
+    background: radial-gradient(circle at 40% 25%, #ff6e8f, #37000a);
+    cursor: pointer;
+    z-index: 20;
+}
+
+/* ============================================================
+   C64 PANEL — TRUE FULL ISOLATION
+   ============================================================ */
+
+#introC64 {
     position: absolute;
     top: 50%;
     left: 50%;
+    width: min(860px, 92vw);
     transform: translate(-50%, -50%);
-    width: min(820px, 92vw);
-    padding: 2.2rem 3rem;
+    padding: 2.4rem 3rem;
 
-    border-radius: 18px;
     background: radial-gradient(circle at top,
-        rgba(40, 70, 150, 0.85),
-        rgba(7, 15, 38, 0.98) 45%,
-        rgba(3, 8, 20, 0.98));
-    border: 2px solid var(--intro-border);
-    box-shadow:
-        0 0 24px rgba(90, 140, 255, 0.9),
-        0 0 40px rgba(30, 80, 220, 0.9);
+        rgba(40,70,150,0.85),
+        rgba(7,15,38,0.98) 45%,
+        rgba(3,8,20,0.98)
+    );
 
-    color: var(--intro-cyan);
-    font-family: "C64 Pro Mono", monospace;
-    font-size: 1.2rem;
-    letter-spacing: 0.06em;
-    text-shadow: 0 0 6px rgba(120, 170, 255, 0.9);
+    border: 2px solid var(--intro-border);
+    border-radius: 18px;
+
+    box-shadow:
+        0 0 24px rgba(90,140,255,0.9),
+        0 0 50px rgba(40,90,255,0.8);
 
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.45s ease, transform 0.45s ease, visibility 0.45s ease;
-    z-index: 8;
-
-    /* ABSOLUTE OVERRIDE: remove global flex/align interference */
-    display: block !important;
 }
 
-.intro-c64-screen * {
-    text-align: left !important;
-    display: block !important;
-}
-
-.intro-c64-screen--visible {
+#introC64.visible {
     opacity: 1;
     visibility: visible;
-    transform: translate(-50%, -50%);
 }
 
-.intro-c64-screen--hidden {
-    opacity: 0;
-    visibility: hidden;
-    transform: translate(-50%, -50%) scale(0.97);
-}
-
-/* INTERNAL ALIGNMENT WRAPPER ------------------------------- */
+/* ============================================================
+   INTERNAL WRAPPER — NOW WORKS PERFECTLY
+   ============================================================ */
 
 .intro-c64-inner {
     width: 100%;
-    max-width: 760px;
-    margin: 0 auto;
+    max-width: 720px;    /* TRUE centralisation width */
+    margin: 0 auto;      /* THIS fixes your screenshot issue */
 }
 
-/* BASIC TEXT -------------------------------------------------- */
+/* ============================================================
+   TEXT LINES
+   ============================================================ */
 
 .intro-c64-line {
+    margin: 0.2rem 0;
+    font-size: 1.22rem;
     white-space: pre;
-    min-height: 1em;
     line-height: 1.1;
-    margin: 0.1rem 0;
+    text-align: left;
 }
 
 .intro-c64-line--header {
-    text-align: center !important;
+    text-align: center;
+    margin-bottom: 0.7rem;
 }
 
 .intro-c64-line--ram {
-    margin-top: 0.35rem;
-    margin-bottom: 1.2rem;
+    text-align: center;
+    margin-bottom: 1.6rem;
 }
 
 .intro-c64-line--ready {
-    margin-top: 0.3rem;
-    margin-bottom: 0.45rem;
+    text-align: left;
+    margin-bottom: 0.6rem;
 }
 
-/* CURSOR ------------------------------------------------------ */
+/* ============================================================
+   CURSOR
+   ============================================================ */
 
 .intro-ready-cursor {
     display: inline-block;
     width: 0.65em;
     height: 1.05em;
-    margin-left: 0.25em;
-    background-color: var(--intro-cyan);
-    box-shadow: 0 0 8px rgba(120, 170, 255, 0.9);
-    animation: introCursorBlink 0.8s steps(2, start) infinite;
-    transform: translateY(0.12em);
+    background: var(--intro-cyan);
+    margin-left: 0.3em;
+    animation: blink 0.8s steps(2,start) infinite;
 }
 
-@keyframes introCursorBlink {
-    0%, 49% { opacity: 1; }
-    50%, 100% { opacity: 0; }
+@keyframes blink {
+    0%,50% { opacity: 1; }
+    51%,100% { opacity: 0; }
 }
 
-/* TYPED TEXT -------------------------------------------------- */
-
-.intro-c64-line--typed {
-    color: var(--intro-cyan);
-    text-shadow:
-        0 0 8px rgba(120, 170, 255, 0.9),
-        0 0 16px rgba(80, 140, 255, 0.9),
-        0 0 32px rgba(40, 100, 255, 0.85);
-}
+/* ============================================================
+   TYPED LINES
+   ============================================================ */
 
 #typedLines {
-    margin-top: 0.35rem;
+    margin-top: 0.5rem;
 }
 
-/* SPEECH (“ANOTHER VISITOR…”) ------------------------------- */
+.intro-c64-line--typed {
+    text-align: left;
+}
+
+/* ============================================================
+   SPEECH (“ANOTHER VISITOR…”)
+   ============================================================ */
 
 .intro-speech-text {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -55%) scale(0.9);
+    transform: translate(-50%, -45%);
     width: 100%;
-    max-width: 1200px;
     text-align: center;
 
-    font-family: "C64 Pro Mono", monospace;
-    font-size: clamp(3rem, 5vw, 4.2rem);
+    font-size: clamp(3rem, 5vw, 4.4rem);
     letter-spacing: 0.25em;
 
     color: var(--intro-cyan);
     opacity: 0;
-    pointer-events: none;
-
-    text-shadow:
-        0 0 12px var(--intro-cyan-deep),
-        0 0 35px rgba(0, 200, 255, 0.9),
-        0 0 70px rgba(0, 200, 255, 0.85);
-
-    z-index: 30;
-    transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
-.intro-speech-text--visible {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-    animation: introSpeechPulse 1.6s ease-in-out infinite alternate;
-}
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 
-@keyframes introSpeechPulse {
-    0% {
-        text-shadow:
-            0 0 14px var(--intro-cyan-deep),
-            0 0 40px rgba(0, 200, 255, 0.8),
-            0 0 80px rgba(0, 200, 255, 0.7);
-        letter-spacing: 0.22em;
-    }
-    50% {
-        text-shadow:
-            0 0 24px var(--intro-cyan-deep),
-            0 0 75px rgba(0, 230, 255, 1),
-            0 0 130px rgba(0, 230, 255, 0.95);
-        letter-spacing: 0.27em;
-    }
-    100% {
-        text-shadow:
-            0 0 14px var(--intro-cyan-deep),
-            0 0 40px rgba(0, 200, 255, 0.8),
-            0 0 80px rgba(0, 200, 255, 0.7);
-        letter-spacing: 0.23em;
-    }
-}
+@media (max-width: 700px) {
 
-/* RESPONSIVE -------------------------------------------------- */
-
-@media (max-width: 768px) {
-
-    .intro-logo img {
-        height: 44px;
-    }
-
-    .intro-skip {
-        padding: 0.55rem 1.3rem;
-        font-size: 0.8rem;
-    }
-
-    .intro-c64-screen {
-        font-size: 1rem;
+    #introC64 {
         padding: 1.4rem 1.6rem;
+        font-size: 0.95rem;
     }
 
-    .intro-speech-text {
-        font-size: clamp(2.3rem, 6vw, 3rem);
-        letter-spacing: 0.18em;
+    .intro-c64-line {
+        font-size: 1.05rem;
     }
 }
