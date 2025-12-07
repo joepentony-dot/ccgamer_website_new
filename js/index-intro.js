@@ -1,152 +1,188 @@
-// Omega C64 Intro Controller — FINAL
+// Omega C64 Intro Controller — Final Neon Edition
 
 document.addEventListener("DOMContentLoaded", () => {
-  const overlay = document.getElementById("introOverlay");
-  const idle = document.getElementById("introIdle");
-  const c64Screen = document.getElementById("introC64");
-  const typedLinesWrap = document.getElementById("typedLines");
-  const fadeLayer = document.getElementById("introFade");
-  const skipBtn = document.getElementById("skipIntro");
-  const speechBox = document.getElementById("speechText");
-  const loaderVideo = document.getElementById("loaderVideo");
+    const overlay        = document.getElementById("introOverlay");
+    const idle           = document.getElementById("introIdle");
+    const c64Screen      = document.getElementById("introC64");
+    const typedLinesWrap = document.getElementById("typedLines");
+    const fadeLayer      = document.getElementById("introFade");
+    const skipBtn        = document.getElementById("skipIntro");
+    const speechBox      = document.getElementById("speechText");
+    const loaderVideo    = document.getElementById("loaderVideo");
 
-  let introStarted = false;
-  let finished = false;
-  const timers = [];
+    let introStarted = false;
+    let finished      = false;
+    const timers      = [];
 
-  const typedLines = [
-    'LOAD"*",8,1',
-    "PRESS PLAY ON TAPE",
-    "LOADING",
-    'FOUND "CHEEKY COMMODORE GAMER"'
-  ];
+    // BASIC typed lines
+    const typedLines = [
+        'LOAD"*",8,1',
+        "PRESS PLAY ON TAPE",
+        "LOADING",
+        'FOUND "CHEEKY COMMODORE GAMER"'
+    ];
 
-  const speechAudio = new Audio("resources/css/audio/c64_speech_stayawhile.mp3");
-  speechAudio.preload = "auto";
-  speechAudio.volume = 0.6;
+    // SID speech audio
+    const speechAudio = new Audio("resources/css/audio/c64_speech_stayawhile.mp3");
+    speechAudio.preload = "auto";
+    speechAudio.volume = 0.7;
 
-  function addTimer(fn, delay) {
-    const id = window.setTimeout(fn, delay);
-    timers.push(id);
-  }
+    // Prime audio on first click so browser allows later playback
+    document.body.addEventListener("click", () => {
+        speechAudio.play().then(() => {
+            speechAudio.pause();
+            speechAudio.currentTime = 0;
+        }).catch(() => {});
+    }, { once: true });
 
-  function clearTimers() {
-    timers.forEach(id => clearTimeout(id));
-    timers.length = 0;
-  }
-
-  function startIntro() {
-    if (introStarted || finished) return;
-    introStarted = true;
-
-    if (idle) idle.classList.add("intro-idle--hidden");
-    if (c64Screen) c64Screen.classList.add("intro-c64-screen--visible");
-    if (loaderVideo && loaderVideo.paused) {
-      loaderVideo.play().catch(() => {});
+    function addTimer(fn, delay) {
+        const id = window.setTimeout(fn, delay);
+        timers.push(id);
     }
 
-    addTimer(beginTyping, 600);
-  }
-
-  function beginTyping() {
-    let lineIndex = 0;
-
-    function typeNextLine() {
-      if (finished) return;
-      if (lineIndex >= typedLines.length) {
-        addTimer(startSpeech, 400);
-        return;
-      }
-
-      const text = typedLines[lineIndex];
-      const lineEl = document.createElement("div");
-      lineEl.className = "intro-c64-line intro-c64-line--typed";
-      typedLinesWrap.appendChild(lineEl);
-
-      let charIndex = 0;
-      function step() {
-        if (finished) return;
-        lineEl.textContent = text.slice(0, charIndex);
-        charIndex++;
-        if (charIndex <= text.length) {
-          addTimer(step, 55);
-        } else {
-          lineIndex++;
-          addTimer(typeNextLine, 220);
+    function clearTimers() {
+        while (timers.length) {
+            clearTimeout(timers.pop());
         }
-      }
-      step();
     }
 
-    typeNextLine();
-  }
+    /* START INTRO ------------------------------------------------------- */
 
-  function showSpeech(text) {
-    if (!speechBox) return;
-    speechBox.innerHTML = text;
-    speechBox.classList.add("intro-speech-text--visible");
-  }
+    function startIntro() {
+        if (introStarted || finished) return;
+        introStarted = true;
 
-  function hideSpeech() {
-    if (!speechBox) return;
-    speechBox.classList.remove("intro-speech-text--visible");
-  }
+        if (idle) {
+            idle.classList.add("intro-idle--hidden");
+        }
 
-  function startSpeech() {
-    if (finished) return;
+        if (c64Screen) {
+            c64Screen.classList.add("intro-c64-screen--visible");
+        }
 
-    if (c64Screen) {
-      c64Screen.classList.add("intro-c64-screen--hidden");
+        if (loaderVideo && loaderVideo.paused) {
+            loaderVideo.play().catch(() => {});
+        }
+
+        addTimer(beginTyping, 650);
     }
 
-    try {
-      speechAudio.currentTime = 0;
-      speechAudio.play().catch(() => {});
-    } catch (e) {}
+    /* TYPING SEQUENCE --------------------------------------------------- */
 
-    hideSpeech();
-    addTimer(() => showSpeech("ANOTHER VISITOR..."), 400);
-    addTimer(() => showSpeech("STAY A WHILE..."), 2000);
-    addTimer(() => showSpeech("STAY FOREVER..."), 3600);
-    addTimer(finishIntro, 5600);
-  }
+    function beginTyping() {
+        let lineIndex = 0;
 
-  function finishIntro(skipInstant) {
-    if (finished) return;
-    finished = true;
-    clearTimers();
+        function typeNextLine() {
+            if (finished) return;
 
-    try {
-      speechAudio.pause();
-      speechAudio.currentTime = 0;
-    } catch (e) {}
+            if (lineIndex >= typedLines.length) {
+                addTimer(startSpeech, 450);
+                return;
+            }
 
-    if (fadeLayer) {
-      fadeLayer.classList.add("intro-fade--active");
+            const text = typedLines[lineIndex];
+            const el   = document.createElement("div");
+            el.className = "intro-c64-line intro-c64-line--typed";
+            typedLinesWrap.appendChild(el);
+
+            let charIndex = 0;
+
+            function step() {
+                if (finished) return;
+
+                el.textContent = text.slice(0, charIndex);
+                charIndex++;
+
+                if (charIndex <= text.length) {
+                    addTimer(step, 55);
+                } else {
+                    lineIndex++;
+                    addTimer(typeNextLine, 230);
+                }
+            }
+
+            step();
+        }
+
+        typeNextLine();
     }
 
-    const delay = skipInstant ? 200 : 500;
-    addTimer(() => {
-      window.location.href = "home.html";
-    }, delay);
-  }
+    /* SPEECH SEQUENCE --------------------------------------------------- */
 
-  function handleGlobalClick(event) {
-    if (finished || introStarted) return;
-    if (skipBtn && event.target.closest && event.target.closest("#skipIntro")) return;
-    startIntro();
-  }
+    function showSpeech(text) {
+        if (!speechBox) return;
+        speechBox.innerHTML = text;
+        speechBox.classList.add("intro-speech-text--visible");
+    }
 
-  if (overlay) {
-    overlay.addEventListener("click", handleGlobalClick);
-  } else {
-    document.addEventListener("click", handleGlobalClick);
-  }
+    function hideSpeech() {
+        if (!speechBox) return;
+        speechBox.classList.remove("intro-speech-text--visible");
+    }
 
-  if (skipBtn) {
-    skipBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      finishIntro(true);
-    });
-  }
+    function startSpeech() {
+        if (finished) return;
+
+        // Fade out C64 panel so only raster bars remain
+        if (c64Screen) {
+            c64Screen.classList.add("intro-c64-screen--hidden");
+        }
+
+        // Play SID speech
+        try {
+            speechAudio.currentTime = 0;
+            speechAudio.play().catch(() => {});
+        } catch (e) {}
+
+        hideSpeech();
+        addTimer(() => showSpeech("ANOTHER VISITOR..."), 300);
+        addTimer(() => showSpeech("STAY AWHILE..."),        1900);
+        addTimer(() => showSpeech("STAY FOREVER..."),       3500);
+        addTimer(finishIntro,                               5500);
+    }
+
+    /* FINISH INTRO ------------------------------------------------------ */
+
+    function finishIntro(skipInstant) {
+        if (finished) return;
+        finished = true;
+        clearTimers();
+
+        try {
+            speechAudio.pause();
+        } catch (e) {}
+
+        if (fadeLayer) {
+            fadeLayer.classList.add("intro-fade--active");
+        }
+
+        const delay = skipInstant ? 250 : 550;
+        addTimer(() => {
+            window.location.href = "home.html";
+        }, delay);
+    }
+
+    /* EVENT WIRING ------------------------------------------------------ */
+
+    function handleGlobalClick(e) {
+        if (finished || introStarted) return;
+        // Don’t treat clicks on Skip as power-on
+        if (skipBtn && e.target.closest && e.target.closest("#skipIntro")) {
+            return;
+        }
+        startIntro();
+    }
+
+    if (overlay) {
+        overlay.addEventListener("click", handleGlobalClick);
+    } else {
+        document.addEventListener("click", handleGlobalClick);
+    }
+
+    if (skipBtn) {
+        skipBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            finishIntro(true);
+        });
+    }
 });
