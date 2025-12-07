@@ -1,36 +1,6 @@
 /* ============================================================
-   intro.css — Omega C64 Cinematic Intro (Corrected & Stable)
+   intro.css — Omega C64 Cinematic Intro (Stable Edition)
    ============================================================ */
-
-/* ------------------------------------------------------------
-   SAFE SANDBOX (Light Version)
-   Prevents global CSS leaks without destroying layout
-   ------------------------------------------------------------ */
-
-.intro-root {
-    all: initial;
-    display: block;
-    font-family: inherit;
-}
-
-.intro-root * {
-    all: unset;
-    display: revert;
-    box-sizing: border-box;
-    font-family: inherit;
-}
-
-/* DO NOT reset structural layout elements */
-.intro-root div,
-.intro-root span,
-.intro-root img,
-.intro-root video,
-.intro-root button {
-    all: revert;
-    box-sizing: border-box;
-}
-
-/* Variables --------------------------------------------------- */
 
 :root {
     --intro-bg: #000000;
@@ -56,10 +26,10 @@ body.intro-body {
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    background: radial-gradient(circle at top, #050b1a 0%, #000000 70%);
+    background: radial-gradient(circle at top, #050b1a 0%, #000 70%);
 }
 
-/* VIDEO ------------------------------------------------------- */
+/* RASTER VIDEO ------------------------------------------------ */
 
 .intro-video {
     position: absolute;
@@ -79,10 +49,6 @@ body.intro-body {
     width: 100%;
     height: 100%;
     z-index: 2;
-    background: radial-gradient(circle at center,
-        rgba(0, 0, 0, 0.25) 0%,
-        rgba(0, 0, 0, 0.9) 70%,
-        #000 100%);
 }
 
 /* LOGO -------------------------------------------------------- */
@@ -107,42 +73,13 @@ body.intro-body {
     padding: 0.7rem 1.9rem;
     border-radius: 999px;
     border: 2px solid var(--intro-skip-red);
-    background: radial-gradient(circle at 30% 20%,
-        #ff647f, #4a000a 55%, #000);
+    background: radial-gradient(circle at 30% 20%, #ff647f, #4a000a 55%, #000);
     color: #fff;
     font-size: 0.9rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     cursor: pointer;
-    box-shadow:
-        0 0 20px rgba(255,60,90,.75),
-        0 0 6px rgba(255,255,255,.6);
-    text-shadow:
-        0 0 5px #fff,
-        0 0 14px #ff324f;
     z-index: 20;
-}
-
-.intro-skip:hover {
-    box-shadow:
-        0 0 26px rgba(255,120,140,.9),
-        0 0 10px rgba(255,255,255,.75);
-}
-
-/* FADE -------------------------------------------------------- */
-
-#introFade {
-    position: absolute;
-    inset: 0;
-    background: #000;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .45s ease;
-    z-index: 50;
-}
-
-#introFade.intro-fade--active {
-    opacity: 1;
 }
 
 /* IDLE -------------------------------------------------------- */
@@ -155,33 +92,16 @@ body.intro-body {
     text-align: center;
     cursor: pointer;
     z-index: 5;
-    transition: opacity .3s ease, transform .3s ease;
 }
 
 .intro-idle-title {
     font-size: clamp(2.8rem, 4vw, 4rem);
-    letter-spacing: .32em;
+    letter-spacing: 0.32em;
     text-transform: uppercase;
     color: var(--intro-cyan);
-    text-shadow:
-        0 0 18px var(--intro-cyan-deep),
-        0 0 45px rgba(0,190,255,1),
-        0 0 85px rgba(0,190,255,.85),
-        0 0 120px rgba(0,190,255,.75);
-    animation: introIdlePulse 2s ease-in-out infinite alternate;
 }
 
-.intro-idle--hidden {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(.96);
-}
-
-@keyframes introIdlePulse {
-    from { opacity: .55; transform: translate(-50%,-50%) scale(.98); }
-    to { opacity: 1; transform: translate(-50%,-50%) scale(1.03); }
-}
-
-/* C64 PANEL ---------------------------------------------------- */
+/* C64 PANEL --------------------------------------------------- */
 
 .intro-c64-screen {
     position: absolute;
@@ -196,46 +116,31 @@ body.intro-body {
         rgba(7,15,38,.98) 45%,
         rgba(3,8,20,.98));
     border: 2px solid var(--intro-border);
-    box-shadow:
-        0 0 24px rgba(90,140,255,.9),
-        0 0 40px rgba(30,80,220,.9);
     color: var(--intro-cyan);
-    font-family: "C64 Pro Mono", monospace;
     font-size: 1.35rem;
-    letter-spacing: .08em;
-    text-shadow: 0 0 6px rgba(120,170,255,.9);
+    letter-spacing: 0.08em;
     opacity: 0;
-    transition: opacity .45s ease, transform .45s ease;
+    transition: opacity 0.45s ease, transform 0.45s ease;
     z-index: 8;
 }
 
-.intro-c64-screen--visible {
-    opacity: 1;
-}
-
-.intro-c64-screen--hidden {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(.97);
-}
+.intro-c64-screen--visible { opacity: 1; }
+.intro-c64-screen--hidden { opacity: 0; }
 
 /* BASIC TEXT --------------------------------------------------- */
 
 .intro-c64-line {
     display: block;
     white-space: pre;
-    min-height: 1em;
-    line-height: 1.05;
-    margin: .05rem 0;
+    margin: 0.1rem 0;
 }
 
 .intro-c64-line--header { text-align: center; }
 
-.intro-c64-line--ready {
-    margin-top: .25rem;
-    margin-bottom: .35rem;
-}
+/* TYPED -------------------------------------------------------- */
 
 .intro-c64-line--typed {
+    text-align: left;
     color: var(--intro-cyan);
     text-shadow:
         0 0 8px rgba(120,170,255,.9),
@@ -243,41 +148,33 @@ body.intro-body {
         0 0 32px rgba(40,100,255,.85);
 }
 
-/* SPEECH TEXT -------------------------------------------------- */
+/* SPEECH ------------------------------------------------------- */
 
 .intro-speech-text {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -60%) scale(.9);
+    transform: translate(-50%, -60%) scale(0.9);
     width: 100%;
-    max-width: 1200px;
     text-align: center;
-    font-family: "C64 Pro Mono", monospace;
     font-size: clamp(3rem, 5vw, 4.2rem);
-    letter-spacing: .25em;
+    letter-spacing: 0.25em;
     color: var(--intro-cyan);
     opacity: 0;
-    pointer-events: none;
-    text-shadow:
-        0 0 15px var(--intro-cyan-deep),
-        0 0 40px rgba(0,200,255,.95),
-        0 0 70px rgba(0,200,255,.85),
-        0 0 110px rgba(0,200,255,.8);
-    transition: opacity .45s ease, transform .45s ease;
+    transition: opacity 0.45s ease, transform 0.45s ease;
+    z-index: 30;
 }
 
 .intro-speech-text--visible {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
-    animation: introSpeechPulse 1.6s ease-in-out infinite alternate;
 }
 
-/* RESPONSIVE -------------------------------------------------- */
+/* RESPONSIVE --------------------------------------------------- */
 
-@media(max-width:768px){
-    .intro-logo img { height:44px; }
-    .intro-skip { padding:.55rem 1.3rem; font-size:.8rem; }
-    .intro-c64-screen { font-size:1rem; padding:1.4rem 1.6rem; }
-    .intro-speech-text { font-size:clamp(2.3rem,6vw,3rem); letter-spacing:.18em; }
+@media (max-width: 768px) {
+    .intro-logo img { height: 44px; }
+    .intro-skip { padding: 0.55rem 1.3rem; font-size: 0.8rem; }
+    .intro-c64-screen { font-size: 1rem; padding: 1.4rem 1.6rem; }
+    .intro-speech-text { font-size: clamp(2.3rem, 6vw, 3rem); }
 }
