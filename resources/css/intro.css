@@ -222,8 +222,11 @@ body.intro-body {
     min-height: 1em;
     line-height: 1.1;
     margin: 0.1rem 0;
+    /* Force all BASIC lines to be left-aligned by default */
+    text-align: left;
 }
 
+/* Only the header lines are centred */
 .intro-c64-line--header {
     text-align: center;
 }
@@ -238,7 +241,6 @@ body.intro-body {
     margin-bottom: 0.45rem;
 }
 
-/* Blinking READY cursor */
 .intro-ready-cursor {
     display: inline-block;
     width: 0.65em;
