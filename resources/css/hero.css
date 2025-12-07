@@ -1,99 +1,133 @@
 /* ============================================================
-   HERO.CSS — OMEGA GLOBAL SYNC (FINAL SAFE EDITION)
-   ------------------------------------------------------------
-   • Unifies all hero layouts (Home, Genre, Games, Single Game)
-   • Fixes missing backgrounds / black gap at top
-   • Ensures header never overlaps content
-   • Mode-aware glow layers (C64 / Amiga)
-   • 100% SAFE — does not touch intro system
+   HOME.CSS — OMEGA CINEMATIC (H1-C-2 / G2 / B1 FINAL PASS)
+   Zero animation version
    ============================================================ */
 
-/* ==========================
-   UNIVERSAL HERO WRAPPER
-   ========================== */
-.ccg-hero,
-.ccg-section.hero {
-    position: relative;
-    width: 100%;
-    overflow: hidden;
-    background: #000;
-    padding: 6rem 0 5rem;
-    z-index: 1; /* Prevent header overlap */
+:root {
+    --c64-cyan: #7fe9ff;
+    --c64-cyan-deep: #00d2ff;
+    --amiga-pink: #ff77e9;
+    --amiga-purple: #c657ff;
+
+    --hero-overlay: rgba(0, 0, 0, 0.45);
+    --hero-scan: rgba(255, 255, 255, 0.05);
+
+    --glow-strong: 0 0 25px rgba(0, 200, 255, 0.6);
+    --glow-soft: 0 0 12px rgba(0, 200, 255, 0.35);
 }
 
-/* ============================================================
-   HERO BACKGROUND IMAGE LAYER
-   ============================================================ */
-.ccg-hero__media,
-.hero-bg {
+/* ------------------------------------------------------------
+   GLOBAL PAGE LAYOUT
+------------------------------------------------------------- */
+.ccg-page--home {
+    position: relative;
+    z-index: 2;
+}
+
+.ccg-main {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+/* Starfield canvas handled in master.css, just ensure stacking */
+#home-starfield {
+    z-index: 0 !important;
+    pointer-events: none;
+}
+
+/* ------------------------------------------------------------
+   HEADER POLISH
+------------------------------------------------------------- */
+.ccg-header {
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(6px);
+}
+
+.ccg-nav__link {
+    padding: 0.75rem 1rem;
+    font-weight: 500;
+}
+
+.ccg-nav__link--active {
+    color: var(--c64-cyan);
+    text-shadow: var(--glow-soft);
+}
+
+/* ------------------------------------------------------------
+   HERO SECTION — CINEMATIC PRESTIGE
+   (Static, no animation — H1-C-2)
+------------------------------------------------------------- */
+
+.ccg-hero {
+    position: relative;
+    width: 100%;
+    padding: 4.5rem 0 5rem;
+    overflow: hidden;
+    background: #000;
+}
+
+/* HERO BACKGROUND IMAGE — MODE AWARE (G2) */
+.ccg-hero__media {
     position: absolute;
     inset: 0;
-    z-index: 0;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
 }
-
-/* C64 mode */
-body[data-ccg-mode="c64"] .ccg-hero__media,
 body[data-mode="c64"] .ccg-hero__media {
     background-image: url("../images/hero/ccg-hero-c64.png");
 }
-
-/* Amiga mode */
-body[data-ccg-mode="amiga"] .ccg-hero__media,
 body[data-mode="amiga"] .ccg-hero__media {
     background-image: url("../images/hero/ccg-hero-amiga.png");
 }
 
-/* ============================================================
-   DARK OVERLAY
-   ============================================================ */
-.ccg-hero__overlay,
-.hero-overlay {
+/* Dark overlay for prestige blending */
+.ccg-hero__overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.45);
-    z-index: 1;
+    background: var(--hero-overlay);
 }
 
-/* ============================================================
-   SCANLINES
-   ============================================================ */
-.ccg-hero__scanlines,
-.hero-scanlines {
+/* Static scanline texture */
+.ccg-hero__scanlines {
     position: absolute;
     inset: 0;
-    z-index: 2;
-    pointer-events: none;
     background: repeating-linear-gradient(
         to bottom,
-        rgba(255,255,255,0.05) 0px,
-        rgba(255,255,255,0.05) 1px,
-        transparent 3px,
-        transparent 4px
+        transparent 0px,
+        transparent 2px,
+        rgba(255,255,255,0.03) 3px
     );
-    opacity: 0.35;
+    pointer-events: none;
 }
 
-/* ============================================================
-   HERO CONTENT WRAPPER (Safe, Never Overlaps Header)
-   ============================================================ */
-.ccg-hero__content,
-.hero-content {
+/* MODE BADGE */
+.ccg-hero__mode-badge {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    padding: 0.4rem 0.85rem;
+    font-size: 0.85rem;
+    background: rgba(0,0,0,0.55);
+    border-radius: 999px;
+    color: #fff;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.12);
+}
+
+/* HERO CONTENT */
+.ccg-hero__content {
     position: relative;
     z-index: 10;
     max-width: 1100px;
     margin: 0 auto;
     padding: 0 2rem;
+    text-align: left;
 }
 
-/* ============================================================
-   HERO TITLES (universal glow)
-   ============================================================ */
-.ccg-hero__title,
-.hero-title {
-    font-size: 3.6rem;
+/* TITLE — H1-C-2 (Cinematic Prestige Glow) */
+.ccg-hero__title {
+    font-size: 3.5rem;
     font-weight: 800;
     line-height: 1.1;
     color: #fff;
@@ -101,39 +135,117 @@ body[data-mode="amiga"] .ccg-hero__media {
         0 0 12px rgba(0, 200, 255, 0.6),
         0 0 32px rgba(0, 200, 255, 0.35);
 }
-
 .ccg-hero__title-accent {
-    color: #7fe9ff;
-    text-shadow: 0 0 25px rgba(0, 200, 255, 0.6);
+    color: var(--c64-cyan);
+    text-shadow: var(--glow-strong);
 }
 
-/* ============================================================
-   MODE BADGE
-   ============================================================ */
-.ccg-hero__mode-badge {
-    position: absolute;
-    top: 1.25rem;
-    right: 1.25rem;
-    z-index: 12;
-    padding: 0.4rem 0.85rem;
-    font-size: 0.85rem;
-    background: rgba(0, 0, 0, 0.55);
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,0.15);
-    color: white;
-    backdrop-filter: blur(4px);
+/* Subtitle */
+.ccg-hero__subtitle {
+    margin-top: 1.2rem;
+    font-size: 1.25rem;
+    max-width: 700px;
+    color: #d7faff;
+    text-shadow: 0 0 10px rgba(0, 200, 255, 0.3);
 }
 
-/* ============================================================
-   RESPONSIVE CLEANUP
-   ============================================================ */
-@media (max-width: 760px) {
-    .ccg-hero,
-    .ccg-section.hero {
-        padding: 4rem 0 3rem;
-    }
+/* ACTION BUTTONS */
+.ccg-hero__actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
 
-    .ccg-hero__title {
-        font-size: 2.4rem;
+/* Hint */
+.ccg-hero__hint {
+    margin-top: 1rem;
+    color: #9cdcff;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* ------------------------------------------------------------
+   GENRE GRID — POLISHED
+------------------------------------------------------------- */
+.ccg-genre-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1.5rem;
+    padding: 2rem 0;
+}
+
+.ccg-genre-card__thumb img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0,180,255,0.25);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.ccg-genre-card__thumb img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(0,180,255,0.5);
+}
+
+/* ------------------------------------------------------------
+   FEATURED GRID
+------------------------------------------------------------- */
+.ccg-featured-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+@media (max-width: 900px) {
+    .ccg-featured-grid {
+        grid-template-columns: 1fr;
     }
+}
+
+/* ------------------------------------------------------------
+   COLLECTION GRID — FIXED (B1)
+   Preserve whole thumbnails
+------------------------------------------------------------- */
+
+.ccg-collection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 2rem;
+}
+
+.ccg-collection-card__thumb-wrap {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: 14px;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ccg-collection-card__thumb-wrap img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    display: block;
+}
+
+/* ------------------------------------------------------------
+   COMMUNITY GRID
+------------------------------------------------------------- */
+.ccg-community-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 2rem;
+}
+
+/* ------------------------------------------------------------
+   FOOTER
+------------------------------------------------------------- */
+.ccg-footer {
+    margin-top: 3rem;
+    padding: 2rem 0;
+    text-align: center;
+    color: #8fd8ff;
+    opacity: 0.8;
 }
