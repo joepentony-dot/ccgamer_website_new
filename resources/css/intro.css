@@ -1,5 +1,5 @@
 /* ============================================================
-   intro.css — Omega C64 Cinematic Intro (Perfected Version)
+   intro.css — Omega C64 Cinematic Intro (Stable Final)
    ============================================================ */
 
 :root {
@@ -11,7 +11,7 @@
     --intro-skip-red: #ff2440;
 }
 
-/* BODY -------------------------------------------------------- */
+/* BODY / ROOT ------------------------------------------------- */
 
 body.intro-body {
     margin: 0;
@@ -50,9 +50,9 @@ body.intro-body {
     height: 100%;
     z-index: 2;
     background: radial-gradient(circle at center,
-        rgba(0, 0, 0, 0.25) 0%,
-        rgba(0, 0, 0, 0.9) 70%,
-        #000 100%);
+    rgba(0, 0, 0, 0.25) 0%,
+    rgba(0, 0, 0, 0.9) 70%,
+    #000 100%);
 }
 
 /* LOGO -------------------------------------------------------- */
@@ -92,7 +92,13 @@ body.intro-body {
         0 0 14px #ff324f;
 }
 
-/* FADE -------------------------------------------------------- */
+.intro-skip:hover {
+    box-shadow:
+        0 0 26px rgba(255, 120, 140, 0.9),
+        0 0 10px rgba(255, 255, 255, 0.75);
+}
+
+/* FADE TO BLACK ----------------------------------------------- */
 
 #introFade {
     position: absolute;
@@ -108,7 +114,7 @@ body.intro-body {
     opacity: 1;
 }
 
-/* IDLE ("CLICK TO POWER ON") ---------------------------------- */
+/* IDLE (“CLICK TO POWER ON”) --------------------------------- */
 
 .intro-idle {
     position: absolute;
@@ -119,12 +125,13 @@ body.intro-body {
     text-align: center;
     cursor: pointer;
     z-index: 5;
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .intro-idle-title {
     display: inline-block;
-    font-size: clamp(2.4rem, 3.5vw, 3.4rem);
-    letter-spacing: 0.22em;
+    font-size: clamp(2.6rem, 4vw, 3.6rem);
+    letter-spacing: 0.28em;
     text-transform: uppercase;
     color: var(--intro-cyan);
     text-shadow:
@@ -132,9 +139,41 @@ body.intro-body {
         0 0 45px rgba(0, 190, 255, 1),
         0 0 85px rgba(0, 190, 255, 0.85),
         0 0 120px rgba(0, 190, 255, 0.75);
+    animation: introIdlePulse 1.8s ease-in-out infinite alternate;
 }
 
-/* PANEL ------------------------------------------------------- */
+.intro-idle--hidden {
+    opacity: 0;
+    transform: translateY(-50%) scale(0.96);
+    pointer-events: none;
+}
+
+@keyframes introIdlePulse {
+    0% {
+        opacity: 0.55;
+        text-shadow:
+            0 0 12px var(--intro-cyan-deep),
+            0 0 30px rgba(0, 190, 255, 0.8);
+        transform: scale(0.97);
+    }
+    50% {
+        opacity: 1;
+        text-shadow:
+            0 0 22px var(--intro-cyan-deep),
+            0 0 60px rgba(0, 220, 255, 1),
+            0 0 110px rgba(0, 220, 255, 0.9);
+        transform: scale(1.02);
+    }
+    100% {
+        opacity: 0.7;
+        text-shadow:
+            0 0 16px var(--intro-cyan-deep),
+            0 0 40px rgba(0, 200, 255, 0.8);
+        transform: scale(1);
+    }
+}
+
+/* C64 PANEL --------------------------------------------------- */
 
 .intro-c64-screen {
     position: absolute;
@@ -144,91 +183,168 @@ body.intro-body {
     width: min(820px, 92vw);
     padding: 2.2rem 3rem;
     border-radius: 18px;
-
     background: radial-gradient(circle at top,
         rgba(40, 70, 150, 0.85),
         rgba(7, 15, 38, 0.98) 45%,
         rgba(3, 8, 20, 0.98));
-
     border: 2px solid var(--intro-border);
     box-shadow:
         0 0 24px rgba(90, 140, 255, 0.9),
         0 0 40px rgba(30, 80, 220, 0.9);
-
+    color: var(--intro-cyan);
+    font-family: "C64 Pro Mono", monospace;
+    font-size: 1.2rem;
+    letter-spacing: 0.06em;
+    text-shadow: 0 0 6px rgba(120, 170, 255, 0.9);
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.45s ease;
+    transition: opacity 0.45s ease, transform 0.45s ease, visibility 0.45s ease;
+    z-index: 8;
 }
 
-/* When visible */
 .intro-c64-screen--visible {
     opacity: 1;
     visibility: visible;
+    transform: translate(-50%, -50%);
+}
+
+.intro-c64-screen--hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, -50%) scale(0.97);
 }
 
 /* BASIC TEXT -------------------------------------------------- */
 
 .intro-c64-line {
-    white-space: pre;
-    line-height: 1.05;
     display: block;
-    margin: 0.25rem 0;
-}
-
-/* BOTH HEADER LINES centred perfectly */
-.intro-c64-line--header {
-    text-align: center !important;
-    letter-spacing: 0.08em;
-    margin: 0.15rem 0;
-}
-
-/* "READY" with blinking cursor */
-.intro-ready-line {
-    color: var(--intro-cyan);
-    display: inline-block;
     white-space: pre;
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
+    min-height: 1em;
+    line-height: 1.1;
+    margin: 0.1rem 0;
 }
 
-.intro-ready-line::after {
-    content: " █";
-    animation: c64CursorBlink 0.8s steps(1) infinite;
+.intro-c64-line--header {
+    text-align: center;
 }
 
-@keyframes c64CursorBlink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
+.intro-c64-line--ram {
+    margin-top: 0.35rem;
+    margin-bottom: 1.2rem;  /* tighter gap under header block */
 }
 
-/* LOADER LINES ------------------------------------------------ */
+.intro-c64-line--ready {
+    margin-top: 0.3rem;
+    margin-bottom: 0.45rem;
+}
+
+/* Blinking READY cursor */
+.intro-ready-cursor {
+    display: inline-block;
+    width: 0.65em;
+    height: 1.05em;
+    margin-left: 0.25em;
+    background-color: var(--intro-cyan);
+    box-shadow: 0 0 8px rgba(120, 170, 255, 0.9);
+    animation: introCursorBlink 0.8s steps(2, start) infinite;
+    transform: translateY(0.12em);
+}
+
+@keyframes introCursorBlink {
+    0%, 49% {
+        opacity: 1;
+    }
+    50%, 100% {
+        opacity: 0;
+    }
+}
 
 .intro-c64-line--typed {
     text-align: left;
     color: var(--intro-cyan);
-    white-space: pre;
+    text-shadow:
+        0 0 8px rgba(120, 170, 255, 0.9),
+        0 0 16px rgba(80, 140, 255, 0.9),
+        0 0 32px rgba(40, 100, 255, 0.85);
 }
 
-/* SPEECH TEXT ------------------------------------------------- */
+#typedLines {
+    margin-top: 0.35rem;
+}
+
+/* SPEECH (“ANOTHER VISITOR…”) ------------------------------- */
 
 .intro-speech-text {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -55%);
+    transform: translate(-50%, -55%) scale(0.9);
     width: 100%;
     max-width: 1200px;
     text-align: center;
-    opacity: 0;
+    font-family: "C64 Pro Mono", monospace;
+    font-size: clamp(3rem, 5vw, 4.2rem);
     letter-spacing: 0.25em;
     color: var(--intro-cyan);
+    opacity: 0;
+    pointer-events: none;
+    text-shadow:
+        0 0 12px var(--intro-cyan-deep),
+        0 0 35px rgba(0, 200, 255, 0.9),
+        0 0 70px rgba(0, 200, 255, 0.85);
+    z-index: 30;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.intro-speech-text--visible {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    animation: introSpeechPulse 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes introSpeechPulse {
+    0% {
+        text-shadow:
+            0 0 14px var(--intro-cyan-deep),
+            0 0 40px rgba(0, 200, 255, 0.8),
+            0 0 80px rgba(0, 200, 255, 0.7);
+        letter-spacing: 0.22em;
+    }
+    50% {
+        text-shadow:
+            0 0 24px var(--intro-cyan-deep),
+            0 0 75px rgba(0, 230, 255, 1),
+            0 0 130px rgba(0, 230, 255, 0.95);
+        letter-spacing: 0.27em;
+    }
+    100% {
+        text-shadow:
+            0 0 14px var(--intro-cyan-deep),
+            0 0 40px rgba(0, 200, 255, 0.8),
+            0 0 80px rgba(0, 200, 255, 0.7);
+        letter-spacing: 0.23em;
+    }
 }
 
 /* RESPONSIVE -------------------------------------------------- */
 
 @media (max-width: 768px) {
+    .intro-logo img {
+        height: 44px;
+    }
+
+    .intro-skip {
+        padding: 0.55rem 1.3rem;
+        font-size: 0.8rem;
+    }
+
     .intro-c64-screen {
         font-size: 1rem;
         padding: 1.4rem 1.6rem;
+    }
+
+    .intro-speech-text {
+        font-size: clamp(2.3rem, 6vw, 3rem);
+        letter-spacing: 0.18em;
     }
 }
