@@ -1,5 +1,5 @@
 /* ============================================================
-   intro.css — Omega C64 Cinematic Intro (Final Alignment Fix)
+   intro.css — Omega C64 Cinematic Intro (Perfected Version)
    ============================================================ */
 
 :root {
@@ -11,7 +11,7 @@
     --intro-skip-red: #ff2440;
 }
 
-/* BODY / ROOT ------------------------------------------------- */
+/* BODY -------------------------------------------------------- */
 
 body.intro-body {
     margin: 0;
@@ -92,7 +92,7 @@ body.intro-body {
         0 0 14px #ff324f;
 }
 
-/* FADE TO BLACK ------------------------------------------------ */
+/* FADE -------------------------------------------------------- */
 
 #introFade {
     position: absolute;
@@ -108,7 +108,7 @@ body.intro-body {
     opacity: 1;
 }
 
-/* IDLE (“CLICK TO POWER ON”) --------------------------------- */
+/* IDLE ("CLICK TO POWER ON") ---------------------------------- */
 
 .intro-idle {
     position: absolute;
@@ -119,7 +119,6 @@ body.intro-body {
     text-align: center;
     cursor: pointer;
     z-index: 5;
-    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .intro-idle-title {
@@ -133,22 +132,9 @@ body.intro-body {
         0 0 45px rgba(0, 190, 255, 1),
         0 0 85px rgba(0, 190, 255, 0.85),
         0 0 120px rgba(0, 190, 255, 0.75);
-    animation: introIdlePulse 1.8s ease-in-out infinite alternate;
 }
 
-.intro-idle--hidden {
-    opacity: 0;
-    transform: translateY(-50%) scale(0.96);
-    pointer-events: none;
-}
-
-@keyframes introIdlePulse {
-    0% { opacity: 0.55; transform: scale(0.97); }
-    50% { opacity: 1; transform: scale(1.02); }
-    100% { opacity: 0.7; transform: scale(1); }
-}
-
-/* C64 PANEL --------------------------------------------------- */
+/* PANEL ------------------------------------------------------- */
 
 .intro-c64-screen {
     position: absolute;
@@ -158,23 +144,23 @@ body.intro-body {
     width: min(820px, 92vw);
     padding: 2.2rem 3rem;
     border-radius: 18px;
+
     background: radial-gradient(circle at top,
         rgba(40, 70, 150, 0.85),
         rgba(7, 15, 38, 0.98) 45%,
         rgba(3, 8, 20, 0.98));
+
     border: 2px solid var(--intro-border);
     box-shadow:
         0 0 24px rgba(90, 140, 255, 0.9),
         0 0 40px rgba(30, 80, 220, 0.9);
-    color: var(--intro-cyan);
-    font-size: 1.2rem;
-    letter-spacing: 0.06em;
-    text-shadow: 0 0 6px rgba(120, 170, 255, 0.9);
+
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.45s ease, transform 0.45s ease;
+    transition: opacity 0.45s ease;
 }
 
+/* When visible */
 .intro-c64-screen--visible {
     opacity: 1;
     visibility: visible;
@@ -183,101 +169,66 @@ body.intro-body {
 /* BASIC TEXT -------------------------------------------------- */
 
 .intro-c64-line {
-    display: block;
     white-space: pre;
-    min-height: 1em;
     line-height: 1.05;
-    margin: 0.05rem 0.05rem;
-}
-
-.intro-c64-line--header {
-    text-align: center !important;
-    transform: translateX(-0.5%);
+    display: block;
     margin: 0.25rem 0;
 }
 
-/* tighter gap between header 1 + header 2 */
-.intro-c64-line--header + .intro-c64-line--header {
-    margin-top: 0.15rem;
+/* BOTH HEADER LINES centred perfectly */
+.intro-c64-line--header {
+    text-align: center !important;
+    letter-spacing: 0.08em;
+    margin: 0.15rem 0;
 }
 
-/* READY ------------------------------------------------------- */
-
+/* "READY" with blinking cursor */
 .intro-ready-line {
+    color: var(--intro-cyan);
     display: inline-block;
-    margin-top: 1.1rem;
-    margin-bottom: 0.8rem;
     white-space: pre;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .intro-ready-line::after {
-    content: "█";
-    margin-left: 0.3rem;
-    animation: c64cursorBlink 0.8s steps(1) infinite;
-    color: var(--intro-cyan);
+    content: " █";
+    animation: c64CursorBlink 0.8s steps(1) infinite;
 }
 
-@keyframes c64cursorBlink {
-    0% { opacity: 1; }
+@keyframes c64CursorBlink {
+    0%, 100% { opacity: 1; }
     50% { opacity: 0; }
-    100% { opacity: 1; }
 }
 
 /* LOADER LINES ------------------------------------------------ */
 
 .intro-c64-line--typed {
     text-align: left;
-    white-space: pre;
     color: var(--intro-cyan);
-    text-shadow:
-        0 0 8px rgba(120, 170, 255, 0.9),
-        0 0 16px rgba(80, 140, 255, 0.9),
-        0 0 32px rgba(40, 100, 255, 0.85);
+    white-space: pre;
 }
 
-#typedLines {
-    margin-top: 0.35rem;
-}
-
-/* SPEECH (“ANOTHER VISITOR…”) ------------------------------- */
+/* SPEECH TEXT ------------------------------------------------- */
 
 .intro-speech-text {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -55%) scale(0.9);
+    transform: translate(-50%, -55%);
     width: 100%;
     max-width: 1200px;
     text-align: center;
-    font-size: clamp(3rem, 5vw, 4.2rem);
+    opacity: 0;
     letter-spacing: 0.25em;
     color: var(--intro-cyan);
-    opacity: 0;
-    pointer-events: none;
-    text-shadow:
-        0 0 12px var(--intro-cyan-deep),
-        0 0 35px rgba(0, 200, 255, 0.9),
-        0 0 70px rgba(0, 200, 255, 0.85);
-    transition: opacity 0.5s ease, transform 0.5s ease;
-}
-
-.intro-speech-text--visible {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-    animation: introSpeechPulse 1.6s ease-in-out infinite alternate;
-}
-
-@keyframes introSpeechPulse {
-    0% { opacity: 0.9; }
-    50% { opacity: 1; }
-    100% { opacity: 0.9; }
 }
 
 /* RESPONSIVE -------------------------------------------------- */
 
 @media (max-width: 768px) {
-    .intro-logo img { height: 44px; }
-    .intro-skip { padding: 0.55rem 1.3rem; font-size: 0.8rem; }
-    .intro-c64-screen { font-size: 1rem; padding: 1.4rem 1.6rem; }
-    .intro-speech-text { font-size: clamp(2.3rem, 6vw, 3rem); letter-spacing: 0.18em; }
+    .intro-c64-screen {
+        font-size: 1rem;
+        padding: 1.4rem 1.6rem;
+    }
 }
