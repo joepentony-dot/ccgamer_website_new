@@ -1,0 +1,12 @@
+/* ============================================================
+   Local C64 Pro Mono Font — Ultra-Stable, No CDN Required
+   ============================================================ */
+
+@font-face {
+    font-family: 'C64 Pro Mono';
+    src: url('C64_Pro_Mono.woff2') format('woff2'),
+         url('C64_Pro_Mono.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
