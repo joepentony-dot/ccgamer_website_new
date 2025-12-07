@@ -1,6 +1,19 @@
 /* ============================================================
-   intro.css — Omega C64 Cinematic Intro (Centered Panel Edition)
+   intro.css — Omega C64 Cinematic Intro (Corrected + Protected)
    ============================================================ */
+
+/* ------------------------------------------------------------
+   🔒 INTRO SANDBOX — Prevents GLOBAL CSS from breaking layout
+   ------------------------------------------------------------ */
+.intro-root *,
+.intro-root *::before,
+.intro-root *::after {
+    all: unset;
+    display: revert;
+    box-sizing: border-box;
+}
+
+/* Variables --------------------------------------------------- */
 
 :root {
     --intro-bg: #000000;
@@ -11,7 +24,7 @@
     --intro-skip-red: #ff2440;
 }
 
-/* BODY / ROOT ----------------------------------------------------------- */
+/* BODY / ROOT ------------------------------------------------- */
 
 body.intro-body {
     margin: 0;
@@ -29,7 +42,7 @@ body.intro-body {
     background: radial-gradient(circle at top, #050b1a 0%, #000000 70%);
 }
 
-/* RASTER VIDEO ---------------------------------------------------------- */
+/* RASTER VIDEO ------------------------------------------------ */
 
 .intro-video {
     position: absolute;
@@ -42,7 +55,7 @@ body.intro-body {
     pointer-events: none;
 }
 
-/* OVERLAY LAYER --------------------------------------------------------- */
+/* OVERLAY ----------------------------------------------------- */
 
 .intro-overlay {
     position: relative;
@@ -55,7 +68,7 @@ body.intro-body {
         #000000 100%);
 }
 
-/* LOGO ------------------------------------------------------------------ */
+/* LOGO -------------------------------------------------------- */
 
 .intro-logo {
     position: absolute;
@@ -68,7 +81,7 @@ body.intro-body {
     height: 64px;
 }
 
-/* SKIP INTRO BUTTON ----------------------------------------------------- */
+/* SKIP BUTTON ------------------------------------------------- */
 
 .intro-skip {
     position: absolute;
@@ -78,9 +91,7 @@ body.intro-body {
     border-radius: 999px;
     border: 2px solid var(--intro-skip-red);
     background: radial-gradient(circle at 30% 20%,
-        #ff647f 0%,
-        #4a000a 55%,
-        #000000 100%);
+        #ff647f 0%, #4a000a 55%, #000000 100%);
     color: #fff;
     font-size: 0.9rem;
     letter-spacing: 0.18em;
@@ -101,7 +112,7 @@ body.intro-body {
         0 0 10px rgba(255, 255, 255, 0.75);
 }
 
-/* FADE TO BLACK --------------------------------------------------------- */
+/* FADE -------------------------------------------------------- */
 
 #introFade {
     position: absolute;
@@ -117,7 +128,7 @@ body.intro-body {
     opacity: 1;
 }
 
-/* IDLE STATE (CLICK TO POWER ON) --------------------------------------- */
+/* IDLE (“CLICK TO POWER ON”) --------------------------------- */
 
 .intro-idle {
     position: absolute;
@@ -160,13 +171,12 @@ body.intro-body {
     }
 }
 
-/* C64 PANEL ------------------------------------------------------------- */
+/* C64 PANEL ---------------------------------------------------- */
 
 .intro-c64-screen {
     position: absolute;
     top: 50%;
     left: 50%;
-    /* PERFECT CENTER ON ALL SCREENS */
     transform: translate(-50%, -50%);
     width: min(780px, 92vw);
     padding: 2.2rem 3rem;
@@ -199,7 +209,7 @@ body.intro-body {
     transform: translate(-50%, -50%) scale(0.97);
 }
 
-/* BASIC TEXT SPACING ---------------------------------------------------- */
+/* BASIC TEXT --------------------------------------------------- */
 
 .intro-c64-line {
     display: block;
@@ -222,7 +232,6 @@ body.intro-body {
 .intro-c64-line--typed {
     text-align: left;
     color: var(--intro-cyan);
-    /* GLOWING NEON BLUE TYPED TEXT */
     text-shadow:
         0 0 8px rgba(120, 170, 255, 0.9),
         0 0 16px rgba(80, 140, 255, 0.9),
@@ -233,7 +242,7 @@ body.intro-body {
     margin-top: 0.35rem;
 }
 
-/* NEON SPEECH TEXT (ANOTHER VISITOR...) -------------------------------- */
+/* SPEECH TEXT -------------------------------------------------- */
 
 .intro-speech-text {
     position: absolute;
@@ -288,7 +297,7 @@ body.intro-body {
     }
 }
 
-/* RESPONSIVE ------------------------------------------------------------ */
+/* RESPONSIVE -------------------------------------------------- */
 
 @media (max-width: 768px) {
     .intro-logo img {
