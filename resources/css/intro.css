@@ -1,15 +1,32 @@
 /* ============================================================
-   intro.css — Omega C64 Cinematic Intro (Corrected + Protected)
+   intro.css — Omega C64 Cinematic Intro (Corrected & Stable)
    ============================================================ */
 
 /* ------------------------------------------------------------
-   🔒 INTRO SANDBOX — Prevents GLOBAL CSS from breaking layout
+   SAFE SANDBOX (Light Version)
+   Prevents global CSS leaks without destroying layout
    ------------------------------------------------------------ */
-.intro-root *,
-.intro-root *::before,
-.intro-root *::after {
+
+.intro-root {
+    all: initial;
+    display: block;
+    font-family: inherit;
+}
+
+.intro-root * {
     all: unset;
     display: revert;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+/* DO NOT reset structural layout elements */
+.intro-root div,
+.intro-root span,
+.intro-root img,
+.intro-root video,
+.intro-root button {
+    all: revert;
     box-sizing: border-box;
 }
 
@@ -31,7 +48,7 @@ body.intro-body {
     background: #000;
     color: var(--intro-cyan);
     overflow: hidden;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family: "C64 Pro Mono", monospace;
 }
 
 .intro-root {
@@ -42,7 +59,7 @@ body.intro-body {
     background: radial-gradient(circle at top, #050b1a 0%, #000000 70%);
 }
 
-/* RASTER VIDEO ------------------------------------------------ */
+/* VIDEO ------------------------------------------------------- */
 
 .intro-video {
     position: absolute;
@@ -65,7 +82,7 @@ body.intro-body {
     background: radial-gradient(circle at center,
         rgba(0, 0, 0, 0.25) 0%,
         rgba(0, 0, 0, 0.9) 70%,
-        #000000 100%);
+        #000 100%);
 }
 
 /* LOGO -------------------------------------------------------- */
@@ -91,25 +108,25 @@ body.intro-body {
     border-radius: 999px;
     border: 2px solid var(--intro-skip-red);
     background: radial-gradient(circle at 30% 20%,
-        #ff647f 0%, #4a000a 55%, #000000 100%);
+        #ff647f, #4a000a 55%, #000);
     color: #fff;
     font-size: 0.9rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     cursor: pointer;
     box-shadow:
-        0 0 20px rgba(255, 60, 90, 0.75),
-        0 0 6px rgba(255, 255, 255, 0.6);
+        0 0 20px rgba(255,60,90,.75),
+        0 0 6px rgba(255,255,255,.6);
     text-shadow:
-        0 0 5px #ffffff,
+        0 0 5px #fff,
         0 0 14px #ff324f;
     z-index: 20;
 }
 
 .intro-skip:hover {
     box-shadow:
-        0 0 26px rgba(255, 120, 140, 0.9),
-        0 0 10px rgba(255, 255, 255, 0.75);
+        0 0 26px rgba(255,120,140,.9),
+        0 0 10px rgba(255,255,255,.75);
 }
 
 /* FADE -------------------------------------------------------- */
@@ -120,7 +137,7 @@ body.intro-body {
     background: #000;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.45s ease;
+    transition: opacity .45s ease;
     z-index: 50;
 }
 
@@ -128,7 +145,7 @@ body.intro-body {
     opacity: 1;
 }
 
-/* IDLE (“CLICK TO POWER ON”) --------------------------------- */
+/* IDLE -------------------------------------------------------- */
 
 .intro-idle {
     position: absolute;
@@ -138,37 +155,30 @@ body.intro-body {
     text-align: center;
     cursor: pointer;
     z-index: 5;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition: opacity .3s ease, transform .3s ease;
 }
 
 .intro-idle-title {
     font-size: clamp(2.8rem, 4vw, 4rem);
-    letter-spacing: 0.32em;
+    letter-spacing: .32em;
     text-transform: uppercase;
     color: var(--intro-cyan);
     text-shadow:
         0 0 18px var(--intro-cyan-deep),
-        0 0 45px rgba(0, 190, 255, 1),
-        0 0 85px rgba(0, 190, 255, 0.85),
-        0 0 120px rgba(0, 190, 255, 0.75);
+        0 0 45px rgba(0,190,255,1),
+        0 0 85px rgba(0,190,255,.85),
+        0 0 120px rgba(0,190,255,.75);
     animation: introIdlePulse 2s ease-in-out infinite alternate;
 }
 
 .intro-idle--hidden {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.96);
-    pointer-events: none;
+    transform: translate(-50%, -50%) scale(.96);
 }
 
 @keyframes introIdlePulse {
-    from {
-        opacity: 0.55;
-        transform: translate(-50%, -50%) scale(0.98);
-    }
-    to {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1.03);
-    }
+    from { opacity: .55; transform: translate(-50%,-50%) scale(.98); }
+    to { opacity: 1; transform: translate(-50%,-50%) scale(1.03); }
 }
 
 /* C64 PANEL ---------------------------------------------------- */
@@ -182,31 +192,30 @@ body.intro-body {
     padding: 2.2rem 3rem;
     border-radius: 18px;
     background: radial-gradient(circle at top,
-        rgba(40, 70, 150, 0.85) 0%,
-        rgba(7, 15, 38, 0.98) 45%,
-        rgba(3, 8, 20, 0.98) 100%);
+        rgba(40,70,150,.85),
+        rgba(7,15,38,.98) 45%,
+        rgba(3,8,20,.98));
     border: 2px solid var(--intro-border);
     box-shadow:
-        0 0 24px rgba(90, 140, 255, 0.9),
-        0 0 40px rgba(30, 80, 220, 0.9);
+        0 0 24px rgba(90,140,255,.9),
+        0 0 40px rgba(30,80,220,.9);
     color: var(--intro-cyan);
-    font-family: 'C64 Pro Mono', monospace;
+    font-family: "C64 Pro Mono", monospace;
     font-size: 1.35rem;
-    letter-spacing: 0.08em;
-    text-shadow: 0 0 6px rgba(120, 170, 255, 0.9);
+    letter-spacing: .08em;
+    text-shadow: 0 0 6px rgba(120,170,255,.9);
     opacity: 0;
-    transition: opacity 0.45s ease, transform 0.45s ease;
+    transition: opacity .45s ease, transform .45s ease;
     z-index: 8;
 }
 
 .intro-c64-screen--visible {
     opacity: 1;
-    transform: translate(-50%, -50%);
 }
 
 .intro-c64-screen--hidden {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.97);
+    transform: translate(-50%, -50%) scale(.97);
 }
 
 /* BASIC TEXT --------------------------------------------------- */
@@ -216,30 +225,22 @@ body.intro-body {
     white-space: pre;
     min-height: 1em;
     line-height: 1.05;
-    margin-top: 0.05rem;
-    margin-bottom: 0.05rem;
+    margin: .05rem 0;
 }
 
-.intro-c64-line--header {
-    text-align: center;
-}
+.intro-c64-line--header { text-align: center; }
 
 .intro-c64-line--ready {
-    margin-top: 0.25rem;
-    margin-bottom: 0.35rem;
+    margin-top: .25rem;
+    margin-bottom: .35rem;
 }
 
 .intro-c64-line--typed {
-    text-align: left;
     color: var(--intro-cyan);
     text-shadow:
-        0 0 8px rgba(120, 170, 255, 0.9),
-        0 0 16px rgba(80, 140, 255, 0.9),
-        0 0 32px rgba(40, 100, 255, 0.85);
-}
-
-#typedLines {
-    margin-top: 0.35rem;
+        0 0 8px rgba(120,170,255,.9),
+        0 0 16px rgba(80,140,255,.9),
+        0 0 32px rgba(40,100,255,.85);
 }
 
 /* SPEECH TEXT -------------------------------------------------- */
@@ -248,23 +249,22 @@ body.intro-body {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -60%) scale(0.9);
+    transform: translate(-50%, -60%) scale(.9);
     width: 100%;
     max-width: 1200px;
     text-align: center;
-    font-family: 'C64 Pro Mono', monospace;
+    font-family: "C64 Pro Mono", monospace;
     font-size: clamp(3rem, 5vw, 4.2rem);
-    letter-spacing: 0.25em;
+    letter-spacing: .25em;
     color: var(--intro-cyan);
     opacity: 0;
     pointer-events: none;
     text-shadow:
         0 0 15px var(--intro-cyan-deep),
-        0 0 40px rgba(0, 200, 255, 0.95),
-        0 0 70px rgba(0, 200, 255, 0.85),
-        0 0 110px rgba(0, 200, 255, 0.8);
-    z-index: 30;
-    transition: opacity 0.45s ease, transform 0.45s ease;
+        0 0 40px rgba(0,200,255,.95),
+        0 0 70px rgba(0,200,255,.85),
+        0 0 110px rgba(0,200,255,.8);
+    transition: opacity .45s ease, transform .45s ease;
 }
 
 .intro-speech-text--visible {
@@ -273,49 +273,11 @@ body.intro-body {
     animation: introSpeechPulse 1.6s ease-in-out infinite alternate;
 }
 
-@keyframes introSpeechPulse {
-    0% {
-        text-shadow:
-            0 0 15px var(--intro-cyan-deep),
-            0 0 40px rgba(0, 200, 255, 0.7),
-            0 0 70px rgba(0, 200, 255, 0.7);
-        opacity: 0.9;
-    }
-    50% {
-        text-shadow:
-            0 0 25px var(--intro-cyan-deep),
-            0 0 70px rgba(0, 220, 255, 1),
-            0 0 120px rgba(0, 220, 255, 0.9);
-        opacity: 1;
-    }
-    100% {
-        text-shadow:
-            0 0 15px var(--intro-cyan-deep),
-            0 0 40px rgba(0, 200, 255, 0.7),
-            0 0 70px rgba(0, 200, 255, 0.7);
-        opacity: 0.9;
-    }
-}
-
 /* RESPONSIVE -------------------------------------------------- */
 
-@media (max-width: 768px) {
-    .intro-logo img {
-        height: 44px;
-    }
-
-    .intro-skip {
-        padding: 0.55rem 1.3rem;
-        font-size: 0.8rem;
-    }
-
-    .intro-c64-screen {
-        font-size: 1rem;
-        padding: 1.4rem 1.6rem;
-    }
-
-    .intro-speech-text {
-        font-size: clamp(2.3rem, 6vw, 3rem);
-        letter-spacing: 0.18em;
-    }
+@media(max-width:768px){
+    .intro-logo img { height:44px; }
+    .intro-skip { padding:.55rem 1.3rem; font-size:.8rem; }
+    .intro-c64-screen { font-size:1rem; padding:1.4rem 1.6rem; }
+    .intro-speech-text { font-size:clamp(2.3rem,6vw,3rem); letter-spacing:.18em; }
 }
