@@ -34,32 +34,33 @@
         </video>
 
         <!-- INTRO OVERLAY -->
-        <div id="introOverlay" class="intro-overlay intro-click-area">
+        <div id="introOverlay" class="intro-overlay">
 
-            <!-- LOGO (fixed, non-clickable to preserve click-anywhere start) -->
+            <!-- LOGO (non-interactive, sits behind click area) -->
             <div class="intro-logo">
                 <img src="resources/images/ccgamer-logo.png"
                      alt="Cheeky Commodore Gamer logo">
             </div>
 
-            <!-- SKIP INTRO -->
+            <!-- SKIP INTRO BUTTON -->
             <button id="skipIntro" class="intro-skip" type="button">
                 SKIP INTRO
             </button>
 
-            <!-- BLACK FADER -->
+            <!-- FADE LAYER -->
             <div id="introFade" class="intro-fade"></div>
 
-            <!-- IDLE POWER ON PROMPT -->
-            <div id="introIdle" class="intro-idle">
+            <!-- IDLE "CLICK TO POWER ON" STATE -->
+            <div id="introIdle" class="intro-idle intro-click-area">
                 <div class="intro-idle-title">CLICK TO POWER ON</div>
+                <!-- OPTIONAL: remove this line if not needed -->
                 <div class="intro-idle-sub">Press fire to boot the system...</div>
             </div>
 
-            <!-- C64 READY + TYPED COMMANDS -->
+            <!-- C64 READY SCREEN (static + typed commands) -->
             <div id="introC64" class="intro-c64-screen" aria-hidden="true">
 
-                <!-- STATIC C64 HEADER -->
+                <!-- STATIC HEADER -->
                 <div class="intro-c64-line intro-c64-line--header">
                     **** COMMODORE 64 BASIC V2 ****
                 </div>
@@ -70,23 +71,21 @@
                     READY.
                 </div>
 
-                <!-- TYPED LINES INSERT HERE -->
+                <!-- JS inserts typing here -->
                 <div id="typedLines"></div>
             </div>
 
-            <!-- BIG NEON SPEECH TEXT -->
-            <div id="speechText" class="intro-speech-text" aria-hidden="true">
-                <!-- Populated dynamically:
-                     ANOTHER VISITOR
-                     STAY A WHILE
-                     STAY FOREVER... -->
+            <!-- SID SPEECH TEXT -->
+            <div id="speechText" class="intro-speech-text intro-speech-text--hidden"
+                 aria-hidden="true">
             </div>
 
-        </div> <!-- end overlay -->
+        </div> <!-- /introOverlay -->
 
-    </div> <!-- end root -->
+    </div> <!-- /intro-root -->
 
-    <!-- INTRO CONTROLLER -->
-    <script src="js/index-intro.js" defer></script>
+    <!-- IMPORTANT: removed "defer" so click binding works instantly -->
+    <script src="js/index-intro.js"></script>
+
 </body>
 </html>
