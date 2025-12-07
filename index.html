@@ -10,14 +10,14 @@
 
     <link rel="icon" href="favicon.ico" />
 
-    <!-- GLOBAL SITE STYLES (unchanged) -->
+    <!-- GLOBAL SITE STYLES -->
     <link rel="stylesheet" href="resources/css/ccg-master.css" />
 
-    <!-- C64 BLOCKY FONT -->
+    <!-- C64 BLOCKY FONT (WORKING VERSION) -->
     <link rel="stylesheet" href="https://unpkg.com/@fontsource/c64-pro-mono/index.css" />
 
     <!-- INTRO STYLES -->
-    <link rel="stylesheet" href="resources/css/intro.css?v=2" />
+    <link rel="stylesheet" href="resources/css/intro.css?v=4" />
 </head>
 
 <body class="intro-body">
@@ -40,10 +40,10 @@
         <!-- TOP RIGHT SKIP BUTTON -->
         <button id="skipIntro" class="intro-skip" type="button">SKIP INTRO</button>
 
-        <!-- FADE LAYER -->
+        <!-- FADE TO BLACK LAYER -->
         <div id="introFade"></div>
 
-        <!-- IDLE STATE (WAITING FOR USER CLICK) -->
+        <!-- IDLE STATE (CLICK TO POWER ON) -->
         <div id="introIdle" class="intro-idle">
             <div class="intro-idle-title">CLICK TO POWER ON</div>
         </div>
@@ -67,14 +67,14 @@
             <div id="typedLines"></div>
         </div>
 
-        <!-- HUGE NEON SPEECH TEXT APPEARS HERE -->
+        <!-- HUGE NEON SPEECH TEXT -->
         <div id="speechText" class="intro-speech-text"></div>
 
-    </div><!-- /introOverlay -->
-</div><!-- /intro-root -->
+    </div> <!-- /introOverlay -->
+</div> <!-- /intro-root -->
 
 <!-- INTRO SCRIPT -->
-<script src="js/index-intro.js?v=2" defer></script>
+<script src="js/index-intro.js?v=4" defer></script>
 
 </body>
 </html>
