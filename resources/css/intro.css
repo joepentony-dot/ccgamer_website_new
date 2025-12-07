@@ -1,5 +1,5 @@
 /* ============================================================
-   intro.css — Omega C64 Cinematic Intro
+   intro.css — Omega C64 Cinematic Intro (Centered Panel Edition)
    ============================================================ */
 
 :root {
@@ -37,7 +37,7 @@ body.intro-body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: 0.3;
+    opacity: 0.35;
     mix-blend-mode: screen;
     pointer-events: none;
 }
@@ -46,7 +46,6 @@ body.intro-body {
 
 .intro-overlay {
     position: relative;
-    inset: 0;
     width: 100%;
     height: 100%;
     z-index: 2;
@@ -54,10 +53,6 @@ body.intro-body {
         rgba(0, 0, 0, 0.25) 0%,
         rgba(0, 0, 0, 0.9) 70%,
         #000000 100%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
 }
 
 /* LOGO ------------------------------------------------------------------ */
@@ -125,9 +120,14 @@ body.intro-body {
 /* IDLE STATE (CLICK TO POWER ON) --------------------------------------- */
 
 .intro-idle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     text-align: center;
     cursor: pointer;
     z-index: 5;
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .intro-idle-title {
@@ -143,35 +143,30 @@ body.intro-body {
     animation: introIdlePulse 2s ease-in-out infinite alternate;
 }
 
-.intro-idle-sub {
-    margin-top: 0.9rem;
-    font-size: 1rem;
-    color: rgba(190, 240, 255, 0.85);
-    text-shadow: 0 0 8px rgba(0, 160, 255, 0.6);
-}
-
 .intro-idle--hidden {
     opacity: 0;
-    transform: scale(0.96);
+    transform: translate(-50%, -50%) scale(0.96);
     pointer-events: none;
-    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 @keyframes introIdlePulse {
     from {
         opacity: 0.55;
-        transform: scale(0.98);
+        transform: translate(-50%, -50%) scale(0.98);
     }
     to {
         opacity: 1;
-        transform: scale(1.03);
+        transform: translate(-50%, -50%) scale(1.03);
     }
 }
 
 /* C64 PANEL ------------------------------------------------------------- */
 
 .intro-c64-screen {
-    position: relative;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) translateY(20px);
     width: min(780px, 92vw);
     padding: 2.2rem 3rem;
     border-radius: 18px;
@@ -184,24 +179,23 @@ body.intro-body {
         0 0 24px rgba(90, 140, 255, 0.9),
         0 0 40px rgba(30, 80, 220, 0.9);
     color: var(--intro-cyan);
-    font-family: "C64 Pro", "IBM Plex Mono", Consolas, monospace;
+    font-family: 'C64 Pro Mono', monospace;
     font-size: 1.35rem;
     letter-spacing: 0.08em;
     text-shadow: 0 0 6px rgba(120, 170, 255, 0.9);
     opacity: 0;
-    transform: translateY(20px);
     transition: opacity 0.45s ease, transform 0.45s ease;
     z-index: 8;
 }
 
 .intro-c64-screen--visible {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate(-50%, -50%) translateY(0);
 }
 
 .intro-c64-screen--hidden {
     opacity: 0;
-    transform: translateY(10px) scale(0.97);
+    transform: translate(-50%, -50%) translateY(10px) scale(0.97);
 }
 
 /* BASIC TEXT SPACING ---------------------------------------------------- */
@@ -210,7 +204,7 @@ body.intro-body {
     display: block;
     white-space: pre;
     min-height: 1em;
-    line-height: 1.1;
+    line-height: 1.05;
     margin-top: 0.05rem;
     margin-bottom: 0.05rem;
 }
@@ -224,7 +218,6 @@ body.intro-body {
     margin-bottom: 0.25rem;
 }
 
-/* Typed lines = left aligned like real C64 */
 .intro-c64-line--typed {
     text-align: left;
 }
@@ -233,7 +226,7 @@ body.intro-body {
     margin-top: 0.35rem;
 }
 
-/* NEON SPEECH TEXT ------------------------------------------------------ */
+/* NEON SPEECH TEXT (ANOTHER VISITOR...) -------------------------------- */
 
 .intro-speech-text {
     position: absolute;
@@ -243,7 +236,7 @@ body.intro-body {
     width: 100%;
     max-width: 1200px;
     text-align: center;
-    font-family: "C64 Pro", "IBM Plex Mono", Consolas, monospace;
+    font-family: 'C64 Pro Mono', monospace;
     font-size: clamp(3rem, 5vw, 4.2rem);
     letter-spacing: 0.25em;
     color: var(--intro-cyan);
@@ -261,6 +254,31 @@ body.intro-body {
 .intro-speech-text--visible {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
+    animation: introSpeechPulse 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes introSpeechPulse {
+    0% {
+        text-shadow:
+            0 0 15px var(--intro-cyan-deep),
+            0 0 40px rgba(0, 200, 255, 0.7),
+            0 0 70px rgba(0, 200, 255, 0.7);
+        opacity: 0.9;
+    }
+    50% {
+        text-shadow:
+            0 0 25px var(--intro-cyan-deep),
+            0 0 70px rgba(0, 220, 255, 1),
+            0 0 120px rgba(0, 220, 255, 0.9);
+        opacity: 1;
+    }
+    100% {
+        text-shadow:
+            0 0 15px var(--intro-cyan-deep),
+            0 0 40px rgba(0, 200, 255, 0.7),
+            0 0 70px rgba(0, 200, 255, 0.7);
+        opacity: 0.9;
+    }
 }
 
 /* RESPONSIVE ------------------------------------------------------------ */
