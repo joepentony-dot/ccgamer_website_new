@@ -1,228 +1,153 @@
-/* ======================================================================
-   Omega C64 Intro Controller — Stable Timing + Neon Speech Sync (Final)
-   ====================================================================== */
+/* =====================================================================
+   OMEGA INTRO SEQUENCE — FINAL STABLE BUILD
+   Smooth C64 boot → typing → SID speech → fade → homepage
+   ===================================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
-    const overlay        = document.getElementById("introOverlay");
-    const idle           = document.getElementById("introIdle");
-    const c64Screen      = document.getElementById("introC64");
-    const typedLinesWrap = document.getElementById("typedLines");
-    const fadeLayer      = document.getElementById("introFade");
-    const skipBtn        = document.getElementById("skipIntro");
-    const speechBox      = document.getElementById("speechText");
-    const loaderVideo    = document.getElementById("loaderVideo");
 
-    let introStarted      = false;
-    let finished          = false;
-    const timers          = [];
-    let speechDurationMs  = 0;
+    /* --------------------------------------------------------------
+       ELEMENT REFERENCES
+    -------------------------------------------------------------- */
+    const introIdle = document.getElementById("introIdle");
+    const introC64 = document.getElementById("introC64");
+    const typedLines = document.getElementById("typedLines");
+    const skipBtn = document.getElementById("skipIntro");
+    const overlay = document.getElementById("introOverlay");
+    const speechText = document.getElementById("speechText");
+    const fadeLayer = document.getElementById("introFade");
 
-    /* --- BASIC typed lines ------------------------------------------------ */
-    const typedLines = [
-        'LOAD"*",8,1',
-        "PRESS PLAY ON TAPE",
-        "LOADING",
-        'FOUND "CHEEKY COMMODORE GAMER"'
+    /* --------------------------------------------------------------
+       AUDIO (lazy-loaded after user gesture)
+    -------------------------------------------------------------- */
+    let speechAudio = new Audio("resources/audio/another_visitor.mp3");
+    speechAudio.preload = "auto";
+
+    /* --------------------------------------------------------------
+       TYPED COMMAND SEQUENCE
+       Appears AFTER READY line.
+    -------------------------------------------------------------- */
+    const commandLines = [
+        `LOAD"*",8,1`,
+        `PRESS PLAY ON TAPE`,
+        `LOADING`,
+        `FOUND "CHEEKY COMMODORE GAMER"`
     ];
 
-    /* --- SID speech audio ------------------------------------------------- */
-    const speechAudio = new Audio("resources/css/audio/c64_speech_stayawhile.mp3");
-    speechAudio.preload = "auto";
-    speechAudio.volume = 0.7;
+    let currentLine = 0;
+    let typingActive = false;
 
-    speechAudio.addEventListener("loadedmetadata", () => {
-        if (!isNaN(speechAudio.duration) && speechAudio.duration > 0) {
-            speechDurationMs = speechAudio.duration * 1000;
+    /* --------------------------------------------------------------
+       START INTRO — triggered by click anywhere on idle area
+    -------------------------------------------------------------- */
+    introIdle.addEventListener("click", startBootSequence);
+
+    function startBootSequence() {
+        introIdle.classList.add("intro-idle--hidden");
+
+        // Reveal the blue panel
+        setTimeout(() => {
+            introC64.classList.add("intro-c64-screen--visible");
+        }, 400);
+
+        // Start typing after headers settle
+        setTimeout(() => {
+            typingActive = true;
+            typeNextLine();
+        }, 1500);
+    }
+
+    /* --------------------------------------------------------------
+       TYPEWRITER EFFECT (LEFT-ALIGNED)
+    -------------------------------------------------------------- */
+    function typeNextLine() {
+        if (!typingActive) return;
+        if (currentLine >= commandLines.length) {
+            revealSpeech();
+            return;
         }
-    });
 
-    /* --- Audio priming (mobile gesture requirement) ----------------------- */
-    document.body.addEventListener(
-        "click",
-        () => {
-            speechAudio
-                .play()
-                .then(() => {
-                    speechAudio.pause();
-                    speechAudio.currentTime = 0;
-                })
-                .catch(() => {});
-        },
-        { once: true }
-    );
+        let line = commandLines[currentLine];
+        let div = document.createElement("div");
+        div.className = "intro-c64-line intro-c64-line--typed";
+        typedLines.appendChild(div);
 
-    function addTimer(fn, delay) {
-        const id = window.setTimeout(fn, delay);
-        timers.push(id);
+        let i = 0;
+
+        const typer = setInterval(() => {
+            div.textContent = line.substring(0, i);
+            i++;
+
+            if (i > line.length) {
+                clearInterval(typer);
+                currentLine++;
+                setTimeout(typeNextLine, 300);
+            }
+        }, 45);
     }
 
-    function clearTimers() {
-        while (timers.length) clearTimeout(timers.pop());
-    }
+    /* --------------------------------------------------------------
+       SID SPEECH + NEON TEXT SEQUENCE
+    -------------------------------------------------------------- */
+    function revealSpeech() {
+        setTimeout(() => {
+            speechAudio.play().catch(() => {});
+        }, 300);
 
-    /* ======================================================================
-       START INTRO
-       ====================================================================== */
-    function startIntro() {
-        if (introStarted || finished) return;
-        introStarted = true;
+        // Sequence: Another visitor... Stay awhile... Stay forever!
+        const speechLines = [
+            "ANOTHER VISITOR...",
+            "STAY AWHILE...",
+            "STAY FOREVER!"
+        ];
 
-        if (idle) idle.classList.add("intro-idle--hidden");
+        let idx = 0;
 
-        /* Allow CSS reset + transitions to settle before showing the panel */
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                if (c64Screen) {
-                    c64Screen.classList.add("intro-c64-screen--visible");
-                }
-                if (loaderVideo && loaderVideo.paused) {
-                    loaderVideo.play().catch(() => {});
-                }
-                addTimer(beginTyping, 650);
-            });
-        });
-    }
-
-    /* ======================================================================
-       TYPING SEQUENCE
-       ====================================================================== */
-    function beginTyping() {
-        let lineIndex = 0;
-
-        function typeNextLine() {
-            if (finished) return;
-
-            if (lineIndex >= typedLines.length) {
-                addTimer(startSpeech, 450);
+        function showLine() {
+            if (idx >= speechLines.length) {
+                fadeOutToHome();
                 return;
             }
 
-            const text = typedLines[lineIndex];
-            const el = document.createElement("div");
-            el.className = "intro-c64-line intro-c64-line--typed";
-            typedLinesWrap.appendChild(el);
+            speechText.textContent = speechLines[idx];
+            speechText.classList.add("intro-speech-text--visible");
 
-            let charIndex = 0;
-
-            function step() {
-                if (finished) return;
-
-                el.textContent = text.slice(0, charIndex);
-                charIndex++;
-
-                if (charIndex <= text.length) {
-                    addTimer(step, 55);
-                } else {
-                    lineIndex++;
-                    addTimer(typeNextLine, 230);
-                }
-            }
-
-            step();
+            setTimeout(() => {
+                speechText.classList.remove("intro-speech-text--visible");
+                setTimeout(() => {
+                    idx++;
+                    showLine();
+                }, 300);
+            }, 1600);
         }
 
-        typeNextLine();
+        setTimeout(showLine, 600);
     }
 
-    /* ======================================================================
-       SPEECH TEXT HELPERS
-       ====================================================================== */
-    function showSpeech(text) {
-        if (!speechBox) return;
+    /* --------------------------------------------------------------
+       FINAL TRANSITION TO HOME PAGE
+    -------------------------------------------------------------- */
+    function fadeOutToHome() {
+        fadeLayer.classList.add("intro-fade--active");
 
-        speechBox.classList.remove("intro-speech-text--visible");
-        void speechBox.offsetWidth; /* restart animation */
-
-        speechBox.textContent = text;
-        speechBox.classList.add("intro-speech-text--visible");
-    }
-
-    function hideSpeech() {
-        if (!speechBox) return;
-        speechBox.classList.remove("intro-speech-text--visible");
-    }
-
-    /* ======================================================================
-       SPEECH SEQUENCE
-       ====================================================================== */
-    function startSpeech() {
-        if (finished) return;
-
-        /* Allow CSS panel-hide transition to complete cleanly */
-        requestAnimationFrame(() => {
-            if (c64Screen) c64Screen.classList.add("intro-c64-screen--hidden");
-
-            try {
-                speechAudio.currentTime = 0;
-                speechAudio.play().catch(() => {});
-            } catch (e) {}
-
-            const duration = speechDurationMs && speechDurationMs > 0
-                ? speechDurationMs
-                : 8000;
-
-            hideSpeech();
-
-            /* Phrase timings */
-            addTimer(() => { if (!finished) showSpeech("ANOTHER VISITOR..."); }, 250);
-            addTimer(() => { if (!finished) showSpeech("STAY AWHILE..."); }, 1900);
-            addTimer(() => { if (!finished) showSpeech("STAY FOREVER..."); }, 3600);
-
-            const fadeOutAt = Math.max(duration - 400, 4800);
-            addTimer(() => { if (!finished) hideSpeech(); }, fadeOutAt);
-
-            speechAudio.onended = () => {
-                if (!finished) finishIntro(false);
-            };
-
-            addTimer(() => {
-                if (!finished) finishIntro(false);
-            }, duration + 600);
-        });
-    }
-
-    /* ======================================================================
-       FINISH INTRO
-       ====================================================================== */
-    function finishIntro(skipInstant) {
-        if (finished) return;
-        finished = true;
-
-        clearTimers();
-        try {
-            speechAudio.pause();
-            speechAudio.currentTime = 0;
-        } catch (e) {}
-
-        hideSpeech();
-        if (c64Screen) c64Screen.classList.add("intro-c64-screen--hidden");
-
-        if (fadeLayer) fadeLayer.classList.add("intro-fade--active");
-
-        const delay = skipInstant ? 120 : 550;
-        addTimer(() => {
+        setTimeout(() => {
             window.location.href = "home.html";
-        }, delay);
+        }, 700);
     }
 
-    /* ======================================================================
-       EVENT WIRING
-       ====================================================================== */
-    function handleGlobalClick(e) {
-        if (finished || introStarted) return;
+    /* --------------------------------------------------------------
+       SKIP BUTTON — INSTANT EXIT
+    -------------------------------------------------------------- */
+    skipBtn.addEventListener("click", () => {
+        typingActive = false;
 
-        if (skipBtn && e.target.closest && e.target.closest("#skipIntro")) return;
+        speechAudio.pause();
+        speechAudio.currentTime = 0;
 
-        startIntro();
-    }
+        fadeLayer.classList.add("intro-fade--active");
 
-    if (overlay) overlay.addEventListener("click", handleGlobalClick);
-    else document.addEventListener("click", handleGlobalClick);
+        setTimeout(() => {
+            window.location.href = "home.html";
+        }, 300);
+    });
 
-    if (skipBtn) {
-        skipBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            finishIntro(true);
-        });
-    }
 });
