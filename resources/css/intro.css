@@ -124,6 +124,7 @@
         0 0 22px #1133ff55;
     opacity: 0;
     transform: translateY(20px);
+    text-align: center; /* NEW — centres header */
     transition: opacity 0.5s ease-out, transform 0.5s ease-out;
     z-index: 25;
 }
@@ -133,9 +134,35 @@
     transform: translateY(0);
 }
 
+/* Screen hidden during speech */
+.intro-c64-screen--hidden {
+    opacity: 0 !important;
+    transform: scale(0.97);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
 .intro-c64-line {
     display: block;
     white-space: pre;
+    min-height: 1em;
+    line-height: 1.1;
+    margin-top: 0.05rem;
+    margin-bottom: 0.05rem;
+}
+
+.intro-c64-line--header {
+    margin-top: 0.05rem;
+    margin-bottom: 0.05rem;
+}
+
+.intro-c64-line--ready {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+#typedLines .intro-c64-line {
+    margin-top: 0.08rem;
+    margin-bottom: 0.08rem;
 }
 
 /* CURSOR ------------------------------------------------------------------ */
@@ -150,20 +177,24 @@
     50%  { opacity: 1; }
 }
 
-/* SPEECH TEXT ------------------------------------------------------------- */
+/* SPEECH TEXT — BEAUTIFUL NEON ------------------------------------------- */
 .intro-speech-text {
     position: absolute;
     bottom: 12%;
-    font-size: 3rem;
-    font-family: "C64 Pro", monospace;
-    letter-spacing: 0.1em;
+    width: 100%;
     text-align: center;
+    font-size: 3.4rem;
+    font-family: "C64 Pro", monospace;
+    letter-spacing: 0.18em;
     opacity: 0;
     transform: translateY(20px);
-    transition: opacity 0.3s, transform 0.3s ease-out;
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
     color: #6af0ff;
-    text-shadow: 0 0 20px #00eeff;
-    z-index: 200;
+    text-shadow:
+        0 0 20px #00eaff,
+        0 0 40px #00c8ff,
+        0 0 80px #00c8ff;
+    z-index: 300;
 }
 
 .intro-speech-text--visible {
@@ -171,42 +202,10 @@
     transform: translateY(0);
 }
 
-.intro-speech-text--hidden {
-    opacity: 0;
-    transform: translateY(20px);
-}
-
 .intro-forever {
-    color: #ff5aff;
-    text-shadow: 0 0 25px #ff22ff;
-}
-
-/* ========================================================================
-   FINAL PATCH: Accurate C64 BASIC Spacing
-   ======================================================================== */
-
-/* Generic C64 line spacing */
-.intro-c64-line {
-    min-height: 1em;
-    line-height: 1.1;
-    margin-top: 0.05rem;
-    margin-bottom: 0.05rem;
-}
-
-/* Header lines (**** COMMODORE 64 BASIC V2 ****) */
-.intro-c64-line--header {
-    margin-top: 0.05rem;
-    margin-bottom: 0.05rem;
-}
-
-/* READY. line */
-.intro-c64-line--ready {
-    margin-top: 0.25rem;
-    margin-bottom: 0.25rem;
-}
-
-/* Typed LOAD/PRESS PLAY lines */
-#typedLines .intro-c64-line {
-    margin-top: 0.08rem;
-    margin-bottom: 0.08rem;
+    color: #ff6aff;
+    text-shadow:
+        0 0 25px #ff4aff,
+        0 0 55px #ff1aff,
+        0 0 90px #ff1aff;
 }
