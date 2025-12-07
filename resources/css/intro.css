@@ -1,5 +1,5 @@
 /* ============================================================
-   intro.css — Omega C64 Cinematic Intro (Stable Final)
+   intro.css — Omega C64 Cinematic Intro (Centered Panel Edition)
    ============================================================ */
 
 :root {
@@ -49,10 +49,12 @@ body.intro-body {
     width: 100%;
     height: 100%;
     z-index: 2;
-    background: radial-gradient(circle at center,
-    rgba(0, 0, 0, 0.25) 0%,
-    rgba(0, 0, 0, 0.9) 70%,
-    #000 100%);
+    background: radial-gradient(
+        circle at center,
+        rgba(0, 0, 0, 0.25) 0%,
+        rgba(0, 0, 0, 0.9) 70%,
+        #000 100%
+    );
 }
 
 /* LOGO -------------------------------------------------------- */
@@ -214,6 +216,14 @@ body.intro-body {
     transform: translate(-50%, -50%) scale(0.97);
 }
 
+/* ⭐ INTERNAL PANEL ALIGNMENT FIX --------------------------------- */
+
+.intro-c64-inner {
+    width: 100%;
+    max-width: 760px;      /* Keeps headers perfectly centred */
+    margin: 0 auto;        /* TRUE centering of the BASIC content */
+}
+
 /* BASIC TEXT -------------------------------------------------- */
 
 .intro-c64-line {
@@ -222,18 +232,16 @@ body.intro-body {
     min-height: 1em;
     line-height: 1.1;
     margin: 0.1rem 0;
-    /* Force all BASIC lines to be left-aligned by default */
-    text-align: left;
+    text-align: left; /* default for BASIC text */
 }
 
-/* Only the header lines are centred */
 .intro-c64-line--header {
     text-align: center;
 }
 
 .intro-c64-line--ram {
     margin-top: 0.35rem;
-    margin-bottom: 1.2rem;  /* tighter gap under header block */
+    margin-bottom: 1.2rem;
 }
 
 .intro-c64-line--ready {
@@ -253,12 +261,8 @@ body.intro-body {
 }
 
 @keyframes introCursorBlink {
-    0%, 49% {
-        opacity: 1;
-    }
-    50%, 100% {
-        opacity: 0;
-    }
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
 }
 
 .intro-c64-line--typed {
@@ -331,6 +335,7 @@ body.intro-body {
 /* RESPONSIVE -------------------------------------------------- */
 
 @media (max-width: 768px) {
+
     .intro-logo img {
         height: 44px;
     }
