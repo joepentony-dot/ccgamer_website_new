@@ -275,13 +275,14 @@
 }
 
 /* ============================================================
-   HOME HERO OVERRIDE — Compact Height Version (A)
-   Ensures homepage hero never becomes oversized.
+   HOME HERO OVERRIDE — FIXED COMPACT VERSION
+   Removes height forcing so hero shrinks to content naturally.
 ============================================================ */
 
 [data-ccg-page="home"] .ccg-hero {
-    padding-top: 3rem;
-    padding-bottom: 1.8rem;
-    min-height: clamp(360px, 52vh, 480px);
+    padding-top: 2.5rem;
+    padding-bottom: 1.4rem;
+    /* Removed min-height clamp completely */
 }
+
 
