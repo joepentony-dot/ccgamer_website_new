@@ -1,5 +1,5 @@
 /* ============================================================
-   CCG HERO SYSTEM — OMEGA MEDIUM-TIGHTENED (A — Compact Version)
+   CCG HERO SYSTEM — OMEGA MEDIUM-TIGHTENED (A — Corrected DIV Background Version)
    Global hero layout for Home, Games Index, Genre pages, etc.
    This file does NOT touch intro or loader screens.
    ============================================================ */
@@ -17,21 +17,31 @@
 
     text-align: center;
     color: var(--text-light);
-    overflow: hidden; /* <— CRITICAL: prevents hero from being stretched by image */
+    overflow: hidden; /* <— prevents hero from stretching */
 }
 
-/* Hero background image (FINAL FIX APPLIED) */
+/* ============================================================
+   HERO BACKGROUND IMAGE LAYER (FINAL FIX)
+   This is a DIV background layer, not an <img>.
+   It now correctly receives background-image: var(--hero-img)
+   from ccg-mode.css without interference.
+   ============================================================ */
 .ccg-hero-image {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
 
-    /* FORCE image to obey hero height instead of stretching page */
-    object-fit: cover;
-    object-position: center top;
+    /* Correct background behaviour */
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
 
-    filter: brightness(0.62) contrast(1.15);
+    /* Visual polish */
+    opacity: 0.95;
+    filter: brightness(0.62) contrast(1.15)
+            drop-shadow(0 0 14px rgba(var(--accent-rgb), 0.35));
+
     z-index: -1;
 }
 
