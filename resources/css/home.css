@@ -204,6 +204,367 @@
 
 
 /* ======================================================================
+   COLLECTION GRID — Resized, cinematic (Phase 6)
+====================================================================== */
+.ccg-collection-grid {
+    margin-top: 1.4rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.6rem;
+    justify-items: center; /* centre cards, honour max-width */
+}
+
+.ccg-collection-card {
+    display: flex;
+    flex-direction: column;
+    background: rgba(0,0,0,0.38);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 14px;
+    text-align: center;
+    padding-bottom: 0.7rem;
+    transition: 0.25s ease;
+    text-decoration: none;
+    box-shadow: 0 0 18px rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+}
+
+.ccg-collection-card__thumb-wrap {
+    aspect-ratio: 16 / 9; /* more cinematic rectangle */
+    overflow: hidden;
+    border-radius: 14px 14px 0 0;
+    position: relative;
+}
+
+/* soft gradient overlay for cinematic depth, no HTML change */
+.ccg-collection-card__thumb-wrap::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.20),
+        rgba(0, 0, 0, 0.50)
+    );
+    pointer-events: none;
+}
+
+/* Ensure collection thumbs are fully visible */
+.ccg-collection-card__thumb-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 1;
+    transform: scale(1);
+    transition: transform 0.28s ease;
+}
+
+.ccg-collection-card__title {
+    margin-top: 0.55rem;
+    font-size: 1.02rem;
+    color: var(--text-light);
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.ccg-collection-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent);
+    box-shadow:
+        0 0 22px rgba(var(--accent-rgb), 0.7),
+        0 0 36px rgba(var(--accent-rgb), 0.45);
+}
+
+.ccg-collection-card:hover .ccg-collection-card__thumb-wrap img {
+    transform: scale(1.06);
+}
+
+
+/* ======================================================================
+   COMMUNITY SECTION — Cinematic Cards
+====================================================================== */
+.ccg-community-grid {
+    margin-top: 1.4rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.6rem;
+}
+
+.ccg-community-card {
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 1.4rem 1rem;
+    border-radius: 14px;
+    transition: 0.25s ease;
+    backdrop-filter: blur(4px);
+    text-decoration: none;
+    display: block;
+}
+
+.ccg-community-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+    box-shadow: 0 0 24px rgba(var(--accent-rgb), 0.6);
+}
+
+.ccg-community-title {
+    font-size: 1.2rem;
+    margin-bottom: 0.4rem;
+    color: var(--text-light);
+    font-weight: 600;
+}
+
+.ccg-community-text {
+    font-size: 0.95rem;
+    opacity: 0.85;
+}
+
+
+/* ======================================================================
+   HOMEPAGE LINK NORMALISATION (inside sections)
+   Prevents random browser-blue underlined links in tiles/cards.
+====================================================================== */
+.ccg-section a {
+    color: inherit;
+    text-decoration: none;
+}
+
+
+/* ======================================================================
+   MOBILE TWEAKS
+====================================================================== */
+@media (max-width: 900px) {
+    .ccg-featured-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================================
+   HOME HERO OVERRIDE — FIXED COMPACT VERSION
+   Removes height forcing so hero shrinks to content naturally.
+============================================================ */
+
+[data-ccg-page="home"] .ccg-hero {
+    padding-top: 2.5rem;
+    padding-bottom: 1.4rem;
+    /* Removed min-height clamp completely */
+}
+
+/* Phase4 + Phase6 collection sizing (honour cinematic max width) */
+.ccg-collection-card {
+    max-width: 380px;
+}
+
+.ccg-collection-card__thumb-wrap img {
+    object-fit: cover;
+    object-position: center;
+}
+/* =======================================================================
+   HOME.CSS — OMEGA CINEMATIC FUSION (PHASE 2 TIGHTEN)
+   This file controls ONLY the homepage visuals.
+   It does NOT override global frameworks unless necessary.
+   ======================================================================= */
+
+
+/* -------------------------------------------------------------
+   HERO SOCIAL ROW
+------------------------------------------------------------- */
+.ccg-social-hero-row {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1.2rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.ccg-social-hero-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.55rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(0,0,0,0.45);
+    border: 1px solid rgba(255,255,255,0.12);
+    transition: 0.25s ease;
+    box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.30);
+}
+
+.ccg-social-hero-btn img {
+    width: 32px;
+    height: 32px;
+    display: block;
+    filter: drop-shadow(0 0 6px rgba(var(--accent-rgb), 0.45));
+}
+
+.ccg-social-hero-btn:hover {
+    background: rgba(0,0,0,0.65);
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow:
+        0 0 20px rgba(var(--accent-rgb), 0.7),
+        0 0 36px rgba(var(--accent-rgb), 0.5);
+}
+
+/* PayPal label */
+.ccg-social-hero-btn--paypal {
+    gap: 0.45rem;
+}
+
+.ccg-social-hero-btn--paypal span {
+    color: var(--text-light);
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+
+/* ======================================================================
+   SECTION TITLES — uniform cinematic spacing
+====================================================================== */
+.ccg-section {
+    margin-top: 4rem;
+    padding-bottom: 2rem;
+}
+
+.ccg-section-title {
+    text-align: left;
+    font-size: 1.8rem;
+    margin-bottom: 1.4rem;
+    padding-left: 0.4rem;
+    border-left: 4px solid var(--accent);
+    text-shadow: 0 0 14px rgba(var(--accent-rgb), 0.8);
+}
+
+
+/* ======================================================================
+   FEATURED HIGHLIGHTS
+====================================================================== */
+.ccg-featured-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.2rem;
+    align-items: stretch;
+}
+
+.ccg-card--featured-game,
+.ccg-card--featured-video {
+    display: flex;
+    flex-direction: column;
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    overflow: hidden;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 0 18px rgba(0,0,0,0.45);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.ccg-card__media {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+}
+
+/* Ensure featured thumbnails are fully visible (no hover-only opacity) */
+.ccg-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 1;
+    transform: scale(1);
+    transition: transform 0.25s ease;
+}
+
+.ccg-card__video-frame iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.ccg-card__body {
+    padding: 1rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.ccg-card__title {
+    font-size: 1.3rem;
+    color: var(--text-light);
+}
+
+.ccg-card__text {
+    font-size: 0.95rem;
+    opacity: 0.85;
+}
+
+/* Omega glow lift on hover */
+.ccg-card--featured-game:hover,
+.ccg-card--featured-video:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+    box-shadow:
+        0 0 16px rgba(var(--accent-rgb), 0.55),
+        0 0 30px rgba(var(--accent-rgb), 0.35);
+}
+
+.ccg-card--featured-game:hover .ccg-card__media img,
+.ccg-card--featured-video:hover .ccg-card__media img {
+    transform: scale(1.03);
+}
+
+
+/* ======================================================================
+   GENRE GRID (Homepage subset)
+====================================================================== */
+.ccg-genre-grid {
+    margin-top: 1.2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1.2rem;
+}
+
+.ccg-genre-tile {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    background: rgba(0,0,0,0.4);
+    border-radius: 12px;
+    padding-bottom: 0.6rem;
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: 0.25s ease;
+    text-decoration: none;
+}
+
+/* Ensure genre thumbnails are fully visible at rest */
+.ccg-genre-tile img {
+    width: 100%;
+    border-radius: 12px 12px 0 0;
+    object-fit: cover;
+    opacity: 1;
+    transform: scale(1);
+    transition: transform 0.25s ease;
+}
+
+.ccg-genre-tile span {
+    padding-top: 0.4rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+.ccg-genre-tile:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.6);
+    border-color: var(--accent);
+}
+
+.ccg-genre-tile:hover img {
+    transform: scale(1.03);
+}
+
+
+/* ======================================================================
    COLLECTION GRID — Resized, cinematic
 ====================================================================== */
 .ccg-collection-grid {
