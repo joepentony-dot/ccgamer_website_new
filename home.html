@@ -9,7 +9,7 @@
         content="Cheeky Commodore Gamer — epic Commodore 64 and Amiga coverage: reviews, longplays, trivia, curated collections and more. Stay a while, stay forever!">
     <link rel="canonical" href="home.html" />
 
-    <!-- Global site CSS -->
+    <!-- Global CSS -->
     <link rel="stylesheet" href="resources/css/ccg-master.css" />
     <link rel="stylesheet" href="resources/css/ccg-mode.css" />
     <link rel="stylesheet" href="resources/css/ccg-effects.css" />
@@ -22,7 +22,12 @@
 
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
 
+    <!-- STARFIELD -->
     <canvas id="home-starfield" class="ccg-starfield" aria-hidden="true"></canvas>
+
+    <!-- OMEGA GLOBAL VISUAL LAYERS -->
+    <div class="ccg-bg-crt-overlay"></div>
+    <div class="ccg-bg-grid"></div>
 
     <div class="ccg-page ccg-page--home">
 
@@ -47,7 +52,6 @@
                     </div>
                 </a>
 
-                <!-- NAV -->
                 <nav class="ccg-nav" aria-label="Primary navigation">
                     <ul class="ccg-nav__list">
                         <li><a href="home.html" class="ccg-nav__link ccg-nav__link--active">Home</a></li>
@@ -168,7 +172,7 @@
             </section>
 
             <!-- ============================================================
-                 FEATURED HIGHLIGHTS (Dynamic)
+                 FEATURED HIGHLIGHTS — DYNAMIC
             ============================================================ -->
             <section class="ccg-section ccg-featured">
                 <h2 class="ccg-section-title">Featured Highlights</h2>
@@ -190,7 +194,7 @@
                     <!-- FEATURED VIDEO -->
                     <article class="ccg-card ccg-card--featured-video">
                         <div class="ccg-card__media ccg-card__video-frame" data-ccg-featured-video>
-                            <!-- Dynamic iframe inserted here -->
+                            <!-- iframe inserted dynamically -->
                         </div>
                         <div class="ccg-card__body">
                             <h3 class="ccg-card__title" data-ccg-featured-video-title>Featured Video</h3>
@@ -204,14 +208,14 @@
                 </div>
             </section>
 
-
             <!-- ============================================================
-                 BROWSE BY GENRE
+                 GENRES
             ============================================================ -->
             <section class="ccg-section ccg-genre-section">
                 <h2 class="ccg-section-title">Browse by Genre</h2>
 
                 <div class="ccg-genre-grid">
+
                     <a href="games/genres/action-adventure-games.html" class="ccg-genre-tile">
                         <img src="resources/images/genres/action-adventure.png" alt="">
                         <span>Action-Adventure</span>
@@ -256,6 +260,7 @@
                         <img src="resources/images/genres/role-playing.png" alt="">
                         <span>RPG</span>
                     </a>
+
                 </div>
             </section>
 
@@ -343,5 +348,6 @@
     <script src="js/ccg-global.js" defer></script>
     <script src="js/ccg-mode-engine.js" defer></script>
     <script src="js/home-dynamic.js" defer></script>
+
 </body>
 </html>
