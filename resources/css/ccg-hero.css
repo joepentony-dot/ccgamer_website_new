@@ -1,19 +1,20 @@
 /* ============================================================
-   HOME HERO BACKGROUNDS — C64 & Amiga
+   HOME HERO BACKGROUNDS — C64 & Amiga (CORRECTED PATHS)
    ============================================================ */
 
 [data-mode="c64"] .ccg-hero--home .ccg-hero-image {
-    background-image: url("resources/images/hero/ccg-hero-c64.png");
+    background-image: url("../images/hero/ccg-hero-c64.png");
     background-size: cover;
     background-position: center;
 }
 
 [data-mode="amiga"] .ccg-hero--home .ccg-hero-image {
-    background-image: url("resources/images/hero/ccg-hero-amiga.png");
+    background-image: url("../images/hero/ccg-hero-amiga.png");
     background-size: cover;
     background-position: center;
 }
 
+/* Limit home hero height to prevent layout push */
 .ccg-hero--home {
     position: relative;
     overflow: hidden;
@@ -47,16 +48,19 @@
     box-sizing: border-box;
 }
 
-/* Hero background image */
+/* Hero background image container */
 .ccg-hero-image {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+
+    background-size: cover;
+    background-position: center;
 
     filter: brightness(0.55) contrast(1.15);
-    z-index: -1;
+
+    z-index: 0; /* IMPORTANT: prevents "black void" and overlay issues */
 }
 
 /* Main hero container */
@@ -68,6 +72,9 @@
     flex-direction: column;
     align-items: center;
     gap: 14px;
+
+    position: relative;
+    z-index: 2; /* Ensures text sits ABOVE background + overlays */
 }
 
 /* Titles */
