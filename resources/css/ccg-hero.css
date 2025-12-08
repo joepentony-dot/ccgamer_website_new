@@ -1,4 +1,20 @@
 /* ============================================================
+   HOME HERO BACKGROUNDS — C64 & Amiga
+   ============================================================ */
+
+[data-mode="c64"] .ccg-hero--home .ccg-hero-image {
+    background-image: url("resources/images/hero/ccg-hero-c64.png");
+    background-size: cover;
+    background-position: center;
+}
+
+[data-mode="amiga"] .ccg-hero--home .ccg-hero-image {
+    background-image: url("resources/images/hero/ccg-hero-amiga.png");
+    background-size: cover;
+    background-position: center;
+}
+
+/* ============================================================
    CCG HERO SYSTEM — OMEGA MEDIUM-TIGHTENED
    ============================================================ */
 
