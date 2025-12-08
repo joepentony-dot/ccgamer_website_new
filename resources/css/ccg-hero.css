@@ -17,14 +17,12 @@
 
     text-align: center;
     color: var(--text-light);
-    overflow: hidden; /* <— prevents hero from stretching */
+    overflow: hidden;
 }
 
 /* ============================================================
-   HERO BACKGROUND IMAGE LAYER (FINAL FIX)
-   This is a DIV background layer, not an <img>.
-   It now correctly receives background-image: var(--hero-img)
-   from ccg-mode.css without interference.
+   HERO BACKGROUND IMAGE LAYER (DIV BACKGROUND)
+   Now with subtle cinematic motion (Phase 8)
    ============================================================ */
 .ccg-hero-image {
     position: absolute;
@@ -32,25 +30,38 @@
     width: 100%;
     height: 100%;
 
-    /* Correct background behaviour */
     background-size: cover;
     background-position: center top;
     background-repeat: no-repeat;
 
-    /* Visual polish */
     opacity: 0.95;
     filter: brightness(0.62) contrast(1.15)
             drop-shadow(0 0 14px rgba(var(--accent-rgb), 0.35));
 
     z-index: -1;
+
+    /* ---------------------------
+       PHASE 8 — Subtle Drift Motion
+       --------------------------- */
+    transform: scale(1.04);
+    animation: ccgHeroDrift 22s ease-in-out infinite alternate;
 }
 
-/* Extra scanline layer over hero art */
+@keyframes ccgHeroDrift {
+    0%   { transform: scale(1.04) translateY(0px) translateX(0px); }
+    100% { transform: scale(1.06) translateY(-6px) translateX(-4px); }
+}
+
+/* ============================================================
+   SCANLINE LAYER
+   Now includes ultra-soft shimmer (Phase 8)
+   ============================================================ */
 .ccg-hero-scanlines {
     position: absolute;
     inset: 0;
     pointer-events: none;
     z-index: -1;
+
     background:
         repeating-linear-gradient(
             to bottom,
@@ -61,6 +72,15 @@
         );
     mix-blend-mode: soft-light;
     opacity: 0.18;
+
+    /* Phase 8 — shimmer sweep */
+    animation: ccgScanlineSweep 12s linear infinite;
+}
+
+@keyframes ccgScanlineSweep {
+    0%   { opacity: 0.16; }
+    50%  { opacity: 0.22; }
+    100% { opacity: 0.16; }
 }
 
 /* Main hero container */
@@ -93,6 +113,16 @@
     text-transform: uppercase;
     opacity: 0.9;
     margin: 0.2rem 0 0.3rem;
+
+    /* ---------------------------
+       PHASE 8 — Neon Soft Pulse
+       --------------------------- */
+    animation: ccgModePulse 3.8s ease-in-out infinite;
+}
+
+@keyframes ccgModePulse {
+    0%, 100% { opacity: 0.85; text-shadow: 0 0 4px rgba(var(--accent-rgb), 0.4); }
+    50%      { opacity: 1;    text-shadow: 0 0 10px rgba(var(--accent-rgb), 0.8); }
 }
 
 .ccg-hero-tagline {
@@ -124,13 +154,25 @@
     color: var(--accent);
 }
 
-/* Buttons */
+/* ============================================================
+   HERO BUTTONS — Phase 8 Micro Lift
+   ============================================================ */
 .ccg-hero-buttons {
     margin-top: 0.8rem;
     display: flex;
     gap: 0.9rem;
     flex-wrap: wrap;
     justify-content: center;
+}
+
+.ccg-hero-buttons .ccg-btn {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.ccg-hero-buttons .ccg-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.55),
+                0 0 28px rgba(var(--accent-rgb), 0.35);
 }
 
 .ccg-hero__hint {
@@ -149,6 +191,15 @@
     }
     .ccg-hero-inner {
         gap: 0.6rem;
+    }
+
+    /* reduce drift effect slightly on mobile for better perf */
+    .ccg-hero-image {
+        animation: ccgHeroDriftMobile 18s ease-in-out infinite alternate;
+    }
+    @keyframes ccgHeroDriftMobile {
+        0%   { transform: scale(1.035) translateY(0px); }
+        100% { transform: scale(1.045) translateY(-4px); }
     }
 }
 
