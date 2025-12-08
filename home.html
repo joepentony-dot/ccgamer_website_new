@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="resources/css/ccg-mode.css">
     <link rel="stylesheet" href="resources/css/ccg-effects.css">
     <link rel="stylesheet" href="resources/css/ccg-socials.css">
+    <link rel="stylesheet" href="resources/css/ccg-hero.css">
 
     <!-- Home-specific CSS -->
     <link rel="stylesheet" href="resources/css/home.css">
@@ -112,28 +113,34 @@
         ========================== -->
         <main class="ccg-main">
 
-            <!-- HERO: dynamic per-mode -->
-            <section class="ccg-hero" aria-labelledby="home-hero-title">
-                <div class="ccg-hero__media">
-                    <div class="ccg-hero__overlay"></div>
-                    <div class="ccg-hero__scanlines"></div>
+            <!-- HERO: Omega A1 Cinematic -->
+            <section class="ccg-hero ccg-hero--home" aria-labelledby="home-hero-title">
+                <!-- Background + scanlines (image handled in CSS per mode) -->
+                <div class="ccg-hero-image"></div>
+                <div class="ccg-hero-scanlines"></div>
+
+                <div class="ccg-hero-inner">
+                    <!-- Mode badge (top-right) -->
                     <div class="ccg-hero__mode-badge" data-ccg-hero-badge>
                         <span class="ccg-hero__mode-prefix">Mode:</span>
                         <span class="ccg-hero__mode-label" data-ccg-hero-mode-label>C64</span>
                     </div>
-                </div>
 
-                <div class="ccg-hero__content">
-                    <h1 id="home-hero-title" class="ccg-hero__title">
-                        Commodore 64 &amp; Amiga
-                        <span class="ccg-hero__title-accent">— Reloaded</span>
+                    <!-- Hero text -->
+                    <h1 id="home-hero-title" class="ccg-hero-title">
+                        The Ultimate Commodore Experience
                     </h1>
-                    <p class="ccg-hero__subtitle">
-                        Hand-picked classics, deep-dive features and proper longplays.
-                        Built by a lifelong Commodore nut just like you. 😇🕹️👌
+
+                    <p class="ccg-hero-accent">
+                        &mdash; C64 &amp; Amiga &mdash;
                     </p>
 
-                    <div class="ccg-hero__actions">
+                    <p class="ccg-hero-tagline">
+                        Dive into curated classics, game reviews, deep-dive features and retro magic across C64 &amp; Amiga.
+                    </p>
+
+                    <!-- Hero actions -->
+                    <div class="ccg-hero-buttons">
                         <a href="games/index.html" class="ccg-btn ccg-btn--primary">
                             Browse All Games
                         </a>
@@ -552,7 +559,7 @@
     </div> <!-- /.ccg-page.ccg-page--home -->
 
     <!-- Global scripts -->
-    <script src="js/ccj-global.js" defer></script>
+    <script src="js/ccg-global.js" defer></script>
     <script src="js/ccg-mode-engine.js" defer></script>
     <!-- Home-only dynamics -->
     <script src="js/home-dynamic.js" defer></script>
