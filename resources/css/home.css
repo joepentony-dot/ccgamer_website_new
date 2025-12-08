@@ -1,11 +1,16 @@
 /* ============================================================
-   HOME.CSS — OMEGA CINEMATIC HOME (FINAL A1 SYNC)
-   Fully synced with:
-     - ccg-hero.css
-     - ccg-master.css
-     - ccg-mode.css
-   Safe: Does NOT affect intro loader
+   HOME.CSS — OMEGA CINEMATIC HOME
+   Fully synced with ccg-master / ccg-mode / ccg-hero
+   Safe: does NOT affect intro loader
 ============================================================ */
+
+/* Local accent helpers (global accent still comes from mode CSS) */
+:root {
+    --c64-cyan: #7fe9ff;
+    --amiga-pink: #ff77e9;
+    --glow-strong: 0 0 25px rgba(0, 200, 255, 0.6);
+    --glow-soft: 0 0 12px rgba(0, 200, 255, 0.35);
+}
 
 /* ============================================================
    PAGE BASE
@@ -16,8 +21,8 @@
     z-index: 2;
 }
 
-.ccg-page--home .ccg-main {
-    margin-top: 0.75rem;
+#home-starfield {
+    z-index: 0 !important;
 }
 
 /* ============================================================
@@ -74,7 +79,8 @@
     margin-left: 0.4rem;
 }
 
-/* Nav tweaks */
+/* Nav */
+
 .ccg-page--home .ccg-nav {
     display: flex;
     flex-wrap: wrap;
@@ -120,7 +126,7 @@
 }
 
 /* ============================================================
-   HERO SECTION — HOME A1 VARIANT
+   HERO — OMEGA HOME VARIANT
 ============================================================ */
 
 .ccg-hero--home {
@@ -132,7 +138,8 @@
     background: #000;
 }
 
-/* Background images provided per-mode */
+/* Hero background image per mode */
+
 .ccg-hero-image {
     position: absolute;
     inset: 0;
@@ -154,12 +161,14 @@ body[data-mode="amiga"] .ccg-hero-image {
     background-image: url("../images/hero/ccg-hero-amiga.png");
 }
 
-/* Scanlines overlay */
+/* Scanlines overlay (hero.css handles base look) */
+
 .ccg-hero--home .ccg-hero-scanlines {
     opacity: 0.45;
 }
 
 /* Inner container */
+
 .ccg-hero--home .ccg-hero-inner {
     position: relative;
     z-index: 4;
@@ -170,6 +179,7 @@ body[data-mode="amiga"] .ccg-hero-image {
 }
 
 /* Mode badge */
+
 .ccg-hero__mode-badge {
     position: absolute;
     top: 1.75rem;
@@ -187,12 +197,17 @@ body[data-mode="amiga"] .ccg-hero-image {
     box-shadow: 0 0 16px rgba(0, 0, 0, 0.75);
 }
 
+.ccg-hero__mode-prefix {
+    opacity: 0.7;
+}
+
 .ccg-hero__mode-label {
     color: var(--accent);
     text-shadow: var(--glow-soft);
 }
 
-/* Title */
+/* Hero title */
+
 .ccg-hero--home .ccg-hero-title {
     font-size: clamp(2.7rem, 5vw, 4.1rem);
     font-weight: 900;
@@ -207,7 +222,8 @@ body[data-mode="amiga"] .ccg-hero-image {
         0 0 36px rgba(var(--accent-rgb), 0.25);
 }
 
-/* Accent line — C64 & Amiga */
+/* Accent line: — C64 & Amiga — */
+
 .ccg-hero-accent {
     margin: 1.6rem 0 0.15rem;
     font-size: 1rem;
@@ -218,6 +234,7 @@ body[data-mode="amiga"] .ccg-hero-image {
 }
 
 /* Tagline */
+
 .ccg-hero--home .ccg-hero-tagline {
     max-width: 720px;
     margin: 1.5rem auto 2.1rem;
@@ -226,7 +243,8 @@ body[data-mode="amiga"] .ccg-hero-image {
     font-size: 1.05rem;
 }
 
-/* Buttons */
+/* Hero buttons */
+
 .ccg-hero-buttons {
     margin-top: 2rem;
     display: flex;
@@ -236,6 +254,7 @@ body[data-mode="amiga"] .ccg-hero-image {
 }
 
 /* Hint */
+
 .ccg-hero__hint {
     color: #9cdcff;
     margin-top: 1.25rem;
@@ -244,7 +263,69 @@ body[data-mode="amiga"] .ccg-hero-image {
 }
 
 /* ============================================================
-   SOCIAL HERO ROW — OPTION C (90% WIDTH)
+   HERO CTA BUTTONS
+============================================================ */
+
+.ccg-btn {
+    padding: 0.7rem 1.3rem;
+    border-radius: 999px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: 0.25s ease;
+    font-size: 0.92rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+}
+
+.ccg-btn--sm {
+    padding: 0.5rem 1.1rem;
+    font-size: 0.85rem;
+}
+
+/* Primary = neon accent button */
+
+.ccg-btn--primary {
+    background: var(--accent);
+    color: #000;
+    box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.55);
+}
+
+.ccg-btn--primary:hover {
+    background: rgba(var(--accent-rgb), 0.85);
+    transform: translateY(-2px);
+}
+
+/* Secondary */
+
+.ccg-btn--secondary {
+    background: rgba(var(--accent-rgb), 0.18);
+    color: var(--text-light);
+    border: 1px solid rgba(var(--accent-rgb), 0.35);
+}
+
+.ccg-btn--secondary:hover {
+    background: rgba(var(--accent-rgb), 0.28);
+    transform: translateY(-2px);
+}
+
+/* Ghost */
+
+.ccg-btn--ghost {
+    background: transparent;
+    color: var(--text-light);
+    border: 1px solid var(--border-light);
+}
+
+.ccg-btn--ghost:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}
+
+/* ============================================================
+   SOCIAL HERO ROW — OPTION C (92% WIDTH)
 ============================================================ */
 
 .ccg-social-hero-row {
@@ -264,8 +345,8 @@ body[data-mode="amiga"] .ccg-hero-image {
     justify-content: center;
     padding: 0.55rem 0.9rem;
     border-radius: 999px;
-    background: rgba(0,0,0,0.45);
-    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     transition: 0.25s ease;
     box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.30);
 }
@@ -273,17 +354,20 @@ body[data-mode="amiga"] .ccg-hero-image {
 .ccg-social-hero-btn img {
     width: 32px;
     height: 32px;
+    display: block;
     filter: drop-shadow(0 0 6px rgba(var(--accent-rgb), 0.45));
 }
 
 .ccg-social-hero-btn:hover {
-    background: rgba(0,0,0,0.65);
+    background: rgba(0, 0, 0, 0.65);
     border-color: var(--accent);
     transform: translateY(-3px);
     box-shadow:
         0 0 18px rgba(var(--accent-rgb), 0.65),
         0 0 36px rgba(var(--accent-rgb), 0.45);
 }
+
+/* PayPal with label */
 
 .ccg-social-hero-btn--paypal {
     gap: 0.45rem;
@@ -297,7 +381,69 @@ body[data-mode="amiga"] .ccg-hero-image {
 }
 
 /* ============================================================
-   FEATURED HIGHLIGHTS — 16:9 + EQUAL HEIGHT
+   SECTION LAYOUT (GENRES / COLLECTIONS / COMMUNITY)
+============================================================ */
+
+.ccg-section {
+    max-width: 1200px;
+    margin: 0 auto 3rem;
+    padding: 0 2rem;
+}
+
+.ccg-section__header {
+    margin-bottom: 1.5rem;
+}
+
+.ccg-section__eyebrow {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    opacity: 0.7;
+    margin-bottom: 0.2rem;
+}
+
+.ccg-section__title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0 0 0.4rem;
+}
+
+.ccg-section__lede {
+    margin: 0;
+    opacity: 0.85;
+}
+
+/* ============================================================
+   GENRE GRID
+============================================================ */
+
+.ccg-genre-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1.4rem;
+}
+
+.ccg-genre-card__thumb {
+    border-radius: 12px;
+    overflow: hidden;
+    background: radial-gradient(circle at top, rgba(0, 200, 255, 0.25), transparent);
+}
+
+.ccg-genre-card__thumb img {
+    width: 100%;
+    display: block;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 180, 255, 0.25);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.ccg-genre-card__thumb img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(0, 180, 255, 0.5);
+}
+
+/* ============================================================
+   FEATURED GRID — SYMMETRIC PANELS
 ============================================================ */
 
 .ccg-featured-grid {
@@ -307,13 +453,16 @@ body[data-mode="amiga"] .ccg-hero-image {
     align-items: stretch;
 }
 
+/* Equal-height cards */
+
 .ccg-card--featured-game,
 .ccg-card--featured-video {
     display: flex;
     flex-direction: column;
 }
 
-/* Media areas forced to 16:9 */
+/* 16:9 media at top */
+
 .ccg-card--featured-game .ccg-card__media,
 .ccg-card--featured-video .ccg-card__media {
     aspect-ratio: 16 / 9;
@@ -327,6 +476,8 @@ body[data-mode="amiga"] .ccg-hero-image {
     object-fit: cover;
 }
 
+/* Body fills remaining height */
+
 .ccg-card__body {
     flex: 1;
     display: flex;
@@ -335,8 +486,14 @@ body[data-mode="amiga"] .ccg-hero-image {
 }
 
 /* ============================================================
-   COLLECTION GRID — RECTANGULAR (4:3)
+   COLLECTION GRID — RECTANGULAR THUMBS (4:3)
 ============================================================ */
+
+.ccg-collection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 2rem;
+}
 
 .ccg-collection-card__thumb-wrap {
     aspect-ratio: 4 / 3;
@@ -348,6 +505,36 @@ body[data-mode="amiga"] .ccg-hero-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+/* ============================================================
+   COMMUNITY GRID
+============================================================ */
+
+.ccg-community-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 2rem;
+}
+
+.ccg-card--community {
+    transition: transform 0.2s ease, box-shadow 0.25s ease;
+}
+
+.ccg-card--community:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 22px rgba(var(--accent-rgb), 0.28);
+}
+
+/* ============================================================
+   FOOTER
+============================================================ */
+
+.ccg-footer {
+    text-align: center;
+    padding: 2rem 0;
+    color: #8fd8ff;
+    opacity: 0.8;
 }
 
 /* ============================================================
@@ -395,5 +582,9 @@ body[data-mode="amiga"] .ccg-hero-image {
     .ccg-hero-accent {
         font-size: 0.85rem;
         letter-spacing: 0.18em;
+    }
+
+    .ccg-section {
+        padding: 0 1.4rem;
     }
 }
