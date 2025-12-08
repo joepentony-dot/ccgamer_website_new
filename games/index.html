@@ -27,7 +27,7 @@
 
 <div class="ccg-page ccg-page--games-index">
 
-    <!-- HEADER (same structure as home) -->
+    <!-- HEADER -->
     <header class="ccg-header">
         <div class="ccg-header-inner">
 
@@ -77,29 +77,19 @@
                         <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
                         <span class="ccg-socials__label">Subscribe</span>
                     </a>
-                    <a href="https://patreon.com/CheekyCommodoreGamer"
-                       class="ccg-socials__icon-btn"
-                       aria-label="Patreon">
+                    <a href="https://patreon.com/CheekyCommodoreGamer" class="ccg-socials__icon-btn">
                         <span class="ccg-socials__icon ccg-socials__icon--patreon"></span>
                     </a>
-                    <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"
-                       class="ccg-socials__icon-btn"
-                       aria-label="PayPal donations">
+                    <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" class="ccg-socials__icon-btn">
                         <span class="ccg-socials__icon ccg-socials__icon--paypal"></span>
                     </a>
-                    <a href="https://twitter.com/CheekyC64Gamer"
-                       class="ccg-socials__icon-btn"
-                       aria-label="Twitter / X">
+                    <a href="https://twitter.com/CheekyC64Gamer" class="ccg-socials__icon-btn">
                         <span class="ccg-socials__icon ccg-socials__icon--x"></span>
                     </a>
-                    <a href="https://www.facebook.com/cheekycommodoregamer"
-                       class="ccg-socials__icon-btn"
-                       aria-label="Facebook">
+                    <a href="https://www.facebook.com/cheekycommodoregamer" class="ccg-socials__icon-btn">
                         <span class="ccg-socials__icon ccg-socials__icon--fb"></span>
                     </a>
-                    <a href="https://discord.gg/83Xw9ktAn4"
-                       class="ccg-socials__icon-btn"
-                       aria-label="Discord server">
+                    <a href="https://discord.gg/83Xw9ktAn4" class="ccg-socials__icon-btn">
                         <span class="ccg-socials__icon ccg-socials__icon--discord"></span>
                     </a>
                 </div>
@@ -112,7 +102,7 @@
     <!-- MAIN -->
     <main class="ccg-main">
 
-        <!-- HERO / INTRO -->
+        <!-- HERO -->
         <section class="ccg-games-hero">
             <div class="ccg-games-hero__inner">
                 <h1 class="ccg-games-hero__title">Browse the Library</h1>
@@ -123,57 +113,60 @@
             </div>
         </section>
 
-        <!-- BROWSER -->
-        <section class="ccg-games-browser">
+        <!-- ================================================
+             OMEGA ACCORDION FILTER UI (NEW)
+        ================================================= -->
+        <section class="ccg-filters-accordion">
 
-            <!-- TOOLBAR -->
-            <div class="ccg-games-toolbar">
-                <div class="ccg-games-search">
-                    <input type="search"
-                           placeholder="Search title, developer, year…"
-                           aria-label="Search games"
+            <!-- SEARCH -->
+            <div class="ccg-acc-item">
+                <button class="ccg-acc-header" data-acc-toggle>
+                    <span>🔍 Search</span>
+                    <span class="ccg-acc-arrow">▼</span>
+                </button>
+                <div class="ccg-acc-body">
+                    <input id="searchInput"
+                           class="ccg-input"
+                           type="text"
+                           placeholder="Search games…"
                            data-ccg-games-search />
                 </div>
+            </div>
 
-                <div class="ccg-games-filters">
-                    <div class="ccg-games-system-filter" aria-label="Filter by system">
-                        <button type="button"
-                                class="ccg-chip ccg-chip--active"
-                                data-ccg-system-filter
-                                data-system="all">
-                            All
-                        </button>
-                        <button type="button"
-                                class="ccg-chip"
-                                data-ccg-system-filter
-                                data-system="C64">
-                            C64
-                        </button>
-                        <button type="button"
-                                class="ccg-chip"
-                                data-ccg-system-filter
-                                data-system="Amiga">
-                            Amiga
-                        </button>
-                    </div>
-
-                    <div class="ccg-games-genre-filter">
-                        <label for="ccg-genre-select" class="ccg-games-genre-label">
-                            Genre
-                        </label>
-                        <select id="ccg-genre-select"
-                                data-ccg-genre-filter>
-                            <option value="all">All genres</option>
-                            <!-- JS injects the rest -->
-                        </select>
-                    </div>
+            <!-- SYSTEM -->
+            <div class="ccg-acc-item">
+                <button class="ccg-acc-header" data-acc-toggle>
+                    <span>🖥️ System</span>
+                    <span class="ccg-acc-arrow">▼</span>
+                </button>
+                <div class="ccg-acc-body">
+                    <select id="systemFilter" class="ccg-select">
+                        <option value="all">All Systems</option>
+                        <option value="C64">C64</option>
+                        <option value="Amiga">Amiga</option>
+                    </select>
                 </div>
             </div>
 
-            <!-- GRID -->
-            <div class="ccg-games-grid" data-ccg-games-grid>
-                <!-- JS populates game cards -->
+            <!-- GENRE -->
+            <div class="ccg-acc-item">
+                <button class="ccg-acc-header" data-acc-toggle>
+                    <span>🎮 Genre</span>
+                    <span class="ccg-acc-arrow">▼</span>
+                </button>
+                <div class="ccg-acc-body">
+                    <select id="genreFilter" class="ccg-select" data-ccg-genre-filter>
+                        <option value="all">All genres</option>
+                        <!-- JS injects the rest -->
+                    </select>
+                </div>
             </div>
+
+        </section>
+
+        <!-- GRID -->
+        <section class="ccg-games-browser">
+            <div class="ccg-games-grid" data-ccg-games-grid></div>
 
             <div class="ccg-games-load-more-wrap">
                 <button type="button"
