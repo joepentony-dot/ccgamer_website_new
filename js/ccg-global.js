@@ -1,6 +1,6 @@
 /* ==========================================================
    CCG GLOBAL SCRIPT — UNIVERSAL EFFECTS + OMEGA MODE SUPPORT
-   FINAL BUILD — HEADER HEIGHT FIX ADDED
+   FINAL CLEAN BUILD — LOGO FIX FIXED + NO OVERRIDES
    ========================================================== */
 
 (function () {
@@ -14,7 +14,9 @@
     });
 
     /* -----------------------------------------------
-       OMEGA LOGO NORMALISER — ensures correct logo
+       OMEGA LOGO NORMALISER — FINAL FIX
+       Forces all logo elements to use the correct file,
+       preventing 404 errors from legacy filenames.
     ----------------------------------------------- */
     document.addEventListener("DOMContentLoaded", () => {
         const correctLogo = "resources/images/ccgamer-logo.png";
@@ -23,30 +25,6 @@
             img.src = correctLogo;
         });
     });
-
-    /* ==========================================================
-       🔥 OMEGA HEADER HEIGHT ENGINE (THE MISSING PIECE)
-       Calculates header height and updates spacing globally.
-    ========================================================== */
-
-    function updateHeaderHeight() {
-        const header = document.querySelector(".ccg-header");
-        if (!header) return;
-
-        const h = header.offsetHeight;
-
-        document.documentElement.style.setProperty("--ccg-header-height", `${h}px`);
-        document.body.style.setProperty("--ccg-header-height", `${h}px`);
-    }
-
-    // Run ASAP
-    document.addEventListener("DOMContentLoaded", updateHeaderHeight);
-
-    // Re-run on resize
-    window.addEventListener("resize", updateHeaderHeight);
-
-    // Safety re-run after all assets load
-    window.addEventListener("load", updateHeaderHeight);
 
     /* -----------------------------------------------
        SCANLINE INTENSITY (SHIFT + S)
@@ -70,16 +48,18 @@
 
     /* -----------------------------------------------
        GLOBAL MODE CHANGE EVENT
+       Fired by ccg-mode-engine.js
     ----------------------------------------------- */
     document.addEventListener("ccg:modeChange", (event) => {
         const mode = event.detail.mode;
 
         console.log("GLOBAL MODE UPDATE →", mode);
 
+        // Update accent colour system-wide
         if (mode === "c64") {
-            body.style.setProperty("--ccg-accent", "#70fff0");
+            body.style.setProperty("--ccg-accent", "#70fff0");   // cyan glow
         } else if (mode === "amiga") {
-            body.style.setProperty("--ccg-accent", "#f432ff");
+            body.style.setProperty("--ccg-accent", "#f432ff");   // neon magenta
         }
 
         updateModeToggleLabel();
