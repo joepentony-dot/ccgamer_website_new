@@ -1,5 +1,5 @@
 /* =======================================================================
-   HOME.CSS — OMEGA CINEMATIC FUSION (PHASE 2 + PHASE 6B FIX)
+   HOME.CSS — OMEGA CINEMATIC FUSION (PHASE 2 + PHASE 6B + PHASE 6C)
    Controls ONLY homepage visuals. No global overrides unless needed.
    ======================================================================= */
 
@@ -199,7 +199,7 @@
 
 
 /* ======================================================================
-   COLLECTION GRID — Phase 6B: full artwork, no cropping
+   COLLECTION GRID — Phase 6B + Phase 6C
 ====================================================================== */
 .ccg-collection-grid {
     margin-top: 1.4rem;
@@ -217,20 +217,38 @@
     border-radius: 14px;
     text-align: center;
     padding-bottom: 0.7rem;
-    transition: 0.25s ease;
+    transition: 0.28s ease;
     text-decoration: none;
-    box-shadow: 0 0 18px rgba(0,0,0,0.6);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.45), 0 0 18px rgba(0,0,0,0.6);
     backdrop-filter: blur(4px);
     max-width: 380px;
+    position: relative;
 }
 
-/* FIX: preserve full image without cropping */
+/* NEON FRAME (hover only) */
+.ccg-collection-card::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: 16px;
+    background: linear-gradient(
+        45deg,
+        rgba(var(--accent-rgb), 0.2),
+        rgba(var(--accent-rgb), 0.6),
+        rgba(var(--accent-rgb), 0.2)
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+/* Thumbnail container (preserve entire image) */
 .ccg-collection-card__thumb-wrap {
     aspect-ratio: 16 / 9;
     overflow: hidden;
     border-radius: 14px 14px 0 0;
     position: relative;
-    background: rgba(0, 0, 0, 0.55); /* supports contain */
+    background: rgba(0, 0, 0, 0.55);
 }
 
 .ccg-collection-card__thumb-wrap::after {
@@ -245,31 +263,40 @@
     pointer-events: none;
 }
 
-/* FIX: object-fit contain so text is NOT cropped */
+/* FIX: show full artwork */
 .ccg-collection-card__thumb-wrap img {
     width: 100%;
     height: 100%;
     object-fit: contain;
     object-position: center;
-    padding: 4px; /* breathing room to avoid clipping edges */
+    padding: 4px;
     transition: transform 0.28s ease;
 }
 
+/* Title polish */
 .ccg-collection-card__title {
-    margin-top: 0.55rem;
-    font-size: 1.02rem;
+    margin-top: 0.65rem;
+    font-size: 1.08rem;
     color: var(--text-light);
-    font-weight: 600;
-    letter-spacing: 0.03em;
+    font-weight: 700;
+    letter-spacing: 0.035em;
     text-transform: uppercase;
+    text-shadow:
+        0 0 6px rgba(var(--accent-rgb), 0.6),
+        0 0 12px rgba(var(--accent-rgb), 0.3);
 }
 
+/* Hover effects */
 .ccg-collection-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-6px);
     border-color: var(--accent);
     box-shadow:
-        0 0 22px rgba(var(--accent-rgb), 0.7),
-        0 0 36px rgba(var(--accent-rgb), 0.45);
+        0 0 22px rgba(var(--accent-rgb), 0.75),
+        0 0 40px rgba(var(--accent-rgb), 0.45);
+}
+
+.ccg-collection-card:hover::before {
+    opacity: 1;
 }
 
 .ccg-collection-card:hover .ccg-collection-card__thumb-wrap img {
@@ -318,7 +345,7 @@
 
 
 /* ======================================================================
-   NORMALISE LINKS INSIDE HOMEPAGE SECTIONS
+   LINK NORMALISATION
 ====================================================================== */
 .ccg-section a {
     color: inherit;
