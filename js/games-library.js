@@ -1,21 +1,27 @@
 // =====================================================================
-// games-library.js — Omega Games Index Loader (A1)
-// Uses: games/games.json
-// Renders: dynamic grid with search, system filter, genre filter,
-//          and "Show more" pagination.
-//
-// Important: This file only runs on [data-ccg-page="games-index"].
+// games-library.js — Omega Games Index Loader (A2)
+// Includes Omega Accordion UI wiring
 // =====================================================================
 
 (function () {
     const html = document.documentElement;
     if (html.getAttribute("data-ccg-page") !== "games-index") return;
 
+    // Original UI Elements
     const searchInput = document.querySelector("[data-ccg-games-search]");
     const systemButtons = Array.from(document.querySelectorAll("[data-ccg-system-filter]"));
     const genreSelect = document.querySelector("[data-ccg-genre-filter]");
     const grid = document.querySelector("[data-ccg-games-grid]");
     const loadMoreBtn = document.querySelector("[data-ccg-load-more]");
+
+    // NEW Accordion Inputs
+    const accSearch = document.querySelector("#searchInput");
+    const accSystem = document.querySelector("#systemFilter");
+    const accGenre = document.querySelector("#genreFilter");
+
+    // Accordion Items
+    const accordionItems = document.querySelectorAll(".ccg-acc-item");
+    const accordionHeaders = document.querySelectorAll("[data-acc-toggle]");
 
     if (!grid) {
         console.warn("Games grid missing, aborting games-library.js");
@@ -41,14 +47,11 @@
 
         let p = String(raw).trim();
 
-        // Strip repo prefix if present
+        // Clean path fragments
         p = p.replace(/^\/?ccgamer_website_new\//, "");
-
-        // Strip any leading slash so it becomes repo-relative
         p = p.replace(/^\//, "");
 
-        // From /games/, go up one level
-        return "../" + p; // "../resources/..."
+        return "../" + p;
     }
 
     function baseGenres(genresArr) {
@@ -98,18 +101,18 @@
 
         genreSelect.innerHTML = `<option value="all">All genres</option>` +
             genres.map(g => `<option value="${g}">${g}</option>`).join("");
+
+        // Also fill accordion genre menu
+        if (accGenre) {
+            accGenre.innerHTML = genreSelect.innerHTML;
+        }
     }
 
     function applyFilters() {
         filteredGames = allGames.filter(game => {
             if (activeSystem !== "all" && game.system !== activeSystem) return false;
-
             if (activeGenre !== "all" && !game.genres.includes(activeGenre)) return false;
-
-            if (searchTerm) {
-                if (!game.searchText.includes(searchTerm)) return false;
-            }
-
+            if (searchTerm && !game.searchText.includes(searchTerm)) return false;
             return true;
         });
 
@@ -137,7 +140,6 @@
         renderedCount += slice.length;
 
         if (!loadMoreBtn) return;
-
         loadMoreBtn.style.display =
             renderedCount < filteredGames.length ? "inline-flex" : "none";
     }
@@ -155,8 +157,7 @@
 
         card.innerHTML = `
             <div class="ccg-game-card__thumb">
-                <img src="${game.thumbnail}"
-                     alt="${game.title}">
+                <img src="${game.thumbnail}" alt="${game.title}">
             </div>
             <div class="ccg-game-card__body">
                 <h2 class="ccg-game-card__title">${game.title}</h2>
@@ -186,41 +187,83 @@
     }
 
     // ---------------------------------------------------------
-    // UI wiring
+    // UI wiring (chips + selects + accordion)
     // ---------------------------------------------------------
 
     function bindUI() {
+
+        // SEARCH
+        function updateSearch(value) {
+            searchTerm = value.trim().toLowerCase();
+            if (searchInput) searchInput.value = value;
+            if (accSearch) accSearch.value = value;
+            applyFilters();
+        }
+
         if (searchInput) {
-            searchInput.addEventListener("input", (e) => {
-                searchTerm = e.target.value.trim().toLowerCase();
-                applyFilters();
+            searchInput.addEventListener("input", e => updateSearch(e.target.value));
+        }
+        if (accSearch) {
+            accSearch.addEventListener("input", e => updateSearch(e.target.value));
+        }
+
+        // SYSTEM
+        function updateSystem(system) {
+            activeSystem = system;
+
+            systemButtons.forEach(b => b.classList.remove("ccg-chip--active"));
+            systemButtons.forEach(b => {
+                if (b.getAttribute("data-system") === system) {
+                    b.classList.add("ccg-chip--active");
+                }
             });
+
+            if (accSystem) accSystem.value = system;
+
+            applyFilters();
         }
 
         systemButtons.forEach(btn => {
             btn.addEventListener("click", () => {
-                const system = btn.getAttribute("data-system") || "all";
-                activeSystem = system;
-
-                systemButtons.forEach(b => b.classList.remove("ccg-chip--active"));
-                btn.classList.add("ccg-chip--active");
-
-                applyFilters();
+                updateSystem(btn.getAttribute("data-system") || "all");
             });
         });
 
-        if (genreSelect) {
-            genreSelect.addEventListener("change", (e) => {
-                activeGenre = e.target.value || "all";
-                applyFilters();
+        if (accSystem) {
+            accSystem.addEventListener("change", e => {
+                updateSystem(e.target.value);
             });
         }
 
-        if (loadMoreBtn) {
-            loadMoreBtn.addEventListener("click", () => {
-                renderNextPage();
-            });
+        // GENRE
+        function updateGenre(genre) {
+            activeGenre = genre;
+
+            if (genreSelect) genreSelect.value = genre;
+            if (accGenre) accGenre.value = genre;
+
+            applyFilters();
         }
+
+        if (genreSelect) {
+            genreSelect.addEventListener("change", e => updateGenre(e.target.value));
+        }
+        if (accGenre) {
+            accGenre.addEventListener("change", e => updateGenre(e.target.value));
+        }
+
+        // LOAD MORE
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener("click", renderNextPage);
+        }
+
+        // ACCORDION BEHAVIOUR
+        accordionHeaders.forEach(header => {
+            header.addEventListener("click", () => {
+                const parent = header.parentElement;
+                parent.classList.toggle("open");
+            });
+        });
     }
 
     // ---------------------------------------------------------
@@ -238,6 +281,7 @@
             buildGenreOptions();
             bindUI();
             applyFilters();
+
         } catch (err) {
             console.error("Error initialising games-library:", err);
             grid.innerHTML = `<p style="grid-column:1/-1; padding:1rem;">
