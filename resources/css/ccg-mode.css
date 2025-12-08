@@ -1,170 +1,238 @@
 /* ============================================================
-   CCG-MODE.CSS — Omega Mode Engine Skin
-   Controls global theme variables for C64 + Amiga presets.
-   Non-destructive. All JS + HTML remain fully compatible.
-   ============================================================ */
+   CCG-MODE.CSS — Omega Mode Engine (C64 / Amiga)
+   Controls global theming, accents, hero tint, CRT brightness,
+   neon colours, shadows, button glow, and card hue.
+============================================================ */
+
+/* ============================================================
+   BASE VARIABLES (default before mode is chosen)
+============================================================ */
+:root {
+    /* fallback neutral */
+    --accent: #00e0ff;
+    --accent-rgb: 0, 224, 255;
+
+    --accent-soft: rgba(var(--accent-rgb), 0.45);
+    --accent-strong: rgba(var(--accent-rgb), 0.85);
+
+    --crt-opacity: 0.22;
+    --scan-opacity: 0.28;
+
+    --text-light: #ffffff;
+    --text-dim: #c8d4e0;
+
+    --panel-bg: rgba(0, 0, 0, 0.55);
+
+    --hero-img: url("../images/hero/ccg-hero-c64.png");
+
+    --btn-primary-bg: rgba(var(--accent-rgb), 0.25);
+    --btn-primary-border: rgba(var(--accent-rgb), 0.85);
+    --btn-primary-hover-bg: rgba(var(--accent-rgb), 0.35);
+
+    --btn-secondary-bg: rgba(255,255,255,0.06);
+    --btn-secondary-border: rgba(255,255,255,0.25);
+
+    --card-border: rgba(255,255,255,0.12);
+    --card-glow: rgba(var(--accent-rgb), 0.18);
+}
+
+
+/* ============================================================
+   C64 MODE — Crisp cyan neon, classic cold CRT
+============================================================ */
+
+body[data-mode="c64"] {
+    --accent: #00d6ff;
+    --accent-rgb: 0, 214, 255;
+
+    --accent-soft: rgba(var(--accent-rgb), 0.45);
+    --accent-strong: rgba(var(--accent-rgb), 0.85);
+
+    --crt-opacity: 0.26;
+    --scan-opacity: 0.30;
+
+    --panel-bg: rgba(0, 12, 24, 0.55);
+
+    --hero-img: url("../images/hero/ccg-hero-c64.png");
+
+    --btn-primary-bg: rgba(var(--accent-rgb), 0.22);
+    --btn-primary-border: rgba(var(--accent-rgb), 0.88);
+    --btn-primary-hover-bg: rgba(var(--accent-rgb), 0.32);
+
+    --card-glow: rgba(var(--accent-rgb), 0.22);
+}
+
+
+/* ============================================================
+   AMIGA MODE — Magenta neon, warm bloom, pastel tinting
+============================================================ */
+
+body[data-mode="amiga"] {
+    --accent: #ff3bd4;
+    --accent-rgb: 255, 59, 212;
+
+    --accent-soft: rgba(var(--accent-rgb), 0.5);
+    --accent-strong: rgba(var(--accent-rgb), 0.9);
+
+    --crt-opacity: 0.28;
+    --scan-opacity: 0.32;
+
+    --panel-bg: rgba(20, 0, 25, 0.55);
+
+    --hero-img: url("../images/hero/ccg-hero-amiga.png");
+
+    --btn-primary-bg: rgba(var(--accent-rgb), 0.22);
+    --btn-primary-border: rgba(var(--accent-rgb), 0.92);
+    --btn-primary-hover-bg: rgba(var(--accent-rgb), 0.32);
+
+    --card-glow: rgba(var(--accent-rgb), 0.25);
+}
+
+
+/* ============================================================
+   HERO IMAGE MODE SWITCH
+   (This is used by hero containers via var(--hero-img))
+============================================================ */
+
+.ccg-hero-image {
+    background-image: var(--hero-img);
+    background-size: cover;
+    background-position: center;
+    opacity: 0.95;
+    filter: drop-shadow(0 0 14px rgba(var(--accent-rgb), 0.35));
+}
+
+
+/* ============================================================
+   GLOBAL MODE ADAPTIVE COLOURING
+============================================================ */
+
+.ccg-section-title,
+.ccg-card__title,
+.ccg-hero-title {
+    text-shadow:
+        0 0 14px rgba(var(--accent-rgb), 0.6),
+        0 0 28px rgba(var(--accent-rgb), 0.4);
+}
+
 
 /* ------------------------------------------------------------
-   BASE VALUES (fallback) — overridable by data-ccg-mode
+   Buttons
 ------------------------------------------------------------ */
 
-:root {
-    /* Neutral defaults (C64-style bias) */
-    --accent: #3ab0ff;
-    --accent-rgb: 58,176,255;
-
-    --text-light: #ffffff;
-    --text-dim: rgba(255,255,255,0.72);
-
-    --panel-bg: rgba(0,0,0,0.35);
-    --panel-bg-strong: rgba(0,0,0,0.55);
-
-    --border-light: rgba(255,255,255,0.15);
-
-    /* Glow defaults */
-    --glow-soft: 0 0 12px rgba(var(--accent-rgb), 0.5);
-    --glow-medium: 0 0 22px rgba(var(--accent-rgb), 0.6);
-    --glow-strong: 0 0 36px rgba(var(--accent-rgb), 0.75);
+.ccg-btn--primary {
+    background: var(--btn-primary-bg);
+    border: 1px solid var(--btn-primary-border);
 }
 
-/* ============================================================
-   MODE: C64 (default)
-   Bright blue / cyan glow, dark neon sci-fi look
-============================================================ */
-
-body[data-ccg-mode="c64"] {
-    --accent: #28e1ff;
-    --accent-rgb: 40,225,255;
-
-    --text-light: #ffffff;
-    --text-dim: rgba(255,255,255,0.72);
-
-    /* Panels */
-    --panel-bg: rgba(0,0,0,0.38);
-    --panel-bg-strong: rgba(0,0,0,0.6);
-    --border-light: rgba(255,255,255,0.15);
-
-    /* Glow tiering */
-    --glow-soft: 0 0 10px rgba(40,225,255,0.45);
-    --glow-medium: 0 0 20px rgba(40,225,255,0.55);
-    --glow-strong: 0 0 32px rgba(40,225,255,0.70);
-
-    /* Header & hero */
-    --hero-title-shadow:
-        0 0 12px rgba(40,225,255,0.55),
-        0 0 26px rgba(40,225,255,0.35);
-
-    /* Buttons */
-    --btn-primary-shadow:
-        0 0 14px rgba(40,225,255,0.55);
-
-    /* STARFIELD + CRT INTENSITY */
-    --crt-opacity: 0.42;
-    --scanline-strength: 0.08;
-    --starfield-opacity: 0.62;
+.ccg-btn--primary:hover {
+    background: var(--btn-primary-hover-bg);
+    box-shadow:
+        0 0 22px rgba(var(--accent-rgb), 0.65),
+        0 0 44px rgba(var(--accent-rgb), 0.35);
 }
 
-/* ============================================================
-   MODE: AMIGA — Omega Workbench Skin
-   Softer contrast • Cleaner UI • Crystal neon edge
-============================================================ */
-
-body[data-ccg-mode="amiga"] {
-    /* Accent becomes magenta/pink */
-    --accent: #ff4fe8;
-    --accent-rgb: 255,79,232;
-
-    /* Amiga text hierarchy */
-    --text-light: #000000;
-    --text-dim: rgba(0,0,0,0.6);
-
-    /* Panels adopt Workbench-like lightness */
-    --panel-bg: rgba(245,245,255,0.75);
-    --panel-bg-strong: rgba(255,255,255,0.92);
-    --border-light: rgba(0,0,0,0.25);
-
-    /* Controlled neon (to avoid blinding) */
-    --glow-soft: 0 0 6px rgba(255,79,232,0.35);
-    --glow-medium: 0 0 14px rgba(255,79,232,0.42);
-    --glow-strong: 0 0 22px rgba(255,79,232,0.55);
-
-    /* Hero */
-    --hero-title-shadow:
-        0 0 8px rgba(255,79,232,0.45),
-        0 0 16px rgba(255,79,232,0.30);
-
-    /* Buttons */
-    --btn-primary-shadow:
-        0 0 12px rgba(255,79,232,0.40);
-
-    /* CRT + starfield toned down for brighter UI */
-    --crt-opacity: 0.25;
-    --scanline-strength: 0.04;
-    --starfield-opacity: 0.40;
+.ccg-btn--secondary {
+    background: var(--btn-secondary-bg);
+    border: 1px solid var(--btn-secondary-border);
 }
 
-/* ============================================================
-   UNIVERSAL APPLICATION LAYER
-   These rules apply to both themes using variables above.
-============================================================ */
-
-.ccg-accent-text {
-    color: var(--accent);
-    text-shadow: var(--glow-soft);
+.ccg-btn--secondary:hover {
+    box-shadow:
+        0 0 22px rgba(var(--accent-rgb), 0.45),
+        0 0 44px rgba(var(--accent-rgb), 0.30);
 }
 
-.ccg-accent-border {
-    border-color: var(--accent) !important;
-}
 
-.ccg-accent-bg {
-    background: var(--accent);
-    color: #000;
-}
+/* ------------------------------------------------------------
+   Cards & panels
+------------------------------------------------------------ */
 
-/* HERO TITLES */
-.ccg-hero-title,
-.ccg-section-title {
-    text-shadow: var(--hero-title-shadow);
-}
-
-/* BUTTONS */
-.ccg-btn-primary {
-    background: var(--accent);
-    color: #000;
-    box-shadow: var(--btn-primary-shadow);
-}
-.ccg-btn-primary:hover {
-    background: rgba(var(--accent-rgb), 0.75);
-}
-
-/* PANELS */
-.ccg-panel,
 .ccg-card,
-.ccg-genre-tile,
-.ccg-collection-tile {
+.ccg-panel {
     background: var(--panel-bg);
-    border: 1px solid var(--border-light);
-    color: var(--text-light);
+    border: 1px solid var(--card-border);
+    box-shadow:
+        0 0 14px rgba(0,0,0,0.75),
+        0 0 24px var(--card-glow);
 }
 
-/* TEXT */
-.ccg-panel p,
-.ccg-panel span,
-.ccg-panel li {
-    color: var(--text-light);
-    opacity: 0.95;
+.ccg-card__media img {
+    box-shadow:
+        0 0 12px rgba(0,0,0,0.6),
+        0 0 18px rgba(var(--accent-rgb), 0.3);
 }
 
-/* STARFIELD + CRT INTENSITY SYNC */
-.ccg-bg-crt-overlay {
-    opacity: var(--crt-opacity);
+
+/* ------------------------------------------------------------
+   Mode Badge
+------------------------------------------------------------ */
+
+.ccg-hero__mode-badge {
+    color: var(--accent);
+    text-shadow:
+        0 0 10px rgba(var(--accent-rgb), 0.8),
+        0 0 20px rgba(var(--accent-rgb), 0.45);
 }
 
-.ccg-scanlines {
-    opacity: var(--scanline-strength);
+
+/* ------------------------------------------------------------
+   Toggle Pill (C64 ↔ Amiga)
+------------------------------------------------------------ */
+
+.ccg-mode-toggle__pill {
+    background: rgba(var(--accent-rgb), 0.12);
+    border: 1px solid rgba(var(--accent-rgb), 0.45);
+    box-shadow:
+        0 0 16px rgba(var(--accent-rgb), 0.25),
+        inset 0 0 12px rgba(var(--accent-rgb), 0.25);
 }
 
-#ccg-starfield {
-    opacity: var(--starfield-opacity);
+.ccg-mode-toggle__thumb {
+    background: var(--accent);
+    box-shadow:
+        0 0 14px rgba(var(--accent-rgb), 0.75),
+        0 0 26px rgba(var(--accent-rgb), 0.45);
+}
+
+
+/* ------------------------------------------------------------
+   Social Icons Adaptation
+------------------------------------------------------------ */
+
+.ccg-social-hero-btn img,
+.ccg-socials__icon {
+    filter:
+        drop-shadow(0 0 10px rgba(var(--accent-rgb), 0.55))
+        drop-shadow(0 0 18px rgba(var(--accent-rgb), 0.25));
+}
+
+
+/* ------------------------------------------------------------
+   Inputs, tables, misc adaptive elements (future-proofing)
+------------------------------------------------------------ */
+
+input,
+select,
+textarea {
+    border-color: rgba(var(--accent-rgb), 0.5);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.5);
+}
+
+
+/* ============================================================
+   MEDIA QUERY STABILITY (mode safe)
+============================================================ */
+
+@media (max-width: 800px) {
+    .ccg-hero-title {
+        text-shadow:
+            0 0 10px rgba(var(--accent-rgb), 0.55),
+            0 0 18px rgba(var(--accent-rgb), 0.35);
+    }
 }
