@@ -1,211 +1,153 @@
-/* ==========================================================================
-   CCG-HERO.CSS — OMEGA HERO SYSTEM (MEDIUM-TIGHTENED BUILD)
+/* ============================================================
+   CCG HERO SYSTEM — OMEGA MEDIUM-TIGHTENED
    Global hero layout for Home, Games Index, Genre pages, etc.
    This file does NOT touch intro or loader screens.
-   ========================================================================== */
+   ============================================================ */
 
+/* Base hero layout */
+.ccg-hero {
+    position: relative;
+    width: 100%;
 
-/* ==========================================================================
-   MODE-AWARE HERO BACKGROUNDS
-   ========================================================================== */
+    /* Reduced padding so the hero doesn’t eat the whole page */
+    padding: 5.5rem 1rem 3.5rem;
 
-body[data-mode="c64"] .ccg-hero-image {
-    background-image: url("../images/hero/ccg-hero-c64.png");
+    text-align: center;
+    color: var(--text-light);
+    overflow: hidden;
 }
 
-body[data-mode="amiga"] .ccg-hero-image {
-    background-image: url("../images/hero/ccg-hero-amiga.png");
-}
-
-/* Base hero image styling */
+/* Hero background image */
 .ccg-hero-image {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-
+    object-fit: cover;
     filter: brightness(0.62) contrast(1.15);
-    z-index: -2;
+    z-index: -1;
 }
 
-/* Extra scanline layer */
+/* Extra scanline layer over hero art */
 .ccg-hero-scanlines {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: repeating-linear-gradient(
-        to bottom,
-        rgba(255,255,255,0.05) 0px,
-        rgba(255,255,255,0.05) 1px,
-        transparent 1px,
-        transparent 3px
-    );
-    opacity: 0.08;
     z-index: -1;
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0.07) 0px,
+            rgba(255, 255, 255, 0.05) 1px,
+            transparent 1px,
+            transparent 3px
+        );
+    mix-blend-mode: soft-light;
+    opacity: 0.18;
 }
 
-
-
-/* ==========================================================================
-   GLOBAL HERO WRAPPER
-   ========================================================================== */
-
-.ccg-hero {
-    width: 100%;
-    position: relative;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-
-    padding-top: calc(var(--ccg-header-height) + 20px);
-    padding-bottom: 48px;
-
-    box-sizing: border-box;
-}
-
-
-
-/* ==========================================================================
-   HOME HERO — tightened height (THE FIX YOU REQUESTED)
-   ========================================================================== */
-
-.ccg-hero--home {
-    position: relative;
-    overflow: hidden;
-
-    /* Reduced from ~520px → much tighter */
-    height: 360px;
-    max-height: 360px;
-}
-
-@media (max-width: 900px) {
-    .ccg-hero--home {
-        height: 300px;
-        max-height: 300px;
-    }
-}
-
-@media (max-width: 650px) {
-    .ccg-hero--home {
-        height: 260px;
-        max-height: 260px;
-    }
-}
-
-
-
-/* ==========================================================================
-   HERO INNER CONTENT (titles, buttons, tagline)
-   ========================================================================== */
-
+/* Main hero container */
 .ccg-hero-inner {
     max-width: 1100px;
-    padding: 0 20px;
+    margin: 0 auto;
+    padding: 0 1rem;
 
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 14px;
+    gap: 0.9rem;
 }
 
-
-/* Title */
+/* Titles */
 .ccg-hero-title {
     font-family: var(--ccg-font-display);
-    font-size: 2.6rem;
+    font-size: 3rem;
     letter-spacing: 0.065em;
     margin: 0;
-
+    text-transform: uppercase;
     text-shadow:
-        0 0 12px rgba(var(--accent-rgb), 0.6),
-        0 0 32px rgba(var(--accent-rgb), 0.4);
+        0 0 18px rgba(var(--accent-rgb), 0.9),
+        0 0 34px rgba(var(--accent-rgb), 0.6);
 }
 
-@media (max-width: 900px) {
-    .ccg-hero-title {
-        font-size: 2.2rem;
-    }
-}
-
-@media (max-width: 650px) {
-    .ccg-hero-title {
-        font-size: 1.9rem;
-    }
-}
-
-
-/* Subtitle between title + tagline */
 .ccg-hero-accent {
-    font-size: 1.05rem;
-    color: var(--accent);
-    opacity: 0.85;
-
-    margin: 0;
-    letter-spacing: 0.1em;
-
-    text-shadow:
-        0 0 8px rgba(var(--accent-rgb), 0.6),
-        0 0 18px rgba(var(--accent-rgb), 0.35);
+    font-size: 1.1rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    opacity: 0.9;
+    margin: 0.25rem 0 0.35rem;
 }
 
-
-/* Tagline */
 .ccg-hero-tagline {
     max-width: 720px;
     font-size: 1rem;
-    opacity: 0.92;
+    opacity: 0.9;
 }
 
-
-/* Buttons row */
-.ccg-hero-buttons {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-top: 8px;
-}
-
-
-/* Hint text */
-.ccg-hero__hint {
-    margin-top: 8px;
-    font-size: 0.82rem;
-    opacity: 0.75;
-}
-
-
-
-/* ==========================================================================
-   MODE BADGE ("Mode: C64 / Amiga")
-   ========================================================================== */
-
+/* Mode badge */
 .ccg-hero__mode-badge {
-    margin-top: 8px;
-    padding: 6px 14px;
-
-    font-size: 0.85rem;
-    font-weight: 600;
-
-    background: rgba(0,0,0,0.45);
-    border: 1px solid rgba(255,255,255,0.16);
+    margin-top: 0.25rem;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.82rem;
     border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
 
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.25);
     backdrop-filter: blur(6px);
-    letter-spacing: 0.04em;
+}
 
-    box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.5);
+.ccg-hero__mode-prefix {
+    opacity: 0.75;
+    margin-right: 0.35rem;
 }
 
 .ccg-hero__mode-label {
     color: var(--accent);
 }
 
+/* Buttons row */
+.ccg-hero-buttons {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
 
+.ccg-hero__hint {
+    margin-top: 0.65rem;
+    font-size: 0.9rem;
+    opacity: 0.82;
+}
 
-/* END OF FILE */
+/* ------------------------------------------------------------------
+   RESPONSIVE TWEAKS
+------------------------------------------------------------------ */
+
+@media (max-width: 900px) {
+    .ccg-hero-title {
+        font-size: 2.4rem;
+    }
+
+    .ccg-hero-inner {
+        gap: 0.7rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .ccg-hero {
+        padding-top: 4.5rem;
+        padding-bottom: 3rem;
+    }
+
+    .ccg-hero-title {
+        font-size: 2rem;
+    }
+
+    .ccg-hero-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+}
