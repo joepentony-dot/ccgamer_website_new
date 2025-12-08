@@ -275,3 +275,84 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* ============================================================
+   OMEGA CINEMATIC ACCORDION
+============================================================ */
+
+.ccg-filters-accordion {
+    padding: 20px 0 30px;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto 40px;
+}
+
+.ccg-acc-item {
+    margin-bottom: 14px;
+    background: rgba(0,0,0,0.45);
+    border: 1px solid rgba(0,255,255,0.18);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 14px rgba(0, 255, 255, 0.12);
+}
+
+.ccg-acc-header {
+    width: 100%;
+    background: rgba(0,0,0,0.65);
+    color: var(--accent);
+    font-size: 1.05rem;
+    letter-spacing: 0.06em;
+    padding: 14px 18px;
+    border: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.25s ease;
+}
+
+.ccg-acc-header:hover {
+    background: rgba(0,255,255,0.08);
+}
+
+.ccg-acc-arrow {
+    font-size: 1rem;
+    opacity: 0.9;
+    transition: transform 0.25s ease;
+}
+
+.ccg-acc-item.open .ccg-acc-arrow {
+    transform: rotate(180deg);
+}
+
+.ccg-acc-body {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 18px;
+    transition: max-height 0.35s ease, padding 0.35s ease;
+}
+
+.ccg-acc-item.open .ccg-acc-body {
+    padding: 16px 18px 20px;
+    max-height: 300px;
+}
+
+.ccg-input,
+.ccg-select {
+    width: 100%;
+    background: rgba(0,0,0,0.65);
+    border: 1px solid rgba(0,255,255,0.25);
+    padding: 10px 12px;
+    color: var(--accent);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.ccg-input:focus,
+.ccg-select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 12px rgba(0,255,255,0.45);
+}
