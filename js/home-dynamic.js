@@ -1,127 +1,114 @@
 // ======================================================================
-// home-dynamic.js — Omega Dynamic Loader (A2 JSON-SYNC BUILD)
+// home-dynamic.js — Omega Dynamic Loader (FINAL A2 BUILD)
 // Drives:
 //  ✔ Featured Game of the Day (randomised each load)
 //  ✔ Dynamic Featured Video (from the same selected game)
-//  ✔ Safe fallbacks if JSON / video is missing
-//  Uses real keys from games/games.json:
-//     id, title, system, year, videoid, thumbnail
+//  ✔ Safe fallback handling
+// Uses games/games.json with keys: id, title, videoid, thumbnail, genres, etc.
 // ======================================================================
 
-(async function () {
-    const FEATURED_GAME_CONTAINER = document.querySelector("[data-ccg-featured-game]");
-    const FEATURED_VIDEO_FRAME    = document.querySelector("[data-ccg-featured-video]");
-    const FEATURED_VIDEO_TITLE    = document.querySelector("[data-ccg-featured-video-title]");
-    const FEATURED_VIDEO_BUTTON   = document.querySelector("[data-ccg-featured-video-btn]");
+(function () {
+    const html = document.documentElement;
+    if (html.getAttribute("data-ccg-page") !== "home") return;
 
-    // If we’re not on the home page or markup is missing, bail out quietly
+    const FEATURED_GAME_CONTAINER = document.querySelector("[data-ccg-featured-game]");
+    const FEATURED_VIDEO_FRAME   = document.querySelector("[data-ccg-featured-video]");
+    const FEATURED_VIDEO_TITLE   = document.querySelector("[data-ccg-featured-video-title]");
+    const FEATURED_VIDEO_BUTTON  = document.querySelector("[data-ccg-featured-video-btn]");
+
     if (!FEATURED_GAME_CONTAINER || !FEATURED_VIDEO_FRAME) {
-        console.warn("home-dynamic.js: Home dynamic elements missing — nothing to load.");
+        console.warn("Home dynamic elements missing — nothing to load.");
         return;
     }
 
-    try {
-        // -------------------------------------------------------------
-        // 1) LOAD games.json
-        // -------------------------------------------------------------
-        const response = await fetch("games/games.json", { cache: "no-store" });
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status} while fetching games.json`);
-        }
+    const titleEl = FEATURED_GAME_CONTAINER.querySelector("[data-fg-title]");
+    const descEl  = FEATURED_GAME_CONTAINER.querySelector("[data-fg-desc]");
+    const imgEl   = FEATURED_GAME_CONTAINER.querySelector("[data-fg-thumb]");
+    const btnEl   = FEATURED_GAME_CONTAINER.querySelector("[data-fg-btn]");
 
-        const games = await response.json();
-        if (!Array.isArray(games) || games.length === 0) {
-            throw new Error("games.json did not contain an array");
-        }
+    function resolveThumbForHome(raw) {
+        if (!raw) return "resources/images/thumbnails/all/1942.jpg";
+        let p = String(raw).trim();
 
-        // -------------------------------------------------------------
-        // 2) FILTER to games that actually have a YouTube videoid
-        // -------------------------------------------------------------
-        const videoCapable = games.filter(g =>
-            typeof g.videoid === "string" && g.videoid.trim().length > 0
-        );
+        // Strip repo prefix if present
+        p = p.replace(/^\/?ccgamer_website_new\//, "");
 
-        if (videoCapable.length === 0) {
-            console.warn("home-dynamic.js: No video-enabled games in JSON.");
-            FEATURED_VIDEO_FRAME.innerHTML =
-                `<p class="ccg-error-text">No video-enabled games in JSON.</p>`;
-            return;
-        }
+        // Strip any leading slash so it's relative from site root
+        p = p.replace(/^\//, "");
 
-        // Pick a random game each page load
-        const chosen = videoCapable[Math.floor(Math.random() * videoCapable.length)];
+        return p; // e.g. "resources/images/thumbnails/all/1942.jpg"
+    }
 
-        const title   = chosen.title || "Featured Game";
-        const system  = chosen.system || "";
-        const year    = chosen.year || "";
-        const videoId = chosen.videoid.trim();
-        const thumb   = chosen.thumbnail || "";
-        const gameId  = chosen.id || "";
+    async function loadFeatured() {
+        try {
+            const response = await fetch("games/games.json");
+            if (!response.ok) throw new Error("games.json fetch failed");
+            const games = await response.json();
 
-        // -------------------------------------------------------------
-        // 3) UPDATE FEATURED GAME CARD
-        // -------------------------------------------------------------
-        const titleEl = FEATURED_GAME_CONTAINER.querySelector("[data-fg-title]");
-        const descEl  = FEATURED_GAME_CONTAINER.querySelector("[data-fg-desc]");
-        const imgEl   = FEATURED_GAME_CONTAINER.querySelector("[data-fg-thumb]");
-        const btnEl   = FEATURED_GAME_CONTAINER.querySelector("[data-fg-btn]");
+            // Only games with a videoid
+            const videoCapable = games.filter(g => g.videoid && String(g.videoid).trim().length > 0);
 
-        if (titleEl) {
-            titleEl.textContent = title;
-        }
-
-        if (descEl) {
-            const systemPart = system ? ` on ${system}` : "";
-            const yearPart   = year ? ` (${year})` : "";
-            descEl.textContent =
-                `${title}${systemPart}${yearPart} — one of the many curated classics in the CCG library.`;
-        }
-
-        if (imgEl) {
-            if (thumb) {
-                // games.json paths already include /ccgamer_website_new/ prefix, which
-                // works correctly on GitHub Pages, so we can use them as-is.
-                imgEl.src = thumb;
+            if (!videoCapable.length) {
+                FEATURED_VIDEO_FRAME.innerHTML =
+                    `<p style="color:#fff;padding:1rem;">No video-enabled games in JSON.</p>`;
+                return;
             }
-            imgEl.alt = `${title} cover art`;
-        }
 
-        if (btnEl && gameId) {
-            btnEl.href = `games/game.html?id=${encodeURIComponent(gameId)}`;
-        }
+            // Pick random game each load
+            const chosen = videoCapable[Math.floor(Math.random() * videoCapable.length)];
 
-        // -------------------------------------------------------------
-        // 4) UPDATE FEATURED VIDEO BLOCK
-        // -------------------------------------------------------------
-        if (FEATURED_VIDEO_TITLE) {
-            FEATURED_VIDEO_TITLE.textContent = `Featured CCG Video — ${title}`;
-        }
+            const title = chosen.title || "Unknown Game";
+            const year  = chosen.year ? ` (${chosen.year})` : "";
+            const system = chosen.system || "";
+            const dev   = chosen.developer || "";
+            const ytID  = String(chosen.videoid).trim();
 
-        if (videoId) {
+            // ---------------- Featured Game Card ----------------
+            if (titleEl) titleEl.textContent = title;
+
+            if (descEl) {
+                const bits = [];
+                if (system) bits.push(system);
+                if (dev) bits.push(dev);
+                descEl.textContent = bits.length
+                    ? `${bits.join(" • ")} — a standout entry in the Commodore library.`
+                    : "A classic entry in the C64/Amiga library.";
+            }
+
+            if (imgEl) {
+                imgEl.src = resolveThumbForHome(chosen.thumbnail);
+                imgEl.alt = title;
+            }
+
+            if (btnEl) {
+                btnEl.href = `games/game.html?id=${encodeURIComponent(chosen.id)}`;
+            }
+
+            // ---------------- Featured Video Block ----------------
+            if (FEATURED_VIDEO_TITLE) {
+                FEATURED_VIDEO_TITLE.textContent = `Featured CCG Video — ${title}${year}`;
+            }
+
             FEATURED_VIDEO_FRAME.innerHTML = `
                 <iframe
-                    src="https://www.youtube.com/embed/${encodeURIComponent(videoId)}"
-                    title="Cheeky Commodore Gamer featured video"
+                    src="https://www.youtube.com/embed/${ytID}"
+                    title="Featured CCG video"
+                    frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    loading="lazy"
-                    allowfullscreen>
+                    allowfullscreen
+                    loading="lazy">
                 </iframe>
             `;
-        } else {
-            FEATURED_VIDEO_FRAME.innerHTML =
-                `<p class="ccg-error-text">This game has no video attached.</p>`;
-        }
 
-        if (FEATURED_VIDEO_BUTTON && videoId) {
-            FEATURED_VIDEO_BUTTON.href =
-                `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
-        }
-
-    } catch (err) {
-        console.error("home-dynamic.js error:", err);
-        if (FEATURED_VIDEO_FRAME) {
+            if (FEATURED_VIDEO_BUTTON) {
+                FEATURED_VIDEO_BUTTON.href = `https://www.youtube.com/watch?v=${ytID}`;
+            }
+        } catch (err) {
+            console.error("Dynamic home load error:", err);
             FEATURED_VIDEO_FRAME.innerHTML =
-                `<p class="ccg-error-text">Failed to load featured content — please try again later.</p>`;
+                `<p style="color:#fff;padding:1rem;">Failed to load featured content.</p>`;
         }
     }
+
+    document.addEventListener("DOMContentLoaded", loadFeatured);
 })();
