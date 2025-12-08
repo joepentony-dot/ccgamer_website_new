@@ -17,16 +17,20 @@
 
     text-align: center;
     color: var(--text-light);
-    overflow: hidden;
+    overflow: hidden; /* <— CRITICAL: prevents hero from being stretched by image */
 }
 
-/* Hero background image */
+/* Hero background image (FINAL FIX APPLIED) */
 .ccg-hero-image {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
+
+    /* FORCE image to obey hero height instead of stretching page */
     object-fit: cover;
+    object-position: center top;
+
     filter: brightness(0.62) contrast(1.15);
     z-index: -1;
 }
