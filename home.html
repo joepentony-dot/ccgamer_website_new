@@ -78,26 +78,38 @@
                     </button>
 
                     <div class="ccg-socials">
-                        <a href="https://www.youtube.com/c/CheekyCommodoreGamer" class="ccg-socials__link">
+                        <a href="https://www.youtube.com/@CheekyCommodoreGamer"
+                           class="ccg-socials__link" aria-label="YouTube">
                             <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
                             <span class="ccg-socials__label">Subscribe</span>
                         </a>
-                        <a href="https://patreon.com/CheekyCommodoreGamer" class="ccg-socials__icon-btn">
+
+                        <a href="https://patreon.com/CheekyCommodoreGamer"
+                           class="ccg-socials__icon-btn" aria-label="Patreon">
                             <span class="ccg-socials__icon ccg-socials__icon--patreon"></span>
                         </a>
-                        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" class="ccg-socials__icon-btn">
+
+                        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"
+                           class="ccg-socials__icon-btn" aria-label="PayPal">
                             <span class="ccg-socials__icon ccg-socials__icon--paypal"></span>
                         </a>
-                        <a href="https://twitter.com/CheekyC64Gamer" class="ccg-socials__icon-btn">
+
+                        <a href="https://twitter.com/CheekyC64Gamer"
+                           class="ccg-socials__icon-btn" aria-label="Twitter/X">
                             <span class="ccg-socials__icon ccg-socials__icon--x"></span>
                         </a>
-                        <a href="https://www.facebook.com/cheekycommodoregamer" class="ccg-socials__icon-btn">
+
+                        <a href="https://www.facebook.com/cheekycommodoregamer"
+                           class="ccg-socials__icon-btn" aria-label="Facebook">
                             <span class="ccg-socials__icon ccg-socials__icon--fb"></span>
                         </a>
-                        <a href="https://discord.gg/83Xw9ktAn4" class="ccg-socials__icon-btn">
+
+                        <a href="https://discord.gg/83Xw9ktAn4"
+                           class="ccg-socials__icon-btn" aria-label="Discord">
                             <span class="ccg-socials__icon ccg-socials__icon--discord"></span>
                         </a>
                     </div>
+
                 </div>
             </div>
 
@@ -105,66 +117,76 @@
         </header>
 
         <!-- ============================================================
-             HERO SECTION
+             HERO
         ============================================================ -->
         <main class="ccg-main">
 
-            <section class="ccg-hero ccg-hero--home" aria-labelledby="home-hero-title">
+            <section class="ccg-section hero hero--home">
+                <div class="ccg-hero">
 
-                <div class="ccg-hero-image"></div>
-                <div class="ccg-hero-scanlines"></div>
+                    <!-- Background image layer (comes from ccg-mode.css via --hero-img) -->
+                    <div class="ccg-hero-image"></div>
+                    <div class="ccg-hero-scanlines"></div>
 
-                <div class="ccg-hero-inner">
+                    <div class="ccg-hero-inner">
+                        <p class="ccg-hero-accent">MODE · <span data-ccg-mode-label> C64</span></p>
+                        <h1 class="ccg-hero-title">THE ULTIMATE COMMODORE EXPERIENCE</h1>
+                        <p class="ccg-hero-tagline">— C64 &amp; AMIGA —</p>
 
-                    <div class="ccg-hero__mode-badge" data-ccg-hero-badge>
-                        <span class="ccg-hero__mode-prefix">Mode:</span>
-                        <span class="ccg-hero__mode-label" data-ccg-hero-mode-label>C64</span>
+                        <p class="ccg-hero-tagline">
+                            Dive into curated classics, game reviews, deep-dive features and retro magic across C64 &amp; Amiga.
+                        </p>
+
+                        <div class="ccg-hero-buttons">
+                            <a href="games/index.html" class="ccg-btn ccg-btn--primary">Browse All Games</a>
+                            <a href="games/game.html" class="ccg-btn ccg-btn--ghost" data-ccg-random-game>Random Game</a>
+                            <a href="games/collections/top-picks.html" class="ccg-btn ccg-btn--secondary">CCG Top Picks</a>
+                        </div>
+
+                        <p class="ccg-hero__hint">
+                            Tip: Flick the C64/Amiga switch in the corner for a different flavour of neon.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 SOCIAL STRIP
+            ============================================================ -->
+            <section class="ccg-section ccg-social-strip">
+                <div class="ccg-social-strip-inner">
+
+                    <div class="ccg-social-strip__brand">
+                        <span class="ccg-social-strip__tagline">Another visitor...</span>
+                        <span class="ccg-social-strip__tagline ccg-social-strip__tagline--strong">
+                            Stay a while, stay forever!
+                        </span>
                     </div>
 
-                    <h1 id="home-hero-title" class="ccg-hero-title">The Ultimate Commodore Experience</h1>
-
-                    <p class="ccg-hero-accent">&mdash; C64 &amp; Amiga &mdash;</p>
-
-                    <p class="ccg-hero-tagline">
-                        Dive into curated classics, game reviews, deep-dive features and retro magic across C64 &amp; Amiga.
-                    </p>
-
-                    <div class="ccg-hero-buttons">
-                        <a href="games/index.html" class="ccg-btn ccg-btn--primary">Browse All Games</a>
-                        <button class="ccg-btn ccg-btn--secondary" data-ccg-random-game>Random Game</button>
-                        <a href="games/genres/top-picks.html" class="ccg-btn ccg-btn--ghost">CCG Top Picks</a>
-                    </div>
-
-                    <p class="ccg-hero__hint">
-                        Tip: Flick the C64/Amiga switch in the corner for a different flavour of neon.
-                    </p>
-
-                    <!-- SOCIAL HERO ROW -->
-                    <div class="ccg-social-hero-row">
-                        <a href="https://www.youtube.com/c/CheekyCommodoreGamer" class="ccg-social-hero-btn">
-                            <img src="resources/icons/youtube.svg" alt="YouTube">
+                    <div class="ccg-social-strip__icons">
+                        <a href="https://www.youtube.com/@CheekyCommodoreGamer"
+                           class="ccg-socials__icon-btn" aria-label="YouTube">
+                            <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
                         </a>
-
-                        <a href="https://www.facebook.com/cheekycommodoregamer" class="ccg-social-hero-btn">
-                            <img src="resources/icons/facebook.svg" alt="Facebook">
+                        <a href="https://twitter.com/CheekyC64Gamer"
+                           class="ccg-socials__icon-btn" aria-label="Twitter/X">
+                            <span class="ccg-socials__icon ccg-socials__icon--x"></span>
                         </a>
-
-                        <a href="https://twitter.com/CheekyC64Gamer" class="ccg-social-hero-btn">
-                            <img src="resources/icons/twitter.svg" alt="Twitter">
+                        <a href="https://www.facebook.com/cheekycommodoregamer"
+                           class="ccg-socials__icon-btn" aria-label="Facebook">
+                            <span class="ccg-socials__icon ccg-socials__icon--fb"></span>
                         </a>
-
-                        <a href="https://discord.gg/83Xw9ktAn4" class="ccg-social-hero-btn">
-                            <img src="resources/icons/discord.svg" alt="Discord">
+                        <a href="https://discord.gg/83Xw9ktAn4"
+                           class="ccg-socials__icon-btn" aria-label="Discord">
+                            <span class="ccg-socials__icon ccg-socials__icon--discord"></span>
                         </a>
-
-                        <a href="https://patreon.com/CheekyCommodoreGamer" class="ccg-social-hero-btn">
-                            <img src="resources/icons/patreon.svg" alt="Patreon">
+                        <a href="https://patreon.com/CheekyCommodoreGamer"
+                           class="ccg-socials__icon-btn" aria-label="Patreon">
+                            <span class="ccg-socials__icon ccg-socials__icon--patreon"></span>
                         </a>
-
                         <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"
-                            class="ccg-social-hero-btn ccg-social-hero-btn--paypal">
-                            <img src="resources/icons/paypal.svg" alt="Donations">
-                            <span>Donations</span>
+                           class="ccg-socials__icon-btn" aria-label="PayPal">
+                            <span class="ccg-socials__icon ccg-socials__icon--paypal"></span>
                         </a>
                     </div>
 
@@ -185,7 +207,7 @@
                             <img data-fg-thumb src="" alt="">
                         </div>
                         <div class="ccg-card__body">
-                            <h3 class="ccg-card__title" data-fg-title>Loading...</h3>
+                            <h3 class="ccg-card__title" data-fg-title>Loading.</h3>
                             <p class="ccg-card__text" data-fg-desc></p>
                             <a href="#" class="ccg-btn ccg-btn--primary" data-fg-btn>View Game</a>
                         </div>
@@ -258,6 +280,33 @@
                     <a href="games/genres/role-playing-games.html" class="ccg-genre-tile">
                         <img src="resources/images/genres/role-playing.png" alt="">
                         <span>RPG</span>
+                    </a>
+
+                    <!-- NEW GENRES ADDED TO HOMEPAGE GRID -->
+
+                    <a href="games/genres/fighting-games.html" class="ccg-genre-tile">
+                        <img src="resources/images/genres/fighting.png" alt="">
+                        <span>Fighting</span>
+                    </a>
+
+                    <a href="games/genres/horror-games.html" class="ccg-genre-tile">
+                        <img src="resources/images/genres/horror.png" alt="">
+                        <span>Horror</span>
+                    </a>
+
+                    <a href="games/genres/quiz-games.html" class="ccg-genre-tile">
+                        <img src="resources/images/genres/quiz.png" alt="">
+                        <span>Quiz</span>
+                    </a>
+
+                    <a href="games/genres/casino-games.html" class="ccg-genre-tile">
+                        <img src="resources/images/genres/casino.png" alt="">
+                        <span>Casino</span>
+                    </a>
+
+                    <a href="games/genres/miscellaneous.html" class="ccg-genre-tile">
+                        <img src="resources/images/genres/miscellaneous.png" alt="">
+                        <span>Miscellaneous</span>
                     </a>
 
                 </div>
