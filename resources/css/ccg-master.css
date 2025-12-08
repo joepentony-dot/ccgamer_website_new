@@ -107,26 +107,80 @@ body {
 .ccg-header-inner {
     max-width: var(--content-max);
     margin: 0 auto;
-    padding: 0.9rem 1.4rem;
+    padding: 1.1rem 1.4rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 1.25rem;
+}
+
+/* Brand block */
+
+.ccg-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: var(--text-light);
+    flex: 0 0 auto;
+    min-width: 260px;
 }
 
 .ccg-brand__logo {
     height: 48px;
     width: auto;
+    flex-shrink: 0;
 }
 
+.ccg-brand__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
 
+.ccg-brand__kicker {
+    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
 
-/* ==========================================================================
-   NAVIGATION BASE
-========================================================================== */
+.ccg-brand__title {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.ccg-brand__neon-cheeky {
+    color: var(--accent);
+    text-shadow: var(--glow-strong);
+    margin-right: 0.35rem;
+}
+
+.ccg-brand__neon-sub {
+    opacity: 0.9;
+}
+
+/* Header actions (mode toggle + socials) */
+
+.ccg-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    flex: 0 0 auto;
+}
+
+/* Nav wrapper takes the flexible middle space */
+
+.ccg-nav {
+    flex: 1 1 auto;
+}
 
 .ccg-nav__list {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 1rem;
     list-style: none;
 }
@@ -323,6 +377,10 @@ body {
         flex-direction: column;
         gap: 1rem;
         align-items: flex-start;
+    }
+
+    .ccg-nav {
+        width: 100%;
     }
 
     .ccg-nav__list {
