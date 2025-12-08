@@ -14,7 +14,13 @@
 
     const MODE_KEY = "ccg-site-mode";              // localStorage key
     const toggleBtn = document.querySelector("[data-ccg-mode-toggle]");
-    const heroModeLabel = document.querySelector("[data-ccg-hero-mode-label]");
+
+    // Old hero label (still supported in case some pages use it)
+    const heroModeLabelLegacy = document.querySelector("[data-ccg-hero-mode-label]");
+
+    // NEW Phase 5 hero label
+    const heroModeLabel = document.querySelector("[data-ccg-mode-label]");
+
     const heroBadge = document.querySelector("[data-ccg-hero-badge]");
 
     /* ------------------------------------------------------------
@@ -32,8 +38,16 @@
     function applyMode(mode) {
         body.setAttribute("data-mode", mode);
 
+        const upper = mode.toUpperCase();
+
+        // Update NEW Phase 5 label
         if (heroModeLabel) {
-            heroModeLabel.textContent = mode.toUpperCase();
+            heroModeLabel.textContent = upper;
+        }
+
+        // Keep backwards compatibility for any older hero pages
+        if (heroModeLabelLegacy) {
+            heroModeLabelLegacy.textContent = upper;
         }
 
         if (heroBadge) {
