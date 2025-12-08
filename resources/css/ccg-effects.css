@@ -1,8 +1,8 @@
 /* ============================================================
-   CCG-EFFECTS.CSS — CRT • Neon • Bloom FX
+   CCG-EFFECTS.CSS — CRT • Neon • Bloom FX • Omega Grid
    Omega Build — Visual-only layer (non-structural)
    Safe for ALL pages, does NOT touch intro logic.
-   ============================================================ */
+============================================================ */
 
 
 /* ------------------------------------------------------------
@@ -23,10 +23,10 @@
 }
 
 
-/* ------------------------------------------------------------
-   GRID OVERLAY (subtle horizon grid)
-   Optional helper: <div class="ccg-bg-grid"></div>
------------------------------------------------------------- */
+/* ============================================================
+   OMEGA NEON GRID — cinematic horizon grid
+   These layers sit above the starfield but under the page
+============================================================ */
 
 .ccg-bg-grid {
     pointer-events: none;
@@ -34,32 +34,45 @@
     inset: 0;
     z-index: 1;
     opacity: 0.22;
+
     background:
-        linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.3)),
+        linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.25)),
         repeating-linear-gradient(
             to right,
-            rgba(255,255,255,0.09) 0,
-            rgba(255,255,255,0.09) 1px,
+            rgba(255,255,255,0.08) 0px,
+            rgba(255,255,255,0.08) 1px,
             transparent 1px,
-            transparent 28px
+            transparent 32px
         ),
         repeating-linear-gradient(
-            to top,
-            rgba(255,255,255,0.09) 0,
-            rgba(255,255,255,0.09) 1px,
+            to bottom,
+            rgba(255,255,255,0.08) 0px,
+            rgba(255,255,255,0.08) 1px,
             transparent 1px,
-            transparent 20px
+            transparent 24px
         );
+
     transform-origin: center bottom;
     transform: perspective(900px) rotateX(65deg) translateY(30%);
     filter: blur(0.2px);
 }
 
+/* Mode-based neon tinting */
+body[data-mode="c64"] .ccg-bg-grid {
+    --accent-rgb: 0, 200, 255;
+    opacity: 0.28;
+}
+
+body[data-mode="amiga"] .ccg-bg-grid {
+    --accent-rgb: 255, 80, 200;
+    opacity: 0.32;
+}
+
 
 /* ------------------------------------------------------------
    CRT SOFT SCAN OVERLAY
-   Applied via: <div class="ccg-bg-crt-overlay"></div>
-   Opacity is controlled by ccg-mode.css via --crt-opacity.
+   Applied via <div class="ccg-bg-crt-overlay">
+   Adds soft film, scanlines & slight screen bend
 ------------------------------------------------------------ */
 
 .ccg-bg-crt-overlay {
@@ -67,17 +80,37 @@
     position: fixed;
     inset: 0;
     z-index: 2;
+
     background:
         repeating-linear-gradient(
             to bottom,
             rgba(0,0,0,0.35) 0px,
             rgba(0,0,0,0.35) 2px,
             rgba(0,0,0,0.15) 3px
-        );
+        ),
+        url("../images/fx/ccg-noise.png");
+
     mix-blend-mode: multiply;
+    opacity: 0.22;
 }
 
-/* Full-page scanline helper (if used separately) */
+/* Screen curvature & vignette */
+.ccg-bg-crt-overlay::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    pointer-events: none;
+    box-shadow:
+        inset 0 0 60px rgba(0,0,0,0.55),
+        inset 0 0 140px rgba(0,0,0,0.45);
+}
+
+
+/* ------------------------------------------------------------
+   OPTIONAL FULL-SCREEN SCANLINES (disabled by default)
+------------------------------------------------------------ */
+
 .ccg-scanlines {
     pointer-events: none;
     position: fixed;
@@ -92,21 +125,22 @@
             transparent 3px
         );
     mix-blend-mode: soft-light;
+    opacity: 0.25;
 }
 
 
-/* ------------------------------------------------------------
-   PANEL + CARD AMBIENT GLOW
-   Gives soft lift to anything with .ccg-panel
------------------------------------------------------------- */
+/* ============================================================
+   PANEL / CARD GLOW
+============================================================ */
 
 .ccg-panel {
     background: rgba(0,0,0,0.55);
     border: 1px solid rgba(255,255,255,0.12);
-    box-shadow:
-        0 0 18px rgba(0, 0, 0, 0.65),
-        0 0 22px rgba(var(--accent-rgb), 0.15);
     border-radius: 14px;
+
+    box-shadow:
+        0 0 18px rgba(0,0,0,0.65),
+        0 0 22px rgba(var(--accent-rgb), 0.18);
 }
 
 
@@ -136,28 +170,26 @@
 
 
 /* ------------------------------------------------------------
-   IMAGE / THUMBNAIL GLOW
-   Apply to thumbnail wrappers if needed
+   THUMBNAIL GLOW (Universal)
 ------------------------------------------------------------ */
 
 .ccg-thumb-glow img {
     box-shadow:
         0 0 18px rgba(0,0,0,0.7),
         0 0 24px rgba(var(--accent-rgb), 0.35);
-    transition: box-shadow 0.25s ease, transform 0.25s ease;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .ccg-thumb-glow:hover img {
     transform: translateY(-2px);
     box-shadow:
         0 0 26px rgba(0,0,0,0.8),
-        0 0 36px rgba(var(--accent-rgb), 0.6);
+        0 0 36px rgba(var(--accent-rgb), 0.55);
 }
 
 
 /* ------------------------------------------------------------
-   BUTTON GLOW / LIFT ON HOVER
-   Complements ccg-master.css button styles
+   BUTTON GLOW / LIFT
 ------------------------------------------------------------ */
 
 .ccg-btn {
@@ -174,8 +206,7 @@
 
 
 /* ------------------------------------------------------------
-   PAGE FADE-IN (used by ccg-global.js adding .ccg-fade-in)
-   Very subtle – does NOT interfere with intro loader.
+   PAGE FADE-IN (added via ccg-global.js)
 ------------------------------------------------------------ */
 
 .ccg-fade-in {
