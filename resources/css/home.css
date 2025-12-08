@@ -1,6 +1,6 @@
 /* ============================================================
-   HOME.CSS — OMEGA CINEMATIC (H1-C-2 / G2 / B1 FINAL)
-   Fully synced with global hero.css
+   HOME.CSS — OMEGA CINEMATIC HOME (FINAL A1 SYNC)
+   Fully synced with ccg-hero.css / ccg-master.css / ccg-mode.css
    Safe: Does NOT affect intro loader
    ============================================================ */
 
@@ -14,6 +14,7 @@
 /* ============================================================
    PAGE BASE
 ============================================================ */
+
 .ccg-page--home {
     position: relative;
     z-index: 2;
@@ -23,79 +24,297 @@
     z-index: 0 !important;
 }
 
-/* ============================================================
-   HEADER POLISH
-============================================================ */
-.ccg-header {
+/* Tighten spacing between header and hero on home only */
+.ccg-page--home .ccg-header {
+    margin-bottom: 1.25rem;
     background: rgba(0, 0, 0, 0.65);
     backdrop-filter: blur(6px);
+}
+
+.ccg-page--home .ccg-main {
+    margin-top: 0.75rem;
+}
+
+/* ============================================================
+   HEADER POLISH (HOME ONLY)
+============================================================ */
+
+.ccg-page--home .ccg-header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.75rem 0 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.75rem;
+}
+
+.ccg-page--home .ccg-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+.ccg-page--home .ccg-brand__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.ccg-page--home .ccg-brand__kicker {
+    font-size: 0.75rem;
+    opacity: 0.75;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.ccg-page--home .ccg-brand__title {
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+}
+
+.ccg-page--home .ccg-brand__neon-cheeky {
+    color: var(--accent);
+    text-shadow: var(--glow-soft);
+}
+
+.ccg-page--home .ccg-brand__neon-sub {
+    margin-left: 0.4rem;
+}
+
+/* Nav tweaks */
+.ccg-page--home .ccg-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem 1.15rem;
+}
+
+.ccg-nav__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: inherit;
+    flex-wrap: inherit;
+    gap: inherit;
+}
+
+.ccg-nav__link {
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    color: var(--text-light);
+    opacity: 0.9;
+    transition: background 0.18s ease, color 0.18s ease, text-shadow 0.18s ease;
+}
+
+.ccg-nav__link:hover {
+    background: rgba(var(--accent-rgb), 0.18);
+    text-shadow: var(--glow-soft);
+    opacity: 1;
 }
 
 .ccg-nav__link--active {
     color: var(--c64-cyan);
     text-shadow: var(--glow-soft);
+    background: rgba(0, 0, 0, 0.6);
+}
+
+/* Header actions (mode toggle + socials) */
+.ccg-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
 }
 
 /* ============================================================
-   HERO SECTION — MATCHES hero.css
+   HERO SECTION — HOME A1 VARIANT
 ============================================================ */
-.ccg-hero {
+
+.ccg-hero--home {
     position: relative;
-    width: 100%;
-    padding: 6rem 0 5rem;
-    background: #000;
+    padding: 4rem 2rem 4.5rem;
+    text-align: center;
     overflow: hidden;
 }
 
-/* Background image is now delivered by hero.css */
-/* Badges, overlays, scanlines preserved */
-.ccg-hero__content {
+/* Background imagery is driven per-mode */
+.ccg-hero-image {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+}
+
+.ccg-hero--home .ccg-hero-image {
+    opacity: 1;
+}
+
+/* Scanlines overlay already styled by ccg-hero.css; ensure visible */
+.ccg-hero--home .ccg-hero-scanlines {
+    opacity: 0.45;
+}
+
+/* Per-mode backgrounds */
+body[data-mode="c64"] .ccg-hero-image {
+    background-image: url("../images/hero/ccg-hero-c64.png");
+}
+
+body[data-mode="amiga"] .ccg-hero-image {
+    background-image: url("../images/hero/ccg-hero-amiga.png");
+}
+
+/* Inner content */
+.ccg-hero--home .ccg-hero-inner {
     position: relative;
-    z-index: 10;
-    text-align: left;
-    max-width: 1100px;
+    max-width: 980px;
     margin: 0 auto;
-    padding: 0 2rem;
+    z-index: 4;
 }
 
-/* TITLE — H1-C-2 */
-.ccg-hero__title {
-    font-size: 3.5rem;
-    font-weight: 800;
-    color: #fff;
-    line-height: 1.1;
+/* MODE BADGE (top-right) */
+.ccg-hero__mode-badge {
+    position: absolute;
+    top: 1.75rem;
+    right: 2.25rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    background: var(--panel-bg);
+    border: 1px solid var(--border-light);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.75);
+}
+
+.ccg-hero__mode-prefix {
+    opacity: 0.7;
+}
+
+.ccg-hero__mode-label {
+    color: var(--accent);
+    text-shadow: var(--glow-soft);
+}
+
+/* TITLE */
+.ccg-hero--home .ccg-hero-title {
+    font-size: clamp(2.7rem, 5vw, 4.1rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    margin: 0;
+    color: var(--text-light);
     text-shadow:
-        0 0 12px rgba(0, 200, 255, 0.6),
-        0 0 32px rgba(0, 200, 255, 0.35);
+        0 0 10px rgba(var(--accent-rgb), 0.60),
+        0 0 22px rgba(var(--accent-rgb), 0.40),
+        0 0 36px rgba(var(--accent-rgb), 0.25);
 }
 
-.ccg-hero__title-accent {
-    color: var(--c64-cyan);
+/* ACCENT LINE (— C64 & Amiga —) */
+.ccg-hero-accent {
+    margin: 1.6rem 0 0.15rem;
+    font-size: 1rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
     text-shadow: var(--glow-strong);
 }
 
-.ccg-hero__subtitle {
-    margin-top: 1.2rem;
-    font-size: 1.25rem;
-    max-width: 700px;
-    color: #d7faff;
+/* TAGLINE */
+.ccg-hero--home .ccg-hero-tagline {
+    max-width: 720px;
+    margin: 1.5rem auto 2.1rem;
+    opacity: 0.9;
+    line-height: 1.55;
+    font-size: 1.05rem;
 }
 
-/* Buttons */
-.ccg-hero__actions {
+/* HERO BUTTONS */
+.ccg-hero-buttons {
+    margin-top: 1.4rem;
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
-    margin-top: 2rem;
+    justify-content: center;
 }
 
+/* Hint text */
 .ccg-hero__hint {
     color: #9cdcff;
-    margin-top: 1rem;
+    margin-top: 1.25rem;
+    font-size: 0.9rem;
+    opacity: 0.85;
+}
+
+/* ============================================================
+   BUTTON MAPPING (BEM → global accent buttons)
+============================================================ */
+
+.ccg-btn {
+    padding: 0.7rem 1.3rem;
+    border-radius: 999px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: 0.25s ease;
+    font-size: 0.92rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+}
+
+.ccg-btn--sm {
+    padding: 0.5rem 1.1rem;
+    font-size: 0.85rem;
+}
+
+/* Primary = accent neon button */
+.ccg-btn--primary {
+    background: var(--accent);
+    color: #000;
+    box-shadow: var(--btn-primary-shadow, 0 0 14px rgba(var(--accent-rgb), 0.55));
+}
+
+.ccg-btn--primary:hover {
+    background: rgba(var(--accent-rgb), 0.85);
+    transform: translateY(-2px);
+}
+
+/* Secondary = soft panel */
+.ccg-btn--secondary {
+    background: rgba(var(--accent-rgb), 0.18);
+    color: var(--text-light);
+    border: 1px solid rgba(var(--accent-rgb), 0.35);
+}
+
+.ccg-btn--secondary:hover {
+    background: rgba(var(--accent-rgb), 0.28);
+    transform: translateY(-2px);
+}
+
+/* Ghost = outlined */
+.ccg-btn--ghost {
+    background: transparent;
+    color: var(--text-light);
+    border: 1px solid var(--border-light);
+}
+
+.ccg-btn--ghost:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
 }
 
 /* ============================================================
    GENRE GRID
 ============================================================ */
+
 .ccg-genre-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -106,18 +325,19 @@
 .ccg-genre-card__thumb img {
     width: 100%;
     border-radius: 12px;
-    box-shadow: 0 0 20px rgba(0,180,255,0.25);
+    box-shadow: 0 0 20px rgba(0, 180, 255, 0.25);
     transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .ccg-genre-card__thumb img:hover {
     transform: scale(1.05);
-    box-shadow: 0 0 30px rgba(0,180,255,0.5);
+    box-shadow: 0 0 30px rgba(0, 180, 255, 0.5);
 }
 
 /* ============================================================
    FEATURED GRID
 ============================================================ */
+
 .ccg-featured-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -130,9 +350,45 @@
     }
 }
 
+/* Featured cards minor polish */
+.ccg-card--featured-game .ccg-card__media {
+    position: relative;
+    overflow: hidden;
+    border-radius: 14px 14px 0 0;
+}
+
+.ccg-card__media-gradient {
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 40%;
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.85),
+        rgba(0, 0, 0, 0)
+    );
+}
+
+/* Responsive video frame (16:9) */
+.ccg-card__video-frame {
+    position: relative;
+    padding-top: 56.25%;
+    border-radius: 14px 14px 0 0;
+    overflow: hidden;
+    background: #000;
+}
+
+.ccg-card__video-frame iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
 /* ============================================================
    COLLECTION GRID — FIX (B1)
 ============================================================ */
+
 .ccg-collection-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -156,18 +412,72 @@
 /* ============================================================
    COMMUNITY GRID
 ============================================================ */
+
 .ccg-community-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 2rem;
 }
 
+/* Let community cards feel a bit more “clickable” */
+.ccg-card--community {
+    transition: transform 0.2s ease, box-shadow 0.25s ease;
+}
+
+.ccg-card--community:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 22px rgba(var(--accent-rgb), 0.28);
+}
+
 /* ============================================================
    FOOTER
 ============================================================ */
+
 .ccg-footer {
     text-align: center;
     padding: 2rem 0;
     color: #8fd8ff;
     opacity: 0.8;
+}
+
+/* ============================================================
+   RESPONSIVE TWEAKS
+============================================================ */
+
+@media (max-width: 860px) {
+    .ccg-page--home .ccg-header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .ccg-header-actions {
+        align-self: stretch;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .ccg-hero__mode-badge {
+        top: 1.25rem;
+        right: 1.3rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .ccg-hero--home {
+        padding: 3.2rem 1.4rem 3.5rem;
+    }
+
+    .ccg-hero__mode-badge {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.75rem;
+    }
+
+    .ccg-hero--home .ccg-hero-title {
+        font-size: 2.2rem;
+    }
+
+    .ccg-hero-accent {
+        font-size: 0.85rem;
+        letter-spacing: 0.18em;
+    }
 }
