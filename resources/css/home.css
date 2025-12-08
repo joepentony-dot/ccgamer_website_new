@@ -328,3 +328,7 @@
     padding-bottom: 1.4rem;
     /* Removed min-height clamp completely */
 }
+
+/* Phase4 collection sizing */
+.ccg-collection-card { max-width:380px; }
+.ccg-collection-card__thumb-wrap img{ object-fit:cover; object-position:center; }
