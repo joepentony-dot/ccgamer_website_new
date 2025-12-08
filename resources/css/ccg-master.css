@@ -1,5 +1,5 @@
 /* ============================================================
-   CCG MASTER CSS — GLOBAL LAYOUT + OMEGA HEADER (Tightened)
+   CCG MASTER CSS — GLOBAL LAYOUT + OMEGA HEADER (Tightened, Restored)
    ============================================================ */
 
 :root {
@@ -23,16 +23,30 @@
 }
 
 /* -----------------------------
-   GLOBAL BASE
+   GLOBAL BASE + SIMPLE RESET
 ----------------------------- */
 
-html, body {
+html,
+body {
     margin: 0;
     padding: 0;
     width: 100%;
     background: #000;
-    color: #fff;
+    color: var(--text-light);
     font-family: var(--ccg-font-main);
+}
+
+/* basic list + link reset so nav / sections don't show bullets or blue links */
+ul,
+li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
 }
 
 .ccg-fade-in {
@@ -42,6 +56,19 @@ html, body {
 @keyframes ccgFadeIn {
     from { opacity: 0; }
     to   { opacity: 1; }
+}
+
+/* generic page layout wrapper */
+.ccg-page {
+    min-height: 100vh;
+    position: relative;
+    z-index: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.ccg-main {
+    flex: 1 0 auto;
 }
 
 /* -----------------------------
@@ -62,7 +89,7 @@ html, body {
 
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
 
     box-sizing: border-box;
 }
@@ -71,22 +98,20 @@ html, body {
     display: flex;
     align-items: center;
     width: 100%;
+    max-width: 1200px;
     justify-content: space-between;
 }
 
 /* -----------------------------
-   LOGO
+   BRAND BLOCK
 ----------------------------- */
 
-/* Original class (not used in your HTML but kept) */
-.ccg-header-logo img {
-    height: var(--ccg-logo-height);
-    display: block;
-    object-fit: contain;
-    margin: 0;
+.ccg-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
 
-/* ⭐ THIS IS THE FIX — matches your real HTML */
 .ccg-brand__logo {
     height: var(--ccg-logo-height);
     width: auto;
@@ -95,10 +120,108 @@ html, body {
     margin: 0;
 }
 
+/* keep legacy header-logo support for older pages */
+.ccg-header-logo img {
+    height: var(--ccg-logo-height);
+    display: block;
+    object-fit: contain;
+    margin: 0;
+}
+
+.ccg-brand__text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+.ccg-brand__kicker {
+    font-size: 0.78rem;
+    opacity: 0.8;
+}
+
+.ccg-brand__title {
+    font-family: var(--ccg-font-display);
+    font-size: 1.05rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.ccg-brand__neon-cheeky {
+    color: var(--accent);
+}
+
+.ccg-brand__neon-sub {
+    opacity: 0.9;
+}
+
 /* -----------------------------
-   NAVIGATION
+   PRIMARY NAV (OMEGA 2.0)
 ----------------------------- */
 
+.ccg-nav {
+    margin-left: 2rem;
+    margin-right: auto;
+}
+
+.ccg-nav__list {
+    display: flex;
+    align-items: center;
+    gap: var(--ccg-nav-gap);
+}
+
+.ccg-nav__link {
+    position: relative;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding-bottom: 0.18rem;
+    color: var(--text-light);
+    opacity: 0.86;
+    transition: opacity 0.25s ease, color 0.25s ease;
+}
+
+.ccg-nav__link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.15rem;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(
+        to right,
+        rgba(var(--accent-rgb), 0.0),
+        rgba(var(--accent-rgb), 0.9),
+        rgba(var(--accent-rgb), 0.0)
+    );
+    opacity: 0;
+    transform: scaleX(0.75);
+    transform-origin: center;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.ccg-nav__link:hover {
+    opacity: 1;
+    color: var(--accent);
+}
+
+.ccg-nav__link:hover::after {
+    opacity: 1;
+    transform: scaleX(1);
+}
+
+.ccg-nav__link--active {
+    color: var(--accent);
+    opacity: 1;
+}
+
+.ccg-nav__link--active::after {
+    opacity: 1;
+    transform: scaleX(1);
+}
+
+/* keep legacy header-nav support for any old markup */
 .ccg-header-nav {
     display: flex;
     align-items: center;
@@ -115,6 +238,16 @@ html, body {
 
 .ccg-header-nav a:hover {
     opacity: 0.65;
+}
+
+/* -----------------------------
+   HEADER ACTIONS (mode toggle + socials)
+----------------------------- */
+
+.ccg-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
 }
 
 /* -----------------------------
@@ -142,20 +275,29 @@ html, body {
 }
 
 /* -----------------------------
-   SOCIALS (handled in ccg-socials.css)
------------------------------ */
-
-/* -----------------------------
    MAIN CONTENT OFFSET
 ----------------------------- */
 
-main, .ccg-page-content {
+main,
+.ccg-page-content {
     margin-top: var(--ccg-header-height);
 }
 
 /* Ensures hero pages begin correctly below header */
 [data-ccg-page] .ccg-hero {
     margin-top: var(--ccg-header-height);
+}
+
+/* -----------------------------
+   FOOTER
+----------------------------- */
+
+.ccg-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 1rem 1.5rem 1.5rem;
+    text-align: center;
+    font-size: 0.85rem;
+    opacity: 0.8;
 }
 
 /* -----------------------------
@@ -170,8 +312,17 @@ main, .ccg-page-content {
         --ccg-header-padding-x: 18px;
     }
 
-    .ccg-header-nav {
-        font-size: 14px;
+    .ccg-header-inner {
+        gap: 0.75rem;
+    }
+
+    .ccg-nav {
+        margin-left: 1.2rem;
+    }
+
+    .ccg-nav__list {
+        gap: 1.1rem;
+        font-size: 0.82rem;
     }
 }
 
@@ -192,7 +343,12 @@ main, .ccg-page-content {
         gap: 10px;
     }
 
-    .ccg-header-nav {
+    .ccg-nav {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .ccg-nav__list {
         flex-wrap: wrap;
         gap: 12px;
     }
