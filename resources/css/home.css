@@ -1,9 +1,256 @@
 /* ============================================================
-   SOCIAL HERO ROW — (Omega Medium Glow)
+   HOME.CSS — OMEGA CINEMATIC HOME (FINAL A1 SYNC)
+   Fully synced with:
+     - ccg-hero.css
+     - ccg-master.css
+     - ccg-mode.css
+   Safe: Does NOT affect intro loader
+============================================================ */
+
+/* ============================================================
+   PAGE BASE
+============================================================ */
+
+.ccg-page--home {
+    position: relative;
+    z-index: 2;
+}
+
+.ccg-page--home .ccg-main {
+    margin-top: 0.75rem;
+}
+
+/* ============================================================
+   HEADER POLISH (HOME ONLY)
+============================================================ */
+
+.ccg-page--home .ccg-header {
+    margin-bottom: 1.25rem;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(6px);
+}
+
+.ccg-page--home .ccg-header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.75rem 0 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.75rem;
+}
+
+.ccg-page--home .ccg-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+.ccg-page--home .ccg-brand__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.ccg-page--home .ccg-brand__kicker {
+    font-size: 0.75rem;
+    opacity: 0.75;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.ccg-page--home .ccg-brand__title {
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+}
+
+.ccg-page--home .ccg-brand__neon-cheeky {
+    color: var(--accent);
+    text-shadow: var(--glow-soft);
+}
+
+.ccg-page--home .ccg-brand__neon-sub {
+    margin-left: 0.4rem;
+}
+
+/* Nav tweaks */
+.ccg-page--home .ccg-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem 1.15rem;
+}
+
+.ccg-nav__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: inherit;
+    flex-wrap: inherit;
+    gap: inherit;
+}
+
+.ccg-nav__link {
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    color: var(--text-light);
+    opacity: 0.9;
+    transition: background 0.18s ease, color 0.18s ease, text-shadow 0.18s ease;
+}
+
+.ccg-nav__link:hover {
+    background: rgba(var(--accent-rgb), 0.18);
+    text-shadow: var(--glow-soft);
+    opacity: 1;
+}
+
+.ccg-nav__link--active {
+    color: var(--c64-cyan);
+    text-shadow: var(--glow-soft);
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.ccg-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+}
+
+/* ============================================================
+   HERO SECTION — HOME A1 VARIANT
+============================================================ */
+
+.ccg-hero--home {
+    position: relative;
+    width: 100%;
+    padding: 4rem 2rem 4.5rem;
+    text-align: center;
+    overflow: hidden;
+    background: #000;
+}
+
+/* Background images provided per-mode */
+.ccg-hero-image {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+}
+
+.ccg-hero--home .ccg-hero-image {
+    opacity: 1;
+}
+
+body[data-mode="c64"] .ccg-hero-image {
+    background-image: url("../images/hero/ccg-hero-c64.png");
+}
+
+body[data-mode="amiga"] .ccg-hero-image {
+    background-image: url("../images/hero/ccg-hero-amiga.png");
+}
+
+/* Scanlines overlay */
+.ccg-hero--home .ccg-hero-scanlines {
+    opacity: 0.45;
+}
+
+/* Inner container */
+.ccg-hero--home .ccg-hero-inner {
+    position: relative;
+    z-index: 4;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    text-align: center;
+}
+
+/* Mode badge */
+.ccg-hero__mode-badge {
+    position: absolute;
+    top: 1.75rem;
+    right: 2.25rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    background: var(--panel-bg);
+    border: 1px solid var(--border-light);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.75);
+}
+
+.ccg-hero__mode-label {
+    color: var(--accent);
+    text-shadow: var(--glow-soft);
+}
+
+/* Title */
+.ccg-hero--home .ccg-hero-title {
+    font-size: clamp(2.7rem, 5vw, 4.1rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    margin: 0;
+    color: var(--text-light);
+    text-shadow:
+        0 0 12px rgba(0, 200, 255, 0.6),
+        0 0 32px rgba(0, 200, 255, 0.35),
+        0 0 10px rgba(var(--accent-rgb), 0.60),
+        0 0 22px rgba(var(--accent-rgb), 0.40),
+        0 0 36px rgba(var(--accent-rgb), 0.25);
+}
+
+/* Accent line — C64 & Amiga */
+.ccg-hero-accent {
+    margin: 1.6rem 0 0.15rem;
+    font-size: 1rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-shadow: var(--glow-strong);
+}
+
+/* Tagline */
+.ccg-hero--home .ccg-hero-tagline {
+    max-width: 720px;
+    margin: 1.5rem auto 2.1rem;
+    opacity: 0.9;
+    line-height: 1.55;
+    font-size: 1.05rem;
+}
+
+/* Buttons */
+.ccg-hero-buttons {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+}
+
+/* Hint */
+.ccg-hero__hint {
+    color: #9cdcff;
+    margin-top: 1.25rem;
+    font-size: 0.9rem;
+    opacity: 0.85;
+}
+
+/* ============================================================
+   SOCIAL HERO ROW — OPTION C (90% WIDTH)
 ============================================================ */
 
 .ccg-social-hero-row {
-    margin-top: 1.8rem;
+    margin: 2rem auto 0;
+    width: 92%;
+    max-width: 1100px;
     display: flex;
     gap: 1.4rem;
     justify-content: center;
@@ -26,7 +273,6 @@
 .ccg-social-hero-btn img {
     width: 32px;
     height: 32px;
-    display: block;
     filter: drop-shadow(0 0 6px rgba(var(--accent-rgb), 0.45));
 }
 
@@ -39,7 +285,6 @@
         0 0 36px rgba(var(--accent-rgb), 0.45);
 }
 
-/* PayPal with label */
 .ccg-social-hero-btn--paypal {
     gap: 0.45rem;
 }
@@ -51,9 +296,8 @@
     letter-spacing: 0.02em;
 }
 
-
 /* ============================================================
-   FEATURED HIGHLIGHTS — HEIGHT MATCH FIX
+   FEATURED HIGHLIGHTS — 16:9 + EQUAL HEIGHT
 ============================================================ */
 
 .ccg-featured-grid {
@@ -83,7 +327,6 @@
     object-fit: cover;
 }
 
-/* Container flex fill */
 .ccg-card__body {
     flex: 1;
     display: flex;
@@ -92,7 +335,7 @@
 }
 
 /* ============================================================
-   COLLECTIONS — RECTANGULAR FIX (4:3)
+   COLLECTION GRID — RECTANGULAR (4:3)
 ============================================================ */
 
 .ccg-collection-card__thumb-wrap {
@@ -108,11 +351,49 @@
 }
 
 /* ============================================================
-   MOBILE TWEAKS
+   RESPONSIVE TWEAKS
 ============================================================ */
 
 @media (max-width: 900px) {
     .ccg-featured-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 860px) {
+    .ccg-page--home .ccg-header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .ccg-header-actions {
+        align-self: stretch;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .ccg-hero__mode-badge {
+        top: 1.25rem;
+        right: 1.3rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .ccg-hero--home {
+        padding: 3.2rem 1.4rem 3.5rem;
+    }
+
+    .ccg-hero__mode-badge {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.75rem;
+    }
+
+    .ccg-hero--home .ccg-hero-title {
+        font-size: 2.2rem;
+    }
+
+    .ccg-hero-accent {
+        font-size: 0.85rem;
+        letter-spacing: 0.18em;
     }
 }
