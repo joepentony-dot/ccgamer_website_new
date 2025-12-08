@@ -1,146 +1,277 @@
 /* ============================================================
-   GAMES.CSS — OMEGA HERO SYNC (G3 + SINGLE GAME HERO)
-   Matches global cinematic spec + ccg-hero.css
-   ============================================================ */
+   GAMES.CSS — Omega Games Index Layout
+   Scoped to [data-ccg-page="games-index"]
+============================================================ */
 
+:root {
+    --games-grid-gap: 1.5rem;
+    --games-card-radius: 16px;
+}
+
+/* Basic page spacing */
+
+[data-ccg-page="games-index"] .ccg-main {
+    padding: 2.5rem min(5vw, 3.5rem) 3.5rem;
+}
 
 /* ------------------------------------------------------------
-   GAMES INDEX HERO (G3)
+   HERO / INTRO
 ------------------------------------------------------------ */
 
-.games-index-hero,
-.hero--games-index {
-    position: relative;
-    width: 100%;
-    overflow: hidden;
-    padding: 4.2rem 1.5rem 3rem;
-
-    background: #000;
+.ccg-games-hero {
+    margin-bottom: 2rem;
 }
 
-.hero-g3-bg {
-    position: absolute;
-    inset: 0;
-    background-size: cover;
-    background-position: center;
-    filter: brightness(0.55) contrast(1.1);
-    z-index: 0;
-}
-
-.hero-g3-overlay {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-}
-
-/* Content */
-.hero-g3-content {
-    position: relative;
-    z-index: 5;
-    max-width: 56rem;
-    margin: 0 auto;
+.ccg-games-hero__inner {
     text-align: center;
-
-    color: var(--text-light);
-    text-shadow:
-        0 0 6px rgba(0,0,0,0.65),
-        0 0 18px rgba(0,0,0,0.45);
-}
-
-.hero-g3-title {
-    margin: 0 0 0.75rem;
-    font-size: clamp(2.3rem, 6vw, 3.5rem);
-    text-transform: uppercase;
-    color: var(--accent);
-}
-
-.hero-g3-subtitle {
-    opacity: 0.85;
-}
-
-
-/* ------------------------------------------------------------
-   MODE SUPPORT
------------------------------------------------------------- */
-
-body[data-mode="amiga"] .hero-g3-title {
-    color: #ff7bfd;
-    text-shadow: none;
-}
-
-
-/* ------------------------------------------------------------
-   SINGLE GAME HERO (Omega Panel)
------------------------------------------------------------- */
-
-.game-hero,
-.hero--single-game {
-    position: relative;
-    overflow: hidden;
-    padding: 4rem 1.5rem 3rem;
-    background: #000;
-}
-
-.game-hero-bg {
-    position: absolute;
-    inset: 0;
-
-    background-size: cover;
-    background-position: center;
-
-    filter: brightness(0.55) contrast(1.1);
-    z-index: 0;
-}
-
-.game-hero-overlay {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-}
-
-.game-hero-inner {
-    position: relative;
-    z-index: 5;
-    max-width: 52rem;
+    max-width: 720px;
     margin: 0 auto;
-    color: var(--text-light);
-
-    text-shadow:
-        0 0 6px rgba(0,0,0,0.7),
-        0 0 18px rgba(0,0,0,0.45);
 }
 
-.game-hero-title {
-    margin: 0 0 0.5rem;
-    font-size: clamp(2.2rem, 5.8vw, 3.4rem);
+.ccg-games-hero__title {
+    font-size: clamp(2.1rem, 2.6vw, 2.8rem);
     text-transform: uppercase;
-    color: var(--accent);
+    letter-spacing: 0.14em;
+    margin-bottom: 0.5rem;
 }
 
-.game-hero-meta {
+.ccg-games-hero__tagline {
+    font-size: 0.98rem;
+    opacity: 0.9;
+}
+
+/* ------------------------------------------------------------
+   TOOLBAR
+------------------------------------------------------------ */
+
+.ccg-games-browser {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.ccg-games-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 1.5rem;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.ccg-games-search {
+    flex: 1 1 260px;
+}
+
+.ccg-games-search input[type="search"] {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(0, 0, 0, 0.5);
+    color: var(--text-light);
+    font-size: 0.95rem;
+    outline: none;
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.6);
+}
+
+.ccg-games-search input[type="search"]::placeholder {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.ccg-games-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+}
+
+.ccg-games-system-filter {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.ccg-chip {
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    padding: 0.35rem 0.85rem;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    background: rgba(0, 0, 0, 0.6);
+    cursor: pointer;
+    opacity: 0.8;
+    transition: background 0.2s ease, border-color 0.2s ease, opacity 0.2s ease,
+        transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ccg-chip:hover {
+    opacity: 1;
+    transform: translateY(-1px);
+    box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.4);
+}
+
+.ccg-chip--active {
+    opacity: 1;
+    background: linear-gradient(
+        to right,
+        rgba(var(--accent-rgb), 0.36),
+        rgba(var(--accent-rgb), 0.12)
+    );
+    border-color: rgba(var(--accent-rgb), 0.8);
+}
+
+.ccg-games-genre-filter {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.ccg-games-genre-label {
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.78;
+}
+
+.ccg-games-genre-filter select {
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(0, 0, 0, 0.6);
+    color: var(--text-light);
+    font-size: 0.86rem;
+    padding: 0.35rem 0.9rem;
+}
+
+/* ------------------------------------------------------------
+   GAMES GRID + CARDS
+------------------------------------------------------------ */
+
+.ccg-games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--games-grid-gap);
+    min-height: 6rem;
+}
+
+.ccg-game-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--games-card-radius);
+    background: radial-gradient(
+            circle at top left,
+            rgba(var(--accent-rgb), 0.26),
+            transparent 55%
+        ),
+        rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow:
+        0 0 18px rgba(0, 0, 0, 0.85),
+        0 0 18px rgba(var(--accent-rgb), 0.18);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.ccg-game-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(var(--accent-rgb), 0.9);
+    box-shadow:
+        0 0 22px rgba(0, 0, 0, 0.9),
+        0 0 30px rgba(var(--accent-rgb), 0.55);
+}
+
+.ccg-game-card__thumb {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+}
+
+.ccg-game-card__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.ccg-game-card__body {
+    padding: 0.85rem 0.95rem 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.ccg-game-card__title {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.ccg-game-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    font-size: 0.78rem;
     opacity: 0.85;
-    margin-bottom: 1rem;
 }
 
-/* Amiga mode */
-body[data-mode="amiga"] .game-hero-title {
-    color: #ff7bfd;
-    text-shadow: none;
+.ccg-pill {
+    border-radius: 999px;
+    padding: 0.18rem 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.9;
 }
 
+.ccg-game-card__genres {
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+.ccg-game-card__footer {
+    margin-top: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ccg-btn--mini {
+    padding: 0.32rem 0.8rem;
+    font-size: 0.78rem;
+}
+
+/* LOAD MORE */
+
+.ccg-games-load-more-wrap {
+    margin-top: 2rem;
+    text-align: center;
+}
 
 /* ------------------------------------------------------------
    RESPONSIVE
 ------------------------------------------------------------ */
 
-@media (max-width: 760px) {
-
-    .hero--games-index,
-    .game-hero {
-        padding: 3rem 1rem 2.4rem;
+@media (max-width: 900px) {
+    [data-ccg-page="games-index"] .ccg-main {
+        padding-inline: 1.25rem;
     }
 
-    .game-hero-title {
-        font-size: clamp(1.8rem, 7vw, 2.7rem);
+    .ccg-games-toolbar {
+        align-items: stretch;
+    }
+
+    .ccg-games-filters {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 600px) {
+    .ccg-games-hero__title {
+        font-size: 1.8rem;
+    }
+
+    .ccg-games-grid {
+        grid-template-columns: 1fr;
     }
 }
