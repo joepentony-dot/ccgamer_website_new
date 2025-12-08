@@ -1,8 +1,9 @@
 // ======================================================================
-// home-dynamic.js — Omega Dynamic Loader (FINAL A2 BUILD)
+// home-dynamic.js — Omega Dynamic Loader (FINAL A3 BUILD)
 // Drives:
 //  ✔ Featured Game of the Day (randomised each load)
 //  ✔ Dynamic Featured Video (from the same selected game)
+//  ✔ Lightweight Weighted Random (Option A)
 //  ✔ Safe fallback handling
 // Uses games/games.json with keys: id, title, videoid, thumbnail, genres, etc.
 // ======================================================================
@@ -36,7 +37,44 @@
         // Strip any leading slash so it's relative from site root
         p = p.replace(/^\//, "");
 
-        return p; // e.g. "resources/images/thumbnails/all/1942.jpg"
+        return p;
+    }
+
+    /* -------------------------------------------------------------
+       LIGHTWEIGHT WEIGHTED RANDOM
+       Still random, just slightly favours stronger / popular genres.
+       ------------------------------------------------------------- */
+    function makeWeightedList(games) {
+        const weighted = [];
+
+        games.forEach(g => {
+            let weight = 1; // default
+
+            const title = (g.title || "").toLowerCase();
+
+            // Soft genre/title-based weighting (VERY light)
+            if (title.includes("ninja")) weight += 1;
+            if (title.includes("mania")) weight += 0.5;
+
+            // Softer universal popularity bumps
+            if (g.genres && Array.isArray(g.genres)) {
+                const gs = g.genres.map(s => s.toLowerCase());
+                if (gs.includes("arcade") || gs.includes("platform")) weight += 1;
+                if (gs.includes("action") || gs.includes("action-adventure")) weight += 1;
+            }
+
+            // Strong signal: a valid thumbnail
+            if (g.thumbnail && String(g.thumbnail).trim() !== "") {
+                weight += 0.75;
+            }
+
+            // Push into weighted pool
+            for (let i = 0; i < weight; i++) {
+                weighted.push(g);
+            }
+        });
+
+        return weighted;
     }
 
     async function loadFeatured() {
@@ -45,8 +83,10 @@
             if (!response.ok) throw new Error("games.json fetch failed");
             const games = await response.json();
 
-            // Only games with a videoid
-            const videoCapable = games.filter(g => g.videoid && String(g.videoid).trim().length > 0);
+            // Filter to video-enabled games only
+            const videoCapable = games.filter(
+                g => g.videoid && String(g.videoid).trim().length > 0
+            );
 
             if (!videoCapable.length) {
                 FEATURED_VIDEO_FRAME.innerHTML =
@@ -54,8 +94,11 @@
                 return;
             }
 
-            // Pick random game each load
-            const chosen = videoCapable[Math.floor(Math.random() * videoCapable.length)];
+            // Apply LIGHTWEIGHT weight-based random pool
+            const weightedList = makeWeightedList(videoCapable);
+
+            // Pick random from weighted pool
+            const chosen = weightedList[Math.floor(Math.random() * weightedList.length)];
 
             const title = chosen.title || "Unknown Game";
             const year  = chosen.year ? ` (${chosen.year})` : "";
