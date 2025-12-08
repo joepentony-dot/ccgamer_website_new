@@ -1,5 +1,5 @@
 /* ============================================================
-   CCG MASTER CSS — GLOBAL LAYOUT + OMEGA HEADER (Tightened, Restored)
+   CCG MASTER CSS — GLOBAL LAYOUT + OMEGA HEADER (Tightened, Restored + Polished)
    ============================================================ */
 
 :root {
@@ -36,7 +36,6 @@ body {
     font-family: var(--ccg-font-main);
 }
 
-/* basic list + link reset so nav / sections don't show bullets or blue links */
 ul,
 li {
     margin: 0;
@@ -58,7 +57,6 @@ a {
     to   { opacity: 1; }
 }
 
-/* generic page layout wrapper */
 .ccg-page {
     min-height: 100vh;
     position: relative;
@@ -98,8 +96,9 @@ a {
     display: flex;
     align-items: center;
     width: 100%;
-    max-width: 1200px;
+    max-width: 1320px; /* smoother spacing without crowding */
     justify-content: space-between;
+    gap: 1.5rem;
 }
 
 /* -----------------------------
@@ -120,7 +119,6 @@ a {
     margin: 0;
 }
 
-/* keep legacy header-logo support for older pages */
 .ccg-header-logo img {
     height: var(--ccg-logo-height);
     display: block;
@@ -159,7 +157,7 @@ a {
 ----------------------------- */
 
 .ccg-nav {
-    margin-left: 2rem;
+    margin-left: 1.5rem;
     margin-right: auto;
 }
 
@@ -171,39 +169,49 @@ a {
 
 .ccg-nav__link {
     position: relative;
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     font-weight: 500;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.055em;
     text-transform: uppercase;
     padding-bottom: 0.18rem;
     color: var(--text-light);
     opacity: 0.86;
-    transition: opacity 0.25s ease, color 0.25s ease;
+
+    transition:
+        opacity 0.25s ease,
+        color 0.25s ease,
+        transform 0.25s ease;
+}
+
+.ccg-nav__link:hover {
+    opacity: 1;
+    color: var(--accent);
+    transform: translateY(-1px);
 }
 
 .ccg-nav__link::after {
     content: "";
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -0.15rem;
+    left: 10%;
+    right: 10%;
+    bottom: -0.18rem;
     height: 2px;
     border-radius: 999px;
+
     background: linear-gradient(
         to right,
         rgba(var(--accent-rgb), 0.0),
         rgba(var(--accent-rgb), 0.9),
         rgba(var(--accent-rgb), 0.0)
     );
-    opacity: 0;
-    transform: scaleX(0.75);
-    transform-origin: center;
-    transition: opacity 0.25s ease, transform 0.25s ease;
-}
 
-.ccg-nav__link:hover {
-    opacity: 1;
-    color: var(--accent);
+    opacity: 0;
+    transform: scaleX(0.4);
+    transform-origin: center;
+
+    transition:
+        opacity 0.28s ease,
+        transform 0.28s ease;
 }
 
 .ccg-nav__link:hover::after {
@@ -221,7 +229,6 @@ a {
     transform: scaleX(1);
 }
 
-/* keep legacy header-nav support for any old markup */
 .ccg-header-nav {
     display: flex;
     align-items: center;
@@ -241,13 +248,14 @@ a {
 }
 
 /* -----------------------------
-   HEADER ACTIONS (mode toggle + socials)
+   HEADER ACTIONS
 ----------------------------- */
 
 .ccg-header-actions {
     display: flex;
     align-items: center;
-    gap: 1.2rem;
+    gap: 1.4rem;
+    padding-left: 0.5rem;
 }
 
 /* -----------------------------
@@ -258,7 +266,8 @@ a {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 6px 14px;
+
+    padding: 6px 15px;
     font-size: 14px;
     border-radius: 999px;
     cursor: pointer;
@@ -267,11 +276,14 @@ a {
     backdrop-filter: blur(6px);
     background: rgba(255, 255, 255, 0.1);
 
-    transition: background 0.25s ease;
+    transition:
+        background 0.25s ease,
+        transform 0.25s ease;
 }
 
 .ccg-mode-toggle:hover {
     background: rgba(255, 255, 255, 0.18);
+    transform: translateY(-1px);
 }
 
 /* -----------------------------
@@ -283,7 +295,6 @@ main,
     margin-top: var(--ccg-header-height);
 }
 
-/* Ensures hero pages begin correctly below header */
 [data-ccg-page] .ccg-hero {
     margin-top: var(--ccg-header-height);
 }
@@ -313,16 +324,16 @@ main,
     }
 
     .ccg-header-inner {
-        gap: 0.75rem;
+        gap: 1rem;
     }
 
     .ccg-nav {
-        margin-left: 1.2rem;
+        margin-left: 1rem;
     }
 
     .ccg-nav__list {
-        gap: 1.1rem;
-        font-size: 0.82rem;
+        gap: 1rem;
+        font-size: 0.84rem;
     }
 }
 
@@ -340,7 +351,7 @@ main,
     .ccg-header-inner {
         flex-direction: column;
         align-items: flex-start;
-        gap: 10px;
+        gap: 12px;
     }
 
     .ccg-nav {
