@@ -273,3 +273,23 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* ======================================================================
+   OMEGA HERO HEIGHT CONSTRAINT — Prevents hero from pushing content down
+   This ONLY affects the HOME PAGE.
+   ====================================================================== */
+
+[data-ccg-page="home"] .ccg-hero {
+    height: 520px;          /* Cinematic height */
+    max-height: 520px;
+    overflow: hidden;       /* Ensures giant artwork doesn't push layout */
+    position: relative;     /* Ensures correct stacking inside hero */
+}
+
+/* Mobile refinement — shorter hero for small screens */
+@media (max-width: 700px) {
+    [data-ccg-page="home"] .ccg-hero {
+        height: 420px;
+        max-height: 420px;
+    }
+}
