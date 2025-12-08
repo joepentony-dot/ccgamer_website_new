@@ -20,8 +20,6 @@
     /* Typography */
     --ccg-font-main: "Roboto", sans-serif;
     --ccg-font-display: "Orbitron", sans-serif;
-
-    /* Mode colours (C64/Amiga handled by mode engine) */
 }
 
 /* -----------------------------
@@ -69,7 +67,6 @@ html, body {
     box-sizing: border-box;
 }
 
-/* Inner flex control */
 .ccg-header-inner {
     display: flex;
     align-items: center;
@@ -81,8 +78,18 @@ html, body {
    LOGO
 ----------------------------- */
 
+/* Original class (not used in your HTML but kept) */
 .ccg-header-logo img {
     height: var(--ccg-logo-height);
+    display: block;
+    object-fit: contain;
+    margin: 0;
+}
+
+/* ⭐ THIS IS THE FIX — matches your real HTML */
+.ccg-brand__logo {
+    height: var(--ccg-logo-height);
+    width: auto;
     display: block;
     object-fit: contain;
     margin: 0;
