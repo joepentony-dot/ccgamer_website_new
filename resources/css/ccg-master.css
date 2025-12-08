@@ -1,400 +1,192 @@
-/* ==========================================================================
-   CCG-MASTER.CSS — OMEGA CINEMATIC FUSION (GLOBAL FINAL BUILD)
-   Provides:
-   • Global resets & typography
-   • Universal layout spacing & structure
-   • Base card system used across all pages
-   • Accent-aware neon rules for C64 / Amiga modes
-   • Header/footer base behaviour
-   Safe: Does NOT affect intro sequence (intro.css isolated)
-   ========================================================================== */
-
-
-/* ==========================================================================
-   GLOBAL RESET
-========================================================================== */
-
-*,
-*::before,
-*::after {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-html {
-    scroll-behavior: smooth;
-}
-
-body {
-    background: #000;
-    color: var(--text-light, #e8fbff);
-    font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
-    line-height: 1.55;
-}
-
-
-
-/* ==========================================================================
-   GLOBAL VARIABLES
-========================================================================== */
+/* ============================================================
+   CCG MASTER CSS — GLOBAL LAYOUT + OMEGA HEADER (Tightened)
+   ============================================================ */
 
 :root {
-    --text-light: #e8fbff;
+    --ccg-header-height: 88px; /* Medium-tightened universal */
+    --ccg-header-bg: rgba(0, 0, 0, 0.65);
+    --ccg-header-blur: 14px;
 
-    /* C64 Neon */
-    --c64-cyan: #7fe9ff;
+    --ccg-header-padding-y: 10px;
+    --ccg-header-padding-x: 28px;
 
-    /* Amiga Neon */
-    --amiga-pink: #ffb2f6;
+    --ccg-nav-gap: 22px;
+    --ccg-social-gap: 16px;
 
-    /* Layout */
-    --content-max: 1200px;
-    --section-padding: 3.2rem;
+    --ccg-logo-height: 48px; /* consistent across pages */
 
-    /* Borders */
-    --border-light: rgba(255,255,255,0.18);
+    --ccg-hero-top-offset: calc(var(--ccg-header-height) + 20px);
 
-    /* Panel */
-    --panel-bg: rgba(0,0,0,0.55);
+    /* Typography */
+    --ccg-font-main: "Roboto", sans-serif;
+    --ccg-font-display: "Orbitron", sans-serif;
 
-    /* Glows */
-    --glow-soft: 0 0 12px rgba(0, 200, 255, 0.35);
-    --glow-strong: 0 0 28px rgba(0, 200, 255, 0.55);
-
-    /* Accent (dynamic based on mode) */
-    --accent: var(--c64-cyan);
-    --accent-rgb: 127, 233, 255;
+    /* Mode colours (C64/Amiga handled by mode engine) */
 }
 
-/* AMIGA MODE OVERRIDE */
-[data-mode="amiga"] {
-    --accent: var(--amiga-pink);
-    --accent-rgb: 255, 178, 246;
-}
+/* -----------------------------
+   GLOBAL BASE
+----------------------------- */
 
-
-
-/* ==========================================================================
-   PAGE STRUCTURE
-========================================================================== */
-
-.ccg-page {
+html, body {
+    margin: 0;
+    padding: 0;
     width: 100%;
-    position: relative;
-    z-index: 1;
+    background: #000;
+    color: #fff;
+    font-family: var(--ccg-font-main);
 }
 
-.ccg-main {
-    width: 100%;
+.ccg-fade-in {
+    animation: ccgFadeIn 0.8s ease-out forwards;
 }
 
+@keyframes ccgFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
 
-
-/* ==========================================================================
-   HEADERS (base behaviour — visual handled in header-specific CSS)
-========================================================================== */
+/* -----------------------------
+   OMEGA HEADER (UNIVERSAL)
+----------------------------- */
 
 .ccg-header {
-    width: 100%;
-    background: rgba(0,0,0,0.55);
-    backdrop-filter: blur(6px);
-    position: relative;
-    z-index: 50;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-}
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--ccg-header-height);
+    padding: var(--ccg-header-padding-y) var(--ccg-header-padding-x);
+    backdrop-filter: blur(var(--ccg-header-blur));
+    background: var(--ccg-header-bg);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    z-index: 9999;
 
-.ccg-header-inner {
-    max-width: var(--content-max);
-    margin: 0 auto;
-    padding: 1.1rem 1.4rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1.25rem;
+
+    box-sizing: border-box;
 }
 
-/* Brand block */
-
-.ccg-brand {
+/* Inner flex control */
+.ccg-header-inner {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    text-decoration: none;
-    color: var(--text-light);
-    flex: 0 0 auto;
-    min-width: 260px;
-}
-
-.ccg-brand__logo {
-    height: 48px;
-    width: auto;
-    flex-shrink: 0;
-}
-
-.ccg-brand__text {
-    display: flex;
-    flex-direction: column;
-    gap: 0.1rem;
-}
-
-.ccg-brand__kicker {
-    font-size: 0.75rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    opacity: 0.8;
-}
-
-.ccg-brand__title {
-    font-size: 1rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-}
-
-.ccg-brand__neon-cheeky {
-    color: var(--accent);
-    text-shadow: var(--glow-strong);
-    margin-right: 0.35rem;
-}
-
-.ccg-brand__neon-sub {
-    opacity: 0.9;
-}
-
-/* Header actions (mode toggle + socials) */
-
-.ccg-header-actions {
-    display: flex;
-    align-items: center;
-    gap: 0.85rem;
-    flex: 0 0 auto;
-}
-
-/* Nav wrapper takes the flexible middle space */
-
-.ccg-nav {
-    flex: 1 1 auto;
-}
-
-.ccg-nav__list {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    list-style: none;
-}
-
-.ccg-nav__link {
-    color: var(--text-light);
-    opacity: 0.85;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-
-    padding: 0.35rem 0.85rem;
-    border-radius: 999px;
-
-    transition: 0.25s ease;
-}
-
-.ccg-nav__link:hover {
-    opacity: 1;
-    background: rgba(var(--accent-rgb), 0.15);
-    text-shadow: var(--glow-soft);
-}
-
-.ccg-nav__link--active {
-    color: var(--accent);
-    text-shadow: var(--glow-strong);
-    background: rgba(0,0,0,0.5);
-}
-
-
-
-/* ==========================================================================
-   SECTION HEADERS
-========================================================================== */
-
-.ccg-section-title {
-    text-align: center;
-    font-size: 2rem;
-    font-weight: 800;
-    margin-bottom: 2rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-
-    color: var(--accent);
-    text-shadow: var(--glow-strong);
-}
-
-
-
-/* ==========================================================================
-   CARD SYSTEM — Omega Standard
-========================================================================== */
-
-.ccg-card {
-    background: rgba(0,0,0,0.45);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 14px;
-
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.ccg-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 0 24px rgba(var(--accent-rgb), 0.35);
-}
-
-.ccg-card__media {
     width: 100%;
-    overflow: hidden;
-    position: relative;
+    justify-content: space-between;
 }
 
-.ccg-card__media img {
-    width: 100%;
-    height: auto;
+/* -----------------------------
+   LOGO
+----------------------------- */
+
+.ccg-header-logo img {
+    height: var(--ccg-logo-height);
     display: block;
+    object-fit: contain;
+    margin: 0;
 }
 
-.ccg-card__body {
-    padding: 1.1rem 1.25rem;
-    flex: 1;
+/* -----------------------------
+   NAVIGATION
+----------------------------- */
+
+.ccg-header-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--ccg-nav-gap);
 }
 
-.ccg-card__title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin-bottom: 0.55rem;
-}
-
-.ccg-card__text {
-    opacity: 0.85;
-    line-height: 1.5;
-    margin-bottom: 1rem;
-}
-
-
-
-/* ==========================================================================
-   BUTTONS (GLOBAL)
-========================================================================== */
-
-.ccg-btn {
-    padding: 0.65rem 1.25rem;
-    border-radius: 999px;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-
+.ccg-header-nav a {
+    color: #fff;
     text-decoration: none;
-    display: inline-flex;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    transition: opacity 0.25s ease;
+}
+
+.ccg-header-nav a:hover {
+    opacity: 0.65;
+}
+
+/* -----------------------------
+   MODE PILL
+----------------------------- */
+
+.ccg-mode-toggle {
+    display: flex;
     align-items: center;
     justify-content: center;
+    padding: 6px 14px;
+    font-size: 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    user-select: none;
 
-    font-size: 0.92rem;
-    transition: 0.25s ease;
+    backdrop-filter: blur(6px);
+    background: rgba(255, 255, 255, 0.1);
+
+    transition: background 0.25s ease;
 }
 
-/* Primary neon */
-.ccg-btn--primary {
-    background: var(--accent);
-    color: #000;
-    box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.65);
+.ccg-mode-toggle:hover {
+    background: rgba(255, 255, 255, 0.18);
 }
 
-.ccg-btn--primary:hover {
-    background: rgba(var(--accent-rgb), 0.85);
-    transform: translateY(-2px);
+/* -----------------------------
+   SOCIALS (handled in ccg-socials.css)
+----------------------------- */
+
+/* -----------------------------
+   MAIN CONTENT OFFSET
+----------------------------- */
+
+main, .ccg-page-content {
+    margin-top: var(--ccg-header-height);
 }
 
-/* Secondary */
-.ccg-btn--secondary {
-    background: rgba(var(--accent-rgb), 0.18);
-    color: var(--text-light);
-    border: 1px solid rgba(var(--accent-rgb), 0.35);
+/* Ensures hero pages begin correctly below header */
+[data-ccg-page] .ccg-hero {
+    margin-top: var(--ccg-header-height);
 }
 
-.ccg-btn--secondary:hover {
-    background: rgba(var(--accent-rgb), 0.28);
-    transform: translateY(-2px);
-}
-
-/* Ghost */
-.ccg-btn--ghost {
-    background: transparent;
-    border: 1px solid var(--border-light);
-    color: var(--text-light);
-}
-
-.ccg-btn--ghost:hover {
-    border-color: var(--accent);
-    transform: translateY(-2px);
-}
-
-
-
-/* ==========================================================================
-   GRID SYSTEMS
-========================================================================== */
-
-.ccg-genre-grid,
-.ccg-collection-grid,
-.ccg-community-grid,
-.ccg-featured-grid {
-    display: grid;
-    gap: 2rem;
-}
-
-
-
-/* ==========================================================================
-   FOOTER
-========================================================================== */
-
-.ccg-footer {
-    margin-top: 4rem;
-    padding: 2rem 0;
-    text-align: center;
-    opacity: 0.75;
-    color: var(--text-light);
-}
-
-
-
-/* ==========================================================================
+/* -----------------------------
    RESPONSIVE
-========================================================================== */
+----------------------------- */
 
 @media (max-width: 900px) {
-    .ccg-header-inner {
+    :root {
+        --ccg-header-height: 82px;
+        --ccg-logo-height: 42px;
+        --ccg-nav-gap: 16px;
+        --ccg-header-padding-x: 18px;
+    }
+
+    .ccg-header-nav {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 650px) {
+    :root {
+        --ccg-header-height: auto;
+        --ccg-header-padding-y: 12px;
+    }
+
+    .ccg-header {
         flex-direction: column;
-        gap: 1rem;
         align-items: flex-start;
     }
 
-    .ccg-nav {
-        width: 100%;
+    .ccg-header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
     }
 
-    .ccg-nav__list {
+    .ccg-header-nav {
         flex-wrap: wrap;
-        justify-content: center;
-    }
-}
-
-@media (max-width: 600px) {
-    .ccg-section-title {
-        font-size: 1.65rem;
-    }
-
-    .ccg-card__title {
-        font-size: 1.1rem;
+        gap: 12px;
     }
 }
