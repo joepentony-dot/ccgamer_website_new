@@ -6,7 +6,7 @@
     <title>Action Adventure Games | Cheeky Commodore Gamer</title>
 
     <meta name="description"
-          content="From dungeon-crawling epics to isometric escapades, these games mix reflexes with brains and atmosphere." />
+          content="Quest-heavy worlds with real-time combat and exploration — the sweet spot between pure action and pure adventure on C64 & Amiga." />
 
     <link rel="icon" href="../../favicon.ico" />
 
@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="../../resources/css/ccg-modal.css" />
     <link rel="stylesheet" href="../../resources/css/genre.css" />
 </head>
+
 <body class="ccg-body" data-ccg-mode="c64" data-genre="Action Adventure Games">
 
     <!-- BACKGROUND -->
@@ -69,7 +70,7 @@
                 <!-- MODE TOGGLE + SOCIALS -->
                 <div class="ccg-header-actions">
 
-                    <!-- MODE -->
+                    <!-- MODE TOGGLE -->
                     <button class="ccg-mode-toggle"
                             type="button"
                             aria-label="Toggle mode"
@@ -84,39 +85,33 @@
                     <!-- SOCIAL ICONS -->
                     <div class="ccg-socials">
                         <a href="https://www.youtube.com/@CheekyCommodoreGamer"
-                           class="ccg-socials__link"
-                           aria-label="YouTube">
+                           class="ccg-socials__link" aria-label="YouTube">
                             <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
                             <span class="ccg-socials__label">Subscribe</span>
                         </a>
 
                         <a href="https://patreon.com/CheekyCommodoreGamer"
-                           class="ccg-socials__icon-btn"
-                           aria-label="Patreon">
+                           class="ccg-socials__icon-btn" aria-label="Patreon">
                             <span class="ccg-socials__icon ccg-socials__icon--patreon"></span>
                         </a>
 
                         <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"
-                           class="ccg-socials__icon-btn"
-                           aria-label="PayPal">
+                           class="ccg-socials__icon-btn" aria-label="PayPal">
                             <span class="ccg-socials__icon ccg-socials__icon--paypal"></span>
                         </a>
 
                         <a href="https://twitter.com/CheekyC64Gamer"
-                           class="ccg-socials__icon-btn"
-                           aria-label="X (Twitter)">
+                           class="ccg-socials__icon-btn" aria-label="X (Twitter)">
                             <span class="ccg-socials__icon ccg-socials__icon--x"></span>
                         </a>
 
                         <a href="https://facebook.com/cheekycommodoregamer"
-                           class="ccg-socials__icon-btn"
-                           aria-label="Facebook">
+                           class="ccg-socials__icon-btn" aria-label="Facebook">
                             <span class="ccg-socials__icon ccg-socials__icon--fb"></span>
                         </a>
 
                         <a href="https://discord.gg/83Xw9ktAn4"
-                           class="ccg-socials__icon-btn"
-                           aria-label="Discord">
+                           class="ccg-socials__icon-btn" aria-label="Discord">
                             <span class="ccg-socials__icon ccg-socials__icon--discord"></span>
                         </a>
                     </div>
@@ -126,46 +121,44 @@
             <div class="ccg-header-neon-strip"></div>
         </header>
 
-        <!-- ░░ HERO ONLY (NO SECOND THUMB ABOVE) ░░ -->
+        <!-- ░░ CINEMATIC G1 HERO ░░ -->
         <main class="ccg-main">
-            <section class="ccg-section hero hero--genre">
-                <div class="ccg-hero-grid">
 
-                    <!-- IMAGE -->
-                    <div class="ccg-hero-media">
-                        <div class="ccg-hero-frame">
-                            <img src="../../resources/images/genres/action-adventure.png"
-                                 alt="Action Adventure Games Hero Artwork"
-                                 class="ccg-hero-image" />
+            <section class="ccg-genre-hero">
+                <!-- BACKGROUND IMAGE -->
+                <div class="ccg-genre-hero__bg">
+                    <img src="../../resources/images/genres/banners/action-adventure-games-banner.png"
+                         alt="Action Adventure Games Hero Artwork"
+                         class="ccg-genre-hero__img" />
+                    <div class="ccg-genre-hero__overlay"></div>
+                </div>
+
+                <!-- FOREGROUND CONTENT -->
+                <div class="ccg-genre-hero__inner">
+                    <h1 class="ccg-genre-hero__title">Action Adventure Games</h1>
+
+                    <p class="ccg-genre-hero__tagline">
+                        Quest-heavy worlds with real-time combat and exploration — the sweet spot between pure action and pure adventure.
+                    </p>
+
+                    <div class="ccg-genre-meta">
+                        <div class="ccg-genre-meta__left">
+                            <span><span id="genreGamesCount">0</span> games loaded</span>
                         </div>
-                    </div>
-
-                    <!-- COPY -->
-                    <div class="ccg-hero-copy">
-                        <p class="ccg-hero-kicker">Cinematic journeys that blend action & story.</p>
-
-                        <h1 class="ccg-section-title">Action Adventure Games</h1>
-
-                        <p class="ccg-section-subtitle">
-                            From dungeon-crawling epics to isometric escapades, these games mix reflexes with brains and atmosphere.
-                        </p>
-
-                        <div class="ccg-hero-meta-pills">
-                            <span class="pill pill--accent">
-                                <span id="genreGamesCount">0</span> games loaded
-                            </span>
-                            <span class="pill">C64 &amp; Amiga coverage</span>
+                        <div class="ccg-genre-meta__right">
+                            <span>C64 &amp; Amiga coverage</span>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- ░░ GRID ░░ -->
-            <section class="ccg-section">
-                <div id="genreGamesGrid" class="ccg-game-listing-grid">
+            <!-- GRID -->
+            <section class="ccg-genre-main">
+                <div id="genreGamesGrid" class="ccg-genre-grid">
                     <!-- genre-loader injects matching games -->
                 </div>
             </section>
+
         </main>
 
         <!-- FOOTER -->
