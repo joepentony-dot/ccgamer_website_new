@@ -1,8 +1,11 @@
 // =====================================================================
-// OMEGA SINGLE GAME LOADER — FINAL EDITION 😇🕹️👌
+// OMEGA SINGLE GAME LOADER — CINEMATIC HERO EDITION 😇🕹️👌
 // Loads ALL DATA from games.json:
-// title, system, year, genres, developer, lemon links, thumbnail,
-// video, manual PDF, disks, meta tags, hero image, embedded video.
+// - Title, system, year, genres, developer, lemon links
+// - Thumbnail, video, manuals, disks
+// - NEW: Cinematic blurred hero background
+// - NEW: Proper system label
+// - NEW: Related Games section hook
 // =====================================================================
 
 (function () {
@@ -10,6 +13,7 @@
     const REPO_PREFIX = "/ccgamer_website_new";
 
     function qs(sel) { return document.querySelector(sel); }
+    function qsa(sel) { return document.querySelectorAll(sel); }
 
     function setText(sel, value, fallback = "—") {
         const el = typeof sel === "string" ? qs(sel) : sel;
@@ -33,14 +37,14 @@
         return (usingRepoPrefix ? REPO_PREFIX : "") + "/games/games.json";
     }
 
-    // Thumbnail resolver from /games/game.html to /resources/images/...
+    // Thumbnail resolver from JSON → usable path
     function normaliseThumb(raw) {
         if (!raw) return "../resources/images/thumbnails/all/fallback.jpg";
         if (/^https?:\/\//i.test(raw)) return raw;
-
         return "../" + raw.replace(/^\/+/, "");
     }
 
+    // Update browser metadata
     function setMeta(title, description) {
         const metaTitle = qs("#game-meta-title");
         const metaDesc = qs("#game-meta-description");
@@ -58,7 +62,7 @@
     }
 
     // =================================================================
-    // 🍋 LEMON LINKS (with emoji icon as requested)
+    // 🍋 LEMON LINKS (keep original behaviour)
     // =================================================================
     function populateLemonLinks(game) {
         const block = qs("#lemon-links-block");
@@ -71,7 +75,6 @@
         }
 
         list.innerHTML = "";
-
         game.lemon.forEach((url) => {
             const li = document.createElement("li");
             const a = document.createElement("a");
@@ -87,34 +90,72 @@
     }
 
     // =================================================================
+    // NEW: APPLY CINEMATIC HERO BACKGROUND
+    // =================================================================
+    function applyHeroBackground(thumbnailUrl) {
+        const heroBg = qs(".game-hero-bg");
+        if (!heroBg) return;
+
+        heroBg.style.backgroundImage = `url('${thumbnailUrl}')`;
+        heroBg.classList.add("game-hero-bg--active");
+    }
+
+    // =================================================================
+    // NEW: POPULATE RELATED GAMES (placeholder for later)
+    // =================================================================
+    function prepareRelatedGames(game) {
+        const grid = qs("#related-games-grid");
+        if (!grid) return;
+
+        // Placeholder text until we wire dynamic related games
+        grid.innerHTML = `
+            <div class="ccg-related-placeholder">
+                Related games coming soon…
+            </div>
+        `;
+    }
+
+    // =================================================================
     // POPULATE GAME DETAILS
     // =================================================================
     function populateGame(game) {
+
         // -----------------------------------------------------------
         // BASIC INFO
         // -----------------------------------------------------------
         setText("#game-title", game.title);
-        setText("#game-system", game.system);
         setText("#game-year", game.year);
+
+        // Support BOTH old and new system fields
+        setText("#game-system", game.system);
+        setText("#game-system-label", game.system);
+
         setText("#game-genres", buildGenresString(game));
-        setText("#game-description", game.description || "A description will appear here once added.");
+
+        setText("#game-description",
+            game.description ||
+            "No description has been added for this title yet."
+        );
 
         // -----------------------------------------------------------
-        // HERO IMAGE
+        // HERO IMAGE + BACKGROUND
         // -----------------------------------------------------------
         const heroImg = qs("#game-hero-image");
+        const thumb = normaliseThumb(game.thumbnail);
+
         if (heroImg) {
-            heroImg.src = normaliseThumb(game.thumbnail);
+            heroImg.src = thumb;
             heroImg.alt = `${game.title} cover`;
         }
+
+        applyHeroBackground(thumb);
 
         // -----------------------------------------------------------
         // META TAGS
         // -----------------------------------------------------------
         const metaTitle = `${game.title} (${game.year || "Unknown"}) | Cheeky Commodore Gamer`;
-        const metaDesc = `Details, manual, gameplay video and media for ${game.title} — a ${buildGenresString(
-            game
-        )} title on the ${game.system}.`;
+        const metaDesc =
+            `Details, manual, gameplay video and media for ${game.title} — a ${buildGenresString(game)} title on the ${game.system}.`;
 
         setMeta(metaTitle, metaDesc);
 
@@ -132,54 +173,45 @@
 
         if (game.videoid) {
             if (playBtn) {
-                playBtn.href = `https://www.youtube.com/watch?v=${encodeURIComponent(
-                    game.videoid
-                )}`;
+                playBtn.href = `https://www.youtube.com/watch?v=${encodeURIComponent(game.videoid)}`;
                 playBtn.hidden = false;
             }
             if (videoSection && videoEmbed) {
-                videoEmbed.src = `https://www.youtube.com/embed/${encodeURIComponent(
-                    game.videoid
-                )}`;
+                videoEmbed.src = `https://www.youtube.com/embed/${encodeURIComponent(game.videoid)}`;
                 videoSection.hidden = false;
             }
         }
 
         // -----------------------------------------------------------
-        // 📘 MANUAL PDF BUTTON
+        // 📘 MANUAL PDF
         // -----------------------------------------------------------
         const pdfBtn = qs("#pdf-button");
         if (pdfBtn) {
             if (game.pdf && String(game.pdf).trim() !== "") {
                 pdfBtn.href = game.pdf;
                 pdfBtn.hidden = false;
-
-                pdfBtn.innerHTML = `
-                    <img src="../resources/images/icons/pdf.png" class="ccg-icon" alt="">
-                    Manual PDF
-                `;
             } else {
                 pdfBtn.hidden = true;
             }
         }
 
         // -----------------------------------------------------------
-        // 💾 DISK DOWNLOAD BUTTON
+        // 💾 DISK DOWNLOAD
         // -----------------------------------------------------------
         const diskBtn = qs("#disk-button");
         if (diskBtn) {
             if (Array.isArray(game.disk) && game.disk.length > 0) {
                 diskBtn.href = game.disk[0];
                 diskBtn.hidden = false;
-
-                diskBtn.innerHTML = `
-                    <img src="../resources/images/icons/download.png" class="ccg-icon" alt="">
-                    Download Disk
-                `;
             } else {
                 diskBtn.hidden = true;
             }
         }
+
+        // -----------------------------------------------------------
+        // NEW: Related Games
+        // -----------------------------------------------------------
+        prepareRelatedGames(game);
     }
 
     // =================================================================
