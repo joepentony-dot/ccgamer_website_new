@@ -6,6 +6,8 @@
     <title>Complete Index | Cheeky Commodore Gamer</title>
     <meta name="description" content="Complete index of all C64 and Amiga games, genres, collections and quiz extras on Cheeky Commodore Gamer." />
     <link rel="icon" href="favicon.ico" />
+
+    <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="resources/css/ccg-master.css" />
     <link rel="stylesheet" href="resources/css/ccg-mode.css" />
     <link rel="stylesheet" href="resources/css/ccg-effects.css" />
@@ -13,9 +15,13 @@
     <link rel="stylesheet" href="resources/css/ccg-overlays.css" />
     <link rel="stylesheet" href="resources/css/ccg-modal.css" />
 
+    <!-- PAGE CSS -->
     <link rel="stylesheet" href="resources/css/complete-index.css" />
 </head>
+
 <body class="ccg-body" data-ccg-mode="c64">
+
+    <!-- BACKGROUND LAYERS -->
     <div class="ccg-bg">
         <div class="ccg-bg-starfield"></div>
         <div class="ccg-bg-grid"></div>
@@ -23,15 +29,24 @@
     </div>
 
     <div class="ccg-page ccg-page--index">
+
+        <!-- ============================================================
+             HEADER
+        ============================================================ -->
         <header class="ccg-header">
             <div class="ccg-header-inner">
+
                 <a href="home.html" class="ccg-logo-link">
-                    <img src="resources/images/ccgamer-logo.png" alt="Cheeky Commodore Gamer logo" class="ccg-brand__logo ccg-logo-img" />
+                    <img src="resources/images/ccgamer-logo.png"
+                         alt="Cheeky Commodore Gamer logo"
+                         class="ccg-brand__logo ccg-logo-img" />
                 </a>
+
                 <div class="ccg-header-text">
                     <p class="ccg-tagline">Stay a while, stay forever!</p>
                     <h1 class="ccg-site-title">COMPLETE INDEX</h1>
                 </div>
+
                 <nav class="ccg-nav">
                     <a href="home.html" class="nav-item">Home</a>
                     <a href="games/index.html" class="nav-item">Games</a>
@@ -43,48 +58,75 @@
                     <a href="about.html" class="nav-item">About</a>
                     <a href="contact.html" class="nav-item">Contact</a>
                 </nav>
+
                 <button class="ccg-mode-toggle" type="button" data-ccg-mode-toggle>
                     <span class="ccg-mode-toggle-label ccg-mode-toggle-label--c64">C64</span>
                     <span class="ccg-mode-toggle-label ccg-mode-toggle-label--amiga">Amiga</span>
                 </button>
+
                 <div class="ccg-header-socials">
-                    <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer" class="ccg-header-social-link">YouTube</a>
-                    <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer" class="ccg-header-social-link">Patreon</a>
-                    <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" rel="noopener noreferrer" class="ccg-header-social-link">Donate</a>
-                    <a href="https://discord.gg/83Xw9ktAn4" target="_blank" rel="noopener noreferrer" class="ccg-header-social-link">Discord</a>
+                    <a href="https://www.youtube.com/@CheekyCommodoreGamer"
+                       target="_blank" rel="noopener noreferrer"
+                       class="ccg-header-social-link">YouTube</a>
+
+                    <a href="https://patreon.com/CheekyCommodoreGamer"
+                       target="_blank" rel="noopener noreferrer"
+                       class="ccg-header-social-link">Patreon</a>
+
+                    <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"
+                       target="_blank" rel="noopener noreferrer"
+                       class="ccg-header-social-link">Donate</a>
+
+                    <a href="https://discord.gg/83Xw9ktAn4"
+                       target="_blank" rel="noopener noreferrer"
+                       class="ccg-header-social-link">Discord</a>
                 </div>
+
             </div>
         </header>
+
+        <!-- ============================================================
+             MAIN CONTENT
+        ============================================================ -->
         <main class="ccg-main">
+
             <section class="ccg-section">
                 <h2 class="ccg-section-title">Browse the Full Library</h2>
+
                 <p class="ccg-section-subtitle">
-                    Every tracked title, neatly organised by system, genre and collection. Use this hub to jump straight to what you want.
+                    Every tracked title, neatly organised by system, genre and collection.
+                    Use this hub to jump straight to what you want.
                 </p>
+
                 <div class="ccg-index-grid">
                     <a href="games/index.html" class="ccg-panel">
                         <h3>All Games</h3>
                         <p>Alphabetical library of all covered C64 &amp; Amiga titles.</p>
                     </a>
+
                     <a href="games/genres/index.html" class="ccg-panel">
                         <h3>Browse by Genre</h3>
                         <p>Curated genre breakdowns with hand-picked favourites.</p>
                     </a>
+
                     <a href="games/collections/index.html" class="ccg-panel">
                         <h3>Curated Collections</h3>
                         <p>BPJS, Cartridge showcases, Licensed specials and more.</p>
                     </a>
+
                     <a href="quiz/quiz.html" class="ccg-panel">
                         <h3>Trivia League</h3>
                         <p>Jump into the quiz sets and chase top leaderboard spots.</p>
                     </a>
                 </div>
             </section>
+
             <section class="ccg-section">
                 <h2 class="ccg-section-title">Master Index Table</h2>
                 <p class="ccg-section-subtitle">
                     Use this table view for quick reference while filming, scripting or planning new episodes.
                 </p>
+
                 <div class="ccg-index-table-wrapper">
                     <table class="ccg-index-table">
                         <thead>
@@ -97,12 +139,18 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Optional: you can paste a static export here later -->
+                            <!-- Optional static export later -->
                         </tbody>
                     </table>
                 </div>
+
             </section>
+
         </main>
+
+        <!-- ============================================================
+             FOOTER
+        ============================================================ -->
         <footer class="ccg-footer">
             <div class="ccg-footer-inner">
                 <p class="ccg-footer-text">© 2025 Cheeky Commodore Gamer.</p>
@@ -113,7 +161,10 @@
         </footer>
 
     </div>
-    <script src="js/ccj-global.js" defer></script>
+
+    <!-- JS FIX APPLIED -->
+    <script src="js/ccg-global.js" defer></script>
     <script src="js/ccg-mode-engine.js" defer></script>
+
 </body>
 </html>
