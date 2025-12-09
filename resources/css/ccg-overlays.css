@@ -55,12 +55,11 @@
     z-index: 0;                /* always behind page chrome */
 }
 
-/* Keep page content above the overlays */
+/* Keep page content above the overlays,
+   but let the header keep its Omega z-index from ccg-master.css */
 .ccg-page,
-.ccg-header,
 .ccg-main,
 .ccg-footer {
     position: relative;
     z-index: 1;
 }
-
