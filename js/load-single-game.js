@@ -1,11 +1,6 @@
 // =====================================================================
-// OMEGA SINGLE GAME LOADER — CINEMATIC HERO EDITION 😇🕹️👌
-// Loads ALL DATA from games.json:
-// - Title, system, year, genres, developer, lemon links
-// - Thumbnail, video, manuals, disks
-// - NEW: Cinematic blurred hero background
-// - NEW: Proper system label
-// - NEW: Related Games section hook
+// OMEGA SINGLE GAME LOADER — CINEMATIC HERO + RELATED GAMES EDITION
+// Bit Chief 😇🕹️👌
 // =====================================================================
 
 (function () {
@@ -37,21 +32,17 @@
         return (usingRepoPrefix ? REPO_PREFIX : "") + "/games/games.json";
     }
 
-    // Thumbnail resolver from JSON → usable path
     function normaliseThumb(raw) {
         if (!raw) return "../resources/images/thumbnails/all/fallback.jpg";
         if (/^https?:\/\//i.test(raw)) return raw;
         return "../" + raw.replace(/^\/+/, "");
     }
 
-    // Update browser metadata
     function setMeta(title, description) {
         const metaTitle = qs("#game-meta-title");
         const metaDesc = qs("#game-meta-description");
-
         if (metaTitle) metaTitle.textContent = title;
         if (metaDesc) metaDesc.content = description;
-
         document.title = title;
     }
 
@@ -62,7 +53,7 @@
     }
 
     // =================================================================
-    // 🍋 LEMON LINKS (keep original behaviour)
+    // 🍋 LEMON LINKS
     // =================================================================
     function populateLemonLinks(game) {
         const block = qs("#lemon-links-block");
@@ -90,7 +81,7 @@
     }
 
     // =================================================================
-    // NEW: APPLY CINEMATIC HERO BACKGROUND
+    // OMEGA — CINEMATIC HERO BACKGROUND
     // =================================================================
     function applyHeroBackground(thumbnailUrl) {
         const heroBg = qs(".game-hero-bg");
@@ -101,72 +92,146 @@
     }
 
     // =================================================================
-    // NEW: POPULATE RELATED GAMES (placeholder for later)
+    // RELATED GAMES — OMEGA EDITION 😇🕹️👌
     // =================================================================
-    function prepareRelatedGames(game) {
+
+    function shuffle(arr) {
+        return arr
+            .map(a => ({ sort: Math.random(), value: a }))
+            .sort((a, b) => a.sort - b.sort)
+            .map(a => a.value);
+    }
+
+    function generateRelated(game, allGames) {
+        const related = [];
+
+        // 1) MATCH BY GENRE
+        if (Array.isArray(game.genres)) {
+            allGames.forEach(g => {
+                if (g.id === game.id) return;
+                if (!Array.isArray(g.genres)) return;
+
+                const shared = g.genres.some(tag =>
+                    game.genres.includes(tag)
+                );
+
+                if (shared) related.push(g);
+            });
+        }
+
+        // 2) FALLBACK: DEVELOPER MATCH
+        if (related.length < 3 && game.developer) {
+            allGames.forEach(g => {
+                if (g.id === game.id) return;
+                if (!g.developer) return;
+                if (g.developer === game.developer && !related.includes(g)) {
+                    related.push(g);
+                }
+            });
+        }
+
+        // 3) FINAL FALLBACK: RANDOM SELECTION
+        if (related.length < 3) {
+            const randoms = shuffle(allGames.filter(g => g.id !== game.id));
+            randoms.forEach(g => {
+                if (!related.includes(g)) related.push(g);
+            });
+        }
+
+        return shuffle(related).slice(0, 6);
+    }
+
+    function renderRelatedGames(games) {
         const grid = qs("#related-games-grid");
         if (!grid) return;
 
-        // Placeholder text until we wire dynamic related games
-        grid.innerHTML = `
-            <div class="ccg-related-placeholder">
-                Related games coming soon…
-            </div>
-        `;
+        if (!games || games.length === 0) {
+            grid.innerHTML = `<p>No related games available.</p>`;
+            return;
+        }
+
+        grid.innerHTML = "";
+
+        games.forEach(g => {
+            const card = document.createElement("a");
+            card.className = "ccg-game-card";
+            card.href = `game.html?id=${encodeURIComponent(g.id)}`;
+
+            const thumb = normaliseThumb(g.thumbnail);
+
+            card.innerHTML = `
+                <div class="ccg-game-card__thumb">
+                    <img src="${thumb}" alt="${g.title}">
+                </div>
+                <div class="ccg-game-card__body">
+                    <h3 class="ccg-game-card__title">${g.title}</h3>
+                    <p class="ccg-game-card__meta">${g.year || ""} • ${g.system || ""}</p>
+                </div>
+            `;
+
+            grid.appendChild(card);
+        });
     }
 
     // =================================================================
-    // POPULATE GAME DETAILS
+    // POPULATE MAIN GAME DETAILS
     // =================================================================
-    function populateGame(game) {
+    function populateGame(game, allGames) {
 
-        // -----------------------------------------------------------
-        // BASIC INFO
-        // -----------------------------------------------------------
+        // TITLE, YEAR, SYSTEM
         setText("#game-title", game.title);
         setText("#game-year", game.year);
-
-        // Support BOTH old and new system fields
         setText("#game-system", game.system);
         setText("#game-system-label", game.system);
 
+        // GENRES + DESCRIPTION
         setText("#game-genres", buildGenresString(game));
-
         setText("#game-description",
             game.description ||
             "No description has been added for this title yet."
         );
 
-        // -----------------------------------------------------------
         // HERO IMAGE + BACKGROUND
-        // -----------------------------------------------------------
         const heroImg = qs("#game-hero-image");
         const thumb = normaliseThumb(game.thumbnail);
-
         if (heroImg) {
             heroImg.src = thumb;
             heroImg.alt = `${game.title} cover`;
         }
-
         applyHeroBackground(thumb);
 
-        // -----------------------------------------------------------
         // META TAGS
-        // -----------------------------------------------------------
-        const metaTitle = `${game.title} (${game.year || "Unknown"}) | Cheeky Commodore Gamer`;
-        const metaDesc =
+        const pageTitle = `${game.title} (${game.year || "Unknown"}) | Cheeky Commodore Gamer`;
+        const pageDesc =
             `Details, manual, gameplay video and media for ${game.title} — a ${buildGenresString(game)} title on the ${game.system}.`;
+        setMeta(pageTitle, pageDesc);
 
-        setMeta(metaTitle, metaDesc);
+        // MANUAL PDF
+        const pdfBtn = qs("#pdf-button");
+        if (pdfBtn) {
+            if (game.pdf && String(game.pdf).trim() !== "") {
+                pdfBtn.href = game.pdf;
+                pdfBtn.hidden = false;
+            } else {
+                pdfBtn.hidden = true;
+            }
+        }
 
-        // -----------------------------------------------------------
-        // 🍋 LEMON LINKS
-        // -----------------------------------------------------------
+        // DISK LINK
+        const diskBtn = qs("#disk-button");
+        if (diskBtn) {
+            if (Array.isArray(game.disk) && game.disk.length > 0) {
+                diskBtn.href = game.disk[0];
+                diskBtn.hidden = false;
+            } else {
+                diskBtn.hidden = true;
+            }
+        }
+
+        // LEMON LINKS
         populateLemonLinks(game);
 
-        // -----------------------------------------------------------
-        // 🎥 VIDEO BUTTON + EMBED
-        // -----------------------------------------------------------
+        // VIDEO
         const playBtn = qs("#game-play-video");
         const videoSection = qs("#game-video-section");
         const videoEmbed = qs("#game-video-embed");
@@ -182,40 +247,13 @@
             }
         }
 
-        // -----------------------------------------------------------
-        // 📘 MANUAL PDF
-        // -----------------------------------------------------------
-        const pdfBtn = qs("#pdf-button");
-        if (pdfBtn) {
-            if (game.pdf && String(game.pdf).trim() !== "") {
-                pdfBtn.href = game.pdf;
-                pdfBtn.hidden = false;
-            } else {
-                pdfBtn.hidden = true;
-            }
-        }
-
-        // -----------------------------------------------------------
-        // 💾 DISK DOWNLOAD
-        // -----------------------------------------------------------
-        const diskBtn = qs("#disk-button");
-        if (diskBtn) {
-            if (Array.isArray(game.disk) && game.disk.length > 0) {
-                diskBtn.href = game.disk[0];
-                diskBtn.hidden = false;
-            } else {
-                diskBtn.hidden = true;
-            }
-        }
-
-        // -----------------------------------------------------------
-        // NEW: Related Games
-        // -----------------------------------------------------------
-        prepareRelatedGames(game);
+        // 🔥 DYNAMIC RELATED GAMES
+        const related = generateRelated(game, allGames);
+        renderRelatedGames(related);
     }
 
     // =================================================================
-    // LOAD GAME JSON + FIND MATCH
+    // LOAD JSON + APPLY DATA
     // =================================================================
     async function loadGame() {
         const id = getParamId();
@@ -230,14 +268,15 @@
 
             const data = await response.json();
             const gamesArray = Array.isArray(data) ? data : data.games || [];
-            const game = gamesArray.find((g) => g.id === id);
+
+            const game = gamesArray.find(g => g.id === id);
 
             if (!game) {
                 setText("#game-title", "Game Not Found");
                 return;
             }
 
-            populateGame(game);
+            populateGame(game, gamesArray);
 
         } catch (err) {
             console.error("SINGLE GAME LOADER ERROR", err);
