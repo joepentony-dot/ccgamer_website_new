@@ -1,14 +1,21 @@
 // ======================================================================
-// QUIZ ENGINE — OMEGA FX EDITION
+// QUIZ ENGINE — OMEGA FX EDITION (HYBRID FAIL STYLE)
 // Cheeky Commodore Gamer 😇🕹️👌
 // ----------------------------------------------------------------------
-// - Drives the quiz flow on quiz/quiz.html
-// - Talks to quiz-loader.js (loadQuizSets, loadQuizQuestions, saveQuizScore, trackQuizEvent)
-// - Adds:
-//     * Animated score counter
-//     * SID-wave ambient bar intensity control
-//     * Button SFX with toggle (no external audio files required)
-//     * Best-score-per-set tracking (for leaderboard highlight)
+// Drives the quiz flow on quiz/quiz.html
+// Talks to quiz-loader.js (global helpers):
+//   - loadQuizSets(cb)
+//   - loadQuizQuestions(setId, cb)
+//   - saveQuizScore(payload, cb)
+//   - trackQuizEvent(eventName, data)
+//
+// Adds:
+//   * Animated score counter
+//   * SID-bar ambient visualiser control
+//   * Web Audio SFX (no external audio files)
+//   * SFX toggle with localStorage persistence
+//   * Best-score-per-set storage for leaderboard highlight
+//   * Omega FX classes for correct / wrong answers
 // ======================================================================
 
 (function () {
@@ -26,7 +33,9 @@
         questions: [],
         currentIndex: 0,
         score: 0,
-        sfxEnabled: true
+        sfxEnabled: true,
+        acceptingAnswers: false,
+        currentQuestion: null
     };
 
     let audioCtx = null;
@@ -34,85 +43,113 @@
     // --------------------------------------------------
     // UTILITIES
     // --------------------------------------------------
-    const $ = (id) => document.getElementById(id);
-
-    function escapeHtml(str) {
-        if (typeof str !== "string") return "";
-        return str
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#39;");
+    function qs(sel) {
+        return document.querySelector(sel);
     }
 
-    function safeTrack(eventType, data) {
+    function qsa(sel) {
+        return Array.prototype.slice.call(document.querySelectorAll(sel));
+    }
+
+    function track(eventName, payload) {
         try {
-            if (typeof trackQuizEvent === "function") {
-                trackQuizEvent(eventType, data || {});
+            if (typeof window.trackQuizEvent === "function") {
+                window.trackQuizEvent(eventName, payload || {});
             }
         } catch (e) {
-            // tracking must never break the quiz
-            console.warn("quiz track error:", e);
+            // silent
         }
     }
 
-    // --------------------------------------------------
-    // BEST SCORE STORAGE (per set, for leaderboard highlight)
-    // --------------------------------------------------
-    function updateBestScoreStorage(setId, score, total) {
-        if (!setId) return;
-        const safeSetId = String(setId);
+    function clamp(val, min, max) {
+        return Math.min(max, Math.max(min, val));
+    }
 
-        let map = {};
+    // --------------------------------------------------
+    // LOCAL STORAGE HELPERS
+    // --------------------------------------------------
+    function loadSfxEnabled() {
+        try {
+            const raw = localStorage.getItem(SFX_STORAGE_KEY);
+            if (raw === null) return true; // default ON
+            return raw === "true";
+        } catch (e) {
+            return true;
+        }
+    }
+
+    function saveSfxEnabled(flag) {
+        try {
+            localStorage.setItem(SFX_STORAGE_KEY, flag ? "true" : "false");
+        } catch (e) {
+            // ignore
+        }
+    }
+
+    function loadBestScoresMap() {
         try {
             const raw = localStorage.getItem(BEST_SCORE_STORAGE_KEY);
-            if (raw) {
-                const parsed = JSON.parse(raw);
-                if (parsed && typeof parsed === "object") {
-                    map = parsed;
-                }
+            if (!raw) return {};
+            const parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === "object") {
+                return parsed;
             }
+            return {};
         } catch (e) {
-            map = {};
-        }
-
-        const existing = map[safeSetId];
-        const newScore = Number(score) || 0;
-        const newTotal = Number(total) || 0;
-
-        // Only overwrite if new score is higher than existing
-        if (!existing || newScore > Number(existing.score || 0)) {
-            map[safeSetId] = {
-                score: newScore,
-                total: newTotal
-            };
-        }
-
-        try {
-            localStorage.setItem(
-                BEST_SCORE_STORAGE_KEY,
-                JSON.stringify(map)
-            );
-        } catch (e) {
-            // Storage errors must never break the quiz
-            console.warn("Failed to persist best score:", e);
+            return {};
         }
     }
 
-    // --------------------------------------------------
-    // SID BAR INTENSITY (FX only)
-    // --------------------------------------------------
-    function setSidBarsIntensity(opacity) {
-        const bars = $("quiz-sid-bars");
-        if (!bars) return;
-        bars.style.opacity = String(opacity);
+    function saveBestScore(setId, score) {
+        const safeSetId = String(setId);
+        let map = loadBestScoresMap();
+        const existing = typeof map[safeSetId] === "number" ? map[safeSetId] : 0;
+
+        if (score > existing) {
+            map[safeSetId] = score;
+            try {
+                localStorage.setItem(BEST_SCORE_STORAGE_KEY, JSON.stringify(map));
+            } catch (e) {
+                // ignore
+            }
+        }
+    }
+
+    function getBestScore(setId) {
+        const map = loadBestScoresMap();
+        return typeof map[String(setId)] === "number" ? map[String(setId)] : 0;
     }
 
     // --------------------------------------------------
-    // SOUND FX (Web Audio — no external files required)
+    // SID BAR VISUAL FX
     // --------------------------------------------------
-    function ensureAudioContext() {
+    function setSidBarsIntensity(intensity) {
+        const container = qs("#quiz-sid-bars");
+        if (!container) return;
+        const bars = container.querySelectorAll(".quiz-sid-bar");
+        const safe = clamp(intensity, 0, 1);
+
+        bars.forEach((bar, idx) => {
+            const scaleY = 0.2 + safe * (1.2 + (idx % 3) * 0.15);
+            bar.style.transform = "scaleY(" + scaleY.toFixed(2) + ")";
+            bar.style.opacity = String(0.4 + safe * 0.6);
+        });
+    }
+
+    function sidBarsPulseCorrect() {
+        setSidBarsIntensity(1);
+        setTimeout(() => setSidBarsIntensity(0.45), 220);
+    }
+
+    function sidBarsPulseWrong() {
+        setSidBarsIntensity(0.9);
+        setTimeout(() => setSidBarsIntensity(0.2), 260);
+    }
+
+    // --------------------------------------------------
+    // WEB AUDIO SFX
+    // --------------------------------------------------
+    function ensureAudioContext()() {
         if (audioCtx) return audioCtx;
         const Ctx = window.AudioContext || window.webkitAudioContext;
         if (!Ctx) return null;
@@ -120,313 +157,491 @@
         return audioCtx;
     }
 
-    function playBeep(kind) {
+    function playTone(frequency, duration, type) {
         if (!quizState.sfxEnabled) return;
-
         const ctx = ensureAudioContext();
         if (!ctx) return;
 
-        try {
-            const now = ctx.currentTime;
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
 
-            let freq = 660; // default click
-            if (kind === "correct") freq = 1200;
-            else if (kind === "wrong") freq = 240;
+        osc.type = type || "square";
+        osc.frequency.value = frequency;
 
-            osc.type = "square";
-            osc.frequency.setValueAtTime(freq, now);
+        gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
 
-            gain.gain.setValueAtTime(0.001, now);
-            gain.gain.exponentialRampToValueAtTime(0.3, now + 0.02);
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
 
-            osc.connect(gain);
-            gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration + 0.02);
+    }
 
-            osc.start(now);
-            osc.stop(now + 0.22);
-        } catch (e) {
-            // ignore audio issues
-        }
+    function playClickSfx() {
+        playTone(450, 0.05, "square");
+    }
+
+    function playCorrectSfx() {
+        // gentle ascending chirp
+        playTone(620, 0.08, "square");
+        setTimeout(() => playTone(840, 0.09, "triangle"), 60);
+    }
+
+    function playWrongSfx() {
+        // descending buzz
+        playTone(260, 0.08, "sawtooth");
+        setTimeout(() => playTone(120, 0.12, "square"), 70);
+    }
+
+    function playScoreRevealSfx() {
+        playTone(520, 0.08, "triangle");
+        setTimeout(() => playTone(740, 0.08, "triangle"), 80);
+        setTimeout(() => playTone(980, 0.1, "square"), 160);
     }
 
     // --------------------------------------------------
-    // SFX TOGGLE
+    // SFX TOGGLE UI
     // --------------------------------------------------
-    function initSfxToggle() {
-        const btn = $("quiz-sfx-toggle");
+    function updateSfxToggleButton() {
+        const btn = qs("#quiz-sfx-toggle");
         if (!btn) return;
+        btn.setAttribute("aria-pressed", quizState.sfxEnabled ? "true" : "false");
+        btn.textContent = quizState.sfxEnabled ? "SFX: On" : "SFX: Off";
+    }
 
-        // Load saved preference
-        const stored = localStorage.getItem(SFX_STORAGE_KEY);
-        quizState.sfxEnabled = stored !== "off";
+    function initSfxToggle() {
+        quizState.sfxEnabled = loadSfxEnabled();
+        updateSfxToggleButton();
 
-        if (!quizState.sfxEnabled) {
-            btn.classList.add("muted");
-        }
-
+        const btn = qs("#quiz-sfx-toggle");
+        if (!btn) return;
         btn.addEventListener("click", () => {
             quizState.sfxEnabled = !quizState.sfxEnabled;
-            localStorage.setItem(
-                SFX_STORAGE_KEY,
-                quizState.sfxEnabled ? "on" : "off"
-            );
-            btn.classList.toggle("muted", !quizState.sfxEnabled);
-            playBeep("click");
+            saveSfxEnabled(quizState.sfxEnabled);
+            updateSfxToggleButton();
+            playClickSfx();
+            track("sfx_toggle", { enabled: quizState.sfxEnabled });
         });
     }
 
     // --------------------------------------------------
-    // QUIZ INITIALISATION
+    // QUIZ SET + QUESTIONS
     // --------------------------------------------------
-    async function initQuiz() {
-        // Pre-load quiz sets if backend supports them
-        try {
-            if (typeof loadQuizSets === "function") {
-                const sets = await loadQuizSets();
-                if (Array.isArray(sets)) {
-                    quizState.sets = sets;
-                }
-            }
-        } catch (e) {
-            console.warn("Failed to load quiz sets:", e);
+    function populatePackSelect(sets) {
+        const select = qs("#quiz-pack-select");
+        if (!select) return;
+
+        select.innerHTML = "";
+
+        if (!Array.isArray(sets) || sets.length === 0) {
+            const opt = document.createElement("option");
+            opt.value = "";
+            opt.textContent = "No quiz packs available";
+            select.appendChild(opt);
+            select.disabled = true;
+            return;
         }
 
-        // Start button
-        const startBtn = $("quiz-start-btn");
+        const defaultOpt = document.createElement("option");
+        defaultOpt.value = "";
+        defaultOpt.textContent = "Select a quiz pack…";
+        select.appendChild(defaultOpt);
+
+        sets.forEach((set) => {
+            const opt = document.createElement("option");
+            opt.value = set.id || set.ID || set.slug || "";
+            opt.textContent = set.name || set.title || "Untitled Pack";
+            if (quizState.currentSetId && String(quizState.currentSetId) === String(opt.value)) {
+                opt.selected = true;
+            }
+            select.appendChild(opt);
+        });
+    }
+
+    function handleSetsLoaded(sets) {
+        quizState.sets = Array.isArray(sets) ? sets : [];
+        populatePackSelect(quizState.sets);
+    }
+
+    function requestQuizSets() {
+        if (typeof window.loadQuizSets === "function") {
+            window.loadQuizSets(handleSetsLoaded);
+        }
+    }
+
+    // --------------------------------------------------
+    // QUESTION NORMALISATION
+    // --------------------------------------------------
+    function normaliseQuestion(raw) {
+        if (!raw) return null;
+
+        const questionText =
+            raw.question ||
+            raw.Question ||
+            raw.QuestionText ||
+            raw.q ||
+            "";
+
+        let options = [];
+        if (Array.isArray(raw.options)) {
+            options = raw.options.slice();
+        } else {
+            const maybe = [];
+            if (raw.Option1 !== undefined) maybe.push(raw.Option1);
+            if (raw.Option2 !== undefined) maybe.push(raw.Option2);
+            if (raw.Option3 !== undefined) maybe.push(raw.Option3);
+            if (raw.Option4 !== undefined) maybe.push(raw.Option4);
+            if (maybe.length) options = maybe;
+        }
+
+        // derive correct index
+        let correctIndex = 0;
+        if (typeof raw.correctIndex === "number") {
+            correctIndex = raw.correctIndex;
+        } else if (typeof raw.correctOption === "number") {
+            correctIndex = raw.correctOption;
+        } else if (raw.CorrectOption !== undefined && raw.CorrectOption !== null) {
+            const idx = parseInt(raw.CorrectOption, 10);
+            if (!isNaN(idx)) correctIndex = idx;
+        }
+
+        correctIndex = clamp(correctIndex, 0, options.length ? options.length - 1 : 0);
+
+        return {
+            id: raw.id || raw.ID || raw.rowId || null,
+            raw,
+            text: questionText,
+            options,
+            correctIndex
+        };
+    }
+
+    function shuffle(arr) {
+        return arr
+            .map((item) => ({ sort: Math.random(), value: item }))
+            .sort((a, b) => a.sort - b.sort)
+            .map((entry) => entry.value);
+    }
+
+    function handleQuestionsLoaded(rawQuestions) {
+        const normalised = (Array.isArray(rawQuestions) ? rawQuestions : [])
+            .map(normaliseQuestion)
+            .filter(Boolean);
+
+        quizState.questions = shuffle(normalised);
+        quizState.currentIndex = 0;
+        quizState.score = 0;
+        quizState.currentQuestion = null;
+
+        if (!quizState.questions.length) {
+            const qText = qs("#quiz-question-text");
+            if (qText) qText.textContent = "No questions available for this pack.";
+            return;
+        }
+
+        showQuizPanel();
+        showQuestion();
+    }
+
+    function requestQuestionsForCurrentSet() {
+        if (!quizState.currentSetId) return;
+        if (typeof window.loadQuizQuestions === "function") {
+            window.loadQuizQuestions(quizState.currentSetId, handleQuestionsLoaded);
+        }
+    }
+
+    // --------------------------------------------------
+    // UI PANEL HELPERS
+    // --------------------------------------------------
+    function showIntroPanel() {
+        const intro = qs("#quiz-intro-panel");
+        const active = qs("#quiz-panel");
+        const score = qs("#quiz-score-panel");
+        if (intro) intro.hidden = false;
+        if (active) active.hidden = true;
+        if (score) score.hidden = true;
+    }
+
+    function showQuizPanel() {
+        const intro = qs("#quiz-intro-panel");
+        const active = qs("#quiz-panel");
+        const score = qs("#quiz-score-panel");
+        if (intro) intro.hidden = true;
+        if (active) active.hidden = false;
+        if (score) score.hidden = true;
+    }
+
+    function showScorePanel() {
+        const intro = qs("#quiz-intro-panel");
+        const active = qs("#quiz-panel");
+        const score = qs("#quiz-score-panel");
+        if (intro) intro.hidden = true;
+        if (active) active.hidden = true;
+        if (score) score.hidden = false;
+    }
+
+    // --------------------------------------------------
+    // QUESTION DISPLAY + ANSWERS
+    // --------------------------------------------------
+    function updateStatusLine() {
+        const status = qs("#quiz-status");
+        if (!status) return;
+
+        const total = quizState.questions.length;
+        const current = quizState.currentIndex + 1;
+        status.textContent = "Question " + current + " of " + total;
+    }
+
+    function clearAnswersFx() {
+        const btns = qsa(".quiz-answer-btn");
+        btns.forEach((btn) => {
+            btn.classList.remove(
+                "quiz-answer--correct",
+                "quiz-answer--wrong",
+                "quiz-answer--highlight-correct",
+                "quiz-answer--shake"
+            );
+            btn.disabled = false;
+        });
+    }
+
+    function showQuestion() {
+        const qEl = qs("#quiz-question-text");
+        const optionsContainer = qs("#quiz-options");
+
+        if (!qEl || !optionsContainer) return;
+
+        const q = quizState.questions[quizState.currentIndex];
+        quizState.currentQuestion = q;
+
+        // Fade out → in FX
+        optionsContainer.classList.remove("quiz-options--fade-in");
+        void optionsContainer.offsetWidth; // force reflow
+        clearAnswersFx();
+
+        qEl.textContent = q.text || "Untitled question";
+
+        optionsContainer.innerHTML = "";
+
+        q.options.forEach((optText, index) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "quiz-answer-btn";
+            btn.textContent = optText;
+            btn.dataset.index = String(index);
+            btn.addEventListener("click", onAnswerClick);
+            optionsContainer.appendChild(btn);
+        });
+
+        updateStatusLine();
+        quizState.acceptingAnswers = true;
+
+        // trigger fade-in animation class
+        requestAnimationFrame(() => {
+            optionsContainer.classList.add("quiz-options--fade-in");
+        });
+
+        setSidBarsIntensity(0.4);
+    }
+
+    function onAnswerClick(evt) {
+        if (!quizState.acceptingAnswers) return;
+        quizState.acceptingAnswers = false;
+
+        const target = evt.currentTarget;
+        const chosenIndex = parseInt(target.dataset.index, 10);
+        const q = quizState.currentQuestion;
+
+        if (!q) return;
+
+        const correctIndex = q.correctIndex;
+        const buttons = qsa(".quiz-answer-btn");
+
+        // Determine correctness
+        const isCorrect = chosenIndex === correctIndex;
+
+        buttons.forEach((btn, idx) => {
+            btn.disabled = true;
+
+            if (idx === correctIndex) {
+                btn.classList.add("quiz-answer--highlight-correct");
+            }
+        });
+
+        if (isCorrect) {
+            quizState.score += 1;
+            target.classList.add("quiz-answer--correct");
+            sidBarsPulseCorrect();
+            playCorrectSfx();
+            track("answer_correct", { setId: quizState.currentSetId, qId: q.id });
+
+        } else {
+            target.classList.add("quiz-answer--wrong", "quiz-answer--shake");
+            sidBarsPulseWrong();
+            playWrongSfx();
+            track("answer_wrong", { setId: quizState.currentSetId, qId: q.id });
+        }
+
+        // After short delay, move to next
+        setTimeout(nextQuestionOrFinish, 900);
+    }
+
+    function nextQuestionOrFinish() {
+        quizState.currentIndex += 1;
+
+        if (quizState.currentIndex >= quizState.questions.length) {
+            showFinalScore();
+        } else {
+            showQuestion();
+        }
+    }
+
+    // --------------------------------------------------
+    // SCORE + LEADERBOARD
+    // --------------------------------------------------
+    function animateScoreTo(target) {
+        const el = qs("#quiz-score-animated");
+        if (!el) return;
+
+        const duration = 600;
+        const start = performance.now();
+        const initial = 0;
+
+        function step(now) {
+            const progress = clamp((now - start) / duration, 0, 1);
+            const current = Math.round(initial + (target - initial) * progress);
+            el.textContent = String(current);
+
+            if (progress < 1) {
+                requestAnimationFrame(step);
+            }
+        }
+
+        requestAnimationFrame(step);
+    }
+
+    function showFinalScore() {
+        showScorePanel();
+
+        const totalScore = quizState.score;
+        const setId = quizState.currentSetId;
+
+        const packNameEl = qs("#quiz-pack-summary");
+        const set = quizState.sets.find((s) => String(s.id || s.ID || s.slug) === String(setId));
+        if (packNameEl) {
+            packNameEl.textContent = set
+                ? (set.name || set.title || "Unknown Pack")
+                : "Unknown Pack";
+        }
+
+        animateScoreTo(totalScore);
+        playScoreRevealSfx();
+        setSidBarsIntensity(0.6);
+
+        if (setId != null) {
+            saveBestScore(setId, totalScore);
+        }
+
+        track("quiz_finished", {
+            setId: setId,
+            score: totalScore,
+            totalQuestions: quizState.questions.length
+        });
+    }
+
+    function handleSaveScore() {
+        const nameInput = qs("#quiz-name-input");
+        if (!nameInput) return;
+
+        const playerName = (nameInput.value || "").trim() || "Anonymous";
+        const setId = quizState.currentSetId;
+        const score = quizState.score;
+
+        if (typeof window.saveQuizScore === "function") {
+            window.saveQuizScore(
+                {
+                    name: playerName,
+                    setId: setId,
+                    score: score
+                },
+                function onSaved(success) {
+                    // Optional: we could show a toast or visual confirm
+                    track("score_saved", { success, setId, score });
+                }
+            );
+        } else {
+            track("score_saved_local_only", { setId, score });
+        }
+    }
+
+    // --------------------------------------------------
+    // QUIZ FLOW INIT
+    // --------------------------------------------------
+    function startQuiz() {
+        const packSelect = qs("#quiz-pack-select");
+        if (!packSelect) return;
+
+        const chosen = packSelect.value;
+        if (!chosen) {
+            // require pack selection
+            playWrongSfx();
+            const label = qs(".quiz-pack-label");
+            if (label) {
+                label.classList.add("quiz-pack-label--error");
+                setTimeout(() => label.classList.remove("quiz-pack-label--error"), 800);
+            }
+            return;
+        }
+
+        quizState.currentSetId = chosen;
+        quizState.currentIndex = 0;
+        quizState.score = 0;
+
+        track("quiz_start", { setId: chosen });
+        playClickSfx();
+        setSidBarsIntensity(0.5);
+        requestQuestionsForCurrentSet();
+    }
+
+    function restartQuiz() {
+        quizState.currentIndex = 0;
+        quizState.score = 0;
+        track("quiz_restart", { setId: quizState.currentSetId });
+        playClickSfx();
+        requestQuestionsForCurrentSet();
+    }
+
+    function initQuiz() {
+        const startBtn = qs("#quiz-start-btn");
+        const saveBtn = qs("#quiz-save-btn");
+        const restartBtn = qs("#quiz-restart-btn");
+
         if (startBtn) {
-            startBtn.addEventListener("click", () => {
-                playBeep("click");
+            startBtn.addEventListener("click", (e) => {
+                e.preventDefault();
                 startQuiz();
             });
         }
-    }
-
-    function getDefaultSetId() {
-        if (quizState.currentSetId) return quizState.currentSetId;
-
-        if (Array.isArray(quizState.sets) && quizState.sets.length > 0) {
-            const first = quizState.sets[0];
-            return first.id || first.set || "default";
-        }
-
-        return "default";
-    }
-
-    // --------------------------------------------------
-    // QUIZ FLOW
-    // --------------------------------------------------
-    async function startQuiz() {
-        quizState.currentIndex = 0;
-        quizState.score = 0;
-        quizState.currentSetId = getDefaultSetId();
-        setSidBarsIntensity(0.25);
-
-        const container = $("quiz-container");
-        const cabinet = $("quiz-score-cabinet");
-
-        if (cabinet) {
-            cabinet.hidden = true;
-        }
-        if (container) {
-            container.innerHTML =
-                '<p class="quiz-status">Loading questions…</p>';
-        }
-
-        safeTrack("quizStart", { set: quizState.currentSetId });
-
-        try {
-            let qs = [];
-            if (typeof loadQuizQuestions === "function") {
-                qs = await loadQuizQuestions(quizState.currentSetId);
-            }
-            quizState.questions = Array.isArray(qs) ? qs : [];
-        } catch (e) {
-            console.error("Failed to load questions:", e);
-            quizState.questions = [];
-        }
-
-        if (!quizState.questions.length) {
-            if (container) {
-                container.innerHTML =
-                    '<p class="quiz-status">No questions available for this quiz set yet.</p>';
-            }
-            return;
-        }
-
-        renderQuestion();
-    }
-
-    function renderQuestion() {
-        const container = $("quiz-container");
-        if (!container) return;
-
-        if (
-            !Array.isArray(quizState.questions) ||
-            quizState.currentIndex >= quizState.questions.length
-        ) {
-            finishQuiz();
-            return;
-        }
-
-        const q = quizState.questions[quizState.currentIndex];
-        const qText = escapeHtml(q.question || "");
-        const options = Array.isArray(q.options) ? q.options : [];
-
-        setSidBarsIntensity(0.35);
-
-        container.innerHTML = `
-            <div class="quiz-question-block">
-                <h2 class="quiz-question-title">
-                    Q${quizState.currentIndex + 1}. ${qText}
-                </h2>
-                <div class="quiz-options">
-                    ${options
-                        .map(
-                            (opt, idx) => `
-                        <button class="quiz-option-btn"
-                                data-index="${idx}">
-                            ${escapeHtml(String(opt))}
-                        </button>`
-                        )
-                        .join("")}
-                </div>
-            </div>
-        `;
-
-        const buttons = container.querySelectorAll(".quiz-option-btn");
-        buttons.forEach((btn) => {
-            btn.addEventListener("click", () =>
-                handleAnswerClick(btn, q)
-            );
-        });
-    }
-
-    function handleAnswerClick(btn, question) {
-        const container = $("quiz-container");
-        if (!container) return;
-
-        const indexAttr = btn.getAttribute("data-index");
-        const chosenIndex = Number(indexAttr);
-        const correctIndex = Number(question.answer);
-
-        const allButtons = container.querySelectorAll(".quiz-option-btn");
-        allButtons.forEach((b) => (b.disabled = true));
-
-        if (chosenIndex === correctIndex) {
-            quizState.score++;
-            btn.classList.add("correct");
-            playBeep("correct");
-        } else {
-            btn.classList.add("wrong");
-            playBeep("wrong");
-
-            // Highlight correct answer if available
-            allButtons.forEach((b) => {
-                const idx = Number(b.getAttribute("data-index"));
-                if (idx === correctIndex) {
-                    b.classList.add("correct");
-                }
-            });
-        }
-
-        setSidBarsIntensity(0.2);
-
-        setTimeout(() => {
-            quizState.currentIndex += 1;
-            renderQuestion();
-        }, 900);
-    }
-
-    // --------------------------------------------------
-    // FINISH + SCORE CABINET
-    // --------------------------------------------------
-    function finishQuiz() {
-        const container = $("quiz-container");
-        const cabinet = $("quiz-score-cabinet");
-        const animScore = $("quiz-score-animated");
-
-        setSidBarsIntensity(0.1);
-        safeTrack("quizComplete", {
-            set: quizState.currentSetId,
-            score: quizState.score,
-            total: quizState.questions.length
-        });
-
-        // Update best-score-per-set for leaderboard highlighting
-        updateBestScoreStorage(
-            quizState.currentSetId || getDefaultSetId(),
-            quizState.score,
-            quizState.questions.length
-        );
-
-        if (container) {
-            container.innerHTML = "";
-        }
-        if (!cabinet || !animScore) return;
-
-        cabinet.hidden = false;
-
-        // Animated score counter
-        let current = 0;
-        const finalScore = quizState.score;
-        animScore.textContent = "0";
-
-        const step = Math.max(1, Math.ceil(finalScore / 40));
-        const timer = setInterval(() => {
-            current += step;
-            if (current >= finalScore) {
-                current = finalScore;
-                clearInterval(timer);
-            }
-            animScore.textContent = String(current);
-            animScore.classList.add("pulse");
-            setTimeout(() => animScore.classList.remove("pulse"), 120);
-        }, 45);
-
-        // Wire buttons
-        const saveBtn = $("quiz-save-btn");
-        const restartBtn = $("quiz-restart-btn");
 
         if (saveBtn) {
-            saveBtn.onclick = async () => {
-                playBeep("click");
-                const name = window.prompt(
-                    "Enter your name for the leaderboard:"
-                );
-                if (!name) return;
-
-                try {
-                    if (typeof saveQuizScore === "function") {
-                        await saveQuizScore({
-                            name,
-                            score: quizState.score,
-                            total: quizState.questions.length,
-                            setId: quizState.currentSetId
-                        });
-                    }
-                    safeTrack("quizScoreSaved", {
-                        set: quizState.currentSetId,
-                        score: quizState.score
-                    });
-                    window.location.href = "quiz-leaderboard.html";
-                } catch (e) {
-                    console.error("Failed to save score:", e);
-                    window.alert(
-                        "Score could not be saved just now. Please try again later."
-                    );
-                }
-            };
+            saveBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                playClickSfx();
+                handleSaveScore();
+            });
         }
 
         if (restartBtn) {
-            restartBtn.onclick = () => {
-                playBeep("click");
-                startQuiz();
-            };
+            restartBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                restartQuiz();
+            });
         }
+
+        requestQuizSets();
+        showIntroPanel();
     }
 
     // --------------------------------------------------
