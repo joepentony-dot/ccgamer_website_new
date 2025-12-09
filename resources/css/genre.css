@@ -33,7 +33,10 @@
     margin-top: var(--ccg-header-height);
     padding: 2.8rem 1rem 2.2rem;
 
-    overflow: hidden;
+    /* FIX: keep cinematic edges horizontally, but allow header/logo above */
+    overflow-x: hidden;
+    overflow-y: visible;
+
     color: var(--text-light);
 }
 
