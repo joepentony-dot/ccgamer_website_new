@@ -189,7 +189,6 @@
 
 /* ======================================================================
    COLLECTION GRID — RESTORED, NO CROPPING
-   Thumbnails show full 460×215 PNG, no object-fit cropping.
 ====================================================================== */
 .ccg-collection-grid {
     margin-top: 1rem;
@@ -217,7 +216,6 @@
     border-radius: 14px 14px 0 0;
 }
 
-/* KEY FIX: use natural image aspect, no cropping */
 .ccg-collection-card__thumb-wrap img {
     display: block;
     width: 100%;
@@ -294,4 +292,35 @@
     .ccg-featured-grid {
         grid-template-columns: 1fr;
     }
+}
+
+
+/* ======================================================================
+   PHASE 11B — SAFE HEADER & SPACING FIXES (APPENDED)
+   These DO NOT override hero, featured, genre or collections.
+====================================================================== */
+
+/* Tighter section spacing without breaking layout */
+.ccg-section {
+    margin-top: 1.8rem !important;
+}
+
+/* Slightly tighter title spacing */
+.ccg-section-title {
+    margin-bottom: 0.9rem !important;
+}
+
+/* Prevents massive gap below hero */
+[data-ccg-page="home"] .ccg-hero {
+    margin-bottom: 0.4rem !important;
+}
+
+/* Social Strip tightening — no layout shift */
+.ccg-social-strip {
+    margin-top: 1.2rem !important;
+}
+
+/* Ensures no horizontal scroll caused by social buttons */
+.ccg-social-strip__icons {
+    overflow-x: hidden !important;
 }
