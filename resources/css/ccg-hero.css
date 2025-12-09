@@ -219,3 +219,91 @@
         gap: 0.65rem;
     }
 }
+
+/* ============================================================
+   OMEGA — CINEMATIC SINGLE GAME HERO BACKDROP
+   Adds blurred background using the game thumbnail.
+   Safe extension — does not override global hero styling.
+   ============================================================ */
+
+.game-hero-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    filter: blur(18px) brightness(0.35);
+    transform: scale(1.15); /* prevents blur-edge clipping */
+    opacity: 0;
+    transition: opacity 0.6s ease-out;
+    z-index: 0; /* sits behind hero content */
+}
+
+/* Activated once JS sets background-image */
+.game-hero-bg--active {
+    opacity: 1;
+}
+
+/* Ensure hero text + thumbnail sit above blur */
+.game-hero-inner,
+.game-hero-copy,
+.game-hero-media {
+    position: relative;
+    z-index: 2;
+}
+
+/* Soft vignette to enhance cinematic feel */
+.game-hero-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        circle at center,
+        rgba(0,0,0,0) 0%,
+        rgba(0,0,0,0.35) 55%,
+        rgba(0,0,0,0.6) 100%
+    );
+    pointer-events: none;
+}
+
+/* Hero section padding and alignment improvements */
+.ccg-hero--single-game {
+    min-height: 380px;
+    display: flex;
+    align-items: center;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Thumbnail container refinement */
+.game-hero-thumb-wrap img {
+    border-radius: 12px;
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.25),
+                0 0 45px rgba(0, 128, 255, 0.3);
+    max-width: 220px;
+}
+
+/* Metadata & title spacing */
+.game-hero-meta,
+.game-hero-genres {
+    margin-top: 1rem;
+}
+
+/* Responsive layout tweaks */
+@media (max-width: 900px) {
+    .ccg-hero--single-game {
+        flex-direction: column;
+        text-align: center;
+        padding-top: 3rem;
+    }
+
+    .game-hero-media {
+        margin-bottom: 2rem;
+    }
+
+    .game-hero-thumb-wrap img {
+        max-width: 180px;
+    }
+}
+
