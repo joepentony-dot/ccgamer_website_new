@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Browse by Genre | Cheeky Commodore Gamer</title>
-    <meta name="description" content="Browse the Cheeky Commodore Gamer library by genre — arcade, adventure, horror, sports and more." />
+
+    <meta name="description"
+          content="Browse the Cheeky Commodore Gamer library by genre — arcade, adventure, horror, sports, strategy and more across C64 & Amiga." />
+
     <link rel="icon" href="../../favicon.ico" />
 
     <!-- GLOBAL CSS -->
@@ -15,7 +18,7 @@
     <link rel="stylesheet" href="../../resources/css/ccg-overlays.css" />
     <link rel="stylesheet" href="../../resources/css/ccg-modal.css" />
 
-    <!-- GENRE CSS -->
+    <!-- Genre tile & grid styling -->
     <link rel="stylesheet" href="../../resources/css/genre.css" />
 </head>
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
@@ -28,7 +31,7 @@
 
     <div class="ccg-page ccg-page--genres-index">
         <!-- ==========================================
-             OMEGA GLOBAL HEADER (MATCH GAMES/DETAIL)
+             OMEGA GLOBAL HEADER
         =========================================== -->
         <header class="ccg-header">
             <div class="ccg-header-inner">
@@ -66,7 +69,6 @@
 
                 <!-- MODE TOGGLE + SOCIAL ICONS -->
                 <div class="ccg-header-actions">
-                    <!-- Mode toggle -->
                     <button
                         class="ccg-mode-toggle"
                         type="button"
@@ -80,7 +82,6 @@
                         </span>
                     </button>
 
-                    <!-- Socials (icon buttons) -->
                     <div class="ccg-socials">
                         <a href="https://www.youtube.com/@CheekyCommodoreGamer" class="ccg-socials__link" aria-label="YouTube">
                             <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
@@ -105,47 +106,71 @@
                 </div>
             </div>
 
-            <!-- NEON STRIP -->
             <div class="ccg-header-neon-strip"></div>
         </header>
 
-        <!-- ==========================================
-             MAIN CONTENT
-        =========================================== -->
+        <!-- ================================
+             MAIN — HERO + GENRE GRID
+        ================================ -->
         <main class="ccg-main">
-            <section class="ccg-section genres-hero hero hero--subpage">
+            <section class="ccg-section hero hero--subpage genres-hero">
                 <header class="ccg-section__header">
                     <h2 class="ccg-section__title">Browse by Genre</h2>
                     <p class="ccg-section__subtitle">
-                        Tap a genre tile to jump straight into a curated slice of the library.
+                        Tap a genre tile to jump straight into a themed slice of the C64 &amp; Amiga library —
+                        arcade action, text adventures, horror, sports, strategy and more.
+                    </p>
+                </header>
+            </section>
+
+            <section class="ccg-section genres-grid">
+                <header class="ccg-section__header">
+                    <h3 class="ccg-section__title">Choose a Genre</h3>
+                    <p class="ccg-section__subtitle">
+                        These are your core genres. Curated sets like BPJS Indexed, Cartridge, Licensed and Top Picks
+                        live in the separate <a href="../../games/collections/index.html">Collections hub</a>.
                     </p>
                 </header>
 
                 <div class="ccg-genre-grid">
-                    <!-- Static tiles mapped to genre pages -->
+                    <!-- Action Adventure -->
                     <a href="action-adventure-games.html" class="ccg-genre-tile">
                         <div class="ccg-genre-tile-thumb-wrap">
-                            <img src="../../resources/images/genres/action-adventure.png" alt="Action Adventure genre" class="ccg-genre-tile-thumb" />
+                            <img
+                                src="../../resources/images/genres/action-adventure.png"
+                                alt="Action Adventure genre"
+                                class="ccg-genre-tile-thumb"
+                            />
                         </div>
                         <div class="ccg-genre-tile-body">
                             <h3 class="ccg-genre-tile-title">Action Adventure</h3>
-                            <p class="ccg-genre-tile-text">High-stakes quests, puzzles and set-pieces.</p>
+                            <p class="ccg-genre-tile-text">Quest-heavy journeys that blend real-time action with exploration.</p>
                         </div>
                     </a>
 
+                    <!-- Adventure -->
                     <a href="adventure-games.html" class="ccg-genre-tile">
                         <div class="ccg-genre-tile-thumb-wrap">
-                            <img src="../../resources/images/genres/adventure.png" alt="Adventure genre" class="ccg-genre-tile-thumb" />
+                            <img
+                                src="../../resources/images/genres/adventure.png"
+                                alt="Adventure genre"
+                                class="ccg-genre-tile-thumb"
+                            />
                         </div>
                         <div class="ccg-genre-tile-body">
                             <h3 class="ccg-genre-tile-title">Adventure</h3>
-                            <p class="ccg-genre-tile-text">Story-heavy journeys and classic point &amp; click.</p>
+                            <p class="ccg-genre-tile-text">Story-driven quests, text adventures and point &amp; click classics.</p>
                         </div>
                     </a>
 
+                    <!-- Arcade -->
                     <a href="arcade-games.html" class="ccg-genre-tile">
                         <div class="ccg-genre-tile-thumb-wrap">
-                            <img src="../../resources/images/genres/arcade.png" alt="Arcade genre" class="ccg-genre-tile-thumb" />
+                            <img
+                                src="../../resources/images/genres/arcade.png"
+                                alt="Arcade genre"
+                                class="ccg-genre-tile-thumb"
+                            />
                         </div>
                         <div class="ccg-genre-tile-body">
                             <h3 class="ccg-genre-tile-title">Arcade</h3>
@@ -153,9 +178,14 @@
                         </div>
                     </a>
 
+                    <!-- Casino -->
                     <a href="casino-games.html" class="ccg-genre-tile">
                         <div class="ccg-genre-tile-thumb-wrap">
-                            <img src="../../resources/images/genres/casino.png" alt="Casino genre" class="ccg-genre-tile-thumb" />
+                            <img
+                                src="../../resources/images/genres/casino.png"
+                                alt="Casino genre"
+                                class="ccg-genre-tile-thumb"
+                            />
                         </div>
                         <div class="ccg-genre-tile-body">
                             <h3 class="ccg-genre-tile-title">Casino</h3>
@@ -163,159 +193,175 @@
                         </div>
                     </a>
 
+                    <!-- Fighting -->
                     <a href="fighting-games.html" class="ccg-genre-tile">
                         <div class="ccg-genre-tile-thumb-wrap">
-                            <img src="../../resources/images/genres/fighting.png" alt="Fighting genre" class="ccg-genre-tile-thumb" />
+                            <img
+                                src="../../resources/images/genres/fighting.png"
+                                alt="Fighting genre"
+                                class="ccg-genre-tile-thumb"
+                            />
                         </div>
                         <div class="ccg-genre-tile-body">
                             <h3 class="ccg-genre-tile-title">Fighting</h3>
-                            <p class="ccg-genre-tile-text">One-on-one showdowns and brawlers.</p>
+                            <p class="ccg-genre-tile-text">One-on-one showdowns, martial arts and arena brawlers.</p>
                         </div>
                     </a>
 
+                    <!-- Horror -->
                     <a href="horror-games.html" class="ccg-genre-tile">
                         <div class="ccg-genre-tile-thumb-wrap">
-                            <img src="../../resources/images/genres/horror.png" alt="Horror genre" class="ccg-genre-tile-thumb" />
+                            <img
+                                src="../../resources/images/genres/horror.png"
+                                alt="Horror genre"
+                                class="ccg-genre-tile-thumb"
+                            />
                         </div>
                         <div class="ccg-genre-tile-body">
                             <h3 class="ccg-genre-tile-title">Horror</h3>
-                            <p class="ccg-genre-tile-text">Creepy atmospheres, shambling monsters and dread.</p>
+                            <p class="ccg-genre-tile-text">Creepy quests, slashers, haunted houses and dark sci-fi.</p>
                         </div>
                     </a>
 
+                    <!-- Miscellaneous -->
                     <a href="miscellaneous.html" class="ccg-genre-tile">
                         <div class="ccg-genre-tile-thumb-wrap">
-                            <img src="../../resources/images/genres/miscellaneous.png" alt="Miscellaneous genre" class="ccg-genre-tile-thumb" />
+                            <img
+                                src="../../resources/images/genres/miscellaneous.png"
+                                alt="Miscellaneous genre"
+                                class="ccg-genre-tile-thumb"
+                            />
                         </div>
                         <div class="ccg-genre-tile-body">
                             <h3 class="ccg-genre-tile-title">Miscellaneous</h3>
-                            <p class="ccg-genre-tile-text">Oddities, experiments and hard-to-classify weirdness.</p>
+                            <p class="ccg-genre-tile-text">Oddballs, hybrids and hard-to-categorise curios.</p>
                         </div>
                     </a>
 
+                    <!-- Platform -->
                     <a href="platform-games.html" class="ccg-genre-tile">
                         <div class="ccg-genre-tile-thumb-wrap">
-                            <img src="../../resources/images/genres/platform.png" alt="Platform genre" class="ccg-genre-tile-thumb" />
+                            <img
+                                src="../../resources/images/genres/platform.png"
+                                alt="Platform games genre"
+                                class="ccg-genre-tile-thumb"
+                            />
                         </div>
                         <div class="ccg-genre-tile-body">
                             <h3 class="ccg-genre-tile-title">Platform</h3>
-                            <p class="ccg-genre-tile-text">Precise jumps and scrolling worlds.</p>
+                            <p class="ccg-genre-tile-text">Springs, ladders, leaps of faith and pixel-perfect jumps.</p>
                         </div>
                     </a>
 
+                    <!-- Puzzle -->
                     <a href="puzzle-games.html" class="ccg-genre-tile">
                         <div class="ccg-genre-tile-thumb-wrap">
-                            <img src="../../resources/images/genres/puzzle.png" alt="Puzzle genre" class="ccg-genre-tile-thumb" />
+                            <img
+                                src="../../resources/images/genres/puzzle.png"
+                                alt="Puzzle games genre"
+                                class="ccg-genre-tile-thumb"
+                            />
                         </div>
                         <div class="ccg-genre-tile-body">
                             <h3 class="ccg-genre-tile-title">Puzzle</h3>
-                            <p class="ccg-genre-tile-text">Brain-stretchers, logic tests and block shufflers.</p>
+                            <p class="ccg-genre-tile-text">Brain-teasers, logic traps and match-three style challenges.</p>
                         </div>
                     </a>
 
+                    <!-- Quiz -->
                     <a href="quiz-games.html" class="ccg-genre-tile">
                         <div class="ccg-genre-tile-thumb-wrap">
-                            <img src="../../resources/images/genres/quiz.png" alt="Quiz genre" class="ccg-genre-tile-thumb" />
+                            <img
+                                src="../../resources/images/genres/quiz.png"
+                                alt="Quiz and trivia games genre"
+                                class="ccg-genre-tile-thumb"
+                            />
                         </div>
                         <div class="ccg-genre-tile-body">
                             <h3 class="ccg-genre-tile-title">Quiz</h3>
-                            <p class="ccg-genre-tile-text">Licensed quiz shows and trivia tie-ins.</p>
+                            <p class="ccg-genre-tile-text">TV tie-ins, trivia challenges and cheeky question sets.</p>
                         </div>
                     </a>
 
+                    <!-- Racing -->
                     <a href="racing-games.html" class="ccg-genre-tile">
                         <div class="ccg-genre-tile-thumb-wrap">
-                            <img src="../../resources/images/genres/racing.png" alt="Racing genre" class="ccg-genre-tile-thumb" />
+                            <img
+                                src="../../resources/images/genres/racing.png"
+                                alt="Racing games genre"
+                                class="ccg-genre-tile-thumb"
+                            />
                         </div>
                         <div class="ccg-genre-tile-body">
                             <h3 class="ccg-genre-tile-title">Racing</h3>
-                            <p class="ccg-genre-tile-text">Burning rubber across tracks, roads and off-road.</p>
+                            <p class="ccg-genre-tile-text">Top-down scorchers, 3D racers and checkpoint chases.</p>
                         </div>
                     </a>
 
+                    <!-- Role-Playing -->
                     <a href="role-playing-games.html" class="ccg-genre-tile">
                         <div class="ccg-genre-tile-thumb-wrap">
-                            <img src="../../resources/images/genres/role-playing.png" alt="Role Playing genre" class="ccg-genre-tile-thumb" />
+                            <img
+                                src="../../resources/images/genres/role-playing.png"
+                                alt="Role-playing games genre"
+                                class="ccg-genre-tile-thumb"
+                            />
                         </div>
                         <div class="ccg-genre-tile-body">
-                            <h3 class="ccg-genre-tile-title">Role Playing</h3>
-                            <p class="ccg-genre-tile-text">Character-driven quests and stat-heavy epics.</p>
+                            <h3 class="ccg-genre-tile-title">Role-Playing</h3>
+                            <p class="ccg-genre-tile-text">Character sheets, epic quests and worlds to get lost in.</p>
                         </div>
                     </a>
 
+                    <!-- Shooting -->
                     <a href="shooting-games.html" class="ccg-genre-tile">
                         <div class="ccg-genre-tile-thumb-wrap">
-                            <img src="../../resources/images/genres/shooting.png" alt="Shooting genre" class="ccg-genre-tile-thumb" />
+                            <img
+                                src="../../resources/images/genres/shooting.png"
+                                alt="Shooting games genre"
+                                class="ccg-genre-tile-thumb"
+                            />
                         </div>
                         <div class="ccg-genre-tile-body">
                             <h3 class="ccg-genre-tile-title">Shooting</h3>
-                            <p class="ccg-genre-tile-text">Shoot-’em-ups, run-’n-guns and blasters.</p>
+                            <p class="ccg-genre-tile-text">Shmups, run-&amp;-guns and blasting from every angle.</p>
                         </div>
                     </a>
 
+                    <!-- Sports -->
                     <a href="sports-games.html" class="ccg-genre-tile">
                         <div class="ccg-genre-tile-thumb-wrap">
-                            <img src="../../resources/images/genres/sports.png" alt="Sports genre" class="ccg-genre-tile-thumb" />
+                            <img
+                                src="../../resources/images/genres/sports.png"
+                                alt="Sports games genre"
+                                class="ccg-genre-tile-thumb"
+                            />
                         </div>
                         <div class="ccg-genre-tile-body">
                             <h3 class="ccg-genre-tile-title">Sports</h3>
-                            <p class="ccg-genre-tile-text">Pitch, court, field and track.</p>
+                            <p class="ccg-genre-tile-text">Football, athletics, golf, wrestling and more.</p>
                         </div>
                     </a>
 
+                    <!-- Strategy -->
                     <a href="strategy-games.html" class="ccg-genre-tile">
                         <div class="ccg-genre-tile-thumb-wrap">
-                            <img src="../../resources/images/genres/strategy.png" alt="Strategy genre" class="ccg-genre-tile-thumb" />
+                            <img
+                                src="../../resources/images/genres/strategy.png"
+                                alt="Strategy games genre"
+                                class="ccg-genre-tile-thumb"
+                            />
                         </div>
                         <div class="ccg-genre-tile-body">
                             <h3 class="ccg-genre-tile-title">Strategy</h3>
-                            <p class="ccg-genre-tile-text">Thinky campaigns and tactical challenges.</p>
-                        </div>
-                    </a>
-
-                    <a href="bpjs-indexed-games.html" class="ccg-genre-tile">
-                        <div class="ccg-genre-tile-thumb-wrap">
-                            <img src="../../resources/images/genres/bpjs.png" alt="BPJS Indexed genre" class="ccg-genre-tile-thumb" />
-                        </div>
-                        <div class="ccg-genre-tile-body">
-                            <h3 class="ccg-genre-tile-title">BPJS Indexed</h3>
-                            <p class="ccg-genre-tile-text">Games catalogued for your BPJS documentation project.</p>
-                        </div>
-                    </a>
-
-                    <a href="cartridge-games.html" class="ccg-genre-tile">
-                        <div class="ccg-genre-tile-thumb-wrap">
-                            <img src="../../resources/images/genres/cartridge.png" alt="Cartridge genre" class="ccg-genre-tile-thumb" />
-                        </div>
-                        <div class="ccg-genre-tile-body">
-                            <h3 class="ccg-genre-tile-title">Cartridge</h3>
-                            <p class="ccg-genre-tile-text">Instant-load cartridge releases.</p>
-                        </div>
-                    </a>
-
-                    <a href="licensed-games.html" class="ccg-genre-tile">
-                        <div class="ccg-genre-tile-thumb-wrap">
-                            <img src="../../resources/images/genres/licensed.png" alt="Licensed genre" class="ccg-genre-tile-thumb" />
-                        </div>
-                        <div class="ccg-genre-tile-body">
-                            <h3 class="ccg-genre-tile-title">Licensed</h3>
-                            <p class="ccg-genre-tile-text">Film, TV, comic and brand licences.</p>
-                        </div>
-                    </a>
-
-                    <a href="top-picks.html" class="ccg-genre-tile">
-                        <div class="ccg-genre-tile-thumb-wrap">
-                            <img src="../../resources/images/genres/top-picks.png" alt="Top Picks genre" class="ccg-genre-tile-thumb" />
-                        </div>
-                        <div class="ccg-genre-tile-body">
-                            <h3 class="ccg-genre-tile-title">Top Picks</h3>
-                            <p class="ccg-genre-tile-text">Your personal must-play recommendations.</p>
+                            <p class="ccg-genre-tile-text">Tactics, management, war sims and deep thinking.</p>
                         </div>
                     </a>
                 </div>
             </section>
         </main>
 
+        <!-- FOOTER -->
         <footer class="ccg-footer">
             <div class="ccg-footer-inner">
                 <p class="ccg-footer-text">© 2025 Cheeky Commodore Gamer.</p>
@@ -326,6 +372,7 @@
         </footer>
     </div>
 
+    <!-- JS -->
     <script src="../../js/ccg-global.js" defer></script>
     <script src="../../js/ccg-mode-engine.js" defer></script>
 </body>
