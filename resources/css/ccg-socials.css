@@ -1,11 +1,14 @@
 /* ============================================================
-   CCG SOCIAL ICONS — OMEGA FIXED PASS (PHASE 11B)
-   Header socials + Social strip (independent systems)
+   CCG SOCIAL ICONS — OMEGA FIXED PASS (PHASE 11B FINAL)
+   - Header socials (top-right)
+   - Homepage social strip (under hero)
+   This file is self-contained and matches current home.html.
    ============================================================ */
 
 /* ---------------------------------------------
-   HEADER SOCIAL ICONS (Top-right section)
+   HEADER SOCIAL ICONS (top-right in header)
 --------------------------------------------- */
+
 .ccg-header-socials {
     display: flex;
     align-items: center;
@@ -14,6 +17,7 @@
     white-space: nowrap;
 }
 
+/* Circular button that holds each icon */
 .ccg-header-socials a {
     width: 26px;
     height: 26px;
@@ -21,45 +25,73 @@
     align-items: center;
     justify-content: center;
 
-    background: rgba(0, 0, 0, 0.45);
+    background: radial-gradient(circle at 30% 30%,
+        rgba(255,255,255,0.18),
+        rgba(0,0,0,0.8));
     border-radius: 50%;
-    border: 1px solid rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.3);
+
+    box-shadow:
+        0 0 8px rgba(var(--accent-rgb), 0.55),
+        0 0 14px rgba(var(--accent-rgb), 0.35);
 
     transition:
         transform 0.2s ease,
         box-shadow 0.25s ease,
-        background 0.25s ease;
+        background 0.25s ease,
+        border-color 0.25s ease;
 }
 
+/* Hover lift + stronger glow */
 .ccg-header-socials a:hover {
     transform: translateY(-2px) scale(1.07);
-    background: rgba(0,0,0,0.7);
+    background: radial-gradient(circle at 30% 30%,
+        rgba(255,255,255,0.28),
+        rgba(0,0,0,0.85));
+    border-color: var(--accent);
+
     box-shadow:
-        0 0 12px rgba(var(--accent-rgb), 0.7),
-        0 0 24px rgba(var(--accent-rgb), 0.4);
+        0 0 14px rgba(var(--accent-rgb), 0.9),
+        0 0 26px rgba(var(--accent-rgb), 0.6);
 }
+
+/* ---------------------------------------------
+   SHARED ICON SPRITE
+   Used by BOTH header and strip icons
+--------------------------------------------- */
 
 .ccg-socials__icon {
     width: 60%;
     height: 60%;
+    display: inline-block;
+
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
 
-    filter: drop-shadow(0 0 6px rgba(var(--accent-rgb), 0.55));
+    filter: drop-shadow(0 0 6px rgba(var(--accent-rgb), 0.65));
+    transition: transform 0.2s ease, filter 0.25s ease;
 }
 
-/* ICONS — uses your existing sprite assignments */
-.ccg-socials__icon--yt       { background-image: url("../images/social/yt.png"); }
-.ccg-socials__icon--patreon  { background-image: url("../images/social/patreon.png"); }
-.ccg-socials__icon--paypal   { background-image: url("../images/social/paypal.png"); }
-.ccg-socials__icon--x        { background-image: url("../images/social/x.png"); }
-.ccg-socials__icon--fb       { background-image: url("../images/social/facebook.png"); }
-.ccg-socials__icon--discord  { background-image: url("../images/social/discord.png"); }
+/* YouTube, Patreon, PayPal, X, Facebook, Discord */
+.ccg-socials__icon--yt      { background-image: url("../images/social/yt.png"); }
+.ccg-socials__icon--patreon { background-image: url("../images/social/patreon.png"); }
+.ccg-socials__icon--paypal  { background-image: url("../images/social/paypal.png"); }
+.ccg-socials__icon--x       { background-image: url("../images/social/x.png"); }
+.ccg-socials__icon--fb      { background-image: url("../images/social/facebook.png"); }
+.ccg-socials__icon--discord { background-image: url("../images/social/discord.png"); }
+
+/* Slight extra pop on any hovered icon carrier */
+.ccg-header-socials a:hover .ccg-socials__icon,
+.ccg-socials__icon-btn:hover .ccg-socials__icon {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 10px rgba(var(--accent-rgb), 1));
+}
 
 /* ---------------------------------------------
-   RESPONSIVE: shrink before wrap
+   RESPONSIVE — shrink header icons before wrap
 --------------------------------------------- */
+
 @media (max-width: 1200px) {
     .ccg-header-socials a {
         width: 24px;
@@ -83,22 +115,25 @@
     }
 }
 
-/* ----------------------------------------------------------
-   HOMEPAGE SOCIAL STRIP (UNDER HERO) — UNTOUCHED, BUT FIXED
-   Now isolated so it cannot interfere with header socials.
------------------------------------------------------------ */
+/* ============================================================
+   HOMEPAGE SOCIAL STRIP (under hero)
+   Matches markup in <section class="ccg-section ccg-social-strip">
+============================================================ */
+
 .ccg-social-strip {
     margin-top: 2rem;
     padding: 1.2rem 1rem;
     position: relative;
 }
 
+/* Ambient neon glow behind the strip */
 .ccg-social-strip::before {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: 12px;
     z-index: -1;
+
     background: radial-gradient(
         circle,
         rgba(var(--accent-rgb), 0.25),
@@ -107,6 +142,7 @@
     );
     filter: blur(26px);
     opacity: 0.45;
+    pointer-events: none;
 }
 
 .ccg-social-strip-inner {
@@ -117,25 +153,98 @@
     gap: 1rem;
 }
 
+/* Tagline text */
 .ccg-social-strip__brand {
     display: flex;
     flex-direction: column;
     font-size: 1rem;
 }
 
+.ccg-social-strip__tagline {
+    opacity: 0.85;
+}
+
 .ccg-social-strip__tagline--strong {
     color: var(--accent);
     font-weight: 600;
+    opacity: 1;
 }
 
-/* Social Strip Icons */
+/* Icons row in strip */
 .ccg-social-strip__icons {
     display: flex;
     align-items: center;
     gap: 1rem;
 }
 
-.ccg-social-strip__icons .ccg-socials__icon-btn {
+/* Circular neon buttons in the strip */
+.ccg-socials__icon-btn {
     width: 42px;
     height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(255,255,255,0.16);
+    position: relative;
+    overflow: visible;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease,
+        background 0.25s ease;
+}
+
+/* Halo behind strip icons */
+.ccg-socials__icon-btn::before {
+    content: "";
+    position: absolute;
+    inset: -8px;
+    border-radius: inherit;
+    z-index: -1;
+
+    background: radial-gradient(
+        circle,
+        rgba(var(--accent-rgb), 0.85),
+        rgba(var(--accent-rgb), 0.18)
+    );
+
+    opacity: 0;
+    filter: blur(18px);
+    transition: opacity 0.25s ease;
+}
+
+/* Hover state for strip icons */
+.ccg-socials__icon-btn:hover {
+    transform: translateY(-3px) scale(1.06);
+    border-color: var(--accent);
+    background: rgba(0,0,0,0.8);
+
+    box-shadow:
+        0 0 20px rgba(var(--accent-rgb), 0.75),
+        0 0 40px rgba(var(--accent-rgb), 0.45);
+}
+
+.ccg-socials__icon-btn:hover::before {
+    opacity: 1;
+}
+
+/* ---------------------------------------------
+   RESPONSIVE — social strip stacking
+--------------------------------------------- */
+
+@media (max-width: 700px) {
+    .ccg-social-strip-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .ccg-social-strip__icons {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
 }
