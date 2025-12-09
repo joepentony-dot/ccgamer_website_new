@@ -216,3 +216,18 @@ body[data-mode="amiga"] .ccg-mode-toggle__thumb {
     opacity: 0.75;
     font-size: 0.9rem;
 }
+
+/* ============================================================
+   OMEGA SAFETY PASS — HEADER LAYERING
+   Ensure nav / logo always sit above everything else
+   ============================================================ */
+
+.ccg-header {
+    position: relative;  /* or fixed if you currently use fixed header */
+    z-index: 10;         /* above .ccg-page default (1) */
+}
+
+.ccg-header-inner {
+    position: relative;
+    z-index: 11;         /* ensure nav + logo are topmost within header */
+}
