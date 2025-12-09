@@ -1,248 +1,141 @@
 /* ============================================================
-   CCG SOCIAL ICONS — OMEGA FINAL (Header + Strip)
+   CCG SOCIAL ICONS — OMEGA FIXED PASS (PHASE 11B)
+   Header socials + Social strip (independent systems)
    ============================================================ */
 
-/* ------------------------------------------------------------
-   HEADER SOCIALS (right side of header)
------------------------------------------------------------- */
-
-.ccg-socials {
+/* ---------------------------------------------
+   HEADER SOCIAL ICONS (Top-right section)
+--------------------------------------------- */
+.ccg-header-socials {
     display: flex;
     align-items: center;
-    gap: 0.7rem;
+    gap: 0.65rem;
+    padding-left: 0.6rem;
+    white-space: nowrap;
 }
 
-/* Main "Subscribe" pill */
-.ccg-socials__link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    padding: 0.35rem 0.95rem;
-    border-radius: 999px;
-
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.09em;
-
-    background: rgba(0,0,0,0.7);
-    border: 1px solid rgba(255,255,255,0.18);
-    color: var(--text-light);
-
-    box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.6);
-    transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
-}
-
-.ccg-socials__link:hover {
-    background: rgba(0,0,0,0.9);
-    transform: translateY(-2px);
-    box-shadow:
-        0 0 18px rgba(var(--accent-rgb), 0.8),
-        0 0 30px rgba(var(--accent-rgb), 0.5);
-}
-
-.ccg-socials__label {
-    opacity: 0.95;
-}
-
-/* Circular icon-only buttons (Patreon, PayPal, X, FB, Discord) */
-.ccg-socials__icon-btn {
-    width: 32px;
-    height: 32px;
-
+.ccg-header-socials a {
+    width: 26px;
+    height: 26px;
     display: flex;
     align-items: center;
     justify-content: center;
 
+    background: rgba(0, 0, 0, 0.45);
     border-radius: 50%;
-    background: rgba(0,0,0,0.65);
-    border: 1px solid rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.12);
 
     transition:
-        transform 0.25s ease,
+        transform 0.2s ease,
         box-shadow 0.25s ease,
-        border-color 0.25s ease,
         background 0.25s ease;
 }
 
-.ccg-socials__icon-btn:hover {
-    transform: translateY(-2px) scale(1.05);
-    border-color: var(--accent);
-    background: rgba(0,0,0,0.9);
+.ccg-header-socials a:hover {
+    transform: translateY(-2px) scale(1.07);
+    background: rgba(0,0,0,0.7);
     box-shadow:
-        0 0 16px rgba(var(--accent-rgb), 0.8),
-        0 0 28px rgba(var(--accent-rgb), 0.5);
+        0 0 12px rgba(var(--accent-rgb), 0.7),
+        0 0 24px rgba(var(--accent-rgb), 0.4);
 }
 
-/* Icon sprite */
 .ccg-socials__icon {
-    width: 18px;
-    height: 18px;
-    display: inline-block;
+    width: 60%;
+    height: 60%;
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
 
-    filter:
-        brightness(1.2)
-        drop-shadow(0 0 6px rgba(var(--accent-rgb), 0.8));
+    filter: drop-shadow(0 0 6px rgba(var(--accent-rgb), 0.55));
 }
 
-/* Individual icons (paths are relative to resources/css/) */
-.ccg-socials__icon--yt {
-    background-image: url("../icons/youtube.svg");
-}
+/* ICONS — uses your existing sprite assignments */
+.ccg-socials__icon--yt       { background-image: url("../images/social/yt.png"); }
+.ccg-socials__icon--patreon  { background-image: url("../images/social/patreon.png"); }
+.ccg-socials__icon--paypal   { background-image: url("../images/social/paypal.png"); }
+.ccg-socials__icon--x        { background-image: url("../images/social/x.png"); }
+.ccg-socials__icon--fb       { background-image: url("../images/social/facebook.png"); }
+.ccg-socials__icon--discord  { background-image: url("../images/social/discord.png"); }
 
-.ccg-socials__icon--patreon {
-    background-image: url("../icons/patreon.svg");
-}
-
-.ccg-socials__icon--paypal {
-    background-image: url("../icons/paypal.svg");
-}
-
-.ccg-socials__icon--x {
-    background-image: url("../icons/twitter.svg");
-}
-
-.ccg-socials__icon--fb {
-    background-image: url("../icons/facebook.svg");
-}
-
-.ccg-socials__icon--discord {
-    background-image: url("../icons/discord.svg");
-}
-
-/* ------------------------------------------------------------
-   LEGACY HEADER SOCIALS BLOCK (if used elsewhere)
------------------------------------------------------------- */
-
-.ccg-header-socials {
-    display: flex;
-    align-items: center;
-    gap: var(--ccg-social-gap);
-}
-
-.ccg-header-socials a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-
-    opacity: 0.9;
-    transition: opacity 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.ccg-header-socials a:hover {
-    opacity: 1;
-    transform: scale(1.08);
-    box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.7);
-}
-
-.ccg-header-socials img,
-.ccg-header-socials svg {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    pointer-events: none;
-
-    filter:
-        brightness(1.2)
-        drop-shadow(0 0 6px rgba(var(--accent-rgb), 0.75));
-}
-
-/* Mobile tightening for header social cluster */
-@media (max-width: 650px) {
-    .ccg-socials {
-        gap: 0.5rem;
-    }
-
-    .ccg-socials__icon-btn {
-        width: 28px;
-        height: 28px;
-    }
-
-    .ccg-header-socials {
-        gap: 12px;
-    }
-
+/* ---------------------------------------------
+   RESPONSIVE: shrink before wrap
+--------------------------------------------- */
+@media (max-width: 1200px) {
     .ccg-header-socials a {
         width: 24px;
         height: 24px;
     }
 }
 
-/* ============================================================
-   OMEGA SOCIAL STRIP — HIGH NEON PASS (homepage under hero)
-   ============================================================ */
+@media (max-width: 900px) {
+    .ccg-header-socials {
+        gap: 0.45rem;
+    }
+}
 
+@media (max-width: 700px) {
+    .ccg-header-socials {
+        gap: 0.4rem;
+    }
+    .ccg-header-socials a {
+        width: 22px;
+        height: 22px;
+    }
+}
+
+/* ----------------------------------------------------------
+   HOMEPAGE SOCIAL STRIP (UNDER HERO) — UNTOUCHED, BUT FIXED
+   Now isolated so it cannot interfere with header socials.
+----------------------------------------------------------- */
 .ccg-social-strip {
-    margin-top: 2.2rem;
-    padding: 1.4rem 1rem;
+    margin-top: 2rem;
+    padding: 1.2rem 1rem;
     position: relative;
 }
 
-/* Ambient neon background glow */
 .ccg-social-strip::before {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: 12px;
     z-index: -1;
-
     background: radial-gradient(
-        circle at center,
-        rgba(var(--accent-rgb), 0.28),
-        rgba(var(--accent-rgb), 0.06) 55%,
-        rgba(0, 0, 0, 0) 80%
+        circle,
+        rgba(var(--accent-rgb), 0.25),
+        rgba(var(--accent-rgb), 0.05) 55%,
+        transparent 80%
     );
-
-    filter: blur(32px);
+    filter: blur(26px);
     opacity: 0.45;
-    pointer-events: none;
 }
 
-/* Inner container */
 .ccg-social-strip-inner {
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     flex-wrap: wrap;
-    gap: 1.2rem;
+    gap: 1rem;
 }
 
-/* Text block */
 .ccg-social-strip__brand {
     display: flex;
     flex-direction: column;
     font-size: 1rem;
-    letter-spacing: 0.05em;
-    color: var(--text-light);
-}
-
-.ccg-social-strip__tagline {
-    opacity: 0.85;
 }
 
 .ccg-social-strip__tagline--strong {
-    opacity: 1;
-    font-weight: 600;
     color: var(--accent);
+    font-weight: 600;
 }
 
-/* Icons row inside strip */
+/* Social Strip Icons */
 .ccg-social-strip__icons {
     display: flex;
     align-items: center;
-    gap: 1.1rem;
+    gap: 1rem;
 }
 
-/* Re-use .ccg-socials__icon-btn + .ccg-socials__icon styles for strip */
-
-/* Responsive */
-@media (max-width: 700px) {
-    .ccg-social-strip-inner {
-        flex-direction: column;
-        text-align: center;
-    }
+.ccg-social-strip__icons .ccg-socials__icon-btn {
+    width: 42px;
+    height: 42px;
 }
