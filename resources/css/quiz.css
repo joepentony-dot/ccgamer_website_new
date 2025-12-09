@@ -569,3 +569,314 @@ body[data-ccg-mode="amiga"] {
         left: -0.1rem;
     }
 }
+
+/* ============================================================
+   OMEGA LEADERBOARD — VISUAL FX + RESPONSIVE LAYOUT
+   Safe extension for quiz.css (no overrides of existing rules)
+   ============================================================ */
+
+/* HERO TWEAKS FOR LEADERBOARD */
+.ccg-hero--leaderboard {
+    min-height: 260px;
+    padding-top: 3.5rem;
+    padding-bottom: 3.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.leaderboard-hero-grid {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+/* FILTER BAR */
+.leaderboard-filters {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+
+.leaderboard-filters-inner {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.leaderboard-filter-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.lb-filter-label {
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+.lb-filter-select {
+    min-width: 220px;
+    padding: 0.5rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(5, 12, 32, 0.9);
+    border: 1px solid rgba(0, 255, 255, 0.32);
+    color: #e9f7ff;
+    font-size: 0.9rem;
+    outline: none;
+}
+
+/* TABS */
+.leaderboard-tabs {
+    display: inline-flex;
+    border-radius: 999px;
+    padding: 0.25rem;
+    background: radial-gradient(circle at top left,
+        rgba(0, 255, 255, 0.16),
+        rgba(2, 8, 24, 0.95));
+    box-shadow: 0 0 18px rgba(0, 255, 255, 0.15);
+}
+
+.lb-tab {
+    position: relative;
+    border: none;
+    border-radius: 999px;
+    padding: 0.4rem 1.1rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: transparent;
+    color: #bcd9ff;
+    transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.lb-tab--active {
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.25), rgba(0, 128, 255, 0.45));
+    color: #fff;
+    box-shadow:
+        0 0 6px rgba(0, 255, 255, 0.7),
+        0 0 16px rgba(0, 128, 255, 0.6);
+    transform: translateY(-1px);
+}
+
+/* TABLE CONTAINER + STATES */
+.leaderboard-section {
+    padding-top: 1.5rem;
+    padding-bottom: 2.5rem;
+}
+
+.leaderboard-table-container {
+    position: relative;
+    border-radius: 16px;
+    background: radial-gradient(circle at top left,
+        rgba(0, 255, 255, 0.08),
+        rgba(2, 8, 24, 0.98));
+    box-shadow:
+        0 0 24px rgba(0, 0, 0, 0.7),
+        0 0 36px rgba(0, 40, 80, 0.6);
+    padding: 1.25rem 1.25rem 1.5rem;
+    overflow: hidden;
+}
+
+/* CRT overlay */
+.leaderboard-table-container::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.06) 0px,
+            rgba(255,255,255,0.02) 1px,
+            rgba(0,0,0,0.4) 2px
+        );
+    mix-blend-mode: soft-light;
+    opacity: 0.25;
+}
+
+/* Loading / error / empty states */
+.lb-loading,
+.lb-error,
+.lb-no-results {
+    text-align: center;
+    padding: 1.3rem 0.5rem;
+    font-size: 0.95rem;
+    opacity: 0.85;
+}
+
+.lb-error {
+    color: #ff9696;
+}
+
+.lb-no-results {
+    color: #cfe7ff;
+}
+
+/* TABLE CORE */
+.lb-table {
+    width: 100%;
+    border-collapse: collapse;
+    position: relative;
+    z-index: 1;
+    font-size: 0.9rem;
+}
+
+.lb-table thead tr {
+    background: linear-gradient(90deg,
+        rgba(0, 255, 255, 0.2),
+        rgba(0, 128, 255, 0.35));
+}
+
+.lb-table thead th {
+    text-align: left;
+    padding: 0.55rem 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    border-bottom: 1px solid rgba(180, 222, 255, 0.4);
+}
+
+.lb-table tbody tr {
+    transition: background 0.2s ease, box-shadow 0.25s ease, transform 0.2s ease;
+}
+
+.lb-table tbody td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid rgba(120, 160, 210, 0.15);
+}
+
+.lb-row:nth-child(2n) {
+    background-color: rgba(5, 18, 42, 0.75);
+}
+
+/* Rank column */
+.lb-rank {
+    width: 75px;
+    font-weight: 600;
+}
+
+/* Highlight row on hover */
+.lb-row:hover {
+    background: radial-gradient(circle at center,
+        rgba(0, 255, 255, 0.12),
+        rgba(2, 10, 28, 0.98));
+    box-shadow:
+        0 0 18px rgba(0, 255, 255, 0.24),
+        0 0 28px rgba(0, 120, 255, 0.28);
+    transform: translateY(-1px);
+}
+
+/* RANK #1 — NEON CROWN */
+.lb-rank-one {
+    background: radial-gradient(circle at top left,
+        rgba(255, 215, 0, 0.2),
+        rgba(4, 10, 30, 0.98));
+    box-shadow:
+        0 0 24px rgba(255, 215, 0, 0.35),
+        0 0 36px rgba(255, 160, 0, 0.25);
+    position: relative;
+}
+
+.lb-crown {
+    display: inline-block;
+    margin-right: 0.25rem;
+    animation: lb-crown-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes lb-crown-pulse {
+    0%, 100% {
+        transform: translateY(0);
+        filter: drop-shadow(0 0 4px rgba(255, 230, 120, 0.7));
+    }
+    50% {
+        transform: translateY(-2px);
+        filter: drop-shadow(0 0 10px rgba(255, 230, 120, 1));
+    }
+}
+
+/* YOUR BEST SCORE HIGHLIGHT */
+.lb-your-best {
+    background: linear-gradient(90deg,
+        rgba(0, 255, 170, 0.18),
+        rgba(0, 110, 80, 0.6));
+    box-shadow:
+        0 0 18px rgba(0, 255, 170, 0.35),
+        0 0 32px rgba(0, 150, 110, 0.3);
+}
+
+.lb-your-best .lb-player::after {
+    content: " (Your best)";
+    font-size: 0.7rem;
+    opacity: 0.9;
+    margin-left: 0.3rem;
+}
+
+/* FADE-IN ANIMATION */
+@keyframes lb-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.lb-fade-in {
+    animation: lb-fade-in 0.45s ease-out;
+}
+
+/* RESPONSIVE BEHAVIOUR */
+@media (max-width: 800px) {
+    .leaderboard-filters-inner {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .leaderboard-filters-inner .leaderboard-tabs {
+        justify-content: center;
+        align-self: stretch;
+    }
+
+    .lb-filter-select {
+        width: 100%;
+    }
+
+    .leaderboard-table-container {
+        padding: 1rem 0.75rem 1.1rem;
+    }
+
+    .lb-table thead {
+        display: none; /* switch to card layout */
+    }
+
+    .lb-table tr {
+        display: block;
+        margin-bottom: 0.75rem;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(0, 255, 255, 0.2);
+    }
+
+    .lb-table td {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.4rem 0.6rem;
+        font-size: 0.85rem;
+    }
+
+    .lb-table td::before {
+        content: attr(data-label);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-size: 0.7rem;
+        opacity: 0.7;
+        margin-right: 0.5rem;
+    }
+}
