@@ -1,125 +1,128 @@
 /* ============================================================
-   CCG MASTER CSS — GLOBAL OMEGA FRAMEWORK
-   (SAFE VERSION — ONLY FIX APPLIED: header actions overflow)
+   CCG MASTER CSS — GLOBAL STRUCTURE & RESET
+   Omega Edition (Header Z-Index Safety Applied)
    ============================================================ */
 
-/* RESET & BASE ------------------------------------------------ */
+:root {
+    --ccg-font-main: 'Press Start 2P', sans-serif;
+    --ccg-font-alt: 'Roboto', sans-serif;
 
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
+    --ccg-color-blue: #00aaff;
+    --ccg-color-pink: #ff29e0;
+    --ccg-color-cyan: #7fe9ff;
+
+    --ccg-bg-dark: #000;
+    --ccg-text-light: #eef;
 }
+
+/* GLOBAL RESET ------------------------------------------------ */
 
 html, body {
     margin: 0;
     padding: 0;
     background: #000;
-    color: var(--text-light, #ffffff);
-    font-family: var(--ccg-font-main, Arial, sans-serif);
+    color: var(--ccg-text-light);
+    font-family: var(--ccg-font-alt);
     overflow-x: hidden;
+}
+
+a {
+    color: var(--ccg-color-cyan);
+    text-decoration: none;
 }
 
 img {
     max-width: 100%;
-    height: auto;
     display: block;
-}
-
-/* ROOT VARIABLES ---------------------------------------------- */
-
-:root {
-    --accent: #00e2ff;
-    --accent-rgb: 0, 226, 255;
-
-    --text-light: #e7f9ff;
-
-    --ccg-header-height: 92px;
-
-    --ccg-font-main: "Roboto", sans-serif;
-    --ccg-font-display: "Orbitron", sans-serif;
-
-    --ccg-social-gap: 1rem;
 }
 
 /* PAGE WRAPPER ------------------------------------------------ */
 
 .ccg-page {
     position: relative;
-    z-index: 4;
+    z-index: 10;
 }
 
-/* HEADER ------------------------------------------------------ */
+/* ============================================================
+   🔥 OMEGA HEADER SAFETY FIX (CRITICAL)
+   This ensures the header and logo ALWAYS appear above:
+   - starfield
+   - neon grid
+   - CRT overlay
+   - all background effects
+   ============================================================ */
+
+.ccg-header {
+    position: relative;
+    z-index: 9999; /* ABOVE all overlay layers */
+}
+
+.ccg-brand img,
+.ccg-brand__logo,
+.ccg-logo-img {
+    position: relative;
+    z-index: 10000; /* Ensure the actual logo always sits on top */
+}
+
+/* ============================================================
+   HEADER STRUCTURE & BRANDING
+   ============================================================ */
 
 .ccg-header {
     width: 100%;
-    background: rgba(0,0,0,0.82);
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    backdrop-filter: blur(6px);
-    position: sticky;
-    top: 0;
-    z-index: 999;
+    padding: 14px 0;
 }
 
 .ccg-header-inner {
-    max-width: 1500px;
+    width: 96%;
     margin: 0 auto;
-    padding: 0.6rem 1.2rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 2rem;
 }
-
-/* BRAND ------------------------------------------------------- */
 
 .ccg-brand {
     display: flex;
     align-items: center;
-    gap: 0.9rem;
-    text-decoration: none;
-    color: var(--text-light);
+    gap: 12px;
 }
 
 .ccg-brand__logo {
-    width: 62px;
+    width: 64px;
     height: auto;
 }
 
+.ccg-brand__text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
 .ccg-brand__kicker {
-    font-size: 0.8rem;
-    opacity: 0.75;
+    font-size: 0.6rem;
+    opacity: 0.8;
 }
 
 .ccg-brand__title {
-    font-size: 1.3rem;
-    line-height: 1.1;
-    font-weight: 600;
-    display: flex;
-    flex-direction: column;
-}
-
-.ccg-brand__neon-cheeky {
-    color: var(--accent);
-    text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.85);
+    font-size: 1rem;
+    text-transform: uppercase;
+    font-weight: bold;
 }
 
 /* NAVIGATION -------------------------------------------------- */
 
 .ccg-nav__list {
     display: flex;
-    gap: 1.4rem;
+    gap: 14px;
     list-style: none;
-    margin: 0;
     padding: 0;
+    margin: 0;
 }
 
 .ccg-nav__link {
-    text-decoration: none;
-    font-size: 1rem;
-    color: var(--text-light);
-    opacity: 0.85;
-    transition: 0.2s ease;
+    font-size: 0.9rem;
+    opacity: 0.8;
+    transition: 0.2s opacity;
 }
 
 .ccg-nav__link:hover {
@@ -127,127 +130,31 @@ img {
 }
 
 .ccg-nav__link--active {
-    color: var(--accent);
-    text-shadow: 0 0 6px rgba(var(--accent-rgb), 0.65);
-}
-
-/* ============================================================
-   ✔ FIX APPLIED HERE — NOTHING ELSE EDITED
-   ============================================================ */
-
-.ccg-header-actions {
-    display: flex;
-    align-items: center;
-    gap: 1.2rem;
-
-    /* The FIX — restore socials visibility */
-    overflow: visible;  
-}
-
-/* MODE TOGGLE ------------------------------------------------- */
-
-.ccg-mode-toggle {
-    cursor: pointer;
-    background: none;
-    border: none;
-    padding: 0;
-    position: relative;
-}
-
-.ccg-mode-toggle__pill {
-    background: rgba(0,0,0,0.55);
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,0.15);
-    width: 72px;
-    height: 34px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    padding: 0 0.4rem;
-}
-
-.ccg-mode-toggle__thumb {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: var(--accent);
-    position: absolute;
-    transition: transform 0.25s ease;
-}
-
-body[data-mode="c64"] .ccg-mode-toggle__thumb {
-    transform: translateX(0);
-}
-
-body[data-mode="amiga"] .ccg-mode-toggle__thumb {
-    transform: translateX(38px);
-}
-
-/* SOCIAL ICONS (header) -------------------------------------- */
-
-.ccg-header-socials {
-    display: flex;
-    align-items: center;
-    gap: var(--ccg-social-gap);
-}
-
-.ccg-header-socials a {
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0.85;
-    transition: opacity 0.25s ease, transform 0.25s ease;
-}
-
-.ccg-header-socials a:hover {
     opacity: 1;
-    transform: scale(1.08);
+}
+
+/* SOCIALS ----------------------------------------------------- */
+
+.ccg-socials {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* MAIN CONTENT ------------------------------------------------ */
+
+.ccg-main {
+    width: 96%;
+    margin: 0 auto;
+    padding: 20px 0;
 }
 
 /* FOOTER ------------------------------------------------------ */
 
 .ccg-footer {
-    margin-top: 4rem;
-    padding: 2rem;
+    width: 100%;
     text-align: center;
-    color: var(--text-light);
+    padding: 20px 0;
     opacity: 0.75;
-    font-size: 0.9rem;
-}
-
-/* ============================================================
-   OMEGA SAFETY PASS — HEADER LAYERING
-   Ensure nav / logo always sit above everything else
-   ============================================================ */
-
-.ccg-header {
-    position: relative;  /* or fixed if you currently use fixed header */
-    z-index: 10;         /* above .ccg-page default (1) */
-}
-
-.ccg-header-inner {
-    position: relative;
-    z-index: 11;         /* ensure nav + logo are topmost within header */
-}
-
-/* ============================================================
-   OMEGA HEADER SAFETY PATCH — LOGO ALWAYS ON TOP
-   ============================================================ */
-
-.ccg-brand,
-.ccg-brand__logo {
-    position: relative;
-    z-index: 20 !important;
-}
-
-/* ============================================================
-   OMEGA HEADER OVERRIDE — ENSURE LOGO ALWAYS ON TOP
-   ============================================================ */
-
-.ccg-header,
-.ccg-header * {
-    position: relative;
-    z-index: 50 !important;
+    font-size: 0.8rem;
 }
