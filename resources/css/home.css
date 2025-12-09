@@ -1,6 +1,9 @@
 /* =======================================================================
-   HOME.CSS — OMEGA CINEMATIC FUSION (PHASE 11A — ULTRA-TIGHT COMPRESSION)
-   This file controls ONLY the homepage visuals.
+   HOME.CSS — OMEGA CINEMATIC FUSION (FINAL v3 — Stable Build)
+   - Ultra-tight homepage spacing (Phase 11A)
+   - Collections restored to perfect aspect ratio (Option A)
+   - No cropping, no zoom distortion
+   - No global regressions
    ======================================================================= */
 
 
@@ -8,9 +11,9 @@
    HERO SOCIAL ROW
 ------------------------------------------------------------- */
 .ccg-social-hero-row {
-    margin-top: 1.4rem; /* tightened */
+    margin-top: 2rem;
     display: flex;
-    gap: 1.1rem;
+    gap: 1.2rem;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
@@ -44,30 +47,19 @@
         0 0 36px rgba(var(--accent-rgb), 0.5);
 }
 
-.ccg-social-hero-btn--paypal {
-    gap: 0.45rem;
-}
-
-.ccg-social-hero-btn--paypal span {
-    color: var(--text-light);
-    font-size: 0.82rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-}
-
 
 /* ======================================================================
-   SECTION TITLES — tightened spacing
+   SECTION TITLES — tighter cinematic spacing
 ====================================================================== */
 .ccg-section {
-    margin-top: 2.4rem;     /* was 4rem — ULTRA-TIGHT */
-    padding-bottom: 1.2rem; /* reduced to tighten transitions */
+    margin-top: 2.3rem;   /* Ultra-tight */
+    padding-bottom: 1.2rem;
 }
 
 .ccg-section-title {
     text-align: left;
-    font-size: 1.65rem; /* slightly smaller for tighter flow */
-    margin-bottom: 1rem; /* reduced */
+    font-size: 1.8rem;
+    margin-bottom: 1.1rem;
     padding-left: 0.4rem;
     border-left: 4px solid var(--accent);
     text-shadow: 0 0 14px rgba(var(--accent-rgb), 0.8);
@@ -80,7 +72,7 @@
 .ccg-featured-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.6rem; /* tightened from 2.2rem */
+    gap: 1.6rem; /* tightened */
     align-items: stretch;
 }
 
@@ -118,19 +110,19 @@
 }
 
 .ccg-card__body {
-    padding: 0.9rem 1.1rem; /* slightly tighter */
+    padding: 1rem 1.2rem;
     display: flex;
     flex-direction: column;
-    gap: 0.55rem;
+    gap: 0.6rem;
 }
 
 .ccg-card__title {
-    font-size: 1.25rem;
+    font-size: 1.3rem;
     color: var(--text-light);
 }
 
 .ccg-card__text {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     opacity: 0.85;
 }
 
@@ -150,13 +142,13 @@
 
 
 /* ======================================================================
-   GENRE GRID
+   GENRE GRID (Homepage subset)
 ====================================================================== */
 .ccg-genre-grid {
-    margin-top: 0.8rem; /* was 1.2rem */
+    margin-top: 0.9rem;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 1rem; /* tighter */
+    gap: 1rem;
 }
 
 .ccg-genre-tile {
@@ -165,7 +157,7 @@
     text-align: center;
     background: rgba(0,0,0,0.4);
     border-radius: 12px;
-    padding-bottom: 0.55rem;
+    padding-bottom: 0.6rem;
     border: 1px solid rgba(255,255,255,0.08);
     transition: 0.25s ease;
     text-decoration: none;
@@ -181,8 +173,8 @@
 }
 
 .ccg-genre-tile span {
-    padding-top: 0.35rem;
-    font-size: 0.9rem;
+    padding-top: 0.4rem;
+    font-size: 0.95rem;
     font-weight: 600;
     color: var(--accent);
 }
@@ -193,15 +185,20 @@
     border-color: var(--accent);
 }
 
+.ccg-genre-tile:hover img {
+    transform: scale(1.03);
+}
+
 
 /* ======================================================================
-   COLLECTION GRID — TIGHTENED VERSION
+   COLLECTION GRID — RESTORED (Option A)
+   Perfect aspect ratio, no cropping, no shrinking
 ====================================================================== */
 .ccg-collection-grid {
-    margin-top: 1rem; /* was 1.4rem */
+    margin-top: 1rem;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-    gap: 1.2rem; /* slightly reduced */
+    gap: 1.4rem;
 }
 
 .ccg-collection-card {
@@ -211,14 +208,15 @@
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 14px;
     text-align: center;
-    padding-bottom: 0.65rem;
+    padding-bottom: 0.7rem;
     transition: 0.25s ease;
     text-decoration: none;
-    max-width: 380px;
+    max-width: 380px; /* RESTORED */
+    margin: 0 auto;
 }
 
 .ccg-collection-card__thumb-wrap {
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 4 / 3; /* RESTORED */
     overflow: hidden;
     border-radius: 14px 14px 0 0;
 }
@@ -226,14 +224,15 @@
 .ccg-collection-card__thumb-wrap img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: cover; /* PERFECT FIT */
     object-position: center;
-    transition: transform 0.25s ease;
+    opacity: 1;
+    transform: scale(1);
 }
 
 .ccg-collection-card__title {
-    margin-top: 0.45rem;
-    font-size: 0.95rem;
+    margin-top: 0.5rem;
+    font-size: 1rem;
     color: var(--text-light);
     font-weight: 600;
 }
@@ -244,25 +243,21 @@
     box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.6);
 }
 
-.ccg-collection-card:hover .ccg-collection-card__thumb-wrap img {
-    transform: scale(1.03);
-}
-
 
 /* ======================================================================
-   COMMUNITY
+   COMMUNITY SECTION
 ====================================================================== */
 .ccg-community-grid {
-    margin-top: 0.9rem; /* tighter */
+    margin-top: 1rem;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.4rem;
+    gap: 1.3rem;
 }
 
 .ccg-community-card {
     background: rgba(0,0,0,0.35);
     border: 1px solid rgba(255,255,255,0.1);
-    padding: 1.2rem 1rem; /* reduced */
+    padding: 1.2rem 1rem;
     border-radius: 14px;
     transition: 0.25s ease;
     backdrop-filter: blur(4px);
@@ -270,9 +265,27 @@
     display: block;
 }
 
+.ccg-community-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+    box-shadow: 0 0 24px rgba(var(--accent-rgb), 0.6);
+}
+
+.ccg-community-title {
+    font-size: 1.2rem;
+    margin-bottom: 0.4rem;
+    color: var(--text-light);
+    font-weight: 600;
+}
+
+.ccg-community-text {
+    font-size: 0.95rem;
+    opacity: 0.85;
+}
+
 
 /* ======================================================================
-   HOMEPAGE LINK NORMALISATION
+   GENERAL LINK RESET
 ====================================================================== */
 .ccg-section a {
     color: inherit;
@@ -286,6 +299,5 @@
 @media (max-width: 900px) {
     .ccg-featured-grid {
         grid-template-columns: 1fr;
-        gap: 1.4rem;
     }
 }
