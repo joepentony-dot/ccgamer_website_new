@@ -1,9 +1,6 @@
 /* =======================================================================
-   HOME.CSS — OMEGA CINEMATIC FUSION (FINAL v3 — Stable Build)
-   - Ultra-tight homepage spacing (Phase 11A)
-   - Collections restored to perfect aspect ratio (Option A)
-   - No cropping, no zoom distortion
-   - No global regressions
+   HOME.CSS — OMEGA CINEMATIC FUSION (FINAL v4 — Collections Fixed)
+   This file controls ONLY the homepage visuals.
    ======================================================================= */
 
 
@@ -52,7 +49,7 @@
    SECTION TITLES — tighter cinematic spacing
 ====================================================================== */
 .ccg-section {
-    margin-top: 2.3rem;   /* Ultra-tight */
+    margin-top: 2.3rem;
     padding-bottom: 1.2rem;
 }
 
@@ -72,7 +69,7 @@
 .ccg-featured-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.6rem; /* tightened */
+    gap: 1.6rem;
     align-items: stretch;
 }
 
@@ -191,8 +188,8 @@
 
 
 /* ======================================================================
-   COLLECTION GRID — RESTORED (Option A)
-   Perfect aspect ratio, no cropping, no shrinking
+   COLLECTION GRID — RESTORED, NO CROPPING
+   Thumbnails show full 460×215 PNG, no object-fit cropping.
 ====================================================================== */
 .ccg-collection-grid {
     margin-top: 1rem;
@@ -211,23 +208,20 @@
     padding-bottom: 0.7rem;
     transition: 0.25s ease;
     text-decoration: none;
-    max-width: 380px; /* RESTORED */
+    max-width: 380px;
     margin: 0 auto;
 }
 
 .ccg-collection-card__thumb-wrap {
-    aspect-ratio: 4 / 3; /* RESTORED */
     overflow: hidden;
     border-radius: 14px 14px 0 0;
 }
 
+/* KEY FIX: use natural image aspect, no cropping */
 .ccg-collection-card__thumb-wrap img {
+    display: block;
     width: 100%;
-    height: 100%;
-    object-fit: cover; /* PERFECT FIT */
-    object-position: center;
-    opacity: 1;
-    transform: scale(1);
+    height: auto;
 }
 
 .ccg-collection-card__title {
