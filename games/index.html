@@ -32,10 +32,12 @@
         <div class="ccg-header-inner">
 
             <a href="../home.html" class="ccg-brand">
-                <img src="../resources/images/ccgamer-logo.png"
+                <!-- FIXED LOGO PATH (../ → ../../) -->
+                <img src="../../resources/images/ccgamer-logo.png"
                      alt="Cheeky Commodore Gamer logo"
                      class="ccg-brand__logo"
                      loading="lazy">
+
                 <div class="ccg-brand__text">
                     <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
                     <div class="ccg-brand__title">
@@ -102,7 +104,6 @@
     <!-- MAIN -->
     <main class="ccg-main">
 
-        <!-- HERO -->
         <section class="ccg-games-hero">
             <div class="ccg-games-hero__inner">
                 <h1 class="ccg-games-hero__title">Browse the Library</h1>
@@ -113,27 +114,18 @@
             </div>
         </section>
 
-        <!-- ================================================
-             OMEGA ACCORDION FILTER UI
-        ================================================= -->
+        <!-- FILTER UI -->
         <section class="ccg-filters-accordion">
-
-            <!-- SEARCH -->
             <div class="ccg-acc-item">
                 <button class="ccg-acc-header" data-acc-toggle>
                     <span>🔍 Search</span>
                     <span class="ccg-acc-arrow">▼</span>
                 </button>
                 <div class="ccg-acc-body">
-                    <input id="searchInput"
-                           class="ccg-input"
-                           type="text"
-                           placeholder="Search games…"
-                           data-ccg-games-search />
+                    <input id="searchInput" class="ccg-input" type="text" placeholder="Search games…" data-ccg-games-search />
                 </div>
             </div>
 
-            <!-- SYSTEM -->
             <div class="ccg-acc-item">
                 <button class="ccg-acc-header" data-acc-toggle>
                     <span>🖥️ System</span>
@@ -148,7 +140,6 @@
                 </div>
             </div>
 
-            <!-- GENRE -->
             <div class="ccg-acc-item">
                 <button class="ccg-acc-header" data-acc-toggle>
                     <span>🎮 Genre</span>
@@ -160,27 +151,20 @@
                     </select>
                 </div>
             </div>
-
         </section>
 
-        <!-- GRID SECTION -->
         <section class="ccg-games-browser">
-
             <div class="ccg-games-grid" data-ccg-games-grid></div>
 
             <div class="ccg-games-load-more-wrap">
-                <button type="button"
-                        class="ccg-btn ccg-btn--ghost"
-                        data-ccg-load-more>
+                <button type="button" class="ccg-btn ccg-btn--ghost" data-ccg-load-more>
                     Show more games
                 </button>
             </div>
-
         </section>
 
     </main>
 
-    <!-- FOOTER -->
     <footer class="ccg-footer">
         <p class="ccg-footer__text">
             &copy; <span data-ccg-year></span> Cheeky Commodore Gamer.
@@ -193,8 +177,6 @@
 <script src="../js/ccg-global.js" defer></script>
 <script src="../js/ccg-mode-engine.js" defer></script>
 <script src="../js/games-library.js" defer></script>
-
-<!-- NEW: VALIDATOR -->
 <script src="../js/games-validator.js" defer></script>
 
 </body>
