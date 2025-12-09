@@ -1,10 +1,50 @@
 /* ==========================================================
    CCG GLOBAL SCRIPT — UNIVERSAL EFFECTS + OMEGA MODE SUPPORT
-   FINAL CLEAN BUILD — LOGO FIX FIXED + NO OVERRIDES
+   FINAL CLEAN BUILD — DEPTH-AWARE LOGO FIX (NO 404s)
    ========================================================== */
 
 (function () {
     const body = document.body;
+
+    /* -----------------------------------------------
+       HELPER: COMPUTE CORRECT LOGO PATH BY DEPTH
+       Works on:
+       - GitHub Pages: /ccgamer_website_new/...
+       - Future domain: /...
+    ----------------------------------------------- */
+    function getLogoPath() {
+        let path = window.location.pathname || "";
+
+        // If we're on GitHub Pages, strip the repo segment
+        const repoMarker = "/ccgamer_website_new/";
+        const repoIndex = path.indexOf(repoMarker);
+        if (repoIndex !== -1) {
+            path = path.substring(repoIndex + repoMarker.length); // e.g. "games/genres/arcade-games.html"
+        }
+
+        // Normalise leading slash if present (custom domain case)
+        if (path.startsWith("/")) {
+            path = path.slice(1); // "games/index.html"
+        }
+
+        // If we're exactly at the root ("/" or "/ccgamer_website_new/")
+        if (!path) {
+            // Treat as depth 0 (same folder as home.html)
+            return "resources/images/ccgamer-logo.png";
+        }
+
+        const segments = path.split("/");
+        // Last segment is the file, everything before is folder depth
+        const folderDepth = Math.max(segments.length - 1, 0);
+
+        // Build prefix like "", "../", "../../", etc.
+        let prefix = "";
+        for (let i = 0; i < folderDepth; i++) {
+            prefix += "../";
+        }
+
+        return prefix + "resources/images/ccgamer-logo.png";
+    }
 
     /* -----------------------------------------------
        PAGE FADE-IN
@@ -14,15 +54,23 @@
     });
 
     /* -----------------------------------------------
-       OMEGA LOGO NORMALISER — FINAL FIX
-       Forces all logo elements to use the correct file,
-       preventing 404 errors from legacy filenames.
+       OMEGA LOGO NORMALISER — DEPTH-AWARE
+       Ensures all .ccg-brand__logo elements get
+       the correct relative path based on page depth.
     ----------------------------------------------- */
     document.addEventListener("DOMContentLoaded", () => {
-        const correctLogo = "resources/images/ccgamer-logo.png";
+        const correctLogo = getLogoPath();
 
         document.querySelectorAll(".ccg-brand__logo").forEach(img => {
             img.src = correctLogo;
+
+            // Safety: ensure alt + loading are sensible
+            if (!img.alt || img.alt.trim() === "") {
+                img.alt = "Cheeky Commodore Gamer logo";
+            }
+            if (!img.getAttribute("loading")) {
+                img.setAttribute("loading", "lazy");
+            }
         });
     });
 
