@@ -1,159 +1,75 @@
-// js/genre-loader.js
-// FINAL WOW EDITION 😇🕹️👌
-// Ultra-stable, fast, future-proof genre loader
-// Supports GitHub Pages and Fasthosts automatically
+/* ============================================================
+   OMEGA GENRE LOADER — LONG-FORM GENRE EDITION
+   Matches EXACT values used in games.json
+   ============================================================ */
 
-(function () {
-    document.addEventListener('DOMContentLoaded', initGenrePage);
+document.addEventListener("DOMContentLoaded", async () => {
 
-    function initGenrePage() {
-        const body = document.body;
-        if (!body) return;
+    const genreName = document.body.dataset.genre;  
+    const grid = document.getElementById("genreGamesGrid");
+    const countEl = document.getElementById("genreGamesCount");
 
-        const genreKey = (body.getAttribute('data-genre') || '').trim();
-        if (!genreKey) return;
-
-        const countEl = document.getElementById('genreGamesCount');
-        const gridEl = document.getElementById('genreGamesGrid');
-        if (!gridEl) return;
-
-        // Auto-detect whether we are running under a repo folder (GitHub Pages)
-        const REPO_PREFIX = '/ccgamer_website_new';
-        const usingRepoPrefix = window.location.pathname.startsWith(REPO_PREFIX);
-        const basePrefix = usingRepoPrefix ? REPO_PREFIX : '';
-
-        // JSON path (works for GitHub & future Fasthosts)
-        const GAMES_JSON_URL = basePrefix + '/games/games.json';
-
-        fetch(GAMES_JSON_URL, { cache: 'no-store' })
-            .then(res => {
-                if (!res.ok) throw new Error('Failed to load games.json');
-                return res.json();
-            })
-            .then(json => {
-                if (!Array.isArray(json)) throw new Error('games.json must be an array');
-                buildGenreGrid(json, genreKey, {
-                    countEl,
-                    gridEl,
-                    basePrefix,
-                    usingRepoPrefix
-                });
-            })
-            .catch(err => {
-                console.error('Genre Loader Error:', err);
-                if (countEl) countEl.textContent = 'Unable to load games.';
-            });
+    if (!genreName || !grid) {
+        console.warn("CCG Genre Loader: Missing data-genre or grid container.");
+        return;
     }
 
-    // Convert any genre to a slug ("RPG Games" → "rpg-games")
-    function slugifyGenre(str) {
-        return String(str || '')
-            .toLowerCase()
-            .trim()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/-+/g, '-')
-            .replace(/^-|-$/g, '');
-    }
+    try {
+        const response = await fetch("../../games/games.json");
+        const allGames = await response.json();
 
-    function buildGenreGrid(allGames, genreKey, ctx) {
-        const { countEl, gridEl, basePrefix, usingRepoPrefix } = ctx;
+        // ---- MATCH EXACT LONG-FORM GENRE VALUES ----
+        const filtered = allGames.filter(game =>
+            Array.isArray(game.genres) &&
+            game.genres.some(g => g.trim().toLowerCase() === genreName.trim().toLowerCase())
+        );
 
-        const genreSlug = slugifyGenre(genreKey);
+        // Update count
+        countEl.textContent = filtered.length;
 
-        // Filter: match any game whose slugged genre matches
-        const filtered = allGames.filter(game => {
-            if (!game || !Array.isArray(game.genres)) return false;
-            return game.genres.some(g => slugifyGenre(g) === genreSlug);
-        });
-
-        // Sort by sorttitle or title
-        filtered.sort((a, b) => {
-            const at = (a.sorttitle || a.title || '').toLowerCase();
-            const bt = (b.sorttitle || b.title || '').toLowerCase();
-            return at.localeCompare(bt);
-        });
-
-        // Write count
-        if (countEl) {
-            const n = filtered.length;
-            countEl.textContent = n === 0
-                ? 'No games found in this genre yet.'
-                : `${n} game${n !== 1 ? 's' : ''} found in this genre.`;
+        // If no games found, show nice Omega-friendly message
+        if (filtered.length === 0) {
+            grid.innerHTML = `
+                <div class="ccg-no-results">
+                    <p>No games were found for: <strong>${genreName}</strong></p>
+                    <p>This usually means the JSON does not contain this genre yet.</p>
+                </div>
+            `;
+            return;
         }
 
-        gridEl.innerHTML = '';
+        // ---- GENERATE GAME CARDS ----
+        const cardsHTML = filtered.map(game => {
+            const thumb = game.thumbnail || "../../resources/images/thumbnails/default.png";
+            const safeTitle = game.title || "Untitled Game";
 
-        if (filtered.length === 0) return;
+            return `
+                <a href="../game.html?id=${game.id}" class="ccg-game-card" data-ccg-game-id="${game.id}">
+                    <div class="ccg-game-card__thumb-wrap">
+                        <img src="${thumb}" alt="${safeTitle}" class="ccg-game-card__thumb" loading="lazy">
+                    </div>
 
-        // Build cards
-        filtered.forEach(game => {
-            const card = createGameCard(game, basePrefix, usingRepoPrefix);
-            gridEl.appendChild(card);
-        });
+                    <div class="ccg-game-card__info">
+                        <h3 class="ccg-game-card__title">${safeTitle}</h3>
+                        <p class="ccg-game-card__meta">
+                            ${game.year ? game.year : "—"} 
+                            • ${Array.isArray(game.genres) ? game.genres[0] : ""}
+                        </p>
+                    </div>
+                </a>
+            `;
+        }).join("");
+
+        grid.innerHTML = cardsHTML;
+
+    } catch (err) {
+        console.error("CCG Genre Loader — ERROR:", err);
+
+        grid.innerHTML = `
+            <div class="ccg-error">
+                <p>Failed to load genre games.</p>
+                <p>Please try again later.</p>
+            </div>
+        `;
     }
-
-    function createGameCard(game, basePrefix, usingRepoPrefix) {
-        const link = document.createElement('a');
-        link.className = 'genre-game-card';
-        link.href = buildGameUrl(game, basePrefix);
-
-        const img = document.createElement('img');
-        img.loading = 'lazy';
-        img.alt = `${game.title} thumbnail`;
-        img.src = normaliseThumbnailPath(game.thumbnail, basePrefix, usingRepoPrefix);
-        img.onerror = () => { img.src = fallbackThumb(); };
-
-        const title = document.createElement('div');
-        title.className = 'genre-game-title';
-        title.textContent = game.title || 'Untitled';
-
-        link.appendChild(img);
-        link.appendChild(title);
-
-        return link;
-    }
-
-    function buildGameUrl(game, basePrefix) {
-        const id = game.id || '';
-        try {
-            const u = new URL(basePrefix + '/games/game.html', window.location.origin);
-            if (id) u.searchParams.set('id', id);
-            return u.pathname + u.search;
-        } catch (err) {
-            return '../game.html' + (id ? '?id=' + encodeURIComponent(id) : '');
-        }
-    }
-
-    function normaliseThumbnailPath(rawThumb, basePrefix, usingRepoPrefix) {
-        if (!rawThumb) return fallbackThumb();
-
-        let url = String(rawThumb).trim();
-        if (!url) return fallbackThumb();
-
-        // External → leave unchanged
-        if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
-            return url;
-        }
-
-        const REPO_PREFIX = '/ccgamer_website_new';
-
-        // Remove repo prefix if not running under it
-        if (url.startsWith(REPO_PREFIX) && !usingRepoPrefix) {
-            url = url.substring(REPO_PREFIX.length);
-        }
-
-        // Ensure single leading slash
-        if (!url.startsWith('/')) url = '/' + url;
-
-        // Add repo prefix when running on GitHub Pages
-        if (usingRepoPrefix && !url.startsWith(REPO_PREFIX)) {
-            url = REPO_PREFIX + url;
-        }
-
-        return url;
-    }
-
-    function fallbackThumb() {
-        return 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
-    }
-})();
+});
