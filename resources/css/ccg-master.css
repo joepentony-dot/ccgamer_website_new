@@ -231,3 +231,13 @@ body[data-mode="amiga"] .ccg-mode-toggle__thumb {
     position: relative;
     z-index: 11;         /* ensure nav + logo are topmost within header */
 }
+
+/* ============================================================
+   OMEGA HEADER SAFETY PATCH — LOGO ALWAYS ON TOP
+   ============================================================ */
+
+.ccg-brand,
+.ccg-brand__logo {
+    position: relative;
+    z-index: 20 !important;
+}
