@@ -1,100 +1,283 @@
-/* ============================================================
-   GENRE.CSS — OMEGA HERO SYNC (GLOBAL HERO SYSTEM)
-   Updated to match Home Hero (H1-C-2) + ccg-hero.css
-   ============================================================ */
+/* =======================================================================
+   GENRE.CSS — OMEGA CINEMATIC G1 (GLOBAL FOR ALL GENRE PAGES)
+   Applies to pages with data-ccg-page="genre-single"
+   ======================================================================= */
 
-/* ------------------------------------------------------------
-   GENRE PAGE WRAPPER
------------------------------------------------------------- */
-[data-ccg-page="genre-single"] .ccg-page {
-    position: relative;
-    z-index: 3;
-}
+/* ---------------------------------------------------------------
+   PAGE FRAME
+--------------------------------------------------------------- */
 
-/* ------------------------------------------------------------
-   GENRE HERO STRUCTURE
------------------------------------------------------------- */
-.genre-hero,
-.ccg-genre-hero,
-.hero--genre {
+.ccg-page--genre {
+    min-height: 100vh;
     position: relative;
-    width: 100%;
-    overflow: hidden;
-    padding: 4rem 1.5rem 3rem;
+    z-index: 0;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
-
-    background: #000;
 }
 
-/* Background image (if any) */
-.genre-hero__bg {
+/* Main content wrapper under hero */
+.ccg-genre-main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem 3rem;
+}
+
+/* ---------------------------------------------------------------
+   CINEMATIC HERO (G1)
+   Matches markup in the new genre template:
+   <section class="ccg-genre-hero">…</section>
+--------------------------------------------------------------- */
+
+.ccg-genre-hero {
+    position: relative;
+    margin-top: var(--ccg-header-height);
+    padding: 2.8rem 1rem 2.2rem;
+
+    overflow: hidden;
+    color: var(--text-light);
+}
+
+/* Background image layer */
+.ccg-genre-hero__bg {
     position: absolute;
     inset: 0;
-    z-index: 0;
-
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-
-    filter: brightness(0.55) contrast(1.15);
+    z-index: -2;
 }
 
-/* Universal scanlines + vignette come from ccg-hero.css */
-.genre-hero .hero-scanlines {
-    z-index: 2;
+.ccg-genre-hero__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+
+    filter:
+        brightness(0.58)
+        contrast(1.18)
+        saturate(1.08)
+        drop-shadow(0 0 24px rgba(0, 0, 0, 0.85));
 }
 
-/* ------------------------------------------------------------
-   GENRE HERO CONTENT
------------------------------------------------------------- */
-.genre-hero__content {
-    position: relative;
-    z-index: 5;
-    max-width: 54rem;
+/* Overlay gradient + subtle vignette */
+.ccg-genre-hero__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+
+    background:
+        radial-gradient(circle at 15% 0%,
+            rgba(var(--accent-rgb), 0.55),
+            transparent 55%)
+        ,
+        radial-gradient(circle at 85% 100%,
+            rgba(0, 0, 0, 0.8),
+            rgba(0, 0, 0, 0.95) 70%);
+    mix-blend-mode: screen;
+    opacity: 0.9;
+}
+
+/* Inner content */
+.ccg-genre-hero__inner {
+    max-width: 1100px;
     margin: 0 auto;
+    padding: 0 1rem;
 
-    text-align: center;
-    color: var(--text-light);
-    text-shadow:
-        0 0 6px rgba(0,0,0,0.65),
-        0 0 18px rgba(0,0,0,0.45);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
 }
 
-.genre-hero__title {
-    font-size: clamp(2.4rem, 6vw, 3.6rem);
-    margin: 0 0 0.75rem;
+/* Title + tagline */
+.ccg-genre-hero__title {
+    font-family: var(--ccg-font-display);
+    font-size: 2.4rem;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
+    margin: 0 0 0.2rem;
 
-    color: var(--accent);
+    text-shadow:
+        0 0 14px rgba(var(--accent-rgb), 0.9),
+        0 0 30px rgba(var(--accent-rgb), 0.65);
 }
 
-.genre-hero__subtitle {
-    font-size: 1.1rem;
+.ccg-genre-hero__tagline {
+    max-width: 780px;
+    font-size: 0.98rem;
+    opacity: 0.9;
+}
+
+/* Tiny hint line option (if ever added) */
+.ccg-genre-hero__hint {
+    margin-top: 0.4rem;
+    font-size: 0.82rem;
+    opacity: 0.8;
+}
+
+/* ---------------------------------------------------------------
+   GAME GRID — AUTO-POPULATED via genre-loader.js
+   We style generic children so we don’t depend on exact card markup.
+--------------------------------------------------------------- */
+
+.ccg-genre-grid {
+    margin-top: 1.8rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 1.4rem;
+}
+
+/* Generic card shell: covers <a>, <article>, <div> inserted by loader */
+.ccg-genre-grid > a,
+.ccg-genre-grid > article,
+.ccg-genre-grid > div {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    overflow: hidden;
+
+    text-decoration: none;
+    color: var(--text-light);
+
+    box-shadow: 0 0 18px rgba(0, 0, 0, 0.7);
+    transition:
+        transform 0.22s ease,
+        box-shadow 0.22s ease,
+        border-color 0.22s ease,
+        background 0.22s ease;
+}
+
+/* Thumbnail region: first image in the card */
+.ccg-genre-grid > a img,
+.ccg-genre-grid > article img,
+.ccg-genre-grid > div img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    display: block;
+
+    transform: scale(1);
+    opacity: 1;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+/* Card body text: target common patterns */
+.ccg-genre-grid h3,
+.ccg-genre-card__title {
+    font-size: 1rem;
+    margin: 0.6rem 0 0.25rem;
+    padding: 0 0.8rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.ccg-genre-grid p,
+.ccg-genre-card__meta {
+    font-size: 0.86rem;
+    padding: 0 0.8rem 0.8rem;
+    margin: 0;
     opacity: 0.85;
 }
 
-/* ------------------------------------------------------------
-   MODE COLOUR SUPPORT
------------------------------------------------------------- */
-body[data-mode="amiga"] .genre-hero__title {
-    color: #ff7bfd;
-    text-shadow: none;
+/* Optional tag / chip row if genre-loader injects it */
+.ccg-genre-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    padding: 0 0.8rem 0.9rem;
+    font-size: 0.78rem;
+    opacity: 0.9;
 }
 
-body[data-mode="c64"] .genre-hero__title {
-    color: #63d8ff;
+.ccg-genre-card__tag {
+    padding: 0.12rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: rgba(0, 0, 0, 0.55);
 }
 
-/* ------------------------------------------------------------
+/* Hover / focus — Omega lift */
+.ccg-genre-grid > a:hover,
+.ccg-genre-grid > article:hover,
+.ccg-genre-grid > div:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+    background: rgba(0, 0, 0, 0.7);
+
+    box-shadow:
+        0 0 18px rgba(var(--accent-rgb), 0.85),
+        0 0 32px rgba(var(--accent-rgb), 0.45);
+}
+
+.ccg-genre-grid > a:hover img,
+.ccg-genre-grid > article:hover img,
+.ccg-genre-grid > div:hover img {
+    transform: scale(1.05);
+}
+
+/* ---------------------------------------------------------------
+   OPTIONAL META ROW (count, filters, etc.)
+   If we later add summary above the grid, these will style it.
+--------------------------------------------------------------- */
+
+.ccg-genre-meta {
+    margin-top: 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 0.9rem;
+    opacity: 0.88;
+}
+
+.ccg-genre-meta__left {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.ccg-genre-meta__right {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+/* ---------------------------------------------------------------
    RESPONSIVE
------------------------------------------------------------- */
-@media (max-width: 760px) {
-    .genre-hero {
-        padding: 3.2rem 1rem 2.4rem;
+--------------------------------------------------------------- */
+
+@media (max-width: 900px) {
+    .ccg-genre-hero {
+        padding-top: 2.2rem;
+        padding-bottom: 1.8rem;
     }
-    .genre-hero__title {
-        font-size: clamp(2rem, 7vw, 3rem);
+
+    .ccg-genre-hero__title {
+        font-size: 2rem;
+    }
+
+    .ccg-genre-hero__tagline {
+        font-size: 0.92rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .ccg-genre-hero {
+        padding-top: 2rem;
+        padding-bottom: 1.6rem;
+    }
+
+    .ccg-genre-hero__title {
+        font-size: 1.7rem;
+        letter-spacing: 0.12em;
+    }
+
+    .ccg-genre-main {
+        padding-inline: 0.9rem;
+    }
+
+    .ccg-genre-grid {
+        gap: 1.05rem;
     }
 }
