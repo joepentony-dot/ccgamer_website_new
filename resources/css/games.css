@@ -192,3 +192,91 @@
         letter-spacing: 0.12em;
     }
 }
+
+/* ============================================================
+   OMEGA RELATED GAME CARD FX — CINEMATIC EDITION 😇🕹️👌
+   Safe add-on: does not overwrite existing card rules.
+   ============================================================ */
+
+/* Fade-in animation for related cards */
+@keyframes ccg-related-fade {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.game-related-grid .ccg-game-card {
+    position: relative;
+    background: rgba(10, 20, 40, 0.55);
+    border-radius: 12px;
+    overflow: hidden;
+    padding: 0;
+    animation: ccg-related-fade 0.45s ease-out both;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+    backdrop-filter: blur(3px);
+}
+
+/* CRT micro-overlay */
+.game-related-grid .ccg-game-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.04) 0px,
+            rgba(255,255,255,0.04) 1px,
+            rgba(0,0,0,0.15) 2px
+        );
+    opacity: 0.2;
+    mix-blend-mode: overlay;
+}
+
+/* Thumbnail styling */
+.game-related-grid .ccg-game-card__thumb img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+}
+
+/* Neon lift on hover */
+.game-related-grid .ccg-game-card:hover {
+    transform: translateY(-6px);
+    box-shadow:
+        0 0 10px rgba(0, 180, 255, 0.45),
+        0 0 18px rgba(0, 120, 255, 0.35),
+        0 0 32px rgba(0, 80, 255, 0.25);
+    filter: brightness(1.05);
+}
+
+/* Slight thumbnail zoom for energy */
+.game-related-grid .ccg-game-card:hover .ccg-game-card__thumb img {
+    transform: scale(1.04);
+    opacity: 0.9;
+}
+
+/* Body text spacing */
+.game-related-grid .ccg-game-card__body {
+    padding: 0.85rem 1rem 1rem;
+}
+
+.game-related-grid .ccg-game-card__title {
+    font-size: 1rem;
+    font-weight: 600;
+    text-shadow: 0 0 6px rgba(0,255,255,0.4);
+}
+
+.game-related-grid .ccg-game-card__meta {
+    font-size: 0.8rem;
+    opacity: 0.75;
+    margin-top: 4px;
+}
+
