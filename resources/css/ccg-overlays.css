@@ -41,3 +41,26 @@
     from { background-position: 0 0; }
     to   { background-position: 0 2000px; }
 }
+
+/* ============================================================
+   OMEGA SAFETY PASS — BACKGROUND OVERLAYS
+   Ensure starfield / grid / CRT never block clicks
+   ============================================================ */
+
+.ccg-bg,
+.ccg-bg-starfield,
+.ccg-bg-grid,
+.ccg-bg-crt-overlay {
+    pointer-events: none;      /* background only, no click capture */
+    z-index: 0;                /* always behind page chrome */
+}
+
+/* Keep page content above the overlays */
+.ccg-page,
+.ccg-header,
+.ccg-main,
+.ccg-footer {
+    position: relative;
+    z-index: 1;
+}
+
