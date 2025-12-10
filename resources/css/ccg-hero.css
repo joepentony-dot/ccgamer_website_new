@@ -1,67 +1,50 @@
 /* ============================================================
-   CCG HERO SYSTEM — OMEGA MEDIUM-TIGHTENED (A — Corrected DIV Background Version)
-   Global hero layout for Home, Games Index, Genre pages, etc.
-   This file does NOT touch intro or loader screens.
+   CCG HERO SYSTEM — OMEGA MEDIUM-TIGHTENED (A — Corrected Phase 8.2)
+   Fully stabilised for: Home, Games Index, Genre, Single Game.
+   Fixes: stacking, drift, undefined img selectors, flex layout.
    ============================================================ */
 
 /* Base hero layout */
 .ccg-hero {
     position: relative;
     width: 100%;
-
-    /* TIGHTENED PADDING — reduced vertical bloat */
     padding: 3rem 1rem 1.8rem;
-
-    /* Clamp hero height so Featured appears without scrolling */
     min-height: clamp(360px, 52vh, 480px);
-
     text-align: center;
     color: var(--text-light);
     overflow: hidden;
 }
 
 /* ============================================================
-   HERO BACKGROUND IMAGE LAYER (DIV BACKGROUND)
-   Now with subtle cinematic motion (Phase 8)
+   BACKGROUND LAYER — DIV Background System (Active Everywhere)
    ============================================================ */
+
 .ccg-hero-image {
+    /* Legacy fallback no longer used by Omega
+       but kept neutral so it doesn't interfere. */
     position: absolute;
     inset: 0;
-    width: 100%;
-    height: 100%;
-
     background-size: cover;
-    background-position: center top;
-    background-repeat: no-repeat;
-
-    opacity: 0.95;
-    filter: brightness(0.62) contrast(1.15)
-            drop-shadow(0 0 14px rgba(var(--accent-rgb), 0.35));
-
-    z-index: -1;
-
-    /* ---------------------------
-       PHASE 8 — Subtle Drift Motion
-       --------------------------- */
-    transform: scale(1.04);
-    animation: ccgHeroDrift 22s ease-in-out infinite alternate;
+    background-position: center;
+    opacity: 0;
+    pointer-events: none;
 }
 
+/* Cinematic drift */
 @keyframes ccgHeroDrift {
     0%   { transform: scale(1.04) translateY(0px) translateX(0px); }
     100% { transform: scale(1.06) translateY(-6px) translateX(-4px); }
 }
 
 /* ============================================================
-   SCANLINE LAYER
-   Now includes ultra-soft shimmer (Phase 8)
+   SCANLINES — unified across all hero systems
    ============================================================ */
+
 .ccg-hero-scanlines {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    z-index: -1;
-
+    z-index: 1;
     background:
         repeating-linear-gradient(
             to bottom,
@@ -72,8 +55,6 @@
         );
     mix-blend-mode: soft-light;
     opacity: 0.18;
-
-    /* Phase 8 — shimmer sweep */
     animation: ccgScanlineSweep 12s linear infinite;
 }
 
@@ -83,12 +64,14 @@
     100% { opacity: 0.16; }
 }
 
-/* Main hero container */
+/* ============================================================
+   HERO INNER CONTAINER
+   ============================================================ */
+
 .ccg-hero-inner {
     max-width: 1100px;
     margin: 0 auto;
     padding: 0 1rem;
-
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -96,6 +79,7 @@
 }
 
 /* Titles */
+
 .ccg-hero-title {
     font-family: var(--ccg-font-display);
     font-size: 2.7rem;
@@ -112,11 +96,6 @@
     letter-spacing: 0.3em;
     text-transform: uppercase;
     opacity: 0.9;
-    margin: 0.2rem 0 0.3rem;
-
-    /* ---------------------------
-       PHASE 8 — Neon Soft Pulse
-       --------------------------- */
     animation: ccgModePulse 3.8s ease-in-out infinite;
 }
 
@@ -132,37 +111,37 @@
 }
 
 /* Mode badge */
+
 .ccg-hero__mode-badge {
     margin-top: 0.15rem;
     padding: 0.4rem 0.9rem;
     font-size: 0.82rem;
     border-radius: 999px;
+    background: rgba(0,0,0,0.7);
+    border: 1px solid rgba(255,255,255,0.25);
+    backdrop-filter: blur(6px);
     text-transform: uppercase;
     letter-spacing: 0.16em;
-
-    background: rgba(0, 0, 0, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(6px);
 }
 
 .ccg-hero__mode-prefix {
     opacity: 0.75;
     margin-right: 0.35rem;
 }
-
 .ccg-hero__mode-label {
     color: var(--accent);
 }
 
 /* ============================================================
-   HERO BUTTONS — Phase 8 Micro Lift
+   HERO BUTTONS
    ============================================================ */
+
 .ccg-hero-buttons {
-    margin-top: 0.8rem;
     display: flex;
     gap: 0.9rem;
     flex-wrap: wrap;
     justify-content: center;
+    margin-top: 0.8rem;
 }
 
 .ccg-hero-buttons .ccg-btn {
@@ -171,87 +150,46 @@
 
 .ccg-hero-buttons .ccg-btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.55),
-                0 0 28px rgba(var(--accent-rgb), 0.35);
-}
-
-.ccg-hero__hint {
-    margin-top: 0.6rem;
-    font-size: 0.85rem;
-    opacity: 0.82;
-}
-
-/* ------------------------------------------------------------------
-   RESPONSIVE TWEAKS
------------------------------------------------------------------- */
-
-@media (max-width: 900px) {
-    .ccg-hero-title {
-        font-size: 2.3rem;
-    }
-    .ccg-hero-inner {
-        gap: 0.6rem;
-    }
-
-    /* reduce drift effect slightly on mobile for better perf */
-    .ccg-hero-image {
-        animation: ccgHeroDriftMobile 18s ease-in-out infinite alternate;
-    }
-    @keyframes ccgHeroDriftMobile {
-        0%   { transform: scale(1.035) translateY(0px); }
-        100% { transform: scale(1.045) translateY(-4px); }
-    }
-}
-
-@media (max-width: 600px) {
-    .ccg-hero {
-        padding-top: 2.5rem;
-        padding-bottom: 1.6rem;
-        min-height: clamp(320px, 58vh, 450px);
-    }
-
-    .ccg-hero-title {
-        font-size: 1.9rem;
-    }
-
-    .ccg-hero-buttons {
-        flex-direction: column;
-        gap: 0.65rem;
-    }
+    box-shadow: 
+        0 0 14px rgba(var(--accent-rgb), 0.55),
+        0 0 28px rgba(var(--accent-rgb), 0.35);
 }
 
 /* ============================================================
-   OMEGA — CINEMATIC SINGLE GAME HERO BACKDROP
-   Adds blurred background using the game thumbnail.
-   Safe extension — does not override global hero styling.
+   SINGLE GAME HERO — OMEGA ULTRA 8.2
    ============================================================ */
 
+.ccg-hero--single-game {
+    position: relative;
+    overflow: hidden;
+    min-height: 380px;
+    padding: 4rem 1rem;
+    display: flex;
+    flex-direction: row; /* FIXED */
+    justify-content: center;
+    align-items: center;
+    gap: 2.8rem; /* Improved spacing */
+    text-align: left;
+}
+
+/* Background blur */
 .game-hero-bg {
     position: absolute;
     inset: 0;
     background-size: cover;
     background-position: center;
     filter: blur(18px) brightness(0.35);
-    transform: scale(1.15); /* prevents blur-edge clipping */
+    transform: scale(1.15);
     opacity: 0;
     transition: opacity 0.6s ease-out;
-    z-index: 0; /* sits behind hero content */
+    z-index: 0;
 }
 
-/* Activated once JS sets background-image */
 .game-hero-bg--active {
     opacity: 1;
 }
 
-/* Ensure hero text + thumbnail sit above blur */
-.game-hero-inner,
-.game-hero-copy,
-.game-hero-media {
-    position: relative;
-    z-index: 2;
-}
-
-/* Soft vignette to enhance cinematic feel */
+/* Vignette */
 .game-hero-bg::after {
     content: "";
     position: absolute;
@@ -262,49 +200,74 @@
         rgba(0,0,0,0.35) 55%,
         rgba(0,0,0,0.6) 100%
     );
-    pointer-events: none;
 }
 
-/* Hero section padding and alignment improvements */
-.ccg-hero--single-game {
-    min-height: 380px;
-    display: flex;
-    align-items: center;
-    padding-top: 4rem;
-    padding-bottom: 4rem;
+/* STACKING FIX */
+.game-hero-inner,
+.game-hero-copy,
+.game-hero-media {
     position: relative;
-    overflow: hidden;
+    z-index: 3;
 }
 
-/* Thumbnail container refinement */
+.ccg-hero-scanlines {
+    z-index: 2; /* Now correctly sits above blur, below text */
+}
+
+/* ============================================================
+   THUMBNAIL — CORRECTED SIZES 320/360/260
+   ============================================================ */
+
 .game-hero-thumb-wrap img {
+    width: 100%;
+    max-width: 320px; /* FIXED desktop size */
     border-radius: 12px;
-    box-shadow: 0 0 25px rgba(0, 255, 255, 0.25),
-                0 0 45px rgba(0, 128, 255, 0.3);
-    max-width: 440px;   /* doubled from 220px */
-    width: 100%;        /* responsive within the container */
-    height: auto;
+    box-shadow: 
+        0 0 25px rgba(0,255,255,0.25),
+        0 0 45px rgba(0,128,255,0.3);
 }
 
-/* Metadata & title spacing */
+/* Genre + meta spacing */
 .game-hero-meta,
 .game-hero-genres {
     margin-top: 1rem;
 }
 
-/* Responsive layout tweaks */
+/* ============================================================
+   RESPONSIVE — STABILISATION
+   ============================================================ */
+
 @media (max-width: 900px) {
+
     .ccg-hero--single-game {
         flex-direction: column;
         text-align: center;
-        padding-top: 3rem;
-    }
-
-    .game-hero-media {
-        margin-bottom: 2rem;
+        padding: 3rem 1rem;
     }
 
     .game-hero-thumb-wrap img {
-        max-width: 360px;  /* proportionally larger for mid-size screens */
+        max-width: 360px;  /* Larger on tablets */
+    }
+}
+
+@media (max-width: 600px) {
+
+    .ccg-hero {
+        padding-top: 2.5rem;
+        padding-bottom: 1.6rem;
+        min-height: clamp(320px, 58vh, 450px);
+    }
+
+    .ccg-hero-title {
+        font-size: 1.9rem;
+    }
+
+    .game-hero-thumb-wrap img {
+        max-width: 260px; /* Mobile sizing */
+    }
+
+    .ccg-hero-buttons {
+        flex-direction: column;
+        gap: 0.65rem;
     }
 }
