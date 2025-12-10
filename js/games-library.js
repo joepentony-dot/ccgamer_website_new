@@ -1,12 +1,16 @@
 /* ============================================================
    OMEGA GAMES LIBRARY — ULTRA EDITION (STABLE-FINAL)
-   Correct thumbnail paths + unified Omega card output
+   Thumbnail path fix + search fix + genre safety + Omega card output
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", () => {
+
     const grid = document.getElementById("gamesGrid");
     const countEl = document.getElementById("gamesCount");
-    const searchInput = document.getElementById("gamesSearch");
+
+    /* FIXED — correct HTML input ID */
+    const searchInput = document.getElementById("searchInput");
+
     const systemFilter = document.getElementById("systemFilter");
     const genreFilter = document.getElementById("genreFilter");
 
@@ -19,8 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let filteredGames = [];
 
     /* ============================================================
-       LOAD games.json (correct depth for /games/index.html)
-       /games/index.html → games.json (same folder)
+       LOAD games.json (same folder as /games/index.html)
     ============================================================ */
     fetch("games.json")
         .then((response) => response.json())
@@ -39,19 +42,22 @@ document.addEventListener("DOMContentLoaded", () => {
     /* ============================================================
        EVENT LISTENERS
     ============================================================ */
+
     searchInput?.addEventListener("input", applyFilters);
     systemFilter?.addEventListener("change", applyFilters);
     genreFilter?.addEventListener("change", applyFilters);
 
     /* ============================================================
-       FILTER LOGIC
+       FILTER LOGIC (with NORMALIZED GENRE MATCHING)
     ============================================================ */
+
     function applyFilters() {
         const term = (searchInput?.value || "").toLowerCase().trim();
         const system = systemFilter?.value || "all";
-        const activeGenre = genreFilter?.value || "all";
+        const activeGenre = (genreFilter?.value || "all").toLowerCase();
 
         filteredGames = allGames.filter((game) => {
+
             /* TEXT SEARCH */
             if (term) {
                 const haystack = [
@@ -69,9 +75,12 @@ document.addEventListener("DOMContentLoaded", () => {
             /* SYSTEM FILTER */
             if (system !== "all" && game.system !== system) return false;
 
-            /* GENRE FILTER */
+            /* GENRE FILTER (case-insensitive) */
             if (activeGenre !== "all") {
-                const genres = Array.isArray(game.genres) ? game.genres : [];
+                const genres = Array.isArray(game.genres)
+                    ? game.genres.map(g => g.toLowerCase())
+                    : [];
+
                 if (!genres.includes(activeGenre)) return false;
             }
 
@@ -85,6 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
     /* ============================================================
        RENDERING — OMEGA ULTRA CARD FORMAT
     ============================================================ */
+
     function renderGames() {
         if (!filteredGames.length) {
             grid.innerHTML = `
@@ -96,21 +106,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const cardsHtml = filteredGames
             .map((game) => {
-                /* ============================================================
-                   CRITICAL FIX:
-                   game.thumbnail already contains:
-                   "resources/images/thumbnails/all/xxxx.jpg"
-                   From /games/index.html → ONE LEVEL UP:
-                   "../" + game.thumbnail
-                ============================================================ */
 
-                const thumbPath = `../${game.thumbnail}`;
+                /* CORRECT PATH (FINAL): 
+                   game.thumbnail = "filename.jpg"
+                   → /games/index.html must go one level up:
+                   ../resources/images/thumbnails/all/<filename>
+                */
+                const thumbPath = `../resources/images/thumbnails/all/${game.thumbnail}`;
                 const detailUrl = `game.html?id=${encodeURIComponent(game.id)}`;
 
                 return `
                     <article class="ccg-game-card">
 
-                        <!-- CARD THUMBNAIL -->
+                        <!-- THUMB -->
                         <a class="ccg-game-card__thumb" href="${detailUrl}">
                             <img src="${thumbPath}"
                                  alt="${game.title}"
@@ -118,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                  onerror="this.style.opacity='0.2';">
                         </a>
 
-                        <!-- CARD BODY -->
+                        <!-- BODY -->
                         <div class="ccg-game-card__body">
                             <h3 class="ccg-game-card__title">
                                 <a href="${detailUrl}">${game.title}</a>
@@ -131,16 +139,14 @@ document.addEventListener("DOMContentLoaded", () => {
                             </div>
 
                             <div class="ccg-game-card__tags">
-                                ${
-                                    Array.isArray(game.genres)
-                                        ? game.genres
-                                              .map(
-                                                  (g) =>
-                                                      `<span class="ccg-game-card__tag">${g}</span>`
-                                              )
-                                              .join("")
-                                        : ""
-                                }
+                                ${Array.isArray(game.genres)
+                                    ? game.genres
+                                          .map(
+                                              (g) =>
+                                                  `<span class="ccg-game-card__tag">${g}</span>`
+                                          )
+                                          .join("")
+                                    : ""}
                             </div>
 
                             <a class="ccg-btn ccg-btn--primary ccg-view-btn"
@@ -164,8 +170,9 @@ document.addEventListener("DOMContentLoaded", () => {
     /* ============================================================
        POPULATE FILTERS
     ============================================================ */
+
     function populateFilters() {
-        /* SYSTEM FILTER */
+        /* SYSTEMS */
         if (systemFilter) {
             const systems = Array.from(
                 new Set(allGames.map((g) => g.system).filter(Boolean))
@@ -173,13 +180,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             systemFilter.innerHTML = `
                 <option value="all">All Systems</option>
-                ${systems
-                    .map((s) => `<option value="${s}">${s}</option>`)
-                    .join("")}
+                ${systems.map((s) => `<option value="${s}">${s}</option>`).join("")}
             `;
         }
 
-        /* GENRE FILTER */
+        /* GENRES */
         if (genreFilter) {
             const genreSet = new Set();
 
@@ -195,9 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             genreFilter.innerHTML = `
                 <option value="all">All genres</option>
-                ${genres
-                    .map((g) => `<option value="${g}">${g}</option>`)
-                    .join("")}
+                ${genres.map((g) => `<option value="${g}">${g}</option>`).join("")}
             `;
         }
     }
