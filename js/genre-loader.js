@@ -1,7 +1,10 @@
 /* ============================================================
-   OMEGA GENRE LOADER — LONG-FORM GENRE EDITION (Stability)
-   Matches EXACT values used in games.json
-   Target: /games/genres/*.html
+   OMEGA GENRE LOADER — MISSION E6 FINAL EDITION
+   - Loads games.json
+   - Filters by genre in data-genre=""
+   - Correct thumbnail paths
+   - Stable grid rendering
+   - Thumbnails fully clickable
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -11,111 +14,70 @@ document.addEventListener("DOMContentLoaded", async () => {
     const countEl = document.getElementById("genreGamesCount");
 
     if (!genreName || !grid) {
-        console.warn("CCG Genre Loader: Missing data-genre or grid container.");
+        console.warn("Genre Loader: Missing data-genre or grid container.");
         return;
     }
 
     try {
-        const response = await fetch("../../games/games.json");
-        if (!response.ok) {
-            throw new Error("Failed to fetch games.json");
-        }
+        /* ============================================================
+           CORRECT JSON PATH
+           genre pages are 2 LEVELS DEEP:
+           /games/genres/<genre>.html
+           games.json is at: /games/games.json
+           So the correct path is: ../../games.json
+           ============================================================ */
+        const response = await fetch("../../games.json");
+        const games = await response.json();
 
-        const allGames = await response.json();
+        /* ============================================================
+           FILTER GAMES BY GENRE NAME
+           Matches EXACT values in games.json
+           ============================================================ */
+        const filtered = games.filter(g => {
+            if (!g.genre) return false;
+            return g.genre.toLowerCase() === genreName.toLowerCase();
+        });
 
-        // ---- MATCH EXACT LONG-FORM GENRE VALUES ----
-        const filtered = allGames.filter(game =>
-            Array.isArray(game.genres) &&
-            game.genres.some(g => g.trim().toLowerCase() === genreName.trim().toLowerCase())
-        );
+        /* Render game cards */
+        grid.innerHTML = filtered.map(game => generateGenreCard(game)).join("");
 
-        // Update count
-        if (countEl) {
-            countEl.textContent = filtered.length;
-        }
-
-        // If no games found, show nice Omega-friendly message
-        if (filtered.length === 0) {
-            grid.innerHTML = `
-                <div class="ccg-no-results">
-                    <p>No games were found for: <strong>${genreName}</strong></p>
-                    <p>This usually means the JSON does not contain this genre yet.</p>
-                </div>
-            `;
-            return;
-        }
-
-        // ---- GENERATE GAME CARDS ----
-        const cardsHTML = filtered.map(game => {
-            const thumb = normaliseGenreThumb(game.thumbnail);
-            const safeTitle = game.title || "Untitled Game";
-
-            return `
-                <a href="../game.html?id=${encodeURIComponent(game.id)}"
-                   class="ccg-game-card"
-                   data-ccg-game-id="${game.id}">
-                    <img src="${thumb}"
-                         alt="${safeTitle}"
-                         loading="lazy">
-                    <div class="ccg-game-card-content">
-                        <h3 class="ccg-game-card-title">${safeTitle}</h3>
-                        <p class="ccg-game-card-platform">
-                            ${game.year ? game.year : "—"} 
-                            • ${Array.isArray(game.genres) ? game.genres[0] : ""}
-                        </p>
-                    </div>
-                </a>
-            `;
-        }).join("");
-
-        grid.innerHTML = cardsHTML;
+        /* Count text */
+        if (countEl) countEl.textContent = filtered.length;
 
     } catch (err) {
-        console.error("CCG Genre Loader — ERROR:", err);
-
-        grid.innerHTML = `
-            <div class="ccg-error">
-                <p>Failed to load genre games.</p>
-                <p>Please try again later.</p>
-            </div>
-        `;
+        console.error("Error loading genre games:", err);
     }
 });
 
 /* ============================================================
-   THUMBNAIL PATH NORMALISER (GENRE PAGES)
-   From: games.json (root-relative style)
-   To:   ../../resources/images/thumbnails/all/<file>
+   CARD GENERATOR FUNCTION — GENRE VIEW
    ============================================================ */
+function generateGenreCard(game) {
 
-function normaliseGenreThumb(raw) {
-    const FALLBACK = "../../resources/images/thumbnails/all/1942.jpg";
+    const thumbPath = `../../resources/images/thumbnails/all/${game.thumbnail}`;
 
-    if (!raw) return FALLBACK;
+    return `
+        <div class="ccg-game-card genre-card">
+        
+            <!-- CLICKABLE THUMB -->
+            <a class="ccg-game-card__thumb" href="../game.html?id=${game.id}">
+                <img src="${thumbPath}" alt="${game.title}">
+            </a>
 
-    let p = String(raw).trim();
+            <div class="ccg-game-card__body">
+                <h3 class="ccg-game-card__title">${game.title}</h3>
 
-    // Strip any ../ at the start
-    p = p.replace(/^(\.\.\/)+/, "");
+                <div class="ccg-game-card__meta">
+                    <span>${game.year || "—"}</span>
+                    <span class="divider">·</span>
+                    <span>${game.system || "—"}</span>
+                </div>
 
-    // Strip repo prefix if present
-    p = p.replace(/^\/?ccgamer_website_new\//, "");
+                <a class="ccg-btn ccg-btn--primary ccg-view-btn" href="../game.html?id=${game.id}">
+                    View Game
+                </a>
+            </div>
 
-    // Remove leading slash
-    p = p.replace(/^\//, "");
-
-    if (p.startsWith("resources/images/thumbnails/")) {
-        if (!p.startsWith("resources/images/thumbnails/all/")) {
-            p = p.replace(
-                "resources/images/thumbnails/",
-                "resources/images/thumbnails/all/"
-            );
-        }
-    } else {
-        // Treat as bare filename
-        p = "resources/images/thumbnails/all/" + p;
-    }
-
-    // Genre pages live at /games/genres/*.html → need "../../"
-    return "../../" + p;
+        </div>
+    `;
 }
