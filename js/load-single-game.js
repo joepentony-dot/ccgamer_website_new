@@ -136,9 +136,23 @@ function renderGame(game, games) {
 
     if (thumbWrap && youtubeEmbedUrl) {
         thumbWrap.style.cursor = "pointer";
-        thumbWrap.addEventListener("click", () => {
-            activateVideoPlayback(youtubeEmbedUrl);
-        });
+
+        // If the image is wrapped in an <a>, neutralise its default navigation
+        const thumbLink = thumbWrap.querySelector("a");
+
+        if (thumbLink) {
+            thumbLink.removeAttribute("href");
+            thumbLink.style.cursor = "pointer";
+
+            thumbLink.addEventListener("click", (e) => {
+                e.preventDefault();
+                activateVideoPlayback(youtubeEmbedUrl);
+            });
+        } else {
+            thumbWrap.addEventListener("click", () => {
+                activateVideoPlayback(youtubeEmbedUrl);
+            });
+        }
     }
 
     // ----------------------------------------------
@@ -230,8 +244,8 @@ function renderGame(game, games) {
         }
     }
 
-    // The embedded video section will be revealed upon first play
     if (videoSection) {
+        // Embedded section appears on first play
         videoSection.hidden = true;
     }
 
@@ -287,7 +301,7 @@ function activateVideoPlayback(videoUrl) {
 function renderRelatedGames(game, games) {
     const grid = document.getElementById("related-games-grid");
     const title = document.getElementById("related-games-title");
-    const subtitle = document.getElementById("related-games-subtitle"); // optional, may not exist
+    const subtitle = document.getElementById("related-games-subtitle"); // optional
 
     if (!grid) return;
 
