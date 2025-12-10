@@ -1,10 +1,6 @@
 /* ============================================================
-   OMEGA GAMES LIBRARY — ULTRA EDITION
-   - Drives games/index.html
-   - Loads all games from games.json
-   - Correct thumbnail paths
-   - Thumbnails + title + button all link to single game page
-   - Basic filters: search, system, genre
+   OMEGA GAMES LIBRARY — ULTRA EDITION (STABLE-FINAL)
+   Correct thumbnail paths + unified Omega card output
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -22,9 +18,10 @@ document.addEventListener("DOMContentLoaded", () => {
     let allGames = [];
     let filteredGames = [];
 
-    // ------------------------------------------------------------
-    // Load games.json (relative to /games/index.html)
-    // ------------------------------------------------------------
+    /* ============================================================
+       LOAD games.json (correct depth for /games/index.html)
+       /games/index.html → games.json (same folder)
+    ============================================================ */
     fetch("games.json")
         .then((response) => response.json())
         .then((data) => {
@@ -35,43 +32,27 @@ document.addEventListener("DOMContentLoaded", () => {
             updateCount();
             populateFilters();
         })
-        .catch((err) => {
-            console.error("Error loading games.json for library:", err);
-        });
+        .catch((err) =>
+            console.error("Error loading games.json for library:", err)
+        );
 
-    // ------------------------------------------------------------
-    // EVENT LISTENERS — FILTERS
-    // ------------------------------------------------------------
+    /* ============================================================
+       EVENT LISTENERS
+    ============================================================ */
+    searchInput?.addEventListener("input", applyFilters);
+    systemFilter?.addEventListener("change", applyFilters);
+    genreFilter?.addEventListener("change", applyFilters);
 
-    if (searchInput) {
-        searchInput.addEventListener("input", () => {
-            applyFilters();
-        });
-    }
-
-    if (systemFilter) {
-        systemFilter.addEventListener("change", () => {
-            applyFilters();
-        });
-    }
-
-    if (genreFilter) {
-        genreFilter.addEventListener("change", () => {
-            applyFilters();
-        });
-    }
-
-    // ------------------------------------------------------------
-    // FILTER LOGIC
-    // ------------------------------------------------------------
-
+    /* ============================================================
+       FILTER LOGIC
+    ============================================================ */
     function applyFilters() {
         const term = (searchInput?.value || "").toLowerCase().trim();
         const system = systemFilter?.value || "all";
         const activeGenre = genreFilter?.value || "all";
 
         filteredGames = allGames.filter((game) => {
-            // Search
+            /* TEXT SEARCH */
             if (term) {
                 const haystack = [
                     game.title,
@@ -85,17 +66,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!haystack.includes(term)) return false;
             }
 
-            // System filter
-            if (system !== "all" && game.system !== system) {
-                return false;
-            }
+            /* SYSTEM FILTER */
+            if (system !== "all" && game.system !== system) return false;
 
-            // Genre filter — games.json uses an array: game.genres
+            /* GENRE FILTER */
             if (activeGenre !== "all") {
                 const genres = Array.isArray(game.genres) ? game.genres : [];
-                if (!genres.includes(activeGenre)) {
-                    return false;
-                }
+                if (!genres.includes(activeGenre)) return false;
             }
 
             return true;
@@ -105,57 +82,75 @@ document.addEventListener("DOMContentLoaded", () => {
         updateCount();
     }
 
-    // ------------------------------------------------------------
-    // RENDERING
-    // ------------------------------------------------------------
-
+    /* ============================================================
+       RENDERING — OMEGA ULTRA CARD FORMAT
+    ============================================================ */
     function renderGames() {
         if (!filteredGames.length) {
-            grid.innerHTML =
-                `<p class="ccg-empty-state">No games match those filters yet — try adjusting your search.</p>`;
+            grid.innerHTML = `
+                <p class="ccg-empty-state">
+                    No games match those filters yet — try adjusting your search.
+                </p>`;
             return;
         }
 
         const cardsHtml = filteredGames
             .map((game) => {
-                const thumbPath = `../resources/images/thumbnails/all/${game.thumbnail}`;
+                /* ============================================================
+                   CRITICAL FIX:
+                   game.thumbnail already contains:
+                   "resources/images/thumbnails/all/xxxx.jpg"
+                   From /games/index.html → ONE LEVEL UP:
+                   "../" + game.thumbnail
+                ============================================================ */
+
+                const thumbPath = `../${game.thumbnail}`;
                 const detailUrl = `game.html?id=${encodeURIComponent(game.id)}`;
 
                 return `
-            <article class="ccg-game-card">
-                <a class="ccg-game-card__thumb" href="${detailUrl}">
-                    <img src="${thumbPath}"
-                         alt="${game.title}"
-                         loading="lazy"
-                         onerror="this.style.opacity='0.2';">
-                </a>
-                <div class="ccg-game-card__body">
-                    <h3 class="ccg-game-card__title">
-                        <a href="${detailUrl}">${game.title}</a>
-                    </h3>
-                    <div class="ccg-game-card__meta">
-                        <span>${game.year || "—"}</span>
-                        <span class="divider">·</span>
-                        <span>${game.system || "—"}</span>
-                    </div>
-                    <div class="ccg-game-card__tags">
-                        ${
-                            Array.isArray(game.genres)
-                                ? game.genres
-                                      .map(
-                                          (g) =>
-                                              `<span class="ccg-game-card__tag">${g}</span>`
-                                      )
-                                      .join("")
-                                : ""
-                        }
-                    </div>
-                    <a class="ccg-btn ccg-btn--primary ccg-view-btn" href="${detailUrl}">
-                        View Game
-                    </a>
-                </div>
-            </article>
-        `;
+                    <article class="ccg-game-card">
+
+                        <!-- CARD THUMBNAIL -->
+                        <a class="ccg-game-card__thumb" href="${detailUrl}">
+                            <img src="${thumbPath}"
+                                 alt="${game.title}"
+                                 loading="lazy"
+                                 onerror="this.style.opacity='0.2';">
+                        </a>
+
+                        <!-- CARD BODY -->
+                        <div class="ccg-game-card__body">
+                            <h3 class="ccg-game-card__title">
+                                <a href="${detailUrl}">${game.title}</a>
+                            </h3>
+
+                            <div class="ccg-game-card__meta">
+                                <span>${game.year || "—"}</span>
+                                <span class="divider">·</span>
+                                <span>${game.system || "—"}</span>
+                            </div>
+
+                            <div class="ccg-game-card__tags">
+                                ${
+                                    Array.isArray(game.genres)
+                                        ? game.genres
+                                              .map(
+                                                  (g) =>
+                                                      `<span class="ccg-game-card__tag">${g}</span>`
+                                              )
+                                              .join("")
+                                        : ""
+                                }
+                            </div>
+
+                            <a class="ccg-btn ccg-btn--primary ccg-view-btn"
+                               href="${detailUrl}">
+                                View Game
+                            </a>
+                        </div>
+
+                    </article>
+                `;
             })
             .join("");
 
@@ -163,16 +158,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function updateCount() {
-        if (!countEl) return;
-        countEl.textContent = filteredGames.length;
+        if (countEl) countEl.textContent = filteredGames.length;
     }
 
-    // ------------------------------------------------------------
-    // POPULATE FILTER DROPDOWNS (SYSTEM + GENRE)
-    // ------------------------------------------------------------
-
+    /* ============================================================
+       POPULATE FILTERS
+    ============================================================ */
     function populateFilters() {
-        // Systems
+        /* SYSTEM FILTER */
         if (systemFilter) {
             const systems = Array.from(
                 new Set(allGames.map((g) => g.system).filter(Boolean))
@@ -181,15 +174,12 @@ document.addEventListener("DOMContentLoaded", () => {
             systemFilter.innerHTML = `
                 <option value="all">All Systems</option>
                 ${systems
-                    .map(
-                        (s) =>
-                            `<option value="${s}">${s}</option>`
-                    )
+                    .map((s) => `<option value="${s}">${s}</option>`)
                     .join("")}
             `;
         }
 
-        // Genres — flatten all game.genres arrays
+        /* GENRE FILTER */
         if (genreFilter) {
             const genreSet = new Set();
 
@@ -206,10 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
             genreFilter.innerHTML = `
                 <option value="all">All genres</option>
                 ${genres
-                    .map(
-                        (g) =>
-                            `<option value="${g}">${g}</option>`
-                    )
+                    .map((g) => `<option value="${g}">${g}</option>`)
                     .join("")}
             `;
         }
