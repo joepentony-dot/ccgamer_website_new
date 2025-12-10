@@ -1,76 +1,88 @@
-// =============================================================
-// quiz-loader.js — OMEGA EDITION
-// Backend-accurate loader for Quiz Sets, Questions & Scores
-// Fully compatible with Apps Script endpoint & quiz-engine.js
-// =============================================================
+/* ============================================================
+   OMEGA GENRE LOADER — MISSION E7 ULTRA EDITION
+   ------------------------------------------------------------
+   • Loads games.json
+   • Filters using the `genres` ARRAY (correct for your JSON)
+   • Correct thumbnail paths
+   • Stable Omega ULTRA card rendering
+   • Fully clickable thumbs + View Game button
+   ============================================================ */
 
-const QUIZ_API_BASE =
-    "https://script.google.com/macros/s/AKfycbwhkSGA6HcSvCljqBA91JmQVsVVUPU5LCEO1HlifB_Cjwc0DTFCK3m6hG5ZFDSgVHw9/exec";
+document.addEventListener("DOMContentLoaded", async () => {
 
-// -------------------------------------------------------------
-// UNIVERSAL FETCH WRAPPER
-// -------------------------------------------------------------
-async function quizApiGet(params = {}) {
-    const url = new URL(QUIZ_API_BASE);
+    const genreName = document.body.dataset.genre;
+    const grid = document.getElementById("genreGamesGrid");
+    const countEl = document.getElementById("genreGamesCount");
 
-    // Add query parameters required by your backend
-    Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
-
-    const res = await fetch(url.toString(), {
-        method: "GET",
-        mode: "cors",
-        headers: { "Accept": "application/json" }
-    });
-
-    const raw = await res.text();
+    if (!genreName || !grid) {
+        console.warn("Genre Loader: Missing data-genre or grid container.");
+        return;
+    }
 
     try {
-        return JSON.parse(raw);
-    } catch (e) {
-        console.error("❌ Bad JSON from backend:", raw);
-        throw e;
+        /* ============================================================
+           CORRECT JSON PATH
+           /games/genres/page.html  →  ../games.json
+           (Your repo structure confirms this)
+           ============================================================ */
+        const response = await fetch("../games.json");
+        const games = await response.json();
+
+        /* ============================================================
+           FILTER BY GENRE — USING genres ARRAY
+           EXACT match against games.json values
+           ============================================================ */
+        const filtered = games.filter(g => {
+            if (!g.genres || !Array.isArray(g.genres)) return false;
+
+            return g.genres.some(tag =>
+                tag.toLowerCase() === genreName.toLowerCase()
+            );
+        });
+
+        /* Render game cards */
+        grid.innerHTML = filtered.map(game => generateGenreCard(game)).join("");
+
+        /* Update count */
+        if (countEl) countEl.textContent = filtered.length;
+
+    } catch (err) {
+        console.error("Error loading genre games:", err);
     }
-}
+});
 
-// -------------------------------------------------------------
-// 1) LOAD QUIZ SETS
-// Backend expects: ?getQuizSets=true
-// -------------------------------------------------------------
-async function loadQuizSets() {
-    const data = await quizApiGet({ getQuizSets: "true" });
-    return data.sets || [];
-}
 
-// -------------------------------------------------------------
-// 2) LOAD QUESTIONS FOR A SET
-// Backend expects: ?set=SET_ID
-// -------------------------------------------------------------
-async function loadQuizQuestions(setId) {
-    const data = await quizApiGet({ set: setId });
-    return data.questions || [];
-}
+/* ============================================================
+   CARD GENERATOR FUNCTION — GENRE VIEW
+   Omega ULTRA: cinematic thumbnails, click-safe, stable layout
+   ============================================================ */
+function generateGenreCard(game) {
 
-// -------------------------------------------------------------
-// 3) SAVE SCORE TO LEADERBOARD
-// Backend expects: action=saveScore & NAME & SCORE & SET & TOTAL
-// -------------------------------------------------------------
-async function saveQuizScore({ name, score, total, setId }) {
-    return await quizApiGet({
-        action: "saveScore",
-        name,
-        score,
-        total,
-        set: setId
-    });
-}
+    const thumbPath = `../../resources/images/thumbnails/all/${game.thumbnail}`;
 
-// -------------------------------------------------------------
-// 4) OPTIONAL EVENT TRACKING (non-breaking)
-// -------------------------------------------------------------
-async function trackQuizEvent(type, data = {}) {
-    try {
-        await quizApiGet({ action: type, ...data });
-    } catch (e) {
-        console.warn("⚠ Event tracking failed:", type, e);
-    }
+    return `
+        <div class="ccg-game-card genre-card">
+
+            <!-- CLICKABLE THUMB -->
+            <a class="ccg-game-card__thumb" href="../game.html?id=${game.id}">
+                <img src="${thumbPath}" alt="${game.title}">
+            </a>
+
+            <div class="ccg-game-card__body">
+                <h3 class="ccg-game-card__title">${game.title}</h3>
+
+                <div class="ccg-game-card__meta">
+                    <span>${game.year || "—"}</span>
+                    <span class="divider">·</span>
+                    <span>${game.system || "—"}</span>
+                </div>
+
+                <a class="ccg-btn ccg-btn--primary ccg-view-btn"
+                   href="../game.html?id=${game.id}">
+                    View Game
+                </a>
+            </div>
+
+        </div>
+    `;
 }
