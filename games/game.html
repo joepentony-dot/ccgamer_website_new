@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title id="game-title-meta">Game | Cheeky Commodore Gamer</title>
+    <title id="game-meta-title">Game | Cheeky Commodore Gamer</title>
     <meta name="description"
+          id="game-meta-description"
           content="Full details for this Commodore 64 or Amiga game — including video, manual, screenshots and metadata.">
 
     <link rel="icon" href="../favicon.ico">
@@ -57,11 +58,11 @@
                 <nav class="ccg-nav" aria-label="Primary navigation">
                     <ul class="ccg-nav__list">
                         <li><a href="../home.html" class="ccg-nav__link">Home</a></li>
-                        <li><a href="../games/index.html" class="ccg-nav__link">Browse Games</a></li>
+                        <li><a href="../games/index.html" class="ccg-nav__link ccg-nav__link--active">Browse Games</a></li>
                         <li><a href="../games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
                         <li><a href="../games/collections/index.html" class="ccg-nav__link">Collections</a></li>
                         <li><a href="../quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
-                        <li><a href="../complete-index.html" class="ccg-nav__link">Index</a></li>
+                        <li><a href="../emulation.html" class="ccg-nav__link">Emulation</a></li>
                         <li><a href="../about.html" class="ccg-nav__link">About</a></li>
                         <li><a href="../contact.html" class="ccg-nav__link">Contact</a></li>
                     </ul>
@@ -82,7 +83,7 @@
                     </button>
 
                     <!-- Socials -->
-                    <div class="ccg-socials">
+                    <div class="ccg-header-socials ccg-socials">
                         <a href="https://www.youtube.com/@CheekyCommodoreGamer"
                            class="ccg-socials__link"
                            aria-label="Cheeky Commodore Gamer on YouTube">
@@ -127,7 +128,7 @@
             <!-- ░░ OMEGA CINEMATIC GAME HERO ░░ -->
             <section class="ccg-section ccg-hero ccg-hero--single-game">
 
-                <!-- Background uses thumbnail (wired later via JS / CSS var) -->
+                <!-- Background uses thumbnail (wired via JS) -->
                 <div class="game-hero-bg" aria-hidden="true"></div>
                 <div class="ccg-hero-scanlines" aria-hidden="true"></div>
 
@@ -153,24 +154,47 @@
                             Game Title
                         </h1>
 
-                        <!-- Meta (year, publisher, developer, etc.) -->
+                        <!-- Meta (year, system) -->
                         <div id="game-meta" class="game-hero-meta">
-                            <!-- populated by load-single-game.js -->
+                            <div class="game-meta-row">
+                                <span class="game-meta__label">Year</span>
+                                <span id="game-year" class="game-meta__value">—</span>
+                            </div>
+                            <div class="game-meta-row">
+                                <span class="game-meta__label">System</span>
+                                <span id="game-system" class="game-meta__value">—</span>
+                            </div>
                         </div>
 
-                        <!-- Genre chips -->
+                        <!-- Genre chips (string-based) -->
                         <div id="game-genres" class="game-hero-genres">
                             <!-- populated by load-single-game.js -->
                         </div>
 
-                        <!-- Action links (manuals, disks, extras) -->
+                        <!-- Action links (manuals, disks, video) -->
                         <div class="game-hero-actions">
-                            <div id="manual-links" class="game-hero-links game-hero-links--manuals">
-                                <!-- manual PDF / viewer links -->
-                            </div>
-                            <div id="disk-links" class="game-hero-links game-hero-links--disks">
-                                <!-- disk / tape image links -->
-                            </div>
+                            <a id="pdf-button"
+                               href="#"
+                               class="ccg-btn game-hero-btn game-hero-btn--manual"
+                               hidden>
+                                View Manual
+                            </a>
+
+                            <a id="disk-button"
+                               href="#"
+                               class="ccg-btn game-hero-btn game-hero-btn--disk"
+                               hidden>
+                                Load Disk / Tape
+                            </a>
+
+                            <a id="game-play-video"
+                               href="#"
+                               class="ccg-btn game-hero-btn game-hero-btn--video"
+                               target="_blank"
+                               rel="noopener"
+                               hidden>
+                                Watch on YouTube
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -180,15 +204,35 @@
             <section class="ccg-section game-description-section">
                 <h2 class="ccg-section-title">About this game</h2>
                 <div id="game-description" class="game-description-body">
-                    <!-- Optional: description text from games.json, if present -->
+                    <!-- Description text from games.json will appear here -->
                 </div>
             </section>
 
+            <!-- ░░ LEMON / EXTERNAL LINKS ░░ -->
+            <section class="ccg-section game-lemon-section" id="lemon-links-block" hidden>
+                <h2 class="ccg-section-title">External references</h2>
+                <p class="ccg-section-subtitle">
+                    Selected database links and archive entries for this game.
+                </p>
+                <ul id="lemon-links-list" class="game-lemon-list">
+                    <!-- Populated by load-single-game.js when lemon links exist -->
+                </ul>
+            </section>
+
             <!-- ░░ VIDEO SECTION ░░ -->
-            <section class="ccg-section game-video-section">
+            <section class="ccg-section game-video-section" id="game-video-section" hidden>
                 <h2 class="ccg-section-title">Gameplay Video</h2>
-                <div id="video-frame" class="game-video-frame">
-                    <!-- YouTube iframe injected by load-single-game.js when videoid is available -->
+                <div class="game-video-frame">
+                    <div class="game-video-aspect">
+                        <iframe id="game-video-embed"
+                                src=""
+                                title="Gameplay video"
+                                loading="lazy"
+                                allowfullscreen
+                                frameborder="0"
+                                referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
                 </div>
             </section>
 
@@ -199,7 +243,7 @@
                     More titles in a similar vein — same genre, developer or era.
                 </p>
                 <div id="related-games-grid" class="ccg-games-grid game-related-grid">
-                    <!-- Future JS can inject cards here based on genre / developer -->
+                    <!-- JS injects cards here based on genre / developer -->
                 </div>
             </section>
 
