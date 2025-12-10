@@ -1,10 +1,9 @@
 /* ============================================================
-   OMEGA GENRE LOADER — MISSION E6 FINAL EDITION
+   OMEGA GENRE LOADER — ULTRA FINAL
    - Loads games.json
-   - Filters by genre in data-genre=""
+   - Supports MULTI-GENRE ARRAY structure
    - Correct thumbnail paths
    - Stable grid rendering
-   - Thumbnails fully clickable
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -19,29 +18,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        /* ============================================================
-           CORRECT JSON PATH
-           genre pages are 2 LEVELS DEEP:
-           /games/genres/<genre>.html
-           games.json is at: /games/games.json
-           So the correct path is: ../../games.json
-           ============================================================ */
-        const response = await fetch("../../games.json");
+        /* games.json is ONE LEVEL UP from /games/genres/ */
+        const response = await fetch("../games.json");
         const games = await response.json();
 
         /* ============================================================
-           FILTER GAMES BY GENRE NAME
-           Matches EXACT values in games.json
+           MULTI-GENRE FILTER (matches array values EXACTLY)
            ============================================================ */
         const filtered = games.filter(g => {
-            if (!g.genre) return false;
-            return g.genre.toLowerCase() === genreName.toLowerCase();
+            if (!g.genres || !Array.isArray(g.genres)) return false;
+            return g.genres.some(genre => genre.toLowerCase() === genreName.toLowerCase());
         });
 
-        /* Render game cards */
+        /* Render cards */
         grid.innerHTML = filtered.map(game => generateGenreCard(game)).join("");
 
-        /* Count text */
+        /* Update count */
         if (countEl) countEl.textContent = filtered.length;
 
     } catch (err) {
@@ -54,7 +46,7 @@ document.addEventListener("DOMContentLoaded", async () => {
    ============================================================ */
 function generateGenreCard(game) {
 
-    const thumbPath = `../../resources/images/thumbnails/all/${game.thumbnail}`;
+    const thumbPath = `../../${game.thumbnail}`;
 
     return `
         <div class="ccg-game-card genre-card">
