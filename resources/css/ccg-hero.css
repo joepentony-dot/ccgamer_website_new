@@ -281,7 +281,9 @@
     border-radius: 12px;
     box-shadow: 0 0 25px rgba(0, 255, 255, 0.25),
                 0 0 45px rgba(0, 128, 255, 0.3);
-    max-width: 220px;
+    max-width: 440px;   /* doubled from 220px */
+    width: 100%;        /* responsive within the container */
+    height: auto;
 }
 
 /* Metadata & title spacing */
@@ -303,7 +305,6 @@
     }
 
     .game-hero-thumb-wrap img {
-        max-width: 180px;
+        max-width: 360px;  /* proportionally larger for mid-size screens */
     }
 }
-
