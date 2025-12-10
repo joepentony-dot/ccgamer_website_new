@@ -1,7 +1,8 @@
 /* ============================================================
-   OMEGA GENRE LOADER — MISSION E6 FINAL EDITION
+   OMEGA GENRE LOADER — MISSION E7 STABLE EDITION
    - Loads games.json
    - Filters by genre in data-genre=""
+   - Supports BOTH `genre` (string) and `genres` (array) fields
    - Correct thumbnail paths
    - Stable grid rendering
    - Thumbnails fully clickable
@@ -9,7 +10,7 @@
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-    const genreName = document.body.dataset.genre;
+    const genreName = (document.body.dataset.genre || "").trim();
     const grid = document.getElementById("genreGamesGrid");
     const countEl = document.getElementById("genreGamesCount");
 
@@ -21,21 +22,44 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
         /* ============================================================
            CORRECT JSON PATH
-           genre pages are 2 LEVELS DEEP:
+           Genre pages are 1 LEVEL DEEP under /games/:
            /games/genres/<genre>.html
            games.json is at: /games/games.json
-           So the correct path is: ../../games.json
+           So the correct path from genres is: ../games.json
            ============================================================ */
-        const response = await fetch("../../games.json");
+        const response = await fetch("../games.json");
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status} fetching games.json`);
+        }
+
         const games = await response.json();
 
         /* ============================================================
            FILTER GAMES BY GENRE NAME
-           Matches EXACT values in games.json
+           - Many entries use `genres: [ ... ]` (array)
+           - Some may use `genre: "..."` (string)
+           - We treat either as valid and match EXACT text,
+             ignoring case and surrounding whitespace.
            ============================================================ */
-        const filtered = games.filter(g => {
-            if (!g.genre) return false;
-            return g.genre.toLowerCase() === genreName.toLowerCase();
+        const target = genreName.toLowerCase();
+
+        const filtered = (Array.isArray(games) ? games : []).filter(g => {
+            // 1) direct single-genre field
+            if (typeof g.genre === "string") {
+                const direct = g.genre.trim().toLowerCase();
+                if (direct === target) return true;
+            }
+
+            // 2) multi-genre array field
+            if (Array.isArray(g.genres)) {
+                const match = g.genres.some(gen =>
+                    typeof gen === "string" &&
+                    gen.trim().toLowerCase() === target
+                );
+                if (match) return true;
+            }
+
+            return false;
         });
 
         /* Render game cards */
@@ -46,6 +70,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     } catch (err) {
         console.error("Error loading genre games:", err);
+        if (grid) {
+            grid.innerHTML = `
+                <div class="ccg-genre-error">
+                    <p>Sorry, there was a problem loading games for this genre.</p>
+                </div>
+            `;
+        }
     }
 });
 
