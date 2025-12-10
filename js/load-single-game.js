@@ -1,6 +1,6 @@
 // =====================================================================
 // OMEGA SINGLE GAME LOADER — CINEMATIC HERO + RELATED GAMES EDITION
-// Bit Chief 😇🕹️👌
+// Bit Chief 😇🕹️👌 — WITH DEVELOPER SUPPORT (OPTION A)
 // =====================================================================
 
 (function () {
@@ -100,7 +100,7 @@
     }
 
     // =================================================================
-    // RELATED GAMES — OMEGA EDITION 😇🕹️👌
+    // RELATED GAMES — ENHANCED WITH DEVELOPER PRIORITY (OPTION A)
     // =================================================================
 
     function shuffle(arr) {
@@ -113,7 +113,7 @@
     function generateRelated(game, allGames) {
         const related = [];
 
-        // 1) MATCH BY GENRE
+        // 1) MATCH BY GENRE FIRST
         if (Array.isArray(game.genres)) {
             allGames.forEach(g => {
                 if (g.id === game.id) return;
@@ -127,8 +127,8 @@
             });
         }
 
-        // 2) FALLBACK: DEVELOPER MATCH
-        if (related.length < 3 && game.developer) {
+        // 2) MATCH BY DEVELOPER (Option A)
+        if (game.developer) {
             allGames.forEach(g => {
                 if (g.id === game.id) return;
                 if (!g.developer) return;
@@ -138,7 +138,7 @@
             });
         }
 
-        // 3) FINAL FALLBACK: RANDOM SELECTION
+        // 3) RANDOM FILLER IF STILL FEW
         if (related.length < 3) {
             const randoms = shuffle(allGames.filter(g => g.id !== game.id));
             randoms.forEach(g => {
@@ -147,6 +147,26 @@
         }
 
         return shuffle(related).slice(0, 6);
+    }
+
+    function updateRelatedTitle(game, relatedGames) {
+        const titleEl = qs("#related-games-title");
+        if (!titleEl) return;
+
+        if (!game.developer) {
+            titleEl.textContent = "Related games";
+            return;
+        }
+
+        const sameDeveloperCount = relatedGames.filter(
+            g => g.developer === game.developer
+        ).length;
+
+        if (sameDeveloperCount >= 3) {
+            titleEl.textContent = "More From This Developer";
+        } else {
+            titleEl.textContent = "Related games";
+        }
     }
 
     function renderRelatedGames(games) {
@@ -191,6 +211,9 @@
         setText("#game-year", game.year);
         setText("#game-system", game.system);
         setText("#game-system-label", game.system);
+
+        // ⭐ OPTION A — DEVELOPER
+        setText("#game-developer", game.developer);
 
         // SYSTEM ACCENT CLASS ON <html>
         const root = document.documentElement;
@@ -261,7 +284,7 @@
             }
         }
 
-        // LEMON / EXTERNAL LINKS
+        // EXTERNAL LINKS
         populateLemonLinks(game);
 
         // VIDEO
@@ -282,18 +305,19 @@
             }
         }
 
-        // 🔥 DYNAMIC RELATED GAMES
+        // RELATED GAMES (OPTION A ENHANCED)
         const related = generateRelated(game, allGames);
+        updateRelatedTitle(game, related);
         renderRelatedGames(related);
 
-        // Mark page as fully loaded for any subtle CSS transitions
+        // Mark page as loaded (CSS reveals transitions)
         if (root) {
             root.classList.add("single-game-loaded");
         }
     }
 
     // =================================================================
-    // LOAD JSON + APPLY DATA
+    // LOAD JSON + APPLY GAME DATA
     // =================================================================
     async function loadGame() {
         const id = getParamId();
