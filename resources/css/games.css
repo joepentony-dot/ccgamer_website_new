@@ -1,8 +1,12 @@
 /* ============================================================
-   games.css — Omega Games Index Layout (Cinematic 16:9 Edition)
-   Scoped to [data-ccg-page="games-index"]
-   Controls ONLY the visual layout of the games index and
-   the shared 'related games' card grid on game pages.
+   games.css — Omega Games Layout
+   Used by:
+     - [data-ccg-page="games-index"]  (main library)
+     - [data-ccg-page="single-game"]  (single game detail)
+   Controls:
+     - Games index grid, filters, hero strip
+     - Related games grid on single game page
+     - Single-game cinematic hero + sections
    ============================================================ */
 
 :root {
@@ -11,7 +15,272 @@
 }
 
 /* ------------------------------------------------------------
-   BASIC PAGE SPACING
+   SINGLE GAME PAGE — CINEMATIC HERO & SECTIONS
+   ------------------------------------------------------------ */
+
+[data-ccg-page="single-game"] .ccg-main {
+    padding-top: 2.5rem;
+    padding-bottom: 4rem;
+}
+
+/* Hero container */
+
+[data-ccg-page="single-game"] .ccg-hero--single-game {
+    position: relative;
+    padding: 2.5rem 0 2rem;
+    overflow: hidden;
+}
+
+[data-ccg-page="single-game"] .game-hero-inner {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: grid;
+    grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+    gap: 2.25rem;
+    align-items: stretch;
+}
+
+/* Background driven by thumbnail */
+
+[data-ccg-page="single-game"] .game-hero-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    filter: blur(14px) saturate(1.15);
+    transform: scale(1.04);
+    opacity: 0;
+    transition: opacity 0.35s ease-out;
+}
+
+[data-ccg-page="single-game"] .game-hero-bg--active {
+    opacity: 0.35;
+}
+
+/* Foreground positioning */
+
+[data-ccg-page="single-game"] .game-hero-media,
+[data-ccg-page="single-game"] .game-hero-copy {
+    position: relative;
+    z-index: 1;
+}
+
+/* Thumbnail card */
+
+[data-ccg-page="single-game"] .game-hero-thumb-wrap {
+    border-radius: 18px;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.95));
+    box-shadow:
+        0 0 18px rgba(0, 255, 255, 0.45),
+        0 0 40px rgba(120, 0, 255, 0.35);
+}
+
+[data-ccg-page="single-game"] .game-hero-thumb {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    transform-origin: center center;
+    transition: transform 0.4s ease-out, filter 0.4s ease-out;
+}
+
+[data-ccg-page="single-game"] .game-hero-media:hover .game-hero-thumb {
+    transform: scale(1.03);
+    filter: brightness(1.05);
+}
+
+/* Title + kicker */
+
+[data-ccg-page="single-game"] #game-system-label {
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-size: 0.8rem;
+    opacity: 0.9;
+}
+
+[data-ccg-page="single-game"] .game-hero-title {
+    font-size: 2.1rem;
+    line-height: 1.15;
+    margin-top: 0.25rem;
+    margin-bottom: 0.6rem;
+    text-shadow:
+        0 0 14px rgba(0, 255, 255, 0.6),
+        0 0 30px rgba(120, 0, 255, 0.4);
+}
+
+/* Meta layout (Year, System, etc.) */
+
+[data-ccg-page="single-game"] .game-hero-meta {
+    margin-top: 0.75rem;
+    padding: 0.85rem 0.9rem;
+    border-radius: 12px;
+    background:
+        linear-gradient(
+            to right,
+            rgba(2, 6, 20, 0.94),
+            rgba(10, 20, 48, 0.94)
+        );
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+}
+
+[data-ccg-page="single-game"] .game-meta-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+[data-ccg-page="single-game"] .game-meta__label {
+    opacity: 0.75;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.13em;
+}
+
+[data-ccg-page="single-game"] .game-meta__value {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Genres (string rendered from JS, but styled as pill) */
+
+[data-ccg-page="single-game"] .game-hero-genres {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 0.9rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: radial-gradient(circle at top left, rgba(0, 255, 255, 0.16), rgba(0, 0, 0, 0.8));
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+}
+
+/* Action buttons */
+
+[data-ccg-page="single-game"] .game-hero-actions {
+    margin-top: 1.3rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+[data-ccg-page="single-game"] .game-hero-btn {
+    font-size: 0.86rem;
+    padding: 0.55rem 1.2rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    border-width: 1px;
+    border-style: solid;
+}
+
+[data-ccg-page="single-game"] .game-hero-btn--manual {
+    border-color: rgba(0, 255, 200, 0.8);
+    box-shadow: 0 0 12px rgba(0, 255, 200, 0.5);
+}
+
+[data-ccg-page="single-game"] .game-hero-btn--disk {
+    border-color: rgba(255, 200, 0, 0.8);
+    box-shadow: 0 0 12px rgba(255, 200, 0, 0.5);
+}
+
+[data-ccg-page="single-game"] .game-hero-btn--video {
+    border-color: rgba(255, 80, 180, 0.9);
+    box-shadow: 0 0 12px rgba(255, 80, 180, 0.6);
+}
+
+/* Section containers */
+
+[data-ccg-page="single-game"] .game-description-section,
+[data-ccg-page="single-game"] .game-video-section,
+[data-ccg-page="single-game"] .game-lemon-section,
+[data-ccg-page="single-game"] .game-related-section {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: 2.5rem 2rem 0;
+}
+
+/* Description */
+
+[data-ccg-page="single-game"] .game-description-body {
+    margin-top: 0.85rem;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    max-width: 62rem;
+    opacity: 0.92;
+}
+
+/* Lemon links / external references */
+
+[data-ccg-page="single-game"] .game-lemon-list {
+    margin-top: 1rem;
+    list-style: none;
+    padding-left: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+[data-ccg-page="single-game"] .game-lemon-list li a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.12), rgba(0, 0, 0, 0.9));
+}
+
+/* Video frame */
+
+[data-ccg-page="single-game"] .game-video-frame {
+    margin-top: 1.2rem;
+}
+
+[data-ccg-page="single-game"] .game-video-aspect {
+    position: relative;
+    width: 100%;
+    max-width: 960px;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow:
+        0 0 16px rgba(0, 255, 255, 0.5),
+        0 0 36px rgba(120, 0, 255, 0.5);
+    background: radial-gradient(circle at top, rgba(255, 255, 255, 0.04), rgba(0, 0, 0, 0.96));
+}
+
+[data-ccg-page="single-game"] .game-video-aspect::before {
+    content: "";
+    display: block;
+    padding-bottom: 56.25%; /* 16:9 */
+}
+
+[data-ccg-page="single-game"] #game-video-embed {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Related games section small tweaks */
+
+[data-ccg-page="single-game"] .game-related-section .ccg-section-subtitle {
+    margin-top: 0.35rem;
+    opacity: 0.9;
+}
+
+/* ------------------------------------------------------------
+   BASIC PAGE SPACING — GAMES INDEX
 ------------------------------------------------------------ */
 
 [data-ccg-page="games-index"] .ccg-main {
@@ -342,6 +611,15 @@
     [data-ccg-page="games-index"] .ccg-games-browser {
         padding: 0 1.25rem;
     }
+
+    [data-ccg-page="single-game"] .game-hero-inner {
+        padding: 0 1.25rem;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    [data-ccg-page="single-game"] .game-hero-media {
+        max-width: 420px;
+    }
 }
 
 @media (max-width: 640px) {
@@ -352,5 +630,16 @@
 
     [data-ccg-page="games-index"] .ccg-games-grid {
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    [data-ccg-page="single-game"] .game-hero-title {
+        font-size: 1.7rem;
+    }
+
+    [data-ccg-page="single-game"] .game-description-section,
+    [data-ccg-page="single-game"] .game-video-section,
+    [data-ccg-page="single-game"] .game-lemon-section,
+    [data-ccg-page="single-game"] .game-related-section {
+        padding: 2rem 1.25rem 0;
     }
 }
