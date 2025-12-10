@@ -1,114 +1,96 @@
 /* ============================================================
-   OMEGA GENRE LOADER — MISSION E7 STABLE EDITION
-   - Loads games.json
-   - Filters by genre in data-genre=""
-   - Supports BOTH `genre` (string) and `genres` (array) fields
-   - Correct thumbnail paths
-   - Stable grid rendering
-   - Thumbnails fully clickable
+   CCG GENRE LOADER — OMEGA ULTRA STABLE EDITION
+   Reads games.json, filters by genre, injects ULTRA cards.
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-    const genreName = (document.body.dataset.genre || "").trim();
+    const genreName = document.body.dataset.genre;  
     const grid = document.getElementById("genreGamesGrid");
     const countEl = document.getElementById("genreGamesCount");
 
     if (!genreName || !grid) {
-        console.warn("Genre Loader: Missing data-genre or grid container.");
+        console.warn("CCG Genre Loader: Missing data-genre or grid container.");
         return;
     }
 
     try {
-        /* ============================================================
-           CORRECT JSON PATH
-           Genre pages are 1 LEVEL DEEP under /games/:
-           /games/genres/<genre>.html
-           games.json is at: /games/games.json
-           So the correct path from genres is: ../games.json
-           ============================================================ */
-        const response = await fetch("../games.json");
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status} fetching games.json`);
+        const response = await fetch("../../games.json");
+        const allGames = await response.json();
+
+        if (!Array.isArray(allGames)) {
+            console.error("CCG Genre Loader: games.json malformed.");
+            return;
         }
 
-        const games = await response.json();
+        // Match genres exactly as stored in games.json
+        const filtered = allGames.filter(game =>
+            Array.isArray(game.genres) &&
+            game.genres.includes(genreName)
+        );
 
-        /* ============================================================
-           FILTER GAMES BY GENRE NAME
-           - Many entries use `genres: [ ... ]` (array)
-           - Some may use `genre: "..."` (string)
-           - We treat either as valid and match EXACT text,
-             ignoring case and surrounding whitespace.
-           ============================================================ */
-        const target = genreName.toLowerCase();
-
-        const filtered = (Array.isArray(games) ? games : []).filter(g => {
-            // 1) direct single-genre field
-            if (typeof g.genre === "string") {
-                const direct = g.genre.trim().toLowerCase();
-                if (direct === target) return true;
-            }
-
-            // 2) multi-genre array field
-            if (Array.isArray(g.genres)) {
-                const match = g.genres.some(gen =>
-                    typeof gen === "string" &&
-                    gen.trim().toLowerCase() === target
-                );
-                if (match) return true;
-            }
-
-            return false;
-        });
-
-        /* Render game cards */
-        grid.innerHTML = filtered.map(game => generateGenreCard(game)).join("");
-
-        /* Count text */
+        // Count visible games
         if (countEl) countEl.textContent = filtered.length;
 
+        // Inject each card
+        filtered.forEach(game => {
+            const card = createGenreGameCard(game);
+            grid.appendChild(card);
+        });
+
     } catch (err) {
-        console.error("Error loading genre games:", err);
-        if (grid) {
-            grid.innerHTML = `
-                <div class="ccg-genre-error">
-                    <p>Sorry, there was a problem loading games for this genre.</p>
-                </div>
-            `;
-        }
+        console.error("CCG Genre Loader Error:", err);
     }
 });
 
 /* ============================================================
-   CARD GENERATOR FUNCTION — GENRE VIEW
+   CREATE GENRE GAME CARD — Omega ULTRA Version
    ============================================================ */
-function generateGenreCard(game) {
 
-    const thumbPath = `../../resources/images/thumbnails/all/${game.thumbnail}`;
+function createGenreGameCard(game) {
 
-    return `
-        <div class="ccg-game-card genre-card">
-        
-            <!-- CLICKABLE THUMB -->
-            <a class="ccg-game-card__thumb" href="../game.html?id=${game.id}">
-                <img src="${thumbPath}" alt="${game.title}">
-            </a>
+    // ------------------------------------------------------------
+    //  FIXED: genre pages sit at /games/genres/
+    //  → must go UP TWO levels to reach project root: "../../"
+    //
+    //  games.json already contains full path:
+    //     resources/images/thumbnails/all/foo.jpg
+    //
+    //  Correct final path:
+    //     ../../resources/images/thumbnails/all/foo.jpg
+    // ------------------------------------------------------------
+    const thumbPath = `../../${game.thumbnail}`;
+
+    const card = document.createElement("div");
+    card.className = "ccg-game-card";
+
+    card.innerHTML = `
+        <a href="../game.html?id=${game.id}" class="ccg-game-card__link-wrapper">
+
+            <div class="ccg-game-card__thumb">
+                <img src="${thumbPath}" alt="${game.title}" loading="lazy">
+            </div>
 
             <div class="ccg-game-card__body">
                 <h3 class="ccg-game-card__title">${game.title}</h3>
 
                 <div class="ccg-game-card__meta">
-                    <span>${game.year || "—"}</span>
-                    <span class="divider">·</span>
-                    <span>${game.system || "—"}</span>
+                    ${game.year || "Unknown"} • ${game.system || "C64/Amiga"}
                 </div>
 
-                <a class="ccg-btn ccg-btn--primary ccg-view-btn" href="../game.html?id=${game.id}">
-                    View Game
-                </a>
+                <div class="ccg-game-card__tags">
+                    ${(game.genres || [])
+                        .map(tag => `<span class="ccg-game-card__tag">${tag}</span>`)
+                        .join("")}
+                </div>
+
+                <div class="ccg-game-card__link">
+                    View Game →
+                </div>
             </div>
 
-        </div>
+        </a>
     `;
+
+    return card;
 }
