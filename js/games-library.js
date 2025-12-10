@@ -1,6 +1,6 @@
 // =====================================================================
-// games-library.js — Omega Games Index Loader (A2 — Full Normalisation)
-// Uses: ../games.json
+// games-library.js — Omega Games Index Loader (Stability Pass)
+// Uses: games/games.json
 // Works only on: [data-ccg-page="games-index"]
 // =====================================================================
 
@@ -12,10 +12,10 @@
     // DOM HOOKS
     // ---------------------------------------------------------
     const searchInput = document.querySelector("[data-ccg-games-search]");
-    const systemButtons = Array.from(document.querySelectorAll("[data-ccg-system-filter]"));
     const genreSelect = document.querySelector("[data-ccg-genre-filter]");
     const grid = document.querySelector("[data-ccg-games-grid]");
     const loadMoreBtn = document.querySelector("[data-ccg-load-more]");
+    const systemFilter = document.getElementById("systemFilter");
 
     if (!grid) {
         console.warn("Games grid missing — aborting games-library.js");
@@ -39,7 +39,7 @@
     // NORMALISERS
     // ---------------------------------------------------------
 
-    // Fix system names (AMIGA → Amiga)
+    // Fix system names (AMIGA → Amiga, C64, etc.)
     function normaliseSystem(sys) {
         if (!sys) return "C64";
 
@@ -51,7 +51,7 @@
         return "C64"; // fallback
     }
 
-    // Genre normalisation map
+    // Genre normalisation map (for filtering dropdown)
     function baseGenres(genresArr) {
         if (!Array.isArray(genresArr)) return [];
 
@@ -102,11 +102,18 @@
         });
     }
 
-    // Fix thumbnail paths
+    // Fix thumbnail paths for /games/index.html
+    // Canonical truth: games.json has "resources/images/thumbnails/all/<file>"
+    // This ensures we always end up with: ../resources/images/thumbnails/all/<file>
     function normalizeThumbPath(raw) {
-        if (!raw) return "../resources/images/thumbnails/all/1942.jpg";
+        const FALLBACK = "../resources/images/thumbnails/all/1942.jpg";
+
+        if (!raw) return FALLBACK;
 
         let p = String(raw).trim();
+
+        // Strip any ../ at the start
+        p = p.replace(/^(\.\.\/)+/, "");
 
         // Strip repo prefix if present
         p = p.replace(/^\/?ccgamer_website_new\//, "");
@@ -114,7 +121,20 @@
         // Remove any leading slash
         p = p.replace(/^\//, "");
 
-        // Correct relative path (games/index.html → ../)
+        // If already under resources/images/thumbnails, ensure "all/" is present
+        if (p.startsWith("resources/images/thumbnails/")) {
+            if (!p.startsWith("resources/images/thumbnails/all/")) {
+                p = p.replace(
+                    "resources/images/thumbnails/",
+                    "resources/images/thumbnails/all/"
+                );
+            }
+        } else {
+            // If this is just a filename, wrap in canonical folder
+            p = "resources/images/thumbnails/all/" + p;
+        }
+
+        // From /games/index.html we need "../" to reach root resources
         return "../" + p;
     }
 
@@ -188,7 +208,7 @@
             grid.innerHTML = `<p style="grid-column:1/-1; padding:1rem; opacity:0.85;">
                 No games found for the current filters.
             </p>`;
-            loadMoreBtn.style.display = "none";
+            if (loadMoreBtn) loadMoreBtn.style.display = "none";
             return;
         }
 
@@ -205,39 +225,48 @@
 
         const genresLabel = game.genres.length ? game.genres.join(" • ") : "";
 
-        return Object.assign(card, {
-            innerHTML: `
-                <div class="ccg-game-card__thumb">
-                    <img src="${game.thumbnail}" alt="${game.title}">
+        const gameUrl = `game.html?id=${encodeURIComponent(game.id)}`;
+        const videoUrl = game.videoid
+            ? `https://www.youtube.com/watch?v=${game.videoid}`
+            : "";
+
+        card.innerHTML = `
+            <a class="ccg-game-card__thumb" href="${gameUrl}">
+                <img src="${game.thumbnail}" alt="${game.title}">
+            </a>
+
+            <div class="ccg-game-card__body">
+                <h2 class="ccg-game-card__title">${game.title}</h2>
+
+                <div class="ccg-game-card__meta">
+                    ${game.system ? `<span class="ccg-pill">${game.system}</span>` : ""}
+                    ${game.year ? `<span class="ccg-pill">${game.year}</span>` : ""}
+                    ${game.developer ? `<span class="ccg-pill">${game.developer}</span>` : ""}
                 </div>
 
-                <div class="ccg-game-card__body">
-                    <h2 class="ccg-game-card__title">${game.title}</h2>
+                ${genresLabel ? `<p class="ccg-game-card__genres">${genresLabel}</p>` : ""}
 
-                    <div class="ccg-game-card__meta">
-                        ${game.system ? `<span class="ccg-pill">${game.system}</span>` : ""}
-                        ${game.year ? `<span class="ccg-pill">${game.year}</span>` : ""}
-                        ${game.developer ? `<span class="ccg-pill">${game.developer}</span>` : ""}
-                    </div>
+                <div class="ccg-game-card__footer">
+                    <a class="ccg-btn ccg-btn--mini ccg-btn--primary"
+                       href="${gameUrl}">
+                        View Game
+                    </a>
 
-                    ${genresLabel ? `<p class="ccg-game-card__genres">${genresLabel}</p>` : ""}
-
-                    <div class="ccg-game-card__footer">
-                        <a class="ccg-btn ccg-btn--mini ccg-btn--primary"
-                           href="game.html?id=${encodeURIComponent(game.id)}">
-                            View Game
-                        </a>
-
-                        ${game.videoid ? `
-                            <a class="ccg-btn ccg-btn--mini ccg-btn--ghost"
-                               href="https://www.youtube.com/watch?v=${game.videoid}"
-                               target="_blank" rel="noopener">
-                                Watch Video
-                            </a>` : ""}
-                    </div>
+                    ${
+                        videoUrl
+                            ? `
+                    <a class="ccg-btn ccg-btn--mini ccg-btn--ghost"
+                       href="${videoUrl}"
+                       target="_blank" rel="noopener">
+                        Watch Video
+                    </a>`
+                            : ""
+                    }
                 </div>
-            `
-        });
+            </div>
+        `;
+
+        return card;
     }
 
     function renderNextPage() {
@@ -247,8 +276,10 @@
 
         renderedCount += slice.length;
 
-        loadMoreBtn.style.display =
-            renderedCount < filteredGames.length ? "inline-flex" : "none";
+        if (loadMoreBtn) {
+            loadMoreBtn.style.display =
+                renderedCount < filteredGames.length ? "inline-flex" : "none";
+        }
     }
 
     // ---------------------------------------------------------
@@ -256,26 +287,25 @@
     // ---------------------------------------------------------
 
     function bindUI() {
+        // Search
         searchInput?.addEventListener("input", (e) => {
             searchTerm = e.target.value.trim().toLowerCase();
             applyFilters();
         });
 
-        systemButtons.forEach(btn =>
-            btn.addEventListener("click", () => {
-                systemButtons.forEach(b => b.classList.remove("ccg-chip--active"));
-                btn.classList.add("ccg-chip--active");
+        // System filter (select element)
+        systemFilter?.addEventListener("change", (e) => {
+            activeSystem = e.target.value || "all";
+            applyFilters();
+        });
 
-                activeSystem = btn.dataset.system || "all";
-                applyFilters();
-            })
-        );
-
+        // Genre filter
         genreSelect?.addEventListener("change", (e) => {
             activeGenre = e.target.value || "all";
             applyFilters();
         });
 
+        // Load more
         loadMoreBtn?.addEventListener("click", renderNextPage);
     }
 
@@ -298,7 +328,7 @@
         } catch (err) {
             console.error("Error initialising games-library.js:", err);
             grid.innerHTML = `<p style="padding:1rem;">Failed to load games library.</p>`;
-            loadMoreBtn.style.display = "none";
+            if (loadMoreBtn) loadMoreBtn.style.display = "none";
         }
     }
 
