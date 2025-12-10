@@ -1,125 +1,71 @@
-/* ============================================================
-   load-single-game.js — Omega Single Game Loader (Stability)
-   Uses: games/games.json
-   Target: /games/game.html
-   ============================================================ */
+// =====================================================================
+// load-single-game.js — Omega Single Game Loader (Mission E2 + E4/E5)
+// Uses: ../games/games.json
+// Works only on: [data-ccg-page="single-game"]
+// =====================================================================
 
-document.addEventListener("DOMContentLoaded", async () => {
-    const main = document.querySelector(".ccg-main");
-    if (!main) return;
+(function () {
+    const html = document.documentElement;
+    if (html.getAttribute("data-ccg-page") !== "single-game") return;
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const gameId = urlParams.get("id");
-    if (!gameId) return;
+    // ---------------------------------------------------------
+    // DOM HOOKS
+    // ---------------------------------------------------------
+    const params = new URLSearchParams(window.location.search);
+    const gameId = params.get("id");
 
-    try {
-        const response = await fetch("games.json");
-        if (!response.ok) {
-            throw new Error("Failed to fetch games.json");
-        }
-
-        const games = await response.json();
-        const game = games.find(g => String(g.id) === String(gameId));
-
-        if (!game) {
-            console.warn("Game not found:", gameId);
-            return;
-        }
-
-        renderGame(game, games);
-
-    } catch (err) {
-        console.error("Error loading single game:", err);
+    if (!gameId) {
+        console.warn("No ?id= in URL for single game page.");
+        return;
     }
-});
 
-/* ============================================================
-   PATH + VALUE NORMALISERS
-   ============================================================ */
+    fetch("games.json")
+        .then(res => res.json())
+        .then(data => {
+            if (!Array.isArray(data)) {
+                console.error("games.json is not an array");
+                return;
+            }
 
-// Canonical: games.json has "resources/images/thumbnails/all/<file>"
-// Single game page is at /games/game.html → needs "../resources/..."
-function normaliseSingleGameThumb(raw) {
-    const FALLBACK = "../resources/images/thumbnails/all/1942.jpg";
+            const game = data.find(g => String(g.id) === String(gameId));
+            if (!game) {
+                console.warn("Game not found for id:", gameId);
+                renderNotFoundState();
+                return;
+            }
 
-    if (!raw) return FALLBACK;
+            initSingleGamePage(game, data);
+        })
+        .catch(err => {
+            console.error("Failed to load games.json for single game page:", err);
+        });
+})();
 
-    let p = String(raw).trim();
+// ============================================================
+// MAIN INIT
+// ============================================================
 
-    // Strip any ../ at the start
-    p = p.replace(/^(\.\.\/)+/, "");
+function initSingleGamePage(game, games) {
 
-    // Strip repo prefix if present
-    p = p.replace(/^\/?ccgamer_website_new\//, "");
+    // ----------------------------------------------
+    // C64 / Amiga MODE CLASS ON <body>
+    // ----------------------------------------------
+    const body = document.body;
+    body.classList.remove("single-game--c64", "single-game--amiga");
 
-    // Remove leading slash
-    p = p.replace(/^\//, "");
-
-    if (p.startsWith("resources/images/thumbnails/")) {
-        if (!p.startsWith("resources/images/thumbnails/all/")) {
-            p = p.replace(
-                "resources/images/thumbnails/",
-                "resources/images/thumbnails/all/"
-            );
-        }
+    const system = (game.system || "").toLowerCase();
+    if (system.includes("amiga")) {
+        body.classList.add("single-game--amiga");
     } else {
-        // Treat as bare filename
-        p = "resources/images/thumbnails/all/" + p;
-    }
-
-    return "../" + p;
-}
-
-function normaliseSystemLabel(sys) {
-    if (!sys) return "C64";
-
-    const s = String(sys).trim().toLowerCase();
-
-    if (["c64", "commodore 64"].includes(s)) return "C64";
-    if (["amiga", "commodore amiga", "aga"].includes(s)) return "Amiga";
-
-    return sys;
-}
-
-/* ============================================================
-   RENDER THE PAGE
-   ============================================================ */
-
-function renderGame(game, games) {
-
-    // -------------------------------
-    // Derived values
-    // -------------------------------
-    const thumbPath = normaliseSingleGameThumb(game.thumbnail);
-    const systemLabel = normaliseSystemLabel(game.system);
-    const videoId = game.videoid || "";
-    const youtubeWatchUrl = videoId
-        ? `https://www.youtube.com/watch?v=${videoId}`
-        : "";
-    const youtubeEmbedUrl = videoId
-        ? `https://www.youtube.com/embed/${videoId}?rel=0`
-        : "";
-
-    // ----------------------------------------------
-    // System class (C64 / Amiga glow)
-    // ----------------------------------------------
-    const body = document.querySelector("body");
-    if (body) {
-        body.classList.remove("single-game--c64", "single-game--amiga");
-
-        if (game.system && game.system.toLowerCase().includes("amiga")) {
-            body.classList.add("single-game--amiga");
-        } else {
-            body.classList.add("single-game--c64");
-        }
+        body.classList.add("single-game--c64");
     }
 
     // ----------------------------------------------
-    // HERO BACKGROUND (blurred backdrop)
+    // HERO BACKDROP FROM THUMBNAIL
     // ----------------------------------------------
     const heroBg = document.querySelector(".game-hero-bg");
-    if (heroBg) {
-        heroBg.style.backgroundImage = `url('${thumbPath}')`;
+    if (heroBg && game.thumbnail) {
+        heroBg.style.backgroundImage = `url(${game.thumbnail})`;
         heroBg.classList.add("game-hero-bg--active");
     }
 
@@ -129,28 +75,23 @@ function renderGame(game, games) {
     const thumb = document.querySelector(".game-hero-thumb");
     const thumbWrap = document.querySelector(".game-hero-thumb-wrap");
 
-    if (thumb) {
-        thumb.src = thumbPath;
+    if (thumb && game.thumbnail) {
+        thumb.src = game.thumbnail;
         thumb.alt = game.title || "";
-    }
 
-    if (thumbWrap && youtubeEmbedUrl) {
-        thumbWrap.style.cursor = "pointer";
+        /* CLICK THUMBNAIL → PLAY VIDEO */
+        if (game.video && thumbWrap) {
+            // Treat the wrapper as the interactive element (it's an <a> in the HTML)
+            thumbWrap.style.cursor = "pointer";
 
-        // If the image is wrapped in an <a>, neutralise its default navigation
-        const thumbLink = thumbWrap.querySelector("a");
+            // Remove default navigation so we don't reopen the page in a new tab
+            thumbWrap.removeAttribute("href");
+            thumbWrap.removeAttribute("target");
+            thumbWrap.removeAttribute("rel");
 
-        if (thumbLink) {
-            thumbLink.removeAttribute("href");
-            thumbLink.style.cursor = "pointer";
-
-            thumbLink.addEventListener("click", (e) => {
-                e.preventDefault();
-                activateVideoPlayback(youtubeEmbedUrl);
-            });
-        } else {
-            thumbWrap.addEventListener("click", () => {
-                activateVideoPlayback(youtubeEmbedUrl);
+            thumbWrap.addEventListener("click", (event) => {
+                event.preventDefault();
+                activateVideoPlayback(game.video);
             });
         }
     }
@@ -159,95 +100,58 @@ function renderGame(game, games) {
     // TITLE + SYSTEM BOX
     // ----------------------------------------------
     const titleEl = document.getElementById("game-title");
-    if (titleEl) {
-        titleEl.textContent = game.title || "Untitled";
-    }
+    if (titleEl) titleEl.textContent = game.title || "Untitled";
 
-    const systemMeta = document.getElementById("game-system");
-    if (systemMeta) {
-        systemMeta.textContent = systemLabel;
-    }
-
-    const systemKicker = document.getElementById("game-system-label");
-    if (systemKicker) {
-        systemKicker.textContent = systemLabel;
-    }
+    const systemKicker = document.getElementById("game-system");
+    if (systemKicker) systemKicker.textContent = game.system || "Unknown";
 
     // ----------------------------------------------
     // META FIELDS: YEAR / SYSTEM / DEVELOPER
-    // (match actual IDs in game.html)
     // ----------------------------------------------
-    setText("game-year", game.year);
-    setText("game-system", systemLabel);
-    setText("game-developer", game.developer);
+    setText("meta-year", game.year);
+    setText("meta-system", game.system);
+    setText("meta-developer", game.developer);
 
     // ----------------------------------------------
     // GENRES (string)
     // ----------------------------------------------
-    const genreEl = document.getElementById("game-genres");
-    if (genreEl && Array.isArray(game.genres)) {
-        genreEl.textContent = game.genres.join(", ");
+    if (Array.isArray(game.genres)) {
+        const genreEl = document.getElementById("game-genres");
+        if (genreEl) genreEl.textContent = game.genres.join(", ");
     }
 
     // ----------------------------------------------
-    // DESCRIPTION (hide section if empty)
+    // DESCRIPTION
     // ----------------------------------------------
-    const descSection = document.getElementById("game-description-section");
     const descEl = document.getElementById("game-description");
-    if (descEl && descSection) {
-        const text = (game.description || "").trim();
-        if (text) {
-            descEl.textContent = text;
-            descSection.hidden = false;
-        } else {
-            descEl.textContent = "";
-            descSection.hidden = true;
-        }
-    }
+    if (descEl) descEl.textContent = game.description || "";
 
     // ----------------------------------------------
-    // LEMON / EXTERNAL LINKS (optional)
+    // LEMON LINKS (Optional)
     // ----------------------------------------------
-    const lemonSection = document.getElementById("lemon-links-block");
-    const lemonList = document.getElementById("lemon-links-list");
-
-    if (lemonSection && lemonList) {
+    const lemonList = document.getElementById("game-lemon-links");
+    if (lemonList && Array.isArray(game.lemonLinks)) {
         lemonList.innerHTML = "";
-
-        if (Array.isArray(game.lemonLinks) && game.lemonLinks.length > 0) {
-            game.lemonLinks.forEach(link => {
-                if (!link || !link.url) return;
-
-                const li = document.createElement("li");
-                li.innerHTML = `<a href="${link.url}" target="_blank" rel="noopener">${link.label || link.url}</a>`;
-                lemonList.appendChild(li);
-            });
-
-            lemonSection.hidden = false;
-        } else {
-            lemonSection.hidden = true;
-        }
+        game.lemonLinks.forEach(link => {
+            const li = document.createElement("li");
+            li.innerHTML = `<a href="${link.url}" target="_blank" rel="noopener">${link.label}</a>`;
+            lemonList.appendChild(li);
+        });
     }
 
     // ----------------------------------------------
-    // VIDEO HANDLING (using videoid)
+    // VIDEO HANDLING
     // ----------------------------------------------
-    const videoSection = document.getElementById("game-video-section");
-    const videoBtn = document.getElementById("game-play-video");
-
-    if (videoBtn) {
-        if (youtubeWatchUrl) {
-            videoBtn.href = youtubeWatchUrl;
-            videoBtn.hidden = false;
-        } else {
-            videoBtn.hidden = true;
-        }
+    if (game.video) {
+        injectVideo(game.video);
     }
 
-    if (videoSection) {
-        // Embedded section appears on first play
-        videoSection.hidden = true;
-    }
+    // ----------------------------------------------
+    // DOWNLOAD BUTTONS
+    // ----------------------------------------------
+    updateDownloadButton("manual-download", game.manual);
+    updateDownloadButton("disk-download", game.disk);
+    updateDownloadButton("video-button", game.video);
 
     // ----------------------------------------------
     // RELATED GAMES = FIRST BY SAME DEVELOPER,
@@ -256,18 +160,30 @@ function renderGame(game, games) {
     renderRelatedGames(game, games);
 }
 
-/* ============================================================
-   HELPERS
-   ============================================================ */
+// ============================================================
+// HELPERS
+// ============================================================
 
 function setText(id, value) {
     const el = document.getElementById(id);
     if (el) el.textContent = value || "—";
 }
 
-/* ============================================================
-   VIDEO INJECTION + FRAME FLASH
-   ============================================================ */
+function updateDownloadButton(id, url) {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+
+    if (url) {
+        btn.href = url;
+        btn.style.display = "inline-flex";
+    } else {
+        btn.style.display = "none";
+    }
+}
+
+// ============================================================
+// VIDEO INJECTION + FRAME FLASH (E4)
+// ============================================================
 
 function injectVideo(videoUrl) {
     const frame = document.getElementById("game-video-embed");
@@ -275,33 +191,34 @@ function injectVideo(videoUrl) {
 
     frame.src = videoUrl;
 
+    // Add neon flash on load
     const outer = document.querySelector(".game-video-frame-outer");
     if (outer) {
         outer.classList.remove("video-frame--active");
-        void outer.offsetWidth; // reflow
+        void outer.offsetWidth;
         outer.classList.add("video-frame--active");
     }
 }
 
-/* When clicking the thumbnail, start video playback */
+// When clicking the thumbnail, start video playback
 function activateVideoPlayback(videoUrl) {
     injectVideo(videoUrl);
 
-    const videoSection = document.getElementById("game-video-section");
-    if (videoSection) {
-        videoSection.hidden = false;
-        videoSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Scroll smoothly to video section
+    const target = document.querySelector(".game-video-section");
+    if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 }
 
-/* ============================================================
-   RELATED GAMES LOGIC
-   ============================================================ */
+// ============================================================
+// RELATED GAMES LOGIC
+// ============================================================
 
 function renderRelatedGames(game, games) {
     const grid = document.getElementById("related-games-grid");
     const title = document.getElementById("related-games-title");
-    const subtitle = document.getElementById("related-games-subtitle"); // optional
+    const subtitle = document.getElementById("related-games-subtitle");
 
     if (!grid) return;
 
@@ -321,9 +238,9 @@ function renderRelatedGames(game, games) {
 
     if (related.length > 0) {
         if (title) title.textContent = "More From This Developer";
-        if (subtitle) subtitle.textContent = game.developer || "";
+        if (subtitle) subtitle.textContent = game.developer;
     } else {
-        // TRY 2: Same Genre
+        // TRY 2: Fallback to same genre
         related = games.filter(
             g =>
                 g.id !== game.id &&
@@ -332,30 +249,43 @@ function renderRelatedGames(game, games) {
                 g.genres.some(genre => game.genres.includes(genre))
         );
 
-        if (title) title.textContent = "Related games";
+        if (title) title.textContent = "Related Games";
         if (subtitle) subtitle.textContent = "";
     }
 
+    // Build Card Elements
     related.slice(0, 6).forEach(g => {
         const card = document.createElement("a");
-        card.href = `game.html?id=${encodeURIComponent(g.id)}`;
+        card.href = `game.html?id=${g.id}`;
         card.className = "ccg-game-card";
-
-        const relatedThumb = normaliseSingleGameThumb(g.thumbnail);
-        const sysLabel = normaliseSystemLabel(g.system);
 
         card.innerHTML = `
             <div class="ccg-game-card__thumb">
-                <img src="${relatedThumb}" alt="${g.title || ""}">
+                <img src="${g.thumbnail}" alt="${g.title}">
             </div>
             <div class="ccg-game-card__body">
-                <div class="ccg-game-card__title">${g.title || "Untitled"}</div>
+                <div class="ccg-game-card__title">${g.title}</div>
                 <div class="ccg-game-card__meta">
-                    ${(g.year || "").toString().trim() || "—"} • ${sysLabel}
+                    ${g.year || ""} • ${g.system || ""}
                 </div>
             </div>
         `;
 
         grid.appendChild(card);
     });
+}
+
+// ============================================================
+// NOT FOUND STATE (if id is bad)
+// ============================================================
+
+function renderNotFoundState() {
+    const titleEl = document.getElementById("game-title");
+    if (titleEl) titleEl.textContent = "Game not found";
+
+    const descEl = document.getElementById("game-description");
+    if (descEl) {
+        descEl.textContent =
+            "Sorry, we couldn't find this game in the current library. It may have been removed or renamed.";
+    }
 }
