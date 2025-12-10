@@ -5,8 +5,6 @@
 
 (function () {
 
-    const REPO_PREFIX = "/ccgamer_website_new";
-
     function qs(sel) { return document.querySelector(sel); }
     function qsa(sel) { return document.querySelectorAll(sel); }
 
@@ -27,9 +25,9 @@
         return params.get("id");
     }
 
+    // games.json sits in the same folder as game.html
     function jsonPath() {
-        const usingRepoPrefix = window.location.pathname.startsWith(REPO_PREFIX);
-        return (usingRepoPrefix ? REPO_PREFIX : "") + "/games/games.json";
+        return "games.json";
     }
 
     function normaliseThumb(raw) {
@@ -53,7 +51,7 @@
     }
 
     // =================================================================
-    // 🍋 LEMON LINKS
+    // 🍋 LEMON / EXTERNAL LINKS
     // =================================================================
     function populateLemonLinks(game) {
         const block = qs("#lemon-links-block");
@@ -72,7 +70,17 @@
             a.href = url;
             a.target = "_blank";
             a.rel = "noopener";
-            a.textContent = `🍋 Lemon Entry`;
+
+            let label = "Game Database Entry";
+            const lower = String(url).toLowerCase();
+
+            if (lower.includes("lemon64")) {
+                label = "Lemon64";
+            } else if (lower.includes("lemonamiga")) {
+                label = "Lemon Amiga";
+            }
+
+            a.textContent = label;
             li.appendChild(a);
             list.appendChild(li);
         });
@@ -87,7 +95,7 @@
         const heroBg = qs(".game-hero-bg");
         if (!heroBg) return;
 
-        heroBg.style.backgroundImage = `url('${thumbnailUrl}')`;
+        heroBg.style.backgroundImage = "url('" + thumbnailUrl + "')";
         heroBg.classList.add("game-hero-bg--active");
     }
 
@@ -146,7 +154,7 @@
         if (!grid) return;
 
         if (!games || games.length === 0) {
-            grid.innerHTML = `<p>No related games available.</p>`;
+            grid.innerHTML = "<p>No related games available.</p>";
             return;
         }
 
@@ -155,7 +163,7 @@
         games.forEach(g => {
             const card = document.createElement("a");
             card.className = "ccg-game-card";
-            card.href = `game.html?id=${encodeURIComponent(g.id)}`;
+            card.href = "game.html?id=" + encodeURIComponent(g.id);
 
             const thumb = normaliseThumb(g.thumbnail);
 
@@ -184,26 +192,51 @@
         setText("#game-system", game.system);
         setText("#game-system-label", game.system);
 
-        // GENRES + DESCRIPTION
+        // SYSTEM ACCENT CLASS ON <html>
+        const root = document.documentElement;
+        if (root) {
+            root.classList.remove("single-game--c64", "single-game--amiga");
+            const sys = (game.system || "").toLowerCase();
+            if (sys.includes("amiga")) {
+                root.classList.add("single-game--amiga");
+            } else if (sys.includes("64")) {
+                root.classList.add("single-game--c64");
+            }
+        }
+
+        // GENRES
         setText("#game-genres", buildGenresString(game));
-        setText("#game-description",
-            game.description ||
-            "No description has been added for this title yet."
-        );
+
+        // DESCRIPTION (OPTIONAL)
+        const descSection = qs("#game-description-section");
+        const descEl = qs("#game-description");
+        if (descSection && descEl) {
+            const raw = (game.description || "").trim();
+            if (raw) {
+                descEl.textContent = raw;
+                descSection.hidden = false;
+            } else {
+                descSection.hidden = true;
+            }
+        }
 
         // HERO IMAGE + BACKGROUND
         const heroImg = qs("#game-hero-image");
         const thumb = normaliseThumb(game.thumbnail);
         if (heroImg) {
             heroImg.src = thumb;
-            heroImg.alt = `${game.title} cover`;
+            heroImg.alt = game.title ? (game.title + " cover") : "Game cover";
         }
         applyHeroBackground(thumb);
 
         // META TAGS
-        const pageTitle = `${game.title} (${game.year || "Unknown"}) | Cheeky Commodore Gamer`;
+        const pageTitle = (game.title ? game.title : "Game") +
+            " (" + (game.year || "Unknown") + ") | Cheeky Commodore Gamer";
         const pageDesc =
-            `Details, manual, gameplay video and media for ${game.title} — a ${buildGenresString(game)} title on the ${game.system}.`;
+            "Details, manual, gameplay video and media for " +
+            (game.title || "this title") +
+            " — a " + buildGenresString(game) +
+            " title on the " + (game.system || "system") + ".";
         setMeta(pageTitle, pageDesc);
 
         // MANUAL PDF
@@ -228,7 +261,7 @@
             }
         }
 
-        // LEMON LINKS
+        // LEMON / EXTERNAL LINKS
         populateLemonLinks(game);
 
         // VIDEO
@@ -238,11 +271,13 @@
 
         if (game.videoid) {
             if (playBtn) {
-                playBtn.href = `https://www.youtube.com/watch?v=${encodeURIComponent(game.videoid)}`;
+                playBtn.href = "https://www.youtube.com/watch?v=" +
+                    encodeURIComponent(game.videoid);
                 playBtn.hidden = false;
             }
             if (videoSection && videoEmbed) {
-                videoEmbed.src = `https://www.youtube.com/embed/${encodeURIComponent(game.videoid)}`;
+                videoEmbed.src = "https://www.youtube.com/embed/" +
+                    encodeURIComponent(game.videoid);
                 videoSection.hidden = false;
             }
         }
@@ -250,6 +285,11 @@
         // 🔥 DYNAMIC RELATED GAMES
         const related = generateRelated(game, allGames);
         renderRelatedGames(related);
+
+        // Mark page as fully loaded for any subtle CSS transitions
+        if (root) {
+            root.classList.add("single-game-loaded");
+        }
     }
 
     // =================================================================
@@ -267,7 +307,7 @@
             if (!response.ok) throw new Error("Failed to load games.json");
 
             const data = await response.json();
-            const gamesArray = Array.isArray(data) ? data : data.games || [];
+            const gamesArray = Array.isArray(data) ? data : (data.games || []);
 
             const game = gamesArray.find(g => g.id === id);
 
