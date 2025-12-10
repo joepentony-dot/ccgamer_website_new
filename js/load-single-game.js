@@ -1,6 +1,6 @@
 // =====================================================================
 // OMEGA SINGLE GAME LOADER — CINEMATIC HERO + RELATED GAMES EDITION
-// Bit Chief 😇🕹️👌 — WITH DEVELOPER SUPPORT (OPTION A)
+// Bit Chief 😇🕹️👌 — WITH DEVELOPER SUPPORT (OPTION A) + E3 DOWNLOAD POLISH
 // =====================================================================
 
 (function () {
@@ -48,6 +48,37 @@
         return Array.isArray(game.genres) && game.genres.length
             ? game.genres.join(" • ")
             : "Unclassified";
+    }
+
+    // Small helper to make the disk button label format-aware
+    function buildDiskLabelFromUrl(url) {
+        if (!url) return "Load Disk / Tape";
+        const lower = String(url).toLowerCase();
+        const lastDot = lower.lastIndexOf(".");
+        let ext = "";
+        if (lastDot !== -1) {
+            ext = lower.slice(lastDot + 1);
+        }
+
+        switch (ext) {
+            case "d64":
+            case "d71":
+            case "d81":
+                return "Load " + ext.toUpperCase() + " Disk";
+            case "g64":
+                return "Load G64 Disk";
+            case "adf":
+                return "Load ADF Disk";
+            case "tap":
+            case "tzx":
+                return "Load " + ext.toUpperCase() + " Tape";
+            case "zip":
+            case "rar":
+            case "7z":
+                return "Download " + ext.toUpperCase() + " Archive";
+            default:
+                return "Load Disk / Tape";
+        }
     }
 
     // =================================================================
@@ -273,11 +304,23 @@
             }
         }
 
-        // DISK LINK
+        // DISK LINK(S)
         const diskBtn = qs("#disk-button");
+        let diskFiles = [];
+        if (Array.isArray(game.disk)) {
+            diskFiles = game.disk;
+        } else if (typeof game.disk === "string" && game.disk.trim() !== "") {
+            diskFiles = [game.disk.trim()];
+        }
+
         if (diskBtn) {
-            if (Array.isArray(game.disk) && game.disk.length > 0) {
-                diskBtn.href = game.disk[0];
+            if (diskFiles.length > 0) {
+                const firstDiskUrl = diskFiles[0];
+                diskBtn.href = firstDiskUrl;
+                const labelSpan = diskBtn.querySelector(".game-hero-btn__label");
+                if (labelSpan) {
+                    labelSpan.textContent = buildDiskLabelFromUrl(firstDiskUrl);
+                }
                 diskBtn.hidden = false;
             } else {
                 diskBtn.hidden = true;
@@ -303,6 +346,19 @@
                     encodeURIComponent(game.videoid);
                 videoSection.hidden = false;
             }
+        } else {
+            if (playBtn) playBtn.hidden = true;
+            if (videoSection) videoSection.hidden = true;
+        }
+
+        // DOWNLOAD CONSOLE VISIBILITY (hide if nothing to show)
+        const actions = qs(".game-hero-actions");
+        if (actions) {
+            const anyVisible =
+                (pdfBtn && !pdfBtn.hidden) ||
+                (diskBtn && !diskBtn.hidden) ||
+                (playBtn && !playBtn.hidden);
+            actions.hidden = !anyVisible;
         }
 
         // RELATED GAMES (OPTION A ENHANCED)
