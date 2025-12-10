@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", async () => {
            games.json is at: /games/games.json
            So the correct path is: ../../games.json
            ============================================================ */
-        const response = await fetch("../games.json");
+        const response = await fetch("../../games.json");
         const games = await response.json();
 
         /* ============================================================
