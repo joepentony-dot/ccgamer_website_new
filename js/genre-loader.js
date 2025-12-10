@@ -1,11 +1,6 @@
 /* ============================================================
-   OMEGA GENRE LOADER — ULTRA STABLE EDITION (FINAL)
-
-   ✔ Works with array-based genres in games.json
-   ✔ Loads from ../../games.json (correct depth for /games/genres/*.html)
-   ✔ Renders thumbnails + titles + metadata
-   ✔ Fully clickable cards
-   ✔ Zero regressions across the CCG Omega system
+   OMEGA GENRE LOADER — ULTRA STABLE EDITION (FINAL-CLEAN)
+   Fully corrected path logic + Omega card output.
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -21,19 +16,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
         /* ============================================================
-           FETCH THE MASTER GAME DATABASE
-           Genre pages are located at:
-           /games/genres/<file>.html
-           games.json is one level up: /games/games.json
-           ============================================================ */
+           FETCH MASTER DB
+           Correct depth for: /games/genres/*.html → ../games.json
+        ============================================================ */
         const response = await fetch("../games.json");
         const games = await response.json();
 
         /* ============================================================
-           FILTER GAMES BY GENRE (ARRAY-SAFE)
-           games.json now uses:
-           "genres": ["Adventure", "Action-Adventure"]
-           ============================================================ */
+           FILTER BY GENRE (SAFE)
+        ============================================================ */
         const filtered = games.filter(g => {
             if (!g.genres || !Array.isArray(g.genres)) return false;
             return g.genres.map(x => x.toLowerCase()).includes(genreName.toLowerCase());
@@ -42,7 +33,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         /* Render cards */
         grid.innerHTML = filtered.map(game => generateGenreCard(game)).join("");
 
-        /* Update game count */
+        /* Count text */
         if (countEl) countEl.textContent = filtered.length;
 
     } catch (err) {
@@ -51,12 +42,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 /* ============================================================
-   CARD RENDERER — GENRE GRID VIEW
+   CARD RENDERER — ULTRA SAFE VERSION
    ============================================================ */
 function generateGenreCard(game) {
 
-    /* Thumbnail path (always correct location) */
-    const thumbPath = `../../resources/images/thumbnails/all/${game.thumbnail}`;
+    /* ============================================================
+       CRITICAL FIX:
+       game.thumbnail ALREADY contains:
+       "resources/images/thumbnails/all/xxx.jpg"
+       So from /games/genres/ → go ONE level up:
+       "../" + game.thumbnail
+    ============================================================ */
+
+    const thumbPath = `../${game.thumbnail}`;
 
     return `
         <div class="ccg-game-card genre-card">
@@ -76,7 +74,6 @@ function generateGenreCard(game) {
                     <span>${game.system || "—"}</span>
                 </div>
 
-                <!-- VIEW GAME BUTTON -->
                 <a class="ccg-btn ccg-btn--primary ccg-view-btn"
                    href="../game.html?id=${game.id}">
                     View Game
