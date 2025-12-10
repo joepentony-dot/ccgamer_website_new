@@ -1,94 +1,84 @@
 /* ============================================================
-   OMEGA GAMES LIBRARY LOADER — MISSION E6 FINAL EDITION
-   - Loads all games from games.json
-   - Correct thumbnail paths
-   - Thumbnails are fully clickable
-   - Stable card markup
-   - Zero regressions across library & search
+   CCG GAMES LIBRARY LOADER — OMEGA ULTRA STABLE EDITION
+   Loads all games from games.json and populates the main grid.
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
+
+    const grid = document.getElementById("ccgGamesGrid");
+    const countEl = document.getElementById("ccgGamesCount");
+
+    if (!grid) {
+        console.warn("CCG Library Loader: Missing #ccgGamesGrid");
+        return;
+    }
+
     try {
-        /* ============================================================
-           CORRECT JSON PATH
-           games/index.html and games.json are in the same folder.
-           ============================================================ */
-        const response = await fetch("./games.json");
-        const games = await response.json();
+        const response = await fetch("../games.json");
+        const gamesData = await response.json();
 
-        const container = document.getElementById("gamesGrid");
-        const countText = document.getElementById("gamesCount");
-
-        if (!container) {
-            console.error("Library grid container not found.");
+        if (!Array.isArray(gamesData)) {
+            console.error("CCG Library Loader: games.json is malformed.");
             return;
         }
 
-        /* ============================================================
-           RENDER ALL GAME CARDS
-           ============================================================ */
-        container.innerHTML = games.map(game => generateCard(game)).join("");
+        // Count games
+        if (countEl) countEl.textContent = gamesData.length;
 
-        /* Count text */
-        if (countText) {
-            countText.textContent = games.length;
-        }
-
-        /* ============================================================
-           LIVE SEARCH (if present)
-           ============================================================ */
-        const searchInput = document.getElementById("gamesSearch");
-        if (searchInput) {
-            searchInput.addEventListener("input", (e) => {
-                const term = e.target.value.toLowerCase();
-                const filtered = games.filter(g =>
-                    g.title.toLowerCase().includes(term) ||
-                    g.developer?.toLowerCase().includes(term) ||
-                    g.genre?.toLowerCase().includes(term)
-                );
-                container.innerHTML = filtered.map(game => generateCard(game)).join("");
-
-                if (countText) countText.textContent = filtered.length;
-            });
-        }
+        // Inject each card
+        gamesData.forEach(game => {
+            const card = createGameCard(game);
+            grid.appendChild(card);
+        });
 
     } catch (err) {
-        console.error("Error loading games library:", err);
+        console.error("CCG Library Loader Error:", err);
     }
 });
 
 /* ============================================================
-   CARD GENERATOR FUNCTION
-   Matches Omega cinematic card style.
-   Thumbnail click = open single game page.
+   CREATE GAME CARD
    ============================================================ */
 
-function generateCard(game) {
-    const thumbPath = `../resources/images/thumbnails/all/${game.thumbnail}`;
+function createGameCard(game) {
 
-    return `
-        <div class="ccg-game-card">
-        
-            <!-- CLICKABLE THUMBNAIL -->
-            <a class="ccg-game-card__thumb" href="game.html?id=${game.id}">
-                <img src="${thumbPath}" alt="${game.title}">
-            </a>
+    // ------------------------------------------------------------
+    //  FIXED: Thumbnail path uses JSON as source of truth.
+    //  games.json contains: "resources/images/thumbnails/all/foo.jpg"
+    //  From /games/index.html → root requires "../"
+    // ------------------------------------------------------------
+    const thumbPath = `../${game.thumbnail}`;
 
-            <!-- CARD BODY -->
+    const card = document.createElement("div");
+    card.className = "ccg-game-card";
+
+    card.innerHTML = `
+        <a href="game.html?id=${game.id}" class="ccg-game-card__link-wrapper">
+
+            <div class="ccg-game-card__thumb">
+                <img src="${thumbPath}" alt="${game.title}" loading="lazy">
+            </div>
+
             <div class="ccg-game-card__body">
                 <h3 class="ccg-game-card__title">${game.title}</h3>
 
                 <div class="ccg-game-card__meta">
-                    <span>${game.year || "—"}</span>
-                    <span class="divider">·</span>
-                    <span>${game.system || "—"}</span>
+                    ${game.year || "Unknown"} • ${game.system || "C64/Amiga"}
                 </div>
 
-                <!-- VIEW GAME BUTTON -->
-                <a class="ccg-btn ccg-btn--primary ccg-view-btn" href="game.html?id=${game.id}">
-                    View Game
-                </a>
+                <div class="ccg-game-card__tags">
+                    ${(game.genres || [])
+                        .map(tag => `<span class="ccg-game-card__tag">${tag}</span>`)
+                        .join("")}
+                </div>
+
+                <div class="ccg-game-card__link">
+                    View Game →
+                </div>
             </div>
-        </div>
+
+        </a>
     `;
+
+    return card;
 }
