@@ -130,23 +130,26 @@
 
                 <!-- Background uses thumbnail (wired via JS) -->
                 <div class="game-hero-bg" aria-hidden="true"></div>
-                <div class="ccg-hero-scanlines" aria-hidden="true"></div>
+                <div class="ccg-hero-scanlines game-hero-scanlines" aria-hidden="true"></div>
 
                 <div class="ccg-hero-inner game-hero-inner">
 
                     <!-- LEFT: Thumbnail & system -->
                     <div class="game-hero-media">
                         <div class="game-hero-thumb-wrap">
-                            <img id="game-hero-image"
-                                 src=""
-                                 alt="Game artwork"
-                                 class="game-hero-thumb">
+                            <div class="game-hero-thumb-inner">
+                                <img id="game-hero-image"
+                                     src=""
+                                     alt="Game artwork"
+                                     class="game-hero-thumb">
+                                <div class="game-hero-thumb-overlay" aria-hidden="true"></div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- RIGHT: Title, meta, genres, links -->
                     <div class="ccg-hero-text game-hero-copy">
-                        <p class="ccg-hero-kicker" id="game-system-label">
+                        <p class="ccg-hero-kicker game-system-kicker" id="game-system-label">
                             <!-- e.g. Commodore 64 / Amiga -->
                         </p>
 
@@ -156,11 +159,11 @@
 
                         <!-- Meta (year, system) -->
                         <div id="game-meta" class="game-hero-meta">
-                            <div class="game-meta-row">
+                            <div class="game-meta-row game-meta-row--year">
                                 <span class="game-meta__label">Year</span>
                                 <span id="game-year" class="game-meta__value">—</span>
                             </div>
-                            <div class="game-meta-row">
+                            <div class="game-meta-row game-meta-row--system">
                                 <span class="game-meta__label">System</span>
                                 <span id="game-system" class="game-meta__value">—</span>
                             </div>
@@ -174,17 +177,19 @@
                         <!-- Action links (manuals, disks, video) -->
                         <div class="game-hero-actions">
                             <a id="pdf-button"
-                               href="#"
+                               href="#" 
                                class="ccg-btn game-hero-btn game-hero-btn--manual"
                                hidden>
-                                View Manual
+                                <span class="game-hero-btn__icon game-hero-btn__icon--manual" aria-hidden="true"></span>
+                                <span class="game-hero-btn__label">View Manual (PDF)</span>
                             </a>
 
                             <a id="disk-button"
                                href="#"
                                class="ccg-btn game-hero-btn game-hero-btn--disk"
                                hidden>
-                                Load Disk / Tape
+                                <span class="game-hero-btn__icon game-hero-btn__icon--disk" aria-hidden="true"></span>
+                                <span class="game-hero-btn__label">Load Disk / Tape</span>
                             </a>
 
                             <a id="game-play-video"
@@ -193,7 +198,8 @@
                                target="_blank"
                                rel="noopener"
                                hidden>
-                                Watch on YouTube
+                                <span class="game-hero-btn__icon game-hero-btn__icon--video" aria-hidden="true"></span>
+                                <span class="game-hero-btn__label">Watch on YouTube</span>
                             </a>
                         </div>
                     </div>
@@ -201,49 +207,57 @@
             </section>
 
             <!-- ░░ DESCRIPTION ░░ -->
-            <section class="ccg-section game-description-section">
-                <h2 class="ccg-section-title">About this game</h2>
-                <div id="game-description" class="game-description-body">
-                    <!-- Description text from games.json will appear here -->
+            <section class="ccg-section game-description-section" id="game-description-section" hidden>
+                <div class="game-section-panel game-section-panel--description">
+                    <h2 class="ccg-section-title">About this game</h2>
+                    <div id="game-description" class="game-description-body">
+                        <!-- Description text from games.json will appear here when present -->
+                    </div>
                 </div>
             </section>
 
             <!-- ░░ LEMON / EXTERNAL LINKS ░░ -->
             <section class="ccg-section game-lemon-section" id="lemon-links-block" hidden>
-                <h2 class="ccg-section-title">External references</h2>
-                <p class="ccg-section-subtitle">
-                    Selected database links and archive entries for this game.
-                </p>
-                <ul id="lemon-links-list" class="game-lemon-list">
-                    <!-- Populated by load-single-game.js when lemon links exist -->
-                </ul>
+                <div class="game-section-panel game-section-panel--external">
+                    <h2 class="ccg-section-title">External references</h2>
+                    <p class="ccg-section-subtitle">
+                        Selected database links and archive entries for this game.
+                    </p>
+                    <ul id="lemon-links-list" class="game-lemon-list">
+                        <!-- Populated by load-single-game.js when lemon links exist -->
+                    </ul>
+                </div>
             </section>
 
             <!-- ░░ VIDEO SECTION ░░ -->
             <section class="ccg-section game-video-section" id="game-video-section" hidden>
-                <h2 class="ccg-section-title">Gameplay Video</h2>
-                <div class="game-video-frame">
-                    <div class="game-video-aspect">
-                        <iframe id="game-video-embed"
-                                src=""
-                                title="Gameplay video"
-                                loading="lazy"
-                                allowfullscreen
-                                frameborder="0"
-                                referrerpolicy="no-referrer-when-downgrade">
-                        </iframe>
+                <div class="game-section-panel game-section-panel--video">
+                    <h2 class="ccg-section-title">Gameplay Video</h2>
+                    <div class="game-video-frame">
+                        <div class="game-video-aspect">
+                            <iframe id="game-video-embed"
+                                    src=""
+                                    title="Gameplay video"
+                                    loading="lazy"
+                                    allowfullscreen
+                                    frameborder="0"
+                                    referrerpolicy="no-referrer-when-downgrade">
+                            </iframe>
+                        </div>
                     </div>
                 </div>
             </section>
 
             <!-- ░░ RELATED GAMES ░░ -->
             <section class="ccg-section game-related-section">
-                <h2 class="ccg-section-title">Related games</h2>
-                <p class="ccg-section-subtitle">
-                    More titles in a similar vein — same genre, developer or era.
-                </p>
-                <div id="related-games-grid" class="ccg-games-grid game-related-grid">
-                    <!-- JS injects cards here based on genre / developer -->
+                <div class="game-section-panel game-section-panel--related">
+                    <h2 class="ccg-section-title">Related games</h2>
+                    <p class="ccg-section-subtitle">
+                        More titles in a similar vein — same genre, developer or era.
+                    </p>
+                    <div id="related-games-grid" class="ccg-games-grid game-related-grid">
+                        <!-- JS injects cards here based on genre / developer -->
+                    </div>
                 </div>
             </section>
 
