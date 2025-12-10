@@ -1,8 +1,7 @@
 /* ============================================================
-   OMEGA GENRE PAGE — CINEMATIC GRID STYLES
-   Applies to: /games/genres/*.html
-   Preserves Omega neon-card design
-   Thumbnail height increased to 200px (Option B)
+   OMEGA GENRE PAGE — CINEMATIC GRID STYLES (STABLE FINAL)
+   Corrected selectors, fixed thumbnail styling conflicts,
+   restored Omega hover-neon, and ensured JS compatibility.
    ============================================================ */
 
 .ccg-page--genre {
@@ -23,16 +22,15 @@
 }
 
 .ccg-genre-hero__bg {
-    position: relative;
     width: 100%;
     height: 280px;
+    position: relative;
 }
 
 .ccg-genre-hero__img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    display: block;
     filter: brightness(0.85);
 }
 
@@ -41,8 +39,8 @@
     inset: 0;
     background: linear-gradient(
         to bottom,
-        rgba(0,0,0,0.1) 0%,
-        rgba(0,0,0,0.6) 100%
+        rgba(0,0,0,0.1),
+        rgba(0,0,0,0.6)
     );
 }
 
@@ -59,17 +57,18 @@
     font-size: 2.2rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
-    letter-spacing: 1px;
 }
 
 .ccg-genre-hero__tagline {
     font-size: 1.1rem;
     max-width: 900px;
-    margin-bottom: 1rem;
     opacity: 0.9;
 }
 
-/* Meta block below title */
+/* -------------------------
+   META
+-------------------------- */
+
 .ccg-genre-meta {
     display: flex;
     justify-content: space-between;
@@ -77,69 +76,72 @@
     opacity: 0.9;
 }
 
-.ccg-genre-meta__left span,
-.ccg-genre-meta__right span {
-    display: inline-block;
-}
-
 /* -------------------------
    GENRE GRID
 -------------------------- */
 
-.ccg-genre-main {
-    max-width: 1600px;
-    margin: 0 auto 4rem auto;
-    padding: 0 2rem;
-}
-
-.ccg-genre-grid {
+/* FIX: Match JS ID hook */
+#genreGamesGrid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
     gap: 1.6rem;
+    max-width: 1600px;
+    margin: 0 auto 4rem;
+    padding: 0 2rem;
 }
 
 /* -------------------------
    CINEMATIC GENRE CARD
 -------------------------- */
 
-.ccg-game-card.genre-card {
+#genreGamesGrid .ccg-game-card.genre-card {
     background: rgba(0,0,0,0.55);
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 10px;
     overflow: hidden;
+    position: relative;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
     box-shadow:
         0 0 12px rgba(0,0,0,0.6),
         0 0 25px rgba(0,0,0,0.4);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.ccg-game-card.genre-card:hover {
-    transform: translateY(-4px);
+/* Omega Neon Overlay */
+#genreGamesGrid .ccg-game-card.genre-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.06),
+        rgba(0,0,0,0.75)
+    );
+    mix-blend-mode: soft-light;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* Hover state */
+#genreGamesGrid .ccg-game-card.genre-card:hover {
+    transform: translateY(-6px);
     box-shadow:
-        0 0 18px rgba(0, 183, 255, 0.5),
-        0 0 30px rgba(0, 183, 255, 0.35);
+        0 0 18px rgba(0,183,255,0.55),
+        0 0 30px rgba(0,183,255,0.35);
 }
 
-/* CLICKABLE THUMBNAIL AREA */
-
-.ccg-game-card__thumb {
-    display: block;
-    width: 100%;
-    overflow: hidden;
-    background: #000;
-    position: relative;
+#genreGamesGrid .ccg-game-card.genre-card:hover::after {
+    opacity: 1;
 }
 
-/* ---------------------------------------------------------
-   OPTION B — CINEMATIC HEIGHT FIX
-   Increased from 130px → 200px to prevent collapsing,
-   cropping, black boxes, and invisible thumbnails.
----------------------------------------------------------- */
+/* -------------------------
+   THUMBNAIL — FIXED 200px CINEMATIC HEIGHT  
+-------------------------- */
 
-.ccg-game-card__thumb img,
-.ccg-game-card img {
+/* Only apply to genre cards, NOT global cards */
+#genreGamesGrid .ccg-game-card__thumb img {
     width: 100%;
-    height: 200px;     /* <<< NEW OMEGA-CINEMATIC HEIGHT */
+    height: 200px;   /* OMEGA cinematic height */
     object-fit: cover;
     display: block;
     background: #000;
@@ -150,16 +152,15 @@
 -------------------------- */
 
 .ccg-game-card__body {
-    padding: 0.9rem 1.1rem 1.2rem 1.1rem;
+    padding: 0.9rem 1.1rem 1.2rem;
     text-align: center;
 }
 
 .ccg-game-card__title {
     font-size: 1.05rem;
-    margin-bottom: 0.4rem;
     font-weight: 600;
+    margin-bottom: 0.4rem;
     color: #fff;
-    letter-spacing: 0.3px;
 }
 
 .ccg-game-card__meta {
@@ -192,14 +193,14 @@
 }
 
 /* -------------------------
-   RESPONSIVE TWEAKS
+   RESPONSIVE
 -------------------------- */
 
 @media (max-width: 1024px) {
     .ccg-genre-hero__bg {
         height: 240px;
     }
-    .ccg-game-card img {
+    #genreGamesGrid .ccg-game-card__thumb img {
         height: 180px;
     }
 }
@@ -212,7 +213,7 @@
         left: 1rem;
         right: 1rem;
     }
-    .ccg-game-card img {
+    #genreGamesGrid .ccg-game-card__thumb img {
         height: 170px;
     }
 }
