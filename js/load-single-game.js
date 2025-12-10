@@ -1,5 +1,7 @@
 /* ============================================================
-   load-single-game.js — Omega Single Game Loader (E4 Edition)
+   load-single-game.js — Omega Single Game Loader (Stability)
+   Uses: games/games.json
+   Target: /games/game.html
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -12,9 +14,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
         const response = await fetch("games.json");
-        const games = await response.json();
+        if (!response.ok) {
+            throw new Error("Failed to fetch games.json");
+        }
 
+        const games = await response.json();
         const game = games.find(g => String(g.id) === String(gameId));
+
         if (!game) {
             console.warn("Game not found:", gameId);
             return;
@@ -28,112 +34,211 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 /* ============================================================
+   PATH + VALUE NORMALISERS
+   ============================================================ */
+
+// Canonical: games.json has "resources/images/thumbnails/all/<file>"
+// Single game page is at /games/game.html → needs "../resources/..."
+function normaliseSingleGameThumb(raw) {
+    const FALLBACK = "../resources/images/thumbnails/all/1942.jpg";
+
+    if (!raw) return FALLBACK;
+
+    let p = String(raw).trim();
+
+    // Strip any ../ at the start
+    p = p.replace(/^(\.\.\/)+/, "");
+
+    // Strip repo prefix if present
+    p = p.replace(/^\/?ccgamer_website_new\//, "");
+
+    // Remove leading slash
+    p = p.replace(/^\//, "");
+
+    if (p.startsWith("resources/images/thumbnails/")) {
+        if (!p.startsWith("resources/images/thumbnails/all/")) {
+            p = p.replace(
+                "resources/images/thumbnails/",
+                "resources/images/thumbnails/all/"
+            );
+        }
+    } else {
+        // Treat as bare filename
+        p = "resources/images/thumbnails/all/" + p;
+    }
+
+    return "../" + p;
+}
+
+function normaliseSystemLabel(sys) {
+    if (!sys) return "C64";
+
+    const s = String(sys).trim().toLowerCase();
+
+    if (["c64", "commodore 64"].includes(s)) return "C64";
+    if (["amiga", "commodore amiga", "aga"].includes(s)) return "Amiga";
+
+    return sys;
+}
+
+/* ============================================================
    RENDER THE PAGE
    ============================================================ */
 
 function renderGame(game, games) {
 
-    /* ----------------------------------------------
-       System class (C64 / Amiga glow)
-    ---------------------------------------------- */
+    // -------------------------------
+    // Derived values
+    // -------------------------------
+    const thumbPath = normaliseSingleGameThumb(game.thumbnail);
+    const systemLabel = normaliseSystemLabel(game.system);
+    const videoId = game.videoid || "";
+    const youtubeWatchUrl = videoId
+        ? `https://www.youtube.com/watch?v=${videoId}`
+        : "";
+    const youtubeEmbedUrl = videoId
+        ? `https://www.youtube.com/embed/${videoId}?rel=0`
+        : "";
+
+    // ----------------------------------------------
+    // System class (C64 / Amiga glow)
+    // ----------------------------------------------
     const body = document.querySelector("body");
-    body.classList.remove("single-game--c64", "single-game--amiga");
+    if (body) {
+        body.classList.remove("single-game--c64", "single-game--amiga");
 
-    if (game.system && game.system.toLowerCase().includes("amiga")) {
-        body.classList.add("single-game--amiga");
-    } else {
-        body.classList.add("single-game--c64");
-    }
-
-    /* ----------------------------------------------
-       HERO BACKGROUND (blurred backdrop)
-    ---------------------------------------------- */
-    const heroBg = document.querySelector(".game-hero-bg");
-    if (heroBg && game.thumbnail) {
-        heroBg.style.backgroundImage = `url('${game.thumbnail}')`;
-        heroBg.classList.add("game-hero-bg--active");
-    }
-
-    /* ----------------------------------------------
-       HERO: THUMBNAIL + CLICK → PLAY VIDEO
-    ---------------------------------------------- */
-    const thumb = document.querySelector(".game-hero-thumb");
-    const thumbWrap = document.querySelector(".game-hero-thumb-wrap");
-
-    if (thumb && game.thumbnail) {
-        thumb.src = game.thumbnail;
-        thumb.alt = game.title || "";
-
-        /* CLICK THUMBNAIL → PLAY VIDEO */
-        if (game.video) {
-            thumbWrap.style.cursor = "pointer";
-            thumbWrap.addEventListener("click", () => {
-                activateVideoPlayback(game.video);
-            });
+        if (game.system && game.system.toLowerCase().includes("amiga")) {
+            body.classList.add("single-game--amiga");
+        } else {
+            body.classList.add("single-game--c64");
         }
     }
 
-    /* ----------------------------------------------
-       TITLE + SYSTEM BOX
-    ---------------------------------------------- */
-    const titleEl = document.getElementById("game-title");
-    if (titleEl) titleEl.textContent = game.title || "Untitled";
-
-    const systemKicker = document.getElementById("game-system");
-    if (systemKicker) systemKicker.textContent = game.system || "Unknown";
-
-    /* ----------------------------------------------
-       META FIELDS: YEAR / SYSTEM / DEVELOPER
-    ---------------------------------------------- */
-    setText("meta-year", game.year);
-    setText("meta-system", game.system);
-    setText("meta-developer", game.developer);
-
-    /* ----------------------------------------------
-       GENRES (string)
-    ---------------------------------------------- */
-    if (Array.isArray(game.genres)) {
-        const genreEl = document.getElementById("game-genres");
-        if (genreEl) genreEl.textContent = game.genres.join(", ");
+    // ----------------------------------------------
+    // HERO BACKGROUND (blurred backdrop)
+    // ----------------------------------------------
+    const heroBg = document.querySelector(".game-hero-bg");
+    if (heroBg) {
+        heroBg.style.backgroundImage = `url('${thumbPath}')`;
+        heroBg.classList.add("game-hero-bg--active");
     }
 
-    /* ----------------------------------------------
-       DESCRIPTION
-    ---------------------------------------------- */
-    const descEl = document.getElementById("game-description");
-    if (descEl) descEl.textContent = game.description || "";
+    // ----------------------------------------------
+    // HERO: THUMBNAIL + CLICK → PLAY VIDEO
+    // ----------------------------------------------
+    const thumb = document.querySelector(".game-hero-thumb");
+    const thumbWrap = document.querySelector(".game-hero-thumb-wrap");
 
-    /* ----------------------------------------------
-       LEMON LINKS (Optional)
-    ---------------------------------------------- */
-    const lemonList = document.getElementById("game-lemon-links");
-    if (lemonList && Array.isArray(game.lemonLinks)) {
-        lemonList.innerHTML = "";
-        game.lemonLinks.forEach(link => {
-            const li = document.createElement("li");
-            li.innerHTML = `<a href="${link.url}" target="_blank" rel="noopener">${link.label}</a>`;
-            lemonList.appendChild(li);
+    if (thumb) {
+        thumb.src = thumbPath;
+        thumb.alt = game.title || "";
+    }
+
+    if (thumbWrap && youtubeEmbedUrl) {
+        thumbWrap.style.cursor = "pointer";
+        thumbWrap.addEventListener("click", () => {
+            activateVideoPlayback(youtubeEmbedUrl);
         });
     }
 
-    /* ----------------------------------------------
-       VIDEO HANDLING
-    ---------------------------------------------- */
-    if (game.video) {
-        injectVideo(game.video);
+    // ----------------------------------------------
+    // TITLE + SYSTEM BOX
+    // ----------------------------------------------
+    const titleEl = document.getElementById("game-title");
+    if (titleEl) {
+        titleEl.textContent = game.title || "Untitled";
     }
 
-    /* ----------------------------------------------
-       DOWNLOAD BUTTONS
-    ---------------------------------------------- */
-    updateDownloadButton("manual-download", game.manual);
-    updateDownloadButton("disk-download", game.disk);
-    updateDownloadButton("video-button", game.video);
+    const systemMeta = document.getElementById("game-system");
+    if (systemMeta) {
+        systemMeta.textContent = systemLabel;
+    }
 
-    /* ----------------------------------------------
-       RELATED GAMES = FIRST BY SAME DEVELOPER,
-       FALLBACK TO SHARED GENRE
-    ---------------------------------------------- */
+    const systemKicker = document.getElementById("game-system-label");
+    if (systemKicker) {
+        systemKicker.textContent = systemLabel;
+    }
+
+    // ----------------------------------------------
+    // META FIELDS: YEAR / SYSTEM / DEVELOPER
+    // (match actual IDs in game.html)
+    // ----------------------------------------------
+    setText("game-year", game.year);
+    setText("game-system", systemLabel);
+    setText("game-developer", game.developer);
+
+    // ----------------------------------------------
+    // GENRES (string)
+    // ----------------------------------------------
+    const genreEl = document.getElementById("game-genres");
+    if (genreEl && Array.isArray(game.genres)) {
+        genreEl.textContent = game.genres.join(", ");
+    }
+
+    // ----------------------------------------------
+    // DESCRIPTION (hide section if empty)
+    // ----------------------------------------------
+    const descSection = document.getElementById("game-description-section");
+    const descEl = document.getElementById("game-description");
+    if (descEl && descSection) {
+        const text = (game.description || "").trim();
+        if (text) {
+            descEl.textContent = text;
+            descSection.hidden = false;
+        } else {
+            descEl.textContent = "";
+            descSection.hidden = true;
+        }
+    }
+
+    // ----------------------------------------------
+    // LEMON / EXTERNAL LINKS (optional)
+    // ----------------------------------------------
+    const lemonSection = document.getElementById("lemon-links-block");
+    const lemonList = document.getElementById("lemon-links-list");
+
+    if (lemonSection && lemonList) {
+        lemonList.innerHTML = "";
+
+        if (Array.isArray(game.lemonLinks) && game.lemonLinks.length > 0) {
+            game.lemonLinks.forEach(link => {
+                if (!link || !link.url) return;
+
+                const li = document.createElement("li");
+                li.innerHTML = `<a href="${link.url}" target="_blank" rel="noopener">${link.label || link.url}</a>`;
+                lemonList.appendChild(li);
+            });
+
+            lemonSection.hidden = false;
+        } else {
+            lemonSection.hidden = true;
+        }
+    }
+
+    // ----------------------------------------------
+    // VIDEO HANDLING (using videoid)
+    // ----------------------------------------------
+    const videoSection = document.getElementById("game-video-section");
+    const videoBtn = document.getElementById("game-play-video");
+
+    if (videoBtn) {
+        if (youtubeWatchUrl) {
+            videoBtn.href = youtubeWatchUrl;
+            videoBtn.hidden = false;
+        } else {
+            videoBtn.hidden = true;
+        }
+    }
+
+    // The embedded video section will be revealed upon first play
+    if (videoSection) {
+        videoSection.hidden = true;
+    }
+
+    // ----------------------------------------------
+    // RELATED GAMES = FIRST BY SAME DEVELOPER,
+    // FALLBACK TO SHARED GENRE
+    // ----------------------------------------------
     renderRelatedGames(game, games);
 }
 
@@ -146,20 +251,8 @@ function setText(id, value) {
     if (el) el.textContent = value || "—";
 }
 
-function updateDownloadButton(id, url) {
-    const btn = document.getElementById(id);
-    if (!btn) return;
-
-    if (url) {
-        btn.href = url;
-        btn.style.display = "inline-flex";
-    } else {
-        btn.style.display = "none";
-    }
-}
-
 /* ============================================================
-   VIDEO INJECTION + FRAME FLASH (E4)
+   VIDEO INJECTION + FRAME FLASH
    ============================================================ */
 
 function injectVideo(videoUrl) {
@@ -168,11 +261,10 @@ function injectVideo(videoUrl) {
 
     frame.src = videoUrl;
 
-    /* Add neon flash on load */
     const outer = document.querySelector(".game-video-frame-outer");
     if (outer) {
         outer.classList.remove("video-frame--active");
-        void outer.offsetWidth;
+        void outer.offsetWidth; // reflow
         outer.classList.add("video-frame--active");
     }
 }
@@ -181,10 +273,10 @@ function injectVideo(videoUrl) {
 function activateVideoPlayback(videoUrl) {
     injectVideo(videoUrl);
 
-    /* Scroll smoothly to video section */
-    const target = document.querySelector(".game-video-section");
-    if (target) {
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
+    const videoSection = document.getElementById("game-video-section");
+    if (videoSection) {
+        videoSection.hidden = false;
+        videoSection.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 }
 
@@ -195,7 +287,7 @@ function activateVideoPlayback(videoUrl) {
 function renderRelatedGames(game, games) {
     const grid = document.getElementById("related-games-grid");
     const title = document.getElementById("related-games-title");
-    const subtitle = document.getElementById("related-games-subtitle");
+    const subtitle = document.getElementById("related-games-subtitle"); // optional, may not exist
 
     if (!grid) return;
 
@@ -203,9 +295,7 @@ function renderRelatedGames(game, games) {
 
     let related = [];
 
-    /* ----------------------------------------------
-       TRY 1: Same Developer
-    ---------------------------------------------- */
+    // TRY 1: Same Developer
     if (game.developer) {
         related = games.filter(
             g =>
@@ -217,11 +307,9 @@ function renderRelatedGames(game, games) {
 
     if (related.length > 0) {
         if (title) title.textContent = "More From This Developer";
-        if (subtitle) subtitle.textContent = game.developer;
+        if (subtitle) subtitle.textContent = game.developer || "";
     } else {
-        /* ----------------------------------------------
-           TRY 2: Fallback to same genre
-        ---------------------------------------------- */
+        // TRY 2: Same Genre
         related = games.filter(
             g =>
                 g.id !== game.id &&
@@ -230,26 +318,26 @@ function renderRelatedGames(game, games) {
                 g.genres.some(genre => game.genres.includes(genre))
         );
 
-        if (title) title.textContent = "Related Games";
+        if (title) title.textContent = "Related games";
         if (subtitle) subtitle.textContent = "";
     }
 
-    /* ----------------------------------------------
-       Build Card Elements
-    ---------------------------------------------- */
     related.slice(0, 6).forEach(g => {
         const card = document.createElement("a");
-        card.href = `game.html?id=${g.id}`;
+        card.href = `game.html?id=${encodeURIComponent(g.id)}`;
         card.className = "ccg-game-card";
+
+        const relatedThumb = normaliseSingleGameThumb(g.thumbnail);
+        const sysLabel = normaliseSystemLabel(g.system);
 
         card.innerHTML = `
             <div class="ccg-game-card__thumb">
-                <img src="${g.thumbnail}" alt="${g.title}">
+                <img src="${relatedThumb}" alt="${g.title || ""}">
             </div>
             <div class="ccg-game-card__body">
-                <div class="ccg-game-card__title">${g.title}</div>
+                <div class="ccg-game-card__title">${g.title || "Untitled"}</div>
                 <div class="ccg-game-card__meta">
-                    ${g.year || ""} • ${g.system || ""}
+                    ${(g.year || "").toString().trim() || "—"} • ${sysLabel}
                 </div>
             </div>
         `;
