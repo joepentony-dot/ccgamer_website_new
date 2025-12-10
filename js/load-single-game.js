@@ -1,10 +1,9 @@
 /* ============================================================
-   OMEGA SINGLE GAME LOADER — vFinal
-   Restores:
-   - Thumbnail click = play embedded YouTube video
-   - Prevents page reload or opening new tab
-   - Reads correct metadata fields
-   - Hero thumbnail safe, enlarged, cinematic
+   OMEGA SINGLE GAME LOADER — Mission E6 FIXED EDITION
+   - Correct JSON path (critical fix)
+   - Restores all metadata
+   - Restores thumbnail + video activation
+   - Related games stable
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -17,51 +16,52 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        const response = await fetch("../games.json");
+        /* ============================================================
+           CRITICAL FIX — CORRECT PATH
+           game.html is inside /games/
+           games.json is also inside /games/
+           ============================================================ */
+        const response = await fetch("./games.json");
         const games = await response.json();
         const game = games.find(g => g.id === gameId);
 
         if (!game) {
-            console.error("Game not found:", gameId);
+            console.error(`Game not found: ${gameId}`);
             return;
         }
 
-        // -----------------------------
-        // Populate basic game details
-        // -----------------------------
+        /* ----------------------------- */
+        /* Basic fields                  */
+        /* ----------------------------- */
         document.getElementById("gameTitle").textContent = game.title;
         document.getElementById("meta-year").textContent = game.year || "—";
         document.getElementById("meta-system").textContent = game.system || "—";
         document.getElementById("meta-developer").textContent = game.developer || "—";
 
-        // -----------------------------
-        // Thumbnail path
-        // -----------------------------
+        /* ----------------------------- */
+        /* Thumbnail setup               */
+        /* ----------------------------- */
         const thumbPath = `../resources/images/thumbnails/all/${game.thumbnail}`;
         const thumbImg = document.getElementById("heroThumb");
         const thumbLink = document.getElementById("heroThumbLink");
 
         if (thumbImg) {
             thumbImg.src = thumbPath;
-            thumbImg.alt = `${game.title} thumbnail`;
+            thumbImg.alt = `${game.title} artwork`;
         }
 
-        // -----------------------------
-        // Fix: prevent thumbnail link navigation
-        // Thumbnail click must open the YT video, not reload the page
-        // -----------------------------
+        // Make thumbnail play the video instead of navigating
         if (thumbLink) {
             thumbLink.removeAttribute("href");
-
             thumbLink.addEventListener("click", (e) => {
                 e.preventDefault();
                 activateVideo(game.youtube);
             });
         }
 
-        // -----------------------------
-        // Watch on YouTube button
-        // -----------------------------
+        /* ----------------------------- */
+        /* Buttons                       */
+        /* ----------------------------- */
         const ytBtn = document.getElementById("watchOnYouTube");
         if (ytBtn) {
             ytBtn.addEventListener("click", () => {
@@ -69,37 +69,21 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
         }
 
-        // -----------------------------
-        // View Manual
-        // -----------------------------
         const manualBtn = document.getElementById("viewManual");
         if (manualBtn) {
-            if (game.manual) {
-                manualBtn.addEventListener("click", () => {
-                    window.open(game.manual, "_blank");
-                });
-            } else {
-                manualBtn.classList.add("disabled");
-            }
+            if (game.manual) manualBtn.addEventListener("click", () => window.open(game.manual, "_blank"));
+            else manualBtn.classList.add("disabled");
         }
 
-        // -----------------------------
-        // Load Disk/Tape Button
-        // -----------------------------
         const loadBtn = document.getElementById("loadDiskTape");
         if (loadBtn) {
-            if (game.download) {
-                loadBtn.addEventListener("click", () => {
-                    window.open(game.download, "_blank");
-                });
-            } else {
-                loadBtn.classList.add("disabled");
-            }
+            if (game.download) loadBtn.addEventListener("click", () => window.open(game.download, "_blank"));
+            else loadBtn.classList.add("disabled");
         }
 
-        // -----------------------------
-        // YouTube embed activation
-        // -----------------------------
+        /* ----------------------------- */
+        /* YouTube video embedding       */
+        /* ----------------------------- */
         function activateVideo(url) {
             const container = document.getElementById("gameVideoContainer");
             if (!container) return;
@@ -107,35 +91,29 @@ document.addEventListener("DOMContentLoaded", async () => {
             const embedUrl = convertToEmbed(url);
             container.innerHTML = `
                 <iframe 
-                    width="100%" 
-                    height="500" 
-                    src="${embedUrl}" 
-                    frameborder="0" 
-                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+                    width="100%" height="500"
+                    src="${embedUrl}"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen>
-                </iframe>`;
+                </iframe>
+            `;
         }
 
-        // -----------------------------
-        // Turns normal YT link into embed link
-        // -----------------------------
         function convertToEmbed(url) {
             if (!url) return "";
-            if (url.includes("watch?v=")) {
-                return url.replace("watch?v=", "embed/");
-            }
+            if (url.includes("watch?v=")) return url.replace("watch?v=", "embed/");
             return url;
         }
 
-        // -----------------------------
-        // Related games section
-        // -----------------------------
+        /* ----------------------------- */
+        /* Related games                 */
+        /* ----------------------------- */
         const relatedContainer = document.getElementById("relatedGames");
 
         if (relatedContainer) {
             const sameDeveloper = games.filter(g =>
-                g.developer === game.developer &&
-                g.id !== game.id
+                g.developer === game.developer && g.id !== game.id
             );
 
             let html = "";
@@ -145,7 +123,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <a class="related-game-card" href="game.html?id=${g.id}">
                         <img src="../resources/images/thumbnails/all/${g.thumbnail}" alt="${g.title}">
                         <div class="related-title">${g.title}</div>
-                    </a>`;
+                    </a>
+                `;
             });
 
             if (sameDeveloper.length === 0) {
