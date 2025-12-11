@@ -51,6 +51,12 @@ function generateGenreCard(game) {
     // Correct final path for /games/genres/ depth
     const finalThumb = `../../resources/images/thumbnails/all/${t}`;
 
+    const meta = [
+        game.year || "",
+        game.system || "",
+        game.developer || ""
+    ].filter(Boolean).join(" · ");
+
     return `
         <div class="ccg-game-card genre-card">
             <a href="../game.html?id=${game.id}" class="ccg-game-card__thumb">
@@ -58,7 +64,7 @@ function generateGenreCard(game) {
             </a>
             <div class="ccg-game-card__body">
                 <h3 class="ccg-game-card__title">${game.title}</h3>
-                <div class="ccg-game-card__meta">${game.year || ""} · ${game.system || ""}</div>
+                <div class="ccg-game-card__meta">${meta}</div>
                 <a href="../game.html?id=${game.id}" class="ccg-btn ccg-btn--primary">View Game</a>
             </div>
         </div>
