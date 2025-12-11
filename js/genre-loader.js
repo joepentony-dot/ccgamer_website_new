@@ -1,5 +1,5 @@
 /* ============================================================
-   OMEGA GENRE LOADER — FINAL ULTRA-STABLE EDITION
+   OMEGA GENRE LOADER — FINAL FIXED EDITION
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -11,9 +11,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!genreName || !grid) return;
 
     try {
-
-        // ★ FIXED PATH — genre pages → ../../games/games.json
-        const response = await fetch("../../games/games.json");
+        // CORRECT PATH — genre pages are inside /games/genres/
+        const response = await fetch("../games.json");
         const games = await response.json();
 
         const filtered = games.filter(g =>
