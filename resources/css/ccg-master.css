@@ -1,43 +1,68 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & RESET
-   Omega Edition — FINAL VISUAL FOUNDATION
-   Fonts: Orbitron (headers), Roboto (body)
-   Spacing, Logo Rules, 16:9 Prep, Header Lock
+   Omega Neon Edition (Header Z-Index Safety Applied)
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Roboto:wght@400;700&display=swap');
-
 :root {
-    --ccg-font-header: 'Orbitron', sans-serif;
-    --ccg-font-body: 'Roboto', sans-serif;
+    /* FONTS */
+    --ccg-font-main: 'Orbitron', system-ui, sans-serif;
+    --ccg-font-body: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 
+    /* CORE COLOURS */
     --ccg-color-blue: #00aaff;
     --ccg-color-pink: #ff29e0;
     --ccg-color-cyan: #7fe9ff;
 
-    --ccg-bg-dark: #000;
-    --ccg-text-light: #eef;
+    --ccg-bg-dark: #000000;
+    --ccg-bg-panel: #050510;
+    --ccg-text-light: #e8ecff;
+    --ccg-text-soft: #b5bbdf;
 
-    --ccg-spacing: 24px;
-    --ccg-thumb-ratio: 56.25%; /* 16:9 = 9 / 16 = 0.5625 */
+    /* NEON EFFECTS */
+    --ccg-neon-blue: 0 0 8px rgba(0, 170, 255, 0.8), 0 0 16px rgba(0, 170, 255, 0.8);
+    --ccg-neon-pink: 0 0 8px rgba(255, 41, 224, 0.8), 0 0 16px rgba(255, 41, 224, 0.8);
+
+    /* LAYOUT */
+    --ccg-page-max-width: 1320px;
+    --ccg-page-gutter: 2%;
+    --ccg-section-padding: 24px;
+    --ccg-grid-gap: 24px;
 }
 
-/* RESET + BASE --------------------------------------------- */
+/* ============================================================
+   GLOBAL RESET
+   ============================================================ */
 
-html, body {
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
     margin: 0;
     padding: 0;
     background: var(--ccg-bg-dark);
     color: var(--ccg-text-light);
     font-family: var(--ccg-font-body);
+    line-height: 1.5;
     overflow-x: hidden;
-    font-size: 16px;
-    line-height: 1.6;
+}
+
+body.ccg-body {
+    background: var(--ccg-bg-dark);
+    color: var(--ccg-text-light);
 }
 
 a {
     color: var(--ccg-color-cyan);
     text-decoration: none;
+    transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+a:hover {
+    color: var(--ccg-color-blue);
 }
 
 img {
@@ -45,62 +70,98 @@ img {
     display: block;
 }
 
-h1, h2, h3, h4, h5, h6 {
-    font-family: var(--ccg-font-header);
-    font-weight: 600;
-    line-height: 1.2;
-    margin: 0 0 0.5em;
-    color: var(--ccg-text-light);
-}
-
-/* WRAPPERS -------------------------------------------------- */
+/* ============================================================
+   PAGE WRAPPER
+   ============================================================ */
 
 .ccg-page {
     position: relative;
     z-index: 10;
-    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
+/* Main content width */
 .ccg-main {
-    width: 96%;
+    width: min(var(--ccg-page-max-width), 100% - var(--ccg-page-gutter) * 2);
     margin: 0 auto;
-    padding: var(--ccg-spacing) 0;
+    padding: var(--ccg-section-padding) 0;
 }
 
-/* HEADER + LOGO SYSTEM -------------------------------------- */
+/* Generic section helper */
+.ccg-section {
+    width: 100%;
+    margin: 0 auto;
+    padding: var(--ccg-section-padding) 0;
+}
+
+/* ============================================================
+   BACKGROUND LAYERS (STARFIELD / GRID / CRT)
+   (Visual behaviour is mostly in ccg-overlays.css — this keeps
+   them positioned correctly behind all content.)
+   ============================================================ */
+
+.ccg-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* Individual layers are styled further in ccg-overlays.css */
+.ccg-bg-starfield,
+.ccg-bg-grid,
+.ccg-bg-crt-overlay {
+    position: absolute;
+    inset: 0;
+}
+
+/* ============================================================
+   OMEGA HEADER SAFETY FIX (CRITICAL)
+   Ensures header & logo always above backgrounds/overlays
+   ============================================================ */
 
 .ccg-header {
-    width: 100%;
-    padding: 12px 0;
     position: relative;
-    z-index: 9999;
-    background: transparent;
+    z-index: 9999; /* Above all overlay layers */
+    width: 100%;
+    padding: 10px 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.92),
+        rgba(0, 0, 0, 0.85),
+        transparent
+    );
+    backdrop-filter: blur(4px);
 }
 
 .ccg-header-inner {
-    width: 96%;
+    width: min(var(--ccg-page-max-width), 100% - var(--ccg-page-gutter) * 2);
     margin: 0 auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 16px;
 }
 
+/* Brand / Logo */
+
 .ccg-brand {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 12px;
 }
 
-.ccg-brand__logo {
-    width: 64px;
-    height: auto;
-    max-height: 64px;
-    transition: transform 0.3s ease;
-}
-
+.ccg-brand img,
+.ccg-brand__logo,
 .ccg-logo-img {
     position: relative;
-    z-index: 10000;
+    z-index: 10000; /* Ensure actual logo sits on top */
+    width: 64px;
+    height: auto;
+    filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.8));
 }
 
 .ccg-brand__text {
@@ -110,103 +171,317 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .ccg-brand__kicker {
-    font-size: 0.6rem;
-    opacity: 0.75;
     font-family: var(--ccg-font-body);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ccg-text-soft);
+    opacity: 0.9;
 }
 
 .ccg-brand__title {
-    font-size: 1rem;
-    font-weight: bold;
+    font-family: var(--ccg-font-main);
+    font-size: 0.95rem;
     text-transform: uppercase;
-    font-family: var(--ccg-font-header);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25em;
 }
 
-/* NAV ------------------------------------------------------- */
+.ccg-brand__neon-cheeky {
+    color: var(--ccg-color-blue);
+    text-shadow: var(--ccg-neon-blue);
+}
+
+.ccg-brand__neon-sub {
+    color: var(--ccg-color-pink);
+    text-shadow: var(--ccg-neon-pink);
+}
+
+/* Compact neon strip under header */
+.ccg-header-neon-strip {
+    height: 2px;
+    width: 100%;
+    background: linear-gradient(
+        90deg,
+        var(--ccg-color-blue),
+        var(--ccg-color-pink),
+        var(--ccg-color-cyan),
+        var(--ccg-color-blue)
+    );
+    box-shadow: 0 0 8px rgba(0, 170, 255, 0.7);
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+
+.ccg-nav {
+    display: flex;
+    align-items: center;
+}
 
 .ccg-nav__list {
     display: flex;
     gap: 14px;
     list-style: none;
-    margin: 0;
     padding: 0;
+    margin: 0;
 }
 
 .ccg-nav__link {
-    font-size: 0.9rem;
+    font-family: var(--ccg-font-body);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ccg-text-soft);
     opacity: 0.8;
-    transition: 0.2s ease;
+    position: relative;
+    padding-bottom: 3px;
 }
 
-.ccg-nav__link:hover,
+.ccg-nav__link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    width: 0;
+    background: linear-gradient(90deg, var(--ccg-color-blue), var(--ccg-color-pink));
+    transition: width 0.2s ease-out;
+    box-shadow: 0 0 4px rgba(0, 170, 255, 0.7);
+}
+
+.ccg-nav__link:hover {
+    opacity: 1;
+    color: var(--ccg-color-cyan);
+}
+
+.ccg-nav__link:hover::after {
+    width: 100%;
+}
+
 .ccg-nav__link--active {
     opacity: 1;
+    color: var(--ccg-color-cyan);
 }
 
-/* SOCIALS --------------------------------------------------- */
+.ccg-nav__link--active::after {
+    width: 100%;
+}
 
-.ccg-socials {
+/* ============================================================
+   HEADER ACTIONS: MODE TOGGLE + SOCIAL ICONS
+   ============================================================ */
+
+.ccg-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* Mode Toggle Pill */
+
+.ccg-mode-toggle {
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+}
+
+.ccg-mode-toggle__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    padding: 3px;
+    border-radius: 999px;
+    background: radial-gradient(circle at 0% 0%, #101020, #050512);
+    box-shadow:
+        0 0 4px rgba(0, 0, 0, 0.8),
+        0 0 12px rgba(0, 170, 255, 0.4);
+    position: relative;
+}
+
+.ccg-mode-toggle__label {
+    font-family: var(--ccg-font-main);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 4px 8px;
+    color: var(--ccg-text-soft);
+    position: relative;
+    z-index: 1;
+}
+
+.ccg-mode-toggle__thumb {
+    position: absolute;
+    top: 2px;
+    bottom: 2px;
+    left: 2px;
+    width: 50%;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--ccg-color-blue), var(--ccg-color-cyan));
+    box-shadow:
+        0 0 6px rgba(0, 170, 255, 0.8),
+        0 0 14px rgba(0, 170, 255, 0.7);
+    transition: transform 0.2s ease-out, background 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+/* Position thumb based on data-ccg-mode (actual transform is set in ccg-mode.css JS) */
+body[data-ccg-mode="amiga"] .ccg-mode-toggle__thumb {
+    transform: translateX(100%);
+    background: linear-gradient(135deg, var(--ccg-color-pink), #ff7bff);
+    box-shadow:
+        0 0 6px rgba(255, 41, 224, 0.8),
+        0 0 14px rgba(255, 41, 224, 0.7);
+}
+
+/* Social icon container (actual icons styled in ccg-socials.css) */
+
+.ccg-header-socials {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-/* FOOTER ---------------------------------------------------- */
+/* ============================================================
+   TITLES & TYPOGRAPHY
+   ============================================================ */
+
+.ccg-section-title,
+.ccg-genrehub-title,
+.ccg-hero-title,
+.ccg-genre-hero__title {
+    font-family: var(--ccg-font-main);
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-weight: 700;
+    color: var(--ccg-text-light);
+    text-shadow:
+        0 0 8px rgba(0, 0, 0, 0.8),
+        0 0 14px rgba(0, 170, 255, 0.6);
+}
+
+.ccg-section-title {
+    font-size: 1.2rem;
+    margin: 0 0 18px;
+}
+
+/* Subtitles / Taglines */
+
+.ccg-genrehub-subtitle,
+.ccg-hero-tagline,
+.ccg-genre-hero__tagline {
+    font-family: var(--ccg-font-body);
+    font-size: 0.9rem;
+    color: var(--ccg-text-soft);
+    max-width: 640px;
+}
+
+/* ============================================================
+   GENRE HUB HERO (BROWSE BY GENRE INDEX)
+   ============================================================ */
+
+.ccg-genrehub-hero {
+    padding: 24px 0 8px;
+    text-align: left;
+}
+
+.ccg-genrehub-hero__inner {
+    width: min(var(--ccg-page-max-width), 100% - var(--ccg-page-gutter) * 2);
+    margin: 0 auto;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
 
 .ccg-footer {
     width: 100%;
     text-align: center;
-    padding: var(--ccg-spacing) 0;
-    opacity: 0.75;
+    padding: 20px 0 24px;
+    margin-top: auto;
     font-size: 0.8rem;
+    color: var(--ccg-text-soft);
+    opacity: 0.8;
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.9),
+        rgba(0, 0, 0, 0.4),
+        transparent
+    );
 }
 
-/* CARD CONTAINER SPACING PREP ------------------------------- */
-
-.ccg-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: var(--ccg-spacing);
+.ccg-footer__text {
+    margin: 0;
 }
 
-/* 16:9 THUMBNAIL RATIO PREP --------------------------------- */
+/* ============================================================
+   RESPONSIVE TUNING
+   ============================================================ */
 
-.ccg-thumb-16by9 {
-    position: relative;
-    width: 100%;
-    padding-top: var(--ccg-thumb-ratio);
-    overflow: hidden;
-    background: #111;
-}
+@media (max-width: 960px) {
+    .ccg-header-inner {
+        gap: 10px;
+    }
 
-.ccg-thumb-16by9 img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* MEDIA QUERIES — LOGO RESIZE ------------------------------ */
-
-@media (max-width: 640px) {
     .ccg-brand__logo {
-        width: 48px;
-        max-height: 48px;
+        width: 52px;
+    }
+
+    .ccg-nav__list {
+        gap: 10px;
+    }
+
+    .ccg-nav__link {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .ccg-header-inner {
+        flex-wrap: wrap;
+        justify-content: space-between;
+        row-gap: 8px;
+    }
+
+    .ccg-brand__logo {
+        width: 46px;
     }
 
     .ccg-brand__title {
         font-size: 0.85rem;
     }
 
+    .ccg-nav__list {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        column-gap: 10px;
+        row-gap: 4px;
+    }
+
+    .ccg-header-actions {
+        margin-left: auto;
+    }
+}
+
+@media (max-width: 560px) {
     .ccg-header-inner {
         flex-direction: column;
-        gap: 8px;
+        align-items: flex-start;
+    }
+
+    .ccg-brand__logo {
+        width: 40px;
     }
 
     .ccg-nav__list {
-        flex-wrap: wrap;
-        justify-content: center;
+        justify-content: flex-start;
+    }
+
+    .ccg-main {
+        width: 94%;
     }
 }
