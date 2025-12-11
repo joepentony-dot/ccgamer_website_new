@@ -1,0 +1,325 @@
+/* ============================================================
+   CCG CARDS CSS — OMEGA CARD & GRID SYSTEM
+   - 16:9 thumbnails site-wide
+   - Shared card styling for library, genres, collections, related
+   - Neon hover with C64 / Amiga reactive glow
+   ============================================================ */
+
+/* ============================================================
+   GLOBAL CARD GRIDS
+   Used by:
+   - /games/index.html      → #gamesGrid (ccg-genre-grid or similar)
+   - /games/genres/index    → .genre-grid.omega-grid
+   - /games/genres/*.html   → #genreGamesGrid.ccg-genre-grid
+   - /games/collections/    → .ccg-genre-grid (collection tiles)
+   ============================================================ */
+
+.ccg-genre-grid,
+.genre-grid,
+.omega-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--ccg-grid-gap, 24px);
+    align-items: stretch;
+}
+
+/* slightly wider cards on big screens */
+@media (min-width: 1200px) {
+    .ccg-genre-grid,
+    .genre-grid,
+    .omega-grid {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+}
+
+/* ============================================================
+   BASE GAME CARD
+   Used by:
+   - games-library.js (Browse Games)
+   - genre-loader.js (Browse by Genre pages)
+   - load-single-game.js (Related games)
+   Markup:
+     .ccg-game-card
+       .ccg-game-card__thumb > img
+       .ccg-game-card__body
+         .ccg-game-card__title
+         .ccg-game-card__meta
+   ============================================================ */
+
+.ccg-game-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: radial-gradient(circle at top, #15152a 0%, #050510 55%, #020208 100%);
+    border-radius: 14px;
+    border: 1px solid rgba(127, 233, 255, 0.1);
+    box-shadow:
+        0 0 0 rgba(0, 0, 0, 0),
+        0 12px 26px rgba(0, 0, 0, 0.75);
+    overflow: hidden;
+    text-decoration: none;
+    transform: translate3d(0, 0, 0);
+    transition:
+        transform 0.18s ease-out,
+        box-shadow 0.18s ease-out,
+        border-color 0.18s ease-out,
+        background 0.18s ease-out;
+}
+
+/* 16:9 THUMB CONTAINER */
+
+.ccg-game-card__thumb {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: radial-gradient(circle at 50% 0%, #252542 0%, #050511 60%, #020208 100%);
+}
+
+.ccg-game-card__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;   /* FULL 16:9 cover */
+    display: block;
+    transform: scale(1.02);
+    transition: transform 0.25s ease-out, filter 0.25s ease-out;
+}
+
+/* CARD BODY */
+
+.ccg-game-card__body {
+    padding: 10px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.ccg-game-card__title {
+    font-family: var(--ccg-font-main);
+    font-size: 0.9rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ccg-text-light);
+    margin: 0;
+    /* 2-line clamp */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* META: YEAR · SYSTEM · DEVELOPER
+   (JS template can output all three — CSS is ready) */
+.ccg-game-card__meta {
+    font-family: var(--ccg-font-body);
+    font-size: 0.75rem;
+    color: var(--ccg-text-soft);
+    opacity: 0.9;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* If there’s a button inside (e.g. "View Game") */
+.ccg-game-card .ccg-btn {
+    margin-top: 8px;
+}
+
+/* ============================================================
+   HOVER / FOCUS EFFECTS — C64 vs AMIGA
+   ============================================================ */
+
+.ccg-game-card:hover,
+.ccg-game-card:focus-visible {
+    transform: translate3d(0, -4px, 0) scale(1.015);
+    background: radial-gradient(circle at top, #202045 0%, #070716 55%, #04040c 100%);
+    outline: none;
+}
+
+/* C64 MODE — BLUE / CYAN NEON */
+
+body[data-ccg-mode="c64"] .ccg-game-card:hover,
+body[data-ccg-mode="c64"] .ccg-game-card:focus-visible {
+    border-color: rgba(0, 170, 255, 0.7);
+    box-shadow:
+        0 0 12px rgba(0, 170, 255, 0.55),
+        0 0 32px rgba(0, 170, 255, 0.45),
+        0 16px 30px rgba(0, 0, 0, 0.85);
+}
+
+body[data-ccg-mode="c64"] .ccg-game-card:hover .ccg-game-card__thumb img,
+body[data-ccg-mode="c64"] .ccg-game-card:focus-visible .ccg-game-card__thumb img {
+    transform: scale(1.06);
+    filter: saturate(1.15) drop-shadow(0 0 8px rgba(0, 170, 255, 0.8));
+}
+
+/* AMIGA MODE — PINK / PURPLE NEON */
+
+body[data-ccg-mode="amiga"] .ccg-game-card:hover,
+body[data-ccg-mode="amiga"] .ccg-game-card:focus-visible {
+    border-color: rgba(255, 41, 224, 0.75);
+    box-shadow:
+        0 0 12px rgba(255, 41, 224, 0.55),
+        0 0 32px rgba(255, 41, 224, 0.45),
+        0 16px 30px rgba(0, 0, 0, 0.85);
+}
+
+body[data-ccg-mode="amiga"] .ccg-game-card:hover .ccg-game-card__thumb img,
+body[data-ccg-mode="amiga"] .ccg-game-card:focus-visible .ccg-game-card__thumb img {
+    transform: scale(1.06);
+    filter: saturate(1.15) drop-shadow(0 0 8px rgba(255, 41, 224, 0.8));
+}
+
+/* Keyboard focus outline fallback */
+.ccg-game-card:focus-visible {
+    box-shadow:
+        0 0 0 2px rgba(127, 233, 255, 0.7),
+        0 10px 22px rgba(0, 0, 0, 0.85);
+}
+
+/* ============================================================
+   GENRE CONTEXT CARD
+   (Same markup as game card, plus .genre-card class)
+   ============================================================ */
+
+.genre-card {
+    /* slight extra padding / breathing room */
+}
+
+.genre-card .ccg-game-card__body {
+    padding-bottom: 14px;
+}
+
+/* ============================================================
+   CURATED COLLECTION TILES
+   Markup:
+     <a class="ccg-genre-tile">
+       <img ...>
+       <span>Label</span>
+     </a>
+   Used on: /games/collections/index.html
+   ============================================================ */
+
+.ccg-genre-tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: radial-gradient(circle at top, #181833 0%, #050510 60%, #020208 100%);
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(127, 233, 255, 0.12);
+    text-decoration: none;
+    box-shadow:
+        0 0 0 rgba(0, 0, 0, 0),
+        0 12px 26px rgba(0, 0, 0, 0.8);
+    transform: translate3d(0, 0, 0);
+    transition:
+        transform 0.18s ease-out,
+        box-shadow 0.18s ease-out,
+        border-color 0.18s ease-out,
+        background 0.18s ease-out;
+}
+
+/* 16:9 banner thumb for collections */
+
+.ccg-genre-tile img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+    transform: scale(1.02);
+    transition: transform 0.25s ease-out, filter 0.25s ease-out;
+}
+
+/* Label under the image */
+
+.ccg-genre-tile span {
+    padding: 10px 12px 12px;
+    font-family: var(--ccg-font-main);
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ccg-text-light);
+}
+
+/* Hover — C64 vs Amiga reactive */
+
+.ccg-genre-tile:hover,
+.ccg-genre-tile:focus-visible {
+    transform: translate3d(0, -4px, 0) scale(1.015);
+    background: radial-gradient(circle at top, #202045 0%, #070716 55%, #04040c 100%);
+    outline: none;
+}
+
+body[data-ccg-mode="c64"] .ccg-genre-tile:hover,
+body[data-ccg-mode="c64"] .ccg-genre-tile:focus-visible {
+    border-color: rgba(0, 170, 255, 0.75);
+    box-shadow:
+        0 0 12px rgba(0, 170, 255, 0.55),
+        0 0 30px rgba(0, 170, 255, 0.45),
+        0 16px 30px rgba(0, 0, 0, 0.85);
+}
+
+body[data-ccg-mode="c64"] .ccg-genre-tile:hover img,
+body[data-ccg-mode="c64"] .ccg-genre-tile:focus-visible img {
+    transform: scale(1.06);
+    filter: saturate(1.15) drop-shadow(0 0 8px rgba(0, 170, 255, 0.8));
+}
+
+body[data-ccg-mode="amiga"] .ccg-genre-tile:hover,
+body[data-ccg-mode="amiga"] .ccg-genre-tile:focus-visible {
+    border-color: rgba(255, 41, 224, 0.8);
+    box-shadow:
+        0 0 12px rgba(255, 41, 224, 0.55),
+        0 0 30px rgba(255, 41, 224, 0.45),
+        0 16px 30px rgba(0, 0, 0, 0.85);
+}
+
+body[data-ccg-mode="amiga"] .ccg-genre-tile:hover img,
+body[data-ccg-mode="amiga"] .ccg-genre-tile:focus-visible img {
+    transform: scale(1.06);
+    filter: saturate(1.15) drop-shadow(0 0 8px rgba(255, 41, 224, 0.8));
+}
+
+/* ============================================================
+   RELATED GAMES STRIP (ON SINGLE GAME PAGE)
+   Uses .ccg-game-card as well, so this just keeps it tidy
+   ============================================================ */
+
+#relatedGamesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: var(--ccg-grid-gap, 24px);
+    margin-top: 10px;
+}
+
+@media (max-width: 600px) {
+    #relatedGamesGrid {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
+}
+
+/* ============================================================
+   SMALL RESPONSIVE POLISH
+   ============================================================ */
+
+@media (max-width: 480px) {
+    .ccg-game-card__body {
+        padding: 8px 10px 10px;
+    }
+
+    .ccg-game-card__title {
+        font-size: 0.85rem;
+    }
+
+    .ccg-game-card__meta {
+        font-size: 0.7rem;
+    }
+
+    .ccg-genre-tile span {
+        font-size: 0.8rem;
+        padding: 8px 10px 10px;
+    }
+}
