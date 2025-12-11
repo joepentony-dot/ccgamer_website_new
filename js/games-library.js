@@ -1,11 +1,12 @@
 /* ============================================================
-   CCG GAMES LIBRARY — OMEGA SLUG-ID EDITION (FINAL)
+   CCG GAMES LIBRARY — OMEGA ULTRA-STABLE EDITION
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
-
     try {
-        const response = await fetch("games.json");
+
+        // ★ FIXED PATH — index.html → games/games.json
+        const response = await fetch("games/games.json");
         const games = await response.json();
 
         const grid = document.getElementById("gamesGrid");
