@@ -1,11 +1,5 @@
 /* ============================================================
-   CCG LOAD SINGLE GAME — ULTRA-STABLE OMEGA EDITION (FINAL)
-   ------------------------------------------------------------
-   • Auto-corrects thumbnail paths (supports both formats)
-   • Loads game by ID from games.json
-   • Restores all metadata: year, developer, system, genres
-   • Safely injects video, manuals, downloads and related titles
-   • Zero regressions across entire site
+   CCG LOAD SINGLE GAME — OMEGA ULTRA-STABLE FINAL EDITION
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -35,26 +29,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 /* ============================================================
+   UNIVERSAL THUMBNAIL SANITISER
+   ============================================================ */
+function resolveThumb(path) {
+    if (!path) return "";
+
+    return path.replace(/^resources\/images\/thumbnails\/all\//i, "");
+}
+
+/* ============================================================
    RENDER GAME
    ============================================================ */
 
 function renderGame(game) {
 
-    /* ------------------------------
-       THUMBNAIL PATH CORRECTION
-       ------------------------------ */
-
-    let thumb = game.thumbnail || "";
-
-    // If games.json contains "resources/images/...jpg" remove prefix
-    if (thumb.startsWith("resources/images/")) {
-        thumb = thumb.replace("resources/images/thumbnails/all/", "");
-        thumb = thumb.replace("resources/images/thumbnails/", "");
-        thumb = thumb.replace("resources/images/", "");
-    }
-
-    // If games.json contains "airborne_ranger.jpg" already clean
-    const finalThumb = `resources/images/thumbnails/all/${thumb}`;
+    /* ---------- FIX THUMBNAIL ---------- */
+    const clean = resolveThumb(game.thumbnail || "");
+    const finalThumb = `../resources/images/thumbnails/all/${clean}`;
 
     /* ---------- HERO ---------- */
 
@@ -76,9 +67,9 @@ function renderGame(game) {
 
     /* ---------- GENRES ---------- */
 
-    const genresList = document.getElementById("gameGenres");
-    if (genresList) {
-        genresList.textContent = (game.genres || []).join(", ");
+    const genresEl = document.getElementById("gameGenres");
+    if (genresEl) {
+        genresEl.textContent = (game.genres || []).join(", ");
     }
 
     /* ---------- DESCRIPTION ---------- */
@@ -89,42 +80,35 @@ function renderGame(game) {
     /* ---------- VIDEO ---------- */
 
     const embedEl = document.getElementById("game-video-embed");
-
-    if (game.video && embedEl) {
+    if (embedEl && game.video) {
         embedEl.src = `https://www.youtube.com/embed/${game.video}`;
     }
 
-    /* ---------- MANUALS / DOWNLOADS ---------- */
+    /* ---------- MANUALS / DISKS ---------- */
 
     const manualBtn = document.getElementById("gameManualBtn");
     const diskBtn = document.getElementById("gameDiskBtn");
 
     if (manualBtn) {
-        if (game.manual) {
-            manualBtn.href = game.manual;
-        } else {
-            manualBtn.style.display = "none";
-        }
+        if (game.manual) manualBtn.href = game.manual;
+        else manualBtn.style.display = "none";
     }
 
     if (diskBtn) {
-        if (game.disk) {
-            diskBtn.href = game.disk;
-        } else {
-            diskBtn.style.display = "none";
-        }
+        if (game.disk) diskBtn.href = game.disk;
+        else diskBtn.style.display = "none";
     }
 
-    /* ---------- RELATED GAMES ---------- */
-
+    /* ---------- RELATED ---------- */
     renderRelatedGames(game);
 }
 
 /* ============================================================
-   RELATED GAMES (same primary genre)
+   RELATED GAMES
    ============================================================ */
 
 function renderRelatedGames(game) {
+
     const container = document.getElementById("relatedGamesGrid");
     if (!container) return;
 
@@ -141,18 +125,14 @@ function renderRelatedGames(game) {
             ).slice(0, 6);
 
             container.innerHTML = related.map(g => {
-                let t = g.thumbnail || "";
 
-                if (t.startsWith("resources/images/")) {
-                    t = t.replace("resources/images/thumbnails/all/", "");
-                }
-
-                const finalT = `resources/images/thumbnails/all/${t}`;
+                const thumbClean = resolveThumb(g.thumbnail || "");
+                const finalT = `../resources/images/thumbnails/all/${thumbClean}`;
 
                 return `
                     <a href="game.html?id=${g.id}" class="ccg-game-card">
                         <div class="ccg-game-card__thumb">
-                            <img src="${finalT}" alt="${g.title}">
+                            <img src="${finalT}" alt="${g.title}" loading="lazy">
                         </div>
                         <div class="ccg-game-card__body">
                             <h3 class="ccg-game-card__title">${g.title}</h3>
