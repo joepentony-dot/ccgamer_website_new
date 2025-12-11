@@ -1,5 +1,5 @@
 /* ============================================================
-   OMEGA GENRE LOADER — SLUG-ID FINAL EDITION
+   OMEGA GENRE LOADER — FINAL ULTRA-STABLE EDITION
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -11,7 +11,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!genreName || !grid) return;
 
     try {
-        const response = await fetch("../games.json");
+
+        // ★ FIXED PATH — genre pages → ../../games/games.json
+        const response = await fetch("../../games/games.json");
         const games = await response.json();
 
         const filtered = games.filter(g =>
@@ -20,7 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             g.genres.map(x => x.toLowerCase()).includes(genreName.toLowerCase())
         );
 
-        grid.innerHTML = filtered.map(g => generateGenreCard(g)).join("");
+        grid.innerHTML = filtered.map(game => generateGenreCard(game)).join("");
 
         if (countEl) countEl.textContent = filtered.length;
 
