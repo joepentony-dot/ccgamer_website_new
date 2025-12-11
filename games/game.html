@@ -38,7 +38,6 @@
         <header class="ccg-header">
             <div class="ccg-header-inner">
 
-                <!-- BRAND -->
                 <a href="../home.html" class="ccg-brand">
                     <img src="../resources/images/ccgamer-logo.png"
                          alt="Cheeky Commodore Gamer logo"
@@ -54,7 +53,6 @@
                     </div>
                 </a>
 
-                <!-- NAV -->
                 <nav class="ccg-nav">
                     <ul class="ccg-nav__list">
                         <li><a href="../home.html" class="ccg-nav__link">Home</a></li>
@@ -68,9 +66,7 @@
                     </ul>
                 </nav>
 
-                <!-- MODE + SOCIALS -->
                 <div class="ccg-header-actions">
-
                     <button class="ccg-mode-toggle"
                             type="button"
                             data-ccg-mode-toggle>
@@ -114,67 +110,62 @@
             <!-- HERO -->
             <section class="ccg-section ccg-hero ccg-hero--single-game">
 
-                <div class="game-hero-bg"></div>
+                <div id="gameHeroBG" class="game-hero-bg"></div>
                 <div class="ccg-hero-scanlines game-hero-scanlines"></div>
 
                 <div class="ccg-hero-inner game-hero-inner">
 
                     <!-- LEFT -->
                     <div class="game-hero-media">
-                        <a id="game-hero-video-link" class="game-hero-thumb-wrap game-hero-thumb-link" href="#" target="_blank" rel="noopener">
-                            <div class="game-hero-thumb-inner">
-                                <img id="game-hero-image"
-                                     src=""
-                                     alt="Game artwork"
-                                     class="game-hero-thumb game-hero-thumb--placeholder">
-                                <div class="game-hero-thumb-overlay"></div>
-                                <div class="game-hero-play-overlay">
-                                    <span class="game-hero-play-icon">▶</span>
-                                </div>
-                            </div>
-                        </a>
+                        <div class="game-hero-thumb-wrap">
+                            <img id="gameHeroThumb"
+                                 src=""
+                                 alt="Game artwork"
+                                 class="game-hero-thumb">
+                            <div class="game-hero-thumb-overlay"></div>
+                        </div>
                     </div>
 
                     <!-- RIGHT -->
                     <div class="ccg-hero-text game-hero-copy">
 
-                        <p class="ccg-hero-kicker game-system-kicker" id="game-system-label"></p>
+                        <p id="gameSystemKicker" class="ccg-hero-kicker game-system-kicker"></p>
 
-                        <h1 id="game-title" class="ccg-hero-title game-hero-title">Game Title</h1>
+                        <h1 id="gameHeroTitle" class="ccg-hero-title game-hero-title">Game Title</h1>
 
-                        <div id="game-meta" class="game-hero-meta">
+                        <div id="gameMeta" class="game-hero-meta">
                             <div class="game-meta-row game-meta-row--year">
                                 <span class="game-meta__label">Year</span>
-                                <span id="game-year" class="game-meta__value">—</span>
+                                <span id="gameMetaYear" class="game-meta__value">—</span>
                             </div>
 
                             <div class="game-meta-row game-meta-row--system">
                                 <span class="game-meta__label">System</span>
-                                <span id="game-system" class="game-meta__value">—</span>
+                                <span id="gameMetaSystem" class="game-meta__value">—</span>
                             </div>
 
                             <div class="game-meta-row game-meta-row--developer">
                                 <span class="game-meta__label">Developer</span>
-                                <span id="game-developer" class="game-meta__value">—</span>
+                                <span id="gameMetaDeveloper" class="game-meta__value">—</span>
                             </div>
                         </div>
 
                         <!-- GENRES -->
-                        <div id="game-genres" class="game-hero-genres" hidden></div>
+                        <div id="gameGenres" class="game-hero-genres"></div>
 
                         <!-- ACTION BUTTONS -->
                         <div class="game-hero-actions">
-                            <a id="pdf-button" href="#" class="ccg-btn game-hero-btn game-hero-btn--manual" hidden>
+                            <a id="gameManualBtn" href="#" class="ccg-btn game-hero-btn game-hero-btn--manual" hidden>
                                 <span class="game-hero-btn__icon game-hero-btn__icon--manual"></span>
                                 <span>View Manual (PDF)</span>
                             </a>
 
-                            <a id="disk-button" href="#" class="ccg-btn game-hero-btn game-hero-btn--disk" hidden>
+                            <a id="gameDiskBtn" href="#" class="ccg-btn game-hero-btn game-hero-btn--disk" hidden>
                                 <span class="game-hero-btn__icon game-hero-btn__icon--disk"></span>
                                 <span>Load Disk / Tape</span>
                             </a>
 
-                            <a id="game-play-video" href="#" class="ccg-btn game-hero-btn game-hero-btn--video" target="_blank" rel="noopener" hidden>
+                            <a id="gameVideoBtn" href="#" class="ccg-btn game-hero-btn game-hero-btn--video" target="_blank" rel="noopener" hidden>
                                 <span class="game-hero-btn__icon game-hero-btn__icon--video"></span>
                                 <span>Watch on YouTube</span>
                             </a>
@@ -184,15 +175,15 @@
             </section>
 
             <!-- DESCRIPTION -->
-            <section class="ccg-section game-description-section" id="game-description-section" hidden>
+            <section id="game-description-section" class="ccg-section game-description-section" hidden>
                 <div class="game-section-panel game-section-panel--description">
                     <h2 class="ccg-section-title">About this game</h2>
-                    <div id="game-description" class="game-description-body"></div>
+                    <div id="gameDescription" class="game-description-body"></div>
                 </div>
             </section>
 
             <!-- EXTERNAL LINKS -->
-            <section class="ccg-section game-lemon-section" id="lemon-links-block" hidden>
+            <section id="lemon-links-block" class="ccg-section game-lemon-section" hidden>
                 <div class="game-section-panel game-section-panel--external">
                     <h2 class="ccg-section-title">External references</h2>
                     <ul id="lemon-links-list" class="game-lemon-list"></ul>
@@ -200,7 +191,7 @@
             </section>
 
             <!-- VIDEO -->
-            <section class="ccg-section game-video-section" id="game-video-section" hidden>
+            <section id="game-video-section" class="ccg-section game-video-section" hidden>
                 <div class="game-section-panel game-section-panel--video">
                     <h2 class="ccg-section-title">Gameplay Video</h2>
                     <div id="game-video-frame-outer" class="game-video-frame-outer neon-ultra">
@@ -222,7 +213,7 @@
             <section class="ccg-section game-related-section">
                 <div class="game-section-panel game-section-panel--related">
                     <h2 id="related-games-title" class="ccg-section-title">Related games</h2>
-                    <div id="related-games-grid" class="ccg-games-grid game-related-grid"></div>
+                    <div id="relatedGamesGrid" class="ccg-games-grid game-related-grid"></div>
                 </div>
             </section>
 
