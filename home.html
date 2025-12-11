@@ -201,24 +201,29 @@
                         </div>
                     </article>
 
-                    <!-- Featured Video -->
-                    <article class="ccg-card home-feature-card">
+                    <!-- Featured Video (404 fixed, ready for randomiser) -->
+                    <article class="ccg-card home-feature-card ccg-feature-video-card" data-ccg-feature-video>
                         <a href="https://www.youtube.com/@CheekyCommodoreGamer"
                            target="_blank"
                            rel="noopener"
-                           class="ccg-card__media ccg-card__media--16x9">
-                            <img src="resources/images/hero/ccg-feature-video-placeholder.jpg"
-                                 alt="Featured CCG video">
+                           class="ccg-card__media ccg-card__media--16x9"
+                           data-ccg-feature-video-link>
+                            <img
+                                alt="Featured CCG video"
+                                data-ccg-feature-video-thumb>
                         </a>
                         <div class="ccg-card__body">
-                            <h3 class="ccg-card__title">Featured CCG Video</h3>
+                            <h3 class="ccg-card__title" data-ccg-feature-video-title>
+                                Featured CCG Video
+                            </h3>
                             <p class="ccg-card__text">
                                 A hand-picked longplay or review from the channel — perfect for a retro session.
                             </p>
                             <a href="https://www.youtube.com/@CheekyCommodoreGamer"
                                target="_blank"
                                rel="noopener"
-                               class="ccg-btn ccg-btn--primary">
+                               class="ccg-btn ccg-btn--primary"
+                               data-ccg-feature-video-button>
                                 Watch on YouTube
                             </a>
                         </div>
