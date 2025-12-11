@@ -35,8 +35,13 @@ function renderGameCard(game) {
     let thumb = game.thumbnail || "";
 
     // JSON thumbnails are root-relative ("resources/images/thumbnails/all/*.jpg")
-    // Convert to correct depth for /games/
     const finalThumb = `../${thumb}`;
+
+    const meta = [
+        game.year || "",
+        game.system || "",
+        game.developer || ""
+    ].filter(Boolean).join(" · ");
 
     return `
         <a href="game.html?id=${game.id}" class="ccg-game-card">
@@ -45,7 +50,7 @@ function renderGameCard(game) {
             </div>
             <div class="ccg-game-card__body">
                 <h3 class="ccg-game-card__title">${game.title}</h3>
-                <div class="ccg-game-card__meta">${game.year || ""} · ${game.system || ""}</div>
+                <div class="ccg-game-card__meta">${meta}</div>
             </div>
         </a>
     `;
