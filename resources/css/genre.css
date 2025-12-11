@@ -1,130 +1,254 @@
 /* ============================================================
-   GENRE PAGE CSS — OMEGA CONSISTENCY BUILD (MEDIUM LOGO)
-   ============================================================ */
+   GENRE.CSS — Omega Genre System (Final Polished Edition)
+   Handles:
+   - Genre hub grid (20 genres)
+   - Genre single pages (hero + cards)
+   - Banner system
+   - Neon text glow
+   - Spacing + responsive control
+============================================================ */
 
-/* GENERAL LAYOUT */
-.ccg-page--genre {
+/* ============================================================
+   1) GENRE HUB — GRID OF 20 GENRES
+============================================================ */
+
+.ccg-section {
+    width: 96%;
+    margin: 0 auto;
+}
+
+.genre-grid,
+.ccg-genre-grid,
+.ccg-section .genre-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 24px;
+    padding: 20px 0 40px;
+}
+
+/* Genre Hub Cards ------------------------------------------ */
+
+.ccg-card {
+    text-align: center;
+    transition: 0.25s ease;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.ccg-card__image img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+}
+
+.ccg-card:hover {
+    transform: translateY(-6px);
+    box-shadow:
+        0 0 20px var(--accent-strong),
+        0 0 40px var(--accent-soft);
+}
+
+.ccg-card__title {
+    padding: 14px 6px;
+    font-family: var(--ccg-font-main);
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+/* ============================================================
+   2) GENRE SINGLE PAGE
+============================================================ */
+
+.ccg-page--genre-single {
+    width: 100%;
+}
+
+/* -------------------------
+   HERO SECTION
+-------------------------- */
+
+.ccg-genre-hero {
+    width: 100%;
     position: relative;
-    min-height: 100vh;
+    overflow: hidden;
+    height: 28vh; /* YOUR CHOSEN HEIGHT */
+    min-height: 240px;
+    max-height: 420px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
-/* --------------------------------------------
-   BACKGROUND LAYERS
---------------------------------------------- */
-.ccg-bg {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-}
-.ccg-bg-starfield,
-.ccg-bg-grid,
-.ccg-bg-crt-overlay {
+.ccg-genre-hero__bg {
+    width: 100%;
+    height: 100%;
     position: absolute;
     inset: 0;
-    pointer-events: none;
+    overflow: hidden;
 }
 
-/* --------------------------------------------
-   HEADER — OMEGA CONSISTENT MEDIUM LOGO (L2)
---------------------------------------------- */
-.ccg-header {
-    width: 100%;
-    position: relative;
-    z-index: 50;
-}
-
-.ccg-header-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 18px 30px;
-    gap: 20px;
-}
-
-/* LOGO — MEDIUM SIZE OPTION (L2) */
-.ccg-brand__logo,
-.ccg-logo {
-    height: 68px;   /* Final chosen size */
-    width: auto;
-}
-
-/* NAV LINKS */
-.ccg-nav__list,
-.ccg-nav a,
-.ccg-nav {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.ccg-nav__link,
-.nav-item {
-    font-size: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--ccg-text);
-}
-
-.ccg-nav__link--active,
-.nav-item--active {
-    color: var(--ccg-accent);
-}
-
-/* MODE TOGGLE */
-.ccg-mode-toggle {
-    cursor: pointer;
-}
-
-/* SOCIAL ICONS */
-.ccg-header-socials {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-/* --------------------------------------------
-   GENRE HERO
---------------------------------------------- */
 .ccg-genre-hero__img {
     width: 100%;
-    height: auto;
-    display: block;
+    height: 100%;
+    object-fit: cover;
+    filter:
+        brightness(0.75)
+        contrast(1.1)
+        saturate(1.1)
+        blur(0.5px);
+    transform: scale(1.05);
 }
 
 .ccg-genre-hero__overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0,0,0,0.4);
+    background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.2),
+        rgba(0,0,0,0.55)
+    );
 }
+
+/* -------------------------
+   HERO — INNER CONTENT
+-------------------------- */
 
 .ccg-genre-hero__inner {
     position: relative;
-    z-index: 5;
+    z-index: 10;
+    width: 96%;
+    margin: 0 auto;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-bottom: 20px;
 }
 
-/* --------------------------------------------
-   GRID
---------------------------------------------- */
+.ccg-genre-hero__title {
+    font-family: var(--ccg-font-main);
+    font-size: 2.1rem;
+    margin: 0 0 6px;
+    color: var(--text-light);
+    text-shadow:
+        0 0 14px rgba(var(--accent-rgb), 0.75),
+        0 0 34px rgba(var(--accent-rgb), 0.45);
+}
+
+.ccg-genre-hero__tagline {
+    font-size: 1rem;
+    opacity: 0.9;
+    max-width: 680px;
+    margin: 0;
+}
+
+/* -------------------------
+   META ROW
+-------------------------- */
+
+.ccg-genre-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    margin-top: 10px;
+    opacity: 0.85;
+}
+
+.ccg-genre-meta span {
+    color: var(--text-light);
+}
+
+/* ============================================================
+   3) GENRE GAME GRID (Cards inside each genre page)
+============================================================ */
+
 .ccg-genre-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill,minmax(260px,1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 24px;
-    padding: 40px;
+    padding: 20px 0 60px;
 }
 
-.ccg-genre-grid img {
+/* Individual Game Cards */
+
+.genre-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--panel-bg);
+    border: 1px solid rgba(255,255,255,0.12);
+    transition: 0.25s ease;
+}
+
+.genre-card:hover {
+    transform: translateY(-6px);
+    box-shadow:
+        0 0 20px rgba(var(--accent-rgb), 0.7),
+        0 0 40px rgba(var(--accent-rgb), 0.4);
+}
+
+/* Thumbnail */
+
+.genre-card .ccg-game-card__thumb img {
     width: 100%;
-    height: auto;
-    border-radius: 8px;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
 }
 
-/* --------------------------------------------
-   FOOTER
---------------------------------------------- */
-.ccg-footer {
+/* Body */
+
+.ccg-game-card__body {
+    padding: 14px 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ccg-game-card__title {
+    font-size: 1rem;
+    line-height: 1.3;
+    font-family: var(--ccg-font-main);
+    color: var(--text-light);
+}
+
+.ccg-game-card__meta {
+    font-size: 0.75rem;
+    opacity: 0.85;
+}
+
+/* View Game Button */
+
+.ccg-btn--primary {
+    margin-top: 4px;
+    padding: 8px 12px;
     text-align: center;
-    padding: 40px 20px;
-    position: relative;
-    z-index: 5;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-family: var(--ccg-font-main);
 }
 
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width: 900px) {
+    .ccg-genre-hero__title {
+        font-size: 1.6rem;
+    }
+    .ccg-genre-hero__tagline {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .genre-grid,
+    .ccg-genre-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+
+    .ccg-genre-hero {
+        height: 24vh;
+    }
+}
