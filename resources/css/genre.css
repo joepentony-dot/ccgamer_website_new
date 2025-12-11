@@ -1,50 +1,130 @@
 /* ============================================================
-   OMEGA GENRE PAGE CSS — FIXED LOGO SIZE + BACKGROUNDS
+   GENRE PAGE CSS — OMEGA CONSISTENCY BUILD (MEDIUM LOGO)
    ============================================================ */
 
-/* Force consistent brand logo size across ALL genre pages */
-.ccg-logo,
-.ccg-brand__logo {
-    height: 64px;
-    width: auto;
-    object-fit: contain;
+/* GENERAL LAYOUT */
+.ccg-page--genre {
+    position: relative;
+    min-height: 100vh;
 }
 
-/* Ensure hero background behaves correctly */
-.ccg-genre-hero__bg {
+/* --------------------------------------------
+   BACKGROUND LAYERS
+--------------------------------------------- */
+.ccg-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+}
+.ccg-bg-starfield,
+.ccg-bg-grid,
+.ccg-bg-crt-overlay {
     position: absolute;
     inset: 0;
-    z-index: 1;
-    overflow: hidden;
+    pointer-events: none;
 }
 
+/* --------------------------------------------
+   HEADER — OMEGA CONSISTENT MEDIUM LOGO (L2)
+--------------------------------------------- */
+.ccg-header {
+    width: 100%;
+    position: relative;
+    z-index: 50;
+}
+
+.ccg-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 30px;
+    gap: 20px;
+}
+
+/* LOGO — MEDIUM SIZE OPTION (L2) */
+.ccg-brand__logo,
+.ccg-logo {
+    height: 68px;   /* Final chosen size */
+    width: auto;
+}
+
+/* NAV LINKS */
+.ccg-nav__list,
+.ccg-nav a,
+.ccg-nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.ccg-nav__link,
+.nav-item {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--ccg-text);
+}
+
+.ccg-nav__link--active,
+.nav-item--active {
+    color: var(--ccg-accent);
+}
+
+/* MODE TOGGLE */
+.ccg-mode-toggle {
+    cursor: pointer;
+}
+
+/* SOCIAL ICONS */
+.ccg-header-socials {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* --------------------------------------------
+   GENRE HERO
+--------------------------------------------- */
 .ccg-genre-hero__img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
     display: block;
 }
 
-/* Overlay */
 .ccg-genre-hero__overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0,0,0,0.45);
-    z-index: 2;
+    background: rgba(0,0,0,0.4);
 }
 
-/* Main content sits above */
 .ccg-genre-hero__inner {
     position: relative;
-    z-index: 3;
-    text-align: center;
-    padding: 3rem 1rem;
+    z-index: 5;
 }
 
-/* Grid alignment fix */
+/* --------------------------------------------
+   GRID
+--------------------------------------------- */
 .ccg-genre-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 1.75rem;
-    padding: 2rem 1rem;
+    grid-template-columns: repeat(auto-fill,minmax(260px,1fr));
+    gap: 24px;
+    padding: 40px;
 }
+
+.ccg-genre-grid img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+/* --------------------------------------------
+   FOOTER
+--------------------------------------------- */
+.ccg-footer {
+    text-align: center;
+    padding: 40px 20px;
+    position: relative;
+    z-index: 5;
+}
+
