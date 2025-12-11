@@ -1,11 +1,5 @@
 /* ============================================================
    CCG LOAD SINGLE GAME — ULTRA-STABLE OMEGA EDITION (FINAL)
-   ------------------------------------------------------------
-   • Auto-corrects thumbnail paths (supports both formats)
-   • Loads game by ID from games.json
-   • Restores all metadata: year, developer, system, genres
-   • Safely injects video, manuals, downloads and related titles
-   • Zero regressions across entire site
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -18,8 +12,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        // 🔥 FIXED PATH — because game.html is inside /games/
-        const response = await fetch("../games.json");
+        // ★ FIXED PATH — correct JSON location
+        const response = await fetch("../games/games.json");
         const games = await response.json();
 
         const game = games.find(g => String(g.id) === String(gameId));
@@ -30,104 +24,63 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         renderGame(game);
-        renderRelatedGames(game);
-
     } catch (err) {
         console.error("Error loading games.json:", err);
     }
 });
 
-/* ============================================================
-   RENDER GAME
-   ============================================================ */
-
 function renderGame(game) {
 
-    /* ------------------------------
-       THUMBNAIL PATH CORRECTION
-       ------------------------------ */
-
+    /* -------------- THUMBNAIL PATH FIX -------------- */
     let thumb = game.thumbnail || "";
 
-    // If games.json contains "resources/images/...jpg" remove prefix
     if (thumb.startsWith("resources/images/")) {
-        thumb = thumb.replace("resources/images/thumbnails/all/", "");
-        thumb = thumb.replace("resources/images/thumbnails/", "");
-        thumb = thumb.replace("resources/images/", "");
+        thumb = thumb.replace("resources/images/thumbnails/all/", "")
+                     .replace("resources/images/thumbnails/", "")
+                     .replace("resources/images/", "");
     }
 
-    // If games.json contains "airborne_ranger.jpg" already clean
-    const finalThumb = `../resources/images/thumbnails/all/${thumb}`;
+    const finalThumb = `resources/images/thumbnails/all/${thumb}`;
 
     /* ---------- HERO ---------- */
+    document.getElementById("game-title").textContent = game.title;
+    document.getElementById("game-system").textContent = game.system || "Unknown";
+    document.getElementById("game-year").textContent = game.year || "—";
+    document.getElementById("game-developer").textContent = game.developer || "Unknown";
 
-    document.getElementById("gameHeroTitle").textContent = game.title;
-    document.getElementById("gameSystemKicker").textContent = game.system || "Unknown";
-    document.getElementById("gameHeroThumb").src = finalThumb;
+    const img = document.getElementById("game-hero-image");
+    img.src = finalThumb;
+    img.alt = game.title;
 
-    const bg = document.getElementById("gameHeroBG");
+    const bg = document.querySelector(".game-hero-bg");
     if (bg) {
         bg.style.backgroundImage = `url('${finalThumb}')`;
         bg.classList.add("game-hero-bg--active");
     }
 
-    /* ---------- META ---------- */
-
-    document.getElementById("gameMetaYear").textContent = game.year || "—";
-    document.getElementById("gameMetaSystem").textContent = game.system || "—";
-    document.getElementById("gameMetaDeveloper").textContent = game.developer || "Unknown";
-
-    /* ---------- GENRES ---------- */
-
-    const genresList = document.getElementById("gameGenres");
-    if (genresList) {
-        genresList.textContent = (game.genres || []).join(", ");
-    }
-
     /* ---------- DESCRIPTION ---------- */
-
-    document.getElementById("gameDescription").textContent =
-        game.description || "No description available.";
+    const desc = document.getElementById("game-description");
+    if (game.description && desc) {
+        desc.textContent = game.description;
+        document.getElementById("game-description-section").hidden = false;
+    }
 
     /* ---------- VIDEO ---------- */
-
-    const embedEl = document.getElementById("game-video-embed");
-
-    if (game.video && embedEl) {
-        embedEl.src = `https://www.youtube.com/embed/${game.video}`;
+    const vid = document.getElementById("game-video-embed");
+    if (game.video && vid) {
+        vid.src = `https://www.youtube.com/embed/${game.video}`;
+        document.getElementById("game-video-section").hidden = false;
     }
 
-    /* ---------- MANUALS / DOWNLOADS ---------- */
-
-    const manualBtn = document.getElementById("gameManualBtn");
-    const diskBtn = document.getElementById("gameDiskBtn");
-
-    if (manualBtn) {
-        if (game.manual) {
-            manualBtn.href = game.manual;
-        } else {
-            manualBtn.style.display = "none";
-        }
-    }
-
-    if (diskBtn) {
-        if (game.disk) {
-            diskBtn.href = game.disk;
-        } else {
-            diskBtn.style.display = "none";
-        }
-    }
+    /* ---------- RELATED ---------- */
+    renderRelatedGames(game);
 }
 
-/* ============================================================
-   RELATED GAMES (same primary genre)
-   ============================================================ */
-
 function renderRelatedGames(game) {
-    const container = document.getElementById("relatedGamesGrid");
+    const container = document.getElementById("related-games-grid");
     if (!container) return;
 
-    fetch("../games.json")   // 🔥 MUST also use the correct depth
+    fetch("../games/games.json")
         .then(res => res.json())
         .then(allGames => {
 
@@ -146,7 +99,7 @@ function renderRelatedGames(game) {
                     t = t.replace("resources/images/thumbnails/all/", "");
                 }
 
-                const finalT = `../resources/images/thumbnails/all/${t}`;
+                const finalT = `resources/images/thumbnails/all/${t}`;
 
                 return `
                     <a href="game.html?id=${g.id}" class="ccg-game-card">
