@@ -1,27 +1,28 @@
 <!DOCTYPE html>
 <html lang="en" data-ccg-page="single-game">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title id="game-meta-title">Game | Cheeky Commodore Gamer</title>
     <meta name="description"
           id="game-meta-description"
           content="Full details for this Commodore 64 or Amiga game — including video, manual, screenshots and metadata.">
 
-    <link rel="icon" href="../favicon.ico" />
+    <link rel="icon" href="../favicon.ico">
 
     <!-- GLOBAL CSS -->
-    <link rel="stylesheet" href="../resources/css/ccg-master.css" />
-    <link rel="stylesheet" href="../resources/css/ccg-mode.css" />
-    <link rel="stylesheet" href="../resources/css/ccg-effects.css" />
-    <link rel="stylesheet" href="../resources/css/ccg-anim.css" />
-    <link rel="stylesheet" href="../resources/css/ccg-overlays.css" />
-    <link rel="stylesheet" href="../resources/css/ccg-socials.css" />
-    <link rel="stylesheet" href="../resources/css/ccg-cards.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-master.css">
+    <link rel="stylesheet" href="../resources/css/ccg-mode.css">
+    <link rel="stylesheet" href="../resources/css/ccg-effects.css">
+    <link rel="stylesheet" href="../resources/css/ccg-anim.css">
+    <link rel="stylesheet" href="../resources/css/ccg-overlays.css">
+    <link rel="stylesheet" href="../resources/css/ccg-modal.css">
+    <link rel="stylesheet" href="../resources/css/ccg-socials.css">
+    <link rel="stylesheet" href="../resources/css/ccg-cards.css">
 
     <!-- PAGE CSS -->
-    <link rel="stylesheet" href="../resources/css/games.css" />
+    <link rel="stylesheet" href="../resources/css/games.css">
 </head>
 
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
@@ -36,7 +37,7 @@
     <div class="ccg-page ccg-page--single-game">
 
         <!-- ============================================================
-             HEADER (GAMES DEPTH)
+             HEADER
         ============================================================ -->
         <header class="ccg-header">
             <div class="ccg-header-inner">
@@ -61,7 +62,7 @@
                 <nav class="ccg-nav" aria-label="Primary navigation">
                     <ul class="ccg-nav__list">
                         <li><a href="../home.html" class="ccg-nav__link">Home</a></li>
-                        <li><a href="index.html" class="ccg-nav__link">Browse Games</a></li>
+                        <li><a href="index.html" class="ccg-nav__link ccg-nav__link--active">Browse Games</a></li>
                         <li><a href="genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
                         <li><a href="collections/index.html" class="ccg-nav__link">Collections</a></li>
                         <li><a href="../quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
@@ -71,12 +72,10 @@
                     </ul>
                 </nav>
 
-                <!-- HEADER ACTIONS -->
+                <!-- MODE TOGGLE + SOCIALS -->
                 <div class="ccg-header-actions">
 
-                    <!-- MODE TOGGLE -->
-                    <button class="ccg-mode-toggle"
-                            type="button"
+                    <button class="ccg-mode-toggle" type="button"
                             aria-label="Toggle between C64 and Amiga modes"
                             data-ccg-mode-toggle>
                         <span class="ccg-mode-toggle__pill">
@@ -86,7 +85,6 @@
                         </span>
                     </button>
 
-                    <!-- SOCIAL ICONS -->
                     <div class="ccg-header-socials">
                         <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube">
                             <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
@@ -115,58 +113,56 @@
         </header>
 
         <!-- ============================================================
-             MAIN
+             MAIN CONTENT
         ============================================================ -->
         <main class="ccg-main ccg-main--single-game">
 
-            <!-- ========================================================
-                 POSTER HERO (CHOICE 1A)
-                 - Background blur from thumbnail
-                 - Foreground 16:9 thumbnail
-                 - System kicker, title, meta, genres, buttons
-            ========================================================= -->
-            <section class="game-hero" id="gameHeroBG" aria-labelledby="gameHeroTitle">
+            <!-- HERO: POSTER STYLE -->
+            <section class="game-hero" id="gameHeroBG">
                 <div class="game-hero__backdrop"></div>
 
                 <div class="game-hero__inner">
 
-                    <!-- LEFT: TEXT -->
+                    <!-- LEFT: TEXT + META + BUTTONS -->
                     <div class="game-hero__left">
-                        <div class="game-hero__system" id="gameSystemKicker">
-                            Commodore 64
-                        </div>
+                        <div class="game-hero__system" id="gameSystemKicker">C64 / Amiga</div>
 
                         <h1 class="game-hero__title" id="gameHeroTitle">
-                            Game Title
+                            Loading game…
                         </h1>
 
+                        <!-- Single-line meta -->
                         <div class="game-hero__meta">
                             <span id="gameMetaYear">—</span>
                             <span class="game-hero__dot">·</span>
                             <span id="gameMetaSystem">—</span>
                             <span class="game-hero__dot">·</span>
-                            <span id="gameMetaDeveloper">Unknown</span>
+                            <span id="gameMetaDeveloper">—</span>
                         </div>
 
+                        <!-- Genres list (shown via JS when available) -->
                         <div class="game-hero__genres" id="gameGenres" hidden>
-                            <!-- Filled by JS: "Action, Adventure" -->
+                            <!-- Populated by JS -->
                         </div>
 
+                        <!-- Hero buttons (inline) -->
                         <div class="game-hero__buttons">
-                            <a id="gameVideoBtn"
-                               href="#"
+                            <a href="#game-video-section"
+                               id="gameVideoBtn"
                                class="ccg-btn ccg-btn--primary"
                                hidden>
                                 Watch Gameplay
                             </a>
-                            <a id="gameManualBtn"
-                               href="#"
+
+                            <a href="#"
+                               id="gameManualBtn"
                                class="ccg-btn ccg-btn--secondary"
                                hidden>
                                 View Manual (PDF)
                             </a>
-                            <a id="gameDiskBtn"
-                               href="#"
+
+                            <a href="#"
+                               id="gameDiskBtn"
                                class="ccg-btn ccg-btn--secondary"
                                hidden>
                                 Download Game
@@ -174,13 +170,13 @@
                         </div>
                     </div>
 
-                    <!-- RIGHT: 16:9 THUMBNAIL -->
+                    <!-- RIGHT: 16:9 THUMB -->
                     <div class="game-hero__right">
                         <div class="game-hero__thumb-outer">
                             <div class="game-hero__thumb-inner">
                                 <img id="gameHeroThumb"
                                      src="../resources/images/thumbnails/all/1942.jpg"
-                                     alt="Game artwork" />
+                                     alt="Game artwork">
                             </div>
                         </div>
                     </div>
@@ -188,30 +184,22 @@
                 </div>
             </section>
 
-            <!-- ========================================================
-                 DESCRIPTION (CHOICE 4A — FULL WIDTH, NEON DIVIDER)
-            ========================================================= -->
-            <section class="game-section game-section--description"
-                     id="game-description-section"
-                     hidden>
+            <!-- DESCRIPTION -->
+            <section class="game-section" id="game-description-section" hidden>
                 <header class="game-section__header">
-                    <h2 class="game-section__title">Overview</h2>
+                    <h2 class="game-section__title">Game Overview</h2>
                     <div class="game-section__divider"></div>
                 </header>
 
                 <div class="game-section__body">
                     <div id="gameDescription" class="game-description-body">
-                        <!-- Injected from JSON (HTML allowed) -->
+                        <!-- Injected description from JSON -->
                     </div>
                 </div>
             </section>
 
-            <!-- ========================================================
-                 VIDEO (CHOICE 3A — INLINE BUTTON ABOVE, 16:9 FRAME)
-            ========================================================= -->
-            <section class="game-section game-section--video"
-                     id="game-video-section"
-                     hidden>
+            <!-- VIDEO -->
+            <section class="game-section game-section--video" id="game-video-section" hidden>
                 <header class="game-section__header">
                     <h2 class="game-section__title">Gameplay Video</h2>
                     <div class="game-section__divider"></div>
@@ -223,21 +211,16 @@
                             <iframe id="game-video-embed"
                                     src=""
                                     title="Gameplay video"
-                                    frameborder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                     allowfullscreen
-                                    loading="lazy"></iframe>
+                                    loading="lazy">
+                            </iframe>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- ========================================================
-                 EXTERNAL LINKS (LEMON, ETC.)
-            ========================================================= -->
-            <section class="game-section game-section--links"
-                     id="lemon-links-block"
-                     hidden>
+            <!-- EXTERNAL LINKS (LEMON ETC.) -->
+            <section class="game-section" id="lemon-links-block" hidden>
                 <header class="game-section__header">
                     <h2 class="game-section__title">External Links</h2>
                     <div class="game-section__divider"></div>
@@ -245,24 +228,22 @@
 
                 <div class="game-section__body">
                     <ul id="lemon-links-list" class="game-links-list">
-                        <!-- <li><a href="..." target="_blank" rel="noopener">...</a></li> -->
+                        <!-- Populated by JS as neat buttons -->
                     </ul>
                 </div>
             </section>
 
-            <!-- ========================================================
-                 RELATED GAMES (CHOICE 5C — HORIZONTAL SCROLLER)
-            ========================================================= -->
+            <!-- RELATED / SIMILAR GAMES -->
             <section class="game-section game-section--related">
                 <header class="game-section__header">
-                    <h2 class="game-section__title">Related Games</h2>
+                    <h2 class="game-section__title">Similar(ish) titles…</h2>
                     <div class="game-section__divider"></div>
                 </header>
 
                 <div class="game-section__body">
                     <div class="related-scroll-wrapper">
                         <div class="related-scroll" id="relatedGamesGrid">
-                            <!-- Filled by load-single-game.js with .ccg-game-card tiles -->
+                            <!-- Related cards injected by JS -->
                         </div>
                     </div>
                 </div>
@@ -284,5 +265,6 @@
     <script src="../js/ccg-global.js" defer></script>
     <script src="../js/ccg-mode-engine.js" defer></script>
     <script src="../js/load-single-game.js" defer></script>
+
 </body>
 </html>
