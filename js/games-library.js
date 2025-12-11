@@ -1,162 +1,324 @@
 /* ============================================================
-   CCG GAMES LIBRARY — OMEGA A–Z NEON EDITION (FINAL)
-   - Fetches /games/games.json (unchanged path)
-   - Groups games by first letter of title
-   - Renders A–Z sections with neon letter bars
-   - Uses shared 16:9 Omega cards (ccg-game-card classes)
+   CCG GAMES LIBRARY — OMEGA ACCORDION EDITION
+   - Fetches /games/games.json from /games/index.html
+   - 16:9 card thumbnails (handled by ccg-cards.css)
+   - Search by title / system / developer
+   - Alphabet jump (A–Z + #) with accordion sections
    ============================================================ */
 
-document.addEventListener("DOMContentLoaded", async () => {
+let CCG_ALL_GAMES = [];
+let CCG_FILTERED_GAMES = [];
 
+/* ============================================================
+   INIT
+   ============================================================ */
+
+document.addEventListener("DOMContentLoaded", () => {
+    initGamesLibrary();
+});
+
+async function initGamesLibrary() {
     try {
-        // CORRECT PATH — index.html lives inside /games/
-        const response = await fetch("games.json");
+        const response = await fetch("games.json"); // /games/index.html → /games/games.json
         const games = await response.json();
 
-        // Total count (for hero)
-        const countEl = document.getElementById("gamesCount");
-        if (countEl) {
-            countEl.textContent = games.length;
-        }
+        CCG_ALL_GAMES = Array.isArray(games) ? games.slice() : [];
+        CCG_FILTERED_GAMES = CCG_ALL_GAMES.slice();
 
-        const azContainer = document.getElementById("gamesAtoZContainer");
-        const legacyGrid = document.getElementById("gamesGrid"); // safety fallback
+        // Sort master list by title for consistent grouping
+        CCG_ALL_GAMES.sort((a, b) => {
+            const ta = (a.title || "").toLowerCase();
+            const tb = (b.title || "").toLowerCase();
+            return ta.localeCompare(tb);
+        });
 
-        // If we have the new A–Z container, use upgraded layout
-        if (azContainer) {
-            renderAtoZLibrary(games, azContainer);
-        }
-        // Otherwise, fall back gracefully to the older single grid behaviour
-        else if (legacyGrid) {
-            legacyGrid.innerHTML = games.map(g => renderGameCard(g)).join("");
-        }
+        CCG_FILTERED_GAMES = CCG_ALL_GAMES.slice();
+
+        bindGamesUI();
+        renderAlphabetStrip();
+        renderGamesAccordion();
+
+        updateStats();
 
     } catch (err) {
         console.error("Error loading games.json:", err);
     }
-});
+}
 
 /* ============================================================
-   A–Z GROUPING & RENDERING
+   UI BINDINGS
    ============================================================ */
 
-function getTitleFirstLetter(game) {
+function bindGamesUI() {
+    const searchInput = document.getElementById("gamesSearchInput");
+    const clearBtn = document.getElementById("gamesSearchClear");
+    const accordion = document.getElementById("gamesAccordion");
+
+    if (searchInput) {
+        searchInput.addEventListener("input", () => {
+            applySearchFilter(searchInput.value || "");
+        });
+    }
+
+    if (clearBtn && searchInput) {
+        clearBtn.addEventListener("click", () => {
+            searchInput.value = "";
+            applySearchFilter("");
+            searchInput.focus();
+        });
+    }
+
+    // Accordion toggle via event delegation
+    if (accordion) {
+        accordion.addEventListener("click", (e) => {
+            const header = e.target.closest(".games-accordion__header");
+            if (!header) return;
+
+            const section = header.closest(".games-accordion__section");
+            if (!section) return;
+
+            section.classList.toggle("games-accordion__section--open");
+        });
+    }
+}
+
+/* ============================================================
+   SEARCH FILTER
+   ============================================================ */
+
+function applySearchFilter(rawTerm) {
+    const term = String(rawTerm || "").toLowerCase().trim();
+
+    if (!term) {
+        CCG_FILTERED_GAMES = CCG_ALL_GAMES.slice();
+        renderGamesAccordion({ expandAll: false });
+        updateStats();
+        return;
+    }
+
+    CCG_FILTERED_GAMES = CCG_ALL_GAMES.filter(g => {
+        const title = (g.title || "").toLowerCase();
+        const system = (g.system || "").toLowerCase();
+        const dev = (g.developer || "").toLowerCase();
+
+        return (
+            title.includes(term) ||
+            system.includes(term) ||
+            dev.includes(term)
+        );
+    });
+
+    renderGamesAccordion({ expandAll: true });
+    updateStats();
+}
+
+/* ============================================================
+   STATS
+   ============================================================ */
+
+function updateStats() {
+    const totalEl = document.getElementById("gamesTotalCount");
+    const resultsEl = document.getElementById("gamesResultsCount");
+    const emptyState = document.getElementById("gamesEmptyState");
+
+    if (totalEl) {
+        totalEl.textContent = CCG_ALL_GAMES.length.toString();
+    }
+
+    if (resultsEl) {
+        resultsEl.textContent = CCG_FILTERED_GAMES.length.toString();
+    }
+
+    if (emptyState) {
+        emptyState.hidden = CCG_FILTERED_GAMES.length > 0;
+    }
+}
+
+/* ============================================================
+   GROUPING HELPERS
+   ============================================================ */
+
+function getGameLetter(game) {
     const title = (game.title || "").trim();
     if (!title) return "#";
 
-    const letter = title.charAt(0).toUpperCase();
+    const first = title[0].toUpperCase();
+    if (first >= "A" && first <= "Z") return first;
 
-    // A–Z letters stay as-is; numbers / symbols → "#"
-    if (letter >= "A" && letter <= "Z") return letter;
     return "#";
 }
 
-function renderAtoZLibrary(games, container) {
-    // Sort by title first (stable for everything we do after)
-    const sorted = [...games].sort((a, b) => {
-        const ta = (a.title || "").toLowerCase();
-        const tb = (b.title || "").toLowerCase();
-        if (ta < tb) return -1;
-        if (ta > tb) return 1;
-        return 0;
+function buildGroupedGames() {
+    const groups = {};
+
+    CCG_FILTERED_GAMES.forEach(game => {
+        const letter = getGameLetter(game);
+        if (!groups[letter]) groups[letter] = [];
+        groups[letter].push(game);
     });
 
-    // Group by letter
-    const groups = new Map();
+    // Sort each group's games by title
+    Object.keys(groups).forEach(letter => {
+        groups[letter].sort((a, b) => {
+            const ta = (a.title || "").toLowerCase();
+            const tb = (b.title || "").toLowerCase();
+            return ta.localeCompare(tb);
+        });
+    });
 
-    for (const g of sorted) {
-        const letter = getTitleFirstLetter(g);
-        if (!groups.has(letter)) {
-            groups.set(letter, []);
-        }
-        groups.get(letter).push(g);
-    }
-
-    const letters = [];
-    for (let c = 65; c <= 90; c++) {
-        const l = String.fromCharCode(c);
-        if (groups.has(l)) letters.push(l);
-    }
-    // "#" group (0–9 / symbols) at the end if present
-    if (groups.has("#")) {
-        letters.push("#");
-    }
-
-    const html = letters.map(letter => {
-        const list = groups.get(letter) || [];
-        return renderLetterBlock(letter, list);
-    }).join("");
-
-    container.innerHTML = html;
-}
-
-/* ------------------------------------------------------------
-   Render a single letter block
------------------------------------------------------------- */
-
-function renderLetterBlock(letter, games) {
-    const heading = (letter === "#") ? "0–9 & Symbols" : letter;
-
-    return `
-        <section class="games-letter-block">
-            <header class="games-letter-header">
-                <div class="games-letter-bar">
-                    <span class="games-letter-label">${heading}</span>
-                </div>
-            </header>
-
-            <div class="games-letter-grid">
-                ${games.map(g => renderGameCard(g)).join("")}
-            </div>
-        </section>
-    `;
+    return groups;
 }
 
 /* ============================================================
-   RENDERER — CARD (16:9 via ccg-cards.css)
-   - JSON thumbnail paths stay as-is (source of truth)
-   - We simply add "../" for correct depth from /games/
-   - Meta line: Year · System · Developer
+   ALPHABET STRIP
    ============================================================ */
 
-function renderGameCard(game) {
+function renderAlphabetStrip() {
+    const strip = document.getElementById("gamesAlphaStrip");
+    if (!strip) return;
 
-    let thumb = game.thumbnail || "";
+    const letters = [
+        "#",
+        "A","B","C","D","E","F","G","H","I","J","K","L","M",
+        "N","O","P","Q","R","S","T","U","V","W","X","Y","Z"
+    ];
 
-    // JSON thumbnails are root-relative ("resources/images/thumbnails/all/*.jpg")
-    // Convert to correct depth for /games/
-    const finalThumb = thumb ? `../${thumb}` : "../resources/images/thumbnails/all/1942.jpg";
+    strip.innerHTML = letters.map(letter => `
+        <button type="button"
+                class="games-alpha__btn"
+                data-alpha-jump="${letter}">
+            ${letter}
+        </button>
+    `).join("");
 
-    const metaParts = [
+    strip.addEventListener("click", (e) => {
+        const btn = e.target.closest(".games-alpha__btn");
+        if (!btn) return;
+
+        const letter = btn.getAttribute("data-alpha-jump");
+        if (!letter) return;
+
+        const section = document.querySelector(
+            `.games-accordion__section[data-letter="${letter}"]`
+        );
+        if (!section) return;
+
+        // Open it if closed
+        section.classList.add("games-accordion__section--open");
+
+        const rect = section.getBoundingClientRect();
+        window.scrollTo({
+            top: window.scrollY + rect.top - 100,
+            behavior: "smooth"
+        });
+    });
+}
+
+/* ============================================================
+   RENDER — ACCORDION
+   ============================================================ */
+
+function renderGamesAccordion(options = {}) {
+    const { expandAll = false } = options;
+    const accordion = document.getElementById("gamesAccordion");
+    if (!accordion) return;
+
+    const groups = buildGroupedGames();
+
+    const lettersOrder = [
+        "#",
+        "A","B","C","D","E","F","G","H","I","J","K","L","M",
+        "N","O","P","Q","R","S","T","U","V","W","X","Y","Z"
+    ];
+
+    let html = "";
+
+    lettersOrder.forEach(letter => {
+        const games = groups[letter];
+        if (!games || games.length === 0) return;
+
+        const openClass = expandAll ? " games-accordion__section--open" : "";
+        const count = games.length;
+
+        const cardsHtml = games.map(g => renderGameCard(g)).join("");
+
+        html += `
+            <div class="games-accordion__section${openClass}" data-letter="${letter}">
+                <div class="games-accordion__header">
+                    <div class="games-accordion__left">
+                        <div class="games-accordion__letter">${letter}</div>
+                        <div class="games-accordion__count">
+                            <span>${count}</span> game${count !== 1 ? "s" : ""}
+                        </div>
+                    </div>
+                    <div class="games-accordion__chevron">▶</div>
+                </div>
+                <div class="games-accordion__body">
+                    <div class="games-grid">
+                        ${cardsHtml}
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    accordion.innerHTML = html;
+
+    // If nothing exists, clear (handled by empty state separately)
+    if (!html) {
+        accordion.innerHTML = "";
+    }
+}
+
+/* ============================================================
+   CARD RENDERER — Reuses Omega card system
+   ============================================================ */
+
+function resolveGameThumbForIndex(rawThumb) {
+    if (!rawThumb) {
+        // Safe fallback thumbnail (existing known-good path)
+        return "../resources/images/thumbnails/all/1942.jpg";
+    }
+
+    let t = String(rawThumb).trim();
+
+    // strip any leading slash
+    if (t.startsWith("/")) {
+        t = t.replace(/^\/+/, "");
+    }
+
+    // If JSON is already "resources/images/..." then prefix for /games/ depth
+    if (t.startsWith("resources/")) {
+        return `../${t}`;
+    }
+
+    // If it’s just a filename, target the main thumbnails folder
+    return `../resources/images/thumbnails/all/${t}`;
+}
+
+function buildGameMetaLine(game) {
+    const parts = [
         game.year || "",
         game.system || "",
         game.developer || ""
     ].filter(Boolean);
 
-    const metaText = metaParts.join(" · ");
+    return parts.join(" · ");
+}
+
+function renderGameCard(game) {
+    const thumb = resolveGameThumbForIndex(game.thumbnail || game.thumb || game.cover);
+    const meta = buildGameMetaLine(game);
 
     return `
         <a href="game.html?id=${game.id}" class="ccg-game-card">
             <div class="ccg-game-card__thumb">
-                <img src="${finalThumb}" alt="${escapeHtml(game.title || "Game artwork")}">
+                <img src="${thumb}" alt="${game.title || "Game artwork"}">
             </div>
             <div class="ccg-game-card__body">
-                <h3 class="ccg-game-card__title">${escapeHtml(game.title || "Unknown Game")}</h3>
-                <div class="ccg-game-card__meta">${metaText}</div>
+                <h3 class="ccg-game-card__title">${game.title || "Unknown Game"}</h3>
+                <div class="ccg-game-card__meta">${meta}</div>
             </div>
         </a>
     `;
-}
-
-/* ============================================================
-   SMALL HELPER — BASIC HTML ESCAPE
-   (Keeps titles/meta safe inside attributes / HTML)
-   ============================================================ */
-
-function escapeHtml(str) {
-    return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
 }
