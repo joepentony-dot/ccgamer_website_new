@@ -36,7 +36,6 @@
     --card-glow: rgba(var(--accent-rgb), 0.18);
 }
 
-
 /* ============================================================
    C64 MODE — Crisp cyan neon, classic cold CRT
 ============================================================ */
@@ -61,7 +60,6 @@ body[data-mode="c64"] {
 
     --card-glow: rgba(var(--accent-rgb), 0.22);
 }
-
 
 /* ============================================================
    AMIGA MODE — Magenta neon, warm bloom, pastel tinting
@@ -88,10 +86,8 @@ body[data-mode="amiga"] {
     --card-glow: rgba(var(--accent-rgb), 0.25);
 }
 
-
 /* ============================================================
-   HERO IMAGE MODE SWITCH
-   (This is used by hero containers via var(--hero-img))
+   HERO IMAGE MODE SWITCH (uses var(--hero-img))
 ============================================================ */
 
 .ccg-hero-image {
@@ -101,7 +97,6 @@ body[data-mode="amiga"] {
     opacity: 0.95;
     filter: drop-shadow(0 0 14px rgba(var(--accent-rgb), 0.35));
 }
-
 
 /* ============================================================
    GLOBAL MODE ADAPTIVE COLOURING
@@ -114,7 +109,6 @@ body[data-mode="amiga"] {
         0 0 14px rgba(var(--accent-rgb), 0.6),
         0 0 28px rgba(var(--accent-rgb), 0.4);
 }
-
 
 /* ------------------------------------------------------------
    Buttons
@@ -143,9 +137,8 @@ body[data-mode="amiga"] {
         0 0 44px rgba(var(--accent-rgb), 0.30);
 }
 
-
 /* ------------------------------------------------------------
-   Cards & panels
+   Cards & Panels
 ------------------------------------------------------------ */
 
 .ccg-card,
@@ -163,7 +156,6 @@ body[data-mode="amiga"] {
         0 0 18px rgba(var(--accent-rgb), 0.3);
 }
 
-
 /* ------------------------------------------------------------
    Mode Badge
 ------------------------------------------------------------ */
@@ -174,7 +166,6 @@ body[data-mode="amiga"] {
         0 0 10px rgba(var(--accent-rgb), 0.8),
         0 0 20px rgba(var(--accent-rgb), 0.45);
 }
-
 
 /* ------------------------------------------------------------
    Toggle Pill (C64 ↔ Amiga)
@@ -195,7 +186,6 @@ body[data-mode="amiga"] {
         0 0 26px rgba(var(--accent-rgb), 0.45);
 }
 
-
 /* ------------------------------------------------------------
    Social Icons Adaptation
 ------------------------------------------------------------ */
@@ -207,9 +197,8 @@ body[data-mode="amiga"] {
         drop-shadow(0 0 18px rgba(var(--accent-rgb), 0.25));
 }
 
-
 /* ------------------------------------------------------------
-   Inputs, tables, misc adaptive elements (future-proofing)
+   Inputs / Tables / Misc
 ------------------------------------------------------------ */
 
 input,
@@ -224,9 +213,8 @@ select:focus {
     box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.5);
 }
 
-
 /* ============================================================
-   MEDIA QUERY STABILITY (mode safe)
+   MEDIA QUERY STABILITY (SAFE)
 ============================================================ */
 
 @media (max-width: 800px) {
