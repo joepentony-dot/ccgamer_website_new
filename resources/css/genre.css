@@ -1,254 +1,100 @@
 /* ============================================================
-   GENRE.CSS — Omega Genre System (Final Polished Edition)
-   Handles:
-   - Genre hub grid (20 genres)
-   - Genre single pages (hero + cards)
-   - Banner system
-   - Neon text glow
-   - Spacing + responsive control
-============================================================ */
+   GENRE.CSS — Omega Genre Hub Upgrade
+   Now matches collection thumbnail sizing + glow
+   ============================================================ */
 
-/* ============================================================
-   1) GENRE HUB — GRID OF 20 GENRES
-============================================================ */
-
-.ccg-section {
-    width: 96%;
-    margin: 0 auto;
+.ccg-page--genres-index {
+    padding-bottom: 40px;
 }
 
-.genre-grid,
-.ccg-genre-grid,
-.ccg-section .genre-grid {
+/* ---------------------------------------------
+   HERO
+--------------------------------------------- */
+
+.ccg-genrehub-hero {
+    text-align: center;
+    margin: 20px 0 32px 0;
+}
+
+.ccg-genrehub-title {
+    font-size: 1.6rem;
+    margin-bottom: 6px;
+    color: var(--text-light);
+}
+
+.ccg-genrehub-subtitle {
+    font-size: 0.9rem;
+    opacity: 0.85;
+}
+
+/* ---------------------------------------------
+   GRID — match Collections layout
+--------------------------------------------- */
+
+.genre-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 24px;
-    padding: 20px 0 40px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 22px;
+    padding: 0 10px;
 }
 
-/* Genre Hub Cards ------------------------------------------ */
+/* CARD BASE STYLE (matching Collections) */
 
 .ccg-card {
-    text-align: center;
-    transition: 0.25s ease;
-    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    background: rgba(0,0,0,0.55);
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow:
+        0 0 14px rgba(0,0,0,0.85),
+        0 0 28px var(--card-glow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ccg-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 0 20px rgba(var(--accent-rgb), 0.8),
+        0 0 40px rgba(var(--accent-rgb), 0.5);
+}
+
+/* IMAGE — 16:9 centered & fully visible */
+
+.ccg-card__image {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 */
     overflow: hidden;
 }
 
 .ccg-card__image img {
+    position: absolute;
+    inset: 0;
     width: 100%;
-    aspect-ratio: 16 / 9;
+    height: 100%;
     object-fit: cover;
-    display: block;
 }
 
-.ccg-card:hover {
-    transform: translateY(-6px);
-    box-shadow:
-        0 0 20px var(--accent-strong),
-        0 0 40px var(--accent-soft);
-}
+/* TITLE */
 
 .ccg-card__title {
-    padding: 14px 6px;
-    font-family: var(--ccg-font-main);
+    text-align: center;
+    padding: 10px 6px 14px 6px;
     font-size: 0.9rem;
     color: var(--text-light);
-}
-
-/* ============================================================
-   2) GENRE SINGLE PAGE
-============================================================ */
-
-.ccg-page--genre-single {
-    width: 100%;
-}
-
-/* -------------------------
-   HERO SECTION
--------------------------- */
-
-.ccg-genre-hero {
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-    height: 28vh; /* YOUR CHOSEN HEIGHT */
-    min-height: 240px;
-    max-height: 420px;
-    margin-bottom: 30px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.ccg-genre-hero__bg {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-}
-
-.ccg-genre-hero__img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter:
-        brightness(0.75)
-        contrast(1.1)
-        saturate(1.1)
-        blur(0.5px);
-    transform: scale(1.05);
-}
-
-.ccg-genre-hero__overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        to bottom,
-        rgba(0,0,0,0.2),
-        rgba(0,0,0,0.55)
-    );
-}
-
-/* -------------------------
-   HERO — INNER CONTENT
--------------------------- */
-
-.ccg-genre-hero__inner {
-    position: relative;
-    z-index: 10;
-    width: 96%;
-    margin: 0 auto;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding-bottom: 20px;
-}
-
-.ccg-genre-hero__title {
-    font-family: var(--ccg-font-main);
-    font-size: 2.1rem;
-    margin: 0 0 6px;
-    color: var(--text-light);
     text-shadow:
-        0 0 14px rgba(var(--accent-rgb), 0.75),
-        0 0 34px rgba(var(--accent-rgb), 0.45);
+        0 0 8px rgba(var(--accent-rgb), 0.6),
+        0 0 14px rgba(var(--accent-rgb), 0.35);
 }
 
-.ccg-genre-hero__tagline {
-    font-size: 1rem;
-    opacity: 0.9;
-    max-width: 680px;
-    margin: 0;
-}
-
-/* -------------------------
-   META ROW
--------------------------- */
-
-.ccg-genre-meta {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
-    margin-top: 10px;
-    opacity: 0.85;
-}
-
-.ccg-genre-meta span {
-    color: var(--text-light);
-}
-
-/* ============================================================
-   3) GENRE GAME GRID (Cards inside each genre page)
-============================================================ */
-
-.ccg-genre-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 24px;
-    padding: 20px 0 60px;
-}
-
-/* Individual Game Cards */
-
-.genre-card {
-    display: flex;
-    flex-direction: column;
-    border-radius: 10px;
-    overflow: hidden;
-    background: var(--panel-bg);
-    border: 1px solid rgba(255,255,255,0.12);
-    transition: 0.25s ease;
-}
-
-.genre-card:hover {
-    transform: translateY(-6px);
-    box-shadow:
-        0 0 20px rgba(var(--accent-rgb), 0.7),
-        0 0 40px rgba(var(--accent-rgb), 0.4);
-}
-
-/* Thumbnail */
-
-.genre-card .ccg-game-card__thumb img {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    display: block;
-}
-
-/* Body */
-
-.ccg-game-card__body {
-    padding: 14px 16px 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.ccg-game-card__title {
-    font-size: 1rem;
-    line-height: 1.3;
-    font-family: var(--ccg-font-main);
-    color: var(--text-light);
-}
-
-.ccg-game-card__meta {
-    font-size: 0.75rem;
-    opacity: 0.85;
-}
-
-/* View Game Button */
-
-.ccg-btn--primary {
-    margin-top: 4px;
-    padding: 8px 12px;
-    text-align: center;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-family: var(--ccg-font-main);
-}
-
-/* ============================================================
+/* ---------------------------------------------
    RESPONSIVE
-============================================================ */
+--------------------------------------------- */
 
-@media (max-width: 900px) {
-    .ccg-genre-hero__title {
-        font-size: 1.6rem;
-    }
-    .ccg-genre-hero__tagline {
-        font-size: 0.9rem;
-    }
-}
-
-@media (max-width: 600px) {
-    .genre-grid,
-    .ccg-genre-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    }
-
-    .ccg-genre-hero {
-        height: 24vh;
+@media (max-width: 520px) {
+    .genre-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     }
 }
