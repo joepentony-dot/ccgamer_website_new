@@ -1,5 +1,5 @@
 /* ============================================================
-   CCG GAMES LIBRARY — OMEGA ULTRA-STABLE EDITION
+   CCG GAMES LIBRARY — OMEGA ULTRA-STABLE EDITION (FIXED THUMBNAILS)
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -22,24 +22,42 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
+/* ============================================================
+   UNIVERSAL THUMBNAIL NORMALISER
+   Accepts ANY JSON format and outputs CLEAN filename.
+   FIXES:
+   - double paths
+   - missing directories
+   - legacy thumbnail issues
+   ============================================================ */
+function resolveThumbnail(thumb) {
+    if (!thumb) return "";
+
+    // Strip full prefix if JSON contains: resources/images/thumbnails/all/foo.jpg
+    return thumb.replace(/^resources\/images\/thumbnails\/all\//i, "");
+}
+
+/* ============================================================
+   RENDER GAME CARD
+   ============================================================ */
 function renderGameCard(game) {
 
-    let thumb = game.thumbnail || "";
+    const cleanThumb = resolveThumbnail(game.thumbnail || "");
 
-    if (thumb.startsWith("resources/images/")) {
-        thumb = thumb.replace("resources/images/thumbnails/all/", "");
-    }
-
-    const finalThumb = `../resources/images/thumbnails/all/${thumb}`;
+    // games/index.html → thumbnails live 1 level up in ../resources/
+    const finalThumb = `../resources/images/thumbnails/all/${cleanThumb}`;
 
     return `
         <a href="game.html?id=${game.id}" class="ccg-game-card">
             <div class="ccg-game-card__thumb">
-                <img src="${finalThumb}" alt="${game.title}">
+                <img src="${finalThumb}" alt="${game.title}" loading="lazy">
             </div>
+
             <div class="ccg-game-card__body">
                 <h3 class="ccg-game-card__title">${game.title}</h3>
-                <div class="ccg-game-card__meta">${game.year || ""} · ${game.system || ""}</div>
+                <div class="ccg-game-card__meta">
+                    ${game.year || ""} · ${game.system || ""}
+                </div>
             </div>
         </a>
     `;
