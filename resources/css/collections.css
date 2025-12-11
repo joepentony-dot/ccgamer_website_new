@@ -36,6 +36,11 @@
         0 0 32px rgba(var(--accent-rgb), 0.32);
 }
 
+/* 🔥 Hero background visibility for Collections */
+.ccg-hero--collections .ccg-hero-image {
+    opacity: 0.85;
+}
+
 .ccg-hero-inner--collections {
     position: relative;
     z-index: 1;
