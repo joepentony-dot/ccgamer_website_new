@@ -24,8 +24,12 @@
     <!-- HERO SYSTEM (for .ccg-hero, .ccg-hero-inner, etc.) -->
     <link rel="stylesheet" href="../../resources/css/ccg-hero.css" />
 
+    <!-- GLOBAL CARD SYSTEM (Omega cards) -->
+    <link rel="stylesheet" href="../../resources/css/ccg-cards.css" />
+
     <!-- PAGE CSS -->
     <link rel="stylesheet" href="../../resources/css/genre.css" />
+    <link rel="stylesheet" href="../../resources/css/collections.css" />
 </head>
 
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
@@ -113,17 +117,26 @@
         </header>
 
         <!-- ============================================================
-             HERO (COLLECTION HERO)
+             MAIN
         ============================================================ -->
-        <main class="ccg-main">
-            <section class="ccg-collections-hero">
-                <div class="ccg-hero">
+        <main class="ccg-main ccg-main--collections">
+
+            <!-- ========================================================
+                 HERO (COLLECTION HERO — MEDIUM OMEGA)
+            ========================================================= -->
+            <section class="ccg-collections-hero ccg-anim-in">
+                <div class="ccg-hero ccg-hero--collections">
                     <div class="ccg-hero-image"></div>
                     <div class="ccg-hero-scanlines"></div>
 
-                    <div class="ccg-hero-inner">
-                        <h1 class="ccg-hero-title">Curated Collections</h1>
-                        <p class="ccg-hero-tagline">
+                    <div class="ccg-hero-inner ccg-hero-inner--collections">
+                        <p class="ccg-hero-kicker ccg-hero-kicker--collections">
+                            Curated sets · C64 &amp; Amiga
+                        </p>
+                        <h1 class="ccg-hero-title ccg-hero-title--collections">
+                            Curated Collections
+                        </h1>
+                        <p class="ccg-hero-tagline ccg-hero-tagline--collections">
                             Hand-picked sets that highlight some of the finest, rarest and most interesting games
                             across Commodore 64 &amp; Amiga.
                         </p>
@@ -131,32 +144,74 @@
                 </div>
             </section>
 
-            <!-- ============================================================
-                 COLLECTIONS GRID
-            ============================================================ -->
-            <section class="ccg-section ccg-genre-category">
-                <h2 class="ccg-section-title">Choose a Collection</h2>
+            <!-- ========================================================
+                 COLLECTIONS GRID — OMEGA TILE CARDS
+            ========================================================= -->
+            <section class="ccg-section ccg-genre-category ccg-collections-section ccg-anim-in">
+                <h2 class="ccg-section-title ccg-collections-title">
+                    Choose a Collection
+                </h2>
 
-                <div class="ccg-genre-grid">
+                <div class="ccg-genre-grid ccg-collections-grid">
 
-                    <a href="../genres/cartridge-games.html" class="ccg-genre-tile">
-                        <img src="../../resources/images/collections/cartridge-collection.png" alt="Cartridge Classics">
-                        <span>Cartridge Classics</span>
+                    <!-- Cartridge Classics -->
+                    <a href="../genres/cartridge-games.html"
+                       class="ccg-card ccg-collection-card ccg-genre-tile">
+                        <div class="ccg-card__media ccg-card__media--16x9">
+                            <img src="../../resources/images/collections/cartridge-collection.png"
+                                 alt="Cartridge Classics collection artwork">
+                        </div>
+                        <div class="ccg-card__body">
+                            <h3 class="ccg-card__title">Cartridge Classics</h3>
+                            <p class="ccg-card__text">
+                                A celebration of cartridge-based releases and instant-load favourites.
+                            </p>
+                        </div>
                     </a>
 
-                    <a href="../genres/bpjs-indexed-games.html" class="ccg-genre-tile">
-                        <img src="../../resources/images/collections/bpjs-collection.png" alt="BPJS Indexed Games">
-                        <span>BPJS Indexed</span>
+                    <!-- BPJS Indexed -->
+                    <a href="../genres/bpjs-indexed-games.html"
+                       class="ccg-card ccg-collection-card ccg-genre-tile">
+                        <div class="ccg-card__media ccg-card__media--16x9">
+                            <img src="../../resources/images/collections/bpjs-collection.png"
+                                 alt="BPJS Indexed Games collection artwork">
+                        </div>
+                        <div class="ccg-card__body">
+                            <h3 class="ccg-card__title">BPJS Indexed</h3>
+                            <p class="ccg-card__text">
+                                Games from the BPJS list — preserved, catalogued and ready to explore.
+                            </p>
+                        </div>
                     </a>
 
-                    <a href="../genres/licensed-games.html" class="ccg-genre-tile">
-                        <img src="../../resources/images/collections/licensed-collection.png" alt="Licensed Games">
-                        <span>Licensed Games</span>
+                    <!-- Licensed Games -->
+                    <a href="../genres/licensed-games.html"
+                       class="ccg-card ccg-collection-card ccg-genre-tile">
+                        <div class="ccg-card__media ccg-card__media--16x9">
+                            <img src="../../resources/images/collections/licensed-collection.png"
+                                 alt="Licensed Games collection artwork">
+                        </div>
+                        <div class="ccg-card__body">
+                            <h3 class="ccg-card__title">Licensed Games</h3>
+                            <p class="ccg-card__text">
+                                Film, TV and comic tie-ins — the good, the bad and the gloriously retro.
+                            </p>
+                        </div>
                     </a>
 
-                    <a href="../genres/top-picks.html" class="ccg-genre-tile">
-                        <img src="../../resources/images/collections/top-picks-collection.png" alt="CCG Top Picks">
-                        <span>CCG Top Picks</span>
+                    <!-- CCG Top Picks -->
+                    <a href="../genres/top-picks.html"
+                       class="ccg-card ccg-collection-card ccg-genre-tile">
+                        <div class="ccg-card__media ccg-card__media--16x9">
+                            <img src="../../resources/images/collections/top-picks-collection.png"
+                                 alt="CCG Top Picks collection artwork">
+                        </div>
+                        <div class="ccg-card__body">
+                            <h3 class="ccg-card__title">CCG Top Picks</h3>
+                            <p class="ccg-card__text">
+                                Personal favourites and must-plays from the Cheeky Commodore Gamer vault.
+                            </p>
+                        </div>
                     </a>
 
                 </div>
