@@ -1,5 +1,5 @@
 /* ============================================================
-   CCG LOAD SINGLE GAME — ULTRA-STABLE OMEGA EDITION (FINAL)
+   CCG LOAD SINGLE GAME — ULTRA-STABLE OMEGA EDITION (FIXED)
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -12,8 +12,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        // ★ FIXED PATH — correct JSON location
-        const response = await fetch("../games/games.json");
+        // CORRECT PATH — game.html lives inside /games/
+        const response = await fetch("games.json");
         const games = await response.json();
 
         const game = games.find(g => String(g.id) === String(gameId));
@@ -29,28 +29,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
+/* ============================================================
+   RENDER GAME
+   ============================================================ */
+
 function renderGame(game) {
 
-    /* -------------- THUMBNAIL PATH FIX -------------- */
     let thumb = game.thumbnail || "";
 
     if (thumb.startsWith("resources/images/")) {
-        thumb = thumb.replace("resources/images/thumbnails/all/", "")
-                     .replace("resources/images/thumbnails/", "")
-                     .replace("resources/images/", "");
+        thumb = thumb.replace("resources/images/thumbnails/all/", "");
+        thumb = thumb.replace("resources/images/thumbnails/", "");
+        thumb = thumb.replace("resources/images/", "");
     }
 
     const finalThumb = `resources/images/thumbnails/all/${thumb}`;
 
-    /* ---------- HERO ---------- */
     document.getElementById("game-title").textContent = game.title;
-    document.getElementById("game-system").textContent = game.system || "Unknown";
-    document.getElementById("game-year").textContent = game.year || "—";
-    document.getElementById("game-developer").textContent = game.developer || "Unknown";
-
-    const img = document.getElementById("game-hero-image");
-    img.src = finalThumb;
-    img.alt = game.title;
+    document.getElementById("game-system-label").textContent = game.system || "Unknown";
+    document.getElementById("game-hero-image").src = finalThumb;
 
     const bg = document.querySelector(".game-hero-bg");
     if (bg) {
@@ -58,53 +55,80 @@ function renderGame(game) {
         bg.classList.add("game-hero-bg--active");
     }
 
-    /* ---------- DESCRIPTION ---------- */
-    const desc = document.getElementById("game-description");
-    if (game.description && desc) {
-        desc.textContent = game.description;
-        document.getElementById("game-description-section").hidden = false;
+    document.getElementById("game-year").textContent = game.year || "—";
+    document.getElementById("game-system").textContent = game.system || "—";
+    document.getElementById("game-developer").textContent = game.developer || "Unknown";
+
+    const genresEl = document.getElementById("game-genres");
+    if (genresEl && game.genres?.length) {
+        genresEl.textContent = game.genres.join(", ");
+        genresEl.hidden = false;
     }
 
-    /* ---------- VIDEO ---------- */
-    const vid = document.getElementById("game-video-embed");
-    if (game.video && vid) {
-        vid.src = `https://www.youtube.com/embed/${game.video}`;
-        document.getElementById("game-video-section").hidden = false;
+    document.getElementById("game-description").textContent =
+        game.description || "No description available.";
+
+    /* VIDEO */
+    const embedEl = document.getElementById("game-video-embed");
+    const videoSection = document.getElementById("game-video-section");
+
+    if (game.video && embedEl) {
+        embedEl.src = `https://www.youtube.com/embed/${game.video}`;
+        videoSection.hidden = false;
     }
 
-    /* ---------- RELATED ---------- */
+    /* MANUAL / DISK */
+    const pdfBtn = document.getElementById("pdf-button");
+    if (pdfBtn) {
+        if (game.manual) {
+            pdfBtn.href = game.manual;
+            pdfBtn.hidden = false;
+        }
+    }
+
+    const diskBtn = document.getElementById("disk-button");
+    if (diskBtn) {
+        if (game.disk) {
+            diskBtn.href = game.disk;
+            diskBtn.hidden = false;
+        }
+    }
+
+    /* RELATED GAMES */
     renderRelatedGames(game);
 }
+
+/* ============================================================
+   RELATED GAMES
+   ============================================================ */
 
 function renderRelatedGames(game) {
     const container = document.getElementById("related-games-grid");
     if (!container) return;
 
-    fetch("../games/games.json")
+    fetch("games.json")
         .then(res => res.json())
         .then(allGames => {
 
-            const mainGenre = (game.genres && game.genres[0]) || null;
+            const primary = game.genres?.[0] || null;
 
             const related = allGames.filter(g =>
                 g.id !== game.id &&
                 g.genres &&
-                g.genres.includes(mainGenre)
+                g.genres.includes(primary)
             ).slice(0, 6);
 
             container.innerHTML = related.map(g => {
                 let t = g.thumbnail || "";
-
                 if (t.startsWith("resources/images/")) {
                     t = t.replace("resources/images/thumbnails/all/", "");
                 }
-
-                const finalT = `resources/images/thumbnails/all/${t}`;
+                const final = `resources/images/thumbnails/all/${t}`;
 
                 return `
                     <a href="game.html?id=${g.id}" class="ccg-game-card">
                         <div class="ccg-game-card__thumb">
-                            <img src="${finalT}" alt="${g.title}">
+                            <img src="${final}" alt="${g.title}">
                         </div>
                         <div class="ccg-game-card__body">
                             <h3 class="ccg-game-card__title">${g.title}</h3>
