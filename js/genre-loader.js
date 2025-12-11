@@ -1,5 +1,9 @@
 /* ============================================================
-   OMEGA GENRE LOADER — FINAL STABLE EDITION (SANITISED)
+   OMEGA GENRE LOADER — ULTRA-STABLE VISUAL EDITION (FINAL)
+   - Supports Omega 16:9 card system
+   - Correct depth from /games/genres/
+   - Sanitises thumbnails consistently
+   - Meta line unified: Year · System · Developer
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -23,13 +27,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             g.genres.map(x => x.toLowerCase()).includes(genreName.toLowerCase())
         );
 
-        if (filtered.length === 0) {
-            console.warn(`GENRE LOADER — No games found for genre: ${genreName}`);
-        }
+        if (countEl) countEl.textContent = filtered.length;
 
         grid.innerHTML = filtered.map(game => generateGenreCard(game)).join("");
-
-        if (countEl) countEl.textContent = filtered.length;
 
     } catch (err) {
         console.error("GENRE LOADER ERROR:", err);
@@ -37,20 +37,34 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 /* ------------------------------------------------------------
-   Build game card — proper thumbnail sanitation + depth fix
+   Thumbnail sanitiser — returns VALID 16:9 thumbnail path
 ------------------------------------------------------------ */
-function generateGenreCard(game) {
+function resolveGenreThumb(raw) {
+    if (!raw) return "../../resources/images/thumbnails/all/1942.jpg";
 
-    let t = game.thumbnail || "";
+    let t = String(raw).trim();
 
-    // Remove any accidental prefixes
+    // Remove all possible incorrect prefix variants
     t = t.replace("resources/images/thumbnails/all/", "");
     t = t.replace("resources/images/thumbnails/", "");
     t = t.replace("resources/images/", "");
+    t = t.replace(/^\/+/, ""); // leading slashes
 
-    // Correct final path for /games/genres/ depth
-    const finalThumb = `../../resources/images/thumbnails/all/${t}`;
+    if (!t) t = "1942.jpg";
 
+    return `../../resources/images/thumbnails/all/${t}`;
+}
+
+/* ------------------------------------------------------------
+   Build game card (Omega 16:9 card system)
+------------------------------------------------------------ */
+function generateGenreCard(game) {
+
+    const finalThumb = resolveGenreThumb(
+        game.thumbnail || game.thumb || game.cover
+    );
+
+    // Unified meta line: Year · System · Developer
     const meta = [
         game.year || "",
         game.system || "",
@@ -62,10 +76,13 @@ function generateGenreCard(game) {
             <a href="../game.html?id=${game.id}" class="ccg-game-card__thumb">
                 <img src="${finalThumb}" alt="${game.title}">
             </a>
+
             <div class="ccg-game-card__body">
                 <h3 class="ccg-game-card__title">${game.title}</h3>
                 <div class="ccg-game-card__meta">${meta}</div>
-                <a href="../game.html?id=${game.id}" class="ccg-btn ccg-btn--primary">View Game</a>
+
+                <a href="../game.html?id=${game.id}"
+                   class="ccg-btn ccg-btn--primary">View Game</a>
             </div>
         </div>
     `;
