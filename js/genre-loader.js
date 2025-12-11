@@ -1,6 +1,5 @@
 /* ============================================================
-   OMEGA GENRE LOADER — ULTRA-STABLE FINAL EDITION
-   Thumbnail-safe, JSON-safe, GitHub-safe, Fasthosts-safe
+   OMEGA GENRE LOADER — SLUG-ID FINAL EDITION
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -21,7 +20,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             g.genres.map(x => x.toLowerCase()).includes(genreName.toLowerCase())
         );
 
-        grid.innerHTML = filtered.map(g => renderGenreCard(g)).join("");
+        grid.innerHTML = filtered.map(g => generateGenreCard(g)).join("");
 
         if (countEl) countEl.textContent = filtered.length;
 
@@ -30,45 +29,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-/* ============================================================
-   UNIVERSAL THUMBNAIL SANITISER
-   (Fixes ALL broken paths without touching games.json)
-   ============================================================ */
-function resolveThumbnail(path) {
-    if (!path) return "";
+function generateGenreCard(game) {
 
-    // Strip the long prefix if JSON has full paths:
-    // resources/images/thumbnails/all/foo.jpg
-    return path.replace(/^resources\/images\/thumbnails\/all\//i, "");
-}
+    let t = game.thumbnail || "";
 
-/* ============================================================
-   CARD RENDERER
-   Corrects thumbnail path for genre HTML pages:
-   /games/genres/*.html → thumbnails in ../../resources/
-   ============================================================ */
-function renderGenreCard(game) {
+    if (t.startsWith("resources/images/")) {
+        t = t.replace("resources/images/thumbnails/all/", "");
+    }
 
-    const clean = resolveThumbnail(game.thumbnail || "");
-
-    const finalThumb = `../../resources/images/thumbnails/all/${clean}`;
+    const finalThumb = `../../resources/images/thumbnails/all/${t}`;
 
     return `
         <div class="ccg-game-card genre-card">
-
             <a href="../game.html?id=${game.id}" class="ccg-game-card__thumb">
-                <img src="${finalThumb}" alt="${game.title}" loading="lazy">
+                <img src="${finalThumb}" alt="${game.title}">
             </a>
-
             <div class="ccg-game-card__body">
                 <h3 class="ccg-game-card__title">${game.title}</h3>
                 <div class="ccg-game-card__meta">${game.year || ""} · ${game.system || ""}</div>
-
-                <a href="../game.html?id=${game.id}" class="ccg-btn ccg-btn--primary">
-                    View Game
-                </a>
+                <a href="../game.html?id=${game.id}" class="ccg-btn ccg-btn--primary">View Game</a>
             </div>
-
         </div>
     `;
 }
