@@ -1,5 +1,5 @@
 /* ============================================================
-   CCG LOAD SINGLE GAME — OMEGA MATCHED EDITION (HTML-SAFE)
+   CCG LOAD SINGLE GAME — OMEGA ULTRA-STABLE EDITION (FINAL)
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -12,7 +12,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        const response = await fetch("../games/games.json");
+        // CORRECT PATH — game.html lives inside /games/
+        const response = await fetch("games.json");
         const games = await response.json();
 
         const game = games.find(g => String(g.id) === String(gameId));
@@ -34,23 +35,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 function renderGame(game) {
 
-    /* -------- THUMBNAIL FIX -------- */
-    let thumb = game.thumbnail || "";
+    /* -------- THUMBNAIL (DO NOT MODIFY JSON PATHS) -------- */
+    const finalThumb = `../${game.thumbnail}`;
 
-    if (thumb.startsWith("resources/images/")) {
-        thumb = thumb.replace("resources/images/thumbnails/all/", "");
-        thumb = thumb.replace("resources/images/thumbnails/", "");
-        thumb = thumb.replace("resources/images/", "");
-    }
-
-    const finalThumb = `../resources/images/thumbnails/all/${thumb}`;
-
-    /* -------- HERO SECTION -------- */
+    /* -------- HERO -------- */
 
     document.getElementById("gameSystemKicker").textContent = game.system || "Unknown";
-
     document.getElementById("gameHeroTitle").textContent = game.title;
-
     document.getElementById("gameHeroThumb").src = finalThumb;
 
     const bg = document.getElementById("gameHeroBG");
@@ -79,11 +70,11 @@ function renderGame(game) {
         document.getElementById("game-description-section").hidden = false;
     }
 
-    /* -------- VIDEO -------- */
+    /* -------- VIDEO (FIXED KEY) -------- */
 
-    if (game.video) {
+    if (game.videoid) {
         document.getElementById("game-video-embed").src =
-            `https://www.youtube.com/embed/${game.video}`;
+            `https://www.youtube.com/embed/${game.videoid}`;
 
         document.getElementById("game-video-section").hidden = false;
     }
@@ -117,7 +108,7 @@ function renderRelatedGames(game) {
     const container = document.getElementById("relatedGamesGrid");
     if (!container) return;
 
-    fetch("../games/games.json")
+    fetch("games.json")
         .then(res => res.json())
         .then(allGames => {
 
@@ -131,12 +122,7 @@ function renderRelatedGames(game) {
 
             container.innerHTML = related.map(g => {
 
-                let t = g.thumbnail || "";
-                if (t.startsWith("resources/images/")) {
-                    t = t.replace("resources/images/thumbnails/all/", "");
-                }
-
-                const final = `../resources/images/thumbnails/all/${t}`;
+                const final = `../${g.thumbnail}`;
 
                 return `
                     <a href="game.html?id=${g.id}" class="ccg-game-card">
