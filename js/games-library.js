@@ -1,12 +1,12 @@
 /* ============================================================
-   CCG GAMES LIBRARY — OMEGA ULTRA-STABLE EDITION
+   CCG GAMES LIBRARY — OMEGA ULTRA-STABLE EDITION (FIXED PATH)
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
-    try {
 
-        // ★ FIXED PATH — index.html → games/games.json
-        const response = await fetch("games/games.json");
+    try {
+        // CORRECT PATH — index.html lives inside /games/
+        const response = await fetch("games.json");
         const games = await response.json();
 
         const grid = document.getElementById("gamesGrid");
@@ -27,6 +27,7 @@ function renderGameCard(game) {
 
     let thumb = game.thumbnail || "";
 
+    // Strip any accidental prefixes
     if (thumb.startsWith("resources/images/")) {
         thumb = thumb.replace("resources/images/thumbnails/all/", "");
     }
