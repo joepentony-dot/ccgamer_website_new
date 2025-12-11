@@ -1,8 +1,8 @@
 /* ============================================================
-   GAMES.CSS — Omega Games Index (A–Z Neon Edition)
-   - A–Z letter sections with full-width neon bars
-   - Uses shared 16:9 cards from ccg-cards.css
-   - Standard Omega grid density (option 3A)
+   GAMES.CSS — Omega Games Index
+   - Cinematic hero
+   - Search + alphabet strip
+   - Accordion index with responsive grids
    ============================================================ */
 
 .ccg-page--games-index {
@@ -11,10 +11,10 @@
 
 /* MAIN WRAPPER ---------------------------------------------- */
 
-.ccg-main--games-index {
+.games-main {
     max-width: 1120px;
     margin: 0 auto;
-    padding-top: 18px;
+    padding-top: 16px;
     padding-bottom: 32px;
 }
 
@@ -22,268 +22,354 @@
    HERO
    ============================================================ */
 
-.games-index-hero {
-    margin-bottom: 24px;
+.games-hero {
+    margin-bottom: 18px;
 }
 
-.games-index-hero__inner {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    align-items: center;
-    justify-content: space-between;
+.games-hero__inner {
+    padding: 18px 18px 20px 18px;
+    border-radius: 18px;
+    background: linear-gradient(
+        135deg,
+        rgba(0, 0, 0, 0.92),
+        rgba(0, 10, 25, 0.96)
+    );
+    box-shadow:
+        0 0 20px rgba(0, 0, 0, 0.8),
+        0 0 30px rgba(var(--accent-rgb), 0.22);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.games-index-hero__left {
-    flex: 1 1 260px;
-}
-
-.games-index-title {
+.games-hero__title {
     margin: 0 0 6px 0;
     font-family: var(--ccg-font-main, 'Press Start 2P', monospace);
     font-size: 1.05rem;
     text-transform: uppercase;
     color: var(--text-light, #ffffff);
     text-shadow:
-        0 0 14px rgba(var(--accent-rgb), 0.8),
-        0 0 30px rgba(var(--accent-rgb), 0.45);
+        0 0 12px rgba(var(--accent-rgb), 0.8),
+        0 0 24px rgba(var(--accent-rgb), 0.5);
 }
 
-.games-index-subtitle {
-    margin: 0 0 8px 0;
+.games-hero__subtitle {
+    margin: 0;
     font-size: 0.85rem;
-    color: var(--text-dim, #c8d4e0);
-}
-
-.games-index-meta {
-    font-size: 0.82rem;
     color: var(--text-dim, #c8d4e0);
     opacity: 0.95;
 }
 
-.games-index-meta strong {
-    color: var(--accent, #00d6ff);
-}
-
-/* Small right-hand legend */
-
-.games-index-hero__right {
-    flex: 0 0 auto;
+.games-hero__stats {
+    margin-top: 10px;
     display: flex;
-    justify-content: flex-end;
-}
-
-.games-index-legend {
-    display: inline-flex;
-    align-items: center;
+    flex-wrap: wrap;
     gap: 8px;
-    padding: 6px 10px;
-    border-radius: 999px;
-    background: rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow:
-        0 0 16px rgba(0,0,0,0.85),
-        0 0 22px rgba(var(--accent-rgb), 0.36);
-    font-size: 0.75rem;
+    align-items: baseline;
+    font-size: 0.78rem;
     color: var(--text-dim, #c8d4e0);
 }
 
-.games-index-legend__dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 999px;
-    background: var(--accent, #00d6ff);
-    box-shadow:
-        0 0 12px rgba(var(--accent-rgb), 0.9),
-        0 0 24px rgba(var(--accent-rgb), 0.6);
+.games-hero__stats strong {
+    font-size: 0.86rem;
+    color: var(--accent);
 }
 
-/* ============================================================
-   A–Z SECTION STRUCTURE
-   ============================================================ */
-
-.games-index-section {
-    margin-top: 10px;
-}
-
-.games-atoz-container {
-    display: flex;
-    flex-direction: column;
-    gap: 26px;
-}
-
-/* Each letter block */
-.games-letter-block {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-/* ============================================================
-   NEON LETTER HEADER BAR
-   ============================================================ */
-
-.games-letter-header {
-    padding: 4px 0;
-}
-
-.games-letter-bar {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4px 10px;
-    margin: 0;
-}
-
-/* The glowing central pill */
-.games-letter-label {
-    position: relative;
-    z-index: 1;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 44px;
-    padding: 4px 12px 5px;
-    border-radius: 999px;
-    font-family: var(--ccg-font-main, 'Press Start 2P', monospace);
-    font-size: 0.7rem;
-    letter-spacing: 0.12em;
+.games-hero__stats-label {
+    margin-left: 3px;
     text-transform: uppercase;
-    color: var(--text-light, #ffffff);
-    background: radial-gradient(circle at 50% 50%,
-        rgba(var(--accent-rgb), 0.9),
-        rgba(var(--accent-rgb), 0.25)
-    );
-    box-shadow:
-        0 0 16px rgba(var(--accent-rgb), 0.85),
-        0 0 32px rgba(var(--accent-rgb), 0.55);
+    letter-spacing: 0.06em;
+    font-size: 0.7rem;
+    opacity: 0.9;
 }
 
-/* Neon line stretching full width behind the pill */
-.games-letter-bar::before,
-.games-letter-bar::after {
-    content: "";
-    position: absolute;
-    height: 2px;
-    border-radius: 999px;
-    background: linear-gradient(
-        90deg,
-        rgba(var(--accent-rgb), 0.0),
-        rgba(var(--accent-rgb), 0.85),
-        rgba(var(--accent-rgb), 0.0)
-    );
-    box-shadow:
-        0 0 18px rgba(var(--accent-rgb), 0.85),
-        0 0 32px rgba(var(--accent-rgb), 0.55);
-    pointer-events: none;
-}
-
-.games-letter-bar::before {
-    left: 4px;
-    right: 4px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-/* Subtle inner line (adds a bit of CRT feel) */
-.games-letter-bar::after {
-    left: 18px;
-    right: 18px;
-    top: 50%;
-    transform: translateY(-50%);
+.games-hero__stats-divider {
     opacity: 0.6;
 }
 
 /* ============================================================
-   GRID UNDER EACH LETTER
+   TOOLS — SEARCH + ALPHABET
    ============================================================ */
 
-.games-letter-grid {
+.games-tools {
+    margin-bottom: 16px;
+}
+
+.games-tools__inner {
     display: grid;
-    gap: 20px;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.1fr);
+    gap: 18px;
 }
 
-/* We reuse the shared 16:9 Omega card system from ccg-cards.css.
-   Here we only tweak small specifics for the games index if needed. */
-
-.games-letter-grid .ccg-game-card__title {
-    /* keep standard Omega style; slight size nudge for dense grids */
-    font-size: 0.8rem;
+.games-search__label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+    color: var(--text-dim, #c8d4e0);
 }
 
-.games-letter-grid .ccg-game-card__meta {
+.games-search__field {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.85);
+    box-shadow:
+        0 0 12px rgba(0, 0, 0, 0.8),
+        0 0 22px rgba(var(--accent-rgb), 0.28);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 0 10px 0 30px;
+}
+
+.games-search__icon {
+    position: absolute;
+    left: 10px;
+    font-size: 0.85rem;
+    opacity: 0.75;
+}
+
+.games-search__field input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: var(--text-light, #ffffff);
+    padding: 8px 8px 8px 0;
+    font-size: 0.85rem;
+    outline: none;
+}
+
+.games-search__field input::placeholder {
+    color: rgba(200, 212, 224, 0.6);
+}
+
+.games-search__clear {
+    border: none;
+    background: none;
+    color: rgba(220, 230, 240, 0.7);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 4px 4px 4px 8px;
+    opacity: 0.7;
+    transition: opacity 0.18s ease-out, transform 0.18s ease-out;
+}
+
+.games-search__clear:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.games-search__helper {
+    margin: 5px 2px 0 2px;
     font-size: 0.72rem;
+    color: rgba(200, 212, 224, 0.75);
+}
+
+.games-search__helper span {
+    color: var(--accent);
+}
+
+/* Alphabet jump strip --------------------------------------- */
+
+.games-alpha {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.games-alpha__label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim, #c8d4e0);
+    opacity: 0.9;
+}
+
+.games-alpha__strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 4px 0;
+}
+
+.games-alpha__btn {
+    min-width: 22px;
+    padding: 4px 6px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(0, 0, 0, 0.85);
+    font-size: 0.7rem;
+    text-align: center;
+    cursor: pointer;
+    color: rgba(230, 236, 244, 0.9);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    transition:
+        background 0.18s ease-out,
+        box-shadow 0.18s ease-out,
+        transform 0.16s ease-out,
+        color 0.18s ease-out;
+}
+
+.games-alpha__btn:hover {
+    background: rgba(var(--accent-rgb), 0.18);
+    color: #ffffff;
+    box-shadow:
+        0 0 14px rgba(var(--accent-rgb), 0.7),
+        0 0 24px rgba(var(--accent-rgb), 0.4);
+    transform: translateY(-1px);
 }
 
 /* ============================================================
-   RESPONSIVE TUNING
+   ACCORDION
+   ============================================================ */
+
+.games-library__inner {
+    border-radius: 18px;
+    background: rgba(0, 0, 0, 0.8);
+    box-shadow:
+        0 0 20px rgba(0, 0, 0, 0.85),
+        0 0 32px rgba(var(--accent-rgb), 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 12px 10px 14px 10px;
+}
+
+.games-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Section wrapper */
+.games-accordion__section {
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.74);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+        0 0 10px rgba(0, 0, 0, 0.75),
+        0 0 16px rgba(var(--accent-rgb), 0.16);
+}
+
+/* Header row that acts as the toggle */
+.games-accordion__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 10px 7px 12px;
+    cursor: pointer;
+    user-select: none;
+    background: radial-gradient(circle at top left,
+        rgba(var(--accent-rgb), 0.25),
+        rgba(0, 0, 0, 0.95)
+    );
+}
+
+.games-accordion__left {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.games-accordion__letter {
+    font-family: var(--ccg-font-main, 'Press Start 2P', monospace);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-shadow:
+        0 0 10px rgba(var(--accent-rgb), 0.8),
+        0 0 22px rgba(var(--accent-rgb), 0.5);
+}
+
+.games-accordion__count {
+    font-size: 0.75rem;
+    color: var(--text-dim, #c8d4e0);
+    opacity: 0.95;
+}
+
+.games-accordion__count span {
+    color: var(--accent);
+}
+
+.games-accordion__chevron {
+    font-size: 0.9rem;
+    transition: transform 0.2s ease-out;
+    opacity: 0.9;
+}
+
+/* Body with grid of cards */
+.games-accordion__body {
+    display: none;
+    padding: 10px 10px 10px 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Open state */
+.games-accordion__section--open .games-accordion__body {
+    display: block;
+}
+
+.games-accordion__section--open .games-accordion__chevron {
+    transform: rotate(90deg);
+}
+
+/* Grid inside accordion body */
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 18px;
+}
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
+
+.games-empty-state {
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px dashed rgba(255, 255, 255, 0.18);
+    font-size: 0.8rem;
+    text-align: center;
+    color: rgba(210, 222, 236, 0.9);
+}
+
+/* ============================================================
+   RESPONSIVE
    ============================================================ */
 
 @media (max-width: 900px) {
+    .games-tools__inner {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+    }
 
-    .ccg-main--games-index {
-        padding-top: 14px;
+    .games-main {
+        padding-top: 12px;
         padding-bottom: 26px;
     }
 
-    .games-index-hero__inner {
-        gap: 10px;
-    }
-
-    .games-index-title {
-        font-size: 0.98rem;
-    }
-
-    .games-letter-grid {
-        gap: 16px;
+    .games-hero__inner {
+        padding: 16px 14px 18px 14px;
     }
 }
 
-@media (max-width: 720px) {
-
-    .games-index-hero__inner {
-        flex-direction: column;
-        align-items: flex-start;
+@media (max-width: 640px) {
+    .games-library__inner {
+        padding: 10px 8px 12px 8px;
     }
 
-    .games-index-hero__right {
-        width: 100%;
-        justify-content: flex-start;
+    .games-accordion__header {
+        padding: 6px 8px 6px 10px;
     }
 
-    .games-atoz-container {
-        gap: 22px;
+    .games-accordion__body {
+        padding: 8px;
     }
 
-    .games-letter-bar::before {
-        left: 0;
-        right: 0;
-    }
-
-    .games-letter-bar::after {
-        left: 10px;
-        right: 10px;
-    }
-}
-
-@media (max-width: 480px) {
-
-    .games-index-title {
-        font-size: 0.9rem;
-    }
-
-    .games-index-subtitle {
-        font-size: 0.8rem;
-    }
-
-    .games-letter-label {
-        font-size: 0.65rem;
-        padding: 3px 10px 4px;
-    }
-
-    .games-letter-grid {
+    .games-grid {
         grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
     }
 }
