@@ -10,6 +10,9 @@
 
     <link rel="icon" href="../favicon.ico" />
 
+    <!-- REQUIRED FONT RESTORE (Orbitron + Roboto) -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
     <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="../resources/css/ccg-master.css" />
     <link rel="stylesheet" href="../resources/css/ccg-mode.css" />
@@ -73,7 +76,6 @@
                 <!-- MODE TOGGLE + SOCIALS -->
                 <div class="ccg-header-actions">
 
-                    <!-- Mode toggle -->
                     <button class="ccg-mode-toggle"
                             type="button"
                             aria-label="Toggle between C64 and Amiga modes"
@@ -133,6 +135,7 @@
                 <div class="ccg-hero-scanlines" aria-hidden="true"></div>
 
                 <div class="ccg-hero-inner quiz-hero-grid">
+
                     <!-- LEFT: copy + controls -->
                     <div class="ccg-hero-text quiz-hero-copy">
                         <p class="ccg-hero-kicker">CCG Trivia League</p>
@@ -152,20 +155,24 @@
                             </div>
 
                             <div class="quiz-hero-buttons">
-                                <button id="quiz-start-btn" class="btn btn-primary">
+
+                                <button id="quiz-start-btn"
+                                        class="ccg-btn ccg-btn--primary">
                                     Start Quiz
                                 </button>
 
                                 <button id="quiz-sfx-toggle"
-                                        class="btn btn-ghost"
+                                        class="ccg-btn ccg-btn--ghost"
                                         type="button"
                                         aria-pressed="true">
                                     SFX: On
                                 </button>
 
-                                <a href="quiz-leaderboard.html" class="btn btn-secondary">
+                                <a href="quiz-leaderboard.html"
+                                   class="ccg-btn ccg-btn--secondary">
                                     View Leaderboard
                                 </a>
+
                             </div>
                         </div>
                     </div>
@@ -240,15 +247,22 @@
                         </div>
 
                         <div class="quiz-score-actions">
-                            <button id="quiz-save-btn" class="btn btn-primary">
+
+                            <button id="quiz-save-btn"
+                                    class="ccg-btn ccg-btn--primary">
                                 Save to Leaderboard
                             </button>
-                            <button id="quiz-restart-btn" class="btn btn-secondary">
+
+                            <button id="quiz-restart-btn"
+                                    class="ccg-btn ccg-btn--secondary">
                                 Play Again
                             </button>
-                            <a href="quiz-leaderboard.html" class="btn btn-ghost">
+
+                            <a href="quiz-leaderboard.html"
+                               class="ccg-btn ccg-btn--ghost">
                                 View Leaderboard
                             </a>
+
                         </div>
                     </article>
 
