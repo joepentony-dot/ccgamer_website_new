@@ -1,5 +1,5 @@
 /* ============================================================
-   OMEGA GENRE LOADER — FINAL FIXED EDITION
+   OMEGA GENRE LOADER — FINAL STABLE EDITION
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!genreName || !grid) return;
 
     try {
-        // CORRECT PATH — genre pages are inside /games/genres/
+        // CORRECT PATH — genre pages exist in /games/genres/
         const response = await fetch("../games.json");
         const games = await response.json();
 
@@ -30,15 +30,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
+/* ------------------------------------------------------------
+   RENDER CARD — JSON paths remain authoritative.
+   Simply adjust depth for /games/genres/ pages.
+------------------------------------------------------------ */
 function generateGenreCard(game) {
 
-    let t = game.thumbnail || "";
+    let thumb = game.thumbnail || "";
 
-    if (t.startsWith("resources/images/")) {
-        t = t.replace("resources/images/thumbnails/all/", "");
-    }
-
-    const finalThumb = `../../resources/images/thumbnails/all/${t}`;
+    // JSON thumbnails are root-relative: "resources/images/thumbnails/all/*.jpg"
+    const finalThumb = `../../${thumb}`;
 
     return `
         <div class="ccg-game-card genre-card">
