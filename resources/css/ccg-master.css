@@ -1,11 +1,15 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & RESET
-   Omega Edition (Header Z-Index Safety Applied)
+   Omega Edition — FINAL VISUAL FOUNDATION
+   Fonts: Orbitron (headers), Roboto (body)
+   Spacing, Logo Rules, 16:9 Prep, Header Lock
    ============================================================ */
 
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Roboto:wght@400;700&display=swap');
+
 :root {
-    --ccg-font-main: 'Press Start 2P', sans-serif;
-    --ccg-font-alt: 'Roboto', sans-serif;
+    --ccg-font-header: 'Orbitron', sans-serif;
+    --ccg-font-body: 'Roboto', sans-serif;
 
     --ccg-color-blue: #00aaff;
     --ccg-color-pink: #ff29e0;
@@ -13,17 +17,22 @@
 
     --ccg-bg-dark: #000;
     --ccg-text-light: #eef;
+
+    --ccg-spacing: 24px;
+    --ccg-thumb-ratio: 56.25%; /* 16:9 = 9 / 16 = 0.5625 */
 }
 
-/* GLOBAL RESET ------------------------------------------------ */
+/* RESET + BASE --------------------------------------------- */
 
 html, body {
     margin: 0;
     padding: 0;
-    background: #000;
+    background: var(--ccg-bg-dark);
     color: var(--ccg-text-light);
-    font-family: var(--ccg-font-alt);
+    font-family: var(--ccg-font-body);
     overflow-x: hidden;
+    font-size: 16px;
+    line-height: 1.6;
 }
 
 a {
@@ -36,36 +45,36 @@ img {
     display: block;
 }
 
-/* PAGE WRAPPER ------------------------------------------------ */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--ccg-font-header);
+    font-weight: 600;
+    line-height: 1.2;
+    margin: 0 0 0.5em;
+    color: var(--ccg-text-light);
+}
+
+/* WRAPPERS -------------------------------------------------- */
 
 .ccg-page {
     position: relative;
     z-index: 10;
+    width: 100%;
 }
 
-/* ============================================================
-   🔥 OMEGA HEADER SAFETY FIX (CRITICAL)
-   ============================================================ */
-
-.ccg-header {
-    position: relative;
-    z-index: 9999;
+.ccg-main {
+    width: 96%;
+    margin: 0 auto;
+    padding: var(--ccg-spacing) 0;
 }
 
-.ccg-brand img,
-.ccg-brand__logo,
-.ccg-logo-img {
-    position: relative;
-    z-index: 10000;
-}
-
-/* ============================================================
-   HEADER STRUCTURE & BRANDING
-   ============================================================ */
+/* HEADER + LOGO SYSTEM -------------------------------------- */
 
 .ccg-header {
     width: 100%;
-    padding: 14px 0;
+    padding: 12px 0;
+    position: relative;
+    z-index: 9999;
+    background: transparent;
 }
 
 .ccg-header-inner {
@@ -85,6 +94,13 @@ img {
 .ccg-brand__logo {
     width: 64px;
     height: auto;
+    max-height: 64px;
+    transition: transform 0.3s ease;
+}
+
+.ccg-logo-img {
+    position: relative;
+    z-index: 10000;
 }
 
 .ccg-brand__text {
@@ -95,40 +111,39 @@ img {
 
 .ccg-brand__kicker {
     font-size: 0.6rem;
-    opacity: 0.8;
+    opacity: 0.75;
+    font-family: var(--ccg-font-body);
 }
 
 .ccg-brand__title {
     font-size: 1rem;
-    text-transform: uppercase;
     font-weight: bold;
+    text-transform: uppercase;
+    font-family: var(--ccg-font-header);
 }
 
-/* NAVIGATION -------------------------------------------------- */
+/* NAV ------------------------------------------------------- */
 
 .ccg-nav__list {
     display: flex;
     gap: 14px;
     list-style: none;
-    padding: 0;
     margin: 0;
+    padding: 0;
 }
 
 .ccg-nav__link {
     font-size: 0.9rem;
     opacity: 0.8;
-    transition: 0.2s opacity;
+    transition: 0.2s ease;
 }
 
-.ccg-nav__link:hover {
-    opacity: 1;
-}
-
+.ccg-nav__link:hover,
 .ccg-nav__link--active {
     opacity: 1;
 }
 
-/* SOCIALS ----------------------------------------------------- */
+/* SOCIALS --------------------------------------------------- */
 
 .ccg-socials {
     display: flex;
@@ -136,60 +151,62 @@ img {
     gap: 10px;
 }
 
-/* MAIN CONTENT ------------------------------------------------ */
-
-.ccg-main {
-    width: 96%;
-    margin: 0 auto;
-    padding: 20px 0;
-}
-
-/* FOOTER ------------------------------------------------------ */
+/* FOOTER ---------------------------------------------------- */
 
 .ccg-footer {
     width: 100%;
     text-align: center;
-    padding: 20px 0;
+    padding: var(--ccg-spacing) 0;
     opacity: 0.75;
     font-size: 0.8rem;
 }
 
-/* ============================================================
-   === OMEGA THUMBNAIL SYSTEM (NEW — GLOBAL & CONSISTENT) ===
-   Enforces:
-   • Consistent 4:3 game box ratio across ALL pages
-   • Proper filling with object-fit: cover
-   • Prevents stretched or collapsed thumbs
-   ============================================================ */
+/* CARD CONTAINER SPACING PREP ------------------------------- */
 
-.ccg-game-card__thumb,
-.genre-card .ccg-game-card__thumb,
-.ccg-genre-tile img,
-.ccg-related-thumb {
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    overflow: hidden;
-    border-radius: 6px;
-    display: block;
-    background: #000;
+.ccg-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--ccg-spacing);
 }
 
-.ccg-game-card__thumb img,
-.genre-card .ccg-game-card__thumb img,
-.ccg-genre-tile img,
-.ccg-related-thumb img,
-#gameHeroThumb {
+/* 16:9 THUMBNAIL RATIO PREP --------------------------------- */
+
+.ccg-thumb-16by9 {
+    position: relative;
+    width: 100%;
+    padding-top: var(--ccg-thumb-ratio);
+    overflow: hidden;
+    background: #111;
+}
+
+.ccg-thumb-16by9 img {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center;
-    display: block;
-    border-radius: 6px;
 }
 
-/* Hero background images (single-game page) also respect cover */
-#gameHeroBG {
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+/* MEDIA QUERIES — LOGO RESIZE ------------------------------ */
+
+@media (max-width: 640px) {
+    .ccg-brand__logo {
+        width: 48px;
+        max-height: 48px;
+    }
+
+    .ccg-brand__title {
+        font-size: 0.85rem;
+    }
+
+    .ccg-header-inner {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .ccg-nav__list {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
 }
