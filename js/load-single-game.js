@@ -12,8 +12,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        // CORRECT PATH — game.html lives inside /games/
-        const response = await fetch("games.json");
+        // CORRECT PATH — JS file lives in /js, JSON lives in /games
+        const response = await fetch("../games/games.json");
         const games = await response.json();
 
         const game = games.find(g => String(g.id) === String(gameId));
@@ -43,7 +43,7 @@ function renderGame(game) {
         thumb = thumb.replace("resources/images/", "");
     }
 
-    const finalThumb = `resources/images/thumbnails/all/${thumb}`;
+    const finalThumb = `../resources/images/thumbnails/all/${thumb}`;
 
     document.getElementById("game-title").textContent = game.title;
     document.getElementById("game-system-label").textContent = game.system || "Unknown";
@@ -106,7 +106,7 @@ function renderRelatedGames(game) {
     const container = document.getElementById("related-games-grid");
     if (!container) return;
 
-    fetch("games.json")
+    fetch("../games/games.json")
         .then(res => res.json())
         .then(allGames => {
 
@@ -123,7 +123,7 @@ function renderRelatedGames(game) {
                 if (t.startsWith("resources/images/")) {
                     t = t.replace("resources/images/thumbnails/all/", "");
                 }
-                const final = `resources/images/thumbnails/all/${t}`;
+                const final = `../resources/images/thumbnails/all/${t}`;
 
                 return `
                     <a href="game.html?id=${g.id}" class="ccg-game-card">
