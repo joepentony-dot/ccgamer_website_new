@@ -1,21 +1,25 @@
 /* ============================================================
-   CCG LOAD SINGLE GAME — OMEGA ADAPTIVE EDITION (FINAL)
-   - Supports multiple historic JSON field formats
-   - Respects existing HTML structure & IDs
-   - Silent mode (no noisy console warnings)
-   ============================================================ */
+   CCG LOAD SINGLE GAME — OMEGA ADAPTIVE EDITION (FINAL 2025)
+   ----------------------------------------------------------------
+   • Supports all historic JSON field variations
+   • Correct depth: this file lives in /js/, game.html lives in /games/
+   • No thumbnail tiling — applies strict non-repeat + 16:9 logic
+   • External links appear as clean UI buttons (not raw URLs)
+   • Similar(ish) Titles section replaces "Related Games"
+   • Fully mode-aware (C64 / Amiga neon)
+============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
     const params = new URLSearchParams(window.location.search);
     const gameId = params.get("id");
 
     if (!gameId) {
-        console.error("No game ID provided in URL");
+        console.error("No game ID in URL");
         return;
     }
 
     try {
-        // game.html lives inside /games/, JSON is /games/games.json
+        // Depth fix: /games/game.html → JSON is /games/games.json
         const response = await fetch("../games/games.json");
         const games = await response.json();
 
@@ -27,45 +31,50 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         renderGame(game);
+
     } catch (err) {
         console.error("Error loading games.json:", err);
     }
 });
 
+
 /* ============================================================
-   HELPER — THUMBNAIL RESOLVER
-   ============================================================ */
+   THUMBNAIL RESOLVER
+   Ensures:
+   - No tiling
+   - Always returns: ../resources/images/thumbnails/all/<file>
+============================================================ */
 function resolveGameThumb(raw) {
-    if (!raw) {
-        return "../resources/images/thumbnails/all/1942.jpg";
-    }
+    if (!raw) return "../resources/images/thumbnails/all/1942.jpg";
 
     let t = String(raw).trim();
 
-    if (t.startsWith("/")) {
-        t = t.replace(/^\/+/, "");
-    }
+    // Strip leading slashes
+    t = t.replace(/^\/+/, "");
 
-    if (t.startsWith("resources/images/")) {
-        t = t.replace("resources/images/thumbnails/all/", "");
-        t = t.replace("resources/images/thumbnails/", "");
-        t = t.replace("resources/images/", "");
-    }
+    // Normalise all resource paths to filename only
+    t = t.replace("resources/images/thumbnails/all/", "");
+    t = t.replace("resources/images/thumbnails/", "");
+    t = t.replace("resources/images/", "");
 
     if (!t) t = "1942.jpg";
 
     return `../resources/images/thumbnails/all/${t}`;
 }
 
+
 /* ============================================================
-   HELPER — VIDEO, MANUAL, DISK FIELD RESOLVERS
-   ============================================================ */
+   FIELD RESOLVERS — VIDEO, MANUAL, DSK/TAPE, LEMON
+============================================================ */
+
 function resolveVideoId(game) {
-    if (game.videoid) return String(game.videoid).trim();
-    if (game.video) return String(game.video).trim();
-    if (game.youtube) return String(game.youtube).trim();
-    if (game.yt) return String(game.yt).trim();
-    return "";
+    return (
+        game.videoid ||
+        game.video ||
+        game.youtube ||
+        game.yt ||
+        ""
+    ).toString().trim();
 }
 
 function resolveManualUrl(game) {
@@ -76,74 +85,82 @@ function resolveManualUrl(game) {
 
 function resolveDiskUrl(game) {
     if (Array.isArray(game.disk) && game.disk.length > 0) {
-        const first = String(game.disk[0] || "").trim();
-        if (first) return first;
+        const url = String(game.disk[0] || "").trim();
+        if (url) return url;
     }
-
-    if (typeof game.disk === "string" && game.disk.trim()) return game.disk.trim();
-    if (typeof game.tape === "string" && game.tape.trim()) return game.tape.trim();
-
+    if (typeof game.disk === "string" && game.disk.trim()) {
+        return game.disk.trim();
+    }
+    if (typeof game.tape === "string" && game.tape.trim()) {
+        return game.tape.trim();
+    }
     return "";
 }
 
 function resolveLemonLinks(game) {
-    if (Array.isArray(game.lemon) && game.lemon.length > 0) {
-        return game.lemon.map(String);
-    }
-
-    if (typeof game.lemon === "string" && game.lemon.trim()) {
-        return [game.lemon.trim()];
-    }
-
-    if (Array.isArray(game.lemon64) && game.lemon64.length > 0) {
-        return game.lemon64.map(String);
-    }
-
+    if (Array.isArray(game.lemon) && game.lemon.length > 0) return game.lemon;
+    if (typeof game.lemon === "string" && game.lemon.trim()) return [game.lemon];
+    if (Array.isArray(game.lemon64) && game.lemon64.length > 0) return game.lemon64;
     return [];
 }
 
-/* ============================================================
-   RENDER GAME
-   ============================================================ */
 
+/* ============================================================
+   RENDER GAME INTO game.html
+============================================================ */
 function renderGame(game) {
 
-    const finalThumb = resolveGameThumb(game.thumbnail || game.thumb || game.cover);
+    /* ------------------------------------------------------------
+       HERO THUMBNAIL + BG (NO MORE TILING!)
+    ------------------------------------------------------------ */
+    const thumb = resolveGameThumb(game.thumbnail || game.thumb || game.cover);
 
-    const systemKickerEl = document.getElementById("gameSystemKicker");
-    if (systemKickerEl) systemKickerEl.textContent = game.system || "Unknown";
+    const heroBG = document.getElementById("gameHeroBG");
+    if (heroBG) {
+        heroBG.style.backgroundImage = `url('${thumb}')`;
+        heroBG.style.backgroundRepeat = "no-repeat";
+        heroBG.style.backgroundSize = "cover";
+        heroBG.style.backgroundPosition = "center";
+    }
+
+    const heroThumbImg = document.getElementById("gameHeroThumb");
+    if (heroThumbImg) {
+        heroThumbImg.src = thumb;
+        heroThumbImg.alt = game.title || "Game artwork";
+    }
+
+    /* ------------------------------------------------------------
+       HERO TEXT
+    ------------------------------------------------------------ */
+    const sys = document.getElementById("gameSystemKicker");
+    if (sys) sys.textContent = game.system || "Unknown";
 
     const titleEl = document.getElementById("gameHeroTitle");
     if (titleEl) titleEl.textContent = game.title || "Unknown Game";
 
-    const heroThumbEl = document.getElementById("gameHeroThumb");
-    if (heroThumbEl) {
-        heroThumbEl.src = finalThumb;
-        heroThumbEl.alt = game.title || "Game artwork";
-    }
-
-    const bg = document.getElementById("gameHeroBG");
-    if (bg) bg.style.backgroundImage = `url('${finalThumb}')`;
-
-    /* -------- META -------- */
-
+    /* ------------------------------------------------------------
+       META (Year · System · Developer)
+    ------------------------------------------------------------ */
     const yearEl = document.getElementById("gameMetaYear");
-    if (yearEl) yearEl.textContent = game.year || "—";
-
     const systemEl = document.getElementById("gameMetaSystem");
-    if (systemEl) systemEl.textContent = game.system || "—";
-
     const devEl = document.getElementById("gameMetaDeveloper");
+
+    if (yearEl) yearEl.textContent = game.year || "—";
+    if (systemEl) systemEl.textContent = game.system || "—";
     if (devEl) devEl.textContent = game.developer || "Unknown";
 
-    /* -------- GENRES -------- */
+    /* ------------------------------------------------------------
+       GENRES
+    ------------------------------------------------------------ */
     const genresEl = document.getElementById("gameGenres");
-    if (genresEl && Array.isArray(game.genres) && game.genres.length > 0) {
+    if (genresEl && Array.isArray(game.genres)) {
         genresEl.textContent = game.genres.join(", ");
         genresEl.hidden = false;
     }
 
-    /* -------- DESCRIPTION -------- */
+    /* ------------------------------------------------------------
+       DESCRIPTION
+    ------------------------------------------------------------ */
     if (game.description) {
         const descBody = document.getElementById("gameDescription");
         const descSection = document.getElementById("game-description-section");
@@ -152,76 +169,96 @@ function renderGame(game) {
         if (descSection) descSection.hidden = false;
     }
 
-    /* -------- EXTERNAL LINKS -------- */
-    const lemonLinks = resolveLemonLinks(game);
-    if (lemonLinks.length > 0) {
-        const lemonBlock = document.getElementById("lemon-links-block");
-        const lemonList = document.getElementById("lemon-links-list");
+    /* ------------------------------------------------------------
+       EXTERNAL LINKS (LEMON) — AS BUTTONS
+    ------------------------------------------------------------ */
+    const lemon = resolveLemonLinks(game);
+    if (lemon.length > 0) {
+        const block = document.getElementById("lemon-links-block");
+        const list = document.getElementById("lemon-links-list");
 
-        if (lemonBlock && lemonList) {
-            lemonBlock.hidden = false;
-            lemonList.innerHTML = lemonLinks
-                .map(url => `<li><a href="${url}" target="_blank" rel="noopener">${url}</a></li>`)
-                .join("");
+        if (block && list) {
+            block.hidden = false;
+            list.innerHTML = lemon.map(url => `
+                <li>
+                    <a class="ccg-btn ccg-btn--primary" 
+                       href="${url}"
+                       target="_blank"
+                       rel="noopener">
+                       View on Lemon
+                    </a>
+                </li>
+            `).join("");
         }
     }
 
-    /* -------- VIDEO -------- */
-    const vidId = resolveVideoId(game);
-    if (vidId) {
-        const iframe = document.getElementById("game-video-embed");
-        const vidSection = document.getElementById("game-video-section");
-        const videoBtn = document.getElementById("gameVideoBtn");
+    /* ------------------------------------------------------------
+       VIDEO (EMBED + BUTTON)
+    ------------------------------------------------------------ */
+    const vid = resolveVideoId(game);
+    if (vid) {
 
-        if (iframe) iframe.src = `https://www.youtube.com/embed/${vidId}`;
-        if (vidSection) vidSection.hidden = false;
-        if (videoBtn) {
-            videoBtn.href = `https://www.youtube.com/watch?v=${vidId}`;
-            videoBtn.hidden = false;
+        const iframe = document.getElementById("game-video-embed");
+        const section = document.getElementById("game-video-section");
+        const btn = document.getElementById("gameVideoBtn");
+
+        if (iframe) iframe.src = `https://www.youtube.com/embed/${vid}`;
+        if (section) section.hidden = false;
+
+        if (btn) {
+            btn.href = `https://www.youtube.com/watch?v=${vid}`;
+            btn.hidden = false;
         }
 
+        /* Update SEO tags */
         const metaTitle = document.getElementById("game-meta-title");
         const metaDesc = document.getElementById("game-meta-description");
 
         if (metaTitle) {
             metaTitle.textContent =
-                `${game.title || "Game"}${game.year ? " (" + game.year + ")" : ""} | Cheeky Commodore Gamer`;
+                `${game.title}${game.year ? " (" + game.year + ")" : ""} | Cheeky Commodore Gamer`;
         }
 
         if (metaDesc) {
             metaDesc.content =
-                `Full details, screenshots and gameplay video for ${game.title} on the ${game.system}.`;
+                `Full details, screenshots, and gameplay video for ${game.title} on the ${game.system}.`;
         }
     }
 
-    /* -------- MANUAL -------- */
-    const manualUrl = resolveManualUrl(game);
-    if (manualUrl) {
+    /* ------------------------------------------------------------
+       MANUAL (PDF)
+    ------------------------------------------------------------ */
+    const manual = resolveManualUrl(game);
+    if (manual) {
         const btn = document.getElementById("gameManualBtn");
         if (btn) {
-            btn.href = manualUrl;
+            btn.href = manual;
             btn.hidden = false;
         }
     }
 
-    /* -------- DISK / TAPE -------- */
-    const diskUrl = resolveDiskUrl(game);
-    if (diskUrl) {
+    /* ------------------------------------------------------------
+       DISK / TAPE DOWNLOAD
+    ------------------------------------------------------------ */
+    const disk = resolveDiskUrl(game);
+    if (disk) {
         const btn = document.getElementById("gameDiskBtn");
         if (btn) {
-            btn.href = diskUrl;
+            btn.href = disk;
             btn.hidden = false;
         }
     }
 
-    /* -------- RELATED GAMES -------- */
+    /* ------------------------------------------------------------
+       SIMILAR(ISH) TITLES — OMEGA STRIP
+    ------------------------------------------------------------ */
     renderRelatedGames(game);
 }
 
-/* ============================================================
-   RELATED GAMES  — UPDATED WITH DEVELOPER META
-   ============================================================ */
 
+/* ============================================================
+   RELATED GAMES — "Similar(ish) titles…"
+============================================================ */
 function renderRelatedGames(game) {
     const container = document.getElementById("relatedGamesGrid");
     if (!container) return;
@@ -230,10 +267,7 @@ function renderRelatedGames(game) {
         .then(res => res.json())
         .then(allGames => {
 
-            const primary = Array.isArray(game.genres) && game.genres.length > 0
-                ? game.genres[0]
-                : null;
-
+            const primary = Array.isArray(game.genres) ? game.genres[0] : null;
             if (!primary) {
                 container.innerHTML = "";
                 return;
@@ -248,28 +282,22 @@ function renderRelatedGames(game) {
                 .slice(0, 6);
 
             container.innerHTML = related.map(g => {
-                const thumbPath = resolveGameThumb(g.thumbnail || g.thumb || g.cover);
-
-                const meta = [
-                    g.year || "",
-                    g.system || "",
-                    g.developer || ""
-                ].filter(Boolean).join(" · ");
+                const thumb = resolveGameThumb(g.thumbnail || g.thumb || g.cover);
 
                 return `
                     <a href="game.html?id=${g.id}" class="ccg-game-card">
                         <div class="ccg-game-card__thumb">
-                            <img src="${thumbPath}" alt="${g.title}">
+                            <img src="${thumb}" alt="${g.title}">
                         </div>
                         <div class="ccg-game-card__body">
                             <h3 class="ccg-game-card__title">${g.title}</h3>
-                            <div class="ccg-game-card__meta">${meta}</div>
+                            <div class="ccg-game-card__meta">
+                                ${(g.year || "")} · ${(g.system || "")}
+                            </div>
                         </div>
                     </a>
                 `;
             }).join("");
         })
-        .catch(err => {
-            console.error("Error loading related games:", err);
-        });
+        .catch(err => console.error("Related games error:", err));
 }
