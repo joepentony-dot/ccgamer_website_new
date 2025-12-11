@@ -45,23 +45,18 @@ img {
 
 /* ============================================================
    🔥 OMEGA HEADER SAFETY FIX (CRITICAL)
-   This ensures the header and logo ALWAYS appear above:
-   - starfield
-   - neon grid
-   - CRT overlay
-   - all background effects
    ============================================================ */
 
 .ccg-header {
     position: relative;
-    z-index: 9999; /* ABOVE all overlay layers */
+    z-index: 9999;
 }
 
 .ccg-brand img,
 .ccg-brand__logo,
 .ccg-logo-img {
     position: relative;
-    z-index: 10000; /* Ensure the actual logo always sits on top */
+    z-index: 10000;
 }
 
 /* ============================================================
@@ -157,4 +152,44 @@ img {
     padding: 20px 0;
     opacity: 0.75;
     font-size: 0.8rem;
+}
+
+/* ============================================================
+   === OMEGA THUMBNAIL SYSTEM (NEW — GLOBAL & CONSISTENT) ===
+   Enforces:
+   • Consistent 4:3 game box ratio across ALL pages
+   • Proper filling with object-fit: cover
+   • Prevents stretched or collapsed thumbs
+   ============================================================ */
+
+.ccg-game-card__thumb,
+.genre-card .ccg-game-card__thumb,
+.ccg-genre-tile img,
+.ccg-related-thumb {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: 6px;
+    display: block;
+    background: #000;
+}
+
+.ccg-game-card__thumb img,
+.genre-card .ccg-game-card__thumb img,
+.ccg-genre-tile img,
+.ccg-related-thumb img,
+#gameHeroThumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    border-radius: 6px;
+}
+
+/* Hero background images (single-game page) also respect cover */
+#gameHeroBG {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
