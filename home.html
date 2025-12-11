@@ -10,6 +10,11 @@
     <link rel="canonical" href="home.html" />
     <link rel="icon" href="favicon.ico" />
 
+    <!-- ============================================
+         REQUIRED FONT RESTORE (Orbitron + Roboto)
+         ============================================ -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
     <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="resources/css/ccg-master.css" />
     <link rel="stylesheet" href="resources/css/ccg-mode.css" />
@@ -201,29 +206,24 @@
                         </div>
                     </article>
 
-                    <!-- Featured Video (404 fixed, ready for randomiser) -->
-                    <article class="ccg-card home-feature-card ccg-feature-video-card" data-ccg-feature-video>
+                    <!-- Featured Video -->
+                    <article class="ccg-card home-feature-card">
                         <a href="https://www.youtube.com/@CheekyCommodoreGamer"
                            target="_blank"
                            rel="noopener"
-                           class="ccg-card__media ccg-card__media--16x9"
-                           data-ccg-feature-video-link>
-                            <img
-                                alt="Featured CCG video"
-                                data-ccg-feature-video-thumb>
+                           class="ccg-card__media ccg-card__media--16x9">
+                            <img src="resources/images/hero/ccg-feature-video-placeholder.jpg"
+                                 alt="Featured CCG video">
                         </a>
                         <div class="ccg-card__body">
-                            <h3 class="ccg-card__title" data-ccg-feature-video-title>
-                                Featured CCG Video
-                            </h3>
+                            <h3 class="ccg-card__title">Featured CCG Video</h3>
                             <p class="ccg-card__text">
                                 A hand-picked longplay or review from the channel — perfect for a retro session.
                             </p>
                             <a href="https://www.youtube.com/@CheekyCommodoreGamer"
                                target="_blank"
                                rel="noopener"
-                               class="ccg-btn ccg-btn--primary"
-                               data-ccg-feature-video-button>
+                               class="ccg-btn ccg-btn--primary">
                                 Watch on YouTube
                             </a>
                         </div>
