@@ -1,168 +1,166 @@
 /* ============================================================
-   HOME.CSS — Omega Home Layout (Cinematic 2.0 Tight Hero)
-   - 48vh hero height
-   - 16:9 cards using ccg-cards.css helpers
-   - Uniform spacing & neon section dividers
+   HOME.CSS — OMEGA CINEMATIC 2.0 HOMEPAGE
+   - Tight, cinematic hero using global ccg-hero system
+   - Featured highlights (game + video)
+   - Compact genre grid launcher
+   - Safe: no impact on other pages
    ============================================================ */
+
+/* ------------------------------------------------------------
+   PAGE WRAPPER
+------------------------------------------------------------ */
 
 .ccg-page--home {
     padding-bottom: 40px;
 }
 
-/* MAIN WRAPPER ---------------------------------------------- */
-
 .ccg-main--home {
-    max-width: 1180px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 18px 0 32px 0;
+    padding-top: 18px;
+    padding-bottom: 32px;
 }
 
-/* ============================================================
-   HERO
-   ============================================================ */
+/* ------------------------------------------------------------
+   HERO — CINEMATIC 2.0
+   Uses global .ccg-hero styles from ccg-hero.css
+------------------------------------------------------------ */
 
 .home-hero {
-    margin-bottom: 26px;
+    margin-top: 10px;
+    margin-bottom: 22px;
 }
 
 .ccg-hero--home {
-    min-height: 48vh;
-    max-height: 520px;
-    border-radius: 24px;
-    overflow: hidden;
     position: relative;
+    border-radius: 22px;
+    overflow: hidden;
     box-shadow:
-        0 0 28px rgba(0,0,0,0.9),
-        0 0 48px rgba(var(--accent-rgb), 0.35);
+        0 0 26px rgba(0, 0, 0, 0.9),
+        0 0 46px rgba(var(--accent-rgb), 0.32);
 }
 
-/* tighten hero inner layout */
+/* Inner layout */
+
 .home-hero__inner {
     position: relative;
-    z-index: 2;
-    padding: 30px 34px 26px 34px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 12px;
+    z-index: 1;
+    padding: 22px 22px 20px;
     max-width: 720px;
 }
 
-/* mode / sub label line ------------------------------------- */
+/* Mode line above hero title */
 
 .home-hero__mode-line {
     display: flex;
-    flex-wrap: wrap;
     align-items: baseline;
     gap: 10px;
-    font-size: 0.75rem;
+    margin-bottom: 6px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--text-dim);
 }
 
 .home-hero__mode-label {
-    font-family: var(--ccg-font-main, 'Press Start 2P', monospace);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
     color: var(--accent);
     text-shadow:
         0 0 10px rgba(var(--accent-rgb), 0.9),
-        0 0 22px rgba(var(--accent-rgb), 0.6);
+        0 0 20px rgba(var(--accent-rgb), 0.55);
 }
 
 .home-hero__sub-label {
-    opacity: 0.9;
-    color: var(--text-dim, #c8d4e0);
+    opacity: 0.85;
 }
 
-/* title & tagline ------------------------------------------- */
+/* Hero title + tagline */
 
 .home-hero__title {
-    margin: 0;
+    margin: 0 0 8px 0;
     font-family: var(--ccg-font-main, 'Press Start 2P', monospace);
     font-size: 1.35rem;
-    line-height: 1.4;
+    line-height: 1.3;
     text-transform: uppercase;
-    color: var(--text-light, #ffffff);
+    color: var(--text-light);
     text-shadow:
-        0 0 18px rgba(var(--accent-rgb), 0.9),
-        0 0 40px rgba(var(--accent-rgb), 0.5);
-}
-
-.home-hero__title {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+        0 0 16px rgba(var(--accent-rgb), 0.95),
+        0 0 32px rgba(var(--accent-rgb), 0.6);
 }
 
 .home-hero__tagline {
-    margin: 4px 0 0 0;
+    margin: 0 0 14px 0;
     font-size: 0.9rem;
-    color: var(--text-dim, #d0d8e6);
+    line-height: 1.7;
+    color: var(--text-dim);
+    max-width: 640px;
 }
 
-/* hero actions ---------------------------------------------- */
+/* Hero actions */
 
 .home-hero__actions {
-    margin-top: 14px;
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+    margin-bottom: 10px;
 }
 
 .home-hero__btn-alt {
+    white-space: nowrap;
+}
+
+.home-hero__tip {
+    margin: 0;
+    font-size: 0.76rem;
+    color: var(--text-dim);
     opacity: 0.95;
 }
 
-/* tiny tip text --------------------------------------------- */
-
-.home-hero__tip {
-    margin: 10px 0 0 0;
-    font-size: 0.75rem;
-    opacity: 0.85;
-    color: var(--text-dim, #c8d4e0);
-}
-
-/* ============================================================
+/* ------------------------------------------------------------
    TAGLINE STRIP
-   ============================================================ */
+------------------------------------------------------------ */
 
 .home-tagline {
-    margin: 0 auto 26px auto;
-    text-align: left;
+    text-align: center;
+    margin: 0 0 26px 0;
 }
 
 .home-tagline__kicker {
     margin: 0;
     font-size: 0.78rem;
-    opacity: 0.85;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    opacity: 0.9;
 }
 
 .home-tagline__main {
-    margin: 2px 0 0 0;
-    font-size: 0.9rem;
+    margin: 4px 0 0 0;
+    font-family: var(--ccg-font-main, 'Press Start 2P', monospace);
+    font-size: 0.92rem;
+    text-transform: uppercase;
     color: var(--accent);
     text-shadow:
-        0 0 12px rgba(var(--accent-rgb), 0.8),
-        0 0 26px rgba(var(--accent-rgb), 0.5);
+        0 0 12px rgba(var(--accent-rgb), 0.9),
+        0 0 24px rgba(var(--accent-rgb), 0.55);
 }
 
-/* ============================================================
-   HOME SECTIONS (shared)
-   ============================================================ */
+/* ------------------------------------------------------------
+   SHARED HOME SECTIONS
+------------------------------------------------------------ */
 
 .home-section {
-    margin-bottom: 30px;
-    padding: 18px 20px 20px 20px;
-    border-radius: 20px;
+    margin: 0 0 24px 0;
+    padding: 16px 18px 18px;
     background: rgba(0, 0, 0, 0.78);
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow:
-        0 0 22px rgba(0,0,0,0.85),
-        0 0 32px rgba(var(--accent-rgb), 0.18);
-    border: 1px solid rgba(255,255,255,0.08);
+        0 0 22px rgba(0, 0, 0, 0.92),
+        0 0 30px rgba(var(--accent-rgb), 0.26);
 }
 
 .home-section__header {
-    margin-bottom: 14px;
+    margin-bottom: 12px;
 }
 
 .home-section__title {
@@ -170,169 +168,172 @@
     font-family: var(--ccg-font-main, 'Press Start 2P', monospace);
     font-size: 0.95rem;
     text-transform: uppercase;
-    color: var(--text-light, #ffffff);
+    color: var(--text-light);
     text-shadow:
         0 0 12px rgba(var(--accent-rgb), 0.8),
-        0 0 26px rgba(var(--accent-rgb), 0.45);
+        0 0 26px rgba(var(--accent-rgb), 0.5);
 }
 
 .home-section__divider {
     width: 110px;
     height: 2px;
-    border-radius: 999px;
     background: linear-gradient(
         90deg,
-        rgba(var(--accent-rgb), 0.15),
+        rgba(var(--accent-rgb), 0.12),
         rgba(var(--accent-rgb), 0.9),
-        rgba(var(--accent-rgb), 0.15)
+        rgba(var(--accent-rgb), 0.12)
     );
+    border-radius: 999px;
     box-shadow:
         0 0 16px rgba(var(--accent-rgb), 0.9),
         0 0 28px rgba(var(--accent-rgb), 0.6);
 }
 
-/* small footer link in sections ----------------------------- */
+/* ------------------------------------------------------------
+   FEATURED HIGHLIGHTS
+   (Featured game + featured video)
+------------------------------------------------------------ */
 
-.home-section__footer-link {
-    margin-top: 14px;
-    text-align: right;
-    font-size: 0.8rem;
+.home-section--highlights {
+    /* uses base .home-section styling */
 }
-
-.ccg-link-inline {
-    color: var(--accent);
-    text-decoration: none;
-}
-
-.ccg-link-inline:hover {
-    text-shadow:
-        0 0 10px rgba(var(--accent-rgb), 0.75),
-        0 0 22px rgba(var(--accent-rgb), 0.45);
-}
-
-/* ============================================================
-   FEATURED HIGHLIGHTS GRID
-   ============================================================ */
 
 .home-highlights-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 24px;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
+    gap: 18px;
 }
 
-/* Make sure featured cards feel prominent */
+/* Featured cards piggyback on ccg-card style */
+
 .home-feature-card {
-    min-height: 100%;
+    height: 100%;
 }
 
-/* card text override slightly for home panels */
-.home-feature-card .ccg-card__text {
-    font-size: 0.85rem;
+/* Video variant tweaks */
+
+.home-feature-card--video .ccg-card__body {
+    padding-bottom: 10px;
 }
 
-/* ============================================================
-   BROWSE BY GENRE GRID
-   ============================================================ */
+.home-feature-video__frame {
+    margin: 0 0 10px 0;
+}
+
+.home-feature-video__frame iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.home-feature-video__actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* ------------------------------------------------------------
+   GENRE GRID — HOME
+------------------------------------------------------------ */
+
+.home-section--genres {
+    /* uses base .home-section styling */
+}
 
 .home-genre-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 14px;
+    margin-top: 4px;
 }
 
-/* genre cards inherit ccg-card styles, just tighten text */
+/* The cards here are standard .ccg-card with 16:9 media already
+   styled by ccg-cards.css, so we only need light tweaks. */
+
 .home-genre-grid .ccg-card__title {
-    font-size: 0.8rem;
     text-align: center;
-    margin-top: 8px;
+    font-size: 0.86rem;
 }
 
-/* ============================================================
-   RESPONSIVE BEHAVIOUR
-   ============================================================ */
+/* Footer link under genre grid */
 
-@media (max-width: 1024px) {
+.home-section__footer-link {
+    margin-top: 10px;
+    text-align: right;
+}
+
+.home-section__footer-link .ccg-link-inline {
+    font-size: 0.8rem;
+}
+
+/* ------------------------------------------------------------
+   RESPONSIVE TUNING
+------------------------------------------------------------ */
+
+@media (max-width: 960px) {
     .ccg-main--home {
-        padding: 16px 0 28px 0;
+        padding-top: 14px;
     }
 
     .home-hero__inner {
-        padding: 26px 22px 22px 22px;
-    }
-
-    .home-hero__title {
-        font-size: 1.22rem;
-    }
-
-    .home-genre-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        padding: 18px 18px 16px;
     }
 }
 
-@media (max-width: 800px) {
-
-    .ccg-main--home {
-        max-width: 100%;
-        padding: 14px 10px 26px 10px;
-    }
-
-    .ccg-hero--home {
-        min-height: 46vh;
-        border-radius: 18px;
-    }
-
-    .home-hero__inner {
-        padding: 22px 18px 20px 18px;
-        max-width: none;
-    }
-
+@media (max-width: 780px) {
     .home-hero__title {
-        font-size: 1.06rem;
-    }
-
-    .home-section {
-        padding: 16px 14px 18px 14px;
-        margin-bottom: 24px;
+        font-size: 1.05rem;
     }
 
     .home-highlights-grid {
-        grid-template-columns: minmax(0, 1fr);
-    }
-
-    .home-genre-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 18px;
+        grid-template-columns: 1fr;
     }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 640px) {
+    .ccg-main--home {
+        padding-top: 12px;
+        padding-bottom: 26px;
+    }
+
+    .home-hero {
+        margin-top: 6px;
+        margin-bottom: 18px;
+    }
 
     .home-hero__inner {
-        padding: 18px 14px 18px 14px;
+        padding: 16px 14px 14px;
     }
 
     .home-hero__title {
         font-size: 0.96rem;
     }
 
-    .home-hero__tagline {
-        font-size: 0.82rem;
-    }
-
-    .home-hero__mode-label {
-        font-size: 0.6rem;
-    }
-
     .home-tagline__main {
-        font-size: 0.84rem;
+        font-size: 0.85rem;
+    }
+
+    .home-section {
+        padding: 14px 12px 14px;
+    }
+
+    .home-genre-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 12px;
+    }
+}
+
+@media (max-width: 440px) {
+    .home-hero__actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .home-hero__btn-alt {
+        width: 100%;
+        text-align: center;
     }
 
     .home-section__title {
         font-size: 0.86rem;
-    }
-
-    .home-genre-grid {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 16px;
     }
 }
