@@ -23,11 +23,11 @@
 }
 
 /* ------------------------------------------------------------
-   GRID LAYER
-   (Above starfield, below CRT overlay)
+   GRID LAYER — (RENAMED TO PREVENT CONFLICT WITH OMEGA GRID)
+   This prevents overriding the cinematic 3D grid in ccg-effects.css
 ------------------------------------------------------------ */
 
-.ccg-bg-grid {
+.ccg-bg-grid-flat {
     position: absolute;
     inset: 0;
     background: url("../images/bg-grid_new.jpg") repeat;
@@ -50,6 +50,7 @@
 .ccg-bg,
 .ccg-bg-starfield,
 .ccg-bg-grid,
+.ccg-bg-grid-flat,
 .ccg-bg-crt-overlay {
     pointer-events: none;
     z-index: 0;
