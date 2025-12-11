@@ -1,14 +1,403 @@
 /* ============================================================
-   GAME.CSS — Omega Single Game Layout (FINAL)
-   - Poster Hero (16:9 thumbnail + blurred neon BG)
-   - Correct non-tiling backgrounds
-   - Single-line meta (Year · System · Developer)
-   - Clean description section
-   - Video section (16:9, glowing)
-   - External links as clean button rows
-   - Horizontal Related Games scroller
-   - Full C64/Amiga glow adaptation
-============================================================ */
+   GAMES.CSS — OMEGA GAMES INDEX + SINGLE GAME LAYOUT (FINAL)
+   - Part 1: Browse All Games index (accordion, search, A–Z)
+   - Part 2: Single Game Poster Hero layout
+   ============================================================ */
+
+/* ============================================================
+   PART 1 — BROWSE ALL GAMES INDEX (ACCORDION)
+   Used by: games/index.html
+   ============================================================ */
+
+/* PAGE WRAPPER — GAMES INDEX */
+.ccg-page--games-index {
+    padding-bottom: 40px;
+}
+
+.games-main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 18px;
+    padding-bottom: 32px;
+}
+
+/* ------------------------------------------------------------
+   HERO / INTRO
+------------------------------------------------------------ */
+
+.games-hero {
+    margin-bottom: 18px;
+}
+
+.games-hero__inner {
+    background: radial-gradient(circle at top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.92));
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+        0 0 22px rgba(0, 0, 0, 0.9),
+        0 0 36px rgba(var(--accent-rgb), 0.25);
+    padding: 18px 20px 16px;
+}
+
+.games-hero__text {
+    max-width: 760px;
+}
+
+.games-hero__title {
+    margin: 0 0 6px 0;
+    font-family: var(--ccg-font-main, 'Press Start 2P', monospace);
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    color: var(--text-light);
+    text-shadow:
+        0 0 12px rgba(var(--accent-rgb), 0.85),
+        0 0 26px rgba(var(--accent-rgb), 0.55);
+}
+
+.games-hero__subtitle {
+    margin: 0 0 10px 0;
+    font-size: 0.86rem;
+    line-height: 1.6;
+    color: var(--text-dim);
+}
+
+/* Stats line */
+.games-hero__stats {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+.games-hero__stats strong {
+    font-size: 0.9rem;
+    color: var(--accent);
+    text-shadow:
+        0 0 10px rgba(var(--accent-rgb), 0.9),
+        0 0 20px rgba(var(--accent-rgb), 0.5);
+}
+
+.games-hero__stats-label {
+    opacity: 0.9;
+}
+
+.games-hero__stats-divider {
+    opacity: 0.75;
+}
+
+/* ------------------------------------------------------------
+   SEARCH + TOOLS
+------------------------------------------------------------ */
+
+.games-tools {
+    margin-bottom: 18px;
+}
+
+.games-tools__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.8fr) minmax(0, 1.1fr);
+    gap: 18px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow:
+        0 0 20px rgba(0, 0, 0, 0.9),
+        0 0 30px rgba(var(--accent-rgb), 0.22);
+    padding: 14px 18px 14px;
+}
+
+/* Search block */
+.games-search__label {
+    display: block;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+}
+
+.games-search__field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px 6px 12px;
+    border-radius: 999px;
+    background: radial-gradient(circle at top left, rgba(var(--accent-rgb), 0.22), rgba(0, 0, 0, 0.9));
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow:
+        0 0 16px rgba(0, 0, 0, 0.9),
+        0 0 28px rgba(var(--accent-rgb), 0.4);
+}
+
+.games-search__icon {
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+.games-search__field input[type="search"] {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 0.85rem;
+    color: var(--text-light);
+    padding: 4px 0;
+}
+
+.games-search__field input[type="search"]::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.games-search__clear {
+    border: none;
+    background: rgba(0, 0, 0, 0.6);
+    color: rgba(255, 255, 255, 0.8);
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+        background 0.18s ease-out,
+        box-shadow 0.18s ease-out,
+        transform 0.18s ease-out;
+}
+
+.games-search__clear:hover {
+    background: rgba(var(--accent-rgb), 0.4);
+    box-shadow:
+        0 0 12px rgba(var(--accent-rgb), 0.9),
+        0 0 20px rgba(var(--accent-rgb), 0.6);
+    transform: translateY(-1px);
+}
+
+.games-search__helper {
+    margin: 6px 0 0 3px;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+}
+
+.games-search__helper span {
+    color: var(--accent);
+}
+
+/* Alphabet quick jump */
+.games-alpha__label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+}
+
+.games-alpha__strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.games-alpha__btn {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.85);
+    color: rgba(255, 255, 255, 0.86);
+    border-radius: 999px;
+    padding: 4px 7px;
+    min-width: 24px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    text-align: center;
+    text-transform: uppercase;
+    transition:
+        background 0.18s ease-out,
+        box-shadow 0.18s ease-out,
+        transform 0.18s ease-out;
+}
+
+.games-alpha__btn:hover {
+    background: rgba(var(--accent-rgb), 0.4);
+    box-shadow:
+        0 0 12px rgba(var(--accent-rgb), 0.85),
+        0 0 22px rgba(var(--accent-rgb), 0.55);
+    transform: translateY(-1px);
+}
+
+/* ------------------------------------------------------------
+   LIBRARY / ACCORDION
+------------------------------------------------------------ */
+
+.games-library {
+    margin-top: 4px;
+}
+
+.games-library__inner {
+    background: rgba(0, 0, 0, 0.86);
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+        0 0 24px rgba(0, 0, 0, 0.95),
+        0 0 36px rgba(var(--accent-rgb), 0.3);
+    padding: 10px 10px 12px;
+}
+
+.games-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Accordion section shell */
+.games-accordion__section {
+    background: rgba(0, 0, 0, 0.9);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow:
+        0 0 14px rgba(0, 0, 0, 0.9),
+        0 0 26px rgba(var(--accent-rgb), 0.22);
+    overflow: hidden;
+}
+
+/* Header (click target) */
+.games-accordion__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px 8px 12px;
+    cursor: pointer;
+    background: linear-gradient(
+        90deg,
+        rgba(var(--accent-rgb), 0.08),
+        rgba(0, 0, 0, 0.95)
+    );
+}
+
+.games-accordion__header:hover {
+    background: linear-gradient(
+        90deg,
+        rgba(var(--accent-rgb), 0.18),
+        rgba(0, 0, 0, 0.9)
+    );
+}
+
+.games-accordion__left {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.games-accordion__letter {
+    font-family: var(--ccg-font-main, 'Press Start 2P', monospace);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-shadow:
+        0 0 12px rgba(var(--accent-rgb), 0.9),
+        0 0 26px rgba(var(--accent-rgb), 0.6);
+}
+
+.games-accordion__count {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+}
+
+.games-accordion__chevron {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.85);
+    transition:
+        transform 0.2s ease-out,
+        text-shadow 0.2s ease-out;
+}
+
+.games-accordion__section--open .games-accordion__chevron {
+    transform: rotate(90deg);
+    text-shadow:
+        0 0 10px rgba(var(--accent-rgb), 0.9),
+        0 0 18px rgba(var(--accent-rgb), 0.6);
+}
+
+/* Body (collapsible) */
+.games-accordion__body {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition:
+        max-height 0.26s ease-out,
+        opacity 0.2s ease-out;
+    will-change: max-height, opacity;
+    background: rgba(0, 0, 0, 0.95);
+}
+
+.games-accordion__section--open .games-accordion__body {
+    max-height: 9999px;
+    opacity: 1;
+}
+
+/* Grid of cards inside each section */
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    padding: 10px 12px 12px;
+}
+
+/* Empty state */
+.games-empty-state {
+    margin-top: 10px;
+    padding: 10px 12px;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    text-align: center;
+}
+
+/* ------------------------------------------------------------
+   RESPONSIVE — GAMES INDEX
+------------------------------------------------------------ */
+
+@media (max-width: 900px) {
+    .games-tools__inner {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .games-hero__inner {
+        padding: 14px 14px 12px;
+    }
+
+    .games-hero__title {
+        font-size: 0.95rem;
+    }
+
+    .games-tools__inner {
+        padding: 12px 12px 12px;
+    }
+
+    .games-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .games-hero__title {
+        font-size: 0.85rem;
+    }
+
+    .games-accordion__letter {
+        font-size: 0.8rem;
+    }
+
+    .games-accordion__count {
+        font-size: 0.72rem;
+    }
+}
+
+/* ============================================================
+   PART 2 — SINGLE GAME LAYOUT (UNCHANGED)
+   Used by: games/game.html
+   ============================================================ */
 
 /* ============================================================
    PAGE WRAPPER
@@ -349,7 +738,7 @@
 }
 
 /* ============================================================
-   RESPONSIVE TUNING
+   RESPONSIVE TUNING — SINGLE GAME
 ============================================================ */
 
 @media (max-width: 900px) {
