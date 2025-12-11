@@ -1,5 +1,5 @@
 /* ============================================================
-   OMEGA GENRE LOADER — FINAL STABLE EDITION
+   OMEGA GENRE LOADER — FINAL STABLE EDITION (SANITISED)
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -8,18 +8,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     const grid = document.getElementById("genreGamesGrid");
     const countEl = document.getElementById("genreGamesCount");
 
-    if (!genreName || !grid) return;
+    if (!genreName || !grid) {
+        console.warn("GENRE LOADER — Missing genreName or grid container");
+        return;
+    }
 
     try {
-        // CORRECT PATH — genre pages exist in /games/genres/
+        // Correct depth: /games/genres/ → ../games.json
         const response = await fetch("../games.json");
         const games = await response.json();
 
         const filtered = games.filter(g =>
-            g.genres &&
             Array.isArray(g.genres) &&
             g.genres.map(x => x.toLowerCase()).includes(genreName.toLowerCase())
         );
+
+        if (filtered.length === 0) {
+            console.warn(`GENRE LOADER — No games found for genre: ${genreName}`);
+        }
 
         grid.innerHTML = filtered.map(game => generateGenreCard(game)).join("");
 
@@ -31,15 +37,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 /* ------------------------------------------------------------
-   RENDER CARD — JSON paths remain authoritative.
-   Simply adjust depth for /games/genres/ pages.
+   Build game card — proper thumbnail sanitation + depth fix
 ------------------------------------------------------------ */
 function generateGenreCard(game) {
 
-    let thumb = game.thumbnail || "";
+    let t = game.thumbnail || "";
 
-    // JSON thumbnails are root-relative: "resources/images/thumbnails/all/*.jpg"
-    const finalThumb = `../../${thumb}`;
+    // Remove any accidental prefixes
+    t = t.replace("resources/images/thumbnails/all/", "");
+    t = t.replace("resources/images/thumbnails/", "");
+    t = t.replace("resources/images/", "");
+
+    // Correct final path for /games/genres/ depth
+    const finalThumb = `../../resources/images/thumbnails/all/${t}`;
 
     return `
         <div class="ccg-game-card genre-card">
