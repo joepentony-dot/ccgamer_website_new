@@ -1,5 +1,6 @@
 /* ============================================================
-   CCG LOAD SINGLE GAME — OMEGA ULTRA-STABLE EDITION (FINAL)
+   CCG LOAD SINGLE GAME — OMEGA MATCHED EDITION (FINAL A4)
+   Absolute path-safe, thumbnail-safe, video-safe.
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -12,8 +13,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        // CORRECT PATH — game.html lives inside /games/
-        const response = await fetch("games.json");
+        // CORRECT PATH (game.html lives inside /games/)
+        const response = await fetch("../games/games.json");
         const games = await response.json();
 
         const game = games.find(g => String(g.id) === String(gameId));
@@ -35,10 +36,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 function renderGame(game) {
 
-    /* -------- THUMBNAIL (DO NOT MODIFY JSON PATHS) -------- */
-    const finalThumb = `../${game.thumbnail}`;
+    /* -------- THUMBNAIL FIX -------- */
+    let thumb = game.thumbnail || "";
 
-    /* -------- HERO -------- */
+    // Strip redundant prefixes from JSON if present
+    if (thumb.startsWith("resources/images/")) {
+        thumb = thumb.replace("resources/images/thumbnails/all/", "");
+        thumb = thumb.replace("resources/images/thumbnails/", "");
+        thumb = thumb.replace("resources/images/", "");
+    }
+
+    const finalThumb = `../resources/images/thumbnails/all/${thumb}`;
+
+
+    /* ------------------------------------------------------------
+       HERO — IMAGE & BASIC META
+    ------------------------------------------------------------ */
 
     document.getElementById("gameSystemKicker").textContent = game.system || "Unknown";
     document.getElementById("gameHeroTitle").textContent = game.title;
@@ -49,13 +62,14 @@ function renderGame(game) {
         bg.style.backgroundImage = `url('${finalThumb}')`;
     }
 
-    /* -------- META -------- */
-
     document.getElementById("gameMetaYear").textContent = game.year || "—";
     document.getElementById("gameMetaSystem").textContent = game.system || "—";
     document.getElementById("gameMetaDeveloper").textContent = game.developer || "Unknown";
 
-    /* -------- GENRES -------- */
+
+    /* ------------------------------------------------------------
+       GENRES
+    ------------------------------------------------------------ */
 
     const genresEl = document.getElementById("gameGenres");
     if (genresEl && game.genres?.length) {
@@ -63,42 +77,92 @@ function renderGame(game) {
         genresEl.hidden = false;
     }
 
-    /* -------- DESCRIPTION -------- */
+
+    /* ------------------------------------------------------------
+       DESCRIPTION
+    ------------------------------------------------------------ */
 
     if (game.description) {
         document.getElementById("gameDescription").innerHTML = game.description;
         document.getElementById("game-description-section").hidden = false;
     }
 
-    /* -------- VIDEO (FIXED KEY) -------- */
+
+    /* ------------------------------------------------------------
+       EXTERNAL LINKS (e.g., Lemon64 / LemonAmiga)
+    ------------------------------------------------------------ */
+
+    const lemonBlock = document.getElementById("lemon-links-block");
+    const lemonList = document.getElementById("lemon-links-list");
+
+    if (Array.isArray(game.lemon) && game.lemon.length > 0) {
+        lemonBlock.hidden = false;
+        lemonList.innerHTML = game.lemon.map(url => `
+            <li><a href="${url}" target="_blank" rel="noopener">${url}</a></li>
+        `).join("");
+    }
+
+
+    /* ------------------------------------------------------------
+       VIDEO — EMBED + META + WATCH BUTTON
+    ------------------------------------------------------------ */
 
     if (game.videoid) {
+
+        // Show iframe section
         document.getElementById("game-video-embed").src =
             `https://www.youtube.com/embed/${game.videoid}`;
-
         document.getElementById("game-video-section").hidden = false;
+
+        // Activate "Watch on YouTube" button
+        const videoBtn = document.getElementById("gameVideoBtn");
+        if (videoBtn) {
+            videoBtn.href = `https://www.youtube.com/watch?v=${game.videoid}`;
+            videoBtn.hidden = false;
+        }
+
+        // Update meta tags for SEO
+        const metaTitle = document.getElementById("game-meta-title");
+        const metaDesc = document.getElementById("game-meta-description");
+
+        if (metaTitle) {
+            metaTitle.textContent = `${game.title} (${game.year || "C64/Amiga"}) | Cheeky Commodore Gamer`;
+        }
+
+        if (metaDesc) {
+            metaDesc.content =
+                `Full details, screenshots and gameplay video for ${game.title} on the ${game.system}.`;
+        }
     }
 
-    /* -------- MANUAL -------- */
 
-    if (game.manual) {
+    /* ------------------------------------------------------------
+       MANUAL (PDF)
+    ------------------------------------------------------------ */
+    if (game.pdf) {
         const btn = document.getElementById("gameManualBtn");
-        btn.href = game.manual;
+        btn.href = game.pdf;
         btn.hidden = false;
     }
 
-    /* -------- DISK -------- */
 
-    if (game.disk) {
+    /* ------------------------------------------------------------
+       DISK / TAPE
+    ------------------------------------------------------------ */
+    if (Array.isArray(game.disk) && game.disk.length > 0) {
         const btn = document.getElementById("gameDiskBtn");
-        btn.href = game.disk;
+        btn.href = game.disk[0];
         btn.hidden = false;
     }
 
-    /* -------- RELATED -------- */
+
+    /* ------------------------------------------------------------
+       RELATED GAMES
+    ------------------------------------------------------------ */
 
     renderRelatedGames(game);
 }
+
 
 /* ============================================================
    RELATED GAMES
@@ -108,7 +172,7 @@ function renderRelatedGames(game) {
     const container = document.getElementById("relatedGamesGrid");
     if (!container) return;
 
-    fetch("games.json")
+    fetch("../games/games.json")
         .then(res => res.json())
         .then(allGames => {
 
@@ -122,7 +186,12 @@ function renderRelatedGames(game) {
 
             container.innerHTML = related.map(g => {
 
-                const final = `../${g.thumbnail}`;
+                let t = g.thumbnail || "";
+                if (t.startsWith("resources/images/")) {
+                    t = t.replace("resources/images/thumbnails/all/", "");
+                }
+
+                const final = `../resources/images/thumbnails/all/${t}`;
 
                 return `
                     <a href="game.html?id=${g.id}" class="ccg-game-card">
