@@ -189,41 +189,48 @@
                 </header>
 
                 <div class="home-highlights-grid">
-                    <!-- Featured Game -->
-                    <article class="ccg-card home-feature-card">
-                        <a href="games/game.html?id=1942" class="ccg-card__media ccg-card__media--16x9">
+                    <!-- Featured Game (DRIVEN BY home-dynamic.js) -->
+                    <article class="ccg-card home-feature-card" data-ccg-featured-game>
+                        <div class="ccg-card__media ccg-card__media--16x9">
                             <img src="resources/images/thumbnails/all/1942.jpg"
-                                 alt="Featured game artwork">
-                        </a>
+                                 alt="Featured game artwork"
+                                 data-fg-thumb>
+                        </div>
                         <div class="ccg-card__body">
-                            <h3 class="ccg-card__title">Featured Game — Ghetto Blaster</h3>
-                            <p class="ccg-card__text">
+                            <h3 class="ccg-card__title" data-fg-title>
+                                Featured Game — Ghetto Blaster
+                            </h3>
+                            <p class="ccg-card__text" data-fg-desc>
                                 C64 · Virgin Games — a standout entry in the Commodore library with unforgettable tunes.
                             </p>
-                            <a href="games/game.html?id=1942" class="ccg-btn ccg-btn--primary">
+                            <a href="games/game.html?id=1942"
+                               class="ccg-btn ccg-btn--primary"
+                               data-fg-btn>
                                 View Game
                             </a>
                         </div>
                     </article>
 
-                    <!-- Featured Video -->
-                    <article class="ccg-card home-feature-card">
-                        <a href="https://www.youtube.com/@CheekyCommodoreGamer"
-                           target="_blank"
-                           rel="noopener"
-                           class="ccg-card__media ccg-card__media--16x9">
-                            <img src="resources/images/hero/ccg-feature-video-placeholder.jpg"
-                                 alt="Featured CCG video">
-                        </a>
+                    <!-- Featured Video — Omega Cinematic Embed (DRIVEN BY home-dynamic.js) -->
+                    <article class="ccg-card home-feature-card home-feature-card--video">
                         <div class="ccg-card__body">
-                            <h3 class="ccg-card__title">Featured CCG Video</h3>
+                            <h3 class="ccg-card__title" data-ccg-featured-video-title>
+                                Featured CCG Video
+                            </h3>
                             <p class="ccg-card__text">
                                 A hand-picked longplay or review from the channel — perfect for a retro session.
                             </p>
+                        </div>
+                        <div class="ccg-card__media ccg-card__media--16x9 home-feature-video__frame"
+                             data-ccg-featured-video>
+                            <!-- YouTube iframe injected here by home-dynamic.js -->
+                        </div>
+                        <div class="home-feature-video__actions">
                             <a href="https://www.youtube.com/@CheekyCommodoreGamer"
                                target="_blank"
                                rel="noopener"
-                               class="ccg-btn ccg-btn--primary">
+                               class="ccg-btn ccg-btn--primary"
+                               data-ccg-featured-video-btn>
                                 Watch on YouTube
                             </a>
                         </div>
@@ -376,5 +383,6 @@
     <!-- JS -->
     <script src="js/ccg-global.js" defer></script>
     <script src="js/ccg-mode-engine.js" defer></script>
+    <script src="js/home-dynamic.js" defer></script>
 </body>
 </html>
