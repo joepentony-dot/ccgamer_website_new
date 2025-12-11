@@ -376,3 +376,16 @@
         transform: translateY(0);
     }
 }
+
+/* ============================================================
+   OPTIONAL DENSITY HELPERS (CURRENTLY UNUSED — SAFE)
+   These do nothing until applied as extra classes in HTML.
+   ============================================================ */
+
+.ccg-hero--medium {
+    /* slightly tighter hero, safe helper */
+}
+
+.ccg-hero--tight {
+    /* even tighter hero, safe helper */
+}
