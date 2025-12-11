@@ -50,3 +50,65 @@
     0%, 100% { opacity: 0.7; }
     50%      { opacity: 1; }
 }
+
+/* ============================================================
+   OMEGA CINEMATIC — SECTION REVEAL (ADDITIVE + SAFE)
+   Used by: home-dynamic.js to animate hero + highlights + genre
+   Does not override any existing animations.
+   ============================================================ */
+
+.ccg-anim-in {
+    opacity: 0;
+    transform: translateY(22px) scale(0.98);
+    animation:
+        ccgFadeRise 0.66s ease-out forwards,
+        ccgGlowPulse 2.4s ease-out forwards;
+    animation-delay: var(--ccg-anim-delay, 0s);
+    will-change: opacity, transform, filter;
+}
+
+/* Smooth fade + rise */
+@keyframes ccgFadeRise {
+    0% {
+        opacity: 0;
+        transform: translateY(22px) scale(0.98);
+        filter: blur(3px);
+    }
+    40% {
+        opacity: 0.55;
+        transform: translateY(10px) scale(0.99);
+        filter: blur(1.5px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0px);
+    }
+}
+
+/* Subtle neon bloom pulse */
+@keyframes ccgGlowPulse {
+    0% {
+        text-shadow:
+            0 0 0 rgba(var(--accent-rgb), 0),
+            0 0 0 rgba(var(--accent-rgb), 0);
+        box-shadow:
+            0 0 0 rgba(var(--accent-rgb), 0);
+    }
+    40% {
+        text-shadow:
+            0 0 12px rgba(var(--accent-rgb), 0.55),
+            0 0 22px rgba(var(--accent-rgb), 0.35);
+        box-shadow:
+            0 0 14px rgba(var(--accent-rgb), 0.25),
+            0 0 26px rgba(var(--accent-rgb), 0.15);
+    }
+    100% {
+        text-shadow:
+            0 0 8px rgba(var(--accent-rgb), 0.35),
+            0 0 18px rgba(var(--accent-rgb), 0.25);
+        box-shadow:
+            0 0 10px rgba(var(--accent-rgb), 0.22),
+            0 0 22px rgba(var(--accent-rgb), 0.12);
+    }
+}
