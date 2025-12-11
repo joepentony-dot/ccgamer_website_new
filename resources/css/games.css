@@ -1,19 +1,17 @@
 /* ============================================================
-   GAME.CSS — Omega Single Game Layout
-   - 1A Poster Hero (blurred BG + 16:9 thumb)
-   - 2A Single-line meta: Year · System · Developer
-   - 3A Inline buttons
-   - 4A Full-width description + neon divider
-   - 5C Horizontal scroll related games
+   GAMES.CSS — Omega Games Index (A–Z Neon Edition)
+   - A–Z letter sections with full-width neon bars
+   - Uses shared 16:9 cards from ccg-cards.css
+   - Standard Omega grid density (option 3A)
    ============================================================ */
 
-.ccg-page--single-game {
+.ccg-page--games-index {
     padding-bottom: 40px;
 }
 
-/* MAIN WRAPPER TIGHTENING ----------------------------------- */
+/* MAIN WRAPPER ---------------------------------------------- */
 
-.ccg-main--single-game {
+.ccg-main--games-index {
     max-width: 1120px;
     margin: 0 auto;
     padding-top: 18px;
@@ -21,438 +19,271 @@
 }
 
 /* ============================================================
-   HERO — POSTER LAYOUT
+   HERO
    ============================================================ */
 
-.game-hero {
-    position: relative;
-    margin: 0 auto 28px auto;
-    border-radius: 18px;
-    overflow: hidden;
-    padding: 0;
-    background: radial-gradient(circle at top, rgba(255,255,255,0.14), rgba(0,0,0,0.98));
-    min-height: 260px;
-    box-shadow:
-        0 0 26px rgba(0, 0, 0, 0.85),
-        0 0 40px rgba(0, 0, 0, 0.85);
+.games-index-hero {
+    margin-bottom: 24px;
 }
 
-/* Background image is applied inline via JS on #gameHeroBG */
-.game-hero#gameHeroBG {
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
-/* Darken & colourise overlay for readability */
-.game-hero__backdrop {
-    position: absolute;
-    inset: 0;
-    background:
-        radial-gradient(circle at top, rgba(0,0,0,0.35), rgba(0,0,0,0.9))
-        ,
-        linear-gradient(120deg,
-            rgba(var(--accent-rgb), 0.08),
-            rgba(0,0,0,0.8),
-            rgba(var(--accent-rgb), 0.18)
-        );
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    opacity: 0.95;
-}
-
-/* Inner layout: text + thumb */
-.game-hero__inner {
-    position: relative;
-    z-index: 1;
-    display: grid;
-    grid-template-columns: minmax(0, 1.7fr) minmax(0, 1.4fr);
-    gap: 24px;
-    padding: 20px 22px;
-}
-
-/* LEFT PANEL ------------------------------------------------ */
-
-.game-hero__left {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 10px;
-}
-
-.game-hero__system {
-    font-family: var(--ccg-font-main, 'Press Start 2P', monospace);
-    font-size: 0.55rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent);
-    text-shadow:
-        0 0 10px rgba(var(--accent-rgb), 0.85),
-        0 0 24px rgba(var(--accent-rgb), 0.50);
-}
-
-.game-hero__title {
-    margin: 0;
-    font-family: var(--ccg-font-main, 'Press Start 2P', monospace);
-    font-size: 1.15rem;
-    line-height: 1.35;
-    text-transform: uppercase;
-    color: var(--text-light, #ffffff);
-    text-shadow:
-        0 0 14px rgba(var(--accent-rgb), 0.9),
-        0 0 32px rgba(var(--accent-rgb), 0.55);
-}
-
-/* clamp to 2 lines visually if very long */
-.game-hero__title {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-/* Single line meta: Year · System · Developer */
-.game-hero__meta {
-    font-size: 0.8rem;
-    color: var(--text-dim, #c8d4e0);
-    opacity: 0.95;
+.games-index-hero__inner {
     display: flex;
     flex-wrap: wrap;
+    gap: 16px;
     align-items: center;
-    gap: 6px;
+    justify-content: space-between;
 }
 
-.game-hero__dot {
-    opacity: 0.7;
+.games-index-hero__left {
+    flex: 1 1 260px;
 }
 
-.game-hero__genres {
-    font-size: 0.75rem;
-    color: var(--text-light, #ffffff);
-    opacity: 0.9;
-    margin-top: 4px;
-}
-
-/* Buttons row: inline (3A) */
-.game-hero__buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 12px;
-}
-
-/* RIGHT PANEL — 16:9 THUMBNAIL ------------------------------ */
-
-.game-hero__right {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-}
-
-.game-hero__thumb-outer {
-    flex: 0 0 100%;
-    max-width: 360px;
-    width: 100%;
-}
-
-.game-hero__thumb-inner {
-    position: relative;
-    width: 100%;
-    padding-top: 56.25%; /* 16:9 */
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow:
-        0 0 22px rgba(0, 0, 0, 0.85),
-        0 0 40px rgba(var(--accent-rgb), 0.35);
-    transform: translateZ(0);
-    transition:
-        transform 0.22s ease-out,
-        box-shadow 0.22s ease-out;
-}
-
-.game-hero__thumb-inner img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* Hover lift + extra glow */
-.game-hero__thumb-inner:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow:
-        0 0 30px rgba(var(--accent-rgb), 0.8),
-        0 0 56px rgba(var(--accent-rgb), 0.5);
-}
-
-/* ============================================================
-   SHARED SECTION STYLE
-   ============================================================ */
-
-.game-section {
-    margin: 0 0 26px 0;
-    padding: 16px 18px 18px 18px;
-    border-radius: 16px;
-    background: rgba(0, 0, 0, 0.72);
-    box-shadow:
-        0 0 18px rgba(0,0,0,0.8),
-        0 0 28px rgba(var(--accent-rgb), 0.18);
-    border: 1px solid rgba(255,255,255,0.08);
-}
-
-.game-section__header {
-    margin-bottom: 10px;
-}
-
-.game-section__title {
+.games-index-title {
     margin: 0 0 6px 0;
     font-family: var(--ccg-font-main, 'Press Start 2P', monospace);
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     text-transform: uppercase;
     color: var(--text-light, #ffffff);
     text-shadow:
-        0 0 10px rgba(var(--accent-rgb), 0.7),
-        0 0 26px rgba(var(--accent-rgb), 0.45);
+        0 0 14px rgba(var(--accent-rgb), 0.8),
+        0 0 30px rgba(var(--accent-rgb), 0.45);
 }
 
-/* Neon divider bar */
-.game-section__divider {
-    width: 96px;
-    height: 2px;
-    border-radius: 999px;
-    background: linear-gradient(
-        90deg,
-        rgba(var(--accent-rgb), 0.1),
-        rgba(var(--accent-rgb), 0.8),
-        rgba(var(--accent-rgb), 0.1)
-    );
-    box-shadow:
-        0 0 14px rgba(var(--accent-rgb), 0.9),
-        0 0 24px rgba(var(--accent-rgb), 0.6);
-}
-
-.game-section__body {
+.games-index-subtitle {
+    margin: 0 0 8px 0;
     font-size: 0.85rem;
     color: var(--text-dim, #c8d4e0);
 }
 
-/* ============================================================
-   DESCRIPTION
-   ============================================================ */
-
-.game-description-body {
-    line-height: 1.6;
+.games-index-meta {
+    font-size: 0.82rem;
+    color: var(--text-dim, #c8d4e0);
+    opacity: 0.95;
 }
 
-.game-description-body p {
-    margin: 0 0 0.9em 0;
+.games-index-meta strong {
+    color: var(--accent, #00d6ff);
 }
 
-.game-description-body a {
-    color: var(--accent);
-    text-decoration: underline;
+/* Small right-hand legend */
+
+.games-index-hero__right {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: flex-end;
 }
 
-/* ============================================================
-   VIDEO
-   ============================================================ */
-
-.game-section--video .game-section__body {
-    padding-top: 4px;
-}
-
-.game-video-wrapper {
-    max-width: 960px;
-    margin: 0 auto;
-}
-
-.game-video-aspect {
-    position: relative;
-    width: 100%;
-    padding-top: 56.25%; /* 16:9 */
-    border-radius: 14px;
-    overflow: hidden;
+.games-index-legend {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow:
-        0 0 22px rgba(0,0,0,0.85),
-        0 0 40px rgba(var(--accent-rgb), 0.38);
+        0 0 16px rgba(0,0,0,0.85),
+        0 0 22px rgba(var(--accent-rgb), 0.36);
+    font-size: 0.75rem;
+    color: var(--text-dim, #c8d4e0);
 }
 
-.game-video-aspect iframe {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
+.games-index-legend__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--accent, #00d6ff);
+    box-shadow:
+        0 0 12px rgba(var(--accent-rgb), 0.9),
+        0 0 24px rgba(var(--accent-rgb), 0.6);
 }
 
 /* ============================================================
-   EXTERNAL LINKS
+   A–Z SECTION STRUCTURE
    ============================================================ */
 
-.game-links-list {
-    list-style: none;
-    padding: 0;
-    margin: 2px 0 0 0;
+.games-index-section {
+    margin-top: 10px;
+}
+
+.games-atoz-container {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 26px;
 }
 
-.game-links-list a {
-    color: var(--accent);
-    text-decoration: none;
-    font-size: 0.8rem;
-    word-break: break-all;
-}
-
-.game-links-list a:hover {
-    text-shadow:
-        0 0 10px rgba(var(--accent-rgb), 0.8),
-        0 0 22px rgba(var(--accent-rgb), 0.45);
+/* Each letter block */
+.games-letter-block {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 /* ============================================================
-   RELATED GAMES — HORIZONTAL SCROLLER (5C)
+   NEON LETTER HEADER BAR
    ============================================================ */
 
-.related-scroll-wrapper {
-    overflow-x: auto;
-    overflow-y: visible;
-    padding-bottom: 4px;
-    margin: 0 -6px;
+.games-letter-header {
+    padding: 4px 0;
 }
 
-/* hide ugly scrollbars where possible but keep usable */
-.related-scroll-wrapper::-webkit-scrollbar {
-    height: 6px;
-}
-.related-scroll-wrapper::-webkit-scrollbar-track {
-    background: rgba(0,0,0,0.6);
-}
-.related-scroll-wrapper::-webkit-scrollbar-thumb {
-    background: rgba(var(--accent-rgb), 0.6);
-    border-radius: 999px;
-}
-
-.related-scroll {
+.games-letter-bar {
+    position: relative;
     display: flex;
-    gap: 14px;
-    padding: 4px 6px 2px 6px;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    margin: 0;
 }
 
-/* Cards adapt to horizontal strip */
-.related-scroll .ccg-game-card {
-    flex: 0 0 230px;
-    max-width: 230px;
-}
-
-.related-scroll .ccg-game-card__thumb {
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-/* Slightly smaller text than main grids */
-.related-scroll .ccg-game-card__title {
-    font-size: 0.78rem;
-}
-
-.related-scroll .ccg-game-card__meta {
+/* The glowing central pill */
+.games-letter-label {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    padding: 4px 12px 5px;
+    border-radius: 999px;
+    font-family: var(--ccg-font-main, 'Press Start 2P', monospace);
     font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-light, #ffffff);
+    background: radial-gradient(circle at 50% 50%,
+        rgba(var(--accent-rgb), 0.9),
+        rgba(var(--accent-rgb), 0.25)
+    );
+    box-shadow:
+        0 0 16px rgba(var(--accent-rgb), 0.85),
+        0 0 32px rgba(var(--accent-rgb), 0.55);
+}
+
+/* Neon line stretching full width behind the pill */
+.games-letter-bar::before,
+.games-letter-bar::after {
+    content: "";
+    position: absolute;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(
+        90deg,
+        rgba(var(--accent-rgb), 0.0),
+        rgba(var(--accent-rgb), 0.85),
+        rgba(var(--accent-rgb), 0.0)
+    );
+    box-shadow:
+        0 0 18px rgba(var(--accent-rgb), 0.85),
+        0 0 32px rgba(var(--accent-rgb), 0.55);
+    pointer-events: none;
+}
+
+.games-letter-bar::before {
+    left: 4px;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Subtle inner line (adds a bit of CRT feel) */
+.games-letter-bar::after {
+    left: 18px;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.6;
 }
 
 /* ============================================================
-   RESPONSIVE BEHAVIOUR
+   GRID UNDER EACH LETTER
+   ============================================================ */
+
+.games-letter-grid {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+/* We reuse the shared 16:9 Omega card system from ccg-cards.css.
+   Here we only tweak small specifics for the games index if needed. */
+
+.games-letter-grid .ccg-game-card__title {
+    /* keep standard Omega style; slight size nudge for dense grids */
+    font-size: 0.8rem;
+}
+
+.games-letter-grid .ccg-game-card__meta {
+    font-size: 0.72rem;
+}
+
+/* ============================================================
+   RESPONSIVE TUNING
    ============================================================ */
 
 @media (max-width: 900px) {
 
-    .game-hero__inner {
-        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.3fr);
-        gap: 18px;
-        padding: 18px 16px;
+    .ccg-main--games-index {
+        padding-top: 14px;
+        padding-bottom: 26px;
     }
 
-    .game-hero__title {
-        font-size: 1.02rem;
+    .games-index-hero__inner {
+        gap: 10px;
     }
 
-    .game-hero__thumb-outer {
-        max-width: 320px;
+    .games-index-title {
+        font-size: 0.98rem;
+    }
+
+    .games-letter-grid {
+        gap: 16px;
     }
 }
 
 @media (max-width: 720px) {
 
-    .game-hero {
-        margin-bottom: 22px;
+    .games-index-hero__inner {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
-    .game-hero__inner {
-        grid-template-columns: minmax(0, 1fr);
-        padding: 16px;
-        gap: 14px;
-    }
-
-    .game-hero__right {
+    .games-index-hero__right {
+        width: 100%;
         justify-content: flex-start;
     }
 
-    .game-hero__thumb-outer {
-        max-width: 100%;
+    .games-atoz-container {
+        gap: 22px;
     }
 
-    .game-hero__title {
-        font-size: 0.96rem;
+    .games-letter-bar::before {
+        left: 0;
+        right: 0;
     }
 
-    .game-hero__meta {
-        font-size: 0.76rem;
-    }
-
-    .game-hero__buttons {
-        margin-top: 10px;
-    }
-
-    .ccg-main--single-game {
-        padding-top: 12px;
-        padding-bottom: 24px;
-    }
-
-    .game-section {
-        padding: 14px 12px 16px 12px;
-        margin-bottom: 20px;
-    }
-
-    .game-section__title {
-        font-size: 0.82rem;
-    }
-
-    .game-description-body {
-        font-size: 0.84rem;
-    }
-
-    .related-scroll .ccg-game-card {
-        flex: 0 0 210px;
-        max-width: 210px;
+    .games-letter-bar::after {
+        left: 10px;
+        right: 10px;
     }
 }
 
 @media (max-width: 480px) {
 
-    .game-hero__system {
-        font-size: 0.5rem;
-    }
-
-    .game-hero__title {
+    .games-index-title {
         font-size: 0.9rem;
     }
 
-    .game-section__divider {
-        width: 72px;
+    .games-index-subtitle {
+        font-size: 0.8rem;
     }
 
-    .game-links-list a {
-        font-size: 0.75rem;
+    .games-letter-label {
+        font-size: 0.65rem;
+        padding: 3px 10px 4px;
+    }
+
+    .games-letter-grid {
+        grid-template-columns: minmax(0, 1fr);
     }
 }
