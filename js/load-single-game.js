@@ -1,5 +1,5 @@
 /* ============================================================
-   CCG LOAD SINGLE GAME — OMEGA ULTRA-STABLE FINAL EDITION
+   CCG LOAD SINGLE GAME — OMEGA SLUG-ID EDITION (FINAL)
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const response = await fetch("games.json");
         const games = await response.json();
 
-        const game = games.find(g => String(g.id) === String(gameId));
+        const game = games.find(g => g.id === gameId);
 
         if (!game) {
             console.error("Game not found:", gameId);
@@ -29,29 +29,29 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 /* ============================================================
-   UNIVERSAL THUMBNAIL SANITISER
-   ============================================================ */
-function resolveThumb(path) {
-    if (!path) return "";
-
-    return path.replace(/^resources\/images\/thumbnails\/all\//i, "");
-}
-
-/* ============================================================
    RENDER GAME
    ============================================================ */
 
 function renderGame(game) {
 
-    /* ---------- FIX THUMBNAIL ---------- */
-    const clean = resolveThumb(game.thumbnail || "");
-    const finalThumb = `../resources/images/thumbnails/all/${clean}`;
+    /* ---------- THUMBNAIL PATH ---------- */
+
+    let thumb = game.thumbnail || "";
+
+    if (thumb.startsWith("resources/images/")) {
+        thumb = thumb.replace("resources/images/thumbnails/all/", "");
+        thumb = thumb.replace("resources/images/", "");
+    }
+
+    const finalThumb = `resources/images/thumbnails/all/${thumb}`;
 
     /* ---------- HERO ---------- */
 
     document.getElementById("gameHeroTitle").textContent = game.title;
     document.getElementById("gameSystemKicker").textContent = game.system || "Unknown";
-    document.getElementById("gameHeroThumb").src = finalThumb;
+
+    const heroImg = document.getElementById("gameHeroThumb");
+    if (heroImg) heroImg.src = finalThumb;
 
     const bg = document.getElementById("gameHeroBG");
     if (bg) {
@@ -61,21 +61,20 @@ function renderGame(game) {
 
     /* ---------- META ---------- */
 
-    document.getElementById("gameMetaYear").textContent = game.year || "—";
-    document.getElementById("gameMetaSystem").textContent = game.system || "—";
-    document.getElementById("gameMetaDeveloper").textContent = game.developer || "Unknown";
+    setText("gameMetaYear", game.year);
+    setText("gameMetaSystem", game.system);
+    setText("gameMetaDeveloper", game.developer);
 
     /* ---------- GENRES ---------- */
 
-    const genresEl = document.getElementById("gameGenres");
-    if (genresEl) {
-        genresEl.textContent = (game.genres || []).join(", ");
+    const genresList = document.getElementById("gameGenres");
+    if (genresList) {
+        genresList.textContent = (game.genres || []).join(", ");
     }
 
     /* ---------- DESCRIPTION ---------- */
 
-    document.getElementById("gameDescription").textContent =
-        game.description || "No description available.";
+    setText("gameDescription", game.description);
 
     /* ---------- VIDEO ---------- */
 
@@ -84,31 +83,32 @@ function renderGame(game) {
         embedEl.src = `https://www.youtube.com/embed/${game.video}`;
     }
 
-    /* ---------- MANUALS / DISKS ---------- */
+    /* ---------- MANUAL & DISK LINKS ---------- */
 
     const manualBtn = document.getElementById("gameManualBtn");
     const diskBtn = document.getElementById("gameDiskBtn");
 
-    if (manualBtn) {
-        if (game.manual) manualBtn.href = game.manual;
-        else manualBtn.style.display = "none";
-    }
+    if (manualBtn) manualBtn.style.display = game.manual ? "inline-flex" : "none";
+    if (diskBtn) diskBtn.style.display = game.disk ? "inline-flex" : "none";
 
-    if (diskBtn) {
-        if (game.disk) diskBtn.href = game.disk;
-        else diskBtn.style.display = "none";
-    }
+    if (manualBtn && game.manual) manualBtn.href = game.manual;
+    if (diskBtn && game.disk) diskBtn.href = game.disk;
 
-    /* ---------- RELATED ---------- */
+    /* ---------- RELATED GAMES ---------- */
+
     renderRelatedGames(game);
 }
 
+function setText(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value || "—";
+}
+
 /* ============================================================
-   RELATED GAMES
+   RELATED GAMES (Match first genre)
    ============================================================ */
 
 function renderRelatedGames(game) {
-
     const container = document.getElementById("relatedGamesGrid");
     if (!container) return;
 
@@ -124,22 +124,26 @@ function renderRelatedGames(game) {
                 g.genres.includes(mainGenre)
             ).slice(0, 6);
 
-            container.innerHTML = related.map(g => {
-
-                const thumbClean = resolveThumb(g.thumbnail || "");
-                const finalT = `../resources/images/thumbnails/all/${thumbClean}`;
-
-                return `
-                    <a href="game.html?id=${g.id}" class="ccg-game-card">
-                        <div class="ccg-game-card__thumb">
-                            <img src="${finalT}" alt="${g.title}" loading="lazy">
-                        </div>
-                        <div class="ccg-game-card__body">
-                            <h3 class="ccg-game-card__title">${g.title}</h3>
-                            <div class="ccg-game-card__meta">${g.year || ""} · ${g.system || ""}</div>
-                        </div>
-                    </a>
-                `;
-            }).join("");
+            container.innerHTML = related.map(g => createRelatedCard(g)).join("");
         });
+}
+
+function createRelatedCard(g) {
+    let t = g.thumbnail || "";
+    if (t.startsWith("resources/images/")) {
+        t = t.replace("resources/images/thumbnails/all/", "");
+    }
+    const finalT = `resources/images/thumbnails/all/${t}`;
+
+    return `
+        <a href="game.html?id=${g.id}" class="ccg-game-card">
+            <div class="ccg-game-card__thumb">
+                <img src="${finalT}" alt="${g.title}">
+            </div>
+            <div class="ccg-game-card__body">
+                <h3 class="ccg-game-card__title">${g.title}</h3>
+                <div class="ccg-game-card__meta">${g.year || ""} · ${g.system || ""}</div>
+            </div>
+        </a>
+    `;
 }
