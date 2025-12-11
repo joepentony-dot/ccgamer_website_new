@@ -24,7 +24,7 @@
     <link rel="stylesheet" href="../resources/css/quiz.css" />
 </head>
 
-<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
+<body class="ccg-body" data-ccg-mode="c64">
 
     <!-- BACKGROUND -->
     <div class="ccg-bg">
@@ -138,8 +138,7 @@
                         <p class="ccg-hero-kicker">CCG Trivia League</p>
                         <h1 class="ccg-hero-title">Test Your Retro Knowledge</h1>
                         <p class="ccg-section-subtitle">
-                            Choose a quiz pack, answer against the clock and submit your score to the live leaderboard.
-                            C64 and Amiga questions, hand-picked from the Cheeky Commodore Gamer vault.
+                            Choose a quiz pack, answer before the clock expires and submit your score to compete for leaderboard glory.
                         </p>
 
                         <div class="quiz-hero-controls">
@@ -147,7 +146,6 @@
                                 <label for="quiz-pack-select" class="quiz-pack-label">
                                     Quiz Pack
                                 </label>
-                                <!-- Populated by quiz-loader.js -->
                                 <select id="quiz-pack-select" class="quiz-pack-select">
                                     <option value="">Loading packs…</option>
                                 </select>
@@ -172,7 +170,7 @@
                         </div>
                     </div>
 
-                    <!-- RIGHT: SID bars visualiser -->
+                    <!-- RIGHT: SID bars -->
                     <div class="quiz-hero-visual">
                         <div id="quiz-sid-bars" class="quiz-sid-bars">
                             <div class="quiz-sid-bar"></div>
@@ -188,35 +186,28 @@
             <section class="ccg-section quiz-section">
                 <div class="quiz-layout">
 
-                    <!-- INTRO PANEL (textual, optional) -->
+                    <!-- INTRO PANEL -->
                     <article id="quiz-intro-panel" class="quiz-panel quiz-panel--intro">
                         <h2 class="ccg-section-title">How it works</h2>
                         <ol class="quiz-howto-list">
                             <li>Select a quiz pack from the dropdown.</li>
                             <li>Hit <strong>Start Quiz</strong> when you’re ready.</li>
-                            <li>Answer each question before the time runs out.</li>
-                            <li>When you’re done, save your score to the leaderboard.</li>
+                            <li>Answer each question before the timer runs out.</li>
+                            <li>Save your score to the leaderboard.</li>
                         </ol>
-                        <p class="quiz-note">
-                            Pro tip: enable SFX for full SID-flavoured feedback.
-                        </p>
+                        <p class="quiz-note">Pro tip: turn on SFX for extra SID flavour.</p>
                     </article>
 
                     <!-- ACTIVE QUIZ PANEL -->
                     <article id="quiz-panel" class="quiz-panel quiz-panel--active" hidden>
                         <header class="quiz-panel-header">
-                            <div id="quiz-status" class="quiz-status">
-                                <!-- e.g. Question 3 of 10 • 18s left -->
-                            </div>
+                            <div id="quiz-status" class="quiz-status"></div>
                         </header>
 
                         <div class="quiz-question-card">
-                            <div id="quiz-question-text" class="quiz-question-text">
-                                <!-- Question text injected by quiz-engine.js -->
-                            </div>
+                            <div id="quiz-question-text" class="quiz-question-text"></div>
 
                             <div id="quiz-options" class="quiz-options-grid">
-                                <!-- Answer buttons injected here -->
                             </div>
                         </div>
                     </article>
@@ -239,7 +230,7 @@
 
                         <div class="quiz-score-name">
                             <label for="quiz-name-input" class="quiz-name-label">
-                                Enter your name (or handle) for the leaderboard:
+                                Enter your name for the leaderboard:
                             </label>
                             <input id="quiz-name-input"
                                    class="quiz-name-input"
@@ -260,6 +251,7 @@
                             </a>
                         </div>
                     </article>
+
                 </div>
             </section>
 
@@ -268,7 +260,9 @@
         <!-- FOOTER -->
         <footer class="ccg-footer">
             <div class="ccg-footer-inner">
-                <p class="ccg-footer-text">© 2025 Cheeky Commodore Gamer.</p>
+                <p class="ccg-footer-text">
+                    © <span data-ccg-year></span> Cheeky Commodore Gamer.
+                </p>
                 <p class="ccg-footer-text ccg-footer-text--small">
                     Not affiliated with Commodore, Amiga or any publishers.
                 </p>
