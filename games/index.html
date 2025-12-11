@@ -4,9 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Browse Games | Cheeky Commodore Gamer</title>
+    <title>Browse All Games | Cheeky Commodore Gamer</title>
     <meta name="description"
-          content="Browse the full Cheeky Commodore Gamer library — C64 and Amiga classics, BPJS curiosities, licensed gems and more.">
+          content="Browse the full Cheeky Commodore Gamer library of Commodore 64 and Amiga titles — searchable A–Z with thumbnails, year, system and developer details.">
 
     <link rel="icon" href="../favicon.ico" />
 
@@ -14,173 +14,155 @@
     <link rel="stylesheet" href="../resources/css/ccg-master.css" />
     <link rel="stylesheet" href="../resources/css/ccg-mode.css" />
     <link rel="stylesheet" href="../resources/css/ccg-effects.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-anim.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-overlays.css" />
     <link rel="stylesheet" href="../resources/css/ccg-socials.css" />
-    <link rel="stylesheet" href="../resources/css/ccg-hero.css" />
 
-    <!-- GAMES INDEX CSS -->
+    <!-- CARDS + PAGE CSS -->
+    <link rel="stylesheet" href="../resources/css/ccg-cards.css" />
     <link rel="stylesheet" href="../resources/css/games.css" />
 </head>
 
 <body class="ccg-body" data-ccg-mode="c64">
 
-<!-- OMEGA GLOBAL BACKGROUND OVERLAYS -->
-<div class="ccg-bg">
-    <div class="ccg-bg-starfield"></div>
-    <div class="ccg-bg-grid"></div>
-    <div class="ccg-bg-crt-overlay"></div>
-</div>
+    <!-- GLOBAL BACKGROUND LAYERS -->
+    <div class="ccg-bg">
+        <div class="ccg-bg-starfield"></div>
+        <div class="ccg-bg-grid"></div>
+        <div class="ccg-bg-crt-overlay"></div>
+    </div>
 
-<div class="ccg-page ccg-page--games-index">
+    <div class="ccg-page ccg-page--games-index">
 
-    <!-- HEADER -->
-    <header class="ccg-header">
-        <div class="ccg-header-inner">
+        <!-- ============================================================
+             HEADER (DEPTH: /games/)
+        ============================================================ -->
+        <header class="ccg-header">
+            <div class="ccg-header-inner">
 
-            <a href="../home.html" class="ccg-brand">
-                <img src="../resources/images/ccgamer-logo.png"
-                     alt="Cheeky Commodore Gamer logo"
-                     class="ccg-brand__logo"
-                     loading="lazy">
+                <!-- BRAND -->
+                <a href="../home.html" class="ccg-brand">
+                    <img src="../resources/images/ccgamer-logo.png"
+                         alt="Cheeky Commodore Gamer logo"
+                         class="ccg-brand__logo"
+                         loading="lazy">
 
-                <div class="ccg-brand__text">
-                    <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
-                    <div class="ccg-brand__title">
-                        <span class="ccg-brand__n eon-cheeky">CHEEKY</span>
-                        <span class="ccg-brand__neon-sub">COMMODORE GAMER</span>
+                    <div class="ccg-brand__text">
+                        <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
+                        <div class="ccg-brand__title">
+                            <span class="ccg-brand__neon-cheeky">CHEEKY</span>
+                            <span class="ccg-brand__neon-sub">COMMODORE GAMER</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- NAV -->
+                <nav class="ccg-nav" aria-label="Primary navigation">
+                    <ul class="ccg-nav__list">
+                        <li><a href="../home.html" class="ccg-nav__link">Home</a></li>
+                        <li><a href="index.html" class="ccg-nav__link ccg-nav__link--active">Browse Games</a></li>
+                        <li><a href="genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
+                        <li><a href="collections/index.html" class="ccg-nav__link">Collections</a></li>
+                        <li><a href="../quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
+                        <li><a href="../emulation.html" class="ccg-nav__link">Emulation</a></li>
+                        <li><a href="../about.html" class="ccg-nav__link">About</a></li>
+                        <li><a href="../contact.html" class="ccg-nav__link">Contact</a></li>
+                    </ul>
+                </nav>
+
+                <!-- HEADER ACTIONS -->
+                <div class="ccg-header-actions">
+
+                    <!-- MODE TOGGLE -->
+                    <button class="ccg-mode-toggle" type="button"
+                            aria-label="Toggle between C64 and Amiga modes"
+                            data-ccg-mode-toggle>
+                        <span class="ccg-mode-toggle__pill">
+                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
+                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">Amiga</span>
+                            <span class="ccg-mode-toggle__thumb"></span>
+                        </span>
+                    </button>
+
+                    <!-- SOCIAL ICONS -->
+                    <div class="ccg-header-socials">
+                        <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube">
+                            <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
+                        </a>
+                        <a href="https://patreon.com/CheekyCommodoreGamer" aria-label="Patreon">
+                            <span class="ccg-socials__icon ccg-socials__icon--patreon"></span>
+                        </a>
+                        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" aria-label="PayPal">
+                            <span class="ccg-socials__icon ccg-socials__icon--paypal"></span>
+                        </a>
+                        <a href="https://twitter.com/CheekyC64Gamer" aria-label="Twitter/X">
+                            <span class="ccg-socials__icon ccg-socials__icon--x"></span>
+                        </a>
+                        <a href="https://www.facebook.com/cheekycommodoregamer" aria-label="Facebook">
+                            <span class="ccg-socials__icon ccg-socials__icon--fb"></span>
+                        </a>
+                        <a href="https://discord.gg/83Xw9ktAn4" aria-label="Discord">
+                            <span class="ccg-socials__icon ccg-socials__icon--discord"></span>
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="ccg-header-neon-strip"></div>
+        </header>
+
+        <!-- ============================================================
+             MAIN
+        ============================================================ -->
+        <main class="ccg-main ccg-main--games-index">
+
+            <!-- HERO / INTRO -->
+            <section class="games-index-hero">
+                <div class="games-index-hero__inner">
+                    <div class="games-index-hero__left">
+                        <h1 class="games-index-title">Browse All Games</h1>
+                        <p class="games-index-subtitle">
+                            A complete A–Z of Commodore 64 &amp; Amiga titles featured on Cheeky Commodore Gamer.
+                        </p>
+                        <div class="games-index-meta">
+                            <span><strong id="gamesCount">0</strong> games loaded</span>
+                        </div>
+                    </div>
+
+                    <div class="games-index-hero__right">
+                        <div class="games-index-legend">
+                            <span class="games-index-legend__dot"></span>
+                            <span class="games-index-legend__text">Organised by starting letter · A–Z</span>
+                        </div>
                     </div>
                 </div>
-            </a>
+            </section>
 
-            <nav class="ccg-nav" aria-label="Primary navigation">
-                <ul class="ccg-nav__list">
-                    <li><a href="../home.html" class="ccg-nav__link">Home</a></li>
-                    <li><a href="index.html" class="ccg-nav__link ccg-nav__link--active">Browse Games</a></li>
-                    <li><a href="genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
-                    <li><a href="collections/index.html" class="ccg-nav__link">Collections</a></li>
-                    <li><a href="../quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
-                    <li><a href="../emulation.html" class="ccg-nav__link">Emulation</a></li>
-                    <li><a href="../about.html" class="ccg-nav__link">About</a></li>
-                    <li><a href="../contact.html" class="ccg-nav__link">Contact</a></li>
-                </ul>
-            </nav>
-
-            <div class="ccg-header-actions">
-                <button class="ccg-mode-toggle"
-                        type="button"
-                        aria-label="Toggle between C64 and Amiga modes"
-                        data-ccg-mode-toggle>
-                    <span class="ccg-mode-toggle__pill">
-                        <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
-                        <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">Amiga</span>
-                        <span class="ccg-mode-toggle__thumb"></span>
-                    </span>
-                </button>
-
-                <!-- STANDARD OMEGA SOCIAL ICONS -->
-                <div class="ccg-header-socials">
-                    <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube">
-                        <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
-                    </a>
-                    <a href="https://patreon.com/CheekyCommodoreGamer" aria-label="Patreon">
-                        <span class="ccg-socials__icon ccg-socials__icon--patreon"></span>
-                    </a>
-                    <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" aria-label="PayPal">
-                        <span class="ccg-socials__icon ccg-socials__icon--paypal"></span>
-                    </a>
-                    <a href="https://twitter.com/CheekyC64Gamer" aria-label="Twitter/X">
-                        <span class="ccg-socials__icon ccg-socials__icon--x"></span>
-                    </a>
-                    <a href="https://www.facebook.com/cheekycommodoregamer" aria-label="Facebook">
-                        <span class="ccg-socials__icon ccg-socials__icon--fb"></span>
-                    </a>
-                    <a href="https://discord.gg/83Xw9ktAn4" aria-label="Discord">
-                        <span class="ccg-socials__icon ccg-socials__icon--discord"></span>
-                    </a>
+            <!-- A–Z CONTAINER (filled by games-library.js) -->
+            <section class="games-index-section">
+                <div id="gamesAtoZContainer" class="games-atoz-container">
+                    <!-- JS will inject A–Z letter blocks here -->
                 </div>
-            </div>
-        </div>
+            </section>
 
-        <div class="ccg-header-neon-strip"></div>
-    </header>
+        </main>
 
-    <!-- MAIN -->
-    <main class="ccg-main">
+        <!-- FOOTER -->
+        <footer class="ccg-footer">
+            <p class="ccg-footer__text">
+                &copy; <span data-ccg-year></span> Cheeky Commodore Gamer.
+                Not affiliated with Commodore, Amiga or publishers.
+            </p>
+        </footer>
 
-        <section class="ccg-games-hero">
-            <div class="ccg-games-hero__inner">
-                <h1 class="ccg-games-hero__title">Browse the Library</h1>
-                <p class="ccg-games-hero__tagline">
-                    Filter across C64 and Amiga, search by title, year or developer,
-                    and jump straight into game detail pages.
-                </p>
-            </div>
-        </section>
+    </div>
 
-        <!-- FILTER UI -->
-        <section class="ccg-filters-accordion">
-            <div class="ccg-acc-item">
-                <button class="ccg-acc-header" data-acc-toggle>
-                    <span>🔍 Search</span>
-                    <span class="ccg-acc-arrow">▼</span>
-                </button>
-                <div class="ccg-acc-body">
-                    <input id="searchInput" class="ccg-input" type="text" placeholder="Search games…" data-ccg-games-search />
-                </div>
-            </div>
-
-            <div class="ccg-acc-item">
-                <button class="ccg-acc-header" data-acc-toggle>
-                    <span>🖥️ System</span>
-                    <span class="ccg-acc-arrow">▼</span>
-                </button>
-                <div class="ccg-acc-body">
-                    <select id="systemFilter" class="ccg-select">
-                        <option value="all">All Systems</option>
-                        <option value="C64">C64</option>
-                        <option value="Amiga">Amiga</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="ccg-acc-item">
-                <button class="ccg-acc-header" data-acc-toggle>
-                    <span>🎮 Genre</span>
-                    <span class="ccg-acc-arrow">▼</span>
-                </button>
-                <div class="ccg-acc-body">
-                    <select id="genreFilter" class="ccg-select" data-ccg-genre-filter>
-                        <option value="all">All genres</option>
-                    </select>
-                </div>
-            </div>
-        </section>
-
-        <section class="ccg-games-browser">
-
-            <div id="gamesGrid" class="ccg-games-grid"></div>
-
-            <div class="ccg-games-load-more-wrap">
-                <button type="button" class="ccg-btn ccg-btn--ghost" data-ccg-load-more>
-                    Show more games
-                </button>
-            </div>
-        </section>
-
-    </main>
-
-    <footer class="ccg-footer">
-        <p class="ccg-footer__text">
-            &copy; <span data-ccg-year></span> Cheeky Commodore Gamer.
-            Not affiliated with Commodore, Amiga or publishers.
-        </p>
-    </footer>
-
-</div>
-
-<script src="../js/ccg-global.js" defer></script>
-<script src="../js/ccg-mode-engine.js" defer></script>
-<script src="../js/games-library.js" defer></script>
-<script src="../js/games-validator.js" defer></script>
+    <!-- JS -->
+    <script src="../js/ccg-global.js" defer></script>
+    <script src="../js/ccg-mode-engine.js" defer></script>
+    <script src="../js/games-library.js" defer></script>
 
 </body>
 </html>
