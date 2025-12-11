@@ -6,7 +6,7 @@
 
     <title>Browse All Games | Cheeky Commodore Gamer</title>
     <meta name="description"
-          content="Browse the full Cheeky Commodore Gamer library of Commodore 64 and Amiga titles — searchable A–Z with thumbnails, year, system and developer details.">
+          content="Browse the full Cheeky Commodore Gamer library — all Commodore 64 & Amiga titles with search, alphabet index and quick access to single-game detail pages.">
 
     <link rel="icon" href="../favicon.ico" />
 
@@ -17,15 +17,14 @@
     <link rel="stylesheet" href="../resources/css/ccg-anim.css" />
     <link rel="stylesheet" href="../resources/css/ccg-overlays.css" />
     <link rel="stylesheet" href="../resources/css/ccg-socials.css" />
-
-    <!-- CARDS + PAGE CSS -->
     <link rel="stylesheet" href="../resources/css/ccg-cards.css" />
+    <!-- PAGE CSS -->
     <link rel="stylesheet" href="../resources/css/games.css" />
 </head>
 
-<body class="ccg-body" data-ccg-mode="c64">
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
 
-    <!-- GLOBAL BACKGROUND LAYERS -->
+    <!-- GLOBAL BACKGROUND -->
     <div class="ccg-bg">
         <div class="ccg-bg-starfield"></div>
         <div class="ccg-bg-grid"></div>
@@ -35,7 +34,7 @@
     <div class="ccg-page ccg-page--games-index">
 
         <!-- ============================================================
-             HEADER (DEPTH: /games/)
+             HEADER
         ============================================================ -->
         <header class="ccg-header">
             <div class="ccg-header-inner">
@@ -73,7 +72,6 @@
                 <!-- HEADER ACTIONS -->
                 <div class="ccg-header-actions">
 
-                    <!-- MODE TOGGLE -->
                     <button class="ccg-mode-toggle" type="button"
                             aria-label="Toggle between C64 and Amiga modes"
                             data-ccg-mode-toggle>
@@ -84,7 +82,6 @@
                         </span>
                     </button>
 
-                    <!-- SOCIAL ICONS -->
                     <div class="ccg-header-socials">
                         <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube">
                             <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
@@ -107,7 +104,6 @@
                     </div>
 
                 </div>
-
             </div>
 
             <div class="ccg-header-neon-strip"></div>
@@ -116,34 +112,81 @@
         <!-- ============================================================
              MAIN
         ============================================================ -->
-        <main class="ccg-main ccg-main--games-index">
+        <main class="ccg-main games-main">
 
             <!-- HERO / INTRO -->
-            <section class="games-index-hero">
-                <div class="games-index-hero__inner">
-                    <div class="games-index-hero__left">
-                        <h1 class="games-index-title">Browse All Games</h1>
-                        <p class="games-index-subtitle">
-                            A complete A–Z of Commodore 64 &amp; Amiga titles featured on Cheeky Commodore Gamer.
+            <section class="games-hero">
+                <div class="games-hero__inner">
+                    <div class="games-hero__text">
+                        <h1 class="games-hero__title">Browse All Games</h1>
+                        <p class="games-hero__subtitle">
+                            Explore the full C64 &amp; Amiga library using the search bar and
+                            alphabet index. Tap a row to expand the games for that letter.
                         </p>
-                        <div class="games-index-meta">
-                            <span><strong id="gamesCount">0</strong> games loaded</span>
-                        </div>
-                    </div>
 
-                    <div class="games-index-hero__right">
-                        <div class="games-index-legend">
-                            <span class="games-index-legend__dot"></span>
-                            <span class="games-index-legend__text">Organised by starting letter · A–Z</span>
+                        <div class="games-hero__stats">
+                            <span>
+                                <strong id="gamesTotalCount">0</strong>
+                                <span class="games-hero__stats-label">total games</span>
+                            </span>
+                            <span class="games-hero__stats-divider">•</span>
+                            <span>
+                                <strong id="gamesResultsCount">0</strong>
+                                <span class="games-hero__stats-label">matching search</span>
+                            </span>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- A–Z CONTAINER (filled by games-library.js) -->
-            <section class="games-index-section">
-                <div id="gamesAtoZContainer" class="games-atoz-container">
-                    <!-- JS will inject A–Z letter blocks here -->
+            <!-- SEARCH + FILTER TOOLS -->
+            <section class="games-tools">
+                <div class="games-tools__inner">
+
+                    <div class="games-search">
+                        <label for="gamesSearchInput" class="games-search__label">
+                            Search by title, system or developer
+                        </label>
+                        <div class="games-search__field">
+                            <span class="games-search__icon">🔎</span>
+                            <input
+                                type="search"
+                                id="gamesSearchInput"
+                                autocomplete="off"
+                                placeholder="Start typing a game title, system (C64 / Amiga) or developer..."
+                            />
+                            <button type="button" id="gamesSearchClear" class="games-search__clear" aria-label="Clear search">
+                                ×
+                            </button>
+                        </div>
+                        <p class="games-search__helper">
+                            Tip: use short terms like <span>C64</span>, <span>Amiga</span>, <span>Ocean</span> or part of a title.
+                        </p>
+                    </div>
+
+                    <!-- Alphabet quick jump index -->
+                    <div class="games-alpha">
+                        <div class="games-alpha__label">Jump to letter:</div>
+                        <div class="games-alpha__strip" id="gamesAlphaStrip">
+                            <!-- A–Z + # are injected here by JS for consistent ordering -->
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- ACCORDION LIBRARY -->
+            <section class="games-library">
+                <div class="games-library__inner">
+
+                    <div id="gamesAccordion" class="games-accordion" aria-label="Game index by letter">
+                        <!-- Sections injected here by games-library.js -->
+                    </div>
+
+                    <div class="games-empty-state" id="gamesEmptyState" hidden>
+                        <p>No games match your search yet. Try a shorter term or remove filters.</p>
+                    </div>
+
                 </div>
             </section>
 
@@ -152,7 +195,7 @@
         <!-- FOOTER -->
         <footer class="ccg-footer">
             <p class="ccg-footer__text">
-                &copy; <span data-ccg-year></span> Cheeky Commodore Gamer.
+                © <span data-ccg-year></span> Cheeky Commodore Gamer.
                 Not affiliated with Commodore, Amiga or publishers.
             </p>
         </footer>
