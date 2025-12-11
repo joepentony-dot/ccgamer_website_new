@@ -1,90 +1,40 @@
 /* ============================================================
-   CCG MODE ENGINE — OMEGA A1
-   Handles:
-   ✔ C64 ↔ Amiga toggle pill
-   ✔ Body data-mode attribute
-   ✔ Hero label update
-   ✔ LocalStorage persistence
-   ✔ Safe fallbacks
-============================================================ */
+   CCG MODE ENGINE — FIXED ICON PATHS + ERROR HANDLING
+   ============================================================ */
 
-(function () {
+document.addEventListener("DOMContentLoaded", () => {
+
+    const toggle = document.querySelector("[data-ccg-mode-toggle], #ccgModeToggle");
+    if (!toggle) {
+        console.warn("ccg-mode-engine.js: Mode toggle button not found.");
+        return;
+    }
 
     const body = document.body;
+    const current = body.dataset.ccgMode || "c64";
 
-    const MODE_KEY = "ccg-site-mode";              // localStorage key
-    const toggleBtn = document.querySelector("[data-ccg-mode-toggle]");
-
-    // Old hero label (still supported in case some pages use it)
-    const heroModeLabelLegacy = document.querySelector("[data-ccg-hero-mode-label]");
-
-    // NEW Phase 5 hero label
-    const heroModeLabel = document.querySelector("[data-ccg-mode-label]");
-
-    const heroBadge = document.querySelector("[data-ccg-hero-badge]");
-
-    /* ------------------------------------------------------------
-       1) DETERMINE STARTUP MODE
-    ------------------------------------------------------------ */
-
-    function getInitialMode() {
-        const saved = localStorage.getItem(MODE_KEY);
-        if (saved === "c64" || saved === "amiga") return saved;
-
-        // Default mode = C64
-        return "c64";
-    }
-
-    function applyMode(mode) {
-        body.setAttribute("data-mode", mode);
-
-        const upper = mode.toUpperCase();
-
-        // Update NEW Phase 5 label
-        if (heroModeLabel) {
-            heroModeLabel.textContent = upper;
+    const ICON_PATH = (pageDepth => {
+        switch (pageDepth) {
+            case 0: return "resources/images/icons/";
+            case 1: return "../resources/images/icons/";
+            case 2: return "../../resources/images/icons/";
+            default: return "../resources/images/icons/";
         }
+    })(document.location.pathname.split("/").length - 2);
 
-        // Keep backwards compatibility for any older hero pages
-        if (heroModeLabelLegacy) {
-            heroModeLabelLegacy.textContent = upper;
+    const C64_ICON = ICON_PATH + "mode-c64.png";
+    const AMIGA_ICON = ICON_PATH + "mode-amiga.png";
+
+    const toggleIcon = toggle.querySelector("img");
+    if (toggleIcon) toggleIcon.src = current === "c64" ? C64_ICON : AMIGA_ICON;
+
+    toggle.addEventListener("click", () => {
+        const newMode = body.dataset.ccgMode === "c64" ? "amiga" : "c64";
+        body.dataset.ccgMode = newMode;
+
+        if (toggleIcon) {
+            toggleIcon.src = newMode === "c64" ? C64_ICON : AMIGA_ICON;
         }
+    });
 
-        if (heroBadge) {
-            heroBadge.classList.remove("mode-c64", "mode-amiga");
-            heroBadge.classList.add(`mode-${mode}`);
-        }
-
-        localStorage.setItem(MODE_KEY, mode);
-    }
-
-
-    /* ------------------------------------------------------------
-       2) TOGGLE LOGIC
-    ------------------------------------------------------------ */
-
-    function toggleMode() {
-        const current = body.getAttribute("data-mode") || "c64";
-        const next = current === "c64" ? "amiga" : "c64";
-        applyMode(next);
-    }
-
-
-    /* ------------------------------------------------------------
-       3) INITIALISE
-    ------------------------------------------------------------ */
-
-    const startingMode = getInitialMode();
-    applyMode(startingMode);
-
-    /* ------------------------------------------------------------
-       4) WIRE THE BUTTON
-    ------------------------------------------------------------ */
-
-    if (toggleBtn) {
-        toggleBtn.addEventListener("click", toggleMode);
-    } else {
-        console.warn("⚠ ccg-mode-engine.js: Mode toggle button not found.");
-    }
-
-})();
+});
