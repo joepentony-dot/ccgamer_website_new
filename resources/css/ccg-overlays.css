@@ -11,7 +11,7 @@
 .ccg-bg-starfield {
     position: absolute;
     inset: 0;
-    background: url("../images/starfield.png") repeat;
+    background: url("../images/starfield_new.png") repeat;
     opacity: 0.35;
     animation: ccgStarDrift 80s linear infinite;
     z-index: 1;
@@ -30,7 +30,7 @@
 .ccg-bg-grid {
     position: absolute;
     inset: 0;
-    background: url("../images/bg-grid.png") repeat;
+    background: url("../images/bg-grid_new.jpg") repeat;
     opacity: 0.12;
     mix-blend-mode: screen;
     animation: ccgGridScroll 120s linear infinite;
@@ -51,8 +51,8 @@
 .ccg-bg-starfield,
 .ccg-bg-grid,
 .ccg-bg-crt-overlay {
-    pointer-events: none;      /* background only, no click capture */
-    z-index: 0;                /* always behind page chrome */
+    pointer-events: none;
+    z-index: 0;
 }
 
 /* Keep page content above the overlays,
