@@ -1,14 +1,11 @@
 /* ============================================================
-   CCG GAMES LIBRARY — OMEGA ULTRA-STABLE EDITION (FINAL FIX)
-   Thumbnail logic corrected:
-   - JSON paths remain untouched (source of truth)
-   - Proper depth adjustment for /games/ directory
-   ============================================================ */
+   CCG GAMES LIBRARY — OMEGA ULTRA-STABLE EDITION (FINAL META)
+============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
 
     try {
-        // CORRECT PATH — index.html lives inside /games/
+        // Correct path — index.html lives inside /games/
         const response = await fetch("games.json");
         const games = await response.json();
 
@@ -26,15 +23,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-/* ------------------------------------------------------------
-   RENDERER — No prefix stripping. JSON thumbnail stays intact.
-   Simply add "../" for correct depth from /games/ pages.
------------------------------------------------------------- */
+/* ============================================================
+   CARD RENDERER — NOW SHOWS YEAR · SYSTEM · DEVELOPER
+============================================================ */
 function renderGameCard(game) {
 
     let thumb = game.thumbnail || "";
 
-    // JSON thumbnails are root-relative ("resources/images/thumbnails/all/*.jpg")
     const finalThumb = `../${thumb}`;
 
     const meta = [
