@@ -1,9 +1,12 @@
 /* ============================================================
-   CCG GAMES LIBRARY — OMEGA ACCORDION EDITION
-   - Fetches /games/games.json from /games/index.html
-   - 16:9 card thumbnails (handled by ccg-cards.css)
-   - Search by title / system / developer
-   - Alphabet jump (A–Z + #) with accordion sections
+   CCG GAMES LIBRARY — OMEGA ACCORDION EDITION (OPTION B)
+   ------------------------------------------------------------
+   • Fetches /games/games.json from /games/index.html
+   • 16:9 card thumbnails (handled by ccg-cards.css)
+   • Search by title / system / developer
+   • Alphabet jump (A–Z + #)
+   • Accordion UI with smooth open/close
+   • Polished fallback + safer thumb resolver
    ============================================================ */
 
 let CCG_ALL_GAMES = [];
@@ -19,13 +22,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function initGamesLibrary() {
     try {
-        const response = await fetch("games.json"); // /games/index.html → /games/games.json
+
+        // Correct depth: /games/index.html → /games/games.json
+        const response = await fetch("games.json");
         const games = await response.json();
 
+        // Defensive copy
         CCG_ALL_GAMES = Array.isArray(games) ? games.slice() : [];
         CCG_FILTERED_GAMES = CCG_ALL_GAMES.slice();
 
-        // Sort master list by title for consistent grouping
+        // Always sort master list for consistent alphabetical grouping
         CCG_ALL_GAMES.sort((a, b) => {
             const ta = (a.title || "").toLowerCase();
             const tb = (b.title || "").toLowerCase();
@@ -121,13 +127,8 @@ function updateStats() {
     const resultsEl = document.getElementById("gamesResultsCount");
     const emptyState = document.getElementById("gamesEmptyState");
 
-    if (totalEl) {
-        totalEl.textContent = CCG_ALL_GAMES.length.toString();
-    }
-
-    if (resultsEl) {
-        resultsEl.textContent = CCG_FILTERED_GAMES.length.toString();
-    }
+    if (totalEl) totalEl.textContent = CCG_ALL_GAMES.length.toString();
+    if (resultsEl) resultsEl.textContent = CCG_FILTERED_GAMES.length.toString();
 
     if (emptyState) {
         emptyState.hidden = CCG_FILTERED_GAMES.length > 0;
@@ -157,7 +158,7 @@ function buildGroupedGames() {
         groups[letter].push(game);
     });
 
-    // Sort each group's games by title
+    // Sort each group
     Object.keys(groups).forEach(letter => {
         groups[letter].sort((a, b) => {
             const ta = (a.title || "").toLowerCase();
@@ -203,7 +204,6 @@ function renderAlphabetStrip() {
         );
         if (!section) return;
 
-        // Open it if closed
         section.classList.add("games-accordion__section--open");
 
         const rect = section.getBoundingClientRect();
@@ -262,38 +262,37 @@ function renderGamesAccordion(options = {}) {
         `;
     });
 
-    accordion.innerHTML = html;
-
-    // If nothing exists, clear (handled by empty state separately)
-    if (!html) {
-        accordion.innerHTML = "";
-    }
+    accordion.innerHTML = html || "";
 }
 
 /* ============================================================
-   CARD RENDERER — Reuses Omega card system
+   CARD GENERATION — Omega Polished Thumb Resolver
    ============================================================ */
 
 function resolveGameThumbForIndex(rawThumb) {
-    if (!rawThumb) {
-        // Safe fallback thumbnail (existing known-good path)
-        return "../resources/images/thumbnails/all/1942.jpg";
-    }
+
+    // Guaranteed fallback (safe known-good image)
+    const FALLBACK = "../resources/images/thumbnails/all/1942.jpg";
+
+    if (!rawThumb) return FALLBACK;
 
     let t = String(rawThumb).trim();
 
-    // strip any leading slash
-    if (t.startsWith("/")) {
-        t = t.replace(/^\/+/, "");
-    }
+    // Strip any leading slash ("/something.jpg")
+    t = t.replace(/^\/+/, "");
 
-    // If JSON is already "resources/images/..." then prefix for /games/ depth
+    // If JSON contains a full or partial "resources/images/" path
     if (t.startsWith("resources/")) {
         return `../${t}`;
     }
 
-    // If it’s just a filename, target the main thumbnails folder
-    return `../resources/images/thumbnails/all/${t}`;
+    // If only a filename is provided → resolve to main thumbnails folder
+    if (!t.includes("/")) {
+        return `../resources/images/thumbnails/all/${t}`;
+    }
+
+    // Any other unexpected format → fallback
+    return FALLBACK;
 }
 
 function buildGameMetaLine(game) {
@@ -307,7 +306,10 @@ function buildGameMetaLine(game) {
 }
 
 function renderGameCard(game) {
-    const thumb = resolveGameThumbForIndex(game.thumbnail || game.thumb || game.cover);
+    const thumb = resolveGameThumbForIndex(
+        game.thumbnail || game.thumb || game.cover
+    );
+
     const meta = buildGameMetaLine(game);
 
     return `
