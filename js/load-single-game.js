@@ -1,5 +1,5 @@
 /* ============================================================
-   CCG LOAD SINGLE GAME — ULTRA-STABLE OMEGA EDITION (FIXED)
+   CCG LOAD SINGLE GAME — OMEGA MATCHED EDITION (HTML-SAFE)
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        // CORRECT PATH — JS file lives in /js, JSON lives in /games
         const response = await fetch("../games/games.json");
         const games = await response.json();
 
@@ -35,6 +34,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 function renderGame(game) {
 
+    /* -------- THUMBNAIL FIX -------- */
     let thumb = game.thumbnail || "";
 
     if (thumb.startsWith("resources/images/")) {
@@ -45,56 +45,67 @@ function renderGame(game) {
 
     const finalThumb = `../resources/images/thumbnails/all/${thumb}`;
 
-    document.getElementById("game-title").textContent = game.title;
-    document.getElementById("game-system-label").textContent = game.system || "Unknown";
-    document.getElementById("game-hero-image").src = finalThumb;
+    /* -------- HERO SECTION -------- */
 
-    const bg = document.querySelector(".game-hero-bg");
+    document.getElementById("gameSystemKicker").textContent = game.system || "Unknown";
+
+    document.getElementById("gameHeroTitle").textContent = game.title;
+
+    document.getElementById("gameHeroThumb").src = finalThumb;
+
+    const bg = document.getElementById("gameHeroBG");
     if (bg) {
         bg.style.backgroundImage = `url('${finalThumb}')`;
-        bg.classList.add("game-hero-bg--active");
     }
 
-    document.getElementById("game-year").textContent = game.year || "—";
-    document.getElementById("game-system").textContent = game.system || "—";
-    document.getElementById("game-developer").textContent = game.developer || "Unknown";
+    /* -------- META -------- */
 
-    const genresEl = document.getElementById("game-genres");
+    document.getElementById("gameMetaYear").textContent = game.year || "—";
+    document.getElementById("gameMetaSystem").textContent = game.system || "—";
+    document.getElementById("gameMetaDeveloper").textContent = game.developer || "Unknown";
+
+    /* -------- GENRES -------- */
+
+    const genresEl = document.getElementById("gameGenres");
     if (genresEl && game.genres?.length) {
         genresEl.textContent = game.genres.join(", ");
         genresEl.hidden = false;
     }
 
-    document.getElementById("game-description").textContent =
-        game.description || "No description available.";
+    /* -------- DESCRIPTION -------- */
 
-    /* VIDEO */
-    const embedEl = document.getElementById("game-video-embed");
-    const videoSection = document.getElementById("game-video-section");
-
-    if (game.video && embedEl) {
-        embedEl.src = `https://www.youtube.com/embed/${game.video}`;
-        videoSection.hidden = false;
+    if (game.description) {
+        document.getElementById("gameDescription").innerHTML = game.description;
+        document.getElementById("game-description-section").hidden = false;
     }
 
-    /* MANUAL / DISK */
-    const pdfBtn = document.getElementById("pdf-button");
-    if (pdfBtn) {
-        if (game.manual) {
-            pdfBtn.href = game.manual;
-            pdfBtn.hidden = false;
-        }
+    /* -------- VIDEO -------- */
+
+    if (game.video) {
+        document.getElementById("game-video-embed").src =
+            `https://www.youtube.com/embed/${game.video}`;
+
+        document.getElementById("game-video-section").hidden = false;
     }
 
-    const diskBtn = document.getElementById("disk-button");
-    if (diskBtn) {
-        if (game.disk) {
-            diskBtn.href = game.disk;
-            diskBtn.hidden = false;
-        }
+    /* -------- MANUAL -------- */
+
+    if (game.manual) {
+        const btn = document.getElementById("gameManualBtn");
+        btn.href = game.manual;
+        btn.hidden = false;
     }
 
-    /* RELATED GAMES */
+    /* -------- DISK -------- */
+
+    if (game.disk) {
+        const btn = document.getElementById("gameDiskBtn");
+        btn.href = game.disk;
+        btn.hidden = false;
+    }
+
+    /* -------- RELATED -------- */
+
     renderRelatedGames(game);
 }
 
@@ -103,7 +114,7 @@ function renderGame(game) {
    ============================================================ */
 
 function renderRelatedGames(game) {
-    const container = document.getElementById("related-games-grid");
+    const container = document.getElementById("relatedGamesGrid");
     if (!container) return;
 
     fetch("../games/games.json")
@@ -119,10 +130,12 @@ function renderRelatedGames(game) {
             ).slice(0, 6);
 
             container.innerHTML = related.map(g => {
+
                 let t = g.thumbnail || "";
                 if (t.startsWith("resources/images/")) {
                     t = t.replace("resources/images/thumbnails/all/", "");
                 }
+
                 const final = `../resources/images/thumbnails/all/${t}`;
 
                 return `
