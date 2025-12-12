@@ -1,16 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" data-ccg-page="genre-single">
+<html lang="en" data-ccg-page="collection-single">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Top Picks | Cheeky Commodore Gamer</title>
+
+    <title>Top Picks Collection | Cheeky Commodore Gamer</title>
 
     <meta name="description"
-          content="Top Picks — standout Commodore 64 and Amiga titles selected for their quality, innovation, nostalgia and lasting impact across retro gaming history." />
+          content="Top Picks Collection — standout Commodore 64 and Amiga titles personally selected for their quality, innovation, nostalgia and lasting impact across retro gaming history." />
 
     <link rel="icon" href="../../favicon.ico" />
 
-    <!-- REQUIRED FONT RESTORE -->
+    <!-- REQUIRED FONT RESTORE (Orbitron + Roboto) -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     <!-- GLOBAL CSS -->
@@ -24,15 +25,18 @@
     <link rel="stylesheet" href="../../resources/css/genre.css" />
 </head>
 
-<body class="ccg-body" data-ccg-mode="c64" data-genre="Top Picks">
+<body class="ccg-body"
+      data-ccg-mode="c64"
+      data-genre="Top Picks">
 
+    <!-- BACKGROUND -->
     <div class="ccg-bg">
         <div class="ccg-bg-starfield"></div>
         <div class="ccg-bg-grid"></div>
         <div class="ccg-bg-crt-overlay"></div>
     </div>
 
-    <div class="ccg-page ccg-page--genre-single">
+    <div class="ccg-page ccg-page--collection-single">
 
         <!-- HEADER -->
         <header class="ccg-header">
@@ -57,8 +61,8 @@
                     <ul class="ccg-nav__list">
                         <li><a href="../../home.html" class="ccg-nav__link">Home</a></li>
                         <li><a href="../../games/index.html" class="ccg-nav__link">Browse Games</a></li>
-                        <li><a href="../../games/genres/index.html" class="ccg-nav__link ccg-nav__link--active">Browse by Genre</a></li>
-                        <li><a href="../../games/collections/index.html" class="ccg-nav__link">Collections</a></li>
+                        <li><a href="../../games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
+                        <li><a href="index.html" class="ccg-nav__link ccg-nav__link--active">Collections</a></li>
                         <li><a href="../../quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
                         <li><a href="../../emulation.html" class="ccg-nav__link">Emulation</a></li>
                         <li><a href="../../about.html" class="ccg-nav__link">About</a></li>
@@ -86,42 +90,40 @@
                 </div>
 
             </div>
-
             <div class="ccg-header-neon-strip"></div>
         </header>
 
-        <!-- HERO -->
+        <!-- MAIN -->
         <main class="ccg-main">
 
-            <section class="ccg-genre-hero">
-
+            <!-- COLLECTION HERO -->
+            <section class="ccg-genre-hero ccg-collection-hero">
                 <div class="ccg-genre-hero__bg">
                     <img src="../../resources/images/genres/banners/top-picks-banner.png"
-                         alt="Top Picks Hero Artwork"
+                         alt="Top Picks Collection Artwork"
                          class="ccg-genre-hero__img" />
                     <div class="ccg-genre-hero__overlay"></div>
                 </div>
 
                 <div class="ccg-genre-hero__inner">
-
                     <h1 class="ccg-genre-hero__title">Top Picks</h1>
 
                     <p class="ccg-genre-hero__tagline">
-                        Hand-selected retro highlights chosen for pure nostalgic brilliance.
+                        Hand-selected highlights chosen for timeless gameplay and lasting appeal.
                     </p>
 
                     <div class="ccg-genre-meta">
                         <div class="ccg-genre-meta__left">
-                            <span><span id="genreGamesCount">0</span> games loaded</span>
+                            <span><span id="genreGamesCount">0</span> games in this collection</span>
                         </div>
                         <div class="ccg-genre-meta__right">
-                            <span>C64 &amp; Amiga coverage</span>
+                            <span>C64 &amp; Amiga collection</span>
                         </div>
                     </div>
-
                 </div>
             </section>
 
+            <!-- GRID -->
             <section class="ccg-genre-main">
                 <div id="genreGamesGrid" class="ccg-genre-grid"></div>
             </section>
@@ -130,19 +132,20 @@
             <section class="ccg-section ccg-genre-wayfinding">
                 <div class="game-hero__buttons">
                     <a href="index.html" class="ccg-btn ccg-btn--secondary">
-                        ← Back to Genre Index
+                        ← Back to Collections
                     </a>
                     <a href="../index.html" class="ccg-btn ccg-btn--secondary">
                         Browse All Games
                     </a>
-                    <a href="../collections/index.html" class="ccg-btn ccg-btn--secondary">
-                        View Collections
+                    <a href="../genres/index.html" class="ccg-btn ccg-btn--secondary">
+                        Browse by Genre
                     </a>
                 </div>
             </section>
 
         </main>
 
+        <!-- FOOTER -->
         <footer class="ccg-footer">
             <p class="ccg-footer__text">
                 © <span data-ccg-year></span> Cheeky Commodore Gamer.
@@ -152,9 +155,10 @@
 
     </div>
 
+    <!-- JS -->
     <script src="../../js/ccg-global.js" defer></script>
     <script src="../../js/ccg-mode-engine.js" defer></script>
-    <script src="../../js/genre-loader.js" defer></script>
+    <script src="../../js/genre-loader.js" defer></cript>
 
 </body>
 </html>
