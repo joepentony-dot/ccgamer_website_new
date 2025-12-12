@@ -1,10 +1,10 @@
 /* ============================================================
-   OMEGA GENRE LOADER — ULTRA-STABLE INTEGRITY-HARDENED EDITION
+   OMEGA GENRE / COLLECTION LOADER — DATA INTEGRITY EDITION
    ----------------------------------------------------------------
-   • Preserves all visuals & layout exactly
-   • Defensive genre matching (case + whitespace safe)
-   • Console-only integrity diagnostics
-   • No regressions, no behaviour changes
+   • Supports standard genres + collection genres
+   • Zero visual or layout changes
+   • Console-only diagnostics
+   • Robust genre normalisation
 ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -20,12 +20,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        // Correct depth: /games/genres/ → ../games.json
         const response = await fetch("../games.json");
         const games = await response.json();
 
         if (!Array.isArray(games)) {
-            console.error("[CCG GENRE] games.json is not an array");
+            console.error("[CCG DATA] games.json is not an array");
             return;
         }
 
@@ -46,7 +45,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (filtered.length === 0) {
             console.warn(
-                `[CCG GENRE WARNING] No games found for genre "${genreName}"`
+                `[CCG COLLECTION WARNING] No games found for genre / collection "${genreName}"`
             );
         }
 
@@ -65,7 +64,6 @@ function resolveGenreThumb(raw) {
 
     let t = String(raw).trim();
 
-    // Remove all possible incorrect prefix variants
     t = t.replace("resources/images/thumbnails/all/", "");
     t = t.replace("resources/images/thumbnails/", "");
     t = t.replace("resources/images/", "");
@@ -93,7 +91,6 @@ function generateGenreCard(game) {
         game.thumbnail || game.thumb || game.cover
     );
 
-    // Unified meta line: Year · System · Developer
     const meta = [
         game.year || "",
         game.system || "",
