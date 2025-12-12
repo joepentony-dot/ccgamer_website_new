@@ -1,12 +1,13 @@
 /* ============================================================
-   GAMES LIBRARY — STABLE RESTORE
+   GAMES LIBRARY — STABLE RESTORE (BACKBONE FIX)
    ------------------------------------------------------------
    • Accordion layout (A–Z)
    • Search & filter support
-   • Lazy-loaded thumbnails
+   • Session-based accordion state memory
    • NO runtime caching
-   • NO rAF logic
-   • NO Phase C4 complexity
+   • NO IntersectionObserver tuning
+   • NO rAF optimisation
+   • CRITICAL: Robust games.json path resolution
 ============================================================ */
 
 let CCG_ALL_GAMES = [];
@@ -18,20 +19,64 @@ const ACCORDION_STATE_KEY = "ccgAccordionState";
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
-        // ✅ CORRECT PATH (CRITICAL FIX)
-        const response = await fetch("../games.json");
-        const games = await response.json();
+        const games = await loadGamesJsonRobust();
 
         CCG_ALL_GAMES = Array.isArray(games) ? games : [];
+
+        console.log(`[CCG] Games loaded: ${CCG_ALL_GAMES.length}`);
 
         buildGamesAccordion(CCG_ALL_GAMES);
         restoreAccordionState();
         wireSearchFilter();
 
+        // Optional count display if your HTML has these IDs (harmless if missing)
+        const totalEl = document.getElementById("gamesTotalCount");
+        if (totalEl) totalEl.textContent = String(CCG_ALL_GAMES.length);
+
     } catch (err) {
-        console.error("[CCG] Failed to load games.json:", err);
+        console.error("[CCG] Games Index failed to initialise:", err);
     }
 });
+
+/* ============================================================
+   ROBUST LOADER — games.json
+============================================================ */
+
+async function loadGamesJsonRobust() {
+    // Priority order: correct for /games/index.html is "games.json"
+    const candidates = [
+        "games.json",           // /games/games.json (CORRECT)
+        "../games/games.json",  // also resolves to /games/games.json
+        "../games.json"         // legacy fallback (root)
+    ];
+
+    let lastErr = null;
+
+    for (const url of candidates) {
+        try {
+            const res = await fetch(url, { cache: "no-store" });
+
+            if (!res.ok) {
+                throw new Error(`HTTP ${res.status} on ${url}`);
+            }
+
+            const data = await res.json();
+
+            if (!Array.isArray(data)) {
+                throw new Error(`Loaded but not an array from ${url}`);
+            }
+
+            console.log(`[CCG] Loaded games.json from: ${url}`);
+            return data;
+
+        } catch (e) {
+            lastErr = e;
+            console.warn(`[CCG] Failed loading ${url}:`, e);
+        }
+    }
+
+    throw lastErr || new Error("Unknown error loading games.json");
+}
 
 /* ============================================================
    ACCORDION STATE (SESSION)
@@ -74,45 +119,55 @@ function restoreAccordionState() {
 
 function buildGamesAccordion(games) {
     const container = document.getElementById("gamesAccordion");
-    if (!container) return;
+    if (!container) {
+        console.error('[CCG] Missing #gamesAccordion in games/index.html');
+        return;
+    }
 
     container.innerHTML = "";
 
     const groups = {};
 
     games.forEach(game => {
-        const firstLetter = (game.title || "#")[0].toUpperCase();
+        const title = (game.title || "").toString().trim();
+        const firstLetter = (title ? title[0] : "#").toUpperCase();
+
         if (!groups[firstLetter]) groups[firstLetter] = [];
         groups[firstLetter].push(game);
     });
 
-    Object.keys(groups)
-        .sort()
-        .forEach(letter => {
-            const groupEl = document.createElement("div");
-            groupEl.className = "games-accordion__group";
-            groupEl.dataset.letter = letter;
+    const letters = Object.keys(groups).sort();
 
-            groupEl.innerHTML = `
-                <button class="games-accordion__header" type="button">
-                    <span class="games-accordion__letter">${letter}</span>
-                    <span class="games-accordion__count">${groups[letter].length}</span>
-                </button>
-                <div class="games-accordion__content">
-                    <div class="games-grid">
-                        ${groups[letter].map(renderGameCard).join("")}
-                    </div>
+    if (letters.length === 0) {
+        console.warn("[CCG] No games grouped — check games.json contents");
+        return;
+    }
+
+    letters.forEach(letter => {
+        const groupEl = document.createElement("div");
+        groupEl.className = "games-accordion__group";
+        groupEl.dataset.letter = letter;
+
+        groupEl.innerHTML = `
+            <button class="games-accordion__header" type="button">
+                <span class="games-accordion__letter">${letter}</span>
+                <span class="games-accordion__count">${groups[letter].length}</span>
+            </button>
+            <div class="games-accordion__content">
+                <div class="games-grid">
+                    ${groups[letter].map(renderGameCard).join("")}
                 </div>
-            `;
+            </div>
+        `;
 
-            container.appendChild(groupEl);
+        container.appendChild(groupEl);
 
-            const header = groupEl.querySelector(".games-accordion__header");
-            header.addEventListener("click", () => {
-                const isOpen = groupEl.classList.toggle("is-open");
-                toggleAccordionState(letter, isOpen);
-            });
+        const header = groupEl.querySelector(".games-accordion__header");
+        header.addEventListener("click", () => {
+            const isOpen = groupEl.classList.toggle("is-open");
+            toggleAccordionState(letter, isOpen);
         });
+    });
 }
 
 /* ============================================================
@@ -121,19 +176,20 @@ function buildGamesAccordion(games) {
 
 function renderGameCard(game) {
     const thumb = resolveGameThumb(game.thumbnail || game.thumb || game.cover);
+    const title = (game.title || "Unknown").toString();
 
     return `
         <a href="game.html?id=${game.id}" class="ccg-game-card">
             <div class="ccg-game-card__thumb">
                 <img
                     src="${thumb}"
-                    alt="${game.title}"
+                    alt="${title}"
                     loading="lazy"
                     decoding="async"
                 >
             </div>
             <div class="ccg-game-card__body">
-                <h3 class="ccg-game-card__title">${game.title}</h3>
+                <h3 class="ccg-game-card__title">${title}</h3>
                 <div class="ccg-game-card__meta">
                     ${(game.year || "")} · ${(game.system || "")}
                 </div>
@@ -171,12 +227,16 @@ function wireSearchFilter() {
 
         groups.forEach(group => {
             let anyVisible = false;
+
             group.querySelectorAll(".ccg-game-card").forEach(card => {
-                const title = card.querySelector(".ccg-game-card__title");
-                const visible = title.textContent.toLowerCase().includes(term);
+                const titleEl = card.querySelector(".ccg-game-card__title");
+                const title = (titleEl ? titleEl.textContent : "").toLowerCase();
+
+                const visible = title.includes(term);
                 card.style.display = visible ? "" : "none";
                 if (visible) anyVisible = true;
             });
+
             group.style.display = anyVisible ? "" : "none";
         });
     });
