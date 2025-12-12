@@ -1,29 +1,24 @@
 /* ============================================================
-   CCG CARD BUILDER — SHARED (GENRES + COLLECTIONS)
+   CCG CARD BUILDER — OMEGA CANONICAL EDITION
    ------------------------------------------------------------
-   • Single source of truth for:
-     - resolveGenreThumb()
-     - generateGenreCard()
-   • Works for pages at:
-     /games/genres/*.html
-     /games/collections/*.html
-   • No layout changes — just helper functions
+   • Single source of truth for game cards
+   • Used by:
+       - genre-loader.js
+       - collection-loader.js
+       - future systems
+   • Zero fetch logic
+   • Zero page assumptions
 ============================================================ */
 
 /* ------------------------------------------------------------
-   Thumbnail sanitiser — returns VALID thumbnail path
-   Note: Genre/Collection pages live at /games/genres/ and /games/collections/
-   so thumbnails must be ../../resources/images/thumbnails/all/<file>
+   Thumbnail resolver (safe, depth-agnostic)
 ------------------------------------------------------------ */
-function resolveGenreThumb(raw) {
+function ccgResolveThumb(raw) {
     if (!raw) return "../../resources/images/thumbnails/all/1942.jpg";
 
     let t = String(raw).trim();
 
-    // Strip any leading slashes
     t = t.replace(/^\/+/, "");
-
-    // Reduce any stored path down to filename
     t = t.replace("resources/images/thumbnails/all/", "");
     t = t.replace("resources/images/thumbnails/", "");
     t = t.replace("resources/images/", "");
@@ -34,16 +29,16 @@ function resolveGenreThumb(raw) {
 }
 
 /* ------------------------------------------------------------
-   Build game card (Omega 16:9 card system)
-   (Name kept as generateGenreCard for compatibility)
+   Build Omega game card (grid-safe)
 ------------------------------------------------------------ */
-function generateGenreCard(game) {
+function ccgBuildGameCard(game) {
 
     if (!game || game.id === undefined) {
-        console.warn("[CCG DATA WARNING] Game missing ID:", game);
+        console.warn("[CCG CARD] Invalid game object:", game);
+        return "";
     }
 
-    const finalThumb = resolveGenreThumb(
+    const thumb = ccgResolveThumb(
         game.thumbnail || game.thumb || game.cover
     );
 
@@ -53,25 +48,26 @@ function generateGenreCard(game) {
         game.developer || ""
     ].filter(Boolean).join(" · ");
 
-    const gameId = (game && game.id !== undefined && game.id !== null) ? String(game.id) : "";
-
     return `
         <div class="ccg-game-card genre-card">
-            <a href="../game.html?id=${gameId}" class="ccg-game-card__thumb">
-                <img src="${finalThumb}" alt="${game.title || "Game artwork"}">
+            <a href="../game.html?id=${game.id}" class="ccg-game-card__thumb">
+                <img src="${thumb}" alt="${game.title || "Game artwork"}">
             </a>
 
             <div class="ccg-game-card__body">
-                <h3 class="ccg-game-card__title">${game.title || "Unknown Game"}</h3>
-                <div class="ccg-game-card__meta">${meta}</div>
+                <h3 class="ccg-game-card__title">
+                    ${game.title || "Unknown Game"}
+                </h3>
 
-                <a href="../game.html?id=${gameId}"
-                   class="ccg-btn ccg-btn--primary">View Game</a>
+                <div class="ccg-game-card__meta">
+                    ${meta}
+                </div>
+
+                <a href="../game.html?id=${game.id}"
+                   class="ccg-btn ccg-btn--primary">
+                   View Game
+                </a>
             </div>
         </div>
     `;
 }
-
-/* Expose globally (so loaders can call them safely) */
-window.resolveGenreThumb = resolveGenreThumb;
-window.generateGenreCard = generateGenreCard;
