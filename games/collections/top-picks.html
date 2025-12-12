@@ -128,12 +128,6 @@
                 <div id="genreGamesGrid" class="ccg-genre-grid"></div>
             </section>
 
-            <!-- GENRES IN THIS COLLECTION (PASS 3B) -->
-            <section class="ccg-section ccg-genre-wayfinding">
-                <h2 class="ccg-section-title">Genres in this collection</h2>
-                <div class="game-hero__buttons" id="collectionGenreLinks"></div>
-            </section>
-
             <!-- WAYFINDING -->
             <section class="ccg-section ccg-genre-wayfinding">
                 <div class="game-hero__buttons">
@@ -164,45 +158,10 @@
     <!-- JS -->
     <script src="../../js/ccg-global.js" defer></script>
     <script src="../../js/ccg-mode-engine.js" defer></script>
+
+    <!-- IMPORTANT: shared builder must load BEFORE the loader -->
+    <script src="../../js/ccg-card-builder.js" defer></script>
     <script src="../../js/collection-loader.js" defer></script>
-
-    <!-- PASS 3B: GENRE BACKLINK BUILDER -->
-    <script>
-    document.addEventListener("DOMContentLoaded", async () => {
-        const container = document.getElementById("collectionGenreLinks");
-        const collectionKey = (document.body.dataset.genre || "").toLowerCase();
-        if (!container || !collectionKey) return;
-
-        try {
-            const res = await fetch("../games.json");
-            const games = await res.json();
-
-            const genres = new Set();
-
-            games.forEach(g => {
-                if (!Array.isArray(g.genres)) return;
-                if (!g.genres.map(x => x.toLowerCase()).includes(collectionKey)) return;
-
-                g.genres.forEach(genre => {
-                    if (genre.toLowerCase() !== collectionKey) {
-                        genres.add(genre);
-                    }
-                });
-            });
-
-            container.innerHTML = [...genres]
-                .sort()
-                .map(g => {
-                    const slug = g.toLowerCase().replace(/\s+/g, "-");
-                    return `<a href="../genres/${slug}.html" class="ccg-btn ccg-btn--secondary">${g}</a>`;
-                })
-                .join("");
-
-        } catch (e) {
-            console.warn("Collection → Genre backlink build failed", e);
-        }
-    });
-    </script>
 
 </body>
 </html>
