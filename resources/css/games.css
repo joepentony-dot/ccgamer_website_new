@@ -135,3 +135,49 @@
     contain: layout paint;
     content-visibility: auto;
 }
+
+/* ============================================================
+   GAMES INDEX — ACCORDION VISIBILITY RESTORE
+   (Critical Omega Fix)
+============================================================ */
+
+/* Ensure accordion content is visible when opened */
+.games-accordion__group.is-open > .games-accordion__content {
+    display: block !important;
+    height: auto !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+}
+
+/* Default collapsed state */
+.games-accordion__content {
+    display: none;
+}
+
+/* Alphabet strip must always be visible */
+#gamesAlphabet {
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 12px 0 18px;
+}
+
+/* Alphabet buttons */
+.games-alpha__btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* Prevent parent containment from hiding content */
+.games-accordion__group,
+.games-accordion__content,
+.games-grid {
+    contain: none !important;
+}
+
