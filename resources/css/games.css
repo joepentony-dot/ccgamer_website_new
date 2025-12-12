@@ -197,6 +197,47 @@
 }
 
 /* ============================================================
+   GAMES INDEX — ACCORDION MICRO-POLISH (SCOPED)
+   ------------------------------------------------------------
+   • Visual rhythm only
+   • No behaviour changes
+   • Does NOT affect single game or genre pages
+============================================================ */
+
+.ccg-page--games-index .games-accordion {
+    margin-top: 18px;
+}
+
+.ccg-page--games-index .games-accordion__group {
+    margin-bottom: 18px;
+}
+
+.ccg-page--games-index .games-accordion__header {
+    padding: 14px 18px;
+    border-radius: 14px;
+    transition:
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.ccg-page--games-index .games-accordion__header:hover {
+    background-color: rgba(255,255,255,0.03);
+}
+
+.ccg-page--games-index
+.games-accordion__group.is-open
+.games-accordion__header {
+    box-shadow:
+        0 0 0 1px rgba(var(--accent-rgb), 0.25),
+        0 0 18px rgba(var(--accent-rgb), 0.15);
+}
+
+.ccg-page--games-index .games-accordion__content {
+    padding-top: 14px;
+    padding-bottom: 6px;
+}
+
+/* ============================================================
    RESPONSIVE
 ============================================================ */
 
