@@ -1,139 +1,362 @@
 /* ============================================================
-   CCG HOME DYNAMIC — OMEGA CINEMATIC 2.0
+   CCG HOME DYNAMIC — OMEGA CINEMATIC 2.0 (FINAL)
    ------------------------------------------------------------
-   • Loads games.json
-   • Picks a random featured game
-   • Injects Featured Game + Featured CCG Video
-   • Syncs Random Game button
-   • Triggers Hero Boot Animation
+   • Loads games/games.json
+   • Picks a random Featured Game (prefers "Top Picks" if present)
+   • Syncs Featured Game card (thumb, title, meta, button)
+   • Syncs Featured CCG Video (YouTube thumb + title + links)
+   • Random Game button
+   • Mode label sync (C64 / Amiga)
+   • Section reveal animations
+   • Hero CRT boot sequence
+   • Subtle hero parallax drift
    ============================================================ */
 
 let CCG_HOME_ALL_GAMES = [];
+let CCG_HOME_FEATURED_GAME = null;
 
-/* ============================================================
-   DOM HOOKS
-============================================================ */
+/* ------------------------------------------------------------
+   INIT
+------------------------------------------------------------ */
 
-const featuredGameCard = document.querySelector("[data-featured-game]");
-const featuredVideoCard = document.querySelector("[data-featured-video]");
-
-const fgThumbEl = document.querySelector("[data-fg-thumb]");
-const fgTitleEl = document.querySelector("[data-fg-title]");
-const fgMetaEl = document.querySelector("[data-fg-meta]");
-const fgBtnEl = document.querySelector("[data-fg-button]");
-
-const fvThumbEl = document.querySelector("[data-fv-thumb]");
-const fvTitleEl = document.querySelector("[data-fv-title]");
-const fvBtnEl = document.querySelector("[data-fv-button]");
-
-/* Random game button */
-const randomBtn = document.querySelector("[data-random-game]");
-
-/* Hero boot animation */
-window.addEventListener("DOMContentLoaded", () => {
-    const hero = document.querySelector(".ccg-hero--home");
-    if (hero) {
-        hero.classList.add("ccg-hero-boot");
-    }
+document.addEventListener("DOMContentLoaded", () => {
+    initHomeDynamic();
 });
 
-/* ============================================================
-   LOAD GAMES.JSON
-============================================================ */
-
-async function loadGames() {
+async function initHomeDynamic() {
     try {
-        const res = await fetch("games/games.json");
-        CCG_HOME_ALL_GAMES = await res.json();
-
-        if (CCG_HOME_ALL_GAMES.length > 0) {
-            randomBtn.classList.remove("ccg-btn--disabled");
-            chooseFeaturedGame();
-        }
-
+        await loadGamesForHome();
+        chooseAndRenderFeaturedGame();
+        wireRandomGameButton();
+        syncModeLabel();
+        initModeObserver();
+        applyHomeAnimations();
+        applyOmegaHeroEntry();
+        initHeroParallaxDrift();
     } catch (err) {
-        console.error("Failed to load games.json", err);
+        console.error("CCG Home Dynamic — init error:", err);
     }
 }
 
 /* ============================================================
-   PICK RANDOM GAME
+   LOAD GAMES
 ============================================================ */
 
-function chooseFeaturedGame() {
-    const game = CCG_HOME_ALL_GAMES[Math.floor(Math.random() * CCG_HOME_ALL_GAMES.length)];
+async function loadGamesForHome() {
+    try {
+        const response = await fetch("games/games.json");
+        const games = await response.json();
+        CCG_HOME_ALL_GAMES = Array.isArray(games) ? games.slice() : [];
+    } catch (err) {
+        console.error("Error loading games/games.json for home:", err);
+        CCG_HOME_ALL_GAMES = [];
+    }
+}
 
+/* ============================================================
+   FEATURED GAME SELECTION
+============================================================ */
+
+function pickFeaturedGame() {
+    if (!CCG_HOME_ALL_GAMES.length) return null;
+
+    // Prefer games tagged "Top Picks" if present
+    let pool = CCG_HOME_ALL_GAMES.filter(g =>
+        Array.isArray(g.genres) &&
+        g.genres.some(x => typeof x === "string" && x.toLowerCase() === "top picks")
+    );
+
+    if (!pool.length) {
+        pool = CCG_HOME_ALL_GAMES.slice();
+    }
+
+    const idx = Math.floor(Math.random() * pool.length);
+    return pool[idx] || null;
+}
+
+function chooseAndRenderFeaturedGame() {
+    const game = pickFeaturedGame();
     if (!game) return;
 
-    injectFeaturedGame(game);
-    injectFeaturedVideo(game);
+    CCG_HOME_FEATURED_GAME = game;
+
+    renderFeaturedGame(game);
+    renderFeaturedVideo(game);
 }
 
 /* ============================================================
-   INJECT FEATURED GAME
+   THUMBNAIL RESOLVER
 ============================================================ */
 
-function injectFeaturedGame(game) {
+function resolveHomeThumb(rawThumb) {
+    if (!rawThumb) {
+        return "resources/images/thumbnails/all/1942.jpg";
+    }
 
-    /* Thumbnail */
-    fgThumbEl.src = game.thumbnail;
-    fgThumbEl.alt = game.title + " thumbnail";
+    let t = String(rawThumb).trim().replace(/^\/+/, "");
 
-    /* Title */
-    fgTitleEl.textContent = `FEATURED GAME – ${game.title}`;
+    // If already has resources/ prefix, trust it
+    if (t.startsWith("resources/")) {
+        return t;
+    }
 
-    /* Meta */
-    fgMetaEl.textContent = `${game.system} · ${game.developer}`;
-
-    /* Button */
-    fgBtnEl.href = `games/game.html?id=${game.id}`;
+    // Otherwise assume it's a bare filename in thumbnails/all
+    return `resources/images/thumbnails/all/${t}`;
 }
 
 /* ============================================================
-   INJECT FEATURED CCG VIDEO
+   FEATURED GAME RENDER
 ============================================================ */
 
-function injectFeaturedVideo(game) {
+function buildFeaturedGameMeta(game) {
+    const bits = [];
 
-    const vid = game.videoid;
+    if (game.system) bits.push(game.system);
+    if (game.year) bits.push(game.year);
+    if (game.developer) bits.push(game.developer);
 
-    if (!vid) {
-        /* fallback image */
-        fvThumbEl.src = "resources/images/hero/ccg-hero-c64.png";
-        fvTitleEl.textContent = "FEATURED CCG VIDEO";
-        fvBtnEl.href = "https://www.youtube.com/@CheekyCommodoreGamer";
+    if (bits.length) {
+        return bits.join(" · ");
+    }
+
+    return "C64 & Amiga retro highlight from the Cheeky Commodore Gamer library.";
+}
+
+function renderFeaturedGame(game) {
+    const card = document.querySelector("[data-ccg-featured-game]");
+    if (!card || !game) return;
+
+    const imgEl = card.querySelector("[data-fg-thumb]");
+    const titleEl = card.querySelector("[data-fg-title]");
+    const descEl = card.querySelector("[data-fg-desc]");
+    const btnEl = card.querySelector("[data-fg-btn]");
+
+    const thumbPath = resolveHomeThumb(game.thumbnail || game.thumb || game.cover);
+
+    if (imgEl) {
+        imgEl.src = thumbPath;
+        imgEl.alt = `${game.title} artwork`;
+    }
+
+    if (titleEl) {
+        titleEl.textContent = `Featured Game — ${game.title}`;
+    }
+
+    if (descEl) {
+        descEl.textContent = buildFeaturedGameMeta(game);
+    }
+
+    if (btnEl && game.id != null) {
+        btnEl.href = `games/game.html?id=${encodeURIComponent(game.id)}`;
+    }
+}
+
+/* ============================================================
+   FEATURED VIDEO RENDER (SYNCED TO FEATURED GAME)
+============================================================ */
+
+function renderFeaturedVideo(game) {
+    const titleEl = document.querySelector("[data-ccg-featured-video-title]");
+    const imgEl = document.querySelector("[data-ccg-featured-video-thumb]");
+    const descEl = document.querySelector("[data-ccg-featured-video-desc]");
+    const btnEl = document.querySelector("[data-ccg-featured-video-btn]");
+    const frameEl = document.querySelector(".home-feature-video__frame");
+
+    if (!game) {
+        // Fallback to generic state
+        if (titleEl) {
+            titleEl.textContent = "Featured CCG Video";
+        }
+        if (descEl) {
+            descEl.textContent = "A hand-picked longplay or review from the channel — perfectly paired with the featured game.";
+        }
+        if (btnEl) {
+            btnEl.href = "https://www.youtube.com/@CheekyCommodoreGamer";
+        }
         return;
     }
 
-    /* Natural YouTube thumbnail */
-    fvThumbEl.src = `https://img.youtube.com/vi/${vid}/maxresdefault.jpg`;
-    fvThumbEl.alt = `${game.title} YouTube Thumbnail`;
+    const videoId = game.videoid;
 
-    fvTitleEl.textContent = `FEATURED CCG VIDEO – ${game.title}`;
+    // Generic description line (can be extended later)
+    const descText = `A CCG video pick to go with ${game.title}.`;
 
-    /* Click thumbnail = open video */
-    fvThumbEl.style.cursor = "pointer";
-    fvThumbEl.onclick = () => {
-        window.open(`https://www.youtube.com/watch?v=${vid}`, "_blank");
-    };
+    if (!videoId) {
+        // No video ID for this game — fall back gracefully to channel + box art
+        if (titleEl) {
+            titleEl.textContent = `Featured CCG Video — ${game.title}`;
+        }
+        if (descEl) {
+            descEl.textContent = descText;
+        }
 
-    /* Watch on YouTube button */
-    fvBtnEl.href = `https://www.youtube.com/watch?v=${vid}`;
+        const thumbPath = resolveHomeThumb(game.thumbnail || game.thumb || game.cover);
+
+        if (imgEl) {
+            imgEl.src = thumbPath;
+            imgEl.alt = `${game.title} box art`;
+        }
+
+        if (btnEl) {
+            btnEl.href = "https://www.youtube.com/@CheekyCommodoreGamer";
+        }
+
+        if (frameEl) {
+            frameEl.style.cursor = "default";
+            frameEl.onclick = null;
+        }
+
+        return;
+    }
+
+    // We have a real video ID
+    const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
+    const primaryThumb = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+    const fallbackThumb = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+
+    if (titleEl) {
+        titleEl.textContent = `Featured CCG Video — ${game.title}`;
+    }
+
+    if (descEl) {
+        descEl.textContent = descText;
+    }
+
+    if (imgEl) {
+        imgEl.src = primaryThumb;
+        imgEl.alt = `${game.title} YouTube thumbnail`;
+
+        // Fallback to hqdefault if maxres doesn't exist
+        imgEl.onerror = () => {
+            imgEl.onerror = null;
+            imgEl.src = fallbackThumb;
+        };
+    }
+
+    if (btnEl) {
+        btnEl.href = youtubeUrl;
+    }
+
+    if (frameEl) {
+        frameEl.style.cursor = "pointer";
+        frameEl.onclick = () => {
+            window.open(youtubeUrl, "_blank", "noopener");
+        };
+    }
 }
 
 /* ============================================================
    RANDOM GAME BUTTON
 ============================================================ */
 
-randomBtn?.addEventListener("click", () => {
-    if (CCG_HOME_ALL_GAMES.length === 0) return;
+function wireRandomGameButton() {
+    const btn = document.querySelector("[data-ccg-random-game]");
+    if (!btn) return;
 
-    const game = CCG_HOME_ALL_GAMES[Math.floor(Math.random() * CCG_HOME_ALL_GAMES.length)];
-    window.location.href = `games/game.html?id=${game.id}`;
-});
+    function updateState() {
+        if (!CCG_HOME_ALL_GAMES.length) {
+            btn.disabled = true;
+            btn.classList.add("ccg-btn--disabled");
+        } else {
+            btn.disabled = false;
+            btn.classList.remove("ccg-btn--disabled");
+        }
+    }
+
+    updateState();
+
+    btn.addEventListener("click", () => {
+        if (!CCG_HOME_ALL_GAMES.length) return;
+
+        const idx = Math.floor(Math.random() * CCG_HOME_ALL_GAMES.length);
+        const game = CCG_HOME_ALL_GAMES[idx];
+        if (!game || game.id == null) return;
+
+        window.location.href = `games/game.html?id=${encodeURIComponent(game.id)}`;
+    });
+
+    // If games load after this, ensure enabled
+    if (CCG_HOME_ALL_GAMES.length) {
+        btn.disabled = false;
+        btn.classList.remove("ccg-btn--disabled");
+    }
+}
 
 /* ============================================================
-   INIT
+   MODE LABEL SYNC
 ============================================================ */
 
-loadGames();
+function syncModeLabel() {
+    const labelEl = document.querySelector("[data-ccg-mode-label]");
+    if (!labelEl) return;
+
+    const mode = (document.body.getAttribute("data-ccg-mode") || "c64").toUpperCase();
+    labelEl.textContent = mode;
+}
+
+function initModeObserver() {
+    const body = document.body;
+    if (!body) return;
+
+    const observer = new MutationObserver(mutations => {
+        if (mutations.some(m => m.attributeName === "data-ccg-mode")) {
+            syncModeLabel();
+        }
+    });
+
+    observer.observe(body, { attributes: true });
+}
+
+/* ============================================================
+   SECTION REVEAL ANIMATIONS
+============================================================ */
+
+function applyHomeAnimations() {
+    const hero = document.querySelector(".home-hero");
+    const highlights = document.querySelector(".home-section--highlights");
+    const genres = document.querySelector(".home-section--genres");
+
+    [hero, highlights, genres].forEach((el, i) => {
+        if (!el) return;
+        el.classList.add("ccg-anim-in");
+        el.style.setProperty("--ccg-anim-delay", `${i * 0.08}s`);
+    });
+}
+
+/* ============================================================
+   OMEGA HERO ENTRY — CRT SWEEP
+============================================================ */
+
+function applyOmegaHeroEntry() {
+    const hero = document.querySelector(".ccg-hero--home");
+    if (!hero) return;
+
+    hero.classList.add("ccg-hero-boot");
+}
+
+/* ============================================================
+   HERO PARALLAX DRIFT — ultra subtle
+============================================================ */
+
+function initHeroParallaxDrift() {
+    const heroImg = document.querySelector(".ccg-hero--home .ccg-hero-image");
+    if (!heroImg) return;
+
+    let ticking = false;
+
+    window.addEventListener("mousemove", e => {
+        if (ticking) return;
+        ticking = true;
+
+        window.requestAnimationFrame(() => {
+            const xNorm = e.clientX / window.innerWidth - 0.5;
+            const yNorm = e.clientY / window.innerHeight - 0.5;
+
+            const x = xNorm * 4;   // very subtle
+            const y = yNorm * 3;
+
+            heroImg.style.transform = `translate(${x}px, ${y}px) scale(1.03)`;
+            ticking = false;
+        });
+    });
+}
