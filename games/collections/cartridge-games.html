@@ -7,14 +7,12 @@
     <title>Cartridge Classics | Cheeky Commodore Gamer</title>
 
     <meta name="description"
-          content="Cartridge Classics — a curated collection of Commodore 64 and Amiga cartridge-based games featuring instant-load action, enhanced hardware releases and fast-boot retro experiences." />
+          content="Cartridge Classics — instant-load Commodore 64 and Amiga games built for cartridge hardware and fast-boot play." />
 
     <link rel="icon" href="../../favicon.ico" />
 
-    <!-- REQUIRED FONT RESTORE -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-    <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="../../resources/css/ccg-master.css" />
     <link rel="stylesheet" href="../../resources/css/ccg-mode.css" />
     <link rel="stylesheet" href="../../resources/css/ccg-effects.css" />
@@ -27,109 +25,53 @@
 
 <body class="ccg-body"
       data-ccg-mode="c64"
-      data-collection="cartridge-games">
+      data-collection="cartridge games">
 
-    <!-- BACKGROUND -->
-    <div class="ccg-bg">
-        <div class="ccg-bg-starfield"></div>
-        <div class="ccg-bg-grid"></div>
-        <div class="ccg-bg-crt-overlay"></div>
+<div class="ccg-bg">
+    <div class="ccg-bg-starfield"></div>
+    <div class="ccg-bg-grid"></div>
+    <div class="ccg-bg-crt-overlay"></div>
+</div>
+
+<div class="ccg-page ccg-page--collection-single">
+
+<header class="ccg-header">
+    <div class="ccg-header-inner">
+        <a href="../../home.html" class="ccg-brand">
+            <img src="../../resources/images/ccgamer-logo.png" class="ccg-brand__logo" alt="Cheeky Commodore Gamer logo">
+        </a>
     </div>
+    <div class="ccg-header-neon-strip"></div>
+</header>
 
-    <div class="ccg-page ccg-page--collection-single">
+<main class="ccg-main">
 
-        <!-- HEADER -->
-        <header class="ccg-header">
-            <div class="ccg-header-inner">
-
-                <a href="../../home.html" class="ccg-brand">
-                    <img src="../../resources/images/ccgamer-logo.png"
-                         class="ccg-brand__logo"
-                         loading="lazy"
-                         alt="Cheeky Commodore Gamer logo">
-
-                    <div class="ccg-brand__text">
-                        <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
-                        <div class="ccg-brand__title">
-                            <span class="ccg-brand__neon-cheeky">CHEEKY</span>
-                            <span class="ccg-brand__neon-sub">COMMODORE GAMER</span>
-                        </div>
-                    </div>
-                </a>
-
-                <nav class="ccg-nav">
-                    <ul class="ccg-nav__list">
-                        <li><a href="../../home.html" class="ccg-nav__link">Home</a></li>
-                        <li><a href="../../games/index.html" class="ccg-nav__link">Browse Games</a></li>
-                        <li><a href="../../games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
-                        <li><a href="index.html" class="ccg-nav__link ccg-nav__link--active">Collections</a></li>
-                        <li><a href="../../quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
-                        <li><a href="../../emulation.html" class="ccg-nav__link">Emulation</a></li>
-                        <li><a href="../../about.html" class="ccg-nav__link">About</a></li>
-                        <li><a href="../../contact.html" class="ccg-nav__link">Contact</a></li>
-                    </ul>
-                </nav>
-
-                <div class="ccg-header-actions">
-                    <button class="ccg-mode-toggle" type="button" data-ccg-mode-toggle>
-                        <span class="ccg-mode-toggle__pill">
-                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
-                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">Amiga</span>
-                            <span class="ccg-mode-toggle__thumb"></span>
-                        </span>
-                    </button>
-
-                    <div class="ccg-header-socials">
-                        <a href="https://www.youtube.com/@CheekyCommodoreGamer"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>
-                        <a href="https://patreon.com/CheekyCommodoreGamer"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>
-                        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"><span class="ccg-socials__icon ccg-socials__icon--paypal"></span></a>
-                        <a href="https://twitter.com/CheekyC64Gamer"><span class="ccg-socials__icon ccg-socials__icon--x"></span></a>
-                        <a href="https://www.facebook.com/cheekycommodoregamer"><span class="ccg-socials__icon ccg-socials__icon--fb"></span></a>
-                        <a href="https://discord.gg/83Xw9ktAn4"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
-                    </div>
-                </div>
-
-            </div>
-            <div class="ccg-header-neon-strip"></div>
-        </header>
-
-        <!-- MAIN -->
-        <main class="ccg-main">
-
-            <!-- HERO -->
-            <section class="ccg-genre-hero ccg-collection-hero">
-                <div class="ccg-genre-hero__inner">
-                    <h1 class="ccg-genre-hero__title">Cartridge Classics</h1>
-                    <p class="ccg-genre-hero__tagline">
-                        Instant-load retro favourites built for cartridge hardware and fast-boot play.
-                    </p>
-
-                    <div class="ccg-genre-meta">
-                        <span><span id="genreGamesCount">0</span> games in this collection</span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- GRID -->
-            <section class="ccg-genre-main">
-                <div id="genreGamesGrid" class="ccg-genre-grid"></div>
-            </section>
-
-        </main>
-
-        <footer class="ccg-footer">
-            <p class="ccg-footer__text">
-                © <span data-ccg-year></span> Cheeky Commodore Gamer.
-            </p>
-        </footer>
-
+<section class="ccg-genre-hero ccg-collection-hero">
+    <div class="ccg-genre-hero__inner">
+        <h1 class="ccg-genre-hero__title">Cartridge Classics</h1>
+        <p class="ccg-genre-hero__tagline">Instant-load favourites built for cartridge hardware.</p>
+        <div class="ccg-genre-meta">
+            <span><span id="genreGamesCount">0</span> games in this collection</span>
+        </div>
     </div>
+</section>
 
-    <!-- JS -->
-    <script src="../../js/ccg-global.js" defer></script>
-    <script src="../../js/ccg-mode-engine.js" defer></script>
-    <script src="../../js/ccg-card-builder.js" defer></script>
-    <script src="../../js/collection-loader.js" defer></script>
+<section class="ccg-genre-main">
+    <div id="genreGamesGrid" class="ccg-genre-grid"></div>
+</section>
+
+</main>
+
+<footer class="ccg-footer">
+    <p class="ccg-footer__text">© <span data-ccg-year></span> Cheeky Commodore Gamer.</p>
+</footer>
+
+</div>
+
+<script src="../../js/ccg-global.js" defer></script>
+<script src="../../js/ccg-mode-engine.js" defer></script>
+<script src="../../js/ccg-card-builder.js" defer></script>
+<script src="../../js/collection-loader.js" defer></script>
 
 </body>
 </html>
