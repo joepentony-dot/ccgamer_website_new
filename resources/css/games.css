@@ -1,10 +1,9 @@
 /* ============================================================
-   GAMES.CSS — GAMES INDEX & SINGLE GAME (OMEGA)
+   GAMES.CSS — OMEGA PERFORMANCE HARDENED (PHASE C3)
    ------------------------------------------------------------
-   • Phase B1: Sticky Alphabet Strip (CSS-only)
-   • No JS changes
-   • No behaviour changes
-   • STRICT PAGE SCOPING
+   • Paint & layout containment
+   • No visual or behavioural changes
+   • STRICT SCOPING
 ============================================================ */
 
 /* ============================================================
@@ -29,7 +28,7 @@
 
 .ccg-page--games-index .games-alpha {
     position: sticky;
-    top: 74px; /* clears header + neon strip */
+    top: 74px;
     z-index: 10;
 
     margin-bottom: 18px;
@@ -50,11 +49,6 @@
         0 0 18px rgba(var(--accent-rgb), 0.12);
 }
 
-/* Ensure alphabet buttons don’t compress */
-.ccg-page--games-index .games-alpha a {
-    white-space: nowrap;
-}
-
 /* ============================================================
    ACCORDION — VISUAL RHYTHM (PRESERVED)
 ============================================================ */
@@ -70,23 +64,6 @@
 .ccg-page--games-index .games-accordion__header {
     padding: 14px 20px;
     border-radius: 14px;
-    transition:
-        background-color 0.2s ease,
-        box-shadow 0.2s ease,
-        transform 0.15s ease;
-}
-
-.ccg-page--games-index .games-accordion__header:hover {
-    background-color: rgba(255,255,255,0.035);
-    transform: translateY(-1px);
-}
-
-.ccg-page--games-index
-.games-accordion__group.is-open
-.games-accordion__header {
-    box-shadow:
-        0 0 0 1px rgba(var(--accent-rgb), 0.22),
-        0 0 16px rgba(var(--accent-rgb), 0.14);
 }
 
 .ccg-page--games-index .games-accordion__content {
@@ -95,20 +72,40 @@
 }
 
 /* ============================================================
-   GAME CARDS — INDEX ONLY (PRESERVED)
+   GAME GRIDS — CONTAINMENT (CRITICAL)
 ============================================================ */
 
-.ccg-page--games-index .ccg-game-card {
-    transition:
-        transform 0.18s ease,
-        box-shadow 0.18s ease;
+/* Games Index grids */
+.ccg-page--games-index .games-grid {
+    contain: layout paint;
+    content-visibility: auto;
 }
 
-.ccg-page--games-index .ccg-game-card:hover {
-    transform: translateY(-3px);
-    box-shadow:
-        0 10px 28px rgba(0,0,0,0.35),
-        0 0 18px rgba(var(--accent-rgb), 0.18);
+/* Genre grids (safety reinforcement) */
+.ccg-page--genre-single .games-grid,
+.ccg-page--genres-index .genres-grid {
+    contain: layout paint;
+    content-visibility: auto;
+}
+
+/* ============================================================
+   SINGLE GAME PAGE — PERFORMANCE CONTAINMENT
+============================================================ */
+
+/* Hero is heavy (background + overlays) */
+.ccg-page--single-game .game-hero {
+    contain: layout paint;
+}
+
+/* Description block (long text) */
+.ccg-page--single-game .game-description-body {
+    contain: layout paint;
+}
+
+/* Related games grid */
+.ccg-page--single-game .game-section--related .games-grid {
+    contain: layout paint;
+    content-visibility: auto;
 }
 
 /* ============================================================
@@ -127,11 +124,7 @@
 }
 
 /* ============================================================
-   SINGLE GAME PAGE — PRESERVED (NO CHANGES)
-============================================================ */
-
-/* ============================================================
-   IMAGE LOAD STABILITY — CRITICAL (SHARED)
+   IMAGE LOAD STABILITY — SHARED SAFETY
 ============================================================ */
 
 .ccg-game-card__thumb img,
