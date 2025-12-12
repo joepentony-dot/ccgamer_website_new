@@ -1,10 +1,10 @@
 /* ============================================================
-   CCG LOAD SINGLE GAME — OMEGA ADAPTIVE EDITION (PHASE A)
+   CCG LOAD SINGLE GAME — OMEGA ADAPTIVE EDITION (PHASE A — STEP 2)
    ----------------------------------------------------------------
    • Preserves all existing visuals and behaviour
    • Reuses loaded JSON (no double-fetch)
    • Console-only integrity diagnostics
-   • RELATED GAMES: Tiered intelligence (developer → publisher → optional fields)
+   • RELATED GAMES: Tiered intelligence + dynamic section title
 ============================================================ */
 
 let CCG_SINGLE_ALL_GAMES = [];
@@ -164,7 +164,7 @@ function renderGame(game) {
 }
 
 /* ============================================================
-   RELATED GAMES — TIERED INTELLIGENCE
+   RELATED GAMES — TIERED INTELLIGENCE + DYNAMIC TITLE
 ============================================================ */
 function renderRelatedGames(game, allGames) {
     const section = document.querySelector(".game-section--related");
@@ -174,6 +174,7 @@ function renderRelatedGames(game, allGames) {
     if (!section || !container) return;
 
     const currentId = String(game.id);
+
     const dev = (game.developer || "").trim();
     const pub = (game.publisher || "").trim();
     const series = (game.series || "").trim();
@@ -183,38 +184,43 @@ function renderRelatedGames(game, allGames) {
     const pool = [];
     const seen = new Set([currentId]);
 
-    function addMatches(predicate) {
+    let primaryTier = ""; // tracks which tier seeded results
+
+    function addMatches(predicate, tierName) {
+        let added = false;
         allGames.forEach(g => {
             const id = String(g.id);
             if (seen.has(id)) return;
             if (predicate(g)) {
                 seen.add(id);
                 pool.push(g);
+                added = true;
             }
         });
+        if (added && !primaryTier) primaryTier = tierName;
     }
 
     /* Tier 1 — Developer */
     if (dev) {
-        addMatches(g => (g.developer || "").trim() === dev);
+        addMatches(g => (g.developer || "").trim() === dev, "developer");
     }
 
     /* Tier 2 — Publisher */
     if (pool.length < 6 && pub) {
-        addMatches(g => (g.publisher || "").trim() === pub);
+        addMatches(g => (g.publisher || "").trim() === pub, "publisher");
     }
 
-    /* Tier 3 — Optional intelligence fields (only if present) */
+    /* Tier 3 — Optional fields (only if present) */
     if (pool.length < 6 && series) {
-        addMatches(g => (g.series || "").trim() === series);
+        addMatches(g => (g.series || "").trim() === series, "series");
     }
 
     if (pool.length < 6 && franchise) {
-        addMatches(g => (g.franchise || "").trim() === franchise);
+        addMatches(g => (g.franchise || "").trim() === franchise, "franchise");
     }
 
     if (pool.length < 6 && engine) {
-        addMatches(g => (g.engine || "").trim() === engine);
+        addMatches(g => (g.engine || "").trim() === engine, "engine");
     }
 
     const related = pool.slice(0, 6);
@@ -225,7 +231,35 @@ function renderRelatedGames(game, allGames) {
     }
 
     if (titleEl) {
-        titleEl.textContent = "Games from the same developer / publisher";
+        switch (primaryTier) {
+            case "developer":
+                titleEl.textContent = dev
+                    ? `More games by ${dev}`
+                    : "More games by the same developer";
+                break;
+            case "publisher":
+                titleEl.textContent = pub
+                    ? `More games from ${pub}`
+                    : "More games from the same publisher";
+                break;
+            case "series":
+                titleEl.textContent = series
+                    ? `More games from the ${series} series`
+                    : "More games from the same series";
+                break;
+            case "franchise":
+                titleEl.textContent = franchise
+                    ? `More games from the ${franchise} franchise`
+                    : "More games from the same franchise";
+                break;
+            case "engine":
+                titleEl.textContent = engine
+                    ? `More games using the ${engine} engine`
+                    : "More games using the same engine";
+                break;
+            default:
+                titleEl.textContent = "Related games";
+        }
     }
 
     container.innerHTML = related.map(g => {
