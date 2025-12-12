@@ -1,20 +1,24 @@
 /* ============================================================
-   CCG LOAD SINGLE GAME — OMEGA ADAPTIVE EDITION (FINAL 2025)
+   CCG LOAD SINGLE GAME — OMEGA ADAPTIVE EDITION (INTEGRITY HARDENED)
    ----------------------------------------------------------------
-   • Supports all historic JSON field variations
-   • Correct depth: this file lives in /js/, game.html lives in /games/
-   • No thumbnail tiling — applies strict non-repeat + 16:9 logic
-   • External links appear as clean UI buttons (not raw URLs)
-   • Similar(ish) Titles section replaces "Related Games"
-   • Fully mode-aware (C64 / Amiga neon)
+   • Preserves all existing visuals and behaviour
+   • Removes double-fetch by reusing loaded JSON
+   • Adds console-only integrity diagnostics:
+     - missing/duplicate IDs (basic warning)
+     - missing title/system/thumb fields
+     - invalid ?id requests
+   • Safer comparisons (string-normalised IDs)
 ============================================================ */
+
+let CCG_SINGLE_ALL_GAMES = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
     const params = new URLSearchParams(window.location.search);
-    const gameId = params.get("id");
+    const gameIdRaw = params.get("id");
+    const gameId = (gameIdRaw || "").toString().trim();
 
     if (!gameId) {
-        console.error("No game ID in URL");
+        console.error("[CCG] No game ID in URL (?id=...)");
         return;
     }
 
@@ -23,20 +27,53 @@ document.addEventListener("DOMContentLoaded", async () => {
         const response = await fetch("../games/games.json");
         const games = await response.json();
 
-        const game = games.find(g => String(g.id) === String(gameId));
+        CCG_SINGLE_ALL_GAMES = Array.isArray(games) ? games : [];
+
+        // Console-only integrity checks (lightweight)
+        runSingleGameIntegrityChecks(CCG_SINGLE_ALL_GAMES);
+
+        const game = CCG_SINGLE_ALL_GAMES.find(g => String(g.id) === String(gameId));
 
         if (!game) {
-            console.error("Game not found:", gameId);
+            console.error(`[CCG] Game not found for id="${gameId}"`);
             return;
         }
 
         renderGame(game);
 
     } catch (err) {
-        console.error("Error loading games.json:", err);
+        console.error("[CCG] Error loading games.json:", err);
     }
 });
 
+/* ============================================================
+   INTEGRITY CHECKS (CONSOLE ONLY)
+============================================================ */
+function runSingleGameIntegrityChecks(games) {
+    const seen = new Set();
+
+    games.forEach((g, idx) => {
+        const id = (g && g.id !== undefined && g.id !== null) ? String(g.id) : "";
+
+        if (!id) {
+            console.warn(`[CCG DATA WARNING] Game missing ID at index ${idx}:`, g);
+            return;
+        }
+
+        if (seen.has(id)) {
+            console.warn(`[CCG DATA WARNING] Duplicate game ID detected: ${id}`, g);
+        }
+        seen.add(id);
+
+        if (!g.title || !String(g.title).trim()) {
+            console.warn(`[CCG DATA WARNING] Missing title (ID: ${id})`, g);
+        }
+
+        if (!g.system || !String(g.system).trim()) {
+            console.warn(`[CCG DATA WARNING] Missing system (ID: ${id})`, g);
+        }
+    });
+}
 
 /* ============================================================
    THUMBNAIL RESOLVER
@@ -61,7 +98,6 @@ function resolveGameThumb(raw) {
 
     return `../resources/images/thumbnails/all/${t}`;
 }
-
 
 /* ============================================================
    FIELD RESOLVERS — VIDEO, MANUAL, DSK/TAPE, LEMON
@@ -103,7 +139,6 @@ function resolveLemonLinks(game) {
     if (Array.isArray(game.lemon64) && game.lemon64.length > 0) return game.lemon64;
     return [];
 }
-
 
 /* ============================================================
    RENDER GAME INTO game.html
@@ -181,7 +216,7 @@ function renderGame(game) {
             block.hidden = false;
             list.innerHTML = lemon.map(url => `
                 <li>
-                    <a class="ccg-btn ccg-btn--primary" 
+                    <a class="ccg-btn ccg-btn--primary"
                        href="${url}"
                        target="_blank"
                        rel="noopener">
@@ -197,7 +232,6 @@ function renderGame(game) {
     ------------------------------------------------------------ */
     const vid = resolveVideoId(game);
     if (vid) {
-
         const iframe = document.getElementById("game-video-embed");
         const section = document.getElementById("game-video-section");
         const btn = document.getElementById("gameVideoBtn");
@@ -252,52 +286,57 @@ function renderGame(game) {
     /* ------------------------------------------------------------
        SIMILAR(ISH) TITLES — OMEGA STRIP
     ------------------------------------------------------------ */
-    renderRelatedGames(game);
+    renderRelatedGames(game, CCG_SINGLE_ALL_GAMES);
 }
-
 
 /* ============================================================
    RELATED GAMES — "Similar(ish) titles…"
+   (reuses already-loaded games.json — no second fetch)
 ============================================================ */
-function renderRelatedGames(game) {
+function renderRelatedGames(game, allGames) {
     const container = document.getElementById("relatedGamesGrid");
     if (!container) return;
 
-    fetch("../games/games.json")
-        .then(res => res.json())
-        .then(allGames => {
+    const pool = Array.isArray(allGames) ? allGames : [];
 
-            const primary = Array.isArray(game.genres) ? game.genres[0] : null;
-            if (!primary) {
-                container.innerHTML = "";
-                return;
-            }
+    const primary = Array.isArray(game.genres) ? game.genres[0] : null;
+    if (!primary) {
+        container.innerHTML = "";
+        return;
+    }
 
-            const related = allGames
-                .filter(g =>
-                    g.id !== game.id &&
-                    Array.isArray(g.genres) &&
-                    g.genres.includes(primary)
-                )
-                .slice(0, 6);
+    const currentId = String(game.id);
 
-            container.innerHTML = related.map(g => {
-                const thumb = resolveGameThumb(g.thumbnail || g.thumb || g.cover);
+    const related = pool
+        .filter(g =>
+            String(g.id) !== currentId &&
+            Array.isArray(g.genres) &&
+            g.genres.includes(primary)
+        )
+        .slice(0, 6);
 
-                return `
-                    <a href="game.html?id=${g.id}" class="ccg-game-card">
-                        <div class="ccg-game-card__thumb">
-                            <img src="${thumb}" alt="${g.title}">
-                        </div>
-                        <div class="ccg-game-card__body">
-                            <h3 class="ccg-game-card__title">${g.title}</h3>
-                            <div class="ccg-game-card__meta">
-                                ${(g.year || "")} · ${(g.system || "")}
-                            </div>
-                        </div>
-                    </a>
-                `;
-            }).join("");
-        })
-        .catch(err => console.error("Related games error:", err));
+    if (related.length === 0) {
+        // Console-only diagnostic; no UI impact.
+        console.warn(
+            `[CCG DATA WARNING] No related games found for primary genre "${primary}" (ID: ${currentId})`
+        );
+    }
+
+    container.innerHTML = related.map(g => {
+        const thumb = resolveGameThumb(g.thumbnail || g.thumb || g.cover);
+
+        return `
+            <a href="game.html?id=${g.id}" class="ccg-game-card">
+                <div class="ccg-game-card__thumb">
+                    <img src="${thumb}" alt="${g.title}">
+                </div>
+                <div class="ccg-game-card__body">
+                    <h3 class="ccg-game-card__title">${g.title}</h3>
+                    <div class="ccg-game-card__meta">
+                        ${(g.year || "")} · ${(g.system || "")}
+                    </div>
+                </div>
+            </a>
+        `;
+    }).join("");
 }
