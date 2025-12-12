@@ -1,5 +1,5 @@
 /* ============================================================
-   CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM (POLISHED)
+   CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM (DENSITY PASS)
    ============================================================ */
 
 /* ------------------------------------------------------------
@@ -11,12 +11,16 @@
 .genre-grid.omega-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 24px;
+
+    /* STEP 8: tighter rhythm */
+    gap: 20px;
+
     align-items: stretch;
 }
 
 .ccg-genre-grid.ccg-genre-grid--tight {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 18px;
 }
 
 /* ------------------------------------------------------------
@@ -31,15 +35,16 @@
     border-radius: 16px;
     border: 1px solid rgba(255,255,255,.08);
     overflow: hidden;
-    box-shadow: 0 10px 20px rgba(0,0,0,.75);
 
-    /* Hover stability */
+    /* STEP 8: calmer depth for dense views */
+    box-shadow: 0 8px 16px rgba(0,0,0,.7);
+
     will-change: transform, box-shadow;
 
     transition:
-        transform .22s ease,
-        box-shadow .22s ease,
-        border-color .22s ease;
+        transform .2s ease,
+        box-shadow .2s ease,
+        border-color .2s ease;
 
     text-decoration: none;
     color: inherit;
@@ -69,13 +74,12 @@
     object-fit: cover;
     display: block;
 
-    /* Prevent micro jitter */
     backface-visibility: hidden;
     transform: scale(1.01);
 
     transition:
-        transform .22s ease,
-        filter .22s ease;
+        transform .2s ease,
+        filter .2s ease;
 }
 
 /* ------------------------------------------------------------
@@ -129,15 +133,18 @@
 }
 
 /* ------------------------------------------------------------
-   CARD BODY
+   CARD BODY — DENSITY TUNED
 ------------------------------------------------------------ */
 
 .ccg-game-card__body,
 .ccg-card__body {
-    padding: 12px 12px 14px;
+
+    /* STEP 8: tighter but readable */
+    padding: 10px 10px 12px;
+
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
 }
 
 /* Title stability */
@@ -150,23 +157,26 @@
     letter-spacing: .06em;
     color: #ffffff;
 
+    line-height: 1.25;
+
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 
-    /* Prevent hover-induced reflow */
-    min-height: 2.6em;
+    min-height: 2.4em;
 }
 
 /* ------------------------------------------------------------
-   HOVER BEHAVIOUR — POLISHED (NOT CHANGED)
+   HOVER BEHAVIOUR — DENSITY CALMED
 ------------------------------------------------------------ */
 
 .ccg-game-card:hover,
 .ccg-card:hover,
 .ccg-genre-tile:hover {
-    transform: translateY(-3px) scale(1.02);
+
+    /* STEP 8: less vertical jump */
+    transform: translateY(-2px) scale(1.02);
 }
 
 /* C64 MODE */
@@ -176,15 +186,15 @@
     border-color: rgba(0,180,255,.9);
     box-shadow:
         0 0 0 1px rgba(0,180,255,.9),
-        0 0 22px rgba(0,180,255,.85),
-        0 18px 36px rgba(0,0,0,.95);
+        0 0 20px rgba(0,180,255,.8),
+        0 16px 32px rgba(0,0,0,.9);
 }
 
 .ccg-body[data-ccg-mode="c64"] .ccg-card:hover img,
 .ccg-body[data-ccg-mode="c64"] .ccg-game-card:hover img,
 .ccg-body[data-ccg-mode="c64"] .ccg-genre-tile:hover img {
     filter: saturate(1.1) contrast(1.05);
-    transform: scale(1.035);
+    transform: scale(1.03);
 }
 
 /* AMIGA MODE */
@@ -194,15 +204,15 @@
     border-color: rgba(255,80,220,.95);
     box-shadow:
         0 0 0 1px rgba(255,80,220,.95),
-        0 0 22px rgba(255,80,220,.9),
-        0 18px 36px rgba(0,0,0,.95);
+        0 0 20px rgba(255,80,220,.85),
+        0 16px 32px rgba(0,0,0,.9);
 }
 
 .ccg-body[data-ccg-mode="amiga"] .ccg-card:hover img,
 .ccg-body[data-ccg-mode="amiga"] .ccg-game-card:hover img,
 .ccg-body[data-ccg-mode="amiga"] .ccg-genre-tile:hover img {
     filter: saturate(1.15) contrast(1.08);
-    transform: scale(1.035);
+    transform: scale(1.03);
 }
 
 /* ------------------------------------------------------------
