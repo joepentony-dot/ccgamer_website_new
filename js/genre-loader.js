@@ -1,19 +1,21 @@
 /* ============================================================
-   OMEGA GENRE LOADER — ULTRA-STABLE VISUAL EDITION (FINAL)
-   - Supports Omega 16:9 card system
-   - Correct depth from /games/genres/
-   - Sanitises thumbnails consistently
-   - Meta line unified: Year · System · Developer
-   ============================================================ */
+   OMEGA GENRE LOADER — ULTRA-STABLE INTEGRITY-HARDENED EDITION
+   ----------------------------------------------------------------
+   • Preserves all visuals & layout exactly
+   • Defensive genre matching (case + whitespace safe)
+   • Console-only integrity diagnostics
+   • No regressions, no behaviour changes
+============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-    const genreName = document.body.dataset.genre;
+    const genreRaw = document.body.dataset.genre;
+    const genreName = (genreRaw || "").toString().trim();
     const grid = document.getElementById("genreGamesGrid");
     const countEl = document.getElementById("genreGamesCount");
 
     if (!genreName || !grid) {
-        console.warn("GENRE LOADER — Missing genreName or grid container");
+        console.warn("[CCG GENRE] Missing genre name or grid container");
         return;
     }
 
@@ -22,17 +24,36 @@ document.addEventListener("DOMContentLoaded", async () => {
         const response = await fetch("../games.json");
         const games = await response.json();
 
-        const filtered = games.filter(g =>
-            Array.isArray(g.genres) &&
-            g.genres.map(x => x.toLowerCase()).includes(genreName.toLowerCase())
-        );
+        if (!Array.isArray(games)) {
+            console.error("[CCG GENRE] games.json is not an array");
+            return;
+        }
 
-        if (countEl) countEl.textContent = filtered.length;
+        const genreKey = genreName.toLowerCase();
+
+        const filtered = games.filter(game => {
+            if (!Array.isArray(game.genres)) {
+                console.warn("[CCG DATA WARNING] Game missing genres:", game);
+                return false;
+            }
+
+            return game.genres
+                .map(g => String(g).toLowerCase().trim())
+                .includes(genreKey);
+        });
+
+        if (countEl) countEl.textContent = filtered.length.toString();
+
+        if (filtered.length === 0) {
+            console.warn(
+                `[CCG GENRE WARNING] No games found for genre "${genreName}"`
+            );
+        }
 
         grid.innerHTML = filtered.map(game => generateGenreCard(game)).join("");
 
     } catch (err) {
-        console.error("GENRE LOADER ERROR:", err);
+        console.error("[CCG GENRE] Loader error:", err);
     }
 });
 
@@ -48,7 +69,7 @@ function resolveGenreThumb(raw) {
     t = t.replace("resources/images/thumbnails/all/", "");
     t = t.replace("resources/images/thumbnails/", "");
     t = t.replace("resources/images/", "");
-    t = t.replace(/^\/+/, ""); // leading slashes
+    t = t.replace(/^\/+/, "");
 
     if (!t) t = "1942.jpg";
 
@@ -59,6 +80,14 @@ function resolveGenreThumb(raw) {
    Build game card (Omega 16:9 card system)
 ------------------------------------------------------------ */
 function generateGenreCard(game) {
+
+    if (!game || game.id === undefined) {
+        console.warn("[CCG DATA WARNING] Game missing ID:", game);
+    }
+
+    if (!game.title) {
+        console.warn("[CCG DATA WARNING] Game missing title:", game);
+    }
 
     const finalThumb = resolveGenreThumb(
         game.thumbnail || game.thumb || game.cover
@@ -71,17 +100,19 @@ function generateGenreCard(game) {
         game.developer || ""
     ].filter(Boolean).join(" · ");
 
+    const gameId = game.id !== undefined ? String(game.id) : "";
+
     return `
         <div class="ccg-game-card genre-card">
-            <a href="../game.html?id=${game.id}" class="ccg-game-card__thumb">
-                <img src="${finalThumb}" alt="${game.title}">
+            <a href="../game.html?id=${gameId}" class="ccg-game-card__thumb">
+                <img src="${finalThumb}" alt="${game.title || "Game artwork"}">
             </a>
 
             <div class="ccg-game-card__body">
-                <h3 class="ccg-game-card__title">${game.title}</h3>
+                <h3 class="ccg-game-card__title">${game.title || "Unknown Game"}</h3>
                 <div class="ccg-game-card__meta">${meta}</div>
 
-                <a href="../game.html?id=${game.id}"
+                <a href="../game.html?id=${gameId}"
                    class="ccg-btn ccg-btn--primary">View Game</a>
             </div>
         </div>
