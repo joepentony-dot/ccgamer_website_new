@@ -1,5 +1,5 @@
 /* ============================================================
-   CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM (DENSITY PASS)
+   CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM (DENSITY PASS + FIX)
    ============================================================ */
 
 /* ------------------------------------------------------------
@@ -11,10 +11,7 @@
 .genre-grid.omega-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-
-    /* STEP 8: tighter rhythm */
     gap: 20px;
-
     align-items: stretch;
 }
 
@@ -35,17 +32,9 @@
     border-radius: 16px;
     border: 1px solid rgba(255,255,255,.08);
     overflow: hidden;
-
-    /* STEP 8: calmer depth for dense views */
     box-shadow: 0 8px 16px rgba(0,0,0,.7);
-
     will-change: transform, box-shadow;
-
-    transition:
-        transform .2s ease,
-        box-shadow .2s ease,
-        border-color .2s ease;
-
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
     text-decoration: none;
     color: inherit;
 }
@@ -57,7 +46,7 @@
 }
 
 /* ------------------------------------------------------------
-   MEDIA SYSTEM (RESTORED — DO NOT ALTER)
+   MEDIA SYSTEM (GLOBAL)
 ------------------------------------------------------------ */
 
 .ccg-card__media {
@@ -73,23 +62,23 @@
     height: 100%;
     object-fit: cover;
     display: block;
-
     backface-visibility: hidden;
     transform: scale(1.01);
-
-    transition:
-        transform .2s ease,
-        filter .2s ease;
+    transition: transform .2s ease, filter .2s ease;
 }
 
 /* ------------------------------------------------------------
-   GAME LIBRARY CARDS
+   🔴 GAME INDEX THUMB FIX (THIS WAS MISSING)
 ------------------------------------------------------------ */
 
 .ccg-game-card__thumb {
     position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
+
+    /* HARD FLOOR so flex can't collapse it */
+    min-height: 140px;
+
     overflow: hidden;
     border-radius: 12px;
 }
@@ -102,52 +91,17 @@
 }
 
 /* ------------------------------------------------------------
-   GENRE HUB TILES
------------------------------------------------------------- */
-
-.ccg-card__image {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-    border-radius: 12px;
-}
-
-.ccg-card__image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-/* ------------------------------------------------------------
-   COLLECTION TILES
------------------------------------------------------------- */
-
-.ccg-genre-tile img {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    border-radius: 12px;
-    display: block;
-}
-
-/* ------------------------------------------------------------
    CARD BODY — DENSITY TUNED
 ------------------------------------------------------------ */
 
 .ccg-game-card__body,
 .ccg-card__body {
-
-    /* STEP 8: tighter but readable */
     padding: 10px 10px 12px;
-
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
 
-/* Title stability */
 .ccg-game-card__title,
 .ccg-card__title,
 .ccg-genre-tile span {
@@ -156,26 +110,21 @@
     text-transform: uppercase;
     letter-spacing: .06em;
     color: #ffffff;
-
     line-height: 1.25;
-
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-
     min-height: 2.4em;
 }
 
 /* ------------------------------------------------------------
-   HOVER BEHAVIOUR — DENSITY CALMED
+   HOVER BEHAVIOUR — CALMED
 ------------------------------------------------------------ */
 
 .ccg-game-card:hover,
 .ccg-card:hover,
 .ccg-genre-tile:hover {
-
-    /* STEP 8: less vertical jump */
     transform: translateY(-2px) scale(1.02);
 }
 
@@ -226,11 +175,6 @@
     .genre-grid.omega-grid {
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         gap: 18px;
-    }
-
-    .ccg-game-card__body,
-    .ccg-card__body {
-        padding: 10px 10px 12px;
     }
 
     .ccg-game-card__title,
