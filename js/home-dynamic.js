@@ -3,22 +3,22 @@
    ------------------------------------------------------------
    • Featured Game auto-rotation (1B)
    • Random Game button
-   • Featured Video placeholder
+   • Featured Video auto-sync with Featured Game (videoid)
    • Mode label sync
    • Section reveal animations (3D)
-   • NEW: Omega Hero CRT Boot-Up Sequence (2A)
-   • NEW: Subtle Parallax Drift for hero (visual only)
+   • Omega Hero CRT Boot-Up Sequence (2A)
+   • Subtle Parallax Drift for hero (visual only)
    ============================================================ */
 
 let CCG_HOME_ALL_GAMES = [];
+let CCG_HOME_FEATURED_GAME = null;
 
 /* ============================================================
-   CONFIG — FEATURED VIDEO
+   CONFIG — FEATURED VIDEO FALLBACK
 ============================================================ */
 
-const FEATURED_VIDEO_ID = "";
-const FEATURED_VIDEO_TITLE = "Featured CCG Video";
-const FEATURED_VIDEO_URL = "https://www.youtube.com/@CheekyCommodoreGamer";
+const FEATURED_VIDEO_FALLBACK_TITLE = "Featured CCG Video";
+const FEATURED_VIDEO_FALLBACK_URL = "https://www.youtube.com/@CheekyCommodoreGamer";
 
 /* ============================================================
    INIT
@@ -32,13 +32,12 @@ async function initHomeDynamic() {
     try {
         await loadGamesForHome();
         wireRandomGameButton();
-        renderFeaturedGame();
-        renderFeaturedVideo();
+        renderFeaturedGame();       // this will also drive the video card
         syncModeLabel();
         initModeObserver();
         applyHomeAnimations();
-        applyOmegaHeroEntry();       // 🔥 NEW
-        initHeroParallaxDrift();     // 🔥 NEW
+        applyOmegaHeroEntry();
+        initHeroParallaxDrift();
     } catch (err) {
         console.error("CCG Home Dynamic — init error:", err);
     }
@@ -102,15 +101,29 @@ function renderFeaturedGame() {
     const featured = pickFeaturedGame();
     if (!featured) return;
 
-    const thumb = resolveHomeThumb(featured.thumbnail || featured.thumb || featured.cover);
+    CCG_HOME_FEATURED_GAME = featured;
 
-    card.querySelector("[data-fg-thumb]").src = thumb;
-    card.querySelector("[data-fg-thumb]").alt = `${featured.title} artwork`;
-    card.querySelector("[data-fg-title]").textContent = featured.title;
-    card.querySelector("[data-fg-desc]").textContent =
-        buildFeaturedGameDescription(featured);
-    card.querySelector("[data-fg-btn]").href =
-        `games/game.html?id=${featured.id}`;
+    const thumb = resolveHomeThumb(
+        featured.thumbnail || featured.thumb || featured.cover
+    );
+
+    const imgEl = card.querySelector("[data-fg-thumb]");
+    const titleEl = card.querySelector("[data-fg-title]");
+    const descEl = card.querySelector("[data-fg-desc]");
+    const btnEl = card.querySelector("[data-fg-btn]");
+
+    if (imgEl) {
+        imgEl.src = thumb;
+        imgEl.alt = `${featured.title || "Featured Game"} artwork`;
+    }
+    if (titleEl) titleEl.textContent = featured.title || "Featured Game";
+    if (descEl) descEl.textContent = buildFeaturedGameDescription(featured);
+    if (btnEl && featured.id != null) {
+        btnEl.href = `games/game.html?id=${featured.id}`;
+    }
+
+    // Drive the Featured Video card from the same game
+    renderFeaturedVideo();
 }
 
 /* ============================================================
@@ -130,32 +143,66 @@ function wireRandomGameButton() {
     btn.addEventListener("click", () => {
         const r = Math.floor(Math.random() * CCG_HOME_ALL_GAMES.length);
         const g = CCG_HOME_ALL_GAMES[r];
-        if (g && g.id != null) window.location.href = `games/game.html?id=${g.id}`;
+        if (g && g.id != null) {
+            window.location.href = `games/game.html?id=${g.id}`;
+        }
     });
 }
 
 /* ============================================================
-   FEATURED VIDEO
+   FEATURED VIDEO — AUTO-SYNC WITH FEATURED GAME
 ============================================================ */
 
+function buildYouTubeThumbUrl(videoId) {
+    if (!videoId) return null;
+    const v = String(videoId).trim();
+    if (!v) return null;
+    return `https://img.youtube.com/vi/${v}/hqdefault.jpg`;
+}
+
 function renderFeaturedVideo() {
-    const container = document.querySelector("[data-ccg-featured-video]");
+    const thumbEl = document.querySelector("[data-ccg-featured-video-thumb]");
     const titleEl = document.querySelector("[data-ccg-featured-video-title]");
+    const descEl = document.querySelector("[data-ccg-featured-video-desc]");
     const btnEl = document.querySelector("[data-ccg-featured-video-btn]");
 
-    if (titleEl) titleEl.textContent = FEATURED_VIDEO_TITLE;
-    if (btnEl) btnEl.href = FEATURED_VIDEO_URL;
+    if (!thumbEl || !titleEl || !btnEl) return;
 
-    if (!container || !FEATURED_VIDEO_ID) return;
+    const game = CCG_HOME_FEATURED_GAME;
 
-    container.innerHTML = `
-        <iframe
-            src="https://www.youtube.com/embed/${FEATURED_VIDEO_ID}"
-            title="${FEATURED_VIDEO_TITLE}"
-            allowfullscreen
-            loading="lazy">
-        </iframe>
-    `;
+    // Default fallbacks
+    let title = FEATURED_VIDEO_FALLBACK_TITLE;
+    let desc = "A hand-picked longplay or review from the channel — perfect for a retro session.";
+    let href = FEATURED_VIDEO_FALLBACK_URL;
+    let thumbUrl = "resources/images/thumbnails/all/1942.jpg";
+
+    if (game) {
+        if (game.title) {
+            title = `Featured CCG Video — ${game.title}`;
+        }
+
+        desc = "Longplay or review from the CCG channel, paired with this featured game.";
+
+        const videoId = game.videoid || game.videoId || game.youtube || game.video;
+        const ytThumb = buildYouTubeThumbUrl(videoId);
+
+        if (ytThumb) {
+            thumbUrl = ytThumb;
+            href = `https://www.youtube.com/watch?v=${String(videoId).trim()}`;
+        } else {
+            // Fall back to the game's own art if no video id
+            thumbUrl = resolveHomeThumb(
+                game.thumbnail || game.thumb || game.cover
+            );
+            href = FEATURED_VIDEO_FALLBACK_URL;
+        }
+    }
+
+    thumbEl.src = thumbUrl;
+    thumbEl.alt = `${title} thumbnail`;
+    titleEl.textContent = title;
+    if (descEl) descEl.textContent = desc;
+    btnEl.href = href;
 }
 
 /* ============================================================
@@ -195,7 +242,7 @@ function applyHomeAnimations() {
 }
 
 /* ============================================================
-   🔥 OMEGA HERO ENTRY SEQUENCE (Option 2A)
+   OMEGA HERO ENTRY SEQUENCE (Option 2A)
    ----------------------------------------------------------------
    • CRT power-on sweep
    • Neon bloom pulse on title + tagline
@@ -210,7 +257,7 @@ function applyOmegaHeroEntry() {
 }
 
 /* ============================================================
-   🔥 HERO PARALLAX DRIFT — Ultra subtle, visual only
+   HERO PARALLAX DRIFT — Ultra subtle, visual only
 ============================================================ */
 
 function initHeroParallaxDrift() {
