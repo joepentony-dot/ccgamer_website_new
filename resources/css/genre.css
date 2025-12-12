@@ -1,15 +1,24 @@
 /* ============================================================
-   GENRE.CSS — Omega Genre Hub Upgrade
-   Now matches collection thumbnail sizing + glow
-   ============================================================ */
+   GENRE.CSS — OMEGA GENRE HUB SYSTEM
+   ------------------------------------------------------------
+   • Genre index grid styling
+   • Genre single pages (shared elements)
+   • Visual parity with Collections
+   • PASS 1C — Visual depth + hierarchy
+   • ZERO JS or layout dependencies
+============================================================ */
+
+/* ============================================================
+   PAGE BASE
+============================================================ */
 
 .ccg-page--genres-index {
     padding-bottom: 40px;
 }
 
-/* ---------------------------------------------
-   HERO
---------------------------------------------- */
+/* ============================================================
+   GENRE HUB HERO
+============================================================ */
 
 .ccg-genrehub-hero {
     text-align: center;
@@ -20,6 +29,8 @@
     font-size: 1.6rem;
     margin-bottom: 6px;
     color: var(--text-light);
+    text-shadow:
+        0 0 12px rgba(var(--accent-rgb), 0.35);
 }
 
 .ccg-genrehub-subtitle {
@@ -27,9 +38,9 @@
     opacity: 0.85;
 }
 
-/* ---------------------------------------------
-   GRID — match Collections layout
---------------------------------------------- */
+/* ============================================================
+   GENRE GRID — COLLECTION PARITY
+============================================================ */
 
 .genre-grid {
     display: grid;
@@ -38,19 +49,25 @@
     padding: 0 10px;
 }
 
-/* CARD BASE STYLE (matching Collections) */
+/* ============================================================
+   CARD BASE — OMEGA TILE
+============================================================ */
 
 .ccg-card {
     display: flex;
     flex-direction: column;
-    background: rgba(0,0,0,0.55);
+    background: rgba(0, 0, 0, 0.55);
     border-radius: 14px;
     overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.12);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+
     box-shadow:
-        0 0 14px rgba(0,0,0,0.85),
+        0 0 14px rgba(0, 0, 0, 0.85),
         0 0 28px var(--card-glow);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
 }
 
 .ccg-card:hover {
@@ -60,7 +77,9 @@
         0 0 40px rgba(var(--accent-rgb), 0.5);
 }
 
-/* IMAGE — 16:9 centered & fully visible */
+/* ============================================================
+   IMAGE — 16:9 LOCKED
+============================================================ */
 
 .ccg-card__image {
     position: relative;
@@ -75,26 +94,58 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+
+    transition:
+        transform 0.35s ease,
+        filter 0.35s ease;
 }
 
-/* TITLE */
+.ccg-card:hover .ccg-card__image img {
+    transform: scale(1.04);
+    filter: brightness(1.05);
+}
+
+/* ============================================================
+   TITLE
+============================================================ */
 
 .ccg-card__title {
     text-align: center;
     padding: 10px 6px 14px 6px;
     font-size: 0.9rem;
     color: var(--text-light);
+
     text-shadow:
         0 0 8px rgba(var(--accent-rgb), 0.6),
         0 0 14px rgba(var(--accent-rgb), 0.35);
 }
 
-/* ---------------------------------------------
+/* ============================================================
+   PASS 1C — VISUAL HIERARCHY (SUBTLE)
+   Top row receives gentle emphasis
+============================================================ */
+
+.ccg-page--genres-index .ccg-card:nth-child(-n + 4) {
+    box-shadow:
+        0 0 18px rgba(0, 0, 0, 0.9),
+        0 0 34px rgba(var(--accent-rgb), 0.45);
+}
+
+.ccg-page--genres-index .ccg-card:nth-child(-n + 4):hover {
+    transform: translateY(-6px);
+}
+
+/* ============================================================
    RESPONSIVE
---------------------------------------------- */
+============================================================ */
 
 @media (max-width: 520px) {
     .genre-grid {
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 16px;
+    }
+
+    .ccg-genrehub-title {
+        font-size: 1.4rem;
     }
 }
