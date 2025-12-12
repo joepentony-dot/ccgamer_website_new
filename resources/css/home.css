@@ -1,9 +1,11 @@
-/* ============================================================
+/* ============================================================ 
    HOME.CSS — OMEGA CINEMATIC 2.0 HOMEPAGE
-   - Tight, cinematic hero using global ccg-hero system
-   - Featured highlights (game + video)
-   - Compact genre grid launcher
-   - Safe: no impact on other pages
+   FINAL BALANCED SYMMETRY EDITION (OPTION D)
+   ------------------------------------------------------------
+   - Perfect Featured Highlights symmetry
+   - Natural card layout preserved
+   - Even padding + aligned titles + aligned buttons
+   - Fully compatible with all Omega systems
    ============================================================ */
 
 /* ------------------------------------------------------------
@@ -23,7 +25,6 @@
 
 /* ------------------------------------------------------------
    HERO — CINEMATIC 2.0
-   Uses global .ccg-hero styles from ccg-hero.css
 ------------------------------------------------------------ */
 
 .home-hero {
@@ -40,8 +41,6 @@
         0 0 46px rgba(var(--accent-rgb), 0.32);
 }
 
-/* Inner layout */
-
 .home-hero__inner {
     position: relative;
     z-index: 1;
@@ -49,7 +48,7 @@
     max-width: 720px;
 }
 
-/* Mode line above hero title */
+/* Mode line */
 
 .home-hero__mode-line {
     display: flex;
@@ -73,7 +72,7 @@
     opacity: 0.85;
 }
 
-/* Hero title + tagline */
+/* Hero Title + Tagline */
 
 .home-hero__title {
     margin: 0 0 8px 0;
@@ -95,7 +94,7 @@
     max-width: 640px;
 }
 
-/* Hero actions */
+/* Hero Buttons */
 
 .home-hero__actions {
     display: flex;
@@ -125,7 +124,7 @@
     opacity: 0.95;
 }
 
-/* Disabled state for Random Game if games not loaded */
+/* Disabled Random Game state */
 
 .ccg-btn.ccg-btn--disabled {
     opacity: 0.4;
@@ -210,13 +209,8 @@
 }
 
 /* ------------------------------------------------------------
-   FEATURED HIGHLIGHTS
-   (Featured game + featured video)
+   FEATURED HIGHLIGHTS — BALANCED PRO LAYOUT
 ------------------------------------------------------------ */
-
-.home-section--highlights {
-    /* uses base .home-section styling */
-}
 
 .home-highlights-grid {
     display: grid;
@@ -225,47 +219,61 @@
     align-items: stretch;
 }
 
-/* Featured cards piggyback on ccg-card style */
+/* Base structure shared by both cards */
 
 .home-feature-card {
     height: 100%;
     display: flex;
     flex-direction: column;
+    justify-content: flex-start; /* preserves natural feel */
 }
+
+/* Natural 16:9 media, consistent across both cards */
 
 .home-feature-card .ccg-card__media {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
+    flex-shrink: 0;
 }
 
-.home-feature-card .ccg-card__body {
-    flex: 1;
+/* Balanced Padding for Featured Game */
+
+.home-feature-card[data-ccg-featured-game] .ccg-card__body {
+    padding-top: 18px;
+    padding-bottom: 20px;
+
     display: flex;
     flex-direction: column;
+    gap: 12px;
+
+    /* This creates balanced height without forcing centring */
+    justify-content: space-between;
 }
 
-/* Shared titles/meta inside cards */
+/* Featured Game Title + Meta */
 
 .home-feature-title {
     text-align: center;
 }
 
 .home-feature-meta {
-    margin-top: 4px;
-    font-size: 0.8rem;
     text-align: center;
+    font-size: 0.82rem;
+    opacity: 0.9;
 }
 
-/* Buttons at bottom, centred */
+/* Buttons */
 
 .home-feature-card__btn {
-    margin-top: auto;
+    margin-top: 12px;
     align-self: center;
     border-radius: 999px;
     padding-inline: 18px;
 }
 
-/* Video variant tweaks */
+/* ------------------------------------------------------------
+   FEATURED VIDEO (Right side)
+------------------------------------------------------------ */
 
 .home-feature-card--video {
     display: flex;
@@ -273,16 +281,22 @@
 }
 
 .home-feature-video__header {
-    padding: 10px 12px 6px;
+    padding: 12px 12px 6px;
     text-align: center;
 }
 
 .home-feature-card--video .ccg-card__body {
-    padding-top: 10px;
-    padding-bottom: 14px;
+    padding-top: 12px;
+    padding-bottom: 20px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    justify-content: space-between; /* symmetrical with Featured Game */
 }
 
-/* Video thumbnail + neon play icon */
+/* 16:9 thumbnail */
 
 .home-feature-video__frame {
     position: relative;
@@ -294,6 +308,8 @@
     object-fit: cover;
     display: block;
 }
+
+/* Neon Play Icon */
 
 .home-feature-video__play-icon {
     position: absolute;
@@ -329,19 +345,11 @@
     border-left: 17px solid rgba(0, 0, 0, 0.9);
 }
 
-/* Button alignment */
-
-.home-feature-video__btn {
-    /* inherits centring from .home-feature-card__btn */
-}
-
 /* ------------------------------------------------------------
    GENRE GRID — HOME
 ------------------------------------------------------------ */
 
-.home-section--genres {
-    /* uses base .home-section styling */
-}
+.home-section--genres { }
 
 .home-genre-grid {
     display: grid;
@@ -350,15 +358,12 @@
     margin-top: 4px;
 }
 
-/* The cards here are standard .ccg-card with 16:9 media already
-   styled by ccg-cards.css, so we only need light tweaks. */
-
 .home-genre-grid .ccg-card__title {
     text-align: center;
     font-size: 0.86rem;
 }
 
-/* Footer link under genre grid */
+/* Footer link */
 
 .home-section__footer-link {
     margin-top: 10px;
@@ -374,52 +379,22 @@
 ------------------------------------------------------------ */
 
 @media (max-width: 960px) {
-    .ccg-main--home {
-        padding-top: 14px;
-    }
-
-    .home-hero__inner {
-        padding: 18px 18px 16px;
-    }
+    .ccg-main--home { padding-top: 14px; }
+    .home-hero__inner { padding: 18px 18px 16px; }
 }
 
 @media (max-width: 780px) {
-    .home-hero__title {
-        font-size: 1.05rem;
-    }
-
-    .home-highlights-grid {
-        grid-template-columns: 1fr;
-    }
+    .home-hero__title { font-size: 1.05rem; }
+    .home-highlights-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 640px) {
-    .ccg-main--home {
-        padding-top: 12px;
-        padding-bottom: 26px;
-    }
-
-    .home-hero {
-        margin-top: 6px;
-        margin-bottom: 18px;
-    }
-
-    .home-hero__inner {
-        padding: 16px 14px 14px;
-    }
-
-    .home-hero__title {
-        font-size: 0.96rem;
-    }
-
-    .home-tagline__main {
-        font-size: 0.85rem;
-    }
-
-    .home-section {
-        padding: 14px 12px 14px;
-    }
-
+    .ccg-main--home { padding-top: 12px; padding-bottom: 26px; }
+    .home-hero { margin-top: 6px; margin-bottom: 18px; }
+    .home-hero__inner { padding: 16px 14px 14px; }
+    .home-hero__title { font-size: 0.96rem; }
+    .home-tagline__main { font-size: 0.85rem; }
+    .home-section { padding: 14px 12px 14px; }
     .home-genre-grid {
         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
         gap: 12px;
@@ -431,13 +406,9 @@
         flex-direction: column;
         align-items: stretch;
     }
-
     .home-hero__btn {
         width: 100%;
         text-align: center;
     }
-
-    .home-section__title {
-        font-size: 0.86rem;
-    }
+    .home-section__title { font-size: 0.86rem; }
 }
