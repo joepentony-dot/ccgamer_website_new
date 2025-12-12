@@ -29,7 +29,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         restoreAccordionState();
         wireSearchFilter();
 
-        // Optional count display if your HTML has these IDs (harmless if missing)
         const totalEl = document.getElementById("gamesTotalCount");
         if (totalEl) totalEl.textContent = String(CCG_ALL_GAMES.length);
 
@@ -43,11 +42,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 ============================================================ */
 
 async function loadGamesJsonRobust() {
-    // Priority order: correct for /games/index.html is "games.json"
     const candidates = [
-        "games.json",           // /games/games.json (CORRECT)
-        "../games/games.json",  // also resolves to /games/games.json
-        "../games.json"         // legacy fallback (root)
+        "games.json",
+        "../games/games.json",
+        "../games.json"
     ];
 
     let lastErr = null;
@@ -120,7 +118,7 @@ function restoreAccordionState() {
 function buildGamesAccordion(games) {
     const container = document.getElementById("gamesAccordion");
     if (!container) {
-        console.error('[CCG] Missing #gamesAccordion in games/index.html');
+        console.error("[CCG] Missing #gamesAccordion in games/index.html");
         return;
     }
 
