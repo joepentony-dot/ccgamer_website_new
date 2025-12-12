@@ -1,271 +1,186 @@
-/* ============================================================ 
-   HOME.CSS — OMEGA CINEMATIC 2.0 HOMEPAGE
-   ============================================================ */
+/* ============================================================
+   CCG CARDS — OMEGA CINEMATIC SYSTEM
+   ------------------------------------------------------------
+   • Unified card styling for:
+     - Games index
+     - Genre pages
+     - Collection pages
+     - Home page genre launcher
+   • CRT / Neon aware
+   • Layout-safe (no JS dependency)
+============================================================ */
 
 /* ------------------------------------------------------------
-   PAGE WRAPPER
+   BASE CARD
 ------------------------------------------------------------ */
 
-.ccg-page--home {
-    padding-bottom: 40px;
-}
-
-.ccg-main--home {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding-top: 18px;
-    padding-bottom: 32px;
-}
-
-/* ------------------------------------------------------------
-   HERO — CINEMATIC 2.0
------------------------------------------------------------- */
-
-.home-hero {
-    margin-top: 10px;
-    margin-bottom: 22px;
-}
-
-.ccg-hero--home {
+.ccg-card {
     position: relative;
-    border-radius: 22px;
-    overflow: hidden;
-    box-shadow:
-        0 0 26px rgba(0, 0, 0, 0.9),
-        0 0 46px rgba(var(--accent-rgb), 0.32);
-}
-
-.home-hero__inner {
-    position: relative;
-    z-index: 1;
-    padding: 22px 22px 20px;
-    max-width: 720px;
-}
-
-/* Mode line */
-
-.home-hero__mode-line {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    margin-bottom: 6px;
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.16em;
-    color: var(--text-dim);
-}
-
-.home-hero__mode-label {
-    color: var(--accent);
-    text-shadow:
-        0 0 10px rgba(var(--accent-rgb), 0.9),
-        0 0 20px rgba(var(--accent-rgb), 0.55);
-}
-
-.home-hero__sub-label {
-    opacity: 0.85;
-}
-
-/* Hero title + tagline */
-
-.home-hero__title {
-    margin: 0 0 8px 0;
-    font-family: var(--ccg-font-main);
-    font-size: 1.35rem;
-    line-height: 1.3;
-    text-transform: uppercase;
-    color: var(--text-light);
-    text-shadow:
-        0 0 16px rgba(var(--accent-rgb), 0.95),
-        0 0 32px rgba(var(--accent-rgb), 0.6);
-}
-
-.home-hero__tagline {
-    margin: 0 0 14px 0;
-    font-size: 0.9rem;
-    line-height: 1.7;
-    color: var(--text-dim);
-    max-width: 640px;
-}
-
-/* Hero actions */
-
-.home-hero__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.home-hero__btn {
-    min-width: 150px;
-    text-align: center;
-    border-radius: 999px;
-    padding: 9px 18px;
-    font-size: 0.78rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-}
-
-.home-hero__tip {
-    margin: 0;
-    font-size: 0.76rem;
-    color: var(--text-dim);
-    opacity: 0.95;
-}
-
-/* ------------------------------------------------------------
-   TAGLINE STRIP
------------------------------------------------------------- */
-
-.home-tagline {
-    text-align: center;
-    margin: 0 0 26px 0;
-}
-
-.home-tagline__kicker {
-    margin: 0;
-    font-size: 0.78rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    opacity: 0.9;
-}
-
-.home-tagline__main {
-    margin: 4px 0 0 0;
-    font-family: var(--ccg-font-main);
-    font-size: 0.92rem;
-    text-transform: uppercase;
-    color: var(--accent);
-    text-shadow:
-        0 0 12px rgba(var(--accent-rgb), 0.9),
-        0 0 24px rgba(var(--accent-rgb), 0.55);
-}
-
-/* ------------------------------------------------------------
-   SHARED HOME SECTIONS
------------------------------------------------------------- */
-
-.home-section {
-    margin: 0 0 24px 0;
-    padding: 16px 18px 18px;
-    background: rgba(0, 0, 0, 0.78);
-    border-radius: 18px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow:
-        0 0 22px rgba(0, 0, 0, 0.92),
-        0 0 30px rgba(var(--accent-rgb), 0.26);
-}
-
-.home-section__header {
-    margin-bottom: 12px;
-    text-align: center;
-}
-
-.home-section__title {
-    margin: 0 0 6px 0;
-    font-family: var(--ccg-font-main);
-    font-size: 0.95rem;
-    text-transform: uppercase;
-    color: var(--text-light);
-    text-shadow:
-        0 0 12px rgba(var(--accent-rgb), 0.8),
-        0 0 26px rgba(var(--accent-rgb), 0.5);
-}
-
-.home-section__divider {
-    width: 110px;
-    height: 2px;
-    margin: 0 auto;
-    border-radius: 999px;
-    background: linear-gradient(
-        90deg,
-        rgba(var(--accent-rgb), 0.12),
-        rgba(var(--accent-rgb), 0.9),
-        rgba(var(--accent-rgb), 0.12)
-    );
-    box-shadow:
-        0 0 16px rgba(var(--accent-rgb), 0.9),
-        0 0 28px rgba(var(--accent-rgb), 0.6);
-}
-
-/* ------------------------------------------------------------
-   FEATURED HIGHLIGHTS
------------------------------------------------------------- */
-
-.home-highlights-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px;
-}
-
-.home-feature-card {
-    height: 100%;
     display: flex;
     flex-direction: column;
+    background: linear-gradient(
+        180deg,
+        rgba(18, 18, 22, 0.92),
+        rgba(6, 6, 10, 0.95)
+    );
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+        0 0 18px rgba(0, 0, 0, 0.85),
+        0 0 26px rgba(var(--accent-rgb), 0.18);
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+/* Hover */
+
+.ccg-card:hover {
+    transform: translateY(-3px);
+    box-shadow:
+        0 0 26px rgba(0, 0, 0, 0.95),
+        0 0 42px rgba(var(--accent-rgb), 0.45);
 }
 
 /* ------------------------------------------------------------
-   HOME GENRE GRID — 🔧 FIXED
+   CARD MEDIA
 ------------------------------------------------------------ */
 
-.home-genre-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-    gap: 14px;
-    margin-top: 6px;
+.ccg-card__media {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: #000;
 }
 
-/* 🔧 RESTORE MEDIA VISIBILITY */
-.home-genre-grid .ccg-card__media {
-    display: block;
-    height: auto;
+.ccg-card__media--16x9 {
     aspect-ratio: 16 / 9;
 }
 
-.home-genre-grid .ccg-card__media img {
+.ccg-card__media img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
 }
 
-.home-genre-grid .ccg-card__title {
-    text-align: center;
+/* Subtle CRT sheen */
+
+.ccg-card__media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.06),
+            rgba(0,0,0,0.35)
+        );
+}
+
+/* ------------------------------------------------------------
+   CARD BODY
+------------------------------------------------------------ */
+
+.ccg-card__body {
+    padding: 14px 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* ------------------------------------------------------------
+   CARD TITLE
+------------------------------------------------------------ */
+
+.ccg-card__title {
+    margin: 0;
+    font-family: var(--ccg-font-main);
     font-size: 0.86rem;
+    text-transform: uppercase;
+    text-align: center;
+    color: var(--text-light);
+    letter-spacing: 0.14em;
+    text-shadow:
+        0 0 10px rgba(var(--accent-rgb), 0.85),
+        0 0 20px rgba(var(--accent-rgb), 0.55);
+}
+
+/* ------------------------------------------------------------
+   CARD META / TEXT
+------------------------------------------------------------ */
+
+.ccg-card__text {
+    margin: 0;
+    font-size: 0.78rem;
+    text-align: center;
+    color: var(--text-dim);
+}
+
+/* ------------------------------------------------------------
+   BUTTON INSIDE CARD
+------------------------------------------------------------ */
+
+.ccg-card .ccg-btn {
+    margin-top: auto;
+    align-self: center;
+    border-radius: 999px;
+    padding-inline: 18px;
+}
+
+/* ------------------------------------------------------------
+   GRID REGISTRATION — CRITICAL
+------------------------------------------------------------ */
+
+/* Games index */
+.games-grid,
+.games-library,
+.games-accordion {
+    display: grid;
+}
+
+/* Genre pages */
+.genre-games-grid {
+    display: grid;
+}
+
+/* Collection pages */
+.collection-games-grid {
+    display: grid;
+}
+
+/* 🔴 HOME PAGE FIX — THIS WAS MISSING */
+.home-genre-grid {
+    display: grid;
+}
+
+.home-genre-grid .ccg-card {
+    display: flex;
+}
+
+/* ------------------------------------------------------------
+   GRID SPACING NORMALISATION
+------------------------------------------------------------ */
+
+.games-grid,
+.genre-games-grid,
+.collection-games-grid,
+.home-genre-grid {
+    gap: 14px;
 }
 
 /* ------------------------------------------------------------
    RESPONSIVE
 ------------------------------------------------------------ */
 
-@media (max-width: 780px) {
-    .home-highlights-grid {
-        grid-template-columns: 1fr;
+@media (max-width: 640px) {
+    .ccg-card {
+        border-radius: 14px;
     }
-}
 
-/* ============================================================
-   HOME GENRE GRID — FORCE MEDIA RESTORE
-   (Overrides global pill/compact card rules)
-============================================================ */
-
-.home-genre-grid .ccg-card {
-    display: flex;
-    flex-direction: column;
-}
-
-.home-genre-grid .ccg-card__media {
-    display: block !important;
-    visibility: visible !important;
-    height: auto !important;
-    aspect-ratio: 16 / 9;
-}
-
-.home-genre-grid .ccg-card__media img {
-    display: block !important;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    .ccg-card__title {
+        font-size: 0.8rem;
+    }
 }
