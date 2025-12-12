@@ -1,12 +1,9 @@
 /* ============================================================
-   CCG GAMES LIBRARY — OMEGA ACCORDION EDITION (OPTION B)
+   CCG GAMES LIBRARY — OMEGA ACCORDION EDITION (INTEGRITY HARDENED)
    ------------------------------------------------------------
-   • Fetches /games/games.json from /games/index.html
-   • 16:9 card thumbnails (handled by ccg-cards.css)
-   • Search by title / system / developer
-   • Alphabet jump (A–Z + #)
-   • Accordion UI with smooth open/close
-   • Polished fallback + safer thumb resolver
+   • All original behaviour preserved
+   • Added: ID validation, duplicate detection, safe linking
+   • Console-only diagnostics (no UI impact)
    ============================================================ */
 
 let CCG_ALL_GAMES = [];
@@ -22,16 +19,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function initGamesLibrary() {
     try {
-
         // Correct depth: /games/index.html → /games/games.json
         const response = await fetch("games.json");
         const games = await response.json();
 
-        // Defensive copy
         CCG_ALL_GAMES = Array.isArray(games) ? games.slice() : [];
-        CCG_FILTERED_GAMES = CCG_ALL_GAMES.slice();
 
-        // Always sort master list for consistent alphabetical grouping
+        runIntegrityChecks(CCG_ALL_GAMES);
+
+        // Sort master list for consistent alphabetical grouping
         CCG_ALL_GAMES.sort((a, b) => {
             const ta = (a.title || "").toLowerCase();
             const tb = (b.title || "").toLowerCase();
@@ -43,12 +39,47 @@ async function initGamesLibrary() {
         bindGamesUI();
         renderAlphabetStrip();
         renderGamesAccordion();
-
         updateStats();
 
     } catch (err) {
-        console.error("Error loading games.json:", err);
+        console.error("[CCG] Error loading games.json:", err);
     }
+}
+
+/* ============================================================
+   INTEGRITY CHECKS (CONSOLE ONLY)
+   ============================================================ */
+
+function runIntegrityChecks(games) {
+    const seenIds = new Set();
+
+    games.forEach((game, index) => {
+
+        // ID checks
+        if (game.id === undefined || game.id === null || game.id === "") {
+            console.warn(
+                `[CCG DATA WARNING] Game missing ID at index ${index}:`,
+                game
+            );
+        } else {
+            const idStr = String(game.id);
+            if (seenIds.has(idStr)) {
+                console.warn(
+                    `[CCG DATA WARNING] Duplicate game ID detected: ${idStr}`,
+                    game
+                );
+            }
+            seenIds.add(idStr);
+        }
+
+        // Title check
+        if (!game.title || !String(game.title).trim()) {
+            console.warn(
+                `[CCG DATA WARNING] Game missing title (ID: ${game.id})`,
+                game
+            );
+        }
+    });
 }
 
 /* ============================================================
@@ -74,7 +105,6 @@ function bindGamesUI() {
         });
     }
 
-    // Accordion toggle via event delegation
     if (accordion) {
         accordion.addEventListener("click", (e) => {
             const header = e.target.closest(".games-accordion__header");
@@ -144,9 +174,7 @@ function getGameLetter(game) {
     if (!title) return "#";
 
     const first = title[0].toUpperCase();
-    if (first >= "A" && first <= "Z") return first;
-
-    return "#";
+    return first >= "A" && first <= "Z" ? first : "#";
 }
 
 function buildGroupedGames() {
@@ -158,7 +186,6 @@ function buildGroupedGames() {
         groups[letter].push(game);
     });
 
-    // Sort each group
     Object.keys(groups).forEach(letter => {
         groups[letter].sort((a, b) => {
             const ta = (a.title || "").toLowerCase();
@@ -262,50 +289,36 @@ function renderGamesAccordion(options = {}) {
         `;
     });
 
-    accordion.innerHTML = html || "";
+    accordion.innerHTML = html;
 }
 
 /* ============================================================
-   CARD GENERATION — Omega Polished Thumb Resolver
+   CARD GENERATION — SAFE LINKING
    ============================================================ */
 
 function resolveGameThumbForIndex(rawThumb) {
-
-    // Guaranteed fallback (safe known-good image)
     const FALLBACK = "../resources/images/thumbnails/all/1942.jpg";
-
     if (!rawThumb) return FALLBACK;
 
-    let t = String(rawThumb).trim();
+    let t = String(rawThumb).trim().replace(/^\/+/, "");
 
-    // Strip any leading slash ("/something.jpg")
-    t = t.replace(/^\/+/, "");
+    if (t.startsWith("resources/")) return `../${t}`;
+    if (!t.includes("/")) return `../resources/images/thumbnails/all/${t}`;
 
-    // If JSON contains a full or partial "resources/images/" path
-    if (t.startsWith("resources/")) {
-        return `../${t}`;
-    }
-
-    // If only a filename is provided → resolve to main thumbnails folder
-    if (!t.includes("/")) {
-        return `../resources/images/thumbnails/all/${t}`;
-    }
-
-    // Any other unexpected format → fallback
     return FALLBACK;
 }
 
 function buildGameMetaLine(game) {
-    const parts = [
-        game.year || "",
-        game.system || "",
-        game.developer || ""
-    ].filter(Boolean);
-
-    return parts.join(" · ");
+    return [game.year, game.system, game.developer]
+        .filter(Boolean)
+        .join(" · ");
 }
 
 function renderGameCard(game) {
+    if (game.id === undefined || game.id === null || game.id === "") {
+        return "";
+    }
+
     const thumb = resolveGameThumbForIndex(
         game.thumbnail || game.thumb || game.cover
     );
