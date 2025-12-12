@@ -7,7 +7,6 @@
 
 /* ------------------------------------------------------------
    GLOBAL STARFIELD LAYER (canvas)
-   Used by: <canvas id="home-starfield" class="ccg-starfield">
 ------------------------------------------------------------ */
 
 .ccg-starfield,
@@ -25,7 +24,6 @@
 
 /* ============================================================
    OMEGA NEON GRID — cinematic horizon grid
-   These layers sit above the starfield but under the page
 ============================================================ */
 
 .ccg-bg-grid {
@@ -33,21 +31,23 @@
     position: fixed;
     inset: 0;
     z-index: 1;
-    opacity: 0.22;
+
+    /* STEP 6: calmer baseline */
+    opacity: 0.18;
 
     background:
         linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.25)),
         repeating-linear-gradient(
             to right,
-            rgba(255,255,255,0.08) 0px,
-            rgba(255,255,255,0.08) 1px,
+            rgba(255,255,255,0.07) 0px,
+            rgba(255,255,255,0.07) 1px,
             transparent 1px,
             transparent 32px
         ),
         repeating-linear-gradient(
             to bottom,
-            rgba(255,255,255,0.08) 0px,
-            rgba(255,255,255,0.08) 1px,
+            rgba(255,255,255,0.07) 0px,
+            rgba(255,255,255,0.07) 1px,
             transparent 1px,
             transparent 24px
         );
@@ -60,19 +60,17 @@
 /* Mode-based neon tinting */
 body[data-mode="c64"] .ccg-bg-grid {
     --accent-rgb: 0, 200, 255;
-    opacity: 0.28;
+    opacity: 0.24;
 }
 
 body[data-mode="amiga"] .ccg-bg-grid {
     --accent-rgb: 255, 80, 200;
-    opacity: 0.32;
+    opacity: 0.27;
 }
 
 
 /* ------------------------------------------------------------
    CRT SOFT SCAN OVERLAY
-   Applied via <div class="ccg-bg-crt-overlay">
-   Adds soft film, scanlines & slight screen bend
 ------------------------------------------------------------ */
 
 .ccg-bg-crt-overlay {
@@ -84,14 +82,16 @@ body[data-mode="amiga"] .ccg-bg-grid {
     background:
         repeating-linear-gradient(
             to bottom,
-            rgba(0,0,0,0.35) 0px,
-            rgba(0,0,0,0.35) 2px,
-            rgba(0,0,0,0.15) 3px
+            rgba(0,0,0,0.30) 0px,
+            rgba(0,0,0,0.30) 2px,
+            rgba(0,0,0,0.12) 3px
         ),
         url("../images/fx/ccg-noise.png");
 
     mix-blend-mode: multiply;
-    opacity: 0.22;
+
+    /* STEP 6: clearer glass feel */
+    opacity: 0.18;
 }
 
 /* Screen curvature & vignette */
@@ -102,13 +102,13 @@ body[data-mode="amiga"] .ccg-bg-grid {
     border-radius: 12px;
     pointer-events: none;
     box-shadow:
-        inset 0 0 60px rgba(0,0,0,0.55),
-        inset 0 0 140px rgba(0,0,0,0.45);
+        inset 0 0 55px rgba(0,0,0,0.5),
+        inset 0 0 120px rgba(0,0,0,0.4);
 }
 
 
 /* ------------------------------------------------------------
-   OPTIONAL FULL-SCREEN SCANLINES (disabled by default)
+   OPTIONAL FULL-SCREEN SCANLINES
 ------------------------------------------------------------ */
 
 .ccg-scanlines {
@@ -119,13 +119,15 @@ body[data-mode="amiga"] .ccg-bg-grid {
     background:
         repeating-linear-gradient(
             to bottom,
-            rgba(255,255,255,0.03) 0px,
-            rgba(255,255,255,0.03) 1px,
+            rgba(255,255,255,0.025) 0px,
+            rgba(255,255,255,0.025) 1px,
             transparent 1px,
             transparent 3px
         );
     mix-blend-mode: soft-light;
-    opacity: 0.25;
+
+    /* STEP 6: less aggressive */
+    opacity: 0.18;
 }
 
 
@@ -138,9 +140,10 @@ body[data-mode="amiga"] .ccg-bg-grid {
     border: 1px solid rgba(255,255,255,0.12);
     border-radius: 14px;
 
+    /* STEP 6: reduce double-bloom */
     box-shadow:
-        0 0 18px rgba(0,0,0,0.65),
-        0 0 22px rgba(var(--accent-rgb), 0.18);
+        0 0 16px rgba(0,0,0,0.6),
+        0 0 18px rgba(var(--accent-rgb), 0.14);
 }
 
 
@@ -150,22 +153,24 @@ body[data-mode="amiga"] .ccg-bg-grid {
 
 .ccg-text-neon {
     color: var(--accent);
+
+    /* STEP 6: readability first */
     text-shadow:
-        0 0 10px rgba(var(--accent-rgb), 0.7),
-        0 0 24px rgba(var(--accent-rgb), 0.5);
+        0 0 8px rgba(var(--accent-rgb), 0.55),
+        0 0 18px rgba(var(--accent-rgb), 0.38);
 }
 
 .ccg-text-neon-soft {
     text-shadow:
-        0 0 8px rgba(var(--accent-rgb), 0.5),
-        0 0 18px rgba(var(--accent-rgb), 0.35);
+        0 0 6px rgba(var(--accent-rgb), 0.42),
+        0 0 14px rgba(var(--accent-rgb), 0.28);
 }
 
 .ccg-kicker-text {
     font-size: 0.8rem;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    opacity: 0.8;
+    opacity: 0.78;
 }
 
 
@@ -175,16 +180,16 @@ body[data-mode="amiga"] .ccg-bg-grid {
 
 .ccg-thumb-glow img {
     box-shadow:
-        0 0 18px rgba(0,0,0,0.7),
-        0 0 24px rgba(var(--accent-rgb), 0.35);
+        0 0 16px rgba(0,0,0,0.65),
+        0 0 22px rgba(var(--accent-rgb), 0.30);
     transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .ccg-thumb-glow:hover img {
     transform: translateY(-2px);
     box-shadow:
-        0 0 26px rgba(0,0,0,0.8),
-        0 0 36px rgba(var(--accent-rgb), 0.55);
+        0 0 22px rgba(0,0,0,0.75),
+        0 0 32px rgba(var(--accent-rgb), 0.48);
 }
 
 
@@ -199,14 +204,16 @@ body[data-mode="amiga"] .ccg-bg-grid {
 .ccg-btn:hover {
     transform: translateY(-2px);
     opacity: 1;
+
+    /* STEP 6: match card + hero glow */
     box-shadow:
-        0 0 18px rgba(var(--accent-rgb), 0.6),
-        0 0 30px rgba(var(--accent-rgb), 0.35);
+        0 0 14px rgba(var(--accent-rgb), 0.55),
+        0 0 24px rgba(var(--accent-rgb), 0.30);
 }
 
 
 /* ------------------------------------------------------------
-   PAGE FADE-IN (added via ccg-global.js)
+   PAGE FADE-IN
 ------------------------------------------------------------ */
 
 .ccg-fade-in {
