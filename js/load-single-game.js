@@ -1,10 +1,13 @@
 /* ============================================================
-   CCG LOAD SINGLE GAME — OMEGA ADAPTIVE EDITION (PHASE A — STEP 2)
+   CCG LOAD SINGLE GAME — OMEGA ADAPTIVE EDITION (PHASE A — STEP 3)
    ----------------------------------------------------------------
    • Preserves all existing visuals and behaviour
    • Reuses loaded JSON (no double-fetch)
    • Console-only integrity diagnostics
-   • RELATED GAMES: Tiered intelligence + dynamic section title
+   • RELATED GAMES:
+     - Tiered intelligence
+     - Dynamic title
+     - Graceful empty-state messaging
 ============================================================ */
 
 let CCG_SINGLE_ALL_GAMES = [];
@@ -164,7 +167,7 @@ function renderGame(game) {
 }
 
 /* ============================================================
-   RELATED GAMES — TIERED INTELLIGENCE + DYNAMIC TITLE
+   RELATED GAMES — TIERED + DYNAMIC TITLE + EMPTY STATE
 ============================================================ */
 function renderRelatedGames(game, allGames) {
     const section = document.querySelector(".game-section--related");
@@ -184,7 +187,7 @@ function renderRelatedGames(game, allGames) {
     const pool = [];
     const seen = new Set([currentId]);
 
-    let primaryTier = ""; // tracks which tier seeded results
+    let primaryTier = "";
 
     function addMatches(predicate, tierName) {
         let added = false;
@@ -200,36 +203,36 @@ function renderRelatedGames(game, allGames) {
         if (added && !primaryTier) primaryTier = tierName;
     }
 
-    /* Tier 1 — Developer */
-    if (dev) {
-        addMatches(g => (g.developer || "").trim() === dev, "developer");
-    }
-
-    /* Tier 2 — Publisher */
-    if (pool.length < 6 && pub) {
-        addMatches(g => (g.publisher || "").trim() === pub, "publisher");
-    }
-
-    /* Tier 3 — Optional fields (only if present) */
-    if (pool.length < 6 && series) {
-        addMatches(g => (g.series || "").trim() === series, "series");
-    }
-
-    if (pool.length < 6 && franchise) {
-        addMatches(g => (g.franchise || "").trim() === franchise, "franchise");
-    }
-
-    if (pool.length < 6 && engine) {
-        addMatches(g => (g.engine || "").trim() === engine, "engine");
-    }
+    if (dev) addMatches(g => (g.developer || "").trim() === dev, "developer");
+    if (pool.length < 6 && pub) addMatches(g => (g.publisher || "").trim() === pub, "publisher");
+    if (pool.length < 6 && series) addMatches(g => (g.series || "").trim() === series, "series");
+    if (pool.length < 6 && franchise) addMatches(g => (g.franchise || "").trim() === franchise, "franchise");
+    if (pool.length < 6 && engine) addMatches(g => (g.engine || "").trim() === engine, "engine");
 
     const related = pool.slice(0, 6);
 
+    /* ---------- EMPTY STATE ---------- */
     if (related.length === 0) {
-        section.hidden = true;
+
+        if (titleEl) {
+            titleEl.textContent = "Related games";
+        }
+
+        container.innerHTML = `
+            <div class="ccg-related-empty">
+                ${
+                    dev
+                        ? `No other games by <strong>${dev}</strong> are currently in the library.`
+                        : pub
+                            ? `No other games from <strong>${pub}</strong> are currently in the library.`
+                            : `No related games are currently available for this title.`
+                }
+            </div>
+        `;
         return;
     }
 
+    /* ---------- TITLE ---------- */
     if (titleEl) {
         switch (primaryTier) {
             case "developer":
@@ -262,6 +265,7 @@ function renderRelatedGames(game, allGames) {
         }
     }
 
+    /* ---------- CARDS ---------- */
     container.innerHTML = related.map(g => {
         const thumb = resolveGameThumb(g.thumbnail || g.thumb || g.cover);
         return `
