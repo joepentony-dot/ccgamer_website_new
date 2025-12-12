@@ -4,6 +4,7 @@
    • Page-specific layout only
    • NEVER redefines card or media primitives
    • Fully compatible with ccg-cards.css
+   • Includes Step 10 polish pass
 ============================================================ */
 
 /* ============================================================
@@ -51,6 +52,21 @@
 }
 
 /* ============================================================
+   EMPTY / LOADING STATE (STEP 10.1)
+============================================================ */
+
+.ccg-genre-grid:empty::after {
+    content: "Loading games…";
+    display: block;
+    text-align: center;
+    padding: 40px 0;
+    font-size: 0.9rem;
+    letter-spacing: 0.12em;
+    opacity: 0.65;
+    color: var(--text-light);
+}
+
+/* ============================================================
    GENRE HERO (SINGLE)
 ============================================================ */
 
@@ -77,7 +93,8 @@
     position: absolute;
     inset: 0;
     background:
-        radial-gradient(circle at top,
+        radial-gradient(
+            circle at top,
             rgba(0,0,0,0.2),
             rgba(0,0,0,0.75)
         );
@@ -113,6 +130,24 @@
     margin-top: 14px;
     font-size: 0.85rem;
     opacity: 0.85;
+}
+
+/* Step 10.2 — count stability */
+#genreGamesCount {
+    display: inline-block;
+    min-width: 2ch;
+    text-align: right;
+    transition: opacity 0.25s ease;
+}
+
+/* ============================================================
+   FIRST ROW EMPHASIS (STEP 10.3 — SUBTLE)
+============================================================ */
+
+.ccg-page--genre-single .ccg-genre-grid > .ccg-card:nth-child(-n + 4) {
+    box-shadow:
+        0 0 20px rgba(0,0,0,0.85),
+        0 0 30px rgba(var(--accent-rgb), 0.35);
 }
 
 /* ============================================================
