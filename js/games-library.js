@@ -1,10 +1,11 @@
 /* ============================================================
-   GAMES LIBRARY — OMEGA STABLE + DISCOVERABILITY (PHASE B2)
+   GAMES LIBRARY — OMEGA STABLE + PERFORMANCE (PHASE C1)
    ------------------------------------------------------------
    • Accordion layout (A–Z)
    • Search & filter support
    • Lazy-loaded thumbnails
-   • NEW: Session-based accordion state memory
+   • Session-based accordion state memory
+   • NEW: Image decode & LCP hardening
 ============================================================ */
 
 let CCG_ALL_GAMES = [];
@@ -23,7 +24,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         buildGamesAccordion(CCG_ALL_GAMES);
         restoreAccordionState();
-
         wireSearchFilter();
 
     } catch (err) {
@@ -51,11 +51,8 @@ function saveAccordionState(state) {
 function toggleAccordionState(letter, isOpen) {
     const state = new Set(getAccordionState());
 
-    if (isOpen) {
-        state.add(letter);
-    } else {
-        state.delete(letter);
-    }
+    if (isOpen) state.add(letter);
+    else state.delete(letter);
 
     saveAccordionState([...state]);
 }
@@ -67,9 +64,7 @@ function restoreAccordionState() {
         const group = document.querySelector(
             `.games-accordion__group[data-letter="${letter}"]`
         );
-        if (group) {
-            group.classList.add("is-open");
-        }
+        if (group) group.classList.add("is-open");
     });
 }
 
@@ -122,7 +117,7 @@ function buildGamesAccordion(games) {
 }
 
 /* ============================================================
-   GAME CARD RENDERER (PRESERVED)
+   GAME CARD RENDERER — LCP HARDENED
 ============================================================ */
 
 function renderGameCard(game) {
@@ -136,6 +131,7 @@ function renderGameCard(game) {
                     alt="${game.title}"
                     loading="lazy"
                     decoding="async"
+                    fetchpriority="low"
                 >
             </div>
             <div class="ccg-game-card__body">
