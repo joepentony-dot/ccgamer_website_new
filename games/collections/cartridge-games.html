@@ -7,12 +7,14 @@
     <title>Cartridge Classics | Cheeky Commodore Gamer</title>
 
     <meta name="description"
-          content="Cartridge Classics — a curated collection of Commodore 64 and Amiga cartridge-based games featuring instant-load action, enhanced hardware releases and fast-boot retro experiences." />
+          content="Cartridge Classics — instant-load Commodore 64 and Amiga cartridge games featuring fast-boot action and hardware-enhanced releases." />
 
     <link rel="icon" href="../../favicon.ico" />
 
+    <!-- FONTS -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
+    <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="../../resources/css/ccg-master.css" />
     <link rel="stylesheet" href="../../resources/css/ccg-mode.css" />
     <link rel="stylesheet" href="../../resources/css/ccg-effects.css" />
@@ -27,6 +29,7 @@
       data-ccg-mode="c64"
       data-collection="cartridge-games">
 
+    <!-- BACKGROUND -->
     <div class="ccg-bg">
         <div class="ccg-bg-starfield"></div>
         <div class="ccg-bg-grid"></div>
@@ -38,8 +41,12 @@
         <!-- HEADER -->
         <header class="ccg-header">
             <div class="ccg-header-inner">
+
                 <a href="../../home.html" class="ccg-brand">
-                    <img src="../../resources/images/ccgamer-logo.png" class="ccg-brand__logo" loading="lazy" alt="Cheeky Commodore Gamer logo">
+                    <img src="../../resources/images/ccgamer-logo.png"
+                         alt="Cheeky Commodore Gamer logo"
+                         class="ccg-brand__logo"
+                         loading="lazy">
                     <div class="ccg-brand__text">
                         <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
                         <div class="ccg-brand__title">
@@ -61,23 +68,36 @@
                         <li><a href="../../contact.html" class="ccg-nav__link">Contact</a></li>
                     </ul>
                 </nav>
+
+                <div class="ccg-header-actions">
+                    <button class="ccg-mode-toggle" type="button" data-ccg-mode-toggle>
+                        <span class="ccg-mode-toggle__pill">
+                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
+                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">Amiga</span>
+                            <span class="ccg-mode-toggle__thumb"></span>
+                        </span>
+                    </button>
+                </div>
+
             </div>
             <div class="ccg-header-neon-strip"></div>
         </header>
 
+        <!-- MAIN -->
         <main class="ccg-main">
+
             <section class="ccg-genre-hero ccg-collection-hero">
                 <div class="ccg-genre-hero__bg">
                     <img src="../../resources/images/genres/banners/cartridge-games-banner.png"
-                         class="ccg-genre-hero__img"
-                         alt="Cartridge Classics Collection Artwork" />
+                         alt="Cartridge Classics"
+                         class="ccg-genre-hero__img" />
                     <div class="ccg-genre-hero__overlay"></div>
                 </div>
 
                 <div class="ccg-genre-hero__inner">
                     <h1 class="ccg-genre-hero__title">Cartridge Classics</h1>
                     <p class="ccg-genre-hero__tagline">
-                        Instant-load retro favourites built for cartridge hardware and fast-boot play.
+                        Instant-load retro favourites built for cartridge hardware.
                     </p>
 
                     <div class="ccg-genre-meta">
@@ -94,6 +114,7 @@
             <section class="ccg-genre-main">
                 <div id="genreGamesGrid" class="ccg-genre-grid"></div>
             </section>
+
         </main>
 
         <footer class="ccg-footer">
@@ -104,6 +125,7 @@
 
     </div>
 
+    <!-- JS -->
     <script src="../../js/ccg-global.js" defer></script>
     <script src="../../js/ccg-mode-engine.js" defer></script>
     <script src="../../js/ccg-card-builder.js" defer></script>
