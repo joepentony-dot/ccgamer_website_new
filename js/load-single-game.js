@@ -1,21 +1,25 @@
 /* ============================================================
-   CCG LOAD SINGLE GAME — OMEGA ADAPTIVE EDITION (PHASE A — STEP 3)
+   CCG LOAD SINGLE GAME — OMEGA ADAPTIVE EDITION (PHASE C4)
    ----------------------------------------------------------------
    • Preserves all existing visuals and behaviour
    • Reuses loaded JSON (no double-fetch)
    • Console-only integrity diagnostics
    • RELATED GAMES:
      - Tiered intelligence
-     - Dynamic title
+     - Dynamic contextual titles
      - Graceful empty-state messaging
+   • NEW: Runtime optimisation (cached DOM + guarded rendering)
 ============================================================ */
 
 let CCG_SINGLE_ALL_GAMES = [];
 
+/* ============================================================
+   INIT
+============================================================ */
+
 document.addEventListener("DOMContentLoaded", async () => {
     const params = new URLSearchParams(window.location.search);
-    const gameIdRaw = params.get("id");
-    const gameId = (gameIdRaw || "").toString().trim();
+    const gameId = (params.get("id") || "").toString().trim();
 
     if (!gameId) {
         console.error("[CCG] No game ID in URL (?id=...)");
@@ -31,7 +35,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         runSingleGameIntegrityChecks(CCG_SINGLE_ALL_GAMES);
 
         const game = CCG_SINGLE_ALL_GAMES.find(
-            g => String(g.id) === String(gameId)
+            g => String(g.id) === gameId
         );
 
         if (!game) {
@@ -49,6 +53,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 /* ============================================================
    INTEGRITY CHECKS (CONSOLE ONLY)
 ============================================================ */
+
 function runSingleGameIntegrityChecks(games) {
     const seen = new Set();
 
@@ -70,6 +75,7 @@ function runSingleGameIntegrityChecks(games) {
 /* ============================================================
    THUMBNAIL RESOLVER
 ============================================================ */
+
 function resolveGameThumb(raw) {
     if (!raw) return "../resources/images/thumbnails/all/1942.jpg";
 
@@ -84,6 +90,7 @@ function resolveGameThumb(raw) {
 /* ============================================================
    FIELD RESOLVERS
 ============================================================ */
+
 function resolveVideoId(game) {
     return (
         game.videoid ||
@@ -106,69 +113,86 @@ function resolveDiskUrl(game) {
 }
 
 /* ============================================================
-   RENDER GAME
+   RENDER GAME (CACHED DOM)
 ============================================================ */
+
 function renderGame(game) {
+
+    /* Cache DOM nodes */
+    const heroBG = document.getElementById("gameHeroBG");
+    const heroThumb = document.getElementById("gameHeroThumb");
+    const titleEl = document.getElementById("gameHeroTitle");
+    const yearEl = document.getElementById("gameMetaYear");
+    const systemEl = document.getElementById("gameMetaSystem");
+    const devEl = document.getElementById("gameMetaDeveloper");
+    const genresEl = document.getElementById("gameGenres");
+    const descEl = document.getElementById("gameDescription");
+    const descSection = document.getElementById("game-description-section");
 
     const thumb = resolveGameThumb(game.thumbnail || game.thumb || game.cover);
 
-    const heroBG = document.getElementById("gameHeroBG");
     if (heroBG) {
         heroBG.style.backgroundImage = `url('${thumb}')`;
         heroBG.style.backgroundSize = "cover";
         heroBG.style.backgroundPosition = "center";
     }
 
-    const heroThumb = document.getElementById("gameHeroThumb");
     if (heroThumb) heroThumb.src = thumb;
 
-    document.getElementById("gameHeroTitle").textContent = game.title || "Unknown";
-    document.getElementById("gameMetaYear").textContent = game.year || "—";
-    document.getElementById("gameMetaSystem").textContent = game.system || "—";
-    document.getElementById("gameMetaDeveloper").textContent =
-        game.developer || game.publisher || "—";
+    if (titleEl) titleEl.textContent = game.title || "Unknown";
+    if (yearEl) yearEl.textContent = game.year || "—";
+    if (systemEl) systemEl.textContent = game.system || "—";
+    if (devEl) devEl.textContent = game.developer || game.publisher || "—";
 
-    if (Array.isArray(game.genres)) {
-        const g = document.getElementById("gameGenres");
-        g.textContent = game.genres.join(", ");
-        g.hidden = false;
+    if (Array.isArray(game.genres) && genresEl) {
+        genresEl.textContent = game.genres.join(", ");
+        genresEl.hidden = false;
     }
 
-    if (game.description) {
-        document.getElementById("gameDescription").innerHTML = game.description;
-        document.getElementById("game-description-section").hidden = false;
+    if (game.description && descEl && descSection) {
+        descEl.innerHTML = game.description;
+        descSection.hidden = false;
     }
 
     const vid = resolveVideoId(game);
     if (vid) {
-        document.getElementById("game-video-embed").src =
-            `https://www.youtube.com/embed/${vid}`;
-        document.getElementById("game-video-section").hidden = false;
+        const iframe = document.getElementById("game-video-embed");
+        const section = document.getElementById("game-video-section");
         const btn = document.getElementById("gameVideoBtn");
-        btn.href = `https://www.youtube.com/watch?v=${vid}`;
-        btn.hidden = false;
+
+        if (iframe) iframe.src = `https://www.youtube.com/embed/${vid}`;
+        if (section) section.hidden = false;
+        if (btn) {
+            btn.href = `https://www.youtube.com/watch?v=${vid}`;
+            btn.hidden = false;
+        }
     }
 
     const manual = resolveManualUrl(game);
     if (manual) {
         const btn = document.getElementById("gameManualBtn");
-        btn.href = manual;
-        btn.hidden = false;
+        if (btn) {
+            btn.href = manual;
+            btn.hidden = false;
+        }
     }
 
     const disk = resolveDiskUrl(game);
     if (disk) {
         const btn = document.getElementById("gameDiskBtn");
-        btn.href = disk;
-        btn.hidden = false;
+        if (btn) {
+            btn.href = disk;
+            btn.hidden = false;
+        }
     }
 
     renderRelatedGames(game, CCG_SINGLE_ALL_GAMES);
 }
 
 /* ============================================================
-   RELATED GAMES — TIERED + DYNAMIC TITLE + EMPTY STATE
+   RELATED GAMES — RUNTIME OPTIMISED
 ============================================================ */
+
 function renderRelatedGames(game, allGames) {
     const section = document.querySelector(".game-section--related");
     const titleEl = section?.querySelector(".game-section__title");
@@ -186,20 +210,20 @@ function renderRelatedGames(game, allGames) {
 
     const pool = [];
     const seen = new Set([currentId]);
-
     let primaryTier = "";
 
     function addMatches(predicate, tierName) {
         let added = false;
-        allGames.forEach(g => {
+        for (let i = 0; i < allGames.length; i++) {
+            const g = allGames[i];
             const id = String(g.id);
-            if (seen.has(id)) return;
+            if (seen.has(id)) continue;
             if (predicate(g)) {
                 seen.add(id);
                 pool.push(g);
                 added = true;
             }
-        });
+        }
         if (added && !primaryTier) primaryTier = tierName;
     }
 
@@ -213,10 +237,7 @@ function renderRelatedGames(game, allGames) {
 
     /* ---------- EMPTY STATE ---------- */
     if (related.length === 0) {
-
-        if (titleEl) {
-            titleEl.textContent = "Related games";
-        }
+        if (titleEl) titleEl.textContent = "Related games";
 
         container.innerHTML = `
             <div class="ccg-related-empty">
@@ -271,7 +292,13 @@ function renderRelatedGames(game, allGames) {
         return `
             <a href="game.html?id=${g.id}" class="ccg-game-card">
                 <div class="ccg-game-card__thumb">
-                    <img src="${thumb}" alt="${g.title}">
+                    <img
+                        src="${thumb}"
+                        alt="${g.title}"
+                        loading="lazy"
+                        decoding="async"
+                        fetchpriority="low"
+                    >
                 </div>
                 <div class="ccg-game-card__body">
                     <h3 class="ccg-game-card__title">${g.title}</h3>
