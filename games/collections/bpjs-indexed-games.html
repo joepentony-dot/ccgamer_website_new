@@ -7,7 +7,7 @@
     <title>BPJS Indexed Games | Cheeky Commodore Gamer</title>
 
     <meta name="description"
-          content="BPJS Indexed Games — a curated selection of Commodore 64 and Amiga titles drawn from the BPJS index." />
+          content="BPJS Indexed Games — curated Commodore 64 and Amiga titles from the BPJS index." />
 
     <link rel="icon" href="../../favicon.ico" />
 
@@ -25,55 +25,44 @@
 
 <body class="ccg-body"
       data-ccg-mode="c64"
-      data-collection="bpjs-indexed-games">
+      data-collection="bpjs games">
 
-    <div class="ccg-bg">
-        <div class="ccg-bg-starfield"></div>
-        <div class="ccg-bg-grid"></div>
-        <div class="ccg-bg-crt-overlay"></div>
+<div class="ccg-bg">
+    <div class="ccg-bg-starfield"></div>
+    <div class="ccg-bg-grid"></div>
+    <div class="ccg-bg-crt-overlay"></div>
+</div>
+
+<div class="ccg-page ccg-page--collection-single">
+
+<main class="ccg-main">
+
+<section class="ccg-genre-hero ccg-collection-hero">
+    <div class="ccg-genre-hero__inner">
+        <h1 class="ccg-genre-hero__title">BPJS Indexed Games</h1>
+        <p class="ccg-genre-hero__tagline">Essential classics curated from the BPJS index.</p>
+        <div class="ccg-genre-meta">
+            <span><span id="genreGamesCount">0</span> games in this collection</span>
+        </div>
     </div>
+</section>
 
-    <div class="ccg-page ccg-page--collection-single">
+<section class="ccg-genre-main">
+    <div id="genreGamesGrid" class="ccg-genre-grid"></div>
+</section>
 
-        <header class="ccg-header">
-            <div class="ccg-header-inner">
-                <a href="../../home.html" class="ccg-brand">
-                    <img src="../../resources/images/ccgamer-logo.png" class="ccg-brand__logo">
-                </a>
-            </div>
-            <div class="ccg-header-neon-strip"></div>
-        </header>
+</main>
 
-        <main class="ccg-main">
-            <section class="ccg-genre-hero ccg-collection-hero">
-                <div class="ccg-genre-hero__inner">
-                    <h1 class="ccg-genre-hero__title">BPJS Indexed Games</h1>
-                    <p class="ccg-genre-hero__tagline">
-                        Essential classics curated from the BPJS index.
-                    </p>
-                    <div class="ccg-genre-meta">
-                        <span><span id="genreGamesCount">0</span> games in this collection</span>
-                    </div>
-                </div>
-            </section>
+<footer class="ccg-footer">
+    <p class="ccg-footer__text">© <span data-ccg-year></span> Cheeky Commodore Gamer.</p>
+</footer>
 
-            <section class="ccg-genre-main">
-                <div id="genreGamesGrid" class="ccg-genre-grid"></div>
-            </section>
-        </main>
+</div>
 
-        <footer class="ccg-footer">
-            <p class="ccg-footer__text">
-                © <span data-ccg-year></span> Cheeky Commodore Gamer.
-            </p>
-        </footer>
-
-    </div>
-
-    <script src="../../js/ccg-global.js" defer></script>
-    <script src="../../js/ccg-mode-engine.js" defer></script>
-    <script src="../../js/ccg-card-builder.js" defer></script>
-    <script src="../../js/collection-loader.js" defer></script>
+<script src="../../js/ccg-global.js" defer></script>
+<script src="../../js/ccg-mode-engine.js" defer></script>
+<script src="../../js/ccg-card-builder.js" defer></script>
+<script src="../../js/collection-loader.js" defer></script>
 
 </body>
 </html>
