@@ -1,10 +1,10 @@
 /* ============================================================
-   CCG LOAD SINGLE GAME — OMEGA ADAPTIVE EDITION (INTEGRITY HARDENED)
+   CCG LOAD SINGLE GAME — OMEGA ADAPTIVE EDITION (PHASE A)
    ----------------------------------------------------------------
    • Preserves all existing visuals and behaviour
-   • Removes double-fetch by reusing loaded JSON
+   • Reuses loaded JSON (no double-fetch)
    • Console-only integrity diagnostics
-   • UPDATED: Related games by developer / publisher
+   • RELATED GAMES: Tiered intelligence (developer → publisher → optional fields)
 ============================================================ */
 
 let CCG_SINGLE_ALL_GAMES = [];
@@ -102,12 +102,6 @@ function resolveDiskUrl(game) {
     return "";
 }
 
-function resolveLemonLinks(game) {
-    if (Array.isArray(game.lemon)) return game.lemon;
-    if (typeof game.lemon === "string") return [game.lemon];
-    return [];
-}
-
 /* ============================================================
    RENDER GAME
 ============================================================ */
@@ -170,7 +164,7 @@ function renderGame(game) {
 }
 
 /* ============================================================
-   RELATED GAMES — SAME DEVELOPER / PUBLISHER
+   RELATED GAMES — TIERED INTELLIGENCE
 ============================================================ */
 function renderRelatedGames(game, allGames) {
     const section = document.querySelector(".game-section--related");
@@ -182,24 +176,48 @@ function renderRelatedGames(game, allGames) {
     const currentId = String(game.id);
     const dev = (game.developer || "").trim();
     const pub = (game.publisher || "").trim();
+    const series = (game.series || "").trim();
+    const franchise = (game.franchise || "").trim();
+    const engine = (game.engine || "").trim();
 
-    let related = [];
+    const pool = [];
+    const seen = new Set([currentId]);
 
+    function addMatches(predicate) {
+        allGames.forEach(g => {
+            const id = String(g.id);
+            if (seen.has(id)) return;
+            if (predicate(g)) {
+                seen.add(id);
+                pool.push(g);
+            }
+        });
+    }
+
+    /* Tier 1 — Developer */
     if (dev) {
-        related = allGames.filter(g =>
-            String(g.id) !== currentId &&
-            (g.developer || "").trim() === dev
-        );
+        addMatches(g => (g.developer || "").trim() === dev);
     }
 
-    if (related.length === 0 && pub) {
-        related = allGames.filter(g =>
-            String(g.id) !== currentId &&
-            (g.publisher || "").trim() === pub
-        );
+    /* Tier 2 — Publisher */
+    if (pool.length < 6 && pub) {
+        addMatches(g => (g.publisher || "").trim() === pub);
     }
 
-    related = related.slice(0, 6);
+    /* Tier 3 — Optional intelligence fields (only if present) */
+    if (pool.length < 6 && series) {
+        addMatches(g => (g.series || "").trim() === series);
+    }
+
+    if (pool.length < 6 && franchise) {
+        addMatches(g => (g.franchise || "").trim() === franchise);
+    }
+
+    if (pool.length < 6 && engine) {
+        addMatches(g => (g.engine || "").trim() === engine);
+    }
+
+    const related = pool.slice(0, 6);
 
     if (related.length === 0) {
         section.hidden = true;
