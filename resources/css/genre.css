@@ -4,7 +4,7 @@
    • Page-specific layout only
    • NEVER redefines card or media primitives
    • Fully compatible with ccg-cards.css
-   • Includes Step 10 polish pass
+   • Includes Step 10 + Step 11 UX polish
 ============================================================ */
 
 /* ============================================================
@@ -22,7 +22,7 @@
 
 .ccg-genrehub-hero {
     text-align: center;
-    margin: 20px 0 32px 0;
+    margin: 20px 0 36px 0; /* Step 11: clearer separation */
 }
 
 .ccg-genrehub-title {
@@ -39,7 +39,7 @@
 }
 
 /* ============================================================
-   GENRE GRID — USE CANONICAL CARD SYSTEM
+   GENRE GRID — CANONICAL CARD SYSTEM
 ============================================================ */
 
 .ccg-genre-grid {
@@ -52,7 +52,7 @@
 }
 
 /* ============================================================
-   EMPTY / LOADING STATE (STEP 10.1)
+   EMPTY / LOADING STATE
 ============================================================ */
 
 .ccg-genre-grid:empty::after {
@@ -72,7 +72,7 @@
 
 .ccg-genre-hero {
     position: relative;
-    margin-bottom: 28px;
+    margin-bottom: 30px; /* Step 11: breathing room */
     border-radius: 22px;
     overflow: hidden;
 }
@@ -132,16 +132,14 @@
     opacity: 0.85;
 }
 
-/* Step 10.2 — count stability */
 #genreGamesCount {
     display: inline-block;
     min-width: 2ch;
     text-align: right;
-    transition: opacity 0.25s ease;
 }
 
 /* ============================================================
-   FIRST ROW EMPHASIS (STEP 10.3 — SUBTLE)
+   FIRST ROW EMPHASIS (SUBTLE)
 ============================================================ */
 
 .ccg-page--genre-single .ccg-genre-grid > .ccg-card:nth-child(-n + 4) {
@@ -151,12 +149,31 @@
 }
 
 /* ============================================================
-   WAYFINDING
+   WAYFINDING — UX POLISH
 ============================================================ */
 
 .ccg-genre-wayfinding {
-    margin-top: 30px;
+    margin-top: 34px;
     text-align: center;
+}
+
+.ccg-genre-wayfinding .ccg-btn {
+    margin: 0 6px;
+}
+
+/* Subtle affordance */
+.ccg-genre-wayfinding .ccg-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Optional back-to-top hint (no JS required) */
+.ccg-genre-wayfinding::after {
+    content: "↑ Back to top";
+    display: block;
+    margin-top: 12px;
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    opacity: 0.45;
 }
 
 /* ============================================================
@@ -173,5 +190,9 @@
         flex-direction: column;
         gap: 6px;
         text-align: center;
+    }
+
+    .ccg-genre-wayfinding::after {
+        display: none; /* avoid clutter on mobile */
     }
 }
