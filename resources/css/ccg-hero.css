@@ -13,6 +13,12 @@
     text-align: center;
     color: var(--text-light);
     overflow: hidden;
+
+    /* STEP 5: Depth separation (no layout impact) */
+    box-shadow:
+        0 0 0 1px rgba(255,255,255,0.06),
+        0 18px 42px rgba(0,0,0,0.72),
+        0 0 34px rgba(var(--accent-rgb), 0.10);
 }
 
 /* ============================================================
@@ -48,20 +54,24 @@
     background:
         repeating-linear-gradient(
             to bottom,
-            rgba(255, 255, 255, 0.07) 0px,
-            rgba(255, 255, 255, 0.05) 1px,
+            rgba(255, 255, 255, 0.065) 0px,
+            rgba(255, 255, 255, 0.045) 1px,
             transparent 1px,
             transparent 3px
         );
     mix-blend-mode: soft-light;
-    opacity: 0.18;
+
+    /* STEP 5: CRT finesse (calmer, less harsh) */
+    opacity: 0.15;
+    filter: blur(0.2px);
+
     animation: ccgScanlineSweep 12s linear infinite;
 }
 
 @keyframes ccgScanlineSweep {
-    0%   { opacity: 0.16; }
-    50%  { opacity: 0.22; }
-    100% { opacity: 0.16; }
+    0%   { opacity: 0.14; }
+    50%  { opacity: 0.19; }
+    100% { opacity: 0.14; }
 }
 
 /* ============================================================
@@ -86,9 +96,11 @@
     letter-spacing: 0.065em;
     margin: 0;
     text-transform: uppercase;
+
+    /* STEP 5: Glow balance (still Omega, slightly calmer) */
     text-shadow:
-        0 0 18px rgba(var(--accent-rgb), 0.9),
-        0 0 34px rgba(var(--accent-rgb), 0.6);
+        0 0 14px rgba(var(--accent-rgb), 0.82),
+        0 0 28px rgba(var(--accent-rgb), 0.52);
 }
 
 .ccg-hero-accent {
@@ -100,8 +112,8 @@
 }
 
 @keyframes ccgModePulse {
-    0%, 100% { opacity: 0.85; text-shadow: 0 0 4px rgba(var(--accent-rgb), 0.4); }
-    50%      { opacity: 1;    text-shadow: 0 0 10px rgba(var(--accent-rgb), 0.8); }
+    0%, 100% { opacity: 0.85; text-shadow: 0 0 4px rgba(var(--accent-rgb), 0.38); }
+    50%      { opacity: 1;    text-shadow: 0 0 10px rgba(var(--accent-rgb), 0.72); }
 }
 
 .ccg-hero-tagline {
@@ -122,6 +134,11 @@
     backdrop-filter: blur(6px);
     text-transform: uppercase;
     letter-spacing: 0.16em;
+
+    /* STEP 5: Slight depth lift (no layout change) */
+    box-shadow:
+        0 10px 22px rgba(0,0,0,0.45),
+        0 0 18px rgba(var(--accent-rgb), 0.08);
 }
 
 .ccg-hero__mode-prefix {
@@ -150,9 +167,11 @@
 
 .ccg-hero-buttons .ccg-btn:hover {
     transform: translateY(-3px);
+
+    /* STEP 5: Slightly calmer hover bloom */
     box-shadow: 
-        0 0 14px rgba(var(--accent-rgb), 0.55),
-        0 0 28px rgba(var(--accent-rgb), 0.35);
+        0 0 12px rgba(var(--accent-rgb), 0.50),
+        0 0 22px rgba(var(--accent-rgb), 0.28);
 }
 
 /* ============================================================
@@ -178,7 +197,10 @@
     inset: 0;
     background-size: cover;
     background-position: center;
-    filter: blur(18px) brightness(0.35);
+
+    /* STEP 5: Slight finesse (tiny reduction in harshness) */
+    filter: blur(16px) brightness(0.33);
+
     transform: scale(1.15);
     opacity: 0;
     transition: opacity 0.6s ease-out;
@@ -222,9 +244,12 @@
     width: 100%;
     max-width: 320px; /* FIXED desktop size */
     border-radius: 12px;
+
+    /* STEP 5: Mode-aware glow (replaces hard-coded cyan/blue) */
     box-shadow: 
-        0 0 25px rgba(0,255,255,0.25),
-        0 0 45px rgba(0,128,255,0.3);
+        0 0 22px rgba(var(--accent-rgb), 0.22),
+        0 0 42px rgba(var(--accent-rgb), 0.18),
+        0 18px 42px rgba(0,0,0,0.55);
 }
 
 /* Genre + meta spacing */
