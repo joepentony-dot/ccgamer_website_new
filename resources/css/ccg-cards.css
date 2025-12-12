@@ -32,7 +32,10 @@
     border: 1px solid rgba(255,255,255,.08);
     overflow: hidden;
     box-shadow: 0 10px 20px rgba(0,0,0,.75);
-    transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+    transition:
+        transform .22s ease,
+        box-shadow .22s ease,
+        border-color .22s ease;
     text-decoration: none;
     color: inherit;
 }
@@ -44,10 +47,11 @@
 }
 
 /* ------------------------------------------------------------
-   ✅ RESTORED MEDIA SYSTEM (THIS WAS MISSING)
+   ✅ RESTORED MEDIA SYSTEM (CRITICAL FIX)
+   This restores HOME + FEATURED thumbnails
 ------------------------------------------------------------ */
 
-/* Home page + shared cards */
+/* Home page + featured cards */
 .ccg-card__media {
     position: relative;
     width: 100%;
@@ -65,7 +69,10 @@
     transition: transform .22s ease, filter .22s ease;
 }
 
-/* Game library cards */
+/* ------------------------------------------------------------
+   GAME LIBRARY CARDS
+------------------------------------------------------------ */
+
 .ccg-game-card__thumb {
     position: relative;
     width: 100%;
@@ -81,7 +88,10 @@
     display: block;
 }
 
-/* Genre hub tiles */
+/* ------------------------------------------------------------
+   GENRE HUB TILES
+------------------------------------------------------------ */
+
 .ccg-card__image {
     position: relative;
     width: 100%;
@@ -97,7 +107,10 @@
     display: block;
 }
 
-/* Collections */
+/* ------------------------------------------------------------
+   COLLECTION TILES
+------------------------------------------------------------ */
+
 .ccg-genre-tile img {
     width: 100%;
     aspect-ratio: 16 / 9;
@@ -125,7 +138,8 @@
     font-size: 0.78rem;
     text-transform: uppercase;
     letter-spacing: .06em;
-    color: #fff;
+    color: #ffffff;
+
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -133,7 +147,7 @@
 }
 
 /* ------------------------------------------------------------
-   HOVER GLOW (UNCHANGED)
+   HOVER GLOW (UNCHANGED OMEGA BEHAVIOUR)
 ------------------------------------------------------------ */
 
 .ccg-game-card:hover,
@@ -142,7 +156,10 @@
     transform: translateY(-4px) scale(1.02);
 }
 
-.ccg-body[data-ccg-mode="c64"] .ccg-card:hover {
+/* C64 MODE */
+.ccg-body[data-ccg-mode="c64"] .ccg-card:hover,
+.ccg-body[data-ccg-mode="c64"] .ccg-game-card:hover,
+.ccg-body[data-ccg-mode="c64"] .ccg-genre-tile:hover {
     border-color: rgba(0,180,255,.9);
     box-shadow:
         0 0 0 1px rgba(0,180,255,.9),
@@ -150,7 +167,17 @@
         0 18px 36px rgba(0,0,0,.95);
 }
 
-.ccg-body[data-ccg-mode="amiga"] .ccg-card:hover {
+.ccg-body[data-ccg-mode="c64"] .ccg-card:hover img,
+.ccg-body[data-ccg-mode="c64"] .ccg-game-card:hover img,
+.ccg-body[data-ccg-mode="c64"] .ccg-genre-tile:hover img {
+    filter: saturate(1.1) contrast(1.05);
+    transform: scale(1.04);
+}
+
+/* AMIGA MODE */
+.ccg-body[data-ccg-mode="amiga"] .ccg-card:hover,
+.ccg-body[data-ccg-mode="amiga"] .ccg-game-card:hover,
+.ccg-body[data-ccg-mode="amiga"] .ccg-genre-tile:hover {
     border-color: rgba(255,80,220,.95);
     box-shadow:
         0 0 0 1px rgba(255,80,220,.95),
@@ -158,13 +185,34 @@
         0 18px 36px rgba(0,0,0,.95);
 }
 
+.ccg-body[data-ccg-mode="amiga"] .ccg-card:hover img,
+.ccg-body[data-ccg-mode="amiga"] .ccg-game-card:hover img,
+.ccg-body[data-ccg-mode="amiga"] .ccg-genre-tile:hover img {
+    filter: saturate(1.15) contrast(1.08);
+    transform: scale(1.04);
+}
+
 /* ------------------------------------------------------------
    RESPONSIVE
 ------------------------------------------------------------ */
 
 @media (max-width: 768px) {
-    .ccg-genre-grid {
+
+    .ccg-genre-grid,
+    .genre-grid,
+    .genre-grid.omega-grid {
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         gap: 18px;
+    }
+
+    .ccg-game-card__body,
+    .ccg-card__body {
+        padding: 10px 10px 12px;
+    }
+
+    .ccg-game-card__title,
+    .ccg-card__title,
+    .ccg-genre-tile span {
+        font-size: 0.72rem;
     }
 }
