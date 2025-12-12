@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Licensed Games Collection | Cheeky Commodore Gamer</title>
+
+    <title>Licensed Games | Cheeky Commodore Gamer</title>
 
     <meta name="description"
-          content="Licensed Games Collection — film tie-ins, TV adaptations, comic conversions and branded titles that brought popular franchises to the Commodore 64 and Amiga." />
+          content="Licensed Games — a curated collection of Commodore 64 and Amiga titles inspired by films, television series, comics and well-known franchises." />
 
     <link rel="icon" href="../../favicon.ico" />
 
@@ -24,7 +25,9 @@
     <link rel="stylesheet" href="../../resources/css/genre.css" />
 </head>
 
-<body class="ccg-body" data-ccg-mode="c64" data-genre="Licensed Games">
+<body class="ccg-body"
+      data-ccg-mode="c64"
+      data-genre="Licensed Games">
 
     <!-- BACKGROUND -->
     <div class="ccg-bg">
@@ -59,7 +62,7 @@
                         <li><a href="../../home.html" class="ccg-nav__link">Home</a></li>
                         <li><a href="../../games/index.html" class="ccg-nav__link">Browse Games</a></li>
                         <li><a href="../../games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
-                        <li><a href="../../games/collections/index.html" class="ccg-nav__link ccg-nav__link--active">Collections</a></li>
+                        <li><a href="index.html" class="ccg-nav__link ccg-nav__link--active">Collections</a></li>
                         <li><a href="../../quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
                         <li><a href="../../emulation.html" class="ccg-nav__link">Emulation</a></li>
                         <li><a href="../../about.html" class="ccg-nav__link">About</a></li>
@@ -94,7 +97,7 @@
         <main class="ccg-main">
 
             <!-- COLLECTION HERO -->
-            <section class="ccg-genre-hero">
+            <section class="ccg-genre-hero ccg-collection-hero">
                 <div class="ccg-genre-hero__bg">
                     <img src="../../resources/images/genres/banners/licensed-games-banner.png"
                          alt="Licensed Games Collection Artwork"
@@ -106,7 +109,7 @@
                     <h1 class="ccg-genre-hero__title">Licensed Games</h1>
 
                     <p class="ccg-genre-hero__tagline">
-                        A curated collection of retro tie-ins inspired by film, television and comics.
+                        Film, television and comic tie-ins brought to life on classic home computers.
                     </p>
 
                     <div class="ccg-genre-meta">
@@ -114,13 +117,13 @@
                             <span><span id="genreGamesCount">0</span> games in this collection</span>
                         </div>
                         <div class="ccg-genre-meta__right">
-                            <span>C64 &amp; Amiga</span>
+                            <span>C64 &amp; Amiga collection</span>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- GRID -->
+            <!-- GAMES GRID -->
             <section class="ccg-genre-main">
                 <div id="genreGamesGrid" class="ccg-genre-grid"></div>
             </section>
@@ -128,7 +131,7 @@
             <!-- WAYFINDING -->
             <section class="ccg-section ccg-genre-wayfinding">
                 <div class="game-hero__buttons">
-                    <a href="../collections/index.html" class="ccg-btn ccg-btn--secondary">
+                    <a href="index.html" class="ccg-btn ccg-btn--secondary">
                         ← Back to Collections
                     </a>
                     <a href="../index.html" class="ccg-btn ccg-btn--secondary">
@@ -152,6 +155,7 @@
 
     </div>
 
+    <!-- JS -->
     <script src="../../js/ccg-global.js" defer></script>
     <script src="../../js/ccg-mode-engine.js" defer></script>
     <script src="../../js/genre-loader.js" defer></script>
