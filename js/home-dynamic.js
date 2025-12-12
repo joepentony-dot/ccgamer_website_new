@@ -1,273 +1,443 @@
 /* ============================================================
-   CCG HOME DYNAMIC — OMEGA CINEMATIC 2.0 (UPGRADED EDITION)
-   ------------------------------------------------------------
-   • Featured Game auto-rotation (1B)
-   • Random Game button
-   • Featured Video auto-sync with Featured Game (videoid)
-   • Mode label sync
-   • Section reveal animations (3D)
-   • Omega Hero CRT Boot-Up Sequence (2A)
-   • Subtle Parallax Drift for hero (visual only)
+   HOME.CSS — OMEGA CINEMATIC 2.0 HOMEPAGE
+   - Tight, cinematic hero using global ccg-hero system
+   - Featured highlights (game + video)
+   - Compact genre grid launcher
+   - Safe: no impact on other pages
    ============================================================ */
 
-let CCG_HOME_ALL_GAMES = [];
-let CCG_HOME_FEATURED_GAME = null;
+/* ------------------------------------------------------------
+   PAGE WRAPPER
+------------------------------------------------------------ */
 
-/* ============================================================
-   CONFIG — FEATURED VIDEO FALLBACK
-============================================================ */
-
-const FEATURED_VIDEO_FALLBACK_TITLE = "Featured CCG Video";
-const FEATURED_VIDEO_FALLBACK_URL = "https://www.youtube.com/@CheekyCommodoreGamer";
-
-/* ============================================================
-   INIT
-============================================================ */
-
-document.addEventListener("DOMContentLoaded", () => {
-    initHomeDynamic();
-});
-
-async function initHomeDynamic() {
-    try {
-        await loadGamesForHome();
-        wireRandomGameButton();
-        renderFeaturedGame();       // this will also drive the video card
-        syncModeLabel();
-        initModeObserver();
-        applyHomeAnimations();
-        applyOmegaHeroEntry();
-        initHeroParallaxDrift();
-    } catch (err) {
-        console.error("CCG Home Dynamic — init error:", err);
-    }
+.ccg-page--home {
+    padding-bottom: 40px;
 }
 
-/* ============================================================
-   LOAD GAMES
-============================================================ */
-
-async function loadGamesForHome() {
-    try {
-        const response = await fetch("games/games.json");
-        const games = await response.json();
-        CCG_HOME_ALL_GAMES = Array.isArray(games) ? games.slice() : [];
-    } catch (err) {
-        console.error("Error loading games/games.json for home:", err);
-        CCG_HOME_ALL_GAMES = [];
-    }
+.ccg-main--home {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 18px;
+    padding-bottom: 32px;
 }
 
-/* ============================================================
-   THUMB RESOLVER
-============================================================ */
+/* ------------------------------------------------------------
+   HERO — CINEMATIC 2.0
+   Uses global .ccg-hero styles from ccg-hero.css
+------------------------------------------------------------ */
 
-function resolveHomeThumb(rawThumb) {
-    if (!rawThumb) return "resources/images/thumbnails/all/1942.jpg";
-
-    let t = String(rawThumb).trim().replace(/^\/+/, "");
-
-    if (t.startsWith("resources/")) return t;
-
-    return `resources/images/thumbnails/all/${t}`;
+.home-hero {
+    margin-top: 10px;
+    margin-bottom: 22px;
 }
 
-/* ============================================================
-   FEATURED GAME — AUTO ROTATION
-============================================================ */
+.ccg-hero--home {
+    position: relative;
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow:
+        0 0 26px rgba(0, 0, 0, 0.9),
+        0 0 46px rgba(var(--accent-rgb), 0.32);
+}
 
-function pickFeaturedGame() {
-    if (!CCG_HOME_ALL_GAMES.length) return null;
+/* Inner layout */
 
-    let pool = CCG_HOME_ALL_GAMES.filter(g =>
-        Array.isArray(g.genres) && g.genres.includes("Top Picks")
+.home-hero__inner {
+    position: relative;
+    z-index: 1;
+    padding: 22px 22px 20px;
+    max-width: 720px;
+}
+
+/* Mode line above hero title */
+
+.home-hero__mode-line {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 6px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--text-dim);
+}
+
+.home-hero__mode-label {
+    color: var(--accent);
+    text-shadow:
+        0 0 10px rgba(var(--accent-rgb), 0.9),
+        0 0 20px rgba(var(--accent-rgb), 0.55);
+}
+
+.home-hero__sub-label {
+    opacity: 0.85;
+}
+
+/* Hero title + tagline */
+
+.home-hero__title {
+    margin: 0 0 8px 0;
+    font-family: var(--ccg-font-main, 'Press Start 2P', monospace);
+    font-size: 1.35rem;
+    line-height: 1.3;
+    text-transform: uppercase;
+    color: var(--text-light);
+    text-shadow:
+        0 0 16px rgba(var(--accent-rgb), 0.95),
+        0 0 32px rgba(var(--accent-rgb), 0.6);
+}
+
+.home-hero__tagline {
+    margin: 0 0 14px 0;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--text-dim);
+    max-width: 640px;
+}
+
+/* Hero actions */
+
+.home-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.home-hero__btn {
+    min-width: 150px;
+    text-align: center;
+    border-radius: 999px;
+    padding: 9px 18px;
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.home-hero__btn-alt {
+    white-space: nowrap;
+}
+
+.home-hero__tip {
+    margin: 0;
+    font-size: 0.76rem;
+    color: var(--text-dim);
+    opacity: 0.95;
+}
+
+/* Disabled state for Random Game if games not loaded */
+
+.ccg-btn.ccg-btn--disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* ------------------------------------------------------------
+   TAGLINE STRIP
+------------------------------------------------------------ */
+
+.home-tagline {
+    text-align: center;
+    margin: 0 0 26px 0;
+}
+
+.home-tagline__kicker {
+    margin: 0;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    opacity: 0.9;
+}
+
+.home-tagline__main {
+    margin: 4px 0 0 0;
+    font-family: var(--ccg-font-main, 'Press Start 2P', monospace);
+    font-size: 0.92rem;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-shadow:
+        0 0 12px rgba(var(--accent-rgb), 0.9),
+        0 0 24px rgba(var(--accent-rgb), 0.55);
+}
+
+/* ------------------------------------------------------------
+   SHARED HOME SECTIONS
+------------------------------------------------------------ */
+
+.home-section {
+    margin: 0 0 24px 0;
+    padding: 16px 18px 18px;
+    background: rgba(0, 0, 0, 0.78);
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+        0 0 22px rgba(0, 0, 0, 0.92),
+        0 0 30px rgba(var(--accent-rgb), 0.26);
+}
+
+.home-section__header {
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.home-section__title {
+    margin: 0 0 6px 0;
+    font-family: var(--ccg-font-main, 'Press Start 2P', monospace);
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    color: var(--text-light);
+    text-shadow:
+        0 0 12px rgba(var(--accent-rgb), 0.8),
+        0 0 26px rgba(var(--accent-rgb), 0.5);
+}
+
+.home-section__divider {
+    width: 110px;
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        rgba(var(--accent-rgb), 0.12),
+        rgba(var(--accent-rgb), 0.9),
+        rgba(var(--accent-rgb), 0.12)
     );
-
-    if (!pool.length) pool = CCG_HOME_ALL_GAMES.slice();
-
-    return pool[Math.floor(Math.random() * pool.length)] || null;
+    border-radius: 999px;
+    box-shadow:
+        0 0 16px rgba(var(--accent-rgb), 0.9),
+        0 0 28px rgba(var(--accent-rgb), 0.6);
+    margin: 0 auto;
 }
 
-function buildFeaturedGameDescription(game) {
-    const parts = [game.system || "", game.developer || ""].filter(Boolean);
-    return parts.length ? parts.join(" · ") :
-        "C64 & Amiga retro highlight from the Cheeky Commodore Gamer library.";
+/* ------------------------------------------------------------
+   FEATURED HIGHLIGHTS
+   (Featured game + featured video)
+------------------------------------------------------------ */
+
+.home-section--highlights {
+    /* uses base .home-section styling */
 }
 
-function renderFeaturedGame() {
-    const card = document.querySelector("[data-ccg-featured-game]");
-    if (!card) return;
+.home-highlights-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    align-items: stretch;
+}
 
-    const featured = pickFeaturedGame();
-    if (!featured) return;
+/* Featured cards piggyback on ccg-card style */
 
-    CCG_HOME_FEATURED_GAME = featured;
+.home-feature-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
 
-    const thumb = resolveHomeThumb(
-        featured.thumbnail || featured.thumb || featured.cover
-    );
+.home-feature-card .ccg-card__media {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
 
-    const imgEl = card.querySelector("[data-fg-thumb]");
-    const titleEl = card.querySelector("[data-fg-title]");
-    const descEl = card.querySelector("[data-fg-desc]");
-    const btnEl = card.querySelector("[data-fg-btn]");
+.home-feature-card .ccg-card__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
 
-    if (imgEl) {
-        imgEl.src = thumb;
-        imgEl.alt = `${featured.title || "Featured Game"} artwork`;
+/* Shared titles/meta inside cards */
+
+.home-feature-title {
+    text-align: center;
+}
+
+.home-feature-meta {
+    margin-top: 4px;
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+/* Buttons at bottom, centred */
+
+.home-feature-card__btn {
+    margin-top: auto;
+    align-self: center;
+    border-radius: 999px;
+    padding-inline: 18px;
+}
+
+/* Video variant tweaks */
+
+.home-feature-card--video {
+    display: flex;
+    flex-direction: column;
+}
+
+.home-feature-video__header {
+    padding: 10px 12px 6px;
+    text-align: center;
+}
+
+.home-feature-card--video .ccg-card__body {
+    padding-top: 10px;
+    padding-bottom: 14px;
+}
+
+/* Video thumbnail + neon play icon */
+
+.home-feature-video__frame {
+    position: relative;
+}
+
+.home-feature-video__thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.home-feature-video__play-icon {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.home-feature-video__play-icon::before {
+    content: "";
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.95);
+    box-shadow:
+        0 0 16px rgba(var(--accent-rgb), 0.85),
+        0 0 32px rgba(var(--accent-rgb), 0.55);
+    background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(0,0,0,0.7));
+    position: relative;
+}
+
+.home-feature-video__play-icon::after {
+    content: "";
+    position: absolute;
+    margin-left: 3px;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 17px solid rgba(0, 0, 0, 0.9);
+}
+
+/* Button alignment */
+
+.home-feature-video__btn {
+    /* inherits centring from .home-feature-card__btn */
+}
+
+/* ------------------------------------------------------------
+   GENRE GRID — HOME
+------------------------------------------------------------ */
+
+.home-section--genres {
+    /* uses base .home-section styling */
+}
+
+.home-genre-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 14px;
+    margin-top: 4px;
+}
+
+/* The cards here are standard .ccg-card with 16:9 media already
+   styled by ccg-cards.css, so we only need light tweaks. */
+
+.home-genre-grid .ccg-card__title {
+    text-align: center;
+    font-size: 0.86rem;
+}
+
+/* Footer link under genre grid */
+
+.home-section__footer-link {
+    margin-top: 10px;
+    text-align: right;
+}
+
+.home-section__footer-link .ccg-link-inline {
+    font-size: 0.8rem;
+}
+
+/* ------------------------------------------------------------
+   RESPONSIVE TUNING
+------------------------------------------------------------ */
+
+@media (max-width: 960px) {
+    .ccg-main--home {
+        padding-top: 14px;
     }
-    if (titleEl) titleEl.textContent = featured.title || "Featured Game";
-    if (descEl) descEl.textContent = buildFeaturedGameDescription(featured);
-    if (btnEl && featured.id != null) {
-        btnEl.href = `games/game.html?id=${featured.id}`;
+
+    .home-hero__inner {
+        padding: 18px 18px 16px;
+    }
+}
+
+@media (max-width: 780px) {
+    .home-hero__title {
+        font-size: 1.05rem;
     }
 
-    // Drive the Featured Video card from the same game
-    renderFeaturedVideo();
+    .home-highlights-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
-/* ============================================================
-   RANDOM GAME BUTTON
-============================================================ */
-
-function wireRandomGameButton() {
-    const btn = document.querySelector("[data-ccg-random-game]");
-    if (!btn) return;
-
-    if (!CCG_HOME_ALL_GAMES.length) {
-        btn.disabled = true;
-        btn.classList.add("ccg-btn--disabled");
-        return;
+@media (max-width: 640px) {
+    .ccg-main--home {
+        padding-top: 12px;
+        padding-bottom: 26px;
     }
 
-    btn.addEventListener("click", () => {
-        const r = Math.floor(Math.random() * CCG_HOME_ALL_GAMES.length);
-        const g = CCG_HOME_ALL_GAMES[r];
-        if (g && g.id != null) {
-            window.location.href = `games/game.html?id=${g.id}`;
-        }
-    });
-}
-
-/* ============================================================
-   FEATURED VIDEO — AUTO-SYNC WITH FEATURED GAME
-============================================================ */
-
-function buildYouTubeThumbUrl(videoId) {
-    if (!videoId) return null;
-    const v = String(videoId).trim();
-    if (!v) return null;
-    return `https://img.youtube.com/vi/${v}/hqdefault.jpg`;
-}
-
-function renderFeaturedVideo() {
-    const thumbEl = document.querySelector("[data-ccg-featured-video-thumb]");
-    const titleEl = document.querySelector("[data-ccg-featured-video-title]");
-    const descEl = document.querySelector("[data-ccg-featured-video-desc]");
-    const btnEl = document.querySelector("[data-ccg-featured-video-btn]");
-
-    if (!thumbEl || !titleEl || !btnEl) return;
-
-    const game = CCG_HOME_FEATURED_GAME;
-
-    // Default fallbacks
-    let title = FEATURED_VIDEO_FALLBACK_TITLE;
-    let desc = "A hand-picked longplay or review from the channel — perfect for a retro session.";
-    let href = FEATURED_VIDEO_FALLBACK_URL;
-    let thumbUrl = "resources/images/thumbnails/all/1942.jpg";
-
-    if (game) {
-        if (game.title) {
-            title = `Featured CCG Video — ${game.title}`;
-        }
-
-        desc = "Longplay or review from the CCG channel, paired with this featured game.";
-
-        const videoId = game.videoid || game.videoId || game.youtube || game.video;
-        const ytThumb = buildYouTubeThumbUrl(videoId);
-
-        if (ytThumb) {
-            thumbUrl = ytThumb;
-            href = `https://www.youtube.com/watch?v=${String(videoId).trim()}`;
-        } else {
-            // Fall back to the game's own art if no video id
-            thumbUrl = resolveHomeThumb(
-                game.thumbnail || game.thumb || game.cover
-            );
-            href = FEATURED_VIDEO_FALLBACK_URL;
-        }
+    .home-hero {
+        margin-top: 6px;
+        margin-bottom: 18px;
     }
 
-    thumbEl.src = thumbUrl;
-    thumbEl.alt = `${title} thumbnail`;
-    titleEl.textContent = title;
-    if (descEl) descEl.textContent = desc;
-    btnEl.href = href;
+    .home-hero__inner {
+        padding: 16px 14px 14px;
+    }
+
+    .home-hero__title {
+        font-size: 0.96rem;
+    }
+
+    .home-tagline__main {
+        font-size: 0.85rem;
+    }
+
+    .home-section {
+        padding: 14px 12px 14px;
+    }
+
+    .home-genre-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 12px;
+    }
 }
 
-/* ============================================================
-   MODE LABEL SYNC
-============================================================ */
+@media (max-width: 440px) {
+    .home-hero__actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
 
-function syncModeLabel() {
-    const labelEl = document.querySelector("[data-ccg-mode-label]");
-    if (!labelEl) return;
+    .home-hero__btn {
+        width: 100%;
+        text-align: center;
+    }
 
-    const mode = (document.body.getAttribute("data-ccg-mode") || "c64").toUpperCase();
-    labelEl.textContent = mode;
-}
-
-function initModeObserver() {
-    const body = document.body;
-
-    new MutationObserver(m => {
-        if (m.some(x => x.attributeName === "data-ccg-mode")) syncModeLabel();
-    }).observe(body, { attributes: true });
-}
-
-/* ============================================================
-   SECTION REVEAL ANIMATIONS
-============================================================ */
-
-function applyHomeAnimations() {
-    const hero = document.querySelector(".home-hero");
-    const highlights = document.querySelector(".home-section--highlights");
-    const genres = document.querySelector(".home-section--genres");
-
-    [hero, highlights, genres].forEach((el, i) => {
-        if (!el) return;
-        el.classList.add("ccg-anim-in");
-        el.style.setProperty("--ccg-anim-delay", `${i * 0.08}s`);
-    });
-}
-
-/* ============================================================
-   OMEGA HERO ENTRY SEQUENCE (Option 2A)
-   ----------------------------------------------------------------
-   • CRT power-on sweep
-   • Neon bloom pulse on title + tagline
-   • Zero regressions, zero layout shift
-============================================================ */
-
-function applyOmegaHeroEntry() {
-    const hero = document.querySelector(".home-hero .ccg-hero");
-    if (!hero) return;
-
-    hero.classList.add("ccg-hero-boot"); // CSS handles the sweep + bloom
-}
-
-/* ============================================================
-   HERO PARALLAX DRIFT — Ultra subtle, visual only
-============================================================ */
-
-function initHeroParallaxDrift() {
-    const heroImg = document.querySelector(".ccg-hero-image");
-    if (!heroImg) return;
-
-    window.addEventListener("mousemove", e => {
-        const x = (e.clientX / window.innerWidth - 0.5) * 4;
-        const y = (e.clientY / window.innerHeight - 0.5) * 3;
-
-        heroImg.style.transform = `translate(${x}px, ${y}px) scale(1.03)`;
-    });
+    .home-section__title {
+        font-size: 0.86rem;
+    }
 }
