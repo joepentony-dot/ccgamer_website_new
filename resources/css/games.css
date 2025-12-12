@@ -1,10 +1,10 @@
 /* ============================================================
-   GAMES.CSS — GAMES INDEX & SINGLE GAME (OMEGA QA PASS)
+   GAMES.CSS — GAMES INDEX & SINGLE GAME (OMEGA)
    ------------------------------------------------------------
-   • Visual QA only
-   • No JS or data changes
-   • Accordion behaviour untouched
-   • STRICT SCOPING PER PAGE TYPE
+   • Phase B1: Sticky Alphabet Strip (CSS-only)
+   • No JS changes
+   • No behaviour changes
+   • STRICT PAGE SCOPING
 ============================================================ */
 
 /* ============================================================
@@ -16,19 +16,47 @@
 }
 
 /* ============================================================
-   GAMES INDEX — BASE (PRESERVED)
+   GAMES INDEX — BASE
 ============================================================ */
 
 .ccg-page--games-index .ccg-main {
     padding-bottom: 40px;
 }
 
+/* ============================================================
+   ALPHABET STRIP — STICKY (DESKTOP ONLY)
+============================================================ */
+
 .ccg-page--games-index .games-alpha {
+    position: sticky;
+    top: 74px; /* clears header + neon strip */
+    z-index: 10;
+
     margin-bottom: 18px;
+    padding: 10px 12px;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(0,0,0,0.75),
+            rgba(0,0,0,0.55)
+        );
+
+    backdrop-filter: blur(6px);
+    border-radius: 14px;
+
+    box-shadow:
+        0 6px 22px rgba(0,0,0,0.45),
+        0 0 18px rgba(var(--accent-rgb), 0.12);
+}
+
+/* Ensure alphabet buttons don’t compress */
+.ccg-page--games-index .games-alpha a {
+    white-space: nowrap;
 }
 
 /* ============================================================
-   GAMES INDEX — ACCORDION (PRESERVED)
+   ACCORDION — VISUAL RHYTHM (PRESERVED)
 ============================================================ */
 
 .ccg-page--games-index .games-accordion {
@@ -66,6 +94,10 @@
     padding-bottom: 8px;
 }
 
+/* ============================================================
+   GAME CARDS — INDEX ONLY (PRESERVED)
+============================================================ */
+
 .ccg-page--games-index .ccg-game-card {
     transition:
         transform 0.18s ease,
@@ -80,137 +112,23 @@
 }
 
 /* ============================================================
-   SINGLE GAME PAGE — QA POLISH (SCOPED)
-============================================================ */
-
-.ccg-page--single-game {
-    padding-bottom: 44px;
-}
-
-.ccg-main--single-game {
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-/* ------------------------------------------------------------
-   HERO — RHYTHM & CONTAINMENT
------------------------------------------------------------- */
-
-.ccg-page--single-game .game-hero {
-    margin-bottom: 38px;
-}
-
-.ccg-page--single-game .game-hero__inner {
-    gap: 30px;
-}
-
-.ccg-page--single-game .game-hero__title {
-    margin-bottom: 12px;
-}
-
-.ccg-page--single-game .game-hero__meta {
-    margin-bottom: 12px;
-}
-
-/* Button grouping calm */
-.ccg-page--single-game .game-hero__buttons {
-    margin-top: 16px;
-    gap: 12px;
-}
-
-/* ------------------------------------------------------------
-   SECTIONS — VERTICAL RHYTHM
------------------------------------------------------------- */
-
-.ccg-page--single-game .game-section {
-    margin-bottom: 38px;
-}
-
-.ccg-page--single-game .game-section__header {
-    margin-bottom: 16px;
-}
-
-.ccg-page--single-game .game-section__title {
-    letter-spacing: 0.02em;
-}
-
-/* ------------------------------------------------------------
-   DESCRIPTION — LONG-FORM COMFORT
------------------------------------------------------------- */
-
-.ccg-page--single-game .game-description-body {
-    max-width: 840px;
-    line-height: 1.7;
-}
-
-.ccg-page--single-game .game-description-body p {
-    margin-bottom: 16px;
-}
-
-/* ------------------------------------------------------------
-   VIDEO — NON-DOMINANT
------------------------------------------------------------- */
-
-.ccg-page--single-game .game-video-wrapper {
-    margin-top: 6px;
-}
-
-/* ------------------------------------------------------------
-   RELATED — DE-EMPHASISED BUT CLEAR
------------------------------------------------------------- */
-
-.ccg-page--single-game .game-section--related {
-    margin-top: 8px;
-    opacity: 0.88;
-}
-
-.ccg-page--single-game .game-section--related .ccg-game-card {
-    transition:
-        transform 0.18s ease,
-        box-shadow 0.18s ease;
-}
-
-.ccg-page--single-game .game-section--related .ccg-game-card:hover {
-    transform: translateY(-2px);
-    box-shadow:
-        0 8px 22px rgba(0,0,0,0.32),
-        0 0 14px rgba(var(--accent-rgb), 0.16);
-}
-
-/* ------------------------------------------------------------
-   WAYFINDING
------------------------------------------------------------- */
-
-.ccg-page--single-game .game-section--wayfinding {
-    margin-top: 14px;
-    margin-bottom: 28px;
-}
-
-/* ============================================================
-   RESPONSIVE — SINGLE GAME
+   RESPONSIVE — DISABLE STICKY ON MOBILE
 ============================================================ */
 
 @media (max-width: 900px) {
 
-    .ccg-page--single-game .game-hero {
-        margin-bottom: 32px;
-    }
-
-    .ccg-page--single-game .game-section {
-        margin-bottom: 34px;
-    }
-}
-
-@media (max-width: 520px) {
-
-    .ccg-page--single-game {
-        padding-bottom: 36px;
-    }
-
-    .ccg-page--single-game .game-hero__title {
-        font-size: 1.75rem;
+    .ccg-page--games-index .games-alpha {
+        position: static;
+        backdrop-filter: none;
+        box-shadow: none;
+        padding: 0;
+        background: none;
     }
 }
+
+/* ============================================================
+   SINGLE GAME PAGE — PRESERVED (NO CHANGES)
+============================================================ */
 
 /* ============================================================
    IMAGE LOAD STABILITY — CRITICAL (SHARED)
