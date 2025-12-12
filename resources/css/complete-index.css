@@ -1,48 +1,170 @@
 /* ============================================================
-   COMPLETE-INDEX.CSS — Omega A2 Thumbnail-Compatible Edition
-   ============================================================ */
+   COMPLETE-INDEX.CSS — OMEGA A3
+   ------------------------------------------------------------
+   • Games Index ONLY
+   • Accordion restore + micro-polish
+   • No JS changes
+   • No card system interference
+============================================================ */
 
-.ccg-index-wrapper {
-    margin-top: 2rem;
+/* ============================================================
+   PAGE WRAPPER
+============================================================ */
+
+.ccg-page--games-index .ccg-index-wrapper {
+    margin-top: 2.2rem;
 }
 
-/* Table formatting */
-.ccg-index-table {
+/* ============================================================
+   ACCORDION SECTIONS (A–Z GROUPS)
+============================================================ */
+
+.ccg-page--games-index .ccg-index-section {
+    margin-bottom: 18px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(255,255,255,0.08);
+
+    box-shadow:
+        0 0 14px rgba(0,0,0,0.75),
+        0 0 22px rgba(var(--accent-rgb), 0.15);
+}
+
+/* ============================================================
+   ACCORDION HEADER
+============================================================ */
+
+.ccg-page--games-index .ccg-index-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    cursor: pointer;
+
+    background:
+        linear-gradient(
+            to right,
+            rgba(255,255,255,0.06),
+            rgba(255,255,255,0.02)
+        );
+
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+
+    transition: background 0.25s ease;
+}
+
+.ccg-page--games-index .ccg-index-header:hover {
+    background:
+        linear-gradient(
+            to right,
+            rgba(255,255,255,0.12),
+            rgba(255,255,255,0.04)
+        );
+}
+
+/* Chevron / indicator (if present) */
+.ccg-page--games-index .ccg-index-header span {
+    opacity: 0.8;
+}
+
+/* ============================================================
+   ACCORDION BODY
+============================================================ */
+
+.ccg-page--games-index .ccg-index-body {
+    padding: 10px 14px 14px;
+}
+
+/* ============================================================
+   TABLE (INSIDE ACCORDION)
+============================================================ */
+
+.ccg-page--games-index .ccg-index-table {
     width: 100%;
     border-collapse: collapse;
-    background: rgba(0,0,0,0.6);
-    border-radius: 8px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 10px;
     overflow: hidden;
 }
 
-.ccg-index-table th,
-.ccg-index-table td {
-    padding: 0.75rem 1rem;
+.ccg-page--games-index .ccg-index-table th,
+.ccg-page--games-index .ccg-index-table td {
+    padding: 0.7rem 0.9rem;
     border-bottom: 1px solid rgba(255,255,255,0.08);
-    font-size: 0.9rem;
+    font-size: 0.88rem;
 }
 
-.ccg-index-table th {
-    background: rgba(255,255,255,0.05);
-    font-weight: 700;
+.ccg-page--games-index .ccg-index-table th {
+    background: rgba(255,255,255,0.06);
+    font-weight: 600;
 }
 
-.ccg-index-table tr:hover td {
-    background: rgba(255,255,255,0.05);
+.ccg-page--games-index .ccg-index-table tr:hover td {
+    background: rgba(255,255,255,0.06);
 }
 
-/* Column helpers */
-.ccg-col-title { width: 32%; }
-.ccg-col-genre { width: 18%; }
-.ccg-col-system { width: 12%; }
-.ccg-col-video { width: 10%; }
+/* ============================================================
+   COLUMN HELPERS
+============================================================ */
 
-/* Thumbnail inside table (if ever added) */
-.ccg-thumb {
-    width: 60px;
+.ccg-page--games-index .ccg-col-title  { width: 34%; }
+.ccg-page--games-index .ccg-col-genre  { width: 18%; }
+.ccg-page--games-index .ccg-col-system { width: 12%; }
+.ccg-page--games-index .ccg-col-video  { width: 10%; }
+
+/* ============================================================
+   THUMBNAILS (SAFE)
+============================================================ */
+
+.ccg-page--games-index .ccg-thumb {
+    width: 56px;
     aspect-ratio: 1 / 1;
     border-radius: 6px;
-
     object-fit: contain;
     object-position: center;
+
+    box-shadow:
+        0 0 10px rgba(0,0,0,0.8),
+        0 0 16px rgba(var(--accent-rgb), 0.35);
+}
+
+/* ============================================================
+   MICRO POLISH — OPEN / CLOSE FEEL
+============================================================ */
+
+/* Prevent jumpy scrollbars */
+.ccg-page--games-index .ccg-index-body {
+    animation: ccgAccordionFade 0.25s ease;
+}
+
+@keyframes ccgAccordionFade {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width: 720px) {
+
+    .ccg-page--games-index .ccg-index-header {
+        padding: 12px 14px;
+        font-size: 0.8rem;
+    }
+
+    .ccg-page--games-index .ccg-index-table th,
+    .ccg-page--games-index .ccg-index-table td {
+        padding: 0.6rem 0.7rem;
+        font-size: 0.82rem;
+    }
 }
