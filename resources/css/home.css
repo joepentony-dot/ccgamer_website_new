@@ -60,15 +60,15 @@
 }
 
 /* ============================================================
-   FEATURED AREA — REAL CONTAINMENT (FIXED)
+   FEATURED AREA — REAL CONTAINMENT (NO HTML CHANGES)
 ============================================================ */
 
-.home-section--featured {
-    position: relative;
+/* Target ONLY the section that contains the featured grid */
+.home-section:has(.home-featured-grid) {
     overflow: hidden;
 }
 
-/* Cap the overall visual dominance */
+/* Grid */
 .home-featured-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -80,26 +80,25 @@
 .home-featured-grid .ccg-card {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     padding: 14px 12px;
-    max-height: 420px; /* 🔴 HARD VISUAL CAP */
+    max-height: 420px; /* HARD CAP */
 }
 
-/* Inner centring */
+/* Inner layout */
 .home-featured-grid .ccg-card__inner {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
     text-align: center;
     gap: 10px;
 }
 
-/* MEDIA — THIS IS THE KEY FIX */
+/* 🔴 ACTUAL FIX — MEDIA CONSTRAINT */
 .home-featured-grid .ccg-card__media {
-    max-height: 240px;          /* 🔴 ACTUAL CONSTRAINT */
+    max-height: 220px;
     width: 100%;
     overflow: hidden;
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -108,9 +107,9 @@
 .home-featured-grid .ccg-card__media img,
 .home-featured-grid .ccg-card__media iframe,
 .home-featured-grid .ccg-card__media video {
-    max-height: 240px;
-    width: auto;
+    max-height: 220px;
     max-width: 100%;
+    width: auto;
     object-fit: contain;
 }
 
@@ -119,7 +118,6 @@
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     gap: 8px;
     padding: 6px 0;
 }
@@ -186,7 +184,7 @@
         gap: 18px;
     }
 
-    /* Mobile = no caps */
+    /* Mobile = unrestricted */
     .home-featured-grid .ccg-card,
     .home-featured-grid .ccg-card__media,
     .home-featured-grid .ccg-card__media img,
