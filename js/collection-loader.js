@@ -1,12 +1,11 @@
 /* ============================================================
-   CCG COLLECTION LOADER — OMEGA ABSOLUTE PATH BUILD
+   CCG COLLECTION LOADER — OMEGA SAFE BUILD (FIXED)
    ------------------------------------------------------------
    • Purpose: Load curated collections (NOT genres)
-   • Uses absolute JSON path (depth-safe)
-   • Collections are matched via game.genres[] tags
-   • Zero visual or layout changes
-   • Console-only diagnostics
-   ============================================================ */
+   • Uses data-genre attribute as collection key
+   • Fetch path is RELATIVE (GitHub Pages safe)
+   • Requires: /js/ccg-card-builder.js loaded BEFORE this file
+============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -22,14 +21,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        /* ------------------------------------------------------------
-           ABSOLUTE PATH — SAFE FROM ANY DEPTH
-        ------------------------------------------------------------ */
-        const response = await fetch("/games/games.json");
+        // IMPORTANT:
+        // Collection pages are: /games/collections/*.html
+        // JSON is:            /games/games.json
+        // So relative path is: ../games.json  (NO leading slash)
+        const url = "../games.json";
+
+        const response = await fetch(url, { cache: "no-store" });
+
+        if (!response.ok) {
+            console.error(`[CCG COLLECTION] Failed to fetch games.json (${response.status}) from: ${response.url || url}`);
+            return;
+        }
+
         const games = await response.json();
 
         if (!Array.isArray(games)) {
-            console.error("[CCG COLLECTION] games.json is not an array");
+            console.error("[CCG COLLECTION] games.json is not an array.");
             return;
         }
 
@@ -37,26 +45,24 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const filtered = games.filter(game =>
             Array.isArray(game.genres) &&
-            game.genres
-                .map(g => String(g).toLowerCase().trim())
-                .includes(key)
+            game.genres.map(g => String(g).toLowerCase().trim()).includes(key)
         );
 
-        if (countEl) {
-            countEl.textContent = filtered.length.toString();
+        if (countEl) countEl.textContent = String(filtered.length);
+
+        // Shared card builder must exist
+        if (typeof window.generateGenreCard !== "function") {
+            console.error("[CCG COLLECTION] generateGenreCard() missing. Ensure ccg-card-builder.js is loaded before collection-loader.js.");
+            return;
         }
+
+        grid.innerHTML = filtered.map(game => window.generateGenreCard(game)).join("");
 
         if (filtered.length === 0) {
-            console.warn(
-                `[CCG COLLECTION WARNING] No games found for collection "${collectionName}"`
-            );
+            console.warn(`[CCG COLLECTION] 0 games found for collection "${collectionName}". (This may be data tagging, not code.)`);
         }
 
-        grid.innerHTML = filtered
-            .map(game => generateGenreCard(game))
-            .join("");
-
     } catch (err) {
-        console.error("[CCG COLLECTION] Loader failed:", err);
+        console.error("[CCG COLLECTION] Loader error:", err);
     }
 });
