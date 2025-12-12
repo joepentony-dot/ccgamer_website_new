@@ -7,11 +7,11 @@
     <title>Licensed Games | Cheeky Commodore Gamer</title>
 
     <meta name="description"
-          content="Licensed Games — film, TV and comic tie-ins on the Commodore 64 and Amiga, showcasing officially licensed retro adaptations from the golden era." />
+          content="Licensed Games — a curated collection of Commodore 64 and Amiga titles based on films, TV, comics and famous brands from the retro era." />
 
     <link rel="icon" href="../../favicon.ico" />
 
-    <!-- REQUIRED FONT RESTORE -->
+    <!-- REQUIRED FONT RESTORE (Orbitron + Roboto) -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     <!-- GLOBAL CSS -->
@@ -29,6 +29,7 @@
       data-ccg-mode="c64"
       data-collection="licensed-games">
 
+    <!-- BACKGROUND -->
     <div class="ccg-bg">
         <div class="ccg-bg-starfield"></div>
         <div class="ccg-bg-grid"></div>
@@ -37,14 +38,16 @@
 
     <div class="ccg-page ccg-page--collection-single">
 
+        <!-- HEADER -->
         <header class="ccg-header">
             <div class="ccg-header-inner">
 
                 <a href="../../home.html" class="ccg-brand">
                     <img src="../../resources/images/ccgamer-logo.png"
-                         alt="Cheeky Commodore Gamer logo"
                          class="ccg-brand__logo"
-                         loading="lazy">
+                         loading="lazy"
+                         alt="Cheeky Commodore Gamer logo">
+
                     <div class="ccg-brand__text">
                         <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
                         <div class="ccg-brand__title">
@@ -75,28 +78,42 @@
                             <span class="ccg-mode-toggle__thumb"></span>
                         </span>
                     </button>
+
+                    <div class="ccg-header-socials">
+                        <a href="https://www.youtube.com/@CheekyCommodoreGamer"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>
+                        <a href="https://patreon.com/CheekyCommodoreGamer"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>
+                        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"><span class="ccg-socials__icon ccg-socials__icon--paypal"></span></a>
+                        <a href="https://twitter.com/CheekyC64Gamer"><span class="ccg-socials__icon ccg-socials__icon--x"></span></a>
+                        <a href="https://www.facebook.com/cheekycommodoregamer"><span class="ccg-socials__icon ccg-socials__icon--fb"></span></a>
+                        <a href="https://discord.gg/83Xw9ktAn4"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
+                    </div>
                 </div>
 
             </div>
             <div class="ccg-header-neon-strip"></div>
         </header>
 
+        <!-- MAIN -->
         <main class="ccg-main">
 
+            <!-- HERO -->
             <section class="ccg-genre-hero ccg-collection-hero">
                 <div class="ccg-genre-hero__inner">
                     <h1 class="ccg-genre-hero__title">Licensed Games</h1>
+
                     <p class="ccg-genre-hero__tagline">
-                        Official film, TV and comic adaptations from the retro era.
+                        Film, TV and comic tie-ins from the golden era of home computing.
                     </p>
+
                     <div class="ccg-genre-meta">
                         <span><span id="genreGamesCount">0</span> games in this collection</span>
                     </div>
                 </div>
             </section>
 
+            <!-- GRID -->
             <section class="ccg-genre-main">
-                <div id="collectionGamesGrid" class="ccg-genre-grid"></div>
+                <div id="genreGamesGrid" class="ccg-genre-grid"></div>
             </section>
 
         </main>
@@ -109,6 +126,7 @@
 
     </div>
 
+    <!-- JS -->
     <script src="../../js/ccg-global.js" defer></script>
     <script src="../../js/ccg-mode-engine.js" defer></script>
     <script src="../../js/ccg-card-builder.js" defer></script>
