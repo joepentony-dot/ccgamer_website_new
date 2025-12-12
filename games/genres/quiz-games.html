@@ -26,6 +26,7 @@
 
 <body class="ccg-body" data-ccg-mode="c64" data-genre="Quiz Games">
 
+    <!-- BACKGROUND -->
     <div class="ccg-bg">
         <div class="ccg-bg-starfield"></div>
         <div class="ccg-bg-grid"></div>
@@ -34,6 +35,7 @@
 
     <div class="ccg-page ccg-page--genre-single">
 
+        <!-- HEADER -->
         <header class="ccg-header">
             <div class="ccg-header-inner">
 
@@ -90,6 +92,7 @@
             <div class="ccg-header-neon-strip"></div>
         </header>
 
+        <!-- MAIN -->
         <main class="ccg-main">
 
             <section class="ccg-genre-hero">
@@ -149,13 +152,16 @@
             </p>
         </footer>
 
-       </div>
+    </div>
 
+    <!-- CORE -->
     <script src="../../js/ccg-global.js" defer></script>
     <script src="../../js/ccg-mode-engine.js" defer></script>
 
-    <!-- IMPORTANT: shared builder BEFORE loader -->
+    <!-- SHARED BUILDER (MUST LOAD FIRST) -->
     <script src="../../js/ccg-card-builder.js" defer></script>
+
+    <!-- GENRE LOADER -->
     <script src="../../js/genre-loader.js" defer></script>
 
 </body>
