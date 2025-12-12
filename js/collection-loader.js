@@ -1,13 +1,15 @@
 /* ============================================================
-   CCG COLLECTION LOADER — OMEGA CONSOLIDATED
+   CCG COLLECTION LOADER — OMEGA CONSOLIDATED (FIXED)
    ------------------------------------------------------------
    • Uses ccg-card-builder.js
+   • Collection-aware (data-collection)
    • No rendering duplication
 ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-    const collectionName = document.body.dataset.genre;
+    // 🔧 FIX: collections use data-collection, NOT data-genre
+    const collectionName = document.body.dataset.collection;
     const grid = document.getElementById("genreGamesGrid");
     const countEl = document.getElementById("genreGamesCount");
 
@@ -17,6 +19,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
+        // collections live in /games/collections/
         const response = await fetch("../games.json");
         const games = await response.json();
 
@@ -29,16 +32,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const filtered = games.filter(game =>
             Array.isArray(game.genres) &&
-            game.genres.map(g => String(g).toLowerCase().trim()).includes(key)
+            game.genres
+                .map(g => String(g).toLowerCase().trim())
+                .includes(key)
         );
 
-        if (countEl) countEl.textContent = filtered.length;
+        if (countEl) {
+            countEl.textContent = filtered.length;
+        }
 
         grid.innerHTML = filtered.map(ccgBuildGameCard).join("");
 
         if (filtered.length === 0) {
             console.warn(
-                `[CCG COLLECTION] No games found for "${collectionName}"`
+                `[CCG COLLECTION] No games found for collection "${collectionName}"`
             );
         }
 
