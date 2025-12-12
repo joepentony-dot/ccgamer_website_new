@@ -1,23 +1,22 @@
 /* ============================================================
-   GENRE.CSS — OMEGA GENRE HUB SYSTEM
+   GENRE.CSS — OMEGA GENRE PAGES (CONTAINED)
    ------------------------------------------------------------
-   • Genre index grid styling
-   • Genre single pages (shared elements)
-   • Visual parity with Collections
-   • PASS 1C — Visual depth + hierarchy
-   • ZERO JS or layout dependencies
+   • Page-specific layout only
+   • NEVER redefines card or media primitives
+   • Fully compatible with ccg-cards.css
 ============================================================ */
 
 /* ============================================================
    PAGE BASE
 ============================================================ */
 
-.ccg-page--genres-index {
+.ccg-page--genres-index,
+.ccg-page--genre-single {
     padding-bottom: 40px;
 }
 
 /* ============================================================
-   GENRE HUB HERO
+   GENRE HUB HERO (INDEX)
 ============================================================ */
 
 .ccg-genrehub-hero {
@@ -39,100 +38,90 @@
 }
 
 /* ============================================================
-   GENRE GRID — COLLECTION PARITY
+   GENRE GRID — USE CANONICAL CARD SYSTEM
 ============================================================ */
 
-.genre-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 22px;
+.ccg-genre-grid {
     padding: 0 10px;
 }
 
-/* ============================================================
-   CARD BASE — OMEGA TILE
-============================================================ */
-
-.ccg-card {
-    display: flex;
-    flex-direction: column;
-    background: rgba(0, 0, 0, 0.55);
-    border-radius: 14px;
-    overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-
-    box-shadow:
-        0 0 14px rgba(0, 0, 0, 0.85),
-        0 0 28px var(--card-glow);
-
-    transition:
-        transform 0.25s ease,
-        box-shadow 0.25s ease;
-}
-
-.ccg-card:hover {
-    transform: translateY(-4px);
-    box-shadow:
-        0 0 20px rgba(var(--accent-rgb), 0.8),
-        0 0 40px rgba(var(--accent-rgb), 0.5);
+/* Slightly roomier than games index */
+.ccg-page--genre-single .ccg-genre-grid {
+    gap: 26px;
 }
 
 /* ============================================================
-   IMAGE — 16:9 LOCKED
+   GENRE HERO (SINGLE)
 ============================================================ */
 
-.ccg-card__image {
+.ccg-genre-hero {
     position: relative;
-    width: 100%;
-    padding-top: 56.25%; /* 16:9 */
+    margin-bottom: 28px;
+    border-radius: 22px;
     overflow: hidden;
 }
 
-.ccg-card__image img {
+.ccg-genre-hero__bg {
     position: absolute;
     inset: 0;
+}
+
+.ccg-genre-hero__img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-
-    transition:
-        transform 0.35s ease,
-        filter 0.35s ease;
+    filter: brightness(0.4);
 }
 
-.ccg-card:hover .ccg-card__image img {
-    transform: scale(1.04);
-    filter: brightness(1.05);
+.ccg-genre-hero__overlay {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at top,
+            rgba(0,0,0,0.2),
+            rgba(0,0,0,0.75)
+        );
 }
 
-/* ============================================================
-   TITLE
-============================================================ */
-
-.ccg-card__title {
+.ccg-genre-hero__inner {
+    position: relative;
+    z-index: 1;
+    padding: 32px 22px;
     text-align: center;
-    padding: 10px 6px 14px 6px;
-    font-size: 0.9rem;
-    color: var(--text-light);
+}
 
+.ccg-genre-hero__title {
+    font-size: 2rem;
+    margin-bottom: 10px;
     text-shadow:
-        0 0 8px rgba(var(--accent-rgb), 0.6),
-        0 0 14px rgba(var(--accent-rgb), 0.35);
+        0 0 20px rgba(var(--accent-rgb), 0.6);
+}
+
+.ccg-genre-hero__tagline {
+    max-width: 720px;
+    margin: 0 auto;
+    opacity: 0.9;
 }
 
 /* ============================================================
-   PASS 1C — VISUAL HIERARCHY (SUBTLE)
-   Top row receives gentle emphasis
+   META BAR
 ============================================================ */
 
-.ccg-page--genres-index .ccg-card:nth-child(-n + 4) {
-    box-shadow:
-        0 0 18px rgba(0, 0, 0, 0.9),
-        0 0 34px rgba(var(--accent-rgb), 0.45);
+.ccg-genre-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 14px;
+    font-size: 0.85rem;
+    opacity: 0.85;
 }
 
-.ccg-page--genres-index .ccg-card:nth-child(-n + 4):hover {
-    transform: translateY(-6px);
+/* ============================================================
+   WAYFINDING
+============================================================ */
+
+.ccg-genre-wayfinding {
+    margin-top: 30px;
+    text-align: center;
 }
 
 /* ============================================================
@@ -140,12 +129,14 @@
 ============================================================ */
 
 @media (max-width: 520px) {
-    .genre-grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 16px;
-    }
 
     .ccg-genrehub-title {
         font-size: 1.4rem;
+    }
+
+    .ccg-genre-meta {
+        flex-direction: column;
+        gap: 6px;
+        text-align: center;
     }
 }
