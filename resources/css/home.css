@@ -13,7 +13,9 @@
     padding-bottom: 32px;
 }
 
-/* HERO */
+/* ============================================================
+   HERO
+============================================================ */
 
 .home-hero {
     margin-top: 10px;
@@ -36,14 +38,18 @@
     max-width: 720px;
 }
 
-/* TAGLINE */
+/* ============================================================
+   TAGLINE
+============================================================ */
 
 .home-tagline {
     text-align: center;
     margin: 0 0 26px 0;
 }
 
-/* SECTIONS */
+/* ============================================================
+   SECTIONS (BASE)
+============================================================ */
 
 .home-section {
     margin: 0 0 24px 0;
@@ -54,8 +60,60 @@
 }
 
 /* ============================================================
-   HOME GENRE GRID — FINAL FIX
-   This restores thumbnail rendering on home page only
+   FEATURED AREA — SYMMETRY & ALIGNMENT POLISH
+   (Safe additive rules only)
+============================================================ */
+
+/* Two-column featured layout */
+.home-featured-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    align-items: stretch;
+}
+
+/* Featured cards — ensure equal visual weight */
+.home-featured-grid .ccg-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+}
+
+/* Inner content centring (fixes top-left bias) */
+.home-featured-grid .ccg-card__inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+}
+
+/* Media centring parity */
+.home-featured-grid .ccg-card__media {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Subtle glow balance — matched both sides */
+.home-featured-grid .ccg-card {
+    box-shadow:
+        0 0 18px rgba(0, 0, 0, 0.85),
+        0 0 34px rgba(var(--accent-rgb), 0.22);
+}
+
+/* Prevent one card feeling taller due to content */
+.home-featured-grid .ccg-card__content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* ============================================================
+   HOME GENRE GRID — FINAL FIX (PRESERVED)
 ============================================================ */
 
 .home-genre-grid {
@@ -64,8 +122,6 @@
     gap: 14px;
     margin-top: 6px;
 }
-
-/* 🔴 THIS WAS THE MISSING PIECE */
 
 .home-genre-grid .ccg-card__media {
     display: block;
@@ -79,23 +135,31 @@
     object-fit: cover;
 }
 
-/* Titles */
-
 .home-genre-grid .ccg-card__title {
     text-align: center;
     font-size: 0.86rem;
 }
 
-/* Footer link */
+/* ============================================================
+   FOOTER LINK
+============================================================ */
 
 .home-section__footer-link {
     margin-top: 10px;
     text-align: right;
 }
 
-/* RESPONSIVE */
+/* ============================================================
+   RESPONSIVE
+============================================================ */
 
 @media (max-width: 780px) {
+
+    .home-featured-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
     .home-genre-grid {
         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     }
