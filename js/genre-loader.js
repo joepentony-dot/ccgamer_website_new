@@ -1,47 +1,72 @@
 /* ============================================================
-   CCG GENRE LOADER — OMEGA CONSOLIDATED
+   GENRE LOADER — OMEGA STABLE + DISCOVERABILITY (PHASE B3)
    ------------------------------------------------------------
-   • Uses ccg-card-builder.js
-   • Zero duplicated rendering logic
+   • Loads games for a single genre
+   • Uses shared card builder
+   • NEW: Client-side sort toggle (A–Z / Year)
 ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-    const genreRaw = document.body.dataset.genre;
-    const genreName = (genreRaw || "").toString().trim();
+    const genreName = document.body.dataset.genre;
     const grid = document.getElementById("genreGamesGrid");
     const countEl = document.getElementById("genreGamesCount");
+    const sortSelect = document.getElementById("genreSortSelect");
 
-    if (!genreName || !grid) {
-        console.warn("[CCG GENRE] Missing genre name or grid");
-        return;
-    }
+    if (!genreName || !grid) return;
 
     try {
         const response = await fetch("../games.json");
         const games = await response.json();
 
-        if (!Array.isArray(games)) {
-            console.error("[CCG DATA] games.json is not an array");
-            return;
-        }
+        const allGames = Array.isArray(games) ? games : [];
 
-        const key = genreName.toLowerCase();
-
-        const filtered = games.filter(game =>
-            Array.isArray(game.genres) &&
-            game.genres.map(g => String(g).toLowerCase().trim()).includes(key)
+        let filtered = allGames.filter(g =>
+            Array.isArray(g.genres) &&
+            g.genres.map(x => x.toLowerCase()).includes(genreName.toLowerCase())
         );
 
-        if (countEl) countEl.textContent = filtered.length;
+        function sortGames(mode) {
+            const sorted = [...filtered];
 
-        grid.innerHTML = filtered.map(ccgBuildGameCard).join("");
+            if (mode === "year") {
+                sorted.sort((a, b) => {
+                    const ay = parseInt(a.year) || 0;
+                    const by = parseInt(b.year) || 0;
+                    return by - ay;
+                });
+            } else {
+                sorted.sort((a, b) =>
+                    (a.title || "").localeCompare(b.title || "")
+                );
+            }
 
-        if (filtered.length === 0) {
-            console.warn(`[CCG GENRE] No games found for "${genreName}"`);
+            return sorted;
+        }
+
+        function render(mode = "az") {
+            const gamesToRender = sortGames(mode);
+
+            grid.innerHTML = gamesToRender
+                .map(game => buildGameCard(game))
+                .join("");
+
+            if (countEl) {
+                countEl.textContent = gamesToRender.length;
+            }
+        }
+
+        /* Initial render (A–Z default) */
+        render("az");
+
+        /* Wire sort toggle if present */
+        if (sortSelect) {
+            sortSelect.addEventListener("change", () => {
+                render(sortSelect.value);
+            });
         }
 
     } catch (err) {
-        console.error("[CCG GENRE] Loader error:", err);
+        console.error("[CCG] Failed to load genre games:", err);
     }
 });
