@@ -7,11 +7,11 @@
     <title>BPJS Indexed Games | Cheeky Commodore Gamer</title>
 
     <meta name="description"
-          content="BPJS Indexed Games — a curated collection of Commodore 64 and Amiga titles drawn from the BPJS index, highlighting essential classics and historically significant releases." />
+          content="BPJS Indexed Games — a curated selection of Commodore 64 and Amiga titles drawn from the BPJS index, highlighting essential classics and historically significant releases." />
 
     <link rel="icon" href="../../favicon.ico" />
 
-    <!-- REQUIRED FONT RESTORE -->
+    <!-- FONTS -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     <!-- GLOBAL CSS -->
@@ -27,7 +27,7 @@
 
 <body class="ccg-body"
       data-ccg-mode="c64"
-      data-collection="bpjs-indexed-games">
+      data-collection="bpjs-indexed">
 
     <!-- BACKGROUND -->
     <div class="ccg-bg">
@@ -44,9 +44,9 @@
 
                 <a href="../../home.html" class="ccg-brand">
                     <img src="../../resources/images/ccgamer-logo.png"
+                         alt="Cheeky Commodore Gamer logo"
                          class="ccg-brand__logo"
-                         loading="lazy"
-                         alt="Cheeky Commodore Gamer logo">
+                         loading="lazy">
                     <div class="ccg-brand__text">
                         <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
                         <div class="ccg-brand__title">
@@ -68,8 +68,27 @@
                         <li><a href="../../contact.html" class="ccg-nav__link">Contact</a></li>
                     </ul>
                 </nav>
-            </div>
 
+                <div class="ccg-header-actions">
+                    <button class="ccg-mode-toggle" type="button" data-ccg-mode-toggle>
+                        <span class="ccg-mode-toggle__pill">
+                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
+                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">Amiga</span>
+                            <span class="ccg-mode-toggle__thumb"></span>
+                        </span>
+                    </button>
+
+                    <div class="ccg-header-socials">
+                        <a href="https://www.youtube.com/@CheekyCommodoreGamer"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>
+                        <a href="https://patreon.com/CheekyCommodoreGamer"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>
+                        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"><span class="ccg-socials__icon ccg-socials__icon--paypal"></span></a>
+                        <a href="https://twitter.com/CheekyC64Gamer"><span class="ccg-socials__icon ccg-socials__icon--x"></span></a>
+                        <a href="https://www.facebook.com/cheekycommodoregamer"><span class="ccg-socials__icon ccg-socials__icon--fb"></span></a>
+                        <a href="https://discord.gg/83Xw9ktAn4"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
+                    </div>
+                </div>
+
+            </div>
             <div class="ccg-header-neon-strip"></div>
         </header>
 
@@ -79,14 +98,13 @@
             <section class="ccg-genre-hero ccg-collection-hero">
                 <div class="ccg-genre-hero__bg">
                     <img src="../../resources/images/genres/banners/bpjs-games-banner.png"
-                         class="ccg-genre-hero__img"
-                         alt="BPJS Indexed Games Collection Artwork" />
+                         alt="BPJS Indexed Games"
+                         class="ccg-genre-hero__img" />
                     <div class="ccg-genre-hero__overlay"></div>
                 </div>
 
                 <div class="ccg-genre-hero__inner">
                     <h1 class="ccg-genre-hero__title">BPJS Indexed Games</h1>
-
                     <p class="ccg-genre-hero__tagline">
                         Essential classics and standout titles curated from the BPJS index.
                     </p>
@@ -111,15 +129,17 @@
         <footer class="ccg-footer">
             <p class="ccg-footer__text">
                 © <span data-ccg-year></span> Cheeky Commodore Gamer.
+                Not affiliated with Commodore, Amiga or publishers.
             </p>
         </footer>
 
     </div>
 
+    <!-- JS -->
     <script src="../../js/ccg-global.js" defer></script>
     <script src="../../js/ccg-mode-engine.js" defer></script>
     <script src="../../js/ccg-card-builder.js" defer></script>
-    <script src="../../js/collection-loader.js" defer></cript>
+    <script src="../../js/collection-loader.js" defer></script>
 
 </body>
 </html>
