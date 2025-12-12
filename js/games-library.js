@@ -1,18 +1,21 @@
 /* ============================================================
-   GAMES LIBRARY — OMEGA STABLE + PERFORMANCE (PHASE C2)
+   GAMES LIBRARY — OMEGA STABLE + PERFORMANCE (PHASE C4)
    ------------------------------------------------------------
    • Accordion layout (A–Z)
    • Search & filter support
-   • Lazy-loaded thumbnails
    • Session-based accordion state memory
    • Image decode & LCP hardening
-   • NEW: IntersectionObserver tuning for thumbnails
+   • IntersectionObserver preload tuning
+   • NEW: Runtime optimisation (cached DOM + cached titles + rAF input)
 ============================================================ */
 
 let CCG_ALL_GAMES = [];
 const ACCORDION_STATE_KEY = "ccgAccordionState";
 
 let thumbObserver = null;
+
+/* Cached runtime structures (Phase C4) */
+let CCG_GROUP_CACHE = []; // [{ groupEl, cards: [{ el, titleLower }] }]
 
 /* ============================================================
    INIT
@@ -50,11 +53,10 @@ function initThumbnailObserver() {
                 const img = entry.target;
                 thumbObserver.unobserve(img);
 
-                // Force eager decode once near viewport
+                // Encourage earlier decode once near viewport
                 img.loading = "eager";
                 img.decoding = "async";
 
-                // Trigger decode earlier if supported
                 if (img.decode) {
                     img.decode().catch(() => {});
                 }
@@ -62,7 +64,7 @@ function initThumbnailObserver() {
         },
         {
             root: null,
-            rootMargin: "300px 0px", // preload before visible
+            rootMargin: "300px 0px",
             threshold: 0.01
         }
     );
@@ -87,10 +89,8 @@ function saveAccordionState(state) {
 
 function toggleAccordionState(letter, isOpen) {
     const state = new Set(getAccordionState());
-
     if (isOpen) state.add(letter);
     else state.delete(letter);
-
     saveAccordionState([...state]);
 }
 
@@ -114,6 +114,7 @@ function buildGamesAccordion(games) {
     if (!container) return;
 
     container.innerHTML = "";
+    CCG_GROUP_CACHE = [];
 
     const groups = {};
 
@@ -145,7 +146,6 @@ function buildGamesAccordion(games) {
             container.appendChild(groupEl);
 
             const header = groupEl.querySelector(".games-accordion__header");
-
             header.addEventListener("click", () => {
                 const isOpen = groupEl.classList.toggle("is-open");
                 toggleAccordionState(letter, isOpen);
@@ -153,6 +153,26 @@ function buildGamesAccordion(games) {
         });
 
     observeThumbnails(container);
+    buildGroupCache(container);
+}
+
+/* ============================================================
+   RUNTIME CACHE (Phase C4)
+============================================================ */
+
+function buildGroupCache(container) {
+    // Cache group elements and per-card titleLower once.
+    const groups = container.querySelectorAll(".games-accordion__group");
+
+    CCG_GROUP_CACHE = Array.from(groups).map(groupEl => {
+        const cards = Array.from(groupEl.querySelectorAll(".ccg-game-card")).map(el => {
+            const titleEl = el.querySelector(".ccg-game-card__title");
+            const titleLower = (titleEl ? titleEl.textContent : "").toLowerCase();
+            return { el, titleLower };
+        });
+
+        return { groupEl, cards };
+    });
 }
 
 /* ============================================================
@@ -211,31 +231,41 @@ function resolveGameThumb(raw) {
 }
 
 /* ============================================================
-   SEARCH / FILTER (PRESERVED)
+   SEARCH / FILTER — RUNTIME OPTIMISED (Phase C4)
 ============================================================ */
 
 function wireSearchFilter() {
     const input = document.getElementById("gamesSearch");
     if (!input) return;
 
-    input.addEventListener("input", () => {
-        const term = input.value.toLowerCase();
+    let rafPending = false;
+    let lastTerm = "";
 
-        document.querySelectorAll(".games-accordion__group").forEach(group => {
-            const cards = group.querySelectorAll(".ccg-game-card");
+    function applyFilter(term) {
+        // Uses cached cards + cached lowercased titles.
+        CCG_GROUP_CACHE.forEach(({ groupEl, cards }) => {
             let anyVisible = false;
 
-            cards.forEach(card => {
-                const title = card
-                    .querySelector(".ccg-game-card__title")
-                    .textContent.toLowerCase();
-
-                const visible = title.includes(term);
-                card.style.display = visible ? "" : "none";
+            cards.forEach(({ el, titleLower }) => {
+                const visible = titleLower.includes(term);
+                el.style.display = visible ? "" : "none";
                 if (visible) anyVisible = true;
             });
 
-            group.style.display = anyVisible ? "" : "none";
+            groupEl.style.display = anyVisible ? "" : "none";
+        });
+    }
+
+    input.addEventListener("input", () => {
+        lastTerm = (input.value || "").toLowerCase();
+
+        // rAF throttle keeps typing smooth on huge libraries.
+        if (rafPending) return;
+        rafPending = true;
+
+        requestAnimationFrame(() => {
+            rafPending = false;
+            applyFilter(lastTerm);
         });
     });
 }
