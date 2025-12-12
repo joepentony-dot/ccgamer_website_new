@@ -1,16 +1,4 @@
 /* ============================================================
-   HARD CONTAINMENT GUARD — PREVENT BLEED INTO OTHER PAGES
-============================================================ */
-
-.ccg-page:not(.ccg-page--single-game) .game-hero,
-.ccg-page:not(.ccg-page--single-game) .game-hero *,
-.ccg-page:not(.ccg-page--single-game) .game-hero__backdrop {
-    all: unset !important;
-    display: none !important;
-}
-
-
-/* ============================================================
    GAMES.CSS — SINGLE GAME PAGE (OMEGA POLISH)
    ------------------------------------------------------------
    • Visual polish only
