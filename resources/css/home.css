@@ -1,186 +1,102 @@
-/* ============================================================
-   CCG CARDS — OMEGA CINEMATIC SYSTEM
-   ------------------------------------------------------------
-   • Unified card styling for:
-     - Games index
-     - Genre pages
-     - Collection pages
-     - Home page genre launcher
-   • CRT / Neon aware
-   • Layout-safe (no JS dependency)
+/* ============================================================ 
+   HOME.CSS — OMEGA CINEMATIC 2.0 HOMEPAGE
 ============================================================ */
 
-/* ------------------------------------------------------------
-   BASE CARD
------------------------------------------------------------- */
+.ccg-page--home {
+    padding-bottom: 40px;
+}
 
-.ccg-card {
+.ccg-main--home {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 18px;
+    padding-bottom: 32px;
+}
+
+/* HERO */
+
+.home-hero {
+    margin-top: 10px;
+    margin-bottom: 22px;
+}
+
+.ccg-hero--home {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    background: linear-gradient(
-        180deg,
-        rgba(18, 18, 22, 0.92),
-        rgba(6, 6, 10, 0.95)
-    );
-    border-radius: 16px;
+    border-radius: 22px;
     overflow: hidden;
+    box-shadow:
+        0 0 26px rgba(0, 0, 0, 0.9),
+        0 0 46px rgba(var(--accent-rgb), 0.32);
+}
+
+.home-hero__inner {
+    position: relative;
+    z-index: 1;
+    padding: 22px 22px 20px;
+    max-width: 720px;
+}
+
+/* TAGLINE */
+
+.home-tagline {
+    text-align: center;
+    margin: 0 0 26px 0;
+}
+
+/* SECTIONS */
+
+.home-section {
+    margin: 0 0 24px 0;
+    padding: 16px 18px 18px;
+    background: rgba(0, 0, 0, 0.78);
+    border-radius: 18px;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow:
-        0 0 18px rgba(0, 0, 0, 0.85),
-        0 0 26px rgba(var(--accent-rgb), 0.18);
-    transition:
-        transform 0.25s ease,
-        box-shadow 0.25s ease;
 }
 
-/* Hover */
+/* ============================================================
+   HOME GENRE GRID — FINAL FIX
+   This restores thumbnail rendering on home page only
+============================================================ */
 
-.ccg-card:hover {
-    transform: translateY(-3px);
-    box-shadow:
-        0 0 26px rgba(0, 0, 0, 0.95),
-        0 0 42px rgba(var(--accent-rgb), 0.45);
+.home-genre-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 14px;
+    margin-top: 6px;
 }
 
-/* ------------------------------------------------------------
-   CARD MEDIA
------------------------------------------------------------- */
+/* 🔴 THIS WAS THE MISSING PIECE */
 
-.ccg-card__media {
-    position: relative;
+.home-genre-grid .ccg-card__media {
+    display: block;
     width: 100%;
-    overflow: hidden;
-    background: #000;
-}
-
-.ccg-card__media--16x9 {
     aspect-ratio: 16 / 9;
 }
 
-.ccg-card__media img {
+.home-genre-grid .ccg-card__media img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    display: block;
 }
 
-/* Subtle CRT sheen */
+/* Titles */
 
-.ccg-card__media::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background:
-        linear-gradient(
-            to bottom,
-            rgba(255,255,255,0.06),
-            rgba(0,0,0,0.35)
-        );
-}
-
-/* ------------------------------------------------------------
-   CARD BODY
------------------------------------------------------------- */
-
-.ccg-card__body {
-    padding: 14px 14px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-/* ------------------------------------------------------------
-   CARD TITLE
------------------------------------------------------------- */
-
-.ccg-card__title {
-    margin: 0;
-    font-family: var(--ccg-font-main);
+.home-genre-grid .ccg-card__title {
+    text-align: center;
     font-size: 0.86rem;
-    text-transform: uppercase;
-    text-align: center;
-    color: var(--text-light);
-    letter-spacing: 0.14em;
-    text-shadow:
-        0 0 10px rgba(var(--accent-rgb), 0.85),
-        0 0 20px rgba(var(--accent-rgb), 0.55);
 }
 
-/* ------------------------------------------------------------
-   CARD META / TEXT
------------------------------------------------------------- */
+/* Footer link */
 
-.ccg-card__text {
-    margin: 0;
-    font-size: 0.78rem;
-    text-align: center;
-    color: var(--text-dim);
+.home-section__footer-link {
+    margin-top: 10px;
+    text-align: right;
 }
 
-/* ------------------------------------------------------------
-   BUTTON INSIDE CARD
------------------------------------------------------------- */
+/* RESPONSIVE */
 
-.ccg-card .ccg-btn {
-    margin-top: auto;
-    align-self: center;
-    border-radius: 999px;
-    padding-inline: 18px;
-}
-
-/* ------------------------------------------------------------
-   GRID REGISTRATION — CRITICAL
------------------------------------------------------------- */
-
-/* Games index */
-.games-grid,
-.games-library,
-.games-accordion {
-    display: grid;
-}
-
-/* Genre pages */
-.genre-games-grid {
-    display: grid;
-}
-
-/* Collection pages */
-.collection-games-grid {
-    display: grid;
-}
-
-/* 🔴 HOME PAGE FIX — THIS WAS MISSING */
-.home-genre-grid {
-    display: grid;
-}
-
-.home-genre-grid .ccg-card {
-    display: flex;
-}
-
-/* ------------------------------------------------------------
-   GRID SPACING NORMALISATION
------------------------------------------------------------- */
-
-.games-grid,
-.genre-games-grid,
-.collection-games-grid,
-.home-genre-grid {
-    gap: 14px;
-}
-
-/* ------------------------------------------------------------
-   RESPONSIVE
------------------------------------------------------------- */
-
-@media (max-width: 640px) {
-    .ccg-card {
-        border-radius: 14px;
-    }
-
-    .ccg-card__title {
-        font-size: 0.8rem;
+@media (max-width: 780px) {
+    .home-genre-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     }
 }
