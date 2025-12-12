@@ -222,3 +222,17 @@
         max-width: 260px;
     }
 }
+
+/* ============================================================
+   IMAGE LOAD STABILITY — CRITICAL
+   Prevents Chrome cancelling thumbnail requests
+============================================================ */
+
+.ccg-game-card__thumb img,
+.games-grid img {
+    display: block;
+    width: 100%;
+    height: auto;
+    contain: layout paint;
+    content-visibility: auto;
+}
