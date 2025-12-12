@@ -10,7 +10,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
 
     const genreRaw = document.body.dataset.genre;
-    const genreName = (genreRaw || "").toString().trim();
+    const genreName = decodeURIComponent((genreRaw || "").toString()).trim();
     const grid = document.getElementById("genreGamesGrid");
     const countEl = document.getElementById("genreGamesCount");
 
@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
+        // Correct depth for /games/genres/* and /games/collections/*
         const response = await fetch("../games.json");
         const games = await response.json();
 
@@ -36,16 +37,29 @@ document.addEventListener("DOMContentLoaded", async () => {
                 return false;
             }
 
-            return game.genres
-                .map(g => String(g).toLowerCase().trim())
-                .includes(genreKey);
+            const normalisedGenres = game.genres.map(g =>
+                String(g).toLowerCase().trim()
+            );
+
+            return normalisedGenres.includes(genreKey);
         });
 
-        if (countEl) countEl.textContent = filtered.length.toString();
+        if (countEl) {
+            countEl.textContent = filtered.length.toString();
+        }
 
         if (filtered.length === 0) {
             console.warn(
-                `[CCG COLLECTION WARNING] No games found for genre / collection "${genreName}"`
+                `[CCG COLLECTION WARNING] No games found for "${genreName}"`
+            );
+
+            console.info(
+                "[CCG DEBUG] Available genre tags in data:",
+                [...new Set(
+                    games
+                        .flatMap(g => Array.isArray(g.genres) ? g.genres : [])
+                        .map(g => String(g).toLowerCase().trim())
+                )].sort()
             );
         }
 
