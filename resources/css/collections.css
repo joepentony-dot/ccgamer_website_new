@@ -1,239 +1,99 @@
 /* ============================================================
-   COLLECTIONS.CSS — Omega Collections Hub (Medium Hero + Tiles)
-   - Dedicated styling for /games/collections/index.html
-   - Does NOT affect genre hub, games index or single-game pages
-   ============================================================ */
+   COLLECTIONS.CSS — OMEGA PARITY PASS (PASS 2)
+   ------------------------------------------------------------
+   • Visual parity with Genre Index
+   • Shared depth, glow, hover language
+   • No layout or JS dependencies
+============================================================ */
 
-/* ------------------------------------------------------------
-   PAGE WRAPPER
------------------------------------------------------------- */
-
-.ccg-page--collections-index {
-    padding-bottom: 40px;
-}
-
-.ccg-main--collections {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 18px 14px 32px;
-}
-
-/* ------------------------------------------------------------
-   HERO — MEDIUM OMEGA (no CRT boot, no parallax)
-   Uses global .ccg-hero but with toned-down glow
------------------------------------------------------------- */
-
-.ccg-collections-hero {
-    margin: 18px 0 26px 0;
-}
-
-.ccg-hero--collections {
-    position: relative;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow:
-        0 0 22px rgba(0, 0, 0, 0.9),
-        0 0 32px rgba(var(--accent-rgb), 0.32);
-}
-
-/* 🔥 Hero background visibility for Collections */
-.ccg-hero--collections .ccg-hero-image {
-    opacity: 0.85;
-}
-
-.ccg-hero-inner--collections {
-    position: relative;
-    z-index: 1;
-    padding: 20px 22px 18px;
-    max-width: 720px;
-}
-
-.ccg-hero-kicker--collections {
-    margin: 0 0 6px 0;
-    font-size: 0.75rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    opacity: 0.9;
-}
-
-.ccg-hero-title--collections {
-    margin: 0 0 8px 0;
-    font-family: var(--ccg-font-main, 'Press Start 2P', monospace);
-    font-size: 1.3rem;
-    text-transform: uppercase;
-    color: var(--text-light);
-    text-shadow:
-        0 0 14px rgba(var(--accent-rgb), 0.9),
-        0 0 26px rgba(var(--accent-rgb), 0.55);
-}
-
-.ccg-hero-tagline--collections {
-    margin: 0;
-    font-size: 0.9rem;
-    line-height: 1.7;
-    color: var(--text-dim);
-    max-width: 640px;
-}
-
-/* ------------------------------------------------------------
-   COLLECTIONS SECTION
-   Wrapper around the Omega collections grid
------------------------------------------------------------- */
-
-.ccg-collections-section {
-    background: rgba(0, 0, 0, 0.8);
-    border-radius: 18px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow:
-        0 0 22px rgba(0, 0, 0, 0.9),
-        0 0 30px rgba(var(--accent-rgb), 0.26);
-    padding: 18px 18px 20px;
-}
-
-.ccg-collections-title {
-    margin: 0 0 10px 0;
-    font-family: var(--ccg-font-main, 'Press Start 2P', monospace);
-    font-size: 0.98rem;
-    text-transform: uppercase;
-    color: var(--text-light);
-    text-shadow:
-        0 0 12px rgba(var(--accent-rgb), 0.8),
-        0 0 24px rgba(var(--accent-rgb), 0.5);
-}
-
-/* ------------------------------------------------------------
+/* ============================================================
    COLLECTIONS GRID
-   Omega Tile Cards (using ccg-cards.css base)
------------------------------------------------------------- */
+============================================================ */
 
 .ccg-collections-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 18px;
-    margin-top: 8px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 22px;
+    padding: 0 10px;
 }
 
-/* Omega Collection Card — extends .ccg-card */
+/* ============================================================
+   COLLECTION CARD — OMEGA TILE
+============================================================ */
 
 .ccg-collection-card {
-    text-decoration: none;
-    cursor: pointer;
-    background: rgba(0, 0, 0, 0.7);
-    border-radius: 16px;
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: 14px;
+    overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.12);
+
     box-shadow:
-        0 0 14px rgba(0, 0, 0, 0.9),
-        0 0 24px rgba(var(--accent-rgb), 0.32);
+        0 0 14px rgba(0, 0, 0, 0.85),
+        0 0 28px var(--card-glow);
+
     transition:
-        transform 0.16s ease-out,
-        box-shadow 0.16s ease-out,
-        border-color 0.16s ease-out;
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
 }
 
-/* tighten body spacing for collection cards */
-
-.ccg-collection-card .ccg-card__body {
-    padding: 10px 10px 14px;
-}
-
-.ccg-collection-card .ccg-card__title {
-    font-size: 0.96rem;
-    text-align: left;
-}
-
-.ccg-collection-card .ccg-card__text {
-    margin-top: 4px;
-    font-size: 0.82rem;
-    line-height: 1.5;
-    color: var(--text-dim);
-}
-
-/* Hover / focus — Omega tile lift + neon glow */
-
-.ccg-collection-card:hover,
-.ccg-collection-card:focus-visible {
+.ccg-collection-card:hover {
     transform: translateY(-4px);
-    border-color: rgba(var(--accent-rgb), 0.95);
     box-shadow:
-        0 0 22px rgba(var(--accent-rgb), 0.95),
-        0 0 40px rgba(var(--accent-rgb), 0.6);
-    outline: none;
+        0 0 20px rgba(var(--accent-rgb), 0.8),
+        0 0 40px rgba(var(--accent-rgb), 0.5);
 }
 
-/* Make sure media is 16:9 — ccg-cards.css defines base, we ensure safe override */
+/* ============================================================
+   MEDIA — 16:9 LOCK + MOTION
+============================================================ */
 
-.ccg-collection-card .ccg-card__media.ccg-card__media--16x9 {
-    position: relative;
+.ccg-collection-card .ccg-card__media {
     overflow: hidden;
 }
 
-.ccg-collection-card .ccg-card__media.ccg-card__media--16x9 img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.ccg-collection-card .ccg-card__media img {
+    transition:
+        transform 0.35s ease,
+        filter 0.35s ease;
 }
 
-/* ------------------------------------------------------------
-   ANIMATION HOOKS
-   Uses existing .ccg-anim-in from ccg-anim.css
------------------------------------------------------------- */
-
-.ccg-collections-hero.ccg-anim-in {
-    --ccg-anim-delay: 0s;
+.ccg-collection-card:hover .ccg-card__media img {
+    transform: scale(1.04);
+    filter: brightness(1.05);
 }
 
-.ccg-collections-section.ccg-anim-in {
-    --ccg-anim-delay: 0.06s;
+/* ============================================================
+   TITLE + TEXT
+============================================================ */
+
+.ccg-collection-card .ccg-card__title {
+    text-shadow:
+        0 0 8px rgba(var(--accent-rgb), 0.6),
+        0 0 14px rgba(var(--accent-rgb), 0.35);
 }
 
-/* ------------------------------------------------------------
-   RESPONSIVE TUNING
------------------------------------------------------------- */
+/* ============================================================
+   PASS 2 — VISUAL HIERARCHY
+   First row gently elevated
+============================================================ */
 
-@media (max-width: 900px) {
-    .ccg-main--collections {
-        padding: 16px 12px 28px;
-    }
-
-    .ccg-hero-inner--collections {
-        padding: 18px 18px 16px;
-    }
-
-    .ccg-hero-title--collections {
-        font-size: 1.16rem;
-    }
+.ccg-collections-grid .ccg-collection-card:nth-child(-n + 2) {
+    box-shadow:
+        0 0 18px rgba(0, 0, 0, 0.9),
+        0 0 34px rgba(var(--accent-rgb), 0.45);
 }
 
-@media (max-width: 640px) {
-    .ccg-collections-hero {
-        margin: 12px 0 20px 0;
-    }
+.ccg-collections-grid .ccg-collection-card:nth-child(-n + 2):hover {
+    transform: translateY(-6px);
+}
 
-    .ccg-hero-inner--collections {
-        padding: 16px 14px 14px;
-    }
+/* ============================================================
+   RESPONSIVE
+============================================================ */
 
-    .ccg-hero-title--collections {
-        font-size: 1.02rem;
-    }
-
-    .ccg-collections-section {
-        padding: 14px 12px 14px;
-    }
-
+@media (max-width: 520px) {
     .ccg-collections-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 14px;
-    }
-}
-
-@media (max-width: 460px) {
-    .ccg-main--collections {
-        padding: 14px 10px 24px;
-    }
-
-    .ccg-collections-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 16px;
     }
 }
