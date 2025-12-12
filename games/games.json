@@ -3837,27 +3837,6 @@
   {
     "system": "C64",
     "id": "fort_apocalypse",
-    "title": "Fort Apocalypse",
-    "sorttitle": "Fort Apocalypse",
-    "genres": [
-      "Arcade Games"
-    ],
-    "year": 1982,
-    "developer": "Synapse Software",
-    "videoid": "jDpWg9U0zAw",
-    "lemon": [
-      "https://www.lemon64.com/game/fort-apocalypse"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/fort_apocalypse.png",
-    "pdf": "https://drive.google.com/file/d/1J9nWbnlMSY-x8D6BTLNDuy9m97D_BYmY/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1nXRAhPjQoLyZM_lkAGOz64iS8Z3v72di/view?usp=drive_link"
-    ],
-    "description": ""
-  },
-  {
-    "system": "C64",
-    "id": "fort_apocalypse",
     "title": "Fort Apocalypse, Arcade Games",
     "sorttitle": "Fort Apocalypse",
     "genres": [
