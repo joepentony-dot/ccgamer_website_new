@@ -1,15 +1,18 @@
 /* ============================================================
-   GAMES LIBRARY — OMEGA STABLE + PERFORMANCE (PHASE C1)
+   GAMES LIBRARY — OMEGA STABLE + PERFORMANCE (PHASE C2)
    ------------------------------------------------------------
    • Accordion layout (A–Z)
    • Search & filter support
    • Lazy-loaded thumbnails
    • Session-based accordion state memory
-   • NEW: Image decode & LCP hardening
+   • Image decode & LCP hardening
+   • NEW: IntersectionObserver tuning for thumbnails
 ============================================================ */
 
 let CCG_ALL_GAMES = [];
 const ACCORDION_STATE_KEY = "ccgAccordionState";
+
+let thumbObserver = null;
 
 /* ============================================================
    INIT
@@ -22,6 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         CCG_ALL_GAMES = Array.isArray(games) ? games : [];
 
+        initThumbnailObserver();
         buildGamesAccordion(CCG_ALL_GAMES);
         restoreAccordionState();
         wireSearchFilter();
@@ -30,6 +34,39 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.error("[CCG] Failed to load games.json:", err);
     }
 });
+
+/* ============================================================
+   INTERSECTION OBSERVER — THUMBNAILS
+============================================================ */
+
+function initThumbnailObserver() {
+    if (!("IntersectionObserver" in window)) return;
+
+    thumbObserver = new IntersectionObserver(
+        entries => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+
+                const img = entry.target;
+                thumbObserver.unobserve(img);
+
+                // Force eager decode once near viewport
+                img.loading = "eager";
+                img.decoding = "async";
+
+                // Trigger decode earlier if supported
+                if (img.decode) {
+                    img.decode().catch(() => {});
+                }
+            });
+        },
+        {
+            root: null,
+            rootMargin: "300px 0px", // preload before visible
+            threshold: 0.01
+        }
+    );
+}
 
 /* ============================================================
    ACCORDION STATE (SESSION)
@@ -114,10 +151,24 @@ function buildGamesAccordion(games) {
                 toggleAccordionState(letter, isOpen);
             });
         });
+
+    observeThumbnails(container);
 }
 
 /* ============================================================
-   GAME CARD RENDERER — LCP HARDENED
+   THUMBNAIL OBSERVATION
+============================================================ */
+
+function observeThumbnails(root) {
+    if (!thumbObserver) return;
+
+    root.querySelectorAll("img[loading='lazy']").forEach(img => {
+        thumbObserver.observe(img);
+    });
+}
+
+/* ============================================================
+   GAME CARD RENDERER — PERFORMANCE HARDENED
 ============================================================ */
 
 function renderGameCard(game) {
