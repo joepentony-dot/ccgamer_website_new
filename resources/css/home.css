@@ -1,11 +1,9 @@
 /* ============================================================ 
    HOME.CSS — OMEGA CINEMATIC 2.0 HOMEPAGE
-   FINAL BALANCED SYMMETRY EDITION (OPTION D)
-   ------------------------------------------------------------
-   - Perfect Featured Highlights symmetry
-   - Natural card layout preserved
-   - Even padding + aligned titles + aligned buttons
-   - Fully compatible with all Omega systems
+   - Cinematic hero (Cinematic 2.0)
+   - Featured highlights (game + video)
+   - Compact genre grid launcher
+   - Fully symmetric highlight cards (NEW FIX)
    ============================================================ */
 
 /* ------------------------------------------------------------
@@ -72,11 +70,11 @@
     opacity: 0.85;
 }
 
-/* Hero Title + Tagline */
+/* Hero title + tagline */
 
 .home-hero__title {
     margin: 0 0 8px 0;
-    font-family: var(--ccg-font-main, 'Press Start 2P', monospace);
+    font-family: var(--ccg-font-main);
     font-size: 1.35rem;
     line-height: 1.3;
     text-transform: uppercase;
@@ -94,7 +92,7 @@
     max-width: 640px;
 }
 
-/* Hero Buttons */
+/* Hero actions */
 
 .home-hero__actions {
     display: flex;
@@ -113,10 +111,6 @@
     text-transform: uppercase;
 }
 
-.home-hero__btn-alt {
-    white-space: nowrap;
-}
-
 .home-hero__tip {
     margin: 0;
     font-size: 0.76rem;
@@ -124,7 +118,7 @@
     opacity: 0.95;
 }
 
-/* Disabled Random Game state */
+/* Disabled state */
 
 .ccg-btn.ccg-btn--disabled {
     opacity: 0.4;
@@ -152,7 +146,7 @@
 
 .home-tagline__main {
     margin: 4px 0 0 0;
-    font-family: var(--ccg-font-main, 'Press Start 2P', monospace);
+    font-family: var(--ccg-font-main);
     font-size: 0.92rem;
     text-transform: uppercase;
     color: var(--accent);
@@ -183,7 +177,7 @@
 
 .home-section__title {
     margin: 0 0 6px 0;
-    font-family: var(--ccg-font-main, 'Press Start 2P', monospace);
+    font-family: var(--ccg-font-main);
     font-size: 0.95rem;
     text-transform: uppercase;
     color: var(--text-light);
@@ -195,21 +189,21 @@
 .home-section__divider {
     width: 110px;
     height: 2px;
+    margin: 0 auto;
+    border-radius: 999px;
     background: linear-gradient(
         90deg,
         rgba(var(--accent-rgb), 0.12),
         rgba(var(--accent-rgb), 0.9),
         rgba(var(--accent-rgb), 0.12)
     );
-    border-radius: 999px;
     box-shadow:
         0 0 16px rgba(var(--accent-rgb), 0.9),
         0 0 28px rgba(var(--accent-rgb), 0.6);
-    margin: 0 auto;
 }
 
 /* ------------------------------------------------------------
-   FEATURED HIGHLIGHTS — BALANCED PRO LAYOUT
+   FEATURED HIGHLIGHTS (Game + Video)
 ------------------------------------------------------------ */
 
 .home-highlights-grid {
@@ -219,60 +213,60 @@
     align-items: stretch;
 }
 
-/* Base structure shared by both cards */
-
 .home-feature-card {
     height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* preserves natural feel */
 }
-
-/* Natural 16:9 media, consistent across both cards */
 
 .home-feature-card .ccg-card__media {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
-    flex-shrink: 0;
 }
 
-/* Balanced Padding for Featured Game */
-
-.home-feature-card[data-ccg-featured-game] .ccg-card__body {
-    padding-top: 18px;
-    padding-bottom: 20px;
-
+.home-feature-card .ccg-card__body {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-
-    /* This creates balanced height without forcing centring */
-    justify-content: space-between;
 }
 
-/* Featured Game Title + Meta */
+/* Titles + Meta */
 
 .home-feature-title {
     text-align: center;
 }
 
 .home-feature-meta {
+    margin-top: 4px;
+    font-size: 0.8rem;
     text-align: center;
-    font-size: 0.82rem;
-    opacity: 0.9;
 }
 
 /* Buttons */
 
 .home-feature-card__btn {
-    margin-top: 12px;
+    margin-top: auto;
     align-self: center;
     border-radius: 999px;
     padding-inline: 18px;
 }
 
 /* ------------------------------------------------------------
-   FEATURED VIDEO (Right side)
+   🎯 FINAL SYMMETRY FIX
+   Ensures Featured Game card matches Featured Video perfectly.
+------------------------------------------------------------ */
+
+[data-ccg-featured-game] .ccg-card__body {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    padding-top: 18px !important;
+    padding-bottom: 20px !important;
+    gap: 12px !important;
+}
+
+/* ------------------------------------------------------------
+   FEATURED VIDEO
 ------------------------------------------------------------ */
 
 .home-feature-card--video {
@@ -281,22 +275,9 @@
 }
 
 .home-feature-video__header {
-    padding: 12px 12px 6px;
+    padding: 10px 12px 6px;
     text-align: center;
 }
-
-.home-feature-card--video .ccg-card__body {
-    padding-top: 12px;
-    padding-bottom: 20px;
-
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-
-    justify-content: space-between; /* symmetrical with Featured Game */
-}
-
-/* 16:9 thumbnail */
 
 .home-feature-video__frame {
     position: relative;
@@ -309,7 +290,7 @@
     display: block;
 }
 
-/* Neon Play Icon */
+/* Neon play icon overlay */
 
 .home-feature-video__play-icon {
     position: absolute;
@@ -346,10 +327,8 @@
 }
 
 /* ------------------------------------------------------------
-   GENRE GRID — HOME
+   HOME GENRE GRID
 ------------------------------------------------------------ */
-
-.home-section--genres { }
 
 .home-genre-grid {
     display: grid;
@@ -363,8 +342,6 @@
     font-size: 0.86rem;
 }
 
-/* Footer link */
-
 .home-section__footer-link {
     margin-top: 10px;
     text-align: right;
@@ -375,26 +352,56 @@
 }
 
 /* ------------------------------------------------------------
-   RESPONSIVE TUNING
+   RESPONSIVE RULES
 ------------------------------------------------------------ */
 
 @media (max-width: 960px) {
-    .ccg-main--home { padding-top: 14px; }
-    .home-hero__inner { padding: 18px 18px 16px; }
+    .ccg-main--home {
+        padding-top: 14px;
+    }
+
+    .home-hero__inner {
+        padding: 18px 18px 16px;
+    }
 }
 
 @media (max-width: 780px) {
-    .home-hero__title { font-size: 1.05rem; }
-    .home-highlights-grid { grid-template-columns: 1fr; }
+    .home-hero__title {
+        font-size: 1.05rem;
+    }
+
+    .home-highlights-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 640px) {
-    .ccg-main--home { padding-top: 12px; padding-bottom: 26px; }
-    .home-hero { margin-top: 6px; margin-bottom: 18px; }
-    .home-hero__inner { padding: 16px 14px 14px; }
-    .home-hero__title { font-size: 0.96rem; }
-    .home-tagline__main { font-size: 0.85rem; }
-    .home-section { padding: 14px 12px 14px; }
+    .ccg-main--home {
+        padding-top: 12px;
+        padding-bottom: 26px;
+    }
+
+    .home-hero {
+        margin-top: 6px;
+        margin-bottom: 18px;
+    }
+
+    .home-hero__inner {
+        padding: 16px 14px 14px;
+    }
+
+    .home-hero__title {
+        font-size: 0.96rem;
+    }
+
+    .home-tagline__main {
+        font-size: 0.85rem;
+    }
+
+    .home-section {
+        padding: 14px 12px 14px;
+    }
+
     .home-genre-grid {
         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
         gap: 12px;
@@ -406,9 +413,12 @@
         flex-direction: column;
         align-items: stretch;
     }
+
     .home-hero__btn {
         width: 100%;
-        text-align: center;
     }
-    .home-section__title { font-size: 0.86rem; }
+
+    .home-section__title {
+        font-size: 0.86rem;
+    }
 }
