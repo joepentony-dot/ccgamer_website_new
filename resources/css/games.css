@@ -1,9 +1,10 @@
 /* ============================================================
-   GAMES.CSS — OMEGA PERFORMANCE HARDENED (PHASE C3)
+   GAMES.CSS — STABLE FUNCTIONAL RESTORE
    ------------------------------------------------------------
-   • Paint & layout containment
-   • No visual or behavioural changes
-   • STRICT SCOPING
+   • NO containment
+   • NO content-visibility
+   • Accordion visibility guaranteed
+   • Behaviour restored exactly as before
 ============================================================ */
 
 /* ============================================================
@@ -50,7 +51,7 @@
 }
 
 /* ============================================================
-   ACCORDION — VISUAL RHYTHM (PRESERVED)
+   ACCORDION — VISUAL RHYTHM
 ============================================================ */
 
 .ccg-page--games-index .games-accordion {
@@ -66,46 +67,56 @@
     border-radius: 14px;
 }
 
-.ccg-page--games-index .games-accordion__content {
+/* ============================================================
+   ACCORDION VISIBILITY (CRITICAL)
+============================================================ */
+
+/* Default collapsed */
+.games-accordion__content {
+    display: none;
+}
+
+/* Open state */
+.games-accordion__group.is-open > .games-accordion__content {
+    display: block;
+    height: auto;
+    opacity: 1;
+    overflow: visible;
     padding-top: 14px;
     padding-bottom: 8px;
 }
 
 /* ============================================================
-   GAME GRIDS — CONTAINMENT (CRITICAL)
+   GAME CARDS
 ============================================================ */
 
-/* Games Index grids */
-.ccg-page--games-index .games-grid {
-    contain: layout paint;
-    content-visibility: auto;
-}
-
-/* Genre grids (safety reinforcement) */
-.ccg-page--genre-single .games-grid,
-.ccg-page--genres-index .genres-grid {
-    contain: layout paint;
-    content-visibility: auto;
+.ccg-game-card__thumb img,
+.games-grid img {
+    display: block;
+    width: 100%;
+    height: auto;
 }
 
 /* ============================================================
-   SINGLE GAME PAGE — PERFORMANCE CONTAINMENT
+   ALPHABET STRIP — FORCE VISIBILITY
 ============================================================ */
 
-/* Hero is heavy (background + overlays) */
-.ccg-page--single-game .game-hero {
-    contain: layout paint;
+#gamesAlphabet {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 12px 0 18px;
 }
 
-/* Description block (long text) */
-.ccg-page--single-game .game-description-body {
-    contain: layout paint;
-}
-
-/* Related games grid */
-.ccg-page--single-game .game-section--related .games-grid {
-    contain: layout paint;
-    content-visibility: auto;
+.games-alpha__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border-radius: 8px;
+    cursor: pointer;
 }
 
 /* ============================================================
@@ -122,62 +133,3 @@
         background: none;
     }
 }
-
-/* ============================================================
-   IMAGE LOAD STABILITY — SHARED SAFETY
-============================================================ */
-
-.ccg-game-card__thumb img,
-.games-grid img {
-    display: block;
-    width: 100%;
-    height: auto;
-    contain: layout paint;
-    content-visibility: auto;
-}
-
-/* ============================================================
-   GAMES INDEX — ACCORDION VISIBILITY RESTORE
-   (Critical Omega Fix)
-============================================================ */
-
-/* Ensure accordion content is visible when opened */
-.games-accordion__group.is-open > .games-accordion__content {
-    display: block !important;
-    height: auto !important;
-    opacity: 1 !important;
-    overflow: visible !important;
-}
-
-/* Default collapsed state */
-.games-accordion__content {
-    display: none;
-}
-
-/* Alphabet strip must always be visible */
-#gamesAlphabet {
-    display: flex !important;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin: 12px 0 18px;
-}
-
-/* Alphabet buttons */
-.games-alpha__btn {
-    display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
-    min-width: 32px;
-    height: 32px;
-    padding: 0 8px;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-/* Prevent parent containment from hiding content */
-.games-accordion__group,
-.games-accordion__content,
-.games-grid {
-    contain: none !important;
-}
-
