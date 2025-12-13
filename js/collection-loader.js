@@ -1,22 +1,24 @@
 /* ============================================================
-   CCG COLLECTION LOADER — OMEGA CONSOLIDATED (FIXED)
+   CCG COLLECTION LOADER — OMEGA STABLE RESTORE
    ------------------------------------------------------------
    • Uses ccg-card-builder.js
-   • Collection-aware (data-collection)
-   • No rendering duplication
+   • Reads data-collection
+   • Supports multiple collection schemas safely
+   • ZERO impact on genres or games index
 ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-    // 🔧 FIX: collections use data-collection, NOT data-genre
     const collectionName = document.body.dataset.collection;
     const grid = document.getElementById("genreGamesGrid");
     const countEl = document.getElementById("genreGamesCount");
 
     if (!collectionName || !grid) {
-        console.warn("[CCG COLLECTION] Missing collection name or grid");
+        console.warn("[CCG COLLECTION] Missing data-collection or grid");
         return;
     }
+
+    const key = collectionName.toLowerCase().trim();
 
     try {
         // collections live in /games/collections/
@@ -28,14 +30,33 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        const key = collectionName.toLowerCase().trim();
+        const filtered = games.filter(game => {
 
-        const filtered = games.filter(game =>
-            Array.isArray(game.genres) &&
-            game.genres
-                .map(g => String(g).toLowerCase().trim())
-                .includes(key)
-        );
+            /* Single string */
+            if (typeof game.collection === "string") {
+                if (game.collection.toLowerCase().trim() === key) return true;
+            }
+
+            /* Array of collections */
+            if (Array.isArray(game.collections)) {
+                if (
+                    game.collections
+                        .map(c => String(c).toLowerCase().trim())
+                        .includes(key)
+                ) return true;
+            }
+
+            /* Tags fallback */
+            if (Array.isArray(game.tags)) {
+                if (
+                    game.tags
+                        .map(t => String(t).toLowerCase().trim())
+                        .includes(key)
+                ) return true;
+            }
+
+            return false;
+        });
 
         if (countEl) {
             countEl.textContent = filtered.length;
