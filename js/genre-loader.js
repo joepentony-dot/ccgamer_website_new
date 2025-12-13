@@ -1,9 +1,9 @@
 /* ============================================================
-   GENRE LOADER — OMEGA STABLE + DISCOVERABILITY (PHASE B3)
+   GENRE LOADER — STABLE FUNCTIONAL RESTORE
    ------------------------------------------------------------
-   • Loads games for a single genre
-   • Uses shared card builder
-   • NEW: Client-side sort toggle (A–Z / Year)
+   • Deterministic genre filtering
+   • Local card rendering (NO shared builder dependency)
+   • A–Z default sort
 ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -11,62 +11,69 @@ document.addEventListener("DOMContentLoaded", async () => {
     const genreName = document.body.dataset.genre;
     const grid = document.getElementById("genreGamesGrid");
     const countEl = document.getElementById("genreGamesCount");
-    const sortSelect = document.getElementById("genreSortSelect");
 
-    if (!genreName || !grid) return;
+    if (!genreName || !grid) {
+        console.warn("[CCG] Genre loader aborted — missing genre or grid");
+        return;
+    }
 
     try {
-        const response = await fetch("../games.json");
-        const games = await response.json();
+        const res = await fetch("../games.json", { cache: "no-store" });
+        if (!res.ok) throw new Error(`games.json ${res.status}`);
 
-        const allGames = Array.isArray(games) ? games : [];
+        const games = await res.json();
+        if (!Array.isArray(games)) throw new Error("games.json is not an array");
 
-        let filtered = allGames.filter(g =>
+        const filtered = games.filter(g =>
             Array.isArray(g.genres) &&
             g.genres.map(x => x.toLowerCase()).includes(genreName.toLowerCase())
         );
 
-        function sortGames(mode) {
-            const sorted = [...filtered];
+        filtered.sort((a, b) =>
+            (a.title || "").localeCompare(b.title || "")
+        );
 
-            if (mode === "year") {
-                sorted.sort((a, b) => {
-                    const ay = parseInt(a.year) || 0;
-                    const by = parseInt(b.year) || 0;
-                    return by - ay;
-                });
-            } else {
-                sorted.sort((a, b) =>
-                    (a.title || "").localeCompare(b.title || "")
-                );
-            }
+        grid.innerHTML = filtered.map(renderGenreCard).join("");
 
-            return sorted;
-        }
+        if (countEl) countEl.textContent = filtered.length;
 
-        function render(mode = "az") {
-            const gamesToRender = sortGames(mode);
-
-            grid.innerHTML = gamesToRender
-                .map(game => buildGameCard(game))
-                .join("");
-
-            if (countEl) {
-                countEl.textContent = gamesToRender.length;
-            }
-        }
-
-        /* Initial render (A–Z default) */
-        render("az");
-
-        /* Wire sort toggle if present */
-        if (sortSelect) {
-            sortSelect.addEventListener("change", () => {
-                render(sortSelect.value);
-            });
-        }
+        console.log(`[CCG] Genre "${genreName}" loaded: ${filtered.length} games`);
 
     } catch (err) {
         console.error("[CCG] Failed to load genre games:", err);
     }
 });
+
+/* ============================================================
+   LOCAL CARD RENDERER (GENRE-SAFE)
+============================================================ */
+
+function renderGenreCard(game) {
+    const thumb = resolveGenreThumb(game.thumbnail || game.thumb || game.cover);
+    const title = game.title || "Unknown";
+
+    return `
+        <a href="../game.html?id=${game.id}" class="ccg-game-card">
+            <div class="ccg-game-card__thumb">
+                <img src="${thumb}" alt="${title}">
+            </div>
+            <div class="ccg-game-card__body">
+                <h3 class="ccg-game-card__title">${title}</h3>
+                <div class="ccg-game-card__meta">
+                    ${game.year || ""} · ${game.system || ""}
+                </div>
+            </div>
+        </a>
+    `;
+}
+
+function resolveGenreThumb(raw) {
+    if (!raw) return "../../resources/images/thumbnails/all/1942.jpg";
+
+    let t = String(raw).replace(/^\/+/, "");
+    if (!t.startsWith("resources/")) {
+        t = `resources/images/thumbnails/all/${t}`;
+    }
+
+    return `../../${t}`;
+}
