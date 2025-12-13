@@ -1,10 +1,10 @@
 /* ============================================================
-   CCG COLLECTION LOADER — OMEGA STABLE RESTORE
+   CCG COLLECTION LOADER — OMEGA STABLE (GENRE-BACKED)
    ------------------------------------------------------------
+   • Collections are genre-backed (e.g. "Cartridge Games")
    • Uses ccg-card-builder.js
-   • Reads data-collection
-   • Supports multiple collection schemas safely
-   • ZERO impact on genres or games index
+   • Mirrors genre-loader behaviour
+   • ZERO impact on genres, index or single-game pages
 ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -30,33 +30,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        const filtered = games.filter(game => {
-
-            /* Single string */
-            if (typeof game.collection === "string") {
-                if (game.collection.toLowerCase().trim() === key) return true;
-            }
-
-            /* Array of collections */
-            if (Array.isArray(game.collections)) {
-                if (
-                    game.collections
-                        .map(c => String(c).toLowerCase().trim())
-                        .includes(key)
-                ) return true;
-            }
-
-            /* Tags fallback */
-            if (Array.isArray(game.tags)) {
-                if (
-                    game.tags
-                        .map(t => String(t).toLowerCase().trim())
-                        .includes(key)
-                ) return true;
-            }
-
-            return false;
-        });
+        const filtered = games.filter(game =>
+            Array.isArray(game.genres) &&
+            game.genres
+                .map(g => String(g).toLowerCase().trim())
+                .includes(key)
+        );
 
         if (countEl) {
             countEl.textContent = filtered.length;
