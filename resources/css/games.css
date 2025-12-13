@@ -4,7 +4,7 @@
    • NO containment
    • NO content-visibility
    • Accordion visibility guaranteed
-   • Behaviour restored exactly as before
+   • Structure restored (ID alignment fix)
 ============================================================ */
 
 /* ============================================================
@@ -71,12 +71,10 @@
    ACCORDION VISIBILITY (CRITICAL)
 ============================================================ */
 
-/* Default collapsed */
 .games-accordion__content {
     display: none;
 }
 
-/* Open state */
 .games-accordion__group.is-open > .games-accordion__content {
     display: block;
     height: auto;
@@ -98,10 +96,10 @@
 }
 
 /* ============================================================
-   ALPHABET STRIP — FORCE VISIBILITY
+   ALPHABET STRIP — FORCE VISIBILITY (FIXED ID)
 ============================================================ */
 
-#gamesAlphabet {
+#gamesAlphaStrip {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
@@ -124,7 +122,6 @@
 ============================================================ */
 
 @media (max-width: 900px) {
-
     .ccg-page--games-index .games-alpha {
         position: static;
         backdrop-filter: none;
