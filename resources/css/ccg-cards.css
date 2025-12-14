@@ -1,6 +1,6 @@
 /* ============================================================
    CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM
-   P7: Hover Timing Polish (Ease Curves Only)
+   P8: Mode-Based Hover Saturation Tuning
    ============================================================ */
 
 /* ------------------------------------------------------------
@@ -16,7 +16,7 @@
 }
 
 /* ------------------------------------------------------------
-   🔒 GENRE PAGE GRID OVERRIDE (THE REAL FIX)
+   🔒 GENRE PAGE GRID OVERRIDE
 ------------------------------------------------------------ */
 
 .ccg-page--genre-single .ccg-genre-grid {
@@ -42,11 +42,11 @@
     display: flex;
     flex-direction: column;
 
-    /* 🎯 P7 — refined timing */
     transition:
         transform 0.32s cubic-bezier(0.22, 0.61, 0.36, 1),
         box-shadow 0.32s cubic-bezier(0.22, 0.61, 0.36, 1),
-        border-color 0.28s ease-out;
+        border-color 0.28s ease-out,
+        filter 0.28s ease-out;
 }
 
 /* ------------------------------------------------------------
@@ -89,11 +89,35 @@
 }
 
 /* ------------------------------------------------------------
-   HOVER (FEEL POLISHED, NOT FASTER)
+   HOVER — SHARED MOTION (FROM P7)
 ------------------------------------------------------------ */
 
 .ccg-game-card:hover {
     transform: translateY(-2px) scale(1.02);
+}
+
+/* ------------------------------------------------------------
+   🎮 C64 MODE — COOL, CONTROLLED
+------------------------------------------------------------ */
+
+body[data-ccg-mode="c64"] .ccg-game-card:hover {
+    border-color: rgba(0, 170, 255, 0.55);
+    box-shadow:
+        0 12px 26px rgba(0, 0, 0, 0.75),
+        0 0 22px rgba(0, 170, 255, 0.28);
+    filter: saturate(1.05) brightness(1.03);
+}
+
+/* ------------------------------------------------------------
+   💾 AMIGA MODE — RICHER, LUSHER
+------------------------------------------------------------ */
+
+body[data-ccg-mode="amiga"] .ccg-game-card:hover {
+    border-color: rgba(255, 41, 224, 0.65);
+    box-shadow:
+        0 14px 30px rgba(0, 0, 0, 0.78),
+        0 0 28px rgba(255, 41, 224, 0.38);
+    filter: saturate(1.12) brightness(1.05);
 }
 
 /* ------------------------------------------------------------
