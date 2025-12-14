@@ -5,11 +5,11 @@
    • NO content-visibility
    • Accordion visibility guaranteed
    • Structure restored (ID alignment fix)
-============================================================ */
+   ============================================================ */
 
 /* ============================================================
    PAGE BASE — SHARED
-============================================================ */
+   ============================================================ */
 
 .games-grid {
     width: 100%;
@@ -17,7 +17,7 @@
 
 /* ============================================================
    GAMES INDEX — BASE
-============================================================ */
+   ============================================================ */
 
 .ccg-page--games-index .ccg-main {
     padding-bottom: 40px;
@@ -25,7 +25,7 @@
 
 /* ============================================================
    ALPHABET STRIP — STICKY (DESKTOP ONLY)
-============================================================ */
+   ============================================================ */
 
 .ccg-page--games-index .games-alpha {
     position: sticky;
@@ -52,7 +52,7 @@
 
 /* ============================================================
    ACCORDION — VISUAL RHYTHM
-============================================================ */
+   ============================================================ */
 
 .ccg-page--games-index .games-accordion {
     margin-top: 16px;
@@ -69,7 +69,7 @@
 
 /* ============================================================
    ACCORDION VISIBILITY (CRITICAL)
-============================================================ */
+   ============================================================ */
 
 .games-accordion__content {
     display: none;
@@ -85,8 +85,8 @@
 }
 
 /* ============================================================
-   GAME CARDS
-============================================================ */
+   GAME CARDS (BASE SAFETY)
+   ============================================================ */
 
 .ccg-game-card__thumb img,
 .games-grid img {
@@ -97,7 +97,7 @@
 
 /* ============================================================
    ALPHABET STRIP — FORCE VISIBILITY (FIXED ID)
-============================================================ */
+   ============================================================ */
 
 #gamesAlphaStrip {
     display: flex;
@@ -118,8 +118,99 @@
 }
 
 /* ============================================================
-   RESPONSIVE — DISABLE STICKY ON MOBILE
-============================================================ */
+   🔥 P6 — RELATED GAMES STRIP (DEPTH + GLOW TAPER)
+   ============================================================ */
+
+/* Outer well — creates cinematic depth separation */
+.game-section--related {
+    position: relative;
+    margin-top: 36px;
+    padding-top: 18px;
+}
+
+.game-section--related::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(0,0,0,0.55),
+            rgba(0,0,0,0.85) 70%
+        );
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Scroll wrapper — establishes depth plane */
+.related-scroll-wrapper {
+    position: relative;
+    padding: 14px 0;
+    z-index: 1;
+}
+
+/* Edge glow taper (left / right vignette) */
+.related-scroll-wrapper::before,
+.related-scroll-wrapper::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 60px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.related-scroll-wrapper::before {
+    left: 0;
+    background:
+        linear-gradient(
+            to right,
+            rgba(0,0,0,0.9),
+            rgba(0,0,0,0)
+        );
+}
+
+.related-scroll-wrapper::after {
+    right: 0;
+    background:
+        linear-gradient(
+            to left,
+            rgba(0,0,0,0.9),
+            rgba(0,0,0,0)
+        );
+}
+
+/* Inner scroll strip — keeps behaviour untouched */
+.related-scroll {
+    display: flex;
+    gap: 18px;
+    padding: 6px 12px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+}
+
+/* Card glow discipline inside related strip */
+.related-scroll .ccg-game-card {
+    box-shadow:
+        0 10px 26px rgba(0,0,0,0.65),
+        0 0 14px rgba(var(--accent-rgb), 0.18);
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+/* Hover peak — glow increases but stays controlled */
+.related-scroll .ccg-game-card:hover {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow:
+        0 14px 34px rgba(0,0,0,0.75),
+        0 0 22px rgba(var(--accent-rgb), 0.35);
+}
+
+/* ============================================================
+   RESPONSIVE — DISABLE HEAVY DEPTH ON SMALL SCREENS
+   ============================================================ */
 
 @media (max-width: 900px) {
     .ccg-page--games-index .games-alpha {
@@ -128,5 +219,10 @@
         box-shadow: none;
         padding: 0;
         background: none;
+    }
+
+    .related-scroll-wrapper::before,
+    .related-scroll-wrapper::after {
+        display: none;
     }
 }
