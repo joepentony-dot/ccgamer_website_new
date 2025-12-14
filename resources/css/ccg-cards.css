@@ -1,5 +1,5 @@
 /* ============================================================
-   CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM (DENSITY PASS + FIX)
+   CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM (FINAL DENSITY FIX)
    ============================================================ */
 
 /* ------------------------------------------------------------
@@ -12,12 +12,16 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 20px;
-    align-items: stretch;
 }
 
-.ccg-genre-grid.ccg-genre-grid--tight {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 18px;
+/* ------------------------------------------------------------
+   🔒 GENRE PAGE GRID OVERRIDE (THE REAL FIX)
+   Prevents 1fr banner-style expansion
+------------------------------------------------------------ */
+
+.ccg-page--genre-single .ccg-genre-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 260px));
+    justify-content: center;
 }
 
 /* ------------------------------------------------------------
@@ -33,34 +37,11 @@
     border: 1px solid rgba(255,255,255,.08);
     overflow: hidden;
     box-shadow: 0 8px 16px rgba(0,0,0,.7);
-    will-change: transform, box-shadow;
     transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
     text-decoration: none;
     color: inherit;
-}
-
-.ccg-game-card,
-.ccg-card {
     display: flex;
     flex-direction: column;
-}
-
-/* ------------------------------------------------------------
-   MEDIA SYSTEM
------------------------------------------------------------- */
-
-.ccg-card__media {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-    border-radius: 12px 12px 0 0;
-}
-
-.ccg-card__media img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
 }
 
 /* ------------------------------------------------------------
@@ -68,35 +49,31 @@
 ------------------------------------------------------------ */
 
 .ccg-game-card__thumb {
-    position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
     min-height: 140px;
     overflow: hidden;
-    border-radius: 12px;
 }
 
 .ccg-game-card__thumb img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
 }
 
 /* ------------------------------------------------------------
    CARD BODY
 ------------------------------------------------------------ */
 
-.ccg-game-card__body,
-.ccg-card__body {
+.ccg-game-card__body {
     padding: 10px 10px 12px;
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
 
-.ccg-game-card__title,
-.ccg-card__title,
-.ccg-genre-tile span {
+.ccg-game-card__title {
     font-family: var(--ccg-font-main);
     font-size: 0.78rem;
     text-transform: uppercase;
@@ -107,23 +84,11 @@
 }
 
 /* ------------------------------------------------------------
-   HOVER BEHAVIOUR
+   HOVER
 ------------------------------------------------------------ */
 
-.ccg-game-card:hover,
-.ccg-card:hover,
-.ccg-genre-tile:hover {
+.ccg-game-card:hover {
     transform: translateY(-2px) scale(1.02);
-}
-
-/* ------------------------------------------------------------
-   🎯 GENRE PAGE CARD WIDTH CONTROL (FINAL POLISH)
------------------------------------------------------------- */
-
-.ccg-page--genre-single .ccg-game-card {
-    max-width: 260px;
-    width: 100%;
-    justify-self: center; /* critical: prevents grid stretch */
 }
 
 /* ------------------------------------------------------------
@@ -132,20 +97,11 @@
 
 @media (max-width: 768px) {
 
-    .ccg-genre-grid,
-    .genre-grid,
-    .genre-grid.omega-grid {
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 18px;
+    .ccg-page--genre-single .ccg-genre-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 200px));
     }
 
-    .ccg-game-card__title,
-    .ccg-card__title,
-    .ccg-genre-tile span {
+    .ccg-game-card__title {
         font-size: 0.72rem;
-    }
-
-    .ccg-page--genre-single .ccg-game-card {
-        max-width: 220px;
     }
 }
