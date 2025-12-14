@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" data-ccg-page="about">
+<html lang="en" data-ccg-page="contact">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>About | Cheeky Commodore Gamer</title>
+    <title>Contact | Cheeky Commodore Gamer</title>
     <meta name="description"
-          content="The story behind Cheeky Commodore Gamer — Commodore 64 and Amiga nostalgia, passion projects, and retro gaming history." />
+          content="Get in touch with Cheeky Commodore Gamer — questions, collaborations, feedback, or just to say hello." />
 
     <link rel="icon" href="favicon.ico" />
 
@@ -62,8 +62,8 @@
                 <li><a href="quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
                 <li><a href="emulation.html" class="ccg-nav__link">Emulation</a></li>
                 <li><a href="complete-index.html" class="ccg-nav__link">Index</a></li>
-                <li><a href="about.html" class="ccg-nav__link ccg-nav__link--active">About</a></li>
-                <li><a href="contact.html" class="ccg-nav__link">Contact</a></li>
+                <li><a href="about.html" class="ccg-nav__link">About</a></li>
+                <li><a href="contact.html" class="ccg-nav__link ccg-nav__link--active">Contact</a></li>
             </ul>
         </nav>
 
@@ -112,48 +112,75 @@
 
 <section class="ccg-section">
 
-<h2 class="ccg-section-title">About Cheeky Commodore Gamer</h2>
+    <h2 class="ccg-section-title">Get in Touch</h2>
 
-<p class="ccg-body-text">
-Cheeky Commodore Gamer is a long-running passion project dedicated to the Commodore 64 and Commodore Amiga —
-two machines that defined a generation of home computing and gaming.
-</p>
+    <p class="ccg-body-text">
+        Questions, feedback, collaboration ideas, or just want to say hello —
+        use the form below or join the Discord for quicker replies.
+    </p>
 
-<p class="ccg-body-text">
-The project began not as a technical archive, but as a way to relive the games themselves:
-the loading screens, the music, the moments of discovery, and the memories tied to them.
-</p>
+    <p class="ccg-body-text">
+        This site and channel are built around community interaction,
+        and every message is read.
+    </p>
 
-<p class="ccg-body-text">
-Growing up with the Commodore 64 and later the Amiga, gaming was never about frame rates or specs —
-it was about atmosphere, imagination, and persistence.
-Waiting for tapes to load, learning quirks of individual games,
-and sharing discoveries with friends were all part of the experience.
-</p>
+    <!-- DISCORD HIGHLIGHT -->
+    <div class="ccg-info-callout">
+        <p>
+            <strong>Fastest response:</strong><br>
+            Join the <a href="https://discord.gg/83Xw9ktAn4">Cheeky Commodore Gamer Discord</a>
+            for live chat and community discussion.
+        </p>
+    </div>
 
-<p class="ccg-body-text">
-Cheeky Commodore Gamer exists to preserve that feeling.
-The YouTube channel and this site work together as a growing archive —
-each game given a proper place with artwork, information, videos, and trivia.
-</p>
+    <!-- CONTACT FORM -->
+    <form id="contactForm" class="ccg-info-form" aria-label="Contact form">
 
-<p class="ccg-body-text">
-While many retro projects focus on hardware or programming,
-the emphasis here remains firmly on the games:
-what made them special, why they’re remembered,
-and why they still deserve attention today.
-</p>
+        <div class="ccg-form-group">
+            <label for="name">Your Name *</label>
+            <input type="text" id="name" name="name" required />
+        </div>
 
-<p class="ccg-body-text">
-This site continues to evolve alongside the channel,
-with new games, collections, quizzes and features added over time.
-Everything is built to be explored at your own pace —
-no rush, no noise, just classic games and their stories.
-</p>
+        <div class="ccg-form-group">
+            <label for="email">Your Email *</label>
+            <input type="email" id="email" name="email" required />
+        </div>
 
-<p class="ccg-body-text">
-Stay a while. Stay forever.
-</p>
+        <div class="ccg-form-group">
+            <label>What’s this about? *</label>
+
+            <div class="ccg-checkbox-group">
+                <label><input type="checkbox" name="topic" value="General Question"> General Question</label>
+                <label><input type="checkbox" name="topic" value="Collaboration"> Collaboration</label>
+                <label><input type="checkbox" name="topic" value="Tech Support"> Tech Support</label>
+                <label><input type="checkbox" name="topic" value="Quiz Feedback"> Quiz Feedback</label>
+                <label><input type="checkbox" name="topic" value="Other"> Something Else</label>
+            </div>
+        </div>
+
+        <div class="ccg-form-group">
+            <label for="message">Your Message *</label>
+            <textarea id="message" name="message" maxlength="500" required></textarea>
+            <div class="ccg-form-counter" id="charCounter">0 / 500</div>
+        </div>
+
+        <button type="submit" id="submitBtn" class="ccg-btn-primary">
+            Send Message
+        </button>
+
+        <div class="ccg-form-success" id="successMessage">
+            Message sent — thank you!
+        </div>
+
+        <div class="ccg-form-error" id="errorMessage">
+            Something went wrong. Please try again or use Discord.
+        </div>
+
+    </form>
+
+    <p class="ccg-body-text ccg-info-small">
+        Your details are never shared and are only used to respond.
+    </p>
 
 </section>
 
@@ -178,6 +205,57 @@ Stay a while. Stay forever.
 <!-- JS -->
 <script src="js/ccg-global.js" defer></script>
 <script src="js/ccg-mode-engine.js" defer></script>
+
+<!-- CONTACT FORM LOGIC (UNCHANGED) -->
+<script defer>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz_HRg2IZ6yEQpfQNRbOnFdi1bYMRdmELwU9PnQ7hlLDic20bDlB7Wu9BaPqO3avYhs/exec';
+
+const form = document.getElementById('contactForm');
+const submitBtn = document.getElementById('submitBtn');
+const successMessage = document.getElementById('successMessage');
+const errorMessage = document.getElementById('errorMessage');
+const messageInput = document.getElementById('message');
+const charCounter = document.getElementById('charCounter');
+
+messageInput.addEventListener('input', () => {
+    const len = messageInput.value.length;
+    charCounter.textContent = `${len} / 500`;
+});
+
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const topics = Array.from(document.querySelectorAll('input[name="topic"]:checked')).map(cb => cb.value);
+
+    if (!topics.length) {
+        errorMessage.style.display = 'block';
+        errorMessage.textContent = 'Please select at least one topic.';
+        return;
+    }
+
+    submitBtn.disabled = true;
+    successMessage.style.display = 'none';
+    errorMessage.style.display = 'none';
+
+    try {
+        const formData = new FormData(form);
+        formData.append('topics', topics.join(', '));
+        formData.append('timestamp', new Date().toISOString());
+
+        const response = await fetch(SCRIPT_URL, { method: 'POST', body: formData });
+        if (!response.ok) throw new Error();
+
+        successMessage.style.display = 'block';
+        form.reset();
+        charCounter.textContent = '0 / 500';
+
+    } catch {
+        errorMessage.style.display = 'block';
+    } finally {
+        submitBtn.disabled = false;
+    }
+});
+</script>
 
 </body>
 </html>
