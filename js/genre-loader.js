@@ -1,5 +1,5 @@
 /* ============================================================
-   GENRE LOADER — STABLE + URL SAFE IDS (PATH VERIFIED)
+   GENRE LOADER — STABLE + URL SAFE IDS (THUMB PATH FIX)
 ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!genreName || !grid) return;
 
     try {
-        // ✅ CORRECT PATH FOR /games/genres/*  → JSON lives at /games/games.json
         const res = await fetch("../games.json", { cache: "no-store" });
         if (!res.ok) throw new Error("Failed to load games.json");
 
@@ -49,7 +48,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 function resolveGameThumb(raw) {
-    if (!raw) return "../../resources/images/thumbnails/all/1942.jpg";
-    let t = String(raw).replace(/^\/+/, "");
+    if (!raw) {
+        return "../../resources/images/thumbnails/all/1942.jpg";
+    }
+
+    const t = String(raw).replace(/^\/+/, "");
+
+    // ✅ If JSON already provides a path, respect it
+    if (t.includes("/")) {
+        return t.startsWith("http") ? t : `../../${t}`;
+    }
+
+    // ✅ Otherwise, treat as filename only
     return `../../resources/images/thumbnails/all/${t}`;
 }
