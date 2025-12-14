@@ -1,6 +1,6 @@
 /* ============================================================
    CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM
-   P8: Mode-Based Hover Saturation Tuning
+   P9: Thumbnail Vignette Depth (Micro Contrast)
    ============================================================ */
 
 /* ------------------------------------------------------------
@@ -54,17 +54,46 @@
 ------------------------------------------------------------ */
 
 .ccg-game-card__thumb {
+    position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
     min-height: 140px;
     overflow: hidden;
 }
 
+/* Image itself */
 .ccg-game-card__thumb img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
+}
+
+/* ------------------------------------------------------------
+   🎯 P9 — VIGNETTE LAYER (MICRO DEPTH)
+------------------------------------------------------------ */
+
+.ccg-game-card__thumb::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+
+    /* Subtle inner vignette */
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(0,0,0,0) 55%,
+            rgba(0,0,0,0.35) 100%
+        );
+
+    transition: opacity 0.28s ease-out;
+    opacity: 0.85;
+}
+
+/* Slight lift on hover — keeps artwork alive */
+.ccg-game-card:hover .ccg-game-card__thumb::after {
+    opacity: 0.65;
 }
 
 /* ------------------------------------------------------------
@@ -89,7 +118,7 @@
 }
 
 /* ------------------------------------------------------------
-   HOVER — SHARED MOTION (FROM P7)
+   HOVER — SHARED MOTION
 ------------------------------------------------------------ */
 
 .ccg-game-card:hover {
