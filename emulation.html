@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Emulation | Cheeky Commodore Gamer</title>
-    <meta name="description" content="Recommended emulators, setup notes and legal guidance for enjoying Commodore 64 and Amiga games on modern hardware." />
+    <meta name="description"
+          content="Recommended emulators and setup guidance for Commodore 64 and Amiga gaming on modern hardware." />
+
     <link rel="icon" href="favicon.ico" />
 
-    <!-- REQUIRED FONT RESTORE (Orbitron + Roboto) -->
+    <!-- REQUIRED FONT RESTORE -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     <!-- GLOBAL CSS -->
@@ -19,14 +21,14 @@
     <link rel="stylesheet" href="resources/css/ccg-overlays.css" />
     <link rel="stylesheet" href="resources/css/ccg-modal.css" />
 
-    <!-- INFO / EMULATION -->
+    <!-- INFO PAGES -->
     <link rel="stylesheet" href="resources/css/info-pages.css" />
     <link rel="stylesheet" href="resources/css/emulation.css" />
 </head>
 
 <body class="ccg-body" data-ccg-mode="c64">
 
-<!-- BACKGROUND LAYERS -->
+<!-- BACKGROUND -->
 <div class="ccg-bg">
     <div class="ccg-bg-starfield"></div>
     <div class="ccg-bg-grid"></div>
@@ -36,7 +38,7 @@
 <div class="ccg-page ccg-page--info">
 
 <!-- ============================================================
-     OMEGA HEADER (ROOT VERSION)
+     HEADER (ROOT)
 ============================================================ -->
 <header class="ccg-header">
     <div class="ccg-header-inner">
@@ -73,8 +75,8 @@
         <div class="ccg-header-actions">
 
             <button class="ccg-mode-toggle" type="button"
-                aria-label="Toggle between C64 and Amiga modes"
-                data-ccg-mode-toggle>
+                    aria-label="Toggle between C64 and Amiga modes"
+                    data-ccg-mode-toggle>
                 <span class="ccg-mode-toggle__pill">
                     <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
                     <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">Amiga</span>
@@ -99,64 +101,75 @@
 </header>
 
 <!-- ============================================================
-     MAIN CONTENT — STRUCTURE ONLY (STAGE 1)
+     MAIN
 ============================================================ -->
 <main class="ccg-main">
 
-    <!-- INTRO -->
-    <section class="ccg-section">
-        <h2 class="ccg-section-title">Emulation Guide</h2>
+<section class="ccg-section">
+    <h2 class="ccg-section-title">Emulation Guide</h2>
+
+    <p class="ccg-body-text">
+        This page documents recommended emulators and setup approaches used across the Cheeky Commodore Gamer library.
+        It’s designed as a practical reference rather than a technical deep dive.
+    </p>
+
+    <p class="ccg-body-text">
+        Everything here focuses on stability, authenticity and ease of use — the same setups used when capturing
+        footage for the channel.
+    </p>
+</section>
+
+<!-- ============================================================
+     C64 SECTION — STAGE 2
+============================================================ -->
+<section class="ccg-section ccg-emulation-section">
+
+    <h2 class="ccg-section-title">Commodore 64 Emulation</h2>
+
+    <p class="ccg-body-text">
+        The Commodore 64 remains one of the best-supported retro platforms for emulation.
+        With the right setup, accuracy and compatibility are extremely high.
+    </p>
+
+    <div class="ccg-info-block">
+        <h3 class="ccg-info-title">Recommended Emulator</h3>
 
         <p class="ccg-body-text">
-            This page brings together recommended emulators, setup notes and legal guidance
-            for running Commodore 64 and Amiga software on modern systems.
+            <strong>VICE</strong> is the primary emulator used for C64 coverage.
+            It offers excellent hardware accuracy, wide format support and consistent behaviour across platforms.
         </p>
 
-        <p class="ccg-body-text">
-            It’s designed as a long-term reference to support videos, reviews and future content
-            across the site.
-        </p>
-    </section>
+        <ul class="ccg-info-list">
+            <li>Accurate CPU, VIC-II and SID emulation</li>
+            <li>Supports disk, tape and cartridge formats</li>
+            <li>Available on Windows, macOS and Linux</li>
+            <li>Ideal for both casual play and recording</li>
+        </ul>
+    </div>
 
-    <!-- LEGAL / DISCLAIMER -->
-    <section class="ccg-section">
-        <h3 class="ccg-subsection-title">Legal &amp; Ownership Notes</h3>
+    <div class="ccg-info-block">
+        <h3 class="ccg-info-title">Common Formats</h3>
 
-        <p class="ccg-body-text">
-            Emulators themselves are legal. Game software and system ROMs are typically protected
-            by copyright and should be dumped from media you personally own.
-        </p>
-    </section>
+        <ul class="ccg-info-list">
+            <li><strong>.D64</strong> – Standard floppy disk images</li>
+            <li><strong>.T64</strong> – Tape container format</li>
+            <li><strong>.PRG</strong> – Single-file programs</li>
+            <li><strong>.CRT</strong> – Cartridge images</li>
+        </ul>
+    </div>
 
-    <!-- C64 SECTION -->
-    <section class="ccg-section">
-        <h3 class="ccg-subsection-title">Commodore 64 Emulation</h3>
+    <div class="ccg-info-block">
+        <h3 class="ccg-info-title">General Setup Notes</h3>
 
-        <p class="ccg-body-text">
-            This section will cover recommended C64 emulators, configuration basics,
-            controller setup and common pitfalls.
-        </p>
-    </section>
+        <ul class="ccg-info-list">
+            <li>Use NTSC or PAL timing that matches the original release</li>
+            <li>Enable true drive emulation for disk-based titles</li>
+            <li>Map joystick to keyboard or controller early</li>
+            <li>Save states are useful but not always authentic</li>
+        </ul>
+    </div>
 
-    <!-- AMIGA SECTION -->
-    <section class="ccg-section">
-        <h3 class="ccg-subsection-title">Commodore Amiga Emulation</h3>
-
-        <p class="ccg-body-text">
-            This section will focus on Amiga emulation, including Kickstart handling,
-            WHDLoad usage and performance considerations.
-        </p>
-    </section>
-
-    <!-- QUICK LINKS / RESOURCES -->
-    <section class="ccg-section">
-        <h3 class="ccg-subsection-title">Resources &amp; Further Reading</h3>
-
-        <p class="ccg-body-text">
-            Official emulator sites, documentation and trusted community resources
-            will be collected here.
-        </p>
-    </section>
+</section>
 
 </main>
 
