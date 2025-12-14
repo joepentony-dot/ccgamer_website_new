@@ -1,5 +1,5 @@
 /* ============================================================
-   GENRE LOADER — STABLE + URL SAFE IDS
+   GENRE LOADER — STABLE + URL SAFE IDS (FINAL PATH FIX)
 ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -11,7 +11,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!genreName || !grid) return;
 
     try {
-        const res = await fetch("../games.json", { cache: "no-store" });
+        // ✅ CORRECT PATH FOR /games/genres/*
+        const res = await fetch("../../games.json", { cache: "no-store" });
         if (!res.ok) throw new Error("Failed to load games.json");
 
         const games = await res.json();
