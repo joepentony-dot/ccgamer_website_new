@@ -1,5 +1,6 @@
 /* ============================================================
-   CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM (FINAL DENSITY FIX)
+   CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM
+   P5: GLOW CONSISTENCY & VISUAL PAYOFF (SAFE POLISH)
    ============================================================ */
 
 /* ------------------------------------------------------------
@@ -15,8 +16,7 @@
 }
 
 /* ------------------------------------------------------------
-   🔒 GENRE PAGE GRID OVERRIDE (THE REAL FIX)
-   Prevents 1fr banner-style expansion
+   🔒 GENRE PAGE GRID OVERRIDE (LOCKED BEHAVIOUR)
 ------------------------------------------------------------ */
 
 .ccg-page--genre-single .ccg-genre-grid {
@@ -25,23 +25,48 @@
 }
 
 /* ------------------------------------------------------------
-   BASE CARD SHELL
+   BASE CARD SHELL (NEUTRAL IDLE STATE)
 ------------------------------------------------------------ */
 
 .ccg-game-card,
 .ccg-card,
 .ccg-genre-tile {
     position: relative;
-    background: radial-gradient(circle at top, rgba(40,40,80,.55), rgba(0,0,0,.9));
+    background: radial-gradient(
+        circle at top,
+        rgba(40,40,80,.55),
+        rgba(0,0,0,.92)
+    );
     border-radius: 16px;
     border: 1px solid rgba(255,255,255,.08);
     overflow: hidden;
-    box-shadow: 0 8px 16px rgba(0,0,0,.7);
-    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+
+    /* Unified idle depth */
+    box-shadow:
+        0 6px 14px rgba(0,0,0,.75),
+        0 0 0 rgba(0,0,0,0);
+
+    transition:
+        transform .2s ease,
+        box-shadow .25s ease,
+        border-color .25s ease;
+
     text-decoration: none;
     color: inherit;
     display: flex;
     flex-direction: column;
+}
+
+/* ------------------------------------------------------------
+   MODE-AWARE GLOW VARIABLES
+------------------------------------------------------------ */
+
+body[data-ccg-mode="c64"] {
+    --ccg-card-glow: 0, 170, 255; /* cyan / blue */
+}
+
+body[data-ccg-mode="amiga"] {
+    --ccg-card-glow: 255, 41, 224; /* pink */
 }
 
 /* ------------------------------------------------------------
@@ -84,15 +109,50 @@
 }
 
 /* ------------------------------------------------------------
-   HOVER
+   HOVER / FOCUS — CONSISTENT NEON LIFT
 ------------------------------------------------------------ */
 
-.ccg-game-card:hover {
+.ccg-game-card:hover,
+.ccg-game-card:focus-visible,
+.ccg-card:hover,
+.ccg-genre-tile:hover {
     transform: translateY(-2px) scale(1.02);
+
+    border-color: rgba(var(--ccg-card-glow), .55);
+
+    box-shadow:
+        0 12px 26px rgba(0,0,0,.85),
+        0 0 18px rgba(var(--ccg-card-glow), .35),
+        0 0 34px rgba(var(--ccg-card-glow), .18);
+}
+
+/* Subtle inner sheen for premium feel */
+.ccg-game-card::after,
+.ccg-card::after,
+.ccg-genre-tile::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(255,255,255,.06),
+            transparent 45%
+        );
+    opacity: .55;
+    transition: opacity .25s ease;
+}
+
+.ccg-game-card:hover::after,
+.ccg-card:hover::after,
+.ccg-genre-tile:hover::after {
+    opacity: .85;
 }
 
 /* ------------------------------------------------------------
-   RESPONSIVE
+   RESPONSIVE (UNCHANGED GEOMETRY)
 ------------------------------------------------------------ */
 
 @media (max-width: 768px) {
