@@ -1,6 +1,6 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & RESET
-   Omega Neon Edition — Phase P3 Header Alignment Polish
+   Omega Neon Edition — Phase P4 Typography Rhythm Polish
    ============================================================ */
 
 :root {
@@ -94,7 +94,7 @@ body {
 }
 
 /* ============================================================
-   HEADER — PHASE P3 ALIGNMENT POLISH
+   HEADER (UNCHANGED FROM P3)
    ============================================================ */
 
 .ccg-header {
@@ -114,71 +114,63 @@ body {
 .ccg-header-inner {
     width: min(var(--ccg-page-max-width), 100% - var(--ccg-page-gutter) * 2);
     margin: 0 auto;
-
     display: flex;
-    align-items: center;              /* 🔒 single baseline */
+    align-items: center;
     justify-content: space-between;
     gap: 18px;
 }
 
-/* Brand */
+/* ============================================================
+   SECTION TITLES — PHASE P4 POLISH
+   ============================================================ */
 
-.ccg-brand {
-    display: inline-flex;
-    align-items: center;              /* 🔧 vertical lock */
-    gap: 12px;
+.ccg-section-title,
+.ccg-genrehub-title,
+.ccg-hero-title,
+.ccg-genre-hero__title {
+    font-family: var(--ccg-font-main);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;                 /* 🔧 slightly cleaner */
+    font-weight: 700;
+    color: var(--ccg-text-light);
+    margin: 0 0 22px;                       /* 🔧 more breathing room */
+    position: relative;
+    text-shadow:
+        0 0 8px rgba(0, 0, 0, 0.8),
+        0 0 14px rgba(0, 170, 255, 0.6);
 }
 
-.ccg-brand__logo {
-    width: 64px;
-    height: auto;
+/* Subtle neon divider — visual only */
+.ccg-section-title::after {
+    content: "";
     display: block;
-}
-
-.ccg-brand__text {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;          /* 🔧 optical centring */
-    line-height: 1.2;
-}
-
-/* Navigation */
-
-.ccg-nav {
-    display: flex;
-    align-items: center;              /* 🔧 align to brand */
-}
-
-.ccg-nav__list {
-    display: flex;
-    align-items: center;              /* 🔧 fixes drift */
-    gap: 14px;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-/* Header actions */
-
-.ccg-header-actions {
-    display: flex;
-    align-items: center;              /* 🔧 matches nav + brand */
-    gap: 16px;
-}
-
-/* Neon strip */
-
-.ccg-header-neon-strip {
+    width: 64px;
     height: 2px;
-    width: 100%;
+    margin-top: 10px;
     background: linear-gradient(
         90deg,
         var(--ccg-color-blue),
-        var(--ccg-color-pink),
-        var(--ccg-color-cyan),
-        var(--ccg-color-blue)
+        var(--ccg-color-pink)
     );
-    box-shadow: 0 0 8px rgba(0, 170, 255, 0.7);
+    opacity: 0.65;
+    box-shadow:
+        0 0 6px rgba(0, 170, 255, 0.6),
+        0 0 12px rgba(255, 41, 224, 0.4);
+}
+
+/* ============================================================
+   SUBTITLES / BODY LEAD TEXT
+   ============================================================ */
+
+.ccg-genrehub-subtitle,
+.ccg-hero-tagline,
+.ccg-genre-hero__tagline,
+.ccg-section-subtitle {
+    font-family: var(--ccg-font-body);
+    font-size: 0.95rem;
+    color: var(--ccg-text-soft);
+    max-width: 680px;
+    margin-bottom: 8px;                    /* 🔧 clearer grouping */
 }
 
 /* ============================================================
