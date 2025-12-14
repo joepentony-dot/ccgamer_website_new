@@ -8,8 +8,7 @@
 
 .ccg-genre-grid,
 .genre-grid,
-.genre-grid.omega-grid,
-.ccg-page--genre-single .games-grid {
+.genre-grid.omega-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 20px;
@@ -47,7 +46,7 @@
 }
 
 /* ------------------------------------------------------------
-   MEDIA SYSTEM (GLOBAL)
+   MEDIA SYSTEM
 ------------------------------------------------------------ */
 
 .ccg-card__media {
@@ -62,14 +61,10 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    display: block;
-    backface-visibility: hidden;
-    transform: scale(1.01);
-    transition: transform .2s ease, filter .2s ease;
 }
 
 /* ------------------------------------------------------------
-   GAME CARD THUMB (SHARED)
+   GAME CARD THUMB
 ------------------------------------------------------------ */
 
 .ccg-game-card__thumb {
@@ -85,11 +80,10 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    display: block;
 }
 
 /* ------------------------------------------------------------
-   CARD BODY — DENSITY TUNED
+   CARD BODY
 ------------------------------------------------------------ */
 
 .ccg-game-card__body,
@@ -109,10 +103,6 @@
     letter-spacing: .06em;
     color: #ffffff;
     line-height: 1.25;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
     min-height: 2.4em;
 }
 
@@ -126,40 +116,13 @@
     transform: translateY(-2px) scale(1.02);
 }
 
-/* C64 MODE */
-.ccg-body[data-ccg-mode="c64"] .ccg-card:hover,
-.ccg-body[data-ccg-mode="c64"] .ccg-game-card:hover,
-.ccg-body[data-ccg-mode="c64"] .ccg-genre-tile:hover {
-    border-color: rgba(0,180,255,.9);
-    box-shadow:
-        0 0 0 1px rgba(0,180,255,.9),
-        0 0 20px rgba(0,180,255,.8),
-        0 16px 32px rgba(0,0,0,.9);
-}
+/* ------------------------------------------------------------
+   🎯 GENRE PAGE CARD WIDTH CONTROL (POLISH ONLY)
+------------------------------------------------------------ */
 
-.ccg-body[data-ccg-mode="c64"] .ccg-card:hover img,
-.ccg-body[data-ccg-mode="c64"] .ccg-game-card:hover img,
-.ccg-body[data-ccg-mode="c64"] .ccg-genre-tile:hover img {
-    filter: saturate(1.1) contrast(1.05);
-    transform: scale(1.03);
-}
-
-/* AMIGA MODE */
-.ccg-body[data-ccg-mode="amiga"] .ccg-card:hover,
-.ccg-body[data-ccg-mode="amiga"] .ccg-game-card:hover,
-.ccg-body[data-ccg-mode="amiga"] .ccg-genre-tile:hover {
-    border-color: rgba(255,80,220,.95);
-    box-shadow:
-        0 0 0 1px rgba(255,80,220,.95),
-        0 0 20px rgba(255,80,220,.85),
-        0 16px 32px rgba(0,0,0,.9);
-}
-
-.ccg-body[data-ccg-mode="amiga"] .ccg-card:hover img,
-.ccg-body[data-ccg-mode="amiga"] .ccg-game-card:hover img,
-.ccg-body[data-ccg-mode="amiga"] .ccg-genre-tile:hover img {
-    filter: saturate(1.15) contrast(1.08);
-    transform: scale(1.03);
+.ccg-page--genre-single .ccg-game-card {
+    max-width: 260px;
+    margin: 0 auto;
 }
 
 /* ------------------------------------------------------------
@@ -170,8 +133,7 @@
 
     .ccg-genre-grid,
     .genre-grid,
-    .genre-grid.omega-grid,
-    .ccg-page--genre-single .games-grid {
+    .genre-grid.omega-grid {
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         gap: 18px;
     }
@@ -180,5 +142,9 @@
     .ccg-card__title,
     .ccg-genre-tile span {
         font-size: 0.72rem;
+    }
+
+    .ccg-page--genre-single .ccg-game-card {
+        max-width: 220px;
     }
 }
