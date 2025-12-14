@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Emulation | Cheeky Commodore Gamer</title>
-    <meta name="description"
-          content="Recommended emulators and setup guidance for Commodore 64 and Amiga gaming on modern hardware." />
-
+    <meta name="description" content="Recommended emulators and quick-start tips for enjoying Commodore 64 and Amiga games on modern hardware." />
     <link rel="icon" href="favicon.ico" />
 
-    <!-- REQUIRED FONT RESTORE -->
+    <!-- REQUIRED FONT RESTORE (Orbitron + Roboto) -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     <!-- GLOBAL CSS -->
@@ -20,178 +18,295 @@
     <link rel="stylesheet" href="resources/css/ccg-anim.css" />
     <link rel="stylesheet" href="resources/css/ccg-overlays.css" />
     <link rel="stylesheet" href="resources/css/ccg-modal.css" />
-
-    <!-- INFO PAGES -->
     <link rel="stylesheet" href="resources/css/info-pages.css" />
+
+    <!-- PAGE CSS -->
     <link rel="stylesheet" href="resources/css/emulation.css" />
 </head>
 
 <body class="ccg-body" data-ccg-mode="c64">
 
-<!-- BACKGROUND -->
-<div class="ccg-bg">
-    <div class="ccg-bg-starfield"></div>
-    <div class="ccg-bg-grid"></div>
-    <div class="ccg-bg-crt-overlay"></div>
-</div>
+    <!-- BACKGROUND LAYERS -->
+    <div class="ccg-bg">
+        <div class="ccg-bg-starfield"></div>
+        <div class="ccg-bg-grid"></div>
+        <div class="ccg-bg-crt-overlay"></div>
+    </div>
 
-<div class="ccg-page ccg-page--info">
+    <div class="ccg-page ccg-page--info ccg-page--emulation">
 
-<!-- ============================================================
-     HEADER (ROOT)
-============================================================ -->
-<header class="ccg-header">
-    <div class="ccg-header-inner">
+        <!-- ============================================================
+             OMEGA HEADER (ROOT VERSION)
+        ============================================================ -->
+        <header class="ccg-header">
+            <div class="ccg-header-inner">
 
-        <a href="home.html" class="ccg-brand">
-            <img src="resources/images/ccgamer-logo.png"
-                 alt="Cheeky Commodore Gamer logo"
-                 class="ccg-brand__logo"
-                 loading="lazy">
+                <!-- BRAND -->
+                <a href="home.html" class="ccg-brand">
+                    <img src="resources/images/ccgamer-logo.png"
+                         alt="Cheeky Commodore Gamer logo"
+                         class="ccg-brand__logo"
+                         loading="lazy">
 
-            <div class="ccg-brand__text">
-                <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
-                <div class="ccg-brand__title">
-                    <span class="ccg-brand__neon-cheeky">CHEEKY</span>
-                    <span class="ccg-brand__neon-sub">COMMODORE GAMER</span>
+                    <div class="ccg-brand__text">
+                        <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
+                        <div class="ccg-brand__title">
+                            <span class="ccg-brand__neon-cheeky">CHEEKY</span>
+                            <span class="ccg-brand__neon-sub">COMMODORE GAMER</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- NAV -->
+                <nav class="ccg-nav" aria-label="Primary navigation">
+                    <ul class="ccg-nav__list">
+                        <li><a href="home.html" class="ccg-nav__link">Home</a></li>
+                        <li><a href="games/index.html" class="ccg-nav__link">Browse Games</a></li>
+                        <li><a href="games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
+                        <li><a href="games/collections/index.html" class="ccg-nav__link">Collections</a></li>
+                        <li><a href="quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
+                        <li><a href="emulation.html" class="ccg-nav__link ccg-nav__link--active">Emulation</a></li>
+                        <li><a href="complete-index.html" class="ccg-nav__link">Index</a></li>
+                        <li><a href="about.html" class="ccg-nav__link">About</a></li>
+                        <li><a href="contact.html" class="ccg-nav__link">Contact</a></li>
+                    </ul>
+                </nav>
+
+                <!-- MODE TOGGLE + SOCIALS -->
+                <div class="ccg-header-actions">
+
+                    <!-- MODE TOGGLE -->
+                    <button class="ccg-mode-toggle" type="button"
+                        aria-label="Toggle between C64 and Amiga modes" data-ccg-mode-toggle>
+                        <span class="ccg-mode-toggle__pill">
+                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
+                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">Amiga</span>
+                            <span class="ccg-mode-toggle__thumb"></span>
+                        </span>
+                    </button>
+
+                    <!-- SOCIAL ICONS -->
+                    <div class="ccg-header-socials">
+                        <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube">
+                            <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
+                        </a>
+                        <a href="https://patreon.com/CheekyCommodoreGamer" aria-label="Patreon">
+                            <span class="ccg-socials__icon ccg-socials__icon--patreon"></span>
+                        </a>
+                        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" aria-label="PayPal">
+                            <span class="ccg-socials__icon ccg-socials__icon--paypal"></span>
+                        </a>
+                        <a href="https://discord.gg/83Xw9ktAn4" aria-label="Discord">
+                            <span class="ccg-socials__icon ccg-socials__icon--discord"></span>
+                        </a>
+                        <a href="https://twitter.com/CheekyC64Gamer" aria-label="Twitter/X">
+                            <span class="ccg-socials__icon ccg-socials__icon--x"></span>
+                        </a>
+                        <a href="https://www.facebook.com/cheekycommodoregamer" aria-label="Facebook">
+                            <span class="ccg-socials__icon ccg-socials__icon--fb"></span>
+                        </a>
+                    </div>
+
                 </div>
-            </div>
-        </a>
 
-        <nav class="ccg-nav" aria-label="Primary navigation">
-            <ul class="ccg-nav__list">
-                <li><a href="home.html" class="ccg-nav__link">Home</a></li>
-                <li><a href="games/index.html" class="ccg-nav__link">Browse Games</a></li>
-                <li><a href="games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
-                <li><a href="games/collections/index.html" class="ccg-nav__link">Collections</a></li>
-                <li><a href="quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
-                <li><a href="emulation.html" class="ccg-nav__link ccg-nav__link--active">Emulation</a></li>
-                <li><a href="complete-index.html" class="ccg-nav__link">Index</a></li>
-                <li><a href="about.html" class="ccg-nav__link">About</a></li>
-                <li><a href="contact.html" class="ccg-nav__link">Contact</a></li>
-            </ul>
-        </nav>
-
-        <div class="ccg-header-actions">
-
-            <button class="ccg-mode-toggle" type="button"
-                    aria-label="Toggle between C64 and Amiga modes"
-                    data-ccg-mode-toggle>
-                <span class="ccg-mode-toggle__pill">
-                    <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
-                    <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">Amiga</span>
-                    <span class="ccg-mode-toggle__thumb"></span>
-                </span>
-            </button>
-
-            <div class="ccg-header-socials">
-                <a href="https://www.youtube.com/@CheekyCommodoreGamer"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>
-                <a href="https://patreon.com/CheekyCommodoreGamer"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>
-                <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"><span class="ccg-socials__icon ccg-socials__icon--paypal"></span></a>
-                <a href="https://discord.gg/83Xw9ktAn4"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
-                <a href="https://twitter.com/CheekyC64Gamer"><span class="ccg-socials__icon ccg-socials__icon--x"></span></a>
-                <a href="https://www.facebook.com/cheekycommodoregamer"><span class="ccg-socials__icon ccg-socials__icon--fb"></span></a>
             </div>
 
-        </div>
+            <div class="ccg-header-neon-strip"></div>
+        </header>
+
+        <!-- ============================================================
+             MAIN CONTENT — STAGE 1 (STRUCTURE) + STAGE 2 (C64) + STAGE 3 (AMIGA)
+        ============================================================ -->
+        <main class="ccg-main" id="top">
+
+            <!-- INTRO -->
+            <section class="ccg-section ccg-emulation-intro">
+                <h1 class="ccg-section-title">Emulation Guide</h1>
+
+                <p class="ccg-body-text">
+                    A practical, no-nonsense setup hub for enjoying Commodore 64 and Amiga games on modern hardware —
+                    recommended emulators, quick-start steps, controller tips, and common fixes.
+                </p>
+
+                <p class="ccg-body-text">
+                    This page is designed to be a living reference as the CCG library grows.
+                    When a video covers a new setup trick or emulator feature, we can fold it in here.
+                </p>
+
+                <div class="ccg-emulation-jump">
+                    <a class="ccg-emulation-jump__link" href="#c64">Jump to C64</a>
+                    <a class="ccg-emulation-jump__link" href="#amiga">Jump to Amiga</a>
+                    <a class="ccg-emulation-jump__link" href="#legal">Legal &amp; BIOS notes</a>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 C64 — STAGE 2
+            ============================================================ -->
+            <section class="ccg-section ccg-emulation-section" id="c64">
+                <h2 class="ccg-section-title">🕹️ Commodore 64</h2>
+
+                <div class="ccg-emulation-box">
+
+                    <p class="ccg-body-text">
+                        If you want a straightforward “it just works” setup, start with VICE.
+                        If you want something lighter, CCS64 is a common alternative.
+                    </p>
+
+                    <details class="ccg-emulation-details">
+                        <summary class="ccg-emulation-summary">Best C64 emulators</summary>
+                        <ul class="ccg-emulation-list">
+                            <li><strong>VICE</strong> — the go-to for accuracy and features (Windows / macOS / Linux).</li>
+                            <li><strong>CCS64</strong> — lightweight and simple, good on older machines.</li>
+                            <li><strong>Web / portable options</strong> — handy for quick tests, but desktop emulators are usually best for long sessions.</li>
+                        </ul>
+                        <p class="ccg-body-text ccg-emulation-note">
+                            Tip: if a game is timing-sensitive, prefer an accuracy-focused build and avoid “turbo” settings unless you need them.
+                        </p>
+                    </details>
+
+                    <details class="ccg-emulation-details">
+                        <summary class="ccg-emulation-summary">Quick-start (VICE)</summary>
+                        <ol class="ccg-emulation-steps">
+                            <li>Install VICE and launch the <strong>x64</strong> emulator (or equivalent on your platform).</li>
+                            <li>Load media via <strong>File → Autostart disk/tape image</strong> (or Attach Disk/Tape).</li>
+                            <li>Set controls via <strong>Settings → Joystick settings</strong>.</li>
+                            <li>For display: enable <strong>Double Size</strong> / <strong>Fullscreen</strong> to taste, then save settings.</li>
+                        </ol>
+                    </details>
+
+                    <details class="ccg-emulation-details">
+                        <summary class="ccg-emulation-summary">Controllers &amp; key mappings</summary>
+                        <ul class="ccg-emulation-list">
+                            <li>Most games assume <strong>Joystick Port 2</strong> (common C64 convention).</li>
+                            <li>If the game ignores input, swap ports in emulator settings.</li>
+                            <li>Keyboard-heavy games: keep a simple mapping profile per game type (platformer, shooter, adventure).</li>
+                        </ul>
+                    </details>
+
+                    <details class="ccg-emulation-details">
+                        <summary class="ccg-emulation-summary">Common issues (fast fixes)</summary>
+                        <ul class="ccg-emulation-list">
+                            <li><strong>Black screen / hangs at load:</strong> try Autostart rather than manual attach.</li>
+                            <li><strong>No sound:</strong> check audio device output + emulator audio enabled.</li>
+                            <li><strong>Too fast / too slow:</strong> disable warp/turbo and verify refresh timing (PAL/NTSC if the emulator exposes it).</li>
+                            <li><strong>Drive noise / loading delays:</strong> some emulators allow “True drive emulation” toggles — accuracy vs speed trade-off.</li>
+                        </ul>
+                    </details>
+
+                    <div class="ccg-emulation-backtotop">
+                        <a href="#top" class="ccg-emulation-backtotop__link">Back to top</a>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 AMIGA — STAGE 3
+            ============================================================ -->
+            <section class="ccg-section ccg-emulation-section" id="amiga">
+                <h2 class="ccg-section-title">🖥️ Commodore Amiga</h2>
+
+                <div class="ccg-emulation-box">
+
+                    <p class="ccg-body-text">
+                        Amiga emulation is brilliant once you’re set up — the only “gotcha” is that many emulators require
+                        legitimate Kickstart ROMs (or alternatives where supported).
+                    </p>
+
+                    <details class="ccg-emulation-details">
+                        <summary class="ccg-emulation-summary">Best Amiga emulators</summary>
+                        <ul class="ccg-emulation-list">
+                            <li><strong>FS-UAE</strong> — gaming-focused and friendly (multi-platform).</li>
+                            <li><strong>WinUAE</strong> — the powerhouse on Windows (deep configuration, extremely capable).</li>
+                            <li><strong>Amiberry</strong> — popular on Raspberry Pi / ARM setups.</li>
+                            <li><strong>vAmiga</strong> — a strong option on macOS.</li>
+                        </ul>
+                    </details>
+
+                    <details class="ccg-emulation-details">
+                        <summary class="ccg-emulation-summary">Quick-start (FS-UAE)</summary>
+                        <ol class="ccg-emulation-steps">
+                            <li>Install FS-UAE and the FS-UAE Launcher.</li>
+                            <li>Add your <strong>Kickstart</strong> ROMs in the launcher (required for most setups).</li>
+                            <li>Load a game (ADF / WHDLoad package depending on what you use).</li>
+                            <li>Pick a sensible base model (A500 for many classics) and assign your controller.</li>
+                            <li>Start the emulation and use the menu hotkey (varies) for disk swaps / resets.</li>
+                        </ol>
+                    </details>
+
+                    <details class="ccg-emulation-details">
+                        <summary class="ccg-emulation-summary">Model guidance</summary>
+                        <ul class="ccg-emulation-list">
+                            <li><strong>A500</strong>: most “classic” Amiga-era titles.</li>
+                            <li><strong>A1200</strong>: later titles and some WHDLoad setups that expect AGA.</li>
+                            <li><strong>Memory</strong>: when in doubt, start modest — too much “modern” config can cause odd behaviour in older games.</li>
+                        </ul>
+                    </details>
+
+                    <details class="ccg-emulation-details">
+                        <summary class="ccg-emulation-summary">Common issues (fast fixes)</summary>
+                        <ul class="ccg-emulation-list">
+                            <li><strong>Kickstart missing:</strong> emulator will complain — add the correct ROM for the model you selected.</li>
+                            <li><strong>Disk swap chaos:</strong> confirm the correct drive order and use the emulator’s built-in disk manager.</li>
+                            <li><strong>Stutter:</strong> try fullscreen/windowed toggles, vsync options, and keep scaling simple.</li>
+                            <li><strong>Controller not responding:</strong> remap in emulator settings and verify “port” assignments (some games assume joystick in Port 2).</li>
+                        </ul>
+                    </details>
+
+                    <div class="ccg-emulation-backtotop">
+                        <a href="#top" class="ccg-emulation-backtotop__link">Back to top</a>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 LEGAL / BIOS NOTES
+            ============================================================ -->
+            <section class="ccg-section ccg-emulation-section" id="legal">
+                <h2 class="ccg-section-title">Sources, legality &amp; sensible notes</h2>
+
+                <div class="ccg-emulation-box">
+                    <p class="ccg-body-text">
+                        Emulators are generally legal — the tricky bit is usually the copyrighted content:
+                        game files (ROMs / disk images) and Amiga Kickstart ROMs.
+                    </p>
+
+                    <ul class="ccg-emulation-list">
+                        <li>Use your <strong>own original media</strong> where possible, or legitimately purchased re-releases/collections.</li>
+                        <li>For Amiga: obtain Kickstarts through legitimate means (bundled solutions or your own dumps).</li>
+                        <li>If you’re unsure about the status of a download, treat it as <strong>not OK</strong> until you’ve verified it.</li>
+                    </ul>
+
+                    <p class="ccg-body-text ccg-emulation-note">
+                        We can expand this section later with “CCG recommended setups” per platform (PC, Mac, Raspberry Pi, handhelds),
+                        once the core site is fully stable end-to-end.
+                    </p>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- ============================================================
+             FOOTER
+        ============================================================ -->
+        <footer class="ccg-footer">
+            <div class="ccg-footer-inner">
+                <p class="ccg-footer-text">
+                    © <span data-ccg-year></span> Cheeky Commodore Gamer.
+                </p>
+                <p class="ccg-footer-text ccg-footer-text--small">
+                    Not affiliated with Commodore, Amiga or any publishers.
+                </p>
+            </div>
+        </footer>
 
     </div>
 
-    <div class="ccg-header-neon-strip"></div>
-</header>
-
-<!-- ============================================================
-     MAIN
-============================================================ -->
-<main class="ccg-main">
-
-<section class="ccg-section">
-    <h2 class="ccg-section-title">Emulation Guide</h2>
-
-    <p class="ccg-body-text">
-        This page documents recommended emulators and setup approaches used across the Cheeky Commodore Gamer library.
-        It’s designed as a practical reference rather than a technical deep dive.
-    </p>
-
-    <p class="ccg-body-text">
-        Everything here focuses on stability, authenticity and ease of use — the same setups used when capturing
-        footage for the channel.
-    </p>
-</section>
-
-<!-- ============================================================
-     C64 SECTION — STAGE 2
-============================================================ -->
-<section class="ccg-section ccg-emulation-section">
-
-    <h2 class="ccg-section-title">Commodore 64 Emulation</h2>
-
-    <p class="ccg-body-text">
-        The Commodore 64 remains one of the best-supported retro platforms for emulation.
-        With the right setup, accuracy and compatibility are extremely high.
-    </p>
-
-    <div class="ccg-info-block">
-        <h3 class="ccg-info-title">Recommended Emulator</h3>
-
-        <p class="ccg-body-text">
-            <strong>VICE</strong> is the primary emulator used for C64 coverage.
-            It offers excellent hardware accuracy, wide format support and consistent behaviour across platforms.
-        </p>
-
-        <ul class="ccg-info-list">
-            <li>Accurate CPU, VIC-II and SID emulation</li>
-            <li>Supports disk, tape and cartridge formats</li>
-            <li>Available on Windows, macOS and Linux</li>
-            <li>Ideal for both casual play and recording</li>
-        </ul>
-    </div>
-
-    <div class="ccg-info-block">
-        <h3 class="ccg-info-title">Common Formats</h3>
-
-        <ul class="ccg-info-list">
-            <li><strong>.D64</strong> – Standard floppy disk images</li>
-            <li><strong>.T64</strong> – Tape container format</li>
-            <li><strong>.PRG</strong> – Single-file programs</li>
-            <li><strong>.CRT</strong> – Cartridge images</li>
-        </ul>
-    </div>
-
-    <div class="ccg-info-block">
-        <h3 class="ccg-info-title">General Setup Notes</h3>
-
-        <ul class="ccg-info-list">
-            <li>Use NTSC or PAL timing that matches the original release</li>
-            <li>Enable true drive emulation for disk-based titles</li>
-            <li>Map joystick to keyboard or controller early</li>
-            <li>Save states are useful but not always authentic</li>
-        </ul>
-    </div>
-
-</section>
-
-</main>
-
-<!-- ============================================================
-     FOOTER
-============================================================ -->
-<footer class="ccg-footer">
-    <div class="ccg-footer-inner">
-        <p class="ccg-footer-text">
-            © <span data-ccg-year></span> Cheeky Commodore Gamer.
-        </p>
-        <p class="ccg-footer-text ccg-footer-text--small">
-            Not affiliated with Commodore, Amiga or any publishers.
-        </p>
-    </div>
-</footer>
-
-</div>
-
-<!-- JS -->
-<script src="js/ccg-global.js" defer></script>
-<script src="js/ccg-mode-engine.js" defer></script>
+    <!-- JS -->
+    <script src="js/ccg-global.js" defer></script>
+    <script src="js/ccg-mode-engine.js" defer></script>
 
 </body>
 </html>
