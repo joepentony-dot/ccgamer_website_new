@@ -1,6 +1,6 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & RESET
-   Omega Neon Edition (Header Z-Index Safety Applied)
+   Omega Neon Edition — Phase P3 Header Alignment Polish
    ============================================================ */
 
 :root {
@@ -25,7 +25,7 @@
     /* LAYOUT */
     --ccg-page-max-width: 1320px;
     --ccg-page-gutter: 2%;
-    --ccg-section-padding: 32px; /* ↑ was 24px */
+    --ccg-section-padding: 28px;
     --ccg-grid-gap: 24px;
 }
 
@@ -46,28 +46,8 @@ body {
     background: var(--ccg-bg-dark);
     color: var(--ccg-text-light);
     font-family: var(--ccg-font-body);
-    line-height: 1.55; /* subtle readability lift */
+    line-height: 1.55;
     overflow-x: hidden;
-}
-
-body.ccg-body {
-    background: var(--ccg-bg-dark);
-    color: var(--ccg-text-light);
-}
-
-a {
-    color: var(--ccg-color-cyan);
-    text-decoration: none;
-    transition: color 0.2s ease, opacity 0.2s ease;
-}
-
-a:hover {
-    color: var(--ccg-color-blue);
-}
-
-img {
-    max-width: 100%;
-    display: block;
 }
 
 /* ============================================================
@@ -82,14 +62,12 @@ img {
     flex-direction: column;
 }
 
-/* Main content width — slightly tighter than sections */
 .ccg-main {
     width: min(var(--ccg-page-max-width), 100% - var(--ccg-page-gutter) * 2);
     margin: 0 auto;
-    padding: 24px 0; /* remains tighter for structure */
+    padding: var(--ccg-section-padding) 0;
 }
 
-/* Generic section helper — now breathes more */
 .ccg-section {
     width: 100%;
     margin: 0 auto;
@@ -116,14 +94,14 @@ img {
 }
 
 /* ============================================================
-   HEADER (UNCHANGED — SAFETY LOCKED)
+   HEADER — PHASE P3 ALIGNMENT POLISH
    ============================================================ */
 
 .ccg-header {
     position: relative;
     z-index: 9999;
     width: 100%;
-    padding: 10px 0;
+    padding: 12px 0;
     background: linear-gradient(
         to bottom,
         rgba(0, 0, 0, 0.92),
@@ -136,99 +114,81 @@ img {
 .ccg-header-inner {
     width: min(var(--ccg-page-max-width), 100% - var(--ccg-page-gutter) * 2);
     margin: 0 auto;
+
     display: flex;
-    align-items: center;
+    align-items: center;              /* 🔒 single baseline */
     justify-content: space-between;
-    gap: 16px;
+    gap: 18px;
 }
 
-/* ============================================================
-   BRAND / LOGO (UNCHANGED)
-   ============================================================ */
+/* Brand */
 
 .ccg-brand {
     display: inline-flex;
-    align-items: center;
+    align-items: center;              /* 🔧 vertical lock */
     gap: 12px;
 }
 
-.ccg-brand img,
-.ccg-brand__logo,
-.ccg-logo-img {
-    position: relative;
-    z-index: 10000;
+.ccg-brand__logo {
     width: 64px;
     height: auto;
-    filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.8));
+    display: block;
 }
 
 .ccg-brand__text {
     display: flex;
     flex-direction: column;
+    justify-content: center;          /* 🔧 optical centring */
     line-height: 1.2;
 }
 
-.ccg-brand__kicker {
-    font-family: var(--ccg-font-body);
-    font-size: 0.6rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ccg-text-soft);
-    opacity: 0.9;
-}
+/* Navigation */
 
-.ccg-brand__title {
-    font-family: var(--ccg-font-main);
-    font-size: 0.95rem;
-    text-transform: uppercase;
-    font-weight: 700;
-    letter-spacing: 0.12em;
+.ccg-nav {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.25em;
+    align-items: center;              /* 🔧 align to brand */
 }
 
-.ccg-brand__neon-cheeky {
-    color: var(--ccg-color-blue);
-    text-shadow: var(--ccg-neon-blue);
+.ccg-nav__list {
+    display: flex;
+    align-items: center;              /* 🔧 fixes drift */
+    gap: 14px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
-.ccg-brand__neon-sub {
-    color: var(--ccg-color-pink);
-    text-shadow: var(--ccg-neon-pink);
+/* Header actions */
+
+.ccg-header-actions {
+    display: flex;
+    align-items: center;              /* 🔧 matches nav + brand */
+    gap: 16px;
+}
+
+/* Neon strip */
+
+.ccg-header-neon-strip {
+    height: 2px;
+    width: 100%;
+    background: linear-gradient(
+        90deg,
+        var(--ccg-color-blue),
+        var(--ccg-color-pink),
+        var(--ccg-color-cyan),
+        var(--ccg-color-blue)
+    );
+    box-shadow: 0 0 8px rgba(0, 170, 255, 0.7);
 }
 
 /* ============================================================
-   TITLES & TYPOGRAPHY (POLISHED)
-   ============================================================ */
-
-.ccg-section-title,
-.ccg-genrehub-title,
-.ccg-hero-title,
-.ccg-genre-hero__title {
-    font-family: var(--ccg-font-main);
-    text-transform: uppercase;
-    letter-spacing: 0.16em;
-    font-weight: 700;
-    color: var(--ccg-text-light);
-    text-shadow:
-        0 0 8px rgba(0, 0, 0, 0.8),
-        0 0 14px rgba(0, 170, 255, 0.6);
-}
-
-.ccg-section-title {
-    font-size: 1.2rem;
-    margin: 0 0 26px; /* ↑ was 18px */
-}
-
-/* ============================================================
-   FOOTER (UNCHANGED)
+   FOOTER
    ============================================================ */
 
 .ccg-footer {
     width: 100%;
     text-align: center;
-    padding: 20px 0 24px;
+    padding: 22px 0 26px;
     margin-top: auto;
     font-size: 0.8rem;
     color: var(--ccg-text-soft);
@@ -239,36 +199,4 @@ img {
         rgba(0, 0, 0, 0.4),
         transparent
     );
-}
-
-.ccg-footer__text {
-    margin: 0;
-}
-
-/* ============================================================
-   RESPONSIVE TUNING (UNCHANGED)
-   ============================================================ */
-
-@media (max-width: 960px) {
-    .ccg-header-inner { gap: 10px; }
-    .ccg-brand__logo { width: 52px; }
-}
-
-@media (max-width: 768px) {
-    .ccg-header-inner {
-        flex-wrap: wrap;
-        justify-content: space-between;
-        row-gap: 8px;
-    }
-}
-
-@media (max-width: 560px) {
-    .ccg-header-inner {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .ccg-main {
-        width: 94%;
-    }
 }
