@@ -8,7 +8,8 @@
 
 .ccg-genre-grid,
 .genre-grid,
-.genre-grid.omega-grid {
+.genre-grid.omega-grid,
+.ccg-page--genre-single .games-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 20px;
@@ -68,17 +69,14 @@
 }
 
 /* ------------------------------------------------------------
-   🔴 GAME INDEX THUMB FIX (THIS WAS MISSING)
+   GAME CARD THUMB (SHARED)
 ------------------------------------------------------------ */
 
 .ccg-game-card__thumb {
     position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
-
-    /* HARD FLOOR so flex can't collapse it */
     min-height: 140px;
-
     overflow: hidden;
     border-radius: 12px;
 }
@@ -119,7 +117,7 @@
 }
 
 /* ------------------------------------------------------------
-   HOVER BEHAVIOUR — CALMED
+   HOVER BEHAVIOUR
 ------------------------------------------------------------ */
 
 .ccg-game-card:hover,
@@ -172,7 +170,8 @@
 
     .ccg-genre-grid,
     .genre-grid,
-    .genre-grid.omega-grid {
+    .genre-grid.omega-grid,
+    .ccg-page--genre-single .games-grid {
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         gap: 18px;
     }
