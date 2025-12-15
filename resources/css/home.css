@@ -1,16 +1,16 @@
 /* ============================================================
-   HOME.CSS — OMEGA CINEMATIC HERO (PHASE K)
-   Alignment & Rhythm Polish — HOME
+   HOME.CSS — OMEGA CINEMATIC HOME
+   Phase R1 — Alignment & Vertical Rhythm Polish
 ============================================================ */
 
 /* ------------------------------------------------------------
-   HERO CONTAINER (LOCKED)
+   HERO CONTAINER (UNCHANGED STRUCTURE)
 ------------------------------------------------------------ */
 
 .home-hero {
     position: relative;
-    margin-top: 12px;
-    padding: 48px 0 56px;
+    margin-top: 16px;
+    padding: 52px 0 56px;
 
     border-radius: 22px;
     overflow: hidden;
@@ -30,109 +30,190 @@
 }
 
 /* ------------------------------------------------------------
-   FEATURED SECTION — STAGE
+   HERO INNER
 ------------------------------------------------------------ */
 
-.home-featured {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 32px;
+.home-hero__inner {
+    position: relative;
+    z-index: 2;
 
-    margin: 52px auto 0;
     width: min(1200px, 92%);
-}
-
-/* ------------------------------------------------------------
-   FEATURED CARDS — BASELINE
------------------------------------------------------------- */
-
-.home-featured .ccg-card {
-    height: 100%;
-    border-radius: 20px;
+    margin: 0 auto;
 
     display: flex;
     flex-direction: column;
-
-    box-shadow:
-        0 18px 46px rgba(0,0,0,0.55),
-        0 0 22px rgba(0,170,255,0.08);
+    gap: 18px;
 }
 
 /* ------------------------------------------------------------
-   FEATURED GAME — TEXT RHYTHM
+   HERO TEXT
 ------------------------------------------------------------ */
 
-.home-feature-card .ccg-card__body {
-    padding-top: 20px;
+.home-hero__mode {
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ccg-text-soft);
+    opacity: 0.85;
 }
 
-.home-feature-card .ccg-card__title {
-    margin-bottom: 6px;
+.home-hero__title {
+    font-family: var(--ccg-font-main);
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #ffffff;
+
+    margin-top: 6px;
+
+    text-shadow:
+        0 0 12px rgba(0, 170, 255, 0.55),
+        0 0 28px rgba(0, 170, 255, 0.35);
 }
 
-.home-feature-card .home-feature-meta {
-    margin-bottom: 12px;
+.home-hero__subtitle {
+    max-width: 640px;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--ccg-text-soft);
 }
 
 /* ------------------------------------------------------------
-   FEATURED CCG VIDEO — OPTICAL ALIGNMENT
+   HERO ACTIONS
 ------------------------------------------------------------ */
 
-/* Break out of global 16:9 for home video only */
-.home-feature-card--video .ccg-card__media--16x9 {
-    aspect-ratio: auto !important;
-    padding-top: 0 !important;
+.home-hero__actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 12px;
 }
 
-/* Media frame — size already correct, just stabilised */
-.home-feature-card--video .home-feature-video__frame {
-    height: 260px;
-    max-width: 88%;
-    margin: 0 auto;
+/* ------------------------------------------------------------
+   TAGLINE STRIP
+------------------------------------------------------------ */
 
-    overflow: hidden;
-    border-radius: 16px;
+.home-tagline {
+    margin: 56px auto 64px;
+    text-align: center;
 }
 
-/* Thumbnail behaviour */
-.home-feature-card--video .home-feature-video__thumb {
-    width: 100%;
+.home-tagline__kicker {
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.65;
+}
+
+.home-tagline__main {
+    font-family: var(--ccg-font-main);
+    font-size: 1.25rem;
+    margin-top: 6px;
+}
+
+/* ------------------------------------------------------------
+   HOME SECTIONS — GLOBAL RHYTHM
+------------------------------------------------------------ */
+
+.home-section {
+    margin: 72px auto;
+    width: min(1200px, 92%);
+}
+
+.home-section__header {
+    margin-bottom: 26px;
+}
+
+.home-section__title {
+    font-family: var(--ccg-font-main);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.home-section__divider {
+    margin-top: 10px;
+}
+
+/* ------------------------------------------------------------
+   FEATURED HIGHLIGHTS
+------------------------------------------------------------ */
+
+.home-highlights-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px;
+}
+
+.home-feature-card {
     height: 100%;
-    object-fit: cover;
-    display: block;
 }
 
-/* Match body rhythm to game card */
-.home-feature-card--video .ccg-card__body {
-    padding-top: 20px;
+.home-feature-meta {
+    margin-top: 6px;
 }
 
-.home-feature-card--video .home-feature-meta {
-    margin-bottom: 12px;
+/* ------------------------------------------------------------
+   GENRE SECTION
+------------------------------------------------------------ */
+
+.home-section--genres {
+    margin-top: 84px;
+}
+
+.home-genre-grid {
+    margin-top: 32px;
+}
+
+/* Footer link */
+.home-section__footer-link {
+    margin-top: 34px;
+    text-align: center;
 }
 
 /* ------------------------------------------------------------
    MODE AWARE TUNING
 ------------------------------------------------------------ */
 
-body[data-ccg-mode="amiga"] .home-featured .ccg-card {
-    box-shadow:
-        0 18px 46px rgba(0,0,0,0.55),
-        0 0 22px rgba(255,41,224,0.10);
+body[data-ccg-mode="amiga"] .home-hero {
+    background:
+        linear-gradient(
+            120deg,
+            rgba(90, 0, 90, 0.65),
+            rgba(60, 0, 120, 0.65)
+        );
+}
+
+body[data-ccg-mode="amiga"] .home-hero__title {
+    text-shadow:
+        0 0 12px rgba(255, 41, 224, 0.55),
+        0 0 28px rgba(255, 41, 224, 0.35);
 }
 
 /* ------------------------------------------------------------
-   RESPONSIVE
+   RESPONSIVE RHYTHM
 ------------------------------------------------------------ */
 
 @media (max-width: 900px) {
-    .home-featured {
+    .home-highlights-grid {
         grid-template-columns: 1fr;
-        gap: 32px;
+        gap: 34px;
     }
 
-    .home-feature-card--video .home-feature-video__frame {
-        max-width: 94%;
-        height: 220px;
+    .home-section {
+        margin: 64px auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .home-hero {
+        padding: 40px 0 44px;
+    }
+
+    .home-hero__title {
+        letter-spacing: 0.14em;
+    }
+
+    .home-tagline {
+        margin: 48px auto 56px;
     }
 }
