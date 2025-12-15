@@ -1,19 +1,30 @@
 /* ============================================================
-   CCG-ANIM.CSS — OMEGA CINEMATIC MOTION LAYER
-   Phase P15 — Scroll Depth & Reveal Timing
+   CCG-ANIM.CSS — OMEGA INTERACTION POLISH
+   Phase P18 — Hover Easing & Motion Luxury
    ------------------------------------------------------------
    • Visual-only animations
-   • NEVER alters layout or geometry
-   • Additive to all existing pages
+   • NO layout influence
+   • No transforms that affect flow
+   • Global easing upgrade
    ============================================================ */
 
 /* ============================================================
-   BASE FADE IN
+   CORE EASING VARIABLES
+============================================================ */
+
+:root {
+    --ccg-ease-out-smooth: cubic-bezier(0.22, 0.61, 0.36, 1);
+    --ccg-ease-out-lux: cubic-bezier(0.16, 1, 0.3, 1);
+    --ccg-ease-soft: cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* ============================================================
+   FADE IN
 ============================================================ */
 
 .ccg-fade-in {
     opacity: 0;
-    animation: ccgFadeIn 0.9s ease forwards;
+    animation: ccgFadeIn 0.8s var(--ccg-ease-soft) forwards;
 }
 
 @keyframes ccgFadeIn {
@@ -22,19 +33,19 @@
 }
 
 /* ============================================================
-   SLIDE UP + FADE (STANDARD BLOCKS)
+   SLIDE UP + FADE
 ============================================================ */
 
 .ccg-slide-up {
     opacity: 0;
-    transform: translateY(26px);
-    animation: ccgSlideUp 0.75s ease forwards;
+    transform: translateY(20px);
+    animation: ccgSlideUp 0.65s var(--ccg-ease-out-smooth) forwards;
 }
 
 @keyframes ccgSlideUp {
     from {
         opacity: 0;
-        transform: translateY(26px);
+        transform: translateY(20px);
     }
     to {
         opacity: 1;
@@ -43,34 +54,42 @@
 }
 
 /* ============================================================
-   OMEGA SECTION REVEAL (PRIMARY)
-   Used across: sections, cards, grids, hero blocks
+   PULSE GLOW (NEON ACCENTS)
+============================================================ */
+
+.ccg-pulse {
+    animation: ccgPulse 2.2s ease-in-out infinite;
+}
+
+@keyframes ccgPulse {
+    0%, 100% { opacity: 0.75; }
+    50%      { opacity: 1; }
+}
+
+/* ============================================================
+   OMEGA SECTION REVEAL
 ============================================================ */
 
 .ccg-anim-in {
     opacity: 0;
-    transform: translateY(28px) scale(0.97);
+    transform: translateY(22px) scale(0.985);
     animation:
-        ccgRevealRise 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards,
-        ccgGlowSettle 2.6s ease-out forwards;
+        ccgFadeRise 0.72s var(--ccg-ease-out-lux) forwards,
+        ccgGlowPulse 2.4s ease-out forwards;
     animation-delay: var(--ccg-anim-delay, 0s);
     will-change: opacity, transform, filter;
 }
 
-/* ============================================================
-   REVEAL RISE — DEPTH CUE
-============================================================ */
-
-@keyframes ccgRevealRise {
+@keyframes ccgFadeRise {
     0% {
         opacity: 0;
-        transform: translateY(28px) scale(0.97);
+        transform: translateY(22px) scale(0.985);
         filter: blur(3px);
     }
     45% {
         opacity: 0.6;
-        transform: translateY(12px) scale(0.985);
-        filter: blur(1.5px);
+        transform: translateY(10px) scale(0.995);
+        filter: blur(1.2px);
     }
     100% {
         opacity: 1;
@@ -79,74 +98,37 @@
     }
 }
 
-/* ============================================================
-   GLOW SETTLE — NEON DEPTH (SUBTLE)
-============================================================ */
-
-@keyframes ccgGlowSettle {
+@keyframes ccgGlowPulse {
     0% {
-        box-shadow: none;
         text-shadow: none;
+        box-shadow: none;
     }
     40% {
-        box-shadow:
-            0 0 18px rgba(var(--accent-rgb), 0.35),
-            0 0 32px rgba(var(--accent-rgb), 0.18);
         text-shadow:
-            0 0 14px rgba(var(--accent-rgb), 0.45),
-            0 0 26px rgba(var(--accent-rgb), 0.25);
+            0 0 12px rgba(var(--accent-rgb), 0.55),
+            0 0 22px rgba(var(--accent-rgb), 0.35);
+        box-shadow:
+            0 0 14px rgba(var(--accent-rgb), 0.25),
+            0 0 26px rgba(var(--accent-rgb), 0.15);
     }
     100% {
+        text-shadow:
+            0 0 8px rgba(var(--accent-rgb), 0.35),
+            0 0 18px rgba(var(--accent-rgb), 0.25);
         box-shadow:
             0 0 10px rgba(var(--accent-rgb), 0.22),
             0 0 22px rgba(var(--accent-rgb), 0.12);
-        text-shadow:
-            0 0 8px rgba(var(--accent-rgb), 0.28),
-            0 0 18px rgba(var(--accent-rgb), 0.18);
     }
 }
 
 /* ============================================================
-   CARD-SPECIFIC DEPTH REVEAL (GRIDS)
+   UNIVERSAL HOVER POLISH (SAFE TARGETS ONLY)
 ============================================================ */
 
-.ccg-game-card.ccg-anim-in,
-.ccg-card.ccg-anim-in {
-    transform-origin: center bottom;
-}
-
-.ccg-game-card.ccg-anim-in {
-    animation-duration: 0.65s;
-}
-
-/* ============================================================
-   RELATED STRIP — DEPTH LAYERING
-============================================================ */
-
-.related-scroll .ccg-game-card {
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease,
-        filter 0.2s ease;
-}
-
-.related-scroll .ccg-game-card:hover {
-    transform: translateY(-4px) scale(1.05);
-    box-shadow:
-        0 12px 34px rgba(0,0,0,0.7),
-        0 0 28px rgba(var(--accent-rgb),0.35);
-    filter: saturate(1.1);
-}
-
-/* ============================================================
-   PULSE GLOW (LOGO / HERO ACCENTS)
-============================================================ */
-
-.ccg-pulse {
-    animation: ccgPulse 2.4s ease-in-out infinite;
-}
-
-@keyframes ccgPulse {
-    0%, 100% { opacity: 0.7; }
-    50%      { opacity: 1; }
+.ccg-game-card,
+.ccg-panel,
+.ccg-btn,
+.ccg-nav__link,
+.ccg-genre-tile {
+    transition-timing-function: var(--ccg-ease-out-lux);
 }
