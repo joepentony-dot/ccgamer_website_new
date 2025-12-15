@@ -1,8 +1,8 @@
 /* ============================================================
-   GAMES LIBRARY — STABLE RESTORE + SMART THUMB CHECK
-   - No games.json edits
-   - No repo structure changes
-   - Fallback only when truly missing
+   GAMES LIBRARY — STABLE RESTORE (NO LAZY MAGIC)
+   - Correct thumbnail resolution
+   - Fallback ONLY on genuine 404
+   - No games.json changes
 ============================================================ */
 
 let CCG_ALL_GAMES = [];
@@ -74,24 +74,23 @@ function buildGamesAccordion(games) {
 }
 
 /* ============================================================
-   RENDER GAME CARD (SMART THUMB)
+   RENDER GAME CARD — CORRECT SRC + FALLBACK
 ============================================================ */
 
 function renderGameCard(game) {
     const id = encodeURIComponent(game.id);
-    const rawThumb = game.thumbnail || game.thumb || game.cover || "";
-    const thumbPath = buildThumbPath(rawThumb);
     const title = game.title || "Untitled Game";
+    const thumb = resolveGameThumb(game.thumbnail || game.thumb || game.cover);
 
     return `
         <a href="game.html?id=${id}" class="ccg-game-card">
             <div class="ccg-game-card__thumb">
                 <img
-                    data-src="${thumbPath}"
+                    src="${thumb}"
                     alt="${title}"
                     loading="lazy"
                     decoding="async"
-                    src="${FALLBACK_THUMB}"
+                    onerror="this.onerror=null;this.src='${FALLBACK_THUMB}'"
                 >
             </div>
             <div class="ccg-game-card__body">
@@ -105,10 +104,10 @@ function renderGameCard(game) {
 }
 
 /* ============================================================
-   THUMB PATH BUILDER
+   THUMB PATH RESOLUTION
 ============================================================ */
 
-function buildThumbPath(raw) {
+function resolveGameThumb(raw) {
     if (!raw) return FALLBACK_THUMB;
     const clean = String(raw).replace(/^\/+/, "");
     return `../resources/images/thumbnails/all/${clean}`;
