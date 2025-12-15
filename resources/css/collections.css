@@ -1,16 +1,17 @@
 /* ============================================================
-   COLLECTIONS.CSS — OMEGA PARITY PASS (PASS 2)
+   COLLECTIONS.CSS — OMEGA HOME PARITY (FINAL)
    ------------------------------------------------------------
-   • Visual parity with Genre Index
-   • Shared depth, glow, hover language
-   • No layout or JS dependencies
+   • Collections now EXACTLY match Home genre tiles
+   • Home is the immutable master contract
+   • Strict page scoping — zero bleed
+   • No JS or layout dependencies
 ============================================================ */
 
 /* ============================================================
    COLLECTIONS GRID
 ============================================================ */
 
-.ccg-collections-grid {
+.ccg-page--collections-index .ccg-collections-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 22px;
@@ -18,10 +19,10 @@
 }
 
 /* ============================================================
-   COLLECTION CARD — OMEGA TILE
+   COLLECTION CARD — STRUCTURE
 ============================================================ */
 
-.ccg-collection-card {
+.ccg-page--collections-index .ccg-collection-card {
     background: rgba(0, 0, 0, 0.55);
     border-radius: 14px;
     overflow: hidden;
@@ -36,7 +37,7 @@
         box-shadow 0.25s ease;
 }
 
-.ccg-collection-card:hover {
+.ccg-page--collections-index .ccg-collection-card:hover {
     transform: translateY(-4px);
     box-shadow:
         0 0 20px rgba(var(--accent-rgb), 0.8),
@@ -44,47 +45,48 @@
 }
 
 /* ============================================================
-   MEDIA — 16:9 LOCK + MOTION
+   MEDIA — HOME MASTER CONTRACT (THE FIX)
 ============================================================ */
 
-.ccg-collection-card .ccg-card__media {
+.ccg-page--collections-index .ccg-collection-card .ccg-card__media {
+    width: 100%;
+    aspect-ratio: 16 / 9;
     overflow: hidden;
+    position: relative;
 }
 
-.ccg-collection-card .ccg-card__media img {
+/* Image behaviour — IDENTICAL to Home */
+.ccg-page--collections-index .ccg-collection-card .ccg-card__media img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+    object-position: center;
+
     transition:
         transform 0.35s ease,
         filter 0.35s ease;
 }
 
-.ccg-collection-card:hover .ccg-card__media img {
-    transform: scale(1.04);
+.ccg-page--collections-index
+.ccg-collection-card:hover
+.ccg-card__media img {
+    transform: scale(1.03);
     filter: brightness(1.05);
 }
 
 /* ============================================================
-   TITLE + TEXT
+   BODY CONTENT
 ============================================================ */
 
-.ccg-collection-card .ccg-card__title {
+.ccg-page--collections-index .ccg-collection-card .ccg-card__body {
+    padding: 12px 14px 14px;
+}
+
+.ccg-page--collections-index .ccg-collection-card .ccg-card__title {
     text-shadow:
         0 0 8px rgba(var(--accent-rgb), 0.6),
         0 0 14px rgba(var(--accent-rgb), 0.35);
-}
-
-/* ============================================================
-   PASS 2 — VISUAL HIERARCHY
-   First row gently elevated
-============================================================ */
-
-.ccg-collections-grid .ccg-collection-card:nth-child(-n + 2) {
-    box-shadow:
-        0 0 18px rgba(0, 0, 0, 0.9),
-        0 0 34px rgba(var(--accent-rgb), 0.45);
-}
-
-.ccg-collections-grid .ccg-collection-card:nth-child(-n + 2):hover {
-    transform: translateY(-6px);
 }
 
 /* ============================================================
@@ -92,7 +94,7 @@
 ============================================================ */
 
 @media (max-width: 520px) {
-    .ccg-collections-grid {
+    .ccg-page--collections-index .ccg-collections-grid {
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
         gap: 16px;
     }
