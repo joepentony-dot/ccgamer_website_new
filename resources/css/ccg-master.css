@@ -1,6 +1,6 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & RESET
-   Omega Neon Edition — Phase P12 Editorial Polish
+   Omega Neon Edition — Phase P13 Header Alignment Lock
    ============================================================ */
 
 :root {
@@ -75,7 +75,7 @@ body {
 }
 
 /* ============================================================
-   SECTION RHYTHM — P11 EDITORIAL CADENCE
+   SECTION RHYTHM
    ============================================================ */
 
 .ccg-section + .ccg-section {
@@ -106,14 +106,14 @@ body {
 }
 
 /* ============================================================
-   HEADER (UNCHANGED — ALIGNMENT FIX COMES IN P13)
+   HEADER — PHASE P13 ALIGNMENT LOCK
    ============================================================ */
 
 .ccg-header {
     position: relative;
     z-index: 9999;
     width: 100%;
-    padding: 12px 0;
+    padding: 10px 0; /* 🔧 reduced vertical drift */
     background: linear-gradient(
         to bottom,
         rgba(0,0,0,.92),
@@ -123,17 +123,62 @@ body {
     backdrop-filter: blur(4px);
 }
 
+/* Core alignment fix */
 .ccg-header-inner {
     width: min(var(--ccg-page-max-width), 100% - var(--ccg-page-gutter) * 2);
     margin: 0 auto;
     display: flex;
-    align-items: center;
+    align-items: center;              /* 🔒 vertical baseline lock */
     justify-content: space-between;
-    gap: 18px;
+    gap: 20px;
+    min-height: 64px;                 /* 🔒 prevents collapse / drift */
+}
+
+/* Brand block */
+.ccg-brand {
+    display: inline-flex;
+    align-items: center;              /* 🔒 logo + text vertical sync */
+    gap: 12px;
+}
+
+.ccg-brand__logo {
+    width: 64px;
+    height: auto;
+    flex-shrink: 0;
+}
+
+/* Brand text stack */
+.ccg-brand__text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;          /* 🔒 centers text vs logo */
+    line-height: 1.15;
+}
+
+/* Navigation alignment */
+.ccg-nav {
+    display: flex;
+    align-items: center;              /* 🔒 nav baseline fixed */
+}
+
+.ccg-nav__list {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Header actions */
+.ccg-header-actions {
+    display: flex;
+    align-items: center;              /* 🔒 toggle + socials align */
+    gap: 16px;
 }
 
 /* ============================================================
-   SECTION TITLES — P4 MICRO TYPOGRAPHY
+   SECTION TITLES
    ============================================================ */
 
 .ccg-section-title,
@@ -152,7 +197,6 @@ body {
         0 0 14px rgba(0,170,255,.6);
 }
 
-/* Section divider glow */
 .ccg-section-title::after {
     content: "";
     display: block;
@@ -171,14 +215,13 @@ body {
     transition: width .25s ease, opacity .25s ease;
 }
 
-/* Interactive cadence (visual only) */
 .ccg-section:hover .ccg-section-title::after {
     width: 88px;
     opacity: .85;
 }
 
 /* ============================================================
-   SUBTITLES / LEAD TEXT
+   SUBTITLES
    ============================================================ */
 
 .ccg-genrehub-subtitle,
@@ -193,7 +236,7 @@ body {
 }
 
 /* ============================================================
-   P12 — MICRO TEXTURE (QUALITY DEPTH)
+   MICRO TEXTURE
    ============================================================ */
 
 .ccg-section,
@@ -229,4 +272,28 @@ body {
 
 .ccg-footer__text {
     margin: 0;
+}
+
+/* ============================================================
+   RESPONSIVE — HEADER STABILITY
+   ============================================================ */
+
+@media (max-width: 768px) {
+    .ccg-header-inner {
+        flex-wrap: wrap;
+        align-items: center;
+        row-gap: 8px;
+        min-height: unset;
+    }
+
+    .ccg-header-actions {
+        margin-left: auto;
+    }
+}
+
+@media (max-width: 560px) {
+    .ccg-header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
