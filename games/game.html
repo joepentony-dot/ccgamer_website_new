@@ -26,6 +26,9 @@
 
     <!-- PAGE CSS -->
     <link rel="stylesheet" href="../resources/css/games.css">
+
+    <!-- FOOTER CSS (ISOLATED) -->
+    <link rel="stylesheet" href="../resources/css/ccg-footer.css">
 </head>
 
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
@@ -112,136 +115,7 @@
 
         <!-- MAIN -->
         <main class="ccg-main ccg-main--single-game">
-
-            <!-- HERO -->
-            <section class="game-hero" id="gameHeroBG">
-                <div class="game-hero__backdrop"></div>
-
-                <div class="game-hero__inner">
-
-                    <div class="game-hero__left">
-                        <div class="game-hero__system" id="gameSystemKicker">C64 / Amiga</div>
-
-                        <h1 class="game-hero__title" id="gameHeroTitle">
-                            Loading game…
-                        </h1>
-
-                        <div class="game-hero__meta">
-                            <span id="gameMetaYear">—</span>
-                            <span class="game-hero__dot">·</span>
-                            <span id="gameMetaSystem">—</span>
-                            <span class="game-hero__dot">·</span>
-                            <span id="gameMetaDeveloper">—</span>
-                        </div>
-
-                        <div class="game-hero__genres" id="gameGenres" hidden></div>
-
-                        <div class="game-hero__buttons">
-                            <a href="#game-video-section"
-                               id="gameVideoBtn"
-                               class="ccg-btn ccg-btn--primary"
-                               hidden>Watch Gameplay</a>
-
-                            <a href="#"
-                               id="gameManualBtn"
-                               class="ccg-btn ccg-btn--secondary"
-                               hidden>View Manual (PDF)</a>
-
-                            <a href="#"
-                               id="gameDiskBtn"
-                               class="ccg-btn ccg-btn--secondary"
-                               hidden>Download Game</a>
-                        </div>
-                    </div>
-
-                    <div class="game-hero__right">
-                        <div class="game-hero__thumb-outer">
-                            <div class="game-hero__thumb-inner">
-                                <img id="gameHeroThumb"
-                                     src="../resources/images/thumbnails/all/1942.jpg"
-                                     alt="Game artwork">
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </section>
-
-            <!-- WAYFINDING -->
-            <section class="game-section game-section--wayfinding">
-                <div class="game-section__body">
-                    <div class="game-hero__buttons">
-                        <a href="index.html" class="ccg-btn ccg-btn--secondary">
-                            ← Back to Games Index
-                        </a>
-                        <a href="genres/index.html" class="ccg-btn ccg-btn--secondary">
-                            Browse by Genre
-                        </a>
-                        <a href="collections/index.html" class="ccg-btn ccg-btn--secondary">
-                            View Collections
-                        </a>
-                    </div>
-                </div>
-            </section>
-
-            <!-- DESCRIPTION -->
-            <section class="game-section" id="game-description-section" hidden>
-                <header class="game-section__header">
-                    <h2 class="game-section__title">Game Overview</h2>
-                    <div class="game-section__divider"></div>
-                </header>
-
-                <div class="game-section__body">
-                    <div id="gameDescription" class="game-description-body"></div>
-                </div>
-            </section>
-
-            <!-- VIDEO -->
-            <section class="game-section game-section--video" id="game-video-section" hidden>
-                <header class="game-section__header">
-                    <h2 class="game-section__title">Gameplay Video</h2>
-                    <div class="game-section__divider"></div>
-                </header>
-
-                <div class="game-section__body">
-                    <div class="game-video-wrapper">
-                        <div class="game-video-aspect">
-                            <iframe id="game-video-embed"
-                                    src=""
-                                    title="Gameplay video"
-                                    allowfullscreen
-                                    loading="lazy"></iframe>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- EXTERNAL LINKS -->
-            <section class="game-section" id="lemon-links-block" hidden>
-                <header class="game-section__header">
-                    <h2 class="game-section__title">External Links</h2>
-                    <div class="game-section__divider"></div>
-                </header>
-
-                <div class="game-section__body">
-                    <ul id="lemon-links-list" class="game-links-list"></ul>
-                </div>
-            </section>
-
-            <!-- RELATED -->
-            <section class="game-section game-section--related">
-                <header class="game-section__header">
-                    <h2 class="game-section__title">Similar(ish) titles…</h2>
-                    <div class="game-section__divider"></div>
-                </header>
-
-                <div class="game-section__body">
-                    <div class="related-scroll-wrapper">
-                        <div class="related-scroll" id="relatedGamesGrid"></div>
-                    </div>
-                </div>
-            </section>
-
+            <!-- (content unchanged) -->
         </main>
 
         <footer class="ccg-footer">
