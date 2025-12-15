@@ -1,36 +1,35 @@
 /* ============================================================
-   CCG-OVERLAYS.CSS — OMEGA DEPTH PASS
-   Phase P23 — Hero Background Grain & Depth
+   CCG OVERLAYS — CRT / VIGNETTE FINAL MICRO DEPTH
+   Phase P29 — Cinematic Finish
 ============================================================ */
 
-.ccg-bg-starfield,
-.ccg-bg-grid,
+.ccg-bg-starfield {
+    background-image: url("../images/starfield_new.png");
+    opacity: 0.75;
+}
+
+.ccg-bg-grid {
+    background-image: url("../images/bg-grid_new.jpg");
+    opacity: 0.18;
+    mix-blend-mode: screen;
+}
+
 .ccg-bg-crt-overlay {
-    will-change: transform, opacity;
-}
-
-/* subtle grain layer */
-.ccg-bg::after {
-    content: "";
-    position: absolute;
-    inset: 0;
     pointer-events: none;
-    background-image:
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(255,255,255,0.03) 0%,
+            rgba(0,0,0,0.35) 70%,
+            rgba(0,0,0,0.65) 100%
+        ),
         repeating-linear-gradient(
-            0deg,
-            rgba(255,255,255,0.015),
-            rgba(255,255,255,0.015) 1px,
+            to bottom,
+            rgba(255,255,255,0.02),
+            rgba(255,255,255,0.02) 1px,
             transparent 1px,
-            transparent 2px
+            transparent 3px
         );
-    opacity: 0.25;
     mix-blend-mode: overlay;
-}
-
-/* hero sections float slightly above background */
-.ccg-hero,
-.ccg-genre-hero,
-.game-hero {
-    position: relative;
-    z-index: 2;
+    opacity: 0.45;
 }
