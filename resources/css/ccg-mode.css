@@ -1,226 +1,104 @@
 /* ============================================================
-   CCG-MODE.CSS — Omega Mode Engine (C64 / Amiga)
-   Controls global theming, accents, hero tint, CRT brightness,
-   neon colours, shadows, button glow, and card hue.
-============================================================ */
+   CCG MODE CSS — SYSTEM PERSONALITY LAYER
+   Phase P16 — Mode-Based Neon Intensity Tuning
+   ------------------------------------------------------------
+   • C64 = cooler, disciplined neon
+   • Amiga = warmer, richer glow
+   • ZERO layout changes
+   ============================================================ */
 
 /* ============================================================
-   BASE VARIABLES (default before mode is chosen)
+   DEFAULT (C64 MODE)
 ============================================================ */
-:root {
-    /* fallback neutral */
-    --accent: #00e0ff;
-    --accent-rgb: 0, 224, 255;
 
-    --accent-soft: rgba(var(--accent-rgb), 0.45);
-    --accent-strong: rgba(var(--accent-rgb), 0.85);
+body[data-ccg-mode="c64"] {
+    --accent-rgb: 0, 170, 255;
+    --accent-main: var(--ccg-color-blue);
+    --accent-soft: var(--ccg-color-cyan);
 
-    --crt-opacity: 0.22;
-    --scan-opacity: 0.28;
+    --ccg-neon-main:
+        0 0 6px rgba(0,170,255,0.45),
+        0 0 14px rgba(0,170,255,0.25);
 
-    --text-light: #ffffff;
-    --text-dim: #c8d4e0;
-
-    --panel-bg: rgba(0, 0, 0, 0.55);
-
-    --hero-img: url("../images/hero/ccg-hero-c64.png");
-
-    --btn-primary-bg: rgba(var(--accent-rgb), 0.25);
-    --btn-primary-border: rgba(var(--accent-rgb), 0.85);
-    --btn-primary-hover-bg: rgba(var(--accent-rgb), 0.35);
-
-    --btn-secondary-bg: rgba(255,255,255,0.06);
-    --btn-secondary-border: rgba(255,255,255,0.25);
-
-    --card-border: rgba(255,255,255,0.12);
-    --card-glow: rgba(var(--accent-rgb), 0.18);
+    --ccg-neon-strong:
+        0 0 10px rgba(0,170,255,0.65),
+        0 0 22px rgba(0,170,255,0.4);
 }
 
 /* ============================================================
-   C64 MODE — Crisp cyan neon, classic cold CRT
+   AMIGA MODE — RICHER / HOTTER
 ============================================================ */
 
-body[data-mode="c64"] {
-    --accent: #00d6ff;
-    --accent-rgb: 0, 214, 255;
+body[data-ccg-mode="amiga"] {
+    --accent-rgb: 255, 41, 224;
+    --accent-main: var(--ccg-color-pink);
+    --accent-soft: #ff7bff;
 
-    --accent-soft: rgba(var(--accent-rgb), 0.45);
-    --accent-strong: rgba(var(--accent-rgb), 0.85);
+    --ccg-neon-main:
+        0 0 8px rgba(255,41,224,0.55),
+        0 0 18px rgba(255,41,224,0.35);
 
-    --crt-opacity: 0.26;
-    --scan-opacity: 0.30;
-
-    --panel-bg: rgba(0, 12, 24, 0.55);
-
-    --hero-img: url("../images/hero/ccg-hero-c64.png");
-
-    --btn-primary-bg: rgba(var(--accent-rgb), 0.22);
-    --btn-primary-border: rgba(var(--accent-rgb), 0.88);
-    --btn-primary-hover-bg: rgba(var(--accent-rgb), 0.32);
-
-    --card-glow: rgba(var(--accent-rgb), 0.22);
+    --ccg-neon-strong:
+        0 0 14px rgba(255,41,224,0.75),
+        0 0 30px rgba(255,41,224,0.5);
 }
 
 /* ============================================================
-   AMIGA MODE — Magenta neon, warm bloom, pastel tinting
+   SHARED NEON APPLICATIONS
 ============================================================ */
 
-body[data-mode="amiga"] {
-    --accent: #ff3bd4;
-    --accent-rgb: 255, 59, 212;
-
-    --accent-soft: rgba(var(--accent-rgb), 0.5);
-    --accent-strong: rgba(var(--accent-rgb), 0.9);
-
-    --crt-opacity: 0.28;
-    --scan-opacity: 0.32;
-
-    --panel-bg: rgba(20, 0, 25, 0.55);
-
-    --hero-img: url("../images/hero/ccg-hero-amiga.png");
-
-    --btn-primary-bg: rgba(var(--accent-rgb), 0.22);
-    --btn-primary-border: rgba(var(--accent-rgb), 0.92);
-    --btn-primary-hover-bg: rgba(var(--accent-rgb), 0.32);
-
-    --card-glow: rgba(var(--accent-rgb), 0.25);
-}
-
-/* ============================================================
-   HERO IMAGE MODE SWITCH (uses var(--hero-img))
-============================================================ */
-
-.ccg-hero-image {
-    background-image: var(--hero-img);
-    background-size: cover;
-    background-position: center;
-    opacity: 0.95;
-    filter: drop-shadow(0 0 14px rgba(var(--accent-rgb), 0.35));
-}
-
-/* ============================================================
-   GLOBAL MODE ADAPTIVE COLOURING
-============================================================ */
-
-.ccg-section-title,
-.ccg-card__title,
-.ccg-hero-title {
+/* Section titles */
+body[data-ccg-mode] .ccg-section-title,
+body[data-ccg-mode] .ccg-hero-title,
+body[data-ccg-mode] .ccg-genre-hero__title {
     text-shadow:
-        0 0 14px rgba(var(--accent-rgb), 0.6),
-        0 0 28px rgba(var(--accent-rgb), 0.4);
+        0 0 6px rgba(0,0,0,0.8),
+        var(--ccg-neon-main);
 }
 
-/* ------------------------------------------------------------
-   Buttons
------------------------------------------------------------- */
-
-.ccg-btn--primary {
-    background: var(--btn-primary-bg);
-    border: 1px solid var(--btn-primary-border);
-}
-
-.ccg-btn--primary:hover {
-    background: var(--btn-primary-hover-bg);
+/* Buttons */
+body[data-ccg-mode] .ccg-btn--primary {
     box-shadow:
-        0 0 22px rgba(var(--accent-rgb), 0.65),
-        0 0 44px rgba(var(--accent-rgb), 0.35);
+        0 0 10px rgba(var(--accent-rgb),0.45),
+        inset 0 0 12px rgba(var(--accent-rgb),0.25);
 }
 
-.ccg-btn--secondary {
-    background: var(--btn-secondary-bg);
-    border: 1px solid var(--btn-secondary-border);
-}
-
-.ccg-btn--secondary:hover {
+body[data-ccg-mode] .ccg-btn--primary:hover {
     box-shadow:
-        0 0 22px rgba(var(--accent-rgb), 0.45),
-        0 0 44px rgba(var(--accent-rgb), 0.30);
+        var(--ccg-neon-strong),
+        inset 0 0 14px rgba(var(--accent-rgb),0.35);
 }
 
-/* ------------------------------------------------------------
-   Cards & Panels
------------------------------------------------------------- */
-
-.ccg-card,
-.ccg-panel {
-    background: var(--panel-bg);
-    border: 1px solid var(--card-border);
+/* Cards */
+body[data-ccg-mode] .ccg-game-card,
+body[data-ccg-mode] .ccg-card {
     box-shadow:
-        0 0 14px rgba(0,0,0,0.75),
-        0 0 24px var(--card-glow);
+        0 8px 18px rgba(0,0,0,0.7),
+        0 0 18px rgba(var(--accent-rgb),0.12);
 }
 
-.ccg-card__media img {
+body[data-ccg-mode] .ccg-game-card:hover,
+body[data-ccg-mode] .ccg-card:hover {
     box-shadow:
-        0 0 12px rgba(0,0,0,0.6),
-        0 0 18px rgba(var(--accent-rgb), 0.3);
+        0 14px 32px rgba(0,0,0,0.8),
+        0 0 30px rgba(var(--accent-rgb),0.35);
 }
 
-/* ------------------------------------------------------------
-   Mode Badge
------------------------------------------------------------- */
-
-.ccg-hero__mode-badge {
-    color: var(--accent);
-    text-shadow:
-        0 0 10px rgba(var(--accent-rgb), 0.8),
-        0 0 20px rgba(var(--accent-rgb), 0.45);
-}
-
-/* ------------------------------------------------------------
-   Toggle Pill (C64 ↔ Amiga)
------------------------------------------------------------- */
-
-.ccg-mode-toggle__pill {
-    background: rgba(var(--accent-rgb), 0.12);
-    border: 1px solid rgba(var(--accent-rgb), 0.45);
+/* Header neon strip */
+body[data-ccg-mode] .ccg-header-neon-strip {
     box-shadow:
-        0 0 16px rgba(var(--accent-rgb), 0.25),
-        inset 0 0 12px rgba(var(--accent-rgb), 0.25);
-}
-
-.ccg-mode-toggle__thumb {
-    background: var(--accent);
-    box-shadow:
-        0 0 14px rgba(var(--accent-rgb), 0.75),
-        0 0 26px rgba(var(--accent-rgb), 0.45);
-}
-
-/* ------------------------------------------------------------
-   Social Icons Adaptation
------------------------------------------------------------- */
-
-.ccg-social-hero-btn img,
-.ccg-socials__icon {
-    filter:
-        drop-shadow(0 0 10px rgba(var(--accent-rgb), 0.55))
-        drop-shadow(0 0 18px rgba(var(--accent-rgb), 0.25));
-}
-
-/* ------------------------------------------------------------
-   Inputs / Tables / Misc
------------------------------------------------------------- */
-
-input,
-select,
-textarea {
-    border-color: rgba(var(--accent-rgb), 0.5);
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-    box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.5);
+        0 0 10px rgba(var(--accent-rgb),0.6),
+        0 0 18px rgba(var(--accent-rgb),0.35);
 }
 
 /* ============================================================
-   MEDIA QUERY STABILITY (SAFE)
+   MODE TOGGLE THUMB (VISUAL CONFIRMATION)
 ============================================================ */
 
-@media (max-width: 800px) {
-    .ccg-hero-title {
-        text-shadow:
-            0 0 10px rgba(var(--accent-rgb), 0.55),
-            0 0 18px rgba(var(--accent-rgb), 0.35);
-    }
+body[data-ccg-mode="c64"] .ccg-mode-toggle__thumb {
+    background: linear-gradient(135deg, #00aaff, #7fe9ff);
+}
+
+body[data-ccg-mode="amiga"] .ccg-mode-toggle__thumb {
+    background: linear-gradient(135deg, #ff29e0, #ff7bff);
 }
