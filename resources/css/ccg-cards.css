@@ -1,15 +1,18 @@
 /* ============================================================
    CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM
-   Phase P17 — Thumbnail Vignette & Micro-Contrast
+   Phase P21 — Card Hover Glow Taper & Depth
    ------------------------------------------------------------
-   • Adds depth without darkening content
-   • Mode-aware (C64 cooler / Amiga richer)
-   • ZERO layout changes
+   GOALS:
+   • Higher “wow” on hover (depth + taper glow)
+   • No layout shifts (no padding/size changes)
+   • Mode-aware glow (C64 vs Amiga)
+   • Thumbnail vignette micro-contrast baked in
+   • Keeps your critical genre grid override intact
    ============================================================ */
 
-/* ============================================================
-   GRID LAYOUTS
-============================================================ */
+/* ------------------------------------------------------------
+   BASE GRID LAYOUTS
+------------------------------------------------------------ */
 
 .ccg-genre-grid,
 .genre-grid,
@@ -19,98 +22,167 @@
     gap: 20px;
 }
 
-/* Genre page density lock */
+/* ------------------------------------------------------------
+   🔒 GENRE PAGE GRID OVERRIDE (CRITICAL)
+   Prevents 1fr banner-style expansion
+------------------------------------------------------------ */
+
 .ccg-page--genre-single .ccg-genre-grid {
     grid-template-columns: repeat(auto-fill, minmax(260px, 260px));
     justify-content: center;
 }
 
-/* ============================================================
-   BASE CARD SHELL
-============================================================ */
+/* ------------------------------------------------------------
+   BASE CARD SHELL (shared)
+------------------------------------------------------------ */
 
 .ccg-game-card,
 .ccg-card,
 .ccg-genre-tile {
     position: relative;
-    background: radial-gradient(circle at top, rgba(40,40,80,.55), rgba(0,0,0,.9));
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,.08);
-    overflow: hidden;
-    box-shadow:
-        0 8px 16px rgba(0,0,0,.7),
-        0 0 18px rgba(var(--accent-rgb), 0.12);
-    transition:
-        transform .22s ease,
-        box-shadow .22s ease,
-        border-color .22s ease;
-    text-decoration: none;
-    color: inherit;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+    border-radius: 16px;
+
+    /* deep cinematic body */
+    background:
+        radial-gradient(circle at top, rgba(40,40,80,.58), rgba(0,0,0,.92));
+
+    border: 1px solid rgba(255,255,255,.08);
+    box-shadow:
+        0 10px 22px rgba(0,0,0,.72);
+
+    text-decoration: none;
+    color: inherit;
+
+    /* Hover timing polish (P7) — curves only */
+    transition:
+        transform 220ms cubic-bezier(.2,.8,.2,1),
+        box-shadow 260ms cubic-bezier(.2,.8,.2,1),
+        border-color 220ms cubic-bezier(.2,.8,.2,1),
+        filter 220ms cubic-bezier(.2,.8,.2,1);
+    will-change: transform, box-shadow, filter;
 }
 
-/* ============================================================
-   THUMBNAIL WRAPPER
-============================================================ */
+/* ------------------------------------------------------------
+   GLOW TAPER LAYERS (visual only)
+   Uses ::before for glow, ::after for vignette/top sheen.
+------------------------------------------------------------ */
 
+.ccg-game-card::before,
+.ccg-card::before,
+.ccg-genre-tile::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+
+    /* default: C64 lean (blue/cyan) */
+    background:
+        radial-gradient(circle at 20% 0%,
+            rgba(var(--accent-rgb, 0,170,255), 0.32),
+            transparent 55%),
+        radial-gradient(circle at 85% 105%,
+            rgba(var(--accent-rgb, 0,170,255), 0.18),
+            transparent 60%),
+        linear-gradient(135deg,
+            rgba(var(--accent-rgb, 0,170,255), 0.10),
+            transparent 55%);
+
+    filter: blur(10px);
+    transition: opacity 240ms cubic-bezier(.2,.8,.2,1);
+}
+
+.ccg-game-card::after,
+.ccg-card::after,
+.ccg-genre-tile::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+
+    /* cinematic vignette + subtle top sheen */
+    background:
+        radial-gradient(circle at 50% 40%,
+            rgba(255,255,255,0.06),
+            transparent 55%),
+        radial-gradient(circle at 50% 120%,
+            rgba(0,0,0,0.42),
+            transparent 55%),
+        linear-gradient(to bottom,
+            rgba(0,0,0,0.08),
+            rgba(0,0,0,0.24));
+
+    opacity: 0.95;
+    transition: opacity 260ms cubic-bezier(.2,.8,.2,1);
+}
+
+/* ------------------------------------------------------------
+   CARD MEDIA (16:9)
+------------------------------------------------------------ */
+
+.ccg-card__media,
 .ccg-game-card__thumb {
     position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
     min-height: 140px;
     overflow: hidden;
-    background: #000;
 }
 
-/* Image itself */
+/* Thumbnail vignette depth (P9) — micro contrast */
+.ccg-card__media::before,
+.ccg-game-card__thumb::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    background:
+        radial-gradient(circle at 50% 45%,
+            transparent 35%,
+            rgba(0,0,0,0.22) 72%,
+            rgba(0,0,0,0.46) 100%),
+        linear-gradient(to bottom,
+            rgba(0,0,0,0.08),
+            rgba(0,0,0,0.22));
+    opacity: 0.95;
+}
+
+.ccg-card__media img,
 .ccg-game-card__thumb img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
 
-    /* Micro contrast & sharpness */
-    filter:
-        contrast(1.05)
-        saturate(1.02);
-
-    transition: filter .25s ease, transform .25s ease;
+    /* keeps art punchy but not nuclear */
+    filter: brightness(0.95) contrast(1.05) saturate(0.98);
+    transform: translateZ(0);
+    transition:
+        transform 320ms cubic-bezier(.2,.8,.2,1),
+        filter 260ms cubic-bezier(.2,.8,.2,1);
 }
 
-/* ============================================================
-   VIGNETTE OVERLAY (THE MAGIC)
-============================================================ */
-
-.ccg-game-card__thumb::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-
-    /* Soft cinematic vignette */
-    background:
-        radial-gradient(
-            ellipse at center,
-            rgba(0,0,0,0) 55%,
-            rgba(0,0,0,0.35) 100%
-        );
-
-    opacity: 0.9;
-    transition: opacity .25s ease;
-}
-
-/* ============================================================
+/* ------------------------------------------------------------
    CARD BODY
-============================================================ */
+------------------------------------------------------------ */
 
+.ccg-card__body,
 .ccg-game-card__body {
+    position: relative;
+    z-index: 3;
     padding: 10px 10px 12px;
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 
+.ccg-card__title,
 .ccg-game-card__title {
     font-family: var(--ccg-font-main);
     font-size: 0.78rem;
@@ -119,58 +191,100 @@
     color: #ffffff;
     line-height: 1.25;
     min-height: 2.4em;
+    text-shadow: 0 0 8px rgba(0,0,0,0.65);
 }
 
-/* ============================================================
-   HOVER — DEPTH WITHOUT FLASH
-============================================================ */
+.ccg-card__text,
+.ccg-game-card__text {
+    font-family: var(--ccg-font-body);
+    font-size: 0.86rem;
+    color: var(--ccg-text-soft);
+    line-height: 1.45;
+}
 
-.ccg-game-card:hover {
-    transform: translateY(-2px) scale(1.02);
+/* ------------------------------------------------------------
+   HOVER — DEPTH + GLOW TAPER (P21)
+------------------------------------------------------------ */
+
+.ccg-game-card:hover,
+.ccg-card:hover,
+.ccg-genre-tile:hover {
+    transform: translateY(-3px) scale(1.02);
+    border-color: rgba(255,255,255,.14);
+
     box-shadow:
-        0 14px 32px rgba(0,0,0,.8),
-        0 0 30px rgba(var(--accent-rgb), 0.35);
+        0 18px 44px rgba(0,0,0,.80),
+        0 0 26px rgba(var(--accent-rgb, 0,170,255), 0.16),
+        0 0 52px rgba(var(--accent-rgb, 0,170,255), 0.08);
 }
 
-.ccg-game-card:hover .ccg-game-card__thumb img {
-    filter:
-        contrast(1.12)
-        saturate(1.08);
-    transform: scale(1.04);
+.ccg-game-card:hover::before,
+.ccg-card:hover::before,
+.ccg-genre-tile:hover::before {
+    opacity: 1;
 }
 
-.ccg-game-card:hover .ccg-game-card__thumb::after {
-    opacity: 0.6; /* reveal more artwork on hover */
+/* thumbnail “lift” */
+.ccg-game-card:hover .ccg-game-card__thumb img,
+.ccg-card:hover .ccg-card__media img,
+.ccg-genre-tile:hover .ccg-card__media img {
+    transform: scale(1.035);
+    filter: brightness(1.02) contrast(1.08) saturate(1.06);
 }
 
-/* ============================================================
-   MODE-SPECIFIC TUNING
-============================================================ */
+/* ------------------------------------------------------------
+   FOCUS ACCESSIBILITY (keyboard safe)
+------------------------------------------------------------ */
 
-/* C64 — disciplined, cooler */
-body[data-ccg-mode="c64"] .ccg-game-card__thumb img {
-    filter:
-        contrast(1.04)
-        saturate(1.01);
+.ccg-game-card:focus-visible,
+.ccg-card:focus-visible,
+.ccg-genre-tile:focus-visible {
+    outline: 2px solid rgba(var(--accent-rgb, 0,170,255), 0.55);
+    outline-offset: 3px;
 }
 
-/* Amiga — richer colour depth */
-body[data-ccg-mode="amiga"] .ccg-game-card__thumb img {
-    filter:
-        contrast(1.08)
-        saturate(1.08);
+/* ------------------------------------------------------------
+   MODE-BASED HOVER SATURATION TUNING (P8)
+------------------------------------------------------------ */
+
+body[data-ccg-mode="c64"] .ccg-game-card:hover,
+body[data-ccg-mode="c64"] .ccg-card:hover,
+body[data-ccg-mode="c64"] .ccg-genre-tile:hover {
+    box-shadow:
+        0 18px 44px rgba(0,0,0,.80),
+        0 0 30px rgba(0,170,255, 0.18),
+        0 0 60px rgba(0,170,255, 0.10);
 }
 
-/* ============================================================
+body[data-ccg-mode="amiga"] .ccg-game-card:hover,
+body[data-ccg-mode="amiga"] .ccg-card:hover,
+body[data-ccg-mode="amiga"] .ccg-genre-tile:hover {
+    /* Amiga = slightly richer bloom, still controlled */
+    box-shadow:
+        0 18px 44px rgba(0,0,0,.80),
+        0 0 30px rgba(255,41,224, 0.18),
+        0 0 60px rgba(255,41,224, 0.10);
+}
+
+/* ------------------------------------------------------------
    RESPONSIVE
-============================================================ */
+------------------------------------------------------------ */
 
 @media (max-width: 768px) {
+
     .ccg-page--genre-single .ccg-genre-grid {
         grid-template-columns: repeat(auto-fill, minmax(200px, 200px));
     }
 
+    .ccg-card__title,
     .ccg-game-card__title {
         font-size: 0.72rem;
+    }
+
+    /* soften hover scale on touchy layouts */
+    .ccg-game-card:hover,
+    .ccg-card:hover,
+    .ccg-genre-tile:hover {
+        transform: translateY(-2px) scale(1.015);
     }
 }
