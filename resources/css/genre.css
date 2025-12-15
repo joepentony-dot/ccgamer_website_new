@@ -1,10 +1,6 @@
 /* ============================================================
-   GENRE.CSS — GENRE INDEX & GENRE SINGLE (OMEGA QA PASS)
-   ------------------------------------------------------------
-   • Visual QA only
-   • No JS or data changes
-   • No card or loader redefinitions
-   • STRICT PAGE SCOPING
+   GENRE.CSS — GENRE INDEX & GENRE SINGLE
+   OMEGA QA PASS + MOBILE SANITY
 ============================================================ */
 
 /* ============================================================
@@ -17,10 +13,6 @@
 
 .ccg-page--genres-index .page-header {
     margin-bottom: 28px;
-}
-
-.ccg-page--genres-index .page-header__title {
-    margin-bottom: 10px;
 }
 
 .ccg-page--genres-index .page-header__description {
@@ -45,22 +37,10 @@
 
 .ccg-page--genres-index .genre-card:hover {
     transform: translateY(-3px);
-    box-shadow:
-        0 10px 26px rgba(0,0,0,0.32),
-        0 0 18px rgba(var(--accent-rgb), 0.18);
-}
-
-/* Genre card content rhythm */
-.ccg-page--genres-index .genre-card__body {
-    padding-top: 12px;
-}
-
-.ccg-page--genres-index .genre-card__title {
-    margin-bottom: 6px;
 }
 
 /* ============================================================
-   GENRE SINGLE — BASE
+   GENRE SINGLE
 ============================================================ */
 
 .ccg-page--genre-single .ccg-main {
@@ -71,95 +51,29 @@
     margin-bottom: 30px;
 }
 
-.ccg-page--genre-single .page-header__description {
-    max-width: 860px;
-    opacity: 0.9;
-}
-
-/* ============================================================
-   GENRE SINGLE — GAME GRID
-============================================================ */
-
 .ccg-page--genre-single .games-grid {
     margin-top: 26px;
     gap: 22px;
 }
 
-.ccg-page--genre-single .ccg-game-card {
-    transition:
-        transform 0.18s ease,
-        box-shadow 0.18s ease;
-}
-
-.ccg-page--genre-single .ccg-game-card:hover {
-    transform: translateY(-3px);
-    box-shadow:
-        0 10px 26px rgba(0,0,0,0.32),
-        0 0 18px rgba(var(--accent-rgb), 0.18);
-}
-
 /* ============================================================
-   SECTION DIVIDERS — VISUAL RHYTHM
+   MOBILE SANITY
 ============================================================ */
 
-.ccg-page--genres-index .section-divider,
-.ccg-page--genre-single .section-divider {
-    margin-top: 10px;
-    margin-bottom: 18px;
-    opacity: 0.7;
-}
-
-/* ============================================================
-   RESPONSIVE
-============================================================ */
-
-@media (max-width: 900px) {
+@media (max-width: 768px) {
 
     .ccg-page--genres-index .page-header,
     .ccg-page--genre-single .page-header {
-        margin-bottom: 24px;
+        margin-bottom: 22px;
     }
 
     .ccg-page--genres-index .genres-grid,
     .ccg-page--genre-single .games-grid {
         gap: 18px;
     }
-}
 
-@media (max-width: 520px) {
-
-    .ccg-page--genres-index .page-header,
-    .ccg-page--genre-single .page-header {
-        margin-bottom: 20px;
+    .ccg-page--genres-index .genre-card,
+    .ccg-page--genre-single .ccg-game-card {
+        margin-inline: auto;
     }
-
-    .ccg-page--genres-index .genres-grid,
-    .ccg-page--genre-single .games-grid {
-        gap: 16px;
-    }
-}
-
-/* ============================================================
-   IMAGE LOAD STABILITY — SHARED SAFETY
-============================================================ */
-
-.genre-card img,
-.ccg-game-card__thumb img {
-    display: block;
-    width: 100%;
-    height: auto;
-    contain: layout paint;
-    content-visibility: auto;
-}
-
-/* ============================================================
-   HOME MASTER CONTRACT OVERRIDE (GENRES INDEX ONLY)
-   Ensures containment cannot be undone by height:auto rules
-============================================================ */
-
-.ccg-page--genres-index .ccg-genre-grid .ccg-card.ccg-genre-card > img {
-    height: auto;            /* keep stable */
-    object-fit: contain;     /* HOME MASTER */
-    object-position: center; /* HOME MASTER */
-    aspect-ratio: 16 / 9;    /* HOME MASTER */
 }
