@@ -1,7 +1,7 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & RESET
    Omega Neon Edition — Phase P24
-   GLOBAL HEADER + BRAND LOCK (FOUNDATION RESTORE)
+   MOBILE SANITY SWEEP PASS (SAFE)
 ============================================================ */
 
 :root {
@@ -96,7 +96,6 @@ body {
     max-width: 420px;
 }
 
-/* LOGO IMAGE — THIS FIXES THE HUGE LOGO EVERYWHERE */
 .ccg-brand__logo {
     display: block;
     width: 56px;
@@ -107,14 +106,12 @@ body {
     flex-shrink: 0;
 }
 
-/* BRAND TEXT WRAP */
 .ccg-brand__text {
     display: flex;
     flex-direction: column;
     line-height: 1.1;
 }
 
-/* KICKER */
 .ccg-brand__kicker {
     font-size: 0.7rem;
     letter-spacing: 0.08em;
@@ -122,7 +119,6 @@ body {
     opacity: 0.85;
 }
 
-/* TITLE LINE */
 .ccg-brand__title {
     font-family: var(--ccg-font-main);
     font-size: 0.95rem;
@@ -131,7 +127,6 @@ body {
     white-space: nowrap;
 }
 
-/* NEON WORDS (COLOUR ONLY — NO SIZE) */
 .ccg-brand__neon-cheeky {
     color: var(--ccg-color-blue);
 }
@@ -212,7 +207,6 @@ body {
     width: 100%;
 }
 
-/* Mode-aware glow */
 body[data-ccg-mode="amiga"] .ccg-nav__link:hover {
     text-shadow: 0 0 8px rgba(255,41,224,0.45);
 }
@@ -260,7 +254,6 @@ body[data-ccg-mode="amiga"] .ccg-nav__link:hover {
         0 0 6px rgba(0,170,255,0.18);
 }
 
-/* Amiga warmth */
 body[data-ccg-mode="amiga"] .ccg-section-title {
     text-shadow:
         0 0 10px rgba(255,41,224,0.35);
@@ -281,4 +274,42 @@ button,
 .ccg-panel,
 .ccg-btn {
     transition-timing-function: var(--ccg-ease-out) !important;
+}
+
+/* ============================================================
+   MOBILE SANITY — SAFE ONLY
+============================================================ */
+
+@media (max-width: 768px) {
+
+    .ccg-header {
+        padding: 10px 0 10px;
+    }
+
+    .ccg-header-inner {
+        gap: 14px;
+    }
+
+    .ccg-brand {
+        max-width: none;
+    }
+
+    .ccg-brand__title {
+        font-size: 0.85rem;
+        white-space: normal;
+    }
+
+    .ccg-nav__list {
+        gap: 12px;
+    }
+
+    .ccg-nav__link {
+        font-size: 0.75rem;
+        padding-bottom: 6px;
+    }
+
+    .ccg-section-title {
+        margin-top: 10px;
+        margin-bottom: 16px;
+    }
 }
