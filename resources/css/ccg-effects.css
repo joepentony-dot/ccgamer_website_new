@@ -1,232 +1,102 @@
 /* ============================================================
-   CCG-EFFECTS.CSS — CRT • Neon • Bloom FX • Omega Grid
-   Omega Build — Visual-only layer (non-structural)
-   Safe for ALL pages, does NOT touch intro logic.
-============================================================ */
-
+   CCG-EFFECTS.CSS — OMEGA VISUAL EMPHASIS
+   Phase P14 — Button Glow Consistency
+   ============================================================ */
 
 /* ------------------------------------------------------------
-   GLOBAL STARFIELD LAYER (canvas)
+   BUTTON BASELINE
 ------------------------------------------------------------ */
 
-.ccg-starfield,
-#ccg-starfield {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 0;
-    display: block;
-    background: #000;
-}
-
-
-/* ============================================================
-   OMEGA NEON GRID — cinematic horizon grid
-============================================================ */
-
-.ccg-bg-grid {
-    pointer-events: none;
-    position: fixed;
-    inset: 0;
-    z-index: 1;
-
-    /* STEP 6: calmer baseline */
-    opacity: 0.18;
-
-    background:
-        linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.25)),
-        repeating-linear-gradient(
-            to right,
-            rgba(255,255,255,0.07) 0px,
-            rgba(255,255,255,0.07) 1px,
-            transparent 1px,
-            transparent 32px
-        ),
-        repeating-linear-gradient(
-            to bottom,
-            rgba(255,255,255,0.07) 0px,
-            rgba(255,255,255,0.07) 1px,
-            transparent 1px,
-            transparent 24px
-        );
-
-    transform-origin: center bottom;
-    transform: perspective(900px) rotateX(65deg) translateY(30%);
-    filter: blur(0.2px);
-}
-
-/* Mode-based neon tinting */
-body[data-mode="c64"] .ccg-bg-grid {
-    --accent-rgb: 0, 200, 255;
-    opacity: 0.24;
-}
-
-body[data-mode="amiga"] .ccg-bg-grid {
-    --accent-rgb: 255, 80, 200;
-    opacity: 0.27;
-}
-
-
-/* ------------------------------------------------------------
-   CRT SOFT SCAN OVERLAY
------------------------------------------------------------- */
-
-.ccg-bg-crt-overlay {
-    pointer-events: none;
-    position: fixed;
-    inset: 0;
-    z-index: 2;
-
-    background:
-        repeating-linear-gradient(
-            to bottom,
-            rgba(0,0,0,0.30) 0px,
-            rgba(0,0,0,0.30) 2px,
-            rgba(0,0,0,0.12) 3px
-        ),
-        url("../images/fx/ccg-noise.png");
-
-    mix-blend-mode: multiply;
-
-    /* STEP 6: clearer glass feel */
-    opacity: 0.18;
-}
-
-/* Screen curvature & vignette */
-.ccg-bg-crt-overlay::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 12px;
-    pointer-events: none;
-    box-shadow:
-        inset 0 0 55px rgba(0,0,0,0.5),
-        inset 0 0 120px rgba(0,0,0,0.4);
-}
-
-
-/* ------------------------------------------------------------
-   OPTIONAL FULL-SCREEN SCANLINES
------------------------------------------------------------- */
-
-.ccg-scanlines {
-    pointer-events: none;
-    position: fixed;
-    inset: 0;
-    z-index: 2;
-    background:
-        repeating-linear-gradient(
-            to bottom,
-            rgba(255,255,255,0.025) 0px,
-            rgba(255,255,255,0.025) 1px,
-            transparent 1px,
-            transparent 3px
-        );
-    mix-blend-mode: soft-light;
-
-    /* STEP 6: less aggressive */
-    opacity: 0.18;
-}
-
-
-/* ============================================================
-   PANEL / CARD GLOW
-============================================================ */
-
-.ccg-panel {
-    background: rgba(0,0,0,0.55);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 14px;
-
-    /* STEP 6: reduce double-bloom */
-    box-shadow:
-        0 0 16px rgba(0,0,0,0.6),
-        0 0 18px rgba(var(--accent-rgb), 0.14);
-}
-
-
-/* ------------------------------------------------------------
-   TEXT NEON HELPERS
------------------------------------------------------------- */
-
-.ccg-text-neon {
-    color: var(--accent);
-
-    /* STEP 6: readability first */
-    text-shadow:
-        0 0 8px rgba(var(--accent-rgb), 0.55),
-        0 0 18px rgba(var(--accent-rgb), 0.38);
-}
-
-.ccg-text-neon-soft {
-    text-shadow:
-        0 0 6px rgba(var(--accent-rgb), 0.42),
-        0 0 14px rgba(var(--accent-rgb), 0.28);
-}
-
-.ccg-kicker-text {
-    font-size: 0.8rem;
-    letter-spacing: 0.16em;
+.ccg-btn,
+.ccg-btn-primary,
+.ccg-btn--primary,
+.ccg-btn--secondary {
+    position: relative;
+    font-family: var(--ccg-font-main);
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    opacity: 0.78;
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        filter 0.18s ease,
+        background-color 0.18s ease;
+    will-change: transform, box-shadow, filter;
 }
-
 
 /* ------------------------------------------------------------
-   THUMBNAIL GLOW (Universal)
+   PRIMARY BUTTON — HERO / CTA
 ------------------------------------------------------------ */
 
-.ccg-thumb-glow img {
+.ccg-btn--primary,
+.ccg-btn-primary {
+    background: linear-gradient(
+        135deg,
+        var(--ccg-color-blue),
+        var(--ccg-color-cyan)
+    );
+    color: #fff;
     box-shadow:
-        0 0 16px rgba(0,0,0,0.65),
-        0 0 22px rgba(var(--accent-rgb), 0.30);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+        0 6px 18px rgba(0,0,0,0.6),
+        0 0 14px rgba(0,170,255,0.55);
 }
 
-.ccg-thumb-glow:hover img {
-    transform: translateY(-2px);
+.ccg-btn--primary:hover,
+.ccg-btn-primary:hover {
+    transform: translateY(-2px) scale(1.04);
     box-shadow:
-        0 0 22px rgba(0,0,0,0.75),
-        0 0 32px rgba(var(--accent-rgb), 0.48);
+        0 10px 28px rgba(0,0,0,0.7),
+        0 0 26px rgba(0,170,255,0.85);
+    filter: saturate(1.08);
 }
-
 
 /* ------------------------------------------------------------
-   BUTTON GLOW / LIFT
+   SECONDARY BUTTON — NAV / WAYFINDING
 ------------------------------------------------------------ */
 
-.ccg-btn {
-    will-change: transform, box-shadow;
-}
-
-.ccg-btn:hover {
-    transform: translateY(-2px);
-    opacity: 1;
-
-    /* STEP 6: match card + hero glow */
+.ccg-btn--secondary {
+    background: rgba(0,0,0,0.45);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--ccg-text-light);
     box-shadow:
-        0 0 14px rgba(var(--accent-rgb), 0.55),
-        0 0 24px rgba(var(--accent-rgb), 0.30);
+        0 4px 12px rgba(0,0,0,0.55),
+        0 0 8px rgba(255,255,255,0.06);
 }
 
+.ccg-btn--secondary:hover {
+    transform: translateY(-1px) scale(1.03);
+    box-shadow:
+        0 8px 20px rgba(0,0,0,0.65),
+        0 0 14px rgba(255,255,255,0.18);
+}
 
 /* ------------------------------------------------------------
-   PAGE FADE-IN
+   MODE-BASED BUTTON INTENSITY (HOOKED, SAFE)
 ------------------------------------------------------------ */
 
-.ccg-fade-in {
-    animation: ccg-page-fade-in 0.45s ease-out;
+body[data-ccg-mode="amiga"] .ccg-btn--primary {
+    background: linear-gradient(
+        135deg,
+        var(--ccg-color-pink),
+        #ff7bff
+    );
+    box-shadow:
+        0 6px 18px rgba(0,0,0,0.6),
+        0 0 18px rgba(255,41,224,0.65);
 }
 
-@keyframes ccg-page-fade-in {
-    from {
-        opacity: 0;
-        transform: translateY(6px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+body[data-ccg-mode="amiga"] .ccg-btn--primary:hover {
+    box-shadow:
+        0 12px 32px rgba(0,0,0,0.75),
+        0 0 34px rgba(255,41,224,0.95);
+}
+
+/* ------------------------------------------------------------
+   BUTTON FOCUS (ACCESSIBILITY — VISUAL ONLY)
+------------------------------------------------------------ */
+
+.ccg-btn:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 2px rgba(255,255,255,0.35),
+        0 0 18px rgba(var(--accent-rgb),0.55);
 }
