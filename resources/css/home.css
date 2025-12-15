@@ -1,10 +1,10 @@
 /* ============================================================
-   HOME.CSS — OMEGA CINEMATIC HERO (PHASE J)
-   Featured CCG Video — BREAK OUT OF GLOBAL 16:9 RULE
+   HOME.CSS — OMEGA CINEMATIC HERO (PHASE K)
+   Alignment & Rhythm Polish — HOME
 ============================================================ */
 
 /* ------------------------------------------------------------
-   HERO CONTAINER (LOCKED SAFE)
+   HERO CONTAINER (LOCKED)
 ------------------------------------------------------------ */
 
 .home-hero {
@@ -36,9 +36,9 @@
 .home-featured {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 28px;
+    gap: 32px;
 
-    margin: 56px auto 0;
+    margin: 52px auto 0;
     width: min(1200px, 92%);
 }
 
@@ -50,27 +50,41 @@
     height: 100%;
     border-radius: 20px;
 
+    display: flex;
+    flex-direction: column;
+
     box-shadow:
         0 18px 46px rgba(0,0,0,0.55),
         0 0 22px rgba(0,170,255,0.08);
 }
 
 /* ------------------------------------------------------------
-   FEATURED GAME — NO CHANGE
+   FEATURED GAME — TEXT RHYTHM
 ------------------------------------------------------------ */
-/* Intentionally untouched */
+
+.home-feature-card .ccg-card__body {
+    padding-top: 20px;
+}
+
+.home-feature-card .ccg-card__title {
+    margin-bottom: 6px;
+}
+
+.home-feature-card .home-feature-meta {
+    margin-bottom: 12px;
+}
 
 /* ------------------------------------------------------------
-   FEATURED CCG VIDEO — THE REAL FIX
+   FEATURED CCG VIDEO — OPTICAL ALIGNMENT
 ------------------------------------------------------------ */
 
-/* Kill the global 16:9 behaviour ONLY here */
+/* Break out of global 16:9 for home video only */
 .home-feature-card--video .ccg-card__media--16x9 {
     aspect-ratio: auto !important;
     padding-top: 0 !important;
 }
 
-/* Define our own cinematic dimensions */
+/* Media frame — size already correct, just stabilised */
 .home-feature-card--video .home-feature-video__frame {
     height: 260px;
     max-width: 88%;
@@ -80,7 +94,7 @@
     border-radius: 16px;
 }
 
-/* Make the thumbnail behave */
+/* Thumbnail behaviour */
 .home-feature-card--video .home-feature-video__thumb {
     width: 100%;
     height: 100%;
@@ -88,12 +102,13 @@
     display: block;
 }
 
-/* ------------------------------------------------------------
-   BODY SPACING
------------------------------------------------------------- */
-
+/* Match body rhythm to game card */
 .home-feature-card--video .ccg-card__body {
-    padding-top: 18px;
+    padding-top: 20px;
+}
+
+.home-feature-card--video .home-feature-meta {
+    margin-bottom: 12px;
 }
 
 /* ------------------------------------------------------------
