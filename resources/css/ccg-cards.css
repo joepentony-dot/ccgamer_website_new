@@ -1,11 +1,6 @@
 /* ============================================================
    CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM
-   Phase P31 — Featured Video Balance (FINAL)
-   ------------------------------------------------------------
-   • NO grid changes
-   • NO aspect ratio changes
-   • NO height constraints
-   • Home Featured Video width-balanced only
+   Phase P32 — Featured Video Grid Containment (FINAL)
 ============================================================ */
 
 /* ============================================================
@@ -59,18 +54,12 @@
    MODE AWARE GLOW BALANCE
 ============================================================ */
 
-body[data-ccg-mode="c64"] .ccg-game-card:hover,
-body[data-ccg-mode="c64"] .ccg-card:hover,
-body[data-ccg-mode="c64"] .ccg-genre-tile:hover,
 body[data-ccg-mode="c64"] .ccg-feature-card:hover {
     box-shadow:
         0 18px 36px rgba(0,0,0,.85),
         0 0 26px rgba(0,170,255,.28);
 }
 
-body[data-ccg-mode="amiga"] .ccg-game-card:hover,
-body[data-ccg-mode="amiga"] .ccg-card:hover,
-body[data-ccg-mode="amiga"] .ccg-genre-tile:hover,
 body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
     box-shadow:
         0 18px 40px rgba(0,0,0,.88),
@@ -78,17 +67,17 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
 }
 
 /* ============================================================
-   HOME FEATURED VIDEO — WIDTH BALANCE ONLY (CORRECT FIX)
+   HOME FEATURED VIDEO — GRID-LEVEL CONTAINMENT (THE REAL FIX)
 ============================================================ */
 
-/* Visually subordinate video without touching aspect ratio */
-.home-feature-card--video {
-    max-width: 92%;
+/* Limit the VIDEO column itself, not the card */
+.home-highlights-grid > .home-feature-card--video {
+    max-width: 720px;
     margin-inline: auto;
 }
 
-/* Slightly calmer glow so Featured Game remains dominant */
-.home-feature-card--video:hover {
+/* Keep hover slightly calmer so it never dominates */
+.home-highlights-grid > .home-feature-card--video:hover {
     box-shadow:
         0 16px 32px rgba(0,0,0,.85),
         0 0 22px rgba(var(--accent-rgb), 0.26);
@@ -99,16 +88,10 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
 ============================================================ */
 
 @media (max-width: 768px) {
-    .ccg-game-card:hover,
-    .ccg-card:hover,
-    .ccg-genre-tile:hover,
     .ccg-feature-card:hover {
         transform: none;
     }
 
-    .ccg-game-card:active,
-    .ccg-card:active,
-    .ccg-genre-tile:active,
     .ccg-feature-card:active {
         transform: scale(0.985);
         box-shadow:
