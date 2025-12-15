@@ -1,6 +1,6 @@
 /* ============================================================
-   GAMES.CSS — INDEX POLISH + RELATED STRIP (OMEGA SAFE)
-   Phase P28 — Games Index Rhythm & Accordion Clarity
+   GAMES.CSS — STABLE FUNCTIONAL RESTORE
+   Phase P27 + MOBILE SANITY PASS
 ============================================================ */
 
 /* ============================================================
@@ -12,83 +12,7 @@
 }
 
 /* ============================================================
-   GAMES INDEX — HERO & TOOLS SPACING
-============================================================ */
-
-.ccg-page--games-index .games-hero {
-    margin-bottom: 18px;
-}
-
-.ccg-page--games-index .games-tools {
-    margin-bottom: 26px;
-}
-
-/* ============================================================
-   GAMES INDEX — ALPHABET STRIP
-============================================================ */
-
-.ccg-page--games-index .games-alpha {
-    margin-top: 18px;
-}
-
-.ccg-page--games-index .games-alpha__strip {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 8px;
-}
-
-/* ============================================================
-   GAMES INDEX — ACCORDION GROUP RHYTHM
-============================================================ */
-
-.ccg-page--games-index .games-accordion__group {
-    margin-bottom: 14px;
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-/* Accordion header clarity */
-.ccg-page--games-index .games-accordion__header {
-    padding: 14px 16px;
-    font-size: 0.9rem;
-    letter-spacing: 0.08em;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-/* Slight lift on hover — visual only */
-.ccg-page--games-index .games-accordion__header:hover {
-    background: rgba(255,255,255,0.04);
-}
-
-/* ============================================================
-   GAMES INDEX — GRID DENSITY
-============================================================ */
-
-.ccg-page--games-index .games-accordion__content {
-    padding: 16px 14px 18px;
-}
-
-.ccg-page--games-index .games-accordion__content .games-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 18px;
-}
-
-/* ============================================================
-   EMPTY STATE BREATHING ROOM
-============================================================ */
-
-.ccg-page--games-index .games-empty-state {
-    margin-top: 30px;
-    opacity: 0.85;
-}
-
-/* ============================================================
    RELATED GAMES STRIP (SINGLE GAME PAGE)
-   — PRESERVED AS-IS
 ============================================================ */
 
 .game-section--related {
@@ -102,7 +26,6 @@
     padding: 10px 4px 18px;
 }
 
-/* subtle edge fade */
 .related-scroll-wrapper::before,
 .related-scroll-wrapper::after {
     content: "";
@@ -130,34 +53,31 @@
     padding: 8px 6px;
 }
 
-/* Cards inside related strip */
 .related-scroll .ccg-game-card {
     min-width: 220px;
     flex-shrink: 0;
 }
 
 /* ============================================================
-   RESPONSIVE — GAMES INDEX + RELATED STRIP
+   MOBILE SANITY
 ============================================================ */
 
 @media (max-width: 768px) {
 
-    .ccg-page--games-index .games-accordion__content {
-        padding: 14px 12px 16px;
-    }
-
-    .ccg-page--games-index
-    .games-accordion__content
     .games-grid {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-        gap: 16px;
+        padding-top: 6px;
     }
 
     .related-scroll {
         gap: 14px;
+        padding: 6px 4px 16px;
     }
 
     .related-scroll .ccg-game-card {
         min-width: 200px;
+    }
+
+    .game-section--related {
+        margin-top: 28px;
     }
 }
