@@ -1,10 +1,10 @@
 /* ============================================================
    CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM
-   Phase P29 — Media Normalisation & Visual Mass Control
+   Phase P29 — Genre Grid Rhythm & Row Consistency
 ============================================================ */
 
 /* ------------------------------------------------------------
-   GRID SYSTEMS
+   GENRE GRIDS — STRUCTURE
 ------------------------------------------------------------ */
 
 .ccg-genre-grid,
@@ -12,23 +12,30 @@
 .genre-grid.omega-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 18px;
+    gap: 22px;
+    align-items: stretch;
 }
 
+/* Genre single pages stay centred */
 .ccg-page--genre-single .ccg-genre-grid {
     grid-template-columns: repeat(auto-fill, minmax(240px, 240px));
     justify-content: center;
 }
 
 /* ------------------------------------------------------------
-   BASE CARD
+   CARD BASE
 ------------------------------------------------------------ */
 
 .ccg-game-card,
 .ccg-card,
 .ccg-genre-tile {
     position: relative;
-    background: radial-gradient(circle at top, rgba(40,40,80,.55), rgba(0,0,0,.92));
+    display: flex;
+    flex-direction: column;
+
+    background:
+        radial-gradient(circle at top, rgba(40,40,80,.55), rgba(0,0,0,.92));
+
     border-radius: 14px;
     border: 1px solid rgba(255,255,255,.08);
     overflow: hidden;
@@ -42,61 +49,57 @@
         box-shadow .22s ease-out,
         border-color .22s ease;
 
-    display: flex;
-    flex-direction: column;
     touch-action: manipulation;
 }
 
 /* ------------------------------------------------------------
-   MEDIA CONTAINER — HARD NORMALISATION (KEY FIX)
+   CARD MEDIA — RHYTHM LOCK
 ------------------------------------------------------------ */
 
+/* Universal media container */
 .ccg-card__media,
 .ccg-game-card__thumb {
     position: relative;
     width: 100%;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
+    height: 140px;                 /* 🔑 VISUAL MASS LOCK */
     flex-shrink: 0;
+    overflow: hidden;
 }
 
-/* Universal image constraint */
+/* Images behave consistently */
 .ccg-card__media img,
 .ccg-game-card__thumb img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    display: block;
 }
 
-/* Subtle vignette for depth */
+/* Subtle vignette */
 .ccg-card__media::after,
 .ccg-game-card__thumb::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at center, transparent 55%, rgba(0,0,0,.45));
+    background:
+        radial-gradient(circle at center, transparent 55%, rgba(0,0,0,.45));
     pointer-events: none;
 }
 
 /* ------------------------------------------------------------
-   CARD BODY
+   CARD BODY — BREATHING ROOM
 ------------------------------------------------------------ */
 
-.ccg-game-card__body,
-.ccg-card__body {
-    padding: 10px 12px 12px;
-    gap: 6px;
+.ccg-card__body,
+.ccg-game-card__body {
+    padding: 12px 14px 14px;
     display: flex;
     flex-direction: column;
+    gap: 6px;
 }
 
-/* ------------------------------------------------------------
-   TITLES
------------------------------------------------------------- */
-
-.ccg-game-card__title,
-.ccg-card__title {
+/* Titles */
+.ccg-card__title,
+.ccg-game-card__title {
     font-family: var(--ccg-font-main);
     font-size: 0.75rem;
     letter-spacing: .065em;
@@ -119,7 +122,7 @@
 }
 
 /* ------------------------------------------------------------
-   MOBILE POLISH
+   MOBILE TUNING
 ------------------------------------------------------------ */
 
 @media (max-width: 768px) {
@@ -129,14 +132,19 @@
         border-radius: 12px;
     }
 
+    .ccg-card__media,
+    .ccg-game-card__thumb {
+        height: 120px;
+    }
+
     .ccg-game-card:active,
     .ccg-card:active {
         transform: scale(0.985);
         box-shadow: 0 4px 12px rgba(0,0,0,.85);
     }
 
-    .ccg-game-card__title,
-    .ccg-card__title {
+    .ccg-card__title,
+    .ccg-game-card__title {
         font-size: 0.7rem;
     }
 }
