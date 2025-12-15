@@ -1,6 +1,11 @@
 /* ============================================================
    HOME.CSS — OMEGA CINEMATIC (LOCKED HOME CONTRACT)
-   Phase H-L2 — Featured Video Cinematic Clamp (FINAL)
+   Phase H-L2 — Desktop Split Layout (Highlights / CCG Video)
+   ------------------------------------------------------------
+   • Desktop: 2-column cinematic layout
+   • Mobile: single-column preserved
+   • NO global bleed
+   • NO sizing hacks
 ============================================================ */
 
 /* ============================================================
@@ -13,79 +18,78 @@
 }
 
 /* ============================================================
-   FEATURED HIGHLIGHTS — LAYOUT
+   FEATURED SPLIT WRAPPER (NEW — DESKTOP ONLY)
 ============================================================ */
 
-.home-featured-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 36px;
-    align-items: start;
-}
-
-@media (max-width: 900px) {
-    .home-featured-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* ============================================================
-   FEATURED VIDEO — SIZE CLAMP (CRITICAL FIX)
-============================================================ */
-
-/* Card container clamp — THIS is the missing piece */
-.home-feature-card--video {
-    max-width: 820px;          /* 🎯 Cinematic but controlled */
-    margin: 0 auto;            /* centre horizontally */
-}
-
-/* Media frame — aspect preserved, never grows vertically */
-.home-feature-video__frame {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-    border-radius: 14px;
-}
-
-/* Image / iframe behaviour */
-.home-feature-video__frame img,
-.home-feature-video__frame iframe {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.home-featured-split {
     display: block;
 }
 
 /* ============================================================
-   HOME GENRE GRID (LAYOUT ONLY — NO STRETCHING)
+   FEATURED HIGHLIGHTS (LEFT COLUMN)
+============================================================ */
+
+.home-featured-highlights {
+    width: 100%;
+}
+
+/* ============================================================
+   FEATURED CCG VIDEO (RIGHT COLUMN)
+============================================================ */
+
+.home-featured-video {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* Prevent runaway width */
+.home-featured-video .ccg-feature-card {
+    width: 100%;
+    max-width: 560px; /* 🎯 Cinematic but restrained */
+}
+
+/* ============================================================
+   DESKTOP SPLIT ACTIVATION
+============================================================ */
+
+@media (min-width: 1100px) {
+
+    .home-featured-split {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 48px;
+        align-items: start;
+    }
+
+    .home-featured-video {
+        justify-content: flex-end;
+    }
+}
+
+/* ============================================================
+   HOME GENRE GRID (LOCKED — UNCHANGED)
 ============================================================ */
 
 .home-genre-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 28px;
-    align-items: start; /* 🔒 prevents vertical stretching */
+    align-items: start;
 }
 
-/* ============================================================
-   HOME GENRE TILE — HARD SIZE CONTRACT
-============================================================ */
-
 .home-genre-grid .ccg-genre-tile {
-    max-width: 360px;            /* 🔒 parity with genre index */
+    max-width: 360px;
     margin: 0 auto;
     height: auto;
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
 }
-
-/* ============================================================
-   HOME GENRE THUMBNAIL — ABSOLUTE LOCK
-============================================================ */
 
 .home-genre-grid .ccg-genre-tile__thumb {
     width: 100%;
-    aspect-ratio: 16 / 9;        /* 🔒 SAME AS GENRE INDEX */
+    aspect-ratio: 16 / 9;
     overflow: hidden;
     position: relative;
     flex-shrink: 0;
@@ -94,14 +98,10 @@
 .home-genre-grid .ccg-genre-tile__thumb img {
     width: 100%;
     height: 100%;
-    object-fit: contain;         /* 🔒 NO CROPPING OF TEXT */
+    object-fit: contain;
     object-position: center;
     display: block;
 }
-
-/* ============================================================
-   HOME GENRE BODY
-============================================================ */
 
 .home-genre-grid .ccg-genre-tile__body {
     padding: 12px 14px 14px;
@@ -116,16 +116,12 @@
     text-overflow: ellipsis;
 }
 
-/* ============================================================
-   HOVER — VISUAL ONLY (NO SIZE CHANGE)
-============================================================ */
-
 .home-genre-grid .ccg-genre-tile:hover {
     transform: translateY(-3px);
 }
 
 /* ============================================================
-   RESPONSIVE — SCALE GRID, NEVER MEDIA
+   RESPONSIVE SAFETY
 ============================================================ */
 
 @media (max-width: 900px) {
@@ -143,21 +139,3 @@
         max-width: 100%;
     }
 }
-
-/* ============================================================
-   HOME — FEATURED VIDEO FINAL BALANCE PASS
-   (Micro visual tuning only)
-============================================================ */
-
-.home-feature-card--video {
-    max-width: 760px; /* ↓ subtle reduction for balance */
-}
-
-.home-feature-card--video .ccg-card__header {
-    padding-bottom: 10px; /* ↓ trims visual height */
-}
-
-.home-feature-video__frame {
-    border-radius: 12px; /* slightly tighter than cards */
-}
-
