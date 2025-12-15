@@ -1,75 +1,80 @@
 /* ============================================================
-   CCG FOOTER CSS — OMEGA MICRO-POLISH
-   Mobile Sanity Pass (SAFE)
+   CCG FOOTER CSS — GLOBAL FOOTER CONSOLIDATION
+   Omega Safe Pass — Styling Only
    ------------------------------------------------------------
-   • Improves mobile legibility
-   • Desktop visuals unchanged
-   • Footer structure remains intact
+   • No structural assumptions
+   • No layout overrides
+   • Mobile-safe
 ============================================================ */
 
 /* ============================================================
-   FOOTER BASE
+   BASE FOOTER
 ============================================================ */
 
 .ccg-footer {
-    width: 100%;
-    margin-top: 48px;
-    padding: 18px 0 20px;
+    margin-top: 60px;
+    padding: 28px 16px 34px;
+
+    text-align: center;
 
     background:
         linear-gradient(
             to top,
             rgba(0,0,0,0.85),
-            rgba(0,0,0,0.65),
+            rgba(0,0,0,0.55),
             transparent
         );
 
-    box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.05),
-        0 -10px 28px rgba(0,0,0,0.55);
-}
+    border-top: 1px solid rgba(255,255,255,0.08);
 
-.ccg-footer__text {
-    text-align: center;
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
-    color: var(--ccg-text-soft);
-    opacity: 0.9;
-    margin: 0;
-    padding: 0 14px;
+    box-shadow:
+        0 -12px 30px rgba(0,0,0,0.65),
+        0 0 18px rgba(var(--accent-rgb),0.12);
 }
 
 /* ============================================================
-   LINKS (IF PRESENT)
+   FOOTER TEXT
 ============================================================ */
 
-.ccg-footer a {
+.ccg-footer__text {
+    margin: 6px 0;
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
     color: var(--ccg-text-soft);
-    text-decoration: none;
-    transition: color 0.25s ease, text-shadow 0.25s ease;
 }
 
-.ccg-footer a:hover {
-    color: var(--ccg-color-cyan);
-    text-shadow: 0 0 6px rgba(0,170,255,0.35);
+.ccg-footer__text--small {
+    font-size: 0.72rem;
+    opacity: 0.85;
 }
 
 /* ============================================================
-   MOBILE MICRO-POLISH (COSMETIC ONLY)
+   MODE AWARE GLOW
+============================================================ */
+
+body[data-ccg-mode="c64"] .ccg-footer {
+    box-shadow:
+        0 -12px 30px rgba(0,0,0,0.7),
+        0 0 20px rgba(0,170,255,0.14);
+}
+
+body[data-ccg-mode="amiga"] .ccg-footer {
+    box-shadow:
+        0 -12px 34px rgba(0,0,0,0.75),
+        0 0 26px rgba(255,41,224,0.18);
+}
+
+/* ============================================================
+   MOBILE SANITY
 ============================================================ */
 
 @media (max-width: 600px) {
-
     .ccg-footer {
-        margin-top: 36px;
-        padding: 20px 0 22px;
+        margin-top: 42px;
+        padding: 22px 14px 26px;
     }
 
     .ccg-footer__text {
-        font-size: 0.7rem;
-        line-height: 1.6;
-        letter-spacing: 0.04em;
-        padding: 0 18px;
+        font-size: 0.75rem;
     }
-
 }
