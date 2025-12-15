@@ -267,3 +267,19 @@ body {
         transparent
     );
 }
+
+/* ============================================================
+   PHASE P25 — GLOBAL HOVER EASING UNIFICATION
+============================================================ */
+
+:root {
+    --ccg-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+a,
+button,
+.ccg-game-card,
+.ccg-panel,
+.ccg-btn {
+    transition-timing-function: var(--ccg-ease-out) !important;
+}
