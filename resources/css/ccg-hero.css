@@ -1,7 +1,7 @@
 /* ============================================================
    CCG HERO CSS — OMEGA CINEMATIC DEPTH PASS
-   Phase P21 — Hero Parallax & Glow Breathing
-   ============================================================ */
+   Phase P22 — Hero Image Re-Emergence & Depth Balance
+============================================================ */
 
 /* ============================================================
    GENERIC HERO CONTAINER
@@ -32,7 +32,7 @@
 }
 
 /* ============================================================
-   HERO BACKDROP CONTROL (PARALLAX LAYER)
+   HERO BACKDROP CONTROL (IMAGE MID-PLANE)
 ============================================================ */
 
 .ccg-hero__backdrop,
@@ -43,31 +43,50 @@
     z-index: 0;
     overflow: hidden;
 
-    animation: ccg-hero-backdrop-drift 120s ease-in-out infinite;
+    animation: ccg-hero-backdrop-drift 140s ease-in-out infinite;
     will-change: transform;
 }
 
-.ccg-genre-hero__img,
-.game-hero__bg img {
+/* Primary hero imagery — restored presence */
+.ccg-hero__backdrop img,
+.game-hero__bg img,
+.ccg-genre-hero__img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 
+    opacity: 0.55;
+
     filter:
-        brightness(0.75)
-        contrast(1.05)
-        saturate(0.9);
+        brightness(0.9)
+        contrast(1.08)
+        saturate(1);
+
+    transform: scale(1.05);
+    animation: ccg-hero-image-breathe 26s ease-in-out infinite;
+    will-change: transform, opacity;
 }
 
-/* Very slow vertical drift — almost subconscious */
+/* Slow vertical drift — subconscious parallax */
 @keyframes ccg-hero-backdrop-drift {
-    0%   { transform: translateY(0); }
-    50%  { transform: translateY(-1.6%); }
-    100% { transform: translateY(0); }
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-1.8%); }
+}
+
+/* Gentle image breathing — keeps artwork alive */
+@keyframes ccg-hero-image-breathe {
+    0%, 100% {
+        opacity: 0.52;
+        transform: scale(1.05);
+    }
+    50% {
+        opacity: 0.6;
+        transform: scale(1.08);
+    }
 }
 
 /* ============================================================
-   HERO OVERLAY — CINEMATIC LIGHT BLOOM
+   HERO OVERLAY — GLASS & LIGHT CONTROL
 ============================================================ */
 
 .ccg-hero::before,
@@ -174,8 +193,17 @@ body[data-ccg-mode="amiga"] .ccg-genre-hero::before {
         );
 }
 
+/* Slightly stronger image presence in Amiga mode */
+body[data-ccg-mode="amiga"] .ccg-hero__backdrop img {
+    opacity: 0.6;
+    filter:
+        brightness(0.95)
+        contrast(1.1)
+        saturate(1.05);
+}
+
 /* ============================================================
-   BREATHING ANIMATIONS (SUBTLE, PREMIUM)
+   BREATHING ANIMATIONS
 ============================================================ */
 
 @keyframes ccg-hero-glow-breathe {
