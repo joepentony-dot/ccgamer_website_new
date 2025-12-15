@@ -10,7 +10,7 @@
     <link rel="canonical" href="home.html" />
     <link rel="icon" href="favicon.ico" />
 
-    <!-- FONTS -->
+    <!-- REQUIRED FONT RESTORE (Orbitron + Roboto) -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     <!-- GLOBAL CSS -->
@@ -23,142 +23,385 @@
     <link rel="stylesheet" href="resources/css/ccg-anim.css" />
     <link rel="stylesheet" href="resources/css/ccg-overlays.css" />
 
-    <!-- HOME CSS -->
+    <!-- PAGE CSS -->
     <link rel="stylesheet" href="resources/css/home.css" />
 </head>
 
-<body class="ccg-body" data-ccg-mode="c64">
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
 
-<!-- BACKGROUND -->
-<div class="ccg-bg">
-    <div class="ccg-bg-starfield"></div>
-    <div class="ccg-bg-grid"></div>
-    <div class="ccg-bg-crt-overlay"></div>
-</div>
+    <!-- GLOBAL BACKGROUND OVERLAYS -->
+    <div class="ccg-bg">
+        <div class="ccg-bg-starfield"></div>
+        <div class="ccg-bg-grid"></div>
+        <div class="ccg-bg-crt-overlay"></div>
+    </div>
 
-<div class="ccg-page ccg-page--home">
+    <div class="ccg-page ccg-page--home">
 
-<!-- HEADER -->
-<header class="ccg-header">
-    <div class="ccg-header-inner">
+        <!-- HEADER -->
+        <header class="ccg-header">
+            <div class="ccg-header-inner">
 
-        <a href="home.html" class="ccg-brand">
-            <img src="resources/images/ccgamer-logo.png"
-                 class="ccg-brand__logo"
-                 width="56" height="56"
-                 alt="Cheeky Commodore Gamer logo">
-            <div class="ccg-brand__text">
-                <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
-                <div class="ccg-brand__title">
-                    <span class="ccg-brand__neon-cheeky">CHEEKY</span>
-                    <span class="ccg-brand__neon-sub">COMMODORE GAMER</span>
+                <!-- BRAND -->
+                <a href="home.html" class="ccg-brand">
+                    <img src="resources/images/ccgamer-logo.png"
+                         class="ccg-brand__logo"
+                         loading="lazy"
+                         decoding="async"
+                         width="56"
+                         height="56"
+                         alt="Cheeky Commodore Gamer logo">
+
+                    <div class="ccg-brand__text">
+                        <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
+                        <div class="ccg-brand__title">
+                            <span class="ccg-brand__neon-cheeky">CHEEKY</span>
+                            <span class="ccg-brand__neon-sub">COMMODORE GAMER</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- NAV -->
+                <nav class="ccg-nav" aria-label="Primary navigation">
+                    <ul class="ccg-nav__list">
+                        <li><a href="home.html" class="ccg-nav__link ccg-nav__link--active">Home</a></li>
+                        <li><a href="games/index.html" class="ccg-nav__link">Browse Games</a></li>
+                        <li><a href="games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
+                        <li><a href="games/collections/index.html" class="ccg-nav__link">Collections</a></li>
+                        <li><a href="quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
+                        <li><a href="emulation.html" class="ccg-nav__link">Emulation</a></li>
+                        <li><a href="about.html" class="ccg-nav__link">About</a></li>
+                        <li><a href="contact.html" class="ccg-nav__link">Contact</a></li>
+                    </ul>
+                </nav>
+
+                <!-- HEADER ACTIONS -->
+                <div class="ccg-header-actions">
+
+                    <!-- MODE TOGGLE -->
+                    <button class="ccg-mode-toggle"
+                            type="button"
+                            aria-label="Toggle between C64 and Amiga modes"
+                            data-ccg-mode-toggle>
+                        <span class="ccg-mode-toggle__pill">
+                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
+                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">Amiga</span>
+                            <span class="ccg-mode-toggle__thumb"></span>
+                        </span>
+                    </button>
+
+                    <!-- SOCIAL ICONS -->
+                    <div class="ccg-header-socials">
+                        <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube">
+                            <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
+                        </a>
+                        <a href="https://patreon.com/CheekyCommodoreGamer" aria-label="Patreon">
+                            <span class="ccg-socials__icon ccg-socials__icon--patreon"></span>
+                        </a>
+                        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" aria-label="PayPal">
+                            <span class="ccg-socials__icon ccg-socials__icon--paypal"></span>
+                        </a>
+                        <a href="https://twitter.com/CheekyC64Gamer" aria-label="X/Twitter">
+                            <span class="ccg-socials__icon ccg-socials__icon--x"></span>
+                        </a>
+                        <a href="https://www.facebook.com/cheekycommodoregamer" aria-label="Facebook">
+                            <span class="ccg-socials__icon ccg-socials__icon--fb"></span>
+                        </a>
+                        <a href="https://discord.gg/83Xw9ktAn4" aria-label="Discord">
+                            <span class="ccg-socials__icon ccg-socials__icon--discord"></span>
+                        </a>
+                    </div>
+
                 </div>
             </div>
-        </a>
 
-        <nav class="ccg-nav">
-            <ul class="ccg-nav__list">
-                <li><a href="home.html" class="ccg-nav__link ccg-nav__link--active">Home</a></li>
-                <li><a href="games/index.html" class="ccg-nav__link">Browse Games</a></li>
-                <li><a href="games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
-                <li><a href="games/collections/index.html" class="ccg-nav__link">Collections</a></li>
-                <li><a href="quiz/quiz.html" class="ccg-nav__link">Trivia & Leaderboard</a></li>
-                <li><a href="emulation.html" class="ccg-nav__link">Emulation</a></li>
-                <li><a href="about.html" class="ccg-nav__link">About</a></li>
-                <li><a href="contact.html" class="ccg-nav__link">Contact</a></li>
-            </ul>
-        </nav>
+            <div class="ccg-header-neon-strip"></div>
+        </header>
 
-        <div class="ccg-header-actions">
-            <button class="ccg-mode-toggle" data-ccg-mode-toggle>
-                <span class="ccg-mode-toggle__pill">
-                    <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
-                    <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">Amiga</span>
-                    <span class="ccg-mode-toggle__thumb"></span>
-                </span>
-            </button>
-        </div>
+        <!-- MAIN -->
+        <main class="ccg-main ccg-main--home">
 
-    </div>
-    <div class="ccg-header-neon-strip"></div>
-</header>
+            <!-- HERO -->
+            <section class="home-hero">
+                <div class="ccg-hero ccg-hero--home">
 
-<!-- MAIN -->
-<main class="ccg-main ccg-main--home">
+                    <!-- these are intentionally present; home-dynamic.js can target them if needed -->
+                    <div class="ccg-hero-image"></div>
+                    <div class="ccg-hero-scanlines"></div>
 
-<!-- HERO -->
-<section class="home-hero">
-    <div class="ccg-hero ccg-hero--home">
-        <div class="ccg-hero__inner home-hero__inner">
-            <h1 class="ccg-hero-title">THE ULTIMATE COMMODORE EXPERIENCE</h1>
-            <p class="ccg-hero-tagline">
-                Dive into curated classics, deep-dive features and retro magic across C64 & Amiga.
-            </p>
-        </div>
-    </div>
-</section>
+                    <div class="ccg-hero-inner home-hero__inner">
+                        <div class="home-hero__mode-line">
+                            <span class="home-hero__mode-label">
+                                MODE · <span data-ccg-mode-label>C64</span>
+                            </span>
+                            <span class="home-hero__sub-label">C64 &amp; Amiga</span>
+                        </div>
 
-<!-- FEATURED SPLIT -->
-<section class="home-section home-section--featured">
-    <div class="home-featured-split">
+                        <h1 class="ccg-hero-title home-hero__title">
+                            THE ULTIMATE COMMODORE EXPERIENCE
+                        </h1>
 
-        <!-- LEFT -->
-        <div class="home-featured-left">
-            <h2 class="ccg-section-title">Featured Highlights</h2>
+                        <p class="ccg-hero-tagline home-hero__tagline">
+                            Dive into curated classics, game reviews, deep-dive features and retro magic
+                            across C64 &amp; Amiga.
+                        </p>
 
-            <article class="ccg-card home-feature-card" data-ccg-featured-game>
-                <div class="ccg-card__media ccg-card__media--16x9">
-                    <img data-fg-thumb>
+                        <div class="home-hero__actions">
+                            <a href="games/index.html" class="ccg-btn ccg-btn--primary home-hero__btn">
+                                Browse All Games
+                            </a>
+                            <button type="button"
+                                    class="ccg-btn ccg-btn--primary home-hero__btn"
+                                    data-ccg-random-game>
+                                Random Game
+                            </button>
+                            <a href="games/collections/top-picks.html" class="ccg-btn ccg-btn--primary home-hero__btn home-hero__btn-alt">
+                                CCG Top Picks
+                            </a>
+                        </div>
+
+                        <p class="home-hero__tip">
+                            Tip: Flick the C64/Amiga switch in the corner for a different flavour of neon.
+                        </p>
+                    </div>
                 </div>
-                <div class="ccg-card__body">
-                    <h3 data-fg-title></h3>
-                    <p data-fg-desc></p>
-                    <a class="ccg-btn ccg-btn--primary" data-fg-btn>View Game</a>
+            </section>
+
+            <!-- TAGLINE STRIP -->
+            <section class="home-tagline">
+                <p class="home-tagline__kicker">Another visitor...</p>
+                <p class="home-tagline__main">Stay a while, stay forever!</p>
+            </section>
+
+            <!-- FEATURED HIGHLIGHTS (SPLIT ON DESKTOP VIA home.css) -->
+            <section class="home-section home-section--highlights">
+                <header class="home-section__header">
+                    <h2 class="home-section__title">Featured Highlights</h2>
+                    <div class="home-section__divider"></div>
+                </header>
+
+                <div class="home-highlights-grid">
+
+                    <!-- Featured Game (DRIVEN BY home-dynamic.js) -->
+                    <article class="ccg-card home-feature-card" data-ccg-featured-game>
+                        <div class="ccg-card__media ccg-card__media--16x9">
+                            <img src="resources/images/thumbnails/all/1942.jpg"
+                                 alt="Featured game artwork"
+                                 data-fg-thumb>
+                        </div>
+                        <div class="ccg-card__body">
+                            <h3 class="ccg-card__title home-feature-title" data-fg-title>Featured Game</h3>
+                            <p class="ccg-card__text home-feature-meta" data-fg-desc></p>
+                            <a href="#"
+                               class="ccg-btn ccg-btn--primary home-feature-card__btn"
+                               data-fg-btn>
+                                View Game
+                            </a>
+                        </div>
+                    </article>
+
+                    <!-- Featured Video (DRIVEN BY home-dynamic.js) -->
+                    <article class="ccg-card home-feature-card home-feature-card--video">
+                        <header class="home-feature-video__header">
+                            <h3 class="ccg-card__title home-feature-title" data-ccg-featured-video-title>
+                                Featured CCG Video
+                            </h3>
+                        </header>
+
+                        <div class="ccg-card__media ccg-card__media--16x9 home-feature-video__frame">
+                            <img src="resources/images/thumbnails/all/1942.jpg"
+                                 alt="Featured CCG video thumbnail"
+                                 class="home-feature-video__thumb"
+                                 data-ccg-featured-video-thumb>
+                            <span class="home-feature-video__play-icon" aria-hidden="true"></span>
+                        </div>
+
+                        <div class="ccg-card__body">
+                            <p class="ccg-card__text home-feature-meta" data-ccg-featured-video-desc>
+                                A hand-picked longplay or review from the channel — perfectly paired with the featured game.
+                            </p>
+                            <a href="https://www.youtube.com/@CheekyCommodoreGamer"
+                               target="_blank"
+                               rel="noopener"
+                               class="ccg-btn ccg-btn--primary home-feature-card__btn home-feature-video__btn"
+                               data-ccg-featured-video-btn>
+                                Watch on YouTube
+                            </a>
+                        </div>
+                    </article>
+
                 </div>
-            </article>
-        </div>
+            </section>
 
-        <!-- RIGHT -->
-        <div class="home-featured-right">
-            <article class="ccg-card home-feature-card home-feature-card--video">
-                <h3 data-ccg-featured-video-title></h3>
+            <!-- BROWSE BY GENRE -->
+            <section class="home-section home-section--genres">
+                <header class="home-section__header">
+                    <h2 class="home-section__title">Browse by Genre</h2>
+                    <div class="home-section__divider"></div>
+                </header>
 
-                <div class="ccg-card__media ccg-card__media--16x9">
-                    <img data-ccg-featured-video-thumb>
+                <div class="home-genre-grid">
+
+                    <a class="ccg-card ccg-genre-tile" href="games/genres/action-adventure-games.html">
+                        <div class="ccg-card__media ccg-card__media--16x9 ccg-genre-tile__thumb">
+                            <img src="resources/images/genres/action-adventure.png" alt="Action Adventure">
+                        </div>
+                        <div class="ccg-card__body ccg-genre-tile__body">
+                            <h3 class="ccg-card__title ccg-genre-tile__title">Action Adventure</h3>
+                        </div>
+                    </a>
+
+                    <a class="ccg-card ccg-genre-tile" href="games/genres/adventure-games.html">
+                        <div class="ccg-card__media ccg-card__media--16x9 ccg-genre-tile__thumb">
+                            <img src="resources/images/genres/adventure.png" alt="Adventure">
+                        </div>
+                        <div class="ccg-card__body ccg-genre-tile__body">
+                            <h3 class="ccg-card__title ccg-genre-tile__title">Adventure</h3>
+                        </div>
+                    </a>
+
+                    <a class="ccg-card ccg-genre-tile" href="games/genres/arcade-games.html">
+                        <div class="ccg-card__media ccg-card__media--16x9 ccg-genre-tile__thumb">
+                            <img src="resources/images/genres/arcade.png" alt="Arcade">
+                        </div>
+                        <div class="ccg-card__body ccg-genre-tile__body">
+                            <h3 class="ccg-card__title ccg-genre-tile__title">Arcade</h3>
+                        </div>
+                    </a>
+
+                    <a class="ccg-card ccg-genre-tile" href="games/genres/platform-games.html">
+                        <div class="ccg-card__media ccg-card__media--16x9 ccg-genre-tile__thumb">
+                            <img src="resources/images/genres/platform.png" alt="Platform">
+                        </div>
+                        <div class="ccg-card__body ccg-genre-tile__body">
+                            <h3 class="ccg-card__title ccg-genre-tile__title">Platform</h3>
+                        </div>
+                    </a>
+
+                    <a class="ccg-card ccg-genre-tile" href="games/genres/racing-games.html">
+                        <div class="ccg-card__media ccg-card__media--16x9 ccg-genre-tile__thumb">
+                            <img src="resources/images/genres/racing.png" alt="Racing">
+                        </div>
+                        <div class="ccg-card__body ccg-genre-tile__body">
+                            <h3 class="ccg-card__title ccg-genre-tile__title">Racing</h3>
+                        </div>
+                    </a>
+
+                    <a class="ccg-card ccg-genre-tile" href="games/genres/puzzle-games.html">
+                        <div class="ccg-card__media ccg-card__media--16x9 ccg-genre-tile__thumb">
+                            <img src="resources/images/genres/puzzle.png" alt="Puzzle">
+                        </div>
+                        <div class="ccg-card__body ccg-genre-tile__body">
+                            <h3 class="ccg-card__title ccg-genre-tile__title">Puzzle</h3>
+                        </div>
+                    </a>
+
+                    <a class="ccg-card ccg-genre-tile" href="games/genres/shooting-games.html">
+                        <div class="ccg-card__media ccg-card__media--16x9 ccg-genre-tile__thumb">
+                            <img src="resources/images/genres/shooting.png" alt="Shooting">
+                        </div>
+                        <div class="ccg-card__body ccg-genre-tile__body">
+                            <h3 class="ccg-card__title ccg-genre-tile__title">Shooting</h3>
+                        </div>
+                    </a>
+
+                    <a class="ccg-card ccg-genre-tile" href="games/genres/sports-games.html">
+                        <div class="ccg-card__media ccg-card__media--16x9 ccg-genre-tile__thumb">
+                            <img src="resources/images/genres/sports.png" alt="Sports">
+                        </div>
+                        <div class="ccg-card__body ccg-genre-tile__body">
+                            <h3 class="ccg-card__title ccg-genre-tile__title">Sports</h3>
+                        </div>
+                    </a>
+
+                    <a class="ccg-card ccg-genre-tile" href="games/genres/role-playing-games.html">
+                        <div class="ccg-card__media ccg-card__media--16x9 ccg-genre-tile__thumb">
+                            <img src="resources/images/genres/role-playing.png" alt="Role Playing">
+                        </div>
+                        <div class="ccg-card__body ccg-genre-tile__body">
+                            <h3 class="ccg-card__title ccg-genre-tile__title">RPG</h3>
+                        </div>
+                    </a>
+
+                    <a class="ccg-card ccg-genre-tile" href="games/genres/strategy-games.html">
+                        <div class="ccg-card__media ccg-card__media--16x9 ccg-genre-tile__thumb">
+                            <img src="resources/images/genres/strategy.png" alt="Strategy">
+                        </div>
+                        <div class="ccg-card__body ccg-genre-tile__body">
+                            <h3 class="ccg-card__title ccg-genre-tile__title">Strategy</h3>
+                        </div>
+                    </a>
+
+                    <a class="ccg-card ccg-genre-tile" href="games/genres/fighting-games.html">
+                        <div class="ccg-card__media ccg-card__media--16x9 ccg-genre-tile__thumb">
+                            <img src="resources/images/genres/fighting.png" alt="Fighting">
+                        </div>
+                        <div class="ccg-card__body ccg-genre-tile__body">
+                            <h3 class="ccg-card__title ccg-genre-tile__title">Fighting</h3>
+                        </div>
+                    </a>
+
+                    <a class="ccg-card ccg-genre-tile" href="games/genres/horror-games.html">
+                        <div class="ccg-card__media ccg-card__media--16x9 ccg-genre-tile__thumb">
+                            <img src="resources/images/genres/horror.png" alt="Horror">
+                        </div>
+                        <div class="ccg-card__body ccg-genre-tile__body">
+                            <h3 class="ccg-card__title ccg-genre-tile__title">Horror</h3>
+                        </div>
+                    </a>
+
+                    <a class="ccg-card ccg-genre-tile" href="games/genres/casino-games.html">
+                        <div class="ccg-card__media ccg-card__media--16x9 ccg-genre-tile__thumb">
+                            <img src="resources/images/genres/casino.png" alt="Casino">
+                        </div>
+                        <div class="ccg-card__body ccg-genre-tile__body">
+                            <h3 class="ccg-card__title ccg-genre-tile__title">Casino</h3>
+                        </div>
+                    </a>
+
+                    <a class="ccg-card ccg-genre-tile" href="games/genres/quiz-games.html">
+                        <div class="ccg-card__media ccg-card__media--16x9 ccg-genre-tile__thumb">
+                            <img src="resources/images/genres/quiz.png" alt="Quiz">
+                        </div>
+                        <div class="ccg-card__body ccg-genre-tile__body">
+                            <h3 class="ccg-card__title ccg-genre-tile__title">Quiz</h3>
+                        </div>
+                    </a>
+
+                    <a class="ccg-card ccg-genre-tile" href="games/genres/miscellaneous.html">
+                        <div class="ccg-card__media ccg-card__media--16x9 ccg-genre-tile__thumb">
+                            <img src="resources/images/genres/miscellaneous.png" alt="Miscellaneous">
+                        </div>
+                        <div class="ccg-card__body ccg-genre-tile__body">
+                            <h3 class="ccg-card__title ccg-genre-tile__title">Miscellaneous</h3>
+                        </div>
+                    </a>
+
                 </div>
 
-                <div class="ccg-card__body">
-                    <p data-ccg-featured-video-desc></p>
-                    <a class="ccg-btn ccg-btn--primary" data-ccg-featured-video-btn>
-                        Watch on YouTube
+                <div class="home-section__footer-link">
+                    <a href="games/genres/index.html" class="ccg-link-inline">
+                        View full genre hub →
                     </a>
                 </div>
-            </article>
-        </div>
+            </section>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="ccg-footer">
+            <p class="ccg-footer__text">
+                © <span data-ccg-year></span> Cheeky Commodore Gamer.
+                Not affiliated with Commodore, Amiga or publishers.
+            </p>
+        </footer>
 
     </div>
-</section>
 
-<!-- GENRES -->
-<section class="home-section home-section--genres">
-    <h2 class="ccg-section-title">Browse by Genre</h2>
-    <div class="home-genre-grid">
-        <!-- unchanged genre tiles -->
-    </div>
-</section>
-
-</main>
-
-<footer class="ccg-footer">
-    <p>© <span data-ccg-year></span> Cheeky Commodore Gamer</p>
-</footer>
-
-</div>
-
-<!-- JS -->
-<script src="js/ccg-global.js" defer></script>
-<script src="js/ccg-mode-engine.js" defer></script>
-<script src="js/home-dynamic.js" defer></script>
+    <!-- JS -->
+    <script src="js/ccg-global.js" defer></script>
+    <script src="js/ccg-mode-engine.js" defer></script>
+    <script src="js/home-dynamic.js" defer></script>
 
 </body>
 </html>
