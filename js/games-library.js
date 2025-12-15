@@ -1,15 +1,16 @@
 /* ============================================================
-   GAMES LIBRARY — STABLE RESTORE + URL SAFE IDS
-   Hardened thumbnail handling (404-safe)
+   GAMES LIBRARY — STABLE RESTORE + SMART THUMB CHECK
+   - No games.json edits
+   - No repo structure changes
+   - Fallback only when truly missing
 ============================================================ */
 
 let CCG_ALL_GAMES = [];
 const ACCORDION_STATE_KEY = "ccgAccordionState";
+const FALLBACK_THUMB = "../resources/images/thumbnails/all/1942.jpg";
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
-        // NOTE: games/index.html lives in /games/
-        // so games.json is local
         const res = await fetch("games.json", { cache: "no-store" });
         if (!res.ok) throw new Error("Failed to load games.json");
 
@@ -62,38 +63,39 @@ function buildGamesAccordion(games) {
             </div>
         `;
 
-        const header = group.querySelector(".games-accordion__header");
-        header.addEventListener("click", () => {
-            const open = group.classList.toggle("is-open");
-            toggleAccordionState(letter, open);
-        });
+        group.querySelector(".games-accordion__header")
+            .addEventListener("click", () => {
+                const open = group.classList.toggle("is-open");
+                toggleAccordionState(letter, open);
+            });
 
         container.appendChild(group);
     });
 }
 
 /* ============================================================
-   RENDER GAME CARD (404-SAFE)
+   RENDER GAME CARD (SMART THUMB)
 ============================================================ */
 
 function renderGameCard(game) {
     const id = encodeURIComponent(game.id);
-    const thumb = resolveGameThumb(game.thumbnail || game.thumb || game.cover);
-    const safeTitle = game.title || "Untitled Game";
+    const rawThumb = game.thumbnail || game.thumb || game.cover || "";
+    const thumbPath = buildThumbPath(rawThumb);
+    const title = game.title || "Untitled Game";
 
     return `
         <a href="game.html?id=${id}" class="ccg-game-card">
             <div class="ccg-game-card__thumb">
                 <img
-                    src="${thumb}"
-                    alt="${safeTitle}"
+                    data-src="${thumbPath}"
+                    alt="${title}"
                     loading="lazy"
                     decoding="async"
-                    onerror="this.onerror=null;this.src='../resources/images/thumbnails/all/1942.jpg';"
+                    src="${FALLBACK_THUMB}"
                 >
             </div>
             <div class="ccg-game-card__body">
-                <h3 class="ccg-game-card__title">${safeTitle}</h3>
+                <h3 class="ccg-game-card__title">${title}</h3>
                 <div class="ccg-game-card__meta">
                     ${(game.year || "")} · ${(game.system || "")}
                 </div>
@@ -103,20 +105,17 @@ function renderGameCard(game) {
 }
 
 /* ============================================================
-   THUMBNAIL PATH RESOLUTION
+   THUMB PATH BUILDER
 ============================================================ */
 
-function resolveGameThumb(raw) {
-    if (!raw) {
-        return "../resources/images/thumbnails/all/1942.jpg";
-    }
-
-    const t = String(raw).replace(/^\/+/, "");
-    return `../resources/images/thumbnails/all/${t}`;
+function buildThumbPath(raw) {
+    if (!raw) return FALLBACK_THUMB;
+    const clean = String(raw).replace(/^\/+/, "");
+    return `../resources/images/thumbnails/all/${clean}`;
 }
 
 /* ============================================================
-   ACCORDION STATE (SESSION-ONLY)
+   ACCORDION STATE (SESSION ONLY)
 ============================================================ */
 
 function getAccordionState() {
@@ -135,9 +134,9 @@ function toggleAccordionState(letter, open) {
 
 function restoreAccordionState() {
     getAccordionState().forEach(letter => {
-        const group = document.querySelector(
+        const g = document.querySelector(
             `.games-accordion__group[data-letter="${letter}"]`
         );
-        if (group) group.classList.add("is-open");
+        if (g) g.classList.add("is-open");
     });
 }
