@@ -1,6 +1,6 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & RESET
-   Omega Neon Edition — Phase P4 Typography Rhythm Polish
+   Omega Neon Edition — Phase P12 Editorial Polish
    ============================================================ */
 
 :root {
@@ -19,8 +19,8 @@
     --ccg-text-soft: #b5bbdf;
 
     /* NEON EFFECTS */
-    --ccg-neon-blue: 0 0 8px rgba(0, 170, 255, 0.8), 0 0 16px rgba(0, 170, 255, 0.8);
-    --ccg-neon-pink: 0 0 8px rgba(255, 41, 224, 0.8), 0 0 16px rgba(255, 41, 224, 0.8);
+    --ccg-neon-blue: 0 0 8px rgba(0,170,255,.8), 0 0 16px rgba(0,170,255,.8);
+    --ccg-neon-pink: 0 0 8px rgba(255,41,224,.8), 0 0 16px rgba(255,41,224,.8);
 
     /* LAYOUT */
     --ccg-page-max-width: 1320px;
@@ -75,6 +75,18 @@ body {
 }
 
 /* ============================================================
+   SECTION RHYTHM — P11 EDITORIAL CADENCE
+   ============================================================ */
+
+.ccg-section + .ccg-section {
+    margin-top: 12px;
+}
+
+.ccg-section:not(:last-of-type) {
+    padding-bottom: calc(var(--ccg-section-padding) + 8px);
+}
+
+/* ============================================================
    BACKGROUND LAYERS
    ============================================================ */
 
@@ -94,7 +106,7 @@ body {
 }
 
 /* ============================================================
-   HEADER (UNCHANGED FROM P3)
+   HEADER (UNCHANGED — ALIGNMENT FIX COMES IN P13)
    ============================================================ */
 
 .ccg-header {
@@ -104,8 +116,8 @@ body {
     padding: 12px 0;
     background: linear-gradient(
         to bottom,
-        rgba(0, 0, 0, 0.92),
-        rgba(0, 0, 0, 0.85),
+        rgba(0,0,0,.92),
+        rgba(0,0,0,.85),
         transparent
     );
     backdrop-filter: blur(4px);
@@ -121,7 +133,7 @@ body {
 }
 
 /* ============================================================
-   SECTION TITLES — PHASE P4 POLISH
+   SECTION TITLES — P4 MICRO TYPOGRAPHY
    ============================================================ */
 
 .ccg-section-title,
@@ -130,17 +142,17 @@ body {
 .ccg-genre-hero__title {
     font-family: var(--ccg-font-main);
     text-transform: uppercase;
-    letter-spacing: 0.18em;                 /* 🔧 slightly cleaner */
+    letter-spacing: 0.18em;
     font-weight: 700;
     color: var(--ccg-text-light);
-    margin: 0 0 22px;                       /* 🔧 more breathing room */
+    margin: 0 0 22px;
     position: relative;
     text-shadow:
-        0 0 8px rgba(0, 0, 0, 0.8),
-        0 0 14px rgba(0, 170, 255, 0.6);
+        0 0 8px rgba(0,0,0,.8),
+        0 0 14px rgba(0,170,255,.6);
 }
 
-/* Subtle neon divider — visual only */
+/* Section divider glow */
 .ccg-section-title::after {
     content: "";
     display: block;
@@ -152,14 +164,21 @@ body {
         var(--ccg-color-blue),
         var(--ccg-color-pink)
     );
-    opacity: 0.65;
+    opacity: .65;
     box-shadow:
-        0 0 6px rgba(0, 170, 255, 0.6),
-        0 0 12px rgba(255, 41, 224, 0.4);
+        0 0 6px rgba(0,170,255,.6),
+        0 0 12px rgba(255,41,224,.4);
+    transition: width .25s ease, opacity .25s ease;
+}
+
+/* Interactive cadence (visual only) */
+.ccg-section:hover .ccg-section-title::after {
+    width: 88px;
+    opacity: .85;
 }
 
 /* ============================================================
-   SUBTITLES / BODY LEAD TEXT
+   SUBTITLES / LEAD TEXT
    ============================================================ */
 
 .ccg-genrehub-subtitle,
@@ -167,10 +186,25 @@ body {
 .ccg-genre-hero__tagline,
 .ccg-section-subtitle {
     font-family: var(--ccg-font-body);
-    font-size: 0.95rem;
+    font-size: .95rem;
     color: var(--ccg-text-soft);
     max-width: 680px;
-    margin-bottom: 8px;                    /* 🔧 clearer grouping */
+    margin-bottom: 8px;
+}
+
+/* ============================================================
+   P12 — MICRO TEXTURE (QUALITY DEPTH)
+   ============================================================ */
+
+.ccg-section,
+.ccg-hero,
+.ccg-genre-hero {
+    background-image:
+        linear-gradient(
+            rgba(255,255,255,0.015),
+            rgba(255,255,255,0.015)
+        );
+    background-blend-mode: overlay;
 }
 
 /* ============================================================
@@ -182,13 +216,17 @@ body {
     text-align: center;
     padding: 22px 0 26px;
     margin-top: auto;
-    font-size: 0.8rem;
+    font-size: .8rem;
     color: var(--ccg-text-soft);
-    opacity: 0.8;
+    opacity: .8;
     background: linear-gradient(
         to top,
-        rgba(0, 0, 0, 0.9),
-        rgba(0, 0, 0, 0.4),
+        rgba(0,0,0,.9),
+        rgba(0,0,0,.4),
         transparent
     );
+}
+
+.ccg-footer__text {
+    margin: 0;
 }
