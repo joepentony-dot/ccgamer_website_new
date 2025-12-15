@@ -1,10 +1,6 @@
 /* ============================================================
    HOME.CSS — OMEGA CINEMATIC (LOCKED HOME CONTRACT)
-   Phase H-L1 — PERMANENT Home Genre Thumbnail Lock
-   ------------------------------------------------------------
-   CRITICAL RULE:
-   Home genre tiles MUST visually match Genre Index tiles
-   and must NEVER stretch, squash, or fill grid width.
+   Phase H-L2 — Featured Video Cinematic Clamp (FINAL)
 ============================================================ */
 
 /* ============================================================
@@ -14,6 +10,50 @@
 .home-section {
     width: 100%;
     position: relative;
+}
+
+/* ============================================================
+   FEATURED HIGHLIGHTS — LAYOUT
+============================================================ */
+
+.home-featured-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .home-featured-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================================
+   FEATURED VIDEO — SIZE CLAMP (CRITICAL FIX)
+============================================================ */
+
+/* Card container clamp — THIS is the missing piece */
+.home-feature-card--video {
+    max-width: 820px;          /* 🎯 Cinematic but controlled */
+    margin: 0 auto;            /* centre horizontally */
+}
+
+/* Media frame — aspect preserved, never grows vertically */
+.home-feature-video__frame {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: 14px;
+}
+
+/* Image / iframe behaviour */
+.home-feature-video__frame img,
+.home-feature-video__frame iframe {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 /* ============================================================
@@ -32,12 +72,11 @@
 ============================================================ */
 
 .home-genre-grid .ccg-genre-tile {
-    max-width: 360px;            /* 🔒 visual parity with genre index */
-    margin: 0 auto;              /* centre inside grid cell */
+    max-width: 360px;            /* 🔒 parity with genre index */
+    margin: 0 auto;
     height: auto;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
 }
 
 /* ============================================================
@@ -52,7 +91,6 @@
     flex-shrink: 0;
 }
 
-/* IMAGE BEHAVIOUR — READABILITY FIRST */
 .home-genre-grid .ccg-genre-tile__thumb img {
     width: 100%;
     height: 100%;
@@ -62,17 +100,13 @@
 }
 
 /* ============================================================
-   HOME GENRE BODY — STABLE HEIGHT
+   HOME GENRE BODY
 ============================================================ */
 
 .home-genre-grid .ccg-genre-tile__body {
     padding: 12px 14px 14px;
     text-align: left;
 }
-
-/* ============================================================
-   HOME GENRE TITLE — NO INFLUENCE ON CARD SIZE
-============================================================ */
 
 .home-genre-grid .ccg-genre-tile__title {
     font-size: 0.85rem;
@@ -91,7 +125,7 @@
 }
 
 /* ============================================================
-   RESPONSIVE — SCALE GRID, NEVER THUMB
+   RESPONSIVE — SCALE GRID, NEVER MEDIA
 ============================================================ */
 
 @media (max-width: 900px) {
