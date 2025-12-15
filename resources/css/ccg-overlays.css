@@ -1,35 +1,80 @@
 /* ============================================================
-   CCG OVERLAYS — CRT / VIGNETTE FINAL MICRO DEPTH
-   Phase P29 — Cinematic Finish
+   CCG OVERLAYS — OMEGA CINEMATIC DEPTH RESTORE
+   Phase A — Background Motion & Presence
 ============================================================ */
+
+/* ------------------------------------------------------------
+   STARFIELD — PRIMARY DEPTH LAYER
+------------------------------------------------------------ */
 
 .ccg-bg-starfield {
     background-image: url("../images/starfield_new.png");
-    opacity: 0.75;
+    background-repeat: repeat;
+    background-size: 1200px 1200px;
+    opacity: 0.55;
+
+    animation: ccg-star-drift 180s linear infinite;
+    will-change: background-position;
 }
+
+/* Slow cinematic drift */
+@keyframes ccg-star-drift {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: -1200px 1200px;
+    }
+}
+
+/* ------------------------------------------------------------
+   GRID — SECONDARY PARALLAX LAYER
+------------------------------------------------------------ */
 
 .ccg-bg-grid {
     background-image: url("../images/bg-grid_new.jpg");
-    opacity: 0.18;
+    background-repeat: repeat;
+    background-size: 800px 800px;
+
+    opacity: 0.12;
     mix-blend-mode: screen;
+
+    animation: ccg-grid-drift 260s linear infinite;
+    will-change: background-position;
 }
+
+/* Slower, opposing drift = depth illusion */
+@keyframes ccg-grid-drift {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: 800px -800px;
+    }
+}
+
+/* ------------------------------------------------------------
+   CRT / VIGNETTE — TUNED, NOT DOMINANT
+------------------------------------------------------------ */
 
 .ccg-bg-crt-overlay {
     pointer-events: none;
+
     background:
         radial-gradient(
             ellipse at center,
-            rgba(255,255,255,0.03) 0%,
-            rgba(0,0,0,0.35) 70%,
-            rgba(0,0,0,0.65) 100%
+            rgba(255,255,255,0.025) 0%,
+            rgba(0,0,0,0.25) 65%,
+            rgba(0,0,0,0.55) 100%
         ),
         repeating-linear-gradient(
             to bottom,
-            rgba(255,255,255,0.02),
-            rgba(255,255,255,0.02) 1px,
+            rgba(255,255,255,0.018),
+            rgba(255,255,255,0.018) 1px,
             transparent 1px,
             transparent 3px
         );
+
     mix-blend-mode: overlay;
-    opacity: 0.45;
+    opacity: 0.35;
 }
