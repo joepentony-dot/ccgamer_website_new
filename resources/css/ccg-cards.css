@@ -1,18 +1,15 @@
 /* ============================================================
    CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM
-   Phase P29 — Thumbnail Context Isolation + Aspect Ratio Safety
+   Phase P31 — CARD HOVER SYNCHRONISATION
    ------------------------------------------------------------
-   GOALS:
-   • Keep ALL cards stable across the site (no “full screen” tiles)
-   • Isolate thumbnail rules by context:
-       - Game cards (cover)
-       - Featured cards (cover)
-       - Genre tiles with text inside image (contain / safe crop)
-   • Prevent missing images / 404 thumbs from exploding layout
+   • Matches button & nav timing philosophy
+   • Unified hover-in / hover-out rhythm
+   • Glow decay (no snap-off)
+   • ZERO layout or aspect ratio changes
 ============================================================ */
 
 /* ============================================================
-   GRID WRAPPERS (SAFE DEFAULTS)
+   GRID WRAPPERS (LOCKED)
 ============================================================ */
 
 .ccg-genre-grid,
@@ -24,13 +21,11 @@
     align-items: start;
 }
 
-/* Genre single pages often want consistent tile width */
 .ccg-page--genre-single .ccg-genre-grid {
     grid-template-columns: repeat(auto-fit, minmax(240px, 240px));
     justify-content: center;
 }
 
-/* Home genre grid is defined in home.css, but keep a safe fallback */
 .home-genre-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -39,7 +34,7 @@
 }
 
 /* ============================================================
-   BASE CARD (ccg-card) — USED EVERYWHERE
+   BASE CARD (ccg-card)
 ============================================================ */
 
 .ccg-card {
@@ -58,23 +53,32 @@
         0 0 18px rgba(var(--accent-rgb), 0.12);
 
     transition:
-        transform .22s ease-out,
-        box-shadow .22s ease-out,
-        border-color .22s ease;
+        transform 0.45s var(--ccg-ease-in),
+        box-shadow 0.45s var(--ccg-ease-in),
+        border-color 0.45s var(--ccg-ease-in);
+
+    will-change: transform, box-shadow;
 }
 
-/* Hover (gentle, synced) */
+/* Hover-in (cinematic lift) */
 .ccg-card:hover,
 .ccg-card:focus-within {
-    transform: translateY(-3px);
-    border-color: rgba(255,255,255,.14);
+    transform: translateY(-4px);
+    border-color: rgba(var(--accent-rgb), 0.35);
+
     box-shadow:
-        0 14px 32px rgba(0,0,0,.80),
-        0 0 30px rgba(var(--accent-rgb), 0.28);
+        0 16px 34px rgba(0,0,0,.85),
+        0 0 32px rgba(var(--accent-rgb), 0.35);
+}
+
+/* Hover-out (quicker return) */
+.ccg-card:not(:hover) {
+    transition-duration: 0.25s;
+    transition-timing-function: var(--ccg-ease-out-fast);
 }
 
 /* ============================================================
-   CARD MEDIA (shared)
+   CARD MEDIA (LOCKED ASPECTS)
 ============================================================ */
 
 .ccg-card__media {
@@ -82,17 +86,13 @@
     width: 100%;
     overflow: hidden;
     flex-shrink: 0;
-
-    /* If an image fails to load, the card still looks intentional */
     background: radial-gradient(circle at 40% 35%, rgba(255,255,255,.06), rgba(0,0,0,.82));
 }
 
-/* 16:9 frame utility */
 .ccg-card__media--16x9 {
     aspect-ratio: 16 / 9;
 }
 
-/* Default media behaviour = COVER (good for game thumbs + featured) */
 .ccg-card__media img,
 .ccg-card__media video,
 .ccg-card__media iframe {
@@ -100,9 +100,21 @@
     height: 100%;
     display: block;
     object-fit: cover;
+
+    transition:
+        transform 0.45s var(--ccg-ease-in),
+        filter 0.45s var(--ccg-ease-in);
 }
 
-/* Soft vignette on media */
+/* Media reacts WITH card */
+.ccg-card:hover .ccg-card__media img,
+.ccg-card:hover .ccg-card__media video,
+.ccg-card:hover .ccg-card__media iframe {
+    transform: scale(1.03);
+    filter: brightness(1.06) contrast(1.04);
+}
+
+/* Vignette */
 .ccg-card__media::after {
     content: "";
     position: absolute;
@@ -112,7 +124,7 @@
 }
 
 /* ============================================================
-   CARD BODY (shared)
+   CARD BODY / TEXT
 ============================================================ */
 
 .ccg-card__body {
@@ -129,9 +141,18 @@
     line-height: 1.25;
     margin: 0;
     color: var(--ccg-text-light);
+
+    transition:
+        color 0.45s var(--ccg-ease-in),
+        text-shadow 0.45s var(--ccg-ease-in);
+}
+
+/* Title energises WITH card */
+.ccg-card:hover .ccg-card__title {
+    color: var(--accent-soft);
     text-shadow:
-        0 0 6px rgba(0,0,0,.8),
-        var(--ccg-neon-main);
+        0 0 6px rgba(0,0,0,.85),
+        0 0 14px rgba(var(--accent-rgb), .35);
 }
 
 .ccg-card__text {
@@ -142,7 +163,26 @@
 }
 
 /* ============================================================
-   GAME CARDS (ccg-game-card) — DO NOT BREAK GAMES INDEX
+   GLOW DECAY LAYER (PREVENT SNAP-OFF)
+============================================================ */
+
+.ccg-card::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: inherit;
+    transition: opacity 0.35s ease;
+}
+
+.ccg-card:hover::after {
+    opacity: 1;
+}
+
+/* ============================================================
+   GAME CARDS (ccg-game-card) — SAME RHYTHM
 ============================================================ */
 
 .ccg-game-card {
@@ -161,17 +201,26 @@
         0 0 12px rgba(var(--accent-rgb), 0.08);
 
     transition:
-        transform .22s ease-out,
-        box-shadow .22s ease-out,
-        border-color .22s ease;
+        transform 0.45s var(--ccg-ease-in),
+        box-shadow 0.45s var(--ccg-ease-in),
+        border-color 0.45s var(--ccg-ease-in);
+
+    will-change: transform, box-shadow;
 }
 
 .ccg-game-card:hover,
 .ccg-game-card:focus-within {
     transform: translateY(-3px);
+    border-color: rgba(var(--accent-rgb), 0.35);
+
     box-shadow:
-        0 10px 26px rgba(0,0,0,.85),
-        0 0 22px rgba(var(--accent-rgb), 0.22);
+        0 12px 28px rgba(0,0,0,.85),
+        0 0 26px rgba(var(--accent-rgb), 0.28);
+}
+
+.ccg-game-card:not(:hover) {
+    transition-duration: 0.25s;
+    transition-timing-function: var(--ccg-ease-out-fast);
 }
 
 .ccg-game-card__thumb {
@@ -180,7 +229,6 @@
     min-height: 120px;
     position: relative;
     overflow: hidden;
-    background: radial-gradient(circle at 40% 35%, rgba(255,255,255,.06), rgba(0,0,0,.82));
 }
 
 .ccg-game-card__thumb img {
@@ -188,6 +236,15 @@
     height: 100%;
     display: block;
     object-fit: cover;
+
+    transition:
+        transform 0.45s var(--ccg-ease-in),
+        filter 0.45s var(--ccg-ease-in);
+}
+
+.ccg-game-card:hover .ccg-game-card__thumb img {
+    transform: scale(1.03);
+    filter: brightness(1.06) contrast(1.04);
 }
 
 .ccg-game-card__thumb::after {
@@ -211,65 +268,30 @@
     letter-spacing: .065em;
     line-height: 1.25;
     margin: 0;
+
+    transition:
+        color 0.45s var(--ccg-ease-in),
+        text-shadow 0.45s var(--ccg-ease-in);
+}
+
+.ccg-game-card:hover .ccg-game-card__title {
+    color: var(--accent-soft);
+    text-shadow:
+        0 0 6px rgba(0,0,0,.85),
+        0 0 14px rgba(var(--accent-rgb), .35);
 }
 
 /* ============================================================
-   GENRE TILE IMAGE FIT (IMPORTANT)
-   Your genre thumbnails have TEXT inside the image. We must
-   show the whole word without chopping the sides.
-============================================================ */
-
-/* Only for GENRE GRIDS (home + genre hub + any genre grid) */
-.ccg-genre-grid .ccg-card__media img,
-.genre-grid .ccg-card__media img,
-.home-genre-grid .ccg-card__media img {
-    object-fit: contain;           /* show whole artwork */
-    background: rgba(0,0,0,0.78);  /* letterbox looks intentional */
-}
-
-/* Slight inner padding so text doesn’t kiss edges */
-.ccg-genre-grid .ccg-card__media--16x9,
-.genre-grid .ccg-card__media--16x9,
-.home-genre-grid .ccg-card__media--16x9 {
-    padding: 8px;
-}
-
-/* When we add padding, ensure the child still fills the padded box */
-.ccg-genre-grid .ccg-card__media img,
-.genre-grid .ccg-card__media img,
-.home-genre-grid .ccg-card__media img {
-    width: 100%;
-    height: 100%;
-}
-
-/* ============================================================
-   MOBILE TAP TARGET POLISH
+   ACTIVE / TOUCH FEEDBACK
 ============================================================ */
 
 @media (max-width: 768px) {
-    .ccg-card {
-        border-radius: 14px;
-    }
-
-    .ccg-card:active {
-        transform: scale(0.985);
-        box-shadow: 0 6px 16px rgba(0,0,0,.85);
-    }
-
-    .ccg-card__title {
-        font-size: 0.72rem;
-    }
-
-    .ccg-game-card {
-        border-radius: 12px;
-    }
-
+    .ccg-card:active,
     .ccg-game-card:active {
         transform: scale(0.985);
-        box-shadow: 0 4px 12px rgba(0,0,0,.85);
-    }
-
-    .ccg-game-card__title {
-        font-size: 0.70rem;
+        box-shadow:
+            0 6px 16px rgba(0,0,0,.85),
+            0 0 16px rgba(var(--accent-rgb), 0.22);
+        transition-duration: 0.12s;
     }
 }
