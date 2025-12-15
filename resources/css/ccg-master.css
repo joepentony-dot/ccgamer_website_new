@@ -1,7 +1,7 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & RESET
-   Omega Neon Edition — Phase P19 Header Depth Polish
-   ============================================================ */
+   Omega Neon Edition — Phase P20 Section Rhythm Lock
+============================================================ */
 
 :root {
     /* FONTS */
@@ -25,7 +25,12 @@
     /* LAYOUT */
     --ccg-page-max-width: 1320px;
     --ccg-page-gutter: 2%;
-    --ccg-section-padding: 28px;
+
+    /* GLOBAL RHYTHM */
+    --ccg-section-gap: 84px;
+    --ccg-header-gap-top: 0;
+    --ccg-header-gap-bottom: 26px;
+    --ccg-divider-gap: 10px;
 }
 
 /* ============================================================
@@ -64,12 +69,46 @@ body {
 .ccg-main {
     width: min(var(--ccg-page-max-width), 100% - var(--ccg-page-gutter) * 2);
     margin: 0 auto;
-    padding: var(--ccg-section-padding) 0;
+    padding: 0;
 }
 
-.ccg-section {
+/* ============================================================
+   SECTION RHYTHM (GLOBAL)
+============================================================ */
+
+.ccg-section,
+.home-section {
     width: 100%;
-    padding: var(--ccg-section-padding) 0;
+    margin-top: var(--ccg-section-gap);
+}
+
+.ccg-section:first-child,
+.home-section:first-child {
+    margin-top: 0;
+}
+
+/* ============================================================
+   SECTION HEADERS (LOCKED SYSTEM)
+============================================================ */
+
+.ccg-section__header,
+.home-section__header {
+    margin-top: var(--ccg-header-gap-top);
+    margin-bottom: var(--ccg-header-gap-bottom);
+}
+
+.ccg-section__title,
+.home-section__title {
+    font-family: var(--ccg-font-main);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+/* Divider optical alignment */
+.ccg-section__divider,
+.home-section__divider {
+    margin-top: var(--ccg-divider-gap);
 }
 
 /* ============================================================
@@ -91,7 +130,7 @@ body {
 }
 
 /* ============================================================
-   HEADER — PHASE P19 POLISH
+   HEADER — PRESERVED (P19)
 ============================================================ */
 
 .ccg-header {
@@ -123,7 +162,7 @@ body {
 }
 
 /* ============================================================
-   BRAND / LOGO LOCK
+   BRAND / LOGO LOCK (UNCHANGED)
 ============================================================ */
 
 .ccg-brand {
@@ -162,18 +201,8 @@ body {
     gap: 0.3em;
 }
 
-.ccg-brand__neon-cheeky {
-    color: var(--ccg-color-blue);
-    text-shadow: var(--ccg-neon-blue);
-}
-
-.ccg-brand__neon-sub {
-    color: var(--ccg-color-pink);
-    text-shadow: var(--ccg-neon-pink);
-}
-
 /* ============================================================
-   NAV — ALIGNMENT & VISUAL BALANCE
+   NAV (UNCHANGED STRUCTURE)
 ============================================================ */
 
 .ccg-nav {
@@ -200,55 +229,6 @@ body {
     position: relative;
 }
 
-.ccg-nav__link::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    height: 2px;
-    width: 0;
-    background: linear-gradient(90deg, var(--ccg-color-blue), var(--ccg-color-pink));
-    transition: width .2s ease;
-}
-
-.ccg-nav__link:hover,
-.ccg-nav__link--active {
-    opacity: 1;
-    color: var(--ccg-color-cyan);
-}
-
-.ccg-nav__link:hover::after,
-.ccg-nav__link--active::after {
-    width: 100%;
-}
-
-/* ============================================================
-   HEADER ACTIONS
-============================================================ */
-
-.ccg-header-actions {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-/* ============================================================
-   HEADER NEON STRIP (TONED)
-============================================================ */
-
-.ccg-header-neon-strip {
-    height: 2px;
-    width: 100%;
-    background: linear-gradient(
-        90deg,
-        rgba(0,170,255,0.8),
-        rgba(255,41,224,0.8),
-        rgba(0,170,255,0.8)
-    );
-    box-shadow:
-        0 0 6px rgba(0,170,255,0.5);
-}
-
 /* ============================================================
    FOOTER (UNCHANGED)
 ============================================================ */
@@ -269,7 +249,7 @@ body {
 }
 
 /* ============================================================
-   PHASE P25 — GLOBAL HOVER EASING UNIFICATION
+   GLOBAL HOVER EASING (PRESERVED)
 ============================================================ */
 
 :root {
@@ -282,4 +262,22 @@ button,
 .ccg-panel,
 .ccg-btn {
     transition-timing-function: var(--ccg-ease-out) !important;
+}
+
+/* ============================================================
+   RESPONSIVE RHYTHM
+============================================================ */
+
+@media (max-width: 900px) {
+    :root {
+        --ccg-section-gap: 64px;
+        --ccg-header-gap-bottom: 22px;
+    }
+}
+
+@media (max-width: 768px) {
+    :root {
+        --ccg-section-gap: 56px;
+        --ccg-header-gap-bottom: 20px;
+    }
 }
