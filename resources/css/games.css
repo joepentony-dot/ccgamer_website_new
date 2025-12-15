@@ -1,142 +1,63 @@
 /* ============================================================
-   GAMES.CSS — OMEGA VISUAL DEPTH & STRUCTURE
-   Phase P22 — Related Games Strip Depth & Glow
-   ------------------------------------------------------------
-   SAFE:
-   • No layout containment
-   • No JS dependency changes
-   • No accordion logic touched
+   GAMES.CSS — STABLE FUNCTIONAL RESTORE
+   Phase P27 — Related Strip Depth & Spacing Polish
 ============================================================ */
 
 /* ============================================================
-   SHARED GAME PAGE BASE
+   PAGE BASE — SHARED
 ============================================================ */
 
-.ccg-main--single-game {
-    padding-bottom: 56px;
+.games-grid {
+    width: 100%;
 }
 
 /* ============================================================
-   RELATED GAMES SECTION — CONTAINER
+   RELATED GAMES STRIP (SINGLE GAME PAGE)
 ============================================================ */
 
 .game-section--related {
-    position: relative;
-    margin-top: 48px;
-    padding-top: 32px;
+    margin-top: 36px;
+    padding-bottom: 12px;
 }
-
-/* soft cinematic separation from page above */
-.game-section--related::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 86%;
-    height: 1px;
-    transform: translateX(-50%);
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(var(--accent-rgb), 0.35),
-        transparent
-    );
-    box-shadow:
-        0 0 12px rgba(var(--accent-rgb), 0.35);
-    opacity: 0.7;
-}
-
-/* ============================================================
-   RELATED STRIP WRAPPER
-============================================================ */
 
 .related-scroll-wrapper {
     position: relative;
     overflow-x: auto;
-    padding: 18px 0 24px;
-    scrollbar-width: none;
+    padding: 10px 4px 18px;
 }
 
-.related-scroll-wrapper::-webkit-scrollbar {
-    display: none;
-}
-
-/* subtle depth fade edges */
+/* subtle edge fade */
 .related-scroll-wrapper::before,
 .related-scroll-wrapper::after {
     content: "";
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 64px;
+    width: 36px;
     pointer-events: none;
-    z-index: 5;
+    z-index: 2;
 }
 
 .related-scroll-wrapper::before {
     left: 0;
-    background: linear-gradient(
-        to right,
-        rgba(0,0,0,0.85),
-        transparent
-    );
+    background: linear-gradient(to right, rgba(0,0,0,0.85), transparent);
 }
 
 .related-scroll-wrapper::after {
     right: 0;
-    background: linear-gradient(
-        to left,
-        rgba(0,0,0,0.85),
-        transparent
-    );
+    background: linear-gradient(to left, rgba(0,0,0,0.85), transparent);
 }
-
-/* ============================================================
-   RELATED STRIP — FLEX ROW
-============================================================ */
 
 .related-scroll {
     display: flex;
-    gap: 18px;
-    padding: 6px 18px;
-    align-items: stretch;
+    gap: 16px;
+    padding: 8px 6px;
 }
 
-/* ============================================================
-   RELATED CARD — DEPTH NORMALISATION
-   (inherits P21 hover logic from ccg-cards.css)
-============================================================ */
-
+/* Cards inside related strip */
 .related-scroll .ccg-game-card {
-    flex: 0 0 240px;
-    max-width: 240px;
-    transform-origin: center bottom;
-}
-
-/* ============================================================
-   HOVER — PARALLAX LIFT (SUBTLE)
-============================================================ */
-
-.related-scroll .ccg-game-card:hover {
-    transform:
-        translateY(-4px)
-        scale(1.03);
-}
-
-/* ============================================================
-   MODE-BASED DEPTH TUNING
-============================================================ */
-
-body[data-ccg-mode="c64"] .related-scroll .ccg-game-card {
-    box-shadow:
-        0 12px 30px rgba(0,0,0,0.75),
-        0 0 24px rgba(0,170,255,0.12);
-}
-
-body[data-ccg-mode="amiga"] .related-scroll .ccg-game-card {
-    box-shadow:
-        0 12px 30px rgba(0,0,0,0.75),
-        0 0 24px rgba(255,41,224,0.14);
+    min-width: 220px;
+    flex-shrink: 0;
 }
 
 /* ============================================================
@@ -144,14 +65,11 @@ body[data-ccg-mode="amiga"] .related-scroll .ccg-game-card {
 ============================================================ */
 
 @media (max-width: 768px) {
-
     .related-scroll {
         gap: 14px;
-        padding: 6px 14px;
     }
 
     .related-scroll .ccg-game-card {
-        flex: 0 0 200px;
-        max-width: 200px;
+        min-width: 200px;
     }
 }
