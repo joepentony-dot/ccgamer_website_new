@@ -1,7 +1,7 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & RESET
-   Omega Neon Edition — Phase P21
-   Global Button Hover Polish (SAFE & VISIBLE)
+   Omega Neon Edition — Phase P22
+   Header Nav Hover Refinement
 ============================================================ */
 
 :root {
@@ -49,101 +49,132 @@ body {
 }
 
 /* ============================================================
-   BUTTON BASE
+   HEADER (STRUCTURE UNCHANGED)
 ============================================================ */
 
-.ccg-btn {
+.ccg-header {
     position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    z-index: 9999;
+    width: 100%;
+    padding: 14px 0 12px;
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(0,0,0,0.94),
+            rgba(0,0,0,0.88),
+            rgba(0,0,0,0.65),
+            transparent
+        );
+    backdrop-filter: blur(5px);
+    box-shadow:
+        0 10px 28px rgba(0,0,0,0.65),
+        0 0 18px rgba(0,170,255,0.08);
+}
 
-    padding: 10px 18px;
-    font-family: var(--ccg-font-main);
-    font-size: 0.75rem;
-    letter-spacing: 0.12em;
+.ccg-header-inner {
+    width: min(1320px, 96%);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+/* ============================================================
+   NAV — HOVER REFINEMENT (SAFE)
+============================================================ */
+
+.ccg-nav {
+    display: flex;
+    align-items: center;
+}
+
+.ccg-nav__list {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.ccg-nav__link {
+    position: relative;
+    font-size: 0.8rem;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
 
-    color: var(--ccg-text-light);
-    background: rgba(0,0,0,0.55);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 999px;
+    color: var(--ccg-text-soft);
+    opacity: 0.82;
 
-    cursor: pointer;
+    padding-bottom: 4px;
     text-decoration: none;
 
     transition:
-        transform 0.28s var(--ccg-ease-out),
-        box-shadow 0.32s var(--ccg-ease-out),
-        background-color 0.28s ease,
-        border-color 0.28s ease;
+        color 0.22s ease,
+        opacity 0.22s ease,
+        text-shadow 0.28s var(--ccg-ease-out);
+}
+
+/* Underline — delayed, momentum-based */
+.ccg-nav__link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+
+    width: 0;
+    height: 2px;
+
+    background: linear-gradient(
+        90deg,
+        var(--ccg-color-blue),
+        var(--ccg-color-pink)
+    );
+
+    transition:
+        width 0.32s var(--ccg-ease-out);
+}
+
+/* Hover */
+.ccg-nav__link:hover {
+    color: var(--ccg-color-cyan);
+    opacity: 1;
+    text-shadow:
+        0 0 6px rgba(0,170,255,0.35);
+}
+
+.ccg-nav__link:hover::after {
+    width: 100%;
+}
+
+/* Active (current page) */
+.ccg-nav__link--active {
+    color: var(--ccg-color-cyan);
+    opacity: 1;
+}
+
+.ccg-nav__link--active::after {
+    width: 100%;
 }
 
 /* ============================================================
-   PRIMARY BUTTON
+   MODE AWARE NAV GLOW
 ============================================================ */
 
-.ccg-btn--primary {
-    border-color: rgba(0,170,255,0.45);
-    box-shadow:
-        inset 0 0 0 rgba(0,0,0,0),
-        0 0 0 rgba(0,0,0,0);
-}
-
-/* Hover — gentle lift + delayed glow */
-.ccg-btn--primary:hover {
-    transform: translateY(-2px);
-    border-color: rgba(0,170,255,0.75);
-    box-shadow:
-        0 0 14px rgba(0,170,255,0.45),
-        0 0 26px rgba(0,170,255,0.25);
-}
-
-/* Active — press, not shrink */
-.ccg-btn--primary:active {
-    transform: translateY(0);
-    box-shadow:
-        0 0 8px rgba(0,170,255,0.35);
+body[data-ccg-mode="amiga"] .ccg-nav__link:hover {
+    text-shadow:
+        0 0 8px rgba(255,41,224,0.45);
 }
 
 /* ============================================================
-   SECONDARY BUTTON
+   GLOBAL HOVER EASING (PRESERVED)
 ============================================================ */
 
-.ccg-btn--secondary {
-    border-color: rgba(255,255,255,0.18);
-}
-
-.ccg-btn--secondary:hover {
-    transform: translateY(-2px);
-    border-color: rgba(255,255,255,0.35);
-    box-shadow:
-        0 0 12px rgba(255,255,255,0.25);
-}
-
-.ccg-btn--secondary:active {
-    transform: translateY(0);
-    box-shadow:
-        0 0 6px rgba(255,255,255,0.2);
-}
-
-/* ============================================================
-   MODE-AWARE NEON INTENSITY
-============================================================ */
-
-body[data-ccg-mode="amiga"] .ccg-btn--primary:hover {
-    box-shadow:
-        0 0 16px rgba(255,41,224,0.45),
-        0 0 30px rgba(255,41,224,0.3);
-    border-color: rgba(255,41,224,0.75);
-}
-
-/* ============================================================
-   FOCUS ACCESSIBILITY (NO GLOW JUMP)
-============================================================ */
-
-.ccg-btn:focus-visible {
-    outline: none;
-    box-shadow:
-        0 0 0 2px rgba(0,170,255,0.5);
+a,
+button,
+.ccg-game-card,
+.ccg-panel,
+.ccg-btn {
+    transition-timing-function: var(--ccg-ease-out) !important;
 }
