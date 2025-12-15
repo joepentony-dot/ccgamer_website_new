@@ -17,11 +17,11 @@
 .ccg-page--home .home-hero,
 .ccg-page--home .home-tagline {
     position: relative;
-    z-index: 1; /* ensures content sits above bg layers */
+    z-index: 1;
 }
 
 /* ============================================================
-   HERO (LIGHT TOUCH — relies on global/hero CSS for most)
+   HERO (LIGHT TOUCH — relies on global/hero CSS)
 ============================================================ */
 
 .ccg-page--home .home-hero {
@@ -30,7 +30,7 @@
     margin-bottom: 16px;
 }
 
-/* prevent any accidental collapse */
+/* prevent accidental collapse */
 .ccg-page--home .home-hero .ccg-hero {
     min-height: 220px;
 }
@@ -50,40 +50,39 @@
    FEATURED HIGHLIGHTS — DESKTOP SPLIT LOCK
 ============================================================ */
 
-/* container spacing only */
 .ccg-page--home .home-section--highlights {
     width: 100%;
     margin: 10px 0 26px;
 }
 
-/* this is THE split controller */
+/* Base: stacked */
 .ccg-page--home .home-highlights-grid {
     display: grid;
-    grid-template-columns: 1fr; /* default: stacked */
+    grid-template-columns: 1fr;
     gap: 22px;
     align-items: start;
 }
 
-/* DESKTOP SPLIT: left = featured game, right = featured video */
+/* Desktop split */
 @media (min-width: 980px) {
     .ccg-page--home .home-highlights-grid {
-        grid-template-columns: 1fr 1fr; /* true parity */
+        grid-template-columns: 1fr 1fr;
         gap: 26px;
-        align-items: stretch; /* both cards same vertical behaviour */
+        align-items: stretch;
     }
 }
 
-/* Both cards must behave identically */
+/* Cards behave identically */
 .ccg-page--home .home-highlights-grid > .home-feature-card {
     width: 100%;
-    max-width: none; /* do NOT let one card cap smaller */
+    max-width: none;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-self: stretch;
 }
 
-/* Media: enforce 16:9 always (prevents “huge” distort) */
+/* Media lock — 16:9 always */
 .ccg-page--home .home-feature-card .ccg-card__media,
 .ccg-page--home .home-feature-video__frame {
     width: 100%;
@@ -92,35 +91,48 @@
     border-radius: 14px;
 }
 
-/* Images inside media: no stretch */
+/* Image behaviour */
 .ccg-page--home .home-feature-card .ccg-card__media img,
 .ccg-page--home .home-feature-video__frame img {
     width: 100%;
     height: 100%;
     display: block;
-    object-fit: cover; /* cinematic crop; keeps ratio, prevents squash */
+    object-fit: cover;
     object-position: center;
 }
 
-/* IMPORTANT: cap the *visual dominance* of the video on desktop
-   - without breaking ratio
-   - without touching globals
-*/
-@media (min-width: 980px) {
+/* ============================================================
+   FINAL DESKTOP VISUAL BALANCE (COSMETIC ONLY)
+   This is the missing piece
+============================================================ */
+
+@media (min-width: 1024px) {
+
+    /* Prevent video from visually overpowering */
     .ccg-page--home .home-feature-card--video .home-feature-video__frame {
-        /* keeps it aligned with the left card visually */
         max-height: 360px;
+    }
+
+    /* Add breathing room so it doesn’t feel edge-to-edge */
+    .ccg-page--home .home-feature-card--video .home-feature-video__frame {
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    /* Slight perceptual softening vs highlight card */
+    .ccg-page--home .home-feature-card--video img {
+        filter: brightness(0.92) contrast(0.95);
     }
 }
 
-/* keep card bodies consistent */
+/* Card body consistency */
 .ccg-page--home .home-feature-card .ccg-card__body {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-/* make buttons sit consistently (prevents odd “floating” height differences) */
+/* Button alignment */
 .ccg-page--home .home-feature-card__btn {
     margin-top: 6px;
     align-self: flex-start;
@@ -130,72 +142,47 @@
    HOME GENRE GRID (PERMANENT CONTRACT — UNCHANGED)
 ============================================================ */
 
-/* ============================================================
-   HOME SECTION BASE
-============================================================ */
-
 .home-section {
     width: 100%;
     position: relative;
 }
 
-/* ============================================================
-   HOME GENRE GRID (LAYOUT ONLY — NO STRETCHING)
-============================================================ */
-
 .home-genre-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 28px;
-    align-items: start; /* 🔒 prevents vertical stretching */
+    align-items: start;
 }
 
-/* ============================================================
-   HOME GENRE TILE — HARD SIZE CONTRACT
-============================================================ */
-
 .home-genre-grid .ccg-genre-tile {
-    max-width: 360px;            /* 🔒 visual parity with genre index */
-    margin: 0 auto;              /* centre inside grid cell */
+    max-width: 360px;
+    margin: 0 auto;
     height: auto;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
 }
 
-/* ============================================================
-   HOME GENRE THUMBNAIL — ABSOLUTE LOCK
-============================================================ */
-
 .home-genre-grid .ccg-genre-tile__thumb {
     width: 100%;
-    aspect-ratio: 16 / 9;        /* 🔒 SAME AS GENRE INDEX */
+    aspect-ratio: 16 / 9;
     overflow: hidden;
     position: relative;
     flex-shrink: 0;
 }
 
-/* IMAGE BEHAVIOUR — READABILITY FIRST */
 .home-genre-grid .ccg-genre-tile__thumb img {
     width: 100%;
     height: 100%;
-    object-fit: contain;         /* 🔒 NO CROPPING OF TEXT */
+    object-fit: contain;
     object-position: center;
     display: block;
 }
-
-/* ============================================================
-   HOME GENRE BODY — STABLE HEIGHT
-============================================================ */
 
 .home-genre-grid .ccg-genre-tile__body {
     padding: 12px 14px 14px;
     text-align: left;
 }
-
-/* ============================================================
-   HOME GENRE TITLE — NO INFLUENCE ON CARD SIZE
-============================================================ */
 
 .home-genre-grid .ccg-genre-tile__title {
     font-size: 0.85rem;
@@ -205,17 +192,9 @@
     text-overflow: ellipsis;
 }
 
-/* ============================================================
-   HOVER — VISUAL ONLY (NO SIZE CHANGE)
-============================================================ */
-
 .home-genre-grid .ccg-genre-tile:hover {
     transform: translateY(-3px);
 }
-
-/* ============================================================
-   RESPONSIVE — SCALE GRID, NEVER THUMB
-============================================================ */
 
 @media (max-width: 900px) {
     .home-genre-grid {
