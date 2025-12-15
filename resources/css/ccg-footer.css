@@ -1,0 +1,75 @@
+/* ============================================================
+   CCG FOOTER CSS — OMEGA MICRO-POLISH
+   Mobile Sanity Pass (SAFE)
+   ------------------------------------------------------------
+   • Improves mobile legibility
+   • Desktop visuals unchanged
+   • Footer structure remains intact
+============================================================ */
+
+/* ============================================================
+   FOOTER BASE
+============================================================ */
+
+.ccg-footer {
+    width: 100%;
+    margin-top: 48px;
+    padding: 18px 0 20px;
+
+    background:
+        linear-gradient(
+            to top,
+            rgba(0,0,0,0.85),
+            rgba(0,0,0,0.65),
+            transparent
+        );
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 -10px 28px rgba(0,0,0,0.55);
+}
+
+.ccg-footer__text {
+    text-align: center;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: var(--ccg-text-soft);
+    opacity: 0.9;
+    margin: 0;
+    padding: 0 14px;
+}
+
+/* ============================================================
+   LINKS (IF PRESENT)
+============================================================ */
+
+.ccg-footer a {
+    color: var(--ccg-text-soft);
+    text-decoration: none;
+    transition: color 0.25s ease, text-shadow 0.25s ease;
+}
+
+.ccg-footer a:hover {
+    color: var(--ccg-color-cyan);
+    text-shadow: 0 0 6px rgba(0,170,255,0.35);
+}
+
+/* ============================================================
+   MOBILE MICRO-POLISH (COSMETIC ONLY)
+============================================================ */
+
+@media (max-width: 600px) {
+
+    .ccg-footer {
+        margin-top: 36px;
+        padding: 20px 0 22px;
+    }
+
+    .ccg-footer__text {
+        font-size: 0.7rem;
+        line-height: 1.6;
+        letter-spacing: 0.04em;
+        padding: 0 18px;
+    }
+
+}
