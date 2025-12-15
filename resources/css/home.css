@@ -1,11 +1,133 @@
 /* ============================================================
    HOME.CSS — OMEGA CINEMATIC (LOCKED HOME CONTRACT)
-   Phase H-L2 — Desktop Split Layout (Highlights / CCG Video)
+   SPLIT COMMIT PASS — Desktop Highlights Left / Video Right
    ------------------------------------------------------------
-   • Desktop: 2-column cinematic layout
-   • Mobile: single-column preserved
-   • NO global bleed
-   • NO sizing hacks
+   Goals:
+   ✅ Restore full home flow (Hero → Tagline → Highlights → Genres)
+   ✅ Desktop-only 2-col split for highlights
+   ✅ Video can NEVER overpower the left card
+   ✅ Preserve Home Genre Thumbnail Lock (unchanged contract)
+============================================================ */
+
+/* ============================================================
+   SAFE PAGE SCOPE
+============================================================ */
+
+.ccg-page--home .home-section,
+.ccg-page--home .home-hero,
+.ccg-page--home .home-tagline {
+    position: relative;
+    z-index: 1; /* ensures content sits above bg layers */
+}
+
+/* ============================================================
+   HERO (LIGHT TOUCH — relies on global/hero CSS for most)
+============================================================ */
+
+.ccg-page--home .home-hero {
+    width: 100%;
+    margin-top: 12px;
+    margin-bottom: 16px;
+}
+
+/* prevent any accidental collapse */
+.ccg-page--home .home-hero .ccg-hero {
+    min-height: 220px;
+}
+
+/* ============================================================
+   TAGLINE STRIP
+============================================================ */
+
+.ccg-page--home .home-tagline {
+    width: 100%;
+    margin: 10px 0 18px;
+    padding: 14px 0;
+    opacity: 0.95;
+}
+
+/* ============================================================
+   FEATURED HIGHLIGHTS — DESKTOP SPLIT LOCK
+============================================================ */
+
+/* container spacing only */
+.ccg-page--home .home-section--highlights {
+    width: 100%;
+    margin: 10px 0 26px;
+}
+
+/* this is THE split controller */
+.ccg-page--home .home-highlights-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* default: stacked */
+    gap: 22px;
+    align-items: start;
+}
+
+/* DESKTOP SPLIT: left = featured game, right = featured video */
+@media (min-width: 980px) {
+    .ccg-page--home .home-highlights-grid {
+        grid-template-columns: 1fr 1fr; /* true parity */
+        gap: 26px;
+        align-items: stretch; /* both cards same vertical behaviour */
+    }
+}
+
+/* Both cards must behave identically */
+.ccg-page--home .home-highlights-grid > .home-feature-card {
+    width: 100%;
+    max-width: none; /* do NOT let one card cap smaller */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-self: stretch;
+}
+
+/* Media: enforce 16:9 always (prevents “huge” distort) */
+.ccg-page--home .home-feature-card .ccg-card__media,
+.ccg-page--home .home-feature-video__frame {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: 14px;
+}
+
+/* Images inside media: no stretch */
+.ccg-page--home .home-feature-card .ccg-card__media img,
+.ccg-page--home .home-feature-video__frame img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover; /* cinematic crop; keeps ratio, prevents squash */
+    object-position: center;
+}
+
+/* IMPORTANT: cap the *visual dominance* of the video on desktop
+   - without breaking ratio
+   - without touching globals
+*/
+@media (min-width: 980px) {
+    .ccg-page--home .home-feature-card--video .home-feature-video__frame {
+        /* keeps it aligned with the left card visually */
+        max-height: 360px;
+    }
+}
+
+/* keep card bodies consistent */
+.ccg-page--home .home-feature-card .ccg-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* make buttons sit consistently (prevents odd “floating” height differences) */
+.ccg-page--home .home-feature-card__btn {
+    margin-top: 6px;
+    align-self: flex-start;
+}
+
+/* ============================================================
+   HOME GENRE GRID (PERMANENT CONTRACT — UNCHANGED)
 ============================================================ */
 
 /* ============================================================
@@ -18,95 +140,62 @@
 }
 
 /* ============================================================
-   FEATURED SPLIT WRAPPER (NEW — DESKTOP ONLY)
-============================================================ */
-
-.home-featured-split {
-    display: block;
-}
-
-/* ============================================================
-   FEATURED HIGHLIGHTS (LEFT COLUMN)
-============================================================ */
-
-.home-featured-highlights {
-    width: 100%;
-}
-
-/* ============================================================
-   FEATURED CCG VIDEO (RIGHT COLUMN)
-============================================================ */
-
-.home-featured-video {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
-/* Prevent runaway width */
-.home-featured-video .ccg-feature-card {
-    width: 100%;
-    max-width: 560px; /* 🎯 Cinematic but restrained */
-}
-
-/* ============================================================
-   DESKTOP SPLIT ACTIVATION
-============================================================ */
-
-@media (min-width: 1100px) {
-
-    .home-featured-split {
-        display: grid;
-        grid-template-columns: 1.1fr 0.9fr;
-        gap: 48px;
-        align-items: start;
-    }
-
-    .home-featured-video {
-        justify-content: flex-end;
-    }
-}
-
-/* ============================================================
-   HOME GENRE GRID (LOCKED — UNCHANGED)
+   HOME GENRE GRID (LAYOUT ONLY — NO STRETCHING)
 ============================================================ */
 
 .home-genre-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 28px;
-    align-items: start;
+    align-items: start; /* 🔒 prevents vertical stretching */
 }
 
+/* ============================================================
+   HOME GENRE TILE — HARD SIZE CONTRACT
+============================================================ */
+
 .home-genre-grid .ccg-genre-tile {
-    max-width: 360px;
-    margin: 0 auto;
+    max-width: 360px;            /* 🔒 visual parity with genre index */
+    margin: 0 auto;              /* centre inside grid cell */
     height: auto;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
 }
 
+/* ============================================================
+   HOME GENRE THUMBNAIL — ABSOLUTE LOCK
+============================================================ */
+
 .home-genre-grid .ccg-genre-tile__thumb {
     width: 100%;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 16 / 9;        /* 🔒 SAME AS GENRE INDEX */
     overflow: hidden;
     position: relative;
     flex-shrink: 0;
 }
 
+/* IMAGE BEHAVIOUR — READABILITY FIRST */
 .home-genre-grid .ccg-genre-tile__thumb img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: contain;         /* 🔒 NO CROPPING OF TEXT */
     object-position: center;
     display: block;
 }
+
+/* ============================================================
+   HOME GENRE BODY — STABLE HEIGHT
+============================================================ */
 
 .home-genre-grid .ccg-genre-tile__body {
     padding: 12px 14px 14px;
     text-align: left;
 }
+
+/* ============================================================
+   HOME GENRE TITLE — NO INFLUENCE ON CARD SIZE
+============================================================ */
 
 .home-genre-grid .ccg-genre-tile__title {
     font-size: 0.85rem;
@@ -116,12 +205,16 @@
     text-overflow: ellipsis;
 }
 
+/* ============================================================
+   HOVER — VISUAL ONLY (NO SIZE CHANGE)
+============================================================ */
+
 .home-genre-grid .ccg-genre-tile:hover {
     transform: translateY(-3px);
 }
 
 /* ============================================================
-   RESPONSIVE SAFETY
+   RESPONSIVE — SCALE GRID, NEVER THUMB
 ============================================================ */
 
 @media (max-width: 900px) {
@@ -139,32 +232,3 @@
         max-width: 100%;
     }
 }
-
-/* ============================================================
-   HOME — STACKING CONTEXT RESTORE (CRITICAL FIX)
-   Ensures background overlays NEVER mask page content
-============================================================ */
-
-.ccg-page--home {
-    position: relative;
-    z-index: 1;
-}
-
-.ccg-main--home {
-    position: relative;
-    z-index: 2;
-}
-
-/* Featured split must live ABOVE background, BELOW header */
-.home-featured-split {
-    position: relative;
-    z-index: 3;
-}
-
-/* Global background must NEVER intercept content */
-.ccg-bg,
-.ccg-bg * {
-    pointer-events: none;
-    z-index: 0 !important;
-}
-
