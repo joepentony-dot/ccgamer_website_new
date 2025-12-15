@@ -1,13 +1,7 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & RESET
    Omega Neon Edition
-   Phase P21 — BUTTON INTERACTION POLISH
-   ------------------------------------------------------------
-   • Cinematic hover-in
-   • Faster hover-out
-   • Glow decay (no snap-off)
-   • Subtle press depth
-   • Mode-aware via existing variables
+   Phase P22 — HEADER NAV HOVER REFINEMENT
 ============================================================ */
 
 /* ============================================================
@@ -144,7 +138,7 @@ body {
 }
 
 /* ============================================================
-   HEADER (P19 — PRESERVED)
+   HEADER (P19 PRESERVED)
 ============================================================ */
 
 .ccg-header {
@@ -193,30 +187,8 @@ body {
         drop-shadow(0 0 10px rgba(0,170,255,0.25));
 }
 
-.ccg-brand__text {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.15;
-}
-
-.ccg-brand__kicker {
-    font-size: 0.6rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ccg-text-soft);
-}
-
-.ccg-brand__title {
-    font-family: var(--ccg-font-main);
-    font-size: 0.95rem;
-    letter-spacing: 0.14em;
-    font-weight: 700;
-    display: flex;
-    gap: 0.3em;
-}
-
 /* ============================================================
-   NAV (STRUCTURE PRESERVED)
+   NAV — PHASE P22 REFINEMENT
 ============================================================ */
 
 .ccg-nav {
@@ -238,13 +210,64 @@ body {
     letter-spacing: 0.09em;
     text-transform: uppercase;
     color: var(--ccg-text-soft);
-    opacity: 0.85;
-    padding-bottom: 4px;
+    opacity: 0.82;
+    padding-bottom: 6px;
     position: relative;
+    transition:
+        color 0.35s ease,
+        opacity 0.35s ease;
+}
+
+/* Underline — cinematic slide */
+.ccg-nav__link::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    height: 2px;
+    width: 0;
+    background: linear-gradient(
+        90deg,
+        var(--ccg-color-blue),
+        var(--ccg-color-pink)
+    );
+    transform: translateX(-50%);
+    transition:
+        width 0.45s var(--ccg-ease-in),
+        opacity 0.25s ease;
+    opacity: 0;
+}
+
+/* Hover */
+.ccg-nav__link:hover {
+    color: var(--ccg-color-cyan);
+    opacity: 1;
+}
+
+.ccg-nav__link:hover::after {
+    width: 100%;
+    opacity: 1;
+}
+
+/* Hover out — quicker decay */
+.ccg-nav__link:not(:hover)::after {
+    transition-duration: 0.25s;
+    transition-timing-function: var(--ccg-ease-out-fast);
+}
+
+/* Active (latched state) */
+.ccg-nav__link--active {
+    color: var(--ccg-color-cyan);
+    opacity: 1;
+}
+
+.ccg-nav__link--active::after {
+    width: 100%;
+    opacity: 0.85;
 }
 
 /* ============================================================
-   BUTTON SYSTEM — PHASE P21 POLISH
+   BUTTON SYSTEM — P21 PRESERVED
 ============================================================ */
 
 .ccg-btn,
@@ -267,43 +290,21 @@ a.ccg-btn {
         color 0.3s ease;
 }
 
-/* Hover — cinematic rise */
 .ccg-btn:hover,
 button:hover {
     transform: translateY(-2px);
-    transition-timing-function: var(--ccg-ease-in);
 }
 
-/* Hover out — quicker return */
 .ccg-btn:not(:hover),
 button:not(:hover) {
     transition-duration: 0.25s;
     transition-timing-function: var(--ccg-ease-out-fast);
 }
 
-/* Active / press */
 .ccg-btn:active,
 button:active {
     transform: translateY(0) scale(0.97);
-    box-shadow:
-        inset 0 0 10px rgba(0,0,0,0.55);
-    transition-duration: 0.12s;
-}
-
-/* Glow decay (prevents snap-off) */
-.ccg-btn::after {
-    content: "";
-    position: absolute;
-    inset: -2px;
-    opacity: 0;
-    border-radius: inherit;
-    box-shadow: inherit;
-    transition: opacity 0.35s ease;
-    pointer-events: none;
-}
-
-.ccg-btn:hover::after {
-    opacity: 1;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.55);
 }
 
 /* ============================================================
