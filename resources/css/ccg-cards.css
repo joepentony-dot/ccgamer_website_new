@@ -1,10 +1,10 @@
 /* ============================================================
    CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM
-   Phase P30 — Micro Hover & Glow Polish
+   Phase P31 — Media Aspect Integrity Fix
 ============================================================ */
 
 /* ------------------------------------------------------------
-   GENRE GRIDS — STRUCTURE
+   GENRE GRIDS
 ------------------------------------------------------------ */
 
 .ccg-genre-grid,
@@ -53,18 +53,24 @@
 }
 
 /* ------------------------------------------------------------
-   CARD MEDIA — RHYTHM LOCK
+   CARD MEDIA — CORRECT ASPECT HANDLING
 ------------------------------------------------------------ */
 
+/* Universal media container */
 .ccg-card__media,
 .ccg-game-card__thumb {
     position: relative;
     width: 100%;
-    height: 140px;
-    flex-shrink: 0;
+
+    aspect-ratio: 16 / 9;     /* 🔑 RESTORED */
+    min-height: 130px;        /* breathing room */
+    max-height: 160px;
+
     overflow: hidden;
+    flex-shrink: 0;
 }
 
+/* IMG-based cards */
 .ccg-card__media img,
 .ccg-game-card__thumb img {
     width: 100%;
@@ -72,14 +78,22 @@
     object-fit: cover;
 }
 
-/* Soft vignette */
+/* Background-image genre tiles */
+.ccg-genre-tile,
+.ccg-genre-tile .ccg-card__media {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Subtle vignette */
 .ccg-card__media::after,
 .ccg-game-card__thumb::after {
     content: "";
     position: absolute;
     inset: 0;
     background:
-        radial-gradient(circle at center, transparent 58%, rgba(0,0,0,.42));
+        radial-gradient(circle at center, transparent 60%, rgba(0,0,0,.42));
     pointer-events: none;
 }
 
@@ -104,7 +118,7 @@
 }
 
 /* ------------------------------------------------------------
-   MICRO HOVER POLISH
+   MICRO HOVER POLISH (UNCHANGED)
 ------------------------------------------------------------ */
 
 .ccg-game-card:hover,
@@ -118,15 +132,8 @@
         0 0 18px rgba(var(--accent-rgb), 0.18);
 }
 
-/* Border glow eases in slightly later */
-.ccg-game-card:hover,
-.ccg-card:hover,
-.ccg-genre-tile:hover {
-    transition-delay: 0s, .06s, 0s;
-}
-
 /* ------------------------------------------------------------
-   MOBILE — NO FLOAT
+   MOBILE
 ------------------------------------------------------------ */
 
 @media (max-width: 768px) {
@@ -138,7 +145,8 @@
 
     .ccg-card__media,
     .ccg-game-card__thumb {
-        height: 120px;
+        min-height: 110px;
+        max-height: 140px;
     }
 
     .ccg-game-card:active,
