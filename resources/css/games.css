@@ -1,5 +1,189 @@
 /* ============================================================
    GAMES.CSS — STABLE FUNCTIONAL RESTORE
+   + P10: Related Games Strip Edge Fade (Depth Continuity)
+   ------------------------------------------------------------
+   • NO containment
+   • NO content-visibility
+   • Accordion visibility guaranteed
+   • Visual-only enhancement
+============================================================ */
+
+/* ============================================================
+   PAGE BASE — SHARED
+============================================================ */
+
+.games-grid {
+    width: 100%;
+}
+
+/* ============================================================
+   GAMES INDEX — BASE
+============================================================ */
+
+.ccg-page--games-index .ccg-main {
+    padding-bottom: 40px;
+}
+
+/* ============================================================
+   ALPHABET STRIP — STICKY (DESKTOP ONLY)
+============================================================ */
+
+.ccg-page--games-index .games-alpha {
+    position: sticky;
+    top: 74px;
+    z-index: 10;
+
+    margin-bottom: 18px;
+    padding: 10px 12px;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(0,0,0,0.75),
+            rgba(0,0,0,0.55)
+        );
+
+    backdrop-filter: blur(6px);
+    border-radius: 14px;
+
+    box-shadow:
+        0 6px 22px rgba(0,0,0,0.45),
+        0 0 18px rgba(var(--accent-rgb), 0.12);
+}
+
+/* ============================================================
+   ACCORDION — VISUAL RHYTHM
+============================================================ */
+
+.ccg-page--games-index .games-accordion {
+    margin-top: 16px;
+}
+
+.ccg-page--games-index .games-accordion__group {
+    margin-bottom: 20px;
+}
+
+.ccg-page--games-index .games-accordion__header {
+    padding: 14px 20px;
+    border-radius: 14px;
+}
+
+/* ============================================================
+   ACCORDION VISIBILITY (CRITICAL)
+============================================================ */
+
+.games-accordion__content {
+    display: none;
+}
+
+.games-accordion__group.is-open > .games-accordion__content {
+    display: block;
+    height: auto;
+    opacity: 1;
+    overflow: visible;
+    padding-top: 14px;
+    padding-bottom: 8px;
+}
+
+/* ============================================================
+   GAME CARDS
+============================================================ */
+
+.ccg-game-card__thumb img,
+.games-grid img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* ============================================================
+   ALPHABET STRIP — FORCE VISIBILITY (FIXED ID)
+============================================================ */
+
+#gamesAlphaStrip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 12px 0 18px;
+}
+
+.games-alpha__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* ============================================================
+   🎬 P10 — RELATED GAMES STRIP DEPTH FADE
+============================================================ */
+
+.related-scroll-wrapper {
+    position: relative;
+}
+
+/* Left / right cinematic fades */
+.related-scroll-wrapper::before,
+.related-scroll-wrapper::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 56px;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.related-scroll-wrapper::before {
+    left: 0;
+    background: linear-gradient(
+        to right,
+        rgba(0,0,0,0.95),
+        rgba(0,0,0,0)
+    );
+}
+
+.related-scroll-wrapper::after {
+    right: 0;
+    background: linear-gradient(
+        to left,
+        rgba(0,0,0,0.95),
+        rgba(0,0,0,0)
+    );
+}
+
+/* Extra depth polish — slight inset shadow */
+.related-scroll {
+    position: relative;
+    padding-bottom: 6px;
+}
+
+/* ============================================================
+   RESPONSIVE — DISABLE STICKY ON MOBILE
+============================================================ */
+
+@media (max-width: 900px) {
+
+    .ccg-page--games-index .games-alpha {
+        position: static;
+        backdrop-filter: none;
+        box-shadow: none;
+        padding: 0;
+        background: none;
+    }
+
+    /* Reduce fade strength on mobile */
+    .related-scroll-wrapper::before,
+    .related-scroll-wrapper::after {
+        width: 32px;
+    }
+}
+/* ============================================================
+   GAMES.CSS — STABLE FUNCTIONAL RESTORE
    ------------------------------------------------------------
    • NO containment
    • NO content-visibility
