@@ -1,6 +1,6 @@
 /* ============================================================
    GAMES.CSS — STABLE FUNCTIONAL RESTORE
-   Phase P27 + MOBILE SANITY + A–Z POLISH
+   Phase P28 — Alphabet Strip Mobile Polish (A–Z)
 ============================================================ */
 
 /* ============================================================
@@ -12,126 +12,84 @@
 }
 
 /* ============================================================
-   GAMES INDEX — ALPHABET STRIP (BASE)
+   ALPHABET STRIP — BASE (DESKTOP UNCHANGED)
 ============================================================ */
 
-.ccg-page--games-index .games-alpha {
-    margin-top: 18px;
-}
-
-.ccg-page--games-index .games-alpha__label {
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
-    opacity: 0.85;
-}
-
-.ccg-page--games-index .games-alpha__strip {
+.games-alphabet {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 10px;
+    gap: 6px;
+    margin: 14px 0 18px;
+}
+
+.games-alphabet button {
+    min-width: 30px;
+    height: 30px;
+    border-radius: 6px;
+
+    font-family: var(--ccg-font-main);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+
+    background: rgba(255,255,255,0.08);
+    color: var(--ccg-text-light);
+
+    border: 1px solid rgba(255,255,255,0.14);
+    cursor: pointer;
+
+    transition:
+        background 0.25s ease,
+        color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.games-alphabet button:hover {
+    background: rgba(var(--accent-rgb),0.18);
+    box-shadow: 0 0 10px rgba(var(--accent-rgb),0.35);
+}
+
+.games-alphabet button.is-active {
+    background: rgba(var(--accent-rgb),0.28);
+    box-shadow:
+        0 0 14px rgba(var(--accent-rgb),0.55);
 }
 
 /* ============================================================
-   RELATED GAMES STRIP (SINGLE GAME PAGE)
-============================================================ */
-
-.game-section--related {
-    margin-top: 36px;
-    padding-bottom: 12px;
-}
-
-.related-scroll-wrapper {
-    position: relative;
-    overflow-x: auto;
-    padding: 10px 4px 18px;
-}
-
-.related-scroll-wrapper::before,
-.related-scroll-wrapper::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 36px;
-    pointer-events: none;
-    z-index: 2;
-}
-
-.related-scroll-wrapper::before {
-    left: 0;
-    background: linear-gradient(to right, rgba(0,0,0,0.85), transparent);
-}
-
-.related-scroll-wrapper::after {
-    right: 0;
-    background: linear-gradient(to left, rgba(0,0,0,0.85), transparent);
-}
-
-.related-scroll {
-    display: flex;
-    gap: 16px;
-    padding: 8px 6px;
-}
-
-.related-scroll .ccg-game-card {
-    min-width: 220px;
-    flex-shrink: 0;
-}
-
-/* ============================================================
-   MOBILE SANITY — A–Z STRIP POLISH
+   MOBILE — HORIZONTAL SWIPE STRIP (NEW)
 ============================================================ */
 
 @media (max-width: 768px) {
 
-    /* Give the alphabet strip its own visual lane */
-    .ccg-page--games-index .games-alpha {
-        margin-top: 20px;
-        padding-top: 6px;
-        border-top: 1px solid rgba(255,255,255,0.06);
-    }
-
-    /* Horizontal scroll instead of tight wrapping */
-    .ccg-page--games-index .games-alpha__strip {
+    .games-alphabet {
         flex-wrap: nowrap;
         overflow-x: auto;
+        overflow-y: hidden;
+
         gap: 10px;
+        padding: 10px 6px 14px;
 
-        padding: 8px 6px 10px;
-        margin-top: 8px;
-
-        scrollbar-width: none; /* Firefox */
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
     }
 
-    .ccg-page--games-index .games-alpha__strip::-webkit-scrollbar {
-        display: none; /* WebKit */
+    .games-alphabet::-webkit-scrollbar {
+        display: none;
     }
 
-    /* Each letter becomes a comfortable tap target */
-    .ccg-page--games-index .games-alpha__strip > * {
-        min-width: 36px;
-        height: 36px;
+    .games-alphabet button {
+        min-width: 42px;
+        height: 42px;
 
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        font-size: 0.8rem;
+        border-radius: 10px;
 
-        border-radius: 8px;
         flex-shrink: 0;
     }
 
-    /* Related strip mobile preservation */
-    .related-scroll {
-        gap: 14px;
-        padding: 6px 4px 16px;
-    }
-
-    .related-scroll .ccg-game-card {
-        min-width: 200px;
-    }
-
-    .game-section--related {
-        margin-top: 28px;
+    /* Tap feedback (no hover reliance) */
+    .games-alphabet button:active {
+        transform: scale(0.94);
+        box-shadow:
+            0 0 14px rgba(var(--accent-rgb),0.6);
     }
 }
