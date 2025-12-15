@@ -140,9 +140,10 @@
 }
 
 /* ============================================================
-   IMAGE LOAD STABILITY — SHARED SAFETY
+   IMAGE LOAD STABILITY — SHARED SAFETY (SCOPED FIX)
 ============================================================ */
 
+/* Default behaviour for generic genre cards elsewhere */
 .genre-card img,
 .ccg-game-card__thumb img {
     display: block;
@@ -150,4 +151,10 @@
     height: auto;
     contain: layout paint;
     content-visibility: auto;
+}
+
+/* OVERRIDE: genre INDEX cards must respect 16:9 containment */
+.ccg-page--genres-index .ccg-card.ccg-genre-card img {
+    height: 100%;
+    object-fit: cover;
 }
