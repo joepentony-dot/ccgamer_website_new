@@ -1,17 +1,13 @@
 /* ============================================================
-   COLLECTIONS.CSS — OMEGA HOME PARITY (FINAL)
-   ------------------------------------------------------------
-   • Collections now EXACTLY match Home genre tiles
-   • Home is the immutable master contract
-   • Strict page scoping — zero bleed
-   • No JS or layout dependencies
+   COLLECTIONS.CSS — OMEGA PARITY PASS
+   + MOBILE SANITY
 ============================================================ */
 
 /* ============================================================
    COLLECTIONS GRID
 ============================================================ */
 
-.ccg-page--collections-index .ccg-collections-grid {
+.ccg-collections-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 22px;
@@ -19,83 +15,40 @@
 }
 
 /* ============================================================
-   COLLECTION CARD — STRUCTURE
+   COLLECTION CARD
 ============================================================ */
 
-.ccg-page--collections-index .ccg-collection-card {
+.ccg-collection-card {
     background: rgba(0, 0, 0, 0.55);
     border-radius: 14px;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.12);
-
-    box-shadow:
-        0 0 14px rgba(0, 0, 0, 0.85),
-        0 0 28px var(--card-glow);
 
     transition:
         transform 0.25s ease,
         box-shadow 0.25s ease;
 }
 
-.ccg-page--collections-index .ccg-collection-card:hover {
+.ccg-collection-card:hover {
     transform: translateY(-4px);
-    box-shadow:
-        0 0 20px rgba(var(--accent-rgb), 0.8),
-        0 0 40px rgba(var(--accent-rgb), 0.5);
 }
 
 /* ============================================================
-   MEDIA — HOME MASTER CONTRACT (THE FIX)
+   MOBILE SANITY
 ============================================================ */
 
-.ccg-page--collections-index .ccg-collection-card .ccg-card__media {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-    position: relative;
-}
+@media (max-width: 768px) {
 
-/* Image behaviour — IDENTICAL to Home */
-.ccg-page--collections-index .ccg-collection-card .ccg-card__media img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: contain;
-    object-position: center;
+    .ccg-collections-grid {
+        padding: 0 14px;
+        gap: 18px;
+    }
 
-    transition:
-        transform 0.35s ease,
-        filter 0.35s ease;
-}
+    .ccg-collection-card {
+        margin-inline: auto;
+    }
 
-.ccg-page--collections-index
-.ccg-collection-card:hover
-.ccg-card__media img {
-    transform: scale(1.03);
-    filter: brightness(1.05);
-}
-
-/* ============================================================
-   BODY CONTENT
-============================================================ */
-
-.ccg-page--collections-index .ccg-collection-card .ccg-card__body {
-    padding: 12px 14px 14px;
-}
-
-.ccg-page--collections-index .ccg-collection-card .ccg-card__title {
-    text-shadow:
-        0 0 8px rgba(var(--accent-rgb), 0.6),
-        0 0 14px rgba(var(--accent-rgb), 0.35);
-}
-
-/* ============================================================
-   RESPONSIVE
-============================================================ */
-
-@media (max-width: 520px) {
-    .ccg-page--collections-index .ccg-collections-grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 16px;
+    .ccg-collection-card .ccg-card__body {
+        padding: 12px 14px 16px;
     }
 }
