@@ -1,16 +1,7 @@
 /* ============================================================
    CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM
-   Phase P26 — Thumbnail Sizing & Density Lock
-   ------------------------------------------------------------
-   • Reduces visual bulk
-   • Preserves glow + hover lift
-   • Improves scan-ability on large libraries
-   • ZERO loader / JS impact
+   Phase P28 — Mobile Tap Target & Touch Polish
 ============================================================ */
-
-/* ------------------------------------------------------------
-   BASE GRID LAYOUTS
------------------------------------------------------------- */
 
 .ccg-genre-grid,
 .genre-grid,
@@ -20,18 +11,10 @@
     gap: 18px;
 }
 
-/* ------------------------------------------------------------
-   🔒 GENRE PAGE GRID OVERRIDE (CONTROLLED DENSITY)
------------------------------------------------------------- */
-
 .ccg-page--genre-single .ccg-genre-grid {
     grid-template-columns: repeat(auto-fill, minmax(240px, 240px));
     justify-content: center;
 }
-
-/* ------------------------------------------------------------
-   BASE CARD SHELL
------------------------------------------------------------- */
 
 .ccg-game-card,
 .ccg-card,
@@ -45,92 +28,58 @@
         0 6px 14px rgba(0,0,0,.75),
         0 0 12px rgba(var(--accent-rgb), 0.08);
     transition:
-        transform .22s var(--ccg-ease-out),
-        box-shadow .22s var(--ccg-ease-out),
+        transform .22s ease-out,
+        box-shadow .22s ease-out,
         border-color .22s ease;
-    text-decoration: none;
-    color: inherit;
     display: flex;
     flex-direction: column;
+    touch-action: manipulation;
 }
-
-/* ------------------------------------------------------------
-   GAME CARD THUMB — SIZE NORMALISATION
------------------------------------------------------------- */
 
 .ccg-game-card__thumb {
     width: 100%;
     aspect-ratio: 16 / 9;
-    min-height: 120px;              /* 🔧 reduced from 140px */
-    overflow: hidden;
+    min-height: 120px;
     position: relative;
 }
 
-/* subtle vignette for depth */
 .ccg-game-card__thumb::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: radial-gradient(
-        circle at center,
-        rgba(0,0,0,0) 55%,
-        rgba(0,0,0,0.45) 100%
-    );
-    pointer-events: none;
+    background: radial-gradient(circle at center, transparent 55%, rgba(0,0,0,.45));
 }
-
-.ccg-game-card__thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-/* ------------------------------------------------------------
-   CARD BODY — TIGHTENED RHYTHM
------------------------------------------------------------- */
 
 .ccg-game-card__body {
-    padding: 9px 10px 11px;          /* 🔧 slightly tighter */
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    padding: 10px 12px 12px;
+    gap: 5px;
 }
 
 .ccg-game-card__title {
     font-family: var(--ccg-font-main);
-    font-size: 0.75rem;              /* 🔧 reduced from 0.78 */
-    text-transform: uppercase;
+    font-size: 0.75rem;
     letter-spacing: .065em;
-    color: #ffffff;
-    line-height: 1.22;
-    min-height: 2.2em;
+    line-height: 1.25;
 }
 
-/* ------------------------------------------------------------
-   HOVER — DEPTH WITHOUT BULK
------------------------------------------------------------- */
-
-.ccg-game-card:hover {
+/* Hover / focus */
+.ccg-game-card:hover,
+.ccg-game-card:focus-within {
     transform: translateY(-3px) scale(1.015);
     box-shadow:
         0 10px 26px rgba(0,0,0,.85),
         0 0 22px rgba(var(--accent-rgb), 0.22);
-    border-color: rgba(var(--accent-rgb), 0.45);
 }
 
-/* ------------------------------------------------------------
-   RESPONSIVE — MAINTAIN SCAN DENSITY
------------------------------------------------------------- */
-
+/* Mobile tap feedback */
 @media (max-width: 768px) {
-
-    .ccg-page--genre-single .ccg-genre-grid {
-        grid-template-columns: repeat(auto-fill, minmax(190px, 190px));
+    .ccg-game-card {
+        border-radius: 12px;
     }
 
-    .ccg-game-card__thumb {
-        min-height: 110px;
+    .ccg-game-card:active {
+        transform: scale(0.985);
+        box-shadow: 0 4px 12px rgba(0,0,0,.85);
     }
 
     .ccg-game-card__title {
