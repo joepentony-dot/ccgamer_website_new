@@ -1,10 +1,12 @@
 /* ============================================================
-   GAMES LIBRARY — STABLE RESTORE (PATH-SAFE, OMEGA COMPLIANT)
+   GAMES LIBRARY — OMEGA UX POLISH (INDEX ONLY)
    ------------------------------------------------------------
-   • Correct thumbnail base path
-   • Supports thumbnail | thumb | cover fields
-   • Prevents absolute / broken paths
-   • No defaults, no visual lies
+   • Preserves existing path-safe thumbnail logic
+   • Preserves session-based accordion memory
+   • Adds TRUE accordion behaviour (open / close)
+   • Alphabet strip now OPENS + SCROLLS to letter
+   • Search results auto-open relevant letters
+   • ZERO CSS changes
 ============================================================ */
 
 let CCG_ALL_GAMES = [];
@@ -20,10 +22,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         CCG_ALL_GAMES = Array.isArray(games) ? games : [];
 
         buildGamesAccordion(CCG_ALL_GAMES);
+        buildAlphaStrip(CCG_ALL_GAMES);
         restoreAccordionState();
 
         const totalEl = document.getElementById("gamesTotalCount");
         if (totalEl) totalEl.textContent = CCG_ALL_GAMES.length;
+
+        wireSearch();
 
     } catch (err) {
         console.error("[CCG] Games Index failed:", err);
@@ -54,29 +59,154 @@ function buildGamesAccordion(games) {
         group.dataset.letter = letter;
 
         group.innerHTML = `
-            <button class="games-accordion__header" type="button">
+            <button class="games-accordion__header" type="button"
+                    aria-expanded="false">
                 <span>${letter}</span>
                 <span>${groups[letter].length}</span>
             </button>
-            <div class="games-accordion__content">
+            <div class="games-accordion__content" hidden>
                 <div class="games-grid">
                     ${groups[letter].map(renderGameCard).join("")}
                 </div>
             </div>
         `;
 
-        group.querySelector(".games-accordion__header")
-            .addEventListener("click", () => {
-                const open = group.classList.toggle("is-open");
-                toggleAccordionState(letter, open);
-            });
+        const header = group.querySelector(".games-accordion__header");
+        const content = group.querySelector(".games-accordion__content");
+
+        header.addEventListener("click", () => {
+            const isOpen = group.classList.toggle("is-open");
+            header.setAttribute("aria-expanded", isOpen);
+            content.hidden = !isOpen;
+            toggleAccordionState(letter, isOpen);
+        });
 
         container.appendChild(group);
     });
 }
 
 /* ============================================================
-   GAME CARD
+   ALPHABET STRIP
+============================================================ */
+
+function buildAlphaStrip(games) {
+    const strip = document.getElementById("gamesAlphaStrip");
+    if (!strip) return;
+
+    strip.innerHTML = "";
+
+    const letters = new Set();
+    games.forEach(g => {
+        const t = (g.title || "").trim();
+        letters.add(t ? t[0].toUpperCase() : "#");
+    });
+
+    const ordered = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ", "#"];
+
+    ordered.forEach(letter => {
+        const exists = letters.has(letter);
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "games-alpha__letter";
+        btn.textContent = letter;
+        btn.disabled = !exists;
+
+        if (exists) {
+            btn.addEventListener("click", () => openAndScrollToLetter(letter));
+        }
+
+        strip.appendChild(btn);
+    });
+}
+
+function openAndScrollToLetter(letter) {
+    const group = document.querySelector(
+        `.games-accordion__group[data-letter="${letter}"]`
+    );
+    if (!group) return;
+
+    const header = group.querySelector(".games-accordion__header");
+    const content = group.querySelector(".games-accordion__content");
+
+    if (!group.classList.contains("is-open")) {
+        group.classList.add("is-open");
+        header.setAttribute("aria-expanded", "true");
+        content.hidden = false;
+        toggleAccordionState(letter, true);
+    }
+
+    group.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+}
+
+/* ============================================================
+   SEARCH BEHAVIOUR (UX POLISH ONLY)
+============================================================ */
+
+function wireSearch() {
+    const input = document.getElementById("gamesSearchInput");
+    const clearBtn = document.getElementById("gamesSearchClear");
+    if (!input) return;
+
+    input.addEventListener("input", () => applySearch(input.value));
+    clearBtn?.addEventListener("click", () => {
+        input.value = "";
+        applySearch("");
+    });
+}
+
+function applySearch(query) {
+    const term = query.trim().toLowerCase();
+    const groups = document.querySelectorAll(".games-accordion__group");
+
+    let matches = 0;
+    const openLetters = new Set();
+
+    groups.forEach(group => {
+        const cards = group.querySelectorAll(".ccg-game-card");
+        let groupHasMatch = false;
+
+        cards.forEach(card => {
+            const text = card.textContent.toLowerCase();
+            const hit = !term || text.includes(term);
+            card.style.display = hit ? "" : "none";
+            if (hit) {
+                matches++;
+                groupHasMatch = true;
+            }
+        });
+
+        const header = group.querySelector(".games-accordion__header");
+        const content = group.querySelector(".games-accordion__content");
+
+        if (groupHasMatch) {
+            group.classList.add("is-open");
+            header.setAttribute("aria-expanded", "true");
+            content.hidden = false;
+            openLetters.add(group.dataset.letter);
+        } else {
+            group.classList.remove("is-open");
+            header.setAttribute("aria-expanded", "false");
+            content.hidden = true;
+        }
+    });
+
+    sessionStorage.setItem(
+        ACCORDION_STATE_KEY,
+        JSON.stringify([...openLetters])
+    );
+
+    const resultsEl = document.getElementById("gamesResultsCount");
+    if (resultsEl) resultsEl.textContent = matches;
+
+    const empty = document.getElementById("gamesEmptyState");
+    if (empty) empty.hidden = matches > 0;
+}
+
+/* ============================================================
+   GAME CARD (UNCHANGED)
 ============================================================ */
 
 function renderGameCard(game) {
@@ -107,19 +237,13 @@ function renderGameCard(game) {
 }
 
 /* ============================================================
-   THUMB RESOLUTION — THE FIX
+   THUMB RESOLUTION (UNCHANGED, PATH-SAFE)
 ============================================================ */
 
 function resolveGameThumb(raw) {
     if (!raw) return "";
-
-    // Strip any path — filename only
-    const filename = String(raw)
-        .replace(/^.*[\\/]/, "")
-        .trim();
-
+    const filename = String(raw).replace(/^.*[\\/]/, "").trim();
     if (!filename) return "";
-
     return THUMB_BASE_PATH + filename;
 }
 
@@ -149,6 +273,13 @@ function restoreAccordionState() {
         const g = document.querySelector(
             `.games-accordion__group[data-letter="${letter}"]`
         );
-        if (g) g.classList.add("is-open");
+        if (!g) return;
+
+        const header = g.querySelector(".games-accordion__header");
+        const content = g.querySelector(".games-accordion__content");
+
+        g.classList.add("is-open");
+        header.setAttribute("aria-expanded", "true");
+        content.hidden = false;
     });
 }
