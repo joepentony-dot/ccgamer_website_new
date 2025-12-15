@@ -1,16 +1,19 @@
 /* ============================================================
-   CCG-ANIM.CSS — SUBTLE PAGE ANIMATIONS (OMEGA BUILD)
-   Phase P2: Cinematic Timing Polish
-   Visual-only — ZERO layout influence
+   CCG-ANIM.CSS — OMEGA CINEMATIC MOTION LAYER
+   Phase P15 — Scroll Depth & Reveal Timing
+   ------------------------------------------------------------
+   • Visual-only animations
+   • NEVER alters layout or geometry
+   • Additive to all existing pages
    ============================================================ */
 
-/* ------------------------------------------------------------
-   FADE IN (softened easing)
------------------------------------------------------------- */
+/* ============================================================
+   BASE FADE IN
+============================================================ */
 
 .ccg-fade-in {
     opacity: 0;
-    animation: ccgFadeIn 0.9s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+    animation: ccgFadeIn 0.9s ease forwards;
 }
 
 @keyframes ccgFadeIn {
@@ -18,20 +21,20 @@
     to   { opacity: 1; }
 }
 
-/* ------------------------------------------------------------
-   SLIDE UP + FADE (reduced travel, smoother feel)
------------------------------------------------------------- */
+/* ============================================================
+   SLIDE UP + FADE (STANDARD BLOCKS)
+============================================================ */
 
 .ccg-slide-up {
     opacity: 0;
-    transform: translateY(16px);
-    animation: ccgSlideUp 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+    transform: translateY(26px);
+    animation: ccgSlideUp 0.75s ease forwards;
 }
 
 @keyframes ccgSlideUp {
     from {
         opacity: 0;
-        transform: translateY(16px);
+        transform: translateY(26px);
     }
     to {
         opacity: 1;
@@ -39,46 +42,35 @@
     }
 }
 
-/* ------------------------------------------------------------
-   PULSE GLOW (more organic breathing)
------------------------------------------------------------- */
-
-.ccg-pulse {
-    animation: ccgPulse 3.2s ease-in-out infinite;
-}
-
-@keyframes ccgPulse {
-    0%, 100% { opacity: 0.72; }
-    50%      { opacity: 1; }
-}
-
 /* ============================================================
-   OMEGA CINEMATIC — SECTION REVEAL (POLISHED)
-   Used by: home-dynamic.js
-   Still additive, still safe
-   ============================================================ */
+   OMEGA SECTION REVEAL (PRIMARY)
+   Used across: sections, cards, grids, hero blocks
+============================================================ */
 
 .ccg-anim-in {
     opacity: 0;
-    transform: translateY(18px) scale(0.985);
+    transform: translateY(28px) scale(0.97);
     animation:
-        ccgFadeRise 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) forwards,
-        ccgGlowPulse 2.8s ease-out forwards;
+        ccgRevealRise 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+        ccgGlowSettle 2.6s ease-out forwards;
     animation-delay: var(--ccg-anim-delay, 0s);
     will-change: opacity, transform, filter;
 }
 
-/* Smooth fade + rise (less blur, less jump) */
-@keyframes ccgFadeRise {
+/* ============================================================
+   REVEAL RISE — DEPTH CUE
+============================================================ */
+
+@keyframes ccgRevealRise {
     0% {
         opacity: 0;
-        transform: translateY(18px) scale(0.985);
-        filter: blur(2px);
+        transform: translateY(28px) scale(0.97);
+        filter: blur(3px);
     }
-    40% {
+    45% {
         opacity: 0.6;
-        transform: translateY(8px) scale(0.992);
-        filter: blur(1px);
+        transform: translateY(12px) scale(0.985);
+        filter: blur(1.5px);
     }
     100% {
         opacity: 1;
@@ -87,26 +79,74 @@
     }
 }
 
-/* Subtle neon bloom — restrained & premium */
-@keyframes ccgGlowPulse {
+/* ============================================================
+   GLOW SETTLE — NEON DEPTH (SUBTLE)
+============================================================ */
+
+@keyframes ccgGlowSettle {
     0% {
-        text-shadow: none;
         box-shadow: none;
+        text-shadow: none;
     }
-    45% {
-        text-shadow:
-            0 0 10px rgba(var(--accent-rgb), 0.45),
-            0 0 20px rgba(var(--accent-rgb), 0.25);
+    40% {
         box-shadow:
-            0 0 12px rgba(var(--accent-rgb), 0.2),
-            0 0 24px rgba(var(--accent-rgb), 0.12);
+            0 0 18px rgba(var(--accent-rgb), 0.35),
+            0 0 32px rgba(var(--accent-rgb), 0.18);
+        text-shadow:
+            0 0 14px rgba(var(--accent-rgb), 0.45),
+            0 0 26px rgba(var(--accent-rgb), 0.25);
     }
     100% {
-        text-shadow:
-            0 0 6px rgba(var(--accent-rgb), 0.3),
-            0 0 14px rgba(var(--accent-rgb), 0.2);
         box-shadow:
-            0 0 8px rgba(var(--accent-rgb), 0.18),
-            0 0 18px rgba(var(--accent-rgb), 0.1);
+            0 0 10px rgba(var(--accent-rgb), 0.22),
+            0 0 22px rgba(var(--accent-rgb), 0.12);
+        text-shadow:
+            0 0 8px rgba(var(--accent-rgb), 0.28),
+            0 0 18px rgba(var(--accent-rgb), 0.18);
     }
+}
+
+/* ============================================================
+   CARD-SPECIFIC DEPTH REVEAL (GRIDS)
+============================================================ */
+
+.ccg-game-card.ccg-anim-in,
+.ccg-card.ccg-anim-in {
+    transform-origin: center bottom;
+}
+
+.ccg-game-card.ccg-anim-in {
+    animation-duration: 0.65s;
+}
+
+/* ============================================================
+   RELATED STRIP — DEPTH LAYERING
+============================================================ */
+
+.related-scroll .ccg-game-card {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        filter 0.2s ease;
+}
+
+.related-scroll .ccg-game-card:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow:
+        0 12px 34px rgba(0,0,0,0.7),
+        0 0 28px rgba(var(--accent-rgb),0.35);
+    filter: saturate(1.1);
+}
+
+/* ============================================================
+   PULSE GLOW (LOGO / HERO ACCENTS)
+============================================================ */
+
+.ccg-pulse {
+    animation: ccgPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes ccgPulse {
+    0%, 100% { opacity: 0.7; }
+    50%      { opacity: 1; }
 }
