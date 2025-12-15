@@ -1,6 +1,6 @@
 /* ============================================================
    HOME.CSS — OMEGA CINEMATIC HERO (PHASE C)
-   Cinematic Parallax, Breathing & Balance
+   Cinematic Parallax, Breathing & Balance — Fixed Text Layer
 ============================================================ */
 
 /* ------------------------------------------------------------
@@ -28,6 +28,8 @@
 
     animation: home-hero-breathe 20s ease-in-out infinite;
     will-change: box-shadow, transform;
+
+    isolation: isolate; /* Prevent layering collapse */
 }
 
 /* Subtle glass glow edge */
@@ -72,8 +74,7 @@
 
 .home-hero__inner {
     position: relative;
-    z-index: 2;
-
+    z-index: 2; /* Ensure it stays on top */
     width: min(1200px, 92%);
     margin: 0 auto;
 
