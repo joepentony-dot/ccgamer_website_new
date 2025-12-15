@@ -1,6 +1,6 @@
 /* ============================================================
    GAMES.CSS — STABLE FUNCTIONAL RESTORE
-   Phase P28 — Alphabet Strip Mobile Polish (A–Z)
+   Phase P29 — Mobile Card Spacing & Rhythm Polish
 ============================================================ */
 
 /* ============================================================
@@ -55,7 +55,7 @@
 }
 
 /* ============================================================
-   MOBILE — HORIZONTAL SWIPE STRIP (NEW)
+   MOBILE — A–Z STRIP (FROM PREVIOUS PASS)
 ============================================================ */
 
 @media (max-width: 768px) {
@@ -86,10 +86,65 @@
         flex-shrink: 0;
     }
 
-    /* Tap feedback (no hover reliance) */
     .games-alphabet button:active {
         transform: scale(0.94);
         box-shadow:
             0 0 14px rgba(var(--accent-rgb),0.6);
+    }
+}
+
+/* ============================================================
+   MOBILE — GAME CARD GRID SPACING (NEW)
+   Applies ONLY to Games Index cards
+============================================================ */
+
+@media (max-width: 768px) {
+
+    /* Accordion content spacing */
+    .games-accordion__content {
+        padding: 12px 0 18px;
+    }
+
+    /* Grid breathes vertically */
+    .games-accordion__content .games-grid {
+        gap: 18px;
+    }
+
+    /* Individual card comfort */
+    .games-accordion__content .ccg-game-card {
+        border-radius: 16px;
+    }
+
+    /* Card body padding refinement */
+    .games-accordion__content .ccg-game-card__body {
+        padding: 14px 14px 16px;
+    }
+
+    /* Title readability */
+    .games-accordion__content .ccg-game-card__title {
+        font-size: 0.85rem;
+        line-height: 1.35;
+        margin-bottom: 6px;
+    }
+
+    /* Meta spacing */
+    .games-accordion__content .ccg-game-card__meta {
+        font-size: 0.72rem;
+        opacity: 0.85;
+    }
+}
+
+/* ============================================================
+   VERY SMALL PHONES (≤ 420px)
+============================================================ */
+
+@media (max-width: 420px) {
+
+    .games-accordion__content .games-grid {
+        gap: 16px;
+    }
+
+    .games-accordion__content .ccg-game-card__body {
+        padding: 12px 12px 14px;
     }
 }
