@@ -1,13 +1,13 @@
 /* ============================================================
-   COLLECTIONS.CSS — OMEGA PARITY PASS
-   + MOBILE SANITY
+   COLLECTIONS.CSS — OMEGA HOME PARITY
+   Phase P31 — Mobile Spacing Polish
 ============================================================ */
 
 /* ============================================================
-   COLLECTIONS GRID
+   COLLECTIONS GRID — BASE
 ============================================================ */
 
-.ccg-collections-grid {
+.ccg-page--collections-index .ccg-collections-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 22px;
@@ -15,10 +15,10 @@
 }
 
 /* ============================================================
-   COLLECTION CARD
+   COLLECTION CARD — BASE (DESKTOP UNCHANGED)
 ============================================================ */
 
-.ccg-collection-card {
+.ccg-page--collections-index .ccg-collection-card {
     background: rgba(0, 0, 0, 0.55);
     border-radius: 14px;
     overflow: hidden;
@@ -29,26 +29,56 @@
         box-shadow 0.25s ease;
 }
 
-.ccg-collection-card:hover {
+.ccg-page--collections-index .ccg-collection-card:hover {
     transform: translateY(-4px);
 }
 
 /* ============================================================
-   MOBILE SANITY
+   MOBILE SANITY — COLLECTIONS INDEX ONLY
 ============================================================ */
 
 @media (max-width: 768px) {
 
-    .ccg-collections-grid {
-        padding: 0 14px;
+    /* Grid breathes */
+    .ccg-page--collections-index .ccg-collections-grid {
         gap: 18px;
+        padding-inline: 14px;
     }
 
-    .ccg-collection-card {
+    /* Cards stay centred */
+    .ccg-page--collections-index .ccg-collection-card {
         margin-inline: auto;
+        border-radius: 16px;
     }
 
-    .ccg-collection-card .ccg-card__body {
+    /* Body text comfort */
+    .ccg-page--collections-index .ccg-collection-card .ccg-card__body {
+        padding: 14px 16px 18px;
+    }
+
+    .ccg-page--collections-index .ccg-collection-card .ccg-card__title {
+        line-height: 1.3;
+        margin-bottom: 6px;
+    }
+
+    .ccg-page--collections-index .ccg-collection-card .ccg-card__text {
+        font-size: 0.78rem;
+        opacity: 0.9;
+    }
+}
+
+/* ============================================================
+   VERY SMALL PHONES (≤ 420px)
+============================================================ */
+
+@media (max-width: 420px) {
+
+    .ccg-page--collections-index .ccg-collections-grid {
+        gap: 16px;
+        padding-inline: 10px;
+    }
+
+    .ccg-page--collections-index .ccg-collection-card .ccg-card__body {
         padding: 12px 14px 16px;
     }
 }
