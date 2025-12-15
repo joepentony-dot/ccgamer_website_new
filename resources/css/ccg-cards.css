@@ -1,6 +1,6 @@
 /* ============================================================
    CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM
-   Phase P33 — GENRE & COLLECTION INDEX DIMENSION POLISH
+   Phase P34 — GENRE INDEX IMAGE CONTAINMENT (FINAL)
 ============================================================ */
 
 /* ============================================================
@@ -67,7 +67,7 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
 }
 
 /* ============================================================
-   HOME FEATURED VIDEO — GRID-LEVEL CONTAINMENT (LOCKED)
+   HOME FEATURED VIDEO — LOCKED
 ============================================================ */
 
 .home-highlights-grid > .home-feature-card--video {
@@ -75,89 +75,61 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
     margin-inline: auto;
 }
 
-.home-highlights-grid > .home-feature-card--video:hover {
-    box-shadow:
-        0 16px 32px rgba(0,0,0,.85),
-        0 0 22px rgba(var(--accent-rgb), 0.26);
-}
-
 /* ============================================================
-   MOBILE TAP FEEDBACK (NO LIFT)
+   MOBILE TAP FEEDBACK
 ============================================================ */
 
 @media (max-width: 768px) {
     .ccg-feature-card:hover {
         transform: none;
     }
-
-    .ccg-feature-card:active {
-        transform: scale(0.985);
-        box-shadow:
-            0 10px 22px rgba(0,0,0,.85),
-            0 0 18px rgba(var(--accent-rgb), 0.28);
-    }
 }
 
-/* ======================================================================
-   GENRE INDEX — CARD DIMENSION LOCK (ISOLATED CONTEXT)
-   Affects: games/genres/index.html ONLY
-   Does NOT affect: Home, Games index, Collections, Single Game
-====================================================================== */
+/* ============================================================
+   GENRE INDEX — FINAL CARD + IMAGE CONTAINMENT (ISOLATED)
+   Affects ONLY: games/genres/index.html
+============================================================ */
 
-.ccg-page--genres-index .ccg-genre-tile {
+.ccg-page--genres-index .ccg-card.ccg-genre-card {
     aspect-ratio: 16 / 9;
-    min-height: 180px;
+    min-height: 190px;
     max-height: 220px;
+    display: grid;
+    place-items: center;
 }
 
-.ccg-page--genres-index .ccg-genre-tile__thumb,
-.ccg-page--genres-index .ccg-genre-tile img {
+/* Image is now CLAMPED */
+.ccg-page--genres-index .ccg-card.ccg-genre-card img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
 }
 
-/* Tighter rhythm for genre grid only */
-.ccg-page--genres-index .ccg-genre-grid {
-    gap: 22px;
-}
+/* Genre title overlay stays readable */
+.ccg-page--genres-index .ccg-card.ccg-genre-card span {
+    position: absolute;
+    bottom: 14px;
+    left: 14px;
+    right: 14px;
 
-/* Mobile sanity — reduce height without stretching */
-@media (max-width: 640px) {
-    .ccg-page--genres-index .ccg-genre-tile {
-        min-height: 150px;
-        max-height: 180px;
-    }
-}
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-align: center;
 
-/* ======================================================================
-   COLLECTION INDEX — CARD DIMENSION LOCK (ISOLATED CONTEXT)
-   Affects: games/collections/index.html ONLY
-   Slightly heavier presence than genres (curated sets)
-====================================================================== */
-
-.ccg-page--collections-index .ccg-card {
-    aspect-ratio: 16 / 9;
-    min-height: 200px;
-    max-height: 240px;
-}
-
-.ccg-page--collections-index .ccg-card__thumb,
-.ccg-page--collections-index .ccg-card img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* Calm the lift slightly — collections feel heavier */
-.ccg-page--collections-index .ccg-card:hover {
-    transform: translateY(-4px);
+    background: linear-gradient(
+        to top,
+        rgba(0,0,0,.65),
+        rgba(0,0,0,0)
+    );
+    padding: 10px 8px;
+    border-radius: 8px;
 }
 
 /* Mobile sanity */
 @media (max-width: 640px) {
-    .ccg-page--collections-index .ccg-card {
-        min-height: 165px;
-        max-height: 200px;
+    .ccg-page--genres-index .ccg-card.ccg-genre-card {
+        min-height: 160px;
+        max-height: 190px;
     }
 }
