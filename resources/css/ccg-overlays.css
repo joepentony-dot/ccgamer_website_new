@@ -1,66 +1,36 @@
 /* ============================================================
-   CCG-OVERLAYS.CSS — STARFIELD + GRID BACKGROUND LAYERS
-   Omega Build — Background-only, no structural impact
-   ============================================================ */
+   CCG-OVERLAYS.CSS — OMEGA DEPTH PASS
+   Phase P23 — Hero Background Grain & Depth
+============================================================ */
 
-/* ------------------------------------------------------------
-   STARFIELD LAYER
-   (Behind everything except the grid + CRT overlay)
------------------------------------------------------------- */
-
-.ccg-bg-starfield {
-    position: absolute;
-    inset: 0;
-    background: url("../images/starfield_new.png") repeat;
-    opacity: 0.35;
-    animation: ccgStarDrift 80s linear infinite;
-    z-index: 1;
-}
-
-@keyframes ccgStarDrift {
-    from { background-position: 0 0; }
-    to   { background-position: -2000px 2000px; }
-}
-
-/* ------------------------------------------------------------
-   GRID LAYER — (RENAMED TO PREVENT CONFLICT WITH OMEGA GRID)
-   This prevents overriding the cinematic 3D grid in ccg-effects.css
------------------------------------------------------------- */
-
-.ccg-bg-grid-flat {
-    position: absolute;
-    inset: 0;
-    background: url("../images/bg-grid_new.jpg") repeat;
-    opacity: 0.12;
-    mix-blend-mode: screen;
-    animation: ccgGridScroll 120s linear infinite;
-    z-index: 2;
-}
-
-@keyframes ccgGridScroll {
-    from { background-position: 0 0; }
-    to   { background-position: 0 2000px; }
-}
-
-/* ============================================================
-   OMEGA SAFETY PASS — BACKGROUND OVERLAYS
-   Ensure starfield / grid / CRT never block clicks
-   ============================================================ */
-
-.ccg-bg,
 .ccg-bg-starfield,
 .ccg-bg-grid,
-.ccg-bg-grid-flat,
 .ccg-bg-crt-overlay {
-    pointer-events: none;
-    z-index: 0;
+    will-change: transform, opacity;
 }
 
-/* Keep page content above the overlays,
-   but let the header keep its Omega z-index from ccg-master.css */
-.ccg-page,
-.ccg-main,
-.ccg-footer {
+/* subtle grain layer */
+.ccg-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+        repeating-linear-gradient(
+            0deg,
+            rgba(255,255,255,0.015),
+            rgba(255,255,255,0.015) 1px,
+            transparent 1px,
+            transparent 2px
+        );
+    opacity: 0.25;
+    mix-blend-mode: overlay;
+}
+
+/* hero sections float slightly above background */
+.ccg-hero,
+.ccg-genre-hero,
+.game-hero {
     position: relative;
-    z-index: 1;
+    z-index: 2;
 }
