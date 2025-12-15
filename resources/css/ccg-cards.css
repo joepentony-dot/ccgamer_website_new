@@ -1,297 +1,101 @@
 /* ============================================================
    CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM
-   Phase P31 — CARD HOVER SYNCHRONISATION
+   Phase P29 — Hover Synchronisation Lock
    ------------------------------------------------------------
-   • Matches button & nav timing philosophy
-   • Unified hover-in / hover-out rhythm
-   • Glow decay (no snap-off)
-   • ZERO layout or aspect ratio changes
+   • NO sizing changes
+   • NO aspect ratio changes
+   • NO grid changes
+   • Hover behaviour unified across ALL card types
 ============================================================ */
 
 /* ============================================================
-   GRID WRAPPERS (LOCKED)
+   SHARED CARD BASE (STRUCTURE ONLY)
 ============================================================ */
 
-.ccg-genre-grid,
-.genre-grid,
-.genre-grid.omega-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 18px;
-    align-items: start;
-}
-
-.ccg-page--genre-single .ccg-genre-grid {
-    grid-template-columns: repeat(auto-fit, minmax(240px, 240px));
-    justify-content: center;
-}
-
-.home-genre-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 18px;
-    align-items: start;
-}
-
-/* ============================================================
-   BASE CARD (ccg-card)
-============================================================ */
-
-.ccg-card {
+.ccg-game-card,
+.ccg-card,
+.ccg-genre-tile,
+.ccg-feature-card {
     position: relative;
-    display: flex;
-    flex-direction: column;
-
-    border-radius: 16px;
-    overflow: hidden;
-
     background: radial-gradient(circle at top, rgba(40,40,80,.55), rgba(0,0,0,.92));
-    border: 1px solid rgba(255,255,255,.08);
-
-    box-shadow:
-        0 8px 18px rgba(0,0,0,.70),
-        0 0 18px rgba(var(--accent-rgb), 0.12);
-
-    transition:
-        transform 0.45s var(--ccg-ease-in),
-        box-shadow 0.45s var(--ccg-ease-in),
-        border-color 0.45s var(--ccg-ease-in);
-
-    will-change: transform, box-shadow;
-}
-
-/* Hover-in (cinematic lift) */
-.ccg-card:hover,
-.ccg-card:focus-within {
-    transform: translateY(-4px);
-    border-color: rgba(var(--accent-rgb), 0.35);
-
-    box-shadow:
-        0 16px 34px rgba(0,0,0,.85),
-        0 0 32px rgba(var(--accent-rgb), 0.35);
-}
-
-/* Hover-out (quicker return) */
-.ccg-card:not(:hover) {
-    transition-duration: 0.25s;
-    transition-timing-function: var(--ccg-ease-out-fast);
-}
-
-/* ============================================================
-   CARD MEDIA (LOCKED ASPECTS)
-============================================================ */
-
-.ccg-card__media {
-    position: relative;
-    width: 100%;
-    overflow: hidden;
-    flex-shrink: 0;
-    background: radial-gradient(circle at 40% 35%, rgba(255,255,255,.06), rgba(0,0,0,.82));
-}
-
-.ccg-card__media--16x9 {
-    aspect-ratio: 16 / 9;
-}
-
-.ccg-card__media img,
-.ccg-card__media video,
-.ccg-card__media iframe {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: cover;
-
-    transition:
-        transform 0.45s var(--ccg-ease-in),
-        filter 0.45s var(--ccg-ease-in);
-}
-
-/* Media reacts WITH card */
-.ccg-card:hover .ccg-card__media img,
-.ccg-card:hover .ccg-card__media video,
-.ccg-card:hover .ccg-card__media iframe {
-    transform: scale(1.03);
-    filter: brightness(1.06) contrast(1.04);
-}
-
-/* Vignette */
-.ccg-card__media::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: radial-gradient(circle at center, transparent 55%, rgba(0,0,0,.45));
-}
-
-/* ============================================================
-   CARD BODY / TEXT
-============================================================ */
-
-.ccg-card__body {
-    padding: 12px 14px 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.ccg-card__title {
-    font-family: var(--ccg-font-main);
-    font-size: 0.78rem;
-    letter-spacing: .07em;
-    line-height: 1.25;
-    margin: 0;
-    color: var(--ccg-text-light);
-
-    transition:
-        color 0.45s var(--ccg-ease-in),
-        text-shadow 0.45s var(--ccg-ease-in);
-}
-
-/* Title energises WITH card */
-.ccg-card:hover .ccg-card__title {
-    color: var(--accent-soft);
-    text-shadow:
-        0 0 6px rgba(0,0,0,.85),
-        0 0 14px rgba(var(--accent-rgb), .35);
-}
-
-.ccg-card__text {
-    margin: 0;
-    color: var(--ccg-text-soft);
-    font-size: 0.92rem;
-    line-height: 1.45;
-}
-
-/* ============================================================
-   GLOW DECAY LAYER (PREVENT SNAP-OFF)
-============================================================ */
-
-.ccg-card::after {
-    content: "";
-    position: absolute;
-    inset: -2px;
-    border-radius: inherit;
-    opacity: 0;
-    pointer-events: none;
-    box-shadow: inherit;
-    transition: opacity 0.35s ease;
-}
-
-.ccg-card:hover::after {
-    opacity: 1;
-}
-
-/* ============================================================
-   GAME CARDS (ccg-game-card) — SAME RHYTHM
-============================================================ */
-
-.ccg-game-card {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-
     border-radius: 14px;
-    overflow: hidden;
-
-    background: radial-gradient(circle at top, rgba(40,40,80,.55), rgba(0,0,0,.92));
     border: 1px solid rgba(255,255,255,.08);
+    overflow: hidden;
 
     box-shadow:
         0 6px 14px rgba(0,0,0,.75),
         0 0 12px rgba(var(--accent-rgb), 0.08);
 
     transition:
-        transform 0.45s var(--ccg-ease-in),
-        box-shadow 0.45s var(--ccg-ease-in),
-        border-color 0.45s var(--ccg-ease-in);
+        transform 0.32s var(--ccg-ease-out),
+        box-shadow 0.38s var(--ccg-ease-out),
+        border-color 0.32s ease;
 
     will-change: transform, box-shadow;
 }
 
+/* ============================================================
+   HOVER / FOCUS — UNIFIED MOTION
+============================================================ */
+
 .ccg-game-card:hover,
-.ccg-game-card:focus-within {
-    transform: translateY(-3px);
-    border-color: rgba(var(--accent-rgb), 0.35);
+.ccg-card:hover,
+.ccg-genre-tile:hover,
+.ccg-feature-card:hover,
+.ccg-game-card:focus-within,
+.ccg-card:focus-within,
+.ccg-genre-tile:focus-within,
+.ccg-feature-card:focus-within {
+    transform: translateY(-6px);
 
     box-shadow:
-        0 12px 28px rgba(0,0,0,.85),
-        0 0 26px rgba(var(--accent-rgb), 0.28);
-}
+        0 18px 38px rgba(0,0,0,.85),
+        0 0 28px rgba(var(--accent-rgb), 0.32);
 
-.ccg-game-card:not(:hover) {
-    transition-duration: 0.25s;
-    transition-timing-function: var(--ccg-ease-out-fast);
-}
-
-.ccg-game-card__thumb {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    min-height: 120px;
-    position: relative;
-    overflow: hidden;
-}
-
-.ccg-game-card__thumb img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: cover;
-
-    transition:
-        transform 0.45s var(--ccg-ease-in),
-        filter 0.45s var(--ccg-ease-in);
-}
-
-.ccg-game-card:hover .ccg-game-card__thumb img {
-    transform: scale(1.03);
-    filter: brightness(1.06) contrast(1.04);
-}
-
-.ccg-game-card__thumb::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: radial-gradient(circle at center, transparent 55%, rgba(0,0,0,.45));
-}
-
-.ccg-game-card__body {
-    padding: 10px 12px 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.ccg-game-card__title {
-    font-family: var(--ccg-font-main);
-    font-size: 0.75rem;
-    letter-spacing: .065em;
-    line-height: 1.25;
-    margin: 0;
-
-    transition:
-        color 0.45s var(--ccg-ease-in),
-        text-shadow 0.45s var(--ccg-ease-in);
-}
-
-.ccg-game-card:hover .ccg-game-card__title {
-    color: var(--accent-soft);
-    text-shadow:
-        0 0 6px rgba(0,0,0,.85),
-        0 0 14px rgba(var(--accent-rgb), .35);
+    border-color: rgba(var(--accent-rgb), 0.35);
 }
 
 /* ============================================================
-   ACTIVE / TOUCH FEEDBACK
+   MODE AWARE GLOW BALANCE
+============================================================ */
+
+body[data-ccg-mode="c64"] .ccg-game-card:hover,
+body[data-ccg-mode="c64"] .ccg-card:hover,
+body[data-ccg-mode="c64"] .ccg-genre-tile:hover,
+body[data-ccg-mode="c64"] .ccg-feature-card:hover {
+    box-shadow:
+        0 18px 36px rgba(0,0,0,.85),
+        0 0 26px rgba(0,170,255,.28);
+}
+
+body[data-ccg-mode="amiga"] .ccg-game-card:hover,
+body[data-ccg-mode="amiga"] .ccg-card:hover,
+body[data-ccg-mode="amiga"] .ccg-genre-tile:hover,
+body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
+    box-shadow:
+        0 18px 40px rgba(0,0,0,.88),
+        0 0 34px rgba(255,41,224,.38);
+}
+
+/* ============================================================
+   MOBILE TAP FEEDBACK (NO LIFT)
 ============================================================ */
 
 @media (max-width: 768px) {
+    .ccg-game-card:hover,
+    .ccg-card:hover,
+    .ccg-genre-tile:hover,
+    .ccg-feature-card:hover {
+        transform: none;
+    }
+
+    .ccg-game-card:active,
     .ccg-card:active,
-    .ccg-game-card:active {
+    .ccg-genre-tile:active,
+    .ccg-feature-card:active {
         transform: scale(0.985);
         box-shadow:
-            0 6px 16px rgba(0,0,0,.85),
-            0 0 16px rgba(var(--accent-rgb), 0.22);
-        transition-duration: 0.12s;
+            0 10px 22px rgba(0,0,0,.85),
+            0 0 18px rgba(var(--accent-rgb), 0.28);
     }
 }
