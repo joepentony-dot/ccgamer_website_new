@@ -1,6 +1,6 @@
 /* ============================================================
    CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM
-   Phase P34 — GENRE INDEX IMAGE CONTAINMENT (FINAL)
+   Phase P35 — HOME MASTER TILE CONTRACT (INDEX UNITY)
 ============================================================ */
 
 /* ============================================================
@@ -67,69 +67,135 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
 }
 
 /* ============================================================
-   HOME FEATURED VIDEO — LOCKED
+   HOME FEATURED VIDEO — GRID-LEVEL CONTAINMENT (LOCKED)
 ============================================================ */
 
+/* Limit the VIDEO column itself, not the card */
 .home-highlights-grid > .home-feature-card--video {
     max-width: 720px;
     margin-inline: auto;
 }
 
+/* Keep hover slightly calmer so it never dominates */
+.home-highlights-grid > .home-feature-card--video:hover {
+    box-shadow:
+        0 16px 32px rgba(0,0,0,.85),
+        0 0 22px rgba(var(--accent-rgb), 0.26);
+}
+
 /* ============================================================
-   MOBILE TAP FEEDBACK
+   MOBILE TAP FEEDBACK (NO LIFT)
 ============================================================ */
 
 @media (max-width: 768px) {
     .ccg-feature-card:hover {
         transform: none;
     }
+
+    .ccg-feature-card:active {
+        transform: scale(0.985);
+        box-shadow:
+            0 10px 22px rgba(0,0,0,.85),
+            0 0 18px rgba(var(--accent-rgb), 0.28);
+    }
 }
 
-/* ============================================================
-   GENRE INDEX — FINAL CARD + IMAGE CONTAINMENT (ISOLATED)
-   Affects ONLY: games/genres/index.html
-============================================================ */
+/* ======================================================================
+   HOME MASTER TILE CONTRACT — APPLIED TO INDEX PAGES (UNITY)
+   - Mirrors HOME genre tiles (16:9 + object-fit:contain + caption body)
+   - Affects ONLY:
+       • games/genres/index.html
+       • games/collections/index.html
+   - Does NOT affect Home (frozen), game cards, featured cards, single pages
+====================================================================== */
 
-.ccg-page--genres-index .ccg-card.ccg-genre-card {
+/* -----------------------------
+   GENRES INDEX (static tiles)
+   Markup: <a class="ccg-card ccg-genre-card"><img><span>Title</span></a>
+------------------------------ */
+
+.ccg-page--genres-index .ccg-genre-grid .ccg-card.ccg-genre-card {
+    max-width: 360px;
+    margin: 0 auto;
+    height: auto;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.ccg-page--genres-index .ccg-genre-grid .ccg-card.ccg-genre-card > img {
+    width: 100%;
     aspect-ratio: 16 / 9;
-    min-height: 190px;
-    max-height: 220px;
-    display: grid;
-    place-items: center;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+
+    display: block;
+    object-fit: contain;     /* HOME MASTER */
+    object-position: center; /* HOME MASTER */
 }
 
-/* Image is now CLAMPED */
-.ccg-page--genres-index .ccg-card.ccg-genre-card img {
+.ccg-page--genres-index .ccg-genre-grid .ccg-card.ccg-genre-card > span {
+    padding: 12px 14px 14px;
+    text-align: left;
+
+    font-size: 0.85rem;      /* HOME MASTER */
+    letter-spacing: 0.08em;  /* HOME MASTER */
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    position: static;
+    inset: auto;
+    background: none;
+    border-radius: 0;
+}
+
+/* -----------------------------
+   COLLECTIONS INDEX (dynamic cards)
+   We support both common patterns:
+   A) .ccg-card__thumb img
+   B) direct child <img>
+------------------------------ */
+
+.ccg-page--collections-index .ccg-card {
+    max-width: 360px;
+    margin: 0 auto;
+    height: auto;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+/* Pattern A: thumb wrapper exists */
+.ccg-page--collections-index .ccg-card .ccg-card__thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.ccg-page--collections-index .ccg-card .ccg-card__thumb img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
     display: block;
+    object-fit: contain;     /* HOME MASTER */
+    object-position: center; /* HOME MASTER */
 }
 
-/* Genre title overlay stays readable */
-.ccg-page--genres-index .ccg-card.ccg-genre-card span {
-    position: absolute;
-    bottom: 14px;
-    left: 14px;
-    right: 14px;
+/* Pattern B: direct image child */
+.ccg-page--collections-index .ccg-card > img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
 
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-align: center;
-
-    background: linear-gradient(
-        to top,
-        rgba(0,0,0,.65),
-        rgba(0,0,0,0)
-    );
-    padding: 10px 8px;
-    border-radius: 8px;
-}
-
-/* Mobile sanity */
-@media (max-width: 640px) {
-    .ccg-page--genres-index .ccg-card.ccg-genre-card {
-        min-height: 160px;
-        max-height: 190px;
-    }
+    display: block;
+    object-fit: contain;     /* HOME MASTER */
+    object-position: center; /* HOME MASTER */
 }
