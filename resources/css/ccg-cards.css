@@ -1,109 +1,146 @@
 /* ============================================================
-   CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM
-   Phase P31 — Media Aspect Integrity Fix
+   CCG CARDS CSS — OMEGA ISOLATED MEDIA SYSTEM
+   Phase P29 — Thumbnail Context Isolation & Aspect Lock
+   ------------------------------------------------------------
+   • Fixes stretched / squashed thumbnails
+   • Separates FEATURED / GENRE / GAME card behaviour
+   • Zero HTML changes
 ============================================================ */
 
-/* ------------------------------------------------------------
-   GENRE GRIDS
------------------------------------------------------------- */
+/* ============================================================
+   BASE CARD (STRUCTURE ONLY — NO MEDIA SIZING)
+============================================================ */
 
-.ccg-genre-grid,
-.genre-grid,
-.genre-grid.omega-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 22px;
-    align-items: stretch;
-}
-
-.ccg-page--genre-single .ccg-genre-grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 240px));
-    justify-content: center;
-}
-
-/* ------------------------------------------------------------
-   CARD BASE
------------------------------------------------------------- */
-
-.ccg-game-card,
 .ccg-card,
+.ccg-game-card,
 .ccg-genre-tile {
     position: relative;
     display: flex;
     flex-direction: column;
 
-    background:
-        radial-gradient(circle at top, rgba(40,40,80,.55), rgba(0,0,0,.92));
+    background: radial-gradient(
+        circle at top,
+        rgba(40,40,80,.55),
+        rgba(0,0,0,.92)
+    );
 
     border-radius: 14px;
     border: 1px solid rgba(255,255,255,.08);
     overflow: hidden;
 
     box-shadow:
-        0 4px 10px rgba(0,0,0,.75),
-        0 0 10px rgba(var(--accent-rgb), 0.06);
+        0 6px 14px rgba(0,0,0,.75),
+        0 0 12px rgba(var(--accent-rgb), 0.08);
 
     transition:
-        transform .35s cubic-bezier(.22,.61,.36,1),
-        box-shadow .45s ease,
-        border-color .35s ease;
+        transform .22s ease-out,
+        box-shadow .22s ease-out,
+        border-color .22s ease;
 
-    will-change: transform, box-shadow;
     touch-action: manipulation;
 }
 
-/* ------------------------------------------------------------
-   CARD MEDIA — CORRECT ASPECT HANDLING
------------------------------------------------------------- */
+/* ============================================================
+   IMAGE RESET — NEVER STRETCH
+============================================================ */
 
-/* Universal media container */
-.ccg-card__media,
-.ccg-game-card__thumb {
-    position: relative;
+.ccg-card img,
+.ccg-game-card img {
     width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
 
-    aspect-ratio: 16 / 9;     /* 🔑 RESTORED */
-    min-height: 130px;        /* breathing room */
-    max-height: 160px;
+/* ============================================================
+   FEATURED CARDS (HOME)
+============================================================ */
 
+.home-feature-card .ccg-card__media {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: 260px;
     overflow: hidden;
     flex-shrink: 0;
 }
 
-/* IMG-based cards */
-.ccg-card__media img,
+.home-feature-card .ccg-card__media img {
+    object-fit: cover;
+}
+
+/* Video variant */
+.home-feature-card--video .ccg-card__media {
+    max-height: 240px;
+}
+
+/* ============================================================
+   GENRE TILES (HOME — BROWSE BY GENRE)
+============================================================ */
+
+.home-genre-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.home-genre-grid .ccg-card {
+    height: 100%;
+}
+
+.home-genre-grid .ccg-card__media {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.home-genre-grid .ccg-card__media img {
+    object-fit: cover;
+}
+
+/* ============================================================
+   GAME CARDS (GAMES INDEX / GENRES / COLLECTIONS)
+============================================================ */
+
+.ccg-game-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.ccg-game-card__thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    min-height: 120px;
+    overflow: hidden;
+    position: relative;
+}
+
 .ccg-game-card__thumb img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-/* Background-image genre tiles */
-.ccg-genre-tile,
-.ccg-genre-tile .ccg-card__media {
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
 /* Subtle vignette */
-.ccg-card__media::after,
 .ccg-game-card__thumb::after {
     content: "";
     position: absolute;
     inset: 0;
-    background:
-        radial-gradient(circle at center, transparent 60%, rgba(0,0,0,.42));
+    background: radial-gradient(
+        circle at center,
+        transparent 55%,
+        rgba(0,0,0,.45)
+    );
     pointer-events: none;
 }
 
-/* ------------------------------------------------------------
+/* ============================================================
    CARD BODY
------------------------------------------------------------- */
+============================================================ */
 
 .ccg-card__body,
 .ccg-game-card__body {
-    padding: 12px 14px 14px;
+    padding: 10px 12px 12px;
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -117,40 +154,31 @@
     line-height: 1.25;
 }
 
-/* ------------------------------------------------------------
-   MICRO HOVER POLISH (UNCHANGED)
------------------------------------------------------------- */
+/* ============================================================
+   HOVER / INTERACTION (GENTLE — NO DISTORTION)
+============================================================ */
 
-.ccg-game-card:hover,
 .ccg-card:hover,
-.ccg-genre-tile:hover,
-.ccg-game-card:focus-within,
+.ccg-game-card:hover,
 .ccg-card:focus-within {
-    transform: translateY(-1.5px);
+    transform: translateY(-3px) scale(1.015);
     box-shadow:
-        0 10px 24px rgba(0,0,0,.85),
-        0 0 18px rgba(var(--accent-rgb), 0.18);
+        0 10px 26px rgba(0,0,0,.85),
+        0 0 22px rgba(var(--accent-rgb), 0.22);
 }
 
-/* ------------------------------------------------------------
-   MOBILE
------------------------------------------------------------- */
+/* ============================================================
+   MOBILE POLISH
+============================================================ */
 
 @media (max-width: 768px) {
-    .ccg-game-card,
     .ccg-card,
-    .ccg-genre-tile {
+    .ccg-game-card {
         border-radius: 12px;
     }
 
-    .ccg-card__media,
-    .ccg-game-card__thumb {
-        min-height: 110px;
-        max-height: 140px;
-    }
-
-    .ccg-game-card:active,
-    .ccg-card:active {
+    .ccg-card:active,
+    .ccg-game-card:active {
         transform: scale(0.985);
         box-shadow: 0 4px 12px rgba(0,0,0,.85);
     }
@@ -158,5 +186,9 @@
     .ccg-card__title,
     .ccg-game-card__title {
         font-size: 0.7rem;
+    }
+
+    .home-feature-card .ccg-card__media {
+        max-height: 220px;
     }
 }
