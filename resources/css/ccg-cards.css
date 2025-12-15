@@ -1,11 +1,11 @@
 /* ============================================================
    CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM
-   Phase P29 — Hover Synchronisation Lock
+   Phase P30 — Featured Balance Lock
    ------------------------------------------------------------
-   • NO sizing changes
-   • NO aspect ratio changes
    • NO grid changes
-   • Hover behaviour unified across ALL card types
+   • NO aspect ratio changes
+   • NO global sizing changes
+   • Featured Video visually contained (Home only)
 ============================================================ */
 
 /* ============================================================
@@ -75,6 +75,23 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
     box-shadow:
         0 18px 40px rgba(0,0,0,.88),
         0 0 34px rgba(255,41,224,.38);
+}
+
+/* ============================================================
+   FEATURED VIDEO — VISUAL CONTAINMENT (HOME ONLY)
+============================================================ */
+
+/* Limit perceived dominance without changing aspect ratio */
+.home-feature-card--video .ccg-card__media {
+    max-height: 260px;
+    overflow: hidden;
+}
+
+/* Slightly calmer glow so it doesn't overpower Featured Game */
+.home-feature-card--video:hover {
+    box-shadow:
+        0 16px 32px rgba(0,0,0,.85),
+        0 0 22px rgba(var(--accent-rgb), 0.26);
 }
 
 /* ============================================================
