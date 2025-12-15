@@ -1,11 +1,15 @@
 /* ============================================================
    CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM
-   P9: Thumbnail Vignette Depth (Micro Contrast)
+   Phase P17 — Thumbnail Vignette & Micro-Contrast
+   ------------------------------------------------------------
+   • Adds depth without darkening content
+   • Mode-aware (C64 cooler / Amiga richer)
+   • ZERO layout changes
    ============================================================ */
 
-/* ------------------------------------------------------------
-   BASE GRID LAYOUTS
------------------------------------------------------------- */
+/* ============================================================
+   GRID LAYOUTS
+============================================================ */
 
 .ccg-genre-grid,
 .genre-grid,
@@ -15,18 +19,15 @@
     gap: 20px;
 }
 
-/* ------------------------------------------------------------
-   🔒 GENRE PAGE GRID OVERRIDE
------------------------------------------------------------- */
-
+/* Genre page density lock */
 .ccg-page--genre-single .ccg-genre-grid {
     grid-template-columns: repeat(auto-fill, minmax(260px, 260px));
     justify-content: center;
 }
 
-/* ------------------------------------------------------------
+/* ============================================================
    BASE CARD SHELL
------------------------------------------------------------- */
+============================================================ */
 
 .ccg-game-card,
 .ccg-card,
@@ -36,22 +37,22 @@
     border-radius: 16px;
     border: 1px solid rgba(255,255,255,.08);
     overflow: hidden;
-    box-shadow: 0 8px 16px rgba(0,0,0,.7);
+    box-shadow:
+        0 8px 16px rgba(0,0,0,.7),
+        0 0 18px rgba(var(--accent-rgb), 0.12);
+    transition:
+        transform .22s ease,
+        box-shadow .22s ease,
+        border-color .22s ease;
     text-decoration: none;
     color: inherit;
     display: flex;
     flex-direction: column;
-
-    transition:
-        transform 0.32s cubic-bezier(0.22, 0.61, 0.36, 1),
-        box-shadow 0.32s cubic-bezier(0.22, 0.61, 0.36, 1),
-        border-color 0.28s ease-out,
-        filter 0.28s ease-out;
 }
 
-/* ------------------------------------------------------------
-   GAME CARD THUMB
------------------------------------------------------------- */
+/* ============================================================
+   THUMBNAIL WRAPPER
+============================================================ */
 
 .ccg-game-card__thumb {
     position: relative;
@@ -59,6 +60,7 @@
     aspect-ratio: 16 / 9;
     min-height: 140px;
     overflow: hidden;
+    background: #000;
 }
 
 /* Image itself */
@@ -67,11 +69,18 @@
     height: 100%;
     object-fit: cover;
     display: block;
+
+    /* Micro contrast & sharpness */
+    filter:
+        contrast(1.05)
+        saturate(1.02);
+
+    transition: filter .25s ease, transform .25s ease;
 }
 
-/* ------------------------------------------------------------
-   🎯 P9 — VIGNETTE LAYER (MICRO DEPTH)
------------------------------------------------------------- */
+/* ============================================================
+   VIGNETTE OVERLAY (THE MAGIC)
+============================================================ */
 
 .ccg-game-card__thumb::after {
     content: "";
@@ -79,7 +88,7 @@
     inset: 0;
     pointer-events: none;
 
-    /* Subtle inner vignette */
+    /* Soft cinematic vignette */
     background:
         radial-gradient(
             ellipse at center,
@@ -87,24 +96,19 @@
             rgba(0,0,0,0.35) 100%
         );
 
-    transition: opacity 0.28s ease-out;
-    opacity: 0.85;
+    opacity: 0.9;
+    transition: opacity .25s ease;
 }
 
-/* Slight lift on hover — keeps artwork alive */
-.ccg-game-card:hover .ccg-game-card__thumb::after {
-    opacity: 0.65;
-}
-
-/* ------------------------------------------------------------
+/* ============================================================
    CARD BODY
------------------------------------------------------------- */
+============================================================ */
 
 .ccg-game-card__body {
     padding: 10px 10px 12px;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 6px;
 }
 
 .ccg-game-card__title {
@@ -117,44 +121,51 @@
     min-height: 2.4em;
 }
 
-/* ------------------------------------------------------------
-   HOVER — SHARED MOTION
------------------------------------------------------------- */
+/* ============================================================
+   HOVER — DEPTH WITHOUT FLASH
+============================================================ */
 
 .ccg-game-card:hover {
     transform: translateY(-2px) scale(1.02);
-}
-
-/* ------------------------------------------------------------
-   🎮 C64 MODE — COOL, CONTROLLED
------------------------------------------------------------- */
-
-body[data-ccg-mode="c64"] .ccg-game-card:hover {
-    border-color: rgba(0, 170, 255, 0.55);
     box-shadow:
-        0 12px 26px rgba(0, 0, 0, 0.75),
-        0 0 22px rgba(0, 170, 255, 0.28);
-    filter: saturate(1.05) brightness(1.03);
+        0 14px 32px rgba(0,0,0,.8),
+        0 0 30px rgba(var(--accent-rgb), 0.35);
 }
 
-/* ------------------------------------------------------------
-   💾 AMIGA MODE — RICHER, LUSHER
------------------------------------------------------------- */
-
-body[data-ccg-mode="amiga"] .ccg-game-card:hover {
-    border-color: rgba(255, 41, 224, 0.65);
-    box-shadow:
-        0 14px 30px rgba(0, 0, 0, 0.78),
-        0 0 28px rgba(255, 41, 224, 0.38);
-    filter: saturate(1.12) brightness(1.05);
+.ccg-game-card:hover .ccg-game-card__thumb img {
+    filter:
+        contrast(1.12)
+        saturate(1.08);
+    transform: scale(1.04);
 }
 
-/* ------------------------------------------------------------
+.ccg-game-card:hover .ccg-game-card__thumb::after {
+    opacity: 0.6; /* reveal more artwork on hover */
+}
+
+/* ============================================================
+   MODE-SPECIFIC TUNING
+============================================================ */
+
+/* C64 — disciplined, cooler */
+body[data-ccg-mode="c64"] .ccg-game-card__thumb img {
+    filter:
+        contrast(1.04)
+        saturate(1.01);
+}
+
+/* Amiga — richer colour depth */
+body[data-ccg-mode="amiga"] .ccg-game-card__thumb img {
+    filter:
+        contrast(1.08)
+        saturate(1.08);
+}
+
+/* ============================================================
    RESPONSIVE
------------------------------------------------------------- */
+============================================================ */
 
 @media (max-width: 768px) {
-
     .ccg-page--genre-single .ccg-genre-grid {
         grid-template-columns: repeat(auto-fill, minmax(200px, 200px));
     }
