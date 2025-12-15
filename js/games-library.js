@@ -1,6 +1,6 @@
 /* ============================================================
    GAMES LIBRARY — STABLE RESTORE + URL SAFE IDS
-   FIX: Correct games.json path for /games/index.html
+   Hardened thumbnail handling (404-safe)
 ============================================================ */
 
 let CCG_ALL_GAMES = [];
@@ -8,8 +8,9 @@ const ACCORDION_STATE_KEY = "ccgAccordionState";
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
-        // ✅ FIXED PATH (CRITICAL)
-        const res = await fetch("../games/games.json", { cache: "no-store" });
+        // NOTE: games/index.html lives in /games/
+        // so games.json is local
+        const res = await fetch("games.json", { cache: "no-store" });
         if (!res.ok) throw new Error("Failed to load games.json");
 
         const games = await res.json();
@@ -26,6 +27,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
+/* ============================================================
+   BUILD ACCORDION
+============================================================ */
+
 function buildGamesAccordion(games) {
     const container = document.getElementById("gamesAccordion");
     if (!container) return;
@@ -33,6 +38,7 @@ function buildGamesAccordion(games) {
     container.innerHTML = "";
 
     const groups = {};
+
     games.forEach(game => {
         const title = (game.title || "").trim();
         const letter = title ? title[0].toUpperCase() : "#";
@@ -66,17 +72,28 @@ function buildGamesAccordion(games) {
     });
 }
 
+/* ============================================================
+   RENDER GAME CARD (404-SAFE)
+============================================================ */
+
 function renderGameCard(game) {
     const id = encodeURIComponent(game.id);
     const thumb = resolveGameThumb(game.thumbnail || game.thumb || game.cover);
+    const safeTitle = game.title || "Untitled Game";
 
     return `
         <a href="game.html?id=${id}" class="ccg-game-card">
             <div class="ccg-game-card__thumb">
-                <img src="${thumb}" alt="${game.title}">
+                <img
+                    src="${thumb}"
+                    alt="${safeTitle}"
+                    loading="lazy"
+                    decoding="async"
+                    onerror="this.onerror=null;this.src='../resources/images/thumbnails/all/1942.jpg';"
+                >
             </div>
             <div class="ccg-game-card__body">
-                <h3 class="ccg-game-card__title">${game.title}</h3>
+                <h3 class="ccg-game-card__title">${safeTitle}</h3>
                 <div class="ccg-game-card__meta">
                     ${(game.year || "")} · ${(game.system || "")}
                 </div>
@@ -85,14 +102,21 @@ function renderGameCard(game) {
     `;
 }
 
+/* ============================================================
+   THUMBNAIL PATH RESOLUTION
+============================================================ */
+
 function resolveGameThumb(raw) {
-    if (!raw) return "../resources/images/thumbnails/all/1942.jpg";
-    let t = String(raw).replace(/^\/+/, "");
+    if (!raw) {
+        return "../resources/images/thumbnails/all/1942.jpg";
+    }
+
+    const t = String(raw).replace(/^\/+/, "");
     return `../resources/images/thumbnails/all/${t}`;
 }
 
 /* ============================================================
-   ACCORDION STATE (SESSION SAFE)
+   ACCORDION STATE (SESSION-ONLY)
 ============================================================ */
 
 function getAccordionState() {
@@ -111,9 +135,9 @@ function toggleAccordionState(letter, open) {
 
 function restoreAccordionState() {
     getAccordionState().forEach(letter => {
-        const g = document.querySelector(
+        const group = document.querySelector(
             `.games-accordion__group[data-letter="${letter}"]`
         );
-        if (g) g.classList.add("is-open");
+        if (group) group.classList.add("is-open");
     });
 }
