@@ -1,14 +1,15 @@
 /* ============================================================
-   GAMES LIBRARY — STABLE RESTORE (NO FALLBACK POISON)
+   GAMES LIBRARY — STABLE RESTORE (PATH-SAFE, OMEGA COMPLIANT)
    ------------------------------------------------------------
-   ✔ Correct thumbnail paths
-   ✔ No fake fallback images
-   ✔ Broken thumbs fail cleanly
-   ✔ Accordion + state preserved
+   • Correct thumbnail base path
+   • Supports thumbnail | thumb | cover fields
+   • Prevents absolute / broken paths
+   • No defaults, no visual lies
 ============================================================ */
 
 let CCG_ALL_GAMES = [];
 const ACCORDION_STATE_KEY = "ccgAccordionState";
+const THUMB_BASE_PATH = "../resources/images/thumbnails/all/";
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
@@ -30,7 +31,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 /* ============================================================
-   BUILD ACCORDION
+   ACCORDION BUILD
 ============================================================ */
 
 function buildGamesAccordion(games) {
@@ -75,27 +76,28 @@ function buildGamesAccordion(games) {
 }
 
 /* ============================================================
-   RENDER GAME CARD — NO HARDCODED FALLBACK
+   GAME CARD
 ============================================================ */
 
 function renderGameCard(game) {
-    const id = encodeURIComponent(game.id);
-    const title = game.title || "Untitled Game";
-    const thumb = resolveGameThumb(game.thumbnail || game.thumb || game.cover);
+    const id = encodeURIComponent(game.id || "");
+    const thumbSrc = resolveGameThumb(
+        game.thumbnail || game.thumb || game.cover
+    );
 
     return `
         <a href="game.html?id=${id}" class="ccg-game-card">
             <div class="ccg-game-card__thumb">
-                <img
-                    src="${thumb}"
-                    alt="${title}"
-                    loading="lazy"
-                    decoding="async"
-                    onerror="this.remove()"
-                >
+                ${thumbSrc ? `
+                    <img src="${thumbSrc}"
+                         alt="${game.title}"
+                         loading="lazy"
+                         decoding="async"
+                         onerror="this.remove()">
+                ` : ``}
             </div>
             <div class="ccg-game-card__body">
-                <h3 class="ccg-game-card__title">${title}</h3>
+                <h3 class="ccg-game-card__title">${game.title}</h3>
                 <div class="ccg-game-card__meta">
                     ${(game.year || "")} · ${(game.system || "")}
                 </div>
@@ -105,17 +107,24 @@ function renderGameCard(game) {
 }
 
 /* ============================================================
-   THUMB PATH RESOLUTION (NO ASSUMPTIONS)
+   THUMB RESOLUTION — THE FIX
 ============================================================ */
 
 function resolveGameThumb(raw) {
     if (!raw) return "";
-    const clean = String(raw).replace(/^\/+/, "");
-    return `../resources/images/thumbnails/all/${clean}`;
+
+    // Strip any path — filename only
+    const filename = String(raw)
+        .replace(/^.*[\\/]/, "")
+        .trim();
+
+    if (!filename) return "";
+
+    return THUMB_BASE_PATH + filename;
 }
 
 /* ============================================================
-   ACCORDION STATE (SESSION)
+   ACCORDION STATE
 ============================================================ */
 
 function getAccordionState() {
@@ -129,7 +138,10 @@ function getAccordionState() {
 function toggleAccordionState(letter, open) {
     const state = new Set(getAccordionState());
     open ? state.add(letter) : state.delete(letter);
-    sessionStorage.setItem(ACCORDION_STATE_KEY, JSON.stringify([...state]));
+    sessionStorage.setItem(
+        ACCORDION_STATE_KEY,
+        JSON.stringify([...state])
+    );
 }
 
 function restoreAccordionState() {
