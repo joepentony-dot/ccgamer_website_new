@@ -1,5 +1,5 @@
 /* ============================================================
-   CCG HERO CSS — OMEGA SAFE STACK VERSION
+   CCG HERO CSS — OMEGA SAFE STACK VERSION (CLICK-SAFE)
 ============================================================ */
 
 /* ------------------------------------------------------------
@@ -41,6 +41,8 @@
     inset: 0;
     z-index: 0;
     overflow: hidden;
+
+    pointer-events: none; /* 🔒 NEVER intercept clicks */
 }
 
 /* Image motion ONLY on image itself */
@@ -64,7 +66,7 @@
 }
 
 /* ------------------------------------------------------------
-   OVERLAY LAYER
+   OVERLAY LAYER (VISUAL ONLY — CLICK-THROUGH)
 ------------------------------------------------------------ */
 
 .ccg-hero::before,
@@ -94,6 +96,8 @@
         );
 
     animation: ccg-hero-overlay-breathe 22s ease-in-out infinite;
+
+    pointer-events: none; /* 🔒 CRITICAL FIX */
 }
 
 /* ------------------------------------------------------------
