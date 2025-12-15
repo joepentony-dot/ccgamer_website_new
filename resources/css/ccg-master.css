@@ -1,6 +1,6 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & RESET
-   Omega Neon Edition — Phase P13 Header Alignment Lock
+   Omega Neon Edition — Phase P19 Header Depth Polish
    ============================================================ */
 
 :root {
@@ -26,12 +26,11 @@
     --ccg-page-max-width: 1320px;
     --ccg-page-gutter: 2%;
     --ccg-section-padding: 28px;
-    --ccg-grid-gap: 24px;
 }
 
 /* ============================================================
-   GLOBAL RESET
-   ============================================================ */
+   RESET
+============================================================ */
 
 *,
 *::before,
@@ -52,7 +51,7 @@ body {
 
 /* ============================================================
    PAGE WRAPPER
-   ============================================================ */
+============================================================ */
 
 .ccg-page {
     position: relative;
@@ -70,32 +69,18 @@ body {
 
 .ccg-section {
     width: 100%;
-    margin: 0 auto;
     padding: var(--ccg-section-padding) 0;
 }
 
 /* ============================================================
-   SECTION RHYTHM
-   ============================================================ */
-
-.ccg-section + .ccg-section {
-    margin-top: 12px;
-}
-
-.ccg-section:not(:last-of-type) {
-    padding-bottom: calc(var(--ccg-section-padding) + 8px);
-}
-
-/* ============================================================
    BACKGROUND LAYERS
-   ============================================================ */
+============================================================ */
 
 .ccg-bg {
     position: fixed;
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    overflow: hidden;
 }
 
 .ccg-bg-starfield,
@@ -106,194 +91,179 @@ body {
 }
 
 /* ============================================================
-   HEADER — PHASE P13 ALIGNMENT LOCK
-   ============================================================ */
+   HEADER — PHASE P19 POLISH
+============================================================ */
 
 .ccg-header {
     position: relative;
     z-index: 9999;
     width: 100%;
-    padding: 10px 0; /* 🔧 reduced vertical drift */
-    background: linear-gradient(
-        to bottom,
-        rgba(0,0,0,.92),
-        rgba(0,0,0,.85),
-        transparent
-    );
-    backdrop-filter: blur(4px);
+    padding: 14px 0 12px;
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(0,0,0,0.94),
+            rgba(0,0,0,0.88),
+            rgba(0,0,0,0.65),
+            transparent
+        );
+    backdrop-filter: blur(5px);
+    box-shadow:
+        0 10px 28px rgba(0,0,0,0.65),
+        0 0 18px rgba(0,170,255,0.08);
 }
 
-/* Core alignment fix */
 .ccg-header-inner {
     width: min(var(--ccg-page-max-width), 100% - var(--ccg-page-gutter) * 2);
     margin: 0 auto;
     display: flex;
-    align-items: center;              /* 🔒 vertical baseline lock */
+    align-items: center;
     justify-content: space-between;
     gap: 20px;
-    min-height: 64px;                 /* 🔒 prevents collapse / drift */
 }
 
-/* Brand block */
+/* ============================================================
+   BRAND / LOGO LOCK
+============================================================ */
+
 .ccg-brand {
     display: inline-flex;
-    align-items: center;              /* 🔒 logo + text vertical sync */
-    gap: 12px;
+    align-items: center;
+    gap: 14px;
 }
 
 .ccg-brand__logo {
-    width: 64px;
+    width: 58px;
     height: auto;
-    flex-shrink: 0;
+    filter:
+        drop-shadow(0 0 6px rgba(0,0,0,0.9))
+        drop-shadow(0 0 10px rgba(0,170,255,0.25));
 }
 
-/* Brand text stack */
 .ccg-brand__text {
     display: flex;
     flex-direction: column;
-    justify-content: center;          /* 🔒 centers text vs logo */
     line-height: 1.15;
 }
 
-/* Navigation alignment */
+.ccg-brand__kicker {
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ccg-text-soft);
+}
+
+.ccg-brand__title {
+    font-family: var(--ccg-font-main);
+    font-size: 0.95rem;
+    letter-spacing: 0.14em;
+    font-weight: 700;
+    display: flex;
+    gap: 0.3em;
+}
+
+.ccg-brand__neon-cheeky {
+    color: var(--ccg-color-blue);
+    text-shadow: var(--ccg-neon-blue);
+}
+
+.ccg-brand__neon-sub {
+    color: var(--ccg-color-pink);
+    text-shadow: var(--ccg-neon-pink);
+}
+
+/* ============================================================
+   NAV — ALIGNMENT & VISUAL BALANCE
+============================================================ */
+
 .ccg-nav {
     display: flex;
-    align-items: center;              /* 🔒 nav baseline fixed */
+    align-items: center;
 }
 
 .ccg-nav__list {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 16px;
     list-style: none;
-    padding: 0;
     margin: 0;
+    padding: 0;
 }
 
-/* Header actions */
+.ccg-nav__link {
+    font-size: 0.8rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ccg-text-soft);
+    opacity: 0.85;
+    padding-bottom: 4px;
+    position: relative;
+}
+
+.ccg-nav__link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    width: 0;
+    background: linear-gradient(90deg, var(--ccg-color-blue), var(--ccg-color-pink));
+    transition: width .2s ease;
+}
+
+.ccg-nav__link:hover,
+.ccg-nav__link--active {
+    opacity: 1;
+    color: var(--ccg-color-cyan);
+}
+
+.ccg-nav__link:hover::after,
+.ccg-nav__link--active::after {
+    width: 100%;
+}
+
+/* ============================================================
+   HEADER ACTIONS
+============================================================ */
+
 .ccg-header-actions {
     display: flex;
-    align-items: center;              /* 🔒 toggle + socials align */
+    align-items: center;
     gap: 16px;
 }
 
 /* ============================================================
-   SECTION TITLES
-   ============================================================ */
+   HEADER NEON STRIP (TONED)
+============================================================ */
 
-.ccg-section-title,
-.ccg-genrehub-title,
-.ccg-hero-title,
-.ccg-genre-hero__title {
-    font-family: var(--ccg-font-main);
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    font-weight: 700;
-    color: var(--ccg-text-light);
-    margin: 0 0 22px;
-    position: relative;
-    text-shadow:
-        0 0 8px rgba(0,0,0,.8),
-        0 0 14px rgba(0,170,255,.6);
-}
-
-.ccg-section-title::after {
-    content: "";
-    display: block;
-    width: 64px;
+.ccg-header-neon-strip {
     height: 2px;
-    margin-top: 10px;
+    width: 100%;
     background: linear-gradient(
         90deg,
-        var(--ccg-color-blue),
-        var(--ccg-color-pink)
+        rgba(0,170,255,0.8),
+        rgba(255,41,224,0.8),
+        rgba(0,170,255,0.8)
     );
-    opacity: .65;
     box-shadow:
-        0 0 6px rgba(0,170,255,.6),
-        0 0 12px rgba(255,41,224,.4);
-    transition: width .25s ease, opacity .25s ease;
-}
-
-.ccg-section:hover .ccg-section-title::after {
-    width: 88px;
-    opacity: .85;
+        0 0 6px rgba(0,170,255,0.5);
 }
 
 /* ============================================================
-   SUBTITLES
-   ============================================================ */
-
-.ccg-genrehub-subtitle,
-.ccg-hero-tagline,
-.ccg-genre-hero__tagline,
-.ccg-section-subtitle {
-    font-family: var(--ccg-font-body);
-    font-size: .95rem;
-    color: var(--ccg-text-soft);
-    max-width: 680px;
-    margin-bottom: 8px;
-}
-
-/* ============================================================
-   MICRO TEXTURE
-   ============================================================ */
-
-.ccg-section,
-.ccg-hero,
-.ccg-genre-hero {
-    background-image:
-        linear-gradient(
-            rgba(255,255,255,0.015),
-            rgba(255,255,255,0.015)
-        );
-    background-blend-mode: overlay;
-}
-
-/* ============================================================
-   FOOTER
-   ============================================================ */
+   FOOTER (UNCHANGED)
+============================================================ */
 
 .ccg-footer {
-    width: 100%;
     text-align: center;
     padding: 22px 0 26px;
     margin-top: auto;
-    font-size: .8rem;
+    font-size: 0.8rem;
     color: var(--ccg-text-soft);
-    opacity: .8;
+    opacity: 0.85;
     background: linear-gradient(
         to top,
-        rgba(0,0,0,.9),
-        rgba(0,0,0,.4),
+        rgba(0,0,0,0.9),
+        rgba(0,0,0,0.4),
         transparent
     );
-}
-
-.ccg-footer__text {
-    margin: 0;
-}
-
-/* ============================================================
-   RESPONSIVE — HEADER STABILITY
-   ============================================================ */
-
-@media (max-width: 768px) {
-    .ccg-header-inner {
-        flex-wrap: wrap;
-        align-items: center;
-        row-gap: 8px;
-        min-height: unset;
-    }
-
-    .ccg-header-actions {
-        margin-left: auto;
-    }
-}
-
-@media (max-width: 560px) {
-    .ccg-header-inner {
-        flex-direction: column;
-        align-items: flex-start;
-    }
 }
