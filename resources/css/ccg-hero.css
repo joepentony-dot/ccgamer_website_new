@@ -1,5 +1,6 @@
 /* ============================================================
    CCG HERO CSS — OMEGA SAFE STACK VERSION (CLICK-SAFE)
+   Phase P33 — Single Game Mobile Flow Polish
 ============================================================ */
 
 /* ------------------------------------------------------------
@@ -42,10 +43,9 @@
     z-index: 0;
     overflow: hidden;
 
-    pointer-events: none; /* 🔒 NEVER intercept clicks */
+    pointer-events: none;
 }
 
-/* Image motion ONLY on image itself */
 .ccg-hero__backdrop img,
 .game-hero__bg img,
 .ccg-genre-hero__img {
@@ -96,8 +96,7 @@
         );
 
     animation: ccg-hero-overlay-breathe 22s ease-in-out infinite;
-
-    pointer-events: none; /* 🔒 CRITICAL FIX */
+    pointer-events: none;
 }
 
 /* ------------------------------------------------------------
@@ -111,6 +110,50 @@
     position: relative;
     z-index: 2;
     padding: 36px 36px 42px;
+}
+
+/* ------------------------------------------------------------
+   MOBILE FLOW POLISH — SINGLE GAME HERO ONLY
+------------------------------------------------------------ */
+
+@media (max-width: 768px) {
+
+    /* Reduce hero dominance on phones */
+    .game-hero {
+        margin-bottom: 22px;
+        border-radius: 16px;
+    }
+
+    /* Tighter but comfortable padding */
+    .game-hero__inner {
+        padding: 22px 20px 26px;
+    }
+
+    /* Calm image motion slightly on mobile */
+    .game-hero__bg img {
+        animation-duration: 34s;
+        opacity: 0.5;
+    }
+
+    /* Soften overlay intensity */
+    .game-hero::before {
+        opacity: 0.9;
+    }
+}
+
+/* ------------------------------------------------------------
+   VERY SMALL PHONES
+------------------------------------------------------------ */
+
+@media (max-width: 420px) {
+
+    .game-hero__inner {
+        padding: 18px 16px 22px;
+    }
+
+    .game-hero {
+        margin-bottom: 18px;
+    }
 }
 
 /* ------------------------------------------------------------
