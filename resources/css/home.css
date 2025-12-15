@@ -139,3 +139,32 @@
         max-width: 100%;
     }
 }
+
+/* ============================================================
+   HOME — STACKING CONTEXT RESTORE (CRITICAL FIX)
+   Ensures background overlays NEVER mask page content
+============================================================ */
+
+.ccg-page--home {
+    position: relative;
+    z-index: 1;
+}
+
+.ccg-main--home {
+    position: relative;
+    z-index: 2;
+}
+
+/* Featured split must live ABOVE background, BELOW header */
+.home-featured-split {
+    position: relative;
+    z-index: 3;
+}
+
+/* Global background must NEVER intercept content */
+.ccg-bg,
+.ccg-bg * {
+    pointer-events: none;
+    z-index: 0 !important;
+}
+
