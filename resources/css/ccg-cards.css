@@ -1,6 +1,6 @@
 /* ============================================================
    CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM
-   Phase P28 — Mobile Tap Target & Touch Polish
+   Phase P29 — Thumbnail Visual Mass Normalisation
 ============================================================ */
 
 .ccg-genre-grid,
@@ -36,19 +36,42 @@
     touch-action: manipulation;
 }
 
-.ccg-game-card__thumb {
+/* ------------------------------------------------------------
+   CARD MEDIA — CONSISTENT VISUAL MASS
+------------------------------------------------------------ */
+
+.ccg-game-card__thumb,
+.ccg-card__media,
+.ccg-card__media--16x9 {
     width: 100%;
     aspect-ratio: 16 / 9;
-    min-height: 120px;
     position: relative;
+    overflow: hidden;
 }
 
-.ccg-game-card__thumb::after {
+/* Normalise all images inside card media */
+.ccg-game-card__thumb img,
+.ccg-card__media img,
+.ccg-card__media--16x9 img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;        /* 🔑 THIS FIXES MISCELLANEOUS */
+    display: block;
+}
+
+/* Subtle vignette for consistency */
+.ccg-game-card__thumb::after,
+.ccg-card__media::after {
     content: "";
     position: absolute;
     inset: 0;
     background: radial-gradient(circle at center, transparent 55%, rgba(0,0,0,.45));
+    pointer-events: none;
 }
+
+/* ------------------------------------------------------------
+   CARD BODY
+------------------------------------------------------------ */
 
 .ccg-game-card__body {
     padding: 10px 12px 12px;
@@ -62,7 +85,10 @@
     line-height: 1.25;
 }
 
-/* Hover / focus */
+/* ------------------------------------------------------------
+   HOVER / FOCUS
+------------------------------------------------------------ */
+
 .ccg-game-card:hover,
 .ccg-game-card:focus-within {
     transform: translateY(-3px) scale(1.015);
@@ -71,7 +97,10 @@
         0 0 22px rgba(var(--accent-rgb), 0.22);
 }
 
-/* Mobile tap feedback */
+/* ------------------------------------------------------------
+   MOBILE TAP FEEDBACK
+------------------------------------------------------------ */
+
 @media (max-width: 768px) {
     .ccg-game-card {
         border-radius: 12px;
