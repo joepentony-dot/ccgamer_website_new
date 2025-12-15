@@ -8,13 +8,35 @@
 ------------------------------------------------------------ */
 
 .ccg-bg-starfield {
+    position: absolute;
+    inset: 0;
+
     background-image: url("../images/starfield_new.png");
     background-repeat: repeat;
     background-size: 1200px 1200px;
+
     opacity: 0.55;
 
     animation: ccg-star-drift 180s linear infinite;
     will-change: background-position;
+}
+
+/* Subtle secondary depth ghost (no extra DOM) */
+.ccg-bg-starfield::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background-image: url("../images/starfield_new.png");
+    background-repeat: repeat;
+    background-size: 1600px 1600px;
+
+    opacity: 0.25;
+
+    animation: ccg-star-drift-alt 320s linear infinite;
+    will-change: background-position;
+
+    pointer-events: none;
 }
 
 /* Slow cinematic drift */
@@ -27,11 +49,24 @@
     }
 }
 
+/* Slower, offset drift for depth separation */
+@keyframes ccg-star-drift-alt {
+    from {
+        background-position: 800px -400px;
+    }
+    to {
+        background-position: -1600px 1200px;
+    }
+}
+
 /* ------------------------------------------------------------
    GRID — SECONDARY PARALLAX LAYER
 ------------------------------------------------------------ */
 
 .ccg-bg-grid {
+    position: absolute;
+    inset: 0;
+
     background-image: url("../images/bg-grid_new.jpg");
     background-repeat: repeat;
     background-size: 800px 800px;
