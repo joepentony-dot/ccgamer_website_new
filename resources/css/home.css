@@ -143,3 +143,21 @@
         max-width: 100%;
     }
 }
+
+/* ============================================================
+   HOME — FEATURED VIDEO FINAL BALANCE PASS
+   (Micro visual tuning only)
+============================================================ */
+
+.home-feature-card--video {
+    max-width: 760px; /* ↓ subtle reduction for balance */
+}
+
+.home-feature-card--video .ccg-card__header {
+    padding-bottom: 10px; /* ↓ trims visual height */
+}
+
+.home-feature-video__frame {
+    border-radius: 12px; /* slightly tighter than cards */
+}
+
