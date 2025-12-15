@@ -1,13 +1,14 @@
 /* ============================================================
-   GAMES LIBRARY — STABLE RESTORE (NO LAZY MAGIC)
-   - Correct thumbnail resolution
-   - Fallback ONLY on genuine 404
-   - No games.json changes
+   GAMES LIBRARY — STABLE RESTORE (NO FALLBACK POISON)
+   ------------------------------------------------------------
+   ✔ Correct thumbnail paths
+   ✔ No fake fallback images
+   ✔ Broken thumbs fail cleanly
+   ✔ Accordion + state preserved
 ============================================================ */
 
 let CCG_ALL_GAMES = [];
 const ACCORDION_STATE_KEY = "ccgAccordionState";
-const FALLBACK_THUMB = "../resources/images/thumbnails/all/1942.jpg";
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
@@ -74,7 +75,7 @@ function buildGamesAccordion(games) {
 }
 
 /* ============================================================
-   RENDER GAME CARD — CORRECT SRC + FALLBACK
+   RENDER GAME CARD — NO HARDCODED FALLBACK
 ============================================================ */
 
 function renderGameCard(game) {
@@ -90,7 +91,7 @@ function renderGameCard(game) {
                     alt="${title}"
                     loading="lazy"
                     decoding="async"
-                    onerror="this.onerror=null;this.src='${FALLBACK_THUMB}'"
+                    onerror="this.remove()"
                 >
             </div>
             <div class="ccg-game-card__body">
@@ -104,17 +105,17 @@ function renderGameCard(game) {
 }
 
 /* ============================================================
-   THUMB PATH RESOLUTION
+   THUMB PATH RESOLUTION (NO ASSUMPTIONS)
 ============================================================ */
 
 function resolveGameThumb(raw) {
-    if (!raw) return FALLBACK_THUMB;
+    if (!raw) return "";
     const clean = String(raw).replace(/^\/+/, "");
     return `../resources/images/thumbnails/all/${clean}`;
 }
 
 /* ============================================================
-   ACCORDION STATE (SESSION ONLY)
+   ACCORDION STATE (SESSION)
 ============================================================ */
 
 function getAccordionState() {
