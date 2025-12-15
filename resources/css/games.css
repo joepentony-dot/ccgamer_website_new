@@ -1,6 +1,6 @@
 /* ============================================================
    GAMES.CSS — STABLE FUNCTIONAL RESTORE
-   Phase P27 + MOBILE SANITY PASS
+   Phase P27 + MOBILE SANITY + A–Z POLISH
 ============================================================ */
 
 /* ============================================================
@@ -9,6 +9,27 @@
 
 .games-grid {
     width: 100%;
+}
+
+/* ============================================================
+   GAMES INDEX — ALPHABET STRIP (BASE)
+============================================================ */
+
+.ccg-page--games-index .games-alpha {
+    margin-top: 18px;
+}
+
+.ccg-page--games-index .games-alpha__label {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    opacity: 0.85;
+}
+
+.ccg-page--games-index .games-alpha__strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
 }
 
 /* ============================================================
@@ -59,15 +80,48 @@
 }
 
 /* ============================================================
-   MOBILE SANITY
+   MOBILE SANITY — A–Z STRIP POLISH
 ============================================================ */
 
 @media (max-width: 768px) {
 
-    .games-grid {
+    /* Give the alphabet strip its own visual lane */
+    .ccg-page--games-index .games-alpha {
+        margin-top: 20px;
         padding-top: 6px;
+        border-top: 1px solid rgba(255,255,255,0.06);
     }
 
+    /* Horizontal scroll instead of tight wrapping */
+    .ccg-page--games-index .games-alpha__strip {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 10px;
+
+        padding: 8px 6px 10px;
+        margin-top: 8px;
+
+        scrollbar-width: none; /* Firefox */
+    }
+
+    .ccg-page--games-index .games-alpha__strip::-webkit-scrollbar {
+        display: none; /* WebKit */
+    }
+
+    /* Each letter becomes a comfortable tap target */
+    .ccg-page--games-index .games-alpha__strip > * {
+        min-width: 36px;
+        height: 36px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 8px;
+        flex-shrink: 0;
+    }
+
+    /* Related strip mobile preservation */
     .related-scroll {
         gap: 14px;
         padding: 6px 4px 16px;
