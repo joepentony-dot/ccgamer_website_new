@@ -1,11 +1,11 @@
 /* ============================================================
    CCG MODE CSS — SYSTEM PERSONALITY LAYER
-   Phase P16 — Mode-Based Neon Intensity Tuning
+   Phase P17 — Subtle Mode Contrast Refinement
    ------------------------------------------------------------
-   • C64 = cooler, disciplined neon
-   • Amiga = warmer, richer glow
+   • C64 = cooler, tighter, CRT-precise
+   • Amiga = warmer, softer, analogue-rich
    • ZERO layout changes
-   ============================================================ */
+============================================================ */
 
 /* ============================================================
    DEFAULT (C64 MODE)
@@ -16,17 +16,18 @@ body[data-ccg-mode="c64"] {
     --accent-main: var(--ccg-color-blue);
     --accent-soft: var(--ccg-color-cyan);
 
+    /* Tighter neon with faster falloff */
     --ccg-neon-main:
-        0 0 6px rgba(0,170,255,0.45),
-        0 0 14px rgba(0,170,255,0.25);
+        0 0 5px rgba(0,170,255,0.45),
+        0 0 12px rgba(0,170,255,0.22);
 
     --ccg-neon-strong:
-        0 0 10px rgba(0,170,255,0.65),
-        0 0 22px rgba(0,170,255,0.4);
+        0 0 9px rgba(0,170,255,0.6),
+        0 0 20px rgba(0,170,255,0.35);
 }
 
 /* ============================================================
-   AMIGA MODE — RICHER / HOTTER
+   AMIGA MODE — RICHER / SOFTER
 ============================================================ */
 
 body[data-ccg-mode="amiga"] {
@@ -34,13 +35,14 @@ body[data-ccg-mode="amiga"] {
     --accent-main: var(--ccg-color-pink);
     --accent-soft: #ff7bff;
 
+    /* Broader glow with gentler edge */
     --ccg-neon-main:
-        0 0 8px rgba(255,41,224,0.55),
-        0 0 18px rgba(255,41,224,0.35);
+        0 0 8px rgba(255,41,224,0.5),
+        0 0 18px rgba(255,41,224,0.32);
 
     --ccg-neon-strong:
-        0 0 14px rgba(255,41,224,0.75),
-        0 0 30px rgba(255,41,224,0.5);
+        0 0 14px rgba(255,41,224,0.7),
+        0 0 32px rgba(255,41,224,0.48);
 }
 
 /* ============================================================
@@ -52,43 +54,43 @@ body[data-ccg-mode] .ccg-section-title,
 body[data-ccg-mode] .ccg-hero-title,
 body[data-ccg-mode] .ccg-genre-hero__title {
     text-shadow:
-        0 0 6px rgba(0,0,0,0.8),
+        0 0 6px rgba(0,0,0,0.85),
         var(--ccg-neon-main);
 }
 
 /* Buttons */
 body[data-ccg-mode] .ccg-btn--primary {
     box-shadow:
-        0 0 10px rgba(var(--accent-rgb),0.45),
-        inset 0 0 12px rgba(var(--accent-rgb),0.25);
+        0 0 9px rgba(var(--accent-rgb),0.42),
+        inset 0 0 11px rgba(var(--accent-rgb),0.22);
 }
 
 body[data-ccg-mode] .ccg-btn--primary:hover {
     box-shadow:
         var(--ccg-neon-strong),
-        inset 0 0 14px rgba(var(--accent-rgb),0.35);
+        inset 0 0 13px rgba(var(--accent-rgb),0.32);
 }
 
 /* Cards */
 body[data-ccg-mode] .ccg-game-card,
 body[data-ccg-mode] .ccg-card {
     box-shadow:
-        0 8px 18px rgba(0,0,0,0.7),
-        0 0 18px rgba(var(--accent-rgb),0.12);
+        0 7px 16px rgba(0,0,0,0.72),
+        0 0 16px rgba(var(--accent-rgb),0.1);
 }
 
 body[data-ccg-mode] .ccg-game-card:hover,
 body[data-ccg-mode] .ccg-card:hover {
     box-shadow:
-        0 14px 32px rgba(0,0,0,0.8),
-        0 0 30px rgba(var(--accent-rgb),0.35);
+        0 13px 30px rgba(0,0,0,0.82),
+        0 0 28px rgba(var(--accent-rgb),0.3);
 }
 
 /* Header neon strip */
 body[data-ccg-mode] .ccg-header-neon-strip {
     box-shadow:
-        0 0 10px rgba(var(--accent-rgb),0.6),
-        0 0 18px rgba(var(--accent-rgb),0.35);
+        0 0 9px rgba(var(--accent-rgb),0.55),
+        0 0 16px rgba(var(--accent-rgb),0.32);
 }
 
 /* ============================================================
@@ -96,9 +98,9 @@ body[data-ccg-mode] .ccg-header-neon-strip {
 ============================================================ */
 
 body[data-ccg-mode="c64"] .ccg-mode-toggle__thumb {
-    background: linear-gradient(135deg, #00aaff, #7fe9ff);
+    background: linear-gradient(135deg, #00aaff, #6fdfff);
 }
 
 body[data-ccg-mode="amiga"] .ccg-mode-toggle__thumb {
-    background: linear-gradient(135deg, #ff29e0, #ff7bff);
+    background: linear-gradient(135deg, #ff29e0, #ff8aff);
 }
