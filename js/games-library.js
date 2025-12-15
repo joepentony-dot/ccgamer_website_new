@@ -1,5 +1,6 @@
 /* ============================================================
    GAMES LIBRARY — STABLE RESTORE + URL SAFE IDS
+   FIX: Correct games.json path for /games/index.html
 ============================================================ */
 
 let CCG_ALL_GAMES = [];
@@ -7,7 +8,8 @@ const ACCORDION_STATE_KEY = "ccgAccordionState";
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
-        const res = await fetch("games.json", { cache: "no-store" });
+        // ✅ FIXED PATH (CRITICAL)
+        const res = await fetch("../games/games.json", { cache: "no-store" });
         if (!res.ok) throw new Error("Failed to load games.json");
 
         const games = await res.json();
@@ -89,7 +91,9 @@ function resolveGameThumb(raw) {
     return `../resources/images/thumbnails/all/${t}`;
 }
 
-/* ===== Accordion state ===== */
+/* ============================================================
+   ACCORDION STATE (SESSION SAFE)
+============================================================ */
 
 function getAccordionState() {
     try {
@@ -107,7 +111,9 @@ function toggleAccordionState(letter, open) {
 
 function restoreAccordionState() {
     getAccordionState().forEach(letter => {
-        const g = document.querySelector(`.games-accordion__group[data-letter="${letter}"]`);
+        const g = document.querySelector(
+            `.games-accordion__group[data-letter="${letter}"]`
+        );
         if (g) g.classList.add("is-open");
     });
 }
