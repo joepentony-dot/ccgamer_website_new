@@ -1,7 +1,19 @@
 /* ============================================================
    CCG OVERLAYS — OMEGA CINEMATIC DEPTH RESTORE
-   Phase A — Background Motion & Presence
+   Phase A+ — Interaction Lock & Z-Index Discipline
 ============================================================ */
+
+/* ------------------------------------------------------------
+   GLOBAL OVERLAY SAFETY
+   ------------------------------------------------------------
+   All decorative layers MUST NEVER intercept clicks
+------------------------------------------------------------ */
+
+.ccg-bg-starfield,
+.ccg-bg-grid,
+.ccg-bg-crt-overlay {
+    pointer-events: none;
+}
 
 /* ------------------------------------------------------------
    STARFIELD — PRIMARY DEPTH LAYER
@@ -10,6 +22,7 @@
 .ccg-bg-starfield {
     position: absolute;
     inset: 0;
+    z-index: 0;
 
     background-image: url("../images/starfield_new.png");
     background-repeat: repeat;
@@ -24,7 +37,7 @@
     will-change: background-position, opacity;
 }
 
-/* Subtle secondary depth ghost (no extra DOM) */
+/* Subtle secondary depth ghost (pseudo-layer) */
 .ccg-bg-starfield::after {
     content: "";
     position: absolute;
@@ -46,33 +59,25 @@
 
 /* Slow cinematic drift */
 @keyframes ccg-star-drift {
-    from {
-        background-position: 0 0;
-    }
-    to {
-        background-position: -1200px 1200px;
-    }
+    from { background-position: 0 0; }
+    to   { background-position: -1200px 1200px; }
 }
 
 /* Slower, offset drift for depth separation */
 @keyframes ccg-star-drift-alt {
-    from {
-        background-position: 800px -400px;
-    }
-    to {
-        background-position: -1600px 1200px;
-    }
+    from { background-position: 800px -400px; }
+    to   { background-position: -1600px 1200px; }
 }
 
-/* Gentle luminance breathing — almost imperceptible */
+/* Gentle luminance breathing */
 @keyframes ccg-star-breathe {
     0%, 100% { opacity: 0.52; }
-    50% { opacity: 0.58; }
+    50%      { opacity: 0.58; }
 }
 
 @keyframes ccg-star-breathe-alt {
     0%, 100% { opacity: 0.22; }
-    50% { opacity: 0.28; }
+    50%      { opacity: 0.28; }
 }
 
 /* ------------------------------------------------------------
@@ -82,6 +87,7 @@
 .ccg-bg-grid {
     position: absolute;
     inset: 0;
+    z-index: 1;
 
     background-image: url("../images/bg-grid_new.jpg");
     background-repeat: repeat;
@@ -94,22 +100,20 @@
     will-change: background-position;
 }
 
-/* Slower, opposing drift = depth illusion */
+/* Opposing drift for depth illusion */
 @keyframes ccg-grid-drift {
-    from {
-        background-position: 0 0;
-    }
-    to {
-        background-position: 800px -800px;
-    }
+    from { background-position: 0 0; }
+    to   { background-position: 800px -800px; }
 }
 
 /* ------------------------------------------------------------
-   CRT / VIGNETTE — TUNED, NOT DOMINANT
+   CRT / VIGNETTE — TOP DECORATIVE LAYER
 ------------------------------------------------------------ */
 
 .ccg-bg-crt-overlay {
-    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
 
     background:
         radial-gradient(
