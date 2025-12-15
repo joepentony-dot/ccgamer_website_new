@@ -1,10 +1,10 @@
 /* ============================================================
    CCG MODE CSS — SYSTEM PERSONALITY LAYER
-   Phase P17 — Global Button Hover Polish
+   Phase P18 — Header Nav Hover Refinement
    ------------------------------------------------------------
-   • Improved timing & easing
-   • Glow blooms in, decays smoothly
-   • ZERO layout or sizing changes
+   • Unified timing philosophy with buttons
+   • Glow bloom → decay (no snap)
+   • ZERO layout or spacing changes
 ============================================================ */
 
 /* ============================================================
@@ -24,9 +24,7 @@ body[data-ccg-mode="c64"] {
         0 0 10px rgba(0,170,255,0.65),
         0 0 22px rgba(0,170,255,0.4);
 
-    /* Button motion profile (disciplined) */
-    --ccg-btn-ease: cubic-bezier(.25,.8,.35,1);
-    --ccg-btn-hover-scale: 1.025;
+    --ccg-ease-ui: cubic-bezier(.25,.8,.35,1);
 }
 
 /* ============================================================
@@ -46,80 +44,81 @@ body[data-ccg-mode="amiga"] {
         0 0 14px rgba(255,41,224,0.75),
         0 0 30px rgba(255,41,224,0.5);
 
-    /* Button motion profile (lusher) */
-    --ccg-btn-ease: cubic-bezier(.22,.9,.32,1);
-    --ccg-btn-hover-scale: 1.035;
+    --ccg-ease-ui: cubic-bezier(.22,.9,.32,1);
 }
 
 /* ============================================================
-   BUTTON BASE (NO LAYOUT CHANGES)
+   HEADER NAV — BASELINE (NO VISUAL CHANGE)
+============================================================ */
+
+body[data-ccg-mode] .ccg-nav__link {
+    transition:
+        color 360ms var(--ccg-ease-ui),
+        text-shadow 360ms var(--ccg-ease-ui),
+        filter 360ms var(--ccg-ease-ui);
+
+    will-change: color, text-shadow;
+}
+
+/* ============================================================
+   HEADER NAV — HOVER (BLOOM THEN SETTLE)
+============================================================ */
+
+body[data-ccg-mode] .ccg-nav__link:hover {
+    color: var(--accent-soft);
+
+    text-shadow:
+        0 0 6px rgba(0,0,0,0.85),
+        var(--ccg-neon-main);
+
+    filter: brightness(1.08);
+}
+
+/* ============================================================
+   HEADER NAV — ACTIVE LINK (CURRENT PAGE)
+============================================================ */
+
+body[data-ccg-mode] .ccg-nav__link--active {
+    color: var(--accent-main);
+
+    text-shadow:
+        0 0 8px rgba(0,0,0,0.9),
+        var(--ccg-neon-strong);
+}
+
+/* ============================================================
+   HEADER NAV — KEYBOARD FOCUS (QUIET, CLEAN)
+============================================================ */
+
+body[data-ccg-mode] .ccg-nav__link:focus-visible {
+    outline: none;
+
+    text-shadow:
+        0 0 0 rgba(0,0,0,0),
+        0 0 6px rgba(var(--accent-rgb),0.45);
+}
+
+/* ============================================================
+   BUTTONS (UNCHANGED — CONTINUITY)
 ============================================================ */
 
 body[data-ccg-mode] .ccg-btn--primary {
     transition:
-        box-shadow 420ms var(--ccg-btn-ease),
-        transform 420ms var(--ccg-btn-ease),
-        filter 420ms var(--ccg-btn-ease);
+        box-shadow 420ms var(--ccg-ease-ui),
+        transform 420ms var(--ccg-ease-ui),
+        filter 420ms var(--ccg-ease-ui);
 
     box-shadow:
         0 0 10px rgba(var(--accent-rgb),0.45),
         inset 0 0 12px rgba(var(--accent-rgb),0.25);
-
-    will-change: transform, box-shadow;
 }
 
-/* ============================================================
-   HOVER — BLOOM THEN SETTLE
-============================================================ */
-
 body[data-ccg-mode] .ccg-btn--primary:hover {
-    transform: translateY(-1px) scale(var(--ccg-btn-hover-scale));
+    transform: translateY(-1px) scale(1.03);
 
     box-shadow:
         var(--ccg-neon-strong),
         inset 0 0 14px rgba(var(--accent-rgb),0.35);
-}
-
-/* ============================================================
-   ACTIVE — QUICK DISCHARGE
-============================================================ */
-
-body[data-ccg-mode] .ccg-btn--primary:active {
-    transition-duration: 140ms;
-    transform: scale(0.98);
-
-    box-shadow:
-        0 0 6px rgba(var(--accent-rgb),0.35),
-        inset 0 0 10px rgba(var(--accent-rgb),0.25);
-}
-
-/* ============================================================
-   FOCUS (KEYBOARD — NO FLASH)
-============================================================ */
-
-body[data-ccg-mode] .ccg-btn--primary:focus-visible {
-    outline: none;
-    box-shadow:
-        0 0 0 2px rgba(var(--accent-rgb),0.35),
-        var(--ccg-neon-main);
-}
-
-/* ============================================================
-   CARDS (UNCHANGED — INCLUDED FOR CONTEXT SAFETY)
-============================================================ */
-
-body[data-ccg-mode] .ccg-game-card,
-body[data-ccg-mode] .ccg-card {
-    box-shadow:
-        0 8px 18px rgba(0,0,0,0.7),
-        0 0 18px rgba(var(--accent-rgb),0.12);
-}
-
-body[data-ccg-mode] .ccg-game-card:hover,
-body[data-ccg-mode] .ccg-card:hover {
-    box-shadow:
-        0 14px 32px rgba(0,0,0,0.8),
-        0 0 30px rgba(var(--accent-rgb),0.35);
 }
 
 /* ============================================================
