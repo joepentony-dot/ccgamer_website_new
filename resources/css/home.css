@@ -1,10 +1,10 @@
 /* ============================================================
-   HOME.CSS — OMEGA CINEMATIC HERO (PHASE C)
-   Cinematic Parallax, Breathing & Balance — Fixed Text Layer
+   HOME.CSS — OMEGA CINEMATIC HERO (PHASE D)
+   FINAL STACK-SAFE VERSION
 ============================================================ */
 
 /* ------------------------------------------------------------
-   HERO CONTAINER
+   HERO CONTAINER (NO TRANSFORMS — EVER)
 ------------------------------------------------------------ */
 
 .home-hero {
@@ -26,17 +26,19 @@
         0 30px 80px rgba(0, 0, 0, 0.85),
         inset 0 0 0 1px rgba(255, 255, 255, 0.06);
 
-    animation: home-hero-breathe 20s ease-in-out infinite;
-    will-change: box-shadow, transform;
-
-    isolation: isolate; /* Prevent layering collapse */
+    isolation: isolate;
 }
 
-/* Subtle glass glow edge */
+/* ------------------------------------------------------------
+   VISUAL MOTION LAYER (SAFE — NO CONTENT)
+------------------------------------------------------------ */
+
 .home-hero::before {
     content: "";
     position: absolute;
-    inset: 0;
+    inset: -6px;
+    z-index: 0;
+
     border-radius: inherit;
 
     background:
@@ -47,15 +49,18 @@
         );
 
     opacity: 0.85;
-    animation: home-hero-glow-drift 26s ease-in-out infinite;
+
+    animation: home-hero-visual-drift 26s ease-in-out infinite;
+    will-change: transform, opacity;
     pointer-events: none;
 }
 
-/* Vignette for focus */
+/* Vignette — static by design */
 .home-hero::after {
     content: "";
     position: absolute;
     inset: 0;
+    z-index: 1;
 
     background:
         radial-gradient(
@@ -69,12 +74,13 @@
 }
 
 /* ------------------------------------------------------------
-   HERO INNER
+   HERO INNER (LOCKED ABOVE ALL EFFECTS)
 ------------------------------------------------------------ */
 
 .home-hero__inner {
     position: relative;
-    z-index: 2; /* Ensure it stays on top */
+    z-index: 2;
+
     width: min(1200px, 92%);
     margin: 0 auto;
 
@@ -154,29 +160,16 @@ body[data-ccg-mode="amiga"] .home-hero__title {
 }
 
 /* ------------------------------------------------------------
-   CINEMATIC MICRO-MOTION (HOME ONLY)
+   SAFE VISUAL MOTION
 ------------------------------------------------------------ */
 
-@keyframes home-hero-breathe {
+@keyframes home-hero-visual-drift {
     0%, 100% {
         transform: translateY(0);
-        box-shadow:
-            0 30px 80px rgba(0, 0, 0, 0.85),
-            inset 0 0 0 1px rgba(255, 255, 255, 0.06);
-    }
-    50% {
-        transform: translateY(-3px);
-        box-shadow:
-            0 36px 92px rgba(0, 0, 0, 0.9),
-            inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-    }
-}
-
-@keyframes home-hero-glow-drift {
-    0%, 100% {
         opacity: 0.8;
     }
     50% {
+        transform: translateY(-4px);
         opacity: 1;
     }
 }
