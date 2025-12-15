@@ -1,14 +1,14 @@
 /* ============================================================
    CCG CARDS CSS — OMEGA ISOLATED MEDIA SYSTEM
-   Phase P29 — Thumbnail Context Isolation & Aspect Lock
+   Phase P30 — Genre Thumbnail Legibility Refinement
    ------------------------------------------------------------
-   • Fixes stretched / squashed thumbnails
-   • Separates FEATURED / GENRE / GAME card behaviour
-   • Zero HTML changes
+   • Genre tiles prioritise wordmark readability
+   • Game & Featured thumbnails remain cinematic
+   • Zero HTML or JS changes
 ============================================================ */
 
 /* ============================================================
-   BASE CARD (STRUCTURE ONLY — NO MEDIA SIZING)
+   BASE CARD
 ============================================================ */
 
 .ccg-card,
@@ -34,21 +34,19 @@
 
     transition:
         transform .22s ease-out,
-        box-shadow .22s ease-out,
-        border-color .22s ease;
+        box-shadow .22s ease-out;
 
     touch-action: manipulation;
 }
 
 /* ============================================================
-   IMAGE RESET — NEVER STRETCH
+   GLOBAL IMAGE SAFETY
 ============================================================ */
 
 .ccg-card img,
 .ccg-game-card img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
     display: block;
 }
 
@@ -68,11 +66,6 @@
     object-fit: cover;
 }
 
-/* Video variant */
-.home-feature-card--video .ccg-card__media {
-    max-height: 240px;
-}
-
 /* ============================================================
    GENRE TILES (HOME — BROWSE BY GENRE)
 ============================================================ */
@@ -87,19 +80,26 @@
     height: 100%;
 }
 
+/* MEDIA FRAME */
 .home-genre-grid .ccg-card__media {
     width: 100%;
     aspect-ratio: 16 / 9;
-    overflow: hidden;
-    flex-shrink: 0;
+    padding: 10px 14px; /* 🔑 breathing room for wordmarks */
+    background: rgba(0,0,0,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+/* IMAGE — DO NOT CROP WORDS */
 .home-genre-grid .ccg-card__media img {
-    object-fit: cover;
+    object-fit: contain;       /* 🔑 THIS FIXES CUT-OFF TEXT */
+    max-width: 100%;
+    max-height: 100%;
 }
 
 /* ============================================================
-   GAME CARDS (GAMES INDEX / GENRES / COLLECTIONS)
+   GAME CARDS (INDEX / GENRES / COLLECTIONS)
 ============================================================ */
 
 .ccg-game-card {
@@ -155,12 +155,11 @@
 }
 
 /* ============================================================
-   HOVER / INTERACTION (GENTLE — NO DISTORTION)
+   HOVER (GENTLE)
 ============================================================ */
 
 .ccg-card:hover,
-.ccg-game-card:hover,
-.ccg-card:focus-within {
+.ccg-game-card:hover {
     transform: translateY(-3px) scale(1.015);
     box-shadow:
         0 10px 26px rgba(0,0,0,.85),
@@ -168,7 +167,7 @@
 }
 
 /* ============================================================
-   MOBILE POLISH
+   MOBILE
 ============================================================ */
 
 @media (max-width: 768px) {
