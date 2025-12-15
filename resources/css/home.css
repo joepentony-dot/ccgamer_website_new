@@ -1,6 +1,6 @@
 /* ============================================================
-   HOME.CSS — OMEGA CINEMATIC HERO (PHASE H)
-   Featured CCG Video — WIDTH PERCEPTION BALANCE
+   HOME.CSS — OMEGA CINEMATIC HERO (PHASE I)
+   Featured CCG Video — FINAL PERCEPTUAL WIDTH FIX
 ============================================================ */
 
 /* ------------------------------------------------------------
@@ -61,38 +61,34 @@
 /* Intentionally untouched */
 
 /* ------------------------------------------------------------
-   FEATURED CCG VIDEO — FINAL BALANCE FIX
+   FEATURED CCG VIDEO — DEFINITIVE FIX
 ------------------------------------------------------------ */
 
-/* Keep the card full width, but inset the media visually */
+/* Media container stays full width */
 .home-feature-card--video .home-feature-video__frame {
     position: relative;
     height: 280px;
     max-height: 280px;
-
-    /* 👇 THIS IS THE KEY CHANGE */
-    padding: 0 14px;                /* horizontal inset */
-    box-sizing: border-box;
-
-    overflow: hidden;
+    overflow: visible; /* allow inner centring */
 }
 
-/* Actual visible video area */
+/* Inner visual width reduction */
 .home-feature-card--video .home-feature-video__thumb {
-    width: 100%;
+    width: 88%;                 /* 🔑 THIS IS THE REAL FIX */
     height: 100%;
-    object-fit: cover;
-
-    border-radius: 14px;
+    margin: 0 auto;             /* centre it */
     display: block;
+
+    object-fit: cover;
+    border-radius: 16px;
 }
 
-/* Prevent vertical stretch */
+/* Prevent card stretch */
 .home-feature-card--video .ccg-card__media {
     flex-shrink: 0;
 }
 
-/* Reduce bulk below */
+/* Calm the body spacing */
 .home-feature-card--video .ccg-card__body {
     padding-top: 18px;
 }
@@ -120,6 +116,9 @@ body[data-ccg-mode="amiga"] .home-featured .ccg-card {
     .home-feature-card--video .home-feature-video__frame {
         height: 240px;
         max-height: 240px;
-        padding: 0 10px;
+    }
+
+    .home-feature-card--video .home-feature-video__thumb {
+        width: 94%;
     }
 }
