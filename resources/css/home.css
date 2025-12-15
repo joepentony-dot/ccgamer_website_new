@@ -1,16 +1,31 @@
 /* ============================================================
    HOME.CSS — OMEGA CINEMATIC HOME
-   Phase R1 — Alignment & Vertical Rhythm Polish
+   Phase R2 — Desktop Container Width Lock
 ============================================================ */
 
 /* ------------------------------------------------------------
-   HERO CONTAINER (UNCHANGED STRUCTURE)
+   GLOBAL HOME CONTENT RAIL
+------------------------------------------------------------ */
+
+.ccg-page--home {
+    --home-max-width: 1180px;
+    --home-side-pad: 6vw;
+}
+
+/* Utility: centred content rail */
+.ccg-page--home .home-rail {
+    width: min(var(--home-max-width), 100% - var(--home-side-pad));
+    margin-inline: auto;
+}
+
+/* ------------------------------------------------------------
+   HERO CONTAINER (FULL BLEED BACKDROP)
 ------------------------------------------------------------ */
 
 .home-hero {
     position: relative;
     margin-top: 16px;
-    padding: 52px 0 56px;
+    padding: 56px 0 60px;
 
     border-radius: 22px;
     overflow: hidden;
@@ -29,16 +44,13 @@
     isolation: isolate;
 }
 
-/* ------------------------------------------------------------
-   HERO INNER
------------------------------------------------------------- */
-
+/* Hero content stays locked */
 .home-hero__inner {
     position: relative;
     z-index: 2;
 
-    width: min(1200px, 92%);
-    margin: 0 auto;
+    width: min(var(--home-max-width), 100% - var(--home-side-pad));
+    margin-inline: auto;
 
     display: flex;
     flex-direction: column;
@@ -49,22 +61,12 @@
    HERO TEXT
 ------------------------------------------------------------ */
 
-.home-hero__mode {
-    font-size: 0.75rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--ccg-text-soft);
-    opacity: 0.85;
-}
-
 .home-hero__title {
     font-family: var(--ccg-font-main);
     font-size: clamp(1.9rem, 4vw, 2.6rem);
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: #ffffff;
-
-    margin-top: 6px;
 
     text-shadow:
         0 0 12px rgba(0, 170, 255, 0.55),
@@ -79,59 +81,26 @@
 }
 
 /* ------------------------------------------------------------
-   HERO ACTIONS
------------------------------------------------------------- */
-
-.home-hero__actions {
-    display: flex;
-    gap: 14px;
-    flex-wrap: wrap;
-    margin-top: 12px;
-}
-
-/* ------------------------------------------------------------
    TAGLINE STRIP
 ------------------------------------------------------------ */
 
 .home-tagline {
-    margin: 56px auto 64px;
+    margin: 64px auto 72px;
     text-align: center;
-}
-
-.home-tagline__kicker {
-    font-size: 0.85rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    opacity: 0.65;
-}
-
-.home-tagline__main {
-    font-family: var(--ccg-font-main);
-    font-size: 1.25rem;
-    margin-top: 6px;
+    width: min(var(--home-max-width), 100% - var(--home-side-pad));
 }
 
 /* ------------------------------------------------------------
-   HOME SECTIONS — GLOBAL RHYTHM
+   HOME SECTIONS — LOCKED WIDTH
 ------------------------------------------------------------ */
 
 .home-section {
-    margin: 72px auto;
-    width: min(1200px, 92%);
+    margin: 80px auto;
+    width: min(var(--home-max-width), 100% - var(--home-side-pad));
 }
 
 .home-section__header {
-    margin-bottom: 26px;
-}
-
-.home-section__title {
-    font-family: var(--ccg-font-main);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-}
-
-.home-section__divider {
-    margin-top: 10px;
+    margin-bottom: 28px;
 }
 
 /* ------------------------------------------------------------
@@ -141,32 +110,20 @@
 .home-highlights-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 28px;
-}
-
-.home-feature-card {
-    height: 100%;
-}
-
-.home-feature-meta {
-    margin-top: 6px;
+    gap: 32px;
 }
 
 /* ------------------------------------------------------------
    GENRE SECTION
 ------------------------------------------------------------ */
 
-.home-section--genres {
-    margin-top: 84px;
-}
-
 .home-genre-grid {
-    margin-top: 32px;
+    margin-top: 34px;
 }
 
-/* Footer link */
+/* Footer link alignment */
 .home-section__footer-link {
-    margin-top: 34px;
+    margin-top: 36px;
     text-align: center;
 }
 
@@ -190,13 +147,13 @@ body[data-ccg-mode="amiga"] .home-hero__title {
 }
 
 /* ------------------------------------------------------------
-   RESPONSIVE RHYTHM
+   RESPONSIVE
 ------------------------------------------------------------ */
 
 @media (max-width: 900px) {
     .home-highlights-grid {
         grid-template-columns: 1fr;
-        gap: 34px;
+        gap: 36px;
     }
 
     .home-section {
@@ -206,11 +163,7 @@ body[data-ccg-mode="amiga"] .home-hero__title {
 
 @media (max-width: 768px) {
     .home-hero {
-        padding: 40px 0 44px;
-    }
-
-    .home-hero__title {
-        letter-spacing: 0.14em;
+        padding: 44px 0 48px;
     }
 
     .home-tagline {
