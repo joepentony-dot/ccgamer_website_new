@@ -17,8 +17,11 @@
 
     opacity: 0.55;
 
-    animation: ccg-star-drift 180s linear infinite;
-    will-change: background-position;
+    animation:
+        ccg-star-drift 180s linear infinite,
+        ccg-star-breathe 14s ease-in-out infinite;
+
+    will-change: background-position, opacity;
 }
 
 /* Subtle secondary depth ghost (no extra DOM) */
@@ -33,9 +36,11 @@
 
     opacity: 0.25;
 
-    animation: ccg-star-drift-alt 320s linear infinite;
-    will-change: background-position;
+    animation:
+        ccg-star-drift-alt 320s linear infinite,
+        ccg-star-breathe-alt 22s ease-in-out infinite;
 
+    will-change: background-position, opacity;
     pointer-events: none;
 }
 
@@ -57,6 +62,17 @@
     to {
         background-position: -1600px 1200px;
     }
+}
+
+/* Gentle luminance breathing — almost imperceptible */
+@keyframes ccg-star-breathe {
+    0%, 100% { opacity: 0.52; }
+    50% { opacity: 0.58; }
+}
+
+@keyframes ccg-star-breathe-alt {
+    0%, 100% { opacity: 0.22; }
+    50% { opacity: 0.28; }
 }
 
 /* ------------------------------------------------------------
