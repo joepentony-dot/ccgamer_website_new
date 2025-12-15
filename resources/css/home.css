@@ -1,324 +1,111 @@
 /* ============================================================
-   HOME.CSS — OMEGA CINEMATIC HOME STAGE
-   Phase H30 — Home Rhythm + Safe Container Widths
+   HOME.CSS — OMEGA CINEMATIC (LOCKED HOME CONTRACT)
+   Phase H-L1 — PERMANENT Home Genre Thumbnail Lock
    ------------------------------------------------------------
-   • Keep hero stable
-   • Featured highlights balanced
-   • Home “Browse by Genre” tiles match genre hub behaviour
-   • No layout bleed into other pages
+   CRITICAL RULE:
+   Home genre tiles MUST visually match Genre Index tiles
+   and must NEVER stretch, squash, or fill grid width.
 ============================================================ */
 
 /* ============================================================
-   HERO CONTAINER (LOCKED SAFE)
-============================================================ */
-
-.home-hero {
-    position: relative;
-    margin-top: 12px;
-    padding: 48px 0 56px;
-
-    border-radius: 22px;
-    overflow: hidden;
-
-    background:
-        linear-gradient(
-            120deg,
-            rgba(0, 40, 80, 0.65),
-            rgba(40, 0, 60, 0.65)
-        );
-
-    box-shadow:
-        0 30px 80px rgba(0, 0, 0, 0.85),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.06);
-
-    isolation: isolate;
-}
-
-/* Subtle glass glow edge */
-.home-hero::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-
-    background:
-        radial-gradient(
-            ellipse at top left,
-            rgba(0, 170, 255, 0.18),
-            transparent 60%
-        );
-
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* Vignette for focus */
-.home-hero::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-
-    background:
-        radial-gradient(
-            ellipse at center,
-            transparent 0%,
-            rgba(0, 0, 0, 0.45) 70%,
-            rgba(0, 0, 0, 0.65) 100%
-        );
-
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* Hero inner */
-.home-hero__inner {
-    position: relative;
-    z-index: 2;
-
-    width: min(1200px, 92%);
-    margin: 0 auto;
-
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-}
-
-.home-hero__mode-line {
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.home-hero__mode-label {
-    font-size: 0.75rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--ccg-text-soft);
-    opacity: 0.9;
-}
-
-.home-hero__sub-label {
-    font-size: 0.75rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.70);
-}
-
-.home-hero__title {
-    font-family: var(--ccg-font-main);
-    font-size: clamp(1.8rem, 4vw, 2.6rem);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    margin: 0;
-
-    color: #ffffff;
-
-    text-shadow:
-        0 0 12px rgba(0, 170, 255, 0.55),
-        0 0 28px rgba(0, 170, 255, 0.35);
-}
-
-.home-hero__tagline {
-    max-width: 680px;
-    font-size: 1rem;
-    line-height: 1.55;
-    margin: 0;
-    color: var(--ccg-text-soft);
-
-    text-shadow:
-        0 0 6px rgba(0,0,0,0.75);
-}
-
-.home-hero__actions {
-    display: flex;
-    gap: 14px;
-    flex-wrap: wrap;
-    margin-top: 10px;
-}
-
-.home-hero__tip {
-    margin: 8px 0 0;
-    font-size: 0.9rem;
-    color: rgba(255,255,255,0.70);
-}
-
-/* Mode-sensitive glow */
-body[data-ccg-mode="amiga"] .home-hero {
-    background:
-        linear-gradient(
-            120deg,
-            rgba(90, 0, 90, 0.65),
-            rgba(60, 0, 120, 0.65)
-        );
-}
-
-body[data-ccg-mode="amiga"] .home-hero__title {
-    text-shadow:
-        0 0 12px rgba(255, 41, 224, 0.55),
-        0 0 28px rgba(255, 41, 224, 0.35);
-}
-
-/* ============================================================
-   TAGLINE STRIP
-============================================================ */
-
-.home-tagline {
-    margin: 22px auto 6px;
-    width: min(1200px, 92%);
-    padding: 16px 18px;
-
-    border-radius: 16px;
-    background: rgba(0,0,0,0.35);
-    border: 1px solid rgba(255,255,255,0.06);
-
-    box-shadow:
-        0 14px 34px rgba(0,0,0,0.55),
-        0 0 20px rgba(var(--accent-rgb), 0.10);
-}
-
-.home-tagline__kicker {
-    margin: 0;
-    font-size: 0.85rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.70);
-}
-
-.home-tagline__main {
-    margin: 6px 0 0;
-    font-family: var(--ccg-font-main);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--ccg-text-light);
-    text-shadow:
-        0 0 6px rgba(0,0,0,0.8),
-        var(--ccg-neon-main);
-}
-
-/* ============================================================
-   SECTION WRAPPER + RHYTHM
+   HOME SECTION BASE
 ============================================================ */
 
 .home-section {
-    width: min(1200px, 92%);
-    margin: 34px auto 0;
-}
-
-.home-section__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 18px;
-
-    margin-bottom: 16px;
-}
-
-.home-section__title {
-    margin: 0;
-    font-family: var(--ccg-font-main);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--ccg-text-light);
-    text-shadow:
-        0 0 6px rgba(0,0,0,0.8),
-        var(--ccg-neon-main);
-}
-
-.home-section__divider {
-    height: 2px;
-    flex: 1;
-    background: linear-gradient(90deg, rgba(var(--accent-rgb),0.60), rgba(255,255,255,0.00));
-    opacity: 0.65;
-    border-radius: 999px;
-}
-
-/* Footer link block under sections */
-.home-section__footer-link {
-    margin-top: 14px;
+    width: 100%;
+    position: relative;
 }
 
 /* ============================================================
-   FEATURED HIGHLIGHTS (2-COL GRID)
-============================================================ */
-
-.home-highlights-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 22px;
-    align-items: stretch;
-}
-
-/* Ensure both featured cards behave identically */
-.home-highlights-grid .home-feature-card {
-    height: 100%;
-}
-
-/* Featured media should stay cinematic but not “massive” */
-.home-highlights-grid .ccg-card__media--16x9 {
-    aspect-ratio: 16 / 9;
-}
-
-/* Tighten featured body rhythm */
-.home-feature-meta {
-    min-height: 2.4em; /* stabilises height between cards */
-}
-
-/* Responsive */
-@media (max-width: 900px) {
-    .home-highlights-grid {
-        grid-template-columns: 1fr;
-        gap: 26px;
-    }
-}
-
-/* ============================================================
-   HOME GENRE GRID — MUST MATCH GENRE HUB FEEL
+   HOME GENRE GRID (LAYOUT ONLY — NO STRETCHING)
 ============================================================ */
 
 .home-genre-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 18px;
-    align-items: start;
-}
-
-/* Prevent “full screen” feel: cap tile growth */
-.home-genre-grid .ccg-card {
-    max-width: 340px;
-    justify-self: center;
-    width: 100%;
-}
-
-/* Keep media readable (genre text inside image) */
-.home-genre-grid .ccg-card__media--16x9 {
-    aspect-ratio: 16 / 9;
-}
-
-/* Title block spacing */
-.home-genre-grid .ccg-card__body {
-    padding: 10px 12px 12px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 28px;
+    align-items: start; /* 🔒 prevents vertical stretching */
 }
 
 /* ============================================================
-   RESPONSIVE
+   HOME GENRE TILE — HARD SIZE CONTRACT
 ============================================================ */
 
-@media (max-width: 768px) {
-    .home-hero {
-        padding: 36px 0 42px;
+.home-genre-grid .ccg-genre-tile {
+    max-width: 360px;            /* 🔒 visual parity with genre index */
+    margin: 0 auto;              /* centre inside grid cell */
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+/* ============================================================
+   HOME GENRE THUMBNAIL — ABSOLUTE LOCK
+============================================================ */
+
+.home-genre-grid .ccg-genre-tile__thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;        /* 🔒 SAME AS GENRE INDEX */
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+}
+
+/* IMAGE BEHAVIOUR — READABILITY FIRST */
+.home-genre-grid .ccg-genre-tile__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;         /* 🔒 NO CROPPING OF TEXT */
+    object-position: center;
+    display: block;
+}
+
+/* ============================================================
+   HOME GENRE BODY — STABLE HEIGHT
+============================================================ */
+
+.home-genre-grid .ccg-genre-tile__body {
+    padding: 12px 14px 14px;
+    text-align: left;
+}
+
+/* ============================================================
+   HOME GENRE TITLE — NO INFLUENCE ON CARD SIZE
+============================================================ */
+
+.home-genre-grid .ccg-genre-tile__title {
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ============================================================
+   HOVER — VISUAL ONLY (NO SIZE CHANGE)
+============================================================ */
+
+.home-genre-grid .ccg-genre-tile:hover {
+    transform: translateY(-3px);
+}
+
+/* ============================================================
+   RESPONSIVE — SCALE GRID, NEVER THUMB
+============================================================ */
+
+@media (max-width: 900px) {
+    .home-genre-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .home-genre-grid {
+        grid-template-columns: 1fr;
     }
 
-    .home-hero__title {
-        letter-spacing: 0.14em;
-    }
-
-    .home-section {
-        margin-top: 28px;
-    }
-
-    .home-genre-grid .ccg-card {
+    .home-genre-grid .ccg-genre-tile {
         max-width: 100%;
-        justify-self: stretch;
     }
 }
