@@ -1,0 +1,167 @@
+/* ============================================================
+   CCG BUTTONS — OMEGA PARITY SYSTEM
+   ------------------------------------------------------------
+   • Unified weight, glow & motion
+   • Mode-aware (C64 / Amiga)
+   • Primary & secondary tiers
+   • Zero layout or JS impact
+============================================================ */
+
+/* ============================================================
+   BASE BUTTON RESET (SAFE)
+============================================================ */
+
+.ccg-btn,
+a.ccg-btn,
+button.ccg-btn {
+    appearance: none;
+    border: none;
+    background: none;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+/* ============================================================
+   CORE BUTTON LANGUAGE
+============================================================ */
+
+.ccg-btn {
+    --btn-accent: var(--ccg-color-cyan);
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 10px 16px;
+    border-radius: 12px;
+
+    font-family: var(--ccg-font-main);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+
+    color: var(--ccg-text-light);
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.06),
+            rgba(0,0,0,0.55)
+        );
+
+    border: 1px solid rgba(255,255,255,0.14);
+
+    box-shadow:
+        0 6px 14px rgba(0,0,0,0.75),
+        0 0 14px rgba(var(--accent-rgb), 0.22);
+
+    transition:
+        transform 0.32s var(--ccg-ease-out),
+        box-shadow 0.36s var(--ccg-ease-out),
+        background 0.32s ease,
+        border-color 0.32s ease;
+}
+
+/* ============================================================
+   PRIMARY BUTTON (DEFAULT)
+============================================================ */
+
+.ccg-btn--primary {
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(var(--accent-rgb), 0.35),
+            rgba(0,0,0,0.6)
+        );
+
+    border-color: rgba(var(--accent-rgb), 0.55);
+
+    box-shadow:
+        0 10px 22px rgba(0,0,0,0.85),
+        0 0 22px rgba(var(--accent-rgb), 0.45);
+}
+
+/* ============================================================
+   SECONDARY / SOFT BUTTON
+============================================================ */
+
+.ccg-btn--secondary {
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.05),
+            rgba(0,0,0,0.45)
+        );
+
+    border-color: rgba(255,255,255,0.16);
+
+    box-shadow:
+        0 6px 14px rgba(0,0,0,0.7),
+        0 0 14px rgba(var(--accent-rgb), 0.18);
+}
+
+/* ============================================================
+   HOVER / FOCUS — UNIFIED FEEL
+============================================================ */
+
+.ccg-btn:hover,
+.ccg-btn:focus-visible {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 16px 34px rgba(0,0,0,0.9),
+        0 0 34px rgba(var(--accent-rgb), 0.55);
+
+    border-color: rgba(var(--accent-rgb), 0.85);
+}
+
+/* ============================================================
+   ACTIVE / PRESS
+============================================================ */
+
+.ccg-btn:active {
+    transform: translateY(0) scale(0.98);
+
+    box-shadow:
+        0 8px 18px rgba(0,0,0,0.85),
+        0 0 18px rgba(var(--accent-rgb), 0.45);
+}
+
+/* ============================================================
+   MODE TINTING (SUBTLE DIFFERENCE)
+============================================================ */
+
+body[data-ccg-mode="c64"] .ccg-btn {
+    --accent-rgb: 0,170,255;
+}
+
+body[data-ccg-mode="amiga"] .ccg-btn {
+    --accent-rgb: 255,41,224;
+}
+
+/* ============================================================
+   ICON BUTTON SUPPORT
+============================================================ */
+
+.ccg-btn svg,
+.ccg-btn img {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+/* ============================================================
+   MOBILE — NO FLOATY LIFT
+============================================================ */
+
+@media (max-width: 768px) {
+
+    .ccg-btn:hover {
+        transform: none;
+    }
+
+    .ccg-btn:active {
+        transform: scale(0.97);
+    }
+}
