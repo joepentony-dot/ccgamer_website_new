@@ -82,3 +82,34 @@
         padding: 12px 14px 16px;
     }
 }
+
+/* ============================================================
+   COLLECTIONS INDEX — THUMBNAIL ISOLATION FIX
+   Scope: /games/collections/index.html ONLY
+   SAFE: No bleed to genres, games, home or single pages
+============================================================ */
+
+/* Ensure media container establishes height */
+.ccg-page--collections-index .ccg-card__media {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 14px;
+}
+
+/* Explicit 16:9 enforcement */
+.ccg-page--collections-index .ccg-card__media--16x9 {
+    aspect-ratio: 16 / 9;
+}
+
+/* Force image to render correctly */
+.ccg-page--collections-index .ccg-card__media img {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    display: block;
+}
