@@ -1001,3 +1001,48 @@
         opacity: 0.22;
     }
 }
+
+/* ============================================================
+   HOME — STARFIELD DEPTH RESTORE
+   ------------------------------------------------------------
+   • Restores visible star presence behind hero
+   • Adds subtle foreground star shimmer
+   • Preserves cinematic overlays
+============================================================ */
+
+/* Strengthen global starfield contrast on home */
+.ccg-page--home .ccg-bg-starfield {
+    opacity: 0.7;
+    filter: contrast(1.15) brightness(1.1);
+}
+
+/* Localised hero star shimmer (foreground depth) */
+.ccg-page--home .ccg-hero--home::before {
+    background:
+        radial-gradient(circle at 30% 40%, rgba(255,255,255,0.08), transparent 45%),
+        radial-gradient(circle at 70% 65%, rgba(var(--accent-rgb),0.12), transparent 50%),
+        linear-gradient(to bottom, rgba(0,0,0,0.45), rgba(0,0,0,0.75));
+}
+
+/* Gentle shimmer motion */
+.ccg-page--home .ccg-hero--home::before {
+    animation: hero-star-shimmer 26s ease-in-out infinite;
+}
+
+@keyframes hero-star-shimmer {
+    0%, 100% {
+        background-position: 0% 0%;
+        opacity: 0.9;
+    }
+    50% {
+        background-position: 2% 3%;
+        opacity: 1;
+    }
+}
+
+/* Mobile: reduce intensity */
+@media (max-width: 768px) {
+    .ccg-page--home .ccg-bg-starfield {
+        opacity: 0.55;
+    }
+}
