@@ -2,7 +2,7 @@
    HOME.CSS — OMEGA CINEMATIC SHOWPIECE (FLAGSHIP)
    ------------------------------------------------------------
    Scope:
-   • HOME ONLY (scoped via .ccg-page--home)
+   • HOME ONLY (scoped via html[data-ccg-page="home"])
    • Massive “WOW” factor through depth, hierarchy, ceremony
    • Zero JS changes
    • Zero HTML changes
@@ -10,25 +10,151 @@
 ============================================================ */
 
 /* ============================================================
-   HOME MAIN WRAPPER
+   HOME PAGE SCOPE ROOT
 ============================================================ */
 
-.ccg-page--home .ccg-main--home {
+html[data-ccg-page="home"] .ccg-main--home {
     padding-top: 18px;
     padding-bottom: 26px;
+}
+
+/* ============================================================
+   FULL-PAGE STARFIELD PRESENCE (HOME ONLY)
+   ------------------------------------------------------------
+   IMPORTANT:
+   .ccg-bg sits OUTSIDE .ccg-page, so we scope using html[data-ccg-page]
+============================================================ */
+
+html[data-ccg-page="home"] .ccg-bg {
+    /* Ensure background always covers the full scroll height */
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+html[data-ccg-page="home"] .ccg-page {
+    position: relative;
+    z-index: 1; /* content sits above the fixed bg */
+}
+
+/* Stronger stars across the full page */
+html[data-ccg-page="home"] .ccg-bg-starfield {
+    opacity: 0.78;
+    filter: contrast(1.18) brightness(1.12);
+    transform: translateZ(0);
+}
+
+/* Grid stays subtle */
+html[data-ccg-page="home"] .ccg-bg-grid {
+    opacity: 0.28;
+}
+
+/* CRT overlay stays present but controlled */
+html[data-ccg-page="home"] .ccg-bg-crt-overlay {
+    opacity: 0.22;
+}
+
+/* Mobile: reduce intensity */
+@media (max-width: 768px) {
+    html[data-ccg-page="home"] .ccg-bg-starfield { opacity: 0.58; }
+    html[data-ccg-page="home"] .ccg-bg-grid { opacity: 0.20; }
+    html[data-ccg-page="home"] .ccg-bg-crt-overlay { opacity: 0.18; }
+}
+
+/* ============================================================
+   HOME HEADER ALIGNMENT SAFETY (HOME ONLY)
+   ------------------------------------------------------------
+   Fixes the “stacked vertical nav in the middle” issue without
+   touching global CSS.
+============================================================ */
+
+html[data-ccg-page="home"] .ccg-header {
+    position: relative;
+    z-index: 5; /* above hero glow layers */
+}
+
+html[data-ccg-page="home"] .ccg-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+/* Brand stays left */
+html[data-ccg-page="home"] .ccg-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 260px;
+}
+
+/* Nav stays centred-ish but never collapses into a vertical “tower” */
+html[data-ccg-page="home"] .ccg-nav {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: center;
+}
+
+html[data-ccg-page="home"] .ccg-nav__list {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* Header actions stay right */
+html[data-ccg-page="home"] .ccg-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 0 0 auto;
+}
+
+/* If your global CSS forces nav links to block/column, neutralise it on HOME only */
+html[data-ccg-page="home"] .ccg-nav__list > li {
+    margin: 0;
+    padding: 0;
+}
+
+/* Mobile: allow a nice wrap, but keep structure */
+@media (max-width: 900px) {
+    html[data-ccg-page="home"] .ccg-header-inner {
+        justify-content: center;
+    }
+
+    html[data-ccg-page="home"] .ccg-nav {
+        order: 3;
+        width: 100%;
+    }
+
+    html[data-ccg-page="home"] .ccg-header-actions {
+        order: 2;
+    }
+
+    html[data-ccg-page="home"] .ccg-brand {
+        order: 1;
+        justify-content: center;
+    }
 }
 
 /* ============================================================
    HERO STAGE — THE TITLE SCREEN MOMENT
 ============================================================ */
 
-.ccg-page--home .home-hero {
+html[data-ccg-page="home"] .home-hero {
     position: relative;
     margin-top: 12px;
     margin-bottom: 22px;
 }
 
-.ccg-page--home .home-hero .ccg-hero.ccg-hero--home {
+/* The hero “stage” container */
+html[data-ccg-page="home"] .home-hero .ccg-hero.ccg-hero--home {
     position: relative;
     border-radius: 22px;
     overflow: hidden;
@@ -45,8 +171,8 @@
         inset 0 0 0 1px rgba(255,255,255,0.06);
 }
 
-/* Hero overlay */
-.ccg-page--home .home-hero .ccg-hero.ccg-hero--home::before {
+/* Cinematic edge glow ring + star shimmer (foreground depth) */
+html[data-ccg-page="home"] .home-hero .ccg-hero.ccg-hero--home::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -54,14 +180,18 @@
     pointer-events: none;
 
     background:
+        radial-gradient(circle at 30% 40%, rgba(255,255,255,0.08), transparent 45%),
+        radial-gradient(circle at 70% 65%, rgba(var(--accent-rgb),0.12), transparent 50%),
         radial-gradient(circle at 30% 10%, rgba(var(--accent-rgb),0.10), transparent 46%),
         radial-gradient(circle at 70% 90%, rgba(255,41,224,0.10), transparent 52%),
-        linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,0.58));
+        linear-gradient(to bottom, rgba(0,0,0,0.08), rgba(0,0,0,0.62));
 
+    opacity: 0.95;
     animation: home-hero-overlay-breathe 18s ease-in-out infinite;
 }
 
-.ccg-page--home .ccg-hero-image {
+/* Backplate “image” layer that home-dynamic.js can target */
+html[data-ccg-page="home"] .ccg-hero-image {
     position: absolute;
     inset: -8%;
     z-index: 0;
@@ -70,14 +200,17 @@
     background:
         radial-gradient(circle at 35% 25%, rgba(255,255,255,0.06), transparent 55%),
         radial-gradient(circle at 70% 65%, rgba(var(--accent-rgb),0.10), transparent 62%),
-        linear-gradient(120deg, rgba(0,0,0,0.10), rgba(0,0,0,0.70));
+        linear-gradient(120deg, rgba(0,0,0,0.10), rgba(0,0,0,0.74));
 
+    filter: saturate(1.1) contrast(1.08);
     transform: scale(1.06);
     opacity: 0.85;
+
     animation: home-hero-drift 26s ease-in-out infinite;
 }
 
-.ccg-page--home .ccg-hero-scanlines {
+/* Scanlines layer (exists in HTML) */
+html[data-ccg-page="home"] .ccg-hero-scanlines {
     position: absolute;
     inset: 0;
     z-index: 2;
@@ -96,111 +229,542 @@
     mix-blend-mode: overlay;
 }
 
-.ccg-page--home .home-hero__inner {
+/* Inner content */
+html[data-ccg-page="home"] .home-hero__inner {
     position: relative;
     z-index: 3;
+
     padding: 56px 46px 52px;
+    text-align: left;
 }
 
-.ccg-page--home .home-hero__mode-line {
+/* Mode line = “system panel readout” */
+html[data-ccg-page="home"] .home-hero__mode-line {
     display: flex;
     align-items: center;
     gap: 12px;
     margin-bottom: 14px;
 }
 
-.ccg-page--home .home-hero__mode-label {
+html[data-ccg-page="home"] .home-hero__mode-label {
+    font-family: var(--ccg-font-main);
     font-size: 0.76rem;
     letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ccg-text-soft);
+    opacity: 0.95;
+
     padding: 8px 12px;
     border-radius: 999px;
+
     background: rgba(0,0,0,0.42);
     border: 1px solid rgba(255,255,255,0.08);
+
+    box-shadow:
+        0 10px 22px rgba(0,0,0,0.65),
+        inset 0 0 0 1px rgba(0,0,0,0.35);
 }
 
-.ccg-page--home .home-hero__title {
-    margin: 0 0 14px;
-    font-size: clamp(1.6rem, 3.2vw, 3.05rem);
+html[data-ccg-page="home"] .home-hero__sub-label {
+    font-family: var(--ccg-font-main);
+    font-size: 0.76rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
+    color: rgba(232,236,255,0.82);
+    opacity: 0.95;
+}
+
+/* Title = signature moment (hover power-up) */
+html[data-ccg-page="home"] .home-hero__title {
+    margin: 0 0 14px;
+    font-family: var(--ccg-font-main);
+    font-weight: 700;
+
+    font-size: clamp(1.6rem, 3.2vw, 3.05rem);
+    line-height: 1.08;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+
+    color: rgba(232,236,255,0.98);
+
     text-shadow:
         0 18px 52px rgba(0,0,0,0.82),
         0 0 22px rgba(var(--accent-rgb),0.22);
+
+    position: relative;
+    z-index: 5;
+    transition:
+        text-shadow 420ms cubic-bezier(.25,.8,.35,1),
+        filter 420ms cubic-bezier(.25,.8,.35,1),
+        transform 420ms cubic-bezier(.25,.8,.35,1);
+}
+
+html[data-ccg-page="home"] .home-hero__title:hover {
+    text-shadow:
+        0 0 10px rgba(0,0,0,0.85),
+        0 0 22px rgba(var(--accent-rgb),0.65),
+        0 0 42px rgba(var(--accent-rgb),0.35);
+
+    filter: brightness(1.15) contrast(1.1) saturate(1.05);
+    transform: translateY(-1px);
+}
+
+html[data-ccg-page="home"] .home-hero__title::after {
+    content: "";
+    position: absolute;
+    inset: -8px -16px;
+    pointer-events: none;
+    opacity: 0;
+
+    background:
+        linear-gradient(
+            120deg,
+            transparent 35%,
+            rgba(var(--accent-rgb),0.25),
+            rgba(255,255,255,0.35),
+            rgba(var(--accent-rgb),0.25),
+            transparent 65%
+        );
+
+    filter: blur(6px);
+    transform: translateX(-60%);
+}
+
+html[data-ccg-page="home"] .home-hero__title:hover::after {
+    opacity: 0.85;
+    animation: hero-title-shimmer 1.1s ease-out forwards;
+}
+
+/* Tagline */
+html[data-ccg-page="home"] .home-hero__tagline {
+    margin: 0 0 22px;
+    max-width: 64ch;
+
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: rgba(232,236,255,0.86);
+
+    text-shadow: 0 10px 32px rgba(0,0,0,0.72);
+}
+
+/* Actions = command console */
+html[data-ccg-page="home"] .home-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center; /* keeps buttons level */
+    gap: 12px;
+    margin-top: 16px;
+}
+
+/* Make hero buttons feel premium, without touching global button CSS */
+html[data-ccg-page="home"] .home-hero__btn {
+    position: relative;
+    padding: 12px 16px;
+    border-radius: 14px;
+
+    box-shadow:
+        0 16px 38px rgba(0,0,0,0.78),
+        0 0 18px rgba(var(--accent-rgb),0.20),
+        inset 0 0 0 1px rgba(255,255,255,0.06);
+
+    transform: translateZ(0);
+    transition:
+        transform 0.32s var(--ccg-ease-out),
+        box-shadow 0.42s var(--ccg-ease-out),
+        filter 0.32s ease;
+}
+
+html[data-ccg-page="home"] .home-hero__btn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 22px 54px rgba(0,0,0,0.82),
+        0 0 26px rgba(var(--accent-rgb),0.34),
+        inset 0 0 0 1px rgba(var(--accent-rgb),0.16);
+    filter: brightness(1.06);
+}
+
+html[data-ccg-page="home"] .home-hero__btn:active {
+    transform: translateY(-1px) scale(0.992);
+}
+
+html[data-ccg-page="home"] .home-hero__tip {
+    margin: 18px 0 0;
+    font-size: 0.9rem;
+    color: rgba(232,236,255,0.74);
+    opacity: 0.95;
 }
 
 /* ============================================================
-   FEATURED HIGHLIGHTS GRID — ALIGNED & BALANCED
+   TAGLINE STRIP — “ARCADE INSCRIPTION”
 ============================================================ */
 
-.ccg-page--home .home-highlights-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 18px;
-    align-items: stretch;
-}
+html[data-ccg-page="home"] .home-tagline {
+    margin: 18px 0 30px;
+    padding: 16px 18px;
 
-@media (min-width: 980px) {
-    .ccg-page--home .home-highlights-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-}
+    border-radius: 16px;
 
-/* Core alignment fix */
-.ccg-page--home .home-feature-card {
-    display: flex;
-    flex-direction: column;
-    border-radius: 18px;
+    background:
+        linear-gradient(
+            120deg,
+            rgba(0,0,0,0.72),
+            rgba(20,20,42,0.60),
+            rgba(0,0,0,0.72)
+        );
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    box-shadow:
+        0 18px 46px rgba(0,0,0,0.80),
+        0 0 22px rgba(var(--accent-rgb),0.12);
+
+    text-align: center;
     overflow: hidden;
+    position: relative;
+    isolation: isolate;
 }
 
-.ccg-page--home .home-feature-card .ccg-card__body {
+html[data-ccg-page="home"] .home-tagline::after {
+    content: "";
+    position: absolute;
+    inset: -40%;
+    pointer-events: none;
+    z-index: 0;
+
+    background:
+        radial-gradient(circle at 30% 30%, rgba(var(--accent-rgb),0.12), transparent 52%),
+        radial-gradient(circle at 70% 70%, rgba(255,41,224,0.10), transparent 55%);
+
+    transform: rotate(12deg);
+    opacity: 0.8;
+    animation: home-tagline-sweep 22s ease-in-out infinite;
+}
+
+html[data-ccg-page="home"] .home-tagline__kicker,
+html[data-ccg-page="home"] .home-tagline__main {
+    position: relative;
+    z-index: 1;
+}
+
+html[data-ccg-page="home"] .home-tagline__kicker {
+    margin: 0 0 6px;
+    font-family: var(--ccg-font-main);
+    font-size: 0.82rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(232,236,255,0.70);
+}
+
+html[data-ccg-page="home"] .home-tagline__main {
+    margin: 0;
+    font-family: var(--ccg-font-main);
+    font-size: 1.25rem;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+
+    color: rgba(232,236,255,0.96);
+
+    text-shadow:
+        0 0 18px rgba(var(--accent-rgb),0.20),
+        0 16px 42px rgba(0,0,0,0.75);
+}
+
+/* ============================================================
+   HOME SECTIONS — MUSEUM FRAMING
+============================================================ */
+
+html[data-ccg-page="home"] .home-section {
+    margin: 0 0 34px;
+    padding: 18px 18px 22px;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(0,0,0,0.62),
+            rgba(0,0,0,0.76)
+        );
+
+    border: 1px solid rgba(255,255,255,0.07);
+
+    box-shadow:
+        0 22px 58px rgba(0,0,0,0.82),
+        0 0 20px rgba(var(--accent-rgb),0.08);
+
+    position: relative;
+    isolation: isolate;
+}
+
+html[data-ccg-page="home"] .home-section__header {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    flex: 1;
+    margin-bottom: 16px;
 }
 
-.ccg-page--home .home-feature-card .ccg-btn {
-    margin-top: auto;
+html[data-ccg-page="home"] .home-section__title {
+    margin: 0;
+
+    font-family: var(--ccg-font-main);
+    font-size: clamp(1.15rem, 1.6vw, 1.55rem);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+
+    color: rgba(232,236,255,0.94);
+
+    text-shadow:
+        0 0 18px rgba(var(--accent-rgb),0.18),
+        0 14px 40px rgba(0,0,0,0.72);
 }
 
-/* Video header parity */
-.ccg-page--home .home-feature-card--video .home-feature-video__header {
-    margin-bottom: 12px;
-}
+html[data-ccg-page="home"] .home-section__divider {
+    height: 2px;
+    width: min(420px, 100%);
+    border-radius: 999px;
 
-/* Game media parity */
-.ccg-page--home
-.home-feature-card:not(.home-feature-card--video)
-.ccg-card__media {
-    margin-bottom: 12px;
+    background: linear-gradient(
+        90deg,
+        rgba(var(--accent-rgb),0.75),
+        rgba(255,41,224,0.55),
+        transparent
+    );
+
+    box-shadow: 0 0 14px rgba(var(--accent-rgb),0.28);
 }
 
 /* ============================================================
-   STARFIELD DEPTH RESTORE
+   FEATURED HIGHLIGHTS GRID — ALIGN + SHOWPIECE
 ============================================================ */
 
-.ccg-page--home .ccg-bg-starfield {
-    opacity: 0.7;
-    filter: contrast(1.15) brightness(1.1);
+html[data-ccg-page="home"] .home-highlights-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    align-items: stretch;
 }
 
-@media (max-width: 768px) {
-    .ccg-page--home .ccg-bg-starfield {
-        opacity: 0.55;
+/* Two-column on desktop */
+@media (min-width: 980px) {
+    html[data-ccg-page="home"] .home-highlights-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
     }
 }
 
+/* Ensure both cards behave as equal-height panels */
+html[data-ccg-page="home"] .home-feature-card {
+    border-radius: 18px;
+    overflow: hidden;
+
+    box-shadow:
+        0 26px 64px rgba(0,0,0,0.86),
+        0 0 26px rgba(var(--accent-rgb),0.12);
+
+    transform: translateZ(0);
+
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Media stays at top, body fills, button sits consistently */
+html[data-ccg-page="home"] .home-feature-card .ccg-card__media {
+    flex: 0 0 auto;
+}
+
+html[data-ccg-page="home"] .home-feature-card .ccg-card__body {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+html[data-ccg-page="home"] .home-feature-card .home-feature-card__btn,
+html[data-ccg-page="home"] .home-feature-card .home-feature-video__btn {
+    margin-top: auto; /* anchors CTA to bottom across both cards */
+}
+
+/* Video play icon presence */
+html[data-ccg-page="home"] .home-feature-video__frame {
+    position: relative;
+}
+
+html[data-ccg-page="home"] .home-feature-video__play-icon {
+    position: absolute;
+    inset: auto auto 14px 14px;
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+
+    background: rgba(0,0,0,0.45);
+    border: 1px solid rgba(255,255,255,0.10);
+
+    box-shadow:
+        0 14px 30px rgba(0,0,0,0.75),
+        0 0 18px rgba(var(--accent-rgb),0.18),
+        inset 0 0 0 1px rgba(0,0,0,0.35);
+
+    pointer-events: none;
+}
+
+html[data-ccg-page="home"] .home-feature-title {
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+}
+
 /* ============================================================
-   KEYFRAMES
+   GENRE GRID — DESTINATION GATEWAYS
+============================================================ */
+
+html[data-ccg-page="home"] .home-genre-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+@media (min-width: 760px) {
+    html[data-ccg-page="home"] .home-genre-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+    }
+}
+
+@media (min-width: 1100px) {
+    html[data-ccg-page="home"] .home-genre-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 16px;
+    }
+}
+
+html[data-ccg-page="home"] .home-genre-grid .ccg-genre-tile {
+    border-radius: 18px;
+
+    box-shadow:
+        0 20px 50px rgba(0,0,0,0.84),
+        0 0 24px rgba(var(--accent-rgb),0.10);
+
+    transition:
+        transform 0.36s var(--ccg-ease-out),
+        box-shadow 0.42s var(--ccg-ease-out);
+}
+
+html[data-ccg-page="home"] .home-genre-grid .ccg-genre-tile:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 28px 72px rgba(0,0,0,0.88),
+        0 0 30px rgba(var(--accent-rgb),0.24);
+}
+
+html[data-ccg-page="home"] .home-section__footer-link {
+    margin-top: 14px;
+    text-align: right;
+}
+
+/* ============================================================
+   SIGNATURE MOMENT — BOOT + SWEEP (HOME ONLY)
+============================================================ */
+
+html[data-ccg-page="home"] .ccg-page--home {
+    animation: home-crt-boot 1.35s cubic-bezier(.25,1,.35,1) both;
+}
+
+html[data-ccg-page="home"] .home-hero .ccg-hero--home::after {
+    content: "";
+    position: absolute;
+    inset: -40%;
+    z-index: 4;
+    pointer-events: none;
+
+    background:
+        linear-gradient(
+            120deg,
+            transparent 35%,
+            rgba(var(--accent-rgb),0.35),
+            rgba(255,41,224,0.28),
+            transparent 65%
+        );
+
+    transform: translateX(-120%) rotate(12deg);
+    opacity: 0;
+
+    animation: home-neon-sweep 1.6s ease-out 0.8s forwards;
+}
+
+/* ============================================================
+   MOTION
 ============================================================ */
 
 @keyframes home-hero-drift {
-    0%,100% { transform: scale(1.06); }
-    50% { transform: scale(1.10) translate(-10px,8px); }
+    0%, 100% { transform: scale(1.06) translate3d(0, 0, 0); opacity: 0.82; }
+    50%      { transform: scale(1.10) translate3d(-10px, 8px, 0); opacity: 0.90; }
 }
 
 @keyframes home-hero-overlay-breathe {
-    0%,100% { opacity: 0.92; }
-    50% { opacity: 1; }
+    0%, 100% { opacity: 0.90; }
+    50%      { opacity: 1; }
+}
+
+@keyframes home-tagline-sweep {
+    0%, 100% { transform: rotate(12deg) translate3d(0, 0, 0); opacity: 0.70; }
+    50%      { transform: rotate(12deg) translate3d(18px, -10px, 0); opacity: 0.88; }
+}
+
+@keyframes hero-title-shimmer {
+    from { transform: translateX(-60%); }
+    to   { transform: translateX(60%); }
+}
+
+@keyframes home-crt-boot {
+    0%   { opacity: 0; filter: brightness(0) contrast(1.2); }
+    20%  { opacity: 1; filter: brightness(0.25) contrast(1.4); }
+    45%  { filter: brightness(1.6) contrast(1.2); }
+    100% { filter: brightness(1) contrast(1); }
+}
+
+@keyframes home-neon-sweep {
+    0%   { transform: translateX(-120%) rotate(12deg); opacity: 0; }
+    20%  { opacity: 0.85; }
+    100% { transform: translateX(120%) rotate(12deg); opacity: 0; }
+}
+
+/* ============================================================
+   MOBILE TUNING
+============================================================ */
+
+@media (max-width: 768px) {
+
+    html[data-ccg-page="home"] .home-hero__inner {
+        padding: 42px 18px 40px;
+    }
+
+    html[data-ccg-page="home"] .home-hero__tagline {
+        font-size: 1rem;
+    }
+
+    html[data-ccg-page="home"] .home-hero__actions {
+        gap: 10px;
+    }
+
+    html[data-ccg-page="home"] .home-section {
+        padding: 16px 14px 18px;
+        border-radius: 16px;
+    }
+
+    html[data-ccg-page="home"] .home-hero__title:hover {
+        transform: none;
+        text-shadow:
+            0 0 14px rgba(var(--accent-rgb),0.45),
+            0 0 28px rgba(var(--accent-rgb),0.25);
+    }
+}
+
+@media (max-width: 420px) {
+    html[data-ccg-page="home"] .home-hero__title {
+        letter-spacing: 0.10em;
+    }
+
+    html[data-ccg-page="home"] .home-tagline__main {
+        font-size: 1.08rem;
+    }
 }
