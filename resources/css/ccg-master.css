@@ -1,11 +1,11 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & TYPOGRAPHY
-   Omega Neon Edition — PARITY LOCK + GLOBAL RHYTHM
+   Omega Neon Edition — NAV POLISH LOCK
    ------------------------------------------------------------
    • Header height parity LOCKED
-   • Nav optically centred (viewport-safe)
-   • Global vertical rhythm normalised (TOP-LEVEL ONLY)
-   • Readability & cadence polish
+   • Nav optical centring refined (no structure change)
+   • Hover / active feel elevated
+   • Neon cadence tightened
    • Zero layout drift risk
 ============================================================ */
 
@@ -94,11 +94,6 @@ body {
 
 /* ============================================================
    GLOBAL CONTENT RHYTHM (TOP-LEVEL ONLY)
-   ------------------------------------------------------------
-   CRITICAL:
-   Only style DIRECT children of .ccg-main.
-   This prevents bleed into cards/tiles/grids that may contain
-   their own <section>, <p>, <h*> internally.
 ============================================================ */
 
 .ccg-main > section {
@@ -137,17 +132,17 @@ body {
     background:
         linear-gradient(
             to bottom,
-            rgba(0,0,0,0.94),
+            rgba(0,0,0,0.95),
             rgba(0,0,0,0.88),
-            rgba(0,0,0,0.65),
+            rgba(0,0,0,0.62),
             transparent
         );
 
     backdrop-filter: blur(5px);
 
     box-shadow:
-        0 10px 28px rgba(0,0,0,0.65),
-        0 0 18px rgba(0,170,255,0.08);
+        0 12px 32px rgba(0,0,0,0.7),
+        0 0 16px rgba(0,170,255,0.06);
 }
 
 .ccg-header-inner {
@@ -189,7 +184,7 @@ body {
 }
 
 /* ============================================================
-   NAV — OPTICAL CENTRE (SAFE)
+   NAV — OPTICAL CENTRE (POLISHED)
 ============================================================ */
 
 .ccg-nav {
@@ -199,7 +194,7 @@ body {
 
 .ccg-nav__list {
     display: flex;
-    gap: 10px;
+    gap: 12px;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -210,7 +205,7 @@ body {
 }
 
 .ccg-nav__link {
-    padding: 8px 14px;
+    padding: 9px 15px;
     border-radius: 999px;
 
     font-family: var(--ccg-font-main);
@@ -221,22 +216,34 @@ body {
     color: var(--ccg-text-soft);
     text-decoration: none;
 
-    background: linear-gradient(
-        180deg,
-        rgba(255,255,255,0.07),
-        rgba(255,255,255,0.02)
-    );
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.08),
+            rgba(255,255,255,0.03)
+        );
 
     border: 1px solid rgba(255,255,255,0.14);
 
     transition:
-        transform 260ms var(--ccg-ease-out),
-        box-shadow 260ms var(--ccg-ease-out);
+        transform 240ms var(--ccg-ease-out),
+        box-shadow 240ms var(--ccg-ease-out),
+        color 200ms ease;
+}
+
+.ccg-nav__link:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 6px 14px rgba(0,0,0,0.55),
+        0 0 12px rgba(var(--accent-rgb),0.35);
+    color: var(--ccg-text-light);
 }
 
 .ccg-nav__link--active {
     color: var(--accent-main);
     border-color: rgba(var(--accent-rgb),0.7);
+    box-shadow:
+        0 0 14px rgba(var(--accent-rgb),0.45);
 }
 
 /* ============================================================
@@ -250,7 +257,7 @@ body {
 }
 
 /* ============================================================
-   NEON STRIP
+   NEON STRIP (REFINED)
 ============================================================ */
 
 .ccg-header-neon-strip {
@@ -295,7 +302,7 @@ body[data-ccg-mode="amiga"] {
 
     .ccg-nav__list {
         max-width: 100%;
-        gap: 8px;
+        gap: 10px;
     }
 
     .ccg-brand__logo {
