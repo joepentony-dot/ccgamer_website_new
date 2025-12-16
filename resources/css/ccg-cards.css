@@ -1,6 +1,11 @@
 /* ============================================================
    CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM
-   Phase P35 — HOME MASTER TILE CONTRACT (INDEX UNITY)
+   Phase P36 — VISUAL POLISH & MOTION CALM
+   ------------------------------------------------------------
+   Scope:
+   • Visual refinement only
+   • Preserves all thumbnail & context contracts
+   • Zero JS or layout impact
 ============================================================ */
 
 /* ============================================================
@@ -12,25 +17,31 @@
 .ccg-genre-tile,
 .ccg-feature-card {
     position: relative;
-    background: radial-gradient(circle at top, rgba(40,40,80,.55), rgba(0,0,0,.92));
+    background:
+        radial-gradient(
+            circle at top,
+            rgba(42,42,84,0.55),
+            rgba(0,0,0,0.92)
+        );
+
     border-radius: 14px;
-    border: 1px solid rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,0.08);
     overflow: hidden;
 
     box-shadow:
-        0 6px 14px rgba(0,0,0,.75),
-        0 0 12px rgba(var(--accent-rgb), 0.08);
+        0 6px 14px rgba(0,0,0,0.72),
+        0 0 12px rgba(var(--accent-rgb), 0.06);
 
     transition:
-        transform 0.32s var(--ccg-ease-out),
-        box-shadow 0.38s var(--ccg-ease-out),
+        transform 0.36s var(--ccg-ease-out),
+        box-shadow 0.42s var(--ccg-ease-out),
         border-color 0.32s ease;
 
     will-change: transform, box-shadow;
 }
 
 /* ============================================================
-   HOVER / FOCUS — UNIFIED MOTION
+   HOVER / FOCUS — UNIFIED MOTION LANGUAGE
 ============================================================ */
 
 .ccg-game-card:hover,
@@ -41,29 +52,29 @@
 .ccg-card:focus-within,
 .ccg-genre-tile:focus-within,
 .ccg-feature-card:focus-within {
-    transform: translateY(-6px);
+    transform: translateY(-5px);
 
     box-shadow:
-        0 18px 38px rgba(0,0,0,.85),
-        0 0 28px rgba(var(--accent-rgb), 0.32);
+        0 16px 34px rgba(0,0,0,0.82),
+        0 0 26px rgba(var(--accent-rgb), 0.28);
 
-    border-color: rgba(var(--accent-rgb), 0.35);
+    border-color: rgba(var(--accent-rgb), 0.32);
 }
 
 /* ============================================================
-   MODE AWARE GLOW BALANCE
+   MODE-AWARE GLOW BALANCE (FEATURED ONLY)
 ============================================================ */
 
 body[data-ccg-mode="c64"] .ccg-feature-card:hover {
     box-shadow:
-        0 18px 36px rgba(0,0,0,.85),
-        0 0 26px rgba(0,170,255,.28);
+        0 16px 32px rgba(0,0,0,0.82),
+        0 0 24px rgba(0,170,255,0.26);
 }
 
 body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
     box-shadow:
-        0 18px 40px rgba(0,0,0,.88),
-        0 0 34px rgba(255,41,224,.38);
+        0 16px 36px rgba(0,0,0,0.86),
+        0 0 30px rgba(255,41,224,0.34);
 }
 
 /* ============================================================
@@ -79,8 +90,8 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
 /* Keep hover slightly calmer so it never dominates */
 .home-highlights-grid > .home-feature-card--video:hover {
     box-shadow:
-        0 16px 32px rgba(0,0,0,.85),
-        0 0 22px rgba(var(--accent-rgb), 0.26);
+        0 14px 30px rgba(0,0,0,0.82),
+        0 0 22px rgba(var(--accent-rgb), 0.24);
 }
 
 /* ============================================================
@@ -88,30 +99,33 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
 ============================================================ */
 
 @media (max-width: 768px) {
+
     .ccg-feature-card:hover {
         transform: none;
     }
 
     .ccg-feature-card:active {
-        transform: scale(0.985);
+        transform: scale(0.988);
         box-shadow:
-            0 10px 22px rgba(0,0,0,.85),
-            0 0 18px rgba(var(--accent-rgb), 0.28);
+            0 10px 22px rgba(0,0,0,0.82),
+            0 0 18px rgba(var(--accent-rgb), 0.26);
     }
 }
 
 /* ======================================================================
    HOME MASTER TILE CONTRACT — APPLIED TO INDEX PAGES (UNITY)
-   - Mirrors HOME genre tiles (16:9 + object-fit:contain + caption body)
-   - Affects ONLY:
-       • games/genres/index.html
-       • games/collections/index.html
-   - Does NOT affect Home (frozen), game cards, featured cards, single pages
+   ----------------------------------------------------------
+   Mirrors HOME genre tiles:
+   • 16:9
+   • object-fit: contain
+   • caption body
+   Applies ONLY to:
+   • games/genres/index.html
+   • games/collections/index.html
 ====================================================================== */
 
 /* -----------------------------
    GENRES INDEX (static tiles)
-   Markup: <a class="ccg-card ccg-genre-card"><img><span>Title</span></a>
 ------------------------------ */
 
 .ccg-page--genres-index .ccg-genre-grid .ccg-card.ccg-genre-card {
@@ -124,38 +138,34 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
     justify-content: flex-start;
 }
 
-.ccg-page--genres-index .ccg-genre-grid .ccg-card.ccg-genre-card > img {
+.ccg-page--genres-index .ccg-genre-grid
+.ccg-card.ccg-genre-card > img {
     width: 100%;
     aspect-ratio: 16 / 9;
-    overflow: hidden;
-    position: relative;
-    flex-shrink: 0;
-
     display: block;
-    object-fit: contain;     /* HOME MASTER */
-    object-position: center; /* HOME MASTER */
+
+    object-fit: contain;
+    object-position: center;
 }
 
-.ccg-page--genres-index .ccg-genre-grid .ccg-card.ccg-genre-card > span {
+.ccg-page--genres-index .ccg-genre-grid
+.ccg-card.ccg-genre-card > span {
     padding: 12px 14px 14px;
     text-align: left;
 
-    font-size: 0.85rem;      /* HOME MASTER */
-    letter-spacing: 0.08em;  /* HOME MASTER */
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
 
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 
-    position: static;
-    inset: auto;
     background: none;
-    border-radius: 0;
 }
 
 /* -----------------------------
    COLLECTIONS INDEX (dynamic cards)
-   We support both common patterns:
+   Supports:
    A) .ccg-card__thumb img
    B) direct child <img>
 ------------------------------ */
@@ -170,32 +180,29 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
     justify-content: flex-start;
 }
 
-/* Pattern A: thumb wrapper exists */
+/* Pattern A */
 .ccg-page--collections-index .ccg-card .ccg-card__thumb {
     width: 100%;
     aspect-ratio: 16 / 9;
     overflow: hidden;
-    position: relative;
-    flex-shrink: 0;
 }
 
-.ccg-page--collections-index .ccg-card .ccg-card__thumb img {
+.ccg-page--collections-index
+.ccg-card .ccg-card__thumb img {
     width: 100%;
     height: 100%;
     display: block;
-    object-fit: contain;     /* HOME MASTER */
-    object-position: center; /* HOME MASTER */
+
+    object-fit: contain;
+    object-position: center;
 }
 
-/* Pattern B: direct image child */
+/* Pattern B */
 .ccg-page--collections-index .ccg-card > img {
     width: 100%;
     aspect-ratio: 16 / 9;
-    overflow: hidden;
-    position: relative;
-    flex-shrink: 0;
-
     display: block;
-    object-fit: contain;     /* HOME MASTER */
-    object-position: center; /* HOME MASTER */
+
+    object-fit: contain;
+    object-position: center;
 }
