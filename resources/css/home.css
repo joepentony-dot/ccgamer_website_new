@@ -1,251 +1,537 @@
 /* ============================================================
-   HOME.CSS — OMEGA CINEMATIC (LOCKED HOME CONTRACT)
-   RHYTHM & CADENCE PASS — VISUAL ONLY
-   + MOBILE-FIRST SPACING AUDIT
+   HOME.CSS — OMEGA CINEMATIC SHOWPIECE (FLAGSHIP)
    ------------------------------------------------------------
-   Goals:
-   ✅ Improve vertical rhythm & breathing room
-   ✅ Mobile-first tightening (≤768px)
-   ✅ Preserve all existing layout contracts
-   ✅ Zero impact on JS, loaders, thumbnails or cards
+   Scope:
+   • HOME ONLY (scoped via .ccg-page--home)
+   • Massive “WOW” factor through depth, hierarchy, ceremony
+   • Zero JS changes
+   • Zero HTML changes
+   • No impact on other pages
 ============================================================ */
 
 /* ============================================================
-   SAFE PAGE SCOPE
+   HOME MAIN WRAPPER
 ============================================================ */
 
-.ccg-page--home .home-section,
-.ccg-page--home .home-hero,
-.ccg-page--home .home-tagline {
-    position: relative;
-    z-index: 1;
+.ccg-page--home .ccg-main--home {
+    padding-top: 18px;
+    padding-bottom: 26px;
 }
 
 /* ============================================================
-   HERO (LIGHT TOUCH — relies on global/hero CSS)
+   HERO STAGE — THE TITLE SCREEN MOMENT
 ============================================================ */
 
 .ccg-page--home .home-hero {
-    width: 100%;
-    margin-top: 16px;
+    position: relative;
+    margin-top: 12px;
     margin-bottom: 22px;
 }
 
-/* prevent accidental collapse */
-.ccg-page--home .home-hero .ccg-hero {
-    min-height: 220px;
+/* The hero “stage” container */
+.ccg-page--home .home-hero .ccg-hero.ccg-hero--home {
+    position: relative;
+    border-radius: 22px;
+    overflow: hidden;
+    isolation: isolate;
+
+    background:
+        radial-gradient(circle at top left, rgba(var(--accent-rgb),0.22), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(255,41,224,0.16), transparent 60%),
+        linear-gradient(140deg, rgba(0,0,0,0.82), rgba(5,5,18,0.78), rgba(0,0,0,0.86));
+
+    box-shadow:
+        0 34px 88px rgba(0,0,0,0.88),
+        0 0 28px rgba(var(--accent-rgb),0.14),
+        inset 0 0 0 1px rgba(255,255,255,0.06);
 }
 
-/* ============================================================
-   TAGLINE STRIP
-============================================================ */
+/* Cinematic edge glow ring */
+.ccg-page--home .home-hero .ccg-hero.ccg-hero--home::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
 
-.ccg-page--home .home-tagline {
-    width: 100%;
-    margin: 14px 0 28px;
-    padding: 16px 0;
+    background:
+        radial-gradient(circle at 30% 10%, rgba(var(--accent-rgb),0.10), transparent 46%),
+        radial-gradient(circle at 70% 90%, rgba(255,41,224,0.10), transparent 52%),
+        linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,0.58));
+
+    opacity: 1;
+    animation: home-hero-overlay-breathe 18s ease-in-out infinite;
+}
+
+/* Backplate “image” layer that home-dynamic.js can target */
+.ccg-page--home .ccg-hero-image {
+    position: absolute;
+    inset: -8%;
+    z-index: 0;
+    pointer-events: none;
+
+    /* fallback cinematic texture (no external image dependency) */
+    background:
+        radial-gradient(circle at 35% 25%, rgba(255,255,255,0.06), transparent 55%),
+        radial-gradient(circle at 70% 65%, rgba(var(--accent-rgb),0.10), transparent 62%),
+        linear-gradient(120deg, rgba(0,0,0,0.10), rgba(0,0,0,0.70));
+
+    filter: saturate(1.1) contrast(1.08);
+    transform: scale(1.06);
+    opacity: 0.85;
+
+    animation: home-hero-drift 26s ease-in-out infinite;
+}
+
+/* Scanlines layer (exists in HTML) */
+.ccg-page--home .ccg-hero-scanlines {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.035),
+            rgba(255,255,255,0.035) 1px,
+            transparent 1px,
+            transparent 4px
+        );
+
+    opacity: 0.18;
+    mix-blend-mode: overlay;
+}
+
+/* Inner content */
+.ccg-page--home .home-hero__inner {
+    position: relative;
+    z-index: 3;
+
+    padding: 56px 46px 52px;
+    text-align: left;
+}
+
+/* Mode line = “system panel readout” */
+.ccg-page--home .home-hero__mode-line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.ccg-page--home .home-hero__mode-label {
+    font-family: var(--ccg-font-main);
+    font-size: 0.76rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ccg-text-soft);
+    opacity: 0.95;
+
+    padding: 8px 12px;
+    border-radius: 999px;
+
+    background: rgba(0,0,0,0.42);
+    border: 1px solid rgba(255,255,255,0.08);
+
+    box-shadow:
+        0 10px 22px rgba(0,0,0,0.65),
+        inset 0 0 0 1px rgba(0,0,0,0.35);
+}
+
+.ccg-page--home .home-hero__sub-label {
+    font-family: var(--ccg-font-main);
+    font-size: 0.76rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(232,236,255,0.82);
+    opacity: 0.95;
+}
+
+/* Title = the “holy sh*t” moment */
+.ccg-page--home .home-hero__title {
+    margin: 0 0 14px;
+    font-family: var(--ccg-font-main);
+    font-weight: 700;
+
+    font-size: clamp(1.6rem, 3.2vw, 3.05rem);
+    line-height: 1.08;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+
+    color: rgba(232,236,255,0.98);
+
+    text-shadow:
+        0 18px 52px rgba(0,0,0,0.82),
+        0 0 22px rgba(var(--accent-rgb),0.22);
+}
+
+/* Tagline feels like a cinematic inscription */
+.ccg-page--home .home-hero__tagline {
+    margin: 0 0 22px;
+    max-width: 64ch;
+
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: rgba(232,236,255,0.86);
+
+    text-shadow:
+        0 10px 32px rgba(0,0,0,0.72);
+}
+
+/* Actions = command console */
+.ccg-page--home .home-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+/* Make hero buttons feel premium, without touching global button CSS */
+.ccg-page--home .home-hero__btn {
+    position: relative;
+    padding: 12px 16px;
+    border-radius: 14px;
+
+    box-shadow:
+        0 16px 38px rgba(0,0,0,0.78),
+        0 0 18px rgba(var(--accent-rgb),0.20),
+        inset 0 0 0 1px rgba(255,255,255,0.06);
+
+    transform: translateZ(0);
+    transition:
+        transform 0.32s var(--ccg-ease-out),
+        box-shadow 0.42s var(--ccg-ease-out),
+        filter 0.32s ease;
+}
+
+.ccg-page--home .home-hero__btn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 22px 54px rgba(0,0,0,0.82),
+        0 0 26px rgba(var(--accent-rgb),0.34),
+        inset 0 0 0 1px rgba(var(--accent-rgb),0.16);
+    filter: brightness(1.06);
+}
+
+.ccg-page--home .home-hero__btn:active {
+    transform: translateY(-1px) scale(0.992);
+}
+
+.ccg-page--home .home-hero__tip {
+    margin: 18px 0 0;
+    font-size: 0.9rem;
+    color: rgba(232,236,255,0.74);
     opacity: 0.95;
 }
 
 /* ============================================================
-   FEATURED HIGHLIGHTS — DESKTOP SPLIT LOCK
+   TAGLINE STRIP — “ARCADE INSCRIPTION”
 ============================================================ */
 
-.ccg-page--home .home-section--highlights {
-    width: 100%;
-    margin: 18px 0 42px;
+.ccg-page--home .home-tagline {
+    margin: 18px 0 30px;
+    padding: 16px 18px;
+
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            120deg,
+            rgba(0,0,0,0.72),
+            rgba(20,20,42,0.60),
+            rgba(0,0,0,0.72)
+        );
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    box-shadow:
+        0 18px 46px rgba(0,0,0,0.80),
+        0 0 22px rgba(var(--accent-rgb),0.12);
+
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+    isolation: isolate;
 }
 
-/* Section header rhythm */
+.ccg-page--home .home-tagline::after {
+    content: "";
+    position: absolute;
+    inset: -40%;
+    pointer-events: none;
+    z-index: 0;
+
+    background:
+        radial-gradient(circle at 30% 30%, rgba(var(--accent-rgb),0.12), transparent 52%),
+        radial-gradient(circle at 70% 70%, rgba(255,41,224,0.10), transparent 55%);
+
+    transform: rotate(12deg);
+    opacity: 0.8;
+    animation: home-tagline-sweep 22s ease-in-out infinite;
+}
+
+.ccg-page--home .home-tagline__kicker,
+.ccg-page--home .home-tagline__main {
+    position: relative;
+    z-index: 1;
+}
+
+.ccg-page--home .home-tagline__kicker {
+    margin: 0 0 6px;
+    font-family: var(--ccg-font-main);
+    font-size: 0.82rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(232,236,255,0.70);
+}
+
+.ccg-page--home .home-tagline__main {
+    margin: 0;
+    font-family: var(--ccg-font-main);
+    font-size: 1.25rem;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+
+    color: rgba(232,236,255,0.96);
+
+    text-shadow:
+        0 0 18px rgba(var(--accent-rgb),0.20),
+        0 16px 42px rgba(0,0,0,0.75);
+}
+
+/* ============================================================
+   HOME SECTIONS — MUSEUM FRAMING
+============================================================ */
+
+.ccg-page--home .home-section {
+    margin: 0 0 34px;
+    padding: 18px 18px 22px;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(0,0,0,0.62),
+            rgba(0,0,0,0.76)
+        );
+
+    border: 1px solid rgba(255,255,255,0.07);
+
+    box-shadow:
+        0 22px 58px rgba(0,0,0,0.82),
+        0 0 20px rgba(var(--accent-rgb),0.08);
+
+    position: relative;
+    isolation: isolate;
+}
+
 .ccg-page--home .home-section__header {
-    margin-bottom: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
 }
 
 .ccg-page--home .home-section__title {
-    margin-bottom: 10px;
+    margin: 0;
+
+    font-family: var(--ccg-font-main);
+    font-size: clamp(1.15rem, 1.6vw, 1.55rem);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+
+    color: rgba(232,236,255,0.94);
+
+    text-shadow:
+        0 0 18px rgba(var(--accent-rgb),0.18),
+        0 14px 40px rgba(0,0,0,0.72);
 }
 
 .ccg-page--home .home-section__divider {
-    margin-bottom: 6px;
+    height: 2px;
+    width: min(420px, 100%);
+    border-radius: 999px;
+
+    background: linear-gradient(
+        90deg,
+        rgba(var(--accent-rgb),0.75),
+        rgba(255,41,224,0.55),
+        transparent
+    );
+
+    box-shadow:
+        0 0 14px rgba(var(--accent-rgb),0.28);
 }
 
-/* Base: stacked */
+/* ============================================================
+   FEATURED HIGHLIGHTS GRID — SHOWPIECE CARDS
+============================================================ */
+
 .ccg-page--home .home-highlights-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 26px;
-    align-items: start;
+    gap: 16px;
+    align-items: stretch;
 }
 
-/* Desktop split */
+/* Two-column on desktop */
 @media (min-width: 980px) {
     .ccg-page--home .home-highlights-grid {
         grid-template-columns: 1fr 1fr;
-        gap: 30px;
-        align-items: stretch;
+        gap: 18px;
     }
 }
 
-/* Cards behave identically */
-.ccg-page--home .home-highlights-grid > .home-feature-card {
-    width: 100%;
-    max-width: none;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-self: stretch;
+/* Keep the video column contained (matches your ccg-cards isolation intent) */
+.ccg-page--home .home-highlights-grid > .home-feature-card--video {
+    max-width: 760px;
+    margin-inline: auto;
 }
 
-/* Media lock — 16:9 always */
-.ccg-page--home .home-feature-card .ccg-card__media,
+/* Give highlight cards extra authority, scoped to HOME only */
+.ccg-page--home .home-feature-card {
+    border-radius: 18px;
+    overflow: hidden;
+
+    box-shadow:
+        0 26px 64px rgba(0,0,0,0.86),
+        0 0 26px rgba(var(--accent-rgb),0.12);
+
+    transform: translateZ(0);
+}
+
+/* Video play icon presence (if your CSS defines the icon shape elsewhere, this still helps framing) */
 .ccg-page--home .home-feature-video__frame {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-    border-radius: 14px;
-}
-
-/* Image behaviour */
-.ccg-page--home .home-feature-card .ccg-card__media img,
-.ccg-page--home .home-feature-video__frame img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: cover;
-    object-position: center;
-}
-
-/* ============================================================
-   FINAL DESKTOP VISUAL BALANCE (COSMETIC ONLY)
-============================================================ */
-
-@media (min-width: 1024px) {
-
-    .ccg-page--home .home-feature-card--video .home-feature-video__frame {
-        max-height: 360px;
-    }
-
-    .ccg-page--home .home-feature-card--video .home-feature-video__frame {
-        padding: 12px;
-        box-sizing: border-box;
-    }
-
-    .ccg-page--home .home-feature-card--video img {
-        filter: brightness(0.92) contrast(0.95);
-    }
-}
-
-/* Card body consistency */
-.ccg-page--home .home-feature-card .ccg-card__body {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-/* Button alignment */
-.ccg-page--home .home-feature-card__btn {
-    margin-top: 8px;
-    align-self: flex-start;
-}
-
-/* ============================================================
-   HOME GENRE GRID (PERMANENT CONTRACT — UNCHANGED)
-============================================================ */
-
-.home-section {
-    width: 100%;
     position: relative;
 }
 
-.home-genre-grid {
+.ccg-page--home .home-feature-video__play-icon {
+    position: absolute;
+    inset: auto auto 14px 14px;
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+
+    background: rgba(0,0,0,0.45);
+    border: 1px solid rgba(255,255,255,0.10);
+
+    box-shadow:
+        0 14px 30px rgba(0,0,0,0.75),
+        0 0 18px rgba(var(--accent-rgb),0.18),
+        inset 0 0 0 1px rgba(0,0,0,0.35);
+
+    pointer-events: none;
+}
+
+/* Titles inside feature cards feel “headline” */
+.ccg-page--home .home-feature-title {
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+}
+
+/* ============================================================
+   GENRE GRID — DESTINATION GATEWAYS
+============================================================ */
+
+.ccg-page--home .home-genre-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 32px;
-    align-items: start;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
 }
 
-.home-genre-grid .ccg-genre-tile {
-    max-width: 360px;
-    margin: 0 auto;
-    height: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+@media (min-width: 760px) {
+    .ccg-page--home .home-genre-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+    }
 }
 
-.home-genre-grid .ccg-genre-tile__thumb {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-    position: relative;
-    flex-shrink: 0;
+@media (min-width: 1100px) {
+    .ccg-page--home .home-genre-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 16px;
+    }
 }
 
-.home-genre-grid .ccg-genre-tile__thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: center;
-    display: block;
+/* Home tiles get “destination” framing without breaking tile isolation rules */
+.ccg-page--home .home-genre-grid .ccg-genre-tile {
+    border-radius: 18px;
+
+    box-shadow:
+        0 20px 50px rgba(0,0,0,0.84),
+        0 0 24px rgba(var(--accent-rgb),0.10);
+
+    transition:
+        transform 0.36s var(--ccg-ease-out),
+        box-shadow 0.42s var(--ccg-ease-out);
 }
 
-.home-genre-grid .ccg-genre-tile__body {
-    padding: 14px 16px 16px;
-    text-align: left;
+.ccg-page--home .home-genre-grid .ccg-genre-tile:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 28px 72px rgba(0,0,0,0.88),
+        0 0 30px rgba(var(--accent-rgb),0.24);
 }
 
-.home-genre-grid .ccg-genre-tile__title {
-    font-size: 0.85rem;
-    letter-spacing: 0.08em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.home-genre-grid .ccg-genre-tile:hover {
-    transform: translateY(-3px);
+/* Footer link at end of section */
+.ccg-page--home .home-section__footer-link {
+    margin-top: 14px;
+    text-align: right;
 }
 
 /* ============================================================
-   MOBILE-FIRST SPACING AUDIT (≤768px)
-   Small, cosmetic-only tightening
+   MOBILE TUNING — KEEP WOW, KEEP READABILITY
 ============================================================ */
 
 @media (max-width: 768px) {
 
-    .ccg-page--home .home-hero {
-        margin-bottom: 16px;
+    .ccg-page--home .home-hero__inner {
+        padding: 42px 18px 40px;
     }
 
-    .ccg-page--home .home-tagline {
-        margin: 10px 0 20px;
-        padding: 12px 0;
+    .ccg-page--home .home-hero__tagline {
+        font-size: 1rem;
     }
 
-    .ccg-page--home .home-section--highlights {
-        margin: 14px 0 32px;
+    .ccg-page--home .home-hero__actions {
+        gap: 10px;
     }
 
-    .ccg-page--home .home-section__header {
-        margin-bottom: 16px;
-    }
-
-    .ccg-page--home .home-highlights-grid {
-        gap: 22px;
-    }
-
-    .home-genre-grid {
-        gap: 24px;
+    .ccg-page--home .home-section {
+        padding: 16px 14px 18px;
+        border-radius: 16px;
     }
 }
 
-@media (max-width: 600px) {
-    .home-genre-grid {
-        grid-template-columns: 1fr;
-        gap: 22px;
+/* Very small phones */
+@media (max-width: 420px) {
+
+    .ccg-page--home .home-hero__title {
+        letter-spacing: 0.10em;
     }
 
-    .home-genre-grid .ccg-genre-tile {
-        max-width: 100%;
+    .ccg-page--home .home-tagline__main {
+        font-size: 1.08rem;
     }
+}
+
+/* ============================================================
+   CINEMATIC MOTION — RESTRAINED
+============================================================ */
+
+@keyframes home-hero-drift {
+    0%, 100% { transform: scale(1.06) translate3d(0, 0, 0); opacity: 0.82; }
+    50%      { transform: scale(1.10) translate3d(-10px, 8px, 0); opacity: 0.90; }
+}
+
+@keyframes home-hero-overlay-breathe {
+    0%, 100% { opacity: 0.92; }
+    50%      { opacity: 1; }
+}
+
+@keyframes home-tagline-sweep {
+    0%, 100% { transform: rotate(12deg) translate3d(0, 0, 0); opacity: 0.70; }
+    50%      { transform: rotate(12deg) translate3d(18px, -10px, 0); opacity: 0.88; }
 }
