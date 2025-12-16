@@ -288,3 +288,78 @@ img {
         padding-top: var(--ccg-space-sm);
     }
 }
+
+/* ============================================================
+   GLOBAL NAVIGATION — CINEMATIC CONTROL PASS
+   ------------------------------------------------------------
+   • Retro console-style illuminated navigation
+   • No layout changes
+   • Mode-aware glow
+============================================================ */
+
+/* Navigation link baseline upgrade */
+.ccg-nav__link {
+    position: relative;
+    padding-inline: 2px;
+    text-shadow: 0 0 0 rgba(0,0,0,0);
+}
+
+/* Power rail underline */
+.ccg-nav__link::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 2px;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(var(--accent-rgb),0.65),
+        transparent
+    );
+
+    opacity: 0;
+    transform: scaleX(0.3);
+    transition:
+        opacity 260ms ease,
+        transform 320ms cubic-bezier(.25,.8,.35,1);
+}
+
+/* Hover energise */
+.ccg-nav__link:hover::before {
+    opacity: 1;
+    transform: scaleX(1);
+}
+
+.ccg-nav__link:hover {
+    color: var(--accent-soft);
+    text-shadow:
+        0 0 8px rgba(var(--accent-rgb),0.45);
+}
+
+/* Active link — steady powered state */
+.ccg-nav__link--active {
+    color: var(--accent-main);
+    text-shadow:
+        0 0 10px rgba(var(--accent-rgb),0.65);
+}
+
+.ccg-nav__link--active::before {
+    opacity: 1;
+    transform: scaleX(1);
+    background: linear-gradient(
+        90deg,
+        rgba(var(--accent-rgb),0.35),
+        rgba(var(--accent-rgb),0.85),
+        rgba(var(--accent-rgb),0.35)
+    );
+}
+
+/* Mobile restraint */
+@media (max-width: 768px) {
+    .ccg-nav__link::before {
+        bottom: -4px;
+    }
+}
