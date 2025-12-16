@@ -743,3 +743,91 @@
     }
 }
 
+/* ============================================================
+   SIGNATURE MOMENT #2 — MODE SWITCH RECALIBRATION FLASH
+   ------------------------------------------------------------
+   • Visual system re-sync on C64 ↔ Amiga toggle
+   • Home page only
+   • Triggered via data-ccg-mode attribute change
+   • CSS-only, zero layout impact
+============================================================ */
+
+/* ------------------------------------------------------------
+   RECALIBRATION FLASH LAYER
+------------------------------------------------------------ */
+
+.ccg-page--home .home-hero .ccg-hero--home::marker {
+    display: none;
+}
+
+/* Mode transition flash */
+.ccg-page--home body[data-ccg-mode] .ccg-hero--home {
+    position: relative;
+}
+
+/* When mode changes, flash executes */
+.ccg-page--home body[data-ccg-mode="c64"] .ccg-hero--home,
+.ccg-page--home body[data-ccg-mode="amiga"] .ccg-hero--home {
+    animation: hero-mode-recalibrate 0.65s cubic-bezier(.25,.8,.35,1);
+}
+
+/* ------------------------------------------------------------
+   RECALIBRATION ANIMATION
+------------------------------------------------------------ */
+
+@keyframes hero-mode-recalibrate {
+    0% {
+        filter: brightness(0.9) contrast(1.1) saturate(1.05);
+    }
+    35% {
+        filter: brightness(1.35) contrast(1.25) saturate(1.25);
+    }
+    100% {
+        filter: brightness(1) contrast(1) saturate(1);
+    }
+}
+
+/* ------------------------------------------------------------
+   SUBTLE NEON BLOOM OVERLAY
+------------------------------------------------------------ */
+
+.ccg-page--home .ccg-hero--home::after {
+    content: "";
+    position: absolute;
+    inset: -12%;
+    z-index: 3;
+    pointer-events: none;
+    opacity: 0;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(var(--accent-rgb),0.35),
+            transparent 55%
+        );
+
+    transition: opacity 220ms ease-out;
+}
+
+/* Bloom triggers briefly during recalibration */
+.ccg-page--home body[data-ccg-mode="c64"] .ccg-hero--home::after,
+.ccg-page--home body[data-ccg-mode="amiga"] .ccg-hero--home::after {
+    opacity: 0.65;
+}
+
+/* ------------------------------------------------------------
+   MOBILE SAFETY — REDUCE INTENSITY
+------------------------------------------------------------ */
+
+@media (max-width: 768px) {
+
+    .ccg-page--home body[data-ccg-mode="c64"] .ccg-hero--home,
+    .ccg-page--home body[data-ccg-mode="amiga"] .ccg-hero--home {
+        animation-duration: 0.5s;
+    }
+
+    .ccg-page--home .ccg-hero--home::after {
+        opacity: 0.45;
+    }
+}
+
