@@ -1,7 +1,7 @@
 /* ============================================================
    CCG LOAD SINGLE GAME — STABLE RESTORE + URL SAFE IDS
    ------------------------------------------------------------
-   • Correct games.json path
+   • Correct games.json path (FIXED)
    • URL-safe ID decoding
    • FULL renderGame restored
 ============================================================ */
@@ -25,7 +25,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        const response = await fetch("games.json", { cache: "no-store" });
+        // 🔧 FIX: explicit depth-safe path
+        const response = await fetch("../games/games.json", { cache: "no-store" });
         if (!response.ok) throw new Error(`games.json ${response.status}`);
 
         const games = await response.json();
@@ -88,7 +89,7 @@ function resolveDiskUrl(game) {
 }
 
 /* ============================================================
-   RENDER GAME (RESTORED)
+   RENDER GAME
 ============================================================ */
 
 function renderGame(game) {
@@ -105,10 +106,7 @@ function renderGame(game) {
 
     const thumb = resolveGameThumb(game.thumbnail || game.thumb || game.cover);
 
-    if (heroBG) {
-        heroBG.style.backgroundImage = `url('${thumb}')`;
-    }
-
+    if (heroBG) heroBG.style.backgroundImage = `url('${thumb}')`;
     if (heroThumb) heroThumb.src = thumb;
     if (titleEl) titleEl.textContent = game.title || "Unknown";
     if (yearEl) yearEl.textContent = game.year || "—";
@@ -161,7 +159,7 @@ function renderGame(game) {
 }
 
 /* ============================================================
-   RELATED GAMES — SIMPLE & STABLE
+   RELATED GAMES
 ============================================================ */
 
 function renderRelatedGames(game, allGames) {
