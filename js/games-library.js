@@ -15,7 +15,8 @@ const THUMB_BASE_PATH = "../resources/images/thumbnails/all/";
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
-        const res = await fetch("games.json", { cache: "no-store" });
+        // 🔧 FIX: correct, depth-safe path
+        const res = await fetch("../games/games.json", { cache: "no-store" });
         if (!res.ok) throw new Error("Failed to load games.json");
 
         const games = await res.json();
@@ -135,14 +136,11 @@ function openAndScrollToLetter(letter) {
         toggleAccordionState(letter, true);
     }
 
-    group.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-    });
+    group.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 /* ============================================================
-   SEARCH BEHAVIOUR (UX POLISH ONLY)
+   SEARCH BEHAVIOUR
 ============================================================ */
 
 function wireSearch() {
@@ -169,8 +167,7 @@ function applySearch(query) {
         let groupHasMatch = false;
 
         cards.forEach(card => {
-            const text = card.textContent.toLowerCase();
-            const hit = !term || text.includes(term);
+            const hit = !term || card.textContent.toLowerCase().includes(term);
             card.style.display = hit ? "" : "none";
             if (hit) {
                 matches++;
@@ -198,15 +195,13 @@ function applySearch(query) {
         JSON.stringify([...openLetters])
     );
 
-    const resultsEl = document.getElementById("gamesResultsCount");
-    if (resultsEl) resultsEl.textContent = matches;
-
+    document.getElementById("gamesResultsCount")?.textContent = matches;
     const empty = document.getElementById("gamesEmptyState");
     if (empty) empty.hidden = matches > 0;
 }
 
 /* ============================================================
-   GAME CARD (UNCHANGED)
+   GAME CARD
 ============================================================ */
 
 function renderGameCard(game) {
@@ -237,14 +232,13 @@ function renderGameCard(game) {
 }
 
 /* ============================================================
-   THUMB RESOLUTION (UNCHANGED, PATH-SAFE)
+   THUMB RESOLUTION
 ============================================================ */
 
 function resolveGameThumb(raw) {
     if (!raw) return "";
     const filename = String(raw).replace(/^.*[\\/]/, "").trim();
-    if (!filename) return "";
-    return THUMB_BASE_PATH + filename;
+    return filename ? THUMB_BASE_PATH + filename : "";
 }
 
 /* ============================================================
