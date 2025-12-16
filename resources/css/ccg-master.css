@@ -1,11 +1,12 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & TYPOGRAPHY
-   Omega Neon Edition — GLOBAL HEADER PARITY LOCK (FINAL)
+   Omega Neon Edition — GLOBAL HEADER PARITY LOCK (FINAL+)
    ------------------------------------------------------------
    • Header fully isolated from page layout
    • Identical appearance across ALL pages
    • Intentional multi-row nav wrapping
    • Perceptual height parity (not just variable-based)
+   • NEW: Out-of-flow utility UI parity (mode toggle + socials)
    • ZERO JS / ZERO HTML changes
 ============================================================ */
 
@@ -56,6 +57,14 @@
     --ccg-header-height: 92px;
     --ccg-header-pad-y: 14px;
     --ccg-header-nav-gap: 10px;
+
+    /* 🔒 Parity: reserve a consistent right column */
+    --ccg-header-actions-width: 132px;
+
+    /* 🔒 Parity: absolute utility offsets */
+    --ccg-header-utility-right: 18px;
+    --ccg-header-utility-top: 14px;
+    --ccg-header-utility-bottom: 12px;
 }
 
 /* ============================================================
@@ -133,6 +142,9 @@ body {
     min-height: var(--ccg-header-height);
     padding-block: var(--ccg-header-pad-y);
 
+    /* Allow absolute utility UI (toggle/socials) without clipping */
+    overflow: visible;
+
     background:
         linear-gradient(
             to bottom,
@@ -158,12 +170,13 @@ body {
     margin: 0 auto;
 
     display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
 
+    /* 🔒 Parity: fixed actions column prevents nav “squeeze shift” */
+    grid-template-columns: auto 1fr var(--ccg-header-actions-width);
+
+    align-items: center;
     gap: 22px;
 
-    /* Prevent page CSS influence */
     position: relative;
 }
 
@@ -204,8 +217,6 @@ body {
 .ccg-nav {
     display: flex;
     justify-content: center;
-
-    /* Prevent vertical collapse */
     min-height: 100%;
 }
 
@@ -223,7 +234,7 @@ body {
 
     max-width: 980px;
 
-    /* 🔒 Critical: locks perceived height */
+    /* 🔒 Locks perceived nav band height */
     min-height: 52px;
 }
 
@@ -270,7 +281,50 @@ body {
 .ccg-header-actions {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 14px;
+
+    /* Keep this column stable even if children are absolute */
+    min-height: 52px;
+    position: relative;
+    z-index: 3;
+}
+
+/* ============================================================
+   GLOBAL HEADER UTILITY PARITY (CRITICAL)
+   ------------------------------------------------------------
+   Some pages place the mode toggle/socials differently in markup.
+   These rules force them OUT-OF-FLOW so they do NOT change header
+   height/centering, and so they land in the same place visually.
+============================================================ */
+
+/* Mode toggle: always pinned top-right inside header */
+.ccg-header .ccg-mode-toggle,
+.ccg-header [data-ccg-mode-toggle] {
+    position: absolute;
+    right: var(--ccg-header-utility-right);
+    top: var(--ccg-header-utility-top);
+    z-index: 5;
+}
+
+/* Any socials block that appears inside the header should NEVER
+   affect header height. (Home / Complete Index style) */
+.ccg-header .ccg-socials,
+.ccg-header .ccg-socials-bar,
+.ccg-header .ccg-header-socials {
+    position: absolute;
+    left: 18px;
+    bottom: var(--ccg-header-utility-bottom);
+    z-index: 4;
+}
+
+/* Quiz-like vertical socials: if it’s inside the header, pin it too */
+.ccg-header .ccg-socials-vertical,
+.ccg-header .ccg-socials-stack {
+    position: absolute;
+    right: var(--ccg-header-utility-right);
+    top: calc(var(--ccg-header-utility-top) + 44px);
+    z-index: 4;
 }
 
 /* ============================================================
@@ -317,6 +371,10 @@ body[data-ccg-mode="amiga"] {
     :root {
         --ccg-header-height: 86px;
         --ccg-header-pad-y: 12px;
+        --ccg-header-actions-width: 120px;
+        --ccg-header-utility-right: 14px;
+        --ccg-header-utility-top: 12px;
+        --ccg-header-utility-bottom: 10px;
     }
 
     .ccg-brand__logo {
