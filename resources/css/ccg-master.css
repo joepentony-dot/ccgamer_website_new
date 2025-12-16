@@ -1,12 +1,12 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & TYPOGRAPHY
-   Omega Neon Edition — NAV POLISH LOCK
+   Omega Neon Edition — GLOBAL HEADER PARITY LOCK (P33)
    ------------------------------------------------------------
-   • Header height parity LOCKED
-   • Nav optical centring refined (no structure change)
-   • Hover / active feel elevated
-   • Neon cadence tightened
-   • Zero layout drift risk
+   • Header height parity LOCKED (min-height via variable)
+   • Fixes “garbled” nav by allowing pill-wrapping (not text-wrapping)
+   • Uniform header rhythm across ALL pages (home + all index pages)
+   • Hover/active feel preserved + refined
+   • CSS-only, zero JS impact
 ============================================================ */
 
 :root {
@@ -129,6 +129,9 @@ body {
     position: relative;
     z-index: 9999;
 
+    /* ✅ Key parity: controlled breathing room so wrapped nav looks intentional */
+    padding: 10px 0;
+
     background:
         linear-gradient(
             to bottom,
@@ -184,7 +187,7 @@ body {
 }
 
 /* ============================================================
-   NAV — OPTICAL CENTRE (POLISHED)
+   NAV — GLOBAL PARITY (FIXES “GARBLED” PILLS)
 ============================================================ */
 
 .ccg-nav {
@@ -192,18 +195,24 @@ body {
     justify-content: center;
 }
 
+/* ✅ Critical: allow pills to wrap as pills (NOT text wrapping inside pills) */
 .ccg-nav__list {
     display: flex;
+    flex-wrap: wrap;              /* ✅ was nowrap */
+    justify-content: center;
+    align-items: center;
+
     gap: 12px;
+    row-gap: 10px;                /* ✅ makes multi-row nav look designed */
+
     list-style: none;
     margin: 0;
     padding: 0;
 
-    max-width: 920px;
-    justify-content: center;
-    flex-wrap: nowrap;
+    max-width: 1000px;
 }
 
+/* ✅ Prevent “BROWSE / GAMES” splitting inside one pill */
 .ccg-nav__link {
     padding: 9px 15px;
     border-radius: 999px;
@@ -212,6 +221,9 @@ body {
     font-size: 0.72rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
+
+    white-space: nowrap;          /* ✅ stops internal word-wrap */
+    line-height: 1.1;
 
     color: var(--ccg-text-soft);
     text-decoration: none;
@@ -257,7 +269,7 @@ body {
 }
 
 /* ============================================================
-   NEON STRIP (REFINED)
+   NEON STRIP
 ============================================================ */
 
 .ccg-header-neon-strip {
@@ -300,14 +312,20 @@ body[data-ccg-mode="amiga"] {
         --ccg-header-height: 86px;
     }
 
-    .ccg-nav__list {
-        max-width: 100%;
-        gap: 10px;
-    }
-
     .ccg-brand__logo {
         width: 44px;
         height: 44px;
+    }
+
+    .ccg-nav__list {
+        max-width: 100%;
+        gap: 10px;
+        row-gap: 8px;
+    }
+
+    .ccg-nav__link {
+        font-size: 0.70rem;
+        padding: 8px 13px;
     }
 
     .ccg-main > section {
