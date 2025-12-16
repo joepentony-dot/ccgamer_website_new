@@ -1,12 +1,12 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & TYPOGRAPHY
-   Omega Neon Edition — GLOBAL HEADER PARITY LOCK (P33)
+   Omega Neon Edition — GLOBAL HEADER PARITY LOCK (FINAL)
    ------------------------------------------------------------
-   • Header height parity LOCKED (min-height via variable)
-   • Fixes “garbled” nav by allowing pill-wrapping (not text-wrapping)
-   • Uniform header rhythm across ALL pages (home + all index pages)
-   • Hover/active feel preserved + refined
-   • CSS-only, zero JS impact
+   • Header fully isolated from page layout
+   • Identical appearance across ALL pages
+   • Intentional multi-row nav wrapping
+   • Perceptual height parity (not just variable-based)
+   • ZERO JS / ZERO HTML changes
 ============================================================ */
 
 :root {
@@ -41,7 +41,7 @@
     --ccg-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 
     /* ========================================================
-       GLOBAL RHYTHM (LOCKED SCALE)
+       GLOBAL RHYTHM
     ======================================================== */
     --ccg-space-xxs: 6px;
     --ccg-space-xs: 10px;
@@ -50,8 +50,12 @@
     --ccg-space-lg: 36px;
     --ccg-space-xl: 56px;
 
-    /* 🔒 Header contract */
+    /* ========================================================
+       HEADER — FINAL LOCK
+    ======================================================== */
     --ccg-header-height: 92px;
+    --ccg-header-pad-y: 14px;
+    --ccg-header-nav-gap: 10px;
 }
 
 /* ============================================================
@@ -114,39 +118,40 @@ body {
     color: var(--ccg-text-light);
 }
 
-.ccg-main > section > p + p {
-    margin-top: var(--ccg-space-xs);
-}
-
 /* ============================================================
-   HEADER — PARITY LOCKED
+   HEADER — GLOBAL PARITY CONTAINER (ISOLATED)
 ============================================================ */
 
 .ccg-header {
-    min-height: var(--ccg-header-height);
-    display: flex;
-    align-items: center;
     position: relative;
     z-index: 9999;
 
-    /* ✅ Key parity: controlled breathing room so wrapped nav looks intentional */
-    padding: 10px 0;
+    isolation: isolate; /* 🔒 critical */
+    display: flex;
+    align-items: center;
+
+    min-height: var(--ccg-header-height);
+    padding-block: var(--ccg-header-pad-y);
 
     background:
         linear-gradient(
             to bottom,
-            rgba(0,0,0,0.95),
+            rgba(0,0,0,0.96),
             rgba(0,0,0,0.88),
-            rgba(0,0,0,0.62),
+            rgba(0,0,0,0.65),
             transparent
         );
 
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(6px);
 
     box-shadow:
-        0 12px 32px rgba(0,0,0,0.7),
-        0 0 16px rgba(0,170,255,0.06);
+        0 10px 28px rgba(0,0,0,0.65),
+        0 0 18px rgba(0,170,255,0.08);
 }
+
+/* ============================================================
+   HEADER INNER — LAYOUT LOCK
+============================================================ */
 
 .ccg-header-inner {
     width: min(1320px, 96%);
@@ -155,7 +160,11 @@ body {
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: center;
+
     gap: 22px;
+
+    /* Prevent page CSS influence */
+    position: relative;
 }
 
 /* ============================================================
@@ -166,6 +175,7 @@ body {
     display: flex;
     align-items: center;
     gap: 14px;
+
     white-space: nowrap;
     text-decoration: none;
 }
@@ -173,6 +183,7 @@ body {
 .ccg-brand__logo {
     width: 48px;
     height: 48px;
+    flex-shrink: 0;
 }
 
 .ccg-brand__kicker {
@@ -187,34 +198,41 @@ body {
 }
 
 /* ============================================================
-   NAV — GLOBAL PARITY (FIXES “GARBLED” PILLS)
+   NAV — PARITY LOCK (KEY FIX)
 ============================================================ */
 
 .ccg-nav {
     display: flex;
     justify-content: center;
+
+    /* Prevent vertical collapse */
+    min-height: 100%;
 }
 
-/* ✅ Critical: allow pills to wrap as pills (NOT text wrapping inside pills) */
 .ccg-nav__list {
     display: flex;
-    flex-wrap: wrap;              /* ✅ was nowrap */
+    flex-wrap: wrap;
     justify-content: center;
-    align-items: center;
+    align-content: center;
 
-    gap: 12px;
-    row-gap: 10px;                /* ✅ makes multi-row nav look designed */
+    gap: var(--ccg-header-nav-gap);
 
     list-style: none;
     margin: 0;
     padding: 0;
 
-    max-width: 1000px;
+    max-width: 980px;
+
+    /* 🔒 Critical: locks perceived height */
+    min-height: 52px;
 }
 
-/* ✅ Prevent “BROWSE / GAMES” splitting inside one pill */
 .ccg-nav__link {
-    padding: 9px 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 8px 14px;
     border-radius: 999px;
 
     font-family: var(--ccg-font-main);
@@ -222,44 +240,31 @@ body {
     letter-spacing: 0.12em;
     text-transform: uppercase;
 
-    white-space: nowrap;          /* ✅ stops internal word-wrap */
-    line-height: 1.1;
-
     color: var(--ccg-text-soft);
     text-decoration: none;
 
     background:
         linear-gradient(
             180deg,
-            rgba(255,255,255,0.08),
-            rgba(255,255,255,0.03)
+            rgba(255,255,255,0.07),
+            rgba(255,255,255,0.02)
         );
 
     border: 1px solid rgba(255,255,255,0.14);
 
     transition:
-        transform 240ms var(--ccg-ease-out),
-        box-shadow 240ms var(--ccg-ease-out),
+        transform 260ms var(--ccg-ease-out),
+        box-shadow 260ms var(--ccg-ease-out),
         color 200ms ease;
-}
-
-.ccg-nav__link:hover {
-    transform: translateY(-2px);
-    box-shadow:
-        0 6px 14px rgba(0,0,0,0.55),
-        0 0 12px rgba(var(--accent-rgb),0.35);
-    color: var(--ccg-text-light);
 }
 
 .ccg-nav__link--active {
     color: var(--accent-main);
     border-color: rgba(var(--accent-rgb),0.7);
-    box-shadow:
-        0 0 14px rgba(var(--accent-rgb),0.45);
 }
 
 /* ============================================================
-   HEADER ACTIONS
+   HEADER ACTIONS (MODE TOGGLE)
 ============================================================ */
 
 .ccg-header-actions {
@@ -277,6 +282,7 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
+
     height: 2px;
 
     background:
@@ -304,12 +310,13 @@ body[data-ccg-mode="amiga"] {
 }
 
 /* ============================================================
-   MOBILE — STILL SAFE
+   MOBILE — STILL IDENTICAL BEHAVIOUR
 ============================================================ */
 
 @media (max-width: 768px) {
     :root {
         --ccg-header-height: 86px;
+        --ccg-header-pad-y: 12px;
     }
 
     .ccg-brand__logo {
@@ -318,14 +325,8 @@ body[data-ccg-mode="amiga"] {
     }
 
     .ccg-nav__list {
-        max-width: 100%;
-        gap: 10px;
-        row-gap: 8px;
-    }
-
-    .ccg-nav__link {
-        font-size: 0.70rem;
-        padding: 8px 13px;
+        gap: 8px;
+        min-height: 48px;
     }
 
     .ccg-main > section {
