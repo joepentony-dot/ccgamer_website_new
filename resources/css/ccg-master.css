@@ -4,7 +4,7 @@
    ------------------------------------------------------------
    • Header height parity LOCKED
    • Nav optically centred (viewport-safe)
-   • Global vertical rhythm normalised
+   • Global vertical rhythm normalised (TOP-LEVEL ONLY)
    • Readability & cadence polish
    • Zero layout drift risk
 ============================================================ */
@@ -93,28 +93,33 @@ body {
 }
 
 /* ============================================================
-   GLOBAL CONTENT RHYTHM
+   GLOBAL CONTENT RHYTHM (TOP-LEVEL ONLY)
+   ------------------------------------------------------------
+   CRITICAL:
+   Only style DIRECT children of .ccg-main.
+   This prevents bleed into cards/tiles/grids that may contain
+   their own <section>, <p>, <h*> internally.
 ============================================================ */
 
-.ccg-main section {
+.ccg-main > section {
     margin-bottom: var(--ccg-space-xl);
 }
 
-.ccg-main h1,
-.ccg-main h2,
-.ccg-main h3 {
+.ccg-main > section > h1,
+.ccg-main > section > h2,
+.ccg-main > section > h3 {
     font-family: var(--ccg-font-main);
     line-height: 1.25;
     margin: 0 0 var(--ccg-space-sm) 0;
 }
 
-.ccg-main p {
+.ccg-main > section > p {
     margin: 0 0 var(--ccg-space-sm) 0;
     max-width: 78ch;
     color: var(--ccg-text-light);
 }
 
-.ccg-main p + p {
+.ccg-main > section > p + p {
     margin-top: var(--ccg-space-xs);
 }
 
@@ -298,7 +303,7 @@ body[data-ccg-mode="amiga"] {
         height: 44px;
     }
 
-    .ccg-main section {
+    .ccg-main > section {
         margin-bottom: var(--ccg-space-lg);
     }
 }
