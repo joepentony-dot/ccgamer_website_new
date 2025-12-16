@@ -11,7 +11,7 @@
 
     <link rel="icon" href="../favicon.ico">
 
-    <!-- REQUIRED FONT RESTORE (Orbitron + Roboto) -->
+    <!-- REQUIRED FONTS -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     <!-- GLOBAL CSS -->
@@ -27,13 +27,13 @@
     <!-- PAGE CSS -->
     <link rel="stylesheet" href="../resources/css/games.css">
 
-    <!-- FOOTER CSS (ISOLATED) -->
+    <!-- FOOTER -->
     <link rel="stylesheet" href="../resources/css/ccg-footer.css">
 </head>
 
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
 
-    <!-- GLOBAL BACKGROUND LAYERS -->
+    <!-- GLOBAL BACKGROUND -->
     <div class="ccg-bg">
         <div class="ccg-bg-starfield"></div>
         <div class="ccg-bg-grid"></div>
@@ -113,11 +113,55 @@
             <div class="ccg-header-neon-strip"></div>
         </header>
 
-        <!-- MAIN -->
+        <!-- MAIN CONTENT -->
         <main class="ccg-main ccg-main--single-game">
-            <!-- (content unchanged) -->
+
+            <!-- HERO -->
+            <section class="game-hero">
+                <div id="gameHeroBG" class="game-hero__bg"></div>
+
+                <div class="game-hero__inner">
+                    <h1 id="gameHeroTitle"></h1>
+
+                    <div class="game-meta">
+                        <span id="gameMetaYear"></span> ·
+                        <span id="gameMetaSystem"></span> ·
+                        <span id="gameMetaDeveloper"></span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DESCRIPTION -->
+            <section id="game-description-section" hidden>
+                <p id="gameDescription"></p>
+            </section>
+
+            <!-- VIDEO -->
+            <section id="game-video-section" hidden>
+                <iframe id="game-video-embed"
+                        loading="lazy"
+                        allowfullscreen></iframe>
+
+                <a id="gameVideoBtn" class="ccg-btn" target="_blank" hidden>
+                    Watch on YouTube
+                </a>
+            </section>
+
+            <!-- ACTION BUTTONS -->
+            <section class="game-actions">
+                <a id="gameManualBtn" class="ccg-btn" target="_blank" hidden>Manual</a>
+                <a id="gameDiskBtn" class="ccg-btn" target="_blank" hidden>Play / Download</a>
+            </section>
+
+            <!-- RELATED GAMES -->
+            <section class="game-section game-section--related">
+                <h2 class="game-section__title">Related games</h2>
+                <div id="relatedGamesGrid" class="ccg-cards-grid"></div>
+            </section>
+
         </main>
 
+        <!-- FOOTER -->
         <footer class="ccg-footer">
             <p class="ccg-footer__text">
                 © <span data-ccg-year></span> Cheeky Commodore Gamer.
@@ -127,6 +171,7 @@
 
     </div>
 
+    <!-- JS -->
     <script src="../js/ccg-global.js" defer></script>
     <script src="../js/ccg-mode-engine.js" defer></script>
     <script src="../js/load-single-game.js" defer></script>
