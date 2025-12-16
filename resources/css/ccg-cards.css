@@ -1,6 +1,6 @@
 /* ============================================================
    CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM
-   Phase P36 — VISUAL POLISH & MOTION CALM
+   Phase P37 — CINEMATIC DEPTH & MOTION REFINEMENT
    ------------------------------------------------------------
    Scope:
    • Visual refinement only
@@ -30,18 +30,18 @@
 
     box-shadow:
         0 6px 14px rgba(0,0,0,0.72),
-        0 0 12px rgba(var(--accent-rgb), 0.06);
+        0 0 10px rgba(var(--accent-rgb), 0.05);
 
     transition:
-        transform 0.36s var(--ccg-ease-out),
-        box-shadow 0.42s var(--ccg-ease-out),
+        transform 0.38s var(--ccg-ease-out),
+        box-shadow 0.44s var(--ccg-ease-out),
         border-color 0.32s ease;
 
     will-change: transform, box-shadow;
 }
 
 /* ============================================================
-   HOVER / FOCUS — UNIFIED MOTION LANGUAGE
+   HOVER / FOCUS — CINEMATIC LIFT (CALM)
 ============================================================ */
 
 .ccg-game-card:hover,
@@ -52,13 +52,21 @@
 .ccg-card:focus-within,
 .ccg-genre-tile:focus-within,
 .ccg-feature-card:focus-within {
-    transform: translateY(-5px);
+    transform: translateY(-3px) scale(1.012);
 
     box-shadow:
-        0 16px 34px rgba(0,0,0,0.82),
-        0 0 26px rgba(var(--accent-rgb), 0.28);
+        0 14px 30px rgba(0,0,0,0.82),
+        0 0 18px rgba(var(--accent-rgb), 0.22);
 
-    border-color: rgba(var(--accent-rgb), 0.32);
+    border-color: rgba(var(--accent-rgb), 0.28);
+}
+
+/* Keyboard focus parity (no outline jump) */
+.ccg-game-card:focus-visible,
+.ccg-card:focus-visible,
+.ccg-genre-tile:focus-visible,
+.ccg-feature-card:focus-visible {
+    outline: none;
 }
 
 /* ============================================================
@@ -67,14 +75,14 @@
 
 body[data-ccg-mode="c64"] .ccg-feature-card:hover {
     box-shadow:
-        0 16px 32px rgba(0,0,0,0.82),
-        0 0 24px rgba(0,170,255,0.26);
+        0 18px 34px rgba(0,0,0,0.84),
+        0 0 26px rgba(0,170,255,0.28);
 }
 
 body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
     box-shadow:
-        0 16px 36px rgba(0,0,0,0.86),
-        0 0 30px rgba(255,41,224,0.34);
+        0 18px 38px rgba(0,0,0,0.86),
+        0 0 32px rgba(255,41,224,0.36);
 }
 
 /* ============================================================
@@ -87,11 +95,13 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
     margin-inline: auto;
 }
 
-/* Keep hover slightly calmer so it never dominates */
+/* Keep hover calmer so video never dominates */
 .home-highlights-grid > .home-feature-card--video:hover {
+    transform: translateY(-2px) scale(1.008);
+
     box-shadow:
-        0 14px 30px rgba(0,0,0,0.82),
-        0 0 22px rgba(var(--accent-rgb), 0.24);
+        0 12px 26px rgba(0,0,0,0.82),
+        0 0 20px rgba(var(--accent-rgb), 0.22);
 }
 
 /* ============================================================
@@ -100,15 +110,22 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
 
 @media (max-width: 768px) {
 
+    .ccg-game-card:hover,
+    .ccg-card:hover,
+    .ccg-genre-tile:hover,
     .ccg-feature-card:hover {
         transform: none;
     }
 
+    .ccg-game-card:active,
+    .ccg-card:active,
+    .ccg-genre-tile:active,
     .ccg-feature-card:active {
-        transform: scale(0.988);
+        transform: scale(0.985);
+
         box-shadow:
             0 10px 22px rgba(0,0,0,0.82),
-            0 0 18px rgba(var(--accent-rgb), 0.26);
+            0 0 18px rgba(var(--accent-rgb), 0.24);
     }
 }
 
@@ -165,9 +182,6 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
 
 /* -----------------------------
    COLLECTIONS INDEX (dynamic cards)
-   Supports:
-   A) .ccg-card__thumb img
-   B) direct child <img>
 ------------------------------ */
 
 .ccg-page--collections-index .ccg-card {
