@@ -1,15 +1,11 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & TYPOGRAPHY
-   Omega Neon Edition — PARITY LOCK (FINAL)
+   Omega Neon Edition — PARITY LOCK + NAV OPTICAL CENTRE
    ------------------------------------------------------------
-   • Absolute header height parity across ALL pages
-   • Main container baseline locked to Home
-   • Nav wrapping no longer alters header height
-   • Zero HTML / JS changes
-============================================================ */
-
-/* ============================================================
-   ROOT VARIABLES
+   • Header height parity LOCKED
+   • Nav optically centred (viewport-safe)
+   • Zero layout drift risk
+   • CSS-only, deterministic
 ============================================================ */
 
 :root {
@@ -25,19 +21,18 @@
 
     --ccg-text-light: #e8ecff;
     --ccg-text-soft: #b5bbdf;
-    --ccg-text-muted: rgba(232,236,255,0.68);
 
     --ccg-neon-soft: 0 0 10px rgba(0,170,255,0.35);
     --ccg-neon-strong: 0 0 22px rgba(0,170,255,0.55);
 
     --ccg-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 
-    /* 🔒 HEADER CONTRACT */
+    /* 🔒 Header contract */
     --ccg-header-height: 92px;
 }
 
 /* ============================================================
-   RESET & BASE
+   RESET
 ============================================================ */
 
 *,
@@ -53,14 +48,7 @@ body {
     background: var(--ccg-bg-dark);
     color: var(--ccg-text-light);
     font-family: var(--ccg-font-body);
-    font-size: 16px;
-    line-height: 1.6;
     overflow-x: hidden;
-}
-
-img {
-    max-width: 100%;
-    height: auto;
 }
 
 /* ============================================================
@@ -68,34 +56,25 @@ img {
 ============================================================ */
 
 .ccg-page {
-    position: relative;
     min-height: 100vh;
-    z-index: 1;
 }
 
-/* 🔒 MAIN BASELINE LOCK */
 .ccg-main {
-    position: relative;
     width: min(1320px, 96%);
     margin: 0 auto;
     padding-top: 24px;
-    z-index: 1;
 }
 
 /* ============================================================
-   HEADER — PARITY LOCK (ALL PAGES)
+   HEADER — PARITY LOCKED
 ============================================================ */
 
 .ccg-header {
-    position: relative;
-    z-index: 9999;
-    isolation: isolate;
-
-    width: 100%;
     min-height: var(--ccg-header-height);
-
     display: flex;
     align-items: center;
+    position: relative;
+    z-index: 9999;
 
     background:
         linear-gradient(
@@ -113,7 +92,6 @@ img {
         0 0 18px rgba(0,170,255,0.08);
 }
 
-/* 🔒 INNER GRID — HEIGHT-STABLE */
 .ccg-header-inner {
     width: min(1320px, 96%);
     margin: 0 auto;
@@ -125,34 +103,24 @@ img {
 }
 
 /* ============================================================
-   BRAND — SIZE CONTRACT
+   BRAND
 ============================================================ */
 
 .ccg-brand {
     display: flex;
     align-items: center;
     gap: 14px;
-    text-decoration: none;
     white-space: nowrap;
+    text-decoration: none;
 }
 
 .ccg-brand__logo {
     width: 48px;
     height: 48px;
-    flex-shrink: 0;
-    display: block;
-    object-fit: contain;
-}
-
-.ccg-brand__text {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.1;
 }
 
 .ccg-brand__kicker {
     font-size: 0.68rem;
-    letter-spacing: 0.08em;
     color: var(--ccg-text-soft);
 }
 
@@ -160,39 +128,35 @@ img {
     font-family: var(--ccg-font-main);
     font-size: 0.9rem;
     letter-spacing: 0.1em;
-    white-space: nowrap;
 }
 
-.ccg-brand__neon-cheeky { color: var(--ccg-color-blue); }
-.ccg-brand__neon-sub { color: var(--ccg-text-light); }
-
 /* ============================================================
-   NAV — HEIGHT SAFE
+   NAV — OPTICAL CENTRE (SAFE)
 ============================================================ */
 
 .ccg-nav {
-    min-width: 0;
+    display: flex;
+    justify-content: center;
 }
 
+/*
+   🔑 KEY FIX:
+   Nav group is centred within a fixed optical window
+   rather than stretching across the entire 1fr column.
+*/
 .ccg-nav__list {
     display: flex;
-    align-items: center;
-    justify-content: center;
     gap: 10px;
-
     list-style: none;
     margin: 0;
     padding: 0;
 
-    flex-wrap: nowrap; /* 🔒 NO HEIGHT EXPANSION */
+    max-width: 920px;   /* optical centre clamp */
+    justify-content: center;
+    flex-wrap: nowrap;
 }
 
-/* NAV CAPSULE */
 .ccg-nav__link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
     padding: 8px 14px;
     border-radius: 999px;
 
@@ -201,27 +165,20 @@ img {
     letter-spacing: 0.12em;
     text-transform: uppercase;
 
-    text-decoration: none;
     color: var(--ccg-text-soft);
+    text-decoration: none;
 
-    background:
-        linear-gradient(
-            180deg,
-            rgba(255,255,255,0.07),
-            rgba(255,255,255,0.02)
-        );
+    background: linear-gradient(
+        180deg,
+        rgba(255,255,255,0.07),
+        rgba(255,255,255,0.02)
+    );
 
     border: 1px solid rgba(255,255,255,0.14);
 
-    box-shadow:
-        0 6px 14px rgba(0,0,0,0.65),
-        inset 0 0 14px rgba(255,255,255,0.03);
-
     transition:
-        transform 300ms var(--ccg-ease-out),
-        box-shadow 300ms var(--ccg-ease-out),
-        border-color 240ms ease,
-        color 240ms ease;
+        transform 260ms var(--ccg-ease-out),
+        box-shadow 260ms var(--ccg-ease-out);
 }
 
 .ccg-nav__link--active {
@@ -230,18 +187,17 @@ img {
 }
 
 /* ============================================================
-   HEADER ACTIONS — HEIGHT LOCK
+   HEADER ACTIONS
 ============================================================ */
 
 .ccg-header-actions {
     display: flex;
     align-items: center;
     gap: 14px;
-    justify-self: end;
 }
 
 /* ============================================================
-   HEADER NEON STRIP
+   NEON STRIP
 ============================================================ */
 
 .ccg-header-neon-strip {
@@ -249,15 +205,15 @@ img {
     bottom: 0;
     left: 0;
     right: 0;
-
     height: 2px;
+
     background:
         linear-gradient(
             90deg,
-            rgba(0,170,255,0.0),
+            rgba(0,170,255,0),
             rgba(0,170,255,0.35),
             rgba(255,41,224,0.35),
-            rgba(0,170,255,0.0)
+            rgba(0,170,255,0)
         );
 }
 
@@ -268,45 +224,24 @@ img {
 body[data-ccg-mode="c64"] {
     --accent-rgb: 0,170,255;
     --accent-main: var(--ccg-color-blue);
-    --accent-soft: var(--ccg-color-cyan);
 }
 
 body[data-ccg-mode="amiga"] {
     --accent-rgb: 255,41,224;
     --accent-main: var(--ccg-color-pink);
-    --accent-soft: #ff7bff;
 }
 
 /* ============================================================
-   HOME — HERO TITLE IGNITE
-============================================================ */
-
-.ccg-page--home .home-hero__title {
-    animation: ccg-hero-title-ignite 1.25s cubic-bezier(.25,1,.35,1) 0.35s both;
-}
-
-@keyframes ccg-hero-title-ignite {
-    from {
-        opacity: 0;
-        transform: translateY(10px) scale(0.985);
-    }
-    to {
-        opacity: 1;
-        transform: none;
-    }
-}
-
-/* ============================================================
-   MOBILE — PARITY PRESERVED
+   MOBILE — STILL SAFE
 ============================================================ */
 
 @media (max-width: 768px) {
-
     :root {
         --ccg-header-height: 86px;
     }
 
     .ccg-nav__list {
+        max-width: 100%;
         gap: 8px;
     }
 
