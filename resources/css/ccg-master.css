@@ -1,11 +1,11 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & TYPOGRAPHY
-   Omega Neon Edition — HEADER PARITY LOCK (FINAL)
+   Omega Neon Edition — GLOBAL RHYTHM PASS (LOCK-SAFE)
    ------------------------------------------------------------
    • Header/nav/brand unified across ALL pages
    • Logo size & rhythm identical everywhere
    • Header stack isolation LOCKED
-   • Typography cadence preserved
+   • Global spacing & flow refinement
    • Zero JS or layout impact
 ============================================================ */
 
@@ -38,6 +38,13 @@
 
     /* MOTION */
     --ccg-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+    /* RHYTHM */
+    --ccg-space-xs: 8px;
+    --ccg-space-sm: 16px;
+    --ccg-space-md: 24px;
+    --ccg-space-lg: 32px;
+    --ccg-space-xl: 48px;
 }
 
 /* ============================================================
@@ -60,7 +67,7 @@ body {
 
     font-family: var(--ccg-font-body);
     font-size: 16px;
-    line-height: 1.6;
+    line-height: 1.65;
 
     overflow-x: hidden;
 }
@@ -84,7 +91,7 @@ img {
     position: relative;
     width: min(1320px, 96%);
     margin: 0 auto;
-    padding: 18px 0 0;
+    padding: var(--ccg-space-md) 0 0;
     z-index: 1;
 }
 
@@ -98,7 +105,7 @@ img {
     isolation: isolate;
 
     width: 100%;
-    padding: 14px 0 12px;
+    padding: var(--ccg-space-sm) 0 calc(var(--ccg-space-sm) - 2px);
 
     background:
         linear-gradient(
@@ -123,7 +130,7 @@ img {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 20px;
+    gap: var(--ccg-space-sm);
 }
 
 /* ============================================================
@@ -155,7 +162,7 @@ img {
 .ccg-brand__text {
     display: flex;
     flex-direction: column;
-    line-height: 1.1;
+    line-height: 1.15;
 }
 
 .ccg-brand__kicker {
@@ -163,14 +170,14 @@ img {
     letter-spacing: 0.08em;
     color: var(--ccg-text-soft);
     opacity: 0.85;
+    margin-bottom: 2px;
 }
 
 .ccg-brand__title {
     font-family: var(--ccg-font-main);
     font-size: 0.9rem;
     letter-spacing: 0.1em;
-    line-height: 1.1;
-
+    line-height: 1.15;
     white-space: nowrap;
 }
 
@@ -275,5 +282,9 @@ img {
     .ccg-nav__link {
         font-size: 0.75rem;
         padding-bottom: 6px;
+    }
+
+    .ccg-main {
+        padding-top: var(--ccg-space-sm);
     }
 }
