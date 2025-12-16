@@ -1,12 +1,12 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & TYPOGRAPHY
-   Omega Neon Edition — TYPOGRAPHY CADENCE PASS (FINAL)
+   Omega Neon Edition — HEADER RESTORE + TYPOGRAPHY CADENCE
    ------------------------------------------------------------
-   • Header/nav structure unchanged (LOCKED)
-   • Header stack isolation FIXED
-   • Typography rhythm & hierarchy only
+   • Restores last known GOOD header/nav/brand state
+   • Header stack isolation LOCKED
+   • Typography rhythm & hierarchy
    • Mobile-first readability
-   • Zero layout or JS impact
+   • Zero JS impact
 ============================================================ */
 
 /* ============================================================
@@ -14,23 +14,29 @@
 ============================================================ */
 
 :root {
+    /* FONTS */
     --ccg-font-main: 'Orbitron', system-ui, sans-serif;
     --ccg-font-body: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 
+    /* CORE COLOURS */
     --ccg-color-blue: #00aaff;
     --ccg-color-pink: #ff29e0;
     --ccg-color-cyan: #7fe9ff;
 
+    /* BACKGROUNDS */
     --ccg-bg-dark: #000000;
     --ccg-bg-panel: #050510;
 
+    /* TEXT */
     --ccg-text-light: #e8ecff;
     --ccg-text-soft: #b5bbdf;
     --ccg-text-muted: rgba(232,236,255,0.68);
 
+    /* NEON */
     --ccg-neon-soft: 0 0 10px rgba(0,170,255,0.35);
     --ccg-neon-strong: 0 0 22px rgba(0,170,255,0.55);
 
+    /* MOTION */
     --ccg-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -59,20 +65,236 @@ body {
     overflow-x: hidden;
 }
 
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
 /* ============================================================
-   HEADER — FINAL LOCK (STACK SAFE)
+   PAGE WRAPPERS (SAFE GLOBAL STRUCTURE)
+============================================================ */
+
+.ccg-page {
+    position: relative;
+    min-height: 100vh;
+    z-index: 1;
+}
+
+.ccg-main {
+    position: relative;
+    width: min(1320px, 96%);
+    margin: 0 auto;
+    padding: 18px 0 0;
+    z-index: 1;
+}
+
+/* ============================================================
+   HEADER — FINAL LOCKED STRUCTURE (STACK SAFE)
 ============================================================ */
 
 .ccg-header {
     position: relative;
     z-index: 9999;
     isolation: isolate; /* 🔒 HEADER STACK LOCK */
+
+    width: 100%;
+    padding: 14px 0 12px;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(0,0,0,0.94),
+            rgba(0,0,0,0.88),
+            rgba(0,0,0,0.65),
+            transparent
+        );
+
+    backdrop-filter: blur(5px);
+
+    box-shadow:
+        0 10px 28px rgba(0,0,0,0.65),
+        0 0 18px rgba(0,170,255,0.08);
+}
+
+.ccg-header-inner {
+    width: min(1320px, 96%);
+    margin: 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+/* ------------------------------------------------------------
+   BRAND — HARD CONTRACT
+------------------------------------------------------------ */
+
+.ccg-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    text-decoration: none;
+    max-width: 420px;
+    white-space: nowrap;
+}
+
+.ccg-brand__logo {
+    width: 56px;
+    height: 56px;
+    max-width: 56px;
+    max-height: 56px;
+
+    object-fit: contain;
+    flex-shrink: 0;
+    display: block;
+}
+
+.ccg-brand__text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+.ccg-brand__kicker {
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    color: var(--ccg-text-soft);
+    opacity: 0.85;
+}
+
+.ccg-brand__title {
+    font-family: var(--ccg-font-main);
+    font-size: 0.95rem;
+    letter-spacing: 0.1em;
+    line-height: 1.1;
+
+    white-space: nowrap; /* 🔒 critical */
+}
+
+.ccg-brand__neon-cheeky {
+    color: var(--ccg-color-blue);
+}
+
+.ccg-brand__neon-sub {
+    color: var(--ccg-text-light);
+}
+
+/* ------------------------------------------------------------
+   NAVIGATION — FINAL LOCK
+------------------------------------------------------------ */
+
+.ccg-nav {
+    display: flex;
+    align-items: center;
+}
+
+.ccg-nav__list {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    list-style: none; /* 🔒 prevents bullets */
+    margin: 0;
+    padding: 0;
+}
+
+.ccg-nav__link {
+    position: relative;
+
+    font-size: 0.8rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+
+    text-decoration: none;
+    color: var(--ccg-text-soft);
+    opacity: 0.82;
+
+    padding-bottom: 4px;
+
+    transition:
+        color 0.22s ease,
+        opacity 0.22s ease,
+        text-shadow 0.28s var(--ccg-ease-out);
+}
+
+.ccg-nav__link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+
+    width: 0;
+    height: 2px;
+
+    background: linear-gradient(
+        90deg,
+        var(--ccg-color-blue),
+        var(--ccg-color-pink)
+    );
+
+    transition: width 0.32s var(--ccg-ease-out);
+}
+
+.ccg-nav__link:hover {
+    color: var(--ccg-color-cyan);
+    opacity: 1;
+    text-shadow: 0 0 6px rgba(0,170,255,0.35);
+}
+
+.ccg-nav__link:hover::after {
+    width: 100%;
+}
+
+.ccg-nav__link--active {
+    color: var(--ccg-color-cyan);
+    opacity: 1;
+}
+
+.ccg-nav__link--active::after {
+    width: 100%;
+}
+
+/* ------------------------------------------------------------
+   HEADER ACTIONS (MODE TOGGLE + SOCIALS)
+------------------------------------------------------------ */
+
+.ccg-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 0;
+}
+
+/* Neon strip (kept simple; your dedicated css can decorate more) */
+.ccg-header-neon-strip {
+    height: 2px;
+    width: 100%;
+    opacity: 0.6;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(0,170,255,0.65),
+            rgba(255,41,224,0.35),
+            transparent
+        );
 }
 
 /* ============================================================
-   BODY COPY — GLOBAL RHYTHM
+   TYPOGRAPHY CADENCE (GLOBAL)
 ============================================================ */
 
+/* Body copy rhythm */
 p {
     margin: 0 0 1em;
     color: var(--ccg-text-soft);
@@ -82,6 +304,7 @@ p:last-child {
     margin-bottom: 0;
 }
 
+/* Lists stay calm and readable */
 ul,
 ol {
     margin: 0 0 1.1em 1.2em;
@@ -93,10 +316,7 @@ li {
     color: var(--ccg-text-soft);
 }
 
-/* ============================================================
-   HEADINGS — CINEMATIC HIERARCHY
-============================================================ */
-
+/* Headings hierarchy */
 h1,
 h2,
 h3,
@@ -132,12 +352,10 @@ h5 {
     opacity: 0.95;
 }
 
-/* ============================================================
-   SECTION TITLES (PRESERVED + REFINED)
-============================================================ */
-
+/* Section titles (preserved) */
 .ccg-section-title {
     margin-bottom: 18px;
+
     font-family: var(--ccg-font-main);
     letter-spacing: 0.06em;
 
@@ -148,8 +366,8 @@ h5 {
 .ccg-section-title::after {
     content: "";
     display: block;
-
     margin-top: 10px;
+
     height: 2px;
     width: 64px;
 
@@ -164,10 +382,7 @@ h5 {
     opacity: 0.85;
 }
 
-/* ============================================================
-   META / SMALL TEXT
-============================================================ */
-
+/* Meta / small text */
 small,
 .meta,
 .ccg-meta {
@@ -176,10 +391,7 @@ small,
     color: var(--ccg-text-muted);
 }
 
-/* ============================================================
-   LINKS — CLEAN & CONSISTENT
-============================================================ */
-
+/* Links */
 a {
     color: var(--ccg-color-cyan);
     text-decoration: none;
@@ -199,10 +411,7 @@ a:hover {
     letter-spacing: 0.06em;
 }
 
-/* ============================================================
-   GLOBAL INTERACTION EASING
-============================================================ */
-
+/* Global easing */
 a,
 button,
 .ccg-game-card,
@@ -212,7 +421,7 @@ button,
 }
 
 /* ============================================================
-   MOBILE TYPOGRAPHY TUNING
+   MOBILE — COSMETIC ONLY (SAFE)
 ============================================================ */
 
 @media (max-width: 768px) {
@@ -220,6 +429,23 @@ button,
     body {
         font-size: 15px;
         line-height: 1.65;
+    }
+
+    .ccg-header {
+        padding: 10px 0;
+    }
+
+    .ccg-header-inner {
+        gap: 14px;
+    }
+
+    .ccg-nav__list {
+        gap: 12px;
+    }
+
+    .ccg-nav__link {
+        font-size: 0.75rem;
+        padding-bottom: 6px;
     }
 
     h1 {
@@ -233,4 +459,6 @@ button,
     p {
         margin-bottom: 0.95em;
     }
+
+    /* 🔒 no wrapping rules added here — header structure remains locked */
 }
