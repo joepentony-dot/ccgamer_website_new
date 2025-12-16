@@ -1,22 +1,27 @@
 /* ============================================================
-   CCG OVERLAYS — OMEGA CINEMATIC DEPTH RESTORE
-   Phase A+ — Interaction Lock & Z-Index Discipline
+   CCG OVERLAYS — OMEGA UNIVERSE LAYER (LOCKED)
+   Phase U1 — FULL-PAGE STARFIELD RESTORE
+   ------------------------------------------------------------
+   • Starfield spans entire page height
+   • Decorative layers never block interaction
+   • Safe z-index discipline
+   • ZERO layout or JS impact
 ============================================================ */
 
 /* ------------------------------------------------------------
-   GLOBAL OVERLAY SAFETY
-   ------------------------------------------------------------
-   All decorative layers MUST NEVER intercept clicks
+   GLOBAL UNIVERSE CONTAINER
 ------------------------------------------------------------ */
 
-.ccg-bg-starfield,
-.ccg-bg-grid,
-.ccg-bg-crt-overlay {
+.ccg-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
     pointer-events: none;
 }
 
 /* ------------------------------------------------------------
-   STARFIELD — PRIMARY DEPTH LAYER
+   STARFIELD — PRIMARY UNIVERSE LAYER
 ------------------------------------------------------------ */
 
 .ccg-bg-starfield {
@@ -37,51 +42,27 @@
     will-change: background-position, opacity;
 }
 
-/* Subtle secondary depth ghost (pseudo-layer) */
+/* Secondary depth ghost (parallax illusion) */
 .ccg-bg-starfield::after {
     content: "";
     position: absolute;
-    inset: 0;
+    inset: -50%;
 
     background-image: url("../images/starfield_new.png");
     background-repeat: repeat;
     background-size: 1600px 1600px;
 
-    opacity: 0.25;
+    opacity: 0.22;
 
     animation:
         ccg-star-drift-alt 320s linear infinite,
         ccg-star-breathe-alt 22s ease-in-out infinite;
 
-    will-change: background-position, opacity;
     pointer-events: none;
 }
 
-/* Slow cinematic drift */
-@keyframes ccg-star-drift {
-    from { background-position: 0 0; }
-    to   { background-position: -1200px 1200px; }
-}
-
-/* Slower, offset drift for depth separation */
-@keyframes ccg-star-drift-alt {
-    from { background-position: 800px -400px; }
-    to   { background-position: -1600px 1200px; }
-}
-
-/* Gentle luminance breathing */
-@keyframes ccg-star-breathe {
-    0%, 100% { opacity: 0.52; }
-    50%      { opacity: 0.58; }
-}
-
-@keyframes ccg-star-breathe-alt {
-    0%, 100% { opacity: 0.22; }
-    50%      { opacity: 0.28; }
-}
-
 /* ------------------------------------------------------------
-   GRID — SECONDARY PARALLAX LAYER
+   GRID — SECONDARY DEPTH LAYER
 ------------------------------------------------------------ */
 
 .ccg-bg-grid {
@@ -98,12 +79,6 @@
 
     animation: ccg-grid-drift 260s linear infinite;
     will-change: background-position;
-}
-
-/* Opposing drift for depth illusion */
-@keyframes ccg-grid-drift {
-    from { background-position: 0 0; }
-    to   { background-position: 800px -800px; }
 }
 
 /* ------------------------------------------------------------
@@ -132,4 +107,33 @@
 
     mix-blend-mode: overlay;
     opacity: 0.35;
+}
+
+/* ------------------------------------------------------------
+   KEYFRAMES — CINEMATIC DRIFT
+------------------------------------------------------------ */
+
+@keyframes ccg-star-drift {
+    from { background-position: 0 0; }
+    to   { background-position: -1200px 1200px; }
+}
+
+@keyframes ccg-star-drift-alt {
+    from { background-position: 800px -400px; }
+    to   { background-position: -1600px 1200px; }
+}
+
+@keyframes ccg-star-breathe {
+    0%, 100% { opacity: 0.52; }
+    50%      { opacity: 0.58; }
+}
+
+@keyframes ccg-star-breathe-alt {
+    0%, 100% { opacity: 0.20; }
+    50%      { opacity: 0.26; }
+}
+
+@keyframes ccg-grid-drift {
+    from { background-position: 0 0; }
+    to   { background-position: 800px -800px; }
 }
