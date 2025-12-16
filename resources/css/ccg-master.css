@@ -1,12 +1,12 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & TYPOGRAPHY
-   Omega Neon Edition — GLOBAL SPACING & RHYTHM PASS (LOCKED)
+   Omega Neon Edition — HEADER PARITY LOCK (FINAL)
    ------------------------------------------------------------
-   • Header/nav structure untouched (LOCKED)
-   • Global vertical rhythm unified
-   • Hero → content flow refined
-   • Mobile spacing tightened
-   • Zero JS or layout logic impact
+   • Header/nav/brand unified across ALL pages
+   • Logo size & rhythm identical everywhere
+   • Header stack isolation LOCKED
+   • Typography cadence preserved
+   • Zero JS or layout impact
 ============================================================ */
 
 /* ============================================================
@@ -18,7 +18,7 @@
     --ccg-font-main: 'Orbitron', system-ui, sans-serif;
     --ccg-font-body: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 
-    /* CORE COLOURS */
+    /* COLOURS */
     --ccg-color-blue: #00aaff;
     --ccg-color-pink: #ff29e0;
     --ccg-color-cyan: #7fe9ff;
@@ -70,15 +70,8 @@ img {
     height: auto;
 }
 
-button,
-input,
-select,
-textarea {
-    font: inherit;
-}
-
 /* ============================================================
-   PAGE WRAPPERS — GLOBAL RHYTHM ANCHOR
+   PAGE WRAPPERS
 ============================================================ */
 
 .ccg-page {
@@ -87,25 +80,16 @@ textarea {
     z-index: 1;
 }
 
-/* Main content column */
 .ccg-main {
     position: relative;
     width: min(1320px, 96%);
     margin: 0 auto;
-
-    /* ⬇ refined top rhythm */
-    padding: 28px 0 0;
-
+    padding: 18px 0 0;
     z-index: 1;
 }
 
-/* Add consistent bottom breathing before footer */
-.ccg-main:last-child {
-    padding-bottom: 56px;
-}
-
 /* ============================================================
-   HEADER — FINAL LOCKED STRUCTURE (STACK SAFE)
+   HEADER — PARITY LOCK (ALL PAGES)
 ============================================================ */
 
 .ccg-header {
@@ -143,163 +127,153 @@ textarea {
 }
 
 /* ============================================================
-   TYPOGRAPHY CADENCE — GLOBAL
+   BRAND — UNIFIED SIZE CONTRACT
 ============================================================ */
 
-p {
-    margin: 0 0 1em;
-    color: var(--ccg-text-soft);
+.ccg-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    text-decoration: none;
+    white-space: nowrap;
+    max-width: 420px;
 }
 
-p:last-child {
-    margin-bottom: 0;
-}
+/* 🔒 LOGO SIZE LOCK — SAME EVERYWHERE */
+.ccg-brand__logo {
+    width: 48px;
+    height: 48px;
+    max-width: 48px;
+    max-height: 48px;
 
-ul,
-ol {
-    margin: 0 0 1.2em 1.2em;
-    padding: 0;
-}
-
-li {
-    margin-bottom: 0.45em;
-    color: var(--ccg-text-soft);
-}
-
-/* Headings */
-h1,
-h2,
-h3,
-h4,
-h5 {
-    font-family: var(--ccg-font-main);
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    color: var(--ccg-text-light);
-
-    margin: 0 0 0.7em;
-    line-height: 1.25;
-}
-
-h1 {
-    font-size: clamp(1.6rem, 3vw, 2.4rem);
-    letter-spacing: 0.08em;
-}
-
-h2 {
-    font-size: clamp(1.2rem, 2.4vw, 1.7rem);
-}
-
-h3 {
-    font-size: 1rem;
-    letter-spacing: 0.07em;
-}
-
-h4,
-h5 {
-    font-size: 0.85rem;
-    letter-spacing: 0.06em;
-    opacity: 0.95;
-}
-
-/* Section titles */
-.ccg-section-title {
-    margin-bottom: 22px;
-
-    font-family: var(--ccg-font-main);
-    letter-spacing: 0.06em;
-
-    color: var(--ccg-text-light);
-    text-shadow: 0 0 8px rgba(0,170,255,0.25);
-}
-
-.ccg-section-title::after {
-    content: "";
+    object-fit: contain;
+    flex-shrink: 0;
     display: block;
-    margin-top: 12px;
+}
 
-    height: 2px;
-    width: 64px;
+.ccg-brand__text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
 
-    background:
-        linear-gradient(
-            90deg,
-            rgba(0,170,255,0.65),
-            rgba(255,41,224,0.35)
-        );
-
-    box-shadow: 0 0 10px rgba(0,170,255,0.35);
+.ccg-brand__kicker {
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    color: var(--ccg-text-soft);
     opacity: 0.85;
 }
 
-/* Meta */
-small,
-.meta,
-.ccg-meta {
-    font-size: 0.75rem;
-    letter-spacing: 0.04em;
-    color: var(--ccg-text-muted);
+.ccg-brand__title {
+    font-family: var(--ccg-font-main);
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    line-height: 1.1;
+
+    white-space: nowrap;
 }
 
-/* Links */
-a {
-    color: var(--ccg-color-cyan);
+.ccg-brand__neon-cheeky {
+    color: var(--ccg-color-blue);
+}
+
+.ccg-brand__neon-sub {
+    color: var(--ccg-text-light);
+}
+
+/* ============================================================
+   NAVIGATION — UNIFIED RHYTHM
+============================================================ */
+
+.ccg-nav {
+    display: flex;
+    align-items: center;
+}
+
+.ccg-nav__list {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.ccg-nav__link {
+    position: relative;
+
+    font-size: 0.8rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+
     text-decoration: none;
+    color: var(--ccg-text-soft);
+    opacity: 0.82;
+
+    padding-bottom: 4px;
 
     transition:
         color 0.22s ease,
-        text-shadow 0.22s ease;
+        opacity 0.22s ease,
+        text-shadow 0.28s var(--ccg-ease-out);
 }
 
-a:hover {
-    color: #ffffff;
-    text-shadow: 0 0 6px rgba(0,170,255,0.45);
+.ccg-nav__link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+
+    width: 0;
+    height: 2px;
+
+    background: linear-gradient(
+        90deg,
+        var(--ccg-color-blue),
+        var(--ccg-color-pink)
+    );
+
+    transition: width 0.32s var(--ccg-ease-out);
+}
+
+.ccg-nav__link:hover {
+    color: var(--ccg-color-cyan);
+    opacity: 1;
+    text-shadow: 0 0 6px rgba(0,170,255,0.35);
+}
+
+.ccg-nav__link:hover::after,
+.ccg-nav__link--active::after {
+    width: 100%;
+}
+
+.ccg-nav__link--active {
+    color: var(--ccg-color-cyan);
+    opacity: 1;
 }
 
 /* ============================================================
-   GLOBAL INTERACTION EASING
-============================================================ */
-
-a,
-button,
-.ccg-game-card,
-.ccg-panel,
-.ccg-btn {
-    transition-timing-function: var(--ccg-ease-out) !important;
-}
-
-/* ============================================================
-   MOBILE — RHYTHM TIGHTENING (SAFE)
+   MOBILE — COSMETIC ONLY
 ============================================================ */
 
 @media (max-width: 768px) {
 
-    body {
-        font-size: 15px;
-        line-height: 1.65;
+    .ccg-header {
+        padding: 10px 0;
     }
 
-    .ccg-main {
-        padding-top: 22px;
+    .ccg-header-inner {
+        gap: 14px;
     }
 
-    .ccg-main:last-child {
-        padding-bottom: 42px;
+    .ccg-nav__list {
+        gap: 12px;
     }
 
-    .ccg-section-title {
-        margin-bottom: 18px;
-    }
-
-    p {
-        margin-bottom: 0.95em;
-    }
-
-    h1 {
-        font-size: 1.45rem;
-    }
-
-    h2 {
-        font-size: 1.15rem;
+    .ccg-nav__link {
+        font-size: 0.75rem;
+        padding-bottom: 6px;
     }
 }
