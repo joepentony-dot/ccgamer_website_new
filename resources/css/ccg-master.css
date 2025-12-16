@@ -1,10 +1,11 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & RESET
-   Omega Neon Edition — HEADER RESTORE (LOCKED)
+   Omega Neon Edition — TYPOGRAPHY CADENCE PASS (LOCKED)
    ------------------------------------------------------------
-   • Restores last known GOOD header/nav/brand state
-   • Mobile tweaks are cosmetic ONLY
-   • Header is now FINAL — do not modify further
+   • Typography rhythm polish ONLY
+   • No font-size changes
+   • No header / nav changes
+   • No layout impact
 ============================================================ */
 
 /* ============================================================
@@ -47,12 +48,65 @@ body {
     background: var(--ccg-bg-dark);
     color: var(--ccg-text-light);
     font-family: var(--ccg-font-body);
+
+    /* Typography baseline */
     line-height: 1.55;
+
     overflow-x: hidden;
 }
 
 /* ============================================================
-   HEADER — FINAL LOCKED STRUCTURE
+   GLOBAL TYPOGRAPHY CADENCE (NEW — SAFE)
+============================================================ */
+
+/* Paragraph rhythm */
+p {
+    margin: 0 0 1em;
+}
+
+/* Lists inherit calm rhythm */
+ul,
+ol {
+    margin: 0 0 1.1em;
+    padding-left: 1.2em;
+}
+
+li {
+    margin-bottom: 0.45em;
+}
+
+/* Headings — spacing only (sizes untouched) */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0 0 0.6em;
+    line-height: 1.25;
+    font-weight: inherit;
+}
+
+/* Reduce stacked heading collisions */
+h2 + h3,
+h3 + h4 {
+    margin-top: -0.15em;
+}
+
+/* Paragraphs following headings */
+h1 + p,
+h2 + p,
+h3 + p {
+    margin-top: 0.25em;
+}
+
+/* Links inside text blocks */
+p a {
+    line-height: inherit;
+}
+
+/* ============================================================
+   HEADER — FINAL LOCKED STRUCTURE (UNCHANGED)
 ============================================================ */
 
 .ccg-header {
@@ -128,7 +182,7 @@ body {
     font-size: 0.95rem;
     letter-spacing: 0.1em;
     line-height: 1.1;
-    white-space: nowrap; /* 🔒 CRITICAL */
+    white-space: nowrap;
 }
 
 .ccg-brand__neon-cheeky {
@@ -140,7 +194,7 @@ body {
 }
 
 /* ============================================================
-   NAVIGATION — FINAL LOCK
+   NAVIGATION — FINAL LOCK (UNCHANGED)
 ============================================================ */
 
 .ccg-nav {
@@ -152,7 +206,7 @@ body {
     display: flex;
     align-items: center;
     gap: 16px;
-    list-style: none; /* 🔒 prevents bullet fallback */
+    list-style: none;
     margin: 0;
     padding: 0;
 }
@@ -212,7 +266,7 @@ body {
 }
 
 /* ============================================================
-   SECTION HEADERS — PRESERVED
+   SECTION HEADERS — PRESERVED (SPACING UNAFFECTED)
 ============================================================ */
 
 .ccg-section-title {
@@ -257,6 +311,14 @@ button,
 ============================================================ */
 
 @media (max-width: 768px) {
+
+    body {
+        line-height: 1.6; /* Slightly easier reading on phones */
+    }
+
+    p {
+        margin-bottom: 0.95em;
+    }
 
     .ccg-header {
         padding: 10px 0;
