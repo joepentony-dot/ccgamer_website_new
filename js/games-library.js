@@ -13,9 +13,12 @@ let CCG_ALL_GAMES = [];
 const ACCORDION_STATE_KEY = "ccgAccordionState";
 const THUMB_BASE_PATH = "../resources/images/thumbnails/all/";
 
+/* ============================================================
+   INIT
+============================================================ */
+
 document.addEventListener("DOMContentLoaded", async () => {
     try {
-        // 🔧 FIX: correct, depth-safe path
         const res = await fetch("../games/games.json", { cache: "no-store" });
         if (!res.ok) throw new Error("Failed to load games.json");
 
@@ -51,7 +54,11 @@ function buildGamesAccordion(games) {
     games.forEach(game => {
         const title = (game.title || "").trim();
         const letter = title ? title[0].toUpperCase() : "#";
-        (groups[letter] ||= []).push(game);
+
+        if (!groups[letter]) {
+            groups[letter] = [];
+        }
+        groups[letter].push(game);
     });
 
     Object.keys(groups).sort().forEach(letter => {
@@ -60,8 +67,7 @@ function buildGamesAccordion(games) {
         group.dataset.letter = letter;
 
         group.innerHTML = `
-            <button class="games-accordion__header" type="button"
-                    aria-expanded="false">
+            <button class="games-accordion__header" type="button" aria-expanded="false">
                 <span>${letter}</span>
                 <span>${groups[letter].length}</span>
             </button>
@@ -140,7 +146,7 @@ function openAndScrollToLetter(letter) {
 }
 
 /* ============================================================
-   SEARCH BEHAVIOUR
+   SEARCH
 ============================================================ */
 
 function wireSearch() {
@@ -149,10 +155,12 @@ function wireSearch() {
     if (!input) return;
 
     input.addEventListener("input", () => applySearch(input.value));
-    clearBtn?.addEventListener("click", () => {
-        input.value = "";
-        applySearch("");
-    });
+    if (clearBtn) {
+        clearBtn.addEventListener("click", () => {
+            input.value = "";
+            applySearch("");
+        });
+    }
 }
 
 function applySearch(query) {
@@ -195,7 +203,9 @@ function applySearch(query) {
         JSON.stringify([...openLetters])
     );
 
-    document.getElementById("gamesResultsCount")?.textContent = matches;
+    const resultsEl = document.getElementById("gamesResultsCount");
+    if (resultsEl) resultsEl.textContent = matches;
+
     const empty = document.getElementById("gamesEmptyState");
     if (empty) empty.hidden = matches > 0;
 }
