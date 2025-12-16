@@ -1,207 +1,133 @@
 /* ============================================================
-   GAMES.CSS — STABLE FUNCTIONAL RESTORE
-   Phase P29 — Mobile Card Spacing & Rhythm Polish
+   GAMES INDEX — ACCORDION NEON GLOW & MOTION (WOW)
+   ------------------------------------------------------------
+   Scope:
+   • Add glow & neon emphasis to accordion headers
+   • Smooth transitions on hover/active
+   • No layout or logic changes
 ============================================================ */
 
 /* ============================================================
-   PAGE BASE — SHARED
+   ACCORDION HEADER (GLOW ON HOVER & ACTIVE)
 ============================================================ */
 
-.games-grid {
-    width: 100%;
-}
+.games-accordion__header {
+    position: relative;
+    z-index: 1;
+    padding: 14px 16px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
 
-/* ============================================================
-   ALPHABET STRIP — BASE (DESKTOP UNCHANGED)
-============================================================ */
-
-.games-alphabet {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin: 14px 0 18px;
-}
-
-.games-alphabet button {
-    min-width: 30px;
-    height: 30px;
-    border-radius: 6px;
-
-    font-family: var(--ccg-font-main);
-    font-size: 0.7rem;
-    letter-spacing: 0.08em;
-
-    background: rgba(255,255,255,0.08);
-    color: var(--ccg-text-light);
-
-    border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 8px;
     cursor: pointer;
-
-    transition:
-        background 0.25s ease,
-        color 0.25s ease,
-        box-shadow 0.25s ease;
+    transition: all 0.3s ease;
 }
 
-.games-alphabet button:hover {
-    background: rgba(var(--accent-rgb),0.18);
-    box-shadow: 0 0 10px rgba(var(--accent-rgb),0.35);
+.games-accordion__header:hover {
+    color: var(--ccg-color-cyan);
+    text-shadow: 0 0 8px rgba(0,170,255,0.5);
+    box-shadow: 0 4px 12px rgba(0,170,255,0.25);
 }
 
-.games-alphabet button.is-active {
-    background: rgba(var(--accent-rgb),0.28);
-    box-shadow:
-        0 0 14px rgba(var(--accent-rgb),0.55);
+.games-accordion__header:active {
+    transform: scale(0.98);
+    box-shadow: 0 8px 18px rgba(0,170,255,0.4);
 }
 
 /* ============================================================
-   MOBILE — A–Z STRIP (FROM PREVIOUS PASS)
+   ACCORDION ACTIVE STATE (NEON GLOW)
+============================================================ */
+
+.games-accordion__header.is-active {
+    color: var(--ccg-color-pink);
+    text-shadow: 0 0 10px rgba(255,41,224,0.75);
+    box-shadow: 0 0 22px rgba(255,41,224,0.5);
+}
+
+/* ============================================================
+   ACCORDION CONTENT (NEON FOCUS + LIFT)
+============================================================ */
+
+.games-accordion__content {
+    padding: 16px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.6);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+    transform: scale(0.98);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    z-index: 0;
+}
+
+.games-accordion__content.is-open {
+    transform: scale(1);
+    opacity: 1;
+}
+
+/* Subtle depth on open */
+.games-accordion__content.is-open {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.6), 0 0 18px rgba(var(--accent-rgb), 0.25);
+}
+
+/* ============================================================
+   ACCORDION CONTAINER (INACTIVE STATE NEON)
+============================================================ */
+
+.games-empty-state {
+    display: none;
+    color: rgba(255,255,255,0.85);
+    text-align: center;
+    font-size: 1.1rem;
+    margin-top: var(--ccg-space-lg);
+    transition: opacity 0.3s ease-in-out;
+}
+
+.games-empty-state.is-visible {
+    display: block;
+    opacity: 1;
+}
+
+/* ============================================================
+   INTERACTIVE BUTTONS (GLOW ON HOVER/ACTIVE)
+============================================================ */
+
+.games-search__clear,
+.games-alpha__strip button {
+    transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.games-search__clear:hover,
+.games-alpha__strip button:hover {
+    color: var(--ccg-color-cyan);
+    text-shadow: 0 0 8px rgba(0,170,255,0.5);
+    transform: scale(1.05);
+}
+
+.games-search__clear:active,
+.games-alpha__strip button:active {
+    transform: scale(0.98);
+    box-shadow: 0 8px 16px rgba(0,170,255,0.35);
+}
+
+/* ============================================================
+   MOBILE TAP FEEDBACK (NO LIFT, CALM TAP)
 ============================================================ */
 
 @media (max-width: 768px) {
 
-    .games-alphabet {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        overflow-y: hidden;
-
-        gap: 10px;
-        padding: 10px 6px 14px;
-
-        scrollbar-width: none;
-        -webkit-overflow-scrolling: touch;
+    .games-accordion__header:hover {
+        transform: none;
+        text-shadow: 0 0 6px rgba(0,170,255,0.4);
     }
 
-    .games-alphabet::-webkit-scrollbar {
-        display: none;
+    .games-accordion__header:active {
+        transform: scale(0.96);
     }
 
-    .games-alphabet button {
-        min-width: 42px;
-        height: 42px;
-
-        font-size: 0.8rem;
-        border-radius: 10px;
-
-        flex-shrink: 0;
-    }
-
-    .games-alphabet button:active {
-        transform: scale(0.94);
-        box-shadow:
-            0 0 14px rgba(var(--accent-rgb),0.6);
-    }
-}
-
-/* ============================================================
-   MOBILE — GAME CARD GRID SPACING (INDEX ONLY)
-============================================================ */
-
-@media (max-width: 768px) {
-
-    /* Accordion content spacing */
-    .games-accordion__content {
-        padding: 12px 0 18px;
-    }
-
-    /* Grid breathes vertically */
-    .games-accordion__content .games-grid {
-        gap: 18px;
-    }
-
-    /* Individual card comfort */
-    .games-accordion__content .ccg-game-card {
-        border-radius: 16px;
-    }
-
-    /* Card body padding refinement */
-    .games-accordion__content .ccg-game-card__body {
-        padding: 14px 14px 16px;
-    }
-
-    /* Title readability */
-    .games-accordion__content .ccg-game-card__title {
-        font-size: 0.85rem;
-        line-height: 1.35;
-        margin-bottom: 6px;
-    }
-
-    /* Meta spacing */
-    .games-accordion__content .ccg-game-card__meta {
-        font-size: 0.72rem;
-        opacity: 0.85;
-    }
-}
-
-/* ============================================================
-   VERY SMALL PHONES (≤ 420px)
-============================================================ */
-
-@media (max-width: 420px) {
-
-    .games-accordion__content .games-grid {
-        gap: 16px;
-    }
-
-    .games-accordion__content .ccg-game-card__body {
-        padding: 12px 12px 14px;
-    }
-}
-
-/* ============================================================
-   SINGLE GAME PAGE — MOBILE RHYTHM PASS (NEW, SAFE)
-   Scope: ccg-page--single-game ONLY
-   Visual spacing only — no layout or JS impact
-============================================================ */
-
-@media (max-width: 768px) {
-
-    /* Reduce hero → content collision */
-    .ccg-page--single-game .ccg-main {
-        padding-top: 6px;
-    }
-
-    /* Section breathing room */
-    .ccg-page--single-game section {
-        margin-bottom: 28px;
-    }
-
-    /* Headings feel less crushed */
-    .ccg-page--single-game h2,
-    .ccg-page--single-game h3 {
-        margin-bottom: 10px;
-    }
-
-    /* Body text rhythm */
-    .ccg-page--single-game p {
-        margin-bottom: 12px;
-        line-height: 1.55;
-    }
-
-    /* Media blocks (video, screenshots, embeds) */
-    .ccg-page--single-game .ccg-card,
-    .ccg-page--single-game .ccg-media,
-    .ccg-page--single-game iframe {
-        margin-bottom: 22px;
-    }
-
-    /* Button groups don’t feel cramped */
-    .ccg-page--single-game .ccg-btn {
-        margin-top: 10px;
-    }
-}
-
-/* ============================================================
-   VERY SMALL PHONES — SINGLE GAME
-============================================================ */
-
-@media (max-width: 420px) {
-
-    .ccg-page--single-game section {
-        margin-bottom: 22px;
-    }
-
-    .ccg-page--single-game p {
-        margin-bottom: 10px;
+    .games-accordion__content.is-open {
+        box-shadow: 0 10px 20px rgba(0,0,0,0.65), 0 0 18px rgba(var(--accent-rgb), 0.3);
     }
 }
