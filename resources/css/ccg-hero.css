@@ -1,15 +1,15 @@
 /* ============================================================
-   CCG HERO CSS — OMEGA SAFE STACK (CONSISTENCY PASS)
-   Phase P34 — Cross-Page Hero Rhythm & Calm
+   CCG HERO CSS — OMEGA VISUAL BALANCE PASS (FINAL)
    ------------------------------------------------------------
    Scope:
-   • Visual consistency only
+   • Image scale & framing ONLY
    • No structural or JS changes
-   • Safe across Home / Games / Genres / Single Game
+   • Home remains cinematic
+   • Inner pages calm & balanced
 ============================================================ */
 
 /* ------------------------------------------------------------
-   HERO CONTAINERS (STATIC STACK ROOTS)
+   HERO CONTAINERS (UNCHANGED STRUCTURE)
 ------------------------------------------------------------ */
 
 .ccg-hero,
@@ -37,7 +37,7 @@
 }
 
 /* ------------------------------------------------------------
-   HERO IMAGE PLANE (MOTION SAFE)
+   IMAGE PLANE — BASELINE (ALL HEROES)
 ------------------------------------------------------------ */
 
 .ccg-hero__backdrop,
@@ -46,31 +46,53 @@
     position: absolute;
     inset: 0;
     z-index: 0;
-    overflow: hidden;
     pointer-events: none;
+    overflow: hidden;
 }
 
-.ccg-hero__backdrop img,
+/* ============================================================
+   HOME HERO — STAYS CINEMATIC
+============================================================ */
+
+.ccg-page--home .ccg-hero__backdrop img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+    /* Cinematic presence */
+    transform: scale(1.08);
+    object-position: center 45%;
+
+    opacity: 0.6;
+
+    animation: ccg-hero-image-breathe 28s ease-in-out infinite;
+}
+
+/* ============================================================
+   INNER PAGES — VISUAL CALM
+   Games / Genres / Collections / Single Game
+============================================================ */
+
+.games-hero img,
 .game-hero__bg img,
 .ccg-genre-hero__img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 
-    opacity: 0.56;
+    /* 🔑 KEY CHANGE: calmer scale */
+    transform: scale(1.02);
 
-    filter:
-        brightness(0.9)
-        contrast(1.06)
-        saturate(1);
+    /* 🔑 Lift subject slightly */
+    object-position: center 35%;
 
-    transform: scale(1.05);
-    animation: ccg-hero-image-breathe 28s ease-in-out infinite;
-    will-change: transform, opacity;
+    opacity: 0.5;
+
+    animation: ccg-hero-image-breathe-soft 36s ease-in-out infinite;
 }
 
 /* ------------------------------------------------------------
-   OVERLAY LAYER (VISUAL ONLY — CLICK-THROUGH)
+   OVERLAY — UNCHANGED (DEPTH ONLY)
 ------------------------------------------------------------ */
 
 .ccg-hero::before,
@@ -104,7 +126,7 @@
 }
 
 /* ------------------------------------------------------------
-   CONTENT LAYER
+   CONTENT LAYER (UNCHANGED)
 ------------------------------------------------------------ */
 
 .ccg-hero__inner,
@@ -117,27 +139,17 @@
 }
 
 /* ------------------------------------------------------------
-   MOBILE FLOW POLISH — SINGLE GAME HERO ONLY
+   MOBILE — EXTRA CALM
 ------------------------------------------------------------ */
 
 @media (max-width: 768px) {
 
-    .game-hero {
-        margin-bottom: 24px;
-        border-radius: 16px;
-    }
-
-    .game-hero__inner {
-        padding: 24px 22px 28px;
-    }
-
-    .game-hero__bg img {
-        animation-duration: 34s;
-        opacity: 0.5;
-    }
-
-    .game-hero::before {
-        opacity: 0.9;
+    .games-hero img,
+    .game-hero__bg img,
+    .ccg-genre-hero__img {
+        transform: scale(1.01);
+        object-position: center 40%;
+        opacity: 0.48;
     }
 }
 
@@ -147,12 +159,11 @@
 
 @media (max-width: 420px) {
 
-    .game-hero {
-        margin-bottom: 20px;
-    }
-
-    .game-hero__inner {
-        padding: 20px 18px 24px;
+    .games-hero img,
+    .game-hero__bg img,
+    .ccg-genre-hero__img {
+        transform: scale(1);
+        opacity: 0.45;
     }
 }
 
@@ -162,12 +173,23 @@
 
 @keyframes ccg-hero-image-breathe {
     0%, 100% {
-        opacity: 0.54;
-        transform: scale(1.05);
+        transform: scale(1.08);
+        opacity: 0.56;
     }
     50% {
-        opacity: 0.6;
-        transform: scale(1.08);
+        transform: scale(1.12);
+        opacity: 0.62;
+    }
+}
+
+@keyframes ccg-hero-image-breathe-soft {
+    0%, 100% {
+        transform: scale(1.02);
+        opacity: 0.48;
+    }
+    50% {
+        transform: scale(1.04);
+        opacity: 0.52;
     }
 }
 
