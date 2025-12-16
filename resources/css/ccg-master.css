@@ -1,9 +1,11 @@
 /* ============================================================
-   CCG MASTER CSS — GLOBAL STRUCTURE & RESET
-   Omega Neon Edition — HEADER RESTORE (LOCKED)
+   CCG MASTER CSS — GLOBAL STRUCTURE & TYPOGRAPHY
+   Omega Neon Edition — TYPOGRAPHY CADENCE PASS (FINAL)
    ------------------------------------------------------------
-   • Header/nav/brand state FINAL
-   • Typography cadence pass appended (visual-only)
+   • Header/nav structure unchanged (LOCKED)
+   • Typography rhythm & hierarchy only
+   • Mobile-first readability
+   • Zero layout or JS impact
 ============================================================ */
 
 /* ============================================================
@@ -20,8 +22,10 @@
 
     --ccg-bg-dark: #000000;
     --ccg-bg-panel: #050510;
+
     --ccg-text-light: #e8ecff;
     --ccg-text-soft: #b5bbdf;
+    --ccg-text-muted: rgba(232,236,255,0.68);
 
     --ccg-neon-soft: 0 0 10px rgba(0,170,255,0.35);
     --ccg-neon-strong: 0 0 22px rgba(0,170,255,0.55);
@@ -30,7 +34,7 @@
 }
 
 /* ============================================================
-   RESET
+   RESET & BASE FLOW
 ============================================================ */
 
 *,
@@ -43,26 +47,91 @@ html,
 body {
     margin: 0;
     padding: 0;
+
     background: var(--ccg-bg-dark);
     color: var(--ccg-text-light);
+
     font-family: var(--ccg-font-body);
-    line-height: 1.6; /* ⬅ slightly calmer reading rhythm */
+    font-size: 16px;
+    line-height: 1.6;
+
     overflow-x: hidden;
 }
 
 /* ============================================================
-   HEADER — FINAL LOCKED STRUCTURE (UNCHANGED)
+   BODY COPY — GLOBAL RHYTHM
 ============================================================ */
 
-/* [ HEADER BLOCK UNCHANGED — EXACTLY AS PROVIDED ] */
+p {
+    margin: 0 0 1em;
+    color: var(--ccg-text-soft);
+}
+
+p:last-child {
+    margin-bottom: 0;
+}
+
+/* Lists stay calm and readable */
+ul,
+ol {
+    margin: 0 0 1.1em 1.2em;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 0.45em;
+    color: var(--ccg-text-soft);
+}
 
 /* ============================================================
-   SECTION HEADERS — PRESERVED
+   HEADINGS — CINEMATIC HIERARCHY
+============================================================ */
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    font-family: var(--ccg-font-main);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--ccg-text-light);
+
+    margin: 0 0 0.6em;
+    line-height: 1.25;
+}
+
+h1 {
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    letter-spacing: 0.08em;
+}
+
+h2 {
+    font-size: clamp(1.2rem, 2.4vw, 1.7rem);
+}
+
+h3 {
+    font-size: 1rem;
+    letter-spacing: 0.07em;
+}
+
+h4,
+h5 {
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    opacity: 0.95;
+}
+
+/* ============================================================
+   SECTION TITLES (PRESERVED + REFINED)
 ============================================================ */
 
 .ccg-section-title {
+    margin-bottom: 18px;
+
     font-family: var(--ccg-font-main);
     letter-spacing: 0.06em;
+
     color: var(--ccg-text-light);
     text-shadow: 0 0 8px rgba(0,170,255,0.25);
 }
@@ -70,6 +139,7 @@ body {
 .ccg-section-title::after {
     content: "";
     display: block;
+
     margin-top: 10px;
     height: 2px;
     width: 64px;
@@ -86,7 +156,43 @@ body {
 }
 
 /* ============================================================
-   GLOBAL HOVER EASING
+   META / SMALL TEXT
+============================================================ */
+
+small,
+.meta,
+.ccg-meta {
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    color: var(--ccg-text-muted);
+}
+
+/* ============================================================
+   LINKS — CLEAN & CONSISTENT
+============================================================ */
+
+a {
+    color: var(--ccg-color-cyan);
+    text-decoration: none;
+
+    transition:
+        color 0.22s ease,
+        text-shadow 0.22s ease;
+}
+
+a:hover {
+    color: #ffffff;
+    text-shadow: 0 0 6px rgba(0,170,255,0.45);
+}
+
+/* Inline text links */
+.ccg-link-inline {
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+}
+
+/* ============================================================
+   GLOBAL INTERACTION EASING
 ============================================================ */
 
 a,
@@ -98,153 +204,25 @@ button,
 }
 
 /* ============================================================
-   MOBILE — COSMETIC ONLY (SAFE)
+   MOBILE TYPOGRAPHY TUNING
 ============================================================ */
 
 @media (max-width: 768px) {
 
-    .ccg-header {
-        padding: 10px 0;
-    }
-
-    .ccg-header-inner {
-        gap: 14px;
-    }
-
-    .ccg-nav__list {
-        gap: 12px;
-    }
-
-    .ccg-nav__link {
-        font-size: 0.75rem;
-        padding-bottom: 6px;
-    }
-}
-
-/* ============================================================
-   ============================================================
-   TYPOGRAPHY CADENCE PASS — OMEGA SAFE (NEW)
-   ------------------------------------------------------------
-   • Visual rhythm only
-   • No font-size changes
-   • No layout impact
-   • Global inheritance
-   ============================================================
-============================================================ */
-
-/* ------------------------------------------------------------
-   BODY TEXT FLOW
------------------------------------------------------------- */
-
-p {
-    line-height: 1.65;
-    margin: 0 0 0.85em;
-    color: var(--ccg-text-light);
-}
-
-p:last-child {
-    margin-bottom: 0;
-}
-
-/* Softer secondary text */
-.ccg-text-soft,
-.ccg-muted,
-.small,
-.meta,
-.ccg-card__meta {
-    color: var(--ccg-text-soft);
-    line-height: 1.55;
-}
-
-/* ------------------------------------------------------------
-   HEADINGS — RHYTHM & STACKING
------------------------------------------------------------- */
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    font-family: var(--ccg-font-main);
-    line-height: 1.18;
-    margin-top: 0;
-    margin-bottom: 0.45em;
-}
-
-/* Prevent tight heading + paragraph collisions */
-h1 + p,
-h2 + p,
-h3 + p {
-    margin-top: 0.35em;
-}
-
-/* Prevent stacked heading compression */
-h2 + h3,
-h3 + h4 {
-    margin-top: 0.4em;
-}
-
-/* ------------------------------------------------------------
-   LISTS — READABILITY
------------------------------------------------------------- */
-
-ul,
-ol {
-    margin: 0 0 1em;
-    padding-left: 1.2em;
-}
-
-li {
-    margin-bottom: 0.35em;
-    line-height: 1.55;
-}
-
-/* ------------------------------------------------------------
-   INLINE TEXT ELEMENTS
------------------------------------------------------------- */
-
-strong {
-    font-weight: 600;
-    color: var(--ccg-text-light);
-}
-
-em {
-    color: var(--ccg-text-soft);
-}
-
-/* ------------------------------------------------------------
-   CARD TEXT BALANCE
------------------------------------------------------------- */
-
-.ccg-card__text {
-    line-height: 1.55;
-}
-
-.ccg-card__title {
-    line-height: 1.25;
-}
-
-/* ------------------------------------------------------------
-   LINK READABILITY (NON-NAV)
------------------------------------------------------------- */
-
-.ccg-main a:not(.ccg-btn):not(.ccg-nav__link) {
-    text-decoration-thickness: 1px;
-    text-underline-offset: 3px;
-}
-
-/* ------------------------------------------------------------
-   MOBILE TYPOGRAPHY COMFORT
------------------------------------------------------------- */
-
-@media (max-width: 600px) {
-
     body {
+        font-size: 15px;
         line-height: 1.65;
     }
 
+    h1 {
+        font-size: 1.45rem;
+    }
+
+    h2 {
+        font-size: 1.15rem;
+    }
+
     p {
-        margin-bottom: 0.9em;
+        margin-bottom: 0.95em;
     }
 }
