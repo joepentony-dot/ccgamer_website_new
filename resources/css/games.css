@@ -94,8 +94,7 @@
 }
 
 /* ============================================================
-   MOBILE — GAME CARD GRID SPACING (NEW)
-   Applies ONLY to Games Index cards
+   MOBILE — GAME CARD GRID SPACING (INDEX ONLY)
 ============================================================ */
 
 @media (max-width: 768px) {
@@ -146,5 +145,63 @@
 
     .games-accordion__content .ccg-game-card__body {
         padding: 12px 12px 14px;
+    }
+}
+
+/* ============================================================
+   SINGLE GAME PAGE — MOBILE RHYTHM PASS (NEW, SAFE)
+   Scope: ccg-page--single-game ONLY
+   Visual spacing only — no layout or JS impact
+============================================================ */
+
+@media (max-width: 768px) {
+
+    /* Reduce hero → content collision */
+    .ccg-page--single-game .ccg-main {
+        padding-top: 6px;
+    }
+
+    /* Section breathing room */
+    .ccg-page--single-game section {
+        margin-bottom: 28px;
+    }
+
+    /* Headings feel less crushed */
+    .ccg-page--single-game h2,
+    .ccg-page--single-game h3 {
+        margin-bottom: 10px;
+    }
+
+    /* Body text rhythm */
+    .ccg-page--single-game p {
+        margin-bottom: 12px;
+        line-height: 1.55;
+    }
+
+    /* Media blocks (video, screenshots, embeds) */
+    .ccg-page--single-game .ccg-card,
+    .ccg-page--single-game .ccg-media,
+    .ccg-page--single-game iframe {
+        margin-bottom: 22px;
+    }
+
+    /* Button groups don’t feel cramped */
+    .ccg-page--single-game .ccg-btn {
+        margin-top: 10px;
+    }
+}
+
+/* ============================================================
+   VERY SMALL PHONES — SINGLE GAME
+============================================================ */
+
+@media (max-width: 420px) {
+
+    .ccg-page--single-game section {
+        margin-bottom: 22px;
+    }
+
+    .ccg-page--single-game p {
+        margin-bottom: 10px;
     }
 }
