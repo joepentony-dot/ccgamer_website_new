@@ -1,9 +1,11 @@
 /* ============================================================
    HOME.CSS — OMEGA CINEMATIC (LOCKED HOME CONTRACT)
    RHYTHM & CADENCE PASS — VISUAL ONLY
+   + MOBILE-FIRST SPACING AUDIT
    ------------------------------------------------------------
    Goals:
    ✅ Improve vertical rhythm & breathing room
+   ✅ Mobile-first tightening (≤768px)
    ✅ Preserve all existing layout contracts
    ✅ Zero impact on JS, loaders, thumbnails or cards
 ============================================================ */
@@ -26,7 +28,7 @@
 .ccg-page--home .home-hero {
     width: 100%;
     margin-top: 16px;
-    margin-bottom: 22px; /* more separation before tagline */
+    margin-bottom: 22px;
 }
 
 /* prevent accidental collapse */
@@ -40,7 +42,7 @@
 
 .ccg-page--home .home-tagline {
     width: 100%;
-    margin: 14px 0 28px; /* clearer hand-off to highlights */
+    margin: 14px 0 28px;
     padding: 16px 0;
     opacity: 0.95;
 }
@@ -51,7 +53,7 @@
 
 .ccg-page--home .home-section--highlights {
     width: 100%;
-    margin: 18px 0 42px; /* stronger cinematic pause */
+    margin: 18px 0 42px;
 }
 
 /* Section header rhythm */
@@ -119,18 +121,15 @@
 
 @media (min-width: 1024px) {
 
-    /* Prevent video from visually overpowering */
     .ccg-page--home .home-feature-card--video .home-feature-video__frame {
         max-height: 360px;
     }
 
-    /* Add breathing room so it doesn’t feel edge-to-edge */
     .ccg-page--home .home-feature-card--video .home-feature-video__frame {
         padding: 12px;
         box-sizing: border-box;
     }
 
-    /* Slight perceptual softening vs highlight card */
     .ccg-page--home .home-feature-card--video img {
         filter: brightness(0.92) contrast(0.95);
     }
@@ -161,7 +160,7 @@
 .home-genre-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 32px; /* slightly calmer rhythm */
+    gap: 32px;
     align-items: start;
 }
 
@@ -207,10 +206,36 @@
     transform: translateY(-3px);
 }
 
-@media (max-width: 900px) {
+/* ============================================================
+   MOBILE-FIRST SPACING AUDIT (≤768px)
+   Small, cosmetic-only tightening
+============================================================ */
+
+@media (max-width: 768px) {
+
+    .ccg-page--home .home-hero {
+        margin-bottom: 16px;
+    }
+
+    .ccg-page--home .home-tagline {
+        margin: 10px 0 20px;
+        padding: 12px 0;
+    }
+
+    .ccg-page--home .home-section--highlights {
+        margin: 14px 0 32px;
+    }
+
+    .ccg-page--home .home-section__header {
+        margin-bottom: 16px;
+    }
+
+    .ccg-page--home .home-highlights-grid {
+        gap: 22px;
+    }
+
     .home-genre-grid {
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 26px;
+        gap: 24px;
     }
 }
 
