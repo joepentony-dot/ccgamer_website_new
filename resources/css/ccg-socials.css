@@ -3,7 +3,7 @@
    - Header socials (top-right)
    - Homepage social-strip (below hero)
    - Uses SVG icons from /resources/icons/
-   ============================================================ */
+============================================================ */
 
 /* ---------------------------------------------
    HEADER SOCIAL ICONS
@@ -14,7 +14,14 @@
     align-items: center;
     gap: 0.65rem;
     padding-left: 0.6rem;
-    white-space: nowrap;
+
+    /* CRITICAL FIX:
+       Do NOT globally force nowrap.
+       This allows the header layout engine to
+       resolve tight widths without hiding icons.
+    */
+    flex-wrap: nowrap;
+    min-width: 0;
 }
 
 /* Circular glowing buttons */
@@ -25,9 +32,11 @@
     align-items: center;
     justify-content: center;
 
-    background: radial-gradient(circle at 30% 30%,
+    background: radial-gradient(
+        circle at 30% 30%,
         rgba(255,255,255,0.18),
-        rgba(0,0,0,0.8));
+        rgba(0,0,0,0.8)
+    );
     border-radius: 50%;
     border: 1px solid rgba(255,255,255,0.28);
 
@@ -44,9 +53,11 @@
 
 .ccg-header-socials a:hover {
     transform: translateY(-2px) scale(1.07);
-    background: radial-gradient(circle at 30% 30%,
+    background: radial-gradient(
+        circle at 30% 30%,
         rgba(255,255,255,0.28),
-        rgba(0,0,0,0.85));
+        rgba(0,0,0,0.85)
+    );
     border-color: var(--accent);
 
     box-shadow:
@@ -109,9 +120,22 @@
         width: 22px;
         height: 22px;
     }
+
     .ccg-header-socials {
         gap: 0.35rem;
     }
+}
+
+/* ---------------------------------------------
+   HOMEPAGE HEADER SOCIAL LOCK (INTENTIONAL)
+   ------------------------------------------------
+   Only the HOME page header keeps nowrap.
+   This preserves the cinematic layout there
+   without breaking global header parity.
+--------------------------------------------- */
+
+.ccg-page--home .ccg-header-socials {
+    white-space: nowrap;
 }
 
 /* ============================================================
