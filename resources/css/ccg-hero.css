@@ -1,6 +1,11 @@
 /* ============================================================
-   CCG HERO CSS — OMEGA SAFE STACK VERSION (CLICK-SAFE)
-   Phase P33 — Single Game Mobile Flow Polish
+   CCG HERO CSS — OMEGA SAFE STACK (CONSISTENCY PASS)
+   Phase P34 — Cross-Page Hero Rhythm & Calm
+   ------------------------------------------------------------
+   Scope:
+   • Visual consistency only
+   • No structural or JS changes
+   • Safe across Home / Games / Genres / Single Game
 ============================================================ */
 
 /* ------------------------------------------------------------
@@ -14,19 +19,19 @@
     position: relative;
     overflow: hidden;
     border-radius: 18px;
-    margin-bottom: 28px;
+    margin-bottom: 32px;
 
     background:
         linear-gradient(
             to bottom,
-            rgba(0,0,0,0.75),
-            rgba(0,0,0,0.35),
-            rgba(0,0,0,0.15)
+            rgba(0,0,0,0.78),
+            rgba(0,0,0,0.42),
+            rgba(0,0,0,0.18)
         );
 
     box-shadow:
-        0 24px 60px rgba(0,0,0,0.75),
-        0 0 28px rgba(0,170,255,0.12);
+        0 26px 64px rgba(0,0,0,0.78),
+        0 0 26px rgba(0,170,255,0.10);
 
     isolation: isolate;
 }
@@ -42,7 +47,6 @@
     inset: 0;
     z-index: 0;
     overflow: hidden;
-
     pointer-events: none;
 }
 
@@ -53,15 +57,15 @@
     height: 100%;
     object-fit: cover;
 
-    opacity: 0.55;
+    opacity: 0.56;
 
     filter:
         brightness(0.9)
-        contrast(1.08)
+        contrast(1.06)
         saturate(1);
 
     transform: scale(1.05);
-    animation: ccg-hero-image-breathe 26s ease-in-out infinite;
+    animation: ccg-hero-image-breathe 28s ease-in-out infinite;
     will-change: transform, opacity;
 }
 
@@ -81,26 +85,26 @@
     background:
         radial-gradient(
             circle at top left,
-            rgba(0,170,255,0.18),
+            rgba(0,170,255,0.16),
             transparent 55%
         ),
         radial-gradient(
             circle at bottom right,
-            rgba(255,41,224,0.18),
+            rgba(255,41,224,0.16),
             transparent 60%
         ),
         linear-gradient(
             to bottom,
-            rgba(0,0,0,0.35),
-            rgba(0,0,0,0.65)
+            rgba(0,0,0,0.38),
+            rgba(0,0,0,0.68)
         );
 
-    animation: ccg-hero-overlay-breathe 22s ease-in-out infinite;
+    animation: ccg-hero-overlay-breathe 24s ease-in-out infinite;
     pointer-events: none;
 }
 
 /* ------------------------------------------------------------
-   CONTENT — ABSOLUTE TOP
+   CONTENT LAYER
 ------------------------------------------------------------ */
 
 .ccg-hero__inner,
@@ -109,7 +113,7 @@
 .ccg-genre-hero__inner {
     position: relative;
     z-index: 2;
-    padding: 36px 36px 42px;
+    padding: 38px 38px 44px;
 }
 
 /* ------------------------------------------------------------
@@ -118,24 +122,20 @@
 
 @media (max-width: 768px) {
 
-    /* Reduce hero dominance on phones */
     .game-hero {
-        margin-bottom: 22px;
+        margin-bottom: 24px;
         border-radius: 16px;
     }
 
-    /* Tighter but comfortable padding */
     .game-hero__inner {
-        padding: 22px 20px 26px;
+        padding: 24px 22px 28px;
     }
 
-    /* Calm image motion slightly on mobile */
     .game-hero__bg img {
         animation-duration: 34s;
         opacity: 0.5;
     }
 
-    /* Soften overlay intensity */
     .game-hero::before {
         opacity: 0.9;
     }
@@ -147,12 +147,12 @@
 
 @media (max-width: 420px) {
 
-    .game-hero__inner {
-        padding: 18px 16px 22px;
+    .game-hero {
+        margin-bottom: 20px;
     }
 
-    .game-hero {
-        margin-bottom: 18px;
+    .game-hero__inner {
+        padding: 20px 18px 24px;
     }
 }
 
@@ -162,7 +162,7 @@
 
 @keyframes ccg-hero-image-breathe {
     0%, 100% {
-        opacity: 0.52;
+        opacity: 0.54;
         transform: scale(1.05);
     }
     50% {
@@ -172,6 +172,6 @@
 }
 
 @keyframes ccg-hero-overlay-breathe {
-    0%, 100% { opacity: 0.92; }
+    0%, 100% { opacity: 0.9; }
     50% { opacity: 1; }
 }
