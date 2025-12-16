@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
         // 🔧 FIX: explicit depth-safe path
-        const response = await fetch("../games/games.json", { cache: "no-store" });
+        const response = await fetch("games.json", { cache: "no-store" });
         if (!response.ok) throw new Error(`games.json ${response.status}`);
 
         const games = await response.json();
