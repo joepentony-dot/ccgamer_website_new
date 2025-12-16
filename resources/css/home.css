@@ -1,12 +1,11 @@
 /* ============================================================
    HOME.CSS — OMEGA CINEMATIC (LOCKED HOME CONTRACT)
-   SPLIT COMMIT PASS — Desktop Highlights Left / Video Right
+   RHYTHM & CADENCE PASS — VISUAL ONLY
    ------------------------------------------------------------
    Goals:
-   ✅ Restore full home flow (Hero → Tagline → Highlights → Genres)
-   ✅ Desktop-only 2-col split for highlights
-   ✅ Video can NEVER overpower the left card
-   ✅ Preserve Home Genre Thumbnail Lock (unchanged contract)
+   ✅ Improve vertical rhythm & breathing room
+   ✅ Preserve all existing layout contracts
+   ✅ Zero impact on JS, loaders, thumbnails or cards
 ============================================================ */
 
 /* ============================================================
@@ -26,8 +25,8 @@
 
 .ccg-page--home .home-hero {
     width: 100%;
-    margin-top: 12px;
-    margin-bottom: 16px;
+    margin-top: 16px;
+    margin-bottom: 22px; /* more separation before tagline */
 }
 
 /* prevent accidental collapse */
@@ -41,8 +40,8 @@
 
 .ccg-page--home .home-tagline {
     width: 100%;
-    margin: 10px 0 18px;
-    padding: 14px 0;
+    margin: 14px 0 28px; /* clearer hand-off to highlights */
+    padding: 16px 0;
     opacity: 0.95;
 }
 
@@ -52,14 +51,27 @@
 
 .ccg-page--home .home-section--highlights {
     width: 100%;
-    margin: 10px 0 26px;
+    margin: 18px 0 42px; /* stronger cinematic pause */
+}
+
+/* Section header rhythm */
+.ccg-page--home .home-section__header {
+    margin-bottom: 22px;
+}
+
+.ccg-page--home .home-section__title {
+    margin-bottom: 10px;
+}
+
+.ccg-page--home .home-section__divider {
+    margin-bottom: 6px;
 }
 
 /* Base: stacked */
 .ccg-page--home .home-highlights-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 22px;
+    gap: 26px;
     align-items: start;
 }
 
@@ -67,7 +79,7 @@
 @media (min-width: 980px) {
     .ccg-page--home .home-highlights-grid {
         grid-template-columns: 1fr 1fr;
-        gap: 26px;
+        gap: 30px;
         align-items: stretch;
     }
 }
@@ -103,7 +115,6 @@
 
 /* ============================================================
    FINAL DESKTOP VISUAL BALANCE (COSMETIC ONLY)
-   This is the missing piece
 ============================================================ */
 
 @media (min-width: 1024px) {
@@ -115,7 +126,7 @@
 
     /* Add breathing room so it doesn’t feel edge-to-edge */
     .ccg-page--home .home-feature-card--video .home-feature-video__frame {
-        padding: 10px;
+        padding: 12px;
         box-sizing: border-box;
     }
 
@@ -129,12 +140,12 @@
 .ccg-page--home .home-feature-card .ccg-card__body {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 }
 
 /* Button alignment */
 .ccg-page--home .home-feature-card__btn {
-    margin-top: 6px;
+    margin-top: 8px;
     align-self: flex-start;
 }
 
@@ -150,7 +161,7 @@
 .home-genre-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 28px;
+    gap: 32px; /* slightly calmer rhythm */
     align-items: start;
 }
 
@@ -180,7 +191,7 @@
 }
 
 .home-genre-grid .ccg-genre-tile__body {
-    padding: 12px 14px 14px;
+    padding: 14px 16px 16px;
     text-align: left;
 }
 
@@ -199,12 +210,14 @@
 @media (max-width: 900px) {
     .home-genre-grid {
         grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 26px;
     }
 }
 
 @media (max-width: 600px) {
     .home-genre-grid {
         grid-template-columns: 1fr;
+        gap: 22px;
     }
 
     .home-genre-grid .ccg-genre-tile {
