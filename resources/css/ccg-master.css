@@ -1,17 +1,24 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & TYPOGRAPHY
-   Omega Neon Edition — PARITY LOCK + NAV OPTICAL CENTRE
+   Omega Neon Edition — PARITY LOCK + GLOBAL RHYTHM
    ------------------------------------------------------------
    • Header height parity LOCKED
    • Nav optically centred (viewport-safe)
+   • Global vertical rhythm normalised
+   • Readability & cadence polish
    • Zero layout drift risk
-   • CSS-only, deterministic
 ============================================================ */
 
 :root {
+    /* ========================================================
+       TYPOGRAPHY
+    ======================================================== */
     --ccg-font-main: 'Orbitron', system-ui, sans-serif;
     --ccg-font-body: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 
+    /* ========================================================
+       COLOURS
+    ======================================================== */
     --ccg-color-blue: #00aaff;
     --ccg-color-pink: #ff29e0;
     --ccg-color-cyan: #7fe9ff;
@@ -22,10 +29,26 @@
     --ccg-text-light: #e8ecff;
     --ccg-text-soft: #b5bbdf;
 
+    /* ========================================================
+       NEON
+    ======================================================== */
     --ccg-neon-soft: 0 0 10px rgba(0,170,255,0.35);
     --ccg-neon-strong: 0 0 22px rgba(0,170,255,0.55);
 
+    /* ========================================================
+       MOTION
+    ======================================================== */
     --ccg-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+    /* ========================================================
+       GLOBAL RHYTHM (LOCKED SCALE)
+    ======================================================== */
+    --ccg-space-xxs: 6px;
+    --ccg-space-xs: 10px;
+    --ccg-space-sm: 16px;
+    --ccg-space-md: 24px;
+    --ccg-space-lg: 36px;
+    --ccg-space-xl: 56px;
 
     /* 🔒 Header contract */
     --ccg-header-height: 92px;
@@ -45,9 +68,13 @@ html,
 body {
     margin: 0;
     padding: 0;
+
     background: var(--ccg-bg-dark);
     color: var(--ccg-text-light);
+
     font-family: var(--ccg-font-body);
+    line-height: 1.6;
+
     overflow-x: hidden;
 }
 
@@ -62,7 +89,33 @@ body {
 .ccg-main {
     width: min(1320px, 96%);
     margin: 0 auto;
-    padding-top: 24px;
+    padding-top: var(--ccg-space-md);
+}
+
+/* ============================================================
+   GLOBAL CONTENT RHYTHM
+============================================================ */
+
+.ccg-main section {
+    margin-bottom: var(--ccg-space-xl);
+}
+
+.ccg-main h1,
+.ccg-main h2,
+.ccg-main h3 {
+    font-family: var(--ccg-font-main);
+    line-height: 1.25;
+    margin: 0 0 var(--ccg-space-sm) 0;
+}
+
+.ccg-main p {
+    margin: 0 0 var(--ccg-space-sm) 0;
+    max-width: 78ch;
+    color: var(--ccg-text-light);
+}
+
+.ccg-main p + p {
+    margin-top: var(--ccg-space-xs);
 }
 
 /* ============================================================
@@ -139,11 +192,6 @@ body {
     justify-content: center;
 }
 
-/*
-   🔑 KEY FIX:
-   Nav group is centred within a fixed optical window
-   rather than stretching across the entire 1fr column.
-*/
 .ccg-nav__list {
     display: flex;
     gap: 10px;
@@ -151,7 +199,7 @@ body {
     margin: 0;
     padding: 0;
 
-    max-width: 920px;   /* optical centre clamp */
+    max-width: 920px;
     justify-content: center;
     flex-wrap: nowrap;
 }
@@ -248,5 +296,9 @@ body[data-ccg-mode="amiga"] {
     .ccg-brand__logo {
         width: 44px;
         height: 44px;
+    }
+
+    .ccg-main section {
+        margin-bottom: var(--ccg-space-lg);
     }
 }
