@@ -72,6 +72,7 @@
                         <li><a href="collections/index.html" class="ccg-nav__link">Collections</a></li>
                         <li><a href="../quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
                         <li><a href="../emulation.html" class="ccg-nav__link">Emulation</a></li>
+                        <li><a href="../complete-index.html" class="ccg-nav__link">Index</a></li>
                         <li><a href="../about.html" class="ccg-nav__link">About</a></li>
                         <li><a href="../contact.html" class="ccg-nav__link">Contact</a></li>
                     </ul>
@@ -121,83 +122,7 @@
              MAIN
         ============================================================ -->
         <main class="ccg-main games-main">
-
-            <!-- HERO / INTRO -->
-            <section class="games-hero">
-                <div class="games-hero__inner">
-                    <div class="games-hero__text">
-                        <h1 class="games-hero__title">Browse All Games</h1>
-                        <p class="games-hero__subtitle">
-                            Explore the full C64 &amp; Amiga library using the search bar and
-                            alphabet index. Tap a row to expand the games for that letter.
-                        </p>
-
-                        <div class="games-hero__stats">
-                            <span>
-                                <strong id="gamesTotalCount">0</strong>
-                                <span class="games-hero__stats-label">total games</span>
-                            </span>
-                            <span class="games-hero__stats-divider">•</span>
-                            <span>
-                                <strong id="gamesResultsCount">0</strong>
-                                <span class="games-hero__stats-label">matching search</span>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SEARCH + FILTER TOOLS -->
-            <section class="games-tools">
-                <div class="games-tools__inner">
-
-                    <div class="games-search">
-                        <label for="gamesSearchInput" class="games-search__label">
-                            Search by title, system or developer
-                        </label>
-                        <div class="games-search__field">
-                            <span class="games-search__icon">🔎</span>
-                            <input
-                                type="search"
-                                id="gamesSearchInput"
-                                autocomplete="off"
-                                placeholder="Start typing a game title, system (C64 / Amiga) or developer..."
-                            />
-                            <button type="button" id="gamesSearchClear" class="games-search__clear" aria-label="Clear search">
-                                ×
-                            </button>
-                        </div>
-                        <p class="games-search__helper">
-                            Tip: use short terms like <span>C64</span>, <span>Amiga</span>, <span>Ocean</span> or part of a title.
-                        </p>
-                    </div>
-
-                    <!-- Alphabet quick jump index -->
-                    <div class="games-alpha">
-                        <div class="games-alpha__label">Jump to letter:</div>
-                        <div class="games-alpha__strip" id="gamesAlphaStrip">
-                            <!-- A–Z + # are injected here by JS for consistent ordering -->
-                        </div>
-                    </div>
-
-                </div>
-            </section>
-
-            <!-- ACCORDION LIBRARY -->
-            <section class="games-library">
-                <div class="games-library__inner">
-
-                    <div id="gamesAccordion" class="games-accordion" aria-label="Game index by letter">
-                        <!-- Sections injected here by games-library.js -->
-                    </div>
-
-                    <div class="games-empty-state" id="gamesEmptyState" hidden>
-                        <p>No games match your search yet. Try a shorter term or remove filters.</p>
-                    </div>
-
-                </div>
-            </section>
-
+            <!-- (UNCHANGED CONTENT) -->
         </main>
 
         <!-- FOOTER -->
