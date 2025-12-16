@@ -12,6 +12,69 @@
 }
 
 /* ============================================================
+   ✅ GAMES INDEX — THUMBNAIL SIZE LOCK (PAGE-SCOPED ONLY)
+   ------------------------------------------------------------
+   Fixes: /games/index.html thumbnails rendering FAR TOO BIG
+   Scope: .ccg-page--games-index only
+   Zero impact on collections / genres / single-game pages
+============================================================ */
+
+/* Ensure the injected game cards render as a multi-column grid inside accordion content */
+.ccg-page--games-index .games-accordion__content .games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+    align-items: start;
+}
+
+/* Slightly tighter on medium screens */
+@media (max-width: 980px) {
+    .ccg-page--games-index .games-accordion__content .games-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 16px;
+    }
+}
+
+/* Mobile: still grid, but comfortable (prevents gigantic single-column cards) */
+@media (max-width: 768px) {
+    .ccg-page--games-index .games-accordion__content .games-grid {
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+        gap: 14px;
+    }
+}
+
+/* Preferred markup: thumb wrapper */
+.ccg-page--games-index .ccg-game-card__thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+}
+
+/* Preferred markup: img inside thumb wrapper */
+.ccg-page--games-index .ccg-game-card__thumb img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+    object-position: center;
+}
+
+/* Fallback markup A: direct image child */
+.ccg-page--games-index .ccg-game-card > img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    object-position: center;
+}
+
+/* Fallback markup B: last resort clamp (still page-scoped) */
+.ccg-page--games-index .ccg-game-card img {
+    max-height: 220px;
+}
+
+/* ============================================================
    A–Z CONTROL DECK (NEW) — matches games/index.html structure
    Uses:
    .games-alpha
