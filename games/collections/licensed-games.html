@@ -11,7 +11,7 @@
 
     <link rel="icon" href="../../favicon.ico" />
 
-    <!-- REQUIRED FONTS -->
+    <!-- REQUIRED FONT RESTORE -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     <!-- GLOBAL CSS -->
@@ -21,12 +21,9 @@
     <link rel="stylesheet" href="../../resources/css/ccg-anim.css" />
     <link rel="stylesheet" href="../../resources/css/ccg-overlays.css" />
     <link rel="stylesheet" href="../../resources/css/ccg-socials.css" />
-
-    <!-- CARD + PAGE CSS -->
-    <link rel="stylesheet" href="../../resources/css/ccg-cards.css" />
     <link rel="stylesheet" href="../../resources/css/genre.css" />
 
-    <!-- FOOTER CSS (ISOLATED) -->
+    <!-- FOOTER CSS -->
     <link rel="stylesheet" href="../../resources/css/ccg-footer.css" />
 </head>
 
@@ -34,7 +31,7 @@
       data-ccg-mode="c64"
       data-collection="Licensed Games">
 
-<!-- BACKGROUNDS -->
+<!-- BACKGROUND -->
 <div class="ccg-bg">
     <div class="ccg-bg-starfield"></div>
     <div class="ccg-bg-grid"></div>
@@ -44,11 +41,12 @@
 <div class="ccg-page ccg-page--collection-single">
 
 <!-- ============================================================
-     HEADER
+     HEADER — PARITY RESTORED
 ============================================================ -->
 <header class="ccg-header">
     <div class="ccg-header-inner">
 
+        <!-- BRAND -->
         <a href="../../home.html" class="ccg-brand">
             <img src="../../resources/images/ccgamer-logo.png"
                  alt="Cheeky Commodore Gamer logo"
@@ -64,6 +62,7 @@
             </div>
         </a>
 
+        <!-- NAV -->
         <nav class="ccg-nav" aria-label="Primary navigation">
             <ul class="ccg-nav__list">
                 <li><a href="../../home.html" class="ccg-nav__link">Home</a></li>
@@ -72,13 +71,14 @@
                 <li><a href="index.html" class="ccg-nav__link ccg-nav__link--active">Collections</a></li>
                 <li><a href="../../quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
                 <li><a href="../../emulation.html" class="ccg-nav__link">Emulation</a></li>
+                <li><a href="../../complete-index.html" class="ccg-nav__link">Index</a></li>
                 <li><a href="../../about.html" class="ccg-nav__link">About</a></li>
                 <li><a href="../../contact.html" class="ccg-nav__link">Contact</a></li>
             </ul>
         </nav>
 
+        <!-- ACTIONS -->
         <div class="ccg-header-actions">
-
             <button class="ccg-mode-toggle" type="button" data-ccg-mode-toggle>
                 <span class="ccg-mode-toggle__pill">
                     <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
@@ -86,29 +86,8 @@
                     <span class="ccg-mode-toggle__thumb"></span>
                 </span>
             </button>
-
-            <div class="ccg-header-socials">
-                <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube">
-                    <span class="ccg-socials__icon ccg-socials__icon--yt"></span>
-                </a>
-                <a href="https://patreon.com/CheekyCommodoreGamer" aria-label="Patreon">
-                    <span class="ccg-socials__icon ccg-socials__icon--patreon"></span>
-                </a>
-                <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" aria-label="PayPal">
-                    <span class="ccg-socials__icon ccg-socials__icon--paypal"></span>
-                </a>
-                <a href="https://twitter.com/CheekyC64Gamer" aria-label="Twitter/X">
-                    <span class="ccg-socials__icon ccg-socials__icon--x"></span>
-                </a>
-                <a href="https://www.facebook.com/cheekycommodoregamer" aria-label="Facebook">
-                    <span class="ccg-socials__icon ccg-socials__icon--fb"></span>
-                </a>
-                <a href="https://discord.gg/83Xw9ktAn4" aria-label="Discord">
-                    <span class="ccg-socials__icon ccg-socials__icon--discord"></span>
-                </a>
-            </div>
-
         </div>
+
     </div>
 
     <div class="ccg-header-neon-strip"></div>
