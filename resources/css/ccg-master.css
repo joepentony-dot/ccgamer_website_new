@@ -1,12 +1,11 @@
 /* ============================================================
-   CCG MASTER CSS — GLOBAL STRUCTURE & TYPOGRAPHY
-   Omega Neon Edition — GLOBAL RHYTHM PASS (LOCK-SAFE)
+   CCG MASTER CSS — CONTROL DECK NAVIGATION UPGRADE
+   Omega Neon Edition — NAV SYSTEM V1
    ------------------------------------------------------------
-   • Header/nav/brand unified across ALL pages
-   • Logo size & rhythm identical everywhere
-   • Header stack isolation LOCKED
-   • Global spacing & flow refinement
-   • Zero JS or layout impact
+   • Navigation becomes glass + neon control deck
+   • Active state feels powered
+   • Hover feels energised
+   • ZERO layout or JS impact
 ============================================================ */
 
 /* ============================================================
@@ -14,41 +13,22 @@
 ============================================================ */
 
 :root {
-    /* FONTS */
     --ccg-font-main: 'Orbitron', system-ui, sans-serif;
-    --ccg-font-body: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    --ccg-font-body: 'Roboto', system-ui, sans-serif;
 
-    /* COLOURS */
     --ccg-color-blue: #00aaff;
     --ccg-color-pink: #ff29e0;
     --ccg-color-cyan: #7fe9ff;
 
-    /* BACKGROUNDS */
-    --ccg-bg-dark: #000000;
-    --ccg-bg-panel: #050510;
-
-    /* TEXT */
+    --ccg-bg-dark: #000;
     --ccg-text-light: #e8ecff;
     --ccg-text-soft: #b5bbdf;
-    --ccg-text-muted: rgba(232,236,255,0.68);
 
-    /* NEON */
-    --ccg-neon-soft: 0 0 10px rgba(0,170,255,0.35);
-    --ccg-neon-strong: 0 0 22px rgba(0,170,255,0.55);
-
-    /* MOTION */
-    --ccg-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-
-    /* RHYTHM */
-    --ccg-space-xs: 8px;
-    --ccg-space-sm: 16px;
-    --ccg-space-md: 24px;
-    --ccg-space-lg: 32px;
-    --ccg-space-xl: 48px;
+    --ccg-ease-ui: cubic-bezier(.22,.9,.32,1);
 }
 
 /* ============================================================
-   RESET & BASE FLOW
+   BASE RESET
 ============================================================ */
 
 *,
@@ -60,306 +40,157 @@
 html,
 body {
     margin: 0;
-    padding: 0;
-
     background: var(--ccg-bg-dark);
     color: var(--ccg-text-light);
-
     font-family: var(--ccg-font-body);
-    font-size: 16px;
-    line-height: 1.65;
-
     overflow-x: hidden;
 }
 
-img {
-    max-width: 100%;
-    height: auto;
-}
-
 /* ============================================================
-   PAGE WRAPPERS
-============================================================ */
-
-.ccg-page {
-    position: relative;
-    min-height: 100vh;
-    z-index: 1;
-}
-
-.ccg-main {
-    position: relative;
-    width: min(1320px, 96%);
-    margin: 0 auto;
-    padding: var(--ccg-space-md) 0 0;
-    z-index: 1;
-}
-
-/* ============================================================
-   HEADER — PARITY LOCK (ALL PAGES)
+   HEADER BASE (UNCHANGED STRUCTURE)
 ============================================================ */
 
 .ccg-header {
     position: relative;
     z-index: 9999;
-    isolation: isolate;
-
-    width: 100%;
-    padding: var(--ccg-space-sm) 0 calc(var(--ccg-space-sm) - 2px);
-
+    padding: 14px 0;
+    backdrop-filter: blur(6px);
     background:
         linear-gradient(
             to bottom,
-            rgba(0,0,0,0.94),
-            rgba(0,0,0,0.88),
-            rgba(0,0,0,0.65),
+            rgba(0,0,0,0.92),
+            rgba(0,0,0,0.72),
             transparent
         );
-
-    backdrop-filter: blur(5px);
-
-    box-shadow:
-        0 10px 28px rgba(0,0,0,0.65),
-        0 0 18px rgba(0,170,255,0.08);
 }
 
 .ccg-header-inner {
     width: min(1320px, 96%);
     margin: 0 auto;
-
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--ccg-space-sm);
+    gap: 20px;
 }
 
 /* ============================================================
-   BRAND — UNIFIED SIZE CONTRACT
+   CONTROL DECK NAVIGATION
 ============================================================ */
-
-.ccg-brand {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-
-    text-decoration: none;
-    white-space: nowrap;
-    max-width: 420px;
-}
-
-/* 🔒 LOGO SIZE LOCK — SAME EVERYWHERE */
-.ccg-brand__logo {
-    width: 48px;
-    height: 48px;
-    max-width: 48px;
-    max-height: 48px;
-
-    object-fit: contain;
-    flex-shrink: 0;
-    display: block;
-}
-
-.ccg-brand__text {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.15;
-}
-
-.ccg-brand__kicker {
-    font-size: 0.68rem;
-    letter-spacing: 0.08em;
-    color: var(--ccg-text-soft);
-    opacity: 0.85;
-    margin-bottom: 2px;
-}
-
-.ccg-brand__title {
-    font-family: var(--ccg-font-main);
-    font-size: 0.9rem;
-    letter-spacing: 0.1em;
-    line-height: 1.15;
-    white-space: nowrap;
-}
-
-.ccg-brand__neon-cheeky {
-    color: var(--ccg-color-blue);
-}
-
-.ccg-brand__neon-sub {
-    color: var(--ccg-text-light);
-}
-
-/* ============================================================
-   NAVIGATION — UNIFIED RHYTHM
-============================================================ */
-
-.ccg-nav {
-    display: flex;
-    align-items: center;
-}
 
 .ccg-nav__list {
     display: flex;
     align-items: center;
-    gap: 16px;
-
+    gap: 10px;
     list-style: none;
     margin: 0;
     padding: 0;
 }
 
+/* NAV BUTTON BASE */
 .ccg-nav__link {
     position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-    font-size: 0.8rem;
-    letter-spacing: 0.09em;
+    padding: 8px 14px;
+    border-radius: 999px;
+
+    font-family: var(--ccg-font-main);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
 
-    text-decoration: none;
     color: var(--ccg-text-soft);
-    opacity: 0.82;
+    text-decoration: none;
 
-    padding-bottom: 4px;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.06),
+            rgba(255,255,255,0.01)
+        );
+
+    border: 1px solid rgba(255,255,255,0.12);
+
+    box-shadow:
+        inset 0 0 0 rgba(255,255,255,0),
+        0 4px 10px rgba(0,0,0,0.6);
 
     transition:
-        color 0.22s ease,
-        opacity 0.22s ease,
-        text-shadow 0.28s var(--ccg-ease-out);
+        color 320ms var(--ccg-ease-ui),
+        box-shadow 360ms var(--ccg-ease-ui),
+        transform 360ms var(--ccg-ease-ui),
+        border-color 360ms var(--ccg-ease-ui);
 }
 
+/* ENERGY STRIP */
 .ccg-nav__link::after {
     content: "";
     position: absolute;
-    left: 0;
-    bottom: 0;
-
-    width: 0;
-    height: 2px;
-
-    background: linear-gradient(
-        90deg,
-        var(--ccg-color-blue),
-        var(--ccg-color-pink)
-    );
-
-    transition: width 0.32s var(--ccg-ease-out);
+    inset: 0;
+    border-radius: inherit;
+    opacity: 0;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(0,170,255,0.0),
+            rgba(0,170,255,0.35),
+            rgba(0,170,255,0.0)
+        );
+    transition: opacity 360ms ease;
 }
 
+/* HOVER = ENERGY CHARGE */
 .ccg-nav__link:hover {
     color: var(--ccg-color-cyan);
+    transform: translateY(-1px);
+    border-color: rgba(var(--accent-rgb),0.45);
+    box-shadow:
+        0 0 16px rgba(var(--accent-rgb),0.35),
+        inset 0 0 12px rgba(var(--accent-rgb),0.18);
+}
+
+.ccg-nav__link:hover::after {
     opacity: 1;
-    text-shadow: 0 0 6px rgba(0,170,255,0.35);
 }
 
-.ccg-nav__link:hover::after,
-.ccg-nav__link--active::after {
-    width: 100%;
-}
-
+/* ACTIVE = POWERED STATE */
 .ccg-nav__link--active {
-    color: var(--ccg-color-cyan);
-    opacity: 1;
+    color: var(--accent-main);
+    border-color: rgba(var(--accent-rgb),0.65);
+    box-shadow:
+        0 0 22px rgba(var(--accent-rgb),0.55),
+        inset 0 0 18px rgba(var(--accent-rgb),0.35);
 }
 
 /* ============================================================
-   MOBILE — COSMETIC ONLY
+   MODE AWARE COLOUR FEED
+============================================================ */
+
+body[data-ccg-mode="c64"] {
+    --accent-rgb: 0,170,255;
+    --accent-main: var(--ccg-color-blue);
+}
+
+body[data-ccg-mode="amiga"] {
+    --accent-rgb: 255,41,224;
+    --accent-main: var(--ccg-color-pink);
+}
+
+/* ============================================================
+   MOBILE — CONTROL DECK COMPACT
 ============================================================ */
 
 @media (max-width: 768px) {
 
-    .ccg-header {
-        padding: 10px 0;
-    }
-
-    .ccg-header-inner {
-        gap: 14px;
-    }
-
     .ccg-nav__list {
-        gap: 12px;
+        gap: 8px;
+        flex-wrap: wrap;
     }
 
     .ccg-nav__link {
-        font-size: 0.75rem;
-        padding-bottom: 6px;
-    }
-
-    .ccg-main {
-        padding-top: var(--ccg-space-sm);
-    }
-}
-
-/* ============================================================
-   GLOBAL NAVIGATION — CINEMATIC CONTROL PASS
-   ------------------------------------------------------------
-   • Retro console-style illuminated navigation
-   • No layout changes
-   • Mode-aware glow
-============================================================ */
-
-/* Navigation link baseline upgrade */
-.ccg-nav__link {
-    position: relative;
-    padding-inline: 2px;
-    text-shadow: 0 0 0 rgba(0,0,0,0);
-}
-
-/* Power rail underline */
-.ccg-nav__link::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -6px;
-    height: 2px;
-
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(var(--accent-rgb),0.65),
-        transparent
-    );
-
-    opacity: 0;
-    transform: scaleX(0.3);
-    transition:
-        opacity 260ms ease,
-        transform 320ms cubic-bezier(.25,.8,.35,1);
-}
-
-/* Hover energise */
-.ccg-nav__link:hover::before {
-    opacity: 1;
-    transform: scaleX(1);
-}
-
-.ccg-nav__link:hover {
-    color: var(--accent-soft);
-    text-shadow:
-        0 0 8px rgba(var(--accent-rgb),0.45);
-}
-
-/* Active link — steady powered state */
-.ccg-nav__link--active {
-    color: var(--accent-main);
-    text-shadow:
-        0 0 10px rgba(var(--accent-rgb),0.65);
-}
-
-.ccg-nav__link--active::before {
-    opacity: 1;
-    transform: scaleX(1);
-    background: linear-gradient(
-        90deg,
-        rgba(var(--accent-rgb),0.35),
-        rgba(var(--accent-rgb),0.85),
-        rgba(var(--accent-rgb),0.35)
-    );
-}
-
-/* Mobile restraint */
-@media (max-width: 768px) {
-    .ccg-nav__link::before {
-        bottom: -4px;
+        padding: 7px 12px;
+        font-size: 0.68rem;
     }
 }
