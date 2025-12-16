@@ -1,6 +1,6 @@
 /* ============================================================
-   GAMES.CSS — STABLE FUNCTIONAL RESTORE + OMEGA WOW
-   Phase P30 — Accordion Cinematic Polish
+   GAMES.CSS — STABLE FUNCTIONAL RESTORE
+   Phase P31 — A–Z CONTROL DECK + ACCORDION WOW (SAFE)
 ============================================================ */
 
 /* ============================================================
@@ -12,7 +12,207 @@
 }
 
 /* ============================================================
-   ALPHABET STRIP — BASE (DESKTOP)
+   A–Z CONTROL DECK (NEW) — matches games/index.html structure
+   Uses:
+   .games-alpha
+   .games-alpha__label
+   .games-alpha__strip
+   .games-alpha__letter (buttons injected by JS)
+============================================================ */
+
+.games-alpha {
+    margin: 14px 0 18px;
+}
+
+.games-alpha__label {
+    font-family: var(--ccg-font-main);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ccg-text-soft);
+    opacity: 0.92;
+    margin-bottom: 10px;
+}
+
+/* The unified “rail” */
+.games-alpha__strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    padding: 12px 12px;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(0,0,0,0.78),
+            rgba(20,20,46,0.55)
+        );
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    box-shadow:
+        inset 0 0 0 1px rgba(0,0,0,0.65),
+        0 14px 34px rgba(0,0,0,0.70),
+        0 0 18px rgba(var(--accent-rgb), 0.10);
+
+    isolation: isolate;
+}
+
+/* Individual “modules” */
+.games-alpha__letter {
+    min-width: 34px;
+    height: 34px;
+    padding: 0 10px;
+
+    border-radius: 12px;
+
+    font-family: var(--ccg-font-main);
+    font-size: 0.76rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.06),
+            rgba(0,0,0,0.55)
+        );
+
+    color: var(--ccg-text-light);
+
+    border: 1px solid rgba(255,255,255,0.10);
+    cursor: pointer;
+
+    position: relative;
+    transform: translateZ(0);
+
+    transition:
+        transform 0.28s var(--ccg-ease-out),
+        box-shadow 0.38s var(--ccg-ease-out),
+        border-color 0.32s ease,
+        background 0.32s ease,
+        color 0.32s ease;
+
+    box-shadow:
+        0 8px 18px rgba(0,0,0,0.55),
+        inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+/* Hover = “energy build-up” */
+.games-alpha__letter:hover:not(:disabled) {
+    color: var(--accent-soft);
+
+    border-color: rgba(var(--accent-rgb), 0.32);
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(var(--accent-rgb),0.14),
+            rgba(0,0,0,0.62)
+        );
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 14px 28px rgba(0,0,0,0.72),
+        0 0 18px rgba(var(--accent-rgb), 0.22),
+        inset 0 0 0 1px rgba(var(--accent-rgb), 0.18);
+}
+
+/* Press = “mechanical confirmation” */
+.games-alpha__letter:active:not(:disabled) {
+    transform: translateY(-1px) scale(0.985);
+
+    box-shadow:
+        0 12px 24px rgba(0,0,0,0.72),
+        0 0 22px rgba(var(--accent-rgb), 0.32),
+        inset 0 0 0 1px rgba(var(--accent-rgb), 0.24);
+}
+
+/* Keyboard parity */
+.games-alpha__letter:focus-visible {
+    outline: none;
+
+    box-shadow:
+        0 14px 28px rgba(0,0,0,0.72),
+        0 0 0 2px rgba(var(--accent-rgb), 0.26),
+        0 0 18px rgba(var(--accent-rgb), 0.24),
+        inset 0 0 0 1px rgba(var(--accent-rgb), 0.18);
+}
+
+/* Dormant letters (disabled) = powered down */
+.games-alpha__letter:disabled {
+    cursor: not-allowed;
+    opacity: 0.38;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.03),
+            rgba(0,0,0,0.60)
+        );
+
+    border-color: rgba(255,255,255,0.06);
+
+    box-shadow:
+        0 6px 14px rgba(0,0,0,0.55),
+        inset 0 0 0 1px rgba(255,255,255,0.03);
+
+    transform: none;
+}
+
+/* Mobile: becomes a single “scrolling control deck” */
+@media (max-width: 768px) {
+
+    .games-alpha__strip {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        gap: 10px;
+        padding: 12px 10px 14px;
+
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .games-alpha__strip::-webkit-scrollbar {
+        display: none;
+    }
+
+    .games-alpha__letter {
+        min-width: 46px;
+        height: 46px;
+        border-radius: 14px;
+
+        font-size: 0.82rem;
+
+        flex-shrink: 0;
+    }
+
+    .games-alpha__letter:hover:not(:disabled) {
+        transform: none;
+    }
+
+    .games-alpha__letter:active:not(:disabled) {
+        transform: scale(0.965);
+    }
+}
+
+/* Very small phones */
+@media (max-width: 420px) {
+
+    .games-alpha__letter {
+        min-width: 44px;
+        height: 44px;
+    }
+}
+
+/* ============================================================
+   LEGACY A–Z STRIP (kept for compatibility if any older markup exists)
 ============================================================ */
 
 .games-alphabet {
@@ -50,49 +250,129 @@
 
 .games-alphabet button.is-active {
     background: rgba(var(--accent-rgb),0.28);
-    box-shadow: 0 0 14px rgba(var(--accent-rgb),0.55);
+    box-shadow:
+        0 0 14px rgba(var(--accent-rgb),0.55);
 }
 
 /* ============================================================
-   MOBILE — A–Z STRIP
+   MOBILE — GAME CARD GRID SPACING (INDEX ONLY)
 ============================================================ */
 
 @media (max-width: 768px) {
 
-    .games-alphabet {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        overflow-y: hidden;
-
-        gap: 10px;
-        padding: 10px 6px 14px;
-
-        scrollbar-width: none;
-        -webkit-overflow-scrolling: touch;
+    /* Accordion content spacing */
+    .games-accordion__content {
+        padding: 12px 0 18px;
     }
 
-    .games-alphabet::-webkit-scrollbar {
-        display: none;
+    /* Grid breathes vertically */
+    .games-accordion__content .games-grid {
+        gap: 18px;
     }
 
-    .games-alphabet button {
-        min-width: 42px;
-        height: 42px;
-
-        font-size: 0.8rem;
-        border-radius: 10px;
-
-        flex-shrink: 0;
+    /* Individual card comfort */
+    .games-accordion__content .ccg-game-card {
+        border-radius: 16px;
     }
 
-    .games-alphabet button:active {
-        transform: scale(0.94);
-        box-shadow: 0 0 14px rgba(var(--accent-rgb),0.6);
+    /* Card body padding refinement */
+    .games-accordion__content .ccg-game-card__body {
+        padding: 14px 14px 16px;
+    }
+
+    /* Title readability */
+    .games-accordion__content .ccg-game-card__title {
+        font-size: 0.85rem;
+        line-height: 1.35;
+        margin-bottom: 6px;
+    }
+
+    /* Meta spacing */
+    .games-accordion__content .ccg-game-card__meta {
+        font-size: 0.72rem;
+        opacity: 0.85;
     }
 }
 
 /* ============================================================
-   ACCORDION — BASE STRUCTURE (UNCHANGED)
+   VERY SMALL PHONES (≤ 420px)
+============================================================ */
+
+@media (max-width: 420px) {
+
+    .games-accordion__content .games-grid {
+        gap: 16px;
+    }
+
+    .games-accordion__content .ccg-game-card__body {
+        padding: 12px 12px 14px;
+    }
+}
+
+/* ============================================================
+   SINGLE GAME PAGE — MOBILE RHYTHM PASS (SAFE)
+   Scope: ccg-page--single-game ONLY
+============================================================ */
+
+@media (max-width: 768px) {
+
+    /* Reduce hero → content collision */
+    .ccg-page--single-game .ccg-main {
+        padding-top: 6px;
+    }
+
+    /* Section breathing room */
+    .ccg-page--single-game section {
+        margin-bottom: 28px;
+    }
+
+    /* Headings feel less crushed */
+    .ccg-page--single-game h2,
+    .ccg-page--single-game h3 {
+        margin-bottom: 10px;
+    }
+
+    /* Body text rhythm */
+    .ccg-page--single-game p {
+        margin-bottom: 12px;
+        line-height: 1.55;
+    }
+
+    /* Media blocks (video, screenshots, embeds) */
+    .ccg-page--single-game .ccg-card,
+    .ccg-page--single-game .ccg-media,
+    .ccg-page--single-game iframe {
+        margin-bottom: 22px;
+    }
+
+    /* Button groups don’t feel cramped */
+    .ccg-page--single-game .ccg-btn {
+        margin-top: 10px;
+    }
+}
+
+/* ============================================================
+   VERY SMALL PHONES — SINGLE GAME
+============================================================ */
+
+@media (max-width: 420px) {
+
+    .ccg-page--single-game section {
+        margin-bottom: 22px;
+    }
+
+    .ccg-page--single-game p {
+        margin-bottom: 10px;
+    }
+}
+
+/* ============================================================
+   GAMES INDEX — ACCORDION WOW PASS (OMEGA CINEMATIC)
+   Uses classes confirmed from games-library.js:
+   .games-accordion__group
+   .games-accordion__header
+   .games-accordion__content
+   .games-accordion__group.is-open
 ============================================================ */
 
 .games-accordion__group {
@@ -102,19 +382,11 @@
     transition: box-shadow 0.45s var(--ccg-ease-out);
 }
 
-/* ============================================================
-   ACCORDION WOW — ACTIVE GROUP GLOW
-============================================================ */
-
 .games-accordion__group.is-open {
     box-shadow:
         0 14px 32px rgba(0,0,0,0.85),
-        0 0 22px rgba(var(--accent-rgb),0.22);
+        0 0 22px rgba(var(--accent-rgb), 0.22);
 }
-
-/* ============================================================
-   ACCORDION HEADER — NEON INTERACTION
-============================================================ */
 
 .games-accordion__header {
     width: 100%;
@@ -158,10 +430,6 @@
     transform: scale(0.985);
 }
 
-/* ============================================================
-   ACCORDION OPEN STATE — THIS IS THE WOW
-============================================================ */
-
 .games-accordion__group.is-open
 .games-accordion__header {
     color: var(--accent-main);
@@ -181,10 +449,6 @@
         0 0 10px rgba(var(--accent-rgb),0.55);
 }
 
-/* ============================================================
-   ACCORDION CONTENT — CINEMATIC REVEAL
-============================================================ */
-
 .games-accordion__content {
     padding: 18px 14px 22px;
 
@@ -198,15 +462,10 @@
     animation: ccg-accordion-open 420ms var(--ccg-ease-out);
 }
 
-/* Cards inside open accordion rise gently */
 .games-accordion__group.is-open
 .games-accordion__content .ccg-game-card {
     animation: ccg-accordion-card-rise 420ms var(--ccg-ease-out);
 }
-
-/* ============================================================
-   MOBILE — CALM, TACTILE
-============================================================ */
 
 @media (max-width: 768px) {
 
@@ -221,10 +480,6 @@
             0 0 18px rgba(var(--accent-rgb),0.25);
     }
 }
-
-/* ============================================================
-   ANIMATIONS
-============================================================ */
 
 @keyframes ccg-accordion-open {
     from {
