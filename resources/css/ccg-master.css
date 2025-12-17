@@ -391,3 +391,99 @@ body[data-ccg-mode="amiga"] {
         margin-bottom: var(--ccg-space-lg);
     }
 }
+
+/* ============================================================
+   GLOBAL LOGO — WEIGHT & GLOW REFINEMENT
+   Phase L1 — SITE-WIDE (SAFE OVERRIDE)
+   ------------------------------------------------------------
+   • Improves logo presence (less skinny)
+   • Adds premium neon glow
+   • Mode-aware (C64 / Amiga)
+   • ZERO layout changes
+   • Header structure untouched
+============================================================ */
+
+/* ------------------------------------------------------------
+   LOGO IMAGE — WEIGHT & PRESENCE
+------------------------------------------------------------ */
+
+.ccg-brand__logo {
+    width: 56px;                /* slightly wider = less skinny */
+    height: auto;
+
+    filter:
+        drop-shadow(0 0 6px rgba(0,0,0,0.65))
+        drop-shadow(0 0 12px rgba(var(--accent-rgb), 0.35));
+
+    transition:
+        filter 0.35s ease,
+        transform 0.35s ease;
+}
+
+/* Hover polish (subtle, premium) */
+.ccg-brand:hover .ccg-brand__logo {
+    transform: translateY(-1px);
+    filter:
+        drop-shadow(0 0 8px rgba(0,0,0,0.75))
+        drop-shadow(0 0 18px rgba(var(--accent-rgb), 0.55));
+}
+
+/* ------------------------------------------------------------
+   LOGO TEXT — WEIGHT + READABILITY
+------------------------------------------------------------ */
+
+.ccg-brand__title {
+    letter-spacing: 0.08em; /* slightly tighter = more solid */
+}
+
+.ccg-brand__neon-cheeky {
+    font-weight: 700; /* was visually too thin */
+    text-shadow:
+        0 0 10px rgba(var(--accent-rgb), 0.55),
+        0 0 22px rgba(var(--accent-rgb), 0.35),
+        0 12px 36px rgba(0,0,0,0.85);
+}
+
+.ccg-brand__neon-sub {
+    font-weight: 500;
+    opacity: 0.9;
+
+    text-shadow:
+        0 0 6px rgba(var(--accent-rgb), 0.25),
+        0 8px 24px rgba(0,0,0,0.85);
+}
+
+/* ------------------------------------------------------------
+   MODE-SPECIFIC INTENSITY (SAFE)
+------------------------------------------------------------ */
+
+/* C64 = slightly crisper blue */
+body[data-ccg-mode="c64"] .ccg-brand__logo {
+    filter:
+        drop-shadow(0 0 6px rgba(0,0,0,0.65))
+        drop-shadow(0 0 14px rgba(0,170,255,0.45));
+}
+
+/* Amiga = warmer neon pink */
+body[data-ccg-mode="amiga"] .ccg-brand__logo {
+    filter:
+        drop-shadow(0 0 6px rgba(0,0,0,0.65))
+        drop-shadow(0 0 16px rgba(255,41,224,0.45));
+}
+
+/* ------------------------------------------------------------
+   MOBILE SAFETY — NO OVERSHADOWING
+------------------------------------------------------------ */
+
+@media (max-width: 768px) {
+
+    .ccg-brand__logo {
+        width: 52px; /* keeps header balanced on mobile */
+    }
+
+    .ccg-brand__neon-cheeky {
+        text-shadow:
+            0 0 8px rgba(var(--accent-rgb), 0.45),
+            0 0 16px rgba(var(--accent-rgb), 0.28);
+    }
+}
