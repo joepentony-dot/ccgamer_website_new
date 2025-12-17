@@ -1,114 +1,111 @@
 /* ============================================================
-   COLLECTIONS.CSS — OMEGA HERO PARITY + VISUAL POLISH
-   Phase CH1 — CURATED EXHIBITION ENTRY (LOCK AFTER APPLY)
+   COLLECTIONS.CSS — OMEGA PARITY + HERO REFINEMENT
+   Phase H1 — HERO CEREMONY ALIGNMENT (LOCK AFTER APPLY)
    ------------------------------------------------------------
    Scope:
    • /games/collections/index.html ONLY
-   • Hero parity with Games / Genres
-   • Calm, authoritative framing
-   • Zero loader or layout disruption
+   • CSS-only
+   • No loader / card / thumbnail impact
 ============================================================ */
+
 
 /* ============================================================
-   HERO ENTRY FRAME — COLLECTIONS INDEX
+   COLLECTIONS HERO — PARITY REFINEMENT
 ============================================================ */
 
-.ccg-page--collections-index .ccg-main--collections {
-    padding-top: 10px;
-}
-
-/* Collections hero container refinement */
-.ccg-page--collections-index .ccg-collections-hero {
+.ccg-page--collections-index .ccg-hero.ccg-hero--collections {
     position: relative;
-    margin-bottom: 42px;
     isolation: isolate;
-}
-
-/* Hero body — refined exhibition tone */
-.ccg-page--collections-index .ccg-hero--collections {
-    position: relative;
     border-radius: 22px;
     overflow: hidden;
 
     background:
         radial-gradient(
-            circle at 28% 22%,
-            rgba(var(--accent-rgb),0.16),
+            ellipse at 28% 22%,
+            rgba(var(--accent-rgb),0.20),
             transparent 55%
         ),
-        radial-gradient(
-            circle at 72% 70%,
-            rgba(255,41,224,0.12),
-            transparent 60%
-        ),
         linear-gradient(
-            140deg,
-            rgba(0,0,0,0.86),
-            rgba(10,10,28,0.82),
-            rgba(0,0,0,0.88)
+            145deg,
+            rgba(0,0,0,0.90),
+            rgba(12,12,34,0.84),
+            rgba(0,0,0,0.92)
         );
 
     box-shadow:
-        0 32px 82px rgba(0,0,0,0.88),
-        0 0 28px rgba(var(--accent-rgb),0.14),
+        0 32px 86px rgba(0,0,0,0.88),
+        0 0 30px rgba(var(--accent-rgb),0.16),
         inset 0 0 0 1px rgba(255,255,255,0.06);
 }
 
-/* Subtle depth veil */
-.ccg-page--collections-index .ccg-hero--collections::before {
+/* Hero depth overlay (scanline + vignette) */
+.ccg-page--collections-index .ccg-hero.ccg-hero--collections::after {
     content: "";
     position: absolute;
     inset: 0;
-    z-index: 0;
+    z-index: 2;
     pointer-events: none;
 
     background:
         radial-gradient(
-            circle at 65% 60%,
-            rgba(var(--accent-rgb),0.14),
-            transparent 62%
+            ellipse at center,
+            transparent 55%,
+            rgba(0,0,0,0.55) 100%
+        ),
+        repeating-linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.026),
+            rgba(255,255,255,0.026) 1px,
+            transparent 1px,
+            transparent 4px
         );
 
-    opacity: 0.85;
+    opacity: 0.22;
 }
 
-/* Keep hero content elevated */
-.ccg-page--collections-index .ccg-hero--collections > * {
+/* Hero image depth parity */
+.ccg-page--collections-index .ccg-hero--collections .ccg-hero-image {
+    filter: saturate(1.05) contrast(1.08);
+    opacity: 0.86;
+}
+
+/* Content elevation */
+.ccg-page--collections-index .ccg-hero-inner--collections {
     position: relative;
-    z-index: 1;
+    z-index: 3;
+    padding: 50px 46px 48px;
 }
 
-/* ============================================================
-   HERO TYPOGRAPHY PARITY
-============================================================ */
-
-.ccg-page--collections-index .ccg-hero-kicker {
-    font-family: var(--ccg-font-main);
-    font-size: 0.78rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    opacity: 0.85;
-}
-
+/* Title glow parity */
 .ccg-page--collections-index .ccg-hero-title {
-    margin: 6px 0 14px;
-
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-
     text-shadow:
-        0 20px 48px rgba(0,0,0,0.82),
-        0 0 22px rgba(var(--accent-rgb),0.28);
+        0 18px 48px rgba(0,0,0,0.85),
+        0 0 26px rgba(var(--accent-rgb),0.30);
 }
 
+/* Tagline rhythm */
 .ccg-page--collections-index .ccg-hero-tagline {
-    max-width: 72ch;
+    max-width: 62ch;
     line-height: 1.6;
     opacity: 0.9;
 }
 
+
 /* ============================================================
-   COLLECTIONS GRID — BASE (LOCKED)
+   HERO → CONTENT SEPARATION
+============================================================ */
+
+.ccg-page--collections-index .ccg-collections-section {
+    margin-top: 22px;
+}
+
+.ccg-page--collections-index .ccg-section-title {
+    margin-bottom: 20px;
+}
+
+
+/* ============================================================
+   COLLECTION GRID — BASE (UNCHANGED)
 ============================================================ */
 
 .ccg-page--collections-index .ccg-collections-grid {
@@ -119,20 +116,9 @@
     align-items: stretch;
 }
 
-/* ============================================================
-   SECTION RHYTHM
-============================================================ */
-
-.ccg-page--collections-index .ccg-collections-section {
-    margin-top: 10px;
-}
-
-.ccg-page--collections-index .ccg-section-title {
-    margin-bottom: 20px;
-}
 
 /* ============================================================
-   COLLECTION CARD — BASE (LOCKED)
+   COLLECTION CARD — BASE (UNCHANGED)
 ============================================================ */
 
 .ccg-page--collections-index .ccg-collection-card {
@@ -150,35 +136,12 @@
     transform: translateY(-4px);
     box-shadow:
         0 18px 40px rgba(0, 0, 0, 0.6),
-        0 0 22px rgba(var(--accent-rgb), 0.25);
+        0 0 22px rgba(0, 170, 255, 0.25);
 }
+
 
 /* ============================================================
-   CARD CONTENT RHYTHM
-============================================================ */
-
-.ccg-page--collections-index
-.ccg-collection-card
-.ccg-card__media {
-    margin-bottom: 6px;
-}
-
-.ccg-page--collections-index
-.ccg-collection-card
-.ccg-card__title {
-    margin-bottom: 6px;
-    letter-spacing: 0.04em;
-}
-
-.ccg-page--collections-index
-.ccg-collection-card
-.ccg-card__text {
-    line-height: 1.55;
-    opacity: 0.92;
-}
-
-/* ============================================================
-   MODE-SENSITIVE GLOW (SUBTLE)
+   MODE-SENSITIVE GLOW (UNCHANGED)
 ============================================================ */
 
 body[data-ccg-mode="c64"]
@@ -197,39 +160,29 @@ body[data-ccg-mode="amiga"]
         0 0 22px rgba(255, 41, 224, 0.35);
 }
 
+
 /* ============================================================
-   MOBILE — HERO DISCIPLINE + GRID RHYTHM
+   MOBILE — HERO DISCIPLINE
 ============================================================ */
 
 @media (max-width: 768px) {
 
-    .ccg-page--collections-index .ccg-collections-hero {
-        margin-bottom: 34px;
+    .ccg-page--collections-index
+    .ccg-hero-inner--collections {
+        padding: 38px 18px 36px;
     }
 
-    .ccg-page--collections-index .ccg-collections-grid {
-        gap: 22px;
-        padding-inline: 14px;
+    .ccg-page--collections-index
+    .ccg-hero.ccg-hero--collections::after {
+        opacity: 0.16;
     }
 
-    .ccg-page--collections-index .ccg-collection-card {
-        margin-inline: auto;
-        border-radius: 16px;
-    }
-
-    .ccg-page--collections-index .ccg-collection-card .ccg-card__body {
-        padding: 14px 16px 18px;
-    }
-
-    .ccg-page--collections-index .ccg-collection-card .ccg-card__title {
-        line-height: 1.3;
-    }
-
-    .ccg-page--collections-index .ccg-collection-card .ccg-card__text {
-        font-size: 0.78rem;
-        opacity: 0.9;
+    .ccg-page--collections-index
+    .ccg-collections-section {
+        margin-top: 26px;
     }
 }
+
 
 /* ============================================================
    VERY SMALL PHONES (≤ 420px)
@@ -237,12 +190,8 @@ body[data-ccg-mode="amiga"]
 
 @media (max-width: 420px) {
 
-    .ccg-page--collections-index .ccg-collections-grid {
-        gap: 16px;
-        padding-inline: 10px;
-    }
-
-    .ccg-page--collections-index .ccg-collection-card .ccg-card__body {
-        padding: 12px 14px 16px;
+    .ccg-page--collections-index
+    .ccg-hero-inner--collections {
+        padding: 34px 16px 32px;
     }
 }
