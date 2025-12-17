@@ -1,258 +1,114 @@
-/* ==========================================================================
-   QUIZ.CSS — OMEGA FX EDITION (ISOLATED)
-   Cinematic Quiz Hero • SID Bars • Neon Cabinet • Anim Score Counter
-   --------------------------------------------------------------------------
-   • Quiz page ONLY
-   • Social elements isolated from global header system
-   • Prevents header/social bleed or collision
-   • ZERO HTML / ZERO JS changes
-   ========================================================================== */
-
-/* ----------------------------------------------
-   PAGE ISOLATION (CRITICAL)
----------------------------------------------- */
-
-.ccg-page--quiz {
-    position: relative;
-    padding-bottom: 4rem;
-    z-index: 2;
-
-    /* 🔒 Prevent quiz content from influencing header */
-    isolation: isolate;
-}
-
-/* Ensure nothing inside quiz can escape upward */
-.ccg-page--quiz * {
-    box-sizing: border-box;
-}
-
-/* ----------------------------------------------
-   MAIN QUIZ LAYOUT
----------------------------------------------- */
-
-.quiz-main {
-    width: 100%;
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 2rem 1.5rem 6rem;
-    position: relative;
-    z-index: 5;
-}
-
-/* ----------------------------------------------
-   QUIZ HERO SECTION
----------------------------------------------- */
-
-.quiz-hero {
-    padding: 6rem 2rem 4rem;
-    text-align: center;
-    position: relative;
-    overflow: visible;
-}
-
-.quiz-title {
-    font-size: 3rem;
-    font-weight: 800;
-    margin-bottom: 0.75rem;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: #fff;
-    text-shadow: 0 0 25px var(--ccg-neon-hero, #28e1ff);
-}
-
-.quiz-tagline {
-    font-size: 1.2rem;
-    opacity: 0.9;
-    margin-bottom: 2.2rem;
-}
-
-/* SID FX BARS */
-.quiz-sid-bars {
-    position: absolute;
-    inset: 0;
-    opacity: 0.20;
-    pointer-events: none;
-    background: repeating-linear-gradient(
-        90deg,
-        rgba(255,255,255,0.03) 0px,
-        rgba(255,255,255,0.03) 2px,
-        transparent 2px,
-        transparent 8px
-    );
-    animation: sidSweep 8s infinite linear;
-    z-index: 1;
-}
-
-@keyframes sidSweep {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-200px); }
-}
-
-/* ----------------------------------------------
-   QUIZ CONTROLS
----------------------------------------------- */
-
-.quiz-controls {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-/* ----------------------------------------------
-   QUESTION AREA
----------------------------------------------- */
-
-.quiz-container {
-    margin-top: 3rem;
-    padding: 2rem;
-    border-radius: 1.2rem;
-    background: rgba(0,0,0,0.45);
-    backdrop-filter: blur(6px);
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
-}
-
-.quiz-question-title {
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
-    font-weight: 700;
-    text-shadow: 0 0 12px var(--ccg-accent);
-}
-
-.quiz-options {
-    margin-top: 1.8rem;
-    display: grid;
-    gap: 1rem;
-}
-
-.quiz-option-btn {
-    padding: 1rem 1.2rem;
-    border-radius: 0.8rem;
-    cursor: pointer;
-    background: rgba(255,255,255,0.05);
-    border: 2px solid rgba(255,255,255,0.2);
-    transition: all 0.2s ease;
-    backdrop-filter: blur(4px);
-    font-size: 1.1rem;
-}
-
-.quiz-option-btn:hover {
-    border-color: var(--ccg-accent);
-    background: rgba(255,255,255,0.12);
-}
-
-.quiz-option-btn.correct {
-    border-color: #4eff75;
-    background: rgba(78,255,117,0.2);
-}
-
-.quiz-option-btn.wrong {
-    border-color: #ff4e4e;
-    background: rgba(255,78,78,0.2);
-}
-
-/* ----------------------------------------------
-   NEON SCORE CABINET
----------------------------------------------- */
-
-.quiz-score-cabinet {
-    margin-top: 4rem;
-    display: flex;
-    justify-content: center;
-}
-
-.quiz-score-cabinet-inner {
-    padding: 3rem 2rem;
-    border-radius: 1.8rem;
-    width: 100%;
-    max-width: 560px;
-    text-align: center;
-    background: radial-gradient(circle at center,
-        rgba(0,0,0,0.7) 0%,
-        rgba(0,0,0,0.45) 100%);
-    border: 3px solid var(--ccg-accent);
-    box-shadow:
-        0 0 25px var(--ccg-accent),
-        inset 0 0 25px rgba(255,255,255,0.1);
-}
-
-.quiz-score-title {
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
-    letter-spacing: 1px;
-}
-
-.quiz-score-animated {
-    font-size: 4rem;
-    font-weight: 900;
-    margin-bottom: 2rem;
-    color: #fff;
-    text-shadow: 0 0 25px var(--ccg-accent);
-    transition: transform 0.15s ease-out;
-}
-
-.quiz-score-animated.pulse {
-    transform: scale(1.15);
-}
-
-/* ----------------------------------------------
-   MODE-SPECIFIC ACCENTS
----------------------------------------------- */
-
-body[data-ccg-mode="c64"] {
-    --ccg-accent: #28e1ff;
-    --ccg-neon-hero: #28e1ff;
-}
-
-body[data-ccg-mode="amiga"] {
-    --ccg-accent: #ff4fe8;
-    --ccg-neon-hero: #ff4fe8;
-}
-
 /* ============================================================
-   QUIZ SOCIAL ISOLATION (FINAL FIX)
+   QUIZ.CSS — FINAL MOBILE RHYTHM PASS
+   Phase MR-FINAL (LOCK AFTER APPLY)
    ------------------------------------------------------------
-   Any socials used inside the Quiz page are treated as
-   content-only and cannot interfere with the global header.
+   Scope:
+   • /quiz.html ONLY
+   • CSS-only
+   • No engine / JS impact
 ============================================================ */
 
-/* Never allow quiz socials to behave like header socials */
-.ccg-page--quiz .ccg-header-socials,
-.ccg-page--quiz .ccg-social-strip,
-.ccg-page--quiz .ccg-socials,
-.ccg-page--quiz .ccg-socials-bar,
-.ccg-page--quiz .ccg-socials-vertical,
-.ccg-page--quiz .ccg-socials-stack {
-    position: relative;
-    inset: auto;
-    z-index: 2;
-
-    /* Prevent layout influence outside quiz */
-    max-width: 100%;
-    overflow: visible;
-}
-
-/* Ensure quiz socials never float or fix themselves */
-.ccg-page--quiz .ccg-socials *,
-.ccg-page--quiz .ccg-socials-vertical *,
-.ccg-page--quiz .ccg-socials-stack * {
-    position: static;
-}
 
 /* ============================================================
-   RESPONSIVE
+   HERO RHYTHM
 ============================================================ */
 
-@media (max-width: 640px) {
-    .quiz-title {
-        font-size: 2.2rem;
+.ccg-page--quiz .ccg-hero {
+    margin-bottom: 26px;
+}
+
+
+/* ============================================================
+   PANEL STACKING
+============================================================ */
+
+.quiz-layout {
+    gap: 26px;
+}
+
+
+/* ============================================================
+   MOBILE RHYTHM — PRIMARY
+============================================================ */
+
+@media (max-width: 768px) {
+
+    .ccg-page--quiz .ccg-main {
+        padding-top: 6px;
     }
 
-    .quiz-question-title {
-        font-size: 1.4rem;
+    .ccg-page--quiz .ccg-hero-inner {
+        padding: 36px 18px 34px;
     }
 
-    .quiz-score-animated {
-        font-size: 3rem;
+    .quiz-layout {
+        gap: 28px;
+    }
+
+    .quiz-panel {
+        padding: 18px 18px 20px;
+        border-radius: 18px;
+    }
+
+    .quiz-panel h2 {
+        margin-bottom: 12px;
+    }
+
+    .quiz-howto-list li {
+        margin-bottom: 8px;
+        line-height: 1.5;
+    }
+
+    /* Question card comfort */
+    .quiz-question-card {
+        padding: 18px 18px 20px;
+        border-radius: 18px;
+    }
+
+    .quiz-question-text {
+        font-size: 1rem;
+        line-height: 1.5;
+        margin-bottom: 18px;
+    }
+
+    /* Answer grid tap comfort */
+    .quiz-options-grid {
+        gap: 12px;
+    }
+
+    .quiz-options-grid button {
+        padding: 14px 14px;
+        font-size: 0.88rem;
+        line-height: 1.35;
+    }
+
+    /* Score panel */
+    .quiz-score-display {
+        margin-bottom: 18px;
+    }
+
+    .quiz-score-actions {
+        gap: 12px;
+    }
+}
+
+
+/* ============================================================
+   VERY SMALL PHONES
+============================================================ */
+
+@media (max-width: 420px) {
+
+    .quiz-panel {
+        padding: 16px 14px 18px;
+    }
+
+    .quiz-question-text {
+        font-size: 0.95rem;
+    }
+
+    .quiz-options-grid button {
+        padding: 13px 12px;
+        font-size: 0.84rem;
     }
 }
