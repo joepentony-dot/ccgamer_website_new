@@ -597,3 +597,109 @@ body[data-ccg-mode="amiga"] .ccg-brand__logo {
         justify-content: center;
     }
 }
+
+/* ============================================================
+   CCG BRAND — LOGO WEIGHT + NEON GLOW REFINEMENT
+   Phase LW-G1 — GLOBAL (LOCK AFTER APPLY)
+   ------------------------------------------------------------
+   • Site-wide
+   • CSS-only
+   • No layout changes
+   • Enhances presence + glow
+============================================================ */
+
+/* ------------------------------------------------------------
+   BRAND TEXT — STRUCTURAL WEIGHT
+------------------------------------------------------------ */
+
+.ccg-brand__title {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+
+    font-weight: 700;
+    letter-spacing: 0.14em; /* wider, more confident */
+}
+
+/* Make CHEEKY feel bold and flagship */
+.ccg-brand__neon-cheeky {
+    font-weight: 800;
+    letter-spacing: 0.18em;
+
+    transform: scaleX(1.06); /* subtle width boost */
+    display: inline-block;
+}
+
+/* Sub-title slightly lighter but still solid */
+.ccg-brand__neon-sub {
+    font-weight: 600;
+    letter-spacing: 0.12em;
+
+    transform: scaleX(1.03);
+    display: inline-block;
+}
+
+/* ------------------------------------------------------------
+   NEON DEPTH — BASE GLOW
+------------------------------------------------------------ */
+
+.ccg-brand__neon-cheeky,
+.ccg-brand__neon-sub {
+    text-shadow:
+        0 0 6px rgba(255,255,255,0.15),
+        0 0 14px rgba(var(--accent-rgb),0.35),
+        0 0 28px rgba(var(--accent-rgb),0.22);
+}
+
+/* ------------------------------------------------------------
+   MODE-SPECIFIC INTENSITY
+------------------------------------------------------------ */
+
+/* C64 — cooler, tighter glow */
+body[data-ccg-mode="c64"] .ccg-brand__neon-cheeky,
+body[data-ccg-mode="c64"] .ccg-brand__neon-sub {
+    text-shadow:
+        0 0 6px rgba(255,255,255,0.18),
+        0 0 16px rgba(0,170,255,0.45),
+        0 0 34px rgba(0,170,255,0.28);
+}
+
+/* Amiga — warmer, richer glow */
+body[data-ccg-mode="amiga"] .ccg-brand__neon-cheeky,
+body[data-ccg-mode="amiga"] .ccg-brand__neon-sub {
+    text-shadow:
+        0 0 6px rgba(255,255,255,0.18),
+        0 0 18px rgba(255,41,224,0.50),
+        0 0 38px rgba(255,41,224,0.32);
+}
+
+/* ------------------------------------------------------------
+   MICRO-HOVER — PREMIUM RESPONSE (DESKTOP ONLY)
+------------------------------------------------------------ */
+
+@media (hover: hover) {
+
+    .ccg-brand:hover .ccg-brand__neon-cheeky,
+    .ccg-brand:hover .ccg-brand__neon-sub {
+        text-shadow:
+            0 0 10px rgba(255,255,255,0.28),
+            0 0 24px rgba(var(--accent-rgb),0.55),
+            0 0 48px rgba(var(--accent-rgb),0.38);
+    }
+}
+
+/* ------------------------------------------------------------
+   MOBILE DISCIPLINE — NO OVERBLOW
+------------------------------------------------------------ */
+
+@media (max-width: 768px) {
+
+    .ccg-brand__neon-cheeky {
+        transform: scaleX(1.04);
+        letter-spacing: 0.16em;
+    }
+
+    .ccg-brand__neon-sub {
+        transform: scaleX(1.02);
+    }
+}
