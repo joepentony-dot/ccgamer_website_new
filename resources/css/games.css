@@ -430,3 +430,103 @@ html[data-ccg-page="single-game"] .game-section--related .game-section__title {
     margin-bottom: 24px;
 }
 
+/* ============================================================
+   SINGLE GAME — MANUAL & DOWNLOAD WOW
+   Phase SG-3 — FINAL CTA POLISH
+   ------------------------------------------------------------
+   • Single-game pages only
+   • CSS-only
+   • Clear action hierarchy
+   • No loader or JS impact
+============================================================ */
+
+/* ------------------------------------------------------------
+   ACTIONS CONTAINER — INTENT STAGE
+------------------------------------------------------------ */
+
+html[data-ccg-page="single-game"] .game-actions {
+    margin-top: 12px;
+    padding: 22px 24px;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,0.04),
+            rgba(255,255,255,0.015)
+        );
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.06),
+        0 18px 42px rgba(0,0,0,0.65);
+}
+
+/* Stack nicely on small screens */
+@media (max-width: 640px) {
+    html[data-ccg-page="single-game"] .game-actions {
+        padding: 18px 18px;
+    }
+}
+
+/* ------------------------------------------------------------
+   BUTTON BASE — CALM, PREMIUM
+------------------------------------------------------------ */
+
+html[data-ccg-page="single-game"] .game-actions .ccg-btn {
+    min-width: 160px;
+    text-align: center;
+
+    letter-spacing: 0.04em;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+/* ------------------------------------------------------------
+   PRIMARY ACTION — PLAY / DOWNLOAD
+------------------------------------------------------------ */
+
+html[data-ccg-page="single-game"] #gameDiskBtn {
+    font-weight: 600;
+
+    box-shadow:
+        0 0 0 1px rgba(var(--accent-rgb), 0.45),
+        0 0 18px rgba(var(--accent-rgb), 0.35);
+}
+
+/* Hover intent — subtle lift */
+html[data-ccg-page="single-game"] #gameDiskBtn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 0 0 1px rgba(var(--accent-rgb), 0.65),
+        0 0 26px rgba(var(--accent-rgb), 0.45),
+        0 18px 42px rgba(0,0,0,0.65);
+}
+
+/* ------------------------------------------------------------
+   SECONDARY ACTION — MANUAL
+------------------------------------------------------------ */
+
+html[data-ccg-page="single-game"] #gameManualBtn {
+    opacity: 0.9;
+}
+
+/* Gentle hover, no competition */
+html[data-ccg-page="single-game"] #gameManualBtn:hover {
+    opacity: 1;
+    transform: translateY(-1px);
+}
+
+/* ------------------------------------------------------------
+   TOUCH DEVICES — NO FAKE HOVER
+------------------------------------------------------------ */
+
+@media (hover: none) {
+    html[data-ccg-page="single-game"] #gameDiskBtn:hover,
+    html[data-ccg-page="single-game"] #gameManualBtn:hover {
+        transform: none;
+        box-shadow: none;
+    }
+}
