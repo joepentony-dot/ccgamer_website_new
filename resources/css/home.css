@@ -131,3 +131,79 @@ html[data-ccg-page="home"] .home-section {
         margin-bottom: 34px;
     }
 }
+
+/* ============================================================
+   HOME PAGE — THUMBNAIL SIZE ISOLATION
+   Phase HT-LOCK — FINAL
+   ------------------------------------------------------------
+   • Scope: HOME ONLY
+   • Fixes oversized featured thumbnails
+   • Preserves 16:9 ratio
+   • ZERO impact on cards elsewhere
+============================================================ */
+
+/* ------------------------------------------------------------
+   FEATURED CARDS — MEDIA LOCK
+------------------------------------------------------------ */
+
+html[data-ccg-page="home"] .home-feature-card .ccg-card__media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+
+    overflow: hidden;
+    border-radius: 16px;
+}
+
+/* Ensure images never exceed container */
+html[data-ccg-page="home"] .home-feature-card .ccg-card__media img {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center;
+
+    display: block;
+}
+
+/* ------------------------------------------------------------
+   VIDEO FEATURE — SAME RULESET
+------------------------------------------------------------ */
+
+html[data-ccg-page="home"] .home-feature-video__frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+
+    overflow: hidden;
+    border-radius: 16px;
+}
+
+html[data-ccg-page="home"] .home-feature-video__thumb {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    display: block;
+}
+
+/* ------------------------------------------------------------
+   MOBILE SAFETY — PREVENT GIANT CARDS
+------------------------------------------------------------ */
+
+@media (max-width: 768px) {
+
+    html[data-ccg-page="home"] .home-feature-card {
+        max-width: 100%;
+    }
+
+    html[data-ccg-page="home"] .home-feature-card .ccg-card__media {
+        border-radius: 14px;
+    }
+}
