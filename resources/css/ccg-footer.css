@@ -1,5 +1,5 @@
 /* ============================================================
-   CCG FOOTER — OMEGA SHARED SYSTEM (ATMOSPHERE PASS)
+   CCG FOOTER — OMEGA SHARED SYSTEM (PARITY LOCK)
    ------------------------------------------------------------
    • Fully isolated footer styling
    • Safe for all pages (root + nested)
@@ -15,7 +15,7 @@
 
 .ccg-footer {
     position: relative;
-    margin-top: 64px;
+    margin-top: clamp(48px, 6vh, 64px);
     padding: 26px 16px 30px;
 
     text-align: center;
@@ -87,15 +87,14 @@
 }
 
 /* ------------------------------------------------------------
-   FOOTER INNER (OPTIONAL WRAPPER)
+   FOOTER CONTENT WRAPPING (PARITY SAFE)
 ------------------------------------------------------------ */
 
+.ccg-footer,
 .ccg-footer-inner {
-    position: relative;
-    z-index: 2;
-
     max-width: 980px;
-    margin: 0 auto;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* ------------------------------------------------------------
@@ -159,13 +158,16 @@
 @media (max-width: 640px) {
 
     .ccg-footer {
-        margin-top: 48px;
         padding: 20px 14px 24px;
     }
 
     .ccg-footer::before {
         left: 8%;
         right: 8%;
+    }
+
+    .ccg-footer::after {
+        opacity: 0.45;
     }
 
     .ccg-footer__text,
