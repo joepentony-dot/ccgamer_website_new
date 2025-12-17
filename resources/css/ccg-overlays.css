@@ -111,6 +111,22 @@
 }
 
 /* ============================================================
+   DESKTOP DEPTH CORRECTION (NON-HOME PAGES)
+   Phase U3 — CONTENT CLARITY LOCK
+   ------------------------------------------------------------
+   • Ensures page content always renders ABOVE universe layers
+   • Fixes “haze / fog” effect on genre & index pages
+   • Home page explicitly excluded
+   • Desktop only (mobile already handled)
+   • CSS-only, zero layout or animation impact
+============================================================ */
+
+html:not([data-ccg-page="home"]) .ccg-page {
+    position: relative;
+    z-index: 2;
+}
+
+/* ============================================================
    MOBILE DEPTH CORRECTION (NON-HOME PAGES ONLY)
    ------------------------------------------------------------
    Mobile browsers + fixed animated layers can visually float
