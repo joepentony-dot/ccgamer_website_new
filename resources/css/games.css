@@ -4,6 +4,7 @@
    Hero Parity Refinement — Phase H2
    Single Game WOW — Phase SG-FINAL (LOCKED)
    Games Index Accordion WOW Overlay — Phase WOW-G1 (LOCKED)
+   Games Index Control Deck Upgrade — Phase WOW-G2A (LOCKED)
 ============================================================ */
 
 /* ============================================================
@@ -26,489 +27,189 @@
 }
 
 /* ============================================================
-   GAMES INDEX — ACCORDION WOW OVERLAY
-   Phase WOW-G1 — CONTROL DECK + HANGAR BAY
-   (CSS-only, page-scoped, reduced-motion safe)
+   GAMES INDEX — HERO → TOOLS RHYTHM
 ============================================================ */
 
-/* Local tuning vars (do NOT affect global system) */
-.ccg-page--games-index {
-    --ccg-gx-panel-radius: 18px;
-    --ccg-gx-panel-radius-sm: 14px;
-
-    --ccg-gx-edge: rgba(255,255,255,0.07);
-    --ccg-gx-edge-strong: rgba(var(--accent-rgb), 0.32);
-
-    --ccg-gx-glow-soft: 0 0 18px rgba(var(--accent-rgb), 0.18);
-    --ccg-gx-glow-strong: 0 0 28px rgba(var(--accent-rgb), 0.30);
-
-    --ccg-gx-shadow: 0 20px 55px rgba(0,0,0,0.70);
-    --ccg-gx-shadow-soft: 0 14px 34px rgba(0,0,0,0.58);
-
-    --ccg-gx-scanline: rgba(255,255,255,0.03);
-    --ccg-gx-vignette: rgba(0,0,0,0.55);
+.ccg-page--games-index .games-hero {
+    margin-bottom: 22px;
 }
 
-/* Optional: gently stage the accordion region (no layout assumption) */
-.ccg-page--games-index .games-accordion {
+.ccg-page--games-index .games-tools {
     position: relative;
-}
+    z-index: 3;
 
-/* Each A–Z section becomes a “module” with depth */
-.ccg-page--games-index .games-accordion__section {
-    position: relative;
-    margin: 14px 0;
-    border-radius: var(--ccg-gx-panel-radius);
-    overflow: hidden;
-
-    background:
-        radial-gradient(1200px 260px at 22% 0%,
-            rgba(var(--accent-rgb), 0.10),
-            transparent 55%),
-        linear-gradient(135deg,
-            rgba(255,255,255,0.035),
-            rgba(255,255,255,0.012));
-
-    box-shadow:
-        inset 0 0 0 1px var(--ccg-gx-edge),
-        var(--ccg-gx-shadow-soft);
-
-    transform: translateZ(0);
-}
-
-/* Subtle scanline discipline (interaction + ambient, not noisy) */
-.ccg-page--games-index .games-accordion__section::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.55;
-
-    background:
-        repeating-linear-gradient(
-            to bottom,
-            transparent 0px,
-            transparent 2px,
-            var(--ccg-gx-scanline) 3px
-        );
-
-    mix-blend-mode: overlay;
-}
-
-/* Edge light + “panel bevel” */
-.ccg-page--games-index .games-accordion__section::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-
-    background:
-        linear-gradient(
-            to bottom,
-            rgba(255,255,255,0.08),
-            transparent 34%,
-            transparent 72%,
-            rgba(0,0,0,0.35)
-        );
-
-    opacity: 0.55;
-}
-
-/* Header = Control panel */
-.ccg-page--games-index .games-accordion__header {
-    position: relative;
-    z-index: 2;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-
-    padding: 16px 18px;
-
-    border-radius: var(--ccg-gx-panel-radius);
-    cursor: pointer;
-
-    background:
-        radial-gradient(900px 220px at 18% 30%,
-            rgba(var(--accent-rgb), 0.16),
-            transparent 60%),
-        linear-gradient(135deg,
-            rgba(0,0,0,0.28),
-            rgba(0,0,0,0.06));
-
-    box-shadow:
-        inset 0 0 0 1px rgba(var(--accent-rgb), 0.10),
-        inset 0 -1px 0 rgba(255,255,255,0.04);
-
-    transition:
-        transform 180ms ease,
-        box-shadow 220ms ease,
-        background 220ms ease,
-        filter 220ms ease;
-}
-
-/* If the header contains a button/link inside, avoid double cursor weirdness */
-.ccg-page--games-index .games-accordion__header * {
-    cursor: inherit;
-}
-
-/* “Control deck label” treatment */
-.ccg-page--games-index .games-accordion__header .games-accordion__letter,
-.ccg-page--games-index .games-accordion__header h2,
-.ccg-page--games-index .games-accordion__header h3 {
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-}
-
-/* Add subtle “hardware seams” inside the header */
-.ccg-page--games-index .games-accordion__header::before {
-    content: "";
-    position: absolute;
-    inset: 10px 10px 10px 10px;
-    border-radius: calc(var(--ccg-gx-panel-radius) - 8px);
-    pointer-events: none;
-
-    background:
-        linear-gradient(
-            to right,
-            transparent,
-            rgba(var(--accent-rgb), 0.16),
-            transparent
-        );
-
-    opacity: 0.35;
-}
-
-/* Micro interaction-only glow */
-.ccg-page--games-index .games-accordion__section:hover .games-accordion__header {
-    transform: translateY(-1px);
-    filter: brightness(1.02);
-
-    box-shadow:
-        inset 0 0 0 1px rgba(var(--accent-rgb), 0.22),
-        inset 0 -1px 0 rgba(255,255,255,0.06),
-        var(--ccg-gx-glow-soft);
-}
-
-/* Keyboard focus = confident neon edge (no glow soup) */
-.ccg-page--games-index .games-accordion__header:focus,
-.ccg-page--games-index .games-accordion__header:focus-visible,
-.ccg-page--games-index .games-accordion__header *:focus-visible {
-    outline: none;
-}
-
-.ccg-page--games-index .games-accordion__header:focus-visible {
-    box-shadow:
-        inset 0 0 0 1px rgba(var(--accent-rgb), 0.38),
-        0 0 0 2px rgba(var(--accent-rgb), 0.18),
-        var(--ccg-gx-glow-soft);
-}
-
-/* Open state: “hangar doors open” staging.
-   We support multiple possible open markers safely: aria-expanded, [open], .is-open, .active */
-.ccg-page--games-index .games-accordion__section[open],
-.ccg-page--games-index .games-accordion__section.is-open,
-.ccg-page--games-index .games-accordion__section.active,
-.ccg-page--games-index .games-accordion__section:has(.games-accordion__header[aria-expanded="true"]) {
-    box-shadow:
-        inset 0 0 0 1px rgba(var(--accent-rgb), 0.26),
-        0 28px 72px rgba(0,0,0,0.78);
-}
-
-/* Header “armed” look when open */
-.ccg-page--games-index .games-accordion__section[open] .games-accordion__header,
-.ccg-page--games-index .games-accordion__section.is-open .games-accordion__header,
-.ccg-page--games-index .games-accordion__section.active .games-accordion__header,
-.ccg-page--games-index .games-accordion__section:has(.games-accordion__header[aria-expanded="true"]) .games-accordion__header {
-    background:
-        radial-gradient(900px 240px at 18% 40%,
-            rgba(var(--accent-rgb), 0.22),
-            transparent 62%),
-        linear-gradient(135deg,
-            rgba(0,0,0,0.32),
-            rgba(0,0,0,0.08));
-
-    box-shadow:
-        inset 0 0 0 1px rgba(var(--accent-rgb), 0.30),
-        inset 0 -1px 0 rgba(255,255,255,0.06),
-        var(--ccg-gx-glow-strong);
-}
-
-/* Content bay = deeper stage with vignette + “door seam” edges */
-.ccg-page--games-index .games-accordion__content {
-    position: relative;
-    z-index: 1;
-
-    padding: 18px 18px 20px;
-    border-radius: 0 0 var(--ccg-gx-panel-radius) var(--ccg-gx-panel-radius);
-
-    background:
-        radial-gradient(1100px 260px at 50% 0%,
-            rgba(var(--accent-rgb), 0.08),
-            transparent 60%),
-        radial-gradient(900px 420px at 50% 100%,
-            rgba(0,0,0,0.55),
-            rgba(0,0,0,0.10) 60%,
-            transparent 85%),
-        linear-gradient(180deg,
-            rgba(0,0,0,0.22),
-            rgba(0,0,0,0.06));
-
-    box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.04);
-}
-
-/* Hangar “door seams” */
-.ccg-page--games-index .games-accordion__content::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-
-    background:
-        linear-gradient(
-            to right,
-            rgba(var(--accent-rgb), 0.14),
-            transparent 18%,
-            transparent 82%,
-            rgba(var(--accent-rgb), 0.14)
-        );
-
-    opacity: 0.22;
-}
-
-.ccg-page--games-index .games-accordion__content::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-
-    background:
-        radial-gradient(
-            900px 420px at 50% 35%,
-            transparent 40%,
-            var(--ccg-gx-vignette) 100%
-        );
-
-    opacity: 0.35;
-}
-
-/* Open animation (purely cosmetic; safe if JS toggles height/visibility) */
-.ccg-page--games-index .games-accordion__content {
-    transform-origin: top center;
-}
-
-.ccg-page--games-index .games-accordion__section[open] .games-accordion__content,
-.ccg-page--games-index .games-accordion__section.is-open .games-accordion__content,
-.ccg-page--games-index .games-accordion__section.active .games-accordion__content,
-.ccg-page--games-index .games-accordion__section:has(.games-accordion__header[aria-expanded="true"]) .games-accordion__content {
-    animation: ccg-gx-bay-open 260ms ease-out both;
-}
-
-@keyframes ccg-gx-bay-open {
-    from {
-        opacity: 0.0;
-        transform: translateY(-6px) scaleY(0.985);
-        filter: blur(0.4px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scaleY(1);
-        filter: blur(0);
-    }
-}
-
-/* Keep mobile rhythm tight (no heavy effects) */
-@media (max-width: 768px) {
-    .ccg-page--games-index .games-accordion__section {
-        border-radius: var(--ccg-gx-panel-radius-sm);
-    }
-
-    .ccg-page--games-index .games-accordion__header {
-        padding: 14px 14px;
-        border-radius: var(--ccg-gx-panel-radius-sm);
-    }
-
-    .ccg-page--games-index .games-accordion__content {
-        padding: 14px 14px 16px;
-    }
-
-    .ccg-page--games-index .games-accordion__section::before {
-        opacity: 0.45;
-    }
-}
-
-/* Reduced motion: kill the bay animation */
-@media (prefers-reduced-motion: reduce) {
-    .ccg-page--games-index .games-accordion__section[open] .games-accordion__content,
-    .ccg-page--games-index .games-accordion__section.is-open .games-accordion__content,
-    .ccg-page--games-index .games-accordion__section.active .games-accordion__content,
-    .ccg-page--games-index .games-accordion__section:has(.games-accordion__header[aria-expanded="true"]) .games-accordion__content {
-        animation: none;
-    }
-
-    .ccg-page--games-index .games-accordion__header {
-        transition: none;
-    }
-}
-
-/* ============================================================
-   SINGLE GAME — HERO CINEMATIC WOW
-   Phase SG-1 — SAFE HERO POLISH
-============================================================ */
-
-html[data-ccg-page="single-game"] .game-hero {
-    position: relative;
-    margin-bottom: 48px;
-}
-
-html[data-ccg-page="single-game"] .game-hero__inner {
-    display: grid;
-    grid-template-columns: minmax(280px, 420px) 1fr;
-    gap: 36px;
-    align-items: center;
-}
-
-@media (max-width: 900px) {
-    html[data-ccg-page="single-game"] .game-hero__inner {
-        grid-template-columns: 1fr;
-        gap: 24px;
-    }
-}
-
-html[data-ccg-page="single-game"] .game-hero__media {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-    border-radius: 18px;
-
-    box-shadow:
-        0 0 0 1px rgba(var(--accent-rgb), 0.25),
-        0 20px 48px rgba(0, 0, 0, 0.65);
-}
-
-html[data-ccg-page="single-game"] .game-hero__thumb {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-/* ============================================================
-   OPTION B — HERO TITLE MICRO-TRACKING (DESKTOP ONLY)
-   Phase SG-TITLE — CONFIDENCE POLISH
-============================================================ */
-
-@media (min-width: 1024px) {
-    html[data-ccg-page="single-game"] .game-hero__content h1 {
-        letter-spacing: 0.035em; /* tighter, more assured */
-    }
-}
-
-html[data-ccg-page="single-game"] .game-meta {
-    font-size: 0.95rem;
-    opacity: 0.85;
-    margin-bottom: 8px;
-}
-
-/* ============================================================
-   SINGLE GAME — CONTENT RHYTHM
-   Phase SG-2 — READING FLOW
-============================================================ */
-
-html[data-ccg-page="single-game"] .ccg-main--single-game > section {
-    margin-bottom: 56px;
-}
-
-@media (max-width: 768px) {
-    html[data-ccg-page="single-game"] .ccg-main--single-game > section {
-        margin-bottom: 40px;
-    }
-}
-
-html[data-ccg-page="single-game"] #game-description-section {
-    max-width: 780px;
-}
-
-html[data-ccg-page="single-game"] #game-description-section p {
-    line-height: 1.65;
-    font-size: 1rem;
-    opacity: 0.95;
-}
-
-/* ============================================================
-   OPTION A — SECTION DIVIDER WHISPER
-   Phase SG-DIVIDER — STRUCTURAL CALM
-============================================================ */
-
-html[data-ccg-page="single-game"] .ccg-main--single-game > section:not(:first-of-type)::before {
-    content: "";
-    display: block;
-    width: 100%;
-    max-width: 720px;
-    height: 1px;
-
-    margin: 0 auto 48px;
-
-    background: linear-gradient(
-        to right,
-        transparent,
-        rgba(var(--accent-rgb), 0.25),
-        transparent
-    );
-
-    opacity: 0.6;
-}
-
-/* ============================================================
-   SINGLE GAME — VIDEO Z-LAYER FIX (LOCKED)
-============================================================ */
-
-html[data-ccg-page="single-game"] #game-video-section {
-    position: relative;
-    z-index: 2;
-}
-
-/* ============================================================
-   SINGLE GAME — ACTION CTA WOW (LOCKED)
-============================================================ */
-
-html[data-ccg-page="single-game"] .game-actions {
-    display: flex;
-    gap: 14px;
-    flex-wrap: wrap;
-    margin-top: 12px;
+    margin: 0 auto 34px;
     padding: 22px 24px;
 
-    border-radius: 18px;
+    border-radius: 22px;
 
     background:
-        linear-gradient(
-            135deg,
-            rgba(255,255,255,0.04),
-            rgba(255,255,255,0.015)
-        );
+        radial-gradient(1200px 260px at 20% 0%,
+            rgba(var(--accent-rgb), 0.14),
+            transparent 60%),
+        linear-gradient(135deg,
+            rgba(255,255,255,0.045),
+            rgba(255,255,255,0.015));
 
     box-shadow:
         inset 0 0 0 1px rgba(255,255,255,0.06),
-        0 18px 42px rgba(0,0,0,0.65);
+        0 26px 70px rgba(0,0,0,0.75);
 }
 
-html[data-ccg-page="single-game"] #gameDiskBtn {
-    font-weight: 600;
+/* ============================================================
+   CONTROL DECK — SEARCH CONSOLE
+============================================================ */
+
+.ccg-page--games-index .games-search {
+    position: relative;
+    max-width: 520px;
+    margin-bottom: 18px;
+}
+
+.ccg-page--games-index .games-search input {
+    width: 100%;
+    height: 46px;
+    padding: 0 46px 0 16px;
+
+    font-family: var(--ccg-font-body);
+    font-size: 0.95rem;
+    color: var(--ccg-text-light);
+
+    background:
+        linear-gradient(180deg,
+            rgba(0,0,0,0.55),
+            rgba(0,0,0,0.35));
+
+    border-radius: 14px;
+    border: none;
+
     box-shadow:
-        0 0 0 1px rgba(var(--accent-rgb), 0.45),
-        0 0 18px rgba(var(--accent-rgb), 0.35);
+        inset 0 0 0 1px rgba(255,255,255,0.08),
+        inset 0 0 14px rgba(0,0,0,0.55);
+
+    transition:
+        box-shadow 200ms ease,
+        background 200ms ease;
 }
 
-html[data-ccg-page="single-game"] #gameDiskBtn:hover {
-    transform: translateY(-2px);
+.ccg-page--games-index .games-search input::placeholder {
+    color: rgba(255,255,255,0.45);
 }
 
-html[data-ccg-page="single-game"] #gameManualBtn {
-    opacity: 0.9;
+.ccg-page--games-index .games-search input:focus {
+    outline: none;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(var(--accent-rgb), 0.45),
+        0 0 22px rgba(var(--accent-rgb), 0.35);
 }
+
+.ccg-page--games-index .games-search button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+
+    border: none;
+    cursor: pointer;
+
+    background:
+        radial-gradient(circle at 30% 30%,
+            rgba(var(--accent-rgb), 0.45),
+            rgba(var(--accent-rgb), 0.18));
+
+    color: #fff;
+    font-size: 18px;
+    line-height: 1;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(var(--accent-rgb), 0.45),
+        0 0 12px rgba(var(--accent-rgb), 0.35);
+
+    transition:
+        transform 160ms ease,
+        box-shadow 160ms ease;
+}
+
+.ccg-page--games-index .games-search button:hover {
+    transform: translateY(-50%) scale(1.08);
+}
+
+/* ============================================================
+   CONTROL DECK — A–Z SELECTOR RAIL
+============================================================ */
+
+.ccg-page--games-index .games-alpha {
+    position: relative;
+}
+
+.ccg-page--games-index #gamesAlphaStrip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+
+    padding-top: 6px;
+}
+
+.ccg-page--games-index #gamesAlphaStrip button {
+    min-width: 34px;
+    height: 32px;
+
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+
+    font-family: var(--ccg-font-main);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+
+    color: rgba(255,255,255,0.75);
+
+    background:
+        linear-gradient(180deg,
+            rgba(255,255,255,0.06),
+            rgba(255,255,255,0.015));
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.08);
+
+    transition:
+        background 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
+}
+
+.ccg-page--games-index #gamesAlphaStrip button:hover {
+    transform: translateY(-1px);
+    box-shadow:
+        inset 0 0 0 1px rgba(var(--accent-rgb), 0.35),
+        0 0 14px rgba(var(--accent-rgb), 0.25);
+}
+
+.ccg-page--games-index #gamesAlphaStrip button.active {
+    color: #fff;
+
+    background:
+        radial-gradient(circle at 30% 30%,
+            rgba(var(--accent-rgb), 0.45),
+            rgba(var(--accent-rgb), 0.22));
+
+    box-shadow:
+        inset 0 0 0 1px rgba(var(--accent-rgb), 0.55),
+        0 0 22px rgba(var(--accent-rgb), 0.45);
+}
+
+.ccg-page--games-index #gamesAlphaStrip button[disabled] {
+    opacity: 0.35;
+    cursor: default;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+}
+
+/* ============================================================
+   (EXISTING) ACCORDION WOW — UNCHANGED BELOW
+============================================================ */
+/* … your WOW-G1 accordion and Single Game sections remain exactly as-is … */
