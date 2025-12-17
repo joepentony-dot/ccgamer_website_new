@@ -182,3 +182,65 @@ html[data-ccg-page="home"] .home-feature-card h3 {
         box-shadow: none;
     }
 }
+
+/* ============================================================
+   HOME — GENRE GRID DISCIPLINE (CRITICAL RESTORE)
+   Phase WOW-H3B — LOCK
+   ------------------------------------------------------------
+   • Restores 2-column desktop layout
+   • Prevents hero-scale genre tiles
+   • Enforces true 16:9 tiles
+   • Home-only, zero global impact
+============================================================ */
+
+/* Target ONLY the home genre section */
+html[data-ccg-page="home"] .home-genres,
+html[data-ccg-page="home"] .home-genres-grid {
+    max-width: 1180px;
+    margin-inline: auto;
+}
+
+/* Desktop: strict 2-column layout */
+@media (min-width: 1024px) {
+    html[data-ccg-page="home"] .home-genres-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 32px;
+    }
+}
+
+/* Tablet fallback */
+@media (min-width: 640px) and (max-width: 1023px) {
+    html[data-ccg-page="home"] .home-genres-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+    }
+}
+
+/* Mobile: single column */
+@media (max-width: 639px) {
+    html[data-ccg-page="home"] .home-genres-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+/* Genre tile sizing discipline */
+html[data-ccg-page="home"] .home-genre-card {
+    max-width: 560px;
+    margin-inline: auto;
+}
+
+/* Image containment — NEVER hero-scale */
+html[data-ccg-page="home"] .home-genre-card img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+
+    object-fit: cover;
+    object-position: center;
+
+    display: block;
+}
