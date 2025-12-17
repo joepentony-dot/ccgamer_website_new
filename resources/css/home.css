@@ -270,3 +270,45 @@ html[data-ccg-page="home"] .home-feature-card:focus-within .ccg-card__media {
         gap: 28px;
     }
 }
+
+/* ============================================================
+   HOME — MICRO FLOURISH: FEATURED TITLE SHIMMER
+   Phase HT-MICRO — FINAL TOUCH
+   ------------------------------------------------------------
+   • Home-only
+   • Hover / focus only
+   • Ultra subtle neon presence
+   • Zero layout or performance impact
+============================================================ */
+
+/* Prepare title for shimmer */
+html[data-ccg-page="home"] .home-feature-card h3,
+html[data-ccg-page="home"] .home-feature-card .ccg-card__title,
+html[data-ccg-page="home"] .home-feature-card__title {
+    position: relative;
+    transition:
+        text-shadow 0.35s ease,
+        color 0.35s ease;
+}
+
+/* Shimmer on interaction only */
+html[data-ccg-page="home"] .home-feature-card:hover h3,
+html[data-ccg-page="home"] .home-feature-card:hover .ccg-card__title,
+html[data-ccg-page="home"] .home-feature-card:hover .home-feature-card__title,
+html[data-ccg-page="home"] .home-feature-card:focus-within h3,
+html[data-ccg-page="home"] .home-feature-card:focus-within .ccg-card__title,
+html[data-ccg-page="home"] .home-feature-card:focus-within .home-feature-card__title {
+    text-shadow:
+        0 0 8px rgba(var(--accent-rgb), 0.45),
+        0 0 16px rgba(var(--accent-rgb), 0.25);
+}
+
+/* Touch devices — keep calm */
+@media (hover: none) {
+    html[data-ccg-page="home"] .home-feature-card:hover h3,
+    html[data-ccg-page="home"] .home-feature-card:hover .ccg-card__title,
+    html[data-ccg-page="home"] .home-feature-card:hover .home-feature-card__title {
+        text-shadow: none;
+    }
+}
+
