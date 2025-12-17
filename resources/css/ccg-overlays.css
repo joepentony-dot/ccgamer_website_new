@@ -1,11 +1,12 @@
 /* ============================================================
    CCG OVERLAYS — OMEGA UNIVERSE LAYER (LOCKED)
-   Phase U1 — FULL-PAGE STARFIELD RESTORE
+   Phase U2 — MOBILE DEPTH CORRECTION PASS
    ------------------------------------------------------------
-   • Starfield spans entire page height
-   • Decorative layers never block interaction
-   • Safe z-index discipline
-   • ZERO layout or JS impact
+   • Desktop: full cinematic fixed universe
+   • Home: intentionally immersive (fixed)
+   • Mobile (non-Home): universe anchored behind content
+   • Prevents “starfield floating above content” illusion
+   • CSS-only, zero JS or layout impact
 ============================================================ */
 
 /* ------------------------------------------------------------
@@ -109,9 +110,39 @@
     opacity: 0.35;
 }
 
-/* ------------------------------------------------------------
+/* ============================================================
+   MOBILE DEPTH CORRECTION (NON-HOME PAGES ONLY)
+   ------------------------------------------------------------
+   Mobile browsers + fixed animated layers can visually float
+   above scrolling content even with correct z-index.
+   This anchors the universe to page flow on mobile EXCEPT Home.
+============================================================ */
+
+@media (max-width: 768px) {
+
+    /* Anchor universe to document flow on mobile */
+    html:not([data-ccg-page="home"]) .ccg-bg {
+        position: absolute;
+        inset: 0;
+    }
+
+    /* Reduce perceived foreground dominance slightly */
+    html:not([data-ccg-page="home"]) .ccg-bg-starfield {
+        opacity: 0.48;
+    }
+
+    html:not([data-ccg-page="home"]) .ccg-bg-grid {
+        opacity: 0.10;
+    }
+
+    html:not([data-ccg-page="home"]) .ccg-bg-crt-overlay {
+        opacity: 0.28;
+    }
+}
+
+/* ============================================================
    KEYFRAMES — CINEMATIC DRIFT
------------------------------------------------------------- */
+============================================================ */
 
 @keyframes ccg-star-drift {
     from { background-position: 0 0; }
