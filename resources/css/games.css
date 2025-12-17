@@ -572,3 +572,17 @@ html[data-ccg-page="single-game"] .game-section--related .ccg-card:focus-within 
         box-shadow: none;
     }
 }
+
+/* ============================================================
+   SINGLE GAME — VIDEO Z-LAYER CORRECTION
+   QA FIX — SAFE & ISOLATED
+   ------------------------------------------------------------
+   • Ensures video renders above starfield
+   • Single-game only
+   • No global impact
+============================================================ */
+
+html[data-ccg-page="single-game"] #game-video-section {
+    position: relative;
+    z-index: 2;
+}
