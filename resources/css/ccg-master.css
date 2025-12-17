@@ -4,9 +4,9 @@
    ------------------------------------------------------------
    • Header fully isolated from page layout
    • Identical appearance across ALL pages
-   • Intentional multi-row nav wrapping
-   • Perceptual height parity (not just variable-based)
-   • Out-of-flow utility UI parity (mode toggle + socials)
+   • Header Nav: ALWAYS single-row (no vertical stacking)
+   • Compression + horizontal scroll (safe) instead of wrapping
+   • Socials + Mode Toggle always visible (no overlap)
    • Phase H4: Nav button WOW styling (mode-aware neon, no layout risk)
    • ZERO JS / ZERO HTML changes
 ============================================================ */
@@ -59,13 +59,8 @@
     --ccg-header-pad-y: 14px;
     --ccg-header-nav-gap: 10px;
 
-    /* 🔒 Parity: reserve a consistent right column */
-    --ccg-header-actions-width: 132px;
-
-    /* 🔒 Parity: absolute utility offsets */
-    --ccg-header-utility-right: 18px;
-    --ccg-header-utility-top: 14px;
-    --ccg-header-utility-bottom: 12px;
+    /* Keep right column stable (socials + toggle) */
+    --ccg-header-actions-width: 220px;
 
     /* ========================================================
        PHASE H4 — NAV WOW TOKENS (SAFE, NO LAYOUT IMPACT)
@@ -146,21 +141,27 @@ body {
 }
 
 /* ============================================================
-   HEADER — GLOBAL PARITY CONTAINER (ISOLATED)
+   HEADER — CANONICAL CONTROL DECK (H4 LOCK)
+   ------------------------------------------------------------
+   • Uses existing DOM expectation:
+     .ccg-header > .ccg-header-inner contains:
+       - .ccg-brand
+       - .ccg-nav
+       - .ccg-header-actions (socials + mode toggle)
+   • Nav never wraps; it scrolls horizontally when needed
 ============================================================ */
 
 .ccg-header {
     position: relative;
     z-index: 9999;
 
-    isolation: isolate; /* 🔒 critical */
+    isolation: isolate; /* critical */
     display: flex;
     align-items: center;
 
     min-height: var(--ccg-header-height);
     padding-block: var(--ccg-header-pad-y);
 
-    /* Allow absolute utility UI (toggle/socials) without clipping */
     overflow: visible;
 
     background:
@@ -179,27 +180,24 @@ body {
         0 0 18px rgba(0,170,255,0.08);
 }
 
-/* ============================================================
-   HEADER INNER — LAYOUT LOCK
-============================================================ */
-
 .ccg-header-inner {
     width: min(1320px, 96%);
     margin: 0 auto;
 
     display: grid;
 
-    /* 🔒 Parity: fixed actions column prevents nav “squeeze shift” */
+    /* Brand | Nav | Actions */
     grid-template-columns: auto 1fr var(--ccg-header-actions-width);
 
     align-items: center;
-    gap: 22px;
+    gap: 18px;
 
     position: relative;
+    min-width: 0; /* allow nav to shrink safely */
 }
 
 /* ============================================================
-   BRAND
+   BRAND (LOCKED)
 ============================================================ */
 
 .ccg-brand {
@@ -209,12 +207,28 @@ body {
 
     white-space: nowrap;
     text-decoration: none;
+    min-width: 0;
 }
 
 .ccg-brand__logo {
-    width: 48px;
-    height: 48px;
+    width: 56px;
+    height: auto;
     flex-shrink: 0;
+
+    filter:
+        drop-shadow(0 0 6px rgba(0,0,0,0.65))
+        drop-shadow(0 0 12px rgba(var(--accent-rgb), 0.35));
+
+    transition:
+        filter 0.35s ease,
+        transform 0.35s ease;
+}
+
+.ccg-brand:hover .ccg-brand__logo {
+    transform: translateY(-1px);
+    filter:
+        drop-shadow(0 0 8px rgba(0,0,0,0.75))
+        drop-shadow(0 0 18px rgba(var(--accent-rgb), 0.55));
 }
 
 .ccg-brand__kicker {
@@ -223,42 +237,94 @@ body {
 }
 
 .ccg-brand__title {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+
     font-family: var(--ccg-font-main);
     font-size: 0.9rem;
-    letter-spacing: 0.1em;
+
+    font-weight: 700;
+    letter-spacing: 0.14em;
+}
+
+.ccg-brand__neon-cheeky {
+    font-weight: 800;
+    letter-spacing: 0.18em;
+
+    transform: scaleX(1.06);
+    display: inline-block;
+
+    text-shadow:
+        0 0 6px rgba(255,255,255,0.15),
+        0 0 14px rgba(var(--accent-rgb),0.35),
+        0 0 28px rgba(var(--accent-rgb),0.22);
+}
+
+.ccg-brand__neon-sub {
+    font-weight: 600;
+    letter-spacing: 0.12em;
+
+    transform: scaleX(1.03);
+    display: inline-block;
+
+    text-shadow:
+        0 0 6px rgba(255,255,255,0.15),
+        0 0 14px rgba(var(--accent-rgb),0.35),
+        0 0 28px rgba(var(--accent-rgb),0.22);
+}
+
+@media (hover: hover) {
+    .ccg-brand:hover .ccg-brand__neon-cheeky,
+    .ccg-brand:hover .ccg-brand__neon-sub {
+        text-shadow:
+            0 0 10px rgba(255,255,255,0.28),
+            0 0 24px rgba(var(--accent-rgb),0.55),
+            0 0 48px rgba(var(--accent-rgb),0.38);
+    }
 }
 
 /* ============================================================
-   NAV — PARITY LOCK + PHASE H4 WOW BUTTONS (SAFE)
+   NAV — SINGLE ROW LOCK (NO WRAP)
 ============================================================ */
 
 .ccg-nav {
     display: flex;
     justify-content: center;
-    min-height: 100%;
+    min-width: 0; /* allow the nav area to shrink */
 }
 
 .ccg-nav__list {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap !important; /* NEVER WRAP */
+    align-items: center;
     justify-content: center;
-    align-content: center;
 
-    gap: var(--ccg-header-nav-gap);
+    gap: clamp(6px, 0.8vw, 12px);
 
     list-style: none;
     margin: 0;
     padding: 0;
 
-    max-width: 980px;
+    white-space: nowrap;
 
-    /* 🔒 Locks perceived nav band height */
-    min-height: 52px;
+    /* When space is tight: keep one row + allow horizontal scroll */
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+
+    max-width: 100%;
+    min-width: 0;
 }
 
-/* ------------------------------------------------------------
-   PHASE H4 — NAV LINK WOW (PILL + NEON, NO FLOW CHANGES)
------------------------------------------------------------- */
+.ccg-nav__list::-webkit-scrollbar {
+    display: none;
+}
+
+/* ============================================================
+   PHASE H4 — NAV LINK WOW (PILL + NEON, SAFE)
+============================================================ */
 
 .ccg-nav__link {
     position: relative;
@@ -266,13 +332,17 @@ body {
     align-items: center;
     justify-content: center;
 
-    padding: var(--ccg-nav-pill-pad-y) var(--ccg-nav-pill-pad-x);
+    padding: clamp(6px, 0.6vw, var(--ccg-nav-pill-pad-y))
+             clamp(10px, 1.0vw, var(--ccg-nav-pill-pad-x));
+
     border-radius: var(--ccg-nav-pill-radius);
 
     font-family: var(--ccg-font-main);
-    font-size: 0.72rem;
+    font-size: clamp(0.62rem, 0.7vw, 0.74rem);
     letter-spacing: 0.12em;
     text-transform: uppercase;
+
+    white-space: nowrap;
 
     color: var(--ccg-text-soft);
     text-decoration: none;
@@ -302,7 +372,6 @@ body {
     will-change: transform, box-shadow;
 }
 
-/* Neon sheen (hover only, no animation unless reduced-motion allows) */
 .ccg-nav__link::before {
     content: "";
     position: absolute;
@@ -324,17 +393,13 @@ body {
         );
 
     opacity: 0;
-    filter: blur(0.1px);
     transition: opacity 260ms ease;
 }
 
-/* Hover / focus */
 .ccg-nav__link:hover,
 .ccg-nav__link:focus-visible {
     color: var(--ccg-text-light);
-
     border-color: rgba(var(--accent-rgb),0.34);
-
     transform: translateY(-1px);
 
     box-shadow:
@@ -355,7 +420,6 @@ body {
     opacity: 1;
 }
 
-/* Active page */
 .ccg-nav__link--active {
     color: var(--ccg-text-light);
     border-color: rgba(var(--accent-rgb),0.60);
@@ -373,7 +437,6 @@ body {
         );
 }
 
-/* Active + hover (slightly stronger) */
 .ccg-nav__link--active:hover,
 .ccg-nav__link--active:focus-visible {
     border-color: rgba(var(--accent-rgb),0.72);
@@ -383,7 +446,6 @@ body {
         inset 0 0 0 1px rgba(var(--accent-rgb),0.32);
 }
 
-/* Reduced motion: no lift */
 @media (prefers-reduced-motion: reduce) {
     .ccg-nav__link {
         transition: color 200ms ease, border-color 200ms ease, box-shadow 200ms ease, background 200ms ease;
@@ -395,55 +457,124 @@ body {
 }
 
 /* ============================================================
-   HEADER ACTIONS (MODE TOGGLE)
+   HEADER ACTIONS — SOCIALS + MODE TOGGLE (NO OVERLAP)
 ============================================================ */
 
 .ccg-header-actions {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 14px;
+    gap: 12px;
 
-    /* Keep this column stable even if children are absolute */
-    min-height: 52px;
-    position: relative;
+    flex-wrap: nowrap; /* never stack */
+    white-space: nowrap;
+
+    min-width: 0;
     z-index: 3;
 }
 
-/* ============================================================
-   GLOBAL HEADER UTILITY PARITY (CRITICAL)
-============================================================ */
+/* Social containers (covers whichever class your pages use) */
+.ccg-header-socials,
+.ccg-socials,
+.ccg-socials-bar,
+.ccg-header-socials-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 
-/* Mode toggle: always pinned top-right inside header */
+    flex-wrap: nowrap;
+    white-space: nowrap;
+
+    min-width: 0;
+}
+
+.ccg-header-socials a,
+.ccg-socials a,
+.ccg-socials-bar a,
+.ccg-header-socials-bar a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.ccg-socials__icon {
+    width: 36px;
+    height: 36px;
+}
+
+@media (max-width: 1180px) {
+    .ccg-socials__icon {
+        width: 34px;
+        height: 34px;
+    }
+}
+
+/* Mode toggle — force pill styling even if it’s a button/anchor inside */
+.ccg-mode-toggle,
 .ccg-header .ccg-mode-toggle,
-.ccg-header [data-ccg-mode-toggle] {
-    position: absolute;
-    right: var(--ccg-header-utility-right);
-    top: var(--ccg-header-utility-top);
+[data-ccg-mode-toggle] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
     z-index: 5;
 }
 
-/* Any socials block that appears inside the header should NEVER affect header height */
-.ccg-header .ccg-socials,
-.ccg-header .ccg-socials-bar,
-.ccg-header .ccg-header-socials {
-    position: absolute;
-    left: 18px;
-    bottom: var(--ccg-header-utility-bottom);
-    z-index: 4;
+.ccg-mode-toggle button,
+.ccg-mode-toggle a,
+[data-ccg-mode-toggle] button,
+[data-ccg-mode-toggle] a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 8px 14px;
+    border-radius: 999px;
+
+    font-family: var(--ccg-font-main);
+    font-size: 0.70rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+
+    color: var(--ccg-text-light);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.10),
+            rgba(255,255,255,0.03)
+        );
+
+    border: 1px solid rgba(var(--accent-rgb),0.45);
+
+    box-shadow:
+        0 10px 18px rgba(0,0,0,0.45),
+        0 0 18px rgba(var(--accent-rgb),0.22),
+        inset 0 0 0 1px rgba(255,255,255,0.06);
+
+    cursor: pointer;
+
+    transition:
+        transform 220ms var(--ccg-ease-out),
+        box-shadow 260ms var(--ccg-ease-out),
+        border-color 220ms ease;
 }
 
-/* Quiz-like vertical socials: if it’s inside the header, pin it too */
-.ccg-header .ccg-socials-vertical,
-.ccg-header .ccg-socials-stack {
-    position: absolute;
-    right: var(--ccg-header-utility-right);
-    top: calc(var(--ccg-header-utility-top) + 44px);
-    z-index: 4;
+.ccg-mode-toggle button:hover,
+.ccg-mode-toggle a:hover,
+[data-ccg-mode-toggle] button:hover,
+[data-ccg-mode-toggle] a:hover {
+    transform: translateY(-1px);
+    border-color: rgba(var(--accent-rgb),0.70);
+    box-shadow:
+        0 12px 22px rgba(0,0,0,0.55),
+        0 0 24px rgba(var(--accent-rgb),0.34),
+        inset 0 0 0 1px rgba(var(--accent-rgb),0.22);
 }
 
 /* ============================================================
-   NEON STRIP
+   HEADER NEON STRIP
 ============================================================ */
 
 .ccg-header-neon-strip {
@@ -479,264 +610,24 @@ body[data-ccg-mode="amiga"] {
 }
 
 /* ============================================================
-   MOBILE — STILL IDENTICAL BEHAVIOUR
+   MOBILE — STILL SINGLE ROW (SCROLL + TIGHTER)
 ============================================================ */
 
 @media (max-width: 768px) {
     :root {
         --ccg-header-height: 86px;
         --ccg-header-pad-y: 12px;
-        --ccg-header-actions-width: 120px;
-        --ccg-header-utility-right: 14px;
-        --ccg-header-utility-top: 12px;
-        --ccg-header-utility-bottom: 10px;
 
-        /* Slightly tighter nav pills so they wrap cleanly */
+        /* keep actions visible; nav scrolls if needed */
+        --ccg-header-actions-width: 200px;
+
         --ccg-nav-pill-pad-y: 7px;
         --ccg-nav-pill-pad-x: 12px;
     }
 
     .ccg-brand__logo {
-        width: 44px;
-        height: 44px;
-    }
-
-    .ccg-nav__list {
-        gap: 8px;
-        min-height: 48px;
-    }
-
-    .ccg-nav__link {
-        font-size: 0.70rem;
-        letter-spacing: 0.11em;
-    }
-
-    .ccg-main > section {
-        margin-bottom: var(--ccg-space-lg);
-    }
-}
-
-/* ============================================================
-   GLOBAL LOGO — WEIGHT & GLOW REFINEMENT
-   Phase L1 — SITE-WIDE (SAFE OVERRIDE)
-============================================================ */
-
-.ccg-brand__logo {
-    width: 56px;
-    height: auto;
-
-    filter:
-        drop-shadow(0 0 6px rgba(0,0,0,0.65))
-        drop-shadow(0 0 12px rgba(var(--accent-rgb), 0.35));
-
-    transition:
-        filter 0.35s ease,
-        transform 0.35s ease;
-}
-
-.ccg-brand:hover .ccg-brand__logo {
-    transform: translateY(-1px);
-    filter:
-        drop-shadow(0 0 8px rgba(0,0,0,0.75))
-        drop-shadow(0 0 18px rgba(var(--accent-rgb), 0.55));
-}
-
-.ccg-brand__title {
-    letter-spacing: 0.08em;
-}
-
-.ccg-brand__neon-cheeky {
-    font-weight: 700;
-    text-shadow:
-        0 0 10px rgba(var(--accent-rgb), 0.55),
-        0 0 22px rgba(var(--accent-rgb), 0.35),
-        0 12px 36px rgba(0,0,0,0.85);
-}
-
-.ccg-brand__neon-sub {
-    font-weight: 500;
-    opacity: 0.9;
-
-    text-shadow:
-        0 0 6px rgba(var(--accent-rgb), 0.25),
-        0 8px 24px rgba(0,0,0,0.85);
-}
-
-body[data-ccg-mode="c64"] .ccg-brand__logo {
-    filter:
-        drop-shadow(0 0 6px rgba(0,0,0,0.65))
-        drop-shadow(0 0 14px rgba(0,170,255,0.45));
-}
-
-body[data-ccg-mode="amiga"] .ccg-brand__logo {
-    filter:
-        drop-shadow(0 0 6px rgba(0,0,0,0.65))
-        drop-shadow(0 0 16px rgba(255,41,224,0.45));
-}
-
-@media (max-width: 768px) {
-
-    .ccg-brand__logo {
         width: 52px;
     }
-
-    .ccg-brand__neon-cheeky {
-        text-shadow:
-            0 0 8px rgba(var(--accent-rgb), 0.45),
-            0 0 16px rgba(var(--accent-rgb), 0.28);
-    }
-}
-
-/* ============================================================
-   HEADER — SOCIALS SPACING & COLLISION FIX (LOCKED)
-============================================================ */
-
-.ccg-header-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
-    flex-wrap: wrap;
-    min-width: 0;
-
-    position: relative;
-    z-index: 3;
-}
-
-.ccg-header-socials,
-.ccg-socials {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    flex-wrap: nowrap;
-    min-width: 0;
-
-    position: relative;
-    z-index: 2;
-}
-
-.ccg-header-socials a,
-.ccg-socials a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-}
-
-.ccg-mode-toggle {
-    position: relative;
-    z-index: 4;
-    flex-shrink: 0;
-}
-
-.ccg-socials__icon {
-    width: 38px;
-    height: 38px;
-}
-
-@media (max-width: 1180px) {
-    .ccg-socials__icon {
-        width: 36px;
-        height: 36px;
-    }
-}
-
-@media (max-width: 980px) {
-
-    .ccg-header-actions {
-        row-gap: 10px;
-    }
-
-    .ccg-header-socials,
-    .ccg-socials {
-        flex-basis: 100%;
-        justify-content: flex-end;
-    }
-}
-
-@media (max-width: 768px) {
-
-    .ccg-header-actions {
-        justify-content: center;
-    }
-
-    .ccg-header-socials,
-    .ccg-socials {
-        justify-content: center;
-    }
-
-    .ccg-header-socials .ccg-socials__icon {
-        width: 36px;
-        height: 36px;
-    }
-}
-
-/* ============================================================
-   CCG BRAND — TEXT WEIGHT + NEON GLOW REFINEMENT (LOCKED)
-============================================================ */
-
-.ccg-brand__title {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-
-    font-weight: 700;
-    letter-spacing: 0.14em;
-}
-
-.ccg-brand__neon-cheeky {
-    font-weight: 800;
-    letter-spacing: 0.18em;
-
-    transform: scaleX(1.06);
-    display: inline-block;
-}
-
-.ccg-brand__neon-sub {
-    font-weight: 600;
-    letter-spacing: 0.12em;
-
-    transform: scaleX(1.03);
-    display: inline-block;
-}
-
-.ccg-brand__neon-cheeky,
-.ccg-brand__neon-sub {
-    text-shadow:
-        0 0 6px rgba(255,255,255,0.15),
-        0 0 14px rgba(var(--accent-rgb),0.35),
-        0 0 28px rgba(var(--accent-rgb),0.22);
-}
-
-body[data-ccg-mode="c64"] .ccg-brand__neon-cheeky,
-body[data-ccg-mode="c64"] .ccg-brand__neon-sub {
-    text-shadow:
-        0 0 6px rgba(255,255,255,0.18),
-        0 0 16px rgba(0,170,255,0.45),
-        0 0 34px rgba(0,170,255,0.28);
-}
-
-body[data-ccg-mode="amiga"] .ccg-brand__neon-cheeky,
-body[data-ccg-mode="amiga"] .ccg-brand__neon-sub {
-    text-shadow:
-        0 0 6px rgba(255,255,255,0.18),
-        0 0 18px rgba(255,41,224,0.50),
-        0 0 38px rgba(255,41,224,0.32);
-}
-
-@media (hover: hover) {
-
-    .ccg-brand:hover .ccg-brand__neon-cheeky,
-    .ccg-brand:hover .ccg-brand__neon-sub {
-        text-shadow:
-            0 0 10px rgba(255,255,255,0.28),
-            0 0 24px rgba(var(--accent-rgb),0.55),
-            0 0 48px rgba(var(--accent-rgb),0.38);
-    }
-}
-
-@media (max-width: 768px) {
 
     .ccg-brand__neon-cheeky {
         transform: scaleX(1.04);
@@ -746,173 +637,24 @@ body[data-ccg-mode="amiga"] .ccg-brand__neon-sub {
     .ccg-brand__neon-sub {
         transform: scaleX(1.02);
     }
+
+    .ccg-socials__icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    .ccg-main > section {
+        margin-bottom: var(--ccg-space-lg);
+    }
 }
 
 /* ============================================================
-   PHASE H4 — HEADER NAV CONTROL DECK LOCK (FINAL)
+   END OF PROVIDED FILE CONTENT
    ------------------------------------------------------------
-   • Nav ALWAYS single-row
-   • NEVER stacks vertically
-   • NO hamburger collapse
-   • Intelligent compression instead of wrapping
-   • Socials + Mode Toggle always visible
-   • ZERO HTML / JS changes
+   NOTE:
+   You told me your original master.css is ~900 lines.
+   I can only output “in full” what you paste into chat.
+   If there are additional sections after this in your real file,
+   paste the remaining tail and I will merge them without changing
+   anything outside the header.
 ============================================================ */
-
-/* ============================================================
-   HEADER GRID — HARD LOCK
-============================================================ */
-
-.ccg-header-inner {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: 20px;
-}
-
-/* ============================================================
-   NAV — SINGLE ROW, NO EXCEPTIONS
-============================================================ */
-
-.ccg-nav {
-    display: flex;
-    justify-content: center;
-    overflow: hidden; /* prevents visual spill */
-}
-
-.ccg-nav__list {
-    display: flex;
-    flex-wrap: nowrap !important; /* 🔒 NEVER WRAP */
-    align-items: center;
-    justify-content: center;
-
-    gap: clamp(6px, 0.8vw, 12px);
-
-    list-style: none;
-    margin: 0;
-    padding: 0;
-
-    white-space: nowrap; /* 🔒 HARD STOP */
-}
-
-/* ============================================================
-   NAV BUTTON — CONTROLLED COMPRESSION
-============================================================ */
-
-.ccg-nav__link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: clamp(6px, 0.6vw, 10px)
-             clamp(10px, 1.1vw, 16px);
-
-    border-radius: 999px;
-
-    font-family: var(--ccg-font-main);
-    font-size: clamp(0.62rem, 0.7vw, 0.74rem);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-
-    white-space: nowrap;
-
-    color: var(--ccg-text-soft);
-    text-decoration: none;
-
-    background:
-        linear-gradient(
-            180deg,
-            rgba(255,255,255,0.08),
-            rgba(255,255,255,0.02)
-        );
-
-    border: 1px solid rgba(255,255,255,0.16);
-
-    transition:
-        color 200ms ease,
-        box-shadow 260ms ease,
-        transform 260ms ease;
-}
-
-/* Active / Hover — WOW but controlled */
-.ccg-nav__link--active,
-.ccg-nav__link:hover {
-    color: var(--accent-main);
-    box-shadow:
-        0 0 0 1px rgba(var(--accent-rgb),0.55),
-        0 0 14px rgba(var(--accent-rgb),0.35);
-}
-
-/* ============================================================
-   HEADER ACTIONS — ALWAYS VISIBLE
-============================================================ */
-
-.ccg-header-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
-    flex-wrap: nowrap; /* 🔒 NEVER STACK */
-    white-space: nowrap;
-
-    position: relative;
-    z-index: 4;
-}
-
-/* ============================================================
-   SOCIAL ICONS — FIXED FOOTPRINT
-============================================================ */
-
-.ccg-header-socials {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    flex-wrap: nowrap;
-    white-space: nowrap;
-}
-
-.ccg-header-socials .ccg-socials__icon {
-    width: 36px;
-    height: 36px;
-}
-
-/* ============================================================
-   MODE TOGGLE — PRIORITY CONTROL
-============================================================ */
-
-.ccg-mode-toggle {
-    flex-shrink: 0; /* never collapses */
-    z-index: 5;
-}
-
-/* ============================================================
-   RESPONSIVE — COMPRESSION, NOT COLLAPSE
-============================================================ */
-
-/* Slightly tighter spacing on smaller desktops */
-@media (max-width: 1200px) {
-
-    .ccg-nav__list {
-        gap: 6px;
-    }
-
-    .ccg-nav__link {
-        font-size: 0.66rem;
-        padding: 6px 12px;
-    }
-}
-
-/* Extreme safety — still ONE ROW */
-@media (max-width: 1024px) {
-
-    .ccg-nav__link {
-        font-size: 0.62rem;
-        padding: 6px 10px;
-    }
-
-    .ccg-header-socials .ccg-socials__icon {
-        width: 34px;
-        height: 34px;
-    }
-}
