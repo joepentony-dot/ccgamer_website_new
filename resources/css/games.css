@@ -245,3 +245,103 @@
         margin-bottom: 12px;
     }
 }
+
+/* ============================================================
+   SINGLE GAME — HERO CINEMATIC WOW
+   Phase SG-1 — SAFE HERO POLISH
+   ------------------------------------------------------------
+   • Single-game pages only
+   • CSS-only
+   • No loader / JS impact
+============================================================ */
+
+html[data-ccg-page="single-game"] .game-hero {
+    position: relative;
+    margin-bottom: 48px;
+}
+
+/* ------------------------------------------------------------
+   HERO INNER — BALANCE MEDIA + CONTENT
+------------------------------------------------------------ */
+
+html[data-ccg-page="single-game"] .game-hero__inner {
+    display: grid;
+    grid-template-columns: minmax(280px, 420px) 1fr;
+    gap: 36px;
+    align-items: center;
+}
+
+/* Mobile stack remains natural */
+@media (max-width: 900px) {
+    html[data-ccg-page="single-game"] .game-hero__inner {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+}
+
+/* ------------------------------------------------------------
+   HERO MEDIA — CINEMATIC FRAME
+------------------------------------------------------------ */
+
+html[data-ccg-page="single-game"] .game-hero__media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+
+    overflow: hidden;
+    border-radius: 18px;
+
+    box-shadow:
+        0 0 0 1px rgba(var(--accent-rgb), 0.25),
+        0 20px 48px rgba(0, 0, 0, 0.65);
+}
+
+html[data-ccg-page="single-game"] .game-hero__thumb {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center;
+
+    display: block;
+}
+
+/* ------------------------------------------------------------
+   HERO CONTENT — TYPOGRAPHY & RHYTHM
+------------------------------------------------------------ */
+
+html[data-ccg-page="single-game"] .game-hero__content {
+    max-width: 640px;
+}
+
+html[data-ccg-page="single-game"] .game-hero__content h1 {
+    line-height: 1.15;
+    margin-bottom: 12px;
+    letter-spacing: 0.04em;
+}
+
+/* Meta line — calm, premium */
+html[data-ccg-page="single-game"] .game-meta {
+    font-size: 0.95rem;
+    opacity: 0.85;
+    margin-bottom: 8px;
+}
+
+/* ------------------------------------------------------------
+   SUBTLE DEPTH — NO CONSTANT GLOW
+------------------------------------------------------------ */
+
+html[data-ccg-page="single-game"] .game-hero__media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    pointer-events: none;
+    border-radius: inherit;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.08);
+}
