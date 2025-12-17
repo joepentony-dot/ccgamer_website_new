@@ -487,3 +487,113 @@ body[data-ccg-mode="amiga"] .ccg-brand__logo {
             0 0 16px rgba(var(--accent-rgb), 0.28);
     }
 }
+
+/* ============================================================
+   HEADER — SOCIALS SPACING & COLLISION FIX
+   Phase H-S1 — SITE-WIDE SAFE OVERRIDE
+   ------------------------------------------------------------
+   • Prevents socials hiding behind mode toggle
+   • Allows graceful wrapping on tight widths
+   • Fixes z-index stacking
+   • ZERO HTML changes
+   • ZERO hero/layout impact
+============================================================ */
+
+/* ------------------------------------------------------------
+   HEADER ACTIONS — FLEX SAFETY
+------------------------------------------------------------ */
+
+.ccg-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    flex-wrap: wrap;       /* critical: prevents collisions */
+    min-width: 0;
+
+    position: relative;
+    z-index: 3;
+}
+
+/* ------------------------------------------------------------
+   SOCIALS CONTAINER — STABLE ROW
+------------------------------------------------------------ */
+
+.ccg-header-socials,
+.ccg-socials {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    flex-wrap: nowrap;
+    min-width: 0;
+
+    position: relative;
+    z-index: 2;
+}
+
+/* Ensure icon links never collapse */
+.ccg-header-socials a,
+.ccg-socials a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+/* ------------------------------------------------------------
+   MODE TOGGLE — ALWAYS ON TOP
+------------------------------------------------------------ */
+
+.ccg-mode-toggle {
+    position: relative;
+    z-index: 4; /* above socials, but not blocking them */
+    flex-shrink: 0;
+}
+
+/* ------------------------------------------------------------
+   ICON SIZE — SLIGHTLY TIGHTER FOR FIT
+------------------------------------------------------------ */
+
+.ccg-socials__icon {
+    width: 38px;
+    height: 38px;
+}
+
+/* ------------------------------------------------------------
+   RESPONSIVE SAFETY
+------------------------------------------------------------ */
+
+@media (max-width: 1180px) {
+    .ccg-socials__icon {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+/* Tablet: allow socials to drop to a clean second row */
+@media (max-width: 980px) {
+
+    .ccg-header-actions {
+        row-gap: 10px;
+    }
+
+    .ccg-header-socials,
+    .ccg-socials {
+        flex-basis: 100%;
+        justify-content: flex-end;
+    }
+}
+
+/* Mobile: nothing overlaps, nothing clips */
+@media (max-width: 768px) {
+
+    .ccg-header-actions {
+        justify-content: center;
+    }
+
+    .ccg-header-socials,
+    .ccg-socials {
+        justify-content: center;
+    }
+}
