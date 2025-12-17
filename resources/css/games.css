@@ -32,7 +32,92 @@
 @media (max-width: 768px) {
     .ccg-page--games-index .games-accordion__content .games-grid {
         grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-        gap: 16px; /* ↓ slightly tighter horizontally, balanced vertically below */
+        gap: 16px;
+    }
+}
+
+/* ============================================================
+   GAMES INDEX — HERO PARITY POLISH
+   Phase H1 — SYSTEM BOOT CEREMONY
+============================================================ */
+
+.ccg-page--games-index .ccg-hero {
+    position: relative;
+    isolation: isolate;
+    border-radius: 20px;
+
+    background:
+        radial-gradient(
+            circle at 30% 20%,
+            rgba(var(--accent-rgb),0.16),
+            transparent 55%
+        ),
+        linear-gradient(
+            140deg,
+            rgba(0,0,0,0.88),
+            rgba(8,8,24,0.82)
+        );
+
+    box-shadow:
+        0 26px 72px rgba(0,0,0,0.85),
+        0 0 26px rgba(var(--accent-rgb),0.14),
+        inset 0 0 0 1px rgba(255,255,255,0.06);
+}
+
+/* Hero glow depth */
+.ccg-page--games-index .ccg-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+
+    background:
+        radial-gradient(
+            circle at 70% 65%,
+            rgba(var(--accent-rgb),0.18),
+            transparent 60%
+        );
+
+    opacity: 0.9;
+}
+
+/* Image depth refinement */
+.ccg-page--games-index .ccg-hero-image {
+    filter: saturate(1.05) contrast(1.08);
+    opacity: 0.85;
+}
+
+/* Content elevation */
+.ccg-page--games-index .ccg-hero-inner {
+    position: relative;
+    z-index: 3;
+    padding: 48px 42px 44px;
+}
+
+/* Title glow parity */
+.ccg-page--games-index .ccg-hero-title {
+    text-shadow:
+        0 18px 48px rgba(0,0,0,0.82),
+        0 0 22px rgba(var(--accent-rgb),0.30);
+}
+
+/* Subtitle rhythm */
+.ccg-page--games-index .ccg-hero-tagline {
+    max-width: 62ch;
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+/* Hero — Mobile discipline */
+@media (max-width: 768px) {
+
+    .ccg-page--games-index .ccg-hero-inner {
+        padding: 38px 18px 36px;
+    }
+
+    .ccg-page--games-index .ccg-hero::before {
+        opacity: 0.6;
     }
 }
 
@@ -42,29 +127,24 @@
 
 @media (max-width: 768px) {
 
-    /* Clearer separation between accordion groups */
     .games-accordion__group {
         margin-bottom: 18px;
     }
 
-    /* Header feels less “stacked” */
     .games-accordion__header {
         padding: 18px 16px;
         letter-spacing: 0.16em;
     }
 
-    /* Content breathes more vertically */
     .games-accordion__content {
         padding: 20px 14px 26px;
     }
 
-    /* Grid spacing prioritises vertical comfort */
     .games-accordion__content .games-grid {
         row-gap: 20px;
         column-gap: 14px;
     }
 
-    /* Cards feel less cramped */
     .games-accordion__content .ccg-game-card {
         border-radius: 16px;
     }
