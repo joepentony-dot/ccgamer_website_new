@@ -1,99 +1,57 @@
 /* ============================================================
-   GENRE.CSS — GENRES INDEX + GENRE PAGES
-   Phase H1 — HERO PARITY REFINEMENT (LOCK AFTER APPLY)
+   GENRE.CSS — OMEGA CINEMATIC WOW
+   Phase G-WOW — FINAL (LOCK AFTER APPLY)
    ------------------------------------------------------------
-   Scope:
-   • /games/genres/index.html
-   • /games/genres/*.html (individual genre pages)
+   • Genre index + single genre pages only
    • CSS-only
-   • No loader / card / thumbnail impact
+   • No JS / no card-builder impact
+   • Calm, premium, cinematic polish
 ============================================================ */
-
 
 /* ============================================================
-   GENRES INDEX GRID — BASE (UNCHANGED)
+   GENRE HERO — CINEMATIC AUTHORITY
 ============================================================ */
 
-.ccg-page--genres-index .ccg-genre-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 36px 40px;
-
-    max-width: 900px;
-    margin: 12px auto 0;
-    align-items: stretch;
-}
-
-@media (max-width: 1024px) {
-    .ccg-page--genres-index .ccg-genre-grid {
-        gap: 30px;
-        max-width: 820px;
-    }
-}
-
-@media (max-width: 768px) {
-    .ccg-page--genres-index .ccg-genre-grid {
-        grid-template-columns: 1fr;
-        gap: 24px;
-        max-width: 420px;
-    }
-}
-
-@media (max-width: 420px) {
-    .ccg-page--genres-index .ccg-genre-grid {
-        gap: 20px;
-    }
-}
-
-
-/* ============================================================
-   GENRE HERO — PARITY REFINEMENT (NEW)
-   Applies to individual genre pages
-============================================================ */
-
-.ccg-page--genre .ccg-hero {
+.ccg-genre-hero {
     position: relative;
-    isolation: isolate;
     border-radius: 22px;
     overflow: hidden;
 
     background:
         radial-gradient(
             ellipse at top left,
-            rgba(var(--accent-rgb),0.22),
+            rgba(var(--accent-rgb), 0.20),
             transparent 55%
         ),
         linear-gradient(
             145deg,
-            rgba(0,0,0,0.88),
-            rgba(10,10,32,0.82),
-            rgba(0,0,0,0.90)
+            rgba(0,0,0,0.92),
+            rgba(12,12,32,0.86),
+            rgba(0,0,0,0.94)
         );
 
     box-shadow:
-        0 30px 82px rgba(0,0,0,0.88),
-        0 0 30px rgba(var(--accent-rgb),0.16),
+        0 30px 80px rgba(0,0,0,0.88),
         inset 0 0 0 1px rgba(255,255,255,0.06);
 }
 
-/* Scanline + vignette depth */
-.ccg-page--genre .ccg-hero::after {
+/* Hero vignette + scanline parity */
+.ccg-genre-hero::after {
     content: "";
     position: absolute;
     inset: 0;
-    z-index: 2;
     pointer-events: none;
 
     background:
         radial-gradient(
             ellipse at center,
             transparent 55%,
-            rgba(0,0,0,0.55) 100%
+            rgba(0,0,0,0.6) 100%
         ),
         repeating-linear-gradient(
             to bottom,
-            rgba(255,255,255,0.028),
-            rgba(255,255,255,0.028) 1px,
+            rgba(255,255,255,0.025),
+            rgba(255,255,255,0.025) 1px,
             transparent 1px,
             transparent 4px
         );
@@ -101,94 +59,140 @@
     opacity: 0.22;
 }
 
-/* Hero image layer parity */
-.ccg-page--genre .ccg-hero-image {
-    filter: saturate(1.05) contrast(1.08);
-    opacity: 0.85;
-}
-
-/* Content elevation */
-.ccg-page--genre .ccg-hero-inner {
+/* Hero inner spacing */
+.ccg-genre-hero__inner {
     position: relative;
-    z-index: 3;
-    padding: 48px 44px 46px;
+    z-index: 2;
+    padding: 56px 48px 52px;
 }
 
-/* Title glow parity */
-.ccg-page--genre .ccg-hero-title {
+/* Mobile discipline */
+@media (max-width: 768px) {
+    .ccg-genre-hero__inner {
+        padding: 40px 18px 36px;
+    }
+}
+
+/* Title confidence */
+.ccg-genre-hero__title {
+    letter-spacing: 0.08em;
     text-shadow:
-        0 18px 48px rgba(0,0,0,0.85),
-        0 0 26px rgba(var(--accent-rgb),0.32);
+        0 18px 42px rgba(0,0,0,0.85),
+        0 0 22px rgba(var(--accent-rgb),0.35);
 }
 
-/* Subtitle rhythm */
-.ccg-page--genre .ccg-hero-tagline {
+/* Tagline readability */
+.ccg-genre-hero__tagline {
     max-width: 62ch;
-    line-height: 1.6;
     opacity: 0.9;
 }
 
-/* Hero → grid separation */
-.ccg-page--genre .ccg-section {
-    margin-top: 22px;
-}
-
-
 /* ============================================================
-   GENRE HERO — MOBILE DISCIPLINE
+   GENRE GRID — STRUCTURAL RHYTHM
 ============================================================ */
 
-@media (max-width: 768px) {
+.ccg-genre-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 26px;
+    align-items: stretch;
+}
 
-    .ccg-page--genre .ccg-hero-inner {
-        padding: 36px 18px 34px;
-    }
-
-    .ccg-page--genre .ccg-hero::after {
-        opacity: 0.16;
-    }
-
-    .ccg-page--genre .ccg-section {
-        margin-top: 26px;
+/* Desktop breathing room */
+@media (min-width: 1024px) {
+    .ccg-genre-grid {
+        gap: 32px;
     }
 }
 
-
 /* ============================================================
-   GENRE CARD — BASELINE POLISH (SAFE)
+   GENRE CARDS — CALM CINEMATIC DEPTH
 ============================================================ */
 
-.ccg-page--genres-index .ccg-genre-card {
-    width: 100%;
-    border-radius: 14px;
+.ccg-genre-card,
+.ccg-genre-grid .ccg-card {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
 
-    background: rgba(0, 0, 0, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.05),
+            rgba(255,255,255,0.02)
+        );
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.08),
+        0 18px 42px rgba(0,0,0,0.65);
 
     transition:
-        transform 0.28s ease,
-        box-shadow 0.28s ease;
+        transform 0.35s ease,
+        box-shadow 0.35s ease;
 }
 
-.ccg-page--genres-index .ccg-genre-card:hover {
-    transform: translateY(-6px);
-    box-shadow:
-        0 18px 42px rgba(0, 0, 0, 0.6),
-        0 0 20px rgba(0, 170, 255, 0.22);
-}
-
-body[data-ccg-mode="amiga"]
-.ccg-page--genres-index
-.ccg-genre-card:hover {
-    box-shadow:
-        0 18px 42px rgba(0, 0, 0, 0.6),
-        0 0 20px rgba(255, 41, 224, 0.28);
-}
-
-.ccg-page--genres-index .ccg-genre-card span {
+/* Media discipline */
+.ccg-genre-card img,
+.ccg-genre-grid .ccg-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     display: block;
-    margin-top: 10px;
-    letter-spacing: 0.04em;
-    text-align: center;
-    opacity: 0.95;
+}
+
+/* Card title rhythm */
+.ccg-genre-card span,
+.ccg-genre-grid .ccg-card__title {
+    display: block;
+    padding: 14px 16px 16px;
+    line-height: 1.25;
+    letter-spacing: 0.06em;
+}
+
+/* ============================================================
+   HOVER / FOCUS — RESTRAINED WOW
+============================================================ */
+
+@media (hover: hover) {
+
+    .ccg-genre-card:hover,
+    .ccg-genre-card:focus-within,
+    .ccg-genre-grid .ccg-card:hover,
+    .ccg-genre-grid .ccg-card:focus-within {
+        transform: translateY(-3px);
+        box-shadow:
+            0 0 0 1px rgba(var(--accent-rgb),0.35),
+            0 0 18px rgba(var(--accent-rgb),0.28),
+            0 22px 48px rgba(0,0,0,0.75);
+    }
+
+    /* Media edge glow only */
+    .ccg-genre-card:hover img,
+    .ccg-genre-grid .ccg-card:hover .ccg-card__media {
+        box-shadow:
+            inset 0 0 0 1px rgba(var(--accent-rgb),0.45);
+    }
+}
+
+/* Touch devices — no fake hover */
+@media (hover: none) {
+    .ccg-genre-card:hover,
+    .ccg-genre-grid .ccg-card:hover {
+        transform: none;
+        box-shadow: none;
+    }
+}
+
+/* ============================================================
+   SECTION RHYTHM — ARRIVAL CONTROL
+============================================================ */
+
+.ccg-genre-main {
+    margin-top: 56px;
+}
+
+@media (max-width: 768px) {
+    .ccg-genre-main {
+        margin-top: 36px;
+    }
 }
