@@ -243,3 +243,30 @@ html[data-ccg-page="home"] .home-feature-card:focus-within .ccg-card__media {
         box-shadow: none;
     }
 }
+
+/* ============================================================
+   HOME — FEATURED SECTION SPACING HARMONY (DESKTOP ONLY)
+   Phase HT-SPACING — FINAL RHYTHM POLISH
+   ------------------------------------------------------------
+   • Desktop-only
+   • Improves vertical breathing room
+   • No impact on mobile
+============================================================ */
+
+@media (min-width: 1024px) {
+
+    /* Give featured sections more presence */
+    html[data-ccg-page="home"] .home-section {
+        margin-bottom: 56px;
+    }
+
+    /* Header to content cadence */
+    html[data-ccg-page="home"] .home-section__header {
+        margin-bottom: 28px;
+    }
+
+    /* Featured cards grid breathing room */
+    html[data-ccg-page="home"] .home-feature-grid {
+        gap: 28px;
+    }
+}
