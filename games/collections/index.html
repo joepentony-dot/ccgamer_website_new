@@ -21,6 +21,11 @@
     <link rel="stylesheet" href="../../resources/css/ccg-overlays.css" />
     <link rel="stylesheet" href="../../resources/css/ccg-socials.css" />
     <link rel="stylesheet" href="../../resources/css/ccg-cards.css" />
+
+    <!-- HERO -->
+    <link rel="stylesheet" href="../../resources/css/ccg-hero.css" />
+
+    <!-- PAGE CSS -->
     <link rel="stylesheet" href="../../resources/css/collections.css" />
 
     <!-- FOOTER CSS -->
@@ -85,17 +90,22 @@
         </header>
 
         <!-- MAIN -->
-        <main class="ccg-main">
+        <main class="ccg-main ccg-main--collections">
 
-            <!-- HERO -->
-            <section class="ccg-hero">
-                <div class="ccg-hero-inner">
-                    <span class="ccg-hero-kicker">Curated Sets • C64 &amp; Amiga</span>
-                    <h1 class="ccg-hero-title">Curated Collections</h1>
-                    <p class="ccg-hero-tagline">
-                        Hand-picked collections highlighting cartridge classics, licensed games,
-                        BPJS standouts and personal favourites from across the Commodore era.
-                    </p>
+            <!-- HERO (PARITY: image layer + scanlines layer present, CSS drives look) -->
+            <section class="ccg-collections-hero">
+                <div class="ccg-hero ccg-hero--collections">
+                    <div class="ccg-hero-image"></div>
+                    <div class="ccg-hero-scanlines"></div>
+
+                    <div class="ccg-hero-inner ccg-hero-inner--collections">
+                        <p class="ccg-hero-kicker">Curated Sets • C64 &amp; Amiga</p>
+                        <h1 class="ccg-hero-title">Curated Collections</h1>
+                        <p class="ccg-hero-tagline">
+                            Hand-picked collections highlighting cartridge classics, licensed games,
+                            BPJS standouts and personal favourites from across the Commodore era.
+                        </p>
+                    </div>
                 </div>
             </section>
 
