@@ -6,7 +6,8 @@
    • Identical appearance across ALL pages
    • Intentional multi-row nav wrapping
    • Perceptual height parity (not just variable-based)
-   • NEW: Out-of-flow utility UI parity (mode toggle + socials)
+   • Out-of-flow utility UI parity (mode toggle + socials)
+   • Phase H4: Nav button WOW styling (mode-aware neon, no layout risk)
    • ZERO JS / ZERO HTML changes
 ============================================================ */
 
@@ -65,6 +66,23 @@
     --ccg-header-utility-right: 18px;
     --ccg-header-utility-top: 14px;
     --ccg-header-utility-bottom: 12px;
+
+    /* ========================================================
+       PHASE H4 — NAV WOW TOKENS (SAFE, NO LAYOUT IMPACT)
+    ======================================================== */
+    --ccg-nav-pill-pad-y: 8px;
+    --ccg-nav-pill-pad-x: 14px;
+    --ccg-nav-pill-radius: 999px;
+
+    --ccg-nav-pill-border: rgba(255,255,255,0.14);
+    --ccg-nav-pill-bg-a: rgba(255,255,255,0.08);
+    --ccg-nav-pill-bg-b: rgba(255,255,255,0.02);
+
+    --ccg-nav-pill-glow-idle: 0 0 0 rgba(0,0,0,0);
+    --ccg-nav-pill-glow-hover: 0 0 16px rgba(var(--accent-rgb),0.22);
+    --ccg-nav-pill-glow-active: 0 0 22px rgba(var(--accent-rgb),0.32);
+
+    --ccg-nav-pill-shadow: 0 10px 18px rgba(0,0,0,0.45);
 }
 
 /* ============================================================
@@ -211,7 +229,7 @@ body {
 }
 
 /* ============================================================
-   NAV — PARITY LOCK (KEY FIX)
+   NAV — PARITY LOCK + PHASE H4 WOW BUTTONS (SAFE)
 ============================================================ */
 
 .ccg-nav {
@@ -238,13 +256,18 @@ body {
     min-height: 52px;
 }
 
+/* ------------------------------------------------------------
+   PHASE H4 — NAV LINK WOW (PILL + NEON, NO FLOW CHANGES)
+------------------------------------------------------------ */
+
 .ccg-nav__link {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
 
-    padding: 8px 14px;
-    border-radius: 999px;
+    padding: var(--ccg-nav-pill-pad-y) var(--ccg-nav-pill-pad-x);
+    border-radius: var(--ccg-nav-pill-radius);
 
     font-family: var(--ccg-font-main);
     font-size: 0.72rem;
@@ -257,21 +280,118 @@ body {
     background:
         linear-gradient(
             180deg,
-            rgba(255,255,255,0.07),
-            rgba(255,255,255,0.02)
+            var(--ccg-nav-pill-bg-a),
+            var(--ccg-nav-pill-bg-b)
         );
 
-    border: 1px solid rgba(255,255,255,0.14);
+    border: 1px solid var(--ccg-nav-pill-border);
+
+    box-shadow:
+        0 0 0 rgba(0,0,0,0),
+        inset 0 0 0 1px rgba(255,255,255,0.04);
+
+    backdrop-filter: blur(6px);
 
     transition:
         transform 260ms var(--ccg-ease-out),
-        box-shadow 260ms var(--ccg-ease-out),
-        color 200ms ease;
+        box-shadow 320ms var(--ccg-ease-out),
+        border-color 240ms ease,
+        color 200ms ease,
+        background 240ms ease;
+
+    will-change: transform, box-shadow;
 }
 
+/* Neon sheen (hover only, no animation unless reduced-motion allows) */
+.ccg-nav__link::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    pointer-events: none;
+
+    background:
+        radial-gradient(
+            circle at 30% 20%,
+            rgba(255,255,255,0.10),
+            rgba(255,255,255,0.00) 55%
+        ),
+        linear-gradient(
+            90deg,
+            rgba(var(--accent-rgb),0.00),
+            rgba(var(--accent-rgb),0.14),
+            rgba(var(--accent-rgb),0.00)
+        );
+
+    opacity: 0;
+    filter: blur(0.1px);
+    transition: opacity 260ms ease;
+}
+
+/* Hover / focus */
+.ccg-nav__link:hover,
+.ccg-nav__link:focus-visible {
+    color: var(--ccg-text-light);
+
+    border-color: rgba(var(--accent-rgb),0.34);
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        var(--ccg-nav-pill-shadow),
+        var(--ccg-nav-pill-glow-hover),
+        inset 0 0 0 1px rgba(var(--accent-rgb),0.18);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.10),
+            rgba(255,255,255,0.03)
+        );
+}
+
+.ccg-nav__link:hover::before,
+.ccg-nav__link:focus-visible::before {
+    opacity: 1;
+}
+
+/* Active page */
 .ccg-nav__link--active {
-    color: var(--accent-main);
-    border-color: rgba(var(--accent-rgb),0.7);
+    color: var(--ccg-text-light);
+    border-color: rgba(var(--accent-rgb),0.60);
+
+    box-shadow:
+        var(--ccg-nav-pill-shadow),
+        var(--ccg-nav-pill-glow-active),
+        inset 0 0 0 1px rgba(var(--accent-rgb),0.26);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(var(--accent-rgb),0.18),
+            rgba(255,255,255,0.02)
+        );
+}
+
+/* Active + hover (slightly stronger) */
+.ccg-nav__link--active:hover,
+.ccg-nav__link--active:focus-visible {
+    border-color: rgba(var(--accent-rgb),0.72);
+    box-shadow:
+        0 12px 20px rgba(0,0,0,0.55),
+        0 0 24px rgba(var(--accent-rgb),0.34),
+        inset 0 0 0 1px rgba(var(--accent-rgb),0.32);
+}
+
+/* Reduced motion: no lift */
+@media (prefers-reduced-motion: reduce) {
+    .ccg-nav__link {
+        transition: color 200ms ease, border-color 200ms ease, box-shadow 200ms ease, background 200ms ease;
+    }
+    .ccg-nav__link:hover,
+    .ccg-nav__link:focus-visible {
+        transform: none;
+    }
 }
 
 /* ============================================================
@@ -292,10 +412,6 @@ body {
 
 /* ============================================================
    GLOBAL HEADER UTILITY PARITY (CRITICAL)
-   ------------------------------------------------------------
-   Some pages place the mode toggle/socials differently in markup.
-   These rules force them OUT-OF-FLOW so they do NOT change header
-   height/centering, and so they land in the same place visually.
 ============================================================ */
 
 /* Mode toggle: always pinned top-right inside header */
@@ -307,8 +423,7 @@ body {
     z-index: 5;
 }
 
-/* Any socials block that appears inside the header should NEVER
-   affect header height. (Home / Complete Index style) */
+/* Any socials block that appears inside the header should NEVER affect header height */
 .ccg-header .ccg-socials,
 .ccg-header .ccg-socials-bar,
 .ccg-header .ccg-header-socials {
@@ -375,6 +490,10 @@ body[data-ccg-mode="amiga"] {
         --ccg-header-utility-right: 14px;
         --ccg-header-utility-top: 12px;
         --ccg-header-utility-bottom: 10px;
+
+        /* Slightly tighter nav pills so they wrap cleanly */
+        --ccg-nav-pill-pad-y: 7px;
+        --ccg-nav-pill-pad-x: 12px;
     }
 
     .ccg-brand__logo {
@@ -387,6 +506,11 @@ body[data-ccg-mode="amiga"] {
         min-height: 48px;
     }
 
+    .ccg-nav__link {
+        font-size: 0.70rem;
+        letter-spacing: 0.11em;
+    }
+
     .ccg-main > section {
         margin-bottom: var(--ccg-space-lg);
     }
@@ -395,20 +519,10 @@ body[data-ccg-mode="amiga"] {
 /* ============================================================
    GLOBAL LOGO — WEIGHT & GLOW REFINEMENT
    Phase L1 — SITE-WIDE (SAFE OVERRIDE)
-   ------------------------------------------------------------
-   • Improves logo presence (less skinny)
-   • Adds premium neon glow
-   • Mode-aware (C64 / Amiga)
-   • ZERO layout changes
-   • Header structure untouched
 ============================================================ */
 
-/* ------------------------------------------------------------
-   LOGO IMAGE — WEIGHT & PRESENCE
------------------------------------------------------------- */
-
 .ccg-brand__logo {
-    width: 56px;                /* slightly wider = less skinny */
+    width: 56px;
     height: auto;
 
     filter:
@@ -420,7 +534,6 @@ body[data-ccg-mode="amiga"] {
         transform 0.35s ease;
 }
 
-/* Hover polish (subtle, premium) */
 .ccg-brand:hover .ccg-brand__logo {
     transform: translateY(-1px);
     filter:
@@ -428,16 +541,12 @@ body[data-ccg-mode="amiga"] {
         drop-shadow(0 0 18px rgba(var(--accent-rgb), 0.55));
 }
 
-/* ------------------------------------------------------------
-   LOGO TEXT — WEIGHT + READABILITY
------------------------------------------------------------- */
-
 .ccg-brand__title {
-    letter-spacing: 0.08em; /* slightly tighter = more solid */
+    letter-spacing: 0.08em;
 }
 
 .ccg-brand__neon-cheeky {
-    font-weight: 700; /* was visually too thin */
+    font-weight: 700;
     text-shadow:
         0 0 10px rgba(var(--accent-rgb), 0.55),
         0 0 22px rgba(var(--accent-rgb), 0.35),
@@ -453,32 +562,22 @@ body[data-ccg-mode="amiga"] {
         0 8px 24px rgba(0,0,0,0.85);
 }
 
-/* ------------------------------------------------------------
-   MODE-SPECIFIC INTENSITY (SAFE)
------------------------------------------------------------- */
-
-/* C64 = slightly crisper blue */
 body[data-ccg-mode="c64"] .ccg-brand__logo {
     filter:
         drop-shadow(0 0 6px rgba(0,0,0,0.65))
         drop-shadow(0 0 14px rgba(0,170,255,0.45));
 }
 
-/* Amiga = warmer neon pink */
 body[data-ccg-mode="amiga"] .ccg-brand__logo {
     filter:
         drop-shadow(0 0 6px rgba(0,0,0,0.65))
         drop-shadow(0 0 16px rgba(255,41,224,0.45));
 }
 
-/* ------------------------------------------------------------
-   MOBILE SAFETY — NO OVERSHADOWING
------------------------------------------------------------- */
-
 @media (max-width: 768px) {
 
     .ccg-brand__logo {
-        width: 52px; /* keeps header balanced on mobile */
+        width: 52px;
     }
 
     .ccg-brand__neon-cheeky {
@@ -489,35 +588,20 @@ body[data-ccg-mode="amiga"] .ccg-brand__logo {
 }
 
 /* ============================================================
-   HEADER — SOCIALS SPACING & COLLISION FIX
-   Phase H-S1 — SITE-WIDE SAFE OVERRIDE
-   ------------------------------------------------------------
-   • Prevents socials hiding behind mode toggle
-   • Allows graceful wrapping on tight widths
-   • Fixes z-index stacking
-   • ZERO HTML changes
-   • ZERO hero/layout impact
+   HEADER — SOCIALS SPACING & COLLISION FIX (LOCKED)
 ============================================================ */
-
-/* ------------------------------------------------------------
-   HEADER ACTIONS — FLEX SAFETY
------------------------------------------------------------- */
 
 .ccg-header-actions {
     display: flex;
     align-items: center;
     gap: 12px;
 
-    flex-wrap: wrap;       /* critical: prevents collisions */
+    flex-wrap: wrap;
     min-width: 0;
 
     position: relative;
     z-index: 3;
 }
-
-/* ------------------------------------------------------------
-   SOCIALS CONTAINER — STABLE ROW
------------------------------------------------------------- */
 
 .ccg-header-socials,
 .ccg-socials {
@@ -532,7 +616,6 @@ body[data-ccg-mode="amiga"] .ccg-brand__logo {
     z-index: 2;
 }
 
-/* Ensure icon links never collapse */
 .ccg-header-socials a,
 .ccg-socials a {
     display: inline-flex;
@@ -541,28 +624,16 @@ body[data-ccg-mode="amiga"] .ccg-brand__logo {
     text-decoration: none;
 }
 
-/* ------------------------------------------------------------
-   MODE TOGGLE — ALWAYS ON TOP
------------------------------------------------------------- */
-
 .ccg-mode-toggle {
     position: relative;
-    z-index: 4; /* above socials, but not blocking them */
+    z-index: 4;
     flex-shrink: 0;
 }
-
-/* ------------------------------------------------------------
-   ICON SIZE — SLIGHTLY TIGHTER FOR FIT
------------------------------------------------------------- */
 
 .ccg-socials__icon {
     width: 38px;
     height: 38px;
 }
-
-/* ------------------------------------------------------------
-   RESPONSIVE SAFETY
------------------------------------------------------------- */
 
 @media (max-width: 1180px) {
     .ccg-socials__icon {
@@ -571,7 +642,6 @@ body[data-ccg-mode="amiga"] .ccg-brand__logo {
     }
 }
 
-/* Tablet: allow socials to drop to a clean second row */
 @media (max-width: 980px) {
 
     .ccg-header-actions {
@@ -585,7 +655,6 @@ body[data-ccg-mode="amiga"] .ccg-brand__logo {
     }
 }
 
-/* Mobile: nothing overlaps, nothing clips */
 @media (max-width: 768px) {
 
     .ccg-header-actions {
@@ -596,21 +665,16 @@ body[data-ccg-mode="amiga"] .ccg-brand__logo {
     .ccg-socials {
         justify-content: center;
     }
+
+    .ccg-header-socials .ccg-socials__icon {
+        width: 36px;
+        height: 36px;
+    }
 }
 
 /* ============================================================
-   CCG BRAND — LOGO WEIGHT + NEON GLOW REFINEMENT
-   Phase LW-G1 — GLOBAL (LOCK AFTER APPLY)
-   ------------------------------------------------------------
-   • Site-wide
-   • CSS-only
-   • No layout changes
-   • Enhances presence + glow
+   CCG BRAND — TEXT WEIGHT + NEON GLOW REFINEMENT (LOCKED)
 ============================================================ */
-
-/* ------------------------------------------------------------
-   BRAND TEXT — STRUCTURAL WEIGHT
------------------------------------------------------------- */
 
 .ccg-brand__title {
     display: flex;
@@ -618,19 +682,17 @@ body[data-ccg-mode="amiga"] .ccg-brand__logo {
     gap: 6px;
 
     font-weight: 700;
-    letter-spacing: 0.14em; /* wider, more confident */
+    letter-spacing: 0.14em;
 }
 
-/* Make CHEEKY feel bold and flagship */
 .ccg-brand__neon-cheeky {
     font-weight: 800;
     letter-spacing: 0.18em;
 
-    transform: scaleX(1.06); /* subtle width boost */
+    transform: scaleX(1.06);
     display: inline-block;
 }
 
-/* Sub-title slightly lighter but still solid */
 .ccg-brand__neon-sub {
     font-weight: 600;
     letter-spacing: 0.12em;
@@ -638,10 +700,6 @@ body[data-ccg-mode="amiga"] .ccg-brand__logo {
     transform: scaleX(1.03);
     display: inline-block;
 }
-
-/* ------------------------------------------------------------
-   NEON DEPTH — BASE GLOW
------------------------------------------------------------- */
 
 .ccg-brand__neon-cheeky,
 .ccg-brand__neon-sub {
@@ -651,11 +709,6 @@ body[data-ccg-mode="amiga"] .ccg-brand__logo {
         0 0 28px rgba(var(--accent-rgb),0.22);
 }
 
-/* ------------------------------------------------------------
-   MODE-SPECIFIC INTENSITY
------------------------------------------------------------- */
-
-/* C64 — cooler, tighter glow */
 body[data-ccg-mode="c64"] .ccg-brand__neon-cheeky,
 body[data-ccg-mode="c64"] .ccg-brand__neon-sub {
     text-shadow:
@@ -664,7 +717,6 @@ body[data-ccg-mode="c64"] .ccg-brand__neon-sub {
         0 0 34px rgba(0,170,255,0.28);
 }
 
-/* Amiga — warmer, richer glow */
 body[data-ccg-mode="amiga"] .ccg-brand__neon-cheeky,
 body[data-ccg-mode="amiga"] .ccg-brand__neon-sub {
     text-shadow:
@@ -672,10 +724,6 @@ body[data-ccg-mode="amiga"] .ccg-brand__neon-sub {
         0 0 18px rgba(255,41,224,0.50),
         0 0 38px rgba(255,41,224,0.32);
 }
-
-/* ------------------------------------------------------------
-   MICRO-HOVER — PREMIUM RESPONSE (DESKTOP ONLY)
------------------------------------------------------------- */
 
 @media (hover: hover) {
 
@@ -688,10 +736,6 @@ body[data-ccg-mode="amiga"] .ccg-brand__neon-sub {
     }
 }
 
-/* ------------------------------------------------------------
-   MOBILE DISCIPLINE — NO OVERBLOW
------------------------------------------------------------- */
-
 @media (max-width: 768px) {
 
     .ccg-brand__neon-cheeky {
@@ -701,93 +745,5 @@ body[data-ccg-mode="amiga"] .ccg-brand__neon-sub {
 
     .ccg-brand__neon-sub {
         transform: scaleX(1.02);
-    }
-}
-
-/* ============================================================
-   HEADER — SOCIALS SPACING & COLLISION FIX
-   Phase HS-FINAL — GLOBAL (LOCK AFTER APPLY)
-   ------------------------------------------------------------
-   • Prevents socials hiding behind mode toggle
-   • Allows safe wrapping at tight widths
-   • No HTML changes
-   • No layout regressions
-============================================================ */
-
-/* ------------------------------------------------------------
-   HEADER ACTIONS — FLEX DISCIPLINE
------------------------------------------------------------- */
-
-.ccg-header-actions {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 12px;
-
-    flex-wrap: wrap;       /* critical */
-    min-width: 0;
-    position: relative;
-    z-index: 3;
-}
-
-/* ------------------------------------------------------------
-   SOCIAL ICONS — NEVER CLIP OR HIDE
------------------------------------------------------------- */
-
-.ccg-header-socials {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    flex-wrap: nowrap;
-    min-width: 0;
-
-    position: relative;
-    z-index: 2;
-}
-
-/* Anchor socials so they always stay clickable */
-.ccg-header-socials a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Slightly tighter icon footprint (safe globally) */
-.ccg-header-socials .ccg-socials__icon {
-    width: 38px;
-    height: 38px;
-}
-
-/* ------------------------------------------------------------
-   MODE TOGGLE — ABSOLUTE VISUAL PRIORITY
------------------------------------------------------------- */
-
-.ccg-mode-toggle {
-    position: relative;
-    z-index: 4;
-    flex-shrink: 0;
-}
-
-/* ------------------------------------------------------------
-   RESPONSIVE — GRACEFUL WRAP WHEN NEEDED
------------------------------------------------------------- */
-
-@media (max-width: 980px) {
-
-    /* Let socials drop to a second line cleanly */
-    .ccg-header-socials {
-        flex-basis: 100%;
-        justify-content: flex-end;
-        margin-top: 6px;
-    }
-}
-
-@media (max-width: 768px) {
-
-    /* Reduce icon size slightly on mobile */
-    .ccg-header-socials .ccg-socials__icon {
-        width: 36px;
-        height: 36px;
     }
 }
