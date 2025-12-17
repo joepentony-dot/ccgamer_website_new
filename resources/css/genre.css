@@ -122,3 +122,42 @@ span {
         gap: 20px;
     }
 }
+
+/* ============================================================
+   GENRES INDEX — MOBILE RHYTHM MICRO-PASS
+   Phase G3.1 (SAFE, OPTIONAL BUT RECOMMENDED)
+============================================================ */
+
+@media (max-width: 768px) {
+
+    /* Give cards slightly more internal comfort */
+    .ccg-page--genres-index .ccg-genre-card {
+        padding-bottom: 6px;
+    }
+
+    /* Text doesn’t feel glued to image */
+    .ccg-page--genres-index
+    .ccg-genre-card
+    span {
+        margin-top: 12px;
+        margin-bottom: 6px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 420px) {
+
+    /* Reduce visual pressure on very small screens */
+    .ccg-page--genres-index .ccg-genre-card {
+        border-radius: 16px;
+    }
+
+    .ccg-page--genres-index
+    .ccg-genre-card
+    span {
+        margin-top: 14px;
+        font-size: 0.88rem;
+        letter-spacing: 0.05em;
+    }
+}
+
