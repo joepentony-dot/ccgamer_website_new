@@ -1,7 +1,8 @@
 /* ============================================================
    GAMES.CSS — STABLE FUNCTIONAL RESTORE
    Mobile Rhythm Pass — Phase MR1
-   Hero Parity Refinement — Phase H2 (LOCK AFTER APPLY)
+   Hero Parity Refinement — Phase H2
+   Single Game WOW — Phase SG-FINAL (LOCKED)
 ============================================================ */
 
 /* ============================================================
@@ -23,246 +24,15 @@
     align-items: start;
 }
 
-@media (max-width: 980px) {
-    .ccg-page--games-index .games-accordion__content .games-grid {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 16px;
-    }
-}
-
-@media (max-width: 768px) {
-    .ccg-page--games-index .games-accordion__content .games-grid {
-        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-        gap: 16px;
-    }
-}
-
-/* ============================================================
-   GAMES INDEX — HERO PARITY REFINEMENT (NEW)
-   Phase H2 — OMEGA CINEMATIC ALIGNMENT
-============================================================ */
-
-.ccg-page--games-index .ccg-hero {
-    position: relative;
-    isolation: isolate;
-    border-radius: 22px;
-    overflow: hidden;
-
-    background:
-        radial-gradient(
-            ellipse at top left,
-            rgba(var(--accent-rgb), 0.22),
-            transparent 55%
-        ),
-        linear-gradient(
-            145deg,
-            rgba(0,0,0,0.88),
-            rgba(10,10,30,0.82),
-            rgba(0,0,0,0.90)
-        );
-
-    box-shadow:
-        0 30px 82px rgba(0,0,0,0.88),
-        0 0 32px rgba(var(--accent-rgb),0.16),
-        inset 0 0 0 1px rgba(255,255,255,0.06);
-}
-
-/* Hero scanline / vignette parity */
-.ccg-page--games-index .ccg-hero::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-
-    background:
-        radial-gradient(
-            ellipse at center,
-            transparent 55%,
-            rgba(0,0,0,0.55) 100%
-        ),
-        repeating-linear-gradient(
-            to bottom,
-            rgba(255,255,255,0.03),
-            rgba(255,255,255,0.03) 1px,
-            transparent 1px,
-            transparent 4px
-        );
-
-    opacity: 0.22;
-}
-
-/* Hero inner elevation */
-.ccg-page--games-index .ccg-hero-inner {
-    position: relative;
-    z-index: 3;
-    padding: 52px 46px 48px;
-}
-
-/* Title parity with Home */
-.ccg-page--games-index .ccg-hero-title {
-    text-shadow:
-        0 20px 52px rgba(0,0,0,0.85),
-        0 0 26px rgba(var(--accent-rgb),0.35);
-}
-
-/* Subtitle spacing discipline */
-.ccg-page--games-index .ccg-hero-tagline {
-    max-width: 64ch;
-    line-height: 1.6;
-    opacity: 0.9;
-}
-
-/* Hero → tools separation (critical on mobile) */
-.ccg-page--games-index .games-tools {
-    margin-top: 22px;
-}
-
-/* ============================================================
-   HERO — MOBILE DISCIPLINE
-============================================================ */
-
-@media (max-width: 768px) {
-
-    .ccg-page--games-index .ccg-hero-inner {
-        padding: 38px 18px 36px;
-    }
-
-    .ccg-page--games-index .ccg-hero::after {
-        opacity: 0.16;
-    }
-
-    .ccg-page--games-index .games-tools {
-        margin-top: 26px;
-    }
-}
-
-/* ============================================================
-   MOBILE — ACCORDION RHYTHM REBALANCE (INDEX ONLY)
-============================================================ */
-
-@media (max-width: 768px) {
-
-    .games-accordion__group {
-        margin-bottom: 18px;
-    }
-
-    .games-accordion__header {
-        padding: 18px 16px;
-        letter-spacing: 0.16em;
-    }
-
-    .games-accordion__content {
-        padding: 20px 14px 26px;
-    }
-
-    .games-accordion__content .games-grid {
-        row-gap: 20px;
-        column-gap: 14px;
-    }
-
-    .games-accordion__content .ccg-game-card {
-        border-radius: 16px;
-    }
-
-    .games-accordion__content .ccg-game-card__body {
-        padding: 14px 14px 18px;
-    }
-
-    .games-accordion__content .ccg-game-card__title {
-        font-size: 0.86rem;
-        line-height: 1.4;
-        margin-bottom: 8px;
-    }
-
-    .games-accordion__content .ccg-game-card__meta {
-        font-size: 0.72rem;
-        opacity: 0.82;
-    }
-}
-
-/* ============================================================
-   VERY SMALL PHONES (≤ 420px)
-============================================================ */
-
-@media (max-width: 420px) {
-
-    .games-accordion__group {
-        margin-bottom: 16px;
-    }
-
-    .games-accordion__content {
-        padding: 18px 12px 22px;
-    }
-
-    .games-accordion__content .games-grid {
-        row-gap: 18px;
-    }
-
-    .games-accordion__content .ccg-game-card__body {
-        padding: 12px 12px 16px;
-    }
-}
-
-/* ============================================================
-   SINGLE GAME PAGE — MOBILE RHYTHM (UNCHANGED)
-============================================================ */
-
-@media (max-width: 768px) {
-
-    .ccg-page--single-game .ccg-main {
-        padding-top: 6px;
-    }
-
-    .ccg-page--single-game section {
-        margin-bottom: 30px;
-    }
-
-    .ccg-page--single-game h2,
-    .ccg-page--single-game h3 {
-        margin-bottom: 12px;
-    }
-
-    .ccg-page--single-game p {
-        margin-bottom: 14px;
-        line-height: 1.55;
-    }
-
-    .ccg-page--single-game .ccg-card,
-    .ccg-page--single-game .ccg-media,
-    .ccg-page--single-game iframe {
-        margin-bottom: 24px;
-    }
-}
-
-@media (max-width: 420px) {
-
-    .ccg-page--single-game section {
-        margin-bottom: 24px;
-    }
-
-    .ccg-page--single-game p {
-        margin-bottom: 12px;
-    }
-}
-
 /* ============================================================
    SINGLE GAME — HERO CINEMATIC WOW
    Phase SG-1 — SAFE HERO POLISH
-   ------------------------------------------------------------
-   • Single-game pages only
-   • CSS-only
-   • No loader / JS impact
 ============================================================ */
 
 html[data-ccg-page="single-game"] .game-hero {
     position: relative;
     margin-bottom: 48px;
 }
-
-/* ------------------------------------------------------------
-   HERO INNER — BALANCE MEDIA + CONTENT
------------------------------------------------------------- */
 
 html[data-ccg-page="single-game"] .game-hero__inner {
     display: grid;
@@ -271,7 +41,6 @@ html[data-ccg-page="single-game"] .game-hero__inner {
     align-items: center;
 }
 
-/* Mobile stack remains natural */
 @media (max-width: 900px) {
     html[data-ccg-page="single-game"] .game-hero__inner {
         grid-template-columns: 1fr;
@@ -279,15 +48,10 @@ html[data-ccg-page="single-game"] .game-hero__inner {
     }
 }
 
-/* ------------------------------------------------------------
-   HERO MEDIA — CINEMATIC FRAME
------------------------------------------------------------- */
-
 html[data-ccg-page="single-game"] .game-hero__media {
     position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
-
     overflow: hidden;
     border-radius: 18px;
 
@@ -299,80 +63,43 @@ html[data-ccg-page="single-game"] .game-hero__media {
 html[data-ccg-page="single-game"] .game-hero__thumb {
     position: absolute;
     inset: 0;
-
     width: 100%;
     height: 100%;
-
     object-fit: cover;
-    object-position: center;
-
     display: block;
 }
 
-/* ------------------------------------------------------------
-   HERO CONTENT — TYPOGRAPHY & RHYTHM
------------------------------------------------------------- */
+/* ============================================================
+   OPTION B — HERO TITLE MICRO-TRACKING (DESKTOP ONLY)
+   Phase SG-TITLE — CONFIDENCE POLISH
+============================================================ */
 
-html[data-ccg-page="single-game"] .game-hero__content {
-    max-width: 640px;
+@media (min-width: 1024px) {
+    html[data-ccg-page="single-game"] .game-hero__content h1 {
+        letter-spacing: 0.035em; /* tighter, more assured */
+    }
 }
 
-html[data-ccg-page="single-game"] .game-hero__content h1 {
-    line-height: 1.15;
-    margin-bottom: 12px;
-    letter-spacing: 0.04em;
-}
-
-/* Meta line — calm, premium */
 html[data-ccg-page="single-game"] .game-meta {
     font-size: 0.95rem;
     opacity: 0.85;
     margin-bottom: 8px;
 }
 
-/* ------------------------------------------------------------
-   SUBTLE DEPTH — NO CONSTANT GLOW
------------------------------------------------------------- */
-
-html[data-ccg-page="single-game"] .game-hero__media::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-
-    pointer-events: none;
-    border-radius: inherit;
-
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.08);
-}
-
 /* ============================================================
-   SINGLE GAME — CONTENT RHYTHM & READING FLOW
-   Phase SG-2 — SAFE POLISH
-   ------------------------------------------------------------
-   • Single-game pages only
-   • Improves spacing & hierarchy
-   • No layout or JS changes
+   SINGLE GAME — CONTENT RHYTHM
+   Phase SG-2 — READING FLOW
 ============================================================ */
-
-/* ------------------------------------------------------------
-   GLOBAL SECTION RHYTHM
------------------------------------------------------------- */
 
 html[data-ccg-page="single-game"] .ccg-main--single-game > section {
     margin-bottom: 56px;
 }
 
-/* Slightly tighter on mobile */
 @media (max-width: 768px) {
     html[data-ccg-page="single-game"] .ccg-main--single-game > section {
         margin-bottom: 40px;
     }
 }
-
-/* ------------------------------------------------------------
-   DESCRIPTION — READABLE, PREMIUM FLOW
------------------------------------------------------------- */
 
 html[data-ccg-page="single-game"] #game-description-section {
     max-width: 780px;
@@ -381,70 +108,50 @@ html[data-ccg-page="single-game"] #game-description-section {
 html[data-ccg-page="single-game"] #game-description-section p {
     line-height: 1.65;
     font-size: 1rem;
-    margin: 0;
     opacity: 0.95;
 }
 
-/* ------------------------------------------------------------
-   VIDEO SECTION — VISUAL PAUSE BEFORE CTA
------------------------------------------------------------- */
+/* ============================================================
+   OPTION A — SECTION DIVIDER WHISPER
+   Phase SG-DIVIDER — STRUCTURAL CALM
+============================================================ */
+
+html[data-ccg-page="single-game"] .ccg-main--single-game > section:not(:first-of-type)::before {
+    content: "";
+    display: block;
+    width: 100%;
+    max-width: 720px;
+    height: 1px;
+
+    margin: 0 auto 48px;
+
+    background: linear-gradient(
+        to right,
+        transparent,
+        rgba(var(--accent-rgb), 0.25),
+        transparent
+    );
+
+    opacity: 0.6;
+}
+
+/* ============================================================
+   SINGLE GAME — VIDEO Z-LAYER FIX (LOCKED)
+============================================================ */
 
 html[data-ccg-page="single-game"] #game-video-section {
-    max-width: 900px;
+    position: relative;
+    z-index: 2;
 }
 
-html[data-ccg-page="single-game"] #game-video-section iframe {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    border-radius: 16px;
-
-    box-shadow:
-        0 0 0 1px rgba(var(--accent-rgb), 0.22),
-        0 18px 42px rgba(0,0,0,0.65);
-}
-
-/* Video CTA spacing */
-html[data-ccg-page="single-game"] #gameVideoBtn {
-    margin-top: 16px;
-}
-
-/* ------------------------------------------------------------
-   ACTION BUTTONS — CLEAR INTENT, NO CLUTTER
------------------------------------------------------------- */
+/* ============================================================
+   SINGLE GAME — ACTION CTA WOW (LOCKED)
+============================================================ */
 
 html[data-ccg-page="single-game"] .game-actions {
     display: flex;
     gap: 14px;
     flex-wrap: wrap;
-}
-
-/* ------------------------------------------------------------
-   RELATED GAMES — ARRIVAL CONTROL
------------------------------------------------------------- */
-
-html[data-ccg-page="single-game"] .game-section--related {
-    margin-top: 72px;
-}
-
-html[data-ccg-page="single-game"] .game-section--related .game-section__title {
-    margin-bottom: 24px;
-}
-
-/* ============================================================
-   SINGLE GAME — MANUAL & DOWNLOAD WOW
-   Phase SG-3 — FINAL CTA POLISH
-   ------------------------------------------------------------
-   • Single-game pages only
-   • CSS-only
-   • Clear action hierarchy
-   • No loader or JS impact
-============================================================ */
-
-/* ------------------------------------------------------------
-   ACTIONS CONTAINER — INTENT STAGE
------------------------------------------------------------- */
-
-html[data-ccg-page="single-game"] .game-actions {
     margin-top: 12px;
     padding: 22px 24px;
 
@@ -462,127 +169,17 @@ html[data-ccg-page="single-game"] .game-actions {
         0 18px 42px rgba(0,0,0,0.65);
 }
 
-/* Stack nicely on small screens */
-@media (max-width: 640px) {
-    html[data-ccg-page="single-game"] .game-actions {
-        padding: 18px 18px;
-    }
-}
-
-/* ------------------------------------------------------------
-   BUTTON BASE — CALM, PREMIUM
------------------------------------------------------------- */
-
-html[data-ccg-page="single-game"] .game-actions .ccg-btn {
-    min-width: 160px;
-    text-align: center;
-
-    letter-spacing: 0.04em;
-
-    transition:
-        transform 0.25s ease,
-        box-shadow 0.25s ease;
-}
-
-/* ------------------------------------------------------------
-   PRIMARY ACTION — PLAY / DOWNLOAD
------------------------------------------------------------- */
-
 html[data-ccg-page="single-game"] #gameDiskBtn {
     font-weight: 600;
-
     box-shadow:
         0 0 0 1px rgba(var(--accent-rgb), 0.45),
         0 0 18px rgba(var(--accent-rgb), 0.35);
 }
 
-/* Hover intent — subtle lift */
 html[data-ccg-page="single-game"] #gameDiskBtn:hover {
     transform: translateY(-2px);
-    box-shadow:
-        0 0 0 1px rgba(var(--accent-rgb), 0.65),
-        0 0 26px rgba(var(--accent-rgb), 0.45),
-        0 18px 42px rgba(0,0,0,0.65);
 }
-
-/* ------------------------------------------------------------
-   SECONDARY ACTION — MANUAL
------------------------------------------------------------- */
 
 html[data-ccg-page="single-game"] #gameManualBtn {
     opacity: 0.9;
-}
-
-/* Gentle hover, no competition */
-html[data-ccg-page="single-game"] #gameManualBtn:hover {
-    opacity: 1;
-    transform: translateY(-1px);
-}
-
-/* ------------------------------------------------------------
-   TOUCH DEVICES — NO FAKE HOVER
------------------------------------------------------------- */
-
-@media (hover: none) {
-    html[data-ccg-page="single-game"] #gameDiskBtn:hover,
-    html[data-ccg-page="single-game"] #gameManualBtn:hover {
-        transform: none;
-        box-shadow: none;
-    }
-}
-
-/* ============================================================
-   SINGLE GAME — RELATED GAMES MICRO POLISH
-   Phase SG-REL-MICRO — FINAL TOUCH
-   ------------------------------------------------------------
-   • Single-game pages only
-   • Hover / focus-visible only
-   • Subtle depth, no constant glow
-   • ZERO impact on other pages
-============================================================ */
-
-/* Base calm state */
-html[data-ccg-page="single-game"] .game-section--related .ccg-card {
-    transition:
-        transform 0.3s ease,
-        box-shadow 0.3s ease;
-}
-
-/* Hover / keyboard focus — gentle lift */
-html[data-ccg-page="single-game"] .game-section--related .ccg-card:hover,
-html[data-ccg-page="single-game"] .game-section--related .ccg-card:focus-within {
-    transform: translateY(-3px);
-    box-shadow:
-        0 0 0 1px rgba(var(--accent-rgb), 0.35),
-        0 0 16px rgba(var(--accent-rgb), 0.25),
-        0 18px 42px rgba(0,0,0,0.65);
-}
-
-/* Keep thumbnails clean — edge glow only */
-html[data-ccg-page="single-game"] .game-section--related .ccg-card:hover .ccg-card__media,
-html[data-ccg-page="single-game"] .game-section--related .ccg-card:focus-within .ccg-card__media {
-    box-shadow:
-        inset 0 0 0 1px rgba(var(--accent-rgb), 0.45);
-}
-
-/* Touch devices — no fake hover */
-@media (hover: none) {
-    html[data-ccg-page="single-game"] .game-section--related .ccg-card:hover {
-        transform: none;
-        box-shadow: none;
-    }
-}
-
-/* ============================================================
-   SINGLE GAME — VIDEO Z-LAYER CORRECTION
-   QA FIX — SAFE & ISOLATED
-   ------------------------------------------------------------
-   • Ensures video renders above starfield
-   • Single-game only
-   • No global impact
-============================================================ */
-
-html[data-ccg-page="single-game"] #game-video-section {
-    position: relative;
-    z-index: 2;
 }
