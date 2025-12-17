@@ -747,3 +747,172 @@ body[data-ccg-mode="amiga"] .ccg-brand__neon-sub {
         transform: scaleX(1.02);
     }
 }
+
+/* ============================================================
+   PHASE H4 — HEADER NAV CONTROL DECK LOCK (FINAL)
+   ------------------------------------------------------------
+   • Nav ALWAYS single-row
+   • NEVER stacks vertically
+   • NO hamburger collapse
+   • Intelligent compression instead of wrapping
+   • Socials + Mode Toggle always visible
+   • ZERO HTML / JS changes
+============================================================ */
+
+/* ============================================================
+   HEADER GRID — HARD LOCK
+============================================================ */
+
+.ccg-header-inner {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 20px;
+}
+
+/* ============================================================
+   NAV — SINGLE ROW, NO EXCEPTIONS
+============================================================ */
+
+.ccg-nav {
+    display: flex;
+    justify-content: center;
+    overflow: hidden; /* prevents visual spill */
+}
+
+.ccg-nav__list {
+    display: flex;
+    flex-wrap: nowrap !important; /* 🔒 NEVER WRAP */
+    align-items: center;
+    justify-content: center;
+
+    gap: clamp(6px, 0.8vw, 12px);
+
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    white-space: nowrap; /* 🔒 HARD STOP */
+}
+
+/* ============================================================
+   NAV BUTTON — CONTROLLED COMPRESSION
+============================================================ */
+
+.ccg-nav__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: clamp(6px, 0.6vw, 10px)
+             clamp(10px, 1.1vw, 16px);
+
+    border-radius: 999px;
+
+    font-family: var(--ccg-font-main);
+    font-size: clamp(0.62rem, 0.7vw, 0.74rem);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+
+    white-space: nowrap;
+
+    color: var(--ccg-text-soft);
+    text-decoration: none;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.08),
+            rgba(255,255,255,0.02)
+        );
+
+    border: 1px solid rgba(255,255,255,0.16);
+
+    transition:
+        color 200ms ease,
+        box-shadow 260ms ease,
+        transform 260ms ease;
+}
+
+/* Active / Hover — WOW but controlled */
+.ccg-nav__link--active,
+.ccg-nav__link:hover {
+    color: var(--accent-main);
+    box-shadow:
+        0 0 0 1px rgba(var(--accent-rgb),0.55),
+        0 0 14px rgba(var(--accent-rgb),0.35);
+}
+
+/* ============================================================
+   HEADER ACTIONS — ALWAYS VISIBLE
+============================================================ */
+
+.ccg-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    flex-wrap: nowrap; /* 🔒 NEVER STACK */
+    white-space: nowrap;
+
+    position: relative;
+    z-index: 4;
+}
+
+/* ============================================================
+   SOCIAL ICONS — FIXED FOOTPRINT
+============================================================ */
+
+.ccg-header-socials {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    flex-wrap: nowrap;
+    white-space: nowrap;
+}
+
+.ccg-header-socials .ccg-socials__icon {
+    width: 36px;
+    height: 36px;
+}
+
+/* ============================================================
+   MODE TOGGLE — PRIORITY CONTROL
+============================================================ */
+
+.ccg-mode-toggle {
+    flex-shrink: 0; /* never collapses */
+    z-index: 5;
+}
+
+/* ============================================================
+   RESPONSIVE — COMPRESSION, NOT COLLAPSE
+============================================================ */
+
+/* Slightly tighter spacing on smaller desktops */
+@media (max-width: 1200px) {
+
+    .ccg-nav__list {
+        gap: 6px;
+    }
+
+    .ccg-nav__link {
+        font-size: 0.66rem;
+        padding: 6px 12px;
+    }
+}
+
+/* Extreme safety — still ONE ROW */
+@media (max-width: 1024px) {
+
+    .ccg-nav__link {
+        font-size: 0.62rem;
+        padding: 6px 10px;
+    }
+
+    .ccg-header-socials .ccg-socials__icon {
+        width: 34px;
+        height: 34px;
+    }
+}
