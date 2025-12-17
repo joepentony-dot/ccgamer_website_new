@@ -1,16 +1,16 @@
 /* ============================================================
    HOME.CSS — OMEGA CINEMATIC SHOWPIECE (FLAGSHIP)
-   Phase WOW-H3 — HOME THUMBNAIL DISCIPLINE (LOCKED)
+   FINAL CLEAN LOCK — Phase WOW-H4
    ------------------------------------------------------------
+   • Removes dead selectors
    • Fixes oversized desktop thumbnails
-   • Enforces TRUE 16:9 presentation
-   • Caps visual authority on large screens
-   • Preserves mobile behaviour
+   • Locks sane 2-column genre layout
+   • Enforces true 16:9 discipline
    • ZERO global card impact
 ============================================================ */
 
 /* ============================================================
-   HOME PAGE SCOPE ROOT
+   HOME PAGE ROOT
 ============================================================ */
 
 html[data-ccg-page="home"] .ccg-main--home {
@@ -19,7 +19,7 @@ html[data-ccg-page="home"] .ccg-main--home {
 }
 
 /* ============================================================
-   FULL-PAGE STARFIELD PRESENCE (HOME ONLY)
+   HOME-ONLY BACKGROUND PRESENCE
 ============================================================ */
 
 html[data-ccg-page="home"] .ccg-bg {
@@ -47,7 +47,7 @@ html[data-ccg-page="home"] .ccg-bg-crt-overlay {
     opacity: 0.22;
 }
 
-/* Mobile: reduce intensity */
+/* Mobile restraint */
 @media (max-width: 768px) {
     html[data-ccg-page="home"] .ccg-bg-starfield { opacity: 0.55; }
     html[data-ccg-page="home"] .ccg-bg-grid { opacity: 0.18; }
@@ -55,17 +55,16 @@ html[data-ccg-page="home"] .ccg-bg-crt-overlay {
 }
 
 /* ============================================================
-   HERO STAGE — SPACING SAFETY
+   HERO STAGE — SAFE SPACING
 ============================================================ */
 
 html[data-ccg-page="home"] .home-hero {
-    position: relative;
     margin-top: 12px;
     margin-bottom: 28px;
 }
 
 /* ============================================================
-   HOME SECTIONS — RHYTHM
+   HOME SECTION RHYTHM
 ============================================================ */
 
 html[data-ccg-page="home"] .home-section {
@@ -73,34 +72,31 @@ html[data-ccg-page="home"] .home-section {
 }
 
 /* ============================================================
-   HOME FEATURE GRID — DESKTOP AUTHORITY CONTROL
-   ------------------------------------------------------------
-   THIS IS THE FIX.
-   Caps featured media so it never fills the viewport.
+   FEATURED HIGHLIGHTS — DESKTOP DISCIPLINE
 ============================================================ */
 
 @media (min-width: 1024px) {
 
-    html[data-ccg-page="home"] .home-feature-grid {
+    html[data-ccg-page="home"] .home-highlights-grid {
         max-width: 1180px;
         margin-inline: auto;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
         gap: 32px;
     }
 
-    /* Individual cards should never exceed this */
     html[data-ccg-page="home"] .home-feature-card {
         max-width: 520px;
         margin-inline: auto;
     }
 
-    /* Video feature slightly wider but still disciplined */
     html[data-ccg-page="home"] .home-feature-card--video {
         max-width: 680px;
     }
 }
 
 /* ============================================================
-   HOME — THUMBNAIL ISOLATION (HOME-ONLY CONTRACT)
+   FEATURED MEDIA — 16:9 LOCK
 ============================================================ */
 
 html[data-ccg-page="home"] .home-feature-card .ccg-card__media,
@@ -108,40 +104,26 @@ html[data-ccg-page="home"] .home-feature-video__frame {
     position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
-
     overflow: hidden;
     border-radius: 18px;
 }
 
-/* Media fill */
-html[data-ccg-page="home"] .home-feature-card .ccg-card__media img,
+html[data-ccg-page="home"] .home-feature-card img,
 html[data-ccg-page="home"] .home-feature-video__frame img,
 html[data-ccg-page="home"] .home-feature-video__frame iframe {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-
     object-fit: cover;
-    object-position: center;
-}
-
-/* Mobile radius discipline */
-@media (max-width: 768px) {
-    html[data-ccg-page="home"] .home-feature-card .ccg-card__media,
-    html[data-ccg-page="home"] .home-feature-video__frame {
-        border-radius: 16px;
-    }
 }
 
 /* ============================================================
-   HOME FEATURE CARD — WOW PRESENCE (SAFE)
+   FEATURED CARD — SUBTLE WOW (HOVER ONLY)
 ============================================================ */
 
 html[data-ccg-page="home"] .home-feature-card {
-    transition:
-        transform 0.35s ease,
-        box-shadow 0.35s ease;
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
 }
 
 html[data-ccg-page="home"] .home-feature-card:hover,
@@ -153,29 +135,6 @@ html[data-ccg-page="home"] .home-feature-card:focus-within {
         0 18px 42px rgba(0, 0, 0, 0.65);
 }
 
-/* Media edge glow only */
-html[data-ccg-page="home"] .home-feature-card:hover .ccg-card__media,
-html[data-ccg-page="home"] .home-feature-card:focus-within .ccg-card__media {
-    box-shadow:
-        inset 0 0 0 1px rgba(var(--accent-rgb), 0.45),
-        0 0 14px rgba(var(--accent-rgb), 0.22);
-}
-
-/* ============================================================
-   FEATURE TITLE RHYTHM
-============================================================ */
-
-html[data-ccg-page="home"] .home-feature-card h3 {
-    line-height: 1.25;
-    letter-spacing: 0.04em;
-    margin-top: 14px;
-    max-width: 22ch;
-}
-
-/* ============================================================
-   MOBILE SAFETY
-============================================================ */
-
 @media (hover: none) {
     html[data-ccg-page="home"] .home-feature-card:hover {
         transform: none;
@@ -184,111 +143,47 @@ html[data-ccg-page="home"] .home-feature-card h3 {
 }
 
 /* ============================================================
-   HOME — GENRE GRID DISCIPLINE (CRITICAL RESTORE)
-   Phase WOW-H3B — LOCK
+   BROWSE BY GENRE — FINAL AUTHORITATIVE LAYOUT
    ------------------------------------------------------------
-   • Restores 2-column desktop layout
-   • Prevents hero-scale genre tiles
-   • Enforces true 16:9 tiles
-   • Home-only, zero global impact
-============================================================ */
-
-/* Target ONLY the home genre section */
-html[data-ccg-page="home"] .home-genres,
-html[data-ccg-page="home"] .home-genres-grid {
-    max-width: 1180px;
-    margin-inline: auto;
-}
-
-/* Desktop: strict 2-column layout */
-@media (min-width: 1024px) {
-    html[data-ccg-page="home"] .home-genres-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 32px;
-    }
-}
-
-/* Tablet fallback */
-@media (min-width: 640px) and (max-width: 1023px) {
-    html[data-ccg-page="home"] .home-genres-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 24px;
-    }
-}
-
-/* Mobile: single column */
-@media (max-width: 639px) {
-    html[data-ccg-page="home"] .home-genres-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-}
-
-/* Genre tile sizing discipline */
-html[data-ccg-page="home"] .home-genre-card {
-    max-width: 560px;
-    margin-inline: auto;
-}
-
-/* Image containment — NEVER hero-scale */
-html[data-ccg-page="home"] .home-genre-card img {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 16 / 9;
-
-    object-fit: cover;
-    object-position: center;
-
-    display: block;
-}
-
-/* ============================================================
-   PHASE H4 — HOME GENRE GRID LOCK (HOME ONLY)
-   ------------------------------------------------------------
-   • Restores 2-column desktop layout
-   • Locks sane tile sizing (no full-bleed)
-   • Preserves 16:9 media contract
-   • ZERO impact outside Home
+   • Desktop: 2 columns
+   • Tablet: 2 columns
+   • Mobile: 1 column
+   • HARD height cap prevents hero-scale tiles
 ============================================================ */
 
 html[data-ccg-page="home"] .home-genre-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 22px;
-    align-items: start;
+    gap: 28px;
+    max-width: 1180px;
+    margin-inline: auto;
 }
 
-/* Mobile: single column */
+/* Mobile */
 @media (max-width: 900px) {
     html[data-ccg-page="home"] .home-genre-grid {
         grid-template-columns: 1fr;
-        gap: 18px;
+        gap: 20px;
     }
 }
 
-/* Tile discipline */
+/* Genre tile */
 html[data-ccg-page="home"] .home-genre-grid .ccg-genre-tile {
     width: 100%;
-    max-width: 100%;
-    text-decoration: none;
     border-radius: 18px;
-}
-
-/* Ensure the 16:9 wrapper actually behaves as a frame */
-html[data-ccg-page="home"] .home-genre-grid .ccg-genre-tile .ccg-card__media--16x9,
-html[data-ccg-page="home"] .home-genre-grid .ccg-genre-tile__thumb {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 9;
     overflow: hidden;
-    border-radius: 18px;
+    text-decoration: none;
 }
 
-/* Image fill (no stretching, no bleed) */
-html[data-ccg-page="home"] .home-genre-grid .ccg-genre-tile__thumb img {
+/* 16:9 frame with desktop cap */
+html[data-ccg-page="home"] .home-genre-grid .ccg-card__media--16x9 {
+    aspect-ratio: 16 / 9;
+    max-height: 280px; /* 🔒 critical cap */
+    overflow: hidden;
+}
+
+/* Image discipline */
+html[data-ccg-page="home"] .home-genre-grid img {
     width: 100%;
     height: 100%;
     display: block;
@@ -296,15 +191,14 @@ html[data-ccg-page="home"] .home-genre-grid .ccg-genre-tile__thumb img {
     object-position: center;
 }
 
-/* Title area: readable + consistent height */
-html[data-ccg-page="home"] .home-genre-grid .ccg-genre-tile__body {
+/* Title spacing */
+html[data-ccg-page="home"] .ccg-genre-tile__body {
     padding-top: 14px;
 }
 
-html[data-ccg-page="home"] .home-genre-grid .ccg-genre-tile__title {
-    margin: 0;
+html[data-ccg-page="home"] .ccg-genre-tile__title {
     font-size: 1rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    margin: 0;
 }
-
