@@ -1,16 +1,16 @@
 /* ============================================================
    CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM
    Phase P38 — THUMBNAIL CONTAINMENT LOCK
+   Phase WOW-G3 — CARD BEAUTY PASS (LOCKED)
    ------------------------------------------------------------
-   Scope:
-   • Visual refinement + containment seal
-   • Preserves all thumbnail & context contracts
-   • Prevents global rhythm bleed
-   • Zero JS or layout impact
+   • Removes flat / white UI feel
+   • Introduces dark-glass cinematic surfaces
+   • Preserves ALL thumbnail isolation contracts
+   • ZERO JS or layout impact
 ============================================================ */
 
 /* ============================================================
-   SHARED CARD BASE (STRUCTURE ONLY)
+   SHARED CARD BASE (STRUCTURE + SURFACE)
 ============================================================ */
 
 .ccg-game-card,
@@ -18,34 +18,87 @@
 .ccg-genre-tile,
 .ccg-feature-card {
     position: relative;
+
     background:
         radial-gradient(
-            circle at top,
-            rgba(42,42,84,0.55),
-            rgba(0,0,0,0.92)
+            120% 80% at 50% -10%,
+            rgba(80,90,160,0.22),
+            rgba(18,18,32,0.92) 55%,
+            rgba(0,0,0,0.98)
         );
 
-    border-radius: 14px;
-    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.06);
     overflow: hidden;
 
     /* 🔒 CONTAINMENT SEAL */
     contain: layout paint;
 
     box-shadow:
-        0 6px 14px rgba(0,0,0,0.72),
-        0 0 10px rgba(var(--accent-rgb), 0.05);
+        0 10px 28px rgba(0,0,0,0.78),
+        inset 0 0 0 1px rgba(255,255,255,0.03);
 
     transition:
-        transform 0.38s var(--ccg-ease-out),
-        box-shadow 0.44s var(--ccg-ease-out),
-        border-color 0.32s ease;
+        transform 0.42s var(--ccg-ease-out),
+        box-shadow 0.46s var(--ccg-ease-out),
+        border-color 0.32s ease,
+        filter 0.32s ease;
 
     will-change: transform, box-shadow;
 }
 
+/* ------------------------------------------------------------
+   CARD SURFACE DEPTH (glass + CRT discipline)
+------------------------------------------------------------ */
+
+.ccg-game-card::before,
+.ccg-card::before,
+.ccg-genre-tile::before,
+.ccg-feature-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+
+    background:
+        radial-gradient(
+            120% 90% at 50% 0%,
+            rgba(255,255,255,0.06),
+            transparent 55%
+        ),
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0px,
+            transparent 2px,
+            rgba(255,255,255,0.02) 3px
+        );
+
+    opacity: 0.55;
+}
+
+/* ------------------------------------------------------------
+   CARD EDGE VIGNETTE
+------------------------------------------------------------ */
+
+.ccg-game-card::after,
+.ccg-card::after,
+.ccg-genre-tile::after,
+.ccg-feature-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+
+    background:
+        radial-gradient(
+            120% 90% at 50% 50%,
+            transparent 55%,
+            rgba(0,0,0,0.55) 100%
+        );
+}
+
 /* ============================================================
-   HOVER / FOCUS — CINEMATIC LIFT (CALM)
+   HOVER / FOCUS — CINEMATIC LIFT (CONTROLLED)
 ============================================================ */
 
 .ccg-game-card:hover,
@@ -56,16 +109,17 @@
 .ccg-card:focus-within,
 .ccg-genre-tile:focus-within,
 .ccg-feature-card:focus-within {
-    transform: translateY(-3px) scale(1.012);
+    transform: translateY(-4px) scale(1.014);
+    filter: brightness(1.03);
 
     box-shadow:
-        0 14px 30px rgba(0,0,0,0.82),
-        0 0 18px rgba(var(--accent-rgb), 0.22);
+        0 18px 44px rgba(0,0,0,0.88),
+        0 0 28px rgba(var(--accent-rgb), 0.28);
 
-    border-color: rgba(var(--accent-rgb), 0.28);
+    border-color: rgba(var(--accent-rgb), 0.32);
 }
 
-/* Keyboard focus parity (no outline jump) */
+/* Keyboard focus parity */
 .ccg-game-card:focus-visible,
 .ccg-card:focus-visible,
 .ccg-genre-tile:focus-visible,
@@ -79,37 +133,18 @@
 
 body[data-ccg-mode="c64"] .ccg-feature-card:hover {
     box-shadow:
-        0 18px 34px rgba(0,0,0,0.84),
-        0 0 26px rgba(0,170,255,0.28);
+        0 22px 48px rgba(0,0,0,0.90),
+        0 0 36px rgba(0,170,255,0.34);
 }
 
 body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
     box-shadow:
-        0 18px 38px rgba(0,0,0,0.86),
-        0 0 32px rgba(255,41,224,0.36);
+        0 22px 52px rgba(0,0,0,0.92),
+        0 0 42px rgba(255,41,224,0.42);
 }
 
 /* ============================================================
-   HOME FEATURED VIDEO — GRID-LEVEL CONTAINMENT (LOCKED)
-============================================================ */
-
-/* Limit the VIDEO column itself, not the card */
-.home-highlights-grid > .home-feature-card--video {
-    max-width: 720px;
-    margin-inline: auto;
-}
-
-/* Keep hover calmer so video never dominates */
-.home-highlights-grid > .home-feature-card--video:hover {
-    transform: translateY(-2px) scale(1.008);
-
-    box-shadow:
-        0 12px 26px rgba(0,0,0,0.82),
-        0 0 20px rgba(var(--accent-rgb), 0.22);
-}
-
-/* ============================================================
-   MOBILE TAP FEEDBACK (NO LIFT)
+   MOBILE TAP FEEDBACK (NO FLOAT)
 ============================================================ */
 
 @media (max-width: 768px) {
@@ -119,6 +154,7 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
     .ccg-genre-tile:hover,
     .ccg-feature-card:hover {
         transform: none;
+        filter: none;
     }
 
     .ccg-game-card:active,
@@ -128,18 +164,14 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
         transform: scale(0.985);
 
         box-shadow:
-            0 10px 22px rgba(0,0,0,0.82),
-            0 0 18px rgba(var(--accent-rgb), 0.24);
+            0 12px 26px rgba(0,0,0,0.86),
+            0 0 24px rgba(var(--accent-rgb), 0.32);
     }
 }
 
-/* ======================================================================
-   MASTER THUMBNAIL CONTRACT — ABSOLUTE
-   ----------------------------------------------------------
-   • Enforces card-relative sizing
-   • Prevents ccg-main rhythm bleed
-   • Applies across HOME, GENRES, COLLECTIONS
-====================================================================== */
+/* ============================================================
+   MASTER THUMBNAIL CONTRACT — ABSOLUTE (UNTOUCHED)
+============================================================ */
 
 .ccg-card img,
 .ccg-game-card img,
@@ -151,7 +183,7 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
 }
 
 /* ============================================================
-   GENRES INDEX (STATIC TILES)
+   GENRES INDEX (STATIC TILES — SAFE)
 ============================================================ */
 
 .ccg-page--genres-index .ccg-genre-grid .ccg-card.ccg-genre-card {
@@ -186,7 +218,7 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
 }
 
 /* ============================================================
-   COLLECTIONS INDEX (DYNAMIC CARDS)
+   COLLECTIONS INDEX (DYNAMIC CARDS — SAFE)
 ============================================================ */
 
 .ccg-page--collections-index .ccg-card {
@@ -197,7 +229,6 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
     flex-direction: column;
 }
 
-/* Pattern A */
 .ccg-page--collections-index .ccg-card .ccg-card__thumb {
     width: 100%;
     aspect-ratio: 16 / 9;
@@ -213,7 +244,6 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
     object-position: center;
 }
 
-/* Pattern B */
 .ccg-page--collections-index .ccg-card > img {
     width: 100%;
     aspect-ratio: 16 / 9;
