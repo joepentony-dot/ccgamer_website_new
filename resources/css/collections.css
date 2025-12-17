@@ -1,49 +1,53 @@
 /* ============================================================
-   COLLECTIONS.CSS — OMEGA PARITY + HERO REFINEMENT
-   Phase H1 — HERO CEREMONY ALIGNMENT (LOCK AFTER APPLY)
+   COLLECTIONS.CSS — OMEGA CINEMATIC POLISH
+   Phase C-WOW — FINAL (LOCK AFTER APPLY)
    ------------------------------------------------------------
-   Scope:
-   • /games/collections/index.html ONLY
+   • Collections index only
    • CSS-only
-   • No loader / card / thumbnail impact
+   • No JS / no card-builder impact
+   • Calm, premium, cinematic presence
 ============================================================ */
-
 
 /* ============================================================
-   COLLECTIONS HERO — PARITY REFINEMENT
+   PAGE SCOPE
 ============================================================ */
 
-.ccg-page--collections-index .ccg-hero.ccg-hero--collections {
+.ccg-page--collections-index .ccg-main--collections {
+    padding-top: 10px;
+}
+
+/* ============================================================
+   HERO — VISUAL AUTHORITY (CALM)
+============================================================ */
+
+.ccg-page--collections-index .ccg-hero--collections {
     position: relative;
-    isolation: isolate;
     border-radius: 22px;
     overflow: hidden;
 
     background:
         radial-gradient(
-            ellipse at 28% 22%,
-            rgba(var(--accent-rgb),0.20),
+            ellipse at top left,
+            rgba(var(--accent-rgb), 0.18),
             transparent 55%
         ),
         linear-gradient(
             145deg,
-            rgba(0,0,0,0.90),
-            rgba(12,12,34,0.84),
+            rgba(0,0,0,0.9),
+            rgba(10,10,30,0.85),
             rgba(0,0,0,0.92)
         );
 
     box-shadow:
-        0 32px 86px rgba(0,0,0,0.88),
-        0 0 30px rgba(var(--accent-rgb),0.16),
+        0 28px 72px rgba(0,0,0,0.85),
         inset 0 0 0 1px rgba(255,255,255,0.06);
 }
 
-/* Hero depth overlay (scanline + vignette) */
-.ccg-page--collections-index .ccg-hero.ccg-hero--collections::after {
+/* Subtle scanline/vignette parity */
+.ccg-page--collections-index .ccg-hero--collections::after {
     content: "";
     position: absolute;
     inset: 0;
-    z-index: 2;
     pointer-events: none;
 
     background:
@@ -54,8 +58,8 @@
         ),
         repeating-linear-gradient(
             to bottom,
-            rgba(255,255,255,0.026),
-            rgba(255,255,255,0.026) 1px,
+            rgba(255,255,255,0.025),
+            rgba(255,255,255,0.025) 1px,
             transparent 1px,
             transparent 4px
         );
@@ -63,135 +67,132 @@
     opacity: 0.22;
 }
 
-/* Hero image depth parity */
-.ccg-page--collections-index .ccg-hero--collections .ccg-hero-image {
-    filter: saturate(1.05) contrast(1.08);
-    opacity: 0.86;
-}
-
-/* Content elevation */
+/* Hero inner spacing */
 .ccg-page--collections-index .ccg-hero-inner--collections {
     position: relative;
-    z-index: 3;
-    padding: 50px 46px 48px;
+    z-index: 2;
+    padding: 56px 48px 52px;
 }
 
-/* Title glow parity */
-.ccg-page--collections-index .ccg-hero-title {
-    text-shadow:
-        0 18px 48px rgba(0,0,0,0.85),
-        0 0 26px rgba(var(--accent-rgb),0.30);
+/* Mobile discipline */
+@media (max-width: 768px) {
+    .ccg-page--collections-index .ccg-hero-inner--collections {
+        padding: 40px 18px 36px;
+    }
 }
-
-/* Tagline rhythm */
-.ccg-page--collections-index .ccg-hero-tagline {
-    max-width: 62ch;
-    line-height: 1.6;
-    opacity: 0.9;
-}
-
 
 /* ============================================================
-   HERO → CONTENT SEPARATION
+   COLLECTION GRID — STRUCTURAL CONFIDENCE
 ============================================================ */
 
-.ccg-page--collections-index .ccg-collections-section {
-    margin-top: 22px;
-}
-
-.ccg-page--collections-index .ccg-section-title {
-    margin-bottom: 20px;
-}
-
-
-/* ============================================================
-   COLLECTION GRID — BASE (UNCHANGED)
-============================================================ */
-
-.ccg-page--collections-index .ccg-collections-grid {
+.ccg-collections-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 28px;
-    padding: 0 10px;
+    gap: 26px;
     align-items: stretch;
 }
 
+/* Desktop breathing room */
+@media (min-width: 1024px) {
+    .ccg-collections-grid {
+        gap: 32px;
+    }
+}
 
 /* ============================================================
-   COLLECTION CARD — BASE (UNCHANGED)
+   COLLECTION CARDS — CINEMATIC PRESENCE
 ============================================================ */
 
-.ccg-page--collections-index .ccg-collection-card {
-    background: rgba(0, 0, 0, 0.55);
-    border-radius: 14px;
+.ccg-page--collections-index .ccg-card {
+    position: relative;
+    border-radius: 18px;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.05),
+            rgba(255,255,255,0.02)
+        );
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.08),
+        0 18px 42px rgba(0,0,0,0.65);
 
     transition:
-        transform 0.28s ease,
-        box-shadow 0.28s ease;
+        transform 0.35s ease,
+        box-shadow 0.35s ease;
 }
 
-.ccg-page--collections-index .ccg-collection-card:hover {
-    transform: translateY(-4px);
-    box-shadow:
-        0 18px 40px rgba(0, 0, 0, 0.6),
-        0 0 22px rgba(0, 170, 255, 0.25);
+/* Media framing lock */
+.ccg-page--collections-index .ccg-card__media {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
 }
 
+/* Image fill discipline */
+.ccg-page--collections-index .ccg-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Card body rhythm */
+.ccg-page--collections-index .ccg-card__body {
+    padding: 18px 18px 20px;
+}
+
+/* Title authority */
+.ccg-page--collections-index .ccg-card__title {
+    line-height: 1.25;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+}
 
 /* ============================================================
-   MODE-SENSITIVE GLOW (UNCHANGED)
+   HOVER / FOCUS — RESTRAINED WOW
 ============================================================ */
 
-body[data-ccg-mode="c64"]
-.ccg-page--collections-index
-.ccg-collection-card:hover {
-    box-shadow:
-        0 18px 40px rgba(0, 0, 0, 0.6),
-        0 0 22px rgba(0, 170, 255, 0.35);
+@media (hover: hover) {
+
+    .ccg-page--collections-index .ccg-card:hover,
+    .ccg-page--collections-index .ccg-card:focus-within {
+        transform: translateY(-3px);
+        box-shadow:
+            0 0 0 1px rgba(var(--accent-rgb), 0.35),
+            0 0 18px rgba(var(--accent-rgb), 0.28),
+            0 22px 48px rgba(0,0,0,0.75);
+    }
+
+    /* Media edge glow only */
+    .ccg-page--collections-index .ccg-card:hover .ccg-card__media,
+    .ccg-page--collections-index .ccg-card:focus-within .ccg-card__media {
+        box-shadow:
+            inset 0 0 0 1px rgba(var(--accent-rgb), 0.45);
+    }
 }
 
-body[data-ccg-mode="amiga"]
-.ccg-page--collections-index
-.ccg-collection-card:hover {
-    box-shadow:
-        0 18px 40px rgba(0, 0, 0, 0.6),
-        0 0 22px rgba(255, 41, 224, 0.35);
+/* Touch devices — no fake hover */
+@media (hover: none) {
+    .ccg-page--collections-index .ccg-card:hover {
+        transform: none;
+        box-shadow: none;
+    }
 }
-
 
 /* ============================================================
-   MOBILE — HERO DISCIPLINE
+   SECTION RHYTHM — VISUAL BREATHING ROOM
 ============================================================ */
 
+.ccg-page--collections-index .ccg-collections-section {
+    margin-top: 56px;
+}
+
+/* Mobile tighten */
 @media (max-width: 768px) {
-
-    .ccg-page--collections-index
-    .ccg-hero-inner--collections {
-        padding: 38px 18px 36px;
-    }
-
-    .ccg-page--collections-index
-    .ccg-hero.ccg-hero--collections::after {
-        opacity: 0.16;
-    }
-
-    .ccg-page--collections-index
-    .ccg-collections-section {
-        margin-top: 26px;
-    }
-}
-
-
-/* ============================================================
-   VERY SMALL PHONES (≤ 420px)
-============================================================ */
-
-@media (max-width: 420px) {
-
-    .ccg-page--collections-index
-    .ccg-hero-inner--collections {
-        padding: 34px 16px 32px;
+    .ccg-page--collections-index .ccg-collections-section {
+        margin-top: 36px;
     }
 }
