@@ -1,6 +1,6 @@
 /* ============================================================
    COLLECTIONS.CSS — OMEGA PARITY + VISUAL POLISH
-   Phase P32 — Locked & Stable
+   Phase P33 — LOCKED AFTER APPLY
 ============================================================ */
 
 /* ============================================================
@@ -13,6 +13,18 @@
     gap: 28px;
     padding: 0 10px;
     align-items: stretch;
+}
+
+/* ============================================================
+   SECTION RHYTHM (POLISH)
+============================================================ */
+
+.ccg-page--collections-index .ccg-collections-section {
+    margin-top: 12px;
+}
+
+.ccg-page--collections-index .ccg-section-title {
+    margin-bottom: 20px;
 }
 
 /* ============================================================
@@ -31,7 +43,7 @@
 }
 
 .ccg-page--collections-index .ccg-collection-card:hover {
-    transform: translateY(-6px);
+    transform: translateY(-4px);
     box-shadow:
         0 18px 40px rgba(0, 0, 0, 0.6),
         0 0 22px rgba(0, 170, 255, 0.25);
