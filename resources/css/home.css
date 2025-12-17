@@ -1,6 +1,6 @@
 /* ============================================================
    HOME.CSS — OMEGA CINEMATIC SHOWPIECE (FLAGSHIP)
-   Mobile Rhythm Pass — Phase MR1 (LOCK AFTER APPLY)
+   Mobile Rhythm Pass — Phase MR1 (LOCKED)
 ============================================================ */
 
 /* ============================================================
@@ -56,7 +56,7 @@ html[data-ccg-page="home"] .ccg-bg-crt-overlay {
 html[data-ccg-page="home"] .home-hero {
     position: relative;
     margin-top: 12px;
-    margin-bottom: 28px; /* ↑ slightly more pause before next section */
+    margin-bottom: 28px;
 }
 
 /* ============================================================
@@ -64,7 +64,7 @@ html[data-ccg-page="home"] .home-hero {
 ============================================================ */
 
 html[data-ccg-page="home"] .home-tagline {
-    margin: 22px 0 36px; /* ↑ clearer separation on mobile */
+    margin: 22px 0 36px;
 }
 
 /* ============================================================
@@ -72,11 +72,11 @@ html[data-ccg-page="home"] .home-tagline {
 ============================================================ */
 
 html[data-ccg-page="home"] .home-section {
-    margin: 0 0 40px; /* ↑ reduces visual stacking pressure */
+    margin: 0 0 40px;
 }
 
 /* ============================================================
-   MOBILE TUNING — RHYTHM FIRST, EFFECTS SECOND
+   MOBILE TUNING — RHYTHM FIRST
 ============================================================ */
 
 @media (max-width: 768px) {
@@ -104,7 +104,6 @@ html[data-ccg-page="home"] .home-section {
         margin-bottom: 18px;
     }
 
-    /* Disable hover theatrics that don’t exist on touch */
     html[data-ccg-page="home"] .home-hero__title:hover {
         transform: none;
         text-shadow:
@@ -133,94 +132,14 @@ html[data-ccg-page="home"] .home-section {
 }
 
 /* ============================================================
-   HOME PAGE — THUMBNAIL SIZE ISOLATION
-   Phase HT-LOCK — FINAL
+   HOME — THUMBNAIL ISOLATION (FINAL, SINGLE SOURCE OF TRUTH)
+   Phase HT-LOCK — HOME ONLY
    ------------------------------------------------------------
-   • Scope: HOME ONLY
-   • Fixes oversized featured thumbnails
-   • Preserves 16:9 ratio
-   • ZERO impact on cards elsewhere
+   • Fixes oversized thumbnails
+   • Locks cinematic 16:9 framing
+   • No max-height fighting aspect-ratio
+   • ZERO impact on other pages
 ============================================================ */
-
-/* ------------------------------------------------------------
-   FEATURED CARDS — MEDIA LOCK
------------------------------------------------------------- */
-
-html[data-ccg-page="home"] .home-feature-card .ccg-card__media {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-
-    overflow: hidden;
-    border-radius: 16px;
-}
-
-/* Ensure images never exceed container */
-html[data-ccg-page="home"] .home-feature-card .ccg-card__media img {
-    position: absolute;
-    inset: 0;
-
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-    object-position: center;
-
-    display: block;
-}
-
-/* ------------------------------------------------------------
-   VIDEO FEATURE — SAME RULESET
------------------------------------------------------------- */
-
-html[data-ccg-page="home"] .home-feature-video__frame {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-
-    overflow: hidden;
-    border-radius: 16px;
-}
-
-html[data-ccg-page="home"] .home-feature-video__thumb {
-    position: absolute;
-    inset: 0;
-
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-    display: block;
-}
-
-/* ------------------------------------------------------------
-   MOBILE SAFETY — PREVENT GIANT CARDS
------------------------------------------------------------- */
-
-@media (max-width: 768px) {
-
-    html[data-ccg-page="home"] .home-feature-card {
-        max-width: 100%;
-    }
-
-    html[data-ccg-page="home"] .home-feature-card .ccg-card__media {
-        border-radius: 14px;
-    }
-}
-
-/* ============================================================
-   HOME — THUMBNAIL SIZE ISOLATION FIX
-   Phase HT-LOCK — HOME ONLY (LOCK AFTER APPLY)
-   ------------------------------------------------------------
-   • Prevents home thumbnails inheriting global card sizing
-   • Locks aspect ratio + max height
-   • ZERO impact on games / genres / collections
-   • CSS-only, safe
-============================================================ */
-
-/* ------------------------------------------------------------
-   HOME FEATURED CARDS — MEDIA CONTAINER LOCK
------------------------------------------------------------- */
 
 html[data-ccg-page="home"] .home-feature-card .ccg-card__media,
 html[data-ccg-page="home"] .home-feature-video__frame {
@@ -232,77 +151,25 @@ html[data-ccg-page="home"] .home-feature-video__frame {
     border-radius: 18px;
 }
 
-/* ------------------------------------------------------------
-   HOME FEATURED IMAGES — SIZE CLAMP
------------------------------------------------------------- */
-
-html[data-ccg-page="home"] .home-feature-card img,
+/* Media fill — image & iframe safe */
+html[data-ccg-page="home"] .home-feature-card .ccg-card__media img,
 html[data-ccg-page="home"] .home-feature-video__frame img,
 html[data-ccg-page="home"] .home-feature-video__frame iframe {
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-    object-position: center;
-
-    display: block;
-}
-
-/* ------------------------------------------------------------
-   HARD SAFETY CLAMP — PREVENT GIANT RENDERS
------------------------------------------------------------- */
-
-html[data-ccg-page="home"] .home-feature-card .ccg-card__media {
-    max-height: 320px;
-}
-
-/* ------------------------------------------------------------
-   MOBILE DISCIPLINE — HOME ONLY
------------------------------------------------------------- */
-
-@media (max-width: 768px) {
-
-    html[data-ccg-page="home"] .home-feature-card .ccg-card__media {
-        max-height: 220px;
-        border-radius: 16px;
-    }
-}
-
-@media (max-width: 420px) {
-
-    html[data-ccg-page="home"] .home-feature-card .ccg-card__media {
-        max-height: 200px;
-    }
-}
-
-/* ============================================================
-   HOME — THUMBNAIL SIZE ISOLATION (CRITICAL)
-   Phase HT-LOCK — HOME ONLY
-   ------------------------------------------------------------
-   • Prevents oversized thumbnails
-   • Locks cinematic 16:9 presence
-   • Does NOT affect other pages
-============================================================ */
-
-.ccg-page--home .ccg-card__media {
-    position: relative;
-    width: 100%;
-    max-width: 100%;
-    overflow: hidden;
-
-    aspect-ratio: 16 / 9;
-    border-radius: 16px;
-}
-
-/* Ensure image fills frame, never expands it */
-.ccg-page--home .ccg-card__media img {
     position: absolute;
     inset: 0;
 
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center;
 
     display: block;
 }
 
+/* Mobile radius discipline only */
+@media (max-width: 768px) {
+    html[data-ccg-page="home"] .home-feature-card .ccg-card__media,
+    html[data-ccg-page="home"] .home-feature-video__frame {
+        border-radius: 16px;
+    }
+}
