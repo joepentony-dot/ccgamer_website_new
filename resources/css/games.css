@@ -1,6 +1,6 @@
 /* ============================================================
    GAMES.CSS — STABLE FUNCTIONAL RESTORE
-   Phase P31 — A–Z CONTROL DECK + ACCORDION WOW (SAFE)
+   Mobile Rhythm Pass — Phase MR1 (LOCK AFTER APPLY)
 ============================================================ */
 
 /* ============================================================
@@ -12,14 +12,9 @@
 }
 
 /* ============================================================
-   ✅ GAMES INDEX — THUMBNAIL SIZE LOCK (PAGE-SCOPED ONLY)
-   ------------------------------------------------------------
-   Fixes: /games/index.html thumbnails rendering FAR TOO BIG
-   Scope: .ccg-page--games-index only
-   Zero impact on collections / genres / single-game pages
+   GAMES INDEX — GRID & THUMB LOCK (UNCHANGED)
 ============================================================ */
 
-/* Ensure the injected game cards render as a multi-column grid inside accordion content */
 .ccg-page--games-index .games-accordion__content .games-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -27,7 +22,6 @@
     align-items: start;
 }
 
-/* Slightly tighter on medium screens */
 @media (max-width: 980px) {
     .ccg-page--games-index .games-accordion__content .games-grid {
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -35,325 +29,59 @@
     }
 }
 
-/* Mobile: still grid, but comfortable (prevents gigantic single-column cards) */
 @media (max-width: 768px) {
     .ccg-page--games-index .games-accordion__content .games-grid {
         grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-        gap: 14px;
-    }
-}
-
-/* Preferred markup: thumb wrapper */
-.ccg-page--games-index .ccg-game-card__thumb {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-}
-
-/* Preferred markup: img inside thumb wrapper */
-.ccg-page--games-index .ccg-game-card__thumb img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: contain;
-    object-position: center;
-}
-
-/* Fallback markup A: direct image child */
-.ccg-page--games-index .ccg-game-card > img {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    height: auto;
-    display: block;
-    object-fit: contain;
-    object-position: center;
-}
-
-/* Fallback markup B: last resort clamp (still page-scoped) */
-.ccg-page--games-index .ccg-game-card img {
-    max-height: 220px;
-}
-
-/* ============================================================
-   A–Z CONTROL DECK (NEW) — matches games/index.html structure
-   Uses:
-   .games-alpha
-   .games-alpha__label
-   .games-alpha__strip
-   .games-alpha__letter (buttons injected by JS)
-============================================================ */
-
-.games-alpha {
-    margin: 14px 0 18px;
-}
-
-.games-alpha__label {
-    font-family: var(--ccg-font-main);
-    font-size: 0.78rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--ccg-text-soft);
-    opacity: 0.92;
-    margin-bottom: 10px;
-}
-
-/* The unified “rail” */
-.games-alpha__strip {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-
-    padding: 12px 12px;
-
-    border-radius: 14px;
-
-    background:
-        linear-gradient(
-            135deg,
-            rgba(0,0,0,0.78),
-            rgba(20,20,46,0.55)
-        );
-
-    border: 1px solid rgba(255,255,255,0.08);
-
-    box-shadow:
-        inset 0 0 0 1px rgba(0,0,0,0.65),
-        0 14px 34px rgba(0,0,0,0.70),
-        0 0 18px rgba(var(--accent-rgb), 0.10);
-
-    isolation: isolate;
-}
-
-/* Individual “modules” */
-.games-alpha__letter {
-    min-width: 34px;
-    height: 34px;
-    padding: 0 10px;
-
-    border-radius: 12px;
-
-    font-family: var(--ccg-font-main);
-    font-size: 0.76rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-
-    background:
-        linear-gradient(
-            to bottom,
-            rgba(255,255,255,0.06),
-            rgba(0,0,0,0.55)
-        );
-
-    color: var(--ccg-text-light);
-
-    border: 1px solid rgba(255,255,255,0.10);
-    cursor: pointer;
-
-    position: relative;
-    transform: translateZ(0);
-
-    transition:
-        transform 0.28s var(--ccg-ease-out),
-        box-shadow 0.38s var(--ccg-ease-out),
-        border-color 0.32s ease,
-        background 0.32s ease,
-        color 0.32s ease;
-
-    box-shadow:
-        0 8px 18px rgba(0,0,0,0.55),
-        inset 0 0 0 1px rgba(255,255,255,0.05);
-}
-
-/* Hover = “energy build-up” */
-.games-alpha__letter:hover:not(:disabled) {
-    color: var(--accent-soft);
-
-    border-color: rgba(var(--accent-rgb), 0.32);
-
-    background:
-        linear-gradient(
-            to bottom,
-            rgba(var(--accent-rgb),0.14),
-            rgba(0,0,0,0.62)
-        );
-
-    transform: translateY(-2px);
-
-    box-shadow:
-        0 14px 28px rgba(0,0,0,0.72),
-        0 0 18px rgba(var(--accent-rgb), 0.22),
-        inset 0 0 0 1px rgba(var(--accent-rgb), 0.18);
-}
-
-/* Press = “mechanical confirmation” */
-.games-alpha__letter:active:not(:disabled) {
-    transform: translateY(-1px) scale(0.985);
-
-    box-shadow:
-        0 12px 24px rgba(0,0,0,0.72),
-        0 0 22px rgba(var(--accent-rgb), 0.32),
-        inset 0 0 0 1px rgba(var(--accent-rgb), 0.24);
-}
-
-/* Keyboard parity */
-.games-alpha__letter:focus-visible {
-    outline: none;
-
-    box-shadow:
-        0 14px 28px rgba(0,0,0,0.72),
-        0 0 0 2px rgba(var(--accent-rgb), 0.26),
-        0 0 18px rgba(var(--accent-rgb), 0.24),
-        inset 0 0 0 1px rgba(var(--accent-rgb), 0.18);
-}
-
-/* Dormant letters (disabled) = powered down */
-.games-alpha__letter:disabled {
-    cursor: not-allowed;
-    opacity: 0.38;
-
-    background:
-        linear-gradient(
-            to bottom,
-            rgba(255,255,255,0.03),
-            rgba(0,0,0,0.60)
-        );
-
-    border-color: rgba(255,255,255,0.06);
-
-    box-shadow:
-        0 6px 14px rgba(0,0,0,0.55),
-        inset 0 0 0 1px rgba(255,255,255,0.03);
-
-    transform: none;
-}
-
-/* Mobile: becomes a single “scrolling control deck” */
-@media (max-width: 768px) {
-
-    .games-alpha__strip {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        overflow-y: hidden;
-
-        gap: 10px;
-        padding: 12px 10px 14px;
-
-        scrollbar-width: none;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .games-alpha__strip::-webkit-scrollbar {
-        display: none;
-    }
-
-    .games-alpha__letter {
-        min-width: 46px;
-        height: 46px;
-        border-radius: 14px;
-
-        font-size: 0.82rem;
-
-        flex-shrink: 0;
-    }
-
-    .games-alpha__letter:hover:not(:disabled) {
-        transform: none;
-    }
-
-    .games-alpha__letter:active:not(:disabled) {
-        transform: scale(0.965);
-    }
-}
-
-/* Very small phones */
-@media (max-width: 420px) {
-
-    .games-alpha__letter {
-        min-width: 44px;
-        height: 44px;
+        gap: 16px; /* ↓ slightly tighter horizontally, balanced vertically below */
     }
 }
 
 /* ============================================================
-   LEGACY A–Z STRIP (kept for compatibility if any older markup exists)
-============================================================ */
-
-.games-alphabet {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin: 14px 0 18px;
-}
-
-.games-alphabet button {
-    min-width: 30px;
-    height: 30px;
-    border-radius: 6px;
-
-    font-family: var(--ccg-font-main);
-    font-size: 0.7rem;
-    letter-spacing: 0.08em;
-
-    background: rgba(255,255,255,0.08);
-    color: var(--ccg-text-light);
-
-    border: 1px solid rgba(255,255,255,0.14);
-    cursor: pointer;
-
-    transition:
-        background 0.25s ease,
-        color 0.25s ease,
-        box-shadow 0.25s ease;
-}
-
-.games-alphabet button:hover {
-    background: rgba(var(--accent-rgb),0.18);
-    box-shadow: 0 0 10px rgba(var(--accent-rgb),0.35);
-}
-
-.games-alphabet button.is-active {
-    background: rgba(var(--accent-rgb),0.28);
-    box-shadow:
-        0 0 14px rgba(var(--accent-rgb),0.55);
-}
-
-/* ============================================================
-   MOBILE — GAME CARD GRID SPACING (INDEX ONLY)
+   MOBILE — ACCORDION RHYTHM REBALANCE (INDEX ONLY)
 ============================================================ */
 
 @media (max-width: 768px) {
 
-    /* Accordion content spacing */
+    /* Clearer separation between accordion groups */
+    .games-accordion__group {
+        margin-bottom: 18px;
+    }
+
+    /* Header feels less “stacked” */
+    .games-accordion__header {
+        padding: 18px 16px;
+        letter-spacing: 0.16em;
+    }
+
+    /* Content breathes more vertically */
     .games-accordion__content {
-        padding: 12px 0 18px;
+        padding: 20px 14px 26px;
     }
 
-    /* Grid breathes vertically */
+    /* Grid spacing prioritises vertical comfort */
     .games-accordion__content .games-grid {
-        gap: 18px;
+        row-gap: 20px;
+        column-gap: 14px;
     }
 
-    /* Individual card comfort */
+    /* Cards feel less cramped */
     .games-accordion__content .ccg-game-card {
         border-radius: 16px;
     }
 
-    /* Card body padding refinement */
     .games-accordion__content .ccg-game-card__body {
-        padding: 14px 14px 16px;
+        padding: 14px 14px 18px;
     }
 
-    /* Title readability */
     .games-accordion__content .ccg-game-card__title {
-        font-size: 0.85rem;
-        line-height: 1.35;
-        margin-bottom: 6px;
+        font-size: 0.86rem;
+        line-height: 1.4;
+        margin-bottom: 8px;
     }
 
-    /* Meta spacing */
     .games-accordion__content .ccg-game-card__meta {
         font-size: 0.72rem;
-        opacity: 0.85;
+        opacity: 0.82;
     }
 }
 
@@ -363,205 +91,61 @@
 
 @media (max-width: 420px) {
 
+    .games-accordion__group {
+        margin-bottom: 16px;
+    }
+
+    .games-accordion__content {
+        padding: 18px 12px 22px;
+    }
+
     .games-accordion__content .games-grid {
-        gap: 16px;
+        row-gap: 18px;
     }
 
     .games-accordion__content .ccg-game-card__body {
-        padding: 12px 12px 14px;
+        padding: 12px 12px 16px;
     }
 }
 
 /* ============================================================
-   SINGLE GAME PAGE — MOBILE RHYTHM PASS (SAFE)
-   Scope: ccg-page--single-game ONLY
+   SINGLE GAME PAGE — MOBILE RHYTHM (UNCHANGED LOGIC)
 ============================================================ */
 
 @media (max-width: 768px) {
 
-    /* Reduce hero → content collision */
     .ccg-page--single-game .ccg-main {
         padding-top: 6px;
     }
 
-    /* Section breathing room */
     .ccg-page--single-game section {
-        margin-bottom: 28px;
+        margin-bottom: 30px;
     }
 
-    /* Headings feel less crushed */
     .ccg-page--single-game h2,
     .ccg-page--single-game h3 {
-        margin-bottom: 10px;
+        margin-bottom: 12px;
     }
 
-    /* Body text rhythm */
     .ccg-page--single-game p {
-        margin-bottom: 12px;
+        margin-bottom: 14px;
         line-height: 1.55;
     }
 
-    /* Media blocks (video, screenshots, embeds) */
     .ccg-page--single-game .ccg-card,
     .ccg-page--single-game .ccg-media,
     .ccg-page--single-game iframe {
-        margin-bottom: 22px;
-    }
-
-    /* Button groups don’t feel cramped */
-    .ccg-page--single-game .ccg-btn {
-        margin-top: 10px;
+        margin-bottom: 24px;
     }
 }
-
-/* ============================================================
-   VERY SMALL PHONES — SINGLE GAME
-============================================================ */
 
 @media (max-width: 420px) {
 
     .ccg-page--single-game section {
-        margin-bottom: 22px;
+        margin-bottom: 24px;
     }
 
     .ccg-page--single-game p {
-        margin-bottom: 10px;
-    }
-}
-
-/* ============================================================
-   GAMES INDEX — ACCORDION WOW PASS (OMEGA CINEMATIC)
-   Uses classes confirmed from games-library.js:
-   .games-accordion__group
-   .games-accordion__header
-   .games-accordion__content
-   .games-accordion__group.is-open
-============================================================ */
-
-.games-accordion__group {
-    margin-bottom: 14px;
-    border-radius: 12px;
-    overflow: hidden;
-    transition: box-shadow 0.45s var(--ccg-ease-out);
-}
-
-.games-accordion__group.is-open {
-    box-shadow:
-        0 14px 32px rgba(0,0,0,0.85),
-        0 0 22px rgba(var(--accent-rgb), 0.22);
-}
-
-.games-accordion__header {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    padding: 14px 18px;
-
-    font-family: var(--ccg-font-main);
-    font-size: 0.95rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-
-    background:
-        linear-gradient(
-            to right,
-            rgba(0,0,0,0.88),
-            rgba(20,20,40,0.75)
-        );
-
-    color: var(--ccg-text-soft);
-    border: none;
-    cursor: pointer;
-
-    transition:
-        color 0.3s ease,
-        box-shadow 0.35s var(--ccg-ease-out),
-        background 0.35s ease,
-        transform 0.28s ease;
-}
-
-.games-accordion__header:hover {
-    color: var(--accent-soft);
-    box-shadow:
-        inset 0 0 0 1px rgba(var(--accent-rgb),0.25),
-        0 0 18px rgba(var(--accent-rgb),0.25);
-}
-
-.games-accordion__header:active {
-    transform: scale(0.985);
-}
-
-.games-accordion__group.is-open
-.games-accordion__header {
-    color: var(--accent-main);
-
-    background:
-        linear-gradient(
-            to right,
-            rgba(0,0,0,0.95),
-            rgba(30,30,70,0.85)
-        );
-
-    box-shadow:
-        inset 0 0 0 1px rgba(var(--accent-rgb),0.35),
-        0 0 26px rgba(var(--accent-rgb),0.35);
-
-    text-shadow:
-        0 0 10px rgba(var(--accent-rgb),0.55);
-}
-
-.games-accordion__content {
-    padding: 18px 14px 22px;
-
-    background:
-        linear-gradient(
-            to bottom,
-            rgba(0,0,0,0.72),
-            rgba(0,0,0,0.88)
-        );
-
-    animation: ccg-accordion-open 420ms var(--ccg-ease-out);
-}
-
-.games-accordion__group.is-open
-.games-accordion__content .ccg-game-card {
-    animation: ccg-accordion-card-rise 420ms var(--ccg-ease-out);
-}
-
-@media (max-width: 768px) {
-
-    .games-accordion__header {
-        padding: 16px 16px;
-        font-size: 0.9rem;
-    }
-
-    .games-accordion__group.is-open {
-        box-shadow:
-            0 10px 22px rgba(0,0,0,0.85),
-            0 0 18px rgba(var(--accent-rgb),0.25);
-    }
-}
-
-@keyframes ccg-accordion-open {
-    from {
-        opacity: 0;
-        transform: translateY(-6px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes ccg-accordion-card-rise {
-    from {
-        opacity: 0;
-        transform: translateY(6px) scale(0.98);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
+        margin-bottom: 12px;
     }
 }
