@@ -1,33 +1,30 @@
 /* ============================================================
-   COMPLETE-INDEX.CSS — OMEGA PARITY + SOCIAL COLLISION FIX
+   COMPLETE-INDEX.CSS — FINAL MOBILE RHYTHM PASS
+   Phase MR-FINAL (LOCK AFTER APPLY)
    ------------------------------------------------------------
-   • Page-scoped ONLY (.ccg-page--complete-index)
-   • Fixes header socials colliding / hiding behind mode pill
-   • Keeps global header locked (ccg-master.css unchanged)
-   • Preserves Omega cinematic look
+   Scope:
+   • /complete-index.html ONLY
+   • CSS-only
+   • No header/footer/global impact
 ============================================================ */
 
 
 /* ============================================================
-   PAGE TYPO / SPACING
+   BASE TYPO RHYTHM
 ============================================================ */
 
 .ccg-page--complete-index .ccg-section-title {
-    font-family: var(--ccg-font-main);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .ccg-page--complete-index .ccg-section-subtitle {
-    max-width: 78ch;
-    color: var(--ccg-text-soft);
     margin-bottom: 22px;
+    line-height: 1.6;
 }
 
 
 /* ============================================================
-   COMPLETE INDEX GRID + PANELS
+   GRID BASE (UNCHANGED DESKTOP)
 ============================================================ */
 
 .ccg-page--complete-index .ccg-index-grid {
@@ -37,145 +34,76 @@
     margin-top: 18px;
 }
 
-.ccg-page--complete-index .ccg-panel {
-    display: block;
-    text-decoration: none;
-    color: var(--ccg-text-light);
 
+/* ============================================================
+   PANEL RHYTHM
+============================================================ */
+
+.ccg-page--complete-index .ccg-panel {
     border-radius: 18px;
     padding: 18px 18px 16px;
-
-    background:
-        linear-gradient(
-            135deg,
-            rgba(255,255,255,0.08),
-            rgba(255,255,255,0.03)
-        );
-
-    border: 1px solid rgba(255,255,255,0.10);
-
-    box-shadow:
-        0 18px 48px rgba(0,0,0,0.65),
-        0 0 22px rgba(var(--accent-rgb), 0.12);
-
-    transition:
-        transform 220ms var(--ccg-ease-out),
-        box-shadow 220ms var(--ccg-ease-out),
-        border-color 220ms var(--ccg-ease-out);
-}
-
-.ccg-page--complete-index .ccg-panel h3 {
-    font-family: var(--ccg-font-main);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin: 0 0 8px 0;
-    font-size: 0.95rem;
-    color: var(--ccg-text-light);
-}
-
-.ccg-page--complete-index .ccg-panel p {
-    margin: 0;
-    color: var(--ccg-text-soft);
-    line-height: 1.55;
-    max-width: 60ch;
-}
-
-.ccg-page--complete-index .ccg-panel:hover {
-    transform: translateY(-2px);
-    border-color: rgba(var(--accent-rgb), 0.45);
-
-    box-shadow:
-        0 22px 62px rgba(0,0,0,0.72),
-        0 0 28px rgba(var(--accent-rgb), 0.18);
 }
 
 
 /* ============================================================
-   HEADER — COMPLETE INDEX SOCIAL COLLISION FIX (PAGE-SCOPED)
-   ------------------------------------------------------------
-   Problem:
-   • Header actions column can become tight at certain widths
-   • Socials end up visually "behind" the mode pill, or clipped
-   Fix:
-   • Allow actions area to wrap safely
-   • Keep socials + toggle in a controlled row/stack
-   • Ensure proper z-order so nothing hides behind the pill
+   MOBILE RHYTHM — PRIMARY
 ============================================================ */
 
-.ccg-page--complete-index .ccg-header-actions {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 12px;
+@media (max-width: 768px) {
 
-    /* Critical: allow contents to shrink/wrap instead of colliding */
-    flex-wrap: wrap;
-    min-width: 0;
-
-    position: relative;
-    z-index: 3;
-}
-
-.ccg-page--complete-index .ccg-header-socials {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    /* Critical: prevent weird overflow clipping */
-    flex-wrap: nowrap;
-    min-width: 0;
-
-    position: relative;
-    z-index: 2;
-}
-
-/* Make header icons slightly tighter on this page so they fit cleanly */
-.ccg-page--complete-index .ccg-header-socials .ccg-socials__icon {
-    width: 38px;
-    height: 38px;
-}
-
-/* If your socials CSS uses inline-block spans, this prevents accidental collapse */
-.ccg-page--complete-index .ccg-header-socials a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-}
-
-/* Ensure the mode toggle never overlaps/intercepts the socials */
-.ccg-page--complete-index .ccg-mode-toggle {
-    position: relative;
-    z-index: 4;
-}
-
-
-/* ============================================================
-   RESPONSIVE — KEEP HEADER ACTIONS CLEAN ON TIGHT WIDTHS
-============================================================ */
-
-@media (max-width: 1180px) {
-    .ccg-page--complete-index .ccg-header-socials .ccg-socials__icon {
-        width: 36px;
-        height: 36px;
+    .ccg-page--complete-index .ccg-main {
+        padding-top: 6px;
     }
-}
 
-@media (max-width: 980px) {
-    /* Let socials drop to a new line within the actions area if needed */
-    .ccg-page--complete-index .ccg-header-socials {
-        flex-basis: 100%;
-        justify-content: flex-end;
+    .ccg-page--complete-index .ccg-section {
+        margin-bottom: 28px;
     }
-}
 
-@media (max-width: 720px) {
+    .ccg-page--complete-index .ccg-section-title {
+        margin-bottom: 10px;
+    }
+
+    .ccg-page--complete-index .ccg-section-subtitle {
+        font-size: 0.9rem;
+        margin-bottom: 18px;
+    }
+
     .ccg-page--complete-index .ccg-index-grid {
-        gap: 14px;
+        gap: 16px;
     }
 
     .ccg-page--complete-index .ccg-panel {
         padding: 16px 16px 14px;
         border-radius: 16px;
+    }
+
+    .ccg-page--complete-index .ccg-panel h3 {
+        font-size: 0.88rem;
+        margin-bottom: 6px;
+    }
+
+    .ccg-page--complete-index .ccg-panel p {
+        font-size: 0.82rem;
+        line-height: 1.5;
+    }
+}
+
+
+/* ============================================================
+   VERY SMALL PHONES
+============================================================ */
+
+@media (max-width: 420px) {
+
+    .ccg-page--complete-index .ccg-section {
+        margin-bottom: 24px;
+    }
+
+    .ccg-page--complete-index .ccg-index-grid {
+        gap: 14px;
+    }
+
+    .ccg-page--complete-index .ccg-panel {
+        padding: 14px 14px 12px;
     }
 }
