@@ -1,6 +1,6 @@
 /* ============================================================
    GENRE.CSS — GENRES INDEX
-   Phase G2 — VISUAL POLISH (LOCKED)
+   Phase G3 — OMEGA POLISH + PARITY
    ------------------------------------------------------------
    Scope:
    • /games/genres/index.html ONLY
@@ -18,17 +18,30 @@
     gap: 36px 40px;
 
     max-width: 900px;
-    margin: 6px auto 0;
+    margin: 12px auto 0;
 
     align-items: stretch;
 }
 
 /* ============================================================
-   GENRE CARD ALIGNMENT (SAFETY ONLY)
+   SECTION RHYTHM (POLISH)
+============================================================ */
+
+.ccg-page--genres-index .ccg-section-title {
+    margin-bottom: 26px;
+}
+
+/* ============================================================
+   GENRE CARD — BASELINE PRESENCE (SAFE)
 ============================================================ */
 
 .ccg-page--genres-index .ccg-genre-card {
     width: 100%;
+    border-radius: 14px;
+
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+
     transition:
         transform 0.28s ease,
         box-shadow 0.28s ease;
@@ -60,16 +73,14 @@ body[data-ccg-mode="amiga"]
 
 .ccg-page--genres-index
 .ccg-genre-card
-.ccg-card__title {
-    letter-spacing: 0.04em;
-    margin-bottom: 6px;
-}
+span {
+    display: block;
+    margin-top: 10px;
 
-.ccg-page--genres-index
-.ccg-genre-card
-.ccg-card__text {
-    line-height: 1.55;
-    opacity: 0.92;
+    letter-spacing: 0.04em;
+    text-align: center;
+
+    opacity: 0.95;
 }
 
 /* ============================================================
@@ -77,6 +88,7 @@ body[data-ccg-mode="amiga"]
 ============================================================ */
 
 @media (max-width: 1024px) {
+
     .ccg-page--genres-index .ccg-genre-grid {
         gap: 30px 30px;
         max-width: 820px;
@@ -88,6 +100,7 @@ body[data-ccg-mode="amiga"]
 ============================================================ */
 
 @media (max-width: 768px) {
+
     .ccg-page--genres-index .ccg-genre-grid {
         grid-template-columns: 1fr;
         gap: 24px;
@@ -104,6 +117,7 @@ body[data-ccg-mode="amiga"]
 ============================================================ */
 
 @media (max-width: 420px) {
+
     .ccg-page--genres-index .ccg-genre-grid {
         gap: 20px;
     }
