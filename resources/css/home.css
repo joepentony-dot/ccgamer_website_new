@@ -199,3 +199,47 @@ html[data-ccg-page="home"] .home-feature-card__title {
         max-width: 26ch;
     }
 }
+
+/* ============================================================
+   HOME — SUBTLE NEON DEPTH (HOVER / FOCUS ONLY)
+   Phase HT-NEON — RESTRAINED WOW POLISH
+   ------------------------------------------------------------
+   • Home-only
+   • Hover & keyboard focus only
+   • No constant glow
+   • Zero layout impact
+============================================================ */
+
+/* Base state — no glow, calm presence */
+html[data-ccg-page="home"] .home-feature-card {
+    position: relative;
+    transition:
+        box-shadow 0.35s ease,
+        transform 0.35s ease;
+}
+
+/* Hover / focus-visible — gentle neon lift */
+html[data-ccg-page="home"] .home-feature-card:hover,
+html[data-ccg-page="home"] .home-feature-card:focus-within {
+    transform: translateY(-2px);
+    box-shadow:
+        0 0 0 1px rgba(var(--accent-rgb), 0.35),
+        0 0 18px rgba(var(--accent-rgb), 0.28),
+        0 18px 42px rgba(0, 0, 0, 0.65);
+}
+
+/* Media edge glow only (keeps text clean) */
+html[data-ccg-page="home"] .home-feature-card:hover .ccg-card__media,
+html[data-ccg-page="home"] .home-feature-card:focus-within .ccg-card__media {
+    box-shadow:
+        inset 0 0 0 1px rgba(var(--accent-rgb), 0.45),
+        0 0 14px rgba(var(--accent-rgb), 0.22);
+}
+
+/* Touch devices — no fake hover theatrics */
+@media (hover: none) {
+    html[data-ccg-page="home"] .home-feature-card:hover {
+        transform: none;
+        box-shadow: none;
+    }
+}
