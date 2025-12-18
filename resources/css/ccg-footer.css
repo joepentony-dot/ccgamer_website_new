@@ -1,5 +1,6 @@
 /* ============================================================
    CCG FOOTER — OMEGA SHARED SYSTEM (PARITY LOCK)
+   W5 — FINAL GLOBAL QA POLISH
    ------------------------------------------------------------
    • Fully isolated footer styling
    • Safe for all pages (root + nested)
@@ -81,9 +82,9 @@
         );
 
     box-shadow:
-        0 0 10px rgba(0,170,255,0.35);
+        0 0 8px rgba(0,170,255,0.30); /* W5 softened */
 
-    opacity: 0.85;
+    opacity: 0.75; /* W5 calmer */
 }
 
 /* ------------------------------------------------------------
@@ -92,7 +93,7 @@
 
 .ccg-footer,
 .ccg-footer-inner {
-    max-width: 980px;
+    max-width: 1100px; /* W5: rhythm alignment */
     margin-left: auto;
     margin-right: auto;
 }
@@ -129,12 +130,12 @@
         linear-gradient(
             to right,
             transparent,
-            rgba(0,170,255,0.7),
+            rgba(0,170,255,0.65),
             transparent
         );
 
     box-shadow:
-        0 0 12px rgba(0,170,255,0.45);
+        0 0 10px rgba(0,170,255,0.40);
 }
 
 /* AMIGA MODE (PINK) */
@@ -143,12 +144,12 @@
         linear-gradient(
             to right,
             transparent,
-            rgba(255,41,224,0.7),
+            rgba(255,41,224,0.65),
             transparent
         );
 
     box-shadow:
-        0 0 14px rgba(255,41,224,0.45);
+        0 0 12px rgba(255,41,224,0.40);
 }
 
 /* ------------------------------------------------------------
@@ -173,5 +174,17 @@
     .ccg-footer__text,
     .ccg-footer-text {
         font-size: 0.82rem;
+    }
+}
+
+/* ------------------------------------------------------------
+   REDUCED MOTION — ACCESSIBILITY (W5)
+------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .ccg-footer::before,
+    .ccg-footer::after {
+        opacity: 0.45;
     }
 }
