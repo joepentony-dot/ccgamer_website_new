@@ -425,3 +425,83 @@ html[data-ccg-page="home"] .home-genre-grid .ccg-genre-tile__title {
         letter-spacing: 0.07em;
     }
 }
+
+/* ============================================================
+   HOME HEADER — STACKED CINEMATIC LAYOUT (FINAL)
+   ------------------------------------------------------------
+   Fixes:
+   • Nav overflow on Home
+   • Logo + pills + socials overlap
+   • Preserves ALL buttons
+   • Home only (inner pages untouched)
+============================================================ */
+
+html[data-ccg-page="home"] .ccg-header {
+    padding-bottom: 22px;
+}
+
+/* Reflow header grid into vertical stack */
+html[data-ccg-page="home"] .ccg-header-inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    row-gap: 14px;
+    align-items: center;
+}
+
+/* ------------------------------
+   ROW 1 — BRAND (TOP)
+-------------------------------- */
+
+html[data-ccg-page="home"] .ccg-brand {
+    justify-self: center;
+}
+
+/* ------------------------------
+   ROW 2 — NAVIGATION (CENTER)
+-------------------------------- */
+
+html[data-ccg-page="home"] .ccg-nav {
+    width: 100%;
+    justify-content: center;
+}
+
+html[data-ccg-page="home"] .ccg-nav__list {
+    justify-content: center;
+    padding-inline: 40px;
+}
+
+/* ------------------------------
+   ROW 3 — MODE + SOCIALS (BOTTOM)
+-------------------------------- */
+
+html[data-ccg-page="home"] .ccg-header-actions {
+    justify-content: center;
+    max-width: none;
+    overflow: visible;
+}
+
+/* Prevent absolute pinning on Home */
+html[data-ccg-page="home"] .ccg-header > .ccg-header-actions {
+    position: static;
+    transform: none;
+}
+
+/* Slight breathing room above hero */
+html[data-ccg-page="home"] .ccg-hero {
+    margin-top: 12px;
+}
+
+/* ------------------------------
+   MOBILE — TIGHTEN SPACING
+-------------------------------- */
+
+@media (max-width: 768px) {
+    html[data-ccg-page="home"] .ccg-header-inner {
+        row-gap: 10px;
+    }
+
+    html[data-ccg-page="home"] .ccg-nav__list {
+        padding-inline: 24px;
+    }
+}
