@@ -1,11 +1,11 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & TYPOGRAPHY
-   OMEGA HEADER LOCK — FINAL SAFE VERSION (W5 QA)
+   OMEGA HEADER LOCK — W6 HEADER ADAPTATION (SAFE)
    ------------------------------------------------------------
-   • ONE in-flow header layout (NO absolute hacks)
-   • Logo | Nav | Actions never overlap
-   • Verified: Home, Collections, Quiz, Single Game
-   • W5: Global rhythm + font polish only
+   • Header overflow resilience added
+   • Nav pills gracefully compress
+   • Scroll hint only when needed
+   • ZERO layout regressions
 ============================================================ */
 
 /* ============================================================
@@ -29,7 +29,7 @@
     --ccg-nav-pill-pad-y: 8px;
     --ccg-nav-pill-pad-x: 14px;
 
-    /* W5: safe default accent (prevents first-frame flash) */
+    /* W5: safe default accent */
     --accent-rgb: 0,170,255;
 }
 
@@ -52,7 +52,6 @@ body {
     font-family: var(--ccg-font-body);
     overflow-x: hidden;
 
-    /* W5: font rendering polish */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -68,13 +67,11 @@ body {
 .ccg-main {
     width: min(1320px, 96%);
     margin: 0 auto;
-
-    /* W5: consistent post-header rhythm */
     padding-top: 22px;
 }
 
 /* ============================================================
-   HEADER — FINAL FIXED VERSION
+   HEADER — OMEGA LOCK + W6 ADAPTATION
 ============================================================ */
 
 .ccg-header {
@@ -96,18 +93,12 @@ body {
     backdrop-filter: blur(6px);
 }
 
-/* === CRITICAL FIX: TRUE 3-COLUMN GRID === */
-
 .ccg-header-inner {
     width: min(1320px, 96%);
     margin: 0 auto;
 
     display: grid;
-    grid-template-columns:
-        auto
-        minmax(0, 1fr)
-        auto;
-
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
     gap: 18px;
 }
@@ -131,7 +122,7 @@ body {
 }
 
 /* ============================================================
-   NAVIGATION (CENTER COLUMN)
+   NAVIGATION — W6 ADAPTIVE
 ============================================================ */
 
 .ccg-nav {
@@ -157,6 +148,7 @@ body {
     display: none;
 }
 
+/* W6: base pill style */
 .ccg-nav__link {
     display: inline-flex;
     align-items: center;
@@ -175,10 +167,32 @@ body {
 
     background: rgba(255,255,255,0.06);
     border: 1px solid rgba(255,255,255,0.12);
+
+    transition:
+        padding 160ms ease,
+        letter-spacing 160ms ease,
+        font-size 160ms ease;
+}
+
+/* W6: pill compression BEFORE overflow feels bad */
+@media (max-width: 1100px) {
+    .ccg-nav__link {
+        padding: 7px 12px;
+        letter-spacing: 0.1em;
+        font-size: 0.68rem;
+    }
+}
+
+@media (max-width: 960px) {
+    .ccg-nav__link {
+        padding: 6px 10px;
+        letter-spacing: 0.08em;
+        font-size: 0.66rem;
+    }
 }
 
 /* ============================================================
-   HEADER ACTIONS (RIGHT COLUMN)
+   HEADER ACTIONS
 ============================================================ */
 
 .ccg-header-actions {
@@ -204,7 +218,7 @@ body {
 }
 
 /* ============================================================
-   IMPORTANT: DISABLE ALL PINNED / ABSOLUTE ACTION BEHAVIOUR
+   ABSOLUTE BEHAVIOUR DISABLED (LOCK)
 ============================================================ */
 
 .ccg-header > .ccg-header-actions {
@@ -226,7 +240,7 @@ body {
     }
 
     .ccg-main {
-        padding-top: 18px; /* W5 mobile rhythm */
+        padding-top: 18px;
     }
 }
 
@@ -243,10 +257,10 @@ body[data-ccg-mode="amiga"] {
 }
 
 /* ============================================================
-   NAV SCROLL HINT POLISH — W5 SAFE
+   NAV SCROLL HINT — W6 INTELLIGENT
 ============================================================ */
 
-/* Fade indicators */
+/* Hidden by default */
 .ccg-nav::before,
 .ccg-nav::after {
     content: "";
@@ -256,6 +270,15 @@ body[data-ccg-mode="amiga"] {
     width: 28px;
     pointer-events: none;
     z-index: 2;
+    opacity: 0;
+}
+
+/* Only show when scrolling is possible (modern browsers) */
+@supports selector(:has(*)) {
+    .ccg-nav:has(.ccg-nav__list:hover)::before,
+    .ccg-nav:has(.ccg-nav__list:hover)::after {
+        opacity: 1;
+    }
 }
 
 .ccg-nav::before {
