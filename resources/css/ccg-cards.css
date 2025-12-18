@@ -1,16 +1,16 @@
 /* ============================================================
-   CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM
+   CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM (CANONICAL)
    Phase P38 — THUMBNAIL CONTAINMENT LOCK
    Phase WOW-G3 — CARD BEAUTY PASS (LOCKED)
    W5 — GLOBAL QA POLISH (SAFE)
-   W7.6 — BROWSE INDEX VISUAL LOCK (THUMB + TYPOGRAPHY)
+   W7.7 — BROWSE INDEX FINAL QA LOCK
    ------------------------------------------------------------
    • Preserves ALL thumbnail isolation contracts
-   • Improves focus accessibility
-   • Normalises hover energy
-   • Micro performance hygiene
-   • Browse Index: locks 16:9 thumbs + kills blue link styling
+   • Zero JS impact
+   • Zero layout bleed between pages
+   • Browse Index fully locked (thumb + typography)
 ============================================================ */
+
 
 /* ============================================================
    SHARED CARD BASE (STRUCTURE + SURFACE)
@@ -48,8 +48,9 @@
         filter 0.32s ease;
 }
 
+
 /* ------------------------------------------------------------
-   CARD SURFACE DEPTH (glass + CRT discipline)
+   CARD SURFACE DEPTH (GLASS + CRT DISCIPLINE)
 ------------------------------------------------------------ */
 
 .ccg-game-card::before,
@@ -77,6 +78,7 @@
     opacity: 0.55;
 }
 
+
 /* ------------------------------------------------------------
    CARD EDGE VIGNETTE
 ------------------------------------------------------------ */
@@ -97,6 +99,7 @@
             rgba(0,0,0,0.55) 100%
         );
 }
+
 
 /* ============================================================
    HOVER / FOCUS — CINEMATIC LIFT (W5 TUNED)
@@ -121,6 +124,7 @@
     will-change: transform, box-shadow;
 }
 
+
 /* ============================================================
    KEYBOARD FOCUS VISIBILITY (W5)
 ============================================================ */
@@ -135,6 +139,7 @@
         inset 0 0 0 2px rgba(var(--accent-rgb), 0.45),
         0 12px 30px rgba(0,0,0,0.80);
 }
+
 
 /* ============================================================
    MODE-AWARE GLOW BALANCE (FEATURED ONLY)
@@ -151,6 +156,7 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
         0 22px 52px rgba(0,0,0,0.92),
         0 0 42px rgba(255,41,224,0.42);
 }
+
 
 /* ============================================================
    MOBILE TAP FEEDBACK (NO FLOAT)
@@ -177,8 +183,9 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
     }
 }
 
+
 /* ============================================================
-   MASTER THUMBNAIL CONTRACT — ABSOLUTE (UNTOUCHED)
+   MASTER THUMBNAIL CONTRACT — GLOBAL (UNTOUCHED)
 ============================================================ */
 
 .ccg-card img,
@@ -189,6 +196,7 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
     width: 100%;
     height: auto;
 }
+
 
 /* ============================================================
    GENRES INDEX (STATIC TILES — SAFE)
@@ -221,288 +229,6 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
     text-overflow: ellipsis;
 }
 
-/* ============================================================
-   COLLECTIONS INDEX (DYNAMIC CARDS — SAFE)
-============================================================ */
-
-.ccg-page--collections-index .ccg-card {
-    max-width: 360px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-}
-
-.ccg-page--collections-index .ccg-card .ccg-card__thumb {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-}
-
-.ccg-page--collections-index .ccg-card .ccg-card__thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: center;
-}
-
-.ccg-page--collections-index .ccg-card > img {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: contain;
-    object-position: center;
-}
-
-/* ============================================================
-   W7.6.1 — BROWSE INDEX THUMBNAIL FRAME AUTHORITY (FINAL FIX)
-   Scope: .ccg-page--games-index ONLY
-   ------------------------------------------------------------
-   • Prevents horizontal banner stretch
-   • Prevents vertical squash
-   • Locks true 16:9 card thumbnails
-============================================================ */
-
-.ccg-page--games-index .ccg-game-card {
-    align-self: stretch;
-}
-
-.ccg-page--games-index .ccg-game-card__thumb {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-}
-
-.ccg-page--games-index .ccg-game-card__thumb img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-}
-
-/* ============================================================
-   CCG CARDS CSS — OMEGA UNIFIED CARD SYSTEM
-   Phase P38 — THUMBNAIL CONTAINMENT LOCK
-   Phase WOW-G3 — CARD BEAUTY PASS (LOCKED)
-   W5 — GLOBAL QA POLISH (SAFE)
-   W7.6 — BROWSE INDEX VISUAL LOCK (THUMB + TYPOGRAPHY)
-   ------------------------------------------------------------
-   • Preserves ALL thumbnail isolation contracts
-   • Improves focus accessibility
-   • Normalises hover energy
-   • Micro performance hygiene
-   • Browse Index: locks 16:9 thumbs + kills blue link styling
-============================================================ */
-
-/* ============================================================
-   SHARED CARD BASE (STRUCTURE + SURFACE)
-============================================================ */
-
-.ccg-game-card,
-.ccg-card,
-.ccg-genre-tile,
-.ccg-feature-card {
-    position: relative;
-
-    background:
-        radial-gradient(
-            120% 80% at 50% -10%,
-            rgba(80,90,160,0.22),
-            rgba(18,18,32,0.92) 55%,
-            rgba(0,0,0,0.98)
-        );
-
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.06);
-    overflow: hidden;
-
-    /* 🔒 CONTAINMENT SEAL */
-    contain: layout paint;
-
-    box-shadow:
-        0 10px 28px rgba(0,0,0,0.78),
-        inset 0 0 0 1px rgba(255,255,255,0.03);
-
-    transition:
-        transform 0.42s var(--ccg-ease-out),
-        box-shadow 0.46s var(--ccg-ease-out),
-        border-color 0.32s ease,
-        filter 0.32s ease;
-}
-
-/* ------------------------------------------------------------
-   CARD SURFACE DEPTH (glass + CRT discipline)
------------------------------------------------------------- */
-
-.ccg-game-card::before,
-.ccg-card::before,
-.ccg-genre-tile::before,
-.ccg-feature-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-
-    background:
-        radial-gradient(
-            120% 90% at 50% 0%,
-            rgba(255,255,255,0.06),
-            transparent 55%
-        ),
-        repeating-linear-gradient(
-            to bottom,
-            transparent 0px,
-            transparent 2px,
-            rgba(255,255,255,0.02) 3px
-        );
-
-    opacity: 0.55;
-}
-
-/* ------------------------------------------------------------
-   CARD EDGE VIGNETTE
------------------------------------------------------------- */
-
-.ccg-game-card::after,
-.ccg-card::after,
-.ccg-genre-tile::after,
-.ccg-feature-card::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-
-    background:
-        radial-gradient(
-            120% 90% at 50% 50%,
-            transparent 55%,
-            rgba(0,0,0,0.55) 100%
-        );
-}
-
-/* ============================================================
-   HOVER / FOCUS — CINEMATIC LIFT (W5 TUNED)
-============================================================ */
-
-.ccg-game-card:hover,
-.ccg-card:hover,
-.ccg-genre-tile:hover,
-.ccg-feature-card:hover,
-.ccg-game-card:focus-within,
-.ccg-card:focus-within,
-.ccg-genre-tile:focus-within,
-.ccg-feature-card:focus-within {
-    transform: translateY(-4px) scale(1.01);
-    filter: brightness(1.03);
-
-    box-shadow:
-        0 16px 40px rgba(0,0,0,0.86),
-        0 0 26px rgba(var(--accent-rgb), 0.26);
-
-    border-color: rgba(var(--accent-rgb), 0.32);
-    will-change: transform, box-shadow;
-}
-
-/* ============================================================
-   KEYBOARD FOCUS VISIBILITY (W5)
-============================================================ */
-
-.ccg-game-card:focus-visible,
-.ccg-card:focus-visible,
-.ccg-genre-tile:focus-visible,
-.ccg-feature-card:focus-visible {
-    outline: none;
-
-    box-shadow:
-        inset 0 0 0 2px rgba(var(--accent-rgb), 0.45),
-        0 12px 30px rgba(0,0,0,0.80);
-}
-
-/* ============================================================
-   MODE-AWARE GLOW BALANCE (FEATURED ONLY)
-============================================================ */
-
-body[data-ccg-mode="c64"] .ccg-feature-card:hover {
-    box-shadow:
-        0 22px 48px rgba(0,0,0,0.90),
-        0 0 36px rgba(0,170,255,0.34);
-}
-
-body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
-    box-shadow:
-        0 22px 52px rgba(0,0,0,0.92),
-        0 0 42px rgba(255,41,224,0.42);
-}
-
-/* ============================================================
-   MOBILE TAP FEEDBACK (NO FLOAT)
-============================================================ */
-
-@media (max-width: 768px) {
-    .ccg-game-card:hover,
-    .ccg-card:hover,
-    .ccg-genre-tile:hover,
-    .ccg-feature-card:hover {
-        transform: none;
-        filter: none;
-    }
-
-    .ccg-game-card:active,
-    .ccg-card:active,
-    .ccg-genre-tile:active,
-    .ccg-feature-card:active {
-        transform: scale(0.985);
-
-        box-shadow:
-            0 12px 26px rgba(0,0,0,0.86),
-            0 0 24px rgba(var(--accent-rgb), 0.32);
-    }
-}
-
-/* ============================================================
-   MASTER THUMBNAIL CONTRACT — ABSOLUTE (UNTOUCHED)
-============================================================ */
-
-.ccg-card img,
-.ccg-game-card img,
-.ccg-genre-tile img,
-.ccg-feature-card img {
-    display: block;
-    width: 100%;
-    height: auto;
-}
-
-/* ============================================================
-   GENRES INDEX (STATIC TILES — SAFE)
-============================================================ */
-
-.ccg-page--genres-index .ccg-genre-grid .ccg-card.ccg-genre-card {
-    max-width: 360px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-}
-
-.ccg-page--genres-index
-.ccg-genre-grid
-.ccg-card.ccg-genre-card > img {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: contain;
-    object-position: center;
-}
-
-.ccg-page--genres-index
-.ccg-genre-grid
-.ccg-card.ccg-genre-card > span {
-    padding: 12px 14px 14px;
-    font-size: 0.85rem;
-    letter-spacing: 0.08em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
 
 /* ============================================================
    COLLECTIONS INDEX (DYNAMIC CARDS — SAFE)
@@ -528,114 +254,58 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
     object-position: center;
 }
 
-.ccg-page--collections-index .ccg-card > img {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: contain;
-    object-position: center;
-}
-
-/* ============================================================
-   W7.6.1 — BROWSE INDEX THUMBNAIL FRAME AUTHORITY (FINAL FIX)
-   Scope: .ccg-page--games-index ONLY
-   ------------------------------------------------------------
-   • Prevents horizontal banner stretch
-   • Prevents vertical squash
-   • Locks true 16:9 card thumbnails
-============================================================ */
-
-.ccg-page--games-index .ccg-game-card {
-    align-self: stretch;
-}
-
-.ccg-page--games-index .ccg-game-card__thumb {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-}
-
-.ccg-page--games-index .ccg-game-card__thumb img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-}
 
 /* ============================================================
    W7.7 — BROWSE INDEX FINAL QA LOCK (THUMB + TYPOGRAPHY)
    Scope: .ccg-page--games-index ONLY
-   ------------------------------------------------------------
-   Locks:
-   • Card cannot become “banner sized” (height clamp)
-   • Card layout becomes deterministic (flex column)
-   • Blue/underlined links are permanently killed (all states)
-   • Title/meta styling cannot fall back to browser defaults
-   • Preserves all other page thumbnail contracts
 ============================================================ */
 
-/* Deterministic card layout (prevents strange inline sizing) */
 .ccg-page--games-index a.ccg-game-card {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    justify-content: flex-start;
 
     width: 100%;
-    max-width: 360px; /* keeps grid rhythm even if a layout goes wide */
+    max-width: 360px;
     margin: 0 auto;
 
     text-decoration: none !important;
     color: inherit !important;
 }
 
-/* Hard kill default link styling inside cards (all link states) */
+.ccg-page--games-index a.ccg-game-card *,
 .ccg-page--games-index a.ccg-game-card:link,
 .ccg-page--games-index a.ccg-game-card:visited,
 .ccg-page--games-index a.ccg-game-card:hover,
-.ccg-page--games-index a.ccg-game-card:active,
-.ccg-page--games-index a.ccg-game-card * {
+.ccg-page--games-index a.ccg-game-card:active {
     text-decoration: none !important;
-    color: inherit;
+    color: inherit !important;
 }
 
-/* Thumbnail: true 16:9 + height clamp so it can never explode */
 .ccg-page--games-index .ccg-game-card__thumb {
     position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
     overflow: hidden;
-
-    /* FINAL: prevents the “giant poster banner” state */
     max-height: 200px;
-
     border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 
-/* Image must fill the frame, not dictate layout */
 .ccg-page--games-index .ccg-game-card__thumb img {
     position: absolute;
     inset: 0;
-
     width: 100%;
     height: 100%;
-
     object-fit: cover;
     object-position: center;
-
-    transform: translateZ(0);
 }
 
-/* Body spacing + legibility */
 .ccg-page--games-index .ccg-game-card__body {
     padding: 12px 14px 14px;
 }
 
-/* Title: neon readable (never default blue) */
 .ccg-page--games-index .ccg-game-card__title {
-    margin: 0 0 6px 0;
+    margin: 0 0 6px;
 
     font-family: var(--ccg-font-main);
     font-size: 0.92rem;
@@ -649,35 +319,15 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
         0 14px 34px rgba(0,0,0,0.90);
 }
 
-/* Meta: calm, premium */
 .ccg-page--games-index .ccg-game-card__meta {
     font-family: var(--ccg-font-body);
     font-size: 0.84rem;
     letter-spacing: 0.06em;
-
     color: rgba(232,236,255,0.72) !important;
 }
 
-/* Hover typography response (Browse Index only) */
-@media (hover: hover) {
-    .ccg-page--games-index a.ccg-game-card:hover .ccg-game-card__title {
-        color: #fff !important;
-        text-shadow:
-            0 0 18px rgba(var(--accent-rgb),0.75),
-            0 0 42px rgba(var(--accent-rgb),0.45),
-            0 16px 38px rgba(0,0,0,0.92);
-    }
-}
-
-/* Mobile: slightly lower clamp */
 @media (max-width: 768px) {
-    .ccg-page--games-index a.ccg-game-card {
-        max-width: 340px;
-    }
     .ccg-page--games-index .ccg-game-card__thumb {
         max-height: 180px;
-    }
-    .ccg-page--games-index .ccg-game-card__body {
-        padding: 12px 12px 13px;
     }
 }
