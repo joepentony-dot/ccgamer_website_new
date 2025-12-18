@@ -2,8 +2,8 @@
    CCG SOCIAL ICONS — OMEGA FINAL (HOME FIX)
    ------------------------------------------------------------
    • Inner pages: inline header socials
-   • HOME page: socials + mode toggle BELOW nav
-   • Explicitly switches header to GRID on Home
+   • HOME page: forces header actions visible + laid out
+   • Uses HOME-scoped !important only (layout authority)
    • Zero HTML or JS changes
 ============================================================ */
 
@@ -70,49 +70,75 @@
 .ccg-socials__icon--paypal  { background-image: url("../icons/paypal.svg"); }
 
 /* ============================================================
-   🔥 HOME PAGE — GRID AUTHORITY FIX (THIS WAS MISSING)
+   🔥 HOME — FORCE ACTIONS ROW VISIBLE (OVERRIDES MASTER LOCKS)
 ============================================================ */
 
+/* Ensure header can actually grow to show row 2 (some masters fix height/overflow) */
+.ccg-page--home .ccg-header {
+    height: auto !important;
+    overflow: visible !important;
+}
+
 .ccg-page--home .ccg-header-inner {
-    display: grid; /* 🔑 CRITICAL FIX */
+    /* Master may be flex !important; this must win on HOME */
+    display: grid !important;
+
     grid-template-columns: auto 1fr;
     grid-template-rows: auto auto;
     row-gap: 10px;
+
     align-items: center;
+    height: auto !important;
+    overflow: visible !important;
+
+    /* Gives the second row breathing room if master pads tightly */
+    padding-bottom: 8px;
 }
 
-/* Brand */
+/* Logo stays left, top */
 .ccg-page--home .ccg-brand {
     grid-column: 1;
     grid-row: 1;
 }
 
-/* Nav */
+/* Nav stays top row */
 .ccg-page--home .ccg-nav {
     grid-column: 2;
     grid-row: 1;
 }
 
-/* Actions (MODE + SOCIALS) */
+/* Actions row under nav — must NOT be collapsed by master rules */
 .ccg-page--home .ccg-header-actions {
     grid-column: 2;
     grid-row: 2;
-    display: flex;
+
+    display: flex !important;
     align-items: center;
     justify-content: flex-end;
     gap: 12px;
+
+    height: auto !important;
+    min-height: 34px;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+
+    position: relative;
+    z-index: 20;
 }
 
-/* Safety visibility */
+/* Socials explicitly visible */
 .ccg-page--home .ccg-header-socials {
-    visibility: visible;
-    opacity: 1;
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
-/* Mobile */
+/* Mobile tidy */
 @media (max-width: 768px) {
     .ccg-page--home .ccg-header-actions {
         flex-wrap: wrap;
         gap: 8px;
+        justify-content: flex-end;
     }
 }
