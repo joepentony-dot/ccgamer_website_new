@@ -95,10 +95,7 @@
             <h2 class="game-section__title">Manuals &amp; Downloads</h2>
 
             <div class="game-downloads">
-
-                <!-- PRIMARY ACTIONS -->
                 <div class="game-downloads__primary">
-
                     <a id="gameManualBtn"
                        class="ccg-btn ccg-btn--primary ccg-btn--icon ccg-btn--pdf"
                        href="#"
@@ -114,10 +111,8 @@
                         <span class="ccg-btn__icon" aria-hidden="true"></span>
                         <span class="ccg-btn__label">Play / Download</span>
                     </a>
-
                 </div>
 
-                <!-- SECONDARY / ARCHIVE -->
                 <div class="game-downloads__secondary" id="gameArchiveLinks" hidden>
                     <span class="game-downloads__archive-label">Archive reference:</span>
 
@@ -133,14 +128,35 @@
                     Manuals and game files are provided for archival and educational purposes.
                     Please ensure you own the original media where required.
                 </p>
-
             </div>
         </section>
 
-        <!-- RELATED -->
+        <!-- RELATED GAMES (CAROUSEL STRUCTURE) -->
         <section class="game-section game-section--related">
-            <h2 class="game-section__title"></h2>
-            <div id="relatedGamesGrid" class="ccg-cards-grid"></div>
+            <h2 class="game-section__title" id="relatedGamesTitle"></h2>
+
+            <div class="related-carousel">
+
+                <button class="related-carousel__nav related-carousel__nav--prev"
+                        type="button"
+                        aria-label="Previous games">
+                    ‹
+                </button>
+
+                <div class="related-carousel__viewport">
+                    <div id="relatedGamesGrid"
+                         class="related-carousel__track">
+                        <!-- Cards injected here -->
+                    </div>
+                </div>
+
+                <button class="related-carousel__nav related-carousel__nav--next"
+                        type="button"
+                        aria-label="Next games">
+                    ›
+                </button>
+
+            </div>
         </section>
 
     </main>
