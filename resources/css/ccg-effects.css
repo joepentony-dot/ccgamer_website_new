@@ -1,6 +1,6 @@
 /* ============================================================
    CCG-EFFECTS.CSS — UI MICRO POLISH
-   Phase P37 — BUTTON PARITY PASS (OMEGA SAFE)
+   Phase P37+ — GLOBAL CINEMATIC COHESION PASS (OMEGA SAFE)
    ------------------------------------------------------------
    Scope:
    • Buttons only (.ccg-btn)
@@ -34,7 +34,10 @@
         rgba(var(--accent-rgb), 0.25)
     );
     border-radius: 8px;
-    box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.35);
+
+    box-shadow:
+        0 0 8px rgba(var(--accent-rgb), 0.35),
+        inset 0 0 0 1px rgba(255,255,255,0.10);
 }
 
 *::-webkit-scrollbar-thumb:hover {
@@ -45,14 +48,13 @@
     );
 }
 
+
 /* ============================================================
-   ============================================================
    BUTTON PARITY PASS — GLOBAL
    ------------------------------------------------------------
    Applies to:
    • <a class="ccg-btn">
    • <button class="ccg-btn">
-   ============================================================
 ============================================================ */
 
 /* ------------------------------------------------------------
@@ -65,10 +67,11 @@
 
     transition:
         transform 0.28s var(--ccg-ease-out),
-        box-shadow 0.34s var(--ccg-ease-out),
+        box-shadow 0.36s var(--ccg-ease-out),
         filter 0.28s ease,
         opacity 0.22s ease;
 }
+
 
 /* ------------------------------------------------------------
    HOVER — DESKTOP & POINTER DEVICES
@@ -79,21 +82,24 @@
     filter: brightness(1.05);
 
     box-shadow:
-        0 10px 22px rgba(0,0,0,0.55),
-        0 0 16px rgba(var(--accent-rgb), 0.35);
+        0 12px 28px rgba(0,0,0,0.58),
+        0 0 18px rgba(var(--accent-rgb), 0.30);
 }
 
+
 /* ------------------------------------------------------------
-   KEYBOARD FOCUS — ACCESSIBLE BUT STYLED
+   KEYBOARD FOCUS — ACCESSIBLE BUT CINEMATIC
 ------------------------------------------------------------ */
 
 .ccg-btn:focus-visible {
     outline: none;
 
     box-shadow:
-        0 0 0 2px rgba(var(--accent-rgb), 0.65),
-        0 0 18px rgba(var(--accent-rgb), 0.45);
+        0 0 0 2px rgba(var(--accent-rgb), 0.55),
+        0 0 20px rgba(var(--accent-rgb), 0.38),
+        0 12px 30px rgba(0,0,0,0.65);
 }
+
 
 /* ------------------------------------------------------------
    ACTIVE / TAP — TOUCH PARITY
@@ -104,9 +110,10 @@
     filter: brightness(0.98);
 
     box-shadow:
-        0 6px 14px rgba(0,0,0,0.6),
-        0 0 14px rgba(var(--accent-rgb), 0.3);
+        0 6px 16px rgba(0,0,0,0.65),
+        0 0 14px rgba(var(--accent-rgb), 0.28);
 }
+
 
 /* ------------------------------------------------------------
    DISABLED / INACTIVE SAFETY
@@ -116,8 +123,9 @@
 .ccg-btn.is-disabled {
     opacity: 0.55;
     pointer-events: none;
-    filter: grayscale(0.2);
+    filter: grayscale(0.25);
 }
+
 
 /* ------------------------------------------------------------
    MOBILE — NO HOVER LIFT, TAP ONLY
@@ -133,8 +141,9 @@
 
     .ccg-btn:active {
         transform: scale(0.97);
+
         box-shadow:
-            0 8px 18px rgba(0,0,0,0.6),
-            0 0 16px rgba(var(--accent-rgb), 0.35);
+            0 8px 18px rgba(0,0,0,0.65),
+            0 0 16px rgba(var(--accent-rgb), 0.32);
     }
 }
