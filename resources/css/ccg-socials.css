@@ -5,6 +5,7 @@
    • HOME page: socials + mode toggle move BELOW nav
    • Zero overlap
    • No HTML or JS changes
+   • Fixes HOME visibility via overflow + z-index
 ============================================================ */
 
 /* ============================================================
@@ -17,6 +18,7 @@
     gap: 0.65rem;
     flex-wrap: nowrap;
     min-width: 0;
+    flex-shrink: 0;
 }
 
 .ccg-header-socials a {
@@ -74,13 +76,16 @@
 .ccg-socials__icon--paypal  { background-image: url("../icons/paypal.svg"); }
 
 /* ============================================================
-   🔥 HOME PAGE FIX — MOVE ACTIONS BELOW NAV
+   🔥 HOME PAGE FIX — MOVE ACTIONS BELOW NAV (VISIBLE)
 ============================================================ */
 
 .ccg-page--home .ccg-header-inner {
     grid-template-columns: auto 1fr;
     grid-template-rows: auto auto;
     row-gap: 10px;
+
+    /* 🔑 CRITICAL: allow header children to render */
+    overflow: visible;
 }
 
 /* Logo stays left */
@@ -95,13 +100,22 @@
     grid-row: 1;
 }
 
-/* Actions move UNDER nav */
+/* Actions move UNDER nav — and ABOVE overlays */
 .ccg-page--home .ccg-header-actions {
     grid-column: 2;
     grid-row: 2;
 
     justify-content: flex-end;
     padding-top: 6px;
+
+    position: relative;
+    z-index: 5; /* Above grid, starfield, CRT */
+}
+
+/* Explicitly ensure socials are visible */
+.ccg-page--home .ccg-header-socials {
+    opacity: 1;
+    visibility: visible;
 }
 
 /* Keep them tidy on small screens */
