@@ -123,7 +123,6 @@
 
             <div class="game-hero__inner">
 
-                <!-- BOX ART / THUMB -->
                 <div class="game-hero__media">
                     <img id="gameHeroThumb"
                          class="game-hero__thumb"
@@ -131,7 +130,6 @@
                          loading="lazy">
                 </div>
 
-                <!-- TITLE + META -->
                 <div class="game-hero__content">
                     <h1 id="gameHeroTitle"></h1>
 
@@ -192,6 +190,35 @@
         </p>
     </footer>
 
+</div>
+
+<!-- =========================================================
+     MANUAL MODAL — HTML HOOK (SG-E1.2)
+     Dormant until activated by JS
+========================================================= -->
+
+<div id="manualModal"
+     class="ccg-modal ccg-modal--manual"
+     aria-hidden="true">
+
+    <div class="ccg-modal-content">
+
+        <div class="ccg-modal-header">
+            <span id="manualModalTitle">Game Manual</span>
+            <span class="ccg-modal-close"
+                  role="button"
+                  aria-label="Close manual viewer">
+                ×
+            </span>
+        </div>
+
+        <div class="ccg-modal-body">
+            <iframe id="manualPdfFrame"
+                    class="ccg-pdf-frame"
+                    loading="lazy"></iframe>
+        </div>
+
+    </div>
 </div>
 
 <!-- JS -->
