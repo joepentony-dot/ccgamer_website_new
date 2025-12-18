@@ -1,14 +1,13 @@
 /* ============================================================
-   CCG GAMES LIBRARY — OMEGA WOW INDEX
-   Phase W7.8 — FINAL LOGIC LOCK
+   CCG GAMES LIBRARY — W7 ACCORDION LOGIC FIX (FINAL)
    ------------------------------------------------------------
-   • A–Z accordion with numeric (#) bucket
-   • TRUE open / close behaviour
+   • True toggle accordion (open / close)
    • Single section open at a time
    • Clicking open section closes it
-   • Spine + accordion always in sync
-   • Search rebuilds accordion safely
-   • ZERO impact on other pages
+   • Spine + accordion fully synced
+   • Close returns scroll to top
+   • Search-safe rebuild logic
+   • ZERO visual or card impact
 ============================================================ */
 
 let CCG_ALL_GAMES = [];
@@ -28,7 +27,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         restoreAccordionState();
 
     } catch (err) {
-        console.error("[CCG] Games index failed:", err);
+        console.error("[CCG] Games index load failed:", err);
     }
 });
 
@@ -53,11 +52,14 @@ function groupGamesByLetter(games) {
         const title = (game.sorttitle || game.title || "").trim();
         if (!title) return;
 
-        let letter = title.charAt(0).toUpperCase();
-        if (letter >= "0" && letter <= "9") letter = "#";
+        let firstChar = title.charAt(0).toUpperCase();
 
-        if (!groups[letter]) groups[letter] = [];
-        groups[letter].push(game);
+        if (firstChar >= "0" && firstChar <= "9") {
+            firstChar = "#";
+        }
+
+        if (!groups[firstChar]) groups[firstChar] = [];
+        groups[firstChar].push(game);
     });
 
     Object.keys(groups).forEach(letter => {
@@ -70,7 +72,7 @@ function groupGamesByLetter(games) {
 }
 
 /* ============================================================
-   ALPHA SPINE (LETTERS ONLY)
+   A–Z SPINE (LETTERS ONLY)
 ============================================================ */
 
 function buildAlphaSpine(groups) {
@@ -91,7 +93,10 @@ function buildAlphaSpine(groups) {
         btn.textContent = letter;
         btn.dataset.letter = letter;
 
-        btn.addEventListener("click", () => toggleAccordion(letter));
+        btn.addEventListener("click", () => {
+            toggleAccordion(letter);
+        });
+
         strip.appendChild(btn);
     });
 }
@@ -135,7 +140,7 @@ function buildAccordion(groups) {
 }
 
 /* ============================================================
-   ACCORDION INTERACTION (FINAL LOCK)
+   ACCORDION INTERACTION — FINAL LOGIC
 ============================================================ */
 
 function attachAccordionEvents() {
@@ -148,7 +153,7 @@ function attachAccordionEvents() {
 
 function toggleAccordion(letter) {
     const sections = document.querySelectorAll(".games-accordion__section");
-    const spineBtns = document.querySelectorAll(".games-alpha__btn");
+    const spineButtons = document.querySelectorAll("#gamesAlphaStrip button");
 
     let opened = false;
 
@@ -164,24 +169,38 @@ function toggleAccordion(letter) {
         }
     });
 
-    spineBtns.forEach(btn => {
+    spineButtons.forEach(btn => {
         btn.classList.toggle("active", opened && btn.dataset.letter === letter);
     });
 
     if (opened) {
-        sessionStorage.setItem(ACCORDION_STATE_KEY, letter);
-        document
-            .querySelector(`.games-accordion__section[data-letter="${letter}"]`)
-            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+        saveAccordionState(letter);
+
+        const target = document.querySelector(
+            `.games-accordion__section[data-letter="${letter}"]`
+        );
+
+        if (target) {
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
     } else {
-        sessionStorage.removeItem(ACCORDION_STATE_KEY);
+        clearAccordionState();
         scrollToTop();
     }
 }
 
 /* ============================================================
-   STATE RESTORE
+   STATE
 ============================================================ */
+
+function saveAccordionState(letter) {
+    sessionStorage.setItem(ACCORDION_STATE_KEY, letter);
+}
+
+function clearAccordionState() {
+    sessionStorage.removeItem(ACCORDION_STATE_KEY);
+}
 
 function restoreAccordionState() {
     const letter = sessionStorage.getItem(ACCORDION_STATE_KEY);
@@ -189,41 +208,50 @@ function restoreAccordionState() {
 }
 
 /* ============================================================
-   SEARCH (SAFE REBUILD)
+   SCROLL CONTROL
+============================================================ */
+
+function scrollToTop() {
+    const anchor =
+        document.querySelector(".games-tools") ||
+        document.querySelector(".games-hero") ||
+        document.body;
+
+    anchor.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+/* ============================================================
+   SEARCH (UNCHANGED)
 ============================================================ */
 
 function setupSearch(allGames) {
     const input = document.getElementById("gamesSearchInput");
     const clearBtn = document.getElementById("gamesSearchClear");
-
     if (!input) return;
 
     input.addEventListener("input", () => {
-        const q = input.value.toLowerCase();
-        const filtered = allGames.filter(g =>
-            (g.title || "").toLowerCase().includes(q)
-        );
-        buildGamesIndex(filtered);
+        const query = input.value.toLowerCase();
+        filterGames(query, allGames);
     });
 
-    clearBtn?.addEventListener("click", () => {
-        input.value = "";
-        buildGamesIndex(allGames);
-    });
+    if (clearBtn) {
+        clearBtn.addEventListener("click", () => {
+            input.value = "";
+            filterGames("", allGames);
+        });
+    }
+}
+
+function filterGames(query, allGames) {
+    const filtered = allGames.filter(game =>
+        (game.title || "").toLowerCase().includes(query)
+    );
+
+    buildGamesIndex(filtered);
 }
 
 /* ============================================================
-   SCROLL CONTROL
-============================================================ */
-
-function scrollToTop() {
-    document
-        .querySelector(".games-tools")
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
-}
-
-/* ============================================================
-   CARD RENDER (THUMB SAFE)
+   CARD RENDER (UNCHANGED)
 ============================================================ */
 
 function renderGameCard(game) {
@@ -233,7 +261,7 @@ function renderGameCard(game) {
         <a href="game.html?id=${encodeURIComponent(game.id)}"
            class="ccg-game-card">
             <div class="ccg-game-card__thumb">
-                <img src="${thumb}" alt="${game.title}" loading="lazy">
+                <img src="${thumb}" alt="${game.title}">
             </div>
             <div class="ccg-game-card__body">
                 <h3 class="ccg-game-card__title">${game.title}</h3>
