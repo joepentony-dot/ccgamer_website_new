@@ -1,14 +1,14 @@
 /* ============================================================
    CCG GAMES LIBRARY — OMEGA WOW INDEX
-   W7.5 — LOGIC LOCK (SAFE)
+   Phase W7.8 — FINAL LOGIC LOCK
    ------------------------------------------------------------
-   • Numeric titles grouped under '#'
-   • Spine shows LETTERS ONLY (no counts)
-   • TRUE toggle accordion (open / close)
-   • Single-open section enforcement
-   • Close = return to top
-   • Active spine sync
-   • HARD JS collapse/expand (no reliance on CSS)
+   • A–Z accordion with numeric (#) bucket
+   • TRUE open / close behaviour
+   • Single section open at a time
+   • Clicking open section closes it
+   • Spine + accordion always in sync
+   • Search rebuilds accordion safely
+   • ZERO impact on other pages
 ============================================================ */
 
 let CCG_ALL_GAMES = [];
@@ -25,12 +25,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         buildGamesIndex(CCG_ALL_GAMES);
         setupSearch(CCG_ALL_GAMES);
-
-        // Restore after first build
         restoreAccordionState();
 
     } catch (err) {
-        console.error("[CCG] Games index load failed:", err);
+        console.error("[CCG] Games index failed:", err);
     }
 });
 
@@ -40,12 +38,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 function buildGamesIndex(games) {
     const grouped = groupGamesByLetter(games);
-
     buildAlphaSpine(grouped);
     buildAccordion(grouped);
-
-    // After rebuild (e.g., search), try to restore if possible
-    restoreAccordionState(true);
 }
 
 /* ============================================================
@@ -59,15 +53,11 @@ function groupGamesByLetter(games) {
         const title = (game.sorttitle || game.title || "").trim();
         if (!title) return;
 
-        let firstChar = title.charAt(0).toUpperCase();
+        let letter = title.charAt(0).toUpperCase();
+        if (letter >= "0" && letter <= "9") letter = "#";
 
-        // ALL numeric titles → '#'
-        if (firstChar >= "0" && firstChar <= "9") {
-            firstChar = "#";
-        }
-
-        if (!groups[firstChar]) groups[firstChar] = [];
-        groups[firstChar].push(game);
+        if (!groups[letter]) groups[letter] = [];
+        groups[letter].push(game);
     });
 
     Object.keys(groups).forEach(letter => {
@@ -77,14 +67,6 @@ function groupGamesByLetter(games) {
     });
 
     return groups;
-}
-
-function getSortedLetters(groups) {
-    return Object.keys(groups).sort((a, b) => {
-        if (a === "#") return -1;
-        if (b === "#") return 1;
-        return a.localeCompare(b);
-    });
 }
 
 /* ============================================================
@@ -97,7 +79,11 @@ function buildAlphaSpine(groups) {
 
     strip.innerHTML = "";
 
-    const letters = getSortedLetters(groups);
+    const letters = Object.keys(groups).sort((a, b) => {
+        if (a === "#") return -1;
+        if (b === "#") return 1;
+        return a.localeCompare(b);
+    });
 
     letters.forEach(letter => {
         const btn = document.createElement("button");
@@ -105,10 +91,7 @@ function buildAlphaSpine(groups) {
         btn.textContent = letter;
         btn.dataset.letter = letter;
 
-        btn.addEventListener("click", () => {
-            toggleAccordion(letter, { scroll: true });
-        });
-
+        btn.addEventListener("click", () => toggleAccordion(letter));
         strip.appendChild(btn);
     });
 }
@@ -123,7 +106,11 @@ function buildAccordion(groups) {
 
     container.innerHTML = "";
 
-    const letters = getSortedLetters(groups);
+    const letters = Object.keys(groups).sort((a, b) => {
+        if (a === "#") return -1;
+        if (b === "#") return 1;
+        return a.localeCompare(b);
+    });
 
     letters.forEach(letter => {
         const section = document.createElement("section");
@@ -131,10 +118,10 @@ function buildAccordion(groups) {
         section.dataset.letter = letter;
 
         section.innerHTML = `
-            <button class="games-accordion__header" data-letter="${letter}" aria-expanded="false">
+            <button class="games-accordion__header" data-letter="${letter}">
                 <span class="games-accordion__letter">${letter}</span>
             </button>
-            <div class="games-accordion__content" style="display:none;">
+            <div class="games-accordion__content">
                 <div class="games-grid">
                     ${groups[letter].map(renderGameCard).join("")}
                 </div>
@@ -148,133 +135,61 @@ function buildAccordion(groups) {
 }
 
 /* ============================================================
-   ACCORDION INTERACTION (LOCKED)
+   ACCORDION INTERACTION (FINAL LOCK)
 ============================================================ */
 
 function attachAccordionEvents() {
-    const headers = document.querySelectorAll(".games-accordion__header");
-
-    headers.forEach(header => {
+    document.querySelectorAll(".games-accordion__header").forEach(header => {
         header.addEventListener("click", () => {
-            toggleAccordion(header.dataset.letter, { scroll: false });
+            toggleAccordion(header.dataset.letter);
         });
     });
 }
 
-/**
- * Toggle logic:
- * - If target is closed => open it, close others
- * - If target is open   => close all + return to top
- */
-function toggleAccordion(letter, opts = {}) {
-    const { scroll = false, silent = false } = opts;
-
+function toggleAccordion(letter) {
     const sections = document.querySelectorAll(".games-accordion__section");
-    if (!sections.length) return;
+    const spineBtns = document.querySelectorAll(".games-alpha__btn");
 
-    const target = document.querySelector(`.games-accordion__section[data-letter="${letter}"]`);
-    const targetIsOpen = !!(target && target.classList.contains("is-open"));
+    let opened = false;
 
-    if (!target) {
-        // Stored letter no longer exists after filtering
-        clearAccordionState();
-        syncAlphaActive(null);
-        return;
-    }
-
-    if (targetIsOpen) {
-        // CLOSE ALL
-        closeAllSections();
-        clearAccordionState();
-        syncAlphaActive(null);
-
-        if (!silent) scrollToTop();
-        return;
-    }
-
-    // OPEN TARGET + CLOSE OTHERS
     sections.forEach(section => {
         const isTarget = section.dataset.letter === letter;
-        setSectionOpen(section, isTarget);
+        const isOpen = section.classList.contains("is-open");
+
+        if (isTarget && !isOpen) {
+            section.classList.add("is-open");
+            opened = true;
+        } else {
+            section.classList.remove("is-open");
+        }
     });
 
-    saveAccordionState(letter);
-    syncAlphaActive(letter);
+    spineBtns.forEach(btn => {
+        btn.classList.toggle("active", opened && btn.dataset.letter === letter);
+    });
 
-    if (!silent && scroll) {
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (opened) {
+        sessionStorage.setItem(ACCORDION_STATE_KEY, letter);
+        document
+            .querySelector(`.games-accordion__section[data-letter="${letter}"]`)
+            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+        sessionStorage.removeItem(ACCORDION_STATE_KEY);
+        scrollToTop();
     }
 }
 
-function closeAllSections() {
-    const sections = document.querySelectorAll(".games-accordion__section");
-    sections.forEach(section => setSectionOpen(section, false));
-}
-
-function setSectionOpen(section, open) {
-    section.classList.toggle("is-open", open);
-
-    const header = section.querySelector(".games-accordion__header");
-    const content = section.querySelector(".games-accordion__content");
-
-    if (header) header.setAttribute("aria-expanded", open ? "true" : "false");
-    if (content) content.style.display = open ? "" : "none";
-}
-
-function syncAlphaActive(letterOrNull) {
-    const spineButtons = document.querySelectorAll("#gamesAlphaStrip button");
-    spineButtons.forEach(btn => {
-        btn.classList.toggle("active", !!letterOrNull && btn.dataset.letter === letterOrNull);
-    });
-}
-
 /* ============================================================
-   STATE
+   STATE RESTORE
 ============================================================ */
 
-function saveAccordionState(letter) {
-    sessionStorage.setItem(ACCORDION_STATE_KEY, letter);
-}
-
-function clearAccordionState() {
-    sessionStorage.removeItem(ACCORDION_STATE_KEY);
-}
-
-/**
- * restoreAfterRebuild:
- * - if true, only restore if the stored letter exists in the newly built DOM
- * - avoids opening random letters after filtering
- */
-function restoreAccordionState(restoreAfterRebuild = false) {
+function restoreAccordionState() {
     const letter = sessionStorage.getItem(ACCORDION_STATE_KEY);
-    if (!letter) return;
-
-    const exists = document.querySelector(`.games-accordion__section[data-letter="${letter}"]`);
-    if (!exists) {
-        clearAccordionState();
-        syncAlphaActive(null);
-        return;
-    }
-
-    // Silent open (no scroll jump during rebuild / load)
-    toggleAccordion(letter, { scroll: false, silent: restoreAfterRebuild });
+    if (letter) toggleAccordion(letter);
 }
 
 /* ============================================================
-   SCROLL CONTROL
-============================================================ */
-
-function scrollToTop() {
-    const anchor =
-        document.querySelector(".games-tools") ||
-        document.querySelector(".games-hero") ||
-        document.body;
-
-    anchor.scrollIntoView({ behavior: "smooth", block: "start" });
-}
-
-/* ============================================================
-   SEARCH (UNCHANGED MECHANICS)
+   SEARCH (SAFE REBUILD)
 ============================================================ */
 
 function setupSearch(allGames) {
@@ -284,28 +199,31 @@ function setupSearch(allGames) {
     if (!input) return;
 
     input.addEventListener("input", () => {
-        const query = input.value.toLowerCase();
-        filterGames(query, allGames);
+        const q = input.value.toLowerCase();
+        const filtered = allGames.filter(g =>
+            (g.title || "").toLowerCase().includes(q)
+        );
+        buildGamesIndex(filtered);
     });
 
-    if (clearBtn) {
-        clearBtn.addEventListener("click", () => {
-            input.value = "";
-            filterGames("", allGames);
-        });
-    }
-}
-
-function filterGames(query, allGames) {
-    const filtered = allGames.filter(game =>
-        (game.title || "").toLowerCase().includes(query)
-    );
-
-    buildGamesIndex(filtered);
+    clearBtn?.addEventListener("click", () => {
+        input.value = "";
+        buildGamesIndex(allGames);
+    });
 }
 
 /* ============================================================
-   CARD RENDER (UNCHANGED)
+   SCROLL CONTROL
+============================================================ */
+
+function scrollToTop() {
+    document
+        .querySelector(".games-tools")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+/* ============================================================
+   CARD RENDER (THUMB SAFE)
 ============================================================ */
 
 function renderGameCard(game) {
@@ -315,7 +233,7 @@ function renderGameCard(game) {
         <a href="game.html?id=${encodeURIComponent(game.id)}"
            class="ccg-game-card">
             <div class="ccg-game-card__thumb">
-                <img src="${thumb}" alt="${game.title}">
+                <img src="${thumb}" alt="${game.title}" loading="lazy">
             </div>
             <div class="ccg-game-card__body">
                 <h3 class="ccg-game-card__title">${game.title}</h3>
