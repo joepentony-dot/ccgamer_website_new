@@ -228,3 +228,71 @@ body[data-ccg-mode="c64"] {
 body[data-ccg-mode="amiga"] {
     --accent-rgb: 255,41,224;
 }
+
+/* ============================================================
+   NAV SCROLL HINT POLISH — OMEGA SAFE (FINAL)
+   ------------------------------------------------------------
+   Purpose:
+   • Visually indicate horizontal nav scrolling
+   • Zero layout changes
+   • Zero JS
+   • Zero HTML edits
+   • Applies to ALL pages safely
+============================================================ */
+
+/* Wrap context */
+.ccg-nav {
+    position: relative;
+}
+
+/* Left & right fade indicators */
+.ccg-nav::before,
+.ccg-nav::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 28px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Left fade */
+.ccg-nav::before {
+    left: 0;
+    background: linear-gradient(
+        to right,
+        rgba(0,0,0,0.85),
+        rgba(0,0,0,0.45),
+        rgba(0,0,0,0)
+    );
+}
+
+/* Right fade */
+.ccg-nav::after {
+    right: 0;
+    background: linear-gradient(
+        to left,
+        rgba(0,0,0,0.85),
+        rgba(0,0,0,0.45),
+        rgba(0,0,0,0)
+    );
+}
+
+/* Prevent fades when nav fits fully */
+.ccg-nav__list {
+    padding-inline: 28px;
+}
+
+/* Mobile: slightly stronger cue */
+@media (max-width: 768px) {
+    .ccg-nav::before,
+    .ccg-nav::after {
+        width: 34px;
+    }
+
+    .ccg-nav__list {
+        padding-inline: 34px;
+    }
+}
+
