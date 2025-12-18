@@ -1,43 +1,51 @@
 /* ============================================================
    GENRE.CSS — OMEGA CINEMATIC WOW
-   Phase W8 — GENRE EXHIBIT GRADE (FINAL)
+   Phase W8 — FINAL (LOCK AFTER APPLY)
    ------------------------------------------------------------
    • Genre index + single genre pages only
-   • CSS-only
-   • No JS / no card-builder impact
-   • Curated, authoritative, cinematic
+   • CSS-only (NO JS)
+   • Zero impact on cards elsewhere
+   • Calm, cinematic, premium authority
 ============================================================ */
 
+/* ============================================================
+   PAGE SCOPE
+============================================================ */
+
+.ccg-page--genres-index .ccg-main,
+.ccg-page--genre-single .ccg-main {
+    padding-top: 12px;
+}
 
 /* ============================================================
-   GENRE HERO — EXHIBIT GATEWAY
+   GENRE HERO — CINEMATIC AUTHORITY
 ============================================================ */
 
 .ccg-genre-hero {
     position: relative;
-    border-radius: 24px;
+    border-radius: 22px;
     overflow: hidden;
     isolation: isolate;
 
     background:
         radial-gradient(
-            ellipse at 20% 18%,
-            rgba(var(--accent-rgb), 0.28),
-            transparent 60%
+            ellipse at 18% 14%,
+            rgba(var(--accent-rgb), 0.22),
+            transparent 58%
         ),
         linear-gradient(
             145deg,
-            rgba(0,0,0,0.96),
-            rgba(14,14,34,0.92),
-            rgba(0,0,0,0.98)
+            rgba(0,0,0,0.94),
+            rgba(12,12,32,0.88),
+            rgba(0,0,0,0.96)
         );
 
     box-shadow:
-        0 38px 96px rgba(0,0,0,0.92),
-        inset 0 0 0 1px rgba(255,255,255,0.08);
+        0 32px 84px rgba(0,0,0,0.90),
+        inset 0 0 0 1px rgba(255,255,255,0.07);
 }
 
-/* Vignette + scanline discipline */
+/* Scanline + vignette parity */
 .ccg-genre-hero::after {
     content: "";
     position: absolute;
@@ -48,188 +56,116 @@
     background:
         radial-gradient(
             ellipse at center,
-            transparent 48%,
-            rgba(0,0,0,0.68) 100%
+            transparent 52%,
+            rgba(0,0,0,0.62) 100%
         ),
         repeating-linear-gradient(
             to bottom,
-            rgba(255,255,255,0.020),
-            rgba(255,255,255,0.020) 1px,
+            rgba(255,255,255,0.022),
+            rgba(255,255,255,0.022) 1px,
             transparent 1px,
             transparent 4px
         );
 
-    opacity: 0.26;
+    opacity: 0.24;
 }
 
-/* Inner layout */
+/* Hero inner spacing */
 .ccg-genre-hero__inner {
     position: relative;
     z-index: 2;
-    padding: 64px 56px 58px;
-
-    text-shadow:
-        0 2px 14px rgba(0,0,0,0.85);
+    padding: 58px 52px 54px;
 }
 
+/* Mobile discipline */
 @media (max-width: 768px) {
     .ccg-genre-hero__inner {
-        padding: 44px 22px 40px;
+        padding: 42px 20px 38px;
     }
 }
 
-/* Title authority */
+/* Title confidence */
 .ccg-genre-hero__title {
-    font-family: var(--ccg-font-main);
-    letter-spacing: 0.14em;
-    line-height: 1.1;
+    letter-spacing: 0.12em;
+    line-height: 1.15;
 
     text-shadow:
-        0 0 18px rgba(var(--accent-rgb),0.55),
-        0 22px 52px rgba(0,0,0,0.92);
+        0 20px 46px rgba(0,0,0,0.90),
+        0 0 26px rgba(var(--accent-rgb),0.38);
 }
 
-/* Tagline clarity */
+/* Tagline readability */
 .ccg-genre-hero__tagline {
-    max-width: 64ch;
-    margin-top: 14px;
-
-    opacity: 0.94;
-    line-height: 1.55;
+    max-width: 62ch;
+    opacity: 0.92;
 
     text-shadow:
-        0 2px 12px rgba(0,0,0,0.78);
+        0 2px 12px rgba(0,0,0,0.75);
 }
-
 
 /* ============================================================
-   GENRE GRID — GALLERY RHYTHM
+   GENRE GRID — STRUCTURAL RHYTHM
 ============================================================ */
 
 .ccg-genre-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 26px;
     align-items: stretch;
 }
 
-/* Desktop: museum spacing */
+/* Desktop breathing room */
 @media (min-width: 1024px) {
     .ccg-genre-grid {
-        gap: 40px;
+        gap: 34px;
     }
 }
 
-
 /* ============================================================
-   GENRE CARDS — EXHIBIT FRAMES
+   GENRE CARD TONE (NO STRUCTURAL OVERRIDE)
 ============================================================ */
 
-.ccg-genre-card,
 .ccg-genre-grid .ccg-card {
-    position: relative;
-    border-radius: 20px;
-    overflow: hidden;
-    isolation: isolate;
-
-    background:
-        radial-gradient(
-            120% 80% at 50% -10%,
-            rgba(80,90,160,0.22),
-            rgba(18,18,32,0.94) 55%,
-            rgba(0,0,0,0.98)
-        );
-
-    box-shadow:
-        0 14px 36px rgba(0,0,0,0.78),
-        inset 0 0 0 1px rgba(255,255,255,0.06);
-
     transition:
-        transform 0.36s ease,
-        box-shadow 0.36s ease,
-        filter 0.36s ease;
+        transform 0.32s ease,
+        box-shadow 0.32s ease;
 }
-
-/* Media discipline — framed, not zoomed */
-.ccg-genre-card img,
-.ccg-genre-grid .ccg-card img {
-    width: 100%;
-    height: auto;
-    display: block;
-
-    object-fit: contain;
-    background: rgba(0,0,0,0.35);
-}
-
-/* Title plaque */
-.ccg-genre-card span,
-.ccg-genre-grid .ccg-card span {
-    display: block;
-    padding: 16px 18px 18px;
-
-    font-family: var(--ccg-font-main);
-    font-size: 0.95rem;
-    letter-spacing: 0.12em;
-    line-height: 1.25;
-
-    text-align: center;
-
-    color: rgba(255,255,255,0.95);
-
-    text-shadow:
-        0 0 14px rgba(var(--accent-rgb),0.45),
-        0 14px 34px rgba(0,0,0,0.88);
-}
-
 
 /* ============================================================
-   HOVER / FOCUS — EXHIBIT ACTIVATION
+   HOVER / FOCUS — RESTRAINED WOW
 ============================================================ */
 
 @media (hover: hover) {
 
-    .ccg-genre-card:hover,
-    .ccg-genre-card:focus-within,
     .ccg-genre-grid .ccg-card:hover,
     .ccg-genre-grid .ccg-card:focus-within {
-        transform: translateY(-4px);
+        transform: translateY(-3px);
 
         box-shadow:
-            inset 0 0 0 1px rgba(var(--accent-rgb),0.45),
-            0 0 26px rgba(var(--accent-rgb),0.35),
-            0 26px 58px rgba(0,0,0,0.86);
-
-        filter: brightness(1.04);
-    }
-
-    .ccg-genre-card:hover img,
-    .ccg-genre-grid .ccg-card:hover img {
-        box-shadow:
-            inset 0 0 0 1px rgba(var(--accent-rgb),0.55);
+            0 0 0 1px rgba(var(--accent-rgb),0.38),
+            0 0 22px rgba(var(--accent-rgb),0.30),
+            0 24px 52px rgba(0,0,0,0.78);
     }
 }
 
 /* Touch devices — no fake hover */
 @media (hover: none) {
-    .ccg-genre-card:hover,
     .ccg-genre-grid .ccg-card:hover {
         transform: none;
         box-shadow: none;
-        filter: none;
     }
 }
 
-
 /* ============================================================
-   SECTION RHYTHM — EXHIBIT FLOW
+   SECTION RHYTHM
 ============================================================ */
 
 .ccg-genre-main {
-    margin-top: 64px;
+    margin-top: 56px;
 }
 
 @media (max-width: 768px) {
     .ccg-genre-main {
-        margin-top: 42px;
+        margin-top: 36px;
     }
 }
