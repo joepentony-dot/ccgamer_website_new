@@ -9,6 +9,7 @@
    • SG-E3: Modal viewer
    • SG-E4.1: Screenshot modal navigation (NEXT / PREV)
    • SG-E4.2: On-screen modal arrows
+   • SG-E5: Related Games carousel behaviour
 ============================================================ */
 
 let CCG_SINGLE_ALL_GAMES = [];
@@ -291,4 +292,36 @@ function renderRelatedGames(game, allGames) {
             </a>
         `;
     }).join("");
+
+    initRelatedCarousel();
+}
+
+/* ============================================================
+   RELATED GAMES CAROUSEL BEHAVIOUR (SG-E5)
+============================================================ */
+
+function initRelatedCarousel() {
+
+    const track = document.querySelector(".related-carousel__track");
+    const viewport = document.querySelector(".related-carousel__viewport");
+    const prevBtn = document.querySelector(".related-carousel__nav--prev");
+    const nextBtn = document.querySelector(".related-carousel__nav--next");
+
+    if (!track || !viewport || !prevBtn || !nextBtn) return;
+
+    const scrollAmount = () => viewport.clientWidth * 0.9;
+
+    prevBtn.addEventListener("click", () => {
+        viewport.scrollBy({
+            left: -scrollAmount(),
+            behavior: "smooth"
+        });
+    });
+
+    nextBtn.addEventListener("click", () => {
+        viewport.scrollBy({
+            left: scrollAmount(),
+            behavior: "smooth"
+        });
+    });
 }
