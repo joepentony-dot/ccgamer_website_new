@@ -1,11 +1,13 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & TYPOGRAPHY
-   OMEGA HEADER LOCK — W6.1 HEADER CONTAINMENT FIX (FINAL)
+   OMEGA HEADER — PHASE H1 STRUCTURAL CERTAINTY (LOCKED)
    ------------------------------------------------------------
-   • Nav overflow fully contained
-   • Predictable scroll direction
-   • No visual run-off
-   • ZERO HTML / JS changes
+   • Header height is HARD-CONSTRAINED
+   • No child may exceed header bounds
+   • Grid alignment mathematically enforced
+   • ZERO overlap possible
+   • NO visual polish yet (intentional)
+   • NO HTML / JS changes
 ============================================================ */
 
 /* ============================================================
@@ -20,8 +22,9 @@
     --ccg-text-light: #e8ecff;
     --ccg-text-soft: #b5bbdf;
 
+    /* HEADER CONTRACT */
     --ccg-header-height: 92px;
-    --ccg-header-pad-y: 14px;
+    --ccg-header-inner-height: 64px;
 
     --ccg-nav-pill-pad-y: 8px;
     --ccg-nav-pill-pad-x: 14px;
@@ -67,16 +70,18 @@ body {
 }
 
 /* ============================================================
-   HEADER — LOCKED STRUCTURE
+   HEADER — HARD CONSTRAINT (H1 LOCK)
 ============================================================ */
 
 .ccg-header {
     position: relative;
     z-index: 9999;
+
+    height: var(--ccg-header-height);
+    max-height: var(--ccg-header-height);
+
     display: flex;
     align-items: center;
-    min-height: var(--ccg-header-height);
-    padding-block: var(--ccg-header-pad-y);
 
     background:
         linear-gradient(
@@ -87,73 +92,105 @@ body {
         );
 
     backdrop-filter: blur(6px);
+
+    overflow: hidden; /* 🔒 NOTHING escapes */
 }
+
+/* ============================================================
+   HEADER INNER — GRID AUTHORITY
+============================================================ */
 
 .ccg-header-inner {
     width: min(1320px, 96%);
     margin: 0 auto;
 
+    height: var(--ccg-header-inner-height);
+    max-height: var(--ccg-header-inner-height);
+
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
+
     gap: 18px;
 }
 
 /* ============================================================
-   BRAND
+   BRAND — SHRINK-SAFE
 ============================================================ */
 
 .ccg-brand {
     display: flex;
     align-items: center;
     gap: 14px;
-    white-space: nowrap;
+
     text-decoration: none;
-    flex-shrink: 0;
+    white-space: nowrap;
+
+    min-width: 0;              /* 🔑 allows shrink */
+    max-width: 100%;
+
+    flex-shrink: 1;
 }
 
 .ccg-brand__logo {
     width: 56px;
     height: auto;
+    flex-shrink: 0;
+}
+
+/* Brand text must never force height growth */
+.ccg-brand__text {
+    line-height: 1.1;
+    max-height: var(--ccg-header-inner-height);
+    overflow: hidden;
 }
 
 /* ============================================================
-   NAVIGATION — FINAL CONTAINMENT
+   NAVIGATION — GUARANTEED CONTAINMENT
 ============================================================ */
 
 .ccg-nav {
     min-width: 0;
     max-width: 100%;
-    position: relative;
+
+    height: 100%;
 
     display: flex;
+    align-items: center;
     justify-content: center;
+
+    position: relative;
 }
 
-/* Nav list is the scrolling surface */
+/* Scrolling surface */
 .ccg-nav__list {
     display: flex;
+    align-items: center;
     gap: 12px;
+
     list-style: none;
     margin: 0;
     padding-inline: 28px;
 
+    max-width: 100%;
+    height: 100%;
+
     white-space: nowrap;
     overflow-x: auto;
     scrollbar-width: none;
-
-    max-width: 100%;
 }
 
 .ccg-nav__list::-webkit-scrollbar {
     display: none;
 }
 
-/* Pills */
+/* Nav pills — vertical contract enforced */
 .ccg-nav__link {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+
+    height: 36px; /* 🔒 fixed pill height */
 
     padding: var(--ccg-nav-pill-pad-y) var(--ccg-nav-pill-pad-x);
     border-radius: 999px;
@@ -169,16 +206,65 @@ body {
     background: rgba(255,255,255,0.06);
     border: 1px solid rgba(255,255,255,0.12);
 
+    flex-shrink: 0;
+
     transition:
         padding 160ms ease,
         letter-spacing 160ms ease,
         font-size 160ms ease;
 }
 
-/* Compression before overflow feels bad */
+/* ============================================================
+   HEADER ACTIONS — HEIGHT LOCKED
+============================================================ */
+
+.ccg-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    height: 100%;
+    max-height: 100%;
+
+    flex-shrink: 0;
+}
+
+.ccg-header-socials {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    height: 100%;
+}
+
+.ccg-header-socials a,
+.ccg-socials__icon,
+.ccg-mode-toggle {
+    flex: 0 0 auto;
+}
+
+/* ============================================================
+   ABSOLUTE BEHAVIOUR DISABLED (HARD LOCK)
+============================================================ */
+
+.ccg-header *,
+.ccg-header *::before,
+.ccg-header *::after {
+    max-height: 100%;
+}
+
+.ccg-header > .ccg-header-actions {
+    position: static !important;
+    transform: none !important;
+}
+
+/* ============================================================
+   RESPONSIVE SAFETY (NO BEHAVIOUR CHANGE)
+============================================================ */
+
 @media (max-width: 1100px) {
     .ccg-nav {
-        justify-content: flex-start; /* 🔑 KEY FIX */
+        justify-content: flex-start;
     }
 
     .ccg-nav__link {
@@ -196,122 +282,14 @@ body {
     }
 }
 
-/* ============================================================
-   SCROLL HINT — ONLY WHEN OVERFLOW EXISTS
-============================================================ */
-
-.ccg-nav::before,
-.ccg-nav::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 28px;
-    pointer-events: none;
-    z-index: 2;
-    opacity: 0;
-}
-
-/* Show fades ONLY if scrolling is possible */
-@supports selector(:has(*)) {
-    .ccg-nav:has(.ccg-nav__list[style*="overflow"])::before,
-    .ccg-nav:has(.ccg-nav__list[style*="overflow"])::after {
-        opacity: 1;
-    }
-}
-
-/* Practical fallback: show fades when not centred */
-@media (max-width: 1100px) {
-    .ccg-nav::before,
-    .ccg-nav::after {
-        opacity: 1;
-    }
-}
-
-.ccg-nav::before {
-    left: 0;
-    background: linear-gradient(
-        to right,
-        rgba(0,0,0,0.85),
-        rgba(0,0,0,0.45),
-        rgba(0,0,0,0)
-    );
-}
-
-.ccg-nav::after {
-    right: 0;
-    background: linear-gradient(
-        to left,
-        rgba(0,0,0,0.85),
-        rgba(0,0,0,0.45),
-        rgba(0,0,0,0)
-    );
-}
-
-/* ============================================================
-   HEADER ACTIONS
-============================================================ */
-
-.ccg-header-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-shrink: 0;
-}
-
-.ccg-header-socials {
-    display: flex;
-    gap: 10px;
-    flex-shrink: 0;
-}
-
-.ccg-header-socials a,
-.ccg-socials__icon {
-    flex: 0 0 auto;
-}
-
-.ccg-mode-toggle {
-    flex-shrink: 0;
-}
-
-/* ============================================================
-   ABSOLUTE BEHAVIOUR DISABLED (LOCK)
-============================================================ */
-
-.ccg-header > .ccg-header-actions {
-    position: static !important;
-    transform: none !important;
-}
-
-.ccg-header > .ccg-header-inner {
-    padding-right: 0 !important;
-}
-
-/* ============================================================
-   MOBILE
-============================================================ */
-
 @media (max-width: 768px) {
-    .ccg-nav {
-        justify-content: flex-start;
-    }
-
-    .ccg-main {
-        padding-top: 18px;
-    }
-
-    .ccg-nav::before,
-    .ccg-nav::after {
-        width: 34px;
-    }
-
     .ccg-nav__list {
         padding-inline: 34px;
     }
 }
 
 /* ============================================================
-   MODE COLOURS
+   MODE COLOURS (UNCHANGED)
 ============================================================ */
 
 body[data-ccg-mode="c64"] {
