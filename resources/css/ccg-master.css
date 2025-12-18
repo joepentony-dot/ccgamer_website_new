@@ -1,6 +1,6 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & TYPOGRAPHY
-   OMEGA HEADER — PHASE H6 NAVIGATION DENSITY (FINAL LOCK)
+   OMEGA HEADER — PHASE H6.1 MICRO POLISH (LOCK)
    ------------------------------------------------------------
    • H1 Structural certainty
    • H2 Logo authority
@@ -8,6 +8,7 @@
    • H4 Toggle ULTRA
    • H5 Social icons neon pack
    • H6 Navigation density resolution (inline dropdown)
+   • H6.1 Focus-visible + edge calm (ACCESSIBILITY SAFE)
    • ZERO layout risk
    • ZERO HTML / JS changes
 ============================================================ */
@@ -96,7 +97,6 @@ body {
 
     backdrop-filter: blur(6px);
 
-    /* ✅ FIX: allow dropdown to escape header */
     overflow: visible;
 }
 
@@ -113,7 +113,6 @@ body {
 
     gap: 18px;
 
-    /* ✅ FIX: prevent inner bar clipping dropdown */
     overflow: visible;
 }
 
@@ -185,12 +184,10 @@ body {
     display: none;
 }
 
-/* ✅ FIX: when dropdown is active, allow it to render outside the scrolling list */
 .ccg-nav__list:focus-within {
     overflow: visible;
 }
 
-/* Modern enhancement: if supported, open state also enables overflow without relying on focus */
 @supports selector(:has(*)) {
     .ccg-nav__list:has(.ccg-nav__dropdown.is-open) {
         overflow: visible;
@@ -218,6 +215,11 @@ body {
     border: 1px solid rgba(255,255,255,0.14);
     box-shadow: 0 6px 14px rgba(0,0,0,0.65);
     text-decoration: none;
+
+    transition:
+        color 140ms ease,
+        box-shadow 140ms ease,
+        border-color 140ms ease;
 }
 
 .ccg-nav__link--active {
@@ -226,6 +228,16 @@ body {
     box-shadow:
         0 0 0 1px rgba(var(--accent-rgb),0.45),
         0 0 22px rgba(var(--accent-rgb),0.45);
+}
+
+/* Focus-visible parity (keyboard users) */
+.ccg-nav__link:focus-visible {
+    outline: none;
+    color: #fff;
+    border-color: rgba(var(--accent-rgb),0.55);
+    box-shadow:
+        0 0 0 1px rgba(var(--accent-rgb),0.45),
+        0 0 18px rgba(var(--accent-rgb),0.35);
 }
 
 /* ============================================================
@@ -313,7 +325,6 @@ body {
 
 /* ============================================================
    PHASE H6 — NAVIGATION DENSITY RESOLUTION
-   Inline dropdown for secondary navigation
 ============================================================ */
 
 .ccg-nav__more {
@@ -359,14 +370,12 @@ body {
     z-index: 10000;
 }
 
-/* ✅ FIX: JS-driven open state */
 .ccg-nav__dropdown.is-open {
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
 }
 
-/* Keep hover/focus as a bonus (does not conflict with JS) */
 .ccg-nav__more:hover .ccg-nav__dropdown,
 .ccg-nav__more:focus-within .ccg-nav__dropdown {
     opacity: 1;
@@ -391,9 +400,11 @@ body {
         color 140ms ease;
 }
 
-.ccg-nav__dropdown-link:hover {
+.ccg-nav__dropdown-link:hover,
+.ccg-nav__dropdown-link:focus-visible {
     background: rgba(var(--accent-rgb), 0.14);
     color: #fff;
+    outline: none;
 }
 
 /* ============================================================
