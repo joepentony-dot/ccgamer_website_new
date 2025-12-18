@@ -4,12 +4,13 @@
    Phase WOW-A1 — CINEMATIC DEPTH & PRESENCE POLISH
    Phase WOW-A2 — MICRO-MOTION CARD POLISH (HOME ONLY)
    Phase WOW-A3 — ULTRA-SUBTLE AMBIENT BACKGROUND CADENCE
+   Phase WOW-A4 — HERO BACKGROUND PARALLAX (MOUSE-FREE)
    ------------------------------------------------------------
    Goals:
    • Keep Home immersive (fixed starfield)
    • Add life WITHOUT visible animation
    • Create cinematic “breathing” background
-   • Respect motion preferences
+   • Add hero depth separation (no cursor)
    • Zero impact outside Home
 ============================================================ */
 
@@ -68,7 +69,6 @@ html[data-ccg-page="home"] .ccg-bg-crt-overlay {
 
 @media (prefers-reduced-motion: no-preference) {
 
-    /* Starfield: ultra-slow drift + breath */
     html[data-ccg-page="home"] .ccg-bg-starfield {
         animation:
             ccg-home-star-drift 90s linear infinite,
@@ -76,41 +76,67 @@ html[data-ccg-page="home"] .ccg-bg-crt-overlay {
         will-change: transform, opacity;
     }
 
-    /* Grid: extremely slow parallax slide */
     html[data-ccg-page="home"] .ccg-bg-grid {
         animation: ccg-home-grid-drift 140s linear infinite;
         will-change: transform;
     }
 
-    /* CRT: microscopic shimmer pulse */
     html[data-ccg-page="home"] .ccg-bg-crt-overlay {
         animation: ccg-home-crt-breathe 60s ease-in-out infinite;
         will-change: opacity;
     }
 }
 
-/* Starfield slow diagonal drift */
 @keyframes ccg-home-star-drift {
     0%   { transform: translate3d(0, 0, 0); }
     100% { transform: translate3d(-22px, 18px, 0); }
 }
 
-/* Starfield brightness breathing */
 @keyframes ccg-home-star-breathe {
     0%, 100% { opacity: 0.76; }
     50%      { opacity: 0.82; }
 }
 
-/* Grid parallax slide */
 @keyframes ccg-home-grid-drift {
     0%   { transform: translate3d(0, 0, 0); }
     100% { transform: translate3d(12px, -14px, 0); }
 }
 
-/* CRT shimmer breath */
 @keyframes ccg-home-crt-breathe {
     0%, 100% { opacity: 0.20; }
     50%      { opacity: 0.24; }
+}
+
+
+/* ============================================================
+   WOW-A4 — HERO BACKGROUND PARALLAX (MOUSE-FREE)
+============================================================ */
+
+@media (prefers-reduced-motion: no-preference) {
+
+    html[data-ccg-page="home"] .ccg-hero-image {
+        animation: ccg-hero-layer-drift 120s ease-in-out infinite;
+        will-change: transform;
+    }
+
+    html[data-ccg-page="home"] .ccg-hero-scanlines {
+        animation: ccg-hero-scanline-drift 160s linear infinite;
+        will-change: transform;
+    }
+}
+
+@keyframes ccg-hero-layer-drift {
+    0%, 100% {
+        transform: translate3d(0, 0, 0);
+    }
+    50% {
+        transform: translate3d(-10px, 6px, 0);
+    }
+}
+
+@keyframes ccg-hero-scanline-drift {
+    0%   { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(6px, -6px, 0); }
 }
 
 
@@ -142,51 +168,6 @@ html[data-ccg-page="home"] .home-hero::before {
 
 html[data-ccg-page="home"] .home-tagline {
     margin: 22px 0 36px;
-}
-
-
-/* ============================================================
-   HOME HERO — TITLE ENERGY
-============================================================ */
-
-html[data-ccg-page="home"] .home-hero__title,
-html[data-ccg-page="home"] .ccg-hero-title.home-hero__title {
-    font-size: clamp(1.9rem, 3.6vw, 3.2rem);
-    letter-spacing: 0.16em;
-    line-height: 1.08;
-
-    color: var(--ccg-text-light);
-
-    text-shadow:
-        0 0 10px rgba(255,255,255,0.12),
-        0 0 22px rgba(var(--accent-rgb),0.35),
-        0 0 48px rgba(var(--accent-rgb),0.22),
-        0 18px 48px rgba(0,0,0,0.85);
-
-    transform: translateZ(0);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-    html[data-ccg-page="home"] .home-hero__title {
-        animation: ccg-home-title-ignite 14s ease-in-out infinite;
-    }
-}
-
-@keyframes ccg-home-title-ignite {
-    0%, 100% {
-        text-shadow:
-            0 0 10px rgba(255,255,255,0.12),
-            0 0 22px rgba(var(--accent-rgb),0.30),
-            0 0 44px rgba(var(--accent-rgb),0.20),
-            0 18px 48px rgba(0,0,0,0.85);
-    }
-    50% {
-        text-shadow:
-            0 0 14px rgba(255,255,255,0.18),
-            0 0 32px rgba(var(--accent-rgb),0.42),
-            0 0 64px rgba(var(--accent-rgb),0.30),
-            0 22px 56px rgba(0,0,0,0.90);
-    }
 }
 
 
