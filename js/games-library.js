@@ -1,12 +1,13 @@
 /* ============================================================
-   CCG GAMES LIBRARY — W7 ACCORDION LOGIC FIX (FINAL)
+   CCG GAMES LIBRARY — W7 ACCORDION LOGIC FIX (FINAL LOCK)
    ------------------------------------------------------------
    • True toggle accordion (open / close)
    • Single section open at a time
    • Clicking open section closes it
    • Spine + accordion fully synced
    • Close returns scroll to top
-   • Search-safe rebuild logic
+   • Search-safe rebuild (state preserved when possible)
+   • Restore state without auto-scroll jump
    • ZERO visual or card impact
 ============================================================ */
 
@@ -24,7 +25,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         buildGamesIndex(CCG_ALL_GAMES);
         setupSearch(CCG_ALL_GAMES);
-        restoreAccordionState();
+
+        // Restore without scroll jump
+        restoreAccordionState({ silent: true });
 
     } catch (err) {
         console.error("[CCG] Games index load failed:", err);
@@ -39,6 +42,9 @@ function buildGamesIndex(games) {
     const grouped = groupGamesByLetter(games);
     buildAlphaSpine(grouped);
     buildAccordion(grouped);
+
+    // After a rebuild (search), re-apply state if it still exists
+    restoreAccordionState({ silent: true, validatePresence: true });
 }
 
 /* ============================================================
@@ -54,6 +60,7 @@ function groupGamesByLetter(games) {
 
         let firstChar = title.charAt(0).toUpperCase();
 
+        // Numeric titles -> '#'
         if (firstChar >= "0" && firstChar <= "9") {
             firstChar = "#";
         }
@@ -123,7 +130,7 @@ function buildAccordion(groups) {
         section.dataset.letter = letter;
 
         section.innerHTML = `
-            <button class="games-accordion__header" data-letter="${letter}">
+            <button class="games-accordion__header" data-letter="${letter}" type="button">
                 <span class="games-accordion__letter">${letter}</span>
             </button>
             <div class="games-accordion__content">
@@ -140,7 +147,7 @@ function buildAccordion(groups) {
 }
 
 /* ============================================================
-   ACCORDION INTERACTION — FINAL LOGIC
+   ACCORDION INTERACTION — FINAL LOCK
 ============================================================ */
 
 function attachAccordionEvents() {
@@ -151,43 +158,57 @@ function attachAccordionEvents() {
     });
 }
 
-function toggleAccordion(letter) {
+/**
+ * Toggle an accordion section.
+ * @param {string} letter
+ * @param {{silent?: boolean}} opts
+ */
+function toggleAccordion(letter, opts = {}) {
     const sections = document.querySelectorAll(".games-accordion__section");
-    const spineButtons = document.querySelectorAll("#gamesAlphaStrip button");
+    if (!sections.length) return;
 
-    let opened = false;
+    const target = document.querySelector(`.games-accordion__section[data-letter="${letter}"]`);
+    if (!target) {
+        // If letter doesn't exist in current build (e.g. search filter)
+        clearAccordionState();
+        setSpineActive(null);
+        if (!opts.silent) scrollToTop();
+        return;
+    }
 
-    sections.forEach(section => {
-        const isTarget = section.dataset.letter === letter;
-        const isOpen = section.classList.contains("is-open");
+    const wasOpen = target.classList.contains("is-open");
+    const willOpen = !wasOpen;
 
-        if (isTarget && !isOpen) {
-            section.classList.add("is-open");
-            opened = true;
-        } else {
-            section.classList.remove("is-open");
-        }
-    });
+    // Single-open enforcement
+    sections.forEach(section => section.classList.remove("is-open"));
 
-    spineButtons.forEach(btn => {
-        btn.classList.toggle("active", opened && btn.dataset.letter === letter);
-    });
-
-    if (opened) {
+    if (willOpen) {
+        target.classList.add("is-open");
         saveAccordionState(letter);
+        setSpineActive(letter);
 
-        const target = document.querySelector(
-            `.games-accordion__section[data-letter="${letter}"]`
-        );
-
-        if (target) {
+        if (!opts.silent) {
             target.scrollIntoView({ behavior: "smooth", block: "start" });
         }
-
     } else {
+        // Closing current open section
         clearAccordionState();
-        scrollToTop();
+        setSpineActive(null);
+
+        if (!opts.silent) {
+            scrollToTop();
+        }
     }
+}
+
+/* ============================================================
+   SPINE ACTIVE SYNC
+============================================================ */
+
+function setSpineActive(letterOrNull) {
+    document.querySelectorAll("#gamesAlphaStrip button").forEach(btn => {
+        btn.classList.toggle("active", !!letterOrNull && btn.dataset.letter === letterOrNull);
+    });
 }
 
 /* ============================================================
@@ -202,9 +223,28 @@ function clearAccordionState() {
     sessionStorage.removeItem(ACCORDION_STATE_KEY);
 }
 
-function restoreAccordionState() {
+/**
+ * Restore stored accordion state.
+ * @param {{silent?: boolean, validatePresence?: boolean}} opts
+ */
+function restoreAccordionState(opts = {}) {
     const letter = sessionStorage.getItem(ACCORDION_STATE_KEY);
-    if (letter) toggleAccordion(letter);
+    if (!letter) {
+        setSpineActive(null);
+        return;
+    }
+
+    // If rebuilding from search, the stored letter might no longer exist
+    if (opts.validatePresence) {
+        const exists = document.querySelector(`.games-accordion__section[data-letter="${letter}"]`);
+        if (!exists) {
+            clearAccordionState();
+            setSpineActive(null);
+            return;
+        }
+    }
+
+    toggleAccordion(letter, { silent: !!opts.silent });
 }
 
 /* ============================================================
@@ -221,7 +261,7 @@ function scrollToTop() {
 }
 
 /* ============================================================
-   SEARCH (UNCHANGED)
+   SEARCH (REBUILD SAFE)
 ============================================================ */
 
 function setupSearch(allGames) {
@@ -248,6 +288,9 @@ function filterGames(query, allGames) {
     );
 
     buildGamesIndex(filtered);
+
+    // If user searches, we should not force scroll jumps
+    // (state will reapply silently if possible)
 }
 
 /* ============================================================
