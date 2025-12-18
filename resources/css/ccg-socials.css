@@ -15,13 +15,13 @@
     gap: 0.65rem;
     padding-left: 0.6rem;
 
-    /* CRITICAL FIX:
-       Do NOT globally force nowrap.
-       This allows the header layout engine to
-       resolve tight widths without hiding icons.
+    /* CRITICAL:
+       Allow grid to resolve width correctly.
+       Icons stay on one row via flex, not nowrap.
     */
     flex-wrap: nowrap;
     min-width: 0;
+    max-width: 100%;
 }
 
 /* Circular glowing buttons */
@@ -127,15 +127,16 @@
 }
 
 /* ---------------------------------------------
-   HOMEPAGE HEADER SOCIAL LOCK (INTENTIONAL)
+   HOMEPAGE HEADER SOCIAL LOCK (GRID-SAFE)
    ------------------------------------------------
-   Only the HOME page header keeps nowrap.
-   This preserves the cinematic layout there
-   without breaking global header parity.
+   Keeps icons on one row WITHOUT breaking
+   header grid or overlapping navigation.
 --------------------------------------------- */
 
 .ccg-page--home .ccg-header-socials {
-    white-space: nowrap;
+    flex-wrap: nowrap;
+    white-space: normal; /* IMPORTANT: allows grid to resolve width */
+    max-width: 100%;
 }
 
 /* ============================================================
@@ -146,7 +147,7 @@
     margin-top: 2rem;
     padding: 1.2rem 1rem;
     position: relative;
-    overflow: hidden; /* prevents scrollbars */
+    overflow: hidden;
 }
 
 /* Ambient glow under strip */
@@ -196,8 +197,8 @@
     display: flex;
     align-items: center;
     gap: 1rem;
-    flex-wrap: wrap;     /* FIXES scrollbar issue */
-    overflow: hidden;    /* extra safety */
+    flex-wrap: wrap;
+    overflow: hidden;
 }
 
 /* Circular buttons for strip */
