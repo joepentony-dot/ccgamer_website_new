@@ -1,11 +1,13 @@
 /* ============================================================
    CCG GAMES LIBRARY — OMEGA WOW INDEX
-   Phase W7.2-A — LOGIC REFINEMENT (SAFE)
+   Phase W7.3 — ULTRA LOGIC PASS (SPINE REACTOR)
    ------------------------------------------------------------
    • Numeric titles grouped under '#'
-   • Removes numeric letter sections (1,2,7...)
    • Spine shows LETTERS ONLY (no counts)
-   • ZERO visual logic, ZERO card changes
+   • TRUE toggle accordion (open / close)
+   • Single-open section enforcement
+   • Close = return to top
+   • Active spine sync for neon reactor
 ============================================================ */
 
 let CCG_ALL_GAMES = [];
@@ -22,6 +24,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         buildGamesIndex(CCG_ALL_GAMES);
         setupSearch(CCG_ALL_GAMES);
 
+        restoreAccordionState();
+
     } catch (err) {
         console.error("[CCG] Games index load failed:", err);
     }
@@ -33,7 +37,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 function buildGamesIndex(games) {
     const grouped = groupGamesByLetter(games);
-
     buildAlphaSpine(grouped);
     buildAccordion(grouped);
 }
@@ -51,7 +54,7 @@ function groupGamesByLetter(games) {
 
         let firstChar = title.charAt(0).toUpperCase();
 
-        // 🔧 ALL numeric titles go under '#'
+        // All numeric titles → '#'
         if (firstChar >= "0" && firstChar <= "9") {
             firstChar = "#";
         }
@@ -63,7 +66,6 @@ function groupGamesByLetter(games) {
         groups[firstChar].push(game);
     });
 
-    // Sort games within each group
     Object.keys(groups).forEach(letter => {
         groups[letter].sort((a, b) =>
             (a.sorttitle || a.title).localeCompare(b.sorttitle || b.title)
@@ -74,7 +76,7 @@ function groupGamesByLetter(games) {
 }
 
 /* ============================================================
-   ALPHA SPINE (LETTERS ONLY — NO COUNTS)
+   ALPHA SPINE (LETTERS ONLY)
 ============================================================ */
 
 function buildAlphaSpine(groups) {
@@ -83,12 +85,11 @@ function buildAlphaSpine(groups) {
 
     strip.innerHTML = "";
 
-    const letters = Object.keys(groups)
-        .sort((a, b) => {
-            if (a === "#") return -1;
-            if (b === "#") return 1;
-            return a.localeCompare(b);
-        });
+    const letters = Object.keys(groups).sort((a, b) => {
+        if (a === "#") return -1;
+        if (b === "#") return 1;
+        return a.localeCompare(b);
+    });
 
     letters.forEach(letter => {
         const btn = document.createElement("button");
@@ -97,7 +98,7 @@ function buildAlphaSpine(groups) {
         btn.dataset.letter = letter;
 
         btn.addEventListener("click", () => {
-            openAccordionSection(letter);
+            toggleAccordion(letter);
         });
 
         strip.appendChild(btn);
@@ -114,12 +115,11 @@ function buildAccordion(groups) {
 
     container.innerHTML = "";
 
-    const letters = Object.keys(groups)
-        .sort((a, b) => {
-            if (a === "#") return -1;
-            if (b === "#") return 1;
-            return a.localeCompare(b);
-        });
+    const letters = Object.keys(groups).sort((a, b) => {
+        if (a === "#") return -1;
+        if (b === "#") return 1;
+        return a.localeCompare(b);
+    });
 
     letters.forEach(letter => {
         const section = document.createElement("section");
@@ -144,7 +144,7 @@ function buildAccordion(groups) {
 }
 
 /* ============================================================
-   ACCORDION INTERACTION
+   ACCORDION INTERACTION (ULTRA)
 ============================================================ */
 
 function attachAccordionEvents() {
@@ -152,37 +152,80 @@ function attachAccordionEvents() {
 
     headers.forEach(header => {
         header.addEventListener("click", () => {
-            const letter = header.dataset.letter;
-            toggleAccordion(letter);
+            toggleAccordion(header.dataset.letter);
         });
     });
 }
 
 function toggleAccordion(letter) {
     const sections = document.querySelectorAll(".games-accordion__section");
+    const spineButtons = document.querySelectorAll("#gamesAlphaStrip button");
+
+    let opening = false;
 
     sections.forEach(section => {
         const isTarget = section.dataset.letter === letter;
-        section.classList.toggle("is-open", isTarget);
+        const isOpen = section.classList.contains("is-open");
+
+        if (isTarget && !isOpen) {
+            opening = true;
+            section.classList.add("is-open");
+        } else {
+            section.classList.remove("is-open");
+        }
     });
 
-    saveAccordionState(letter);
-}
+    spineButtons.forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.letter === letter && opening);
+    });
 
-function openAccordionSection(letter) {
-    toggleAccordion(letter);
+    if (opening) {
+        saveAccordionState(letter);
 
-    const section = document.querySelector(
-        `.games-accordion__section[data-letter="${letter}"]`
-    );
+        const target = document.querySelector(
+            `.games-accordion__section[data-letter="${letter}"]`
+        );
 
-    if (section) {
-        section.scrollIntoView({ behavior: "smooth", block: "start" });
+        if (target) {
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
+    } else {
+        clearAccordionState();
+        scrollToTop();
     }
 }
 
+/* ============================================================
+   STATE
+============================================================ */
+
 function saveAccordionState(letter) {
     sessionStorage.setItem(ACCORDION_STATE_KEY, letter);
+}
+
+function clearAccordionState() {
+    sessionStorage.removeItem(ACCORDION_STATE_KEY);
+}
+
+function restoreAccordionState() {
+    const letter = sessionStorage.getItem(ACCORDION_STATE_KEY);
+    if (letter) {
+        toggleAccordion(letter);
+    }
+}
+
+/* ============================================================
+   SCROLL CONTROL
+============================================================ */
+
+function scrollToTop() {
+    const anchor =
+        document.querySelector(".games-tools") ||
+        document.querySelector(".games-hero") ||
+        document.body;
+
+    anchor.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 /* ============================================================
@@ -243,9 +286,10 @@ function resolveGameThumb(raw) {
     if (!raw) return `${THUMB_BASE_PATH}1942.jpg`;
 
     let t = String(raw).replace(/^\/+/, "");
-    t = t.replace("resources/images/thumbnails/all/", "")
-         .replace("resources/images/thumbnails/", "")
-         .replace("resources/images/", "");
+    t = t
+        .replace("resources/images/thumbnails/all/", "")
+        .replace("resources/images/thumbnails/", "")
+        .replace("resources/images/", "");
 
     return `${THUMB_BASE_PATH}${t}`;
 }
