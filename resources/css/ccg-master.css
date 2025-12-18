@@ -1,11 +1,11 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & TYPOGRAPHY
-   OMEGA HEADER LOCK — FINAL SAFE VERSION
+   OMEGA HEADER LOCK — FINAL SAFE VERSION (W5 QA)
    ------------------------------------------------------------
    • ONE in-flow header layout (NO absolute hacks)
    • Logo | Nav | Actions never overlap
-   • Verified: Home, Collections, Quiz
-   • DO NOT MODIFY WITHOUT FULL REVIEW
+   • Verified: Home, Collections, Quiz, Single Game
+   • W5: Global rhythm + font polish only
 ============================================================ */
 
 /* ============================================================
@@ -28,6 +28,9 @@
 
     --ccg-nav-pill-pad-y: 8px;
     --ccg-nav-pill-pad-x: 14px;
+
+    /* W5: safe default accent (prevents first-frame flash) */
+    --accent-rgb: 0,170,255;
 }
 
 /* ============================================================
@@ -48,6 +51,10 @@ body {
     color: var(--ccg-text-light);
     font-family: var(--ccg-font-body);
     overflow-x: hidden;
+
+    /* W5: font rendering polish */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* ============================================================
@@ -61,6 +68,9 @@ body {
 .ccg-main {
     width: min(1320px, 96%);
     margin: 0 auto;
+
+    /* W5: consistent post-header rhythm */
+    padding-top: 22px;
 }
 
 /* ============================================================
@@ -128,6 +138,7 @@ body {
     display: flex;
     justify-content: center;
     min-width: 0;
+    position: relative;
 }
 
 .ccg-nav__list {
@@ -177,7 +188,6 @@ body {
     flex-shrink: 0;
 }
 
-/* Social icons never shrink */
 .ccg-header-socials {
     display: flex;
     gap: 10px;
@@ -189,7 +199,6 @@ body {
     flex: 0 0 auto;
 }
 
-/* Mode toggle never shrinks */
 .ccg-mode-toggle {
     flex-shrink: 0;
 }
@@ -215,6 +224,10 @@ body {
     .ccg-nav {
         justify-content: flex-start;
     }
+
+    .ccg-main {
+        padding-top: 18px; /* W5 mobile rhythm */
+    }
 }
 
 /* ============================================================
@@ -230,22 +243,10 @@ body[data-ccg-mode="amiga"] {
 }
 
 /* ============================================================
-   NAV SCROLL HINT POLISH — OMEGA SAFE (FINAL)
-   ------------------------------------------------------------
-   Purpose:
-   • Visually indicate horizontal nav scrolling
-   • Zero layout changes
-   • Zero JS
-   • Zero HTML edits
-   • Applies to ALL pages safely
+   NAV SCROLL HINT POLISH — W5 SAFE
 ============================================================ */
 
-/* Wrap context */
-.ccg-nav {
-    position: relative;
-}
-
-/* Left & right fade indicators */
+/* Fade indicators */
 .ccg-nav::before,
 .ccg-nav::after {
     content: "";
@@ -257,7 +258,6 @@ body[data-ccg-mode="amiga"] {
     z-index: 2;
 }
 
-/* Left fade */
 .ccg-nav::before {
     left: 0;
     background: linear-gradient(
@@ -268,7 +268,6 @@ body[data-ccg-mode="amiga"] {
     );
 }
 
-/* Right fade */
 .ccg-nav::after {
     right: 0;
     background: linear-gradient(
@@ -279,12 +278,11 @@ body[data-ccg-mode="amiga"] {
     );
 }
 
-/* Prevent fades when nav fits fully */
+/* Padding prevents content clash */
 .ccg-nav__list {
     padding-inline: 28px;
 }
 
-/* Mobile: slightly stronger cue */
 @media (max-width: 768px) {
     .ccg-nav::before,
     .ccg-nav::after {
@@ -295,4 +293,3 @@ body[data-ccg-mode="amiga"] {
         padding-inline: 34px;
     }
 }
-
