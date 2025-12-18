@@ -67,7 +67,6 @@
         <!-- DESCRIPTION -->
         <section id="game-description-section" class="game-section game-section--description" hidden>
             <h2 class="game-section__title">Overview</h2>
-
             <div class="game-description">
                 <p id="gameDescription"></p>
             </div>
@@ -76,14 +75,10 @@
         <!-- VIDEO -->
         <section id="game-video-section" class="game-section game-section--video" hidden>
             <h2 class="game-section__title">Gameplay Video</h2>
-
             <div class="game-video">
                 <div class="game-video__embed">
-                    <iframe id="game-video-embed"
-                            loading="lazy"
-                            allowfullscreen></iframe>
+                    <iframe id="game-video-embed" loading="lazy" allowfullscreen></iframe>
                 </div>
-
                 <div class="game-video__actions">
                     <a id="gameVideoBtn"
                        class="ccg-btn ccg-btn--secondary"
@@ -95,23 +90,51 @@
             </div>
         </section>
 
-        <!-- SCREENSHOTS -->
-        <section class="game-screenshots" hidden>
-            <h2 class="game-screenshots__title">Screenshots</h2>
-            <div class="game-screenshots__strip" id="gameScreenshotsStrip"></div>
-        </section>
+        <!-- MANUALS & DOWNLOADS -->
+        <section class="game-section game-section--downloads" hidden>
+            <h2 class="game-section__title">Manuals &amp; Downloads</h2>
 
-        <!-- DOWNLOADS -->
-        <section class="game-downloads" hidden>
-            <h2 class="game-downloads__title">Manuals &amp; Downloads</h2>
-            <div class="game-downloads__actions">
-                <a id="gameManualBtn" class="ccg-btn" href="#" hidden>View Manual</a>
-                <a id="gameDiskBtn" class="ccg-btn" target="_blank" hidden>Play / Download</a>
+            <div class="game-downloads">
+
+                <!-- PRIMARY ACTIONS -->
+                <div class="game-downloads__primary">
+
+                    <a id="gameManualBtn"
+                       class="ccg-btn ccg-btn--primary ccg-btn--icon ccg-btn--pdf"
+                       href="#"
+                       hidden>
+                        <span class="ccg-btn__icon" aria-hidden="true"></span>
+                        <span class="ccg-btn__label">View Manual (PDF)</span>
+                    </a>
+
+                    <a id="gameDiskBtn"
+                       class="ccg-btn ccg-btn--primary ccg-btn--icon ccg-btn--download"
+                       target="_blank"
+                       hidden>
+                        <span class="ccg-btn__icon" aria-hidden="true"></span>
+                        <span class="ccg-btn__label">Play / Download</span>
+                    </a>
+
+                </div>
+
+                <!-- SECONDARY / ARCHIVE -->
+                <div class="game-downloads__secondary" id="gameArchiveLinks" hidden>
+                    <span class="game-downloads__archive-label">Archive reference:</span>
+
+                    <a id="gameLemonBtn"
+                       class="ccg-btn ccg-btn--secondary ccg-btn--icon ccg-btn--lemon"
+                       target="_blank">
+                        <span class="ccg-btn__icon" aria-hidden="true"></span>
+                        <span class="ccg-btn__label">Lemon64 Entry</span>
+                    </a>
+                </div>
+
+                <p class="game-downloads__disclaimer">
+                    Manuals and game files are provided for archival and educational purposes.
+                    Please ensure you own the original media where required.
+                </p>
+
             </div>
-            <p class="game-downloads__disclaimer">
-                Manuals and game files are provided for archival and educational purposes.
-                Please ensure you own the original media where required.
-            </p>
         </section>
 
         <!-- RELATED -->
