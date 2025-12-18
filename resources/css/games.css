@@ -1,24 +1,25 @@
 /* ============================================================
-   GAMES.CSS — SINGLE GAME ULTRA
-   Phase W9 — FINAL (LOCK AFTER APPLY)
+   GAMES.CSS — OMEGA WOW SYSTEM
    ------------------------------------------------------------
-   • Single Game page ONLY
-   • CSS-only (NO JS changes)
-   • Cinematic, readable, premium presence
-   • Zero impact on Browse / Genres / Collections
+   • W7 — Browse Index VISUAL LOCK
+   • W9 — Single Game ULTRA
+   • STRICT PAGE SCOPING
+   • SAFE TO LOCK
 ============================================================ */
 
+
 /* ============================================================
-   PAGE SCOPE
+   W9 — SINGLE GAME ULTRA
+   Scope: .ccg-page--single-game ONLY
 ============================================================ */
 
 .ccg-page--single-game .ccg-main {
     padding-top: 14px;
 }
 
-/* ============================================================
+/* ------------------------------------------------------------
    HERO — CINEMATIC FLAGSHIP
-============================================================ */
+------------------------------------------------------------ */
 
 .ccg-page--single-game .game-hero {
     position: relative;
@@ -45,7 +46,6 @@
         inset 0 0 0 1px rgba(255,255,255,0.07);
 }
 
-/* Scanlines + vignette */
 .ccg-page--single-game .game-hero::after {
     content: "";
     position: absolute;
@@ -70,9 +70,9 @@
     opacity: 0.28;
 }
 
-/* ============================================================
-   HERO INNER LAYOUT
-============================================================ */
+/* ------------------------------------------------------------
+   HERO INNER
+------------------------------------------------------------ */
 
 .ccg-page--single-game .game-hero__inner {
     position: relative;
@@ -93,17 +93,15 @@
     }
 }
 
-/* ============================================================
-   HERO THUMBNAIL — PREMIUM FRAME
-============================================================ */
+/* ------------------------------------------------------------
+   HERO MEDIA
+------------------------------------------------------------ */
 
 .ccg-page--single-game .game-hero__media {
     width: 220px;
-    max-width: 100%;
 }
 
 .ccg-page--single-game .game-hero__thumb {
-    display: block;
     width: 100%;
     aspect-ratio: 16 / 9;
     object-fit: contain;
@@ -123,9 +121,9 @@
         0 0 28px rgba(var(--accent-rgb), 0.28);
 }
 
-/* ============================================================
-   HERO TITLE & META
-============================================================ */
+/* ------------------------------------------------------------
+   TITLE & META
+------------------------------------------------------------ */
 
 .ccg-page--single-game .game-hero h1 {
     font-family: var(--ccg-font-main);
@@ -145,9 +143,9 @@
     letter-spacing: 0.06em;
 }
 
-/* ============================================================
-   DESCRIPTION PANEL
-============================================================ */
+/* ------------------------------------------------------------
+   DESCRIPTION
+------------------------------------------------------------ */
 
 .ccg-page--single-game #game-description-section {
     max-width: 900px;
@@ -168,16 +166,9 @@
         0 20px 48px rgba(0,0,0,0.70);
 }
 
-@media (max-width: 768px) {
-    .ccg-page--single-game #game-description-section {
-        padding: 22px 20px;
-        margin-bottom: 36px;
-    }
-}
-
-/* ============================================================
-   VIDEO FRAME — EMBEDDED, NOT FLOATING
-============================================================ */
+/* ------------------------------------------------------------
+   VIDEO
+------------------------------------------------------------ */
 
 .ccg-page--single-game #game-video-section {
     max-width: 980px;
@@ -198,16 +189,9 @@
         0 26px 64px rgba(0,0,0,0.80);
 }
 
-.ccg-page--single-game #game-video-section iframe {
-    display: block;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    border: none;
-}
-
-/* ============================================================
-   ACTION BUTTONS — CONSOLE-GRADE
-============================================================ */
+/* ------------------------------------------------------------
+   ACTIONS + RELATED
+------------------------------------------------------------ */
 
 .ccg-page--single-game .game-actions {
     display: flex;
@@ -217,23 +201,83 @@
     flex-wrap: wrap;
 }
 
-.ccg-page--single-game .game-actions .ccg-btn {
-    min-width: 160px;
-}
-
-/* ============================================================
-   RELATED GAMES — CONTROLLED SHOWCASE
-============================================================ */
-
 .ccg-page--single-game .game-section--related {
     margin-top: 64px;
 }
 
-.ccg-page--single-game .game-section__title {
-    text-align: center;
-    letter-spacing: 0.14em;
-    margin-bottom: 32px;
 
-    text-shadow:
-        0 0 18px rgba(var(--accent-rgb),0.35);
+/* ============================================================
+   W7 — BROWSE INDEX VISUAL LOCK (FINAL)
+   Scope: .ccg-page--games-index ONLY
+============================================================ */
+
+/* ------------------------------------------------------------
+   A–Z SPINE — NEON ARCADE
+------------------------------------------------------------ */
+
+.ccg-page--games-index .games-alpha__btn {
+    background: rgba(0,0,0,0.65);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+
+    font-family: var(--ccg-font-main);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+
+    color: rgba(255,255,255,0.75);
+    padding: 6px 8px;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.04),
+        0 6px 14px rgba(0,0,0,0.65);
+
+    transition: all 0.25s ease;
+}
+
+.ccg-page--games-index .games-alpha__btn.active,
+.ccg-page--games-index .games-alpha__btn:hover {
+    color: #fff;
+    border-color: rgba(var(--accent-rgb),0.6);
+
+    box-shadow:
+        0 0 18px rgba(var(--accent-rgb),0.45),
+        inset 0 0 0 1px rgba(var(--accent-rgb),0.35);
+}
+
+/* ------------------------------------------------------------
+   ACCORDION HEADERS
+------------------------------------------------------------ */
+
+.ccg-page--games-index .games-accordion__header {
+    background: linear-gradient(
+        180deg,
+        rgba(255,255,255,0.06),
+        rgba(0,0,0,0.35)
+    );
+
+    border-radius: 12px;
+    padding: 14px 18px;
+
+    font-family: var(--ccg-font-main);
+    letter-spacing: 0.18em;
+
+    color: rgba(255,255,255,0.85);
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.08),
+        0 10px 28px rgba(0,0,0,0.75);
+}
+
+/* ------------------------------------------------------------
+   OPEN STATE
+------------------------------------------------------------ */
+
+.ccg-page--games-index
+.games-accordion__section.is-open
+.games-accordion__header {
+    color: #fff;
+
+    box-shadow:
+        0 0 28px rgba(var(--accent-rgb),0.45),
+        inset 0 0 0 1px rgba(var(--accent-rgb),0.45);
 }
