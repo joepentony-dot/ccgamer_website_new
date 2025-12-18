@@ -1,6 +1,6 @@
 /* ============================================================
    CCG FOOTER — OMEGA SHARED SYSTEM (PARITY LOCK)
-   W5 — FINAL GLOBAL QA POLISH
+   W5.1 — MICRO POLISH (ACCESSIBILITY + LINK CLARITY)
    ------------------------------------------------------------
    • Fully isolated footer styling
    • Safe for all pages (root + nested)
@@ -8,6 +8,7 @@
    • Mobile-first spacing
    • Cinematic fade-out & grounding
    • Subtle neon divider glow (non-distracting)
+   • Footer-scoped link + focus-visible polish (W5.1)
 ============================================================ */
 
 /* ------------------------------------------------------------
@@ -82,9 +83,9 @@
         );
 
     box-shadow:
-        0 0 8px rgba(0,170,255,0.30); /* W5 softened */
+        0 0 8px rgba(0,170,255,0.30);
 
-    opacity: 0.75; /* W5 calmer */
+    opacity: 0.75;
 }
 
 /* ------------------------------------------------------------
@@ -93,7 +94,7 @@
 
 .ccg-footer,
 .ccg-footer-inner {
-    max-width: 1100px; /* W5: rhythm alignment */
+    max-width: 1100px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -121,6 +122,36 @@
 }
 
 /* ------------------------------------------------------------
+   FOOTER LINKS — CLARITY & ACCESSIBILITY (W5.1)
+------------------------------------------------------------ */
+
+.ccg-footer a {
+    position: relative;
+    z-index: 2;
+
+    color: rgba(232,236,255,0.85);
+    text-decoration: none;
+
+    transition:
+        color 0.18s ease,
+        text-shadow 0.18s ease;
+}
+
+.ccg-footer a:hover {
+    color: #ffffff;
+    text-shadow:
+        0 0 6px rgba(255,255,255,0.35);
+}
+
+/* Keyboard focus — visible but calm */
+.ccg-footer a:focus-visible {
+    outline: none;
+    text-shadow:
+        0 0 0 2px rgba(0,0,0,0.9),
+        0 0 8px rgba(0,170,255,0.55);
+}
+
+/* ------------------------------------------------------------
    MODE TINTING (NEON HORIZON)
 ------------------------------------------------------------ */
 
@@ -138,6 +169,12 @@
         0 0 10px rgba(0,170,255,0.40);
 }
 
+[data-ccg-mode="c64"] .ccg-footer a:focus-visible {
+    text-shadow:
+        0 0 0 2px rgba(0,0,0,0.9),
+        0 0 8px rgba(0,170,255,0.65);
+}
+
 /* AMIGA MODE (PINK) */
 [data-ccg-mode="amiga"] .ccg-footer::before {
     background:
@@ -150,6 +187,12 @@
 
     box-shadow:
         0 0 12px rgba(255,41,224,0.40);
+}
+
+[data-ccg-mode="amiga"] .ccg-footer a:focus-visible {
+    text-shadow:
+        0 0 0 2px rgba(0,0,0,0.9),
+        0 0 10px rgba(255,41,224,0.65);
 }
 
 /* ------------------------------------------------------------
@@ -186,5 +229,9 @@
     .ccg-footer::before,
     .ccg-footer::after {
         opacity: 0.45;
+    }
+
+    .ccg-footer a {
+        transition: none;
     }
 }
