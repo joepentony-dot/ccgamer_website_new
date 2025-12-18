@@ -1,7 +1,12 @@
 /* ============================================================
    CCG-MODAL.CSS — IMAGE + PDF MODAL VIEWER (OMEGA BUILD)
-   High z-index / clean separation / non-interfering overlays
-   ============================================================ */
+   ------------------------------------------------------------
+   • High z-index / clean separation
+   • Image modals preserved
+   • Manual (PDF) viewer variant added
+   • ZERO interference with page layout
+============================================================ */
+
 
 /* ------------------------------------------------------------
    MODAL WRAPPER
@@ -14,27 +19,40 @@
     display: none;
     align-items: center;
     justify-content: center;
-    z-index: 9999; /* Must sit above CRT + hero + UI */
-    backdrop-filter: blur(2px); /* Subtle Omega enhancement */
+    z-index: 9999; /* Above CRT + hero + UI */
+    backdrop-filter: blur(2px);
 }
 
 .ccg-modal.active {
     display: flex;
 }
 
+
 /* ------------------------------------------------------------
-   MODAL CONTENT
+   MODAL CONTENT — BASE
 ------------------------------------------------------------ */
 
 .ccg-modal-content {
+    position: relative;
     max-width: 92vw;
     max-height: 92vh;
-    background: #111;
-    padding: 1rem;
-    border-radius: 8px;
-    overflow: auto;
-    box-shadow: 0 0 20px rgba(0,0,0,0.6);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.06),
+            rgba(0,0,0,0.85)
+        );
+
+    padding: 18px;
+    border-radius: 16px;
+    overflow: hidden;
+
+    box-shadow:
+        0 0 0 1px rgba(255,255,255,0.08),
+        0 30px 80px rgba(0,0,0,0.85);
 }
+
 
 /* ------------------------------------------------------------
    CLOSE BUTTON
@@ -42,28 +60,128 @@
 
 .ccg-modal-close {
     position: absolute;
-    top: 1.2rem;
-    right: 1.8rem;
+    top: 16px;
+    right: 18px;
+
     font-size: 2rem;
-    cursor: pointer;
-    opacity: 0.6;
-    transition: opacity 0.2s ease;
-    user-select: none;
     line-height: 1;
+    cursor: pointer;
+    user-select: none;
+
+    color: rgba(255,255,255,0.75);
+
+    text-shadow:
+        0 0 12px rgba(0,0,0,0.85),
+        0 0 18px rgba(var(--accent-rgb),0.25);
+
+    opacity: 0.7;
+    transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .ccg-modal-close:hover {
     opacity: 1;
+    transform: scale(1.05);
+}
+
+
+/* ============================================================
+   MANUAL VIEWER VARIANT (PDF)
+   Applied via .ccg-modal--manual
+============================================================ */
+
+.ccg-modal--manual .ccg-modal-content {
+    width: min(1200px, 94vw);
+    height: min(820px, 94vh);
+
+    padding: 0;
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            ellipse at top,
+            rgba(var(--accent-rgb), 0.12),
+            transparent 60%
+        ),
+        linear-gradient(
+            180deg,
+            rgba(0,0,0,0.92),
+            rgba(0,0,0,0.96)
+        );
+}
+
+/* ------------------------------------------------------------
+   MANUAL HEADER BAR
+------------------------------------------------------------ */
+
+.ccg-modal--manual .ccg-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 14px 20px;
+
+    font-family: var(--ccg-font-main);
+    letter-spacing: 0.14em;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+
+    color: var(--ccg-text-light);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.08),
+            rgba(0,0,0,0.45)
+        );
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.08),
+        0 6px 18px rgba(0,0,0,0.6);
+}
+
+/* ------------------------------------------------------------
+   MANUAL BODY
+------------------------------------------------------------ */
+
+.ccg-modal--manual .ccg-modal-body {
+    position: relative;
+    flex: 1;
+    background: #000;
 }
 
 /* ------------------------------------------------------------
    PDF FRAME
 ------------------------------------------------------------ */
 
-.ccg-pdf-frame {
-    width: 80vw;
-    height: 80vh;
+.ccg-modal--manual .ccg-pdf-frame {
+    width: 100%;
+    height: 100%;
     border: none;
     display: block;
     background: #000;
+}
+
+
+/* ------------------------------------------------------------
+   MOBILE ADJUSTMENTS
+------------------------------------------------------------ */
+
+@media (max-width: 768px) {
+
+    .ccg-modal--manual .ccg-modal-content {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+    }
+
+    .ccg-modal--manual .ccg-modal-header {
+        padding: 12px 16px;
+        font-size: 0.7rem;
+    }
+
+    .ccg-modal-close {
+        top: 10px;
+        right: 12px;
+        font-size: 1.8rem;
+    }
 }
