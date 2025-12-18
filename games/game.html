@@ -64,22 +64,44 @@
             </div>
         </section>
 
-        <section id="game-description-section" hidden>
-            <p id="gameDescription"></p>
+        <!-- DESCRIPTION -->
+        <section id="game-description-section" class="game-section game-section--description" hidden>
+            <h2 class="game-section__title">Overview</h2>
+
+            <div class="game-description">
+                <p id="gameDescription"></p>
+            </div>
         </section>
 
-        <section id="game-video-section" hidden>
-            <iframe id="game-video-embed" loading="lazy" allowfullscreen></iframe>
-            <a id="gameVideoBtn" class="ccg-btn" target="_blank" hidden>
-                Watch on YouTube
-            </a>
+        <!-- VIDEO -->
+        <section id="game-video-section" class="game-section game-section--video" hidden>
+            <h2 class="game-section__title">Gameplay Video</h2>
+
+            <div class="game-video">
+                <div class="game-video__embed">
+                    <iframe id="game-video-embed"
+                            loading="lazy"
+                            allowfullscreen></iframe>
+                </div>
+
+                <div class="game-video__actions">
+                    <a id="gameVideoBtn"
+                       class="ccg-btn ccg-btn--secondary"
+                       target="_blank"
+                       hidden>
+                        Watch on YouTube
+                    </a>
+                </div>
+            </div>
         </section>
 
+        <!-- SCREENSHOTS -->
         <section class="game-screenshots" hidden>
             <h2 class="game-screenshots__title">Screenshots</h2>
             <div class="game-screenshots__strip" id="gameScreenshotsStrip"></div>
         </section>
 
+        <!-- DOWNLOADS -->
         <section class="game-downloads" hidden>
             <h2 class="game-downloads__title">Manuals &amp; Downloads</h2>
             <div class="game-downloads__actions">
@@ -92,6 +114,7 @@
             </p>
         </section>
 
+        <!-- RELATED -->
         <section class="game-section game-section--related">
             <h2 class="game-section__title"></h2>
             <div id="relatedGamesGrid" class="ccg-cards-grid"></div>
