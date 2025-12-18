@@ -1,9 +1,11 @@
 /* ============================================================
-   CCG LOAD SINGLE GAME — STABLE RESTORE + URL SAFE IDS
+   CCG LOAD SINGLE GAME — STABLE + W4 POLISH
    ------------------------------------------------------------
-   • Correct games.json path (FIXED)
+   • Correct games.json path (LOCKED)
    • URL-safe ID decoding
    • FULL renderGame restored
+   • W4: Smart related-games fallback logic
+   • W4: Auto-hide empty sections
 ============================================================ */
 
 let CCG_SINGLE_ALL_GAMES = [];
@@ -25,7 +27,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        // 🔧 FIX: explicit depth-safe path
+        // 🔒 LOCKED: depth-safe path
         const response = await fetch("games.json", { cache: "no-store" });
         if (!response.ok) throw new Error(`games.json ${response.status}`);
 
@@ -49,7 +51,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 /* ============================================================
-   THUMBNAIL RESOLVER
+   THUMBNAIL RESOLVER (LOCKED)
 ============================================================ */
 
 function resolveGameThumb(raw) {
@@ -64,7 +66,7 @@ function resolveGameThumb(raw) {
 }
 
 /* ============================================================
-   FIELD RESOLVERS
+   FIELD RESOLVERS (LOCKED)
 ============================================================ */
 
 function resolveVideoId(game) {
@@ -100,7 +102,6 @@ function renderGame(game) {
     const yearEl = document.getElementById("gameMetaYear");
     const systemEl = document.getElementById("gameMetaSystem");
     const devEl = document.getElementById("gameMetaDeveloper");
-    const genresEl = document.getElementById("gameGenres");
     const descEl = document.getElementById("gameDescription");
     const descSection = document.getElementById("game-description-section");
 
@@ -113,16 +114,12 @@ function renderGame(game) {
     if (systemEl) systemEl.textContent = game.system || "—";
     if (devEl) devEl.textContent = game.developer || game.publisher || "—";
 
-    if (Array.isArray(game.genres) && genresEl) {
-        genresEl.textContent = game.genres.join(", ");
-        genresEl.hidden = false;
-    }
-
     if (game.description && descEl && descSection) {
         descEl.innerHTML = game.description;
         descSection.hidden = false;
     }
 
+    /* VIDEO */
     const vid = resolveVideoId(game);
     if (vid) {
         const iframe = document.getElementById("game-video-embed");
@@ -137,6 +134,7 @@ function renderGame(game) {
         }
     }
 
+    /* MANUAL */
     const manual = resolveManualUrl(game);
     if (manual) {
         const btn = document.getElementById("gameManualBtn");
@@ -146,6 +144,7 @@ function renderGame(game) {
         }
     }
 
+    /* DISK / TAPE */
     const disk = resolveDiskUrl(game);
     if (disk) {
         const btn = document.getElementById("gameDiskBtn");
@@ -159,24 +158,50 @@ function renderGame(game) {
 }
 
 /* ============================================================
-   RELATED GAMES
+   RELATED GAMES — W4 SMART FALLBACK
 ============================================================ */
 
 function renderRelatedGames(game, allGames) {
+
+    const section = document.querySelector(".game-section--related");
     const container = document.getElementById("relatedGamesGrid");
-    const titleEl = document.querySelector(".game-section--related .game-section__title");
+    const titleEl = section?.querySelector(".game-section__title");
 
-    if (!container) return;
+    if (!section || !container) return;
 
-    const related = allGames
-        .filter(g =>
+    let related = [];
+
+    /* Priority 1 — Same developer */
+    if (game.developer) {
+        related = allGames.filter(g =>
             String(g.id) !== String(game.id) &&
-            g.developer &&
             g.developer === game.developer
-        )
-        .slice(0, 6);
+        );
+    }
 
-    if (titleEl) titleEl.textContent = "Similar(ish) titles…";
+    /* Priority 2 — Same genre fallback */
+    if (related.length === 0 && Array.isArray(game.genres)) {
+        related = allGames.filter(g =>
+            String(g.id) !== String(game.id) &&
+            Array.isArray(g.genres) &&
+            g.genres.some(gen => game.genres.includes(gen))
+        );
+    }
+
+    related = related.slice(0, 6);
+
+    /* Nothing useful — hide section entirely */
+    if (related.length === 0) {
+        section.hidden = true;
+        return;
+    }
+
+    if (titleEl) {
+        titleEl.textContent =
+            related[0].developer === game.developer
+                ? "More from the same developer"
+                : "Related games you might like";
+    }
 
     container.innerHTML = related.map(g => {
         const thumb = resolveGameThumb(g.thumbnail || g.thumb || g.cover);
