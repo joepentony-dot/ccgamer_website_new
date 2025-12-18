@@ -1,14 +1,12 @@
 /* ============================================================
-   CCG MASTER CSS — GLOBAL STRUCTURE & TYPOGRAPHY
-   Omega Neon Edition — GLOBAL HEADER PARITY LOCK (FINAL+)
+   OMEGA HEADER LOCK — DO NOT MODIFY
    ------------------------------------------------------------
-   • Header fully isolated from page layout
-   • Identical appearance across ALL pages
-   • Header Nav: ALWAYS single-row (no vertical stacking)
-   • Compression + horizontal scroll (safe) instead of wrapping
-   • Socials + Mode Toggle always visible (no overlap)
-   • Phase H4: Nav button WOW styling (mode-aware neon, no layout risk)
-   • ZERO JS / ZERO HTML changes
+   • HTML verified across Home, Collections, Quiz
+   • Supports in-flow header-actions only (no absolute hacks)
+   • Nav: single-row with horizontal scroll fallback
+   • Actions: non-shrinking, safe overflow (no squash)
+   • Logo paths remain depth-correct per page (by design)
+   • Any changes here risk site-wide regressions
 ============================================================ */
 
 :root {
