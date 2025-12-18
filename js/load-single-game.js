@@ -1,11 +1,12 @@
 /* ============================================================
-   CCG LOAD SINGLE GAME — STABLE + W4 POLISH
+   CCG LOAD SINGLE GAME — STABLE + W4 POLISH + SG-E1 MANUAL MODAL
    ------------------------------------------------------------
    • Correct games.json path (LOCKED)
    • URL-safe ID decoding
    • FULL renderGame restored
    • W4: Smart related-games fallback logic
    • W4: Auto-hide empty sections
+   • SG-E1.3: Cinematic Manual Modal Viewer
 ============================================================ */
 
 let CCG_SINGLE_ALL_GAMES = [];
@@ -134,13 +135,30 @@ function renderGame(game) {
         }
     }
 
-    /* MANUAL */
+    /* MANUAL (MODAL-AWARE) */
     const manual = resolveManualUrl(game);
     if (manual) {
         const btn = document.getElementById("gameManualBtn");
         if (btn) {
             btn.href = manual;
             btn.hidden = false;
+
+            btn.addEventListener("click", (e) => {
+                const modal = document.getElementById("manualModal");
+                const frame = document.getElementById("manualPdfFrame");
+                const title = document.getElementById("manualModalTitle");
+
+                if (!modal || !frame) return;
+
+                e.preventDefault();
+
+                frame.src = manual;
+                if (title) title.textContent = `${game.title} — Manual`;
+
+                modal.classList.add("active");
+                modal.setAttribute("aria-hidden", "false");
+                document.body.style.overflow = "hidden";
+            });
         }
     }
 
@@ -155,6 +173,40 @@ function renderGame(game) {
     }
 
     renderRelatedGames(game, CCG_SINGLE_ALL_GAMES);
+}
+
+/* ============================================================
+   MODAL CLOSE HANDLING (SAFE, LOCAL)
+============================================================ */
+
+document.addEventListener("click", (e) => {
+
+    const modal = document.getElementById("manualModal");
+    if (!modal || !modal.classList.contains("active")) return;
+
+    if (
+        e.target.classList.contains("ccg-modal-close") ||
+        e.target === modal
+    ) {
+        closeManualModal();
+    }
+});
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeManualModal();
+});
+
+function closeManualModal() {
+    const modal = document.getElementById("manualModal");
+    const frame = document.getElementById("manualPdfFrame");
+
+    if (!modal) return;
+
+    modal.classList.remove("active");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+
+    if (frame) frame.src = "";
 }
 
 /* ============================================================
