@@ -23,17 +23,12 @@
     <link rel="stylesheet" href="../resources/css/ccg-modal.css">
     <link rel="stylesheet" href="../resources/css/ccg-socials.css">
     <link rel="stylesheet" href="../resources/css/ccg-cards.css">
-
-    <!-- PAGE CSS -->
     <link rel="stylesheet" href="../resources/css/games.css">
-
-    <!-- FOOTER -->
     <link rel="stylesheet" href="../resources/css/ccg-footer.css">
 </head>
 
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
 
-<!-- GLOBAL BACKGROUND -->
 <div class="ccg-bg">
     <div class="ccg-bg-starfield"></div>
     <div class="ccg-bg-grid"></div>
@@ -41,25 +36,17 @@
 </div>
 
 <div class="ccg-page ccg-page--single-game">
-
-    <!-- MAIN -->
     <main class="ccg-main ccg-main--single-game">
 
         <!-- HERO -->
         <section class="game-hero">
             <div id="gameHeroBG" class="game-hero__bg"></div>
-
             <div class="game-hero__inner">
                 <div class="game-hero__media">
-                    <img id="gameHeroThumb"
-                         class="game-hero__thumb"
-                         alt=""
-                         loading="lazy">
+                    <img id="gameHeroThumb" class="game-hero__thumb" alt="" loading="lazy">
                 </div>
-
                 <div class="game-hero__content">
                     <h1 id="gameHeroTitle"></h1>
-
                     <div class="game-meta">
                         <span id="gameMetaYear"></span> ·
                         <span id="gameMetaSystem"></span> ·
@@ -69,55 +56,34 @@
             </div>
         </section>
 
-        <!-- DESCRIPTION -->
         <section id="game-description-section" hidden>
             <p id="gameDescription"></p>
         </section>
 
-        <!-- VIDEO -->
         <section id="game-video-section" hidden>
-            <iframe id="game-video-embed"
-                    loading="lazy"
-                    allowfullscreen></iframe>
-
-            <a id="gameVideoBtn"
-               class="ccg-btn"
-               target="_blank"
-               hidden>
+            <iframe id="game-video-embed" loading="lazy" allowfullscreen></iframe>
+            <a id="gameVideoBtn" class="ccg-btn" target="_blank" hidden>
                 Watch on YouTube
             </a>
         </section>
 
-        <!-- SCREENSHOTS (SG-E4) -->
         <section class="game-screenshots" hidden>
             <h2 class="game-screenshots__title">Screenshots</h2>
-
-            <div class="game-screenshots__strip" id="gameScreenshotsStrip">
-                <!-- Injected by JS -->
-            </div>
+            <div class="game-screenshots__strip" id="gameScreenshotsStrip"></div>
         </section>
 
-        <!-- DOWNLOADS (SG-E2) -->
         <section class="game-downloads" hidden>
             <h2 class="game-downloads__title">Manuals &amp; Downloads</h2>
-
             <div class="game-downloads__actions">
-                <a id="gameManualBtn" class="ccg-btn" href="#" hidden>
-                    View Manual
-                </a>
-
-                <a id="gameDiskBtn" class="ccg-btn" target="_blank" hidden>
-                    Play / Download
-                </a>
+                <a id="gameManualBtn" class="ccg-btn" href="#" hidden>View Manual</a>
+                <a id="gameDiskBtn" class="ccg-btn" target="_blank" hidden>Play / Download</a>
             </div>
-
             <p class="game-downloads__disclaimer">
                 Manuals and game files are provided for archival and educational purposes.
                 Please ensure you own the original media where required.
             </p>
         </section>
 
-        <!-- RELATED -->
         <section class="game-section game-section--related">
             <h2 class="game-section__title"></h2>
             <div id="relatedGamesGrid" class="ccg-cards-grid"></div>
@@ -126,21 +92,18 @@
     </main>
 </div>
 
-<!-- ========================================================= -->
-<!-- SG-E3 — CINEMATIC MODAL VIEWER (PDF / IMAGE) -->
-<!-- ========================================================= -->
-
+<!-- MODAL -->
 <div id="ccgModal" class="ccg-modal" aria-hidden="true">
+    <button class="ccg-modal-nav ccg-modal-nav--prev" aria-label="Previous screenshot">‹</button>
+
     <div class="ccg-modal-content">
         <span class="ccg-modal-close" aria-label="Close modal">&times;</span>
-
-        <iframe id="ccgModalFrame"
-                class="ccg-pdf-frame"
-                loading="lazy"></iframe>
+        <iframe id="ccgModalFrame" class="ccg-pdf-frame" loading="lazy"></iframe>
     </div>
+
+    <button class="ccg-modal-nav ccg-modal-nav--next" aria-label="Next screenshot">›</button>
 </div>
 
-<!-- JS -->
 <script src="../js/ccg-global.js" defer></script>
 <script src="../js/ccg-mode-engine.js" defer></script>
 <script src="../js/load-single-game.js" defer></script>
