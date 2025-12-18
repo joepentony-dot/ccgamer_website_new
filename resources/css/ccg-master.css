@@ -112,6 +112,9 @@ body {
     align-items: center;
 
     gap: 18px;
+
+    /* ✅ FIX: prevent inner bar clipping dropdown */
+    overflow: visible;
 }
 
 /* ============================================================
@@ -180,6 +183,18 @@ body {
 
 .ccg-nav__list::-webkit-scrollbar {
     display: none;
+}
+
+/* ✅ FIX: when dropdown is active, allow it to render outside the scrolling list */
+.ccg-nav__list:focus-within {
+    overflow: visible;
+}
+
+/* Modern enhancement: if supported, open state also enables overflow without relying on focus */
+@supports selector(:has(*)) {
+    .ccg-nav__list:has(.ccg-nav__dropdown.is-open) {
+        overflow: visible;
+    }
 }
 
 .ccg-nav__link {
