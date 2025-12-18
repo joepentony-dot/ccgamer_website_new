@@ -1,12 +1,14 @@
 /* ============================================================
    HOME.CSS — OMEGA CINEMATIC SHOWPIECE (FLAGSHIP)
    Phase WOW-H3 — HOME THUMB + LAYOUT DISCIPLINE (LOCKED)
+   Phase WOW-A1 — CINEMATIC DEPTH & PRESENCE POLISH
    ------------------------------------------------------------
    Goals:
    • Keep Home immersive (fixed starfield)
    • Featured Highlights = TRUE 2-column on desktop
    • Browse by Genre = TRUE 16:9 tiles (HOME ONLY)
    • Genre images behave like the Genre Hub (contain, not cover)
+   • Add premium depth & cadence WITHOUT layout change
    • Zero impact outside Home
 ============================================================ */
 
@@ -67,6 +69,23 @@ html[data-ccg-page="home"] .home-hero {
     position: relative;
     margin-top: 12px;
     margin-bottom: 28px;
+}
+
+/* 🆕 Cinematic glass separation */
+html[data-ccg-page="home"] .home-hero::before {
+    content: "";
+    position: absolute;
+    inset: -18px -22px;
+    border-radius: 24px;
+    background:
+        radial-gradient(
+            120% 80% at 50% 0%,
+            rgba(var(--accent-rgb), 0.10),
+            transparent 65%
+        );
+    opacity: 0.35;
+    z-index: -1;
+    pointer-events: none;
 }
 
 html[data-ccg-page="home"] .home-tagline {
@@ -216,6 +235,13 @@ html[data-ccg-page="home"] .home-section {
     html[data-ccg-page="home"] .home-section__header {
         margin-bottom: 28px;
     }
+}
+
+/* 🆕 Section header authority */
+html[data-ccg-page="home"] .home-section__header {
+    text-shadow:
+        0 0 12px rgba(var(--accent-rgb),0.18),
+        0 12px 32px rgba(0,0,0,0.75);
 }
 
 
