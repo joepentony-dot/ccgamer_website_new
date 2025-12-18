@@ -1,11 +1,12 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & TYPOGRAPHY
-   OMEGA HEADER — PHASE H2 LOGO AUTHORITY (LOCKED)
+   OMEGA HEADER — PHASE H3 NAVIGATION PRESENCE (LOCKED)
    ------------------------------------------------------------
-   • Phase H1 structural certainty preserved
-   • Phase H2 visual authority for brand
-   • ZERO layout risk
+   • Phase H1 structural certainty
+   • Phase H2 logo authority
+   • Phase H3 navigation presence & hierarchy
    • ZERO HTML / JS changes
+   • ZERO layout risk
 ============================================================ */
 
 /* ============================================================
@@ -109,7 +110,7 @@ body {
 }
 
 /* ============================================================
-   BRAND — PHASE H2 AUTHORITY
+   BRAND — PHASE H2 (UNCHANGED)
 ============================================================ */
 
 .ccg-brand {
@@ -127,7 +128,6 @@ body {
     position: relative;
 }
 
-/* LOGO IMAGE */
 .ccg-brand__logo {
     width: 56px;
     height: auto;
@@ -140,7 +140,6 @@ body {
     transition: filter 260ms ease;
 }
 
-/* TEXT BLOCK */
 .ccg-brand__text {
     display: flex;
     flex-direction: column;
@@ -151,26 +150,19 @@ body {
     overflow: hidden;
 }
 
-/* KICKER */
 .ccg-brand__kicker {
     font-size: 0.6rem;
     letter-spacing: 0.14em;
     opacity: 0.75;
-
     margin-bottom: 2px;
-
-    text-shadow:
-        0 0 6px rgba(0,0,0,0.85);
 }
 
-/* TITLE LINE */
 .ccg-brand__title {
     display: flex;
     gap: 6px;
     align-items: baseline;
 }
 
-/* CHEEKY — DOMINANT */
 .ccg-brand__neon-cheeky {
     font-family: var(--ccg-font-main);
     font-size: 1.05rem;
@@ -184,7 +176,6 @@ body {
         0 0 34px rgba(var(--accent-rgb),0.25);
 }
 
-/* SUBTITLE */
 .ccg-brand__neon-sub {
     font-family: var(--ccg-font-main);
     font-size: 0.65rem;
@@ -196,24 +187,8 @@ body {
         0 0 6px rgba(var(--accent-rgb),0.25);
 }
 
-/* SUBTLE HOVER CONFIDENCE (DESKTOP ONLY) */
-@media (hover: hover) {
-    .ccg-brand:hover .ccg-brand__logo {
-        filter:
-            drop-shadow(0 0 10px rgba(var(--accent-rgb),0.55))
-            drop-shadow(0 0 26px rgba(var(--accent-rgb),0.40));
-    }
-
-    .ccg-brand:hover .ccg-brand__neon-cheeky {
-        text-shadow:
-            0 0 10px rgba(var(--accent-rgb),0.65),
-            0 0 26px rgba(var(--accent-rgb),0.45),
-            0 0 44px rgba(var(--accent-rgb),0.35);
-    }
-}
-
 /* ============================================================
-   NAVIGATION — UNCHANGED (SAFE)
+   NAVIGATION — PHASE H3 PRESENCE
 ============================================================ */
 
 .ccg-nav {
@@ -228,6 +203,7 @@ body {
     position: relative;
 }
 
+/* Scroll surface */
 .ccg-nav__list {
     display: flex;
     align-items: center;
@@ -237,8 +213,8 @@ body {
     margin: 0;
     padding-inline: 28px;
 
-    max-width: 100%;
     height: 100%;
+    max-width: 100%;
 
     white-space: nowrap;
     overflow-x: auto;
@@ -249,6 +225,7 @@ body {
     display: none;
 }
 
+/* NAV PILL — BASE */
 .ccg-nav__link {
     display: inline-flex;
     align-items: center;
@@ -267,10 +244,59 @@ body {
     color: var(--ccg-text-soft);
     text-decoration: none;
 
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.08),
+            rgba(255,255,255,0.03)
+        );
+
+    border: 1px solid rgba(255,255,255,0.14);
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.04),
+        0 6px 14px rgba(0,0,0,0.65);
 
     flex-shrink: 0;
+
+    transition:
+        color 160ms ease,
+        background 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
+}
+
+/* HOVER — TACTILE CONFIDENCE */
+@media (hover: hover) {
+    .ccg-nav__link:hover {
+        color: #fff;
+
+        transform: translateY(-1px);
+
+        box-shadow:
+            0 0 0 1px rgba(var(--accent-rgb),0.35),
+            0 0 18px rgba(var(--accent-rgb),0.35),
+            0 12px 28px rgba(0,0,0,0.85);
+    }
+}
+
+/* ACTIVE PAGE — ANCHOR */
+.ccg-nav__link--active {
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(var(--accent-rgb),0.28),
+            rgba(var(--accent-rgb),0.12)
+        );
+
+    border-color: rgba(var(--accent-rgb),0.65);
+
+    box-shadow:
+        0 0 0 1px rgba(var(--accent-rgb),0.45),
+        0 0 22px rgba(var(--accent-rgb),0.45),
+        inset 0 0 0 1px rgba(var(--accent-rgb),0.35);
 }
 
 /* ============================================================
@@ -293,7 +319,7 @@ body {
 }
 
 /* ============================================================
-   HARD LOCK SAFETY
+   SAFETY LOCKS
 ============================================================ */
 
 .ccg-header *,
