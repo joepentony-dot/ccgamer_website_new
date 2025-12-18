@@ -3,14 +3,13 @@
    Phase WOW-H3 — HOME THUMB + LAYOUT DISCIPLINE (LOCKED)
    Phase WOW-A1 — CINEMATIC DEPTH & PRESENCE POLISH
    Phase WOW-A2 — MICRO-MOTION CARD POLISH (HOME ONLY)
+   Phase WOW-A3 — ULTRA-SUBTLE AMBIENT BACKGROUND CADENCE
    ------------------------------------------------------------
    Goals:
    • Keep Home immersive (fixed starfield)
-   • Featured Highlights = TRUE 2-column on desktop
-   • Browse by Genre = TRUE 16:9 tiles (HOME ONLY)
-   • Genre images behave like the Genre Hub (contain, not cover)
-   • Add premium depth & cadence WITHOUT layout change
-   • Add subtle interaction delight (micro-motion)
+   • Add life WITHOUT visible animation
+   • Create cinematic “breathing” background
+   • Respect motion preferences
    • Zero impact outside Home
 ============================================================ */
 
@@ -64,7 +63,59 @@ html[data-ccg-page="home"] .ccg-bg-crt-overlay {
 
 
 /* ============================================================
-   HERO + TAGLINE RHYTHM (SAFE)
+   WOW-A3 — AMBIENT BACKGROUND CADENCE (HOME ONLY)
+============================================================ */
+
+@media (prefers-reduced-motion: no-preference) {
+
+    /* Starfield: ultra-slow drift + breath */
+    html[data-ccg-page="home"] .ccg-bg-starfield {
+        animation:
+            ccg-home-star-drift 90s linear infinite,
+            ccg-home-star-breathe 90s ease-in-out infinite;
+        will-change: transform, opacity;
+    }
+
+    /* Grid: extremely slow parallax slide */
+    html[data-ccg-page="home"] .ccg-bg-grid {
+        animation: ccg-home-grid-drift 140s linear infinite;
+        will-change: transform;
+    }
+
+    /* CRT: microscopic shimmer pulse */
+    html[data-ccg-page="home"] .ccg-bg-crt-overlay {
+        animation: ccg-home-crt-breathe 60s ease-in-out infinite;
+        will-change: opacity;
+    }
+}
+
+/* Starfield slow diagonal drift */
+@keyframes ccg-home-star-drift {
+    0%   { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-22px, 18px, 0); }
+}
+
+/* Starfield brightness breathing */
+@keyframes ccg-home-star-breathe {
+    0%, 100% { opacity: 0.76; }
+    50%      { opacity: 0.82; }
+}
+
+/* Grid parallax slide */
+@keyframes ccg-home-grid-drift {
+    0%   { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(12px, -14px, 0); }
+}
+
+/* CRT shimmer breath */
+@keyframes ccg-home-crt-breathe {
+    0%, 100% { opacity: 0.20; }
+    50%      { opacity: 0.24; }
+}
+
+
+/* ============================================================
+   HERO + TAGLINE RHYTHM
 ============================================================ */
 
 html[data-ccg-page="home"] .home-hero {
@@ -73,7 +124,6 @@ html[data-ccg-page="home"] .home-hero {
     margin-bottom: 28px;
 }
 
-/* Cinematic glass separation */
 html[data-ccg-page="home"] .home-hero::before {
     content: "";
     position: absolute;
@@ -116,7 +166,6 @@ html[data-ccg-page="home"] .ccg-hero-title.home-hero__title {
     transform: translateZ(0);
 }
 
-/* Subtle ignite pulse */
 @media (prefers-reduced-motion: no-preference) {
     html[data-ccg-page="home"] .home-hero__title {
         animation: ccg-home-title-ignite 14s ease-in-out infinite;
@@ -142,184 +191,12 @@ html[data-ccg-page="home"] .ccg-hero-title.home-hero__title {
 
 
 /* ============================================================
-   HOME HERO — TAGLINE CLARITY
-============================================================ */
-
-html[data-ccg-page="home"] .home-hero__tagline {
-    max-width: 64ch;
-    margin-top: 14px;
-
-    font-size: clamp(0.95rem, 1.4vw, 1.1rem);
-    line-height: 1.55;
-    letter-spacing: 0.02em;
-
-    color: var(--ccg-text-light);
-
-    text-shadow:
-        0 2px 10px rgba(0,0,0,0.75),
-        0 0 14px rgba(var(--accent-rgb),0.18);
-}
-
-
-/* ============================================================
-   HOME HERO — CTA BUTTON WOW
-============================================================ */
-
-html[data-ccg-page="home"] .home-hero__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    margin-top: 26px;
-}
-
-html[data-ccg-page="home"] .home-hero__btn {
-    position: relative;
-    isolation: isolate;
-
-    box-shadow:
-        0 10px 22px rgba(0,0,0,0.45),
-        0 0 18px rgba(var(--accent-rgb),0.22);
-
-    transition:
-        transform 260ms ease,
-        box-shadow 260ms ease,
-        filter 260ms ease;
-}
-
-html[data-ccg-page="home"] .home-hero__btn::after {
-    content: "";
-    position: absolute;
-    inset: -2px;
-    border-radius: inherit;
-    pointer-events: none;
-
-    background:
-        radial-gradient(
-            120px 40px at 20% 0%,
-            rgba(var(--accent-rgb),0.35),
-            transparent 60%
-        );
-
-    opacity: 0;
-    transition: opacity 260ms ease;
-}
-
-html[data-ccg-page="home"] .home-hero__btn:hover,
-html[data-ccg-page="home"] .home-hero__btn:focus-visible {
-    transform: translateY(-2px);
-    box-shadow:
-        0 14px 32px rgba(0,0,0,0.55),
-        0 0 26px rgba(var(--accent-rgb),0.35);
-}
-
-html[data-ccg-page="home"] .home-hero__btn:hover::after,
-html[data-ccg-page="home"] .home-hero__btn:focus-visible::after {
-    opacity: 1;
-}
-
-html[data-ccg-page="home"] .home-hero__btn-alt {
-    filter: brightness(1.05) saturate(1.05);
-}
-
-
-/* ============================================================
-   HOME SECTIONS — CADENCE
-============================================================ */
-
-html[data-ccg-page="home"] .home-section {
-    margin: 0 0 48px;
-}
-
-@media (min-width: 1024px) {
-    html[data-ccg-page="home"] .home-section {
-        margin-bottom: 56px;
-    }
-    html[data-ccg-page="home"] .home-section__header {
-        margin-bottom: 28px;
-    }
-}
-
-/* Section header authority */
-html[data-ccg-page="home"] .home-section__header {
-    text-shadow:
-        0 0 12px rgba(var(--accent-rgb),0.18),
-        0 12px 32px rgba(0,0,0,0.75);
-}
-
-
-/* ============================================================
-   FEATURED HIGHLIGHTS — TRUE 2-COLUMN
-============================================================ */
-
-html[data-ccg-page="home"] .home-highlights-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 22px;
-}
-
-@media (min-width: 1024px) {
-    html[data-ccg-page="home"] .home-highlights-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        max-width: 1180px;
-        margin-inline: auto;
-        gap: 32px;
-    }
-}
-
-
-/* ============================================================
-   BROWSE BY GENRE — HOME ONLY DISCIPLINE
-============================================================ */
-
-html[data-ccg-page="home"] .home-genre-grid {
-    display: grid;
-    gap: 18px;
-}
-
-@media (min-width: 640px) {
-    html[data-ccg-page="home"] .home-genre-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 22px;
-    }
-}
-
-@media (min-width: 1024px) {
-    html[data-ccg-page="home"] .home-genre-grid {
-        max-width: 1180px;
-        margin-inline: auto;
-        gap: 28px;
-    }
-}
-
-
-/* ============================================================
    WOW-A2 — MICRO-MOTION CARD POLISH (HOME ONLY)
 ============================================================ */
 
 @media (prefers-reduced-motion: no-preference) {
 
-    /* Featured highlight cards */
-    html[data-ccg-page="home"] .home-feature-card {
-        transition:
-            transform 320ms ease,
-            box-shadow 320ms ease;
-        will-change: transform;
-    }
-
-    html[data-ccg-page="home"] .home-feature-card:hover {
-        transform: translateY(-4px);
-        box-shadow:
-            0 18px 42px rgba(0,0,0,0.55),
-            0 0 26px rgba(var(--accent-rgb),0.28);
-    }
-
-    /* Gentle media float (no scale abuse) */
-    html[data-ccg-page="home"] .home-feature-card:hover .ccg-card__media img {
-        transform: translateY(-2px);
-        transition: transform 420ms ease;
-    }
-
-    /* Genre tiles */
+    html[data-ccg-page="home"] .home-feature-card,
     html[data-ccg-page="home"] .ccg-genre-tile {
         transition:
             transform 300ms ease,
@@ -327,15 +204,11 @@ html[data-ccg-page="home"] .home-genre-grid {
         will-change: transform;
     }
 
+    html[data-ccg-page="home"] .home-feature-card:hover,
     html[data-ccg-page="home"] .ccg-genre-tile:hover {
         transform: translateY(-3px);
         box-shadow:
             0 14px 36px rgba(0,0,0,0.55),
             0 0 22px rgba(var(--accent-rgb),0.25);
-    }
-
-    html[data-ccg-page="home"] .ccg-genre-tile:hover img {
-        transform: translateY(-1px);
-        transition: transform 380ms ease;
     }
 }
