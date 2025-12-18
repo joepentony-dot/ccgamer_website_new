@@ -1,15 +1,14 @@
 /* ============================================================
-   GAMES.CSS — OMEGA ARCADE UPGRADE
-   W7.1 — BROWSE INDEX STRONG NEON WOW
+   GAMES.CSS — OMEGA ARCADE CONSOLE
+   W7.2 — BROWSE INDEX HARD NEON (TRON-CLEAN)
    ------------------------------------------------------------
-   Scope:
-   • Games Index ONLY
-   • CSS-only
-   • ZERO JS / data impact
+   • Games Index ONLY: neon spine + chapter bars + typography
+   • Single Game W4 preserved (below)
+   • CSS-only, no JS / data changes
 ============================================================ */
 
 /* ============================================================
-   BASE SAFETY
+   PAGE BASE — SHARED
 ============================================================ */
 
 .games-grid {
@@ -18,14 +17,14 @@
 
 /* ============================================================
    ============================================================
-   W7 — BROWSE INDEX WOW (ARCADE MODE)
+   W7 — BROWSE INDEX WOW (HARD NEON CONSOLE)
    Scope: .ccg-page--games-index ONLY
    ============================================================
 ============================================================ */
 
-/* ============================================================
-   HERO — NEON ARCADE AUTHORITY
-============================================================ */
+/* ------------------------------------------------------------
+   HERO — HARD NEON AUTHORITY
+------------------------------------------------------------ */
 
 .ccg-page--games-index .games-hero {
     position: relative;
@@ -35,14 +34,14 @@
 
     background:
         radial-gradient(
-            ellipse at 18% 14%,
-            rgba(var(--accent-rgb), 0.30),
-            transparent 58%
+            ellipse at 16% 18%,
+            rgba(var(--accent-rgb), 0.22),
+            transparent 60%
         ),
         linear-gradient(
             145deg,
             rgba(0,0,0,0.96),
-            rgba(12,12,32,0.92),
+            rgba(10,10,26,0.92),
             rgba(0,0,0,0.98)
         );
 
@@ -51,7 +50,35 @@
         inset 0 0 0 1px rgba(255,255,255,0.07);
 }
 
+.ccg-page--games-index .games-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+
+    background:
+        linear-gradient(
+            to right,
+            rgba(var(--accent-rgb),0.10),
+            transparent 40%,
+            transparent 60%,
+            rgba(var(--accent-rgb),0.08)
+        ),
+        repeating-linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.018),
+            rgba(255,255,255,0.018) 1px,
+            transparent 1px,
+            transparent 4px
+        );
+
+    opacity: 0.32;
+}
+
 .ccg-page--games-index .games-hero__inner {
+    position: relative;
+    z-index: 2;
     padding: 56px 48px 52px;
 }
 
@@ -63,38 +90,38 @@
 
 .ccg-page--games-index .games-hero__title {
     font-family: var(--ccg-font-main);
-    font-size: clamp(1.9rem, 3.6vw, 3rem);
-    letter-spacing: 0.18em;
-    line-height: 1.08;
+    font-size: clamp(2rem, 3.8vw, 3.1rem);
+    letter-spacing: 0.20em;
+    line-height: 1.06;
+
+    color: var(--ccg-text-light);
 
     text-shadow:
-        0 0 12px rgba(255,255,255,0.18),
-        0 0 26px rgba(var(--accent-rgb),0.55),
-        0 0 54px rgba(var(--accent-rgb),0.35),
-        0 22px 52px rgba(0,0,0,0.90);
+        0 0 10px rgba(255,255,255,0.20),
+        0 0 26px rgba(var(--accent-rgb),0.65),
+        0 0 58px rgba(var(--accent-rgb),0.38),
+        0 22px 54px rgba(0,0,0,0.90);
 }
 
 .ccg-page--games-index .games-hero__subtitle {
     max-width: 60ch;
     margin-top: 14px;
-
     opacity: 0.92;
 
     text-shadow:
-        0 2px 12px rgba(0,0,0,0.75),
-        0 0 16px rgba(var(--accent-rgb),0.22);
+        0 2px 12px rgba(0,0,0,0.72);
 }
 
 .ccg-page--games-index .games-hero__stats {
     margin-top: 18px;
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     letter-spacing: 0.08em;
-    opacity: 0.85;
+    opacity: 0.86;
 }
 
-/* ============================================================
-   CONTROL DECK — SEARCH CONSOLE
-============================================================ */
+/* ------------------------------------------------------------
+   CONTROL DECK — SEARCH + A–Z RAIL
+------------------------------------------------------------ */
 
 .ccg-page--games-index .games-tools {
     position: relative;
@@ -104,15 +131,10 @@
     border-radius: 22px;
 
     background:
-        radial-gradient(
-            1200px 260px at 20% 0%,
-            rgba(var(--accent-rgb), 0.18),
-            transparent 60%
-        ),
         linear-gradient(
             135deg,
             rgba(255,255,255,0.06),
-            rgba(255,255,255,0.02)
+            rgba(255,255,255,0.018)
         );
 
     box-shadow:
@@ -120,10 +142,97 @@
         0 28px 72px rgba(0,0,0,0.80);
 }
 
-/* ============================================================
-   A–Z SELECTOR — NEON ARCADE RAIL
-============================================================ */
+/* Hard neon header bar */
+.ccg-page--games-index .games-tools::before {
+    content: "";
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    top: 14px;
+    height: 2px;
+    border-radius: 999px;
 
+    background:
+        linear-gradient(
+            to right,
+            transparent,
+            rgba(var(--accent-rgb),0.95),
+            transparent
+        );
+
+    box-shadow:
+        0 0 14px rgba(var(--accent-rgb),0.65),
+        0 0 30px rgba(var(--accent-rgb),0.35);
+
+    opacity: 0.95;
+    pointer-events: none;
+}
+
+.ccg-page--games-index .games-search {
+    position: relative;
+    max-width: 560px;
+}
+
+.ccg-page--games-index .games-search input {
+    width: 100%;
+    height: 46px;
+    padding: 0 46px 0 16px;
+
+    font-family: var(--ccg-font-body);
+    font-size: 0.95rem;
+    color: var(--ccg-text-light);
+
+    background:
+        linear-gradient(180deg,
+            rgba(0,0,0,0.62),
+            rgba(0,0,0,0.38));
+
+    border-radius: 14px;
+    border: none;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.10),
+        0 0 0 1px rgba(0,0,0,0.25);
+
+    transition: box-shadow 160ms ease;
+}
+
+.ccg-page--games-index .games-search input:focus {
+    outline: none;
+    box-shadow:
+        inset 0 0 0 1px rgba(var(--accent-rgb), 0.85),
+        0 0 22px rgba(var(--accent-rgb), 0.55);
+}
+
+.ccg-page--games-index .games-search button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    width: 28px;
+    height: 28px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(var(--accent-rgb), 0.75),
+            rgba(var(--accent-rgb), 0.30)
+        );
+
+    color: #081018;
+    font-size: 18px;
+    line-height: 1;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(var(--accent-rgb), 0.85),
+        0 0 18px rgba(var(--accent-rgb), 0.45);
+}
+
+/* A–Z rail */
 .ccg-page--games-index #gamesAlphaStrip {
     display: flex;
     flex-wrap: wrap;
@@ -131,7 +240,6 @@
     margin-top: 16px;
 }
 
-/* Letter buttons */
 .ccg-page--games-index #gamesAlphaStrip button {
     min-width: 36px;
     height: 34px;
@@ -143,7 +251,7 @@
     font-size: 0.75rem;
     letter-spacing: 0.12em;
 
-    color: rgba(255,255,255,0.85);
+    color: rgba(255,255,255,0.88);
 
     background:
         linear-gradient(
@@ -153,54 +261,172 @@
         );
 
     box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.10),
-        0 6px 14px rgba(0,0,0,0.55);
+        inset 0 0 0 1px rgba(255,255,255,0.12),
+        0 8px 16px rgba(0,0,0,0.55);
 
     transition:
         transform 140ms ease,
-        box-shadow 140ms ease,
-        background 140ms ease;
+        box-shadow 140ms ease;
 }
 
-/* Hover punch */
 .ccg-page--games-index #gamesAlphaStrip button:hover {
     transform: translateY(-1px);
-
     box-shadow:
-        inset 0 0 0 1px rgba(var(--accent-rgb), 0.55),
-        0 0 18px rgba(var(--accent-rgb), 0.45),
-        0 10px 22px rgba(0,0,0,0.75);
+        inset 0 0 0 1px rgba(var(--accent-rgb), 0.75),
+        0 0 18px rgba(var(--accent-rgb), 0.55),
+        0 12px 26px rgba(0,0,0,0.75);
 }
 
-/* Active letter — LOCKED NEON */
 .ccg-page--games-index #gamesAlphaStrip button.active {
     color: #fff;
 
     background:
-        radial-gradient(
-            circle at 30% 30%,
-            rgba(var(--accent-rgb), 0.65),
+        linear-gradient(
+            180deg,
+            rgba(var(--accent-rgb), 0.92),
             rgba(var(--accent-rgb), 0.28)
         );
 
     box-shadow:
-        inset 0 0 0 1px rgba(var(--accent-rgb), 0.85),
-        0 0 32px rgba(var(--accent-rgb), 0.65),
+        inset 0 0 0 1px rgba(var(--accent-rgb), 0.95),
+        0 0 32px rgba(var(--accent-rgb), 0.75),
         0 14px 32px rgba(0,0,0,0.85);
 }
 
-/* Disabled letters */
 .ccg-page--games-index #gamesAlphaStrip button.disabled {
-    opacity: 0.35;
+    opacity: 0.30;
     cursor: default;
-
     box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.04);
+        inset 0 0 0 1px rgba(255,255,255,0.05);
 }
 
-/* ============================================================
-   ACCORDION — CHAPTER MODULES
-============================================================ */
+/* ------------------------------------------------------------
+   LAYOUT — ACCORDION CONSOLE (LEFT NEON SPINE + CONTENT)
+   NOTE: Uses your existing “left spine” DOM if present.
+------------------------------------------------------------ */
+
+/* If your JS outputs a wrapper, this will enhance it safely */
+.ccg-page--games-index .games-accordion {
+    position: relative;
+}
+
+/* LEFT SPINE — hard neon tiles + horizontal bars */
+.ccg-page--games-index .games-accordion__index,
+.ccg-page--games-index .games-accordion__letters,
+.ccg-page--games-index .games-accordion__nav {
+    position: sticky;
+    top: 140px;
+}
+
+/* Base tile */
+.ccg-page--games-index .games-accordion__index-item,
+.ccg-page--games-index .games-accordion__letter {
+    position: relative;
+    margin: 10px 0;
+    padding: 10px 12px;
+
+    border-radius: 14px;
+    cursor: pointer;
+
+    font-family: var(--ccg-font-main);
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+
+    color: rgba(255,255,255,0.78);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.06),
+            rgba(0,0,0,0.35)
+        );
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.10),
+        0 10px 18px rgba(0,0,0,0.55);
+
+    transition:
+        transform 140ms ease,
+        box-shadow 140ms ease,
+        color 140ms ease;
+}
+
+/* HARD NEON “HORIZONTAL BAR” under every tile */
+.ccg-page--games-index .games-accordion__index-item::after,
+.ccg-page--games-index .games-accordion__letter::after {
+    content: "";
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: -7px;
+    height: 2px;
+
+    background:
+        linear-gradient(
+            to right,
+            transparent,
+            rgba(var(--accent-rgb), 0.95),
+            transparent
+        );
+
+    box-shadow:
+        0 0 12px rgba(var(--accent-rgb), 0.60),
+        0 0 26px rgba(var(--accent-rgb), 0.32);
+
+    opacity: 0.85;
+}
+
+/* Hover */
+.ccg-page--games-index .games-accordion__index-item:hover,
+.ccg-page--games-index .games-accordion__letter:hover {
+    transform: translateX(2px);
+    color: #fff;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(var(--accent-rgb), 0.75),
+        0 0 20px rgba(var(--accent-rgb), 0.55),
+        0 12px 26px rgba(0,0,0,0.78);
+}
+
+/* Active — “powered on” */
+.ccg-page--games-index .games-accordion__index-item.active,
+.ccg-page--games-index .games-accordion__letter.active {
+    color: #fff;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(var(--accent-rgb), 0.90),
+            rgba(var(--accent-rgb), 0.22)
+        );
+
+    box-shadow:
+        inset 0 0 0 1px rgba(var(--accent-rgb), 0.95),
+        0 0 34px rgba(var(--accent-rgb), 0.78),
+        0 16px 34px rgba(0,0,0,0.88);
+}
+
+/* Active bar even brighter */
+.ccg-page--games-index .games-accordion__index-item.active::after,
+.ccg-page--games-index .games-accordion__letter.active::after {
+    opacity: 1;
+    box-shadow:
+        0 0 16px rgba(var(--accent-rgb), 0.85),
+        0 0 34px rgba(var(--accent-rgb), 0.55);
+}
+
+/* Disabled */
+.ccg-page--games-index .games-accordion__index-item.disabled,
+.ccg-page--games-index .games-accordion__letter.disabled {
+    opacity: 0.28;
+    cursor: default;
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+/* ------------------------------------------------------------
+   ACCORDION SECTIONS — CHAPTER BARS
+------------------------------------------------------------ */
 
 .ccg-page--games-index .games-accordion__section {
     margin-bottom: 18px;
@@ -219,58 +445,406 @@
         0 18px 44px rgba(0,0,0,0.70);
 }
 
-/* Header */
 .ccg-page--games-index .games-accordion__header {
     position: relative;
-    padding: 16px 20px;
+    padding: 18px 22px;
     cursor: pointer;
 
     font-family: var(--ccg-font-main);
-    letter-spacing: 0.18em;
+    letter-spacing: 0.20em;
+
+    color: rgba(255,255,255,0.90);
 
     background:
         linear-gradient(
             180deg,
-            rgba(0,0,0,0.65),
-            rgba(0,0,0,0.35)
+            rgba(0,0,0,0.72),
+            rgba(0,0,0,0.38)
         );
 
     text-shadow:
-        0 0 18px rgba(var(--accent-rgb),0.45);
+        0 0 18px rgba(var(--accent-rgb),0.55);
 }
 
-/* Open state */
-.ccg-page--games-index .games-accordion__section.open
-.games-accordion__header {
+/* HARD NEON “separator bar” inside header */
+.ccg-page--games-index .games-accordion__header::after {
+    content: "";
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    bottom: 10px;
+    height: 2px;
+
     background:
-        radial-gradient(
-            ellipse at 18% 50%,
-            rgba(var(--accent-rgb), 0.45),
-            transparent 65%
-        ),
         linear-gradient(
-            180deg,
-            rgba(0,0,0,0.75),
-            rgba(0,0,0,0.40)
+            to right,
+            transparent,
+            rgba(var(--accent-rgb), 0.95),
+            transparent
         );
 
     box-shadow:
-        inset 0 0 0 1px rgba(var(--accent-rgb), 0.45),
-        0 0 26px rgba(var(--accent-rgb), 0.35);
+        0 0 14px rgba(var(--accent-rgb), 0.65),
+        0 0 30px rgba(var(--accent-rgb), 0.38);
+
+    opacity: 0.55;
 }
 
-/* Content */
+/* Open state — supports either .open or .is-open */
+.ccg-page--games-index .games-accordion__section.open,
+.ccg-page--games-index .games-accordion__section.is-open {
+    box-shadow:
+        inset 0 0 0 1px rgba(var(--accent-rgb), 0.55),
+        0 0 30px rgba(var(--accent-rgb), 0.42),
+        0 28px 66px rgba(0,0,0,0.82);
+}
+
+.ccg-page--games-index .games-accordion__section.open .games-accordion__header,
+.ccg-page--games-index .games-accordion__section.is-open .games-accordion__header {
+    background:
+        linear-gradient(
+            180deg,
+            rgba(0,0,0,0.82),
+            rgba(0,0,0,0.38)
+        );
+}
+
 .ccg-page--games-index .games-accordion__content {
-    padding: 20px 22px 26px;
+    padding: 22px 22px 28px;
 }
 
-/* ============================================================
-   GRID — SAFE (UNCHANGED LOGIC)
-============================================================ */
+/* ------------------------------------------------------------
+   GRID — SAFE (UNCHANGED MECHANICS)
+------------------------------------------------------------ */
 
 .ccg-page--games-index .games-accordion__content .games-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 20px;
     align-items: start;
+}
+
+/* ------------------------------------------------------------
+   CARD TYPOGRAPHY FIX — NO MORE DEFAULT BLUE LINKS
+   (Only inside Browse Index)
+------------------------------------------------------------ */
+
+.ccg-page--games-index .ccg-game-card {
+    text-decoration: none;
+}
+
+/* Kill default browser link styles safely */
+.ccg-page--games-index .ccg-game-card,
+.ccg-page--games-index .ccg-game-card * {
+    text-decoration: none;
+}
+
+/* Title: neon arcade */
+.ccg-page--games-index .ccg-game-card__title,
+.ccg-page--games-index .ccg-game-card h3,
+.ccg-page--games-index .ccg-game-card .title,
+.ccg-page--games-index .ccg-game-card a {
+    color: rgba(255,255,255,0.92);
+}
+
+.ccg-page--games-index .ccg-game-card__title,
+.ccg-page--games-index .ccg-game-card h3 {
+    font-family: var(--ccg-font-main);
+    letter-spacing: 0.12em;
+    line-height: 1.22;
+
+    text-shadow:
+        0 0 16px rgba(var(--accent-rgb),0.55),
+        0 14px 34px rgba(0,0,0,0.90);
+}
+
+/* Meta: calmer */
+.ccg-page--games-index .ccg-game-card__meta,
+.ccg-page--games-index .ccg-game-card .meta {
+    color: rgba(232,236,255,0.70);
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+}
+
+/* Hover: stronger neon response */
+@media (hover: hover) {
+    .ccg-page--games-index .ccg-game-card:hover .ccg-game-card__title,
+    .ccg-page--games-index .ccg-game-card:hover h3 {
+        color: #fff;
+        text-shadow:
+            0 0 18px rgba(var(--accent-rgb),0.75),
+            0 0 42px rgba(var(--accent-rgb),0.45),
+            0 16px 38px rgba(0,0,0,0.92);
+    }
+}
+
+/* ------------------------------------------------------------
+   EMPTY STATE
+------------------------------------------------------------ */
+
+.ccg-page--games-index #gamesEmptyState {
+    margin-top: 42px;
+    padding: 26px;
+    text-align: center;
+
+    font-family: var(--ccg-font-main);
+    letter-spacing: 0.12em;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.06),
+            rgba(255,255,255,0.02)
+        );
+
+    border-radius: 18px;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.08),
+        0 18px 42px rgba(0,0,0,0.75);
+}
+
+/* ------------------------------------------------------------
+   MOBILE DISCIPLINE
+------------------------------------------------------------ */
+
+@media (max-width: 768px) {
+
+    .ccg-page--games-index .games-tools {
+        padding: 22px 18px;
+    }
+
+    .ccg-page--games-index .games-accordion__content {
+        padding: 18px 18px 22px;
+    }
+
+    .ccg-page--games-index .games-grid {
+        gap: 18px;
+    }
+}
+
+
+/* ============================================================
+   ============================================================
+   W4 — SINGLE GAME WOW (FLAGSHIP PAGE) — PRESERVED
+   Scope: SINGLE GAME PAGE ONLY
+   ZERO impact on index, genres, collections
+   ============================================================
+============================================================ */
+
+/* ============================================================
+   SINGLE GAME — HERO (CINEMATIC, READABLE)
+============================================================ */
+
+.ccg-page--single-game .game-hero {
+    position: relative;
+    margin-bottom: 48px;
+    border-radius: 22px;
+    overflow: hidden;
+    isolation: isolate;
+
+    background:
+        radial-gradient(
+            ellipse at 18% 12%,
+            rgba(var(--accent-rgb), 0.24),
+            transparent 60%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(0,0,0,0.96),
+            rgba(12,12,32,0.90),
+            rgba(0,0,0,0.97)
+        );
+
+    box-shadow:
+        0 36px 92px rgba(0,0,0,0.92),
+        inset 0 0 0 1px rgba(255,255,255,0.07);
+}
+
+.ccg-page--single-game .game-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            transparent 52%,
+            rgba(0,0,0,0.65) 100%
+        ),
+        repeating-linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.022),
+            rgba(255,255,255,0.022) 1px,
+            transparent 1px,
+            transparent 4px
+        );
+
+    opacity: 0.28;
+}
+
+.ccg-page--single-game .game-hero__inner {
+    position: relative;
+    z-index: 2;
+
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 36px;
+
+    padding: 64px 56px 58px;
+}
+
+@media (max-width: 900px) {
+    .ccg-page--single-game .game-hero__inner {
+        grid-template-columns: 1fr;
+        padding: 44px 20px 42px;
+        gap: 28px;
+    }
+}
+
+/* ============================================================
+   HERO — THUMBNAIL AUTHORITY
+============================================================ */
+
+.ccg-page--single-game .game-hero__media {
+    width: 220px;
+    max-width: 100%;
+}
+
+.ccg-page--single-game .game-hero__thumb {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.08),
+            rgba(255,255,255,0.03)
+        );
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.10),
+        0 18px 42px rgba(0,0,0,0.75),
+        0 0 28px rgba(var(--accent-rgb), 0.28);
+}
+
+/* ============================================================
+   HERO — TITLE & META
+============================================================ */
+
+.ccg-page--single-game .game-hero h1 {
+    font-family: var(--ccg-font-main);
+    letter-spacing: 0.14em;
+    line-height: 1.12;
+    margin-bottom: 12px;
+
+    text-shadow:
+        0 22px 48px rgba(0,0,0,0.92),
+        0 0 32px rgba(var(--accent-rgb),0.45);
+}
+
+.ccg-page--single-game .game-meta {
+    font-family: var(--ccg-font-body);
+    font-size: 0.9rem;
+    opacity: 0.85;
+    letter-spacing: 0.06em;
+}
+
+/* ============================================================
+   SINGLE GAME — DESCRIPTION
+============================================================ */
+
+.ccg-page--single-game #game-description-section {
+    max-width: 900px;
+    margin: 0 auto 46px;
+
+    padding: 28px 30px;
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.06),
+            rgba(255,255,255,0.02)
+        );
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.08),
+        0 20px 48px rgba(0,0,0,0.70);
+}
+
+@media (max-width: 768px) {
+    .ccg-page--single-game #game-description-section {
+        padding: 22px 20px;
+        margin-bottom: 36px;
+    }
+}
+
+/* ============================================================
+   SINGLE GAME — VIDEO FRAME (16:9 LOCK)
+============================================================ */
+
+.ccg-page--single-game #game-video-section {
+    max-width: 980px;
+    margin: 0 auto 48px;
+
+    border-radius: 22px;
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.06),
+            rgba(255,255,255,0.02)
+        );
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.08),
+        0 26px 64px rgba(0,0,0,0.80);
+}
+
+.ccg-page--single-game #game-video-section iframe {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: none;
+}
+
+/* ============================================================
+   SINGLE GAME — ACTION BUTTONS
+============================================================ */
+
+.ccg-page--single-game .game-actions {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 56px;
+    flex-wrap: wrap;
+}
+
+.ccg-page--single-game .game-actions .ccg-btn {
+    min-width: 160px;
+}
+
+/* ============================================================
+   SINGLE GAME — RELATED GAMES
+============================================================ */
+
+.ccg-page--single-game .game-section--related {
+    margin-top: 64px;
+}
+
+.ccg-page--single-game .game-section__title {
+    text-align: center;
+    letter-spacing: 0.14em;
+    margin-bottom: 32px;
+
+    text-shadow:
+        0 0 18px rgba(var(--accent-rgb),0.35);
 }
