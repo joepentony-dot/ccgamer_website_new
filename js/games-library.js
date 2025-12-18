@@ -1,13 +1,14 @@
 /* ============================================================
    CCG GAMES LIBRARY — OMEGA WOW INDEX
-   Phase W7.3 — ULTRA LOGIC PASS (SPINE REACTOR)
+   W7.5 — LOGIC LOCK (SAFE)
    ------------------------------------------------------------
    • Numeric titles grouped under '#'
    • Spine shows LETTERS ONLY (no counts)
    • TRUE toggle accordion (open / close)
    • Single-open section enforcement
    • Close = return to top
-   • Active spine sync for neon reactor
+   • Active spine sync
+   • HARD JS collapse/expand (no reliance on CSS)
 ============================================================ */
 
 let CCG_ALL_GAMES = [];
@@ -21,9 +22,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!res.ok) throw new Error("Failed to load games.json");
 
         CCG_ALL_GAMES = await res.json();
+
         buildGamesIndex(CCG_ALL_GAMES);
         setupSearch(CCG_ALL_GAMES);
 
+        // Restore after first build
         restoreAccordionState();
 
     } catch (err) {
@@ -37,8 +40,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 function buildGamesIndex(games) {
     const grouped = groupGamesByLetter(games);
+
     buildAlphaSpine(grouped);
     buildAccordion(grouped);
+
+    // After rebuild (e.g., search), try to restore if possible
+    restoreAccordionState(true);
 }
 
 /* ============================================================
@@ -54,15 +61,12 @@ function groupGamesByLetter(games) {
 
         let firstChar = title.charAt(0).toUpperCase();
 
-        // All numeric titles → '#'
+        // ALL numeric titles → '#'
         if (firstChar >= "0" && firstChar <= "9") {
             firstChar = "#";
         }
 
-        if (!groups[firstChar]) {
-            groups[firstChar] = [];
-        }
-
+        if (!groups[firstChar]) groups[firstChar] = [];
         groups[firstChar].push(game);
     });
 
@@ -75,6 +79,14 @@ function groupGamesByLetter(games) {
     return groups;
 }
 
+function getSortedLetters(groups) {
+    return Object.keys(groups).sort((a, b) => {
+        if (a === "#") return -1;
+        if (b === "#") return 1;
+        return a.localeCompare(b);
+    });
+}
+
 /* ============================================================
    ALPHA SPINE (LETTERS ONLY)
 ============================================================ */
@@ -85,11 +97,7 @@ function buildAlphaSpine(groups) {
 
     strip.innerHTML = "";
 
-    const letters = Object.keys(groups).sort((a, b) => {
-        if (a === "#") return -1;
-        if (b === "#") return 1;
-        return a.localeCompare(b);
-    });
+    const letters = getSortedLetters(groups);
 
     letters.forEach(letter => {
         const btn = document.createElement("button");
@@ -98,7 +106,7 @@ function buildAlphaSpine(groups) {
         btn.dataset.letter = letter;
 
         btn.addEventListener("click", () => {
-            toggleAccordion(letter);
+            toggleAccordion(letter, { scroll: true });
         });
 
         strip.appendChild(btn);
@@ -115,11 +123,7 @@ function buildAccordion(groups) {
 
     container.innerHTML = "";
 
-    const letters = Object.keys(groups).sort((a, b) => {
-        if (a === "#") return -1;
-        if (b === "#") return 1;
-        return a.localeCompare(b);
-    });
+    const letters = getSortedLetters(groups);
 
     letters.forEach(letter => {
         const section = document.createElement("section");
@@ -127,10 +131,10 @@ function buildAccordion(groups) {
         section.dataset.letter = letter;
 
         section.innerHTML = `
-            <button class="games-accordion__header" data-letter="${letter}">
+            <button class="games-accordion__header" data-letter="${letter}" aria-expanded="false">
                 <span class="games-accordion__letter">${letter}</span>
             </button>
-            <div class="games-accordion__content">
+            <div class="games-accordion__content" style="display:none;">
                 <div class="games-grid">
                     ${groups[letter].map(renderGameCard).join("")}
                 </div>
@@ -144,7 +148,7 @@ function buildAccordion(groups) {
 }
 
 /* ============================================================
-   ACCORDION INTERACTION (ULTRA)
+   ACCORDION INTERACTION (LOCKED)
 ============================================================ */
 
 function attachAccordionEvents() {
@@ -152,48 +156,76 @@ function attachAccordionEvents() {
 
     headers.forEach(header => {
         header.addEventListener("click", () => {
-            toggleAccordion(header.dataset.letter);
+            toggleAccordion(header.dataset.letter, { scroll: false });
         });
     });
 }
 
-function toggleAccordion(letter) {
+/**
+ * Toggle logic:
+ * - If target is closed => open it, close others
+ * - If target is open   => close all + return to top
+ */
+function toggleAccordion(letter, opts = {}) {
+    const { scroll = false, silent = false } = opts;
+
     const sections = document.querySelectorAll(".games-accordion__section");
-    const spineButtons = document.querySelectorAll("#gamesAlphaStrip button");
+    if (!sections.length) return;
 
-    let opening = false;
+    const target = document.querySelector(`.games-accordion__section[data-letter="${letter}"]`);
+    const targetIsOpen = !!(target && target.classList.contains("is-open"));
 
+    if (!target) {
+        // Stored letter no longer exists after filtering
+        clearAccordionState();
+        syncAlphaActive(null);
+        return;
+    }
+
+    if (targetIsOpen) {
+        // CLOSE ALL
+        closeAllSections();
+        clearAccordionState();
+        syncAlphaActive(null);
+
+        if (!silent) scrollToTop();
+        return;
+    }
+
+    // OPEN TARGET + CLOSE OTHERS
     sections.forEach(section => {
         const isTarget = section.dataset.letter === letter;
-        const isOpen = section.classList.contains("is-open");
-
-        if (isTarget && !isOpen) {
-            opening = true;
-            section.classList.add("is-open");
-        } else {
-            section.classList.remove("is-open");
-        }
+        setSectionOpen(section, isTarget);
     });
 
-    spineButtons.forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.letter === letter && opening);
-    });
+    saveAccordionState(letter);
+    syncAlphaActive(letter);
 
-    if (opening) {
-        saveAccordionState(letter);
-
-        const target = document.querySelector(
-            `.games-accordion__section[data-letter="${letter}"]`
-        );
-
-        if (target) {
-            target.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-
-    } else {
-        clearAccordionState();
-        scrollToTop();
+    if (!silent && scroll) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
     }
+}
+
+function closeAllSections() {
+    const sections = document.querySelectorAll(".games-accordion__section");
+    sections.forEach(section => setSectionOpen(section, false));
+}
+
+function setSectionOpen(section, open) {
+    section.classList.toggle("is-open", open);
+
+    const header = section.querySelector(".games-accordion__header");
+    const content = section.querySelector(".games-accordion__content");
+
+    if (header) header.setAttribute("aria-expanded", open ? "true" : "false");
+    if (content) content.style.display = open ? "" : "none";
+}
+
+function syncAlphaActive(letterOrNull) {
+    const spineButtons = document.querySelectorAll("#gamesAlphaStrip button");
+    spineButtons.forEach(btn => {
+        btn.classList.toggle("active", !!letterOrNull && btn.dataset.letter === letterOrNull);
+    });
 }
 
 /* ============================================================
@@ -208,11 +240,24 @@ function clearAccordionState() {
     sessionStorage.removeItem(ACCORDION_STATE_KEY);
 }
 
-function restoreAccordionState() {
+/**
+ * restoreAfterRebuild:
+ * - if true, only restore if the stored letter exists in the newly built DOM
+ * - avoids opening random letters after filtering
+ */
+function restoreAccordionState(restoreAfterRebuild = false) {
     const letter = sessionStorage.getItem(ACCORDION_STATE_KEY);
-    if (letter) {
-        toggleAccordion(letter);
+    if (!letter) return;
+
+    const exists = document.querySelector(`.games-accordion__section[data-letter="${letter}"]`);
+    if (!exists) {
+        clearAccordionState();
+        syncAlphaActive(null);
+        return;
     }
+
+    // Silent open (no scroll jump during rebuild / load)
+    toggleAccordion(letter, { scroll: false, silent: restoreAfterRebuild });
 }
 
 /* ============================================================
@@ -229,7 +274,7 @@ function scrollToTop() {
 }
 
 /* ============================================================
-   SEARCH (UNCHANGED)
+   SEARCH (UNCHANGED MECHANICS)
 ============================================================ */
 
 function setupSearch(allGames) {
