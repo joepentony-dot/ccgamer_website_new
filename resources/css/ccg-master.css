@@ -1,11 +1,11 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & TYPOGRAPHY
-   OMEGA HEADER LOCK — W6 HEADER ADAPTATION (SAFE)
+   OMEGA HEADER LOCK — W6.1 HEADER CONTAINMENT FIX (FINAL)
    ------------------------------------------------------------
-   • Header overflow resilience added
-   • Nav pills gracefully compress
-   • Scroll hint only when needed
-   • ZERO layout regressions
+   • Nav overflow fully contained
+   • Predictable scroll direction
+   • No visual run-off
+   • ZERO HTML / JS changes
 ============================================================ */
 
 /* ============================================================
@@ -15,9 +15,6 @@
 :root {
     --ccg-font-main: 'Orbitron', system-ui, sans-serif;
     --ccg-font-body: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-
-    --ccg-color-blue: #00aaff;
-    --ccg-color-pink: #ff29e0;
 
     --ccg-bg-dark: #000;
     --ccg-text-light: #e8ecff;
@@ -29,7 +26,6 @@
     --ccg-nav-pill-pad-y: 8px;
     --ccg-nav-pill-pad-x: 14px;
 
-    /* W5: safe default accent */
     --accent-rgb: 0,170,255;
 }
 
@@ -71,7 +67,7 @@ body {
 }
 
 /* ============================================================
-   HEADER — OMEGA LOCK + W6 ADAPTATION
+   HEADER — LOCKED STRUCTURE
 ============================================================ */
 
 .ccg-header {
@@ -122,33 +118,38 @@ body {
 }
 
 /* ============================================================
-   NAVIGATION — W6 ADAPTIVE
+   NAVIGATION — FINAL CONTAINMENT
 ============================================================ */
 
 .ccg-nav {
+    min-width: 0;
+    max-width: 100%;
+    position: relative;
+
     display: flex;
     justify-content: center;
-    min-width: 0;
-    position: relative;
 }
 
+/* Nav list is the scrolling surface */
 .ccg-nav__list {
     display: flex;
     gap: 12px;
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding-inline: 28px;
 
     white-space: nowrap;
     overflow-x: auto;
     scrollbar-width: none;
+
+    max-width: 100%;
 }
 
 .ccg-nav__list::-webkit-scrollbar {
     display: none;
 }
 
-/* W6: base pill style */
+/* Pills */
 .ccg-nav__link {
     display: inline-flex;
     align-items: center;
@@ -174,8 +175,12 @@ body {
         font-size 160ms ease;
 }
 
-/* W6: pill compression BEFORE overflow feels bad */
+/* Compression before overflow feels bad */
 @media (max-width: 1100px) {
+    .ccg-nav {
+        justify-content: flex-start; /* 🔑 KEY FIX */
+    }
+
     .ccg-nav__link {
         padding: 7px 12px;
         letter-spacing: 0.1em;
@@ -189,6 +194,58 @@ body {
         letter-spacing: 0.08em;
         font-size: 0.66rem;
     }
+}
+
+/* ============================================================
+   SCROLL HINT — ONLY WHEN OVERFLOW EXISTS
+============================================================ */
+
+.ccg-nav::before,
+.ccg-nav::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 28px;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0;
+}
+
+/* Show fades ONLY if scrolling is possible */
+@supports selector(:has(*)) {
+    .ccg-nav:has(.ccg-nav__list[style*="overflow"])::before,
+    .ccg-nav:has(.ccg-nav__list[style*="overflow"])::after {
+        opacity: 1;
+    }
+}
+
+/* Practical fallback: show fades when not centred */
+@media (max-width: 1100px) {
+    .ccg-nav::before,
+    .ccg-nav::after {
+        opacity: 1;
+    }
+}
+
+.ccg-nav::before {
+    left: 0;
+    background: linear-gradient(
+        to right,
+        rgba(0,0,0,0.85),
+        rgba(0,0,0,0.45),
+        rgba(0,0,0,0)
+    );
+}
+
+.ccg-nav::after {
+    right: 0;
+    background: linear-gradient(
+        to left,
+        rgba(0,0,0,0.85),
+        rgba(0,0,0,0.45),
+        rgba(0,0,0,0)
+    );
 }
 
 /* ============================================================
@@ -231,7 +288,7 @@ body {
 }
 
 /* ============================================================
-   MOBILE SAFETY
+   MOBILE
 ============================================================ */
 
 @media (max-width: 768px) {
@@ -241,6 +298,15 @@ body {
 
     .ccg-main {
         padding-top: 18px;
+    }
+
+    .ccg-nav::before,
+    .ccg-nav::after {
+        width: 34px;
+    }
+
+    .ccg-nav__list {
+        padding-inline: 34px;
     }
 }
 
@@ -254,65 +320,4 @@ body[data-ccg-mode="c64"] {
 
 body[data-ccg-mode="amiga"] {
     --accent-rgb: 255,41,224;
-}
-
-/* ============================================================
-   NAV SCROLL HINT — W6 INTELLIGENT
-============================================================ */
-
-/* Hidden by default */
-.ccg-nav::before,
-.ccg-nav::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 28px;
-    pointer-events: none;
-    z-index: 2;
-    opacity: 0;
-}
-
-/* Only show when scrolling is possible (modern browsers) */
-@supports selector(:has(*)) {
-    .ccg-nav:has(.ccg-nav__list:hover)::before,
-    .ccg-nav:has(.ccg-nav__list:hover)::after {
-        opacity: 1;
-    }
-}
-
-.ccg-nav::before {
-    left: 0;
-    background: linear-gradient(
-        to right,
-        rgba(0,0,0,0.85),
-        rgba(0,0,0,0.45),
-        rgba(0,0,0,0)
-    );
-}
-
-.ccg-nav::after {
-    right: 0;
-    background: linear-gradient(
-        to left,
-        rgba(0,0,0,0.85),
-        rgba(0,0,0,0.45),
-        rgba(0,0,0,0)
-    );
-}
-
-/* Padding prevents content clash */
-.ccg-nav__list {
-    padding-inline: 28px;
-}
-
-@media (max-width: 768px) {
-    .ccg-nav::before,
-    .ccg-nav::after {
-        width: 34px;
-    }
-
-    .ccg-nav__list {
-        padding-inline: 34px;
-    }
 }
