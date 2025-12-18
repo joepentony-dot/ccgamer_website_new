@@ -2,6 +2,7 @@
    HOME.CSS — OMEGA CINEMATIC SHOWPIECE (FLAGSHIP)
    Phase WOW-H3 — HOME THUMB + LAYOUT DISCIPLINE (LOCKED)
    Phase WOW-A1 — CINEMATIC DEPTH & PRESENCE POLISH
+   Phase WOW-A2 — MICRO-MOTION CARD POLISH (HOME ONLY)
    ------------------------------------------------------------
    Goals:
    • Keep Home immersive (fixed starfield)
@@ -9,6 +10,7 @@
    • Browse by Genre = TRUE 16:9 tiles (HOME ONLY)
    • Genre images behave like the Genre Hub (contain, not cover)
    • Add premium depth & cadence WITHOUT layout change
+   • Add subtle interaction delight (micro-motion)
    • Zero impact outside Home
 ============================================================ */
 
@@ -71,7 +73,7 @@ html[data-ccg-page="home"] .home-hero {
     margin-bottom: 28px;
 }
 
-/* 🆕 Cinematic glass separation */
+/* Cinematic glass separation */
 html[data-ccg-page="home"] .home-hero::before {
     content: "";
     position: absolute;
@@ -94,7 +96,7 @@ html[data-ccg-page="home"] .home-tagline {
 
 
 /* ============================================================
-   HOME HERO — TITLE ENERGY (WOW, HOME ONLY)
+   HOME HERO — TITLE ENERGY
 ============================================================ */
 
 html[data-ccg-page="home"] .home-hero__title,
@@ -237,7 +239,7 @@ html[data-ccg-page="home"] .home-section {
     }
 }
 
-/* 🆕 Section header authority */
+/* Section header authority */
 html[data-ccg-page="home"] .home-section__header {
     text-shadow:
         0 0 12px rgba(var(--accent-rgb),0.18),
@@ -286,5 +288,54 @@ html[data-ccg-page="home"] .home-genre-grid {
         max-width: 1180px;
         margin-inline: auto;
         gap: 28px;
+    }
+}
+
+
+/* ============================================================
+   WOW-A2 — MICRO-MOTION CARD POLISH (HOME ONLY)
+============================================================ */
+
+@media (prefers-reduced-motion: no-preference) {
+
+    /* Featured highlight cards */
+    html[data-ccg-page="home"] .home-feature-card {
+        transition:
+            transform 320ms ease,
+            box-shadow 320ms ease;
+        will-change: transform;
+    }
+
+    html[data-ccg-page="home"] .home-feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow:
+            0 18px 42px rgba(0,0,0,0.55),
+            0 0 26px rgba(var(--accent-rgb),0.28);
+    }
+
+    /* Gentle media float (no scale abuse) */
+    html[data-ccg-page="home"] .home-feature-card:hover .ccg-card__media img {
+        transform: translateY(-2px);
+        transition: transform 420ms ease;
+    }
+
+    /* Genre tiles */
+    html[data-ccg-page="home"] .ccg-genre-tile {
+        transition:
+            transform 300ms ease,
+            box-shadow 300ms ease;
+        will-change: transform;
+    }
+
+    html[data-ccg-page="home"] .ccg-genre-tile:hover {
+        transform: translateY(-3px);
+        box-shadow:
+            0 14px 36px rgba(0,0,0,0.55),
+            0 0 22px rgba(var(--accent-rgb),0.25);
+    }
+
+    html[data-ccg-page="home"] .ccg-genre-tile:hover img {
+        transform: translateY(-1px);
+        transition: transform 380ms ease;
     }
 }
