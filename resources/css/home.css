@@ -1,13 +1,12 @@
 /* ============================================================
    HOME.CSS — OMEGA CINEMATIC SHOWPIECE (FLAGSHIP)
-   Phase WOW-H3 — HOME THUMB + LAYOUT DISCIPLINE (LOCKED)
+   Phase WOW-HW1 — HERO VISUAL AUTHORITY PASS (SAFE)
    ------------------------------------------------------------
-   LOCKED BASELINE:
+   LOCKED BASELINE PRESERVED:
    • Home thumbnails = FIXED visual size
    • NO hover scaling
    • NO transforms affecting perception
    • 16:9 discipline preserved
-   • Matches previously approved Home state
    • ZERO experimental motion
    • ZERO regressions
 ============================================================ */
@@ -61,17 +60,71 @@ html[data-ccg-page="home"] .ccg-bg-crt-overlay {
 
 
 /* ============================================================
-   HERO + TAGLINE RHYTHM (LOCKED)
+   HERO — VISUAL AUTHORITY (HW1)
 ============================================================ */
 
 html[data-ccg-page="home"] .home-hero {
     position: relative;
     margin-top: 12px;
-    margin-bottom: 28px;
+    margin-bottom: 42px;
 }
 
+/* Ground the hero against the universe */
+html[data-ccg-page="home"] .ccg-hero--home {
+    position: relative;
+    isolation: isolate;
+}
+
+/* Subtle cinematic base to anchor content */
+html[data-ccg-page="home"] .ccg-hero--home::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(0,0,0,0.35),
+            rgba(0,0,0,0.65)
+        );
+
+    pointer-events: none;
+}
+
+/* Ensure hero content sits above grounding layer */
+html[data-ccg-page="home"] .home-hero__inner {
+    position: relative;
+    z-index: 1;
+}
+
+/* Strengthen title presence without size change */
+html[data-ccg-page="home"] .home-hero__title {
+    text-shadow:
+        0 2px 10px rgba(0,0,0,0.65),
+        0 0 32px rgba(var(--accent-rgb), 0.35);
+}
+
+/* Tagline clarity against heavy backgrounds */
+html[data-ccg-page="home"] .home-hero__tagline {
+    max-width: 720px;
+    margin-inline: auto;
+    color: rgba(232,236,255,0.85);
+}
+
+/* Actions feel anchored, not floating */
+html[data-ccg-page="home"] .home-hero__actions {
+    margin-top: 26px;
+}
+
+
+/* ============================================================
+   HERO → TAGLINE SEPARATION (AUTHORITY RHYTHM)
+============================================================ */
+
 html[data-ccg-page="home"] .home-tagline {
-    margin: 22px 0 36px;
+    margin: 30px 0 44px;
+    opacity: 0.92;
 }
 
 
@@ -121,7 +174,7 @@ html[data-ccg-page="home"] .home-genre-grid {
 
 
 /* ============================================================
-   🔒 HOME THUMBNAIL DISCIPLINE — FINAL LOCK
+   🔒 HOME THUMBNAIL DISCIPLINE — FINAL LOCK (UNCHANGED)
 ============================================================ */
 
 /* Featured cards — NO motion, NO scaling */
