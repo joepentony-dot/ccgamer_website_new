@@ -95,7 +95,7 @@ html[data-ccg-page="home"] .ccg-hero-title.home-hero__title {
     transform: translateZ(0);
 }
 
-/* Subtle ignite pulse (luxury, not flashy) */
+/* Subtle ignite pulse */
 @media (prefers-reduced-motion: no-preference) {
     html[data-ccg-page="home"] .home-hero__title {
         animation: ccg-home-title-ignite 14s ease-in-out infinite;
@@ -141,9 +141,7 @@ html[data-ccg-page="home"] .home-hero__tagline {
 
 
 /* ============================================================
-   HOME HERO — CTA BUTTON WOW (HOME ONLY)
-   ------------------------------------------------------------
-   Layered ON TOP of existing .ccg-btn system
+   HOME HERO — CTA BUTTON WOW
 ============================================================ */
 
 html[data-ccg-page="home"] .home-hero__actions {
@@ -198,7 +196,6 @@ html[data-ccg-page="home"] .home-hero__btn:focus-visible::after {
     opacity: 1;
 }
 
-/* Alternate CTA stays distinct but premium */
 html[data-ccg-page="home"] .home-hero__btn-alt {
     filter: brightness(1.05) saturate(1.05);
 }
@@ -212,7 +209,6 @@ html[data-ccg-page="home"] .home-section {
     margin: 0 0 48px;
 }
 
-/* Desktop: hints of flagship breathing room */
 @media (min-width: 1024px) {
     html[data-ccg-page="home"] .home-section {
         margin-bottom: 56px;
@@ -224,26 +220,15 @@ html[data-ccg-page="home"] .home-section {
 
 
 /* ============================================================
-   FEATURED HIGHLIGHTS — TRUE 2-COLUMN (DESKTOP)
-   ------------------------------------------------------------
-   Your HTML uses .home-highlights-grid (NOT home-feature-grid)
+   FEATURED HIGHLIGHTS — TRUE 2-COLUMN
 ============================================================ */
 
 html[data-ccg-page="home"] .home-highlights-grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 22px;
-    align-items: start;
 }
 
-/* Tablet+ */
-@media (min-width: 740px) {
-    html[data-ccg-page="home"] .home-highlights-grid {
-        gap: 26px;
-    }
-}
-
-/* Desktop: 2-column, balanced, not tiny + not full-bleed */
 @media (min-width: 1024px) {
     html[data-ccg-page="home"] .home-highlights-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -251,257 +236,29 @@ html[data-ccg-page="home"] .home-highlights-grid {
         margin-inline: auto;
         gap: 32px;
     }
-
-    /* Ensure both cards fill their column (no “postage stamp”) */
-    html[data-ccg-page="home"] .home-highlights-grid > .home-feature-card {
-        width: 100%;
-        max-width: 100%;
-        justify-self: stretch;
-    }
 }
 
 
 /* ============================================================
-   HOME — FEATURE MEDIA CONTRACT (HOME ONLY)
-   (Keeps thumbs sane + true 16:9)
-============================================================ */
-
-html[data-ccg-page="home"] .home-feature-card .ccg-card__media,
-html[data-ccg-page="home"] .home-feature-video__frame {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-    border-radius: 18px;
-}
-
-/* Fill frame */
-html[data-ccg-page="home"] .home-feature-card .ccg-card__media img,
-html[data-ccg-page="home"] .home-feature-video__frame img,
-html[data-ccg-page="home"] .home-feature-video__frame iframe {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
-
-    object-fit: cover;
-    object-position: center;
-}
-
-@media (max-width: 768px) {
-    html[data-ccg-page="home"] .home-feature-card .ccg-card__media,
-    html[data-ccg-page="home"] .home-feature-video__frame {
-        border-radius: 16px;
-    }
-}
-
-
-/* ============================================================
-   HOME — FEATURE CARD WOW (SAFE, HOVER ONLY)
-============================================================ */
-
-html[data-ccg-page="home"] .home-feature-card {
-    position: relative;
-    transition:
-        transform 0.35s ease,
-        box-shadow 0.35s ease;
-}
-
-html[data-ccg-page="home"] .home-feature-card:hover,
-html[data-ccg-page="home"] .home-feature-card:focus-within {
-    transform: translateY(-2px);
-    box-shadow:
-        0 0 0 1px rgba(var(--accent-rgb), 0.35),
-        0 0 18px rgba(var(--accent-rgb), 0.28),
-        0 18px 42px rgba(0, 0, 0, 0.65);
-}
-
-/* Media edge glow only (keeps text clean) */
-html[data-ccg-page="home"] .home-feature-card:hover .ccg-card__media,
-html[data-ccg-page="home"] .home-feature-card:focus-within .ccg-card__media {
-    box-shadow:
-        inset 0 0 0 1px rgba(var(--accent-rgb), 0.45),
-        0 0 14px rgba(var(--accent-rgb), 0.22);
-}
-
-/* Touch devices: no fake hover */
-@media (hover: none) {
-    html[data-ccg-page="home"] .home-feature-card:hover {
-        transform: none;
-        box-shadow: none;
-    }
-}
-
-
-/* ============================================================
-   BROWSE BY GENRE — GRID DISCIPLINE (HOME ONLY)
+   BROWSE BY GENRE — HOME ONLY DISCIPLINE
 ============================================================ */
 
 html[data-ccg-page="home"] .home-genre-grid {
     display: grid;
-    grid-template-columns: 1fr;
     gap: 18px;
-    align-items: start;
 }
 
-/* Tablet: still 2 columns */
 @media (min-width: 640px) {
     html[data-ccg-page="home"] .home-genre-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, 1fr);
         gap: 22px;
     }
 }
 
-/* Desktop: 2 columns + authority cap */
 @media (min-width: 1024px) {
     html[data-ccg-page="home"] .home-genre-grid {
         max-width: 1180px;
         margin-inline: auto;
         gap: 28px;
-    }
-}
-
-/* Tile structure safety (HOME ONLY) */
-html[data-ccg-page="home"] .home-genre-grid .ccg-genre-tile {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    text-decoration: none;
-    border-radius: 18px;
-}
-
-/* 16:9 frame — MUST behave like a frame */
-html[data-ccg-page="home"] .home-genre-grid .ccg-genre-tile .ccg-card__media--16x9,
-html[data-ccg-page="home"] .home-genre-grid .ccg-genre-tile__thumb {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-
-    overflow: hidden;
-    border-radius: 18px;
-
-    background:
-        radial-gradient(900px 220px at 20% 0%,
-            rgba(var(--accent-rgb), 0.10),
-            transparent 62%),
-        linear-gradient(180deg,
-            rgba(0,0,0,0.55),
-            rgba(0,0,0,0.75));
-}
-
-/* IMPORTANT: match Genre Hub feel — show full image, no zoom */
-html[data-ccg-page="home"] .home-genre-grid .ccg-genre-tile__thumb img,
-html[data-ccg-page="home"] .home-genre-grid .ccg-genre-tile .ccg-card__media--16x9 img {
-    width: 100%;
-    height: 100%;
-    display: block;
-
-    object-fit: contain;
-    object-position: center;
-}
-
-/* Title area — readable, consistent */
-html[data-ccg-page="home"] .home-genre-grid .ccg-genre-tile__body {
-    padding-top: 14px;
-}
-
-html[data-ccg-page="home"] .home-genre-grid .ccg-genre-tile__title {
-    margin: 0;
-    font-size: 1rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-
-    color: var(--accent-main);
-    text-shadow:
-        0 0 10px rgba(var(--accent-rgb), 0.35),
-        0 10px 26px rgba(0,0,0,0.85);
-}
-
-/* Small phones — keep type tight */
-@media (max-width: 420px) {
-    html[data-ccg-page="home"] .home-genre-grid .ccg-genre-tile__title {
-        font-size: 0.95rem;
-        letter-spacing: 0.07em;
-    }
-}
-
-/* ============================================================
-   HOME HEADER — STACKED CINEMATIC LAYOUT (FINAL)
-   ------------------------------------------------------------
-   Fixes:
-   • Nav overflow on Home
-   • Logo + pills + socials overlap
-   • Preserves ALL buttons
-   • Home only (inner pages untouched)
-============================================================ */
-
-html[data-ccg-page="home"] .ccg-header {
-    padding-bottom: 22px;
-}
-
-/* Reflow header grid into vertical stack */
-html[data-ccg-page="home"] .ccg-header-inner {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
-    row-gap: 14px;
-    align-items: center;
-}
-
-/* ------------------------------
-   ROW 1 — BRAND (TOP)
--------------------------------- */
-
-html[data-ccg-page="home"] .ccg-brand {
-    justify-self: center;
-}
-
-/* ------------------------------
-   ROW 2 — NAVIGATION (CENTER)
--------------------------------- */
-
-html[data-ccg-page="home"] .ccg-nav {
-    width: 100%;
-    justify-content: center;
-}
-
-html[data-ccg-page="home"] .ccg-nav__list {
-    justify-content: center;
-    padding-inline: 40px;
-}
-
-/* ------------------------------
-   ROW 3 — MODE + SOCIALS (BOTTOM)
--------------------------------- */
-
-html[data-ccg-page="home"] .ccg-header-actions {
-    justify-content: center;
-    max-width: none;
-    overflow: visible;
-}
-
-/* Prevent absolute pinning on Home */
-html[data-ccg-page="home"] .ccg-header > .ccg-header-actions {
-    position: static;
-    transform: none;
-}
-
-/* Slight breathing room above hero */
-html[data-ccg-page="home"] .ccg-hero {
-    margin-top: 12px;
-}
-
-/* ------------------------------
-   MOBILE — TIGHTEN SPACING
--------------------------------- */
-
-@media (max-width: 768px) {
-    html[data-ccg-page="home"] .ccg-header-inner {
-        row-gap: 10px;
-    }
-
-    html[data-ccg-page="home"] .ccg-nav__list {
-        padding-inline: 24px;
     }
 }
