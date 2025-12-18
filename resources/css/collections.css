@@ -1,12 +1,11 @@
 /* ============================================================
    COLLECTIONS.CSS — OMEGA CINEMATIC ULTRA
-   Phase W10 — FINAL LOCK
+   Phase W10 — FINAL (LOCK AFTER APPLY)
    ------------------------------------------------------------
-   • Collections index only
+   • Collections index ONLY
    • CSS-only
-   • No JS / no card-builder impact
-   • Calm, premium, boxed-set presence
-   • Fully isolated from Browse / Genres / Single Game
+   • Calm, curated, boxed-set presence
+   • ZERO impact on cards elsewhere
 ============================================================ */
 
 /* ============================================================
@@ -14,12 +13,11 @@
 ============================================================ */
 
 .ccg-page--collections-index .ccg-main--collections {
-    padding-top: 10px;
+    padding-top: 12px;
 }
 
-
 /* ============================================================
-   HERO — VISUAL AUTHORITY (CALM, CURATED)
+   HERO — CURATED AUTHORITY
 ============================================================ */
 
 .ccg-page--collections-index .ccg-hero--collections {
@@ -46,7 +44,7 @@
         inset 0 0 0 1px rgba(255,255,255,0.07);
 }
 
-/* Subtle scanline + vignette parity */
+/* Scanline + vignette parity */
 .ccg-page--collections-index .ccg-hero--collections::after {
     content: "";
     position: absolute;
@@ -71,7 +69,6 @@
     opacity: 0.24;
 }
 
-/* Hero inner spacing */
 .ccg-page--collections-index .ccg-hero-inner--collections {
     position: relative;
     z-index: 2;
@@ -84,7 +81,6 @@
     }
 }
 
-
 /* ============================================================
    COLLECTION GRID — STRUCTURAL CONFIDENCE
 ============================================================ */
@@ -92,19 +88,18 @@
 .ccg-page--collections-index .ccg-genre-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 26px;
+    gap: 28px;
     align-items: stretch;
 }
 
 @media (min-width: 1024px) {
     .ccg-page--collections-index .ccg-genre-grid {
-        gap: 34px;
+        gap: 36px;
     }
 }
 
-
 /* ============================================================
-   COLLECTION CARDS — BOXED-SET PRESENCE
+   COLLECTION CARDS — BOXED SET PRESENCE
 ============================================================ */
 
 .ccg-page--collections-index .ccg-card {
@@ -128,14 +123,14 @@
         box-shadow 0.32s ease;
 }
 
-/* Media framing lock (delegates containment to ccg-cards.css) */
+/* Media framing — obeys global thumbnail contracts */
 .ccg-page--collections-index .ccg-card img {
     display: block;
     width: 100%;
     height: auto;
 }
 
-/* Title treatment — curated authority */
+/* Title — curated authority */
 .ccg-page--collections-index .ccg-card span {
     display: block;
     padding: 16px 18px 18px;
@@ -152,9 +147,8 @@
         0 12px 28px rgba(0,0,0,0.85);
 }
 
-
 /* ============================================================
-   HOVER / FOCUS — RESTRAINED, PREMIUM WOW
+   HOVER / FOCUS — PREMIUM, RESTRAINED
 ============================================================ */
 
 @media (hover: hover) {
@@ -175,6 +169,7 @@
     }
 }
 
+/* Touch devices — no fake hover */
 @media (hover: none) {
     .ccg-page--collections-index .ccg-card:hover {
         transform: none;
@@ -182,9 +177,8 @@
     }
 }
 
-
 /* ============================================================
-   SECTION RHYTHM — VISUAL BREATHING ROOM
+   SECTION RHYTHM
 ============================================================ */
 
 .ccg-page--collections-index .ccg-section {
