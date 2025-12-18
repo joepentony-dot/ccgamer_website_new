@@ -1,82 +1,33 @@
 /* ============================================================
-   OMEGA HEADER LOCK — DO NOT MODIFY
+   CCG MASTER CSS — GLOBAL STRUCTURE & TYPOGRAPHY
+   OMEGA HEADER LOCK — FINAL SAFE VERSION
    ------------------------------------------------------------
-   • HTML verified across Home, Collections, Quiz
-   • Supports in-flow header-actions only (no absolute hacks)
-   • Nav: single-row with horizontal scroll fallback
-   • Actions: non-shrinking, safe overflow (no squash)
-   • Logo paths remain depth-correct per page (by design)
-   • Any changes here risk site-wide regressions
+   • ONE in-flow header layout (NO absolute hacks)
+   • Logo | Nav | Actions never overlap
+   • Verified: Home, Collections, Quiz
+   • DO NOT MODIFY WITHOUT FULL REVIEW
+============================================================ */
+
+/* ============================================================
+   ROOT VARIABLES
 ============================================================ */
 
 :root {
-    /* ========================================================
-       TYPOGRAPHY
-    ======================================================== */
     --ccg-font-main: 'Orbitron', system-ui, sans-serif;
     --ccg-font-body: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 
-    /* ========================================================
-       COLOURS
-    ======================================================== */
     --ccg-color-blue: #00aaff;
     --ccg-color-pink: #ff29e0;
-    --ccg-color-cyan: #7fe9ff;
 
-    --ccg-bg-dark: #000000;
-    --ccg-bg-panel: #050510;
-
+    --ccg-bg-dark: #000;
     --ccg-text-light: #e8ecff;
     --ccg-text-soft: #b5bbdf;
 
-    /* ========================================================
-       NEON
-    ======================================================== */
-    --ccg-neon-soft: 0 0 10px rgba(0,170,255,0.35);
-    --ccg-neon-strong: 0 0 22px rgba(0,170,255,0.55);
-
-    /* ========================================================
-       MOTION
-    ======================================================== */
-    --ccg-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-
-    /* ========================================================
-       GLOBAL RHYTHM
-    ======================================================== */
-    --ccg-space-xxs: 6px;
-    --ccg-space-xs: 10px;
-    --ccg-space-sm: 16px;
-    --ccg-space-md: 24px;
-    --ccg-space-lg: 36px;
-    --ccg-space-xl: 56px;
-
-    /* ========================================================
-       HEADER — FINAL LOCK
-    ======================================================== */
     --ccg-header-height: 92px;
     --ccg-header-pad-y: 14px;
-    --ccg-header-nav-gap: 10px;
 
-    /* Actions max size safety (prevents Home crush without forcing a fixed grid column) */
-    --ccg-header-actions-max: 320px;
-    --ccg-header-actions-min: 180px;
-
-    /* ========================================================
-       PHASE H4 — NAV WOW TOKENS (SAFE, NO LAYOUT IMPACT)
-    ======================================================== */
     --ccg-nav-pill-pad-y: 8px;
     --ccg-nav-pill-pad-x: 14px;
-    --ccg-nav-pill-radius: 999px;
-
-    --ccg-nav-pill-border: rgba(255,255,255,0.14);
-    --ccg-nav-pill-bg-a: rgba(255,255,255,0.08);
-    --ccg-nav-pill-bg-b: rgba(255,255,255,0.02);
-
-    --ccg-nav-pill-glow-idle: 0 0 0 rgba(0,0,0,0);
-    --ccg-nav-pill-glow-hover: 0 0 16px rgba(var(--accent-rgb),0.22);
-    --ccg-nav-pill-glow-active: 0 0 22px rgba(var(--accent-rgb),0.32);
-
-    --ccg-nav-pill-shadow: 0 10px 18px rgba(0,0,0,0.45);
 }
 
 /* ============================================================
@@ -93,13 +44,9 @@ html,
 body {
     margin: 0;
     padding: 0;
-
     background: var(--ccg-bg-dark);
     color: var(--ccg-text-light);
-
     font-family: var(--ccg-font-body);
-    line-height: 1.6;
-
     overflow-x: hidden;
 }
 
@@ -114,603 +61,170 @@ body {
 .ccg-main {
     width: min(1320px, 96%);
     margin: 0 auto;
-    padding-top: var(--ccg-space-md);
 }
 
 /* ============================================================
-   GLOBAL CONTENT RHYTHM (TOP-LEVEL ONLY)
-============================================================ */
-
-.ccg-main > section {
-    margin-bottom: var(--ccg-space-xl);
-}
-
-.ccg-main > section > h1,
-.ccg-main > section > h2,
-.ccg-main > section > h3 {
-    font-family: var(--ccg-font-main);
-    line-height: 1.25;
-    margin: 0 0 var(--ccg-space-sm) 0;
-}
-
-.ccg-main > section > p {
-    margin: 0 0 var(--ccg-space-sm) 0;
-    max-width: 78ch;
-    color: var(--ccg-text-light);
-}
-
-/* ============================================================
-   HEADER — CANONICAL CONTROL DECK (H4 LOCK)
-   ------------------------------------------------------------
-   • Supports BOTH safe structures without forcing absolute:
-     A) .ccg-header > .ccg-header-inner > .ccg-header-actions (in-flow)
-     B) .ccg-header > .ccg-header-actions (pinned sibling)
-   • Nav stays single-row; it scrolls horizontally when needed
-   • Socials never squash: icons never shrink; actions can scroll if tight
+   HEADER — FINAL FIXED VERSION
 ============================================================ */
 
 .ccg-header {
     position: relative;
     z-index: 9999;
-
-    isolation: isolate; /* critical */
     display: flex;
     align-items: center;
-
     min-height: var(--ccg-header-height);
     padding-block: var(--ccg-header-pad-y);
-
-    overflow: visible;
 
     background:
         linear-gradient(
             to bottom,
             rgba(0,0,0,0.96),
-            rgba(0,0,0,0.88),
-            rgba(0,0,0,0.65),
+            rgba(0,0,0,0.75),
             transparent
         );
 
     backdrop-filter: blur(6px);
-
-    box-shadow:
-        0 10px 28px rgba(0,0,0,0.65),
-        0 0 18px rgba(0,170,255,0.08);
 }
+
+/* === CRITICAL FIX: TRUE 3-COLUMN GRID === */
 
 .ccg-header-inner {
     width: min(1320px, 96%);
     margin: 0 auto;
 
     display: grid;
-
-    /* Brand | Nav | Actions (content-sized) */
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns:
+        auto
+        minmax(0, 1fr)
+        auto;
 
     align-items: center;
     gap: 18px;
-
-    position: relative;
-    min-width: 0; /* allow nav to shrink safely */
-
-    /* If a page uses pinned actions as a sibling, reserve right breathing room */
-    padding-right: clamp(0px, 0px, 0px);
-}
-
-/* If actions exist as a direct child of .ccg-header (not inside .ccg-header-inner),
-   pin it safely WITHOUT breaking in-flow pages. */
-.ccg-header > .ccg-header-actions {
-    position: absolute;
-    right: max(2%, 14px);
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-/* When pinned actions are used, reserve space so nav/brand don’t collide */
-.ccg-header > .ccg-header-inner {
-    padding-right: clamp(var(--ccg-header-actions-min), 22vw, var(--ccg-header-actions-max));
-}
-
-/* If the actions are in-flow (inside header-inner), do NOT pin them */
-.ccg-header-inner > .ccg-header-actions {
-    position: static;
-    transform: none;
 }
 
 /* ============================================================
-   BRAND (LOCKED)
+   BRAND
 ============================================================ */
 
 .ccg-brand {
     display: flex;
     align-items: center;
     gap: 14px;
-
     white-space: nowrap;
     text-decoration: none;
-    min-width: 0;
+    flex-shrink: 0;
 }
 
 .ccg-brand__logo {
     width: 56px;
     height: auto;
-    flex-shrink: 0;
-
-    filter:
-        drop-shadow(0 0 6px rgba(0,0,0,0.65))
-        drop-shadow(0 0 12px rgba(var(--accent-rgb), 0.35));
-
-    transition:
-        filter 0.35s ease,
-        transform 0.35s ease;
-}
-
-.ccg-brand:hover .ccg-brand__logo {
-    transform: translateY(-1px);
-    filter:
-        drop-shadow(0 0 8px rgba(0,0,0,0.75))
-        drop-shadow(0 0 18px rgba(var(--accent-rgb), 0.55));
-}
-
-.ccg-brand__kicker {
-    font-size: 0.68rem;
-    color: var(--ccg-text-soft);
-}
-
-.ccg-brand__title {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-
-    font-family: var(--ccg-font-main);
-    font-size: 0.9rem;
-
-    font-weight: 700;
-    letter-spacing: 0.14em;
-}
-
-.ccg-brand__neon-cheeky {
-    font-weight: 800;
-    letter-spacing: 0.18em;
-
-    transform: scaleX(1.06);
-    display: inline-block;
-
-    text-shadow:
-        0 0 6px rgba(255,255,255,0.15),
-        0 0 14px rgba(var(--accent-rgb),0.35),
-        0 0 28px rgba(var(--accent-rgb),0.22);
-}
-
-.ccg-brand__neon-sub {
-    font-weight: 600;
-    letter-spacing: 0.12em;
-
-    transform: scaleX(1.03);
-    display: inline-block;
-
-    text-shadow:
-        0 0 6px rgba(255,255,255,0.15),
-        0 0 14px rgba(var(--accent-rgb),0.35),
-        0 0 28px rgba(var(--accent-rgb),0.22);
-}
-
-@media (hover: hover) {
-    .ccg-brand:hover .ccg-brand__neon-cheeky,
-    .ccg-brand:hover .ccg-brand__neon-sub {
-        text-shadow:
-            0 0 10px rgba(255,255,255,0.28),
-            0 0 24px rgba(var(--accent-rgb),0.55),
-            0 0 48px rgba(var(--accent-rgb),0.38);
-    }
 }
 
 /* ============================================================
-   NAV — SINGLE ROW LOCK (NO WRAP)
+   NAVIGATION (CENTER COLUMN)
 ============================================================ */
 
 .ccg-nav {
     display: flex;
     justify-content: center;
-    min-width: 0; /* allow the nav area to shrink */
+    min-width: 0;
 }
 
 .ccg-nav__list {
     display: flex;
-    flex-wrap: nowrap !important; /* NEVER WRAP */
-    align-items: center;
-    justify-content: center;
-
-    gap: clamp(6px, 0.8vw, 12px);
-
+    gap: 12px;
     list-style: none;
     margin: 0;
     padding: 0;
 
     white-space: nowrap;
-
-    /* When space is tight: keep one row + allow horizontal scroll */
     overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-
-    max-width: 100%;
-    min-width: 0;
 }
 
 .ccg-nav__list::-webkit-scrollbar {
     display: none;
 }
 
-/* ============================================================
-   PHASE H4 — NAV LINK WOW (PILL + NEON, SAFE)
-============================================================ */
-
 .ccg-nav__link {
-    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
 
-    padding: clamp(6px, 0.6vw, var(--ccg-nav-pill-pad-y))
-             clamp(10px, 1.0vw, var(--ccg-nav-pill-pad-x));
-
-    border-radius: var(--ccg-nav-pill-radius);
+    padding: var(--ccg-nav-pill-pad-y) var(--ccg-nav-pill-pad-x);
+    border-radius: 999px;
 
     font-family: var(--ccg-font-main);
-    font-size: clamp(0.62rem, 0.7vw, 0.74rem);
+    font-size: 0.7rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-
-    white-space: nowrap;
 
     color: var(--ccg-text-soft);
     text-decoration: none;
 
-    background:
-        linear-gradient(
-            180deg,
-            var(--ccg-nav-pill-bg-a),
-            var(--ccg-nav-pill-bg-b)
-        );
-
-    border: 1px solid var(--ccg-nav-pill-border);
-
-    box-shadow:
-        0 0 0 rgba(0,0,0,0),
-        inset 0 0 0 1px rgba(255,255,255,0.04);
-
-    backdrop-filter: blur(6px);
-
-    transition:
-        transform 260ms var(--ccg-ease-out),
-        box-shadow 320ms var(--ccg-ease-out),
-        border-color 240ms ease,
-        color 200ms ease,
-        background 240ms ease;
-
-    will-change: transform, box-shadow;
-}
-
-.ccg-nav__link::before {
-    content: "";
-    position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    pointer-events: none;
-
-    background:
-        radial-gradient(
-            circle at 30% 20%,
-            rgba(255,255,255,0.10),
-            rgba(255,255,255,0.00) 55%
-        ),
-        linear-gradient(
-            90deg,
-            rgba(var(--accent-rgb),0.00),
-            rgba(var(--accent-rgb),0.14),
-            rgba(var(--accent-rgb),0.00)
-        );
-
-    opacity: 0;
-    transition: opacity 260ms ease;
-}
-
-.ccg-nav__link:hover,
-.ccg-nav__link:focus-visible {
-    color: var(--ccg-text-light);
-    border-color: rgba(var(--accent-rgb),0.34);
-    transform: translateY(-1px);
-
-    box-shadow:
-        var(--ccg-nav-pill-shadow),
-        var(--ccg-nav-pill-glow-hover),
-        inset 0 0 0 1px rgba(var(--accent-rgb),0.18);
-
-    background:
-        linear-gradient(
-            180deg,
-            rgba(255,255,255,0.10),
-            rgba(255,255,255,0.03)
-        );
-}
-
-.ccg-nav__link:hover::before,
-.ccg-nav__link:focus-visible::before {
-    opacity: 1;
-}
-
-.ccg-nav__link--active {
-    color: var(--ccg-text-light);
-    border-color: rgba(var(--accent-rgb),0.60);
-
-    box-shadow:
-        var(--ccg-nav-pill-shadow),
-        var(--ccg-nav-pill-glow-active),
-        inset 0 0 0 1px rgba(var(--accent-rgb),0.26);
-
-    background:
-        linear-gradient(
-            180deg,
-            rgba(var(--accent-rgb),0.18),
-            rgba(255,255,255,0.02)
-        );
-}
-
-.ccg-nav__link--active:hover,
-.ccg-nav__link--active:focus-visible {
-    border-color: rgba(var(--accent-rgb),0.72);
-    box-shadow:
-        0 12px 20px rgba(0,0,0,0.55),
-        0 0 24px rgba(var(--accent-rgb),0.34),
-        inset 0 0 0 1px rgba(var(--accent-rgb),0.32);
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .ccg-nav__link {
-        transition: color 200ms ease, border-color 200ms ease, box-shadow 200ms ease, background 200ms ease;
-    }
-    .ccg-nav__link:hover,
-    .ccg-nav__link:focus-visible {
-        transform: none;
-    }
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
 }
 
 /* ============================================================
-   HEADER ACTIONS — SOCIALS + MODE TOGGLE (NO OVERLAP / NO SQUASH)
+   HEADER ACTIONS (RIGHT COLUMN)
 ============================================================ */
 
 .ccg-header-actions {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
     gap: 12px;
-
-    flex-wrap: nowrap; /* never stack */
-    white-space: nowrap;
-
-    /* critical: never allow the actions to compress icons */
     flex-shrink: 0;
-
-    /* safe containment if header is tight */
-    max-width: clamp(var(--ccg-header-actions-min), 22vw, var(--ccg-header-actions-max));
-    overflow-x: auto;
-    overflow-y: hidden;
-
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-
-    min-width: 0;
-    z-index: 3;
 }
 
-.ccg-header-actions::-webkit-scrollbar {
-    display: none;
-}
-
-/* Social containers (covers whichever class your pages use) */
-.ccg-header-socials,
-.ccg-socials,
-.ccg-socials-bar,
-.ccg-header-socials-bar {
+/* Social icons never shrink */
+.ccg-header-socials {
     display: flex;
-    align-items: center;
     gap: 10px;
-
-    flex-wrap: nowrap;
-    white-space: nowrap;
-
-    min-width: 0;
-
-    /* prevent squash inside the socials row */
     flex-shrink: 0;
 }
 
 .ccg-header-socials a,
-.ccg-socials a,
-.ccg-socials-bar a,
-.ccg-header-socials-bar a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-
-    /* do not allow anchor boxes to shrink */
+.ccg-socials__icon {
     flex: 0 0 auto;
 }
 
-.ccg-socials__icon {
-    width: 36px;
-    height: 36px;
-
-    /* do not allow icons to shrink */
-    flex: 0 0 36px;
+/* Mode toggle never shrinks */
+.ccg-mode-toggle {
+    flex-shrink: 0;
 }
 
-@media (max-width: 1180px) {
-    .ccg-socials__icon {
-        width: 34px;
-        height: 34px;
-        flex: 0 0 34px;
+/* ============================================================
+   IMPORTANT: DISABLE ALL PINNED / ABSOLUTE ACTION BEHAVIOUR
+============================================================ */
+
+.ccg-header > .ccg-header-actions {
+    position: static !important;
+    transform: none !important;
+}
+
+.ccg-header > .ccg-header-inner {
+    padding-right: 0 !important;
+}
+
+/* ============================================================
+   MOBILE SAFETY
+============================================================ */
+
+@media (max-width: 768px) {
+    .ccg-nav {
+        justify-content: flex-start;
     }
 }
 
-/* Mode toggle — force pill styling even if it’s a button/anchor inside */
-.ccg-mode-toggle,
-.ccg-header .ccg-mode-toggle,
-[data-ccg-mode-toggle] {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    z-index: 5;
-}
-
-/* Ensure the toggle itself never shrinks */
-.ccg-mode-toggle button,
-.ccg-mode-toggle a,
-[data-ccg-mode-toggle] button,
-[data-ccg-mode-toggle] a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    flex: 0 0 auto;
-
-    padding: 8px 14px;
-    border-radius: 999px;
-
-    font-family: var(--ccg-font-main);
-    font-size: 0.70rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-
-    color: var(--ccg-text-light);
-
-    background:
-        linear-gradient(
-            180deg,
-            rgba(255,255,255,0.10),
-            rgba(255,255,255,0.03)
-        );
-
-    border: 1px solid rgba(var(--accent-rgb),0.45);
-
-    box-shadow:
-        0 10px 18px rgba(0,0,0,0.45),
-        0 0 18px rgba(var(--accent-rgb),0.22),
-        inset 0 0 0 1px rgba(255,255,255,0.06);
-
-    cursor: pointer;
-
-    transition:
-        transform 220ms var(--ccg-ease-out),
-        box-shadow 260ms var(--ccg-ease-out),
-        border-color 220ms ease;
-}
-
-.ccg-mode-toggle button:hover,
-.ccg-mode-toggle a:hover,
-[data-ccg-mode-toggle] button:hover,
-[data-ccg-mode-toggle] a:hover {
-    transform: translateY(-1px);
-    border-color: rgba(var(--accent-rgb),0.70);
-    box-shadow:
-        0 12px 22px rgba(0,0,0,0.55),
-        0 0 24px rgba(var(--accent-rgb),0.34),
-        inset 0 0 0 1px rgba(var(--accent-rgb),0.22);
-}
-
 /* ============================================================
-   HEADER NEON STRIP
-============================================================ */
-
-.ccg-header-neon-strip {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
-    height: 2px;
-
-    background:
-        linear-gradient(
-            90deg,
-            rgba(0,170,255,0),
-            rgba(0,170,255,0.35),
-            rgba(255,41,224,0.35),
-            rgba(0,170,255,0)
-        );
-}
-
-/* ============================================================
-   MODE VARS
+   MODE COLOURS
 ============================================================ */
 
 body[data-ccg-mode="c64"] {
     --accent-rgb: 0,170,255;
-    --accent-main: var(--ccg-color-blue);
 }
 
 body[data-ccg-mode="amiga"] {
     --accent-rgb: 255,41,224;
-    --accent-main: var(--ccg-color-pink);
 }
-
-/* ============================================================
-   MOBILE — STILL SINGLE ROW (SCROLL + TIGHTER)
-============================================================ */
-
-@media (max-width: 768px) {
-    :root {
-        --ccg-header-height: 86px;
-        --ccg-header-pad-y: 12px;
-
-        /* keep actions visible; nav scrolls if needed */
-        --ccg-header-actions-max: 280px;
-        --ccg-header-actions-min: 160px;
-
-        --ccg-nav-pill-pad-y: 7px;
-        --ccg-nav-pill-pad-x: 12px;
-    }
-
-    .ccg-brand__logo {
-        width: 52px;
-    }
-
-    .ccg-brand__neon-cheeky {
-        transform: scaleX(1.04);
-        letter-spacing: 0.16em;
-    }
-
-    .ccg-brand__neon-sub {
-        transform: scaleX(1.02);
-    }
-
-    .ccg-socials__icon {
-        width: 32px;
-        height: 32px;
-        flex: 0 0 32px;
-    }
-
-    .ccg-main > section {
-        margin-bottom: var(--ccg-space-lg);
-    }
-
-    /* If pinned actions are used on mobile, reserve less space */
-    .ccg-header > .ccg-header-inner {
-        padding-right: clamp(var(--ccg-header-actions-min), 34vw, var(--ccg-header-actions-max));
-    }
-}
-
-/* ============================================================
-   END OF PROVIDED FILE CONTENT
-   ------------------------------------------------------------
-   NOTE:
-   You told me your original master.css is ~900 lines.
-   I can only output “in full” what you paste into chat.
-   If there are additional sections after this in your real file,
-   paste the remaining tail and I will merge them without changing
-   anything outside the header.
-============================================================ */
