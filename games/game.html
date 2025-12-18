@@ -33,7 +33,6 @@
 
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
 
-<!-- GLOBAL BACKGROUND -->
 <div class="ccg-bg">
     <div class="ccg-bg-starfield"></div>
     <div class="ccg-bg-grid"></div>
@@ -45,7 +44,19 @@
     <!-- HEADER -->
     <header class="ccg-header">
         <div class="ccg-header-inner">
-            <!-- header unchanged -->
+            <a href="../home.html" class="ccg-brand">
+                <img src="../resources/images/ccgamer-logo.png"
+                     alt="Cheeky Commodore Gamer logo"
+                     class="ccg-brand__logo"
+                     loading="lazy">
+                <div class="ccg-brand__text">
+                    <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
+                    <div class="ccg-brand__title">
+                        <span class="ccg-brand__neon-cheeky">CHEEKY</span>
+                        <span class="ccg-brand__neon-sub">COMMODORE GAMER</span>
+                    </div>
+                </div>
+            </a>
         </div>
         <div class="ccg-header-neon-strip"></div>
     </header>
@@ -58,10 +69,7 @@
             <div id="gameHeroBG" class="game-hero__bg"></div>
             <div class="game-hero__inner">
                 <div class="game-hero__media">
-                    <img id="gameHeroThumb"
-                         class="game-hero__thumb"
-                         alt=""
-                         loading="lazy">
+                    <img id="gameHeroThumb" class="game-hero__thumb" alt="" loading="lazy">
                 </div>
                 <div class="game-hero__content">
                     <h1 id="gameHeroTitle"></h1>
@@ -81,65 +89,46 @@
 
         <!-- VIDEO -->
         <section id="game-video-section" hidden>
-            <iframe id="game-video-embed"
-                    loading="lazy"
-                    allowfullscreen></iframe>
-
-            <a id="gameVideoBtn"
-               class="ccg-btn"
-               target="_blank"
-               hidden>
+            <iframe id="game-video-embed" loading="lazy" allowfullscreen></iframe>
+            <a id="gameVideoBtn" class="ccg-btn" target="_blank" hidden>
                 Watch on YouTube
             </a>
         </section>
 
-        <!-- ACTIONS -->
-        <section class="game-actions">
-
-            <!-- MANUAL (MODAL) -->
-            <a id="gameManualBtn"
-               class="ccg-btn"
-               target="_blank"
-               hidden>
-                Manual
-            </a>
-
-        </section>
-
-        <!-- DOWNLOADS PANEL (SG-E2.2) -->
+        <!-- ============================= -->
+        <!-- SG-E2 DOWNLOADS PANEL (NEW) -->
+        <!-- ============================= -->
         <section class="game-downloads" hidden>
 
-            <h3 class="game-downloads__title">
-                Play / Download
-            </h3>
+            <h2 class="game-downloads__title">
+                Manuals & Downloads
+            </h2>
 
             <div class="game-downloads__actions">
-                <a id="gameDiskBtn"
-                   class="ccg-btn"
-                   target="_blank"
-                   hidden>
-                    Launch / Download
+                <a id="gameManualBtn" class="ccg-btn" target="_blank" hidden>
+                    View Manual
+                </a>
+
+                <a id="gameDiskBtn" class="ccg-btn" target="_blank" hidden>
+                    Play / Download
                 </a>
             </div>
 
             <p class="game-downloads__disclaimer">
-                These files are provided for historical and preservation purposes.
-                You should own an original copy of this game before downloading or playing it.
+                Manuals and game files are provided for archival and educational purposes.
+                Please ensure you own the original media where required.
             </p>
 
         </section>
 
         <!-- RELATED -->
         <section class="game-section game-section--related">
-            <h2 class="game-section__title">
-                More From the Same Developer
-            </h2>
+            <h2 class="game-section__title"></h2>
             <div id="relatedGamesGrid" class="ccg-cards-grid"></div>
         </section>
 
     </main>
 
-    <!-- FOOTER -->
     <footer class="ccg-footer">
         <p class="ccg-footer__text">
             © <span data-ccg-year></span> Cheeky Commodore Gamer.
@@ -149,32 +138,6 @@
 
 </div>
 
-<!-- MANUAL MODAL -->
-<div id="manualModal"
-     class="ccg-modal ccg-modal--manual"
-     aria-hidden="true">
-
-    <div class="ccg-modal-content">
-
-        <div class="ccg-modal-header">
-            <span id="manualModalTitle">Game Manual</span>
-            <span class="ccg-modal-close"
-                  role="button"
-                  aria-label="Close manual viewer">
-                ×
-            </span>
-        </div>
-
-        <div class="ccg-modal-body">
-            <iframe id="manualPdfFrame"
-                    class="ccg-pdf-frame"
-                    loading="lazy"></iframe>
-        </div>
-
-    </div>
-</div>
-
-<!-- JS -->
 <script src="../js/ccg-global.js" defer></script>
 <script src="../js/ccg-mode-engine.js" defer></script>
 <script src="../js/load-single-game.js" defer></script>
