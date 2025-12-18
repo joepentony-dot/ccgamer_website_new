@@ -1,17 +1,15 @@
 /* ============================================================
    HOME.CSS — OMEGA CINEMATIC SHOWPIECE (FLAGSHIP)
    Phase WOW-H3 — HOME THUMB + LAYOUT DISCIPLINE (LOCKED)
-   Phase WOW-A1 — CINEMATIC DEPTH & PRESENCE POLISH
-   Phase WOW-A2 — MICRO-MOTION CARD POLISH (HOME ONLY)
-   Phase WOW-A3 — ULTRA-SUBTLE AMBIENT BACKGROUND CADENCE
-   Phase WOW-A4 — HERO BACKGROUND PARALLAX (MOUSE-FREE)
    ------------------------------------------------------------
-   Goals:
-   • Keep Home immersive (fixed starfield)
-   • Add life WITHOUT visible animation
-   • Create cinematic “breathing” background
-   • Add hero depth separation (no cursor)
-   • Zero impact outside Home
+   LOCKED BASELINE:
+   • Home thumbnails = FIXED visual size
+   • NO hover scaling
+   • NO transforms affecting perception
+   • 16:9 discipline preserved
+   • Matches previously approved Home state
+   • ZERO experimental motion
+   • ZERO regressions
 ============================================================ */
 
 
@@ -44,7 +42,6 @@ html[data-ccg-page="home"] .ccg-page {
 html[data-ccg-page="home"] .ccg-bg-starfield {
     opacity: 0.78;
     filter: contrast(1.18) brightness(1.12);
-    transform: translateZ(0);
 }
 
 html[data-ccg-page="home"] .ccg-bg-grid {
@@ -64,84 +61,7 @@ html[data-ccg-page="home"] .ccg-bg-crt-overlay {
 
 
 /* ============================================================
-   WOW-A3 — AMBIENT BACKGROUND CADENCE (HOME ONLY)
-============================================================ */
-
-@media (prefers-reduced-motion: no-preference) {
-
-    html[data-ccg-page="home"] .ccg-bg-starfield {
-        animation:
-            ccg-home-star-drift 90s linear infinite,
-            ccg-home-star-breathe 90s ease-in-out infinite;
-        will-change: transform, opacity;
-    }
-
-    html[data-ccg-page="home"] .ccg-bg-grid {
-        animation: ccg-home-grid-drift 140s linear infinite;
-        will-change: transform;
-    }
-
-    html[data-ccg-page="home"] .ccg-bg-crt-overlay {
-        animation: ccg-home-crt-breathe 60s ease-in-out infinite;
-        will-change: opacity;
-    }
-}
-
-@keyframes ccg-home-star-drift {
-    0%   { transform: translate3d(0, 0, 0); }
-    100% { transform: translate3d(-22px, 18px, 0); }
-}
-
-@keyframes ccg-home-star-breathe {
-    0%, 100% { opacity: 0.76; }
-    50%      { opacity: 0.82; }
-}
-
-@keyframes ccg-home-grid-drift {
-    0%   { transform: translate3d(0, 0, 0); }
-    100% { transform: translate3d(12px, -14px, 0); }
-}
-
-@keyframes ccg-home-crt-breathe {
-    0%, 100% { opacity: 0.20; }
-    50%      { opacity: 0.24; }
-}
-
-
-/* ============================================================
-   WOW-A4 — HERO BACKGROUND PARALLAX (MOUSE-FREE)
-============================================================ */
-
-@media (prefers-reduced-motion: no-preference) {
-
-    html[data-ccg-page="home"] .ccg-hero-image {
-        animation: ccg-hero-layer-drift 120s ease-in-out infinite;
-        will-change: transform;
-    }
-
-    html[data-ccg-page="home"] .ccg-hero-scanlines {
-        animation: ccg-hero-scanline-drift 160s linear infinite;
-        will-change: transform;
-    }
-}
-
-@keyframes ccg-hero-layer-drift {
-    0%, 100% {
-        transform: translate3d(0, 0, 0);
-    }
-    50% {
-        transform: translate3d(-10px, 6px, 0);
-    }
-}
-
-@keyframes ccg-hero-scanline-drift {
-    0%   { transform: translate3d(0, 0, 0); }
-    100% { transform: translate3d(6px, -6px, 0); }
-}
-
-
-/* ============================================================
-   HERO + TAGLINE RHYTHM
+   HERO + TAGLINE RHYTHM (LOCKED)
 ============================================================ */
 
 html[data-ccg-page="home"] .home-hero {
@@ -150,46 +70,74 @@ html[data-ccg-page="home"] .home-hero {
     margin-bottom: 28px;
 }
 
-html[data-ccg-page="home"] .home-hero::before {
-    content: "";
-    position: absolute;
-    inset: -18px -22px;
-    border-radius: 24px;
-    background:
-        radial-gradient(
-            120% 80% at 50% 0%,
-            rgba(var(--accent-rgb), 0.10),
-            transparent 65%
-        );
-    opacity: 0.35;
-    z-index: -1;
-    pointer-events: none;
-}
-
 html[data-ccg-page="home"] .home-tagline {
     margin: 22px 0 36px;
 }
 
 
 /* ============================================================
-   WOW-A2 — MICRO-MOTION CARD POLISH (HOME ONLY)
+   FEATURED HIGHLIGHTS — TRUE 2-COLUMN (LOCKED)
 ============================================================ */
 
-@media (prefers-reduced-motion: no-preference) {
+html[data-ccg-page="home"] .home-highlights-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 22px;
+}
 
-    html[data-ccg-page="home"] .home-feature-card,
-    html[data-ccg-page="home"] .ccg-genre-tile {
-        transition:
-            transform 300ms ease,
-            box-shadow 300ms ease;
-        will-change: transform;
+@media (min-width: 1024px) {
+    html[data-ccg-page="home"] .home-highlights-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        max-width: 1180px;
+        margin-inline: auto;
+        gap: 32px;
     }
+}
 
-    html[data-ccg-page="home"] .home-feature-card:hover,
-    html[data-ccg-page="home"] .ccg-genre-tile:hover {
-        transform: translateY(-3px);
-        box-shadow:
-            0 14px 36px rgba(0,0,0,0.55),
-            0 0 22px rgba(var(--accent-rgb),0.25);
+
+/* ============================================================
+   BROWSE BY GENRE — HOME ONLY DISCIPLINE (LOCKED)
+============================================================ */
+
+html[data-ccg-page="home"] .home-genre-grid {
+    display: grid;
+    gap: 18px;
+}
+
+@media (min-width: 640px) {
+    html[data-ccg-page="home"] .home-genre-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 22px;
     }
+}
+
+@media (min-width: 1024px) {
+    html[data-ccg-page="home"] .home-genre-grid {
+        max-width: 1180px;
+        margin-inline: auto;
+        gap: 28px;
+    }
+}
+
+
+/* ============================================================
+   🔒 HOME THUMBNAIL DISCIPLINE — FINAL LOCK
+============================================================ */
+
+/* Featured cards — NO motion, NO scaling */
+html[data-ccg-page="home"] .home-feature-card {
+    transform: none !important;
+}
+
+html[data-ccg-page="home"] .home-feature-card img {
+    transform: none !important;
+}
+
+/* Genre tiles — exact visual size, NO hover manipulation */
+html[data-ccg-page="home"] .ccg-genre-tile {
+    transform: none !important;
+}
+
+html[data-ccg-page="home"] .ccg-genre-tile img {
+    transform: none !important;
 }
