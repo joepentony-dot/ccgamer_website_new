@@ -249,11 +249,13 @@ function renderRelatedGames(game, allGames) {
     }
 
     if (titleEl) {
-        titleEl.textContent =
-            related[0].developer === game.developer
-                ? "More from the same developer"
-                : "Related games you might like";
-    }
+    const publisher =
+        game.publisher ||
+        game.developer ||
+        "the same publisher";
+
+    titleEl.textContent = `Other Games by ${publisher}`;
+}
 
     container.innerHTML = related.map(g => {
         const thumb = resolveGameThumb(g.thumbnail || g.thumb || g.cover);
