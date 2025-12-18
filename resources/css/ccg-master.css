@@ -59,8 +59,9 @@
     --ccg-header-pad-y: 14px;
     --ccg-header-nav-gap: 10px;
 
-    /* Keep right column stable (socials + toggle) */
-    --ccg-header-actions-width: 220px;
+    /* Actions max size safety (prevents Home crush without forcing a fixed grid column) */
+    --ccg-header-actions-max: 320px;
+    --ccg-header-actions-min: 180px;
 
     /* ========================================================
        PHASE H4 — NAV WOW TOKENS (SAFE, NO LAYOUT IMPACT)
@@ -143,12 +144,11 @@ body {
 /* ============================================================
    HEADER — CANONICAL CONTROL DECK (H4 LOCK)
    ------------------------------------------------------------
-   • Uses existing DOM expectation:
-     .ccg-header > .ccg-header-inner contains:
-       - .ccg-brand
-       - .ccg-nav
-       - .ccg-header-actions (socials + mode toggle)
-   • Nav never wraps; it scrolls horizontally when needed
+   • Supports BOTH safe structures without forcing absolute:
+     A) .ccg-header > .ccg-header-inner > .ccg-header-actions (in-flow)
+     B) .ccg-header > .ccg-header-actions (pinned sibling)
+   • Nav stays single-row; it scrolls horizontally when needed
+   • Socials never squash: icons never shrink; actions can scroll if tight
 ============================================================ */
 
 .ccg-header {
@@ -186,14 +186,37 @@ body {
 
     display: grid;
 
-    /* Brand | Nav | Actions */
-    grid-template-columns: auto 1fr var(--ccg-header-actions-width);
+    /* Brand | Nav | Actions (content-sized) */
+    grid-template-columns: auto minmax(0, 1fr) auto;
 
     align-items: center;
     gap: 18px;
 
     position: relative;
     min-width: 0; /* allow nav to shrink safely */
+
+    /* If a page uses pinned actions as a sibling, reserve right breathing room */
+    padding-right: clamp(0px, 0px, 0px);
+}
+
+/* If actions exist as a direct child of .ccg-header (not inside .ccg-header-inner),
+   pin it safely WITHOUT breaking in-flow pages. */
+.ccg-header > .ccg-header-actions {
+    position: absolute;
+    right: max(2%, 14px);
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* When pinned actions are used, reserve space so nav/brand don’t collide */
+.ccg-header > .ccg-header-inner {
+    padding-right: clamp(var(--ccg-header-actions-min), 22vw, var(--ccg-header-actions-max));
+}
+
+/* If the actions are in-flow (inside header-inner), do NOT pin them */
+.ccg-header-inner > .ccg-header-actions {
+    position: static;
+    transform: none;
 }
 
 /* ============================================================
@@ -457,7 +480,7 @@ body {
 }
 
 /* ============================================================
-   HEADER ACTIONS — SOCIALS + MODE TOGGLE (NO OVERLAP)
+   HEADER ACTIONS — SOCIALS + MODE TOGGLE (NO OVERLAP / NO SQUASH)
 ============================================================ */
 
 .ccg-header-actions {
@@ -469,8 +492,23 @@ body {
     flex-wrap: nowrap; /* never stack */
     white-space: nowrap;
 
+    /* critical: never allow the actions to compress icons */
+    flex-shrink: 0;
+
+    /* safe containment if header is tight */
+    max-width: clamp(var(--ccg-header-actions-min), 22vw, var(--ccg-header-actions-max));
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+
     min-width: 0;
     z-index: 3;
+}
+
+.ccg-header-actions::-webkit-scrollbar {
+    display: none;
 }
 
 /* Social containers (covers whichever class your pages use) */
@@ -486,6 +524,9 @@ body {
     white-space: nowrap;
 
     min-width: 0;
+
+    /* prevent squash inside the socials row */
+    flex-shrink: 0;
 }
 
 .ccg-header-socials a,
@@ -496,17 +537,24 @@ body {
     align-items: center;
     justify-content: center;
     text-decoration: none;
+
+    /* do not allow anchor boxes to shrink */
+    flex: 0 0 auto;
 }
 
 .ccg-socials__icon {
     width: 36px;
     height: 36px;
+
+    /* do not allow icons to shrink */
+    flex: 0 0 36px;
 }
 
 @media (max-width: 1180px) {
     .ccg-socials__icon {
         width: 34px;
         height: 34px;
+        flex: 0 0 34px;
     }
 }
 
@@ -521,6 +569,7 @@ body {
     z-index: 5;
 }
 
+/* Ensure the toggle itself never shrinks */
 .ccg-mode-toggle button,
 .ccg-mode-toggle a,
 [data-ccg-mode-toggle] button,
@@ -528,6 +577,8 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+
+    flex: 0 0 auto;
 
     padding: 8px 14px;
     border-radius: 999px;
@@ -619,7 +670,8 @@ body[data-ccg-mode="amiga"] {
         --ccg-header-pad-y: 12px;
 
         /* keep actions visible; nav scrolls if needed */
-        --ccg-header-actions-width: 200px;
+        --ccg-header-actions-max: 280px;
+        --ccg-header-actions-min: 160px;
 
         --ccg-nav-pill-pad-y: 7px;
         --ccg-nav-pill-pad-x: 12px;
@@ -641,10 +693,16 @@ body[data-ccg-mode="amiga"] {
     .ccg-socials__icon {
         width: 32px;
         height: 32px;
+        flex: 0 0 32px;
     }
 
     .ccg-main > section {
         margin-bottom: var(--ccg-space-lg);
+    }
+
+    /* If pinned actions are used on mobile, reserve less space */
+    .ccg-header > .ccg-header-inner {
+        padding-right: clamp(var(--ccg-header-actions-min), 34vw, var(--ccg-header-actions-max));
     }
 }
 
