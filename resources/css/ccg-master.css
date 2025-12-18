@@ -1,6 +1,6 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & TYPOGRAPHY
-   OMEGA HEADER — PHASE H6.1 MICRO POLISH (LOCK)
+   OMEGA HEADER — PHASE H6.2 FINAL NAV LOCK
    ------------------------------------------------------------
    • H1 Structural certainty
    • H2 Logo authority
@@ -8,7 +8,8 @@
    • H4 Toggle ULTRA
    • H5 Social icons neon pack
    • H6 Navigation density resolution (inline dropdown)
-   • H6.1 Focus-visible + edge calm (ACCESSIBILITY SAFE)
+   • H6.1 Focus-visible + edge calm
+   • H6.2 Touch, motion & safe-area insurance (FINAL)
    • ZERO layout risk
    • ZERO HTML / JS changes
 ============================================================ */
@@ -175,7 +176,8 @@ body {
     display: flex;
     gap: 12px;
     list-style: none;
-    padding-inline: 28px;
+    padding-inline: calc(28px + env(safe-area-inset-left, 0px))
+                    calc(28px + env(safe-area-inset-right, 0px));
     overflow-x: auto;
     scrollbar-width: none;
 }
@@ -230,7 +232,6 @@ body {
         0 0 22px rgba(var(--accent-rgb),0.45);
 }
 
-/* Focus-visible parity (keyboard users) */
 .ccg-nav__link:focus-visible {
     outline: none;
     color: #fff;
@@ -307,7 +308,7 @@ body {
         drop-shadow(0 0 4px rgba(var(--accent-rgb),0.25));
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
     .ccg-header-socials a:hover {
         transform: translateY(-1px);
         box-shadow:
@@ -333,6 +334,14 @@ body {
 
 .ccg-nav__more-btn {
     cursor: pointer;
+}
+
+/* Focus-visible parity for MORE trigger */
+.ccg-nav__more-btn:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 1px rgba(var(--accent-rgb),0.45),
+        0 0 16px rgba(var(--accent-rgb),0.35);
 }
 
 .ccg-nav__dropdown {
@@ -405,6 +414,14 @@ body {
     background: rgba(var(--accent-rgb), 0.14);
     color: #fff;
     outline: none;
+}
+
+/* Reduced motion — nav only */
+@media (prefers-reduced-motion: reduce) {
+    .ccg-nav__dropdown {
+        transition: none;
+        transform: none;
+    }
 }
 
 /* ============================================================
