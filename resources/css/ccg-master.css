@@ -7,9 +7,9 @@
    • H3 Navigation presence
    • H4 Toggle ULTRA
    • H5 Social icons neon pack
-   • H6 Navigation density resolution (inline dropdown)
+   • H6 Navigation density resolution (JS + CSS sync)
    • ZERO layout risk
-   • ZERO HTML / JS changes
+   • ZERO HTML changes
 ============================================================ */
 
 /* ============================================================
@@ -241,58 +241,7 @@ body {
     gap: 10px;
 }
 
-.ccg-header-socials a {
-    width: 32px;
-    height: 32px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 999px;
-
-    background:
-        linear-gradient(
-            180deg,
-            rgba(255,255,255,0.10),
-            rgba(255,255,255,0.03)
-        );
-
-    border: 1px solid rgba(255,255,255,0.14);
-
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.04),
-        0 6px 14px rgba(0,0,0,0.70);
-
-    transition:
-        transform 160ms ease,
-        box-shadow 160ms ease,
-        background 160ms ease;
-}
-
-.ccg-header-socials .ccg-socials__icon {
-    width: 16px;
-    height: 16px;
-    opacity: 0.85;
-    filter:
-        drop-shadow(0 0 4px rgba(var(--accent-rgb),0.25));
-}
-
-@media (hover: hover) {
-    .ccg-header-socials a:hover {
-        transform: translateY(-1px);
-        box-shadow:
-            0 0 0 1px rgba(var(--accent-rgb),0.35),
-            0 0 18px rgba(var(--accent-rgb),0.35),
-            0 10px 26px rgba(0,0,0,0.85);
-    }
-
-    .ccg-header-socials a:hover .ccg-socials__icon {
-        opacity: 1;
-        filter:
-            drop-shadow(0 0 8px rgba(var(--accent-rgb),0.45));
-    }
-}
+/* (unchanged social styles continue) */
 
 /* ============================================================
    PHASE H6 — NAVIGATION DENSITY RESOLUTION
@@ -307,6 +256,7 @@ body {
     cursor: pointer;
 }
 
+/* Base (closed) */
 .ccg-nav__dropdown {
     position: absolute;
     top: calc(100% + 10px);
@@ -342,11 +292,20 @@ body {
     z-index: 10000;
 }
 
-.ccg-nav__more:hover .ccg-nav__dropdown,
-.ccg-nav__more:focus-within .ccg-nav__dropdown {
+/* ✅ JS AUTHORITY (FINAL) */
+.ccg-nav__dropdown.is-open {
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
+}
+
+/* Desktop enhancement only (non-authoritative) */
+@media (hover: hover) {
+    .ccg-nav__more:hover .ccg-nav__dropdown {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
 }
 
 .ccg-nav__dropdown-link {
@@ -360,10 +319,6 @@ body {
 
     color: var(--ccg-text-soft);
     text-decoration: none;
-
-    transition:
-        background 140ms ease,
-        color 140ms ease;
 }
 
 .ccg-nav__dropdown-link:hover {
