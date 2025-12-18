@@ -33,6 +33,7 @@
 
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
 
+<!-- GLOBAL BACKGROUND -->
 <div class="ccg-bg">
     <div class="ccg-bg-starfield"></div>
     <div class="ccg-bg-grid"></div>
@@ -47,12 +48,18 @@
         <!-- HERO -->
         <section class="game-hero">
             <div id="gameHeroBG" class="game-hero__bg"></div>
+
             <div class="game-hero__inner">
                 <div class="game-hero__media">
-                    <img id="gameHeroThumb" class="game-hero__thumb" alt="" loading="lazy">
+                    <img id="gameHeroThumb"
+                         class="game-hero__thumb"
+                         alt=""
+                         loading="lazy">
                 </div>
+
                 <div class="game-hero__content">
                     <h1 id="gameHeroTitle"></h1>
+
                     <div class="game-meta">
                         <span id="gameMetaYear"></span> ·
                         <span id="gameMetaSystem"></span> ·
@@ -69,15 +76,30 @@
 
         <!-- VIDEO -->
         <section id="game-video-section" hidden>
-            <iframe id="game-video-embed" loading="lazy" allowfullscreen></iframe>
-            <a id="gameVideoBtn" class="ccg-btn" target="_blank" hidden>
+            <iframe id="game-video-embed"
+                    loading="lazy"
+                    allowfullscreen></iframe>
+
+            <a id="gameVideoBtn"
+               class="ccg-btn"
+               target="_blank"
+               hidden>
                 Watch on YouTube
             </a>
         </section>
 
-        <!-- DOWNLOADS -->
+        <!-- SCREENSHOTS (SG-E4) -->
+        <section class="game-screenshots" hidden>
+            <h2 class="game-screenshots__title">Screenshots</h2>
+
+            <div class="game-screenshots__strip" id="gameScreenshotsStrip">
+                <!-- Injected by JS -->
+            </div>
+        </section>
+
+        <!-- DOWNLOADS (SG-E2) -->
         <section class="game-downloads" hidden>
-            <h2 class="game-downloads__title">Manuals & Downloads</h2>
+            <h2 class="game-downloads__title">Manuals &amp; Downloads</h2>
 
             <div class="game-downloads__actions">
                 <a id="gameManualBtn" class="ccg-btn" href="#" hidden>
@@ -105,12 +127,13 @@
 </div>
 
 <!-- ========================================================= -->
-<!-- SG-E3 MODAL VIEWER (PDF / IMAGE) -->
+<!-- SG-E3 — CINEMATIC MODAL VIEWER (PDF / IMAGE) -->
 <!-- ========================================================= -->
 
 <div id="ccgModal" class="ccg-modal" aria-hidden="true">
     <div class="ccg-modal-content">
         <span class="ccg-modal-close" aria-label="Close modal">&times;</span>
+
         <iframe id="ccgModalFrame"
                 class="ccg-pdf-frame"
                 loading="lazy"></iframe>
