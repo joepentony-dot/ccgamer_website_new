@@ -126,6 +126,7 @@
    TITLE & META
 ------------------------------------------------------------ */
 
+/* Legacy selector kept (harmless), but your HTML uses .game-hero__title */
 .ccg-page--single-game .game-hero h1 {
     font-family: var(--ccg-font-main);
     letter-spacing: 0.14em;
@@ -137,11 +138,77 @@
         0 0 32px rgba(var(--accent-rgb),0.45);
 }
 
+/* ✅ Correct selector for your HTML */
+.ccg-page--single-game .game-hero__title {
+    font-family: var(--ccg-font-main);
+    letter-spacing: 0.14em;
+    line-height: 1.10;
+    margin: 0 0 12px;
+
+    text-shadow:
+        0 22px 48px rgba(0,0,0,0.92),
+        0 0 36px rgba(var(--accent-rgb),0.46),
+        0 0 72px rgba(var(--accent-rgb),0.18);
+}
+
+/* Your HTML uses .game-hero__meta and .game-meta__item/.game-meta__sep */
+.ccg-page--single-game .game-hero__meta {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    padding: 10px 14px;
+    border-radius: 999px;
+
+    background: rgba(0,0,0,0.38);
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.08),
+        0 18px 46px rgba(0,0,0,0.72);
+
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+.ccg-page--single-game .game-meta__item {
+    font-family: var(--ccg-font-body);
+    font-size: 0.92rem;
+    opacity: 0.90;
+    letter-spacing: 0.06em;
+    color: var(--ccg-text-light);
+    text-shadow: 0 10px 26px rgba(0,0,0,0.85);
+}
+
+.ccg-page--single-game .game-meta__sep {
+    opacity: 0.55;
+    color: rgba(255,255,255,0.72);
+}
+
+/* Legacy selector kept (harmless) */
 .ccg-page--single-game .game-meta {
     font-family: var(--ccg-font-body);
     font-size: 0.9rem;
     opacity: 0.85;
     letter-spacing: 0.06em;
+}
+
+/* ------------------------------------------------------------
+   SECTION TITLES — SUBTLE NEON HEADER
+   (Matches your HTML: .game-section__title)
+------------------------------------------------------------ */
+
+.ccg-page--single-game .game-section__title {
+    font-family: var(--ccg-font-main);
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.18em;
+    margin: 0 0 16px;
+
+    color: rgba(255,255,255,0.88);
+
+    text-shadow:
+        0 0 16px rgba(var(--accent-rgb),0.24),
+        0 10px 26px rgba(0,0,0,0.85);
 }
 
 /* ------------------------------------------------------------
@@ -167,6 +234,12 @@
         0 20px 48px rgba(0,0,0,0.70);
 }
 
+.ccg-page--single-game #gameDescription {
+    line-height: 1.7;
+    color: rgba(255,255,255,0.86);
+    text-shadow: 0 10px 28px rgba(0,0,0,0.75);
+}
+
 /* ------------------------------------------------------------
    VIDEO
 ------------------------------------------------------------ */
@@ -190,16 +263,85 @@
         0 26px 64px rgba(0,0,0,0.80);
 }
 
+/* ✅ Cinematic frame for the actual embed wrapper in your HTML */
+.ccg-page--single-game .game-video__embed {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.08),
+        0 26px 64px rgba(0,0,0,0.85),
+        0 0 34px rgba(var(--accent-rgb), 0.18);
+}
+
+.ccg-page--single-game .game-video__embed::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+
+    background:
+        radial-gradient(
+            ellipse at 20% 10%,
+            rgba(var(--accent-rgb), 0.18),
+            transparent 60%
+        ),
+        repeating-linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.018),
+            rgba(255,255,255,0.018) 1px,
+            transparent 1px,
+            transparent 5px
+        );
+
+    opacity: 0.28;
+}
+
+.ccg-page--single-game .game-video__embed iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    display: block;
+    border: 0;
+}
+
 /* ------------------------------------------------------------
    ACTIONS
 ------------------------------------------------------------ */
 
+/* Legacy selector kept (harmless), your HTML uses .game-video__actions */
 .ccg-page--single-game .game-actions {
     display: flex;
     justify-content: center;
     gap: 18px;
     margin-bottom: 26px;
     flex-wrap: wrap;
+}
+
+/* ✅ Correct selector for your HTML */
+.ccg-page--single-game .game-video__actions {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    padding: 18px 18px 22px;
+}
+
+/* Slight hover energy for buttons on this page only (no system changes) */
+.ccg-page--single-game .ccg-btn {
+    transition: transform 0.18s ease, box-shadow 0.22s ease, filter 0.22s ease;
+}
+
+.ccg-page--single-game .ccg-btn:hover {
+    transform: translateY(-1px);
+    filter: saturate(1.06);
+    box-shadow:
+        0 16px 44px rgba(0,0,0,0.72),
+        0 0 22px rgba(var(--accent-rgb),0.22);
+}
+
+.ccg-page--single-game .ccg-btn:active {
+    transform: translateY(0px);
 }
 
 /* ============================================================
@@ -268,7 +410,6 @@
 .ccg-page--single-game .game-section--related {
     margin-top: 64px;
 }
-
 
 /* ============================================================
    W7 / W11 — BROWSE INDEX (UNCHANGED)
@@ -389,6 +530,33 @@
         0 24px 56px rgba(0,0,0,0.75);
 }
 
+.ccg-page--single-game .game-downloads::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: 22px;
+
+    background:
+        radial-gradient(
+            ellipse at 22% 10%,
+            rgba(var(--accent-rgb), 0.16),
+            transparent 62%
+        ),
+        radial-gradient(
+            ellipse at 86% 0%,
+            rgba(255,255,255,0.06),
+            transparent 58%
+        );
+
+    opacity: 0.95;
+}
+
+.ccg-page--single-game .game-downloads {
+    position: relative;
+    overflow: hidden;
+}
+
 .ccg-page--single-game .game-downloads__title {
     font-family: var(--ccg-font-main);
     letter-spacing: 0.14em;
@@ -418,3 +586,97 @@
     opacity: 0.65;
 }
 
+/* ✅ Align SG-E2 visuals to your real HTML layout */
+.ccg-page--single-game .game-downloads__primary {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.ccg-page--single-game .game-downloads__secondary {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+
+    margin: 12px auto 0;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    max-width: 860px;
+}
+
+.ccg-page--single-game .game-downloads__archive-label {
+    color: rgba(255,255,255,0.72);
+    letter-spacing: 0.08em;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+}
+
+/* ------------------------------------------------------------
+   RELATED CAROUSEL — WOW NAV + DEPTH
+   (Uses your real HTML: .related-carousel__viewport/.track/.nav)
+------------------------------------------------------------ */
+
+.ccg-page--single-game .related-carousel {
+    position: relative;
+    margin-top: 18px;
+}
+
+.ccg-page--single-game .related-carousel__viewport {
+    border-radius: 18px;
+    padding: 12px;
+
+    background: rgba(0,0,0,0.42);
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.08),
+        0 26px 64px rgba(0,0,0,0.82);
+
+    overflow: hidden;
+}
+
+.ccg-page--single-game .related-carousel__track {
+    gap: 14px;
+}
+
+.ccg-page--single-game .related-carousel__nav {
+    width: 46px;
+    height: 46px;
+    border-radius: 999px;
+
+    background: rgba(0,0,0,0.62);
+    color: rgba(255,255,255,0.92);
+
+    border: 1px solid rgba(255,255,255,0.12);
+
+    box-shadow:
+        0 18px 46px rgba(0,0,0,0.78),
+        0 0 22px rgba(var(--accent-rgb),0.22);
+
+    transition: transform 0.18s ease, box-shadow 0.22s ease, filter 0.22s ease;
+}
+
+.ccg-page--single-game .related-carousel__nav:hover {
+    transform: scale(1.04);
+    filter: saturate(1.06);
+    box-shadow:
+        0 22px 56px rgba(0,0,0,0.85),
+        0 0 32px rgba(var(--accent-rgb),0.28);
+}
+
+.ccg-page--single-game .related-carousel__nav:active {
+    transform: scale(1.00);
+}
+
+@media (max-width: 520px) {
+    .ccg-page--single-game .related-carousel__nav {
+        width: 42px;
+        height: 42px;
+    }
+}
