@@ -331,3 +331,33 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
         max-height: 180px;
     }
 }
+
+
+/* ============================================================
+   W9 — SINGLE GAME RELATED CARDS (WOW-ONLY, SCOPED)
+   Scope: .ccg-page--single-game ONLY
+============================================================ */
+
+.ccg-page--single-game .related-carousel .ccg-game-card {
+    box-shadow:
+        0 14px 36px rgba(0,0,0,0.82),
+        inset 0 0 0 1px rgba(255,255,255,0.06);
+}
+
+.ccg-page--single-game .related-carousel .ccg-game-card:hover {
+    transform: translateY(-6px) scale(1.015);
+
+    box-shadow:
+        0 22px 56px rgba(0,0,0,0.92),
+        0 0 34px rgba(var(--accent-rgb), 0.34);
+
+    border-color: rgba(var(--accent-rgb), 0.38);
+}
+
+.ccg-page--single-game .related-carousel .ccg-game-card::before {
+    opacity: 0.68;
+}
+
+.ccg-page--single-game .related-carousel .ccg-game-card::after {
+    opacity: 0.72;
+}
