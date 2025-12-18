@@ -1,74 +1,63 @@
 /* ============================================================
-   GAMES.CSS — OMEGA ARCADE CONSOLE
+   GAMES.CSS — SINGLE GAME ULTRA
+   Phase W9 — FINAL (LOCK AFTER APPLY)
    ------------------------------------------------------------
-   • W7 — Browse Index WOW (HARD NEON)  [unchanged]
-   • W9 — SINGLE GAME ULTRA (FLAGSHIP CINEMATIC)
-   ------------------------------------------------------------
-   • CSS-only
-   • Scoped safely
-   • ZERO JS / data impact
+   • Single Game page ONLY
+   • CSS-only (NO JS changes)
+   • Cinematic, readable, premium presence
+   • Zero impact on Browse / Genres / Collections
 ============================================================ */
-
 
 /* ============================================================
-   PAGE BASE
+   PAGE SCOPE
 ============================================================ */
 
-.games-grid {
-    width: 100%;
+.ccg-page--single-game .ccg-main {
+    padding-top: 14px;
 }
 
-
 /* ============================================================
-   ============================================================
-   W9 — SINGLE GAME ULTRA (FLAGSHIP PAGE)
-   Scope: .ccg-page--single-game ONLY
-   ============================================================
-============================================================ */
-
-
-/* ============================================================
-   HERO — CINEMATIC MARQUEE AUTHORITY
+   HERO — CINEMATIC FLAGSHIP
 ============================================================ */
 
 .ccg-page--single-game .game-hero {
     position: relative;
-    margin-bottom: 56px;
+    margin-bottom: 48px;
     border-radius: 22px;
     overflow: hidden;
     isolation: isolate;
 
     background:
         radial-gradient(
-            ellipse at 18% 14%,
-            rgba(var(--accent-rgb), 0.26),
+            ellipse at 18% 12%,
+            rgba(var(--accent-rgb), 0.24),
             transparent 60%
         ),
         linear-gradient(
             145deg,
-            rgba(0,0,0,0.97),
-            rgba(12,12,34,0.92),
-            rgba(0,0,0,0.98)
+            rgba(0,0,0,0.96),
+            rgba(12,12,32,0.90),
+            rgba(0,0,0,0.97)
         );
 
     box-shadow:
-        0 38px 96px rgba(0,0,0,0.94),
-        inset 0 0 0 1px rgba(255,255,255,0.08);
+        0 36px 92px rgba(0,0,0,0.92),
+        inset 0 0 0 1px rgba(255,255,255,0.07);
 }
 
-/* Vignette + scanlines */
+/* Scanlines + vignette */
 .ccg-page--single-game .game-hero::after {
     content: "";
     position: absolute;
     inset: 0;
-    pointer-events: none;
     z-index: 1;
+    pointer-events: none;
 
     background:
         radial-gradient(
             ellipse at center,
-            transparent 48%,
-            rgba(0,0,0,0.70) 100%
+            transparent 52%,
+            rgba(0,0,0,0.65) 100%
         ),
         repeating-linear-gradient(
             to bottom,
@@ -78,8 +67,12 @@
             transparent 4px
         );
 
-    opacity: 0.30;
+    opacity: 0.28;
 }
+
+/* ============================================================
+   HERO INNER LAYOUT
+============================================================ */
 
 .ccg-page--single-game .game-hero__inner {
     position: relative;
@@ -87,26 +80,25 @@
 
     display: grid;
     grid-template-columns: auto 1fr;
-    gap: 40px;
+    gap: 36px;
 
-    padding: 68px 58px 62px;
+    padding: 64px 56px 58px;
 }
 
 @media (max-width: 900px) {
     .ccg-page--single-game .game-hero__inner {
         grid-template-columns: 1fr;
-        padding: 46px 20px 44px;
-        gap: 30px;
+        padding: 44px 20px 42px;
+        gap: 28px;
     }
 }
 
-
 /* ============================================================
-   HERO MEDIA — CABINET SCREEN FEEL
+   HERO THUMBNAIL — PREMIUM FRAME
 ============================================================ */
 
 .ccg-page--single-game .game-hero__media {
-    width: 240px;
+    width: 220px;
     max-width: 100%;
 }
 
@@ -126,63 +118,43 @@
         );
 
     box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.12),
-        0 20px 48px rgba(0,0,0,0.78),
-        0 0 32px rgba(var(--accent-rgb), 0.32);
+        inset 0 0 0 1px rgba(255,255,255,0.10),
+        0 18px 42px rgba(0,0,0,0.75),
+        0 0 28px rgba(var(--accent-rgb), 0.28);
 }
 
-
 /* ============================================================
-   HERO TITLE + META — ARCADE MARQUEE TYPOGRAPHY
+   HERO TITLE & META
 ============================================================ */
 
 .ccg-page--single-game .game-hero h1 {
     font-family: var(--ccg-font-main);
-    letter-spacing: 0.16em;
-    line-height: 1.10;
-    margin-bottom: 14px;
+    letter-spacing: 0.14em;
+    line-height: 1.12;
+    margin-bottom: 12px;
 
     text-shadow:
-        0 26px 56px rgba(0,0,0,0.94),
-        0 0 36px rgba(var(--accent-rgb),0.52);
+        0 22px 48px rgba(0,0,0,0.92),
+        0 0 32px rgba(var(--accent-rgb),0.45);
 }
 
 .ccg-page--single-game .game-meta {
-    display: inline-flex;
-    gap: 14px;
-    padding: 8px 14px;
-
     font-family: var(--ccg-font-body);
     font-size: 0.9rem;
-    letter-spacing: 0.08em;
-
-    color: rgba(232,236,255,0.85);
-
-    background:
-        linear-gradient(
-            180deg,
-            rgba(255,255,255,0.06),
-            rgba(255,255,255,0.02)
-        );
-
-    border-radius: 12px;
-
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.08),
-        0 12px 28px rgba(0,0,0,0.70);
+    opacity: 0.85;
+    letter-spacing: 0.06em;
 }
 
-
 /* ============================================================
-   DESCRIPTION — READABLE CINEMATIC PANEL
+   DESCRIPTION PANEL
 ============================================================ */
 
 .ccg-page--single-game #game-description-section {
-    max-width: 920px;
-    margin: 0 auto 52px;
+    max-width: 900px;
+    margin: 0 auto 46px;
 
-    padding: 30px 32px;
-    border-radius: 22px;
+    padding: 28px 30px;
+    border-radius: 20px;
 
     background:
         linear-gradient(
@@ -192,27 +164,26 @@
         );
 
     box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.09),
-        0 22px 52px rgba(0,0,0,0.74);
+        inset 0 0 0 1px rgba(255,255,255,0.08),
+        0 20px 48px rgba(0,0,0,0.70);
 }
 
 @media (max-width: 768px) {
     .ccg-page--single-game #game-description-section {
         padding: 22px 20px;
-        margin-bottom: 40px;
+        margin-bottom: 36px;
     }
 }
 
-
 /* ============================================================
-   VIDEO — FEATURE PRESENTATION FRAME
+   VIDEO FRAME — EMBEDDED, NOT FLOATING
 ============================================================ */
 
 .ccg-page--single-game #game-video-section {
-    max-width: 1000px;
-    margin: 0 auto 54px;
+    max-width: 980px;
+    margin: 0 auto 48px;
 
-    border-radius: 24px;
+    border-radius: 22px;
     overflow: hidden;
 
     background:
@@ -224,7 +195,7 @@
 
     box-shadow:
         inset 0 0 0 1px rgba(255,255,255,0.08),
-        0 30px 72px rgba(0,0,0,0.86);
+        0 26px 64px rgba(0,0,0,0.80);
 }
 
 .ccg-page--single-game #game-video-section iframe {
@@ -234,40 +205,35 @@
     border: none;
 }
 
-
 /* ============================================================
-   ACTION BUTTONS — DECISION MOMENT
+   ACTION BUTTONS — CONSOLE-GRADE
 ============================================================ */
 
 .ccg-page--single-game .game-actions {
     display: flex;
     justify-content: center;
-    gap: 20px;
-    margin-bottom: 64px;
+    gap: 18px;
+    margin-bottom: 56px;
     flex-wrap: wrap;
 }
 
 .ccg-page--single-game .game-actions .ccg-btn {
-    min-width: 180px;
+    min-width: 160px;
 }
 
-
 /* ============================================================
-   RELATED GAMES — STRONG CLOSING ACT
+   RELATED GAMES — CONTROLLED SHOWCASE
 ============================================================ */
 
 .ccg-page--single-game .game-section--related {
-    margin-top: 72px;
-    padding-top: 28px;
-
-    border-top: 1px solid rgba(255,255,255,0.08);
+    margin-top: 64px;
 }
 
 .ccg-page--single-game .game-section__title {
     text-align: center;
-    letter-spacing: 0.16em;
-    margin-bottom: 36px;
+    letter-spacing: 0.14em;
+    margin-bottom: 32px;
 
     text-shadow:
-        0 0 22px rgba(var(--accent-rgb),0.42);
+        0 0 18px rgba(var(--accent-rgb),0.35);
 }
