@@ -41,26 +41,6 @@
 
 <div class="ccg-page ccg-page--single-game">
 
-    <!-- HEADER -->
-    <header class="ccg-header">
-        <div class="ccg-header-inner">
-            <a href="../home.html" class="ccg-brand">
-                <img src="../resources/images/ccgamer-logo.png"
-                     alt="Cheeky Commodore Gamer logo"
-                     class="ccg-brand__logo"
-                     loading="lazy">
-                <div class="ccg-brand__text">
-                    <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
-                    <div class="ccg-brand__title">
-                        <span class="ccg-brand__neon-cheeky">CHEEKY</span>
-                        <span class="ccg-brand__neon-sub">COMMODORE GAMER</span>
-                    </div>
-                </div>
-            </a>
-        </div>
-        <div class="ccg-header-neon-strip"></div>
-    </header>
-
     <!-- MAIN -->
     <main class="ccg-main ccg-main--single-game">
 
@@ -95,17 +75,12 @@
             </a>
         </section>
 
-        <!-- ============================= -->
-        <!-- SG-E2 DOWNLOADS PANEL (NEW) -->
-        <!-- ============================= -->
+        <!-- DOWNLOADS -->
         <section class="game-downloads" hidden>
-
-            <h2 class="game-downloads__title">
-                Manuals & Downloads
-            </h2>
+            <h2 class="game-downloads__title">Manuals & Downloads</h2>
 
             <div class="game-downloads__actions">
-                <a id="gameManualBtn" class="ccg-btn" target="_blank" hidden>
+                <a id="gameManualBtn" class="ccg-btn" href="#" hidden>
                     View Manual
                 </a>
 
@@ -118,7 +93,6 @@
                 Manuals and game files are provided for archival and educational purposes.
                 Please ensure you own the original media where required.
             </p>
-
         </section>
 
         <!-- RELATED -->
@@ -128,16 +102,22 @@
         </section>
 
     </main>
-
-    <footer class="ccg-footer">
-        <p class="ccg-footer__text">
-            © <span data-ccg-year></span> Cheeky Commodore Gamer.
-            Not affiliated with Commodore, Amiga or publishers.
-        </p>
-    </footer>
-
 </div>
 
+<!-- ========================================================= -->
+<!-- SG-E3 MODAL VIEWER (PDF / IMAGE) -->
+<!-- ========================================================= -->
+
+<div id="ccgModal" class="ccg-modal" aria-hidden="true">
+    <div class="ccg-modal-content">
+        <span class="ccg-modal-close" aria-label="Close modal">&times;</span>
+        <iframe id="ccgModalFrame"
+                class="ccg-pdf-frame"
+                loading="lazy"></iframe>
+    </div>
+</div>
+
+<!-- JS -->
 <script src="../js/ccg-global.js" defer></script>
 <script src="../js/ccg-mode-engine.js" defer></script>
 <script src="../js/load-single-game.js" defer></script>
