@@ -1,13 +1,15 @@
 /* ============================================================
    CCG OVERLAYS — OMEGA UNIVERSE LAYER (LOCKED)
-   Phase U2 — MOBILE DEPTH CORRECTION PASS
+   Phase U2+ — CINEMATIC COHESION PASS
    ------------------------------------------------------------
    • Desktop: full cinematic fixed universe
    • Home: intentionally immersive (fixed)
    • Mobile (non-Home): universe anchored behind content
    • Prevents “starfield floating above content” illusion
+   • Balances CRT / grid / starfield intensity site-wide
    • CSS-only, zero JS or layout impact
 ============================================================ */
+
 
 /* ------------------------------------------------------------
    GLOBAL UNIVERSE CONTAINER
@@ -20,6 +22,7 @@
     overflow: hidden;
     pointer-events: none;
 }
+
 
 /* ------------------------------------------------------------
    STARFIELD — PRIMARY UNIVERSE LAYER
@@ -34,11 +37,12 @@
     background-repeat: repeat;
     background-size: 1200px 1200px;
 
-    opacity: 0.55;
+    /* Slightly calmer to match WOW panels & heroes */
+    opacity: 0.52;
 
     animation:
         ccg-star-drift 180s linear infinite,
-        ccg-star-breathe 14s ease-in-out infinite;
+        ccg-star-breathe 16s ease-in-out infinite;
 
     will-change: background-position, opacity;
 }
@@ -53,14 +57,15 @@
     background-repeat: repeat;
     background-size: 1600px 1600px;
 
-    opacity: 0.22;
+    opacity: 0.20;
 
     animation:
         ccg-star-drift-alt 320s linear infinite,
-        ccg-star-breathe-alt 22s ease-in-out infinite;
+        ccg-star-breathe-alt 24s ease-in-out infinite;
 
     pointer-events: none;
 }
+
 
 /* ------------------------------------------------------------
    GRID — SECONDARY DEPTH LAYER
@@ -75,12 +80,14 @@
     background-repeat: repeat;
     background-size: 800px 800px;
 
-    opacity: 0.12;
+    /* Slightly reduced so content glow leads */
+    opacity: 0.11;
     mix-blend-mode: screen;
 
     animation: ccg-grid-drift 260s linear infinite;
     will-change: background-position;
 }
+
 
 /* ------------------------------------------------------------
    CRT / VIGNETTE — TOP DECORATIVE LAYER
@@ -94,31 +101,28 @@
     background:
         radial-gradient(
             ellipse at center,
-            rgba(255,255,255,0.025) 0%,
-            rgba(0,0,0,0.25) 65%,
-            rgba(0,0,0,0.55) 100%
+            rgba(255,255,255,0.022) 0%,
+            rgba(0,0,0,0.26) 62%,
+            rgba(0,0,0,0.56) 100%
         ),
         repeating-linear-gradient(
             to bottom,
-            rgba(255,255,255,0.018),
-            rgba(255,255,255,0.018) 1px,
+            rgba(255,255,255,0.016),
+            rgba(255,255,255,0.016) 1px,
             transparent 1px,
             transparent 3px
         );
 
     mix-blend-mode: overlay;
-    opacity: 0.35;
+
+    /* Reduced slightly so panels & heroes feel clearer */
+    opacity: 0.32;
 }
+
 
 /* ============================================================
    DESKTOP DEPTH CORRECTION (NON-HOME PAGES)
    Phase U3 — CONTENT CLARITY LOCK
-   ------------------------------------------------------------
-   • Ensures page content always renders ABOVE universe layers
-   • Fixes “haze / fog” effect on genre & index pages
-   • Home page explicitly excluded
-   • Desktop only (mobile already handled)
-   • CSS-only, zero layout or animation impact
 ============================================================ */
 
 html:not([data-ccg-page="home"]) .ccg-page {
@@ -126,12 +130,9 @@ html:not([data-ccg-page="home"]) .ccg-page {
     z-index: 2;
 }
 
+
 /* ============================================================
    MOBILE DEPTH CORRECTION (NON-HOME PAGES ONLY)
-   ------------------------------------------------------------
-   Mobile browsers + fixed animated layers can visually float
-   above scrolling content even with correct z-index.
-   This anchors the universe to page flow on mobile EXCEPT Home.
 ============================================================ */
 
 @media (max-width: 768px) {
@@ -142,22 +143,23 @@ html:not([data-ccg-page="home"]) .ccg-page {
         inset: 0;
     }
 
-    /* Reduce perceived foreground dominance slightly */
+    /* Further calm overlays on mobile for clarity */
     html:not([data-ccg-page="home"]) .ccg-bg-starfield {
-        opacity: 0.48;
+        opacity: 0.46;
     }
 
     html:not([data-ccg-page="home"]) .ccg-bg-grid {
-        opacity: 0.10;
+        opacity: 0.09;
     }
 
     html:not([data-ccg-page="home"]) .ccg-bg-crt-overlay {
-        opacity: 0.28;
+        opacity: 0.26;
     }
 }
 
+
 /* ============================================================
-   KEYFRAMES — CINEMATIC DRIFT
+   KEYFRAMES — CINEMATIC DRIFT (UNCHANGED)
 ============================================================ */
 
 @keyframes ccg-star-drift {
@@ -171,13 +173,13 @@ html:not([data-ccg-page="home"]) .ccg-page {
 }
 
 @keyframes ccg-star-breathe {
-    0%, 100% { opacity: 0.52; }
-    50%      { opacity: 0.58; }
+    0%, 100% { opacity: 0.50; }
+    50%      { opacity: 0.56; }
 }
 
 @keyframes ccg-star-breathe-alt {
-    0%, 100% { opacity: 0.20; }
-    50%      { opacity: 0.26; }
+    0%, 100% { opacity: 0.18; }
+    50%      { opacity: 0.24; }
 }
 
 @keyframes ccg-grid-drift {
