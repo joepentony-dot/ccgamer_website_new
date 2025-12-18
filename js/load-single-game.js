@@ -1,20 +1,50 @@
+/* ============================================================
+   CCG LOAD SINGLE GAME — OMEGA STABLE + SG-E4.1
+   ------------------------------------------------------------
+   • Correct games.json path (LOCKED)
+   • URL-safe ID decoding
+   • FULL renderGame restored
+   • Related-games smart fallback
+   • SG-E2: Downloads panel
+   • SG-E3: Modal viewer
+   • SG-E4.1: Screenshot modal navigation (NEXT / PREV)
+============================================================ */
+
 let CCG_SINGLE_ALL_GAMES = [];
+let CCG_SCREENSHOTS = [];
+let CCG_SCREENSHOT_INDEX = 0;
+
+/* ============================================================
+   INIT
+============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
 
     const params = new URLSearchParams(window.location.search);
-    const gameId = decodeURIComponent((params.get("id") || "").trim());
+    const gameId = decodeURIComponent(
+        (params.get("id") || "").toString().trim()
+    );
 
-    if (!gameId) return;
+    if (!gameId) {
+        console.error("[CCG] No game ID in URL");
+        return;
+    }
 
     try {
         const response = await fetch("games.json", { cache: "no-store" });
-        if (!response.ok) throw new Error("games.json failed");
+        if (!response.ok) throw new Error(`games.json ${response.status}`);
 
-        CCG_SINGLE_ALL_GAMES = await response.json();
+        const games = await response.json();
+        CCG_SINGLE_ALL_GAMES = Array.isArray(games) ? games : [];
 
-        const game = CCG_SINGLE_ALL_GAMES.find(g => String(g.id) === gameId);
-        if (!game) return;
+        const game = CCG_SINGLE_ALL_GAMES.find(
+            g => String(g.id) === gameId
+        );
+
+        if (!game) {
+            console.error(`[CCG] Game not found for id="${gameId}"`);
+            return;
+        }
 
         renderGame(game);
 
@@ -23,8 +53,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
+/* ============================================================
+   RESOLVERS (LOCKED)
+============================================================ */
+
+function resolveGameThumb(raw) {
+    if (!raw) return "../resources/images/thumbnails/all/1942.jpg";
+
+    let t = String(raw).trim().replace(/^\/+/, "");
+    t = t.replace("resources/images/thumbnails/all/", "")
+         .replace("resources/images/thumbnails/", "")
+         .replace("resources/images/", "");
+
+    return `../resources/images/thumbnails/all/${t}`;
+}
+
 function resolveVideoId(game) {
-    return (game.videoid || "").trim();
+    return (
+        game.videoid ||
+        game.video ||
+        game.youtube ||
+        ""
+    ).toString().trim();
 }
 
 function resolveManualUrl(game) {
@@ -32,17 +82,33 @@ function resolveManualUrl(game) {
 }
 
 function resolveDiskUrl(game) {
-    if (Array.isArray(game.disk)) return game.disk[0] || "";
-    return game.disk || game.tape || "";
+    if (Array.isArray(game.disk) && game.disk[0]) return game.disk[0];
+    if (typeof game.disk === "string") return game.disk;
+    if (typeof game.tape === "string") return game.tape;
+    return "";
 }
+
+/* ============================================================
+   RENDER GAME
+============================================================ */
 
 function renderGame(game) {
 
+    /* HERO */
+    const thumb = resolveGameThumb(game.thumbnail || game.thumb || game.cover);
+    document.getElementById("gameHeroBG").style.backgroundImage = `url('${thumb}')`;
+    document.getElementById("gameHeroThumb").src = thumb;
     document.getElementById("gameHeroTitle").textContent = game.title || "Unknown";
     document.getElementById("gameMetaYear").textContent = game.year || "—";
     document.getElementById("gameMetaSystem").textContent = game.system || "—";
     document.getElementById("gameMetaDeveloper").textContent =
-        game.developer || game.publisher || "—";
+        game.publisher || game.developer || "—";
+
+    /* DESCRIPTION */
+    if (game.description) {
+        document.getElementById("gameDescription").innerHTML = game.description;
+        document.getElementById("game-description-section").hidden = false;
+    }
 
     /* VIDEO */
     const vid = resolveVideoId(game);
@@ -50,24 +116,20 @@ function renderGame(game) {
         document.getElementById("game-video-embed").src =
             `https://www.youtube.com/embed/${vid}`;
         document.getElementById("game-video-section").hidden = false;
-        document.getElementById("gameVideoBtn").href =
-            `https://www.youtube.com/watch?v=${vid}`;
-        document.getElementById("gameVideoBtn").hidden = false;
+        const btn = document.getElementById("gameVideoBtn");
+        btn.href = `https://www.youtube.com/watch?v=${vid}`;
+        btn.hidden = false;
     }
 
-    /* MANUAL — MODAL */
+    /* DOWNLOADS */
     const manual = resolveManualUrl(game);
     if (manual) {
         const btn = document.getElementById("gameManualBtn");
+        btn.href = manual;
         btn.hidden = false;
-        btn.addEventListener("click", e => {
-            e.preventDefault();
-            openModal(manual);
-        });
         document.querySelector(".game-downloads").hidden = false;
     }
 
-    /* DISK */
     const disk = resolveDiskUrl(game);
     if (disk) {
         const btn = document.getElementById("gameDiskBtn");
@@ -75,37 +137,147 @@ function renderGame(game) {
         btn.hidden = false;
         document.querySelector(".game-downloads").hidden = false;
     }
+
+    /* SCREENSHOTS */
+    if (Array.isArray(game.screenshots) && game.screenshots.length) {
+        renderScreenshots(game.screenshots);
+    }
+
+    renderRelatedGames(game, CCG_SINGLE_ALL_GAMES);
 }
 
 /* ============================================================
-   MODAL CONTROLS — SG-E3
+   SCREENSHOTS + MODAL NAVIGATION (SG-E4.1)
+============================================================ */
+
+function renderScreenshots(screenshots) {
+
+    const section = document.querySelector(".game-screenshots");
+    const strip = document.getElementById("gameScreenshotsStrip");
+    if (!section || !strip) return;
+
+    CCG_SCREENSHOTS = screenshots.slice();
+    strip.innerHTML = "";
+
+    screenshots.forEach((src, index) => {
+        const img = document.createElement("img");
+        img.src = src;
+        img.alt = `Screenshot ${index + 1}`;
+        img.loading = "lazy";
+        img.className = "game-screenshot-thumb";
+
+        img.addEventListener("click", () => {
+            openScreenshotModal(index);
+        });
+
+        strip.appendChild(img);
+    });
+
+    section.hidden = false;
+}
+
+/* ============================================================
+   MODAL CONTROL
 ============================================================ */
 
 const modal = document.getElementById("ccgModal");
 const modalFrame = document.getElementById("ccgModalFrame");
 const modalClose = document.querySelector(".ccg-modal-close");
 
-function openModal(src) {
-    modalFrame.src = src;
+function openScreenshotModal(index) {
+    CCG_SCREENSHOT_INDEX = index;
+    modalFrame.src = CCG_SCREENSHOTS[index];
     modal.classList.add("active");
     modal.setAttribute("aria-hidden", "false");
-    document.body.style.overflow = "hidden";
 }
 
 function closeModal() {
     modal.classList.remove("active");
     modal.setAttribute("aria-hidden", "true");
     modalFrame.src = "";
-    document.body.style.overflow = "";
 }
 
+function nextScreenshot() {
+    if (!CCG_SCREENSHOTS.length) return;
+    CCG_SCREENSHOT_INDEX =
+        (CCG_SCREENSHOT_INDEX + 1) % CCG_SCREENSHOTS.length;
+    modalFrame.src = CCG_SCREENSHOTS[CCG_SCREENSHOT_INDEX];
+}
+
+function prevScreenshot() {
+    if (!CCG_SCREENSHOTS.length) return;
+    CCG_SCREENSHOT_INDEX =
+        (CCG_SCREENSHOT_INDEX - 1 + CCG_SCREENSHOTS.length) % CCG_SCREENSHOTS.length;
+    modalFrame.src = CCG_SCREENSHOTS[CCG_SCREENSHOT_INDEX];
+}
+
+/* ============================================================
+   EVENTS
+============================================================ */
+
 modalClose.addEventListener("click", closeModal);
+
 modal.addEventListener("click", e => {
     if (e.target === modal) closeModal();
 });
 
 document.addEventListener("keydown", e => {
-    if (e.key === "Escape" && modal.classList.contains("active")) {
-        closeModal();
-    }
+    if (!modal.classList.contains("active")) return;
+
+    if (e.key === "Escape") closeModal();
+    if (e.key === "ArrowRight") nextScreenshot();
+    if (e.key === "ArrowLeft") prevScreenshot();
 });
+
+/* ============================================================
+   RELATED GAMES
+============================================================ */
+
+function renderRelatedGames(game, allGames) {
+
+    const section = document.querySelector(".game-section--related");
+    const container = document.getElementById("relatedGamesGrid");
+    const titleEl = section.querySelector(".game-section__title");
+
+    let related = [];
+
+    if (game.publisher) {
+        related = allGames.filter(g =>
+            g.publisher === game.publisher &&
+            String(g.id) !== String(game.id)
+        );
+    }
+
+    if (!related.length && game.developer) {
+        related = allGames.filter(g =>
+            g.developer === game.developer &&
+            String(g.id) !== String(game.id)
+        );
+    }
+
+    related = related.slice(0, 6);
+
+    if (!related.length) {
+        section.hidden = true;
+        return;
+    }
+
+    titleEl.textContent = `Other Games by ${game.publisher || game.developer}`;
+
+    container.innerHTML = related.map(g => {
+        const thumb = resolveGameThumb(g.thumbnail || g.thumb || g.cover);
+        return `
+            <a href="game.html?id=${encodeURIComponent(g.id)}" class="ccg-game-card">
+                <div class="ccg-game-card__thumb">
+                    <img src="${thumb}" alt="${g.title}">
+                </div>
+                <div class="ccg-game-card__body">
+                    <h3 class="ccg-game-card__title">${g.title}</h3>
+                    <div class="ccg-game-card__meta">
+                        ${(g.year || "")} · ${(g.system || "")}
+                    </div>
+                </div>
+            </a>
+        `;
+    }).join("");
+}
