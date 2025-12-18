@@ -1,5 +1,5 @@
 /* ============================================================
-   CCG LOAD SINGLE GAME — OMEGA STABLE + SG-E4.1
+   CCG LOAD SINGLE GAME — OMEGA STABLE + SG-E4.2
    ------------------------------------------------------------
    • Correct games.json path (LOCKED)
    • URL-safe ID decoding
@@ -8,6 +8,7 @@
    • SG-E2: Downloads panel
    • SG-E3: Modal viewer
    • SG-E4.1: Screenshot modal navigation (NEXT / PREV)
+   • SG-E4.2: On-screen modal arrows
 ============================================================ */
 
 let CCG_SINGLE_ALL_GAMES = [];
@@ -116,6 +117,7 @@ function renderGame(game) {
         document.getElementById("game-video-embed").src =
             `https://www.youtube.com/embed/${vid}`;
         document.getElementById("game-video-section").hidden = false;
+
         const btn = document.getElementById("gameVideoBtn");
         btn.href = `https://www.youtube.com/watch?v=${vid}`;
         btn.hidden = false;
@@ -183,6 +185,8 @@ function renderScreenshots(screenshots) {
 const modal = document.getElementById("ccgModal");
 const modalFrame = document.getElementById("ccgModalFrame");
 const modalClose = document.querySelector(".ccg-modal-close");
+const modalNext = document.querySelector(".ccg-modal-nav--next");
+const modalPrev = document.querySelector(".ccg-modal-nav--prev");
 
 function openScreenshotModal(index) {
     CCG_SCREENSHOT_INDEX = index;
@@ -199,15 +203,19 @@ function closeModal() {
 
 function nextScreenshot() {
     if (!CCG_SCREENSHOTS.length) return;
+
     CCG_SCREENSHOT_INDEX =
         (CCG_SCREENSHOT_INDEX + 1) % CCG_SCREENSHOTS.length;
+
     modalFrame.src = CCG_SCREENSHOTS[CCG_SCREENSHOT_INDEX];
 }
 
 function prevScreenshot() {
     if (!CCG_SCREENSHOTS.length) return;
+
     CCG_SCREENSHOT_INDEX =
         (CCG_SCREENSHOT_INDEX - 1 + CCG_SCREENSHOTS.length) % CCG_SCREENSHOTS.length;
+
     modalFrame.src = CCG_SCREENSHOTS[CCG_SCREENSHOT_INDEX];
 }
 
@@ -220,6 +228,9 @@ modalClose.addEventListener("click", closeModal);
 modal.addEventListener("click", e => {
     if (e.target === modal) closeModal();
 });
+
+if (modalNext) modalNext.addEventListener("click", nextScreenshot);
+if (modalPrev) modalPrev.addEventListener("click", prevScreenshot);
 
 document.addEventListener("keydown", e => {
     if (!modal.classList.contains("active")) return;
