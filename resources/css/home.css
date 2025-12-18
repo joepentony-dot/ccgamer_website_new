@@ -1,14 +1,12 @@
 /* ============================================================
    HOME.CSS — OMEGA CINEMATIC SHOWPIECE (FLAGSHIP)
-   Phase WOW-HW1 — HERO VISUAL AUTHORITY PASS (SAFE)
+   Phase WOW-HW3 — ILLS & INTERACTION POLISH (FINAL LOCK)
    ------------------------------------------------------------
-   LOCKED BASELINE PRESERVED:
-   • Home thumbnails = FIXED visual size
-   • NO hover scaling
-   • NO transforms affecting perception
-   • 16:9 discipline preserved
-   • ZERO experimental motion
-   • ZERO regressions
+   PRESERVES ALL LOCKED RULES:
+   • No thumbnail scaling
+   • No layout transforms
+   • No experimental motion
+   • Reduced-motion respected
 ============================================================ */
 
 
@@ -51,7 +49,6 @@ html[data-ccg-page="home"] .ccg-bg-crt-overlay {
     opacity: 0.22;
 }
 
-/* Mobile: reduce intensity */
 @media (max-width: 768px) {
     html[data-ccg-page="home"] .ccg-bg-starfield { opacity: 0.55; }
     html[data-ccg-page="home"] .ccg-bg-grid { opacity: 0.18; }
@@ -60,7 +57,7 @@ html[data-ccg-page="home"] .ccg-bg-crt-overlay {
 
 
 /* ============================================================
-   HERO — VISUAL AUTHORITY (HW1)
+   HERO — PRESENCE & ILLS (NON-MOTIVE)
 ============================================================ */
 
 html[data-ccg-page="home"] .home-hero {
@@ -69,13 +66,30 @@ html[data-ccg-page="home"] .home-hero {
     margin-bottom: 42px;
 }
 
-/* Ground the hero against the universe */
 html[data-ccg-page="home"] .ccg-hero--home {
     position: relative;
     isolation: isolate;
 }
 
-/* Subtle cinematic base to anchor content */
+/* Subtle cinematic breathing (non-motion) */
+html[data-ccg-page="home"] .ccg-hero--home::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(var(--accent-rgb), 0.12),
+            transparent 65%
+        );
+
+    opacity: 0.85;
+    pointer-events: none;
+}
+
+/* Grounding layer (from HW1) */
 html[data-ccg-page="home"] .ccg-hero--home::after {
     content: "";
     position: absolute;
@@ -92,34 +106,101 @@ html[data-ccg-page="home"] .ccg-hero--home::after {
     pointer-events: none;
 }
 
-/* Ensure hero content sits above grounding layer */
 html[data-ccg-page="home"] .home-hero__inner {
     position: relative;
     z-index: 1;
 }
 
-/* Strengthen title presence without size change */
+
+/* ============================================================
+   HERO TITLE & TAGLINE — MICRO INTERACTION
+============================================================ */
+
 html[data-ccg-page="home"] .home-hero__title {
     text-shadow:
         0 2px 10px rgba(0,0,0,0.65),
-        0 0 32px rgba(var(--accent-rgb), 0.35);
+        0 0 36px rgba(var(--accent-rgb), 0.40);
+
+    transition: text-shadow 240ms ease;
 }
 
-/* Tagline clarity against heavy backgrounds */
+@media (hover: hover) and (pointer: fine) {
+    html[data-ccg-page="home"] .home-hero:hover .home-hero__title {
+        text-shadow:
+            0 2px 14px rgba(0,0,0,0.75),
+            0 0 46px rgba(var(--accent-rgb), 0.55);
+    }
+}
+
 html[data-ccg-page="home"] .home-hero__tagline {
     max-width: 720px;
     margin-inline: auto;
-    color: rgba(232,236,255,0.85);
-}
-
-/* Actions feel anchored, not floating */
-html[data-ccg-page="home"] .home-hero__actions {
-    margin-top: 26px;
+    color: rgba(232,236,255,0.88);
 }
 
 
 /* ============================================================
-   HERO → TAGLINE SEPARATION (AUTHORITY RHYTHM)
+   HERO ACTIONS — FEEDBACK WITHOUT MOTION
+============================================================ */
+
+html[data-ccg-page="home"] .home-hero__actions {
+    margin-top: 26px;
+}
+
+html[data-ccg-page="home"] .home-hero__btn {
+    box-shadow:
+        0 8px 22px rgba(0,0,0,0.65),
+        0 0 18px rgba(var(--accent-rgb), 0.28);
+}
+
+
+/* ============================================================
+   HERO CARDS — INTERACTION POLISH (NO TRANSFORMS)
+============================================================ */
+
+html[data-ccg-page="home"] .home-hero-cards {
+    margin-top: 34px;
+    display: grid;
+    gap: 18px;
+}
+
+@media (min-width: 768px) {
+    html[data-ccg-page="home"] .home-hero-cards {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        max-width: 980px;
+        margin-inline: auto;
+    }
+}
+
+html[data-ccg-page="home"] .home-hero-card {
+    border: 1px solid rgba(255,255,255,0.10);
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.06),
+            rgba(255,255,255,0.02)
+        );
+
+    box-shadow:
+        0 10px 28px rgba(0,0,0,0.75);
+
+    transition:
+        box-shadow 220ms ease,
+        border-color 220ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    html[data-ccg-page="home"] .home-hero-card:hover {
+        border-color: rgba(var(--accent-rgb), 0.45);
+        box-shadow:
+            0 0 0 1px rgba(var(--accent-rgb), 0.35),
+            0 14px 36px rgba(0,0,0,0.85);
+    }
+}
+
+
+/* ============================================================
+   TAGLINE STRIP — ATMOSPHERIC PRESENCE
 ============================================================ */
 
 html[data-ccg-page="home"] .home-tagline {
@@ -127,48 +208,27 @@ html[data-ccg-page="home"] .home-tagline {
     opacity: 0.92;
 }
 
-
-/* ============================================================
-   FEATURED HIGHLIGHTS — TRUE 2-COLUMN (LOCKED)
-============================================================ */
-
-html[data-ccg-page="home"] .home-highlights-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 22px;
-}
-
-@media (min-width: 1024px) {
-    html[data-ccg-page="home"] .home-highlights-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        max-width: 1180px;
-        margin-inline: auto;
-        gap: 32px;
-    }
+html[data-ccg-page="home"] .home-tagline__main {
+    text-shadow:
+        0 0 18px rgba(var(--accent-rgb), 0.35);
 }
 
 
 /* ============================================================
-   BROWSE BY GENRE — HOME ONLY DISCIPLINE (LOCKED)
+   REDUCED MOTION — HOME SAFE MODE
 ============================================================ */
 
-html[data-ccg-page="home"] .home-genre-grid {
-    display: grid;
-    gap: 18px;
-}
+@media (prefers-reduced-motion: reduce) {
 
-@media (min-width: 640px) {
-    html[data-ccg-page="home"] .home-genre-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 22px;
+    html[data-ccg-page="home"] .home-hero__title {
+        transition: none;
+        text-shadow:
+            0 2px 10px rgba(0,0,0,0.65),
+            0 0 26px rgba(var(--accent-rgb), 0.35);
     }
-}
 
-@media (min-width: 1024px) {
-    html[data-ccg-page="home"] .home-genre-grid {
-        max-width: 1180px;
-        margin-inline: auto;
-        gap: 28px;
+    html[data-ccg-page="home"] .home-hero-card {
+        transition: none;
     }
 }
 
@@ -177,20 +237,12 @@ html[data-ccg-page="home"] .home-genre-grid {
    🔒 HOME THUMBNAIL DISCIPLINE — FINAL LOCK (UNCHANGED)
 ============================================================ */
 
-/* Featured cards — NO motion, NO scaling */
-html[data-ccg-page="home"] .home-feature-card {
-    transform: none !important;
-}
-
-html[data-ccg-page="home"] .home-feature-card img {
-    transform: none !important;
-}
-
-/* Genre tiles — exact visual size, NO hover manipulation */
+html[data-ccg-page="home"] .home-feature-card,
 html[data-ccg-page="home"] .ccg-genre-tile {
     transform: none !important;
 }
 
+html[data-ccg-page="home"] .home-feature-card img,
 html[data-ccg-page="home"] .ccg-genre-tile img {
     transform: none !important;
 }
