@@ -2,7 +2,7 @@
    GAMES.CSS — STABLE FUNCTIONAL RESTORE
    Mobile Rhythm Pass — Phase MR1
    Hero Parity Refinement — Phase H2
-   Single Game WOW — Phase SG-FINAL (LOCKED)
+   Single Game WOW — Phase SG-W4 (ACTIVE)
    Games Index Accordion WOW Overlay — Phase WOW-G1 (LOCKED)
    Games Index Control Deck Upgrade — Phase WOW-G2A (LOCKED)
    Games Index LEFT SPINE WOW — Phase WOW-G2B (LOCKED)
@@ -28,229 +28,20 @@
 }
 
 /* ============================================================
-   GAMES INDEX — HERO → TOOLS RHYTHM
-============================================================ */
-
-.ccg-page--games-index .games-hero {
-    margin-bottom: 22px;
-}
-
-.ccg-page--games-index .games-tools {
-    position: relative;
-    z-index: 3;
-
-    margin: 0 auto 34px;
-    padding: 22px 24px;
-
-    border-radius: 22px;
-
-    background:
-        radial-gradient(1200px 260px at 20% 0%,
-            rgba(var(--accent-rgb), 0.14),
-            transparent 60%),
-        linear-gradient(135deg,
-            rgba(255,255,255,0.045),
-            rgba(255,255,255,0.015));
-
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.06),
-        0 26px 70px rgba(0,0,0,0.75);
-}
-
-/* ============================================================
-   CONTROL DECK — SEARCH CONSOLE
-============================================================ */
-
-.ccg-page--games-index .games-search {
-    position: relative;
-    max-width: 520px;
-    margin-bottom: 18px;
-}
-
-.ccg-page--games-index .games-search input {
-    width: 100%;
-    height: 46px;
-    padding: 0 46px 0 16px;
-
-    font-family: var(--ccg-font-body);
-    font-size: 0.95rem;
-    color: var(--ccg-text-light);
-
-    background:
-        linear-gradient(180deg,
-            rgba(0,0,0,0.55),
-            rgba(0,0,0,0.35));
-
-    border-radius: 14px;
-    border: none;
-
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.08),
-        inset 0 0 14px rgba(0,0,0,0.55);
-
-    transition:
-        box-shadow 200ms ease,
-        background 200ms ease;
-}
-
-.ccg-page--games-index .games-search input:focus {
-    outline: none;
-    box-shadow:
-        inset 0 0 0 1px rgba(var(--accent-rgb), 0.45),
-        0 0 22px rgba(var(--accent-rgb), 0.35);
-}
-
-.ccg-page--games-index .games-search button {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
-
-    background:
-        radial-gradient(circle at 30% 30%,
-            rgba(var(--accent-rgb), 0.45),
-            rgba(var(--accent-rgb), 0.18));
-
-    color: #fff;
-    font-size: 18px;
-
-    box-shadow:
-        inset 0 0 0 1px rgba(var(--accent-rgb), 0.45),
-        0 0 12px rgba(var(--accent-rgb), 0.35);
-}
-
-/* ============================================================
-   CONTROL DECK — A–Z SELECTOR RAIL (TOP)
-============================================================ */
-
-.ccg-page--games-index #gamesAlphaStrip button {
-    min-width: 34px;
-    height: 32px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-
-    font-family: var(--ccg-font-main);
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
-
-    color: rgba(255,255,255,0.75);
-
-    background:
-        linear-gradient(180deg,
-            rgba(255,255,255,0.06),
-            rgba(255,255,255,0.015));
-
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.08);
-
-    transition:
-        box-shadow 160ms ease,
-        transform 160ms ease;
-}
-
-/* ============================================================
-   LEFT SPINE — LETTER INDEX WOW
-============================================================ */
-
-.ccg-page--games-index .games-accordion__index,
-.ccg-page--games-index .games-accordion__letters,
-.ccg-page--games-index .games-accordion__nav {
-    position: sticky;
-    top: 140px;
-}
-
-.ccg-page--games-index .games-accordion__index-item,
-.ccg-page--games-index .games-accordion__letter {
-    position: relative;
-    margin: 6px 0;
-    padding: 6px 10px;
-
-    border-radius: 12px;
-    cursor: pointer;
-
-    font-family: var(--ccg-font-main);
-    font-size: 0.7rem;
-    letter-spacing: 0.12em;
-
-    color: rgba(255,255,255,0.75);
-
-    background:
-        linear-gradient(180deg,
-            rgba(255,255,255,0.05),
-            rgba(255,255,255,0.015));
-
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.08),
-        0 6px 14px rgba(0,0,0,0.45);
-
-    transition:
-        transform 160ms ease,
-        box-shadow 160ms ease,
-        background 160ms ease;
-}
-
-.ccg-page--games-index .games-accordion__index-item span,
-.ccg-page--games-index .games-accordion__letter span {
-    display: inline-block;
-    margin-left: 6px;
-    font-size: 0.65rem;
-    opacity: 0.65;
-}
-
-.ccg-page--games-index .games-accordion__index-item:hover,
-.ccg-page--games-index .games-accordion__letter:hover {
-    transform: translateX(2px);
-
-    box-shadow:
-        inset 0 0 0 1px rgba(var(--accent-rgb), 0.35),
-        0 0 16px rgba(var(--accent-rgb), 0.35);
-}
-
-.ccg-page--games-index .games-accordion__index-item.active,
-.ccg-page--games-index .games-accordion__letter.active {
-    color: #fff;
-
-    background:
-        radial-gradient(circle at 30% 30%,
-            rgba(var(--accent-rgb), 0.45),
-            rgba(var(--accent-rgb), 0.22));
-
-    box-shadow:
-        inset 0 0 0 1px rgba(var(--accent-rgb), 0.65),
-        0 0 26px rgba(var(--accent-rgb), 0.55);
-}
-
-.ccg-page--games-index .games-accordion__index-item.disabled,
-.ccg-page--games-index .games-accordion__letter.disabled {
-    opacity: 0.35;
-    cursor: default;
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.04);
-}
-
-
-/* ============================================================
    ============================================================
-   W4 — SINGLE GAME WOW (MUSEUM-GRADE)
+   W4 — SINGLE GAME WOW (FLAGSHIP PAGE)
    Scope: SINGLE GAME PAGE ONLY
    ZERO impact on index, genres, collections
    ============================================================
 ============================================================ */
 
 /* ============================================================
-   SINGLE GAME — HERO ARRIVAL
+   SINGLE GAME — HERO (CINEMATIC, READABLE)
 ============================================================ */
 
 .ccg-page--single-game .game-hero {
     position: relative;
-    margin-bottom: 42px;
+    margin-bottom: 48px;
     border-radius: 22px;
     overflow: hidden;
     isolation: isolate;
@@ -258,18 +49,18 @@
     background:
         radial-gradient(
             ellipse at 18% 12%,
-            rgba(var(--accent-rgb), 0.22),
-            transparent 58%
+            rgba(var(--accent-rgb), 0.24),
+            transparent 60%
         ),
         linear-gradient(
             145deg,
-            rgba(0,0,0,0.94),
-            rgba(12,12,32,0.88),
-            rgba(0,0,0,0.96)
+            rgba(0,0,0,0.96),
+            rgba(12,12,32,0.90),
+            rgba(0,0,0,0.97)
         );
 
     box-shadow:
-        0 34px 88px rgba(0,0,0,0.90),
+        0 36px 92px rgba(0,0,0,0.92),
         inset 0 0 0 1px rgba(255,255,255,0.07);
 }
 
@@ -277,14 +68,14 @@
     content: "";
     position: absolute;
     inset: 0;
-    pointer-events: none;
     z-index: 1;
+    pointer-events: none;
 
     background:
         radial-gradient(
             ellipse at center,
             transparent 52%,
-            rgba(0,0,0,0.62) 100%
+            rgba(0,0,0,0.65) 100%
         ),
         repeating-linear-gradient(
             to bottom,
@@ -294,109 +85,169 @@
             transparent 4px
         );
 
-    opacity: 0.26;
+    opacity: 0.28;
 }
 
 .ccg-page--single-game .game-hero__inner {
     position: relative;
     z-index: 2;
-    padding: 60px 56px 56px;
+
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 36px;
+
+    padding: 64px 56px 58px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     .ccg-page--single-game .game-hero__inner {
-        padding: 44px 20px 40px;
+        grid-template-columns: 1fr;
+        padding: 44px 20px 42px;
+        gap: 28px;
     }
 }
 
-/* Title authority */
-.ccg-page--single-game .game-hero__title {
-    letter-spacing: 0.12em;
-    line-height: 1.12;
-
-    text-shadow:
-        0 22px 48px rgba(0,0,0,0.92),
-        0 0 28px rgba(var(--accent-rgb),0.40);
-}
-
-
 /* ============================================================
-   SINGLE GAME — FEATURED VIDEO / MEDIA FRAME
+   HERO — THUMBNAIL AUTHORITY
 ============================================================ */
 
-.ccg-page--single-game .game-media {
-    position: relative;
-    border-radius: 20px;
-    overflow: hidden;
-    margin-bottom: 36px;
-
-    background:
-        linear-gradient(
-            180deg,
-            rgba(255,255,255,0.06),
-            rgba(255,255,255,0.02)
-        );
-
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.08),
-        0 22px 54px rgba(0,0,0,0.78);
+.ccg-page--single-game .game-hero__media {
+    width: 220px;
+    max-width: 100%;
 }
 
-.ccg-page--single-game .game-media iframe,
-.ccg-page--single-game .game-media img {
+.ccg-page--single-game .game-hero__thumb {
     display: block;
     width: 100%;
-    height: auto;
-}
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
 
-
-/* ============================================================
-   SINGLE GAME — INFO PANELS (MANUALS / DOWNLOADS / META)
-============================================================ */
-
-.ccg-page--single-game .game-panels {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 26px;
-    margin-top: 42px;
-}
-
-.ccg-page--single-game .game-panel {
-    border-radius: 18px;
-    padding: 22px 22px 24px;
+    border-radius: 16px;
 
     background:
         linear-gradient(
             180deg,
-            rgba(255,255,255,0.06),
-            rgba(255,255,255,0.02)
+            rgba(255,255,255,0.08),
+            rgba(255,255,255,0.03)
         );
 
     box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.08),
-        0 18px 44px rgba(0,0,0,0.70);
+        inset 0 0 0 1px rgba(255,255,255,0.10),
+        0 18px 42px rgba(0,0,0,0.75),
+        0 0 28px rgba(var(--accent-rgb), 0.28);
 }
 
-.ccg-page--single-game .game-panel__title {
+/* ============================================================
+   HERO — TITLE & META
+============================================================ */
+
+.ccg-page--single-game .game-hero h1 {
     font-family: var(--ccg-font-main);
     letter-spacing: 0.14em;
+    line-height: 1.12;
     margin-bottom: 12px;
 
     text-shadow:
-        0 0 14px rgba(var(--accent-rgb),0.28);
+        0 22px 48px rgba(0,0,0,0.92),
+        0 0 32px rgba(var(--accent-rgb),0.45);
 }
 
+.ccg-page--single-game .game-meta {
+    font-family: var(--ccg-font-body);
+    font-size: 0.9rem;
+    opacity: 0.85;
+    letter-spacing: 0.06em;
+}
 
 /* ============================================================
-   SINGLE GAME — SECTION RHYTHM
+   SINGLE GAME — DESCRIPTION
 ============================================================ */
 
-.ccg-page--single-game .ccg-section {
-    margin-bottom: 56px;
+.ccg-page--single-game #game-description-section {
+    max-width: 900px;
+    margin: 0 auto 46px;
+
+    padding: 28px 30px;
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.06),
+            rgba(255,255,255,0.02)
+        );
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.08),
+        0 20px 48px rgba(0,0,0,0.70);
 }
 
 @media (max-width: 768px) {
-    .ccg-page--single-game .ccg-section {
-        margin-bottom: 38px;
+    .ccg-page--single-game #game-description-section {
+        padding: 22px 20px;
+        margin-bottom: 36px;
     }
+}
+
+/* ============================================================
+   SINGLE GAME — VIDEO FRAME (16:9 LOCK)
+============================================================ */
+
+.ccg-page--single-game #game-video-section {
+    max-width: 980px;
+    margin: 0 auto 48px;
+
+    border-radius: 22px;
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.06),
+            rgba(255,255,255,0.02)
+        );
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.08),
+        0 26px 64px rgba(0,0,0,0.80);
+}
+
+.ccg-page--single-game #game-video-section iframe {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: none;
+}
+
+/* ============================================================
+   SINGLE GAME — ACTION BUTTONS
+============================================================ */
+
+.ccg-page--single-game .game-actions {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 56px;
+    flex-wrap: wrap;
+}
+
+.ccg-page--single-game .game-actions .ccg-btn {
+    min-width: 160px;
+}
+
+/* ============================================================
+   SINGLE GAME — RELATED GAMES
+============================================================ */
+
+.ccg-page--single-game .game-section--related {
+    margin-top: 64px;
+}
+
+.ccg-page--single-game .game-section__title {
+    text-align: center;
+    letter-spacing: 0.14em;
+    margin-bottom: 32px;
+
+    text-shadow:
+        0 0 18px rgba(var(--accent-rgb),0.35);
 }
