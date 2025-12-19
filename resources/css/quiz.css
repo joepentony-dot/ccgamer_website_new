@@ -26,6 +26,74 @@
     gap: 26px;
 }
 
+.quiz-hero-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.quiz-meta-chip {
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.22), rgba(0,0,0,0.65));
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.55);
+}
+
+.quiz-meta-label {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: var(--ccg-text-soft);
+}
+
+.quiz-meta-value {
+    display: block;
+    font-size: 1.05rem;
+    margin-top: 4px;
+    letter-spacing: 0.06em;
+}
+
+.quiz-side-panels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 18px;
+    margin-top: 8px;
+}
+
+.quiz-recent-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+}
+
+.quiz-recent-item,
+.quiz-recent-empty {
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.08);
+    display: grid;
+    grid-template-columns: 1.2fr 1fr auto;
+    gap: 8px;
+    align-items: center;
+}
+
+.quiz-recent-name {
+    font-weight: 700;
+}
+
+.quiz-recent-pack {
+    color: var(--ccg-text-soft);
+}
+
+.quiz-recent-score {
+    text-align: right;
+}
+
 
 /* ============================================================
    MOBILE RHYTHM — PRIMARY

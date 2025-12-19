@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="../resources/css/ccg-overlays.css" />
     <link rel="stylesheet" href="../resources/css/ccg-modal.css" />
     <link rel="stylesheet" href="../resources/css/quiz.css" />
-    <link rel="stylesheet" href="resources/css/ccg-footer.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-footer.css" />
     <meta http-equiv="refresh" content="0; url=quiz.html" />
 </head>
 <body class="ccg-body" data-ccg-mode="c64">
@@ -33,16 +33,26 @@
                     <p class="ccg-tagline">Stay a while, stay forever!</p>
                     <h1 class="ccg-site-title">TRIVIA HUB</h1>
                 </div>
-                <nav class="ccg-nav">
-                    <a href="../home.html" class="nav-item">Home</a>
-                    <a href="../games/index.html" class="nav-item">Games</a>
-                    <a href="../games/genres/index.html" class="nav-item">Genres</a>
-                    <a href="../games/collections/index.html" class="nav-item">Collections</a>
-                    <a href="../quiz/quiz.html" class="nav-item nav-item--active">Trivia</a>
-                    <a href="../emulation.html" class="nav-item">Emulation</a>
-                    <a href="../complete-index.html" class="nav-item">Index</a>
-                    <a href="../about.html" class="nav-item">About</a>
-                    <a href="../contact.html" class="nav-item">Contact</a>
+                <nav class="ccg-nav" aria-label="Primary navigation">
+                    <ul class="ccg-nav__list">
+                        <li><a href="../home.html" class="ccg-nav__link">Home</a></li>
+                        <li><a href="../games/index.html" class="ccg-nav__link">Browse Games</a></li>
+                        <li><a href="../games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
+                        <li><a href="../games/collections/index.html" class="ccg-nav__link">Collections</a></li>
+
+                        <li class="ccg-nav__more">
+                            <button class="ccg-nav__link ccg-nav__more-btn" type="button" aria-haspopup="true" aria-expanded="false">
+                                More ▾
+                            </button>
+                            <ul class="ccg-nav__dropdown">
+                                <li><a href="quiz.html" class="ccg-nav__dropdown-link ccg-nav__dropdown-link--active">Trivia &amp; Leaderboard</a></li>
+                                <li><a href="../emulation.html" class="ccg-nav__dropdown-link">Emulation</a></li>
+                                <li><a href="../complete-index.html" class="ccg-nav__dropdown-link">Index</a></li>
+                                <li><a href="../about.html" class="ccg-nav__dropdown-link">About</a></li>
+                                <li><a href="../contact.html" class="ccg-nav__dropdown-link">Contact</a></li>
+                            </ul>
+                        </li>
+                    </ul>
                 </nav>
                 <button class="ccg-mode-toggle" type="button" data-ccg-mode-toggle>
                     <span class="ccg-mode-toggle-label ccg-mode-toggle-label--c64">C64</span>
@@ -73,7 +83,7 @@
         </footer>
 
     </div>
-    <script src="../js/ccj-global.js" defer></script>
+    <script src="../js/ccg-global.js" defer></script>
     <script src="../js/ccg-mode-engine.js" defer></script>
 </body>
 </html>

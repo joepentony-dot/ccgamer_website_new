@@ -12,6 +12,7 @@
 ============================================================ */
 
 let CCG_ALL_GAMES = [];
+let CCG_GAMES_TOTAL = 0;
 
 const ACCORDION_STATE_KEY = "ccgAccordionState";
 const THUMB_BASE_PATH = "../resources/images/thumbnails/all/";
@@ -22,9 +23,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!res.ok) throw new Error("Failed to load games.json");
 
         CCG_ALL_GAMES = await res.json();
+        CCG_GAMES_TOTAL = CCG_ALL_GAMES.length;
 
         buildGamesIndex(CCG_ALL_GAMES);
         setupSearch(CCG_ALL_GAMES);
+
+        updateCounts(CCG_ALL_GAMES.length);
 
         // Restore without scroll jump
         restoreAccordionState({ silent: true });
@@ -42,6 +46,9 @@ function buildGamesIndex(games) {
     const grouped = groupGamesByLetter(games);
     buildAlphaSpine(grouped);
     buildAccordion(grouped);
+
+    setEmptyState(!games.length);
+    updateCounts(games.length);
 
     // After a rebuild (search), re-apply state if it still exists
     restoreAccordionState({ silent: true, validatePresence: true });
@@ -132,6 +139,7 @@ function buildAccordion(groups) {
         section.innerHTML = `
             <button class="games-accordion__header" data-letter="${letter}" type="button">
                 <span class="games-accordion__letter">${letter}</span>
+                <span class="games-accordion__chevron">⌄</span>
             </button>
             <div class="games-accordion__content">
                 <div class="games-grid">
@@ -152,6 +160,7 @@ function buildAccordion(groups) {
 
 function attachAccordionEvents() {
     document.querySelectorAll(".games-accordion__header").forEach(header => {
+        header.setAttribute("aria-expanded", "false");
         header.addEventListener("click", () => {
             toggleAccordion(header.dataset.letter);
         });
@@ -180,10 +189,16 @@ function toggleAccordion(letter, opts = {}) {
     const willOpen = !wasOpen;
 
     // Single-open enforcement
-    sections.forEach(section => section.classList.remove("is-open"));
+    sections.forEach(section => {
+        section.classList.remove("is-open");
+        const btn = section.querySelector(".games-accordion__header");
+        if (btn) btn.setAttribute("aria-expanded", "false");
+    });
 
     if (willOpen) {
         target.classList.add("is-open");
+        const btn = target.querySelector(".games-accordion__header");
+        if (btn) btn.setAttribute("aria-expanded", "true");
         saveAccordionState(letter);
         setSpineActive(letter);
 
@@ -289,8 +304,30 @@ function filterGames(query, allGames) {
 
     buildGamesIndex(filtered);
 
+    if (!filtered.length) {
+        setSpineActive(null);
+    }
+
     // If user searches, we should not force scroll jumps
     // (state will reapply silently if possible)
+}
+
+/* ============================================================
+   COUNTS + EMPTY STATE
+============================================================ */
+
+function updateCounts(filteredCount) {
+    const totalEl = document.getElementById("gamesTotalCount");
+    const resultsEl = document.getElementById("gamesResultsCount");
+
+    if (totalEl) totalEl.textContent = CCG_GAMES_TOTAL.toLocaleString("en-US");
+    if (resultsEl) resultsEl.textContent = filteredCount.toLocaleString("en-US");
+}
+
+function setEmptyState(isEmpty) {
+    const empty = document.getElementById("gamesEmptyState");
+    if (!empty) return;
+    empty.hidden = !isEmpty;
 }
 
 /* ============================================================

@@ -51,6 +51,29 @@
         inset 0 0 0 1px rgba(255,255,255,0.07);
 }
 
+.ccg-genre-hero__bg,
+.ccg-genre-hero__overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.ccg-genre-hero__overlay {
+    z-index: 1;
+    background:
+        radial-gradient(circle at 20% 30%, rgba(var(--accent-rgb),0.20), transparent 40%),
+        radial-gradient(circle at 80% 18%, rgba(255,255,255,0.14), transparent 46%),
+        linear-gradient(135deg, rgba(255,255,255,0.05), transparent 40%),
+        linear-gradient(to bottom, rgba(0,0,0,0.25), rgba(0,0,0,0.70));
+    mix-blend-mode: screen;
+}
+
+.ccg-genre-hero__inner {
+    position: relative;
+    z-index: 2;
+    backdrop-filter: blur(4px);
+}
+
 /* Scanline + vignette parity */
 .ccg-genre-hero::after {
     content: "";
@@ -88,6 +111,34 @@
     .ccg-genre-hero__inner {
         padding: 42px 20px 38px;
     }
+}
+
+.ccg-genre-meta {
+    margin-top: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 14px 18px;
+    border-radius: 12px;
+
+    background:
+        linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    border: 1px solid rgba(var(--accent-rgb),0.38);
+    box-shadow: 0 20px 46px rgba(0,0,0,0.68), 0 0 20px rgba(var(--accent-rgb),0.20);
+}
+
+.ccg-genre-meta__left,
+.ccg-genre-meta__right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    font-family: var(--ccg-font-main);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
 }
 
 /* Title confidence */
@@ -211,4 +262,130 @@
     .ccg-genre-main::before {
         top: -22px;
     }
+}
+
+
+/* ============================================================
+   GRID CARDS — NEON VAULT FINISH
+============================================================ */
+
+.ccg-page--genre-single .ccg-genre-grid,
+.ccg-page--collection-single .ccg-genre-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 22px;
+}
+
+.ccg-page--genre-single .ccg-game-card,
+.ccg-page--collection-single .ccg-game-card {
+    position: relative;
+    padding: 16px;
+    border-radius: 16px;
+
+    background:
+        linear-gradient(160deg, rgba(255,255,255,0.06), rgba(255,255,255,0.01)),
+        radial-gradient(circle at 18% 22%, rgba(var(--accent-rgb),0.14), transparent 48%),
+        radial-gradient(circle at 82% 8%, rgba(255,255,255,0.10), transparent 54%),
+        rgba(5,7,16,0.92);
+
+    border: 1px solid rgba(var(--accent-rgb),0.36);
+    box-shadow: 0 24px 62px rgba(0,0,0,0.82), 0 0 24px rgba(var(--accent-rgb),0.24);
+    overflow: hidden;
+    transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+}
+
+.ccg-page--genre-single .ccg-game-card::before,
+.ccg-page--collection-single .ccg-game-card::before {
+    content: "";
+    position: absolute;
+    inset: -30% auto auto -30%;
+    width: 80%;
+    height: 80%;
+    background: radial-gradient(circle at center, rgba(var(--accent-rgb),0.18), transparent 60%);
+    filter: blur(18px);
+    z-index: 0;
+}
+
+.ccg-page--genre-single .ccg-game-card:hover,
+.ccg-page--genre-single .ccg-game-card:focus-within,
+.ccg-page--collection-single .ccg-game-card:hover,
+.ccg-page--collection-single .ccg-game-card:focus-within {
+    transform: translateY(-4px);
+    border-color: rgba(var(--accent-rgb),0.75);
+    box-shadow: 0 30px 74px rgba(0,0,0,0.88), 0 0 30px rgba(var(--accent-rgb),0.30);
+}
+
+.ccg-page--genre-single .ccg-game-card__thumb,
+.ccg-page--collection-single .ccg-game-card__thumb {
+    position: relative;
+    z-index: 1;
+    padding: 6px;
+    border-radius: 12px;
+    background: linear-gradient(140deg, rgba(var(--accent-rgb),0.35), rgba(255,255,255,0.08));
+    overflow: hidden;
+    display: block;
+}
+
+.ccg-page--genre-single .ccg-game-card__thumb img,
+.ccg-page--collection-single .ccg-game-card__thumb img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.68);
+}
+
+.ccg-page--genre-single .ccg-game-card__body,
+.ccg-page--collection-single .ccg-game-card__body {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 10px;
+}
+
+.ccg-page--genre-single .ccg-game-card__title,
+.ccg-page--collection-single .ccg-game-card__title {
+    margin: 0;
+    letter-spacing: 0.08em;
+    font-size: 1.05rem;
+    text-shadow: 0 10px 24px rgba(0,0,0,0.72);
+}
+
+.ccg-page--genre-single .ccg-game-card__meta,
+.ccg-page--collection-single .ccg-game-card__meta {
+    color: var(--ccg-soft);
+    font-size: 0.9rem;
+}
+
+.ccg-page--genre-single .ccg-game-card .ccg-btn,
+.ccg-page--collection-single .ccg-game-card .ccg-btn {
+    justify-self: start;
+}
+
+
+/* ============================================================
+   EMPTY STATES — LUXE SUPPORT
+============================================================ */
+
+.ccg-genre-empty {
+    padding: 28px 22px;
+    border-radius: 16px;
+    border: 1px dashed rgba(var(--accent-rgb),0.45);
+    background: rgba(255,255,255,0.04);
+    box-shadow: 0 16px 42px rgba(0,0,0,0.76);
+    text-align: center;
+}
+
+.ccg-genre-empty h3 {
+    margin: 0 0 8px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.ccg-genre-empty__actions {
+    margin-top: 14px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
 }

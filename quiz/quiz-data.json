@@ -1,0 +1,136 @@
+{
+  "packs": [
+    {
+      "id": "c64-legends",
+      "name": "C64 Legends",
+      "difficulty": "Medium",
+      "description": "SID-powered chart toppers every retro fan should know.",
+      "questions": [
+        {
+          "id": "c64-1",
+          "question": "Which composer scored the original Last Ninja on C64?",
+          "options": ["Ben Daglish", "Chris Huelsbeck", "Martin Galway", "Rob Hubbard"],
+          "correctIndex": 0
+        },
+        {
+          "id": "c64-2",
+          "question": "Elite released 'Paperboy' on disk and tape in which year?",
+          "options": ["1984", "1986", "1988", "1990"],
+          "correctIndex": 2
+        },
+        {
+          "id": "c64-3",
+          "question": "The loading tune for 'Commando' was famously arranged by?",
+          "options": ["Jeroen Tel", "Rob Hubbard", "Tim Follin", "David Whittaker"],
+          "correctIndex": 1
+        },
+        {
+          "id": "c64-4",
+          "question": "Which joystick port does Player 1 usually use on the C64?",
+          "options": ["Port 1", "Port 2", "Both", "Neither"],
+          "correctIndex": 1
+        },
+        {
+          "id": "c64-5",
+          "question": "'Impossible Mission' greets players with which phrase?",
+          "options": ["Stay a while, stay forever!", "Mission accepted!", "Welcome agent!", "Enter the base!"],
+          "correctIndex": 0
+        },
+        {
+          "id": "c64-6",
+          "question": "Who published the cult shooter 'Armalyte'?",
+          "options": ["System 3", "Thalamus", "Ocean", "Gremlin"],
+          "correctIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "amiga-essentials",
+      "name": "Amiga Essentials",
+      "difficulty": "Medium",
+      "description": "Amiga 500/1200 highlights, demos and iconic studios.",
+      "questions": [
+        {
+          "id": "amiga-1",
+          "question": "Which developer created 'Shadow of the Beast'?",
+          "options": ["Team17", "Reflections", "Bitmap Brothers", "Delphine"],
+          "correctIndex": 1
+        },
+        {
+          "id": "amiga-2",
+          "question": "'Lemmings' was originally released by which studio?",
+          "options": ["DMA Design", "Psygnosis", "Cinemaware", "Gremlin"],
+          "correctIndex": 0
+        },
+        {
+          "id": "amiga-3",
+          "question": "What chipset powers the Amiga 1200 graphics?",
+          "options": ["ECS", "AGA", "OCS", "VGA"],
+          "correctIndex": 1
+        },
+        {
+          "id": "amiga-4",
+          "question": "Which magazine coverdisk popularised 'Worms' on Amiga?",
+          "options": ["Amiga Power", "Amiga Format", "CU Amiga", "The One"],
+          "correctIndex": 3
+        },
+        {
+          "id": "amiga-5",
+          "question": "The intro voice in 'Sensible World of Soccer' says?",
+          "options": ["Let's play football", "Kick off!", "Sensible Soccer", "Goal time"],
+          "correctIndex": 2
+        },
+        {
+          "id": "amiga-6",
+          "question": "Which tracker format became a demo-scene staple?",
+          "options": [".sid", ".mod", ".mid", ".wav"],
+          "correctIndex": 1
+        }
+      ]
+    },
+    {
+      "id": "arcade-conversions",
+      "name": "Arcade Conversions",
+      "difficulty": "Hard",
+      "description": "Spot-on ports, infamous misses and trivia from the arcades.",
+      "questions": [
+        {
+          "id": "arcade-1",
+          "question": "Which arcade classic shipped on ROM cartridge for C64?",
+          "options": ["Shinobi", "Ghouls 'n Ghosts", "Midnight Resistance", "After Burner"],
+          "correctIndex": 3
+        },
+        {
+          "id": "arcade-2",
+          "question": "Ocean's version of 'Toki' is known for which feature?",
+          "options": ["2-player simultaneous", "Cartoon cutscenes", "Excellent music", "Password save"],
+          "correctIndex": 2
+        },
+        {
+          "id": "arcade-3",
+          "question": "'Out Run Europa' originally started as a sequel for which platform?",
+          "options": ["Master System", "Amiga", "ZX Spectrum", "Game Boy"],
+          "correctIndex": 2
+        },
+        {
+          "id": "arcade-4",
+          "question": "Which company handled many high-profile C64 arcade ports like 'Operation Wolf'?",
+          "options": ["Taito", "Imagine", "Domark", "US Gold"],
+          "correctIndex": 3
+        },
+        {
+          "id": "arcade-5",
+          "question": "The Amiga port of 'Street Fighter II' shipped on how many disks?",
+          "options": ["2", "3", "4", "5"],
+          "correctIndex": 2
+        },
+        {
+          "id": "arcade-6",
+          "question": "Which arcade racer inspired the superscaler feel of 'Lotus Turbo Challenge'?",
+          "options": ["Hang-On", "Pole Position", "Out Run", "Power Drift"],
+          "correctIndex": 2
+        }
+      ]
+    }
+  ]
+}

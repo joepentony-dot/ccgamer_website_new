@@ -1,88 +1,196 @@
 /* ============================================================
-   OMEGA GENRE LOADER — MISSION E7 ULTRA EDITION
+   QUIZ LOADER — COSMIC WOW EDITION
    ------------------------------------------------------------
-   • Loads games.json
-   • Filters using the `genres` ARRAY (correct for your JSON)
-   • Correct thumbnail paths
-   • Stable Omega ULTRA card rendering
-   • Fully clickable thumbs + View Game button
+   • Loads packs + questions from quiz/quiz-data.json
+   • Exposes global callbacks consumed by quiz-engine.js
+   • Adds live pack/question counts and recent score recap
+   • LocalStorage-backed score saver (client-side leaderboard)
    ============================================================ */
 
-document.addEventListener("DOMContentLoaded", async () => {
+(function () {
+    'use strict';
 
-    const genreName = document.body.dataset.genre;
-    const grid = document.getElementById("genreGamesGrid");
-    const countEl = document.getElementById("genreGamesCount");
+    const DATA_URL = './quiz-data.json';
+    const SCORE_KEY = 'ccg_quiz_local_scores';
 
-    if (!genreName || !grid) {
-        console.warn("Genre Loader: Missing data-genre or grid container.");
-        return;
+    let cachedData = null;
+    let normalisedPacks = [];
+
+    /* --------------------------------------------------------
+       FETCH + NORMALISE
+    -------------------------------------------------------- */
+    async function fetchQuizData() {
+        if (cachedData) return cachedData;
+
+        try {
+            const res = await fetch(DATA_URL, { cache: 'no-store' });
+            cachedData = await res.json();
+        } catch (err) {
+            console.error('[Quiz] Unable to load quiz-data.json', err);
+            cachedData = { packs: [] };
+        }
+
+        normalisedPacks = normalisePacks(cachedData);
+        return cachedData;
     }
 
-    try {
-        /* ============================================================
-           CORRECT JSON PATH
-           /games/genres/page.html  →  ../games.json
-           (Your repo structure confirms this)
-           ============================================================ */
-        const response = await fetch("../games.json");
-        const games = await response.json();
+    function normalisePacks(data) {
+        const rawPacks = (data && (data.packs || data.sets)) || [];
 
-        /* ============================================================
-           FILTER BY GENRE — USING genres ARRAY
-           EXACT match against games.json values
-           ============================================================ */
-        const filtered = games.filter(g => {
-            if (!g.genres || !Array.isArray(g.genres)) return false;
+        return rawPacks
+            .map(pack => {
+                if (!pack) return null;
+                const id = pack.id || pack.slug || pack.name;
+                if (!id) return null;
 
-            return g.genres.some(tag =>
-                tag.toLowerCase() === genreName.toLowerCase()
-            );
+                const questions = Array.isArray(pack.questions) ? pack.questions.slice() : [];
+
+                return {
+                    id: String(id),
+                    name: pack.name || pack.title || 'Quiz Pack',
+                    difficulty: pack.difficulty || 'Normal',
+                    description: pack.description || pack.tagline || '',
+                    questions
+                };
+            })
+            .filter(Boolean)
+            .filter(p => p.questions.length > 0);
+    }
+
+    /* --------------------------------------------------------
+       SCORE STORAGE (LOCAL)
+    -------------------------------------------------------- */
+    function loadSavedScores() {
+        try {
+            const raw = localStorage.getItem(SCORE_KEY);
+            if (!raw) return [];
+            const parsed = JSON.parse(raw);
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (err) {
+            console.warn('[Quiz] Unable to read saved scores', err);
+            return [];
+        }
+    }
+
+    function saveScores(list) {
+        try {
+            localStorage.setItem(SCORE_KEY, JSON.stringify(list));
+        } catch (err) {
+            console.warn('[Quiz] Unable to persist scores', err);
+        }
+    }
+
+    function renderRecentScores(list) {
+        const container = document.querySelector('[data-quiz-recent-scores]');
+        if (!container) return;
+
+        container.innerHTML = '';
+        const scores = list.slice(0, 5);
+
+        if (!scores.length) {
+            container.innerHTML = '<li class="quiz-recent-empty">No local scores yet. Finish a quiz to populate this list.</li>';
+            return;
+        }
+
+        scores.forEach(entry => {
+            const li = document.createElement('li');
+            li.className = 'quiz-recent-item';
+            li.innerHTML = `
+                <span class="quiz-recent-name">${entry.name || 'Anonymous'}</span>
+                <span class="quiz-recent-pack">${entry.setId || 'Pack'}</span>
+                <span class="quiz-recent-score">${entry.score || 0} pts</span>
+            `;
+            container.appendChild(li);
         });
-
-        /* Render game cards */
-        grid.innerHTML = filtered.map(game => generateGenreCard(game)).join("");
-
-        /* Update count */
-        if (countEl) countEl.textContent = filtered.length;
-
-    } catch (err) {
-        console.error("Error loading genre games:", err);
     }
-});
 
+    /* --------------------------------------------------------
+       PUBLIC APIS FOR quiz-engine.js
+    -------------------------------------------------------- */
+    window.loadQuizSets = async function loadQuizSets(cb) {
+        await fetchQuizData();
 
-/* ============================================================
-   CARD GENERATOR FUNCTION — GENRE VIEW
-   Omega ULTRA: cinematic thumbnails, click-safe, stable layout
-   ============================================================ */
-function generateGenreCard(game) {
+        const summary = normalisedPacks.map(pack => ({
+            id: pack.id,
+            name: pack.name,
+            title: pack.name,
+            questionCount: pack.questions.length,
+            difficulty: pack.difficulty,
+            description: pack.description
+        }));
 
-    const thumbPath = `../../resources/images/thumbnails/all/${game.thumbnail}`;
+        renderStats(summary);
 
-    return `
-        <div class="ccg-game-card genre-card">
+        if (typeof cb === 'function') cb(summary);
+    };
 
-            <!-- CLICKABLE THUMB -->
-            <a class="ccg-game-card__thumb" href="../game.html?id=${game.id}">
-                <img src="${thumbPath}" alt="${game.title}">
-            </a>
+    window.loadQuizQuestions = async function loadQuizQuestions(setId, cb) {
+        await fetchQuizData();
+        const pack = normalisedPacks.find(p => String(p.id) === String(setId));
+        const questions = pack ? pack.questions.slice() : [];
 
-            <div class="ccg-game-card__body">
-                <h3 class="ccg-game-card__title">${game.title}</h3>
+        updateActivePackLabel(pack);
 
-                <div class="ccg-game-card__meta">
-                    <span>${game.year || "—"}</span>
-                    <span class="divider">·</span>
-                    <span>${game.system || "—"}</span>
-                </div>
+        if (typeof cb === 'function') cb(questions);
+    };
 
-                <a class="ccg-btn ccg-btn--primary ccg-view-btn"
-                   href="../game.html?id=${game.id}">
-                    View Game
-                </a>
-            </div>
+    window.saveQuizScore = function saveQuizScore(payload, cb) {
+        const scores = loadSavedScores();
+        const safe = Object.assign({ time: Date.now() }, payload || {});
 
-        </div>
-    `;
-}
+        scores.unshift(safe);
+        saveScores(scores.slice(0, 12));
+        renderRecentScores(scores);
+
+        if (typeof cb === 'function') cb(true);
+    };
+
+    window.trackQuizEvent = function trackQuizEvent(name, data) {
+        if (name === 'quiz_start') {
+            document.body.dataset.quizActive = 'true';
+        }
+        if (name === 'quiz_finished') {
+            document.body.dataset.quizActive = 'false';
+        }
+        console.info('[Quiz]', name, data || {});
+    };
+
+    /* --------------------------------------------------------
+       UI HELPERS
+    -------------------------------------------------------- */
+    function renderStats(packs) {
+        const packEls = document.querySelectorAll('[data-quiz-pack-count]');
+        const questionEls = document.querySelectorAll('[data-quiz-question-count]');
+
+        const totalPacks = Array.isArray(packs) ? packs.length : 0;
+        const totalQuestions = (packs || []).reduce((sum, pack) => {
+            const count = pack.questionCount || (pack.questions ? pack.questions.length : 0) || 0;
+            return sum + count;
+        }, 0);
+
+        packEls.forEach(el => el.textContent = totalPacks);
+        questionEls.forEach(el => el.textContent = totalQuestions);
+    }
+
+    function updateActivePackLabel(pack) {
+        const labels = document.querySelectorAll('[data-quiz-active-pack]');
+        labels.forEach(label => {
+            label.textContent = pack ? `${pack.name} (${pack.questions.length} Qs)` : 'Pick a pack to begin';
+        });
+    }
+
+    function initQuizBadges() {
+        const savedScores = loadSavedScores();
+        renderRecentScores(savedScores);
+
+        fetchQuizData().then(() => {
+            const summary = normalisedPacks.map(pack => ({
+                questionCount: pack.questions.length,
+                name: pack.name
+            }));
+            renderStats(summary);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', initQuizBadges);
+})();

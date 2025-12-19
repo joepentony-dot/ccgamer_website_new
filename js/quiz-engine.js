@@ -149,7 +149,7 @@
     // --------------------------------------------------
     // WEB AUDIO SFX
     // --------------------------------------------------
-    function ensureAudioContext()() {
+    function ensureAudioContext() {
         if (audioCtx) return audioCtx;
         const Ctx = window.AudioContext || window.webkitAudioContext;
         if (!Ctx) return null;

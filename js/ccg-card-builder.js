@@ -14,16 +14,25 @@
    Thumbnail resolver (safe, depth-agnostic)
 ------------------------------------------------------------ */
 function ccgResolveThumb(raw) {
-    if (!raw) return "../../resources/images/thumbnails/all/1942.jpg";
+    const fallback = "../../resources/images/thumbnails/all/1942.jpg";
+
+    if (!raw) return fallback;
 
     let t = String(raw).trim();
+    if (!t) return fallback;
 
-    t = t.replace(/^\/+/, "");
-    t = t.replace("resources/images/thumbnails/all/", "");
-    t = t.replace("resources/images/thumbnails/", "");
-    t = t.replace("resources/images/", "");
+    if (/^https?:\/\//i.test(t)) return t;
 
-    if (!t) t = "1942.jpg";
+    t = t.replace(/^\.?\//, "");
+    t = t.replace(/^(\.\.\/)+/, "");
+
+    if (t.startsWith("resources/")) {
+        return `../../${t}`;
+    }
+
+    if (t.includes("/")) {
+        return `../../${t}`;
+    }
 
     return `../../resources/images/thumbnails/all/${t}`;
 }
@@ -42,6 +51,8 @@ function ccgBuildGameCard(game) {
         game.thumbnail || game.thumb || game.cover
     );
 
+    const safeId = encodeURIComponent(game.id);
+
     const meta = [
         game.year || "",
         game.system || "",
@@ -50,7 +61,7 @@ function ccgBuildGameCard(game) {
 
     return `
         <div class="ccg-game-card genre-card">
-            <a href="../game.html?id=${game.id}" class="ccg-game-card__thumb">
+            <a href="../game.html?id=${safeId}" class="ccg-game-card__thumb">
                 <img src="${thumb}" alt="${game.title || "Game artwork"}">
             </a>
 
@@ -63,7 +74,7 @@ function ccgBuildGameCard(game) {
                     ${meta}
                 </div>
 
-                <a href="../game.html?id=${game.id}"
+                <a href="../game.html?id=${safeId}"
                    class="ccg-btn ccg-btn--primary">
                    View Game
                 </a>

@@ -10,8 +10,7 @@
 
     <link rel="icon" href="../favicon.ico" />
 
-    <!-- REQUIRED FONT RESTORE (Orbitron + Roboto) -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Fonts loaded globally via ccg-master (Robotron) -->
 
     <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="../resources/css/ccg-master.css" />
@@ -22,7 +21,7 @@
     <link rel="stylesheet" href="../resources/css/ccg-modal.css" />
     <link rel="stylesheet" href="../resources/css/ccg-socials.css" />
     <link rel="stylesheet" href="../resources/css/ccg-hero.css" />
-    <link rel="stylesheet" href="resources/css/ccg-footer.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-footer.css" />
 
     <!-- QUIZ-SPECIFIC CSS -->
     <link rel="stylesheet" href="../resources/css/quiz.css" />
@@ -66,11 +65,19 @@
                         <li><a href="../games/index.html" class="ccg-nav__link">Browse Games</a></li>
                         <li><a href="../games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
                         <li><a href="../games/collections/index.html" class="ccg-nav__link">Collections</a></li>
-                        <li><a href="quiz.html" class="ccg-nav__link ccg-nav__link--active">Trivia &amp; Leaderboard</a></li>
-                        <li><a href="../emulation.html" class="ccg-nav__link">Emulation</a></li>
-                        <li><a href="../complete-index.html" class="ccg-nav__link">Index</a></li>
-                        <li><a href="../about.html" class="ccg-nav__link">About</a></li>
-                        <li><a href="../contact.html" class="ccg-nav__link">Contact</a></li>
+
+                        <li class="ccg-nav__more">
+                            <button class="ccg-nav__link ccg-nav__more-btn" type="button" aria-haspopup="true" aria-expanded="false">
+                                More ▾
+                            </button>
+                            <ul class="ccg-nav__dropdown">
+                                <li><a href="quiz.html" class="ccg-nav__dropdown-link ccg-nav__dropdown-link--active">Trivia &amp; Leaderboard</a></li>
+                                <li><a href="../emulation.html" class="ccg-nav__dropdown-link">Emulation</a></li>
+                                <li><a href="../complete-index.html" class="ccg-nav__dropdown-link">Index</a></li>
+                                <li><a href="../about.html" class="ccg-nav__dropdown-link">About</a></li>
+                                <li><a href="../contact.html" class="ccg-nav__dropdown-link">Contact</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </nav>
 
@@ -176,6 +183,21 @@
 
                             </div>
                         </div>
+
+                        <div class="quiz-hero-meta">
+                            <div class="quiz-meta-chip">
+                                <span class="quiz-meta-label">Packs</span>
+                                <strong class="quiz-meta-value" data-quiz-pack-count>0</strong>
+                            </div>
+                            <div class="quiz-meta-chip">
+                                <span class="quiz-meta-label">Questions Ready</span>
+                                <strong class="quiz-meta-value" data-quiz-question-count>0</strong>
+                            </div>
+                            <div class="quiz-meta-chip">
+                                <span class="quiz-meta-label">Selected Pack</span>
+                                <strong class="quiz-meta-value" data-quiz-active-pack>Pick a pack to begin</strong>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- RIGHT: SID bars -->
@@ -267,6 +289,35 @@
                         </div>
                     </article>
 
+                </div>
+
+                <div class="quiz-side-panels">
+                    <article class="quiz-panel quiz-panel--meta">
+                        <h3 class="ccg-section-title">Live Quiz Stats</h3>
+                        <p class="ccg-body-text">Auto-updates when packs load or you pick a new quiz set.</p>
+                        <div class="quiz-hero-meta quiz-hero-meta--side">
+                            <div class="quiz-meta-chip">
+                                <span class="quiz-meta-label">Packs</span>
+                                <strong class="quiz-meta-value" data-quiz-pack-count>0</strong>
+                            </div>
+                            <div class="quiz-meta-chip">
+                                <span class="quiz-meta-label">Questions Ready</span>
+                                <strong class="quiz-meta-value" data-quiz-question-count>0</strong>
+                            </div>
+                            <div class="quiz-meta-chip">
+                                <span class="quiz-meta-label">Selected Pack</span>
+                                <strong class="quiz-meta-value" data-quiz-active-pack>Pick a pack to begin</strong>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="quiz-panel quiz-panel--meta">
+                        <h3 class="ccg-section-title">Recent Local Runs</h3>
+                        <p class="ccg-body-text">Saved in your browser for quick replays and testing.</p>
+                        <ul class="quiz-recent-list" data-quiz-recent-scores>
+                            <li class="quiz-recent-empty">No local scores yet.</li>
+                        </ul>
+                    </article>
                 </div>
             </section>
 

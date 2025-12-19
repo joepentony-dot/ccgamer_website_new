@@ -79,15 +79,20 @@ function resolveVideoId(game) {
     ).toString().trim();
 }
 
+function resolvePrimaryLink(value) {
+    if (Array.isArray(value) && value.length) {
+        return value.find(Boolean) || "";
+    }
+    if (typeof value === "string") return value.trim();
+    return "";
+}
+
 function resolveManualUrl(game) {
-    return game.pdf || game.manual || "";
+    return resolvePrimaryLink(game.pdf || game.manual || game.manuals);
 }
 
 function resolveDiskUrl(game) {
-    if (Array.isArray(game.disk) && game.disk[0]) return game.disk[0];
-    if (typeof game.disk === "string") return game.disk;
-    if (typeof game.tape === "string") return game.tape;
-    return "";
+    return resolvePrimaryLink(game.disk || game.tape || game.download);
 }
 
 /* ============================================================
@@ -96,10 +101,13 @@ function resolveDiskUrl(game) {
 
 function renderGame(game) {
 
+    updateMeta(game);
+
     /* HERO */
     const thumb = resolveGameThumb(game.thumbnail || game.thumb || game.cover);
     document.getElementById("gameHeroBG").style.backgroundImage = `url('${thumb}')`;
     document.getElementById("gameHeroThumb").src = thumb;
+    document.getElementById("gameHeroThumb").alt = `${game.title || "Game"} cover art`;
     document.getElementById("gameHeroTitle").textContent = game.title || "Unknown";
     document.getElementById("gameMetaYear").textContent = game.year || "—";
     document.getElementById("gameMetaSystem").textContent = game.system || "—";
@@ -129,6 +137,8 @@ function renderGame(game) {
     if (manual) {
         const btn = document.getElementById("gameManualBtn");
         btn.href = manual;
+        btn.target = "_blank";
+        btn.rel = "noopener";
         btn.hidden = false;
         document.querySelector(".game-downloads").hidden = false;
     }
@@ -137,6 +147,8 @@ function renderGame(game) {
     if (disk) {
         const btn = document.getElementById("gameDiskBtn");
         btn.href = disk;
+        btn.target = "_blank";
+        btn.rel = "noopener";
         btn.hidden = false;
         document.querySelector(".game-downloads").hidden = false;
     }
@@ -147,6 +159,20 @@ function renderGame(game) {
     }
 
     renderRelatedGames(game, CCG_SINGLE_ALL_GAMES);
+}
+
+function updateMeta(game) {
+    const title = game.title || "Game";
+    document.title = `${title} | Cheeky Commodore Gamer`;
+
+    const metaTitle = document.getElementById("game-meta-title");
+    if (metaTitle) metaTitle.textContent = document.title;
+
+    const desc = (game.description || "").replace(/<[^>]*>?/gm, "").slice(0, 160);
+    const metaDesc = document.getElementById("game-meta-description");
+    if (metaDesc) metaDesc.setAttribute("content",
+        desc || `${title} on Commodore — screenshots, manual, downloads and video.`
+    );
 }
 
 /* ============================================================
@@ -249,6 +275,7 @@ function renderRelatedGames(game, allGames) {
 
     const section = document.querySelector(".game-section--related");
     const container = document.getElementById("relatedGamesGrid");
+    if (!section || !container) return;
     const titleEl = section.querySelector(".game-section__title");
 
     let related = [];
