@@ -21,44 +21,26 @@ document.addEventListener("DOMContentLoaded", async () => {
             g.genres.map(x => x.toLowerCase()).includes(genreName.toLowerCase())
         );
 
-        grid.innerHTML = filtered.map(game => {
-            const id = encodeURIComponent(game.id);
-            const thumb = resolveGameThumb(game.thumbnail || game.thumb || game.cover);
-
-            return `
-                <a href="../game.html?id=${id}" class="ccg-game-card">
-                    <div class="ccg-game-card__thumb">
-                        <img src="${thumb}" alt="${game.title}">
-                    </div>
-                    <div class="ccg-game-card__body">
-                        <h3 class="ccg-game-card__title">${game.title}</h3>
-                        <div class="ccg-game-card__meta">
-                            ${(game.year || "")} · ${(game.system || "")}
-                        </div>
-                    </div>
-                </a>
-            `;
-        }).join("");
+        const cards = filtered.map(ccgBuildGameCard).join("");
 
         if (countEl) countEl.textContent = filtered.length;
+
+        if (cards) {
+            grid.innerHTML = cards;
+        } else {
+            grid.innerHTML = `
+                <div class="ccg-genre-empty">
+                    <h3>No games found yet</h3>
+                    <p>We&apos;re tuning this genre — check back soon or browse all titles.</p>
+                    <div class="ccg-genre-empty__actions">
+                        <a class="ccg-btn ccg-btn--primary" href="../index.html">Browse All Games</a>
+                        <a class="ccg-btn ccg-btn--secondary" href="../collections/index.html">Explore Collections</a>
+                    </div>
+                </div>
+            `;
+        }
 
     } catch (err) {
         console.error("[CCG] Genre load failed:", err);
     }
 });
-
-function resolveGameThumb(raw) {
-    if (!raw) {
-        return "../../resources/images/thumbnails/all/1942.jpg";
-    }
-
-    const t = String(raw).replace(/^\/+/, "");
-
-    // ✅ If JSON already provides a path, respect it
-    if (t.includes("/")) {
-        return t.startsWith("http") ? t : `../../${t}`;
-    }
-
-    // ✅ Otherwise, treat as filename only
-    return `../../resources/images/thumbnails/all/${t}`;
-}
