@@ -1,23 +1,20 @@
 /* ============================================================
-   CCG HOME DYNAMIC — OMEGA CINEMATIC 2.1 (HOME GENRES FINAL)
+   CCG HOME DYNAMIC — OMEGA (SAFE GENRE THUMBS)
    ------------------------------------------------------------
-   • Featured Game
-   • Featured Highlights
-   • FULL Genre Grid with background thumbnails (Home-only)
-   • Random Game
-   • Mode sync
-   ============================================================ */
+   • Featured Highlights (UNCHANGED behaviour)
+   • Small genre thumbnails at bottom
+   • No large cards
+   • No layout dominance
+============================================================ */
 
 let CCG_HOME_ALL_GAMES = [];
-let CCG_HOME_FEATURED_GAME = null;
 
 document.addEventListener("DOMContentLoaded", () => initHomeDynamic());
 
 async function initHomeDynamic() {
     await loadGamesForHome();
-    chooseAndRenderFeaturedGame();
     renderFeaturedHighlights();
-    renderHomeGenres();
+    renderHomeGenresSmall();
     wireRandomGameButton();
     syncModeLabel();
     initModeObserver();
@@ -37,37 +34,7 @@ async function loadGamesForHome() {
 }
 
 /* ============================================================
-   FEATURED GAME
-============================================================ */
-
-function pickFeaturedGame() {
-    const picks = CCG_HOME_ALL_GAMES.filter(g =>
-        Array.isArray(g.genres) && g.genres.includes("Top Picks")
-    );
-    const pool = picks.length ? picks : CCG_HOME_ALL_GAMES;
-    return pool[Math.floor(Math.random() * pool.length)] || null;
-}
-
-function chooseAndRenderFeaturedGame() {
-    const game = pickFeaturedGame();
-    if (!game) return;
-    CCG_HOME_FEATURED_GAME = game;
-    renderFeaturedGame(game);
-}
-
-function renderFeaturedGame(game) {
-    const card = document.querySelector("[data-ccg-featured-game]");
-    if (!card) return;
-
-    card.querySelector("[data-fg-thumb]").src = resolveThumb(game.thumbnail);
-    card.querySelector("[data-fg-title]").textContent = `Featured Game — ${game.title}`;
-    card.querySelector("[data-fg-desc]").textContent = buildMeta(game);
-    card.querySelector("[data-fg-btn]").href =
-        `games/game.html?id=${encodeURIComponent(game.id)}`;
-}
-
-/* ============================================================
-   FEATURED HIGHLIGHTS
+   FEATURED HIGHLIGHTS — LEAVE AS BEFORE
 ============================================================ */
 
 function renderFeaturedHighlights() {
@@ -97,48 +64,41 @@ function renderFeaturedHighlights() {
 }
 
 /* ============================================================
-   HOME GENRES — FULL BG THUMBNAILS (NEW CARD TYPE)
+   HOME GENRES — SMALL THUMBNAILS ONLY
 ============================================================ */
 
-function renderHomeGenres() {
+function renderHomeGenresSmall() {
     const section = document.querySelector(".home-section--genres");
     if (!section) return;
 
     const genreMap = new Map();
 
-    CCG_HOME_ALL_GAMES.forEach(g => {
-        if (!Array.isArray(g.genres)) return;
-        g.genres.forEach(name => {
-            const n = name.trim();
-            genreMap.set(n, (genreMap.get(n) || 0) + 1);
+    CCG_HOME_ALL_GAMES.forEach(game => {
+        if (!Array.isArray(game.genres)) return;
+        game.genres.forEach(g => {
+            const name = g.trim();
+            genreMap.set(name, (genreMap.get(name) || 0) + 1);
         });
     });
 
     const grid = document.createElement("div");
-    grid.className = "ccg-home-genres-grid";
+    grid.className = "ccg-home-genre-thumb-grid";
 
     [...genreMap.entries()]
         .sort((a, b) => a[0].localeCompare(b[0]))
         .forEach(([genre, count]) => {
             const slug = genre.toLowerCase().replace(/\s+/g, "-");
 
-            const card = document.createElement("a");
-            card.className = "ccg-home-genre-card";
-            card.href = `games/genres/${slug}.html`;
+            const tile = document.createElement("a");
+            tile.className = "ccg-home-genre-thumb";
+            tile.href = `games/genres/${slug}.html`;
 
-            card.style.setProperty(
-                "--genre-bg",
-                `url("resources/images/genres/${slug}.png")`
-            );
-
-            card.innerHTML = `
-                <div class="ccg-home-genre-card__overlay"></div>
-                <div class="ccg-home-genre-card__body">
-                    <h3>${genre}</h3>
-                    <span>${count} games</span>
-                </div>
+            tile.innerHTML = `
+                <img src="resources/images/genres/${slug}.png" alt="${genre}">
+                <span>${genre}</span>
             `;
-            grid.appendChild(card);
+
+            grid.appendChild(tile);
         });
 
     section.appendChild(grid);
