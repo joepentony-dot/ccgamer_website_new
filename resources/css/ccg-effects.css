@@ -4,6 +4,7 @@
    • Button glow harmony & premium feel
    • Hover / focus / active consistency
    • Accessibility & reduced-motion preserved
+   • Ambient overlays, scanlines, hover glows
    • NO layout or size changes
 ============================================================ */
 
@@ -44,6 +45,138 @@
         rgba(var(--accent-rgb), 0.75),
         rgba(var(--accent-rgb), 0.45)
     );
+}
+
+
+/* ============================================================
+   ATMOSPHERIC OVERLAYS — GRIDLINES + SCANLINES
+   ------------------------------------------------------------
+   • Utility classes for layered backgrounds
+   • Pointer-events disabled to keep UI interactive
+   • Subtle motion respecting reduced motion preference
+============================================================ */
+
+.ccg-effect-gridlines,
+.ccg-effect-scanlines,
+.ccg-bg-particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.ccg-effect-gridlines {
+    z-index: 1;
+
+    background:
+        repeating-linear-gradient(
+            to right,
+            rgba(var(--accent-rgb), 0.16) 0,
+            rgba(var(--accent-rgb), 0.16) 1px,
+            transparent 1px,
+            transparent 42px
+        ),
+        repeating-linear-gradient(
+            to bottom,
+            rgba(var(--accent-rgb), 0.12) 0,
+            rgba(var(--accent-rgb), 0.12) 1px,
+            transparent 1px,
+            transparent 42px
+        );
+
+    opacity: 0.18;
+    mix-blend-mode: screen;
+    filter: drop-shadow(0 0 12px rgba(var(--accent-rgb), 0.25));
+
+    animation: ccgGridSweep 26s linear infinite;
+    will-change: transform, opacity;
+}
+
+.ccg-effect-scanlines {
+    z-index: 2;
+
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.04) 0px,
+        rgba(255, 255, 255, 0.04) 1px,
+        transparent 1px,
+        transparent 4px
+    );
+
+    mix-blend-mode: soft-light;
+    opacity: 0.26;
+
+    animation: ccgScanlinePulse 7s ease-in-out infinite;
+}
+
+.ccg-bg-particles {
+    z-index: 1;
+    overflow: hidden;
+    mix-blend-mode: screen;
+}
+
+.ccg-bg-particles__spark {
+    position: absolute;
+    left: var(--ccg-particle-x, 50%);
+    bottom: -8%;
+
+    width: var(--ccg-particle-size, 2px);
+    height: var(--ccg-particle-size, 2px);
+    border-radius: 50%;
+
+    background: radial-gradient(circle, rgba(var(--accent-rgb), 0.92), rgba(var(--accent-rgb), 0.32));
+    opacity: 0;
+
+    filter: drop-shadow(0 0 6px rgba(var(--accent-rgb), 0.38));
+
+    animation: ccgParticleFloat var(--ccg-particle-duration, 14s) linear infinite;
+    animation-delay: calc(-1 * var(--ccg-particle-delay, 0s));
+    will-change: transform, opacity;
+}
+
+@keyframes ccgGridSweep {
+    from { transform: translate3d(0, 0, 0); }
+    to   { transform: translate3d(-36px, -22px, 0); }
+}
+
+@keyframes ccgScanlinePulse {
+    0%, 100% { opacity: 0.22; }
+    40% { opacity: 0.30; }
+    70% { opacity: 0.28; }
+}
+
+@keyframes ccgParticleFloat {
+    0% {
+        transform: translate3d(0, 0, 0);
+        opacity: 0;
+    }
+    10% { opacity: 0.92; }
+    70% { opacity: 0.78; }
+    100% {
+        transform: translate3d(8px, -132vh, 0);
+        opacity: 0;
+    }
+}
+
+
+/* ============================================================
+   ACCESSIBLE FOCUS STATES — CONSISTENT CONTRAST
+============================================================ */
+
+:root {
+    --ccg-focus-outline: rgba(var(--accent-rgb), 0.72);
+    --ccg-focus-halo: rgba(var(--accent-rgb), 0.32);
+}
+
+:where(a, button, input, select, textarea, [role="button"], [tabindex]):focus-visible {
+    outline: 2px solid var(--ccg-focus-outline);
+    outline-offset: 3px;
+
+    box-shadow:
+        0 0 0 2px rgba(0,0,0,0.70),
+        0 0 0 6px var(--ccg-focus-halo),
+        0 0 22px rgba(var(--accent-rgb), 0.32);
+
+    color: #fff;
 }
 
 /* ============================================================
@@ -88,10 +221,12 @@
 ------------------------------------------------------------ */
 
 .ccg-btn:focus-visible {
-    outline: none;
+    outline: 2px solid var(--ccg-focus-outline);
+    outline-offset: 2px;
 
     box-shadow:
-        0 0 0 2px rgba(var(--accent-rgb), 0.50),
+        0 0 0 2px rgba(0,0,0,0.60),
+        0 0 0 6px var(--ccg-focus-halo),
         0 0 18px rgba(var(--accent-rgb), 0.34),
         0 10px 26px rgba(0,0,0,0.60);
 }
@@ -107,6 +242,59 @@
     box-shadow:
         0 6px 14px rgba(0,0,0,0.60),
         0 0 12px rgba(var(--accent-rgb), 0.26);
+}
+
+/* ============================================================
+   IMMERSIVE GLOW ACCENTS — HOVER & SCROLL STATES
+============================================================ */
+
+:where([data-ccg-wow], [data-ccg-glow]) {
+    position: relative;
+    isolation: isolate;
+    transition:
+        box-shadow 0.38s var(--ccg-ease-out, ease),
+        filter 0.32s ease,
+        transform 0.32s var(--ccg-ease-out, ease);
+}
+
+:where([data-ccg-wow], [data-ccg-glow])::after {
+    content: "";
+    position: absolute;
+    inset: -10px;
+    border-radius: 16px;
+    background: radial-gradient(circle at 50% 45%, rgba(var(--accent-rgb), 0.24), transparent 58%);
+    opacity: 0;
+    pointer-events: none;
+    filter: blur(8px);
+    transition: opacity 0.35s ease;
+    z-index: -1;
+}
+
+:where([data-ccg-wow], [data-ccg-glow]).is-lit {
+    box-shadow:
+        0 16px 34px rgba(0,0,0,0.55),
+        0 0 18px rgba(var(--accent-rgb), 0.22);
+}
+
+:where([data-ccg-wow], [data-ccg-glow]).is-lit::after {
+    opacity: 0.74;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    :where([data-ccg-wow], [data-ccg-glow]):hover {
+        transform: translateY(-3px);
+        filter: brightness(1.03);
+    }
+
+    :where([data-ccg-wow], [data-ccg-glow]):hover::after {
+        opacity: 0.88;
+    }
+}
+
+@media (hover: none) {
+    :where([data-ccg-wow], [data-ccg-glow]) {
+        transform: none !important;
+    }
 }
 
 /* ------------------------------------------------------------
@@ -171,5 +359,13 @@
         box-shadow:
             0 0 0 2px rgba(var(--accent-rgb), 0.45),
             0 0 12px rgba(var(--accent-rgb), 0.28);
+    }
+
+    .ccg-effect-gridlines,
+    .ccg-effect-scanlines,
+    .ccg-bg-particles__spark,
+    :where([data-ccg-wow], [data-ccg-glow])::after {
+        animation: none !important;
+        transition-duration: 0s;
     }
 }
