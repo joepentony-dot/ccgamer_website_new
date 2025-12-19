@@ -67,49 +67,114 @@ function renderFeaturedHighlights() {
 }
 
 function renderFeaturedSpotlight() {
-    const pickable = CCG_HOME_ALL_GAMES.filter(g => g.videoid);
-    if (!pickable.length) return;
+    const card = document.querySelector('[data-ccg-spotlight]');
+    if (!card) return;
 
-    const game = pickable[Math.floor(Math.random() * pickable.length)];
+    const game = pickSpotlightGame();
+    if (!game) {
+        card.style.display = "none";
+        return;
+    }
+
     const thumb = resolveThumb(game.thumbnail);
-    const videoUrl = `https://www.youtube.com/watch?v=${game.videoid}`;
+    const meta = buildMeta(game) || "Featured pick";
+    const videoUrl = game.videoid ? `https://www.youtube.com/watch?v=${game.videoid}` : "";
     const gameUrl = `games/game.html?id=${encodeURIComponent(game.id)}`;
 
-    const thumbEl = document.querySelector('[data-ccg-feature-thumb]');
-    const metaEl = document.querySelector('[data-ccg-feature-meta]');
-    const titleEl = document.querySelector('[data-ccg-feature-title]');
-    const copyEl = document.querySelector('[data-ccg-feature-copy]');
-    const playLink = document.querySelector('[data-ccg-feature-play]');
-    const playLink2 = document.querySelector('[data-ccg-feature-play2]');
-    const collectionLink = document.querySelector('[data-ccg-feature-collection]');
+    const artEl = card.querySelector('[data-ccg-spotlight-art]');
+    const metaEl = card.querySelector('[data-ccg-spotlight-meta]');
+    const titleEl = card.querySelector('[data-ccg-spotlight-title]');
+    const copyEl = card.querySelector('[data-ccg-spotlight-copy]');
+    const tagsEl = card.querySelector('[data-ccg-spotlight-tags]');
+    const gameLink = card.querySelector('[data-ccg-spotlight-game]');
+    const ytLink = card.querySelector('[data-ccg-spotlight-youtube]');
+    const videoShell = card.querySelector('[data-ccg-spotlight-video]');
+    const videoLabel = card.querySelector('.home-spotlight__video-label');
+    const iframeWrap = card.querySelector('[data-ccg-spotlight-iframe-wrap]');
 
-    const videoThumb = document.querySelector('[data-ccg-feature-video-thumb]');
-    const videoMeta = document.querySelector('[data-ccg-feature-video-meta]');
-    const videoTitle = document.querySelector('[data-ccg-feature-video-title]');
-    const videoCopy = document.querySelector('[data-ccg-feature-video-copy]');
-    const videoWatch = document.querySelector('[data-ccg-feature-watch]');
-    const videoWatchLink = document.querySelector('[data-ccg-feature-watch-link]');
+    if (artEl) artEl.style.backgroundImage = `url('${thumb}')`;
+    if (videoShell && game.videoid) {
+        videoShell.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.4), rgba(0,0,0,0.85)), url('https://img.youtube.com/vi/${game.videoid}/hqdefault.jpg')`;
+        videoShell.style.backgroundSize = "cover";
+        videoShell.style.backgroundPosition = "center";
+    } else if (videoShell) {
+        videoShell.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.4), rgba(0,0,0,0.85)), url('${thumb}')`;
+        videoShell.classList.add("is-static");
+        if (videoLabel) videoLabel.textContent = "Video preview unavailable";
+    }
 
-    thumbEl && (thumbEl.style.backgroundImage = `url('${thumb}')`);
-    metaEl && (metaEl.textContent = buildMeta(game));
-    titleEl && (titleEl.textContent = game.title);
-    copyEl && (copyEl.textContent = game.description?.trim() || "Neon-fuelled action and pixel-perfect charm.");
+    if (metaEl) metaEl.textContent = meta;
+    if (titleEl) titleEl.textContent = game.title;
+    if (copyEl) copyEl.textContent = game.description?.trim() || "Neon-fuelled action and pixel-perfect charm.";
 
-    [playLink, playLink2].forEach(link => {
-        if (link) link.href = gameUrl;
-    });
-    if (collectionLink) collectionLink.href = "games/collections/top-picks.html";
+    if (tagsEl) {
+        tagsEl.innerHTML = "";
+        [game.system, game.year, ...(game.genres?.slice(0, 2) || [])]
+            .filter(Boolean)
+            .forEach(tag => {
+                const pill = document.createElement("span");
+                pill.className = "home-spotlight__tag";
+                pill.textContent = tag;
+                tagsEl.appendChild(pill);
+            });
+    }
 
-    if (videoThumb) videoThumb.style.backgroundImage = `url('https://img.youtube.com/vi/${game.videoid}/hqdefault.jpg')`;
-    if (videoMeta) videoMeta.textContent = `${game.system} longplay · ${game.year}`;
-    if (videoTitle) videoTitle.textContent = `${game.title} — full feature`;
-    if (videoCopy) videoCopy.textContent = game.description?.trim() || "Watch the exact game in motion with CRT glow and soundtrack.";
-
-    [videoWatch, videoWatchLink].forEach(link => {
-        if (link) {
-            link.onclick = () => window.open(videoUrl, "_blank", "noopener");
-            link.href = videoUrl;
+    if (gameLink) gameLink.href = gameUrl;
+    if (ytLink) {
+        ytLink.href = videoUrl || "#";
+        ytLink.target = "_blank";
+        ytLink.rel = "noopener";
+        if (!videoUrl) {
+            ytLink.setAttribute("aria-disabled", "true");
+            ytLink.onclick = (ev) => ev.preventDefault();
         }
+    }
+
+    hydrateSpotlightVideo(game.videoid, iframeWrap);
+}
+
+function pickSpotlightGame() {
+    if (!CCG_HOME_ALL_GAMES.length) return null;
+
+    const flagged = CCG_HOME_ALL_GAMES.find(g => g.featured === true || g.isFeatured === true || g.homeFeatured === true);
+    if (flagged?.videoid) return flagged;
+
+    const sortedWithVideo = CCG_HOME_ALL_GAMES
+        .filter(g => g.videoid)
+        .sort((a, b) => (a.sorttitle || a.title).localeCompare(b.sorttitle || b.title, undefined, { sensitivity: "base" }));
+
+    if (!sortedWithVideo.length) return flagged || CCG_HOME_ALL_GAMES[0];
+
+    const fallbackId = "turrican_ii_the_final_fight";
+    return sortedWithVideo.find(g => g.id === fallbackId) || sortedWithVideo[0];
+}
+
+function hydrateSpotlightVideo(videoId, iframeWrap) {
+    const watchButtons = document.querySelectorAll('[data-ccg-spotlight-watch]');
+    const iframe = document.querySelector('[data-ccg-spotlight-iframe]');
+
+    if (!videoId || !iframeWrap || !iframe) {
+        watchButtons.forEach(btn => {
+            btn.setAttribute("disabled", "true");
+            btn.disabled = true;
+        });
+        return;
+    }
+
+    const embedSrc = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&autoplay=1`;
+
+    const loadEmbed = () => {
+        if (iframe.dataset.loaded === "true") return;
+        iframe.src = embedSrc;
+        iframe.dataset.loaded = "true";
+        iframeWrap.classList.add("is-playing");
+    };
+
+    watchButtons.forEach(btn => {
+        btn.onclick = (ev) => {
+            ev.preventDefault();
+            loadEmbed();
+        };
     });
 }
 
@@ -157,7 +222,7 @@ function initModeObserver() {
 ============================================================ */
 
 function initHeroCardFX() {
-    const cards = document.querySelectorAll('.home-hero-card, .home-highlight-card, .home-feature-card, .home-feature-video, .home-link-tile');
+    const cards = document.querySelectorAll('.home-hero-card, .home-highlight-card, .home-spotlight-card, .home-link-tile');
     if (!cards.length) return;
 
     cards.forEach(card => {
