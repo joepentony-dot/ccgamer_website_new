@@ -1,400 +1,72 @@
 /* ============================================================
-   HOME.CSS — OMEGA SHOWCASE
-   PHASE H-RESTORE — HERO + SECTION VISIBILITY
-   ------------------------------------------------------------
-   • Restores true Home hero stage (layering + readability)
-   • Ensures sections don’t look “missing” even if empty
-   • NO header/nav/global edits
-   • Home ONLY
+   HOME.CSS — OMEGA SHOWCASE (GENRES FINAL)
 ============================================================ */
 
-
-/* ============================================================
-   PAGE ROOT — SAFE FOREGROUND
-============================================================ */
-
-html[data-ccg-page="home"] .ccg-main--home {
-    position: relative;
-    z-index: 4;
-    padding-top: 64px;     /* clears header + neon strip safely */
-    padding-bottom: 72px;
-    overflow: visible;
-}
-
-
-/* ============================================================
-   HERO — TRUE STAGE RESTORE (HOME ONLY)
-============================================================ */
-
-html[data-ccg-page="home"] .home-hero {
-    position: relative;
-    margin-bottom: 60px;
-    z-index: 3;
-}
-
-/* Establish hero stacking order explicitly */
-html[data-ccg-page="home"] .ccg-hero--home {
-    position: relative;
-    overflow: hidden;
-    border-radius: 22px;              /* matches your card language */
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 44px 18px 34px;
-    box-shadow:
-        0 26px 70px rgba(0,0,0,0.88),
-        inset 0 0 0 1px rgba(255,255,255,0.08);
-}
-
-/* Background image layer */
-html[data-ccg-page="home"] .ccg-hero--home .ccg-hero-image {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    opacity: 0.92; /* restore hero presence */
-}
-
-/* Scanlines above image */
-html[data-ccg-page="home"] .ccg-hero--home .ccg-hero-scanlines {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    opacity: 0.28;
-}
-
-/* Home-only readability veil (does NOT kill the hero) */
-html[data-ccg-page="home"] .ccg-hero--home::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-
-    background:
-        radial-gradient(1200px 520px at 50% 35%, rgba(0,0,0,0.10), rgba(0,0,0,0.62)),
-        linear-gradient(180deg, rgba(0,0,0,0.30), rgba(0,0,0,0.62));
-}
-
-/* Ensure actual content is on top */
-html[data-ccg-page="home"] .ccg-hero--home .ccg-hero-inner {
-    position: relative;
-    z-index: 3;
-}
-
-html[data-ccg-page="home"] .home-hero__inner {
-    max-width: 1060px;
-    margin: 0 auto;
-    text-align: center;
-}
-
-
-/* ============================================================
-   HERO TEXT — HOME NEON IDENTITY (MODE-AWARE)
-============================================================ */
-
-html[data-ccg-page="home"] .home-hero__title {
-    margin-bottom: 14px;
-
-    text-shadow:
-        0 0 12px rgba(0,170,255,0.62),
-        0 0 28px rgba(0,170,255,0.38),
-        0 0 52px rgba(0,170,255,0.22);
-}
-
-html[data-ccg-page="home"][data-ccg-mode="amiga"] .home-hero__title {
-    text-shadow:
-        0 0 12px rgba(255,90,220,0.62),
-        0 0 28px rgba(255,90,220,0.38),
-        0 0 52px rgba(255,90,220,0.22);
-}
-
-html[data-ccg-page="home"] .home-hero__tagline {
-    max-width: 780px;
-    margin-inline: auto;
-    opacity: 0.96;
-    line-height: 1.6;
-}
-
-html[data-ccg-page="home"] .home-hero__mode-line {
-    display: flex;
-    justify-content: center;
-    gap: 14px;
-    flex-wrap: wrap;
-    margin-bottom: 12px;
-    opacity: 0.9;
-}
-
-html[data-ccg-page="home"] .home-hero__tip {
-    margin-top: 18px;
-    opacity: 0.86;
-    line-height: 1.55;
-}
-
-
-/* ============================================================
-   HERO ACTIONS
-============================================================ */
-
-html[data-ccg-page="home"] .home-hero__actions {
-    display: flex;
-    justify-content: center;
-    gap: 14px;
-    flex-wrap: wrap;
-    margin: 22px 0 26px;
-}
-
-
-/* ============================================================
-   HERO CARDS — STABLE GRID + READABLE PANELS
-============================================================ */
-
-html[data-ccg-page="home"] .home-hero-cards {
+html[data-ccg-page="home"] .ccg-home-genres-grid {
     display: grid;
     gap: 22px;
-    margin-top: 20px;
+    margin-top: 24px;
 }
 
-@media (min-width: 768px) {
-    html[data-ccg-page="home"] .home-hero-cards {
-        grid-template-columns: repeat(3, 1fr);
-        max-width: 1020px;
-        margin-inline: auto;
-    }
-}
-
-html[data-ccg-page="home"] .home-hero-card {
-    position: relative;
-    border-radius: 18px;
-    padding: 22px 22px 26px;
-
-    background: linear-gradient(
-        180deg,
-        rgba(0,0,0,0.72),
-        rgba(0,0,0,0.40)
-    );
-
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.12),
-        0 18px 46px rgba(0,0,0,0.86);
-
-    opacity: 1 !important;
-    visibility: visible !important;
-    transform: none !important;
-}
-
-html[data-ccg-page="home"] .home-hero-card p {
-    opacity: 0.92;
-    line-height: 1.6;
-}
-
-
-/* ============================================================
-   TAGLINE STRIP — FOREGROUND PANEL
-============================================================ */
-
-html[data-ccg-page="home"] .home-tagline {
-    max-width: 1180px;
-    margin: 58px auto 24px;
-    padding: 26px 22px;
-    text-align: center;
-
-    background: linear-gradient(
-        180deg,
-        rgba(0,0,0,0.62),
-        rgba(0,0,0,0.38)
-    );
-
-    border-radius: 18px;
-
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.10),
-        0 16px 40px rgba(0,0,0,0.82);
-}
-
-html[data-ccg-page="home"] .home-tagline__kicker {
-    margin: 0 0 6px;
-    opacity: 0.86;
-    letter-spacing: 0.12em;
-}
-
-html[data-ccg-page="home"] .home-tagline__main {
-    margin: 0;
-    opacity: 0.95;
-}
-
-
-/* ============================================================
-   HOME SECTIONS — TITLES + STAGE BACKDROPS
-============================================================ */
-
-html[data-ccg-page="home"] .home-section {
-    max-width: 1180px;
-    margin: 86px auto 0;
-    position: relative;
-    z-index: 4;
-}
-
-html[data-ccg-page="home"] .home-section__header {
-    margin-bottom: 18px;
-}
-
-html[data-ccg-page="home"] .home-section__title {
-    margin: 0 0 10px;
-
-    text-shadow:
-        0 0 10px rgba(0,170,255,0.58),
-        0 0 24px rgba(0,170,255,0.34);
-}
-
-html[data-ccg-page="home"][data-ccg-mode="amiga"] .home-section__title {
-    text-shadow:
-        0 0 10px rgba(255,90,220,0.58),
-        0 0 24px rgba(255,90,220,0.34);
-}
-
-html[data-ccg-page="home"] .home-section__divider {
-    height: 1px;
-    width: 100%;
-    background: linear-gradient(
-        90deg,
-        rgba(255,255,255,0),
-        rgba(255,255,255,0.26),
-        rgba(255,255,255,0)
-    );
-}
-
-
-/* ============================================================
-   FEATURED GRID — SAFE VISIBILITY + EMPTY STATE
-============================================================ */
-
-html[data-ccg-page="home"] .home-highlights-grid {
-    display: grid;
-    gap: 22px;
-    margin-top: 18px;
-    min-height: 68px; /* ensures the section doesn’t collapse to nothing */
-}
-
-@media (min-width: 768px) {
-    html[data-ccg-page="home"] .home-highlights-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-/* If JS fails to populate, show a clean, intentional placeholder */
-html[data-ccg-page="home"] .home-highlights-grid:empty::before {
-    content: "Highlights will appear here once loaded.";
-    display: block;
-    padding: 18px 18px;
-    border-radius: 16px;
-
-    background: linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.34));
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
-    opacity: 0.88;
-}
-
-
-/* ============================================================
-   GENRES — SAFE EMPTY STATE + GRID SUPPORT (IF PRESENT)
-============================================================ */
-
-html[data-ccg-page="home"] .home-section--genres {
-    margin-bottom: 34px;
-}
-
-/* Support likely wrappers if your real markup includes them */
-html[data-ccg-page="home"] .home-genres-grid,
-html[data-ccg-page="home"] .ccg-genre-grid,
-html[data-ccg-page="home"] .ccg-tiles-grid {
-    display: grid;
-    gap: 18px;
-    margin-top: 18px;
-    min-height: 68px;
-}
-
-@media (min-width: 520px) {
-    html[data-ccg-page="home"] .home-genres-grid,
-    html[data-ccg-page="home"] .ccg-genre-grid,
-    html[data-ccg-page="home"] .ccg-tiles-grid {
+@media (min-width: 600px) {
+    html[data-ccg-page="home"] .ccg-home-genres-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 }
-
-@media (min-width: 900px) {
-    html[data-ccg-page="home"] .home-genres-grid,
-    html[data-ccg-page="home"] .ccg-genre-grid,
-    html[data-ccg-page="home"] .ccg-tiles-grid {
+@media (min-width: 960px) {
+    html[data-ccg-page="home"] .ccg-home-genres-grid {
         grid-template-columns: repeat(4, 1fr);
     }
 }
 
-/* Tile discipline: NO scaling/transform */
-html[data-ccg-page="home"] .ccg-genre-tile,
-html[data-ccg-page="home"] .ccg-genre-tile img {
-    transform: none !important;
-}
-
-/* Empty state for the genres section if nothing is present/injected */
-html[data-ccg-page="home"] .home-section--genres:empty::before {
-    content: "Genres are not rendering (likely home-dynamic.js).";
-    display: block;
-    padding: 18px 18px;
-    border-radius: 16px;
-
-    background: linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.34));
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
-    opacity: 0.88;
-}
-
-
 /* ============================================================
-   REDUCED MOTION SAFETY
+   HOME GENRE CARD — FULL BG THUMB
 ============================================================ */
 
-@media (prefers-reduced-motion: reduce) {
-    html[data-ccg-page="home"] * {
-        animation: none !important;
-        transition: none !important;
-    }
+html[data-ccg-page="home"] .ccg-home-genre-card {
+    position: relative;
+    height: 140px;
+    border-radius: 18px;
+    overflow: hidden;
+    background:
+        var(--genre-bg) center / cover no-repeat,
+        #000;
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.08),
+        0 18px 42px rgba(0,0,0,0.8);
 }
 
-/* ============================================================
-   HOME — FINAL NEON IDENTITY PASS (SAFE)
-   • Typography glow only
-   • No layout / no motion
-============================================================ */
-
-html[data-ccg-page="home"] .home-hero__title {
-    text-shadow:
-        0 0 6px rgba(0,170,255,0.9),
-        0 0 18px rgba(0,170,255,0.6),
-        0 0 36px rgba(0,170,255,0.35);
+html[data-ccg-page="home"] .ccg-home-genre-card__overlay {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(0,0,0,0.15),
+            rgba(0,0,0,0.85)
+        );
 }
 
-html[data-ccg-page="home"][data-ccg-mode="amiga"] .home-hero__title {
-    text-shadow:
-        0 0 6px rgba(255,80,200,0.9),
-        0 0 18px rgba(255,80,200,0.6),
-        0 0 36px rgba(255,80,200,0.35);
+html[data-ccg-page="home"] .ccg-home-genre-card__body {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 16px;
 }
 
-/* Section headings */
-html[data-ccg-page="home"] .home-section__title {
-    text-shadow:
-        0 0 4px rgba(0,170,255,0.7),
-        0 0 14px rgba(0,170,255,0.45);
+html[data-ccg-page="home"] .ccg-home-genre-card h3 {
+    margin: 0 0 4px;
+    text-shadow: 0 0 8px rgba(0,170,255,0.6);
 }
 
-html[data-ccg-page="home"][data-ccg-mode="amiga"] .home-section__title {
-    text-shadow:
-        0 0 4px rgba(255,80,200,0.7),
-        0 0 14px rgba(255,80,200,0.45);
+html[data-ccg-page="home"][data-ccg-mode="amiga"] .ccg-home-genre-card h3 {
+    text-shadow: 0 0 8px rgba(255,80,200,0.6);
 }
 
-/* Hero cards */
-html[data-ccg-page="home"] .home-hero-card h3 {
-    text-shadow: 0 0 6px rgba(0,170,255,0.55);
-}
-
-html[data-ccg-page="home"][data-ccg-mode="amiga"] .home-hero-card h3 {
-    text-shadow: 0 0 6px rgba(255,80,200,0.55);
+html[data-ccg-page="home"] .ccg-home-genre-card span {
+    opacity: 0.85;
+    font-size: 0.9rem;
 }
