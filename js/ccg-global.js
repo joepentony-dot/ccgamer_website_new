@@ -2,7 +2,7 @@
    CCG GLOBAL SCRIPT — CORE UI (NAV + WOW)
    ----------------------------------------------------------
    • Depth-aware logo path fix
-   • Header nav flatten (no "More" dropdown)
+   • Priority navigation with responsive drawer + dropdown
    • No dependencies on page-specific JS
 ========================================================== */
 
@@ -28,6 +28,23 @@
         return "../".repeat(depth) + "resources/images/ccgamer-logo.png";
     }
 
+    function normalisePath(path) {
+        const url = new URL(path, window.location.href);
+        let pathname = url.pathname.replace("/ccgamer_website_new", "");
+        if (pathname.endsWith("/")) pathname += "index.html";
+        return pathname;
+    }
+
+    function markActiveLinks(header) {
+        const current = normalisePath(window.location.href);
+        header.querySelectorAll(".ccg-nav__link").forEach(link => {
+            const target = normalisePath(link.getAttribute("href") || "");
+            if (current.endsWith(target) || current === target) {
+                link.classList.add("ccg-nav__link--active");
+            }
+        });
+    }
+
     /* ======================================================
        NAV TOGGLE (MOBILE)
     ====================================================== */
@@ -37,6 +54,15 @@
 
         const toggle = header.querySelector("[data-ccg-nav-toggle]");
         const nav = header.querySelector(".ccg-nav");
+        const drawer = header.querySelector("[data-ccg-nav-drawer]");
+        const drawerPrimary = drawer?.querySelector("[data-ccg-drawer-primary]");
+        const drawerSecondary = drawer?.querySelector("[data-ccg-drawer-secondary]");
+        const primaryList = nav?.querySelector("[data-ccg-nav-primary]");
+        const secondaryList = nav?.querySelector("[data-ccg-nav-secondary]");
+        const moreToggle = header.querySelector("[data-ccg-more-toggle]");
+        const moreMenu = header.querySelector("[data-ccg-more-menu]");
+        const mobileMatch = window.matchMedia("(max-width: 960px)");
+
         if (!toggle || !nav) return;
 
         // Prevent duplicate hydration if something re-runs this script.
@@ -142,11 +168,29 @@
             unlockBody();
         };
 
-        const maybeCloseOnDesktop = () => {
-            if (!mobileMatch.matches) {
-                closeNav();
-            }
+        const toggleMore = () => {
+            if (!moreMenu || !moreToggle) return;
+            const open = moreMenu.hidden;
+            moreMenu.hidden = !open;
+            moreToggle.setAttribute("aria-expanded", open ? "true" : "false");
         };
+
+        moreToggle?.addEventListener("click", event => {
+            event.stopPropagation();
+            toggleMore();
+        });
+
+        const drawerPanel = drawer?.querySelector(".ccg-nav-drawer__panel");
+        const setDrawerState = open => {
+            closeMore();
+            header.classList.toggle("ccg-header--nav-open", open);
+            drawer?.setAttribute("aria-hidden", open ? "false" : "true");
+            toggle.setAttribute("aria-expanded", open ? "true" : "false");
+            document.body.classList.toggle("ccg-body--locked", open);
+        };
+
+        const closeDrawer = () => setDrawerState(false);
+        const openDrawer = () => setDrawerState(true);
 
         toggle.addEventListener("click", () => {
             const isOpen = !header.classList.contains("ccg-header--nav-open");
@@ -188,15 +232,14 @@
             }
         });
 
-        mobileMatch.addEventListener("change", event => {
-            refreshHeaderHeight();
-            if (!event.matches) {
-                unlockBody();
+        const maybeCloseOnDesktop = () => {
+            if (!mobileMatch.matches) {
+                closeDrawer();
+                closeMore();
             }
-            maybeCloseOnDesktop();
-        });
+        };
 
-        window.addEventListener("resize", refreshHeaderHeight, { passive: true });
+        mobileMatch.addEventListener("change", maybeCloseOnDesktop);
 
         /* --------------------------------------------
            MORE DROPDOWN
