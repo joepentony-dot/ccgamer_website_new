@@ -65,24 +65,85 @@
 
         if (!toggle || !nav) return;
 
-        markActiveLinks(header);
+        const primaryLabels = ["home", "browse games", "browse by genre", "collections"];
 
-        if (primaryList && drawerPrimary) {
-            drawerPrimary.appendChild(primaryList.cloneNode(true));
+        const baseList = nav.querySelector(".ccg-nav__list");
+        const items = baseList ? Array.from(baseList.querySelectorAll("li")) : [];
+        if (!items.length) return;
+
+        /* --------------------------------------------
+           Build a modern shell with primary/secondary
+        -------------------------------------------- */
+        const bar = document.createElement("div");
+        bar.className = "ccg-nav__bar";
+
+        const primaryList = document.createElement("ul");
+        primaryList.className = "ccg-nav__list ccg-nav__list--primary";
+
+        const secondaryList = document.createElement("ul");
+        secondaryList.className = "ccg-nav__list ccg-nav__list--secondary";
+
+        const mobileList = document.createElement("ul");
+        mobileList.className = "ccg-nav__list ccg-nav__list--mobile";
+
+        const moreWrap = document.createElement("div");
+        moreWrap.className = "ccg-nav__more";
+
+        const moreButton = document.createElement("button");
+        moreButton.type = "button";
+        moreButton.className = "ccg-nav__more-toggle";
+        moreButton.setAttribute("aria-haspopup", "true");
+        moreButton.setAttribute("aria-expanded", "false");
+        moreButton.innerHTML = "More <span aria-hidden=\"true\">▼</span>";
+
+        const moreMenu = document.createElement("div");
+        moreMenu.className = "ccg-nav__more-menu";
+        moreMenu.setAttribute("role", "menu");
+
+        items.forEach(li => {
+            const link = li.querySelector("a");
+            if (!link) return;
+
+            const liClone = li.cloneNode(true);
+            const liSecondary = li.cloneNode(true);
+            const mobileClone = li.cloneNode(true);
+
+            const label = link.textContent.trim().toLowerCase();
+            if (primaryLabels.includes(label)) {
+                primaryList.appendChild(liClone);
+            } else {
+                secondaryList.appendChild(liSecondary);
+                const overflowLink = link.cloneNode(true);
+                overflowLink.classList.add("ccg-nav__link--overflow");
+                overflowLink.setAttribute("role", "menuitem");
+                moreMenu.appendChild(overflowLink);
+            }
+
+            mobileList.appendChild(mobileClone);
+        });
+
+        if (!moreMenu.childElementCount) {
+            moreWrap.hidden = true;
         }
 
-        if (secondaryList && drawerSecondary) {
-            drawerSecondary.appendChild(secondaryList.cloneNode(true));
-        }
+        moreWrap.append(moreButton, moreMenu);
 
-        if (secondaryList && moreMenu) {
-            moreMenu.appendChild(secondaryList.cloneNode(true));
-        }
+        bar.append(primaryList, secondaryList, moreWrap);
 
-        const closeMore = () => {
-            if (!moreMenu || !moreToggle) return;
-            moreMenu.hidden = true;
-            moreToggle.setAttribute("aria-expanded", "false");
+        const mobilePanel = document.createElement("div");
+        mobilePanel.className = "ccg-nav__mobile";
+        mobilePanel.appendChild(mobileList);
+        mobilePanel.inert = true;
+
+        nav.innerHTML = "";
+        nav.append(bar, mobilePanel);
+
+        const mobileMatch = window.matchMedia("(max-width: 960px)");
+
+        const closeNav = () => {
+            header.classList.remove("ccg-header--nav-open");
+            toggle.setAttribute("aria-expanded", "false");
+            mobilePanel.inert = true;
         };
 
         const toggleMore = () => {
@@ -111,37 +172,35 @@
 
         toggle.addEventListener("click", () => {
             const isOpen = !header.classList.contains("ccg-header--nav-open");
-            isOpen ? openDrawer() : closeDrawer();
-        });
+            header.classList.toggle("ccg-header--nav-open", isOpen);
+            toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
 
-        drawer?.querySelectorAll("[data-ccg-drawer-close]").forEach(btn => {
-            btn.addEventListener("click", closeDrawer);
-        });
-
-        drawer?.addEventListener("click", event => {
-            if (event.target === drawer || event.target.classList.contains("ccg-nav-drawer__backdrop")) {
-                closeDrawer();
-            }
+            const headerRect = header.getBoundingClientRect();
+            nav.style.setProperty("--ccg-header-height", `${headerRect.height}px`);
+            mobilePanel.inert = !isOpen;
         });
 
         header.querySelectorAll(".ccg-nav__link").forEach(link => {
             link.addEventListener("click", () => {
-                closeDrawer();
+                if (mobileMatch.matches) closeNav();
                 closeMore();
             });
         });
 
         document.addEventListener("click", event => {
-            if (moreMenu && !moreMenu.hidden) {
-                if (!event.target.closest("[data-ccg-more-toggle]") && !event.target.closest("[data-ccg-more-menu]")) {
-                    closeMore();
-                }
+            if (!mobileMatch.matches && !header.contains(event.target)) {
+                closeMore();
+            }
+
+            if (!mobileMatch.matches) return;
+            if (!header.contains(event.target)) {
+                closeNav();
             }
         });
 
         document.addEventListener("keydown", event => {
             if (event.key === "Escape") {
-                closeDrawer();
+                closeNav();
                 closeMore();
             }
         });
@@ -155,7 +214,20 @@
 
         mobileMatch.addEventListener("change", maybeCloseOnDesktop);
 
-        drawerPanel?.addEventListener("click", event => event.stopPropagation());
+        /* --------------------------------------------
+           MORE DROPDOWN
+        -------------------------------------------- */
+        function closeMore() {
+            nav.classList.remove("ccg-nav--more-open");
+            moreButton.setAttribute("aria-expanded", "false");
+        }
+
+        if (!moreWrap.hidden) {
+            moreButton.addEventListener("click", () => {
+                const isOpen = nav.classList.toggle("ccg-nav--more-open");
+                moreButton.setAttribute("aria-expanded", isOpen ? "true" : "false");
+            });
+        }
     }
 
     /* ======================================================
