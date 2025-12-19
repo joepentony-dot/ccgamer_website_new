@@ -1,111 +1,80 @@
 /* ============================================================
    HOME.CSS — OMEGA SHOWCASE
-   PHASE H-RESTORE — VISIBILITY + STRUCTURE FINAL
+   PHASE H-RESTORE — FOREGROUND AUTHORITY FIX
    ------------------------------------------------------------
-   • Fixes hero overlap with header
-   • Restores Home-only neon glow
-   • Restores section spacing + titles
-   • No header/nav/global changes
-   • Home page ONLY
+   • Fixes hero frosting / overlay dominance
+   • Restores Home neon identity
+   • Restores section presence
+   • NO header / NO global changes
+   • Home ONLY
 ============================================================ */
 
 
 /* ============================================================
-   PAGE ROOT — STACKING & OFFSET SAFETY
+   PAGE ROOT — FOREGROUND LOCK
 ============================================================ */
-
-html[data-ccg-page="home"] .ccg-page--home {
-    position: relative;
-    z-index: 1;
-}
 
 html[data-ccg-page="home"] .ccg-main--home {
     position: relative;
-    z-index: 3; /* above bg + overlays */
-    padding-top: 48px; /* FIX: clear header neon strip */
-    padding-bottom: 64px;
-    overflow: visible;
+    z-index: 4;
+    padding-top: 56px;
+    padding-bottom: 72px;
 }
 
 
 /* ============================================================
-   HERO — POSITIONING + READABILITY
+   HERO — REASSERT CONTENT ABOVE OVERLAYS
 ============================================================ */
 
 html[data-ccg-page="home"] .home-hero {
     position: relative;
-    margin-bottom: 56px;
-    z-index: 2;
+    margin-bottom: 64px;
 }
 
-html[data-ccg-page="home"] .home-hero__inner {
-    max-width: 1100px;
-    margin: 0 auto;
-    text-align: center;
+/* Force hero content above image + scanlines */
+html[data-ccg-page="home"] .ccg-hero-inner {
     position: relative;
-    z-index: 2;
+    z-index: 5;
 }
 
-/* Neon hero title (HOME ONLY) */
+/* Dim hero background layers (HOME ONLY) */
+html[data-ccg-page="home"] .ccg-hero-image,
+html[data-ccg-page="home"] .ccg-hero-scanlines {
+    opacity: 0.55;
+}
+
+
+/* ============================================================
+   HERO TEXT — NEON RESTORE (THIS WAS MISSING)
+============================================================ */
+
 html[data-ccg-page="home"] .home-hero__title {
-    margin-bottom: 16px;
     text-shadow:
-        0 0 10px rgba(0,170,255,0.45),
-        0 0 22px rgba(0,170,255,0.35),
-        0 0 42px rgba(0,170,255,0.25);
+        0 0 12px rgba(0,170,255,0.6),
+        0 0 28px rgba(0,170,255,0.4),
+        0 0 52px rgba(0,170,255,0.25);
 }
 
 html[data-ccg-page="home"][data-ccg-mode="amiga"] .home-hero__title {
     text-shadow:
-        0 0 10px rgba(255,80,200,0.45),
-        0 0 22px rgba(255,80,200,0.35),
-        0 0 42px rgba(255,80,200,0.25);
+        0 0 12px rgba(255,90,220,0.6),
+        0 0 28px rgba(255,90,220,0.4),
+        0 0 52px rgba(255,90,220,0.25);
 }
 
 html[data-ccg-page="home"] .home-hero__tagline {
-    margin-bottom: 26px;
-    max-width: 760px;
-    margin-inline: auto;
     opacity: 0.95;
 }
 
-/* Mode line + tip */
-html[data-ccg-page="home"] .home-hero__mode-line {
-    display: flex;
-    justify-content: center;
-    gap: 14px;
-    margin-bottom: 14px;
-    opacity: 0.9;
-}
-
-html[data-ccg-page="home"] .home-hero__tip {
-    margin-top: 18px;
-    opacity: 0.85;
-    line-height: 1.55;
-}
-
 
 /* ============================================================
-   HERO ACTIONS
-============================================================ */
-
-html[data-ccg-page="home"] .home-hero__actions {
-    display: flex;
-    justify-content: center;
-    gap: 14px;
-    flex-wrap: wrap;
-    margin-bottom: 30px;
-}
-
-
-/* ============================================================
-   HERO CARDS — VISIBLE, CLICKABLE, READABLE
+   HERO CARDS — STAGE THEM ABOVE UNIVERSE
 ============================================================ */
 
 html[data-ccg-page="home"] .home-hero-cards {
     display: grid;
-    gap: 22px;
-    margin-top: 22px;
+    gap: 24px;
+    margin-top: 26px;
 }
 
 @media (min-width: 768px) {
@@ -117,140 +86,86 @@ html[data-ccg-page="home"] .home-hero-cards {
 }
 
 html[data-ccg-page="home"] .home-hero-card {
-    position: relative;
-    padding: 22px 22px 26px;
-    border-radius: 18px;
+    background: linear-gradient(
+        180deg,
+        rgba(0,0,0,0.70),
+        rgba(0,0,0,0.40)
+    );
 
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.12),
+        0 20px 48px rgba(0,0,0,0.9);
+
+    border-radius: 18px;
+}
+
+
+/* ============================================================
+   TAGLINE STRIP — FOREGROUND PANEL
+============================================================ */
+
+html[data-ccg-page="home"] .home-tagline {
+    max-width: 1100px;
+    margin: 56px auto 24px;
+    padding: 26px 22px;
+
+    background: linear-gradient(
+        180deg,
+        rgba(0,0,0,0.60),
+        rgba(0,0,0,0.38)
+    );
+
+    border-radius: 18px;
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.10),
+        0 16px 40px rgba(0,0,0,0.85);
+}
+
+
+/* ============================================================
+   SECTIONS — VISUAL STAGE + NEON TITLES
+============================================================ */
+
+html[data-ccg-page="home"] .home-section {
+    max-width: 1100px;
+    margin: 84px auto 0;
+    position: relative;
+    z-index: 4;
+}
+
+html[data-ccg-page="home"] .home-section__title {
+    text-shadow:
+        0 0 10px rgba(0,170,255,0.55),
+        0 0 24px rgba(0,170,255,0.35);
+}
+
+html[data-ccg-page="home"][data-ccg-mode="amiga"] .home-section__title {
+    text-shadow:
+        0 0 10px rgba(255,90,220,0.55),
+        0 0 24px rgba(255,90,220,0.35);
+}
+
+html[data-ccg-page="home"] .home-section__divider {
+    margin-top: 10px;
+}
+
+
+/* ============================================================
+   FEATURED + GENRES — ENSURE PRESENCE
+============================================================ */
+
+html[data-ccg-page="home"] .home-highlights-grid {
+    display: grid;
+    gap: 24px;
+    margin-top: 22px;
+}
+
+html[data-ccg-page="home"] .ccg-genre-tile {
     background: linear-gradient(
         180deg,
         rgba(0,0,0,0.55),
         rgba(0,0,0,0.32)
     );
-
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.10),
-        0 18px 44px rgba(0,0,0,0.85);
-
-    opacity: 1 !important;
-    visibility: visible !important;
-    transform: none !important;
-}
-
-html[data-ccg-page="home"] .home-hero-card h3 {
-    margin-bottom: 10px;
-}
-
-html[data-ccg-page="home"] .home-hero-card p {
-    opacity: 0.9;
-    line-height: 1.6;
-}
-
-
-/* ============================================================
-   TAGLINE STRIP — CLEAR SEPARATION
-============================================================ */
-
-html[data-ccg-page="home"] .home-tagline {
-    max-width: 1100px;
-    margin: 48px auto 20px;
-    padding: 22px 20px;
-    text-align: center;
-
-    background: linear-gradient(
-        180deg,
-        rgba(0,0,0,0.45),
-        rgba(0,0,0,0.28)
-    );
-
-    border-radius: 18px;
-
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.08),
-        0 12px 32px rgba(0,0,0,0.75);
-}
-
-html[data-ccg-page="home"] .home-tagline__kicker {
-    margin-bottom: 6px;
-    opacity: 0.85;
-    letter-spacing: 0.12em;
-}
-
-html[data-ccg-page="home"] .home-tagline__main {
-    margin: 0;
-    font-size: 1.1rem;
-    opacity: 0.95;
-}
-
-
-/* ============================================================
-   HOME SECTIONS — TITLES + NEON RESTORE
-============================================================ */
-
-html[data-ccg-page="home"] .home-section {
-    max-width: 1100px;
-    margin: 72px auto 0;
-    position: relative;
-    z-index: 2;
-}
-
-html[data-ccg-page="home"] .home-section__header {
-    margin-bottom: 22px;
-}
-
-html[data-ccg-page="home"] .home-section__title {
-    margin: 0 0 10px;
-    text-shadow:
-        0 0 8px rgba(0,170,255,0.45),
-        0 0 18px rgba(0,170,255,0.35);
-}
-
-html[data-ccg-page="home"][data-ccg-mode="amiga"] .home-section__title {
-    text-shadow:
-        0 0 8px rgba(255,80,200,0.45),
-        0 0 18px rgba(255,80,200,0.35);
-}
-
-html[data-ccg-page="home"] .home-section__divider {
-    height: 1px;
-    width: 100%;
-    background: linear-gradient(
-        90deg,
-        rgba(255,255,255,0),
-        rgba(255,255,255,0.25),
-        rgba(255,255,255,0)
-    );
-}
-
-
-/* ============================================================
-   FEATURED HIGHLIGHTS — GRID VISIBILITY
-============================================================ */
-
-html[data-ccg-page="home"] .home-highlights-grid {
-    display: grid;
-    gap: 22px;
-    margin-top: 20px;
-}
-
-@media (min-width: 768px) {
-    html[data-ccg-page="home"] .home-highlights-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-
-/* ============================================================
-   GENRE SECTION — TITLE + TILE SAFETY
-============================================================ */
-
-html[data-ccg-page="home"] .home-section--genres {
-    margin-bottom: 40px;
-}
-
-html[data-ccg-page="home"] .ccg-genre-tile {
-    opacity: 1 !important;
-    visibility: visible !important;
-    transform: none !important;
 }
 
 
