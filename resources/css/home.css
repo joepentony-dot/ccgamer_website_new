@@ -1,15 +1,100 @@
 /* ============================================================
-   HOME.CSS — FINAL SIZE & VISUAL CORRECTIONS (LOCK CANDIDATE)
+   HOME.CSS — CINEMATIC WOW PASS (A1)
    ------------------------------------------------------------
-   • Featured Highlights cards visually compact
-   • Genre tiles rectangular, restrained, readable
-   • Home-only selectors (page-scoped)
-   • Zero impact on Games / Genres / Collections
+   • Premium hero depth & glow hierarchy
+   • Subtle motion, no gimmicks
+   • Retains all size & layout corrections
+   • HOME ONLY — ZERO global impact
 ============================================================ */
 
 
 /* ============================================================
-   FEATURED HIGHLIGHTS — CARD VISUAL BALANCE
+   HERO — CINEMATIC DEPTH & PRESENCE
+============================================================ */
+
+html[data-ccg-page="home"] .ccg-hero--home {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Background depth illusion */
+html[data-ccg-page="home"] .ccg-hero--home .ccg-hero-image {
+    transform: scale(1.05);
+    filter: brightness(0.9) contrast(1.05);
+}
+
+/* Soft vignette for focus */
+html[data-ccg-page="home"] .ccg-hero--home::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(0,0,0,0) 40%,
+            rgba(0,0,0,0.45) 100%
+        );
+    z-index: 2;
+}
+
+/* ============================================================
+   HERO TITLE — NEON AUTHORITY
+============================================================ */
+
+html[data-ccg-page="home"] .home-hero__title {
+    text-shadow:
+        0 0 12px rgba(0,170,255,0.55),
+        0 0 26px rgba(0,170,255,0.35);
+    letter-spacing: 0.04em;
+}
+
+/* Amiga mode glow shift */
+html[data-ccg-page="home"][data-ccg-mode="amiga"] .home-hero__title {
+    text-shadow:
+        0 0 14px rgba(255,90,200,0.6),
+        0 0 30px rgba(255,90,200,0.4);
+}
+
+
+/* ============================================================
+   HERO TAGLINE — SUPPORTING, NOT COMPETING
+============================================================ */
+
+html[data-ccg-page="home"] .home-hero__tagline {
+    opacity: 0.92;
+    max-width: 720px;
+}
+
+
+/* ============================================================
+   HERO BUTTONS — WEIGHT & CONFIDENCE
+============================================================ */
+
+html[data-ccg-page="home"] .home-hero__actions .ccg-btn {
+    position: relative;
+    box-shadow:
+        0 0 18px rgba(0,170,255,0.35);
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+html[data-ccg-page="home"] .home-hero__actions .ccg-btn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 0 26px rgba(0,170,255,0.55);
+}
+
+html[data-ccg-page="home"][data-ccg-mode="amiga"]
+.home-hero__actions .ccg-btn {
+    box-shadow:
+        0 0 18px rgba(255,90,200,0.4);
+}
+
+
+/* ============================================================
+   FEATURED HIGHLIGHTS — CARD VISUAL BALANCE (RETAINED)
 ============================================================ */
 
 html[data-ccg-page="home"] .home-highlight-card {
@@ -29,7 +114,7 @@ html[data-ccg-page="home"] .home-highlight-card .ccg-card__text {
 
 
 /* ============================================================
-   BROWSE BY GENRE — GRID LAYOUT
+   BROWSE BY GENRE — GRID LAYOUT (RETAINED)
 ============================================================ */
 
 html[data-ccg-page="home"] .home-genres-grid {
@@ -52,7 +137,7 @@ html[data-ccg-page="home"] .home-genres-grid {
 
 
 /* ============================================================
-   GENRE TILES — COMPACT, RECTANGULAR, CONTROLLED
+   GENRE TILES — COMPACT, CONTROLLED (RETAINED)
 ============================================================ */
 
 html[data-ccg-page="home"] .home-genre-tile {
