@@ -1,236 +1,128 @@
-/* ============================================================
-   CCG MASTER CSS — GLOBAL STRUCTURE & FOUNDATION LOCK
-   HEADER/NAV ISOLATION FIX (H-FINAL)
-============================================================ */
+/* ==========================================================
+   CCG GLOBAL SCRIPT — UNIVERSAL EFFECTS + OMEGA MODE SUPPORT
+   FINAL STABLE BUILD — HEADER/NAV SAFE + DEPTH-AWARE LOGO
+   ========================================================== */
 
-/* ============================================================
-   ROOT VARIABLES
-============================================================ */
+(function () {
+    const body = document.body;
 
-:root {
-    --ccg-font-main: 'Orbitron', system-ui, sans-serif;
-    --ccg-font-body: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    /* ======================================================
+       DEPTH-AWARE LOGO PATH (NO 404s)
+    ====================================================== */
 
-    --ccg-bg-dark: #000;
-    --ccg-text-light: #e8ecff;
-    --ccg-text-soft: #b5bbdf;
+    function getLogoPath() {
+        let path = window.location.pathname || "";
 
-    /* HEADER CONTRACT */
-    --ccg-header-height: 92px;
-    --ccg-header-inner-height: 64px;
+        const repoMarker = "/ccgamer_website_new/";
+        const repoIndex = path.indexOf(repoMarker);
+        if (repoIndex !== -1) {
+            path = path.substring(repoIndex + repoMarker.length);
+        }
 
-    --ccg-nav-pill-pad-y: 8px;
-    --ccg-nav-pill-pad-x: 14px;
+        if (path.startsWith("/")) path = path.slice(1);
+        if (!path) return "resources/images/ccgamer-logo.png";
 
-    --ccg-page-entry-pad: 32px;
+        const segments = path.split("/");
+        const depth = Math.max(segments.length - 1, 0);
 
-    --accent-rgb: 0,170,255;
-}
+        let prefix = "";
+        for (let i = 0; i < depth; i++) prefix += "../";
 
-/* ============================================================
-   RESET
-============================================================ */
+        return prefix + "resources/images/ccgamer-logo.png";
+    }
 
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
+    document.addEventListener("DOMContentLoaded", () => {
+        const correctLogo = getLogoPath();
 
-html,
-body {
-    margin: 0;
-    padding: 0;
-    background: var(--ccg-bg-dark);
-    color: var(--ccg-text-light);
-    font-family: var(--ccg-font-body);
-    overflow-x: hidden;
-}
+        document.querySelectorAll(".ccg-brand__logo").forEach(img => {
+            img.src = correctLogo;
+            if (!img.alt) img.alt = "Cheeky Commodore Gamer logo";
+            img.setAttribute("loading", "lazy");
+        });
+    });
 
-/* ============================================================
-   PAGE WRAPPERS
-============================================================ */
+    /* ======================================================
+       PAGE FADE-IN
+    ====================================================== */
 
-.ccg-page {
-    min-height: 100vh;
-    position: relative;
-}
+    document.addEventListener("DOMContentLoaded", () => {
+        body.classList.add("ccg-fade-in");
+    });
 
-.ccg-main {
-    width: min(1320px, 96%);
-    margin: 0 auto;
-    padding-top: var(--ccg-page-entry-pad);
-    position: relative;
-}
+    /* ======================================================
+       MODE LABEL + TOGGLE VISUAL SYNC
+    ====================================================== */
 
-/* ============================================================
-   HEADER — LOCKED STRUCTURE
-============================================================ */
+    function updateModeLabel() {
+        const label = document.querySelector("[data-ccg-mode-label]");
+        if (!label) return;
 
-.ccg-header {
-    position: relative;
-    z-index: 10000; /* HARD TOP LAYER */
+        const mode = body.getAttribute("data-ccg-mode") || "c64";
+        label.textContent = mode.toUpperCase();
+    }
 
-    height: var(--ccg-header-height);
-    display: flex;
-    align-items: center;
+    function updateModeToggleVisual() {
+        const toggle = document.querySelector(".ccg-mode-toggle");
+        if (!toggle) return;
 
-    background:
-        linear-gradient(
-            to bottom,
-            rgba(0,0,0,0.96),
-            rgba(0,0,0,0.82),
-            rgba(0,0,0,0.65)
-        );
+        const mode = body.getAttribute("data-ccg-mode") || "c64";
+        toggle.classList.toggle("ccg-mode-toggle--amiga", mode === "amiga");
+        toggle.classList.toggle("ccg-mode-toggle--c64", mode === "c64");
+    }
 
-    backdrop-filter: blur(6px);
-    overflow: visible;
-}
+    document.addEventListener("ccg:modeChange", (e) => {
+        updateModeLabel();
+        updateModeToggleVisual();
+    });
 
-.ccg-header-inner {
-    width: min(1320px, 96%);
-    margin: 0 auto;
-    height: var(--ccg-header-inner-height);
+    document.addEventListener("DOMContentLoaded", () => {
+        updateModeLabel();
+        updateModeToggleVisual();
+    });
 
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 18px;
+    /* ======================================================
+       HEADER "MORE ▾" DROPDOWN — STABLE & ACCESSIBLE
+    ====================================================== */
 
-    overflow: visible;
-}
+    document.addEventListener("DOMContentLoaded", () => {
+        const moreBtn = document.querySelector(".ccg-nav__more-btn");
+        const dropdown = document.querySelector(".ccg-nav__dropdown");
 
-/* ============================================================
-   NAVIGATION — FIXED OVERFLOW
-============================================================ */
+        if (!moreBtn || !dropdown) return;
 
-.ccg-nav {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+        function openMenu() {
+            dropdown.classList.add("is-open");
+            moreBtn.setAttribute("aria-expanded", "true");
+        }
 
-.ccg-nav__list {
-    display: flex;
-    gap: 12px;
-    padding-inline: 28px;
+        function closeMenu() {
+            dropdown.classList.remove("is-open");
+            moreBtn.setAttribute("aria-expanded", "false");
+        }
 
-    overflow-x: auto;
-    overflow-y: visible; /* ✅ CRITICAL FIX */
-    scrollbar-width: none;
-}
+        function toggleMenu() {
+            dropdown.classList.contains("is-open")
+                ? closeMenu()
+                : openMenu();
+        }
 
-.ccg-nav__list::-webkit-scrollbar {
-    display: none;
-}
+        moreBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleMenu();
+        });
 
-.ccg-nav__link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+        document.addEventListener("click", (e) => {
+            if (!dropdown.contains(e.target) && !moreBtn.contains(e.target)) {
+                closeMenu();
+            }
+        });
 
-    height: 36px;
-    padding: var(--ccg-nav-pill-pad-y) var(--ccg-nav-pill-pad-x);
-    border-radius: 999px;
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                closeMenu();
+            }
+        });
+    });
 
-    font-family: var(--ccg-font-main);
-    font-size: 0.7rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-
-    background:
-        linear-gradient(
-            180deg,
-            rgba(255,255,255,0.08),
-            rgba(255,255,255,0.03)
-        );
-
-    border: 1px solid rgba(255,255,255,0.14);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.65);
-}
-
-/* ============================================================
-   MORE ▾ DROPDOWN — FUNCTIONAL ONLY
-============================================================ */
-
-.ccg-nav__more {
-    position: relative; /* anchor */
-}
-
-.ccg-nav__dropdown {
-    position: absolute;
-    top: calc(100% + 10px);
-    right: 0;
-
-    min-width: 220px;
-    padding: 10px;
-
-    display: none;
-    z-index: 20000;
-
-    background: rgba(0,0,0,0.95);
-    border: 1px solid rgba(255,255,255,0.14);
-    border-radius: 14px;
-
-    box-shadow: 0 18px 48px rgba(0,0,0,0.9);
-}
-
-.ccg-nav__dropdown.is-open {
-    display: block;
-}
-
-.ccg-nav__dropdown-link {
-    display: block;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-family: var(--ccg-font-main);
-    font-size: 0.7rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-}
-
-/* ============================================================
-   HEADER ACTIONS
-============================================================ */
-
-.ccg-header-socials {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.ccg-mode-toggle {
-    height: 36px;
-    min-width: 86px;
-    border-radius: 999px;
-}
-
-/* ============================================================
-   PAGE HANDOFF — CONTRACT PRESERVED
-============================================================ */
-
-html[data-ccg-page="home"] .ccg-main {
-    padding-top: 18px;
-}
-
-.ccg-page--games-index .ccg-main,
-.ccg-page--collections-index .ccg-main,
-.ccg-page--genres-index .ccg-main {
-    padding-top: var(--ccg-page-entry-pad);
-}
-
-.ccg-page--single-game .ccg-main {
-    padding-top: 14px;
-}
-
-/* ============================================================
-   MODE COLOURS
-============================================================ */
-
-body[data-ccg-mode="c64"] {
-    --accent-rgb: 0,170,255;
-}
-
-body[data-ccg-mode="amiga"] {
-    --accent-rgb: 255,41,224;
-}
+})();
