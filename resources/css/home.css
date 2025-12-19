@@ -356,3 +356,45 @@ html[data-ccg-page="home"] .home-section--genres:empty::before {
         transition: none !important;
     }
 }
+
+/* ============================================================
+   HOME — FINAL NEON IDENTITY PASS (SAFE)
+   • Typography glow only
+   • No layout / no motion
+============================================================ */
+
+html[data-ccg-page="home"] .home-hero__title {
+    text-shadow:
+        0 0 6px rgba(0,170,255,0.9),
+        0 0 18px rgba(0,170,255,0.6),
+        0 0 36px rgba(0,170,255,0.35);
+}
+
+html[data-ccg-page="home"][data-ccg-mode="amiga"] .home-hero__title {
+    text-shadow:
+        0 0 6px rgba(255,80,200,0.9),
+        0 0 18px rgba(255,80,200,0.6),
+        0 0 36px rgba(255,80,200,0.35);
+}
+
+/* Section headings */
+html[data-ccg-page="home"] .home-section__title {
+    text-shadow:
+        0 0 4px rgba(0,170,255,0.7),
+        0 0 14px rgba(0,170,255,0.45);
+}
+
+html[data-ccg-page="home"][data-ccg-mode="amiga"] .home-section__title {
+    text-shadow:
+        0 0 4px rgba(255,80,200,0.7),
+        0 0 14px rgba(255,80,200,0.45);
+}
+
+/* Hero cards */
+html[data-ccg-page="home"] .home-hero-card h3 {
+    text-shadow: 0 0 6px rgba(0,170,255,0.55);
+}
+
+html[data-ccg-page="home"][data-ccg-mode="amiga"] .home-hero-card h3 {
+    text-shadow: 0 0 6px rgba(255,80,200,0.55);
+}
