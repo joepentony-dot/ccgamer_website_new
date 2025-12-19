@@ -31,7 +31,7 @@
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
 
     <!-- GLOBAL BACKGROUND OVERLAYS -->
-    <div class="ccg-bg">
+    <div class="ccg-bg" aria-hidden="true">
         <div class="ccg-bg-starfield"></div>
         <div class="ccg-bg-grid"></div>
         <div class="ccg-bg-crt-overlay"></div>
@@ -113,7 +113,7 @@
                     </button>
 
                     <!-- SOCIALS -->
-                    <div class="ccg-header-socials">
+                    <div class="ccg-header-socials" aria-label="Social links">
                         <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>
                         <a href="https://patreon.com/CheekyCommodoreGamer" aria-label="Patreon"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>
                         <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" aria-label="PayPal"><span class="ccg-socials__icon ccg-socials__icon--paypal"></span></a>
@@ -169,7 +169,7 @@
                             </a>
                         </div>
 
-                        <!-- 🌟 HERO CARDS — HW2 -->
+                        <!-- HERO CARDS — HW2 -->
                         <div class="home-hero-cards">
 
                             <a href="games/index.html" class="ccg-card home-hero-card">
@@ -222,13 +222,107 @@
                 </header>
 
                 <div class="home-highlights-grid">
-                    <!-- (unchanged content continues) -->
+
+                    <a href="games/index.html" class="ccg-card home-highlight-card">
+                        <div class="ccg-card__body">
+                            <h3 class="ccg-card__title">The Full A–Z Index</h3>
+                            <p class="ccg-card__text">
+                                Fast browsing, alphabet spine, and search — built for real use, not fluff.
+                            </p>
+                        </div>
+                    </a>
+
+                    <a href="games/genres/index.html" class="ccg-card home-highlight-card">
+                        <div class="ccg-card__body">
+                            <h3 class="ccg-card__title">Genre Hubs</h3>
+                            <p class="ccg-card__text">
+                                Jump straight into your kind of game: action, shooters, platformers, strategy and more.
+                            </p>
+                        </div>
+                    </a>
+
+                    <a href="games/collections/index.html" class="ccg-card home-highlight-card">
+                        <div class="ccg-card__body">
+                            <h3 class="ccg-card__title">Collections That Actually Matter</h3>
+                            <p class="ccg-card__text">
+                                Cartridge, licensed, BPJS and Top Picks — curated like a proper retro magazine feature.
+                            </p>
+                        </div>
+                    </a>
+
+                    <a href="quiz/quiz.html" class="ccg-card home-highlight-card">
+                        <div class="ccg-card__body">
+                            <h3 class="ccg-card__title">Trivia &amp; Leaderboard</h3>
+                            <p class="ccg-card__text">
+                                Quick-fire rounds, score chasing, and bragging rights for proper retro nerds.
+                            </p>
+                        </div>
+                    </a>
+
+                    <a href="emulation.html" class="ccg-card home-highlight-card">
+                        <div class="ccg-card__body">
+                            <h3 class="ccg-card__title">Emulation Guides</h3>
+                            <p class="ccg-card__text">
+                                Get set up cleanly and safely, with practical guidance and no nonsense.
+                            </p>
+                        </div>
+                    </a>
+
+                    <a href="about.html" class="ccg-card home-highlight-card">
+                        <div class="ccg-card__body">
+                            <h3 class="ccg-card__title">The Channel Mission</h3>
+                            <p class="ccg-card__text">
+                                Why this site exists, what’s coming next, and what makes CCG… CCG.
+                            </p>
+                        </div>
+                    </a>
+
                 </div>
             </section>
 
             <!-- BROWSE BY GENRE -->
             <section class="home-section home-section--genres">
-                <!-- (unchanged) -->
+                <header class="home-section__header">
+                    <h2 class="home-section__title">Browse by Genre</h2>
+                    <div class="home-section__divider"></div>
+                </header>
+
+                <div class="home-genres-grid">
+
+                    <a href="games/genres/index.html" class="ccg-card home-genre-tile">
+                        <div class="ccg-card__body">
+                            <h3 class="ccg-card__title">Explore Genres</h3>
+                            <p class="ccg-card__text">
+                                Open the full genre hub and dive into the classics the right way.
+                            </p>
+                        </div>
+                    </a>
+
+                    <a href="games/collections/index.html" class="ccg-card home-genre-tile">
+                        <div class="ccg-card__body">
+                            <h3 class="ccg-card__title">Start with Collections</h3>
+                            <p class="ccg-card__text">
+                                Want a guided tour? Jump into Top Picks and curated sets first.
+                            </p>
+                        </div>
+                    </a>
+
+                    <a href="games/index.html" class="ccg-card home-genre-tile">
+                        <div class="ccg-card__body">
+                            <h3 class="ccg-card__title">Search the Library</h3>
+                            <p class="ccg-card__text">
+                                Use the A–Z index and search to find exactly what you want in seconds.
+                            </p>
+                        </div>
+                    </a>
+
+                </div>
+
+                <div class="home-section__cta">
+                    <a href="games/genres/index.html" class="ccg-btn ccg-btn--primary">
+                        Open Genre Hub
+                    </a>
+                </div>
             </section>
 
         </main>
