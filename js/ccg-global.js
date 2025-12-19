@@ -39,6 +39,9 @@
         const nav = header.querySelector(".ccg-nav");
         if (!toggle || !nav) return;
 
+        // Prevent duplicate hydration if something re-runs this script.
+        if (nav.dataset.hydrated === "true") return;
+
         const primaryLabels = ["home", "browse games", "browse by genre", "collections"];
 
         const baseList = nav.querySelector(".ccg-nav__list");
@@ -111,13 +114,32 @@
 
         nav.innerHTML = "";
         nav.append(bar, mobilePanel);
+        nav.dataset.hydrated = "true";
 
         const mobileMatch = window.matchMedia("(max-width: 960px)");
+
+        let restoreBodyOverflow = document.body.style.overflow || "";
+
+        const refreshHeaderHeight = () => {
+            const headerRect = header.getBoundingClientRect();
+            nav.style.setProperty("--ccg-header-height", `${headerRect.height}px`);
+        };
+        refreshHeaderHeight();
+
+        const lockBody = () => {
+            restoreBodyOverflow = document.body.style.overflow || "";
+            document.body.style.overflow = "hidden";
+        };
+
+        const unlockBody = () => {
+            document.body.style.overflow = restoreBodyOverflow;
+        };
 
         const closeNav = () => {
             header.classList.remove("ccg-header--nav-open");
             toggle.setAttribute("aria-expanded", "false");
             mobilePanel.inert = true;
+            unlockBody();
         };
 
         const maybeCloseOnDesktop = () => {
@@ -131,9 +153,14 @@
             header.classList.toggle("ccg-header--nav-open", isOpen);
             toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
 
-            const headerRect = header.getBoundingClientRect();
-            nav.style.setProperty("--ccg-header-height", `${headerRect.height}px`);
+            refreshHeaderHeight();
             mobilePanel.inert = !isOpen;
+
+            if (isOpen && mobileMatch.matches) {
+                lockBody();
+            } else {
+                unlockBody();
+            }
         });
 
         header.querySelectorAll(".ccg-nav__link").forEach(link => {
@@ -161,7 +188,15 @@
             }
         });
 
-        mobileMatch.addEventListener("change", maybeCloseOnDesktop);
+        mobileMatch.addEventListener("change", event => {
+            refreshHeaderHeight();
+            if (!event.matches) {
+                unlockBody();
+            }
+            maybeCloseOnDesktop();
+        });
+
+        window.addEventListener("resize", refreshHeaderHeight, { passive: true });
 
         /* --------------------------------------------
            MORE DROPDOWN

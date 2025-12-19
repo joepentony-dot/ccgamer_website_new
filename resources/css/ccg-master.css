@@ -340,6 +340,7 @@ li {
     gap: 14px;
     flex-wrap: wrap;
     width: 100%;
+    max-width: min(1180px, 100%);
 }
 
 .ccg-nav__list {
@@ -667,6 +668,22 @@ li {
     transition: transform 140ms ease, box-shadow 160ms ease, border-color 160ms ease;
 }
 
+@media (max-width: 1280px) {
+    .ccg-nav__bar {
+        gap: 10px;
+    }
+
+    .ccg-nav__list {
+        gap: 10px;
+        padding-inline: 8px;
+    }
+
+    .ccg-nav__link {
+        padding: 10px 12px;
+        letter-spacing: 0.1em;
+    }
+}
+
 @media (max-width: 1180px) {
     .ccg-nav__link {
         font-size: 0.66rem;
@@ -676,6 +693,18 @@ li {
 
     .ccg-nav__list {
         gap: 10px;
+    }
+}
+
+@media (max-width: 1040px) {
+    .ccg-nav__link {
+        font-size: 0.62rem;
+        padding: 9px 11px;
+        letter-spacing: 0.095em;
+    }
+
+    .ccg-nav__list {
+        row-gap: 6px;
     }
 }
 
