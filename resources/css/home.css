@@ -1,11 +1,38 @@
 /* ============================================================
-   HOME — SMALL GENRE THUMB GRID (FIXED)
+   HOME.CSS — FINAL SIZE CORRECTIONS
+   ------------------------------------------------------------
+   • Featured Highlights thumbnails half height
+   • Genre thumbnails rectangular & compact
+   • Home-only, no global impact
+============================================================ */
+
+
+/* ============================================================
+   FEATURED HIGHLIGHTS — THUMB SIZE FIX
+============================================================ */
+
+html[data-ccg-page="home"] .home-feature-card img {
+    width: 100%;
+    height: 120px;               /* HALF SIZE */
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 10px;
+}
+
+/* Reduce visual dominance slightly */
+html[data-ccg-page="home"] .home-feature-card {
+    padding: 14px;
+}
+
+
+/* ============================================================
+   HOME GENRES — SMALL RECTANGULAR THUMBS
 ============================================================ */
 
 html[data-ccg-page="home"] .ccg-home-genre-thumb-grid {
     display: grid;
     gap: 16px;
-    margin-top: 20px;
+    margin-top: 22px;
 }
 
 @media (min-width: 600px) {
@@ -14,14 +41,14 @@ html[data-ccg-page="home"] .ccg-home-genre-thumb-grid {
     }
 }
 
-/* Small, supportive tiles */
+/* Compact, rectangular tile */
 html[data-ccg-page="home"] .ccg-home-genre-thumb {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
 
-    padding: 10px;
+    padding: 10px 8px 12px;
     text-align: center;
 
     background: rgba(0,0,0,0.45);
@@ -31,14 +58,17 @@ html[data-ccg-page="home"] .ccg-home-genre-thumb {
         inset 0 0 0 1px rgba(255,255,255,0.08);
 }
 
+/* RECTANGULAR thumbnails */
 html[data-ccg-page="home"] .ccg-home-genre-thumb img {
-    width: 56px;
-    height: 56px;
+    width: 72px;
+    height: 48px;               /* RECTANGLE */
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 6px;
 }
 
+/* Genre label */
 html[data-ccg-page="home"] .ccg-home-genre-thumb span {
     font-size: 0.8rem;
+    line-height: 1.2;
     opacity: 0.9;
 }
