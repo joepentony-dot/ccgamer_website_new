@@ -81,6 +81,55 @@
     }
 
     /* ======================================================
+       LIGHTWEIGHT PARTICLE OVERLAY (GUARDED)
+    ====================================================== */
+    function shouldRenderParticles() {
+        const reducedMotionQuery = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+        if (reducedMotionQuery?.matches) return false;
+
+        const isLowMemory = typeof navigator.deviceMemory === "number" && navigator.deviceMemory <= 2;
+        const isLowCore = typeof navigator.hardwareConcurrency === "number" && navigator.hardwareConcurrency <= 2;
+
+        return !(isLowMemory || isLowCore);
+    }
+
+    function setupParticleField() {
+        if (!shouldRenderParticles()) return;
+
+        const bg = document.querySelector(".ccg-bg");
+        if (!bg || bg.querySelector(".ccg-bg-particles")) return;
+
+        const particleField = document.createElement("div");
+        particleField.className = "ccg-bg-particles";
+        particleField.setAttribute("aria-hidden", "true");
+
+        const particleCount = Math.min(48, Math.max(20, Math.round(window.innerWidth / 28)));
+
+        for (let i = 0; i < particleCount; i++) {
+            const spark = document.createElement("span");
+            spark.className = "ccg-bg-particles__spark";
+
+            spark.style.setProperty("--ccg-particle-x", `${Math.random() * 100}%`);
+            spark.style.setProperty("--ccg-particle-delay", `${Math.random() * 12}s`);
+            spark.style.setProperty("--ccg-particle-duration", `${12 + Math.random() * 10}s`);
+            spark.style.setProperty("--ccg-particle-size", `${1 + Math.random() * 2.5}px`);
+
+            particleField.appendChild(spark);
+        }
+
+        bg.appendChild(particleField);
+
+        const reducedMotionQuery = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+        reducedMotionQuery?.addEventListener?.("change", event => {
+            if (event.matches) {
+                particleField.remove();
+            } else {
+                setupParticleField();
+            }
+        });
+    }
+
+    /* ======================================================
        DOM READY
     ====================================================== */
     document.addEventListener("DOMContentLoaded", () => {
@@ -141,6 +190,8 @@
             target.addEventListener("pointerenter", () => target.classList.add("is-glinting"));
             target.addEventListener("pointerleave", () => target.classList.remove("is-glinting"));
         });
+
+        setupParticleField();
 
     });
 
