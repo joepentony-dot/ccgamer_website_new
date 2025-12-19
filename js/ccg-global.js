@@ -44,40 +44,12 @@
         });
 
         /* ==================================================
-           HEADER NAV FLATTEN — TWO-LAYER PILL ROW
-        ================================================== */
-        const navList = document.querySelector(".ccg-nav__list");
-        const moreBlocks = document.querySelectorAll(".ccg-nav__more");
-
-        moreBlocks.forEach(block => {
-            const menuLinks = block.querySelectorAll(".ccg-nav__dropdown-link");
-            if (!menuLinks.length || !navList) return;
-
-            menuLinks.forEach(link => {
-                const li = document.createElement("li");
-                const clone = link.cloneNode(true);
-                clone.classList.remove("ccg-nav__dropdown-link");
-                clone.classList.add("ccg-nav__link");
-                li.appendChild(clone);
-                navList.appendChild(li);
-            });
-
-            block.remove();
-        });
-
-        if (navList) {
-            navList.classList.add("ccg-nav__list--expanded");
-        }
-
-        /* ==================================================
            VIEWPORT WOW — LIGHT UP EVERYTHING
         ================================================== */
         const wowSelectors = [
             ".ccg-hero",
             ".home-highlight-card",
             ".home-genre-card",
-            ".home-featured-card",
-            ".home-curated-card",
             ".games-accordion__section",
             ".ccg-game-card",
             ".ccg-panel",
@@ -109,7 +81,7 @@
         /* ==================================================
            MICRO-GLINTS — MODED NAV & LOGO
         ================================================== */
-        const glintTargets = document.querySelectorAll(".ccg-brand__logo, .ccg-nav__link, .ccg-nav__dropdown-link");
+        const glintTargets = document.querySelectorAll(".ccg-brand__logo, .ccg-nav__link");
 
         glintTargets.forEach(target => {
             target.addEventListener("pointerenter", () => target.classList.add("is-glinting"));

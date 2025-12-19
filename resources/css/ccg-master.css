@@ -28,8 +28,8 @@
     --ccg-soft: rgba(255, 255, 255, 0.5);
 
     /* HEADER CONTRACT */
-    --ccg-header-height: 112px;
-    --ccg-header-inner-height: 84px;
+    --ccg-header-padding-y: 14px;
+    --ccg-header-offset: clamp(108px, 6vw + 88px, 168px);
 
     --ccg-nav-pill-pad-y: 8px;
     --ccg-nav-pill-pad-x: 14px;
@@ -114,7 +114,7 @@ li {
 .ccg-main {
     width: min(1320px, 96%);
     margin: 0 auto;
-    padding-top: var(--ccg-page-entry-pad);
+    padding-top: calc(var(--ccg-page-entry-pad) + 8px);
     position: relative;
 }
 
@@ -124,25 +124,25 @@ li {
 ============================================================ */
 
 .ccg-header {
-    position: relative;
+    position: sticky;
+    top: 0;
     z-index: 9999;
 
-    min-height: var(--ccg-header-height);
-    height: auto;
-    max-height: none;
-    padding: 12px 0 14px;
+    width: 100%;
+    padding: var(--ccg-header-padding-y) 0;
 
     display: flex;
     align-items: center;
 
     background:
         linear-gradient(120deg,
-            rgba(0,0,0,0.9),
-            rgba(0,0,0,0.82)),
+            rgba(0,0,0,0.94),
+            rgba(0,0,0,0.86)),
         radial-gradient(circle at 15% 20%, rgba(var(--accent-rgb),0.16), transparent 40%),
         radial-gradient(circle at 80% 10%, rgba(255,255,255,0.08), transparent 45%);
 
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 46px rgba(0,0,0,0.72), 0 0 18px rgba(var(--accent-rgb),0.24);
     overflow: visible;
 }
 
@@ -167,14 +167,10 @@ li {
     width: min(1320px, 96%);
     margin: 0 auto;
 
-    min-height: var(--ccg-header-inner-height);
-    height: auto;
-    max-height: none;
-
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
-    align-content: center;
+    row-gap: 12px;
 
     gap: 18px;
     overflow: visible;
@@ -241,13 +237,6 @@ li {
     opacity: 0.35;
 }
 
-.ccg-brand.is-ignited {
-    box-shadow:
-        0 12px 28px rgba(0,0,0,0.72),
-        0 0 26px rgba(69,216,255,0.4),
-        0 0 36px rgba(194,139,255,0.28);
-}
-
 .ccg-brand__kicker,
 .ccg-brand__neon-cheeky,
 .ccg-brand__neon-sub {
@@ -290,7 +279,7 @@ li {
 
 
 /* ============================================================
-   NAVIGATION — STRUCTURAL ONLY (+ DROPDOWN FIX)
+   NAVIGATION — STRUCTURAL ONLY (TWO-LINE SUPPORT)
 ============================================================ */
 
 .ccg-nav {
@@ -309,24 +298,15 @@ li {
     row-gap: 8px;
     padding-inline: 24px;
 
-    overflow-x: auto;
-    overflow-y: visible; /* ✅ CRITICAL: allows dropdown to extend */
+    overflow: visible;
     scrollbar-width: none;
     position: relative;
     z-index: 1;
 }
 
-.ccg-nav__list--expanded {
-    gap: 12px 16px;
-    row-gap: 10px;
-    padding-inline: 18px;
-}
-
 @media (max-width: 1100px) {
     .ccg-header {
-        height: auto;
-        max-height: none;
-        padding: 10px 0 6px;
+        padding: 12px 0 10px;
     }
 
     .ccg-header-inner {
@@ -363,11 +343,6 @@ li {
 
     .ccg-brand__title {
         font-size: 1rem;
-    }
-
-    .ccg-nav__dropdown {
-        left: 0;
-        right: auto;
     }
 }
 
@@ -421,77 +396,49 @@ li {
 }
 
 
+
+
 /* ============================================================
-   MORE ▾ DROPDOWN — FUNCTIONAL CONTRACT (NO REDESIGN)
-   IMPORTANT: Works even if JS fails (focus-within fallback)
+   WOW TAGS — GLOBAL VIEWPORT REVEAL
+
+[data-ccg-wow] {
+    opacity: 0.4;
+    transform: translateY(12px) scale(0.99);
+    filter: saturate(0.9);
+    transition:
+        opacity 520ms ease,
+        transform 520ms ease,
+        filter 520ms ease,
+        box-shadow 520ms ease;
+}
+
+[data-ccg-wow].is-lit {
+    opacity: 1;
+    transform: translateY(0) scale(1.01);
+    filter: saturate(1.08);
+    box-shadow: 0 18px 38px rgba(0,0,0,0.7), 0 0 22px rgba(var(--accent-rgb),0.26);
+}
+
+.is-glinting {
+    transform: translateY(-1px) scale(1.02);
+    filter: saturate(1.15) brightness(1.05);
+    text-shadow: 0 0 10px rgba(var(--accent-rgb),0.45);
+}
+
+
+/* ============================================================
+   SIGNATURE KEYFRAMES
 ============================================================ */
 
-.ccg-nav__more {
-    position: relative;
-    z-index: 2;
+@keyframes ccgLogoGlow {
+    from { filter: drop-shadow(0 0 10px rgba(var(--accent-rgb),0.4)) drop-shadow(0 12px 24px rgba(0,0,0,0.7)); }
+    to   { filter: drop-shadow(0 0 18px rgba(var(--accent-rgb),0.65)) drop-shadow(0 18px 28px rgba(0,0,0,0.65)); }
 }
 
-/* hidden by default */
-.ccg-nav__dropdown {
-    position: absolute;
-    top: calc(100% + 10px);
-    right: 0;
-
-    min-width: 240px;
-    padding: 10px;
-
-    display: none;
-    z-index: 20000;
-
-    background:
-        radial-gradient(circle at 20% 20%, rgba(var(--accent-rgb),0.18), transparent 45%),
-        rgba(0,0,0,0.95);
-    border: 1px solid rgba(255,255,255,0.14);
-    border-radius: 14px;
-
-    box-shadow: 0 18px 48px rgba(0,0,0,0.9), 0 0 24px rgba(var(--accent-rgb),0.24);
-
-    pointer-events: auto;
-}
-
-/* JS-open state */
-.ccg-nav__dropdown.is-open {
-    display: block;
-}
-
-.ccg-nav__more-btn[aria-expanded="true"] + .ccg-nav__dropdown {
-    display: block !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-}
-
-/* ✅ CSS fallback: click/focus on button opens dropdown even if JS is dead */
-.ccg-nav__more:focus-within .ccg-nav__dropdown {
-    display: block;
-}
-
-/* Optional hover support (desktop only feel) */
-@media (hover: hover) and (pointer: fine) {
-    .ccg-nav__more:hover .ccg-nav__dropdown {
-        display: block;
-    }
-}
-
-.ccg-nav__dropdown-link {
-    display: block;
-    padding: 10px 14px;
-    border-radius: 8px;
-
-    font-family: var(--ccg-font-main);
-    font-size: 0.7rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-}
-
-.ccg-nav__dropdown-link--active {
-    background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.35), rgba(var(--accent-rgb), 0.12));
-    color: #fff;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.16);
+@keyframes ccgAurora {
+    0%   { transform: rotate(0deg) scale(1); }
+    50%  { transform: rotate(12deg) scale(1.1); }
+    100% { transform: rotate(-8deg) scale(1.05); }
 }
 
 
@@ -602,24 +549,6 @@ body[data-ccg-mode="amiga"] {
 .ccg-header,
 .ccg-header * {
     pointer-events: auto !important;
-}
-
-/* Absolutely guarantee dropdown visibility logic */
-.ccg-nav__more {
-    position: relative;
-}
-
-/* Force dropdown to show on hover OR focus — no JS required */
-.ccg-nav__more:hover .ccg-nav__dropdown,
-.ccg-nav__more:focus-within .ccg-nav__dropdown {
-    display: block !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-}
-
-/* Ensure dropdown sits above EVERYTHING */
-.ccg-nav__dropdown {
-    z-index: 999999 !important;
 }
 
 /* ============================================================

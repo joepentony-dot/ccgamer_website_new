@@ -42,13 +42,11 @@
         <header class="ccg-header">
             <div class="ccg-header-inner">
 
-                <!-- BRAND -->
                 <a href="home.html" class="ccg-brand">
                     <img src="resources/images/ccgamer-logo.png"
+                         alt="Cheeky Commodore Gamer logo"
                          class="ccg-brand__logo"
-                         width="56"
-                         height="56"
-                         alt="Cheeky Commodore Gamer logo">
+                         loading="lazy">
 
                     <div class="ccg-brand__text">
                         <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
@@ -59,8 +57,7 @@
                     </div>
                 </a>
 
-                <!-- NAV -->
-                <nav class="ccg-nav" aria-label="Primary navigation">
+                                <nav class="ccg-nav" aria-label="Primary navigation">
                     <ul class="ccg-nav__list">
                         <li><a href="home.html" class="ccg-nav__link ccg-nav__link--active">Home</a></li>
                         <li><a href="games/index.html" class="ccg-nav__link">Browse Games</a></li>
@@ -73,10 +70,8 @@
                     </ul>
                 </nav>
 
-                <!-- HEADER ACTIONS -->
                 <div class="ccg-header-actions">
 
-                    <!-- MODE TOGGLE -->
                     <button class="ccg-mode-toggle"
                             type="button"
                             aria-label="Toggle between C64 and Amiga modes"
@@ -88,7 +83,6 @@
                         </span>
                     </button>
 
-                    <!-- SOCIALS -->
                     <div class="ccg-header-socials" aria-label="Social links">
                         <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>
                         <a href="https://patreon.com/CheekyCommodoreGamer" aria-label="Patreon"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>
@@ -108,18 +102,18 @@
         <main class="ccg-main ccg-main--home">
 
             <!-- HERO -->
-            <section class="home-hero">
-                <div class="ccg-hero ccg-hero--home">
+            <section class="home-hero" data-hero-mode="c64">
+                <div class="home-hero__frame">
+                    <div class="home-hero__bg home-hero__bg--c64" aria-hidden="true"></div>
+                    <div class="home-hero__bg home-hero__bg--amiga" aria-hidden="true"></div>
+                    <div class="home-hero__scanlines" aria-hidden="true"></div>
 
-                    <div class="ccg-hero-image"></div>
-                    <div class="ccg-hero-scanlines"></div>
-
-                    <div class="ccg-hero-inner home-hero__inner">
+                    <div class="home-hero__content">
                         <div class="home-hero__mode-line">
-                            <span class="home-hero__mode-label">
+                            <span class="home-hero__mode-pill" aria-live="polite">
                                 MODE · <span data-ccg-mode-label>C64</span>
                             </span>
-                            <span class="home-hero__sub-label">C64 &amp; Amiga</span>
+                            <span class="home-hero__badge" data-ccg-hero-mode-label>C64</span>
                         </div>
 
                         <h1 class="ccg-hero-title home-hero__title">
@@ -132,54 +126,47 @@
                         </p>
 
                         <div class="home-hero__actions">
-                            <a href="games/index.html" class="ccg-btn ccg-btn--primary home-hero__btn">
-                                Browse All Games
+                            <a href="games/index.html" class="ccg-btn home-hero__cta home-hero__cta--solid">
+                                Browse the full library
+                            </a>
+                            <a href="games/collections/top-picks.html" class="ccg-btn home-hero__cta home-hero__cta--ghost">
+                                See CCG Top Picks
                             </a>
                             <button type="button"
-                                    class="ccg-btn ccg-btn--primary home-hero__btn"
+                                    class="ccg-btn home-hero__cta home-hero__cta--random"
                                     data-ccg-random-game>
-                                Random Game
+                                Spin a random game
                             </button>
-                            <a href="games/collections/top-picks.html" class="ccg-btn ccg-btn--primary home-hero__btn home-hero__btn-alt">
-                                CCG Top Picks
-                            </a>
                         </div>
 
-                        <!-- HERO CARDS — HW2 -->
                         <div class="home-hero-cards">
-
-                            <a href="games/index.html" class="ccg-card home-hero-card">
-                                <div class="ccg-card__body">
-                                    <h3 class="ccg-card__title">Browse the Full Library</h3>
-                                    <p class="ccg-card__text">
-                                        Explore hundreds of Commodore 64 and Amiga classics, fully indexed and curated.
-                                    </p>
-                                </div>
-                            </a>
-
                             <a href="games/collections/index.html" class="ccg-card home-hero-card">
                                 <div class="ccg-card__body">
-                                    <h3 class="ccg-card__title">Curated Collections</h3>
+                                    <h3 class="ccg-card__title">Curated collections</h3>
                                     <p class="ccg-card__text">
-                                        Hand-picked sets, themed showcases and essential classics.
+                                        Hand-built sets themed around genres, publishers and channel favourites.
                                     </p>
                                 </div>
                             </a>
 
                             <a href="quiz/quiz.html" class="ccg-card home-hero-card">
                                 <div class="ccg-card__body">
-                                    <h3 class="ccg-card__title">Play Trivia</h3>
+                                    <h3 class="ccg-card__title">Trivia &amp; leaderboard</h3>
                                     <p class="ccg-card__text">
-                                        Test your retro knowledge and climb the leaderboard.
+                                        Rapid-fire questions, score chase intensity and bragging rights.
                                     </p>
                                 </div>
                             </a>
 
+                            <a href="emulation.html" class="ccg-card home-hero-card">
+                                <div class="ccg-card__body">
+                                    <h3 class="ccg-card__title">Emulation ready</h3>
+                                    <p class="ccg-card__text">
+                                        Clean, safe setup guides for C64 and Amiga so you can dive right in.
+                                    </p>
+                                </div>
+                            </a>
                         </div>
-
-                        <p class="home-hero__tip">
-                            Tip: Flick the C64/Amiga switch in the corner for a different flavour of neon.
-                        </p>
                     </div>
                 </div>
             </section>
@@ -255,7 +242,7 @@
 
                     <a href="games/collections/index.html" class="ccg-card home-highlight-card">
                         <div class="ccg-card__body">
-                            <h3 class="ccg-card__title">Curated Collections</h3>
+                            <h3 class="ccg-card__title">Collections that matter</h3>
                             <p class="ccg-card__text">
                                 Cartridge, licensed, BPJS and Top Picks — curated like a proper retro magazine feature.
                             </p>
@@ -289,11 +276,11 @@
                         </div>
                     </a>
 
-                    <a href="contact.html" class="ccg-card home-highlight-card">
+                    <a href="games/genres/index.html" class="ccg-card home-highlight-card">
                         <div class="ccg-card__body">
-                            <h3 class="ccg-card__title">Say Hi</h3>
+                            <h3 class="ccg-card__title">Genre hubs</h3>
                             <p class="ccg-card__text">
-                                Drop a message, pitch a collab, or share your favourite SID memories.
+                                Jump straight into your kind of game: action, shooters, platformers, strategy and more.
                             </p>
                         </div>
                     </a>
@@ -301,36 +288,82 @@
                 </div>
             </section>
 
+            <!-- FEATURED GAME -->
+            <section class="home-section home-section--feature-card">
+                <header class="home-section__header">
+                    <h2 class="home-section__title">Featured Game</h2>
+                    <div class="home-section__divider"></div>
+                </header>
+
+                <article class="home-feature-card">
+                    <div class="home-feature-card__art" role="presentation">
+                        <img src="resources/images/thumbnails/all/turrican_ii_the_final_fight.jpg" alt="Turrican II cover art">
+                    </div>
+                    <div class="home-feature-card__body">
+                        <p class="home-feature-card__eyebrow">AMIGA · RAINBOW ARTS · 1991</p>
+                        <h3 class="home-feature-card__title">Turrican II: The Final Fight</h3>
+                        <p class="home-feature-card__copy">
+                            Thumping Chris Huelsbeck soundtrack, screen-filling bosses and multi-directional plasma cannons.
+                            This definitive Amiga showcase is a perfect stress-test for your emu setup.
+                        </p>
+                        <div class="home-feature-card__ctas">
+                            <a class="ccg-btn home-hero__cta home-hero__cta--solid" href="games/game.html?id=turrican_ii_the_final_fight">
+                                View the game page
+                            </a>
+                            <a class="ccg-btn home-hero__cta home-hero__cta--ghost" href="games/collections/top-picks.html">
+                                More CCG essentials
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <!-- FEATURED VIDEO -->
+            <section class="home-section home-section--feature-video">
+                <header class="home-section__header">
+                    <h2 class="home-section__title">Featured Video</h2>
+                    <div class="home-section__divider"></div>
+                </header>
+
+                <article class="home-feature-video">
+                    <div class="home-feature-video__thumb" role="presentation">
+                        <a href="https://www.youtube.com/watch?v=PPbX3psB8hY" target="_blank" rel="noopener" class="home-feature-video__link">
+                            <span class="home-feature-video__cta">Watch on YouTube</span>
+                        </a>
+                    </div>
+                    <div class="home-feature-video__body">
+                        <p class="home-feature-video__eyebrow">LONGPLAY · C64</p>
+                        <h3 class="home-feature-video__title">Impossible Mission — perfect run</h3>
+                        <p class="home-feature-video__copy">
+                            A chill, atmospheric showcase of the iconic synth voice, smart level layouts and the timeless “Stay a while…"
+                            energy. Kick back with CRT scanlines and relive the suspense.
+                        </p>
+                        <a class="ccg-btn home-hero__cta home-hero__cta--solid" href="https://www.youtube.com/watch?v=PPbX3psB8hY" target="_blank" rel="noopener">
+                            Play the feature
+                        </a>
+                    </div>
+                </article>
+            </section>
+
             <!-- CURATED LINKS -->
-            <section class="home-section home-section--curated">
+            <section class="home-section home-section--links">
                 <header class="home-section__header">
                     <h2 class="home-section__title">Curated Neon Links</h2>
                     <div class="home-section__divider"></div>
                 </header>
 
-                <div class="home-curated-grid">
-                    <a class="home-curated-card" href="games/collections/bpjs-indexed-games.html">
-                        <div class="home-curated__label">BPJS Collection</div>
-                        <p class="home-curated__text">Every UK-banned C64 &amp; Amiga release plus context.</p>
-                        <span class="home-curated__cta">Enter the vault →</span>
+                <div class="home-link-grid">
+                    <a class="home-link-tile" href="games/collections/bpjs.html">
+                        <span class="home-link-tile__label">BPJS collection</span>
+                        <span class="home-link-tile__desc">Every UK charted C64 tape preserved and playable.</span>
                     </a>
-
-                    <a class="home-curated-card" href="games/collections/c64-cartridge-games.html">
-                        <div class="home-curated__label">Cartridge Showcase</div>
-                        <p class="home-curated__text">Instant-load C64 carts with crisp art and backstory.</p>
-                        <span class="home-curated__cta">Slot it in →</span>
+                    <a class="home-link-tile" href="games/collections/cartridge-games.html">
+                        <span class="home-link-tile__label">Cartridge showcase</span>
+                        <span class="home-link-tile__desc">Instant load classics with crisp presentation.</span>
                     </a>
-
-                    <a class="home-curated-card" href="games/collections/licensed-games.html">
-                        <div class="home-curated__label">Licensed Gems</div>
-                        <p class="home-curated__text">Movies, TV tie-ins and licensed wonders done right.</p>
-                        <span class="home-curated__cta">See the hits →</span>
-                    </a>
-
-                    <a class="home-curated-card" href="games/collections/top-picks.html">
-                        <div class="home-curated__label">CCG Essentials</div>
-                        <p class="home-curated__text">Hand-picked bangers to play tonight on C64 or Amiga.</p>
-                        <span class="home-curated__cta">Play first →</span>
+                    <a class="home-link-tile" href="games/collections/licensed-games.html">
+                        <span class="home-link-tile__label">Licensed gems</span>
+                        <span class="home-link-tile__desc">Movie and TV tie-ins worth revisiting.</span>
                     </a>
                 </div>
             </section>

@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => initHomeDynamic());
 
 async function initHomeDynamic() {
     await loadGamesForHome();
-    renderFeaturedShowcase();
+    renderFeaturedHighlights();
     wireRandomGameButton();
     syncModeLabel();
     initModeObserver();
@@ -39,52 +39,30 @@ async function loadGamesForHome() {
    FEATURED SHOWCASE — MATCHED GAME & VIDEO
 ============================================================ */
 
-function renderFeaturedShowcase() {
-    const feature = pickFeaturedGame();
-    if (!feature) return;
+function renderFeaturedHighlights() {
+    const grid = document.querySelector(".home-highlights-grid");
+    if (!grid) return;
 
-    const meta = buildMeta(feature);
-    const description = feature.description?.trim() || `${feature.title} brings ${feature.system} energy from ${feature.year}.`;
+    grid.innerHTML = "";
 
-    const thumbEl = document.querySelector("[data-ccg-feature-thumb]");
-    const metaEl = document.querySelector("[data-ccg-feature-meta]");
-    const titleEl = document.querySelector("[data-ccg-feature-title]");
-    const copyEl = document.querySelector("[data-ccg-feature-copy]");
-    const playLink = document.querySelector("[data-ccg-feature-play]");
-    const collectionLink = document.querySelector("[data-ccg-feature-collection]");
+    CCG_HOME_ALL_GAMES
+        .slice()
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 3)
+        .forEach(game => {
+            const card = document.createElement("a");
+            card.className = "ccg-card home-feature-card";
+            card.href = `games/game.html?id=${encodeURIComponent(game.id)}`;
 
-    if (thumbEl) thumbEl.style.backgroundImage = `url('${resolveThumb(feature.thumbnail)}')`;
-    if (metaEl) metaEl.textContent = meta;
-    if (titleEl) titleEl.textContent = feature.title;
-    if (copyEl) copyEl.textContent = description;
-    if (playLink) playLink.href = `games/game.html?id=${encodeURIComponent(feature.id)}`;
-    if (collectionLink) collectionLink.href = feature.collection || 'games/collections/top-picks.html';
-
-    const videoThumb = document.querySelector("[data-ccg-feature-video-thumb]");
-    const videoMeta = document.querySelector("[data-ccg-feature-video-meta]");
-    const videoTitle = document.querySelector("[data-ccg-feature-video-title]");
-    const videoCopy = document.querySelector("[data-ccg-feature-video-copy]");
-    const watchLink = document.querySelector("[data-ccg-feature-watch-link]");
-    const playBtn = document.querySelector("[data-ccg-feature-watch]");
-    const playCTA = document.querySelector("[data-ccg-feature-play2]");
-
-    if (feature.videoid) {
-        const yt = `https://www.youtube.com/watch?v=${feature.videoid}`;
-        if (watchLink) watchLink.href = yt;
-        if (playBtn) playBtn.onclick = () => window.open(yt, "_blank");
-        if (playCTA) playCTA.href = `games/game.html?id=${encodeURIComponent(feature.id)}`;
-        if (videoThumb) videoThumb.style.backgroundImage = `url('https://img.youtube.com/vi/${feature.videoid}/maxresdefault.jpg')`;
-    }
-
-    if (videoMeta) videoMeta.textContent = `${feature.system} · ${feature.year || "Longplay"}`;
-    if (videoTitle) videoTitle.textContent = `${feature.title} — matching feature`;
-    if (videoCopy) videoCopy.textContent = description;
-}
-
-function pickFeaturedGame() {
-    const withVideo = CCG_HOME_ALL_GAMES.filter(g => g.videoid);
-    if (withVideo.length) return withVideo[Math.floor(Math.random() * withVideo.length)];
-    return CCG_HOME_ALL_GAMES[0];
+            card.innerHTML = `
+                <img src="${resolveThumb(game.thumbnail)}" alt="${game.title}">
+                <div class="ccg-card__body">
+                    <h3 class="ccg-card__title">${game.title}</h3>
+                    <p class="ccg-card__text">${buildMeta(game)}</p>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
 }
 
 /* ============================================================
@@ -131,7 +109,7 @@ function initModeObserver() {
 ============================================================ */
 
 function initHeroCardFX() {
-    const cards = document.querySelectorAll('.home-hero-card, .home-highlight-card, .home-genre-tile, .home-curated-card');
+    const cards = document.querySelectorAll('.home-hero-card, .home-highlight-card, .home-feature-card, .home-feature-video, .home-link-tile');
     if (!cards.length) return;
 
     cards.forEach(card => {

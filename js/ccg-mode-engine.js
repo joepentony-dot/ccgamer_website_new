@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const root = document.body;
     const toggle = document.querySelector("[data-ccg-mode-toggle]");
+    const hero = document.querySelector(".home-hero");
 
     if (!toggle) {
         console.warn("ccg-mode-engine.js: Mode toggle button not found.");
@@ -18,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function applyMode(mode) {
         root.setAttribute("data-ccg-mode", mode);
         root.setAttribute("data-mode", mode);
+        if (hero) hero.setAttribute("data-hero-mode", mode);
         localStorage.setItem("ccg-mode", mode);
 
         const label = mode === "c64" ? "C64" : "Amiga";
