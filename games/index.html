@@ -41,28 +41,40 @@
 <div class="ccg-page ccg-page--games-index">
 
     <!-- HEADER (LOCKED PARITY WITH HOME) -->
-    <header class="ccg-header">
-        <div class="ccg-header-inner">
+            <!-- HEADER -->
+        <header class="ccg-header" data-ccg-header>
+            <div class="ccg-header-inner">
 
-            <!-- BRAND -->
-            <a href="../home.html" class="ccg-brand">
-                <img src="../resources/images/ccgamer-logo.png"
-                     class="ccg-brand__logo"
-                     width="56"
-                     height="56"
-                     alt="Cheeky Commodore Gamer logo">
+                <a href="../home.html" class="ccg-brand">
+                    <img src="../resources/images/ccgamer-logo.png"
+                         alt="Cheeky Commodore Gamer logo"
+                         class="ccg-brand__logo"
+                         loading="lazy">
 
-                <div class="ccg-brand__text">
-                    <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
-                    <div class="ccg-brand__title">
-                        <span class="ccg-brand__neon-cheeky">CHEEKY</span>
-                        <span class="ccg-brand__neon-sub">COMMODORE GAMER</span>
+                    <div class="ccg-brand__text">
+                        <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
+                        <div class="ccg-brand__title">
+                            <span class="ccg-brand__neon-cheeky">CHEEKY COMMODORE</span>
+                            <span class="ccg-brand__neon-sub">GAMER</span>
+                        </div>
                     </div>
-                </div>
-            </a>
+                </a>
 
-            <!-- NAV -->
-                                            <nav class="ccg-nav" aria-label="Primary navigation">
+                <button class="ccg-nav-toggle"
+                        type="button"
+                        aria-label="Toggle navigation"
+                        aria-expanded="false"
+                        aria-controls="ccg-primary-nav"
+                        data-ccg-nav-toggle>
+                    <span class="ccg-nav-toggle__bars" aria-hidden="true">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
+                    <span class="ccg-nav-toggle__label">Menu</span>
+                </button>
+
+                <nav class="ccg-nav" aria-label="Primary navigation" id="ccg-primary-nav">
                     <ul class="ccg-nav__list">
                         <li><a href="../home.html" class="ccg-nav__link">Home</a></li>
                         <li><a href="../games/index.html" class="ccg-nav__link ccg-nav__link--active">Browse Games</a></li>
@@ -75,36 +87,34 @@
                     </ul>
                 </nav>
 
-            <!-- HEADER ACTIONS -->
-            <div class="ccg-header-actions">
+                <div class="ccg-header-actions">
 
-                <!-- MODE TOGGLE -->
-                <button class="ccg-mode-toggle"
-                        type="button"
-                        aria-label="Toggle between C64 and Amiga modes"
-                        data-ccg-mode-toggle>
-                    <span class="ccg-mode-toggle__pill">
-                        <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
-                        <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">Amiga</span>
-                        <span class="ccg-mode-toggle__thumb"></span>
-                    </span>
-                </button>
+                    <button class="ccg-mode-toggle"
+                            type="button"
+                            aria-label="Toggle between C64 and Amiga modes"
+                            data-ccg-mode-toggle>
+                        <span class="ccg-mode-toggle__pill">
+                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
+                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">Amiga</span>
+                            <span class="ccg-mode-toggle__thumb"></span>
+                        </span>
+                    </button>
 
-                <!-- SOCIALS -->
-                <div class="ccg-header-socials">
-                    <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>
-                    <a href="https://patreon.com/CheekyCommodoreGamer" aria-label="Patreon"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>
-                    <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" aria-label="PayPal"><span class="ccg-socials__icon ccg-socials__icon--paypal"></span></a>
-                    <a href="https://twitter.com/CheekyC64Gamer" aria-label="X/Twitter"><span class="ccg-socials__icon ccg-socials__icon--x"></span></a>
-                    <a href="https://www.facebook.com/cheekycommodoregamer" aria-label="Facebook"><span class="ccg-socials__icon ccg-socials__icon--fb"></span></a>
-                    <a href="https://discord.gg/83Xw9ktAn4" aria-label="Discord"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
+                    <div class="ccg-header-socials" aria-label="Social links">
+                        <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>
+                        <a href="https://patreon.com/CheekyCommodoreGamer" aria-label="Patreon"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>
+                        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" aria-label="PayPal"><span class="ccg-socials__icon ccg-socials__icon--paypal"></span></a>
+                        <a href="https://twitter.com/CheekyC64Gamer" aria-label="X/Twitter"><span class="ccg-socials__icon ccg-socials__icon--x"></span></a>
+                        <a href="https://www.facebook.com/cheekycommodoregamer" aria-label="Facebook"><span class="ccg-socials__icon ccg-socials__icon--fb"></span></a>
+                        <a href="https://discord.gg/83Xw9ktAn4" aria-label="Discord"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
+                    </div>
+
                 </div>
-
             </div>
-        </div>
 
-        <div class="ccg-header-neon-strip"></div>
-    </header>
+            <div class="ccg-header-neon-strip"></div>
+        </header>
+
 
     <!-- MAIN -->
     <main class="ccg-main games-main">

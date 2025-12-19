@@ -29,6 +29,58 @@
     }
 
     /* ======================================================
+       NAV TOGGLE (MOBILE)
+    ====================================================== */
+    function setupNavToggle() {
+        const header = document.querySelector("[data-ccg-header]");
+        if (!header) return;
+
+        const toggle = header.querySelector("[data-ccg-nav-toggle]");
+        const nav = header.querySelector(".ccg-nav");
+        if (!toggle || !nav) return;
+
+        const mobileMatch = window.matchMedia("(max-width: 960px)");
+
+        const closeNav = () => {
+            header.classList.remove("ccg-header--nav-open");
+            toggle.setAttribute("aria-expanded", "false");
+        };
+
+        const maybeCloseOnDesktop = () => {
+            if (!mobileMatch.matches) {
+                closeNav();
+            }
+        };
+
+        toggle.addEventListener("click", () => {
+            const isOpen = !header.classList.contains("ccg-header--nav-open");
+            header.classList.toggle("ccg-header--nav-open", isOpen);
+            toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        });
+
+        header.querySelectorAll(".ccg-nav__link").forEach(link => {
+            link.addEventListener("click", () => {
+                if (mobileMatch.matches) closeNav();
+            });
+        });
+
+        document.addEventListener("click", event => {
+            if (!mobileMatch.matches) return;
+            if (!header.contains(event.target)) {
+                closeNav();
+            }
+        });
+
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape") {
+                closeNav();
+            }
+        });
+
+        mobileMatch.addEventListener("change", maybeCloseOnDesktop);
+    }
+
+    /* ======================================================
        DOM READY
     ====================================================== */
     document.addEventListener("DOMContentLoaded", () => {
@@ -42,6 +94,8 @@
             img.loading = img.loading || "lazy";
             img.alt ||= "Cheeky Commodore Gamer logo";
         });
+
+        setupNavToggle();
 
         /* ==================================================
            VIEWPORT WOW — LIGHT UP EVERYTHING
