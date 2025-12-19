@@ -12,12 +12,24 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
+    const heroModeLabel = document.querySelector('[data-ccg-mode-label]');
+    const heroBadgeLabel = document.querySelector('[data-ccg-hero-mode-label]');
+
+    function applyMode(mode) {
+        root.setAttribute("data-ccg-mode", mode);
+        root.setAttribute("data-mode", mode);
+        localStorage.setItem("ccg-mode", mode);
+
+        const label = mode === "c64" ? "C64" : "Amiga";
+        if (heroModeLabel) heroModeLabel.textContent = label;
+        if (heroBadgeLabel) heroBadgeLabel.textContent = label;
+    }
+
     toggle.addEventListener("click", () => {
         const current = root.getAttribute("data-ccg-mode") === "c64" ? "amiga" : "c64";
-        root.setAttribute("data-ccg-mode", current);
-        localStorage.setItem("ccg-mode", current);
+        applyMode(current);
     });
 
     const saved = localStorage.getItem("ccg-mode");
-    if (saved) root.setAttribute("data-ccg-mode", saved);
+    applyMode(saved || root.getAttribute("data-ccg-mode") || "c64");
 });

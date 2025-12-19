@@ -199,6 +199,8 @@ function toggleAccordion(letter, opts = {}) {
         target.classList.add("is-open");
         const btn = target.querySelector(".games-accordion__header");
         if (btn) btn.setAttribute("aria-expanded", "true");
+        target.classList.add("is-energized");
+        setTimeout(() => target.classList.remove("is-energized"), 1100);
         saveAccordionState(letter);
         setSpineActive(letter);
 
@@ -209,6 +211,7 @@ function toggleAccordion(letter, opts = {}) {
         // Closing current open section
         clearAccordionState();
         setSpineActive(null);
+        target.classList.remove("is-energized");
 
         if (!opts.silent) {
             scrollToTop();

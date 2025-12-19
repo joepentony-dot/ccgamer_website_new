@@ -91,6 +91,19 @@ function resolveManualUrl(game) {
     return resolvePrimaryLink(game.pdf || game.manual || game.manuals);
 }
 
+function normaliseManualUrl(url) {
+    if (!url) return "";
+    const trimmed = String(url).trim();
+
+    const driveMatch = trimmed.match(/https?:\/\/drive\.google\.com\/file\/d\/([^/]+)\//i);
+    if (driveMatch && driveMatch[1]) {
+        // Preview-friendly embed that works without extra clicks
+        return `https://drive.google.com/file/d/${driveMatch[1]}/preview`;
+    }
+
+    return trimmed;
+}
+
 function resolveDiskUrl(game) {
     return resolvePrimaryLink(game.disk || game.tape || game.download);
 }
@@ -133,7 +146,7 @@ function renderGame(game) {
     }
 
     /* DOWNLOADS */
-    const manual = resolveManualUrl(game);
+    const manual = normaliseManualUrl(resolveManualUrl(game));
     if (manual) {
         const btn = document.getElementById("gameManualBtn");
         btn.href = manual;
@@ -141,6 +154,13 @@ function renderGame(game) {
         btn.rel = "noopener";
         btn.hidden = false;
         document.querySelector(".game-downloads").hidden = false;
+
+        btn.addEventListener("click", e => {
+            // Open inline for PDFs/Drive; fall back to normal links
+            if (!manual.includes(".pdf") && !manual.includes("drive.google.com")) return;
+            e.preventDefault();
+            openDocumentModal(manual);
+        });
     }
 
     const disk = resolveDiskUrl(game);
@@ -214,10 +234,21 @@ const modalFrame = document.getElementById("ccgModalFrame");
 const modalClose = document.querySelector(".ccg-modal-close");
 const modalNext = document.querySelector(".ccg-modal-nav--next");
 const modalPrev = document.querySelector(".ccg-modal-nav--prev");
+let modalMode = "gallery"; // "gallery" | "doc"
 
 function openScreenshotModal(index) {
     CCG_SCREENSHOT_INDEX = index;
+    modalMode = "gallery";
+    modal.classList.remove("ccg-modal--doc");
     modalFrame.src = CCG_SCREENSHOTS[index];
+    modal.classList.add("active");
+    modal.setAttribute("aria-hidden", "false");
+}
+
+function openDocumentModal(src) {
+    modalMode = "doc";
+    modal.classList.add("ccg-modal--doc");
+    modalFrame.src = src;
     modal.classList.add("active");
     modal.setAttribute("aria-hidden", "false");
 }
@@ -225,6 +256,8 @@ function openScreenshotModal(index) {
 function closeModal() {
     modal.classList.remove("active");
     modal.setAttribute("aria-hidden", "true");
+    modal.classList.remove("ccg-modal--doc");
+    modalMode = "gallery";
     modalFrame.src = "";
 }
 
@@ -256,15 +289,23 @@ modal.addEventListener("click", e => {
     if (e.target === modal) closeModal();
 });
 
-if (modalNext) modalNext.addEventListener("click", nextScreenshot);
-if (modalPrev) modalPrev.addEventListener("click", prevScreenshot);
+if (modalNext) modalNext.addEventListener("click", () => {
+    if (modalMode === "doc") return;
+    nextScreenshot();
+});
+if (modalPrev) modalPrev.addEventListener("click", () => {
+    if (modalMode === "doc") return;
+    prevScreenshot();
+});
 
 document.addEventListener("keydown", e => {
     if (!modal.classList.contains("active")) return;
 
     if (e.key === "Escape") closeModal();
-    if (e.key === "ArrowRight") nextScreenshot();
-    if (e.key === "ArrowLeft") prevScreenshot();
+    if (modalMode !== "doc") {
+        if (e.key === "ArrowRight") nextScreenshot();
+        if (e.key === "ArrowLeft") prevScreenshot();
+    }
 });
 
 /* ============================================================

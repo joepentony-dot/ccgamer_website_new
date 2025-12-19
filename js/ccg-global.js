@@ -49,6 +49,16 @@
         ================================================== */
         const moreBlocks = document.querySelectorAll(".ccg-nav__more");
 
+        const closeAll = () => {
+            moreBlocks.forEach(group => {
+                const btn = group.querySelector(".ccg-nav__more-btn");
+                const menu = group.querySelector(".ccg-nav__dropdown");
+                if (!btn || !menu) return;
+                menu.classList.remove("is-open");
+                btn.setAttribute("aria-expanded", "false");
+            });
+        };
+
         moreBlocks.forEach(block => {
             const btn = block.querySelector(".ccg-nav__more-btn");
             const menu = block.querySelector(".ccg-nav__dropdown");
@@ -56,6 +66,7 @@
             if (!btn || !menu) return;
 
             function open() {
+                closeAll();
                 menu.classList.add("is-open");
                 btn.setAttribute("aria-expanded", "true");
             }
@@ -65,24 +76,67 @@
                 btn.setAttribute("aria-expanded", "false");
             }
 
-            function toggle(e) {
+            btn.addEventListener("click", e => {
                 e.preventDefault();
                 e.stopPropagation();
                 menu.classList.contains("is-open") ? close() : open();
-            }
-
-            btn.addEventListener("click", toggle);
+            });
 
             // Prevent menu clicks closing immediately
             menu.addEventListener("click", e => e.stopPropagation());
 
             // Close on outside click
-            document.addEventListener("click", close);
+            document.addEventListener("click", closeAll);
 
             // Close on ESC
             document.addEventListener("keydown", e => {
-                if (e.key === "Escape") close();
+                if (e.key === "Escape") closeAll();
             });
+        });
+
+        /* ==================================================
+           VIEWPORT WOW — LIGHT UP EVERYTHING
+        ================================================== */
+        const wowSelectors = [
+            ".ccg-hero",
+            ".home-highlight-card",
+            ".home-genre-card",
+            ".games-accordion__section",
+            ".ccg-game-card",
+            ".ccg-panel",
+            ".emulation-cta",
+            ".quiz-card",
+            "footer",
+            ".ccg-brand",
+        ];
+
+        const wowTargets = document.querySelectorAll(wowSelectors.join(","));
+
+        if (wowTargets.length) {
+            const wowObserver = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("is-lit");
+                    } else {
+                        entry.target.classList.remove("is-lit");
+                    }
+                });
+            }, { threshold: 0.25 });
+
+            wowTargets.forEach(el => {
+                el.setAttribute("data-ccg-wow", "");
+                wowObserver.observe(el);
+            });
+        }
+
+        /* ==================================================
+           MICRO-GLINTS — MODED NAV & LOGO
+        ================================================== */
+        const glintTargets = document.querySelectorAll(".ccg-brand__logo, .ccg-nav__link, .ccg-nav__dropdown-link");
+
+        glintTargets.forEach(target => {
+            target.addEventListener("pointerenter", () => target.classList.add("is-glinting"));
+            target.addEventListener("pointerleave", () => target.classList.remove("is-glinting"));
         });
 
     });
