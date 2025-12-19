@@ -39,7 +39,8 @@
     <div class="ccg-page ccg-page--home">
 
         <!-- HEADER -->
-        <header class="ccg-header">
+                <!-- HEADER -->
+        <header class="ccg-header" data-ccg-header>
             <div class="ccg-header-inner">
 
                 <a href="home.html" class="ccg-brand">
@@ -57,7 +58,21 @@
                     </div>
                 </a>
 
-                                <nav class="ccg-nav" aria-label="Primary navigation">
+                <button class="ccg-nav-toggle"
+                        type="button"
+                        aria-label="Toggle navigation"
+                        aria-expanded="false"
+                        aria-controls="ccg-primary-nav"
+                        data-ccg-nav-toggle>
+                    <span class="ccg-nav-toggle__bars" aria-hidden="true">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
+                    <span class="ccg-nav-toggle__label">Menu</span>
+                </button>
+
+                <nav class="ccg-nav" aria-label="Primary navigation" id="ccg-primary-nav">
                     <ul class="ccg-nav__list">
                         <li><a href="home.html" class="ccg-nav__link ccg-nav__link--active">Home</a></li>
                         <li><a href="games/index.html" class="ccg-nav__link">Browse Games</a></li>
@@ -97,6 +112,7 @@
 
             <div class="ccg-header-neon-strip"></div>
         </header>
+
 
         <!-- MAIN -->
         <main class="ccg-main ccg-main--home">

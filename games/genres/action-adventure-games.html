@@ -35,28 +35,40 @@
     <div class="ccg-page ccg-page--genre-single">
 
         <!-- HEADER (LOCKED PARITY) -->
-        <header class="ccg-header">
+                <!-- HEADER -->
+        <header class="ccg-header" data-ccg-header>
             <div class="ccg-header-inner">
 
-                <!-- BRAND -->
                 <a href="../../home.html" class="ccg-brand">
                     <img src="../../resources/images/ccgamer-logo.png"
+                         alt="Cheeky Commodore Gamer logo"
                          class="ccg-brand__logo"
-                         width="56"
-                         height="56"
-                         alt="Cheeky Commodore Gamer logo">
+                         loading="lazy">
 
                     <div class="ccg-brand__text">
                         <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
                         <div class="ccg-brand__title">
-                            <span class="ccg-brand__neon-cheeky">CHEEKY</span>
-                            <span class="ccg-brand__neon-sub">COMMODORE GAMER</span>
+                            <span class="ccg-brand__neon-cheeky">CHEEKY COMMODORE</span>
+                            <span class="ccg-brand__neon-sub">GAMER</span>
                         </div>
                     </div>
                 </a>
 
-                <!-- NAV -->
-                                <nav class="ccg-nav" aria-label="Primary navigation">
+                <button class="ccg-nav-toggle"
+                        type="button"
+                        aria-label="Toggle navigation"
+                        aria-expanded="false"
+                        aria-controls="ccg-primary-nav"
+                        data-ccg-nav-toggle>
+                    <span class="ccg-nav-toggle__bars" aria-hidden="true">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
+                    <span class="ccg-nav-toggle__label">Menu</span>
+                </button>
+
+                <nav class="ccg-nav" aria-label="Primary navigation" id="ccg-primary-nav">
                     <ul class="ccg-nav__list">
                         <li><a href="../../home.html" class="ccg-nav__link">Home</a></li>
                         <li><a href="../../games/index.html" class="ccg-nav__link">Browse Games</a></li>
@@ -69,10 +81,8 @@
                     </ul>
                 </nav>
 
-                <!-- HEADER ACTIONS -->
                 <div class="ccg-header-actions">
 
-                    <!-- MODE TOGGLE -->
                     <button class="ccg-mode-toggle"
                             type="button"
                             aria-label="Toggle between C64 and Amiga modes"
@@ -84,8 +94,7 @@
                         </span>
                     </button>
 
-                    <!-- SOCIALS -->
-                    <div class="ccg-header-socials">
+                    <div class="ccg-header-socials" aria-label="Social links">
                         <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>
                         <a href="https://patreon.com/CheekyCommodoreGamer" aria-label="Patreon"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>
                         <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" aria-label="PayPal"><span class="ccg-socials__icon ccg-socials__icon--paypal"></span></a>
@@ -99,6 +108,7 @@
 
             <div class="ccg-header-neon-strip"></div>
         </header>
+
 
         <!-- MAIN -->
         <main class="ccg-main">
