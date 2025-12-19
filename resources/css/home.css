@@ -1,5 +1,5 @@
 /* ============================================================
-   HOME — SMALL GENRE THUMBNAILS (SAFE)
+   HOME — SMALL GENRE THUMB GRID (FIXED)
 ============================================================ */
 
 html[data-ccg-page="home"] .ccg-home-genre-thumb-grid {
@@ -8,27 +8,21 @@ html[data-ccg-page="home"] .ccg-home-genre-thumb-grid {
     margin-top: 20px;
 }
 
-@media (min-width: 520px) {
-    html[data-ccg-page="home"] .ccg-home-genre-thumb-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
-@media (min-width: 900px) {
+@media (min-width: 600px) {
     html[data-ccg-page="home"] .ccg-home-genre-thumb-grid {
         grid-template-columns: repeat(6, 1fr);
     }
 }
 
-/* Compact, non-dominant tiles */
+/* Small, supportive tiles */
 html[data-ccg-page="home"] .ccg-home-genre-thumb {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
 
-    text-align: center;
     padding: 10px;
+    text-align: center;
 
     background: rgba(0,0,0,0.45);
     border-radius: 12px;
@@ -38,13 +32,13 @@ html[data-ccg-page="home"] .ccg-home-genre-thumb {
 }
 
 html[data-ccg-page="home"] .ccg-home-genre-thumb img {
-    width: 64px;
-    height: 64px;
+    width: 56px;
+    height: 56px;
     object-fit: cover;
     border-radius: 8px;
 }
 
 html[data-ccg-page="home"] .ccg-home-genre-thumb span {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     opacity: 0.9;
 }
