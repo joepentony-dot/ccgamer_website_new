@@ -205,50 +205,47 @@
                 <div class="home-tagline__flare" aria-hidden="true"></div>
             </section>
 
-            <!-- FEATURED SPOTLIGHT -->
-            <section class="home-section home-section--spotlight">
+            <!-- ESSENTIALS CALLOUT -->
+            <section class="home-section home-section--essentials">
                 <header class="home-section__header">
-                    <h2 class="home-section__title">Spotlight: Game &amp; Matching Feature</h2>
+                    <h2 class="home-section__title">Your retro command deck</h2>
                     <div class="home-section__divider"></div>
-                    <p class="home-section__subtitle">One premium, deterministic pick pulled straight from the library.</p>
+                    <p class="home-section__subtitle">Everything you need to get playing, watching and exploring without the fluff.</p>
                 </header>
 
-                <article class="home-spotlight-card" data-ccg-spotlight>
-                    <div class="home-spotlight__media">
-                        <div class="home-spotlight__art" data-ccg-spotlight-art role="presentation"></div>
-                        <div class="home-spotlight__video" data-ccg-spotlight-video>
-                            <div class="home-spotlight__video-overlay">
-                                <p class="home-spotlight__video-label">Matching longplay / feature</p>
-                                <button class="home-spotlight__play" type="button" data-ccg-spotlight-watch>Play the feature</button>
-                            </div>
-                            <div class="home-spotlight__iframe" data-ccg-spotlight-iframe-wrap>
-                                <iframe
-                                    title="Featured longplay"
-                                    loading="lazy"
-                                    referrerpolicy="strict-origin-when-cross-origin"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                    allowfullscreen
-                                    data-ccg-spotlight-iframe>
-                                </iframe>
-                            </div>
+                <div class="home-essentials-grid">
+                    <article class="home-essentials-card">
+                        <p class="home-essentials__eyebrow">Fast entry</p>
+                        <h3 class="home-essentials__title">Jump straight to the good stuff</h3>
+                        <p class="home-essentials__copy">Featured highlights stay up top while the full library, collections and genre hubs sit one click away.</p>
+                        <div class="home-essentials__chips">
+                            <span class="home-essentials__chip">C64 &amp; Amiga</span>
+                            <span class="home-essentials__chip">Randomizer</span>
+                            <span class="home-essentials__chip">Top picks</span>
                         </div>
-                    </div>
+                    </article>
 
-                    <div class="home-spotlight__body">
-                        <p class="home-spotlight__meta" data-ccg-spotlight-meta>Loading featured pick...</p>
-                        <h3 class="home-spotlight__title" data-ccg-spotlight-title>Featured Game</h3>
-                        <p class="home-spotlight__copy" data-ccg-spotlight-copy>Neon-fuelled action and pixel-perfect charm.</p>
+                    <article class="home-essentials-card">
+                        <p class="home-essentials__eyebrow">Immersive vibes</p>
+                        <h3 class="home-essentials__title">Built like a retro magazine</h3>
+                        <p class="home-essentials__copy">Neon overlays, responsive cards, and playful CTAs keep the page lively without slowing you down.</p>
+                        <ul class="home-essentials__list">
+                            <li>Dynamic feature cards pulled from the library</li>
+                            <li>Responsive grids and tactile hover states</li>
+                            <li>Mode-aware styling for C64 or Amiga</li>
+                        </ul>
+                    </article>
 
-                        <div class="home-spotlight__tags" data-ccg-spotlight-tags></div>
-
-                        <div class="home-spotlight__actions">
-                            <a class="ccg-btn ccg-btn--primary" data-ccg-spotlight-game href="#">View the game page</a>
-                            <a class="ccg-btn ccg-btn--ghost" href="games/collections/top-picks.html">More CCG essentials</a>
-                            <button class="ccg-btn ccg-btn--neon" type="button" data-ccg-spotlight-watch>Play the feature</button>
-                            <a class="ccg-btn ccg-btn--ghost" data-ccg-spotlight-youtube href="#" target="_blank" rel="noopener">Watch on YouTube</a>
+                    <article class="home-essentials-card">
+                        <p class="home-essentials__eyebrow">Stay a while</p>
+                        <h3 class="home-essentials__title">Fresh reasons to scroll</h3>
+                        <p class="home-essentials__copy">Quick-access tiles, curated neon links, and a hero ready for spin-the-wheel discoveries.</p>
+                        <div class="home-essentials__actions">
+                            <a class="ccg-btn ccg-btn--primary" href="games/index.html">Browse everything</a>
+                            <a class="ccg-btn ccg-btn--ghost" href="games/collections/top-picks.html">See CCG essentials</a>
                         </div>
-                    </div>
-                </article>
+                    </article>
+                </div>
             </section>
 
             <!-- FEATURED HIGHLIGHTS -->
@@ -366,6 +363,20 @@
                         <span class="home-link-tile__label">Licensed gems</span>
                         <span class="home-link-tile__desc">Movie and TV tie-ins worth revisiting.</span>
                     </a>
+                </div>
+            </section>
+
+            <!-- BOTTOM CTA -->
+            <section class="home-bottom-cta" aria-labelledby="home-bottom-cta-heading">
+                <div class="home-bottom-cta__beam" aria-hidden="true"></div>
+                <div class="home-bottom-cta__content">
+                    <p class="home-bottom-cta__eyebrow">Ready to play?</p>
+                    <h2 class="home-bottom-cta__headline" id="home-bottom-cta-heading">Dial up the games, crank the longplays, own the leaderboard.</h2>
+                    <p class="home-bottom-cta__copy">Whether you’re chasing nostalgia or hunting for a new favourite, the bottom of the page now doubles as a launchpad—no scrolling wasted.</p>
+                    <div class="home-bottom-cta__actions">
+                        <a class="ccg-btn ccg-btn--neon" href="quiz/quiz.html">Take the trivia challenge</a>
+                        <a class="ccg-btn ccg-btn--ghost" href="games/collections/index.html">Explore curated sets</a>
+                    </div>
                 </div>
             </section>
 
