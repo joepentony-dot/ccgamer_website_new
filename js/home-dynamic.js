@@ -9,18 +9,42 @@
 
 let CCG_HOME_ALL_GAMES = [];
 
+const MOBILE_MEDIA = window.matchMedia?.("(max-width: 820px)");
+const PREFERS_REDUCED_MOTION = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+const COARSE_POINTER = window.matchMedia?.("(pointer: coarse)");
+
 document.addEventListener("DOMContentLoaded", () => initHomeDynamic());
 
 async function initHomeDynamic() {
+    const skipAnimations = shouldSkipHomeAnimations();
+
     await loadGamesForHome();
     renderFeaturedHighlights();
     renderFeaturedSpotlight();
     wireRandomGameButton();
     syncModeLabel();
     initModeObserver();
-    initHeroCardFX();
-    initHeroGlowPulse();
-    initHomeEnergy();
+
+    if (skipAnimations) {
+        calmHeroCards();
+    } else {
+        initHeroCardFX();
+        initHeroGlowPulse();
+        initHomeEnergy();
+    }
+}
+
+function shouldSkipHomeAnimations() {
+    const lowMemory = typeof navigator.deviceMemory === "number" && navigator.deviceMemory <= 3;
+    const lowCore = typeof navigator.hardwareConcurrency === "number" && navigator.hardwareConcurrency <= 4;
+
+    return Boolean(
+        PREFERS_REDUCED_MOTION?.matches ||
+        COARSE_POINTER?.matches ||
+        MOBILE_MEDIA?.matches ||
+        lowMemory ||
+        lowCore
+    );
 }
 
 /* ============================================================
@@ -223,23 +247,39 @@ function initModeObserver() {
 
 function initHeroCardFX() {
     const cards = document.querySelectorAll('.home-hero-card, .home-highlight-card, .home-spotlight-card, .home-link-tile');
-    if (!cards.length) return;
+    const hasFinePointer = window.matchMedia?.('(hover: hover) and (pointer: fine)')?.matches;
+    if (!cards.length || !hasFinePointer) return;
 
     cards.forEach(card => {
         card.style.setProperty('--glow-x', '50%');
         card.style.setProperty('--glow-y', '50%');
         card.style.setProperty('--glow-alpha', '0.28');
 
-        card.addEventListener('pointermove', (e) => {
+        let frameId = null;
+        let pendingPoint = null;
+
+        const updateGlow = () => {
+            if (!pendingPoint) return;
             const rect = card.getBoundingClientRect();
-            const x = ((e.clientX - rect.left) / rect.width) * 100;
-            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            const x = ((pendingPoint.x - rect.left) / rect.width) * 100;
+            const y = ((pendingPoint.y - rect.top) / rect.height) * 100;
             card.style.setProperty('--glow-x', `${x.toFixed(2)}%`);
             card.style.setProperty('--glow-y', `${y.toFixed(2)}%`);
             card.style.setProperty('--glow-alpha', '0.55');
-        });
+            frameId = null;
+        };
+
+        card.addEventListener('pointermove', (e) => {
+            pendingPoint = { x: e.clientX, y: e.clientY };
+            if (!frameId) {
+                frameId = requestAnimationFrame(updateGlow);
+            }
+        }, { passive: true });
 
         card.addEventListener('pointerleave', () => {
+            pendingPoint = null;
+            if (frameId) cancelAnimationFrame(frameId);
+            frameId = null;
             card.style.setProperty('--glow-x', '50%');
             card.style.setProperty('--glow-y', '50%');
             card.style.setProperty('--glow-alpha', '0.30');
@@ -249,7 +289,7 @@ function initHeroCardFX() {
 
 function initHeroGlowPulse() {
     const cards = document.querySelectorAll('.home-hero-card');
-    if (!cards.length) return;
+    if (!cards.length || PREFERS_REDUCED_MOTION?.matches) return;
 
     let tick = 0;
     function loop() {
@@ -270,9 +310,21 @@ function initHomeEnergy() {
     const brand = document.querySelector('.ccg-brand');
 
     if (!tagline && !brand) return;
+    if (PREFERS_REDUCED_MOTION?.matches) return;
 
     setInterval(() => {
         tagline?.classList.toggle('is-ignited');
         brand?.classList.toggle('is-ignited');
     }, 2800);
+}
+
+function calmHeroCards() {
+    const cards = document.querySelectorAll('.home-hero-card, .home-highlight-card, .home-spotlight-card, .home-link-tile');
+    if (!cards.length) return;
+
+    cards.forEach(card => {
+        card.style.setProperty('--glow-x', '50%');
+        card.style.setProperty('--glow-y', '50%');
+        card.style.setProperty('--glow-alpha', '0.30');
+    });
 }
