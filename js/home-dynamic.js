@@ -1,10 +1,10 @@
 /* ============================================================
-   CCG HOME DYNAMIC — OMEGA (SAFE GENRE THUMBS)
+   CCG HOME DYNAMIC — OMEGA (GENRE THUMBS FIXED)
    ------------------------------------------------------------
-   • Featured Highlights (UNCHANGED behaviour)
-   • Small genre thumbnails at bottom
-   • No large cards
-   • No layout dominance
+   • Featured Highlights (unchanged)
+   • Small Home genre thumbnails (from first game in genre)
+   • NO new assets
+   • NO 404s
 ============================================================ */
 
 let CCG_HOME_ALL_GAMES = [];
@@ -34,7 +34,7 @@ async function loadGamesForHome() {
 }
 
 /* ============================================================
-   FEATURED HIGHLIGHTS — LEAVE AS BEFORE
+   FEATURED HIGHLIGHTS — DO NOT TOUCH
 ============================================================ */
 
 function renderFeaturedHighlights() {
@@ -64,7 +64,7 @@ function renderFeaturedHighlights() {
 }
 
 /* ============================================================
-   HOME GENRES — SMALL THUMBNAILS ONLY
+   HOME GENRES — SMALL THUMBS (FROM GAME DATA)
 ============================================================ */
 
 function renderHomeGenresSmall() {
@@ -77,7 +77,9 @@ function renderHomeGenresSmall() {
         if (!Array.isArray(game.genres)) return;
         game.genres.forEach(g => {
             const name = g.trim();
-            genreMap.set(name, (genreMap.get(name) || 0) + 1);
+            if (!genreMap.has(name)) {
+                genreMap.set(name, game);
+            }
         });
     });
 
@@ -86,7 +88,7 @@ function renderHomeGenresSmall() {
 
     [...genreMap.entries()]
         .sort((a, b) => a[0].localeCompare(b[0]))
-        .forEach(([genre, count]) => {
+        .forEach(([genre, game]) => {
             const slug = genre.toLowerCase().replace(/\s+/g, "-");
 
             const tile = document.createElement("a");
@@ -94,7 +96,7 @@ function renderHomeGenresSmall() {
             tile.href = `games/genres/${slug}.html`;
 
             tile.innerHTML = `
-                <img src="resources/images/genres/${slug}.png" alt="${genre}">
+                <img src="${resolveThumb(game.thumbnail)}" alt="${genre}">
                 <span>${genre}</span>
             `;
 
