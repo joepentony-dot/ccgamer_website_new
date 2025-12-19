@@ -94,6 +94,51 @@
             });
         });
 
+        /* ==================================================
+           VIEWPORT WOW — LIGHT UP EVERYTHING
+        ================================================== */
+        const wowSelectors = [
+            ".ccg-hero",
+            ".home-highlight-card",
+            ".home-genre-card",
+            ".games-accordion__section",
+            ".ccg-game-card",
+            ".ccg-panel",
+            ".emulation-cta",
+            ".quiz-card",
+            "footer",
+            ".ccg-brand",
+        ];
+
+        const wowTargets = document.querySelectorAll(wowSelectors.join(","));
+
+        if (wowTargets.length) {
+            const wowObserver = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("is-lit");
+                    } else {
+                        entry.target.classList.remove("is-lit");
+                    }
+                });
+            }, { threshold: 0.25 });
+
+            wowTargets.forEach(el => {
+                el.setAttribute("data-ccg-wow", "");
+                wowObserver.observe(el);
+            });
+        }
+
+        /* ==================================================
+           MICRO-GLINTS — MODED NAV & LOGO
+        ================================================== */
+        const glintTargets = document.querySelectorAll(".ccg-brand__logo, .ccg-nav__link, .ccg-nav__dropdown-link");
+
+        glintTargets.forEach(target => {
+            target.addEventListener("pointerenter", () => target.classList.add("is-glinting"));
+            target.addEventListener("pointerleave", () => target.classList.remove("is-glinting"));
+        });
+
     });
 
 })();
