@@ -1,9 +1,8 @@
 /* ==========================================================
-   CCG GLOBAL SCRIPT — CORE UI + HEADER DROPDOWN (LOCKED)
+   CCG GLOBAL SCRIPT — CORE UI (NAV + WOW)
    ----------------------------------------------------------
    • Depth-aware logo path fix
-   • Header "More ▾" dropdown (CLICK-BASED)
-   • Close on outside click / ESC
+   • Header nav flatten (no "More" dropdown)
    • No dependencies on page-specific JS
 ========================================================== */
 
@@ -45,44 +44,76 @@
         });
 
         /* ==================================================
-           HEADER “MORE ▾” DROPDOWN — CLICK TOGGLE
+           HEADER NAV FLATTEN — TWO-LAYER PILL ROW
         ================================================== */
+        const navList = document.querySelector(".ccg-nav__list");
         const moreBlocks = document.querySelectorAll(".ccg-nav__more");
 
         moreBlocks.forEach(block => {
-            const btn = block.querySelector(".ccg-nav__more-btn");
-            const menu = block.querySelector(".ccg-nav__dropdown");
+            const menuLinks = block.querySelectorAll(".ccg-nav__dropdown-link");
+            if (!menuLinks.length || !navList) return;
 
-            if (!btn || !menu) return;
-
-            function open() {
-                menu.classList.add("is-open");
-                btn.setAttribute("aria-expanded", "true");
-            }
-
-            function close() {
-                menu.classList.remove("is-open");
-                btn.setAttribute("aria-expanded", "false");
-            }
-
-            function toggle(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                menu.classList.contains("is-open") ? close() : open();
-            }
-
-            btn.addEventListener("click", toggle);
-
-            // Prevent menu clicks closing immediately
-            menu.addEventListener("click", e => e.stopPropagation());
-
-            // Close on outside click
-            document.addEventListener("click", close);
-
-            // Close on ESC
-            document.addEventListener("keydown", e => {
-                if (e.key === "Escape") close();
+            menuLinks.forEach(link => {
+                const li = document.createElement("li");
+                const clone = link.cloneNode(true);
+                clone.classList.remove("ccg-nav__dropdown-link");
+                clone.classList.add("ccg-nav__link");
+                li.appendChild(clone);
+                navList.appendChild(li);
             });
+
+            block.remove();
+        });
+
+        if (navList) {
+            navList.classList.add("ccg-nav__list--expanded");
+        }
+
+        /* ==================================================
+           VIEWPORT WOW — LIGHT UP EVERYTHING
+        ================================================== */
+        const wowSelectors = [
+            ".ccg-hero",
+            ".home-highlight-card",
+            ".home-genre-card",
+            ".home-featured-card",
+            ".home-curated-card",
+            ".games-accordion__section",
+            ".ccg-game-card",
+            ".ccg-panel",
+            ".emulation-cta",
+            ".quiz-card",
+            "footer",
+            ".ccg-brand",
+        ];
+
+        const wowTargets = document.querySelectorAll(wowSelectors.join(","));
+
+        if (wowTargets.length) {
+            const wowObserver = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("is-lit");
+                    } else {
+                        entry.target.classList.remove("is-lit");
+                    }
+                });
+            }, { threshold: 0.25 });
+
+            wowTargets.forEach(el => {
+                el.setAttribute("data-ccg-wow", "");
+                wowObserver.observe(el);
+            });
+        }
+
+        /* ==================================================
+           MICRO-GLINTS — MODED NAV & LOGO
+        ================================================== */
+        const glintTargets = document.querySelectorAll(".ccg-brand__logo, .ccg-nav__link, .ccg-nav__dropdown-link");
+
+        glintTargets.forEach(target => {
+            target.addEventListener("pointerenter", () => target.classList.add("is-glinting"));
+            target.addEventListener("pointerleave", () => target.classList.remove("is-glinting"));
         });
 
     });

@@ -53,8 +53,8 @@
                     <div class="ccg-brand__text">
                         <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
                         <div class="ccg-brand__title">
-                            <span class="ccg-brand__neon-cheeky">CHEEKY</span>
-                            <span class="ccg-brand__neon-sub">COMMODORE GAMER</span>
+                            <span class="ccg-brand__neon-cheeky">CHEEKY COMMODORE</span>
+                            <span class="ccg-brand__neon-sub">GAMER</span>
                         </div>
                     </div>
                 </a>
@@ -62,37 +62,14 @@
                 <!-- NAV -->
                 <nav class="ccg-nav" aria-label="Primary navigation">
                     <ul class="ccg-nav__list">
-
-                        <li>
-                            <a href="home.html" class="ccg-nav__link ccg-nav__link--active">Home</a>
-                        </li>
-                        <li>
-                            <a href="games/index.html" class="ccg-nav__link">Browse Games</a>
-                        </li>
-                        <li>
-                            <a href="games/genres/index.html" class="ccg-nav__link">Browse by Genre</a>
-                        </li>
-                        <li>
-                            <a href="games/collections/index.html" class="ccg-nav__link">Collections</a>
-                        </li>
-
-                        <!-- MORE -->
-                        <li class="ccg-nav__more">
-                            <button class="ccg-nav__link ccg-nav__more-btn"
-                                    type="button"
-                                    aria-haspopup="true"
-                                    aria-expanded="false">
-                                More ▾
-                            </button>
-
-                            <ul class="ccg-nav__dropdown">
-                                <li><a href="quiz/quiz.html" class="ccg-nav__dropdown-link">Trivia &amp; Leaderboard</a></li>
-                                <li><a href="emulation.html" class="ccg-nav__dropdown-link">Emulation</a></li>
-                                <li><a href="about.html" class="ccg-nav__dropdown-link">About</a></li>
-                                <li><a href="contact.html" class="ccg-nav__dropdown-link">Contact</a></li>
-                            </ul>
-                        </li>
-
+                        <li><a href="home.html" class="ccg-nav__link ccg-nav__link--active">Home</a></li>
+                        <li><a href="games/index.html" class="ccg-nav__link">Browse Games</a></li>
+                        <li><a href="games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
+                        <li><a href="games/collections/index.html" class="ccg-nav__link">Collections</a></li>
+                        <li><a href="quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
+                        <li><a href="emulation.html" class="ccg-nav__link">Emulation</a></li>
+                        <li><a href="about.html" class="ccg-nav__link">About</a></li>
+                        <li><a href="contact.html" class="ccg-nav__link">Contact</a></li>
                     </ul>
                 </nav>
 
@@ -209,8 +186,53 @@
 
             <!-- TAGLINE STRIP -->
             <section class="home-tagline">
-                <p class="home-tagline__kicker">Another visitor...</p>
-                <p class="home-tagline__main">Stay a while, stay forever!</p>
+                <div class="home-tagline__pulse"></div>
+                <div class="home-tagline__text">
+                    <p class="home-tagline__kicker">Another visitor...</p>
+                    <p class="home-tagline__main">Stay a while, stay forever!</p>
+                </div>
+                <div class="home-tagline__flare" aria-hidden="true"></div>
+            </section>
+
+            <!-- FEATURED SHOWCASE -->
+            <section class="home-section home-section--feature">
+                <header class="home-section__header">
+                    <h2 class="home-section__title">Featured Game &amp; Video</h2>
+                    <div class="home-section__divider"></div>
+                    <p class="home-section__subtitle">One spotlight — matching gameplay and longplay so you can dive straight in.</p>
+                </header>
+
+                <div class="home-featured-grid">
+                    <article class="home-featured-card home-featured-card--game">
+                        <div class="home-featured__media" data-ccg-feature-thumb></div>
+                        <div class="home-featured__body">
+                            <p class="home-featured__meta" data-ccg-feature-meta>Loading...</p>
+                            <h3 class="home-featured__title" data-ccg-feature-title>Featured Game</h3>
+                            <p class="home-featured__blurb" data-ccg-feature-copy>Neon-fuelled action and pixel-perfect charm.</p>
+                            <div class="home-featured__actions">
+                                <a class="ccg-btn ccg-btn--primary" data-ccg-feature-play href="#">View the game page</a>
+                                <a class="ccg-btn ccg-btn--ghost" data-ccg-feature-collection href="games/collections/top-picks.html">More CCG essentials</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="home-featured-card home-featured-card--video">
+                        <div class="home-featured__media home-featured__media--video" data-ccg-feature-video-thumb>
+                            <button class="home-featured__play" type="button" aria-label="Play featured video" data-ccg-feature-watch>
+                                ▶
+                            </button>
+                        </div>
+                        <div class="home-featured__body">
+                            <p class="home-featured__meta" data-ccg-feature-video-meta>Longplay · Matching feature</p>
+                            <h3 class="home-featured__title" data-ccg-feature-video-title>Matching longplay / feature</h3>
+                            <p class="home-featured__blurb" data-ccg-feature-video-copy>Watch the exact game in motion with CRT glow and soundtrack.</p>
+                            <div class="home-featured__actions">
+                                <a class="ccg-btn ccg-btn--primary" data-ccg-feature-watch-link href="#" target="_blank" rel="noopener">Watch on YouTube</a>
+                                <a class="ccg-btn ccg-btn--ghost" data-ccg-feature-play2 href="#">Play the feature</a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
             </section>
 
             <!-- FEATURED HIGHLIGHTS -->
@@ -231,18 +253,9 @@
                         </div>
                     </a>
 
-                    <a href="games/genres/index.html" class="ccg-card home-highlight-card">
-                        <div class="ccg-card__body">
-                            <h3 class="ccg-card__title">Genre Hubs</h3>
-                            <p class="ccg-card__text">
-                                Jump straight into your kind of game: action, shooters, platformers, strategy and more.
-                            </p>
-                        </div>
-                    </a>
-
                     <a href="games/collections/index.html" class="ccg-card home-highlight-card">
                         <div class="ccg-card__body">
-                            <h3 class="ccg-card__title">Collections That Actually Matter</h3>
+                            <h3 class="ccg-card__title">Curated Collections</h3>
                             <p class="ccg-card__text">
                                 Cartridge, licensed, BPJS and Top Picks — curated like a proper retro magazine feature.
                             </p>
@@ -276,50 +289,48 @@
                         </div>
                     </a>
 
+                    <a href="contact.html" class="ccg-card home-highlight-card">
+                        <div class="ccg-card__body">
+                            <h3 class="ccg-card__title">Say Hi</h3>
+                            <p class="ccg-card__text">
+                                Drop a message, pitch a collab, or share your favourite SID memories.
+                            </p>
+                        </div>
+                    </a>
+
                 </div>
             </section>
 
-            <!-- BROWSE BY GENRE -->
-            <section class="home-section home-section--genres">
+            <!-- CURATED LINKS -->
+            <section class="home-section home-section--curated">
                 <header class="home-section__header">
-                    <h2 class="home-section__title">Browse by Genre</h2>
+                    <h2 class="home-section__title">Curated Neon Links</h2>
                     <div class="home-section__divider"></div>
                 </header>
 
-                <div class="home-genres-grid">
-
-                    <a href="games/genres/index.html" class="ccg-card home-genre-tile">
-                        <div class="ccg-card__body">
-                            <h3 class="ccg-card__title">Explore Genres</h3>
-                            <p class="ccg-card__text">
-                                Open the full genre hub and dive into the classics the right way.
-                            </p>
-                        </div>
+                <div class="home-curated-grid">
+                    <a class="home-curated-card" href="games/collections/bpjs-indexed-games.html">
+                        <div class="home-curated__label">BPJS Collection</div>
+                        <p class="home-curated__text">Every UK-banned C64 &amp; Amiga release plus context.</p>
+                        <span class="home-curated__cta">Enter the vault →</span>
                     </a>
 
-                    <a href="games/collections/index.html" class="ccg-card home-genre-tile">
-                        <div class="ccg-card__body">
-                            <h3 class="ccg-card__title">Start with Collections</h3>
-                            <p class="ccg-card__text">
-                                Want a guided tour? Jump into Top Picks and curated sets first.
-                            </p>
-                        </div>
+                    <a class="home-curated-card" href="games/collections/c64-cartridge-games.html">
+                        <div class="home-curated__label">Cartridge Showcase</div>
+                        <p class="home-curated__text">Instant-load C64 carts with crisp art and backstory.</p>
+                        <span class="home-curated__cta">Slot it in →</span>
                     </a>
 
-                    <a href="games/index.html" class="ccg-card home-genre-tile">
-                        <div class="ccg-card__body">
-                            <h3 class="ccg-card__title">Search the Library</h3>
-                            <p class="ccg-card__text">
-                                Use the A–Z index and search to find exactly what you want in seconds.
-                            </p>
-                        </div>
+                    <a class="home-curated-card" href="games/collections/licensed-games.html">
+                        <div class="home-curated__label">Licensed Gems</div>
+                        <p class="home-curated__text">Movies, TV tie-ins and licensed wonders done right.</p>
+                        <span class="home-curated__cta">See the hits →</span>
                     </a>
 
-                </div>
-
-                <div class="home-section__cta">
-                    <a href="games/genres/index.html" class="ccg-btn ccg-btn--primary">
-                        Open Genre Hub
+                    <a class="home-curated-card" href="games/collections/top-picks.html">
+                        <div class="home-curated__label">CCG Essentials</div>
+                        <p class="home-curated__text">Hand-picked bangers to play tonight on C64 or Amiga.</p>
+                        <span class="home-curated__cta">Play first →</span>
                     </a>
                 </div>
             </section>

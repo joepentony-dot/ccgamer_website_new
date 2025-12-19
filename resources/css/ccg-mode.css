@@ -48,6 +48,35 @@ body[data-ccg-mode="amiga"] {
 }
 
 /* ============================================================
+   PAGE AURA — MODED WOW HALO
+============================================================ */
+
+body[data-ccg-mode] .ccg-main {
+    position: relative;
+    z-index: 1;
+}
+
+body[data-ccg-mode] .ccg-main::before {
+    content: "";
+    position: absolute;
+    inset: -24px;
+    z-index: -1;
+    border-radius: 28px;
+    filter: blur(26px);
+    opacity: 0.7;
+    transition: opacity 320ms ease;
+    pointer-events: none;
+}
+
+body[data-ccg-mode="c64"] .ccg-main::before {
+    background: radial-gradient(circle at 30% 18%, rgba(0,170,255,0.28), transparent 55%);
+}
+
+body[data-ccg-mode="amiga"] .ccg-main::before {
+    background: radial-gradient(circle at 70% 20%, rgba(255,41,224,0.32), transparent 60%);
+}
+
+/* ============================================================
    HEADER NAV — BASELINE (NO VISUAL CHANGE)
 ============================================================ */
 
@@ -132,13 +161,79 @@ body[data-ccg-mode] .ccg-header-neon-strip {
 }
 
 /* ============================================================
+   MODE TOGGLE — NEON WOW PILL
+============================================================ */
+
+.ccg-mode-toggle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border: 1px solid rgba(var(--accent-rgb), 0.35);
+    background: linear-gradient(135deg, rgba(0,0,0,0.9), rgba(0,0,0,0.72));
+    box-shadow:
+        0 0 0 1px rgba(255,255,255,0.05),
+        0 0 14px rgba(var(--accent-rgb), 0.35),
+        inset 0 0 18px rgba(var(--accent-rgb), 0.18);
+    gap: 8px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.ccg-mode-toggle__pill {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    width: 100%;
+    isolation: isolate;
+}
+
+.ccg-mode-toggle__label {
+    text-transform: uppercase;
+    font-size: 0.65rem;
+    letter-spacing: 0.16em;
+    font-weight: 700;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+.ccg-mode-toggle__label--c64 { color: #6de0ff; }
+.ccg-mode-toggle__label--amiga { color: #ff8bff; }
+
+.ccg-mode-toggle__thumb {
+    position: absolute;
+    inset: 4px;
+    width: calc(50% - 6px);
+    border-radius: 999px;
+    background: linear-gradient(135deg, #00aaff, #7fe9ff);
+    box-shadow:
+        0 0 14px rgba(0, 255, 255, 0.45),
+        inset 0 0 10px rgba(0,0,0,0.4);
+    transition: transform 360ms var(--ccg-ease-ui), box-shadow 360ms var(--ccg-ease-ui);
+    z-index: 1;
+}
+
+/* ============================================================
    MODE TOGGLE THUMB
 ============================================================ */
 
 body[data-ccg-mode="c64"] .ccg-mode-toggle__thumb {
     background: linear-gradient(135deg, #00aaff, #7fe9ff);
+    transform: translateX(0%);
+    box-shadow:
+        0 0 18px rgba(0, 200, 255, 0.55),
+        inset 0 0 10px rgba(0,0,0,0.45);
 }
 
 body[data-ccg-mode="amiga"] .ccg-mode-toggle__thumb {
     background: linear-gradient(135deg, #ff29e0, #ff7bff);
+    transform: translateX(100%);
+    box-shadow:
+        0 0 18px rgba(255, 41, 224, 0.55),
+        inset 0 0 10px rgba(0,0,0,0.45);
 }

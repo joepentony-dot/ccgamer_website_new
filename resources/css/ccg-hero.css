@@ -64,7 +64,8 @@
 
     transform: scale(1.10);
     object-position: center 46%;
-    opacity: 0.62;
+    opacity: 1;
+    filter: saturate(1.12) contrast(1.05);
 
     animation: ccg-home-hero-breathe 30s ease-in-out infinite;
 
@@ -86,18 +87,18 @@
     background:
         radial-gradient(
             ellipse at 18% 22%,
-            rgba(var(--accent-rgb),0.28),
-            transparent 55%
+            rgba(var(--accent-rgb),0.46),
+            transparent 52%
         ),
         radial-gradient(
             ellipse at 82% 78%,
-            rgba(var(--accent-rgb),0.18),
-            transparent 60%
+            rgba(var(--accent-rgb),0.30),
+            transparent 58%
         ),
         linear-gradient(
             to bottom,
-            rgba(0,0,0,0.30),
-            rgba(0,0,0,0.72)
+            rgba(0,0,0,0.16),
+            rgba(0,0,0,0.55)
         );
 
     animation: ccg-home-hero-overlay-breathe 26s ease-in-out infinite;
@@ -114,6 +115,34 @@
 
     text-shadow:
         0 2px 14px rgba(0,0,0,0.85);
+}
+
+/* ------------------------------------------------------------
+   HOME HERO — MODE-SPECIFIC BACKDROP
+------------------------------------------------------------ */
+
+.home-hero .ccg-hero-image {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-size: cover;
+    background-position: center;
+    filter: saturate(1.1) drop-shadow(0 0 14px rgba(0,0,0,0.35));
+    opacity: 0.95;
+    mix-blend-mode: screen;
+    transition: opacity 480ms ease, transform 620ms ease;
+}
+
+body[data-ccg-mode="c64"] .home-hero .ccg-hero-image,
+body[data-mode="c64"] .home-hero .ccg-hero-image {
+    background-image: url("../images/hero/ccg-hero-c64.png");
+    transform: scale(1.02);
+}
+
+body[data-ccg-mode="amiga"] .home-hero .ccg-hero-image,
+body[data-mode="amiga"] .home-hero .ccg-hero-image {
+    background-image: url("../images/hero/ccg-hero-amiga.png");
+    transform: scale(1.05);
 }
 
 /* ============================================================
