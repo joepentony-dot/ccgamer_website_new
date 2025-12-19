@@ -243,6 +243,55 @@ li {
     z-index: 1;
 }
 
+@media (max-width: 1100px) {
+    .ccg-header {
+        height: auto;
+        max-height: none;
+        padding: 10px 0 6px;
+    }
+
+    .ccg-header-inner {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        gap: 12px;
+    }
+
+    .ccg-brand {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .ccg-nav__list {
+        padding-inline: 12px;
+        gap: 10px;
+        row-gap: 10px;
+    }
+
+    .ccg-header-actions {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 680px) {
+    .ccg-nav__link {
+        font-size: 0.62rem;
+        padding-inline: 12px;
+        letter-spacing: 0.1em;
+    }
+
+    .ccg-brand__title {
+        font-size: 1rem;
+    }
+
+    .ccg-nav__dropdown {
+        left: 0;
+        right: auto;
+    }
+}
+
 .ccg-nav__list::-webkit-scrollbar {
     display: none;
 }

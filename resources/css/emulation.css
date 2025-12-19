@@ -3,6 +3,130 @@
    Dedicated styling for emulator cards, setup steps and helper tips.
    ============================================================ */
 
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root {
+    --emu-electric: #00ffff;
+    --emu-amber: #ffcc00;
+    --emu-magenta: #ff00ff;
+}
+
+.emu-hero-deck {
+    margin: 12px 0 24px;
+    padding: clamp(16px, 3vw, 28px);
+    border-radius: 18px;
+    background:
+        radial-gradient(circle at 18% 20%, rgba(var(--accent-rgb),0.25), transparent 46%),
+        radial-gradient(circle at 82% 12%, rgba(255,255,255,0.08), transparent 40%),
+        linear-gradient(140deg, rgba(0,0,0,0.92), rgba(0,0,0,0.76));
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 24px 48px rgba(0,0,0,0.75), 0 0 28px rgba(var(--accent-rgb), 0.25);
+}
+
+.emu-hero-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: clamp(14px, 2vw, 22px);
+    align-items: stretch;
+}
+
+.emu-marquee {
+    padding: clamp(18px, 2.5vw, 26px);
+    border-radius: 16px;
+    background:
+        linear-gradient(135deg, rgba(0,0,0,0.72), rgba(0,0,0,0.82)),
+        linear-gradient(120deg, rgba(var(--accent-rgb),0.18), rgba(255,255,255,0.05));
+    border: 1px solid rgba(255,255,255,0.14);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08), 0 18px 32px rgba(0,0,0,0.7);
+}
+
+.emu-marquee__kicker {
+    font-family: 'Press Start 2P', var(--ccg-font-main);
+    font-size: clamp(0.52rem, 1.4vw, 0.8rem);
+    letter-spacing: 0.14em;
+    color: var(--emu-amber);
+    text-shadow: 0 0 10px rgba(255,204,0,0.45);
+}
+
+.emu-marquee__title {
+    margin: 12px 0 8px;
+    font-family: 'Press Start 2P', var(--ccg-font-main);
+    font-size: clamp(1.1rem, 3vw, 1.7rem);
+    letter-spacing: 0.08em;
+    color: #fff;
+    text-shadow: 0 0 18px rgba(var(--accent-rgb),0.5), 0 0 32px rgba(0,0,0,0.8);
+}
+
+.emu-marquee__text {
+    color: var(--ccg-text-soft);
+    line-height: 1.6;
+}
+
+.emu-cta-row {
+    margin-top: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.emu-cta-row .ccg-btn {
+    min-width: 180px;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.6), 0 0 20px rgba(var(--accent-rgb),0.22);
+}
+
+.emu-burst-card {
+    position: relative;
+    padding: clamp(14px, 2vw, 18px);
+    border-radius: 16px;
+    background:
+        linear-gradient(145deg, rgba(var(--accent-rgb),0.18), rgba(var(--accent-rgb),0.05)),
+        linear-gradient(160deg, rgba(0,0,0,0.85), rgba(0,0,0,0.65));
+    border: 1px solid rgba(255,255,255,0.14);
+    box-shadow: 0 18px 36px rgba(0,0,0,0.68), 0 0 24px rgba(var(--accent-rgb),0.18);
+    overflow: hidden;
+}
+
+.emu-burst-card::after {
+    content: "";
+    position: absolute;
+    inset: -80% 10% auto;
+    height: 120%;
+    background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.14), transparent 60%);
+    filter: blur(12px);
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.emu-burst-card__title {
+    margin: 0 0 6px;
+    font-size: 1rem;
+    letter-spacing: 0.06em;
+}
+
+.emu-burst-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 8px;
+}
+
+.emu-burst-list li {
+    position: relative;
+    padding-left: 20px;
+    color: var(--ccg-text-soft);
+    line-height: 1.5;
+}
+
+.emu-burst-list li::before {
+    content: "✦";
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--emu-electric);
+    text-shadow: 0 0 10px rgba(var(--accent-rgb),0.55);
+}
+
 .emu-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -69,4 +193,45 @@
 
 @media (max-width: 640px) {
     .emu-link-row { justify-content: center; }
+    .emu-hero-grid { grid-template-columns: 1fr; }
+    .emu-cta-row { justify-content: center; }
+}
+
+.ccg-emulation-details {
+    background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.85));
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 14px;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08), 0 16px 34px rgba(0,0,0,0.62);
+    padding: 14px 16px 16px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.ccg-emulation-details summary {
+    cursor: pointer;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ccg-emulation-details summary::before {
+    content: "▸";
+    color: var(--emu-electric);
+    text-shadow: 0 0 8px rgba(var(--accent-rgb),0.6);
+    transition: transform 0.22s ease;
+}
+
+.ccg-emulation-details[open] summary::before {
+    transform: rotate(90deg);
+}
+
+.ccg-emulation-details[open] {
+    border-color: rgba(var(--accent-rgb),0.38);
+    box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb),0.24), 0 18px 32px rgba(0,0,0,0.68);
+}
+
+.ccg-emulation-list,
+.ccg-emulation-steps {
+    margin-top: 10px;
 }
