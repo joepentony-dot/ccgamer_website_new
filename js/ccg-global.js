@@ -1,180 +1,236 @@
-/* ==========================================================
-   CCG GLOBAL SCRIPT — UNIVERSAL EFFECTS + OMEGA MODE SUPPORT
-   FINAL CLEAN BUILD — DEPTH-AWARE LOGO FIX (NO 404s)
-   + HEADER "MORE ▾" DROPDOWN LOGIC (H6)
-   ========================================================== */
+/* ============================================================
+   CCG MASTER CSS — GLOBAL STRUCTURE & FOUNDATION LOCK
+   HEADER/NAV ISOLATION FIX (H-FINAL)
+============================================================ */
 
-(function () {
-    const body = document.body;
+/* ============================================================
+   ROOT VARIABLES
+============================================================ */
 
-    /* -----------------------------------------------
-       HELPER: COMPUTE CORRECT LOGO PATH BY DEPTH
-       Works on:
-       - GitHub Pages: /ccgamer_website_new/...
-       - Future domain: /...
-    ----------------------------------------------- */
-    function getLogoPath() {
-        let path = window.location.pathname || "";
+:root {
+    --ccg-font-main: 'Orbitron', system-ui, sans-serif;
+    --ccg-font-body: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 
-        // If we're on GitHub Pages, strip the repo segment
-        const repoMarker = "/ccgamer_website_new/";
-        const repoIndex = path.indexOf(repoMarker);
-        if (repoIndex !== -1) {
-            path = path.substring(repoIndex + repoMarker.length);
-        }
+    --ccg-bg-dark: #000;
+    --ccg-text-light: #e8ecff;
+    --ccg-text-soft: #b5bbdf;
 
-        if (path.startsWith("/")) {
-            path = path.slice(1);
-        }
+    /* HEADER CONTRACT */
+    --ccg-header-height: 92px;
+    --ccg-header-inner-height: 64px;
 
-        if (!path) {
-            return "resources/images/ccgamer-logo.png";
-        }
+    --ccg-nav-pill-pad-y: 8px;
+    --ccg-nav-pill-pad-x: 14px;
 
-        const segments = path.split("/");
-        const folderDepth = Math.max(segments.length - 1, 0);
+    --ccg-page-entry-pad: 32px;
 
-        let prefix = "";
-        for (let i = 0; i < folderDepth; i++) {
-            prefix += "../";
-        }
+    --accent-rgb: 0,170,255;
+}
 
-        return prefix + "resources/images/ccgamer-logo.png";
-    }
+/* ============================================================
+   RESET
+============================================================ */
 
-    /* -----------------------------------------------
-       PAGE FADE-IN
-    ----------------------------------------------- */
-    document.addEventListener("DOMContentLoaded", () => {
-        body.classList.add("ccg-fade-in");
-    });
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
 
-    /* -----------------------------------------------
-       OMEGA LOGO NORMALISER — DEPTH-AWARE
-    ----------------------------------------------- */
-    document.addEventListener("DOMContentLoaded", () => {
-        const correctLogo = getLogoPath();
+html,
+body {
+    margin: 0;
+    padding: 0;
+    background: var(--ccg-bg-dark);
+    color: var(--ccg-text-light);
+    font-family: var(--ccg-font-body);
+    overflow-x: hidden;
+}
 
-        document.querySelectorAll(".ccg-brand__logo").forEach(img => {
-            img.src = correctLogo;
+/* ============================================================
+   PAGE WRAPPERS
+============================================================ */
 
-            if (!img.alt || img.alt.trim() === "") {
-                img.alt = "Cheeky Commodore Gamer logo";
-            }
-            if (!img.getAttribute("loading")) {
-                img.setAttribute("loading", "lazy");
-            }
-        });
-    });
+.ccg-page {
+    min-height: 100vh;
+    position: relative;
+}
 
-    /* -----------------------------------------------
-       SCANLINE INTENSITY (SHIFT + S)
-    ----------------------------------------------- */
-    const scanlineOverlay = document.querySelector(".crt-overlay");
-    let scanlineStrength = 0.05;
+.ccg-main {
+    width: min(1320px, 96%);
+    margin: 0 auto;
+    padding-top: var(--ccg-page-entry-pad);
+    position: relative;
+}
 
-    function updateScanlines() {
-        if (scanlineOverlay) scanlineOverlay.style.opacity = scanlineStrength;
-    }
+/* ============================================================
+   HEADER — LOCKED STRUCTURE
+============================================================ */
 
-    updateScanlines();
+.ccg-header {
+    position: relative;
+    z-index: 10000; /* HARD TOP LAYER */
 
-    window.addEventListener("keydown", (e) => {
-        if (e.key.toLowerCase() === "s" && e.shiftKey) {
-            scanlineStrength += 0.1;
-            if (scanlineStrength > 0.45) scanlineStrength = 0.05;
-            updateScanlines();
-        }
-    });
+    height: var(--ccg-header-height);
+    display: flex;
+    align-items: center;
 
-    /* -----------------------------------------------
-       GLOBAL MODE CHANGE EVENT
-    ----------------------------------------------- */
-    document.addEventListener("ccg:modeChange", (event) => {
-        const mode = event.detail.mode;
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(0,0,0,0.96),
+            rgba(0,0,0,0.82),
+            rgba(0,0,0,0.65)
+        );
 
-        if (mode === "c64") {
-            body.style.setProperty("--ccg-accent", "#70fff0");
-        } else if (mode === "amiga") {
-            body.style.setProperty("--ccg-accent", "#f432ff");
-        }
+    backdrop-filter: blur(6px);
+    overflow: visible;
+}
 
-        updateModeToggleLabel();
-        updateOmegaSwitchVisual();
-    });
+.ccg-header-inner {
+    width: min(1320px, 96%);
+    margin: 0 auto;
+    height: var(--ccg-header-inner-height);
 
-    /* -----------------------------------------------
-       MODE LABEL HANDLER
-    ----------------------------------------------- */
-    function updateModeToggleLabel() {
-        const label = document.getElementById("ccg-mode-label");
-        if (!label) return;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 18px;
 
-        const mode = document.body.dataset.mode;
-        label.textContent = mode === "amiga" ? "Amiga Mode" : "C64 Mode";
-    }
+    overflow: visible;
+}
 
-    /* -----------------------------------------------
-       OMEGA SWITCH HANDLE POSITION
-    ----------------------------------------------- */
-    function updateOmegaSwitchVisual() {
-        const switchEl = document.querySelector(".ccg-omega-toggle");
-        if (!switchEl) return;
+/* ============================================================
+   NAVIGATION — FIXED OVERFLOW
+============================================================ */
 
-        const mode = body.dataset.mode;
+.ccg-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-        switchEl.classList.toggle("omega-amiga", mode === "amiga");
-        switchEl.classList.toggle("omega-c64", mode === "c64");
-    }
+.ccg-nav__list {
+    display: flex;
+    gap: 12px;
+    padding-inline: 28px;
 
-    /* -----------------------------------------------
-       HEADER "MORE ▾" DROPDOWN — ACCESSIBLE TOGGLE (H6)
-    ----------------------------------------------- */
-    document.addEventListener("DOMContentLoaded", () => {
-        const moreBtn = document.querySelector(".ccg-nav__more-btn");
-        const dropdown = document.querySelector(".ccg-nav__dropdown");
+    overflow-x: auto;
+    overflow-y: visible; /* ✅ CRITICAL FIX */
+    scrollbar-width: none;
+}
 
-        if (!moreBtn || !dropdown) return;
+.ccg-nav__list::-webkit-scrollbar {
+    display: none;
+}
 
-        function openMenu() {
-            dropdown.classList.add("is-open");
-            moreBtn.setAttribute("aria-expanded", "true");
-        }
+.ccg-nav__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-        function closeMenu() {
-            dropdown.classList.remove("is-open");
-            moreBtn.setAttribute("aria-expanded", "false");
-        }
+    height: 36px;
+    padding: var(--ccg-nav-pill-pad-y) var(--ccg-nav-pill-pad-x);
+    border-radius: 999px;
 
-        function toggleMenu() {
-            const isOpen = dropdown.classList.contains("is-open");
-            isOpen ? closeMenu() : openMenu();
-        }
+    font-family: var(--ccg-font-main);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
 
-        moreBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            toggleMenu();
-        });
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.08),
+            rgba(255,255,255,0.03)
+        );
 
-        document.addEventListener("click", (e) => {
-            if (!dropdown.contains(e.target) && !moreBtn.contains(e.target)) {
-                closeMenu();
-            }
-        });
+    border: 1px solid rgba(255,255,255,0.14);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.65);
+}
 
-        document.addEventListener("keydown", (e) => {
-            if (e.key === "Escape") {
-                closeMenu();
-            }
-        });
-    });
+/* ============================================================
+   MORE ▾ DROPDOWN — FUNCTIONAL ONLY
+============================================================ */
 
-    /* -----------------------------------------------
-       INITIALISE ON LOAD
-    ----------------------------------------------- */
-    document.addEventListener("DOMContentLoaded", () => {
-        updateModeToggleLabel();
-        updateOmegaSwitchVisual();
-    });
+.ccg-nav__more {
+    position: relative; /* anchor */
+}
 
-})();
+.ccg-nav__dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+
+    min-width: 220px;
+    padding: 10px;
+
+    display: none;
+    z-index: 20000;
+
+    background: rgba(0,0,0,0.95);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 14px;
+
+    box-shadow: 0 18px 48px rgba(0,0,0,0.9);
+}
+
+.ccg-nav__dropdown.is-open {
+    display: block;
+}
+
+.ccg-nav__dropdown-link {
+    display: block;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-family: var(--ccg-font-main);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+/* ============================================================
+   HEADER ACTIONS
+============================================================ */
+
+.ccg-header-socials {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ccg-mode-toggle {
+    height: 36px;
+    min-width: 86px;
+    border-radius: 999px;
+}
+
+/* ============================================================
+   PAGE HANDOFF — CONTRACT PRESERVED
+============================================================ */
+
+html[data-ccg-page="home"] .ccg-main {
+    padding-top: 18px;
+}
+
+.ccg-page--games-index .ccg-main,
+.ccg-page--collections-index .ccg-main,
+.ccg-page--genres-index .ccg-main {
+    padding-top: var(--ccg-page-entry-pad);
+}
+
+.ccg-page--single-game .ccg-main {
+    padding-top: 14px;
+}
+
+/* ============================================================
+   MODE COLOURS
+============================================================ */
+
+body[data-ccg-mode="c64"] {
+    --accent-rgb: 0,170,255;
+}
+
+body[data-ccg-mode="amiga"] {
+    --accent-rgb: 255,41,224;
+}
