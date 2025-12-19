@@ -45,56 +45,6 @@
         });
 
         /* ==================================================
-           HEADER “MORE ▾” DROPDOWN — CLICK TOGGLE
-        ================================================== */
-        const moreBlocks = document.querySelectorAll(".ccg-nav__more");
-
-        const closeAll = () => {
-            moreBlocks.forEach(group => {
-                const btn = group.querySelector(".ccg-nav__more-btn");
-                const menu = group.querySelector(".ccg-nav__dropdown");
-                if (!btn || !menu) return;
-                menu.classList.remove("is-open");
-                btn.setAttribute("aria-expanded", "false");
-            });
-        };
-
-        moreBlocks.forEach(block => {
-            const btn = block.querySelector(".ccg-nav__more-btn");
-            const menu = block.querySelector(".ccg-nav__dropdown");
-
-            if (!btn || !menu) return;
-
-            function open() {
-                closeAll();
-                menu.classList.add("is-open");
-                btn.setAttribute("aria-expanded", "true");
-            }
-
-            function close() {
-                menu.classList.remove("is-open");
-                btn.setAttribute("aria-expanded", "false");
-            }
-
-            btn.addEventListener("click", e => {
-                e.preventDefault();
-                e.stopPropagation();
-                menu.classList.contains("is-open") ? close() : open();
-            });
-
-            // Prevent menu clicks closing immediately
-            menu.addEventListener("click", e => e.stopPropagation());
-
-            // Close on outside click
-            document.addEventListener("click", closeAll);
-
-            // Close on ESC
-            document.addEventListener("keydown", e => {
-                if (e.key === "Escape") closeAll();
-            });
-        });
-
-        /* ==================================================
            VIEWPORT WOW — LIGHT UP EVERYTHING
         ================================================== */
         const wowSelectors = [
@@ -132,7 +82,7 @@
         /* ==================================================
            MICRO-GLINTS — MODED NAV & LOGO
         ================================================== */
-        const glintTargets = document.querySelectorAll(".ccg-brand__logo, .ccg-nav__link, .ccg-nav__dropdown-link");
+        const glintTargets = document.querySelectorAll(".ccg-brand__logo, .ccg-nav__link");
 
         glintTargets.forEach(target => {
             target.addEventListener("pointerenter", () => target.classList.add("is-glinting"));
