@@ -16,6 +16,9 @@ let CCG_GAMES_TOTAL = 0;
 
 const ACCORDION_STATE_KEY = "ccgAccordionState";
 const THUMB_BASE_PATH = "../resources/images/thumbnails/all/";
+const CCG_PREFERS_REDUCED_MOTION = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+);
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
@@ -136,12 +139,16 @@ function buildAccordion(groups) {
         section.className = "games-accordion__section";
         section.dataset.letter = letter;
 
+        const letterSlug = letter === "#" ? "num" : letter.toLowerCase();
+        const headerId = `games-accordion-header-${letterSlug}`;
+        const contentId = `games-accordion-panel-${letterSlug}`;
+
         section.innerHTML = `
-            <button class="games-accordion__header" data-letter="${letter}" type="button">
+            <button class="games-accordion__header" data-letter="${letter}" type="button" id="${headerId}" aria-controls="${contentId}">
                 <span class="games-accordion__letter">${letter}</span>
                 <span class="games-accordion__chevron">⌄</span>
             </button>
-            <div class="games-accordion__content">
+            <div class="games-accordion__content" id="${contentId}" role="region" aria-labelledby="${headerId}" hidden>
                 <div class="games-grid">
                     ${groups[letter].map(renderGameCard).join("")}
                 </div>
@@ -190,17 +197,11 @@ function toggleAccordion(letter, opts = {}) {
 
     // Single-open enforcement
     sections.forEach(section => {
-        section.classList.remove("is-open");
-        const btn = section.querySelector(".games-accordion__header");
-        if (btn) btn.setAttribute("aria-expanded", "false");
+        updateSectionState(section, false);
     });
 
     if (willOpen) {
-        target.classList.add("is-open");
-        const btn = target.querySelector(".games-accordion__header");
-        if (btn) btn.setAttribute("aria-expanded", "true");
-        target.classList.add("is-energized");
-        setTimeout(() => target.classList.remove("is-energized"), 1100);
+        updateSectionState(target, true);
         saveAccordionState(letter);
         setSpineActive(letter);
 
@@ -211,12 +212,79 @@ function toggleAccordion(letter, opts = {}) {
         // Closing current open section
         clearAccordionState();
         setSpineActive(null);
-        target.classList.remove("is-energized");
+        updateSectionState(target, false);
 
         if (!opts.silent) {
             scrollToTop();
         }
     }
+}
+
+/**
+ * Apply ARIA + motion state to a section.
+ * @param {HTMLElement} section
+ * @param {boolean} isOpen
+ */
+function updateSectionState(section, isOpen) {
+    section.classList.toggle("is-open", isOpen);
+    section.classList.toggle("is-energized", isOpen);
+
+    const btn = section.querySelector(".games-accordion__header");
+    const content = section.querySelector(".games-accordion__content");
+
+    if (btn) btn.setAttribute("aria-expanded", String(isOpen));
+    if (!content) return;
+
+    animateAccordionContent(content, isOpen);
+}
+
+/**
+ * Animate accordion panels while respecting reduced motion.
+ * @param {HTMLElement} content
+ * @param {boolean} isOpening
+ */
+function animateAccordionContent(content, isOpening) {
+    const prefersReduced = CCG_PREFERS_REDUCED_MOTION.matches;
+    const isVisible = content.classList.contains("is-visible");
+
+    // Reset any running animations
+    content.removeEventListener("transitionend", content._ccgMotionHandler);
+    content.style.height = "";
+
+    if (prefersReduced) {
+        content.hidden = !isOpening;
+        content.classList.toggle("is-visible", isOpening);
+        content.setAttribute("aria-hidden", String(!isOpening));
+        return;
+    }
+
+    if (!isOpening && !isVisible) {
+        content.hidden = true;
+        return;
+    }
+
+    content.hidden = false;
+    const targetHeight = content.scrollHeight;
+
+    content.classList.toggle("is-visible", isOpening);
+    content.setAttribute("aria-hidden", String(!isOpening));
+    content.style.height = `${isOpening ? 0 : targetHeight}px`;
+
+    requestAnimationFrame(() => {
+        content.style.height = `${isOpening ? targetHeight : 0}px`;
+    });
+
+    const onTransitionEnd = () => {
+        if (isOpening) {
+            content.style.height = "auto";
+        } else {
+            content.hidden = true;
+        }
+        content._ccgMotionHandler = null;
+    };
+
+    content._ccgMotionHandler = onTransitionEnd;
+    content.addEventListener("transitionend", onTransitionEnd, { once: true });
 }
 
 /* ============================================================
