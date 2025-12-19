@@ -1,193 +1,168 @@
 /* ============================================================
-   HOME.CSS — OMEGA CINEMATIC SHOWPIECE (FLAGSHIP)
-   Phase HW-RESTORE — VISIBILITY & AFFORDANCE RECOVERY
+   HOME.CSS — OMEGA SHOWCASE
+   PHASE H-RESTORE — LAYOUT & CARDS ONLY
    ------------------------------------------------------------
-   PURPOSE:
-   • Restore missing thumbnails
-   • Reassert image visibility & flow
-   • Make cards read as clickable at rest
-   • ZERO layout changes
-   • ZERO motion changes
+   • Restores Home layout after global reset
+   • No header interaction
+   • No visual redesign
+   • No motion experiments
+   • Home page ONLY
 ============================================================ */
 
 
 /* ============================================================
-   HOME PAGE SCOPE ROOT
+   PAGE ROOT
 ============================================================ */
 
 html[data-ccg-page="home"] .ccg-main--home {
     padding-top: 18px;
-    padding-bottom: 26px;
+    padding-bottom: 48px;
 }
 
 
 /* ============================================================
-   FULL-PAGE STARFIELD PRESENCE (HOME ONLY)
+   HERO
 ============================================================ */
 
-html[data-ccg-page="home"] .ccg-bg {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-}
-
-html[data-ccg-page="home"] .ccg-page {
+.home-hero {
     position: relative;
-    z-index: 1;
+    margin-bottom: 48px;
 }
 
-html[data-ccg-page="home"] .ccg-bg-starfield {
-    opacity: 0.78;
-    filter: contrast(1.18) brightness(1.12);
+.home-hero__inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    text-align: center;
 }
 
-html[data-ccg-page="home"] .ccg-bg-grid {
-    opacity: 0.28;
+.home-hero__title {
+    margin-bottom: 14px;
 }
 
-html[data-ccg-page="home"] .ccg-bg-crt-overlay {
-    opacity: 0.22;
-}
-
-@media (max-width: 768px) {
-    html[data-ccg-page="home"] .ccg-bg-starfield { opacity: 0.55; }
-    html[data-ccg-page="home"] .ccg-bg-grid { opacity: 0.18; }
-    html[data-ccg-page="home"] .ccg-bg-crt-overlay { opacity: 0.16; }
+.home-hero__tagline {
+    margin-bottom: 24px;
+    max-width: 760px;
+    margin-inline: auto;
 }
 
 
 /* ============================================================
-   HERO — UNCHANGED
+   HERO ACTIONS — FIXED LAYOUT
 ============================================================ */
 
-html[data-ccg-page="home"] .home-hero {
-    position: relative;
-    margin-top: 12px;
-    margin-bottom: 42px;
+.home-hero__actions {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 34px;
 }
 
-html[data-ccg-page="home"] .ccg-hero--home {
-    position: relative;
-    isolation: isolate;
+
+/* ============================================================
+   HERO CARDS — RESTORED GRID
+============================================================ */
+
+.home-hero-cards {
+    display: grid;
+    gap: 22px;
+    margin-top: 24px;
 }
 
-html[data-ccg-page="home"] .ccg-hero--home::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    background: radial-gradient(
-        ellipse at center,
-        rgba(var(--accent-rgb), 0.12),
-        transparent 65%
-    );
+@media (min-width: 768px) {
+    .home-hero-cards {
+        grid-template-columns: repeat(3, 1fr);
+        max-width: 1000px;
+        margin-inline: auto;
+    }
+}
+
+.home-hero-card {
+    position: relative;
+    padding: 22px 22px 26px;
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.06),
+            rgba(255,255,255,0.02)
+        );
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.08),
+        0 14px 36px rgba(0,0,0,0.75);
+}
+
+.home-hero-card h3 {
+    margin-bottom: 10px;
+}
+
+.home-hero-card p {
     opacity: 0.85;
-    pointer-events: none;
-}
-
-html[data-ccg-page="home"] .ccg-hero--home::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    background: linear-gradient(
-        to bottom,
-        rgba(0,0,0,0.35),
-        rgba(0,0,0,0.65)
-    );
-    pointer-events: none;
-}
-
-html[data-ccg-page="home"] .home-hero__inner {
-    position: relative;
-    z-index: 1;
+    line-height: 1.6;
 }
 
 
 /* ============================================================
-   🔧 CRITICAL RESTORE — CARD MEDIA VISIBILITY
+   FEATURED HIGHLIGHTS
 ============================================================ */
 
-/* Media containers must exist in flow */
-html[data-ccg-page="home"] .ccg-card__media {
-    display: block;
-    position: relative;
-    width: 100%;
-    overflow: hidden;
+.home-featured {
+    margin-top: 56px;
 }
 
-/* Images must paint, size, and be visible */
-html[data-ccg-page="home"] .ccg-card__media img {
-    display: block;
+.home-featured__grid {
+    display: grid;
+    gap: 22px;
+    margin-top: 18px;
+}
+
+@media (min-width: 768px) {
+    .home-featured__grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.home-feature-card {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.06),
+            rgba(255,255,255,0.02)
+        );
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.08),
+        0 14px 36px rgba(0,0,0,0.75);
+}
+
+.home-feature-card__inner {
+    padding: 18px;
+}
+
+.home-feature-card img {
     width: 100%;
     height: auto;
-    opacity: 1;
-    visibility: visible;
+    display: block;
+    border-radius: 12px;
+    margin-bottom: 14px;
 }
 
 
 /* ============================================================
-   FEATURED & GENRE CARDS — CLICKABLE AT REST
+   SAFETY — THUMBNAIL DISCIPLINE (LOCKED)
 ============================================================ */
 
 html[data-ccg-page="home"] .home-feature-card,
 html[data-ccg-page="home"] .ccg-genre-tile {
-    display: block;
-    border: 1px solid rgba(255,255,255,0.14);
-    background: linear-gradient(
-        180deg,
-        rgba(255,255,255,0.07),
-        rgba(255,255,255,0.02)
-    );
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.06),
-        0 14px 36px rgba(0,0,0,0.75);
+    transform: none !important;
 }
 
-/* Non-motion affordance cue */
-html[data-ccg-page="home"] .home-feature-card::after,
-html[data-ccg-page="home"] .ccg-genre-tile::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb), 0.18);
-    opacity: 0.6;
-}
-
-
-/* ============================================================
-   TAGLINE STRIP — UNCHANGED
-============================================================ */
-
-html[data-ccg-page="home"] .home-tagline {
-    margin: 30px 0 44px;
-    opacity: 0.92;
-}
-
-html[data-ccg-page="home"] .home-tagline__main {
-    text-shadow: 0 0 18px rgba(var(--accent-rgb), 0.35);
-}
-
-
-/* ============================================================
-   REDUCED MOTION — SAFE
-============================================================ */
-
-@media (prefers-reduced-motion: reduce) {
-    html[data-ccg-page="home"] * {
-        transition: none !important;
-    }
-}
-
-
-/* ============================================================
-   🔒 HOME THUMBNAIL DISCIPLINE — LOCKED
-============================================================ */
-
-html[data-ccg-page="home"] .home-feature-card,
-html[data-ccg-page="home"] .ccg-genre-tile,
 html[data-ccg-page="home"] .home-feature-card img,
 html[data-ccg-page="home"] .ccg-genre-tile img {
     transform: none !important;
