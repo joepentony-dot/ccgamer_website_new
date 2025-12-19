@@ -3,223 +3,106 @@
    ------------------------------------------------------------
    • W7 — Browse Index VISUAL LOCK (+ W11 Accordion Visual Fix)
    • W9 — Single Game ULTRA
-   • GIX-IL1 — Games Index INTERACTION LAYERING (CSS ONLY)
+   • SG-IL1 — Single Game INTERACTION PARITY (LIGHT)
    • STRICT PAGE SCOPING
    • SAFE TO LOCK
 ============================================================ */
 
 
 /* ============================================================
-   GIX-IL1 — GAMES INDEX INTERACTION LAYERING
-   Scope: .ccg-page--games-index ONLY
+   SG-IL1 — SINGLE GAME INTERACTION PARITY
+   Scope: .ccg-page--single-game ONLY
 ============================================================ */
 
-.ccg-page--games-index .ccg-main {
-    padding-top: 18px;
-}
-
 /* ------------------------------------------------------------
-   A–Z SPINE — FEELS LIKE A CONTROL STRIP
+   HERO — CONFIRM INTERACTIVITY WITHOUT MOTION
 ------------------------------------------------------------ */
 
-.ccg-page--games-index .games-alpha__btn {
-    cursor: pointer;
-    position: relative;
-    isolation: isolate;
-
-    background: rgba(0,0,0,0.62);
-    border: 1px solid rgba(255,255,255,0.14);
-    border-radius: 8px;
-
-    font-family: var(--ccg-font-main);
-    font-size: 0.78rem;
-    letter-spacing: 0.14em;
-
-    color: rgba(255,255,255,0.78);
-    padding: 7px 10px;
-
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.04),
-        0 6px 16px rgba(0,0,0,0.65);
-
-    transition:
-        color 160ms ease,
-        border-color 160ms ease,
-        box-shadow 200ms ease,
-        background 160ms ease;
+.ccg-page--single-game .game-hero {
+    transition: box-shadow 220ms ease;
 }
 
-.ccg-page--games-index .games-alpha__btn:hover,
-.ccg-page--games-index .games-alpha__btn:focus-visible {
-    color: #fff;
-    border-color: rgba(var(--accent-rgb), 0.55);
+@media (hover: hover) and (pointer: fine) {
+    .ccg-page--single-game .game-hero:hover {
+        box-shadow:
+            0 42px 110px rgba(0,0,0,0.95),
+            0 0 42px rgba(var(--accent-rgb),0.25);
+    }
+}
 
-    box-shadow:
-        0 0 18px rgba(var(--accent-rgb),0.35),
-        inset 0 0 0 1px rgba(var(--accent-rgb),0.35);
 
+/* ------------------------------------------------------------
+   PRIMARY ACTION BUTTONS — PARITY WITH INDEX
+------------------------------------------------------------ */
+
+.ccg-page--single-game .game-video__actions .ccg-btn,
+.ccg-page--single-game .game-downloads__actions .ccg-btn {
+    cursor: pointer;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .ccg-page--single-game .ccg-btn:hover {
+        box-shadow:
+            0 18px 44px rgba(0,0,0,0.75),
+            0 0 26px rgba(var(--accent-rgb),0.28);
+    }
+}
+
+
+/* ------------------------------------------------------------
+   FOCUS-VISIBLE — KEYBOARD CONFIDENCE
+------------------------------------------------------------ */
+
+.ccg-page--single-game .ccg-btn:focus-visible {
     outline: none;
-}
-
-.ccg-page--games-index .games-alpha__btn.active {
-    color: #fff;
-    border-color: rgba(var(--accent-rgb),0.75);
 
     box-shadow:
-        0 0 24px rgba(var(--accent-rgb),0.55),
-        inset 0 0 0 1px rgba(var(--accent-rgb),0.45);
+        0 0 0 2px rgba(var(--accent-rgb),0.55),
+        0 0 26px rgba(var(--accent-rgb),0.45),
+        0 16px 38px rgba(0,0,0,0.85);
 }
 
 
 /* ------------------------------------------------------------
-   ACCORDION SECTION — CLEAR PRESSABLE ZONES
+   DOWNLOAD LINKS — LOOK INTENTIONAL
 ------------------------------------------------------------ */
 
-.ccg-page--games-index .games-accordion__section {
-    margin-bottom: 22px;
-    border-radius: 18px;
+.ccg-page--single-game .game-downloads a {
+    text-decoration: none;
 }
 
-/* Header feels like a button */
-.ccg-page--games-index .games-accordion__header {
-    cursor: pointer;
-    position: relative;
-    isolation: isolate;
-
-    background:
-        linear-gradient(
-            180deg,
-            rgba(255,255,255,0.08),
-            rgba(0,0,0,0.42)
-        );
-
-    border-radius: 16px;
-    padding: 18px 22px;
-
-    font-family: var(--ccg-font-main);
-    letter-spacing: 0.18em;
-
-    color: rgba(255,255,255,0.82);
-
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.08),
-        0 14px 36px rgba(0,0,0,0.82);
-
-    transition:
-        color 160ms ease,
-        box-shadow 220ms ease,
-        border-color 160ms ease;
-}
-
-.ccg-page--games-index .games-accordion__header:hover,
-.ccg-page--games-index .games-accordion__header:focus-visible {
+.ccg-page--single-game .game-downloads a:hover,
+.ccg-page--single-game .game-downloads a:focus-visible {
     color: #fff;
+}
 
-    box-shadow:
-        0 0 28px rgba(var(--accent-rgb),0.38),
-        inset 0 0 0 1px rgba(var(--accent-rgb),0.38);
 
+/* ------------------------------------------------------------
+   RELATED CAROUSEL — NAV CONFIDENCE
+------------------------------------------------------------ */
+
+.ccg-page--single-game .related-carousel__nav {
+    cursor: pointer;
+}
+
+.ccg-page--single-game .related-carousel__nav:focus-visible {
     outline: none;
-}
-
-/* OPEN STATE — CONFIDENT, NOT JUMPY */
-.ccg-page--games-index
-.games-accordion__section.is-open
-.games-accordion__header {
-    color: #fff;
 
     box-shadow:
-        0 0 36px rgba(var(--accent-rgb),0.48),
-        inset 0 0 0 1px rgba(var(--accent-rgb),0.45);
-}
-
-/* Content grounding */
-.ccg-page--games-index
-.games-accordion__section.is-open
-.games-accordion__content {
-    margin-top: 16px;
-    padding: 24px 24px 28px;
-
-    border-radius: 18px;
-
-    background:
-        linear-gradient(
-            180deg,
-            rgba(255,255,255,0.06),
-            rgba(255,255,255,0.02)
-        );
-
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.06),
-        0 20px 48px rgba(0,0,0,0.72);
+        0 0 0 2px rgba(var(--accent-rgb),0.45),
+        0 0 26px rgba(var(--accent-rgb),0.38);
 }
 
 
 /* ------------------------------------------------------------
-   GAME CARDS — LOOK SELECTABLE, NOT STATIC
------------------------------------------------------------- */
-
-.ccg-page--games-index .ccg-card {
-    position: relative;
-    isolation: isolate;
-    cursor: pointer;
-
-    transition:
-        box-shadow 220ms ease,
-        border-color 180ms ease;
-}
-
-/* NO scaling, NO transforms — affordance only */
-.ccg-page--games-index .ccg-card::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    border-radius: inherit;
-
-    opacity: 0;
-    transition: opacity 200ms ease;
-
-    background:
-        radial-gradient(
-            ellipse at 30% 10%,
-            rgba(var(--accent-rgb),0.22),
-            transparent 65%
-        );
-}
-
-.ccg-page--games-index .ccg-card:hover::after,
-.ccg-page--games-index .ccg-card:focus-within::after {
-    opacity: 1;
-}
-
-.ccg-page--games-index .ccg-card:hover,
-.ccg-page--games-index .ccg-card:focus-within {
-    box-shadow:
-        0 22px 52px rgba(0,0,0,0.85),
-        0 0 28px rgba(var(--accent-rgb),0.22);
-}
-
-/* Title clarity on intent */
-.ccg-page--games-index .ccg-card:hover .ccg-card__title,
-.ccg-page--games-index .ccg-card:focus-within .ccg-card__title {
-    color: #fff;
-}
-
-
-/* ------------------------------------------------------------
-   REDUCED MOTION — INDEX SAFE MODE
+   REDUCED MOTION — SAFE MODE
 ------------------------------------------------------------ */
 
 @media (prefers-reduced-motion: reduce) {
 
-    .ccg-page--games-index .games-alpha__btn,
-    .ccg-page--games-index .games-accordion__header,
-    .ccg-page--games-index .ccg-card {
-        transition: none;
-    }
-
-    .ccg-page--games-index .ccg-card::after {
+    .ccg-page--single-game .game-hero,
+    .ccg-page--single-game .ccg-btn,
+    .ccg-page--single-game .related-carousel__nav {
         transition: none;
     }
 }
@@ -227,9 +110,5 @@
 
 /* ============================================================
    W9 — SINGLE GAME ULTRA
-   (UNCHANGED — PRESERVED BELOW)
+   (UNCHANGED — YOUR EXISTING STYLES REMAIN BELOW)
 ============================================================ */
-
-/*  ↓↓↓ YOUR EXISTING SINGLE GAME & DOWNLOADS CSS
-    (UNMODIFIED FROM YOUR LAST VERSION)
-    ↓↓↓  */
