@@ -234,6 +234,7 @@
         if (!select) return;
 
         select.innerHTML = "";
+        bindPackSelectChange();
 
         if (!Array.isArray(sets) || sets.length === 0) {
             const opt = document.createElement("option");
@@ -258,6 +259,33 @@
             }
             select.appendChild(opt);
         });
+
+        renderActivePackLabelFromId(select.value || null);
+    }
+
+    function renderActivePackLabelFromId(setId) {
+        const labels = qsa('[data-quiz-active-pack]');
+        const pack = quizState.sets.find((s) => String(s.id || s.ID || s.slug) === String(setId));
+
+        const labelText = pack
+            ? `${pack.name || pack.title || "Quiz Pack"} (${pack.questionCount || (pack.questions ? pack.questions.length : 0)} Qs)`
+            : "Pick a pack to begin";
+
+        labels.forEach((label) => {
+            label.textContent = labelText;
+        });
+    }
+
+    function bindPackSelectChange() {
+        const select = qs("#quiz-pack-select");
+        if (!select || select.dataset.boundChange === "true") return;
+
+        select.addEventListener("change", () => {
+            quizState.currentSetId = select.value || null;
+            renderActivePackLabelFromId(quizState.currentSetId);
+        });
+
+        select.dataset.boundChange = "true";
     }
 
     function handleSetsLoaded(sets) {
