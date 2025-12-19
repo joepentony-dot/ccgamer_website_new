@@ -1,72 +1,50 @@
 /* ============================================================
-   HOME.CSS — OMEGA SHOWCASE (GENRES FINAL)
+   HOME — SMALL GENRE THUMBNAILS (SAFE)
 ============================================================ */
 
-html[data-ccg-page="home"] .ccg-home-genres-grid {
+html[data-ccg-page="home"] .ccg-home-genre-thumb-grid {
     display: grid;
-    gap: 22px;
-    margin-top: 24px;
+    gap: 16px;
+    margin-top: 20px;
 }
 
-@media (min-width: 600px) {
-    html[data-ccg-page="home"] .ccg-home-genres-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-@media (min-width: 960px) {
-    html[data-ccg-page="home"] .ccg-home-genres-grid {
+@media (min-width: 520px) {
+    html[data-ccg-page="home"] .ccg-home-genre-thumb-grid {
         grid-template-columns: repeat(4, 1fr);
     }
 }
 
-/* ============================================================
-   HOME GENRE CARD — FULL BG THUMB
-============================================================ */
-
-html[data-ccg-page="home"] .ccg-home-genre-card {
-    position: relative;
-    height: 140px;
-    border-radius: 18px;
-    overflow: hidden;
-    background:
-        var(--genre-bg) center / cover no-repeat,
-        #000;
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.08),
-        0 18px 42px rgba(0,0,0,0.8);
+@media (min-width: 900px) {
+    html[data-ccg-page="home"] .ccg-home-genre-thumb-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
 }
 
-html[data-ccg-page="home"] .ccg-home-genre-card__overlay {
-    position: absolute;
-    inset: 0;
-    background:
-        linear-gradient(
-            180deg,
-            rgba(0,0,0,0.15),
-            rgba(0,0,0,0.85)
-        );
-}
-
-html[data-ccg-page="home"] .ccg-home-genre-card__body {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
+/* Compact, non-dominant tiles */
+html[data-ccg-page="home"] .ccg-home-genre-thumb {
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
-    padding: 16px;
+    align-items: center;
+    gap: 8px;
+
+    text-align: center;
+    padding: 10px;
+
+    background: rgba(0,0,0,0.45);
+    border-radius: 12px;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.08);
 }
 
-html[data-ccg-page="home"] .ccg-home-genre-card h3 {
-    margin: 0 0 4px;
-    text-shadow: 0 0 8px rgba(0,170,255,0.6);
+html[data-ccg-page="home"] .ccg-home-genre-thumb img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 8px;
 }
 
-html[data-ccg-page="home"][data-ccg-mode="amiga"] .ccg-home-genre-card h3 {
-    text-shadow: 0 0 8px rgba(255,80,200,0.6);
-}
-
-html[data-ccg-page="home"] .ccg-home-genre-card span {
-    opacity: 0.85;
-    font-size: 0.9rem;
+html[data-ccg-page="home"] .ccg-home-genre-thumb span {
+    font-size: 0.85rem;
+    opacity: 0.9;
 }
