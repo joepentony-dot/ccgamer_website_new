@@ -656,3 +656,28 @@
         max-width: 360px;
     }
 }
+
+@media (max-width: 540px) {
+    .about-hero,
+    .about-panel,
+    .about-rail,
+    .about-gallery,
+    .about-signal {
+        padding: 16px;
+        border-radius: 14px;
+    }
+
+    .about-hero__title {
+        font-size: clamp(1.6rem, 6vw, 2rem);
+    }
+
+    .about-gallery__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .about-gallery__item img {
+        height: auto;
+        aspect-ratio: 16 / 10;
+        object-fit: cover;
+    }
+}

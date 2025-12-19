@@ -1465,3 +1465,34 @@ body[data-ccg-mode="amiga"] .home-hero__cta--ghost {
         height: 200px;
     }
 }
+
+@media (max-width: 520px) {
+    .home-tagline {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 10px;
+    }
+
+    .home-tagline__text {
+        justify-items: center;
+    }
+
+    .home-hero__actions {
+        width: 100%;
+    }
+
+    .home-hero__cta {
+        width: 100%;
+        text-align: center;
+    }
+
+    .home-spotlight-card,
+    .home-spotlight__media {
+        grid-template-columns: 1fr;
+    }
+
+    .home-spotlight__art,
+    .home-spotlight__video {
+        min-height: 220px;
+    }
+}
