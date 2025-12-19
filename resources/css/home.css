@@ -798,6 +798,88 @@ body[data-ccg-mode="amiga"] .home-hero__cta--ghost {
     min-height: 160px;
 }
 
+/* ============================================================
+   NEON VISITOR CALLOUT
+============================================================ */
+
+.home-visitor-callout {
+    margin: clamp(26px, 5vw, 44px) auto 6px;
+    padding: 1px;
+    max-width: 1020px;
+    position: relative;
+    isolation: isolate;
+}
+
+.home-visitor-callout__inner {
+    position: relative;
+    overflow: hidden;
+    border-radius: 18px;
+    padding: clamp(18px, 3vw, 28px) clamp(18px, 4vw, 34px);
+    text-align: center;
+    background:
+        radial-gradient(circle at 18% 24%, rgba(var(--accent-rgb),0.22), transparent 48%),
+        radial-gradient(circle at 82% 32%, rgba(120,183,255,0.18), transparent 42%),
+        linear-gradient(120deg, rgba(4,6,18,0.92), rgba(10,16,32,0.82));
+    box-shadow:
+        0 18px 42px rgba(0,0,0,0.78),
+        0 0 30px rgba(var(--accent-rgb),0.32),
+        inset 0 0 0 1px rgba(255,255,255,0.06);
+}
+
+.home-visitor-callout__beam {
+    position: absolute;
+    inset: -30%;
+    background: conic-gradient(from 90deg, rgba(120,183,255,0.05), rgba(194,139,255,0.08), rgba(120,183,255,0.05));
+    filter: blur(14px) saturate(1.2);
+    transform: rotate(12deg);
+    animation: homeVisitorSweep 9s linear infinite;
+    opacity: 0.8;
+}
+
+.home-visitor-callout__kicker {
+    margin: 0;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(232,236,255,0.86);
+    font-size: 0.82rem;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 1px 8px rgba(0,0,0,0.55);
+}
+
+.home-visitor-callout__headline {
+    margin: 8px auto 0;
+    font-size: clamp(1.28rem, 2.6vw, 1.8rem);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 800;
+    color: #dff3ff;
+    position: relative;
+    z-index: 1;
+    text-shadow:
+        0 0 16px rgba(120,183,255,0.8),
+        0 0 34px rgba(194,139,255,0.72),
+        0 0 62px rgba(120,183,255,0.6);
+    animation: homeVisitorPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes homeVisitorPulse {
+    0%, 100% { text-shadow: 0 0 14px rgba(120,183,255,0.7), 0 0 30px rgba(194,139,255,0.62), 0 0 56px rgba(120,183,255,0.54); }
+    50% { text-shadow: 0 0 20px rgba(120,183,255,0.92), 0 0 46px rgba(194,139,255,0.78), 0 0 70px rgba(120,183,255,0.7); }
+}
+
+@keyframes homeVisitorSweep {
+    from { transform: rotate(12deg); }
+    to { transform: rotate(372deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .home-visitor-callout__beam,
+    .home-visitor-callout__headline {
+        animation: none;
+    }
+}
+
 .home-action-card__eyebrow {
     font-size: 0.86rem;
     letter-spacing: 0.14em;
