@@ -22,6 +22,7 @@
 
     <!-- INFO PAGE BASE -->
     <link rel="stylesheet" href="resources/css/info-pages.css" />
+    <link rel="stylesheet" href="resources/css/contact.css" />
 
     <!-- FOOTER CSS (ISOLATED) -->
     <link rel="stylesheet" href="resources/css/ccg-footer.css" />
@@ -61,7 +62,7 @@
                 </a>
 
                 <!-- NAV -->
-                                <nav class="ccg-nav" aria-label="Primary navigation">
+                <nav class="ccg-nav" aria-label="Primary navigation">
                     <ul class="ccg-nav__list">
                         <li><a href="home.html" class="ccg-nav__link">Home</a></li>
                         <li><a href="games/index.html" class="ccg-nav__link">Browse Games</a></li>
@@ -119,21 +120,134 @@
         ============================================================ -->
         <main class="ccg-main">
 
-            <section class="ccg-section">
-                <h2 class="ccg-section-title">Get in Touch</h2>
+            <div class="ccg-info-shell contact-shell">
 
-                <p class="ccg-body-text">
-                    Whether it’s feedback, collaboration ideas, quiz corrections or just a bit of retro chat,
-                    this is the place to reach me.
-                </p>
+                <section class="contact-hero" aria-labelledby="contact-title">
+                    <div class="contact-hero__glow"></div>
+                    <div class="contact-hero__content">
+                        <p class="contact-kicker">Retro signals online</p>
+                        <h1 id="contact-title">Get in Touch</h1>
+                        <p class="contact-lede">
+                            Feedback, collaboration ideas, quiz corrections or just a bit of C64/Amiga chat—drop a note and
+                            I’ll reply as soon as I’m off the joystick.
+                        </p>
+                        <div class="contact-pill-row" aria-label="Ways to reach me">
+                            <span class="contact-pill">Creator feedback</span>
+                            <span class="contact-pill">Bug reports</span>
+                            <span class="contact-pill">Collabs &amp; press</span>
+                            <span class="contact-pill">Retro hangouts</span>
+                        </div>
+                    </div>
+                </section>
 
-                <p class="ccg-body-text">
-                    Contact options will live here — email, forms, Discord and anything else that makes sense
-                    as the site continues to evolve.
-                </p>
-            </section>
+                <div class="contact-grid">
 
-            <!-- FUTURE CONTACT MODULES GO HERE -->
+                    <section class="contact-panel contact-panel--form" aria-labelledby="contact-form-title">
+                        <div class="contact-panel__header">
+                            <div>
+                                <p class="contact-kicker">Signal boost</p>
+                                <h2 id="contact-form-title">Send a message</h2>
+                                <p class="contact-panel__lede">
+                                    I personally read every message. Leave enough detail so I can help quickly—include links,
+                                    screenshots or timestamps if you have them.
+                                </p>
+                            </div>
+                            <div class="contact-panel__meta" aria-label="Response time">
+                                <span class="contact-pill contact-pill--ghost">Avg. reply: 1-2 days</span>
+                            </div>
+                        </div>
+
+                        <form class="contact-form" data-contact-form novalidate>
+                            <div class="contact-field">
+                                <label for="contact-name">Name</label>
+                                <input id="contact-name" name="name" type="text" autocomplete="name" required
+                                    placeholder="Your handle or full name" />
+                                <p class="contact-hint">How should I greet you?</p>
+                            </div>
+
+                            <div class="contact-field">
+                                <label for="contact-email">Email</label>
+                                <input id="contact-email" name="email" type="email" inputmode="email" autocomplete="email"
+                                    required placeholder="you@example.com" />
+                                <p class="contact-hint">I’ll never share your email—only used for replies.</p>
+                            </div>
+
+                            <div class="contact-field">
+                                <label for="contact-subject">Subject</label>
+                                <input id="contact-subject" name="subject" type="text" autocomplete="on"
+                                    placeholder="Feedback, collab idea, bug report…" />
+                            </div>
+
+                            <div class="contact-field">
+                                <div class="contact-field__label-row">
+                                    <label for="contact-message">Message</label>
+                                    <span class="contact-counter" data-char-counter data-max="800" aria-live="polite">0 / 800</span>
+                                </div>
+                                <textarea id="contact-message" name="message" rows="6" required
+                                    maxlength="800" placeholder="Tell me what’s up. Include links, timestamps or device info if it helps."></textarea>
+                                <p class="contact-hint">Minimum 10 characters so I have enough context.</p>
+                            </div>
+
+                            <div class="contact-actions">
+                                <button class="ccg-btn ccg-btn--primary" type="submit">Send transmission</button>
+                                <p class="contact-privacy">By sending, you agree to a reply to the email provided only.</p>
+                            </div>
+
+                            <div class="contact-status" role="status" aria-live="polite" data-contact-status>
+                                <span class="contact-status__icon" aria-hidden="true"></span>
+                                <span class="contact-status__text">Ready when you are.</span>
+                            </div>
+                        </form>
+                    </section>
+
+                    <section class="contact-panel contact-panel--callouts" aria-labelledby="contact-callouts-title">
+                        <div class="contact-panel__header">
+                            <div>
+                                <p class="contact-kicker">Fast tracks</p>
+                                <h2 id="contact-callouts-title">Other ways to reach me</h2>
+                                <p class="contact-panel__lede">Pick your vibe: quick Discord ping, direct email or open feedback form.</p>
+                            </div>
+                        </div>
+
+                        <div class="contact-callout contact-callout--discord">
+                            <div class="contact-callout__glow"></div>
+                            <div>
+                                <p class="contact-kicker">Community signal</p>
+                                <h3>Join the CCG Discord</h3>
+                                <p class="contact-callout__text">
+                                    Hop into the retro lounge for faster replies, streaming announcements and to meet fellow
+                                    Commodore fans.
+                                </p>
+                                <a class="ccg-btn ccg-btn--primary" href="https://discord.gg/83Xw9ktAn4">Open Discord</a>
+                            </div>
+                        </div>
+
+                        <div class="contact-list">
+                            <div class="contact-list__item">
+                                <div>
+                                    <p class="contact-kicker">Direct line</p>
+                                    <h3>Email</h3>
+                                    <p class="contact-list__text">Send details to <a href="mailto:cheekycommodoregamer@gmail.com">cheekycommodoregamer@gmail.com</a>.</p>
+                                </div>
+                            </div>
+
+                            <div class="contact-list__item">
+                                <div>
+                                    <p class="contact-kicker">Useful info</p>
+                                    <h3>Best way to help</h3>
+                                    <ul class="contact-bullets">
+                                        <li>Mention the game, mode (C64/Amiga), and page URL if reporting a bug.</li>
+                                        <li>For collaborations, include timelines or links to your work.</li>
+                                        <li>Quiz fixes? A screenshot or timestamp keeps things speedy.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                </div>
+
+            </div>
 
         </main>
 
@@ -156,6 +270,7 @@
     <!-- JS -->
     <script src="js/ccg-global.js" defer></script>
     <script src="js/ccg-mode-engine.js" defer></script>
+    <script src="js/contact.js" defer></script>
 
 </body>
 </html>
