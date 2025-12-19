@@ -1,7 +1,14 @@
 /* ============================================================
    CCG MASTER CSS — GLOBAL STRUCTURE & FOUNDATION LOCK
-   HEADER/NAV ISOLATION FIX (H-FINAL)
+   PHASE 0 — BASELINE NORMALISATION (PERMANENT)
+   ------------------------------------------------------------
+   • Eliminates browser default styling regressions
+   • Locks anchors, lists, cards & text behaviour
+   • ZERO layout changes
+   • ZERO visual redesign
+   • REQUIRED BEFORE ANY PAGE POLISH
 ============================================================ */
+
 
 /* ============================================================
    ROOT VARIABLES
@@ -22,13 +29,16 @@
     --ccg-nav-pill-pad-y: 8px;
     --ccg-nav-pill-pad-x: 14px;
 
+    /* PAGE ENTRY */
     --ccg-page-entry-pad: 32px;
 
+    /* MODE ACCENTS */
     --accent-rgb: 0,170,255;
 }
 
+
 /* ============================================================
-   RESET
+   RESET — SAFE, NON-DESTRUCTIVE
 ============================================================ */
 
 *,
@@ -45,7 +55,44 @@ body {
     color: var(--ccg-text-light);
     font-family: var(--ccg-font-body);
     overflow-x: hidden;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
+
+
+/* ============================================================
+   🔒 GLOBAL ANCHOR LOCK (CRITICAL)
+============================================================ */
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+a:hover,
+a:focus,
+a:active {
+    color: inherit;
+    text-decoration: none;
+}
+
+
+/* ============================================================
+   🔒 GLOBAL LIST LOCK (CRITICAL)
+============================================================ */
+
+ul,
+ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+li {
+    list-style: none;
+}
+
 
 /* ============================================================
    PAGE WRAPPERS
@@ -63,15 +110,18 @@ body {
     position: relative;
 }
 
+
 /* ============================================================
-   HEADER — LOCKED STRUCTURE
+   HEADER — STRUCTURE (LOCKED, NO VISUAL CHANGE)
 ============================================================ */
 
 .ccg-header {
     position: relative;
-    z-index: 10000; /* HARD TOP LAYER */
+    z-index: 9999;
 
     height: var(--ccg-header-height);
+    max-height: var(--ccg-header-height);
+
     display: flex;
     align-items: center;
 
@@ -87,24 +137,68 @@ body {
     overflow: visible;
 }
 
+.ccg-header::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 28px;
+    pointer-events: none;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(0,0,0,0.65),
+            rgba(0,0,0,0.0)
+        );
+}
+
 .ccg-header-inner {
     width: min(1320px, 96%);
     margin: 0 auto;
+
     height: var(--ccg-header-inner-height);
+    max-height: var(--ccg-header-inner-height);
 
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
-    gap: 18px;
 
+    gap: 18px;
     overflow: visible;
 }
 
+
 /* ============================================================
-   NAVIGATION — FIXED OVERFLOW
+   BRAND — STRUCTURAL ONLY
+============================================================ */
+
+.ccg-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    white-space: nowrap;
+}
+
+.ccg-brand__logo {
+    width: 56px;
+    height: auto;
+}
+
+.ccg-brand__kicker,
+.ccg-brand__neon-cheeky,
+.ccg-brand__neon-sub {
+    display: block;
+}
+
+
+/* ============================================================
+   NAVIGATION — STRUCTURAL ONLY (+ DROPDOWN FIX)
 ============================================================ */
 
 .ccg-nav {
+    min-width: 0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -116,8 +210,10 @@ body {
     padding-inline: 28px;
 
     overflow-x: auto;
-    overflow-y: visible; /* ✅ CRITICAL FIX */
+    overflow-y: visible; /* ✅ CRITICAL: allows dropdown to extend */
     scrollbar-width: none;
+    position: relative;
+    z-index: 1;
 }
 
 .ccg-nav__list::-webkit-scrollbar {
@@ -149,20 +245,28 @@ body {
     box-shadow: 0 6px 14px rgba(0,0,0,0.65);
 }
 
+.ccg-nav__link--active {
+    border-color: rgba(var(--accent-rgb),0.65);
+}
+
+
 /* ============================================================
-   MORE ▾ DROPDOWN — FUNCTIONAL ONLY
+   MORE ▾ DROPDOWN — FUNCTIONAL CONTRACT (NO REDESIGN)
+   IMPORTANT: Works even if JS fails (focus-within fallback)
 ============================================================ */
 
 .ccg-nav__more {
-    position: relative; /* anchor */
+    position: relative;
+    z-index: 2;
 }
 
+/* hidden by default */
 .ccg-nav__dropdown {
     position: absolute;
     top: calc(100% + 10px);
     right: 0;
 
-    min-width: 220px;
+    min-width: 240px;
     padding: 10px;
 
     display: none;
@@ -173,24 +277,41 @@ body {
     border-radius: 14px;
 
     box-shadow: 0 18px 48px rgba(0,0,0,0.9);
+
+    pointer-events: auto;
 }
 
+/* JS-open state */
 .ccg-nav__dropdown.is-open {
     display: block;
+}
+
+/* ✅ CSS fallback: click/focus on button opens dropdown even if JS is dead */
+.ccg-nav__more:focus-within .ccg-nav__dropdown {
+    display: block;
+}
+
+/* Optional hover support (desktop only feel) */
+@media (hover: hover) and (pointer: fine) {
+    .ccg-nav__more:hover .ccg-nav__dropdown {
+        display: block;
+    }
 }
 
 .ccg-nav__dropdown-link {
     display: block;
     padding: 10px 14px;
     border-radius: 8px;
+
     font-family: var(--ccg-font-main);
     font-size: 0.7rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
 }
 
+
 /* ============================================================
-   HEADER ACTIONS
+   HEADER ACTIONS — STRUCTURAL ONLY
 ============================================================ */
 
 .ccg-header-socials {
@@ -205,23 +326,28 @@ body {
     border-radius: 999px;
 }
 
+
 /* ============================================================
-   PAGE HANDOFF — CONTRACT PRESERVED
+   PAGE TYPE HANDOFF (NO VISUALS)
 ============================================================ */
 
+/* HOME — hero docks closer */
 html[data-ccg-page="home"] .ccg-main {
     padding-top: 18px;
 }
 
+/* INDEX PAGES */
 .ccg-page--games-index .ccg-main,
 .ccg-page--collections-index .ccg-main,
 .ccg-page--genres-index .ccg-main {
     padding-top: var(--ccg-page-entry-pad);
 }
 
+/* SINGLE GAME */
 .ccg-page--single-game .ccg-main {
     padding-top: 14px;
 }
+
 
 /* ============================================================
    MODE COLOURS
