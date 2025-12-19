@@ -169,45 +169,50 @@
                 <div class="home-tagline__flare" aria-hidden="true"></div>
             </section>
 
-            <!-- FEATURED SHOWCASE -->
-            <section class="home-section home-section--feature">
+            <!-- FEATURED SPOTLIGHT -->
+            <section class="home-section home-section--spotlight">
                 <header class="home-section__header">
-                    <h2 class="home-section__title">Featured Game &amp; Video</h2>
+                    <h2 class="home-section__title">Spotlight: Game &amp; Matching Feature</h2>
                     <div class="home-section__divider"></div>
-                    <p class="home-section__subtitle">One spotlight — matching gameplay and longplay so you can dive straight in.</p>
+                    <p class="home-section__subtitle">One premium, deterministic pick pulled straight from the library.</p>
                 </header>
 
-                <div class="home-featured-grid">
-                    <article class="home-featured-card home-featured-card--game">
-                        <div class="home-featured__media" data-ccg-feature-thumb></div>
-                        <div class="home-featured__body">
-                            <p class="home-featured__meta" data-ccg-feature-meta>Loading...</p>
-                            <h3 class="home-featured__title" data-ccg-feature-title>Featured Game</h3>
-                            <p class="home-featured__blurb" data-ccg-feature-copy>Neon-fuelled action and pixel-perfect charm.</p>
-                            <div class="home-featured__actions">
-                                <a class="ccg-btn ccg-btn--primary" data-ccg-feature-play href="#">View the game page</a>
-                                <a class="ccg-btn ccg-btn--ghost" data-ccg-feature-collection href="games/collections/top-picks.html">More CCG essentials</a>
+                <article class="home-spotlight-card" data-ccg-spotlight>
+                    <div class="home-spotlight__media">
+                        <div class="home-spotlight__art" data-ccg-spotlight-art role="presentation"></div>
+                        <div class="home-spotlight__video" data-ccg-spotlight-video>
+                            <div class="home-spotlight__video-overlay">
+                                <p class="home-spotlight__video-label">Matching longplay / feature</p>
+                                <button class="home-spotlight__play" type="button" data-ccg-spotlight-watch>Play the feature</button>
+                            </div>
+                            <div class="home-spotlight__iframe" data-ccg-spotlight-iframe-wrap>
+                                <iframe
+                                    title="Featured longplay"
+                                    loading="lazy"
+                                    referrerpolicy="strict-origin-when-cross-origin"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    allowfullscreen
+                                    data-ccg-spotlight-iframe>
+                                </iframe>
                             </div>
                         </div>
-                    </article>
+                    </div>
 
-                    <article class="home-featured-card home-featured-card--video">
-                        <div class="home-featured__media home-featured__media--video" data-ccg-feature-video-thumb>
-                            <button class="home-featured__play" type="button" aria-label="Play featured video" data-ccg-feature-watch>
-                                ▶
-                            </button>
+                    <div class="home-spotlight__body">
+                        <p class="home-spotlight__meta" data-ccg-spotlight-meta>Loading featured pick...</p>
+                        <h3 class="home-spotlight__title" data-ccg-spotlight-title>Featured Game</h3>
+                        <p class="home-spotlight__copy" data-ccg-spotlight-copy>Neon-fuelled action and pixel-perfect charm.</p>
+
+                        <div class="home-spotlight__tags" data-ccg-spotlight-tags></div>
+
+                        <div class="home-spotlight__actions">
+                            <a class="ccg-btn ccg-btn--primary" data-ccg-spotlight-game href="#">View the game page</a>
+                            <a class="ccg-btn ccg-btn--ghost" href="games/collections/top-picks.html">More CCG essentials</a>
+                            <button class="ccg-btn ccg-btn--neon" type="button" data-ccg-spotlight-watch>Play the feature</button>
+                            <a class="ccg-btn ccg-btn--ghost" data-ccg-spotlight-youtube href="#" target="_blank" rel="noopener">Watch on YouTube</a>
                         </div>
-                        <div class="home-featured__body">
-                            <p class="home-featured__meta" data-ccg-feature-video-meta>Longplay · Matching feature</p>
-                            <h3 class="home-featured__title" data-ccg-feature-video-title>Matching longplay / feature</h3>
-                            <p class="home-featured__blurb" data-ccg-feature-video-copy>Watch the exact game in motion with CRT glow and soundtrack.</p>
-                            <div class="home-featured__actions">
-                                <a class="ccg-btn ccg-btn--primary" data-ccg-feature-watch-link href="#" target="_blank" rel="noopener">Watch on YouTube</a>
-                                <a class="ccg-btn ccg-btn--ghost" data-ccg-feature-play2 href="#">Play the feature</a>
-                            </div>
-                        </div>
-                    </article>
-                </div>
+                    </div>
+                </article>
             </section>
 
             <!-- FEATURED HIGHLIGHTS -->
@@ -274,63 +279,6 @@
                     </a>
 
                 </div>
-            </section>
-
-            <!-- FEATURED GAME -->
-            <section class="home-section home-section--feature-card">
-                <header class="home-section__header">
-                    <h2 class="home-section__title">Featured Game</h2>
-                    <div class="home-section__divider"></div>
-                </header>
-
-                <article class="home-feature-card">
-                    <div class="home-feature-card__art" role="presentation">
-                        <img src="resources/images/thumbnails/all/turrican_ii_the_final_fight.jpg" alt="Turrican II cover art">
-                    </div>
-                    <div class="home-feature-card__body">
-                        <p class="home-feature-card__eyebrow">AMIGA · RAINBOW ARTS · 1991</p>
-                        <h3 class="home-feature-card__title">Turrican II: The Final Fight</h3>
-                        <p class="home-feature-card__copy">
-                            Thumping Chris Huelsbeck soundtrack, screen-filling bosses and multi-directional plasma cannons.
-                            This definitive Amiga showcase is a perfect stress-test for your emu setup.
-                        </p>
-                        <div class="home-feature-card__ctas">
-                            <a class="ccg-btn home-hero__cta home-hero__cta--solid" href="games/game.html?id=turrican_ii_the_final_fight">
-                                View the game page
-                            </a>
-                            <a class="ccg-btn home-hero__cta home-hero__cta--ghost" href="games/collections/top-picks.html">
-                                More CCG essentials
-                            </a>
-                        </div>
-                    </div>
-                </article>
-            </section>
-
-            <!-- FEATURED VIDEO -->
-            <section class="home-section home-section--feature-video">
-                <header class="home-section__header">
-                    <h2 class="home-section__title">Featured Video</h2>
-                    <div class="home-section__divider"></div>
-                </header>
-
-                <article class="home-feature-video">
-                    <div class="home-feature-video__thumb" role="presentation">
-                        <a href="https://www.youtube.com/watch?v=PPbX3psB8hY" target="_blank" rel="noopener" class="home-feature-video__link">
-                            <span class="home-feature-video__cta">Watch on YouTube</span>
-                        </a>
-                    </div>
-                    <div class="home-feature-video__body">
-                        <p class="home-feature-video__eyebrow">LONGPLAY · C64</p>
-                        <h3 class="home-feature-video__title">Impossible Mission — perfect run</h3>
-                        <p class="home-feature-video__copy">
-                            A chill, atmospheric showcase of the iconic synth voice, smart level layouts and the timeless “Stay a while…"
-                            energy. Kick back with CRT scanlines and relive the suspense.
-                        </p>
-                        <a class="ccg-btn home-hero__cta home-hero__cta--solid" href="https://www.youtube.com/watch?v=PPbX3psB8hY" target="_blank" rel="noopener">
-                            Play the feature
-                        </a>
-                    </div>
-                </article>
             </section>
 
             <!-- QUICK ACCESS LINKS -->
