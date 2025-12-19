@@ -1,4 +1,20 @@
 /* ============================================================
+   CCG OVERLAYS — INTERACTION SAFETY LOCK
+   ------------------------------------------------------------
+   Prevents starfield / grid / CRT layers from blocking clicks
+   This MUST exist for header/nav to work.
+============================================================ */
+
+.ccg-bg,
+.ccg-bg *,
+.ccg-bg-starfield,
+.ccg-bg-grid,
+.ccg-bg-crt-overlay {
+    pointer-events: none !important;
+}
+
+
+/* ============================================================
    CCG OVERLAYS — OMEGA UNIVERSE LAYER (LOCKED)
    Phase U2+ — CINEMATIC COHESION PASS
    ------------------------------------------------------------
