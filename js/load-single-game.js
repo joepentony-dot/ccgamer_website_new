@@ -79,15 +79,20 @@ function resolveVideoId(game) {
     ).toString().trim();
 }
 
+function resolvePrimaryLink(value) {
+    if (Array.isArray(value) && value.length) {
+        return value.find(Boolean) || "";
+    }
+    if (typeof value === "string") return value.trim();
+    return "";
+}
+
 function resolveManualUrl(game) {
-    return game.pdf || game.manual || "";
+    return resolvePrimaryLink(game.pdf || game.manual || game.manuals);
 }
 
 function resolveDiskUrl(game) {
-    if (Array.isArray(game.disk) && game.disk[0]) return game.disk[0];
-    if (typeof game.disk === "string") return game.disk;
-    if (typeof game.tape === "string") return game.tape;
-    return "";
+    return resolvePrimaryLink(game.disk || game.tape || game.download);
 }
 
 /* ============================================================

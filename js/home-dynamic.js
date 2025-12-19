@@ -18,6 +18,8 @@ async function initHomeDynamic() {
     wireRandomGameButton();
     syncModeLabel();
     initModeObserver();
+    initHeroCardFX();
+    initHeroGlowPulse();
 }
 
 /* ============================================================
@@ -143,4 +145,48 @@ function syncModeLabel() {
 function initModeObserver() {
     new MutationObserver(syncModeLabel)
         .observe(document.body, { attributes: true, attributeFilter: ["data-ccg-mode"] });
+}
+
+/* ============================================================
+   HERO CARD GLOW — POINTER REACTIVE
+============================================================ */
+
+function initHeroCardFX() {
+    const cards = document.querySelectorAll('.home-hero-card, .home-highlight-card, .home-genre-tile');
+    if (!cards.length) return;
+
+    cards.forEach(card => {
+        card.style.setProperty('--glow-x', '50%');
+        card.style.setProperty('--glow-y', '50%');
+        card.style.setProperty('--glow-alpha', '0.28');
+
+        card.addEventListener('pointermove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            card.style.setProperty('--glow-x', `${x.toFixed(2)}%`);
+            card.style.setProperty('--glow-y', `${y.toFixed(2)}%`);
+            card.style.setProperty('--glow-alpha', '0.55');
+        });
+
+        card.addEventListener('pointerleave', () => {
+            card.style.setProperty('--glow-x', '50%');
+            card.style.setProperty('--glow-y', '50%');
+            card.style.setProperty('--glow-alpha', '0.30');
+        });
+    });
+}
+
+function initHeroGlowPulse() {
+    const cards = document.querySelectorAll('.home-hero-card');
+    if (!cards.length) return;
+
+    let tick = 0;
+    function loop() {
+        tick += 0.02;
+        const pulse = 0.30 + Math.sin(tick) * 0.05;
+        cards.forEach(card => card.style.setProperty('--glow-alpha', pulse.toFixed(3)));
+        requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
 }
