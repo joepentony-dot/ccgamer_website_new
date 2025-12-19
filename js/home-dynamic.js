@@ -19,6 +19,7 @@ async function initHomeDynamic() {
     initModeObserver();
     initHeroCardFX();
     initHeroGlowPulse();
+    initHomeEnergy();
 }
 
 /* ============================================================
@@ -35,7 +36,7 @@ async function loadGamesForHome() {
 }
 
 /* ============================================================
-   FEATURED HIGHLIGHTS — DO NOT TOUCH
+   FEATURED SHOWCASE — MATCHED GAME & VIDEO
 ============================================================ */
 
 function renderFeaturedHighlights() {
@@ -145,4 +146,20 @@ function initHeroGlowPulse() {
         requestAnimationFrame(loop);
     }
     requestAnimationFrame(loop);
+}
+
+/* ============================================================
+   HOME ENERGY — TAGLINE + BRAND PULSE
+============================================================ */
+
+function initHomeEnergy() {
+    const tagline = document.querySelector('.home-tagline');
+    const brand = document.querySelector('.ccg-brand');
+
+    if (!tagline && !brand) return;
+
+    setInterval(() => {
+        tagline?.classList.toggle('is-ignited');
+        brand?.classList.toggle('is-ignited');
+    }, 2800);
 }

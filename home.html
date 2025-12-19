@@ -51,8 +51,8 @@
                     <div class="ccg-brand__text">
                         <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
                         <div class="ccg-brand__title">
-                            <span class="ccg-brand__neon-cheeky">CHEEKY</span>
-                            <span class="ccg-brand__neon-sub">COMMODORE GAMER</span>
+                            <span class="ccg-brand__neon-cheeky">CHEEKY COMMODORE</span>
+                            <span class="ccg-brand__neon-sub">GAMER</span>
                         </div>
                     </div>
                 </a>
@@ -173,8 +173,53 @@
 
             <!-- TAGLINE STRIP -->
             <section class="home-tagline">
-                <p class="home-tagline__kicker">Another visitor...</p>
-                <p class="home-tagline__main">Stay a while, stay forever!</p>
+                <div class="home-tagline__pulse"></div>
+                <div class="home-tagline__text">
+                    <p class="home-tagline__kicker">Another visitor...</p>
+                    <p class="home-tagline__main">Stay a while, stay forever!</p>
+                </div>
+                <div class="home-tagline__flare" aria-hidden="true"></div>
+            </section>
+
+            <!-- FEATURED SHOWCASE -->
+            <section class="home-section home-section--feature">
+                <header class="home-section__header">
+                    <h2 class="home-section__title">Featured Game &amp; Video</h2>
+                    <div class="home-section__divider"></div>
+                    <p class="home-section__subtitle">One spotlight — matching gameplay and longplay so you can dive straight in.</p>
+                </header>
+
+                <div class="home-featured-grid">
+                    <article class="home-featured-card home-featured-card--game">
+                        <div class="home-featured__media" data-ccg-feature-thumb></div>
+                        <div class="home-featured__body">
+                            <p class="home-featured__meta" data-ccg-feature-meta>Loading...</p>
+                            <h3 class="home-featured__title" data-ccg-feature-title>Featured Game</h3>
+                            <p class="home-featured__blurb" data-ccg-feature-copy>Neon-fuelled action and pixel-perfect charm.</p>
+                            <div class="home-featured__actions">
+                                <a class="ccg-btn ccg-btn--primary" data-ccg-feature-play href="#">View the game page</a>
+                                <a class="ccg-btn ccg-btn--ghost" data-ccg-feature-collection href="games/collections/top-picks.html">More CCG essentials</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="home-featured-card home-featured-card--video">
+                        <div class="home-featured__media home-featured__media--video" data-ccg-feature-video-thumb>
+                            <button class="home-featured__play" type="button" aria-label="Play featured video" data-ccg-feature-watch>
+                                ▶
+                            </button>
+                        </div>
+                        <div class="home-featured__body">
+                            <p class="home-featured__meta" data-ccg-feature-video-meta>Longplay · Matching feature</p>
+                            <h3 class="home-featured__title" data-ccg-feature-video-title>Matching longplay / feature</h3>
+                            <p class="home-featured__blurb" data-ccg-feature-video-copy>Watch the exact game in motion with CRT glow and soundtrack.</p>
+                            <div class="home-featured__actions">
+                                <a class="ccg-btn ccg-btn--primary" data-ccg-feature-watch-link href="#" target="_blank" rel="noopener">Watch on YouTube</a>
+                                <a class="ccg-btn ccg-btn--ghost" data-ccg-feature-play2 href="#">Play the feature</a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
             </section>
 
             <!-- FEATURED HIGHLIGHTS -->

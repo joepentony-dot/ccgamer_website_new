@@ -1,9 +1,8 @@
 /* ==========================================================
-   CCG GLOBAL SCRIPT — CORE UI + HEADER DROPDOWN (LOCKED)
+   CCG GLOBAL SCRIPT — CORE UI (NAV + WOW)
    ----------------------------------------------------------
    • Depth-aware logo path fix
-   • Header "More ▾" dropdown (CLICK-BASED)
-   • Close on outside click / ESC
+   • Header nav flatten (no "More" dropdown)
    • No dependencies on page-specific JS
 ========================================================== */
 
