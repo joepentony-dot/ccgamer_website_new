@@ -1,74 +1,78 @@
 /* ============================================================
-   HOME.CSS — FINAL SIZE CORRECTIONS
+   HOME.CSS — FINAL SIZE & VISUAL CORRECTIONS (LOCK CANDIDATE)
    ------------------------------------------------------------
-   • Featured Highlights thumbnails half height
-   • Genre thumbnails rectangular & compact
-   • Home-only, no global impact
+   • Featured Highlights cards visually compact
+   • Genre tiles rectangular, restrained, readable
+   • Home-only selectors (page-scoped)
+   • Zero impact on Games / Genres / Collections
 ============================================================ */
 
 
 /* ============================================================
-   FEATURED HIGHLIGHTS — THUMB SIZE FIX
+   FEATURED HIGHLIGHTS — CARD VISUAL BALANCE
 ============================================================ */
 
-html[data-ccg-page="home"] .home-feature-card img {
-    width: 100%;
-    height: 120px;               /* HALF SIZE */
-    object-fit: cover;
-    border-radius: 12px;
-    margin-bottom: 10px;
-}
-
-/* Reduce visual dominance slightly */
-html[data-ccg-page="home"] .home-feature-card {
+html[data-ccg-page="home"] .home-highlight-card {
     padding: 14px;
 }
 
+html[data-ccg-page="home"] .home-highlight-card .ccg-card__title {
+    font-size: 1rem;
+    margin-bottom: 6px;
+}
+
+html[data-ccg-page="home"] .home-highlight-card .ccg-card__text {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    opacity: 0.9;
+}
+
 
 /* ============================================================
-   HOME GENRES — SMALL RECTANGULAR THUMBS
+   BROWSE BY GENRE — GRID LAYOUT
 ============================================================ */
 
-html[data-ccg-page="home"] .ccg-home-genre-thumb-grid {
+html[data-ccg-page="home"] .home-genres-grid {
     display: grid;
     gap: 16px;
     margin-top: 22px;
 }
 
-@media (min-width: 600px) {
-    html[data-ccg-page="home"] .ccg-home-genre-thumb-grid {
-        grid-template-columns: repeat(6, 1fr);
+@media (min-width: 640px) {
+    html[data-ccg-page="home"] .home-genres-grid {
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
-/* Compact, rectangular tile */
-html[data-ccg-page="home"] .ccg-home-genre-thumb {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
+@media (min-width: 1024px) {
+    html[data-ccg-page="home"] .home-genres-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
 
-    padding: 10px 8px 12px;
+
+/* ============================================================
+   GENRE TILES — COMPACT, RECTANGULAR, CONTROLLED
+============================================================ */
+
+html[data-ccg-page="home"] .home-genre-tile {
+    padding: 14px 14px 16px;
     text-align: center;
 
-    background: rgba(0,0,0,0.45);
-    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.45);
+    border-radius: 14px;
 
     box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.08);
+        inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
-/* RECTANGULAR thumbnails */
-html[data-ccg-page="home"] .ccg-home-genre-thumb img {
-    width: 72px;
-    height: 48px;               /* RECTANGLE */
-    object-fit: cover;
-    border-radius: 6px;
+html[data-ccg-page="home"] .home-genre-tile .ccg-card__title {
+    font-size: 1rem;
+    margin-bottom: 6px;
 }
 
-/* Genre label */
-html[data-ccg-page="home"] .ccg-home-genre-thumb span {
-    font-size: 0.8rem;
-    line-height: 1.2;
+html[data-ccg-page="home"] .home-genre-tile .ccg-card__text {
+    font-size: 0.9rem;
+    line-height: 1.4;
     opacity: 0.9;
 }
