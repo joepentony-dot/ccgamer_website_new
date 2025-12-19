@@ -1,156 +1,339 @@
 /* ============================================================
    HOME.CSS — OMEGA SHOWCASE
-   PHASE H-RESTORE — LAYOUT & CARDS ONLY
+   PHASE H-RESTORE — LAYOUT & CARDS VISIBILITY ONLY
    ------------------------------------------------------------
-   • Restores Home layout after global reset
-   • No header interaction
-   • No visual redesign
-   • No motion experiments
-   • Home page ONLY
+   • Restores Home layout + card/thumbnail visibility
+   • Fixes common “suppressed/missing” causes (opacity/z-index/overflow)
+   • NO header/nav interaction
+   • NO global CSS edits
+   • NO motion experiments (respects reduced-motion)
+   • Home page ONLY (all selectors scoped)
 ============================================================ */
 
 
 /* ============================================================
-   PAGE ROOT
+   PAGE ROOT — ENSURE HOME CONTENT SITS ABOVE UNIVERSE LAYERS
 ============================================================ */
+
+html[data-ccg-page="home"] .ccg-page--home {
+    position: relative;
+}
 
 html[data-ccg-page="home"] .ccg-main--home {
+    position: relative;
+    z-index: 2; /* critical: above .ccg-bg (z=0) and any overlay stacking quirks */
     padding-top: 18px;
-    padding-bottom: 48px;
+    padding-bottom: 56px;
+    overflow: visible; /* prevent accidental clipping of cards/glows */
+}
+
+/* Safety: if any global card styles fade/transform cards in, force visibility on Home only */
+html[data-ccg-page="home"] .ccg-main--home .ccg-card,
+html[data-ccg-page="home"] .ccg-main--home .ccg-genre-tile,
+html[data-ccg-page="home"] .ccg-main--home .home-feature-card {
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: block;
+    transform: none !important;
+    filter: none !important;
 }
 
 
 /* ============================================================
-   HERO
+   HERO — STRUCTURE + READABILITY (NO REDESIGN)
 ============================================================ */
 
-.home-hero {
+html[data-ccg-page="home"] .home-hero {
     position: relative;
-    margin-bottom: 48px;
+    margin-bottom: 40px;
 }
 
-.home-hero__inner {
+html[data-ccg-page="home"] .home-hero__inner {
     max-width: 1100px;
     margin: 0 auto;
     text-align: center;
+    position: relative;
+    z-index: 2;
 }
 
-.home-hero__title {
+html[data-ccg-page="home"] .home-hero__title {
     margin-bottom: 14px;
 }
 
-.home-hero__tagline {
-    margin-bottom: 24px;
+html[data-ccg-page="home"] .home-hero__tagline {
+    margin-bottom: 22px;
     max-width: 760px;
     margin-inline: auto;
 }
 
+/* Mode line + tip (if these exist in global styles, this simply stabilises spacing) */
+html[data-ccg-page="home"] .home-hero__mode-line {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+    opacity: 0.95;
+}
 
-/* ============================================================
-   HERO ACTIONS — FIXED LAYOUT
-============================================================ */
+html[data-ccg-page="home"] .home-hero__tip {
+    margin-top: 18px;
+    opacity: 0.82;
+    max-width: 760px;
+    margin-inline: auto;
+    line-height: 1.55;
+}
 
-.home-hero__actions {
+/* Hero action buttons — keep as you had */
+html[data-ccg-page="home"] .home-hero__actions {
     display: flex;
     justify-content: center;
     gap: 14px;
     flex-wrap: wrap;
-    margin-bottom: 34px;
+    margin-bottom: 28px;
 }
 
 
 /* ============================================================
-   HERO CARDS — RESTORED GRID
+   HERO CARDS — RESTORE GRID + ENSURE THEY DON’T DISAPPEAR
 ============================================================ */
 
-.home-hero-cards {
+html[data-ccg-page="home"] .home-hero-cards {
     display: grid;
     gap: 22px;
-    margin-top: 24px;
+    margin-top: 22px;
+    align-items: stretch;
 }
 
 @media (min-width: 768px) {
-    .home-hero-cards {
+    html[data-ccg-page="home"] .home-hero-cards {
         grid-template-columns: repeat(3, 1fr);
         max-width: 1000px;
         margin-inline: auto;
     }
 }
 
-.home-hero-card {
+/* The anchors have class="ccg-card home-hero-card" — keep card discipline, add readable panel */
+html[data-ccg-page="home"] .home-hero-card {
     position: relative;
-    padding: 22px 22px 26px;
     border-radius: 18px;
+    padding: 22px 22px 26px;
 
-    background:
-        linear-gradient(
-            180deg,
-            rgba(255,255,255,0.06),
-            rgba(255,255,255,0.02)
-        );
+    /* Readability panel (no layout transforms, no experimental motion) */
+    background: linear-gradient(
+        180deg,
+        rgba(0,0,0,0.42),
+        rgba(0,0,0,0.28)
+    );
 
     box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.08),
+        inset 0 0 0 1px rgba(255,255,255,0.10),
         0 14px 36px rgba(0,0,0,0.75);
+
+    /* Ensure clickability even if any overlay/pseudo layers exist globally */
+    pointer-events: auto;
+    z-index: 1;
 }
 
-.home-hero-card h3 {
+html[data-ccg-page="home"] .home-hero-card .ccg-card__body {
+    position: relative;
+    z-index: 1;
+}
+
+html[data-ccg-page="home"] .home-hero-card h3,
+html[data-ccg-page="home"] .home-hero-card .ccg-card__title {
     margin-bottom: 10px;
 }
 
-.home-hero-card p {
-    opacity: 0.85;
+html[data-ccg-page="home"] .home-hero-card p,
+html[data-ccg-page="home"] .home-hero-card .ccg-card__text {
+    opacity: 0.90;
     line-height: 1.6;
 }
 
 
 /* ============================================================
-   FEATURED HIGHLIGHTS
+   TAGLINE STRIP — STABILISE VISIBILITY / SPACING
 ============================================================ */
 
-.home-featured {
-    margin-top: 56px;
+html[data-ccg-page="home"] .home-tagline {
+    max-width: 1100px;
+    margin: 34px auto 10px;
+    text-align: center;
+
+    padding: 18px 18px;
+
+    background: linear-gradient(
+        180deg,
+        rgba(0,0,0,0.38),
+        rgba(0,0,0,0.22)
+    );
+
+    border-radius: 18px;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.08),
+        0 10px 28px rgba(0,0,0,0.65);
 }
 
-.home-featured__grid {
+html[data-ccg-page="home"] .home-tagline__kicker {
+    margin: 0 0 6px;
+    opacity: 0.85;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+html[data-ccg-page="home"] .home-tagline__main {
+    margin: 0;
+    opacity: 0.95;
+}
+
+
+/* ============================================================
+   HOME SECTIONS — HEADER + SPACING + “CONTENT NOT SHOWING” FIXES
+============================================================ */
+
+html[data-ccg-page="home"] .home-section {
+    max-width: 1100px;
+    margin: 54px auto 0;
+    position: relative;
+    z-index: 2;
+    overflow: visible;
+}
+
+html[data-ccg-page="home"] .home-section__header {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+html[data-ccg-page="home"] .home-section__title {
+    margin: 0;
+}
+
+html[data-ccg-page="home"] .home-section__divider {
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(
+        90deg,
+        rgba(255,255,255,0.00),
+        rgba(255,255,255,0.18),
+        rgba(255,255,255,0.00)
+    );
+    opacity: 0.9;
+}
+
+
+/* ============================================================
+   FEATURED HIGHLIGHTS — GRID + CARDS (HOME-SAFE)
+   (Your HTML currently has .home-highlights-grid placeholder)
+============================================================ */
+
+html[data-ccg-page="home"] .home-highlights-grid,
+html[data-ccg-page="home"] .home-featured__grid {
     display: grid;
     gap: 22px;
     margin-top: 18px;
+    align-items: stretch;
 }
 
 @media (min-width: 768px) {
-    .home-featured__grid {
+    html[data-ccg-page="home"] .home-highlights-grid,
+    html[data-ccg-page="home"] .home-featured__grid {
         grid-template-columns: repeat(3, 1fr);
     }
 }
 
-.home-feature-card {
+/* If JS injects .home-feature-card items, keep them readable and visible */
+html[data-ccg-page="home"] .home-feature-card {
     position: relative;
     border-radius: 18px;
     overflow: hidden;
 
-    background:
-        linear-gradient(
-            180deg,
-            rgba(255,255,255,0.06),
-            rgba(255,255,255,0.02)
-        );
+    background: linear-gradient(
+        180deg,
+        rgba(0,0,0,0.42),
+        rgba(0,0,0,0.24)
+    );
 
     box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.08),
+        inset 0 0 0 1px rgba(255,255,255,0.10),
         0 14px 36px rgba(0,0,0,0.75);
+
+    z-index: 1;
 }
 
-.home-feature-card__inner {
+html[data-ccg-page="home"] .home-feature-card__inner {
     padding: 18px;
 }
 
-.home-feature-card img {
+html[data-ccg-page="home"] .home-feature-card img {
     width: 100%;
     height: auto;
     display: block;
     border-radius: 12px;
     margin-bottom: 14px;
+}
+
+/* Empty state: prevents “looks broken” when placeholder content isn’t populated yet */
+html[data-ccg-page="home"] .home-highlights-grid:empty::before {
+    content: "Featured highlights loading…";
+    display: block;
+    padding: 18px;
+    border-radius: 14px;
+    background: rgba(0,0,0,0.30);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+    opacity: 0.85;
+}
+
+
+/* ============================================================
+   BROWSE BY GENRE — TILE GRID SAFETY
+   (Markup for this section is “unchanged” in your paste, but tiles
+    are expected to use .ccg-genre-tile per your locked card system)
+============================================================ */
+
+html[data-ccg-page="home"] .home-section--genres {
+    margin-bottom: 10px;
+}
+
+/* Common pattern: a grid wrapper; support either explicit home class or generic container */
+html[data-ccg-page="home"] .home-genres-grid,
+html[data-ccg-page="home"] .ccg-genre-grid,
+html[data-ccg-page="home"] .ccg-tiles-grid {
+    display: grid;
+    gap: 18px;
+    margin-top: 18px;
+}
+
+@media (min-width: 520px) {
+    html[data-ccg-page="home"] .home-genres-grid,
+    html[data-ccg-page="home"] .ccg-genre-grid,
+    html[data-ccg-page="home"] .ccg-tiles-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 900px) {
+    html[data-ccg-page="home"] .home-genres-grid,
+    html[data-ccg-page="home"] .ccg-genre-grid,
+    html[data-ccg-page="home"] .ccg-tiles-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Keep thumbnail isolation LOCK: do not change object-fit/height rules here */
+html[data-ccg-page="home"] .ccg-genre-tile {
+    position: relative;
+    z-index: 1;
+    pointer-events: auto;
+}
+
+/* If any global overlay/pseudo element is masking tiles, keep text readable */
+html[data-ccg-page="home"] .ccg-genre-tile .ccg-card__body,
+html[data-ccg-page="home"] .ccg-genre-tile__body {
+    position: relative;
+    z-index: 1;
 }
 
 
@@ -159,11 +342,26 @@ html[data-ccg-page="home"] .ccg-main--home {
 ============================================================ */
 
 html[data-ccg-page="home"] .home-feature-card,
-html[data-ccg-page="home"] .ccg-genre-tile {
+html[data-ccg-page="home"] .ccg-genre-tile,
+html[data-ccg-page="home"] .home-hero-card {
     transform: none !important;
 }
 
 html[data-ccg-page="home"] .home-feature-card img,
 html[data-ccg-page="home"] .ccg-genre-tile img {
     transform: none !important;
+}
+
+
+/* ============================================================
+   REDUCED MOTION — HOME-SAFE
+============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    html[data-ccg-page="home"] .home-hero-card,
+    html[data-ccg-page="home"] .home-feature-card,
+    html[data-ccg-page="home"] .ccg-genre-tile {
+        transition: none !important;
+        animation: none !important;
+    }
 }
