@@ -1,14 +1,18 @@
 /* ==========================================================
-   CCG GLOBAL SCRIPT — UNIVERSAL EFFECTS + OMEGA MODE SUPPORT
-   FINAL STABLE BUILD — DEPTH-AWARE LOGO + HEADER DROPDOWN
-   ========================================================== */
+   CCG GLOBAL SCRIPT — CORE UI + HEADER DROPDOWN (LOCKED)
+   ----------------------------------------------------------
+   • Depth-aware logo path fix
+   • Header "More ▾" dropdown (CLICK-BASED)
+   • Close on outside click / ESC
+   • No dependencies on page-specific JS
+========================================================== */
 
 (function () {
-    const body = document.body;
+    'use strict';
 
-    /* -----------------------------------------------
-       HELPER: COMPUTE CORRECT LOGO PATH BY DEPTH
-    ----------------------------------------------- */
+    /* ======================================================
+       DEPTH-AWARE LOGO PATH
+    ====================================================== */
     function getLogoPath() {
         let path = window.location.pathname || "";
 
@@ -21,122 +25,66 @@
         if (path.startsWith("/")) path = path.slice(1);
         if (!path) return "resources/images/ccgamer-logo.png";
 
-        const segments = path.split("/");
-        const folderDepth = Math.max(segments.length - 1, 0);
-
-        let prefix = "";
-        for (let i = 0; i < folderDepth; i++) prefix += "../";
-
-        return prefix + "resources/images/ccgamer-logo.png";
+        const depth = path.split("/").length - 1;
+        return "../".repeat(depth) + "resources/images/ccgamer-logo.png";
     }
 
-    /* -----------------------------------------------
-       PAGE FADE-IN
-    ----------------------------------------------- */
+    /* ======================================================
+       DOM READY
+    ====================================================== */
     document.addEventListener("DOMContentLoaded", () => {
-        body.classList.add("ccg-fade-in");
-    });
 
-    /* -----------------------------------------------
-       LOGO NORMALISER — DEPTH-AWARE
-    ----------------------------------------------- */
-    document.addEventListener("DOMContentLoaded", () => {
-        const correctLogo = getLogoPath();
-
+        /* -------------------------------
+           NORMALISE LOGO PATH
+        ------------------------------- */
+        const logoPath = getLogoPath();
         document.querySelectorAll(".ccg-brand__logo").forEach(img => {
-            img.src = correctLogo;
-
-            if (!img.alt || img.alt.trim() === "") {
-                img.alt = "Cheeky Commodore Gamer logo";
-            }
-            if (!img.getAttribute("loading")) {
-                img.setAttribute("loading", "lazy");
-            }
+            img.src = logoPath;
+            img.loading = img.loading || "lazy";
+            img.alt ||= "Cheeky Commodore Gamer logo";
         });
-    });
 
-    /* -----------------------------------------------
-       MODE LABEL HANDLER (HOME USES data-ccg-mode-label)
-    ----------------------------------------------- */
-    function updateModeLabel() {
-        const labelEl = document.querySelector("[data-ccg-mode-label]");
-        if (!labelEl) return;
-
-        const mode = (document.body.getAttribute("data-ccg-mode") || "c64").toUpperCase();
-        labelEl.textContent = mode;
-    }
-
-    document.addEventListener("ccg:modeChange", () => {
-        updateModeLabel();
-    });
-
-    document.addEventListener("DOMContentLoaded", () => {
-        updateModeLabel();
-    });
-
-    /* -----------------------------------------------
-       HEADER "MORE ▾" DROPDOWN — ACCESSIBLE TOGGLE
-       Works with CSS fallback (focus-within) too.
-    ----------------------------------------------- */
-    document.addEventListener("DOMContentLoaded", () => {
+        /* ==================================================
+           HEADER “MORE ▾” DROPDOWN — CLICK TOGGLE
+        ================================================== */
         const moreBlocks = document.querySelectorAll(".ccg-nav__more");
-        if (!moreBlocks.length) return;
-
-        function closeAll() {
-            moreBlocks.forEach(block => {
-                const btn = block.querySelector(".ccg-nav__more-btn");
-                const dd = block.querySelector(".ccg-nav__dropdown");
-                if (!btn || !dd) return;
-                dd.classList.remove("is-open");
-                btn.setAttribute("aria-expanded", "false");
-            });
-        }
 
         moreBlocks.forEach(block => {
-            const moreBtn = block.querySelector(".ccg-nav__more-btn");
-            const dropdown = block.querySelector(".ccg-nav__dropdown");
-            if (!moreBtn || !dropdown) return;
+            const btn = block.querySelector(".ccg-nav__more-btn");
+            const menu = block.querySelector(".ccg-nav__dropdown");
 
-            function openMenu() {
-                dropdown.classList.add("is-open");
-                moreBtn.setAttribute("aria-expanded", "true");
+            if (!btn || !menu) return;
+
+            function open() {
+                menu.classList.add("is-open");
+                btn.setAttribute("aria-expanded", "true");
             }
 
-            function closeMenu() {
-                dropdown.classList.remove("is-open");
-                moreBtn.setAttribute("aria-expanded", "false");
+            function close() {
+                menu.classList.remove("is-open");
+                btn.setAttribute("aria-expanded", "false");
             }
 
-            function toggleMenu() {
-                const isOpen = dropdown.classList.contains("is-open");
-                if (isOpen) {
-                    closeMenu();
-                } else {
-                    closeAll();
-                    openMenu();
-                }
-            }
-
-            moreBtn.addEventListener("click", (e) => {
+            function toggle(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                toggleMenu();
-            });
+                menu.classList.contains("is-open") ? close() : open();
+            }
 
-            dropdown.addEventListener("click", (e) => {
-                e.stopPropagation();
-            });
+            btn.addEventListener("click", toggle);
 
-            document.addEventListener("click", () => {
-                closeMenu();
-            });
+            // Prevent menu clicks closing immediately
+            menu.addEventListener("click", e => e.stopPropagation());
 
-            document.addEventListener("keydown", (e) => {
-                if (e.key === "Escape") {
-                    closeMenu();
-                }
+            // Close on outside click
+            document.addEventListener("click", close);
+
+            // Close on ESC
+            document.addEventListener("keydown", e => {
+                if (e.key === "Escape") close();
             });
         });
+
     });
 
 })();
