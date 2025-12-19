@@ -13,24 +13,24 @@
 ------------------------------------------------------------- */
 
 :root {
-    --ccg-hero-offset: clamp(126px, 7vw + 94px, 184px);
+    --ccg-hero-offset: clamp(88px, 4vw + 70px, 140px);
 }
 
 @media (max-width: 1024px) {
     :root {
-        --ccg-hero-offset: clamp(118px, 8vw + 86px, 176px);
+        --ccg-hero-offset: clamp(82px, 4vw + 64px, 128px);
     }
 }
 
 @media (max-width: 820px) {
     :root {
-        --ccg-hero-offset: clamp(106px, 9vw + 78px, 162px);
+        --ccg-hero-offset: clamp(72px, 5vw + 56px, 118px);
     }
 }
 
 @media (max-width: 540px) {
     :root {
-        --ccg-hero-offset: clamp(96px, 10vw + 70px, 140px);
+        --ccg-hero-offset: clamp(58px, 6vw + 46px, 96px);
     }
 }
 
