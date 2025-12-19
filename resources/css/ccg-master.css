@@ -391,3 +391,13 @@ body[data-ccg-mode="amiga"] {
 .ccg-nav__dropdown {
     z-index: 999999 !important;
 }
+
+/* ============================================================
+   HEADER PSEUDO-ELEMENT SAFETY FIX
+   Prevents ::after gradient from blocking dropdown interaction
+============================================================ */
+
+.ccg-header::after {
+    pointer-events: none !important;
+}
+
