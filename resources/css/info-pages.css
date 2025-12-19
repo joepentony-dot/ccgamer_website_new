@@ -6,7 +6,7 @@
 
 .ccg-info-shell {
     max-width: 1200px;
-    margin: 0 auto;
+    margin: var(--ccg-hero-offset) auto 0;
     display: flex;
     flex-direction: column;
     gap: 2rem;
