@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="resources/css/ccg-anim.css" />
     <link rel="stylesheet" href="resources/css/ccg-overlays.css" />
     <link rel="stylesheet" href="resources/css/info-pages.css" />
+    <link rel="stylesheet" href="resources/css/about.css" />
 
     <!-- FOOTER CSS (ISOLATED) -->
     <link rel="stylesheet" href="resources/css/ccg-footer.css" />
@@ -96,73 +97,146 @@
 ============================================================ -->
 <main class="ccg-main">
 
-<section class="ccg-section">
+<section class="about-hero">
+    <div class="about-hero__banner">Neon dossier</div>
+    <div class="about-hero__body">
+        <div class="about-hero__eyebrow">Stay a while, stay forever.</div>
+        <h1 class="about-hero__title">Cheeky Commodore Gamer</h1>
+        <p class="about-hero__lede">
+            A Lancashire-born retro obsessive decoding the feelings behind Commodore 64 boot screens,
+            Amiga anthems, and arcade counterstops. This is where childhood loading tones became a
+            lifelong broadcast.
+        </p>
+        <div class="about-hero__chips">
+            <span class="about-chip" data-about-sfx>Joystick-deep since the 80s</span>
+            <span class="about-chip" data-about-sfx>1530 Datasette disciple</span>
+            <span class="about-chip" data-about-sfx>Arcade counter ringer</span>
+        </div>
+    </div>
+</section>
 
-    <h2 class="ccg-section-title">About Cheeky Commodore Gamer</h2>
+<div class="about-divider" aria-hidden="true">
+    <span class="about-divider__beam"></span>
+</div>
 
-    <p class="ccg-body-text">
-        Welcome to the retro gaming world of Cheeky Commodore Gamer, where the golden era of home computing
-        is celebrated through a lifelong love of the Commodore 64, the Amiga, and classic arcade games.
-        My name’s Joe, and I’ve been joystick-deep in retro gaming since I was barely out of nappies —
-        thanks largely to my brother Dave, who chose a Commodore 64 over the more affordable ZX Spectrum.
+<section class="about-grid about-grid--two">
+    <article class="about-panel" data-about-sfx>
+        <div class="about-panel__eyebrow">Origin signal</div>
+        <h2 class="about-panel__title">Paper-round pennies to raster bars</h2>
+        <p>
+            My brother Dave chose a Commodore 64 over the cheaper ZX Spectrum, funding the C64 and 1530
+            Datasette with a paper round and endless patience. Those cassette tones and loading bars wrote
+            the soundtrack to our living room, and they set the course for everything that followed.
+        </p>
+        <p>
+            The obsession survived every hardware upgrade and floppy swap. I still chase that feeling of
+            flipping a switch, hearing the drive click, and watching sprites come alive one line at a time.
+        </p>
+    </article>
+
+    <article class="about-panel about-panel--accent" data-about-sfx>
+        <div class="about-panel__eyebrow">Home base</div>
+        <h3 class="about-panel__title">Lancashire, laughter, Labrador</h3>
+        <p>
+            I share the pixels with my wife, our kids, and Jonathan the Labrador — yes, Jonathan. Calling
+            his name across a park always turns heads, and explaining it to the vet is a recurring gag.
+        </p>
+        <div class="about-pullquote">
+            <span class="about-pullquote__accent">“</span>
+            Every episode is a family checkpoint — a little noisier, a little brighter than the last.
+        </div>
+    </article>
+</section>
+
+<div class="about-divider about-divider--markers" aria-hidden="true">
+    <span class="about-divider__marker"></span>
+    <span class="about-divider__marker"></span>
+    <span class="about-divider__marker"></span>
+</div>
+
+<section class="about-rail">
+    <div class="about-rail__header">
+        <div class="about-rail__badge">Broadcast loop</div>
+        <h2 class="about-rail__title">Why the channel exists</h2>
+    </div>
+    <div class="about-rail__content">
+        <p>
+            When my wife’s late shifts left me with quiet evenings, I switched on the camera instead of the
+            television. I wanted to share the stories hiding behind cartridge art and cracked intro tunes —
+            not just specs, but the memories, the stumbles on livestreams, and the goosebumps from a perfect
+            SID arpeggio.
+        </p>
+        <p>
+            Now the channel dives into Commodore 64 legends, Amiga deep cuts, and the arcade favourites that
+            swallowed our pocket money. Expect honest takes, backstage anecdotes, and an open invitation to
+            relive the magic together.
+        </p>
+    </div>
+
+    <div class="about-callouts">
+        <article class="about-callout" data-about-sfx>
+            <div class="about-callout__label">Tune of choice</div>
+            <div class="about-callout__title">Pirates! (C64)</div>
+            <p class="about-callout__text">Forever humming that theme while waiting for the next load.</p>
+        </article>
+        <article class="about-callout" data-about-sfx>
+            <div class="about-callout__label">Point &amp; click comfort</div>
+            <div class="about-callout__title">The Secret of Monkey Island</div>
+            <p class="about-callout__text">The Amiga disk shuffle that taught me patience and punchlines.</p>
+        </article>
+        <article class="about-callout" data-about-sfx>
+            <div class="about-callout__label">Arcade obsession</div>
+            <div class="about-callout__title">Double Dragon</div>
+            <p class="about-callout__text">Forever chasing that one-credit clear without losing a life.</p>
+        </article>
+        <article class="about-callout" data-about-sfx>
+            <div class="about-callout__label">Dream build</div>
+            <div class="about-callout__title">A C64 gallery house</div>
+            <p class="about-callout__text">Every wall a box art lightbox, every hallway a neon loading screen.</p>
+        </article>
+    </div>
+</section>
+
+<section class="about-gallery">
+    <div class="about-gallery__banner">Signal snapshots</div>
+    <div class="about-gallery__grid">
+        <figure class="about-gallery__item">
+            <img src="resources/images/hero/ccg-hero-c64.png" alt="C64 hero illustration" loading="lazy">
+            <figcaption>Where SID soundtracks meet joystick grip marks.</figcaption>
+        </figure>
+        <figure class="about-gallery__item">
+            <img src="resources/images/hero/ccg-hero-amiga.png" alt="Amiga hero illustration" loading="lazy">
+            <figcaption>Floppy clicks, copper bars, and crunchy tracker tunes.</figcaption>
+        </figure>
+        <figure class="about-gallery__item">
+            <img src="resources/images/collections/top-picks-collection.png" alt="Top picks collection badge" loading="lazy">
+            <figcaption>Curated runs of the must-play classics on the channel.</figcaption>
+        </figure>
+        <figure class="about-gallery__item">
+            <img src="resources/images/genres/arcade.png" alt="Arcade genre icon" loading="lazy">
+            <figcaption>Cabinet chatter and the hunt for a perfect credit.</figcaption>
+        </figure>
+    </div>
+</section>
+
+<div class="about-divider" aria-hidden="true">
+    <span class="about-divider__beam"></span>
+</div>
+
+<section class="about-signal">
+    <div class="about-signal__badge">Join the retro revolution</div>
+    <h2 class="about-signal__title">Ready to press play?</h2>
+    <p class="about-signal__text">
+        Subscribe on YouTube, hop into the social links above, and help keep the glow of classic gaming
+        alive. Whether you’re a seasoned C64 veteran or just curious about where modern gaming began, you’re
+        part of the squad.
     </p>
-
-    <p class="ccg-body-text">
-        He saved every penny from his paper round to afford the C64 and the 1530 Datasette, loading games
-        from cassette tapes and waiting patiently as those familiar tones filled the room.
-        That experience shaped everything that came after.
-    </p>
-
-    <p class="ccg-body-text">
-        I live in Lancashire with my wife, our children, and our Labrador, Jonathan — yes, Jonathan.
-        Calling him in a busy park is always entertaining, and ringing the vet is even better.
-    </p>
-
-    <p class="ccg-body-text">
-        The channel began during evenings when my wife worked unusual shifts.
-        Rather than watching television, I wanted to spend that time on something I truly care about:
-        the games themselves. Not just specs or technical details, but the feeling — the memories,
-        the music, and the magic that stayed with us long after the screen faded to black.
-    </p>
-
-    <h2 class="ccg-section-title">Why Subscribe?</h2>
-
-    <p class="ccg-body-text">
-        On the channel, I dive into Commodore 64 classics, Amiga gems, and the occasional arcade favourite.
-        Expect honest takes on legendary titles, overlooked treasures, and stories from years of
-        livestream mishaps and retro discoveries.
-    </p>
-
-    <p class="ccg-body-text">
-        Whether you’re a seasoned C64 veteran, a devoted Amiga fan, or just curious about where modern
-        gaming began, there’s something here for everyone.
-    </p>
-
-    <h2 class="ccg-section-title">Join the Retro Revolution</h2>
-
-    <p class="ccg-body-text">
-        Subscribe on YouTube for regular retro gaming content, follow along on social platforms,
-        and be part of a growing community that keeps the spirit of classic gaming alive.
-    </p>
-
-    <h2 class="ccg-section-title">Fun Facts</h2>
-
-    <ul class="ccg-info-list">
-        <li><strong>Favourite C64 game:</strong> Pirates!</li>
-        <li><strong>Favourite Amiga game:</strong> The Secret of Monkey Island</li>
-        <li><strong>Arcade obsession:</strong> Double Dragon — always chasing that one-credit clear</li>
-        <li><strong>Dream project:</strong> Turning my house into a C64 game gallery</li>
-    </ul>
-
-    <p class="ccg-body-text">
-        Stick around, explore the site, and let’s take a trip back to the days when loading times built
-        character and SID tunes became lifelong earworms.
-    </p>
-
-    <p class="ccg-body-text ccg-info-signoff">
-        Until then… bye for now 😇🕹️👌
-    </p>
-
+    <div class="about-signal__cta">
+        <a class="about-cta" href="https://www.youtube.com/@CheekyCommodoreGamer" data-about-sfx>
+            <span class="about-cta__glow"></span>
+            Beam me to the channel
+        </a>
+    </div>
 </section>
 
 </main>
@@ -186,6 +260,7 @@
 <!-- JS -->
 <script src="js/ccg-global.js" defer></script>
 <script src="js/ccg-mode-engine.js" defer></script>
+<script src="js/about.js" defer></script>
 
 </body>
 </html>
