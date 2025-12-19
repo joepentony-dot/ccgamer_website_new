@@ -360,3 +360,34 @@ body[data-ccg-mode="c64"] {
 body[data-ccg-mode="amiga"] {
     --accent-rgb: 255,41,224;
 }
+
+/* ============================================================
+   HEADER INTERACTION HARD OVERRIDE (FINAL SAFETY NET)
+   ------------------------------------------------------------
+   Forces header/nav to always receive pointer events
+   Prevents ANY overlay or effect layer from blocking clicks
+============================================================ */
+
+/* Header must ALWAYS be interactive */
+.ccg-header,
+.ccg-header * {
+    pointer-events: auto !important;
+}
+
+/* Absolutely guarantee dropdown visibility logic */
+.ccg-nav__more {
+    position: relative;
+}
+
+/* Force dropdown to show on hover OR focus — no JS required */
+.ccg-nav__more:hover .ccg-nav__dropdown,
+.ccg-nav__more:focus-within .ccg-nav__dropdown {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Ensure dropdown sits above EVERYTHING */
+.ccg-nav__dropdown {
+    z-index: 999999 !important;
+}
