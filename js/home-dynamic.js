@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => initHomeDynamic());
 async function initHomeDynamic() {
     await loadGamesForHome();
     renderFeaturedHighlights();
+    renderFeaturedSpotlight();
     wireRandomGameButton();
     syncModeLabel();
     initModeObserver();
@@ -63,6 +64,53 @@ function renderFeaturedHighlights() {
             `;
             grid.appendChild(card);
         });
+}
+
+function renderFeaturedSpotlight() {
+    const pickable = CCG_HOME_ALL_GAMES.filter(g => g.videoid);
+    if (!pickable.length) return;
+
+    const game = pickable[Math.floor(Math.random() * pickable.length)];
+    const thumb = resolveThumb(game.thumbnail);
+    const videoUrl = `https://www.youtube.com/watch?v=${game.videoid}`;
+    const gameUrl = `games/game.html?id=${encodeURIComponent(game.id)}`;
+
+    const thumbEl = document.querySelector('[data-ccg-feature-thumb]');
+    const metaEl = document.querySelector('[data-ccg-feature-meta]');
+    const titleEl = document.querySelector('[data-ccg-feature-title]');
+    const copyEl = document.querySelector('[data-ccg-feature-copy]');
+    const playLink = document.querySelector('[data-ccg-feature-play]');
+    const playLink2 = document.querySelector('[data-ccg-feature-play2]');
+    const collectionLink = document.querySelector('[data-ccg-feature-collection]');
+
+    const videoThumb = document.querySelector('[data-ccg-feature-video-thumb]');
+    const videoMeta = document.querySelector('[data-ccg-feature-video-meta]');
+    const videoTitle = document.querySelector('[data-ccg-feature-video-title]');
+    const videoCopy = document.querySelector('[data-ccg-feature-video-copy]');
+    const videoWatch = document.querySelector('[data-ccg-feature-watch]');
+    const videoWatchLink = document.querySelector('[data-ccg-feature-watch-link]');
+
+    thumbEl && (thumbEl.style.backgroundImage = `url('${thumb}')`);
+    metaEl && (metaEl.textContent = buildMeta(game));
+    titleEl && (titleEl.textContent = game.title);
+    copyEl && (copyEl.textContent = game.description?.trim() || "Neon-fuelled action and pixel-perfect charm.");
+
+    [playLink, playLink2].forEach(link => {
+        if (link) link.href = gameUrl;
+    });
+    if (collectionLink) collectionLink.href = "games/collections/top-picks.html";
+
+    if (videoThumb) videoThumb.style.backgroundImage = `url('https://img.youtube.com/vi/${game.videoid}/hqdefault.jpg')`;
+    if (videoMeta) videoMeta.textContent = `${game.system} longplay · ${game.year}`;
+    if (videoTitle) videoTitle.textContent = `${game.title} — full feature`;
+    if (videoCopy) videoCopy.textContent = game.description?.trim() || "Watch the exact game in motion with CRT glow and soundtrack.";
+
+    [videoWatch, videoWatchLink].forEach(link => {
+        if (link) {
+            link.onclick = () => window.open(videoUrl, "_blank", "noopener");
+            link.href = videoUrl;
+        }
+    });
 }
 
 /* ============================================================
