@@ -1,13 +1,14 @@
 /* ============================================================
-   CCG MASTER CSS — GLOBAL STRUCTURE & TYPOGRAPHY
-   OMEGA HEADER → PAGE COHESION PASS (FINAL LOCK)
+   CCG MASTER CSS — GLOBAL STRUCTURE & FOUNDATION LOCK
+   PHASE 0 — BASELINE NORMALISATION (PERMANENT)
    ------------------------------------------------------------
-   • Single global handoff between header & page content
-   • No layout redesign
-   • No HTML / JS changes
-   • No visual experiments
-   • One-time architectural fix
+   • Eliminates browser default styling regressions
+   • Locks anchors, lists, cards & text behaviour
+   • ZERO layout changes
+   • ZERO visual redesign
+   • REQUIRED BEFORE ANY PAGE POLISH
 ============================================================ */
+
 
 /* ============================================================
    ROOT VARIABLES
@@ -28,15 +29,16 @@
     --ccg-nav-pill-pad-y: 8px;
     --ccg-nav-pill-pad-x: 14px;
 
-    /* PAGE HANDOFF */
+    /* PAGE ENTRY */
     --ccg-page-entry-pad: 32px;
 
     /* MODE ACCENTS */
     --accent-rgb: 0,170,255;
 }
 
+
 /* ============================================================
-   RESET
+   RESET — SAFE, NON-DESTRUCTIVE
 ============================================================ */
 
 *,
@@ -58,6 +60,42 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+
+/* ============================================================
+   🔒 GLOBAL ANCHOR LOCK (CRITICAL)
+   Prevents blue links, underlines, broken cards
+============================================================ */
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+a:hover,
+a:focus,
+a:active {
+    color: inherit;
+    text-decoration: none;
+}
+
+
+/* ============================================================
+   🔒 GLOBAL LIST LOCK (CRITICAL)
+   Prevents bullets in navs, dropdowns, cards
+============================================================ */
+
+ul,
+ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+li {
+    list-style: none;
+}
+
+
 /* ============================================================
    PAGE WRAPPERS
 ============================================================ */
@@ -70,14 +108,13 @@ body {
 .ccg-main {
     width: min(1320px, 96%);
     margin: 0 auto;
-
-    /* 🔒 GLOBAL PAGE ENTRY ZONE */
-    padding-top: calc(var(--ccg-page-entry-pad) + 6px);
+    padding-top: var(--ccg-page-entry-pad);
     position: relative;
 }
 
+
 /* ============================================================
-   HEADER — STRUCTURE (LOCKED)
+   HEADER — STRUCTURE (LOCKED, NO VISUAL CHANGE)
 ============================================================ */
 
 .ccg-header {
@@ -102,7 +139,6 @@ body {
     overflow: visible;
 }
 
-/* 🔒 HEADER TERMINATION / HORIZON */
 .ccg-header::after {
     content: "";
     position: absolute;
@@ -135,52 +171,32 @@ body {
     overflow: visible;
 }
 
+
 /* ============================================================
-   BRAND — AUTHORITY
+   BRAND — STRUCTURAL ONLY
 ============================================================ */
 
 .ccg-brand {
     display: flex;
     align-items: center;
     gap: 14px;
-    text-decoration: none;
     white-space: nowrap;
 }
 
 .ccg-brand__logo {
     width: 56px;
     height: auto;
-    filter:
-        drop-shadow(0 0 6px rgba(var(--accent-rgb),0.35))
-        drop-shadow(0 0 14px rgba(var(--accent-rgb),0.25));
 }
 
-.ccg-brand__kicker {
-    font-size: 0.6rem;
-    letter-spacing: 0.14em;
-    opacity: 0.75;
-}
-
-.ccg-brand__neon-cheeky {
-    font-family: var(--ccg-font-main);
-    font-size: 1.05rem;
-    letter-spacing: 0.22em;
-    color: #fff;
-    text-shadow:
-        0 0 8px rgba(var(--accent-rgb),0.45),
-        0 0 18px rgba(var(--accent-rgb),0.35),
-        0 0 34px rgba(var(--accent-rgb),0.25);
-}
-
+.ccg-brand__kicker,
+.ccg-brand__neon-cheeky,
 .ccg-brand__neon-sub {
-    font-family: var(--ccg-font-main);
-    font-size: 0.65rem;
-    letter-spacing: 0.18em;
-    opacity: 0.8;
+    display: block;
 }
+
 
 /* ============================================================
-   NAVIGATION — LOCKED
+   NAVIGATION — STRUCTURAL ONLY
 ============================================================ */
 
 .ccg-nav {
@@ -193,7 +209,6 @@ body {
 .ccg-nav__list {
     display: flex;
     gap: 12px;
-    list-style: none;
     padding-inline: 28px;
     overflow-x: auto;
     scrollbar-width: none;
@@ -204,6 +219,10 @@ body {
 }
 
 .ccg-nav__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
     height: 36px;
     padding: var(--ccg-nav-pill-pad-y) var(--ccg-nav-pill-pad-x);
     border-radius: 999px;
@@ -213,7 +232,6 @@ body {
     letter-spacing: 0.12em;
     text-transform: uppercase;
 
-    color: var(--ccg-text-soft);
     background:
         linear-gradient(
             180deg,
@@ -223,24 +241,15 @@ body {
 
     border: 1px solid rgba(255,255,255,0.14);
     box-shadow: 0 6px 14px rgba(0,0,0,0.65);
-    text-decoration: none;
-
-    transition:
-        color 140ms ease,
-        box-shadow 140ms ease,
-        border-color 140ms ease;
 }
 
 .ccg-nav__link--active {
-    color: #fff;
     border-color: rgba(var(--accent-rgb),0.65);
-    box-shadow:
-        0 0 0 1px rgba(var(--accent-rgb),0.45),
-        0 0 22px rgba(var(--accent-rgb),0.45);
 }
 
+
 /* ============================================================
-   HEADER ACTIONS — UNCHANGED
+   HEADER ACTIONS — STRUCTURAL ONLY
 ============================================================ */
 
 .ccg-header-socials {
@@ -255,26 +264,28 @@ body {
     border-radius: 999px;
 }
 
+
 /* ============================================================
-   PAGE TYPE COHESION
+   PAGE TYPE HANDOFF (NO VISUALS)
 ============================================================ */
 
-/* HOME — hero docks to header */
+/* HOME — hero docks closer */
 html[data-ccg-page="home"] .ccg-main {
     padding-top: 18px;
 }
 
-/* INDEX PAGES — title block docks cleanly */
+/* INDEX PAGES */
 .ccg-page--games-index .ccg-main,
 .ccg-page--collections-index .ccg-main,
 .ccg-page--genres-index .ccg-main {
     padding-top: var(--ccg-page-entry-pad);
 }
 
-/* SINGLE GAME — hero owns the entry */
+/* SINGLE GAME */
 .ccg-page--single-game .ccg-main {
     padding-top: 14px;
 }
+
 
 /* ============================================================
    MODE COLOURS
