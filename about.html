@@ -12,6 +12,8 @@
 
     <!-- Fonts loaded globally via ccg-master (Robotron) -->
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="resources/css/ccg-master.css" />
     <link rel="stylesheet" href="resources/css/ccg-mode.css" />
@@ -34,308 +36,301 @@
     <div class="ccg-bg-crt-overlay"></div>
 </div>
 
-<div class="ccg-page ccg-page--info">
+<div class="ccg-page ccg-page--info about-c64">
 
 <!-- ============================================================
      HEADER (ROOT)
 ============================================================ -->
-        <!-- HEADER -->
-        <header class="ccg-header" data-ccg-header>
-            <div class="ccg-header-inner">
+    <header class="ccg-header" data-ccg-header>
+        <div class="ccg-header-inner">
 
-                <a href="home.html" class="ccg-brand">
-                    <img src="resources/images/ccgamer-logo.png"
-                         alt="Cheeky Commodore Gamer logo"
-                         class="ccg-brand__logo"
-                         loading="lazy">
+            <a href="home.html" class="ccg-brand">
+                <img src="resources/images/ccgamer-logo.png"
+                     alt="Cheeky Commodore Gamer logo"
+                     class="ccg-brand__logo"
+                     loading="lazy">
 
-                    <div class="ccg-brand__text">
-                        <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
-                        <div class="ccg-brand__title">
-                            <span class="ccg-brand__neon-cheeky">CHEEKY COMMODORE</span>
-                            <span class="ccg-brand__neon-sub">GAMER</span>
-                        </div>
+                <div class="ccg-brand__text">
+                    <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
+                    <div class="ccg-brand__title">
+                        <span class="ccg-brand__neon-cheeky">CHEEKY COMMODORE</span>
+                        <span class="ccg-brand__neon-sub">GAMER</span>
                     </div>
-                </a>
+                </div>
+            </a>
 
-                <button class="ccg-nav-toggle"
+            <button class="ccg-nav-toggle"
+                    type="button"
+                    aria-label="Toggle navigation"
+                    aria-expanded="false"
+                    aria-controls="ccg-primary-nav"
+                    data-ccg-nav-toggle>
+                <span class="ccg-nav-toggle__bars" aria-hidden="true">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+                <span class="ccg-nav-toggle__label">Menu</span>
+            </button>
+
+            <nav class="ccg-nav" aria-label="Primary navigation" id="ccg-primary-nav">
+                <ul class="ccg-nav__list">
+                    <li><a href="home.html" class="ccg-nav__link">Home</a></li>
+                    <li><a href="games/index.html" class="ccg-nav__link">Browse Games</a></li>
+                    <li><a href="games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
+                    <li><a href="games/collections/index.html" class="ccg-nav__link">Collections</a></li>
+                    <li><a href="quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
+                    <li><a href="emulation.html" class="ccg-nav__link">Emulation</a></li>
+                    <li><a href="about.html" class="ccg-nav__link ccg-nav__link--active">About</a></li>
+                    <li><a href="contact.html" class="ccg-nav__link">Contact</a></li>
+                </ul>
+            </nav>
+
+            <div class="ccg-header-actions">
+
+                <button class="ccg-mode-toggle"
                         type="button"
-                        aria-label="Toggle navigation"
-                        aria-expanded="false"
-                        aria-controls="ccg-primary-nav"
-                        data-ccg-nav-toggle>
-                    <span class="ccg-nav-toggle__bars" aria-hidden="true">
-                        <span></span>
-                        <span></span>
-                        <span></span>
+                        aria-label="Toggle between C64 and Amiga modes"
+                        data-ccg-mode-toggle>
+                    <span class="ccg-mode-toggle__pill">
+                        <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
+                        <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">Amiga</span>
+                        <span class="ccg-mode-toggle__thumb"></span>
                     </span>
-                    <span class="ccg-nav-toggle__label">Menu</span>
                 </button>
 
-                <nav class="ccg-nav" aria-label="Primary navigation" id="ccg-primary-nav">
-                    <ul class="ccg-nav__list">
-                        <li><a href="home.html" class="ccg-nav__link">Home</a></li>
-                        <li><a href="games/index.html" class="ccg-nav__link">Browse Games</a></li>
-                        <li><a href="games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
-                        <li><a href="games/collections/index.html" class="ccg-nav__link">Collections</a></li>
-                        <li><a href="quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
-                        <li><a href="emulation.html" class="ccg-nav__link">Emulation</a></li>
-                        <li><a href="about.html" class="ccg-nav__link ccg-nav__link--active">About</a></li>
-                        <li><a href="contact.html" class="ccg-nav__link">Contact</a></li>
-                    </ul>
-                </nav>
-
-                <div class="ccg-header-actions">
-
-                    <button class="ccg-mode-toggle"
-                            type="button"
-                            aria-label="Toggle between C64 and Amiga modes"
-                            data-ccg-mode-toggle>
-                        <span class="ccg-mode-toggle__pill">
-                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
-                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">Amiga</span>
-                            <span class="ccg-mode-toggle__thumb"></span>
-                        </span>
-                    </button>
-
-                    <div class="ccg-header-socials" aria-label="Social links">
-                        <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>
-                        <a href="https://patreon.com/CheekyCommodoreGamer" aria-label="Patreon"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>
-                        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" aria-label="PayPal"><span class="ccg-socials__icon ccg-socials__icon--paypal"></span></a>
-                        <a href="https://twitter.com/CheekyC64Gamer" aria-label="X/Twitter"><span class="ccg-socials__icon ccg-socials__icon--x"></span></a>
-                        <a href="https://www.facebook.com/cheekycommodoregamer" aria-label="Facebook"><span class="ccg-socials__icon ccg-socials__icon--fb"></span></a>
-                        <a href="https://discord.gg/83Xw9ktAn4" aria-label="Discord"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
-                    </div>
-
+                <div class="ccg-header-socials" aria-label="Social links">
+                    <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>
+                    <a href="https://patreon.com/CheekyCommodoreGamer" aria-label="Patreon"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>
+                    <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" aria-label="PayPal"><span class="ccg-socials__icon ccg-socials__icon--paypal"></span></a>
+                    <a href="https://twitter.com/CheekyC64Gamer" aria-label="X/Twitter"><span class="ccg-socials__icon ccg-socials__icon--x"></span></a>
+                    <a href="https://www.facebook.com/cheekycommodoregamer" aria-label="Facebook"><span class="ccg-socials__icon ccg-socials__icon--fb"></span></a>
+                    <a href="https://discord.gg/83Xw9ktAn4" aria-label="Discord"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
                 </div>
-            </div>
 
-            <div class="ccg-header-neon-strip"></div>
-        </header>
+            </div>
+        </div>
+
+        <div class="ccg-header-neon-strip"></div>
+    </header>
 
 
 <!-- ============================================================
      MAIN CONTENT
 ============================================================ -->
-<main class="ccg-main">
+    <main class="ccg-main">
+        <section class="about-c64__shell" id="top">
+            <div class="about-c64__crt"></div>
+            <div class="about-c64__inner">
+                <div class="about-c64__header">
+                    <img src="resources/images/ccgamer-logo.png" alt="Cheeky Commodore Gamer Logo" style="max-width: 150px; image-rendering: pixelated; margin-bottom: 10px;">
+                    <h3>**** COMMODORE 64 BASIC V2 ****</h3>
+                    <p class="about-c64__bytes">64K RAM SYSTEM 38911 BASIC BYTES FREE</p>
 
-<section class="about-hero">
-    <div class="about-hero__banner">Neon dossier</div>
-    <div class="about-hero__body">
-        <div class="about-hero__eyebrow">Stay a while, stay forever.</div>
-        <h1 class="about-hero__title">Cheeky Commodore Gamer</h1>
-        <p class="about-hero__lede">
-            A Lancashire-born retro obsessive decoding the feelings behind Commodore 64 boot screens,
-            Amiga anthems, and arcade counterstops. This is where childhood loading tones became a
-            lifelong broadcast.
-        </p>
-        <div class="about-hero__chips">
-            <span class="about-chip" data-about-sfx>Joystick-deep since the 80s</span>
-            <span class="about-chip" data-about-sfx>1530 Datasette disciple</span>
-            <span class="about-chip" data-about-sfx>Arcade counter ringer</span>
-        </div>
-    </div>
-</section>
+                    <div class="about-c64__nav">
+                        <a href="home.html" class="play-sound">HOME</a>
+                        <a href="games/index.html" class="play-sound">GAMES</a>
+                        <a href="games/genres/index.html" class="play-sound">GENRES</a>
+                        <a href="quiz/quiz.html" class="play-sound">QUIZ</a>
+                        <a href="emulation.html" class="play-sound">EMULATION</a>
+                        <a href="contact.html" class="play-sound">CONTACT</a>
+                    </div>
+                </div>
 
-<div class="about-divider" aria-hidden="true">
-    <span class="about-divider__beam"></span>
-</div>
+                <h1>ABOUT ME</h1>
 
-<section class="about-grid about-grid--two">
-    <article class="about-panel" data-about-sfx>
-        <div class="about-panel__eyebrow">Origin signal</div>
-        <h2 class="about-panel__title">Paper-round pennies to raster bars</h2>
-        <p>
-            My brother Dave chose a Commodore 64 over the cheaper ZX Spectrum, funding the C64 and 1530
-            Datasette with a paper round and endless patience. Those cassette tones and loading bars wrote
-            the soundtrack to our living room, and they set the course for everything that followed.
-        </p>
-        <p>
-            The obsession survived every hardware upgrade and floppy swap. I still chase that feeling of
-            flipping a switch, hearing the drive click, and watching sprites come alive one line at a time.
-        </p>
-    </article>
+                <div class="about-c64__button-row">
+                    <a href="home.html" class="about-c64__btn play-sound"><i class="fa-solid fa-house"></i> BACK TO HOME</a>
+                </div>
 
-    <article class="about-panel about-panel--accent" data-about-sfx>
-        <div class="about-panel__eyebrow">Home base</div>
-        <h3 class="about-panel__title">Lancashire, laughter, Labrador</h3>
-        <p>
-            I share the pixels with my wife, our kids, and Jonathan the Labrador — yes, Jonathan. Calling
-            his name across a park always turns heads, and explaining it to the vet is a recurring gag.
-        </p>
-        <div class="about-pullquote">
-            <span class="about-pullquote__accent">“</span>
-            Every episode is a family checkpoint — a little noisier, a little brighter than the last.
-        </div>
-    </article>
-</section>
+                <div class="about-c64__box">
+                    <h2>ABOUT CHEEKY COMMODORE GAMER</h2>
 
-<div class="about-divider about-divider--markers" aria-hidden="true">
-    <span class="about-divider__marker"></span>
-    <span class="about-divider__marker"></span>
-    <span class="about-divider__marker"></span>
-</div>
+                    <div class="about-c64__audio">
+                        <iframe src="https://drive.google.com/file/d/1dtw9gMzwhP9n9wlQwrxyQhq4IO75sfgT/preview" class="audio-player-iframe" allow="autoplay"></iframe>
+                        <div class="about-c64__audio-caption">MY FAVOURITE SID TRACK OF ALL TIME</div>
+                    </div>
 
-<section class="about-rail">
-    <div class="about-rail__header">
-        <div class="about-rail__badge">Broadcast loop</div>
-        <h2 class="about-rail__title">Why the channel exists</h2>
-    </div>
-    <div class="about-rail__content">
-        <p>
-            When my wife’s late shifts left me with quiet evenings, I switched on the camera instead of the
-            television. I wanted to share the stories hiding behind cartridge art and cracked intro tunes —
-            not just specs, but the memories, the stumbles on livestreams, and the goosebumps from a perfect
-            SID arpeggio.
-        </p>
-        <p>
-            Now the channel dives into Commodore 64 legends, Amiga deep cuts, and the arcade favourites that
-            swallowed our pocket money. Expect honest takes, backstage anecdotes, and an open invitation to
-            relive the magic together.
-        </p>
-    </div>
+                    <figure class="img-float-left">
+                        <img src="resources/images/aboutme/JOE_DAVE.png" alt="Joe and Dave" class="content-image">
+                        <figcaption>ME (LEFT) &amp; BROTHER DAVE (RIGHT)</figcaption>
+                    </figure>
 
-    <div class="about-callouts">
-        <article class="about-callout" data-about-sfx>
-            <div class="about-callout__label">Tune of choice</div>
-            <div class="about-callout__title">Pirates! (C64)</div>
-            <p class="about-callout__text">Forever humming that theme while waiting for the next load.</p>
-        </article>
-        <article class="about-callout" data-about-sfx>
-            <div class="about-callout__label">Point &amp; click comfort</div>
-            <div class="about-callout__title">The Secret of Monkey Island</div>
-            <p class="about-callout__text">The Amiga disk shuffle that taught me patience and punchlines.</p>
-        </article>
-        <article class="about-callout" data-about-sfx>
-            <div class="about-callout__label">Arcade obsession</div>
-            <div class="about-callout__title">Double Dragon</div>
-            <p class="about-callout__text">Forever chasing that one-credit clear without losing a life.</p>
-        </article>
-        <article class="about-callout" data-about-sfx>
-            <div class="about-callout__label">Dream build</div>
-            <div class="about-callout__title">A C64 gallery house</div>
-            <p class="about-callout__text">Every wall a box art lightbox, every hallway a neon loading screen.</p>
-        </article>
-    </div>
-</section>
+                    <p>WELCOME TO THE <strong>RETRO</strong> GAMING WORLD OF CHEEKY COMMODORE GAMER! MY NAME IS JOE, AND I'VE BEEN JOYSTICK-DEEP IN RETRO GAMING SINCE I WAS BARELY OUT OF NAPPIES (OR DIAPERS, FOR MY US FRIENDS).</p>
 
-<section class="about-visuals">
-    <div class="about-visuals__header">
-        <div class="about-visuals__badge">Behind the glow</div>
-        <h2 class="about-visuals__title">Neon keepsakes</h2>
-        <p class="about-visuals__lede">
-            Snapshots from the lab and the people who keep the channel loud. CRT hum, handheld laughs, and
-            the soft glow of Amiga disks in the background.
-        </p>
-    </div>
+                    <p>IT ALL STARTED IN THE 80S WITH MY BROTHER, DAVE. WHILE MOST KIDS WERE ARGUING OVER THE ZX SPECTRUM, DAVE MADE THE BOLD CHOICE TO GO FOR THE <strong>COMMODORE 64</strong>. HE PAINSTAKINGLY SAVED EVERY PENNY FROM HIS PAPER ROUND DELIVERY MONEY TO AFFORD IT. HE EVEN SAVED UP FOR THE <strong>1530 DATASETTE</strong> SO WE COULD LOAD CASSETTES INSTEAD OF CARTRIDGES.</p>
 
-    <div class="about-visuals__grid">
-        <figure class="about-visuals__card about-visuals__card--wide" data-about-sfx>
-            <div class="about-visuals__frame">
-                <img src="./aboutme/ROOM.png" alt="Retro gaming rigs glowing with Commodore gear" loading="lazy">
-                <span class="about-visuals__tag">Studio glow</span>
+                    <p>THAT DECISION DEFINED MY CHILDHOOD. WE SPENT COUNTLESS HOURS WAITING FOR THOSE LOADING BARS TO FLASH, LISTENING TO THE SCREECHING TAPE NOISES, AND DIVING INTO 8-BIT WORLDS THAT FELT MAGICAL.</p>
+
+                    <div style="clear: both;"></div>
+                    <hr>
+
+                    <h2>THE BIRTH OF THE CHANNEL</h2>
+
+                    <figure class="content-figure">
+                        <img src="resources/images/aboutme/JOE_MICHELLE.jpg" alt="Me and wife Michelle" class="content-image">
+                        <figcaption>ME &amp; MY WIFE MICHELLE</figcaption>
+                    </figure>
+
+                    <p>FAST FORWARD A FEW DECADES, AND I'M LIVING IN LANCASHIRE WITH MY WIFE MICHELLE AND OUR CHILDREN. MICHELLE WORKS UNUSUAL SHIFTS, WHICH OFTEN LEFT ME WITH QUIET EVENINGS ALONE. RATHER THAN MINDLESSLY SCROLLING OR WATCHING TV, I DECIDED TO RECONNECT WITH MY PASSION.</p>
+
+                    <p>I REALIZED THAT WHILE THERE WERE MANY CHANNELS TALKING ABOUT TECHNICAL SPECS AND CODING MINUTIAE, VERY FEW FOCUSED ON THE <strong>JOY</strong> OF THE GAMES THEMSELVES. I WANTED TO CAPTURE THAT FEELING OF NOSTALGIA—THE MEMORIES OF THE MUSIC, THE FRUSTRATION OF "GAME OVER", AND THE THRILL OF DISCOVERY.</p>
+
+                    <hr>
+
+                    <h2>MEET THE TEAM (THE DOG)</h2>
+
+                    <p>OF COURSE, NO TEAM IS COMPLETE WITHOUT A MASCOT. INTRODUCING <strong>JONATHAN</strong>, OUR LABRADOR. YES, HIS NAME IS JONATHAN. DON'T ASK WHY.</p>
+
+                    <p>TRY CALLING "JONATHAN!" IN A BUSY PUBLIC PARK AND WATCH THE CONFUSED LOOKS FROM PASSERSBY WHO THINK YOU'RE SHOUTING AT THEIR HUSBAND. RINGING THE VET IS EVEN BETTER: "HELLO, I'D LIKE TO BOOK JONATHAN IN FOR HIS WORM TABLETS." IT NEVER GETS OLD!</p>
+
+                    <div class="about-c64__grid-small">
+                        <img src="resources/images/aboutme/JOEJONATHAN2.jpg" alt="Jonathan looking curious">
+                        <img src="resources/images/aboutme/JOEJONATHAN3.jpg" alt="Jonathan enjoying the outdoors">
+                        <img src="resources/images/aboutme/JOEJONATHAN4.jpg" alt="Jonathan relaxing at home">
+                        <img src="resources/images/aboutme/JOEJONATHAN5.jpg" alt="Jonathan being playful">
+                    </div>
+
+                    <hr>
+
+                    <h2>WHY SUBSCRIBE?</h2>
+
+                    <figure class="img-float-right">
+                        <img src="resources/images/aboutme/JOE_JOHNROMERO.png" alt="With John Romero" class="content-image">
+                        <figcaption>WITH JOHN ROMERO (DOOM)</figcaption>
+                    </figure>
+
+                    <p>I DIVE INTO THE HEART OF RETRO GAMING CULTURE. I'M CURRENTLY WORKING ON BUILDING A <strong>C64 GAME MUSEUM</strong> IN MY HOME, ONE CASSETTE AT A TIME. ON THIS CHANNEL, YOU CAN EXPECT:</p>
+
+                    <ul class="info-list">
+                        <li>HONEST REVIEWS OF CLASSIC C64 &amp; AMIGA TITLES.</li>
+                        <li>GAMEPLAY WALKTHROUGHS (SORT OF!).</li>
+                        <li>AMUSING TALES OF MY MANY LIVESTREAM MISADVENTURES (LIKE MANIC MINER!).</li>
+                        <li>INTERVIEWS WITH LEGENDS OF THE SCENE.</li>
+                    </ul>
+
+                    <div style="clear: both;"></div>
+                    <hr>
+
+                    <h2>JOIN THE REVOLUTION!</h2>
+                    <div class="about-c64__btn-grid">
+                        <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" class="about-c64__btn-retro play-sound"><i class="fa-brands fa-youtube"></i> SUBSCRIBE</a>
+                        <a href="https://patreon.com/CheekyCommodoreGamer" target="_blank" class="about-c64__btn-retro play-sound"><i class="fa-brands fa-patreon"></i> PATREON</a>
+                        <a href="https://facebook.com/cheekycommodoregamer" target="_blank" class="about-c64__btn-retro play-sound"><i class="fa-brands fa-facebook"></i> FACEBOOK</a>
+                        <a href="https://twitter.com/CheekyC64Gamer" target="_blank" class="about-c64__btn-retro play-sound"><i class="fa-brands fa-x-twitter"></i> TWITTER</a>
+                        <a href="https://discord.gg/83Xw9ktAn4" target="_blank" class="about-c64__btn-retro play-sound"><i class="fa-brands fa-discord"></i> DISCORD</a>
+                    </div>
+
+                    <hr>
+
+                    <div class="about-c64__grid-captioned">
+                        <figure>
+                            <img src="resources/images/aboutme/JOE_MARTYN.jpg" alt="Martyn Brown">
+                            <figcaption>WITH MARTYN BROWN (TEAM 17)</figcaption>
+                        </figure>
+                        <figure>
+                            <img src="resources/images/aboutme/JOE_JIMBAGLEY.png" alt="Jim Bagley">
+                            <figcaption>JIM BAGLEY - VETERAN CODER</figcaption>
+                        </figure>
+                        <figure>
+                            <img src="resources/images/aboutme/JOE_WARRENDAVIES.png" alt="Warren Davies">
+                            <figcaption>WARREN DAVIES (Q*BERT)</figcaption>
+                        </figure>
+                    </div>
+
+                    <hr>
+
+                    <h2>FUN FACTS</h2>
+                    <ul class="info-list">
+                        <li><strong>FAVORITE C64 GAME:</strong> PIRATES!</li>
+                        <li><strong>FAVORITE AMIGA GAME:</strong> SECRET OF MONKEY ISLAND</li>
+                        <li><strong>ARCADE OBSESSION:</strong> DOUBLE DRAGON</li>
+                        <li><strong>DREAM PROJECT:</strong> TURN MY HOUSE INTO A C64 MUSEUM</li>
+                    </ul>
+
+                    <figure class="content-figure">
+                        <img src="resources/images/aboutme/ROOM.png" alt="Retro setup" class="content-image">
+                        <figcaption>WHERE THE MAGIC HAPPENS - THE STUDIO</figcaption>
+                    </figure>
+
+                    <figure class="content-figure">
+                        <img src="resources/images/aboutme/JOE_DAD.jpg" alt="Father dedication" class="content-image">
+                        <figcaption>ALL OF THIS IS DEDICATED TO MY FATHER</figcaption>
+                    </figure>
+
+                    <p style="text-align:center; margin-top:20px; color: var(--c64-green);">UNTIL THEN.... BYE FOR NOW 😇🕹️👌</p>
+                </div>
+
+                <div class="about-c64__sitemap">
+                    <h2>EXPLORE MORE</h2>
+                    <div class="about-c64__sitemap-links">
+                        <a href="home.html" class="play-sound">HOME</a>
+                        <a href="games/index.html" class="play-sound">GAMES</a>
+                        <a href="games/collections/index.html" class="play-sound">COLLECTIONS</a>
+                        <a href="games/genres/index.html" class="play-sound">GENRES</a>
+                        <a href="quiz/quiz.html" class="play-sound">QUIZ</a>
+                        <a href="emulation.html" class="play-sound">EMULATION</a>
+                        <a href="contact.html" class="play-sound">CONTACT</a>
+                    </div>
+                </div>
             </div>
-            <figcaption>Where the captures, testing, and late-night edits happen.</figcaption>
-        </figure>
-
-        <figure class="about-visuals__card" data-about-sfx>
-            <div class="about-visuals__frame">
-                <img src="./aboutme/JOE_MICHELLE.jpg" alt="Joe and Michelle smiling with neon background" loading="lazy">
-                <span class="about-visuals__tag">Co-op mode</span>
-            </div>
-            <figcaption>Michelle keeps the vibes bright when the livestream runs long.</figcaption>
-        </figure>
-
-        <figure class="about-visuals__card about-visuals__card--tall" data-about-sfx>
-            <div class="about-visuals__frame">
-                <img src="./aboutme/JOEJONATHAN4.jpg" alt="Jonathan the Labrador in neon light" loading="lazy">
-                <span class="about-visuals__tag">Jonathan on patrol</span>
-            </div>
-            <figcaption>Resident Labrador and stream mascot patrolling the cables.</figcaption>
-        </figure>
-
-        <figure class="about-visuals__card" data-about-sfx>
-            <div class="about-visuals__frame">
-                <img src="./aboutme/JOE_JONATHAN.png" alt="Joe kneeling with Jonathan the Labrador" loading="lazy">
-                <span class="about-visuals__tag">Walk break</span>
-            </div>
-            <figcaption>Resetting the brain between retro challenges and leaderboard runs.</figcaption>
-        </figure>
-
-        <figure class="about-visuals__card" data-about-sfx>
-            <div class="about-visuals__frame">
-                <img src="./aboutme/JOE_JIMBAGLEY.png" alt="Joe and Jim Bagley together at a retro event" loading="lazy">
-                <span class="about-visuals__tag">Community energy</span>
-            </div>
-            <figcaption>Sharing the stage with legends keeps every project honest.</figcaption>
-        </figure>
-    </div>
-</section>
-
-<section class="about-gallery">
-    <div class="about-gallery__banner">Signal snapshots</div>
-    <div class="about-gallery__grid">
-        <figure class="about-gallery__item">
-            <img src="resources/images/hero/ccg-hero-c64.png" alt="C64 hero illustration" loading="lazy">
-            <figcaption>Where SID soundtracks meet joystick grip marks.</figcaption>
-        </figure>
-        <figure class="about-gallery__item">
-            <img src="resources/images/hero/ccg-hero-amiga.png" alt="Amiga hero illustration" loading="lazy">
-            <figcaption>Floppy clicks, copper bars, and crunchy tracker tunes.</figcaption>
-        </figure>
-        <figure class="about-gallery__item">
-            <img src="resources/images/collections/top-picks-collection.png" alt="Top picks collection badge" loading="lazy">
-            <figcaption>Curated runs of the must-play classics on the channel.</figcaption>
-        </figure>
-        <figure class="about-gallery__item">
-            <img src="resources/images/genres/arcade.png" alt="Arcade genre icon" loading="lazy">
-            <figcaption>Cabinet chatter and the hunt for a perfect credit.</figcaption>
-        </figure>
-    </div>
-</section>
-
-<div class="about-divider" aria-hidden="true">
-    <span class="about-divider__beam"></span>
-</div>
-
-<section class="about-signal">
-    <div class="about-signal__badge">Join the retro revolution</div>
-    <h2 class="about-signal__title">Ready to press play?</h2>
-    <p class="about-signal__text">
-        Subscribe on YouTube, hop into the social links above, and help keep the glow of classic gaming
-        alive. Whether you’re a seasoned C64 veteran or just curious about where modern gaming began, you’re
-        part of the squad.
-    </p>
-    <div class="about-signal__cta">
-        <a class="about-cta" href="https://www.youtube.com/@CheekyCommodoreGamer" data-about-sfx>
-            <span class="about-cta__glow"></span>
-            Beam me to the channel
-        </a>
-    </div>
-</section>
-
-</main>
+        </section>
+    </main>
 
 <!-- ============================================================
      FOOTER
 ============================================================ -->
-<footer class="ccg-footer">
-    <div class="ccg-footer-inner">
-        <p class="ccg-footer-text">
-            © <span data-ccg-year></span> Cheeky Commodore Gamer.
-        </p>
-        <p class="ccg-footer-text ccg-footer-text--small">
-            Not affiliated with Commodore, Amiga or any publishers.
-        </p>
-    </div>
-</footer>
+    <footer class="ccg-footer">
+        <div class="ccg-footer-inner">
+            <p class="ccg-footer-text">
+                © <span data-ccg-year></span> Cheeky Commodore Gamer.
+            </p>
+            <p class="ccg-footer-text ccg-footer-text--small">
+                Not affiliated with Commodore, Amiga or any publishers.
+            </p>
+        </div>
+    </footer>
 
 </div>
+
+<button id="back-to-top" class="play-sound" aria-label="Back to top">↑</button>
 
 <!-- JS -->
 <script src="js/ccg-global.js" defer></script>
 <script src="js/ccg-mode-engine.js" defer></script>
 <script src="js/about.js" defer></script>
+<script>
+    // --- SOUND EFFECT ---
+    const playClickSound = () => {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            o.connect(g);
+            g.connect(ctx.destination);
+            o.type = 'square';
+            o.frequency.setValueAtTime(150, ctx.currentTime);
+            o.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.1);
+            g.gain.setValueAtTime(0.1, ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+            o.start();
+            o.stop(ctx.currentTime + 0.1);
+        } catch (e) {
+            // fail silently
+        }
+    };
+
+    document.querySelectorAll('.play-sound').forEach((el) => el.addEventListener('click', playClickSound));
+
+    // --- BACK TO TOP ---
+    const btt = document.getElementById('back-to-top');
+    window.addEventListener('scroll', () => {
+        btt.style.display = window.scrollY > 300 ? 'block' : 'none';
+    });
+    btt.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+</script>
 
 </body>
 </html>
