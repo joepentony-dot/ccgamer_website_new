@@ -3,7 +3,7 @@
 ============================================================ */
 
 .home-hero {
-    margin-top: 14px;
+    margin-top: calc(var(--ccg-hero-offset) - 12px);
 }
 
 .home-highlights-grid {

@@ -10,7 +10,23 @@
 
 /* ------------------------------------------------------------
    HERO CONTAINERS (STRUCTURE LOCKED)
------------------------------------------------------------- */
+------------------------------------------------------------- */
+
+:root {
+    --ccg-hero-offset: clamp(112px, 7vw + 86px, 172px);
+}
+
+@media (max-width: 820px) {
+    :root {
+        --ccg-hero-offset: clamp(96px, 8vw + 68px, 148px);
+    }
+}
+
+@media (max-width: 540px) {
+    :root {
+        --ccg-hero-offset: clamp(82px, 10vw + 58px, 126px);
+    }
+}
 
 .ccg-hero,
 .games-hero,
@@ -22,6 +38,7 @@
     /* W5: radius harmonised with cards / panels */
     border-radius: 20px;
 
+    margin-top: var(--ccg-hero-offset);
     margin-bottom: 32px;
 
     background:
