@@ -54,34 +54,27 @@
 
         const toggle = header.querySelector("[data-ccg-nav-toggle]");
         const nav = header.querySelector(".ccg-nav");
-        const drawer = header.querySelector("[data-ccg-nav-drawer]");
-        const drawerPrimary = drawer?.querySelector("[data-ccg-drawer-primary]");
-        const drawerSecondary = drawer?.querySelector("[data-ccg-drawer-secondary]");
-        const primaryList = nav?.querySelector("[data-ccg-nav-primary]");
-        const secondaryList = nav?.querySelector("[data-ccg-nav-secondary]");
-        const moreToggle = header.querySelector("[data-ccg-more-toggle]");
-        const moreMenu = header.querySelector("[data-ccg-more-menu]");
         const mobileMatch = window.matchMedia("(max-width: 960px)");
 
         if (!toggle || !nav) return;
 
         const primaryLabels = ["home", "browse games", "browse by genre", "collections"];
-
-        const baseList = nav.querySelector(".ccg-nav__list");
-        const items = baseList ? Array.from(baseList.querySelectorAll("li")) : [];
-        if (!items.length) return;
+        const collectedItems = Array.from(nav.querySelectorAll(".ccg-nav__list li"));
+        if (!collectedItems.length) return;
 
         /* --------------------------------------------
-           Build a modern shell with primary/secondary
+           Build a consistent shell from all nav items
         -------------------------------------------- */
         const bar = document.createElement("div");
         bar.className = "ccg-nav__bar";
 
         const primaryList = document.createElement("ul");
         primaryList.className = "ccg-nav__list ccg-nav__list--primary";
+        primaryList.dataset.ccgNavPrimary = "";
 
         const secondaryList = document.createElement("ul");
         secondaryList.className = "ccg-nav__list ccg-nav__list--secondary";
+        secondaryList.dataset.ccgNavSecondary = "";
 
         const mobileList = document.createElement("ul");
         mobileList.className = "ccg-nav__list ccg-nav__list--mobile";
@@ -94,25 +87,27 @@
         moreButton.className = "ccg-nav__more-toggle";
         moreButton.setAttribute("aria-haspopup", "true");
         moreButton.setAttribute("aria-expanded", "false");
+        moreButton.setAttribute("data-ccg-more-toggle", "");
         moreButton.innerHTML = "More <span aria-hidden=\"true\">▼</span>";
 
         const moreMenu = document.createElement("div");
         moreMenu.className = "ccg-nav__more-menu";
         moreMenu.setAttribute("role", "menu");
+        moreMenu.setAttribute("data-ccg-more-menu", "");
 
-        items.forEach(li => {
+        collectedItems.forEach(li => {
             const link = li.querySelector("a");
             if (!link) return;
 
-            const liClone = li.cloneNode(true);
-            const liSecondary = li.cloneNode(true);
+            const normalisedLabel = link.textContent.trim().toLowerCase();
+            const primaryClone = li.cloneNode(true);
+            const secondaryClone = li.cloneNode(true);
             const mobileClone = li.cloneNode(true);
 
-            const label = link.textContent.trim().toLowerCase();
-            if (primaryLabels.includes(label)) {
-                primaryList.appendChild(liClone);
+            if (primaryLabels.includes(normalisedLabel)) {
+                primaryList.appendChild(primaryClone);
             } else {
-                secondaryList.appendChild(liSecondary);
+                secondaryList.appendChild(secondaryClone);
                 const overflowLink = link.cloneNode(true);
                 overflowLink.classList.add("ccg-nav__link--overflow");
                 overflowLink.setAttribute("role", "menuitem");
@@ -124,10 +119,11 @@
 
         if (!moreMenu.childElementCount) {
             moreWrap.hidden = true;
+        } else {
+            moreMenu.hidden = true;
         }
 
         moreWrap.append(moreButton, moreMenu);
-
         bar.append(primaryList, secondaryList, moreWrap);
 
         const mobilePanel = document.createElement("div");
@@ -138,7 +134,11 @@
         nav.innerHTML = "";
         nav.append(bar, mobilePanel);
 
-        const mobileMatch = window.matchMedia("(max-width: 960px)");
+        const closeMore = () => {
+            nav.classList.remove("ccg-nav--more-open");
+            moreButton.setAttribute("aria-expanded", "false");
+            moreMenu.hidden = true;
+        };
 
         const closeNav = () => {
             header.classList.remove("ccg-header--nav-open");
@@ -146,29 +146,15 @@
             mobilePanel.inert = true;
         };
 
-        const toggleMore = () => {
-            if (!moreMenu || !moreToggle) return;
-            const open = moreMenu.hidden;
-            moreMenu.hidden = !open;
-            moreToggle.setAttribute("aria-expanded", open ? "true" : "false");
-        };
-
-        moreToggle?.addEventListener("click", event => {
-            event.stopPropagation();
-            toggleMore();
-        });
-
-        const drawerPanel = drawer?.querySelector(".ccg-nav-drawer__panel");
-        const setDrawerState = open => {
-            closeMore();
-            header.classList.toggle("ccg-header--nav-open", open);
-            drawer?.setAttribute("aria-hidden", open ? "false" : "true");
-            toggle.setAttribute("aria-expanded", open ? "true" : "false");
-            document.body.classList.toggle("ccg-body--locked", open);
-        };
-
-        const closeDrawer = () => setDrawerState(false);
-        const openDrawer = () => setDrawerState(true);
+        if (!moreWrap.hidden) {
+            moreButton.addEventListener("click", event => {
+                event.stopPropagation();
+                const willOpen = moreMenu.hidden;
+                nav.classList.toggle("ccg-nav--more-open", willOpen);
+                moreMenu.hidden = !willOpen;
+                moreButton.setAttribute("aria-expanded", willOpen ? "true" : "false");
+            });
+        }
 
         toggle.addEventListener("click", () => {
             const isOpen = !header.classList.contains("ccg-header--nav-open");
@@ -205,29 +191,14 @@
             }
         });
 
-        const maybeCloseOnDesktop = () => {
+        mobileMatch.addEventListener("change", () => {
             if (!mobileMatch.matches) {
-                closeDrawer();
+                closeNav();
                 closeMore();
             }
-        };
+        });
 
-        mobileMatch.addEventListener("change", maybeCloseOnDesktop);
-
-        /* --------------------------------------------
-           MORE DROPDOWN
-        -------------------------------------------- */
-        function closeMore() {
-            nav.classList.remove("ccg-nav--more-open");
-            moreButton.setAttribute("aria-expanded", "false");
-        }
-
-        if (!moreWrap.hidden) {
-            moreButton.addEventListener("click", () => {
-                const isOpen = nav.classList.toggle("ccg-nav--more-open");
-                moreButton.setAttribute("aria-expanded", isOpen ? "true" : "false");
-            });
-        }
+        markActiveLinks(header);
     }
 
     /* ======================================================
