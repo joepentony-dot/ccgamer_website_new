@@ -39,6 +39,14 @@
     margin: 0 0 0.5rem;
 }
 
+.ccg-info-hero__eyebrow {
+    margin: 0 0 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    font-weight: 700;
+}
+
 .ccg-info-hero p {
     margin: 0 auto 1.2rem;
     max-width: 850px;

@@ -96,7 +96,7 @@ button,
 .ccg-nav-toggle,
 .ccg-mode-toggle,
 .ccg-nav__link {
-    min-height: var(--ccg-touch-size);
+    min-height: 42px;
 }
 
 
@@ -337,7 +337,7 @@ li {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 14px;
+    gap: 8px;
     flex-wrap: wrap;
     width: 100%;
 }
@@ -387,7 +387,7 @@ li {
     justify-content: center;
     gap: 6px;
 
-    padding: 10px 16px;
+    padding: 8px 14px;
     border-radius: 999px;
     border: 1px solid rgba(255,255,255,0.2);
     background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(var(--accent-rgb),0.16));
@@ -739,13 +739,13 @@ li {
     justify-content: center;
 
     height: auto;
-    min-height: var(--ccg-touch-size);
+    min-height: 40px;
     padding: var(--ccg-nav-pill-pad-y) var(--ccg-nav-pill-pad-x);
     border-radius: 999px;
 
     font-family: var(--ccg-font-main);
-    font-size: 0.7rem;
-    letter-spacing: 0.12em;
+    font-size: 0.64rem;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
 
     background:
@@ -768,21 +768,21 @@ li {
 
 @media (max-width: 1180px) {
     .ccg-nav__link {
-        font-size: 0.66rem;
-        padding: 10px 12px;
+        font-size: 0.64rem;
+        padding: 9px 11px;
         letter-spacing: 0.1em;
     }
 
     .ccg-nav__list {
-        gap: 10px;
+        gap: 8px;
     }
 }
 
 @media (max-width: 640px) {
     .ccg-nav__link {
-        font-size: 0.82rem;
+        font-size: 0.7rem;
         letter-spacing: 0.08em;
-        padding: 12px 14px;
+        padding: 10px 12px;
     }
 }
 
