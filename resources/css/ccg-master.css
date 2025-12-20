@@ -31,8 +31,8 @@
     --ccg-header-padding-y: 14px;
     --ccg-header-offset: clamp(108px, 6vw + 88px, 168px);
 
-    --ccg-nav-pill-pad-y: 5px;
-    --ccg-nav-pill-pad-x: 9px;
+    --ccg-nav-pill-pad-y: 8px;
+    --ccg-nav-pill-pad-x: 12px;
 
     /* PAGE ENTRY */
     --ccg-page-entry-pad: 32px;
@@ -346,17 +346,17 @@ li {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 12px;
     flex-wrap: wrap;
 }
 
 .ccg-nav__list {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     flex-wrap: wrap;
-    row-gap: 6px;
-    padding-inline: 10px;
+    row-gap: 8px;
+    padding-inline: 12px;
 
     overflow: visible;
     scrollbar-width: none;
