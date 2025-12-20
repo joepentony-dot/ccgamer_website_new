@@ -32,7 +32,7 @@
     --ccg-header-offset: clamp(108px, 6vw + 88px, 168px);
 
     --ccg-nav-pill-pad-y: 8px;
-    --ccg-nav-pill-pad-x: 14px;
+    --ccg-nav-pill-pad-x: 12px;
 
     /* PAGE ENTRY */
     --ccg-page-entry-pad: 32px;
@@ -347,12 +347,14 @@ li {
     align-items: center;
     justify-content: center;
     gap: 12px;
+    flex-wrap: wrap;
 }
 
 .ccg-nav__list {
     display: flex;
     align-items: center;
     gap: 12px;
+    flex-wrap: wrap;
     row-gap: 8px;
     padding-inline: 12px;
 
