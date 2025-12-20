@@ -325,12 +325,13 @@ li {
     grid-area: nav;
     min-width: 0;
     position: relative;
-    z-index: 2;
+    z-index: 4;
     display: flex;
     width: 100%;
     justify-content: center;
     align-items: center;
     justify-self: center;
+    pointer-events: auto;
 }
 
 
@@ -341,6 +342,9 @@ li {
     gap: 6px 10px;
     flex-wrap: wrap;
     width: min(1200px, 100%);
+    position: relative;
+    z-index: 5;
+    pointer-events: auto;
 }
 
 .ccg-nav__list {
@@ -362,7 +366,8 @@ li {
     overflow: visible;
     scrollbar-width: none;
     position: relative;
-    z-index: 1;
+    z-index: 5;
+    pointer-events: auto;
     flex: 1 1 100%;
     max-width: 100%;
 }
@@ -506,6 +511,10 @@ li {
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.28s ease;
+}
+
+.ccg-nav-drawer[aria-hidden="true"] {
+    display: none;
 }
 
 .ccg-nav-drawer__backdrop {
@@ -743,6 +752,8 @@ li {
     min-height: 36px;
     padding: var(--ccg-nav-pill-pad-y) var(--ccg-nav-pill-pad-x);
     border-radius: 999px;
+
+    pointer-events: auto;
 
     font-family: var(--ccg-font-main);
     font-size: 0.62rem;
