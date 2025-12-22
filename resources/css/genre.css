@@ -14,7 +14,21 @@
 
 .ccg-page--genres-index .ccg-main,
 .ccg-page--genre-single .ccg-main {
-    padding-top: 12px;
+    padding-top: 0;
+}
+
+/* Remove any inherited top padding/margins from the first hero block */
+.ccg-page--genres-index .ccg-main > .ccg-section.ccg-genres-hero {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+
+.ccg-page--genres-index .ccg-genres-hero .ccg-hero {
+    margin-top: 0 !important;
+}
+
+.ccg-page--genres-index .ccg-genres-hero .ccg-hero-inner > :first-child {
+    margin-top: 0 !important;
 }
 
 
@@ -78,7 +92,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: clamp(32px, 4vw, 48px) clamp(22px, 3vw + 10px, 52px);
+    padding: clamp(24px, 3vw, 40px) clamp(22px, 3vw + 10px, 52px);
 }
 
 .ccg-page--genres-index .ccg-hero-inner--genres {
@@ -120,13 +134,13 @@
 .ccg-genre-hero__inner {
     position: relative;
     z-index: 2;
-    padding: 44px 38px 40px;
+    padding: 36px 34px 34px;
 }
 
 /* Mobile discipline */
 @media (max-width: 768px) {
     .ccg-genre-hero__inner {
-        padding: 32px 18px 28px;
+        padding: 26px 16px 24px;
     }
 }
 

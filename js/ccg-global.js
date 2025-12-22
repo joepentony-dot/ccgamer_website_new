@@ -153,10 +153,23 @@
         nav.innerHTML = "";
         nav.append(bar, mobilePanel);
 
+        const openMore = () => {
+            nav.classList.add("ccg-nav--more-open");
+            moreWrap.dataset.open = "true";
+            moreButton.setAttribute("aria-expanded", "true");
+            moreMenu.hidden = false;
+            moreMenu.removeAttribute("hidden");
+            moreMenu.style.display = "grid";
+            moreMenu.dataset.state = "open";
+        };
+
         const closeMore = () => {
             nav.classList.remove("ccg-nav--more-open");
+            delete moreWrap.dataset.open;
             moreButton.setAttribute("aria-expanded", "false");
             moreMenu.hidden = true;
+            moreMenu.style.display = "";
+            delete moreMenu.dataset.state;
         };
 
         const closeNav = () => {
@@ -169,9 +182,12 @@
             moreButton.addEventListener("click", event => {
                 event.stopPropagation();
                 const willOpen = moreMenu.hidden;
-                nav.classList.toggle("ccg-nav--more-open", willOpen);
-                moreMenu.hidden = !willOpen;
-                moreButton.setAttribute("aria-expanded", willOpen ? "true" : "false");
+
+                if (willOpen) {
+                    openMore();
+                } else {
+                    closeMore();
+                }
             });
         }
 

@@ -560,7 +560,58 @@
 
 .related-carousel {
     display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
     gap: 12px;
+}
+
+.related-carousel__viewport {
+    overflow: hidden;
+    border-radius: 14px;
+    border: 1px solid var(--ccg-border);
+    background: rgba(255,255,255,0.02);
+    padding: 6px;
+}
+
+.related-carousel__track {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 4px 2px;
+    scrollbar-width: thin;
+    scroll-behavior: smooth;
+}
+
+.related-carousel__track::-webkit-scrollbar {
+    height: 8px;
+}
+
+.related-carousel__track::-webkit-scrollbar-thumb {
+    background: rgba(var(--accent-rgb), 0.35);
+    border-radius: 99px;
+}
+
+.related-carousel__nav {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1px solid var(--ccg-border);
+    background: rgba(0,0,0,0.35);
+    color: #fff;
+    font-size: 22px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+}
+
+.related-carousel__nav:hover,
+.related-carousel__nav:focus-visible {
+    border-color: rgba(var(--accent-rgb), 0.75);
+    box-shadow: 0 16px 32px rgba(0,0,0,0.6), 0 0 14px rgba(var(--accent-rgb),0.4);
+    transform: translateY(-1px);
+    outline: none;
 }
 
 .related-grid {

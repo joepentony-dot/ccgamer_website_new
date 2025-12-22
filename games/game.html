@@ -224,10 +224,16 @@
 
         <!-- RELATED -->
         <section class="game-section game-section--related" hidden>
-            <p class="game-section__kicker">More from this curator</p>
-            <h2 class="game-section__title">Related Games</h2>
+            <p id="relatedGamesKicker" class="game-section__kicker">More from this publisher</p>
+            <h2 id="relatedGamesTitle" class="game-section__title">More From The Same Publisher</h2>
 
-            <div id="relatedGamesGrid" class="related-grid"></div>
+            <div class="related-carousel">
+                <button class="related-carousel__nav related-carousel__nav--prev" type="button" aria-label="Previous related games">‹</button>
+                <div class="related-carousel__viewport" aria-live="polite">
+                    <div id="relatedGamesTrack" class="related-carousel__track"></div>
+                </div>
+                <button class="related-carousel__nav related-carousel__nav--next" type="button" aria-label="Next related games">›</button>
+            </div>
         </section>
 
     </main>
