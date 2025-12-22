@@ -20,9 +20,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: clamp(54px, 3vw + 36px, 94px);
-    margin-bottom: 24px;
-    padding: clamp(20px, 2.6vw + 6px, 32px) clamp(16px, 2vw + 10px, 38px);
+    padding: clamp(34px, 4vw, 50px) clamp(22px, 3vw + 10px, 52px);
 
     background:
         radial-gradient(
@@ -80,9 +78,9 @@
     flex-direction: column;
     align-items: center;
     gap: 12px;
-    max-width: 840px;
+    max-width: 820px;
     margin: 0 auto;
-    padding: 34px 30px 30px;
+    padding: 60px 54px 56px;
     text-align: center;
 }
 
@@ -101,7 +99,7 @@
 
 @media (max-width: 768px) {
     .ccg-page--collections-index .ccg-hero-inner--collections {
-        padding: 26px 16px 24px;
+        padding: 32px 18px 30px;
     }
 }
 
