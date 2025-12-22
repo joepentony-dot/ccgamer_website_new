@@ -153,6 +153,18 @@ html:not([data-ccg-page="home"]) .ccg-page {
 
 @media (max-width: 768px) {
 
+    /* Calm the animated layers on mobile to prevent flicker */
+    .ccg-bg-starfield,
+    .ccg-bg-grid {
+        animation: none;
+        will-change: auto;
+        background-position: center;
+    }
+
+    .ccg-bg-crt-overlay {
+        opacity: 0.24;
+    }
+
     /* Anchor universe to document flow on mobile */
     html:not([data-ccg-page="home"]) .ccg-bg {
         position: absolute;
