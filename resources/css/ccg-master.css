@@ -236,12 +236,7 @@ li {
 
     width: 100%;
     max-width: 100vw;
-    margin-inline: auto;
-    padding: var(--ccg-header-padding-y) var(--ccg-header-padding-x);
-
-    padding-left: max(var(--ccg-header-padding-x), env(safe-area-inset-left));
-    padding-right: max(var(--ccg-header-padding-x), env(safe-area-inset-right));
-    margin-bottom: clamp(8px, 2vw, 14px);
+    padding: var(--ccg-header-padding-y) clamp(10px, 2vw, 18px);
 
     display: flex;
     align-items: center;
@@ -791,15 +786,10 @@ li {
 @media (max-width: 640px) {
     .ccg-header {
         overflow: clip;
-        margin-inline: auto;
-        width: 100%;
-        max-width: 100%;
-        padding-inline: var(--ccg-header-padding-x);
     }
 
     .ccg-header-inner {
-        max-width: min(100%, calc(100vw - (var(--ccg-header-padding-x) * 2)));
-        padding-inline: clamp(12px, 4vw, 16px);
+        padding-inline: 0;
     }
 
     .ccg-brand {

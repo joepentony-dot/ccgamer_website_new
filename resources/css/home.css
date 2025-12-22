@@ -409,8 +409,8 @@
 ============================================================ */
 
 .home-hero {
-    margin-top: clamp(44px, 7vw, 104px);
-    padding: 18px 0 20px;
+    margin-top: clamp(32px, 6vw, 88px);
+    padding: 16px 0 18px;
 }
 
 .home-hero__frame {
@@ -1396,8 +1396,8 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
 
 @media (max-width: 1024px) {
     .home-hero {
-        margin-top: clamp(48px, 8vw, 96px);
-        padding-top: 18px;
+        margin-top: clamp(36px, 6vw, 78px);
+        padding-top: 14px;
     }
 
     .home-hero__frame {
@@ -1421,12 +1421,12 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
 
 @media (max-width: 768px) {
     .home-hero {
-        margin-top: clamp(56px, 8vw + 10px, 108px);
-        padding-top: 20px;
+        margin-top: clamp(40px, 7vw + 6px, 84px);
+        padding-top: 16px;
     }
 
     .ccg-main--home {
-        padding-top: 18px;
+        padding-top: 14px;
     }
 
     .home-hero__mode-line {
@@ -1454,12 +1454,12 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
 
 @media (max-width: 540px) {
     .home-hero {
-        margin-top: clamp(64px, 10vw + 14px, 120px);
-        padding-top: 22px;
+        margin-top: clamp(44px, 9vw + 8px, 96px);
+        padding-top: 18px;
     }
 
     .ccg-main--home {
-        padding-top: 22px;
+        padding-top: 16px;
     }
 
     .home-hero__frame {

@@ -1,196 +1,224 @@
 /* ============================================================
-   ADMIN TOOLS — GAME UPLOAD HELPER
+   CCG ADMIN TOOLS — CLIENT-SIDE JSON STAGING
    ------------------------------------------------------------
-   • Fetches live games.json for context
-   • Accepts JSON uploads and merges staged entries
-   • Form for manually staging a new game
-   • Download merged JSON for commit-ready use
-============================================================ */
+   • Fetches live games.json
+   • Allows upload + merge
+   • Stages new games safely
+   • Prevents duplicate IDs
+   • Exports merged JSON for manual commit
+   • ZERO backend / ZERO auto-publish
+   ============================================================ */
 
 (function () {
-    'use strict';
+    "use strict";
 
-    const gameCountEl = document.querySelector('[data-admin-game-count]');
-    const stagedCountEl = document.querySelector('[data-admin-staged-count]');
-    const previewBody = document.getElementById('adminGamePreview');
-    const statusEl = document.getElementById('adminStatus');
-
-    const fileInput = document.getElementById('adminFileInput');
-    const refreshBtn = document.getElementById('adminRefresh');
-    const form = document.getElementById('adminGameForm');
-    const downloadBtn = document.getElementById('adminDownload');
-    const clearBtn = document.getElementById('adminClear');
+    const LIVE_JSON_PATH = "../games/games.json";
 
     let liveGames = [];
-    let staged = [];
+    let stagedGames = [];
 
     /* --------------------------------------------------------
-       STATUS HELPERS
+       DOM REFERENCES
     -------------------------------------------------------- */
-    function setStatus(message, state) {
+    const statusEl = document.getElementById("adminStatus");
+    const fileInput = document.getElementById("adminFileInput");
+    const refreshBtn = document.getElementById("adminRefresh");
+    const downloadBtn = document.getElementById("adminDownload");
+    const clearBtn = document.getElementById("adminClear");
+    const form = document.getElementById("adminGameForm");
+    const previewBody = document.getElementById("adminGamePreview");
+
+    const gameCountEl = document.querySelector("[data-admin-game-count]");
+    const stagedCountEl = document.querySelector("[data-admin-staged-count]");
+
+    /* --------------------------------------------------------
+       HELPERS
+    -------------------------------------------------------- */
+    function setStatus(msg, isError = false) {
         if (!statusEl) return;
-        statusEl.textContent = message;
-        statusEl.dataset.state = state || '';
+        statusEl.textContent = msg;
+        statusEl.style.color = isError ? "#ff6b6b" : "";
     }
 
     function updateBadges() {
-        if (gameCountEl) gameCountEl.textContent = liveGames.length + staged.length;
-        if (stagedCountEl) stagedCountEl.textContent = staged.length;
+        if (gameCountEl) gameCountEl.textContent = liveGames.length;
+        if (stagedCountEl) stagedCountEl.textContent = stagedGames.length;
+    }
+
+    function normaliseGame(raw) {
+        return {
+            id: String(raw.id).trim(),
+            title: String(raw.title || "").trim(),
+            year: raw.year ? Number(raw.year) : "",
+            system: raw.system || "C64",
+            genres: raw.genres
+                ? raw.genres.split(",").map(g => g.trim()).filter(Boolean)
+                : [],
+            developer: raw.developer || "",
+            videoid: raw.videoid || "",
+            thumbnail: raw.thumbnail || "",
+            manual: raw.manual || "",
+            disk: raw.disk
+                ? raw.disk.split(",").map(d => d.trim()).filter(Boolean)
+                : []
+        };
+    }
+
+    function isDuplicateId(id) {
+        return [...liveGames, ...stagedGames].some(g => g.id === id);
     }
 
     /* --------------------------------------------------------
-       DATA LOADING + MERGE
+       FETCH LIVE JSON
     -------------------------------------------------------- */
     async function fetchLiveGames() {
+        setStatus("Fetching live games.json…");
         try {
-            const res = await fetch('../games/games.json', { cache: 'no-store' });
-            if (!res.ok) throw new Error(res.statusText);
-            liveGames = await res.json();
-            setStatus(`Loaded ${liveGames.length} games from games.json`, 'success');
+            const res = await fetch(LIVE_JSON_PATH, { cache: "no-store" });
+            if (!res.ok) throw new Error("Fetch failed");
+            const data = await res.json();
+
+            if (!Array.isArray(data)) {
+                throw new Error("Invalid games.json format");
+            }
+
+            liveGames = data;
+            updateBadges();
+            setStatus(`Loaded ${liveGames.length} live games.`);
         } catch (err) {
-            setStatus('Could not fetch games.json — using local cache only', 'error');
+            console.error(err);
+            setStatus("Failed to load live games.json", true);
         }
-        updateBadges();
-        renderPreview();
-    }
-
-    function mergeStagedInto(base) {
-        const merged = base.slice();
-        staged.forEach(game => {
-            const existingIndex = merged.findIndex(g => g.id === game.id);
-            if (existingIndex >= 0) {
-                merged[existingIndex] = game;
-            } else {
-                merged.push(game);
-            }
-        });
-        return merged;
     }
 
     /* --------------------------------------------------------
-       FILE HANDLING
+       FILE UPLOAD
     -------------------------------------------------------- */
-    function handleFileUpload(evt) {
-        const file = evt.target && evt.target.files ? evt.target.files[0] : null;
-        if (!file) return;
+    if (fileInput) {
+        fileInput.addEventListener("change", () => {
+            const file = fileInput.files[0];
+            if (!file) return;
 
-        const reader = new FileReader();
-        reader.onload = () => {
-            try {
-                const parsed = JSON.parse(reader.result);
-                if (Array.isArray(parsed)) {
-                    staged = parsed;
-                    setStatus(`Imported ${parsed.length} games from upload`, 'success');
-                } else {
-                    setStatus('Uploaded file did not contain an array', 'error');
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    const parsed = JSON.parse(reader.result);
+                    if (!Array.isArray(parsed)) {
+                        throw new Error("Uploaded JSON must be an array");
+                    }
+                    liveGames = parsed;
+                    stagedGames = [];
+                    updateBadges();
+                    renderPreview();
+                    setStatus("Uploaded JSON loaded successfully.");
+                } catch (err) {
+                    setStatus("Invalid JSON file.", true);
                 }
-                updateBadges();
-                renderPreview();
-            } catch (err) {
-                setStatus('Upload could not be parsed as JSON', 'error');
+            };
+            reader.readAsText(file);
+        });
+    }
+
+    /* --------------------------------------------------------
+       ADD GAME (STAGE)
+    -------------------------------------------------------- */
+    if (form) {
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+            const raw = Object.fromEntries(formData.entries());
+            const game = normaliseGame(raw);
+
+            if (!game.id || !game.title) {
+                setStatus("ID and Title are required.", true);
+                return;
             }
-        };
-        reader.readAsText(file);
+
+            if (isDuplicateId(game.id)) {
+                setStatus(`Duplicate ID "${game.id}" detected.`, true);
+                return;
+            }
+
+            stagedGames.unshift(game);
+            updateBadges();
+            renderPreview();
+            form.reset();
+
+            setStatus(`Game "${game.title}" staged.`);
+        });
     }
 
     /* --------------------------------------------------------
-       FORM HANDLING
-    -------------------------------------------------------- */
-    function toList(value) {
-        if (!value) return [];
-        return value.split(',').map(v => v.trim()).filter(Boolean);
-    }
-
-    function handleFormSubmit(event) {
-        event.preventDefault();
-        if (!form) return;
-
-        const formData = new FormData(form);
-        const entry = {
-            id: (formData.get('id') || '').toString().trim(),
-            title: (formData.get('title') || '').toString().trim(),
-            sorttitle: (formData.get('title') || '').toString().trim(),
-            year: formData.get('year') ? Number(formData.get('year')) : undefined,
-            system: formData.get('system') || 'C64',
-            genres: toList(formData.get('genres')),
-            developer: (formData.get('developer') || '').toString().trim(),
-            videoid: (formData.get('videoid') || '').toString().trim(),
-            thumbnail: (formData.get('thumbnail') || '').toString().trim(),
-            pdf: (formData.get('manual') || '').toString().trim(),
-            disk: toList(formData.get('disk'))
-        };
-
-        if (!entry.id || !entry.title) {
-            setStatus('ID and title are required.', 'error');
-            return;
-        }
-
-        staged.unshift(entry);
-        staged = staged.slice(0, 24);
-        updateBadges();
-        renderPreview();
-        setStatus(`Staged ${entry.title}`, 'success');
-        form.reset();
-    }
-
-    /* --------------------------------------------------------
-       DOWNLOAD
-    -------------------------------------------------------- */
-    function downloadMerged() {
-        const merged = mergeStagedInto(liveGames);
-        const blob = new Blob([JSON.stringify(merged, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'games.json';
-        link.click();
-        URL.revokeObjectURL(url);
-    }
-
-    /* --------------------------------------------------------
-       PREVIEW RENDER
+       PREVIEW TABLE
     -------------------------------------------------------- */
     function renderPreview() {
         if (!previewBody) return;
-        previewBody.innerHTML = '';
 
-        if (!staged.length) {
-            previewBody.innerHTML = '<tr><td colspan="4">Nothing staged yet.</td></tr>';
+        previewBody.innerHTML = "";
+
+        const preview = stagedGames.slice(0, 12);
+
+        if (!preview.length) {
+            previewBody.innerHTML =
+                "<tr><td colspan='4'>Nothing staged yet.</td></tr>";
             return;
         }
 
-        staged.slice(0, 12).forEach(game => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${game.title || 'Untitled'}</td>
-                <td>${game.system || '—'}</td>
-                <td>${game.year || '—'}</td>
-                <td>${Array.isArray(game.genres) ? game.genres.join(', ') : '—'}</td>
+        preview.forEach(game => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${game.title}</td>
+                <td>${game.system}</td>
+                <td>${game.year || "—"}</td>
+                <td>${game.genres.join(", ")}</td>
             `;
-            previewBody.appendChild(row);
+            previewBody.appendChild(tr);
         });
     }
 
     /* --------------------------------------------------------
-       RESET
+       EXPORT JSON
     -------------------------------------------------------- */
-    function clearStaged() {
-        staged = [];
-        renderPreview();
-        updateBadges();
-        setStatus('Cleared staged entries.', '');
+    if (downloadBtn) {
+        downloadBtn.addEventListener("click", () => {
+            const merged = [...stagedGames, ...liveGames]
+                .sort((a, b) => a.title.localeCompare(b.title));
+
+            const blob = new Blob(
+                [JSON.stringify(merged, null, 2)],
+                { type: "application/json" }
+            );
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "games.json";
+            a.click();
+            URL.revokeObjectURL(url);
+
+            setStatus("Merged games.json downloaded.");
+        });
     }
 
     /* --------------------------------------------------------
-       WIRE EVENTS
+       CLEAR STAGED
     -------------------------------------------------------- */
-    document.addEventListener('DOMContentLoaded', () => {
-        if (refreshBtn) refreshBtn.addEventListener('click', fetchLiveGames);
-        if (fileInput) fileInput.addEventListener('change', handleFileUpload);
-        if (form) form.addEventListener('submit', handleFormSubmit);
-        if (downloadBtn) downloadBtn.addEventListener('click', downloadMerged);
-        if (clearBtn) clearBtn.addEventListener('click', clearStaged);
+    if (clearBtn) {
+        clearBtn.addEventListener("click", () => {
+            stagedGames = [];
+            renderPreview();
+            updateBadges();
+            setStatus("Staged entries cleared.");
+        });
+    }
 
-        fetchLiveGames();
-    });
+    /* --------------------------------------------------------
+       INIT
+    -------------------------------------------------------- */
+    if (refreshBtn) {
+        refreshBtn.addEventListener("click", fetchLiveGames);
+    }
+
+    fetchLiveGames();
 })();
