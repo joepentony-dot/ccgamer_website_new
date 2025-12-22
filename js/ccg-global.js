@@ -37,10 +37,29 @@
 
     function markActiveLinks(header) {
         const current = normalisePath(window.location.href);
+
+        const setActiveState = (link, isActive) => {
+            link.classList.toggle("ccg-nav__link--active", isActive);
+            if (isActive) {
+                link.setAttribute("aria-current", "page");
+            } else {
+                link.removeAttribute("aria-current");
+            }
+        };
+
         header.querySelectorAll(".ccg-nav__link").forEach(link => {
             const target = normalisePath(link.getAttribute("href") || "");
-            if (current.endsWith(target) || current === target) {
-                link.classList.add("ccg-nav__link--active");
+            const isActive = current.endsWith(target) || current === target;
+
+            setActiveState(link, isActive);
+
+            if (isActive) {
+                const href = link.getAttribute("href");
+                if (!href) return;
+
+                header.querySelectorAll(`.ccg-nav__link[href='${href}']`).forEach(matchedLink => {
+                    setActiveState(matchedLink, true);
+                });
             }
         });
     }
@@ -256,6 +275,21 @@
     document.addEventListener("DOMContentLoaded", () => {
 
         /* -------------------------------
+           SKIP LINK FOR KEYBOARD USERS
+        ------------------------------- */
+        const main = document.querySelector("main");
+        if (main) {
+            if (!main.id) main.id = "ccg-main-content";
+            main.setAttribute("tabindex", "-1");
+
+            const skipLink = document.createElement("a");
+            skipLink.className = "ccg-skip-link";
+            skipLink.href = `#${main.id}`;
+            skipLink.textContent = "Skip to main content";
+            document.body.prepend(skipLink);
+        }
+
+        /* -------------------------------
            NORMALISE LOGO PATH
         ------------------------------- */
         const logoPath = getLogoPath();
@@ -263,7 +297,27 @@
             img.src = logoPath;
             img.loading = img.loading || "lazy";
             img.alt ||= "Cheeky Commodore Gamer logo";
+            img.decoding ||= "async";
         });
+
+        /* -------------------------------
+           LAZY RESOURCE ENHANCEMENTS
+        ------------------------------- */
+        document.querySelectorAll("img:not([loading])").forEach(img => {
+            const isAboveTheFold = img.closest("header") || img.closest(".ccg-hero") || img.closest(".home-hero") || img.closest(".ccg-info-hero");
+            img.loading = isAboveTheFold ? "eager" : "lazy";
+            img.decoding ||= "async";
+        });
+
+        document.querySelectorAll("iframe").forEach(frame => {
+            frame.loading = frame.loading || "lazy";
+            frame.referrerPolicy ||= "strict-origin-when-cross-origin";
+        });
+
+        const introVideo = document.querySelector(".intro-video");
+        if (introVideo) {
+            introVideo.preload = "metadata";
+        }
 
         setupNavToggle();
 
