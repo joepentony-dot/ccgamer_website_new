@@ -529,6 +529,14 @@ li {
     transform: translateY(0);
 }
 
+.ccg-nav__more[data-open="true"] .ccg-nav__more-menu,
+.ccg-nav__more:focus-within .ccg-nav__more-menu,
+.ccg-nav__more:hover .ccg-nav__more-menu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
 .ccg-nav__link--overflow {
     width: 100%;
     justify-content: flex-start;
