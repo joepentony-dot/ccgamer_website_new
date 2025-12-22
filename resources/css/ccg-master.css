@@ -676,7 +676,7 @@ li {
         inset: 0;
         background: rgba(6,6,12,0.94);
         z-index: 9998;
-        padding: calc(var(--ccg-header-height, 92px) + 12px) 20px 24px;
+        padding: var(--ccg-header-height, 92px) 20px 24px;
         overflow-y: auto;
         opacity: 0;
         transform: translateY(-6px);
