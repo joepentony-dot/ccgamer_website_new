@@ -5643,6 +5643,23 @@
     "description": ""
   },
   {
+    "id": "hunchback_2",
+    "title": "Hunchback II: Quasimodo's Revenge",
+    "year": 1985,
+    "system": "C64",
+    "genres": [
+      "Platform Games",
+      "Arcade Games"
+    ],
+    "developer": "Ocean Software",
+    "videoid": "dTe4AscaMOU",
+    "thumbnail": "hunchback_2.jpg",
+    "manual": "https://drive.google.com/file/d/1re4dlg5zHdtyooCPhhRrPXb2lKA6bxOM/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1JQRAwfq_K55aSFKw5TqHkyn7fi3sggRT/view?usp=drive_link"
+    ]
+  },
+  {
     "system": "AMIGA",
     "id": "hunter",
     "title": "Hunter",
@@ -8875,23 +8892,6 @@
       "https://drive.google.com/file/d/17AKW_4HCu-107Lj_ZKVdnVxDHHRIg5PL/view?usp=drive_link"
     ],
     "description": ""
-  },
-  {
-    "id": "r-type",
-    "title": "R-Type",
-    "year": 1988,
-    "system": "C64",
-    "genres": [
-      "Shooting Games",
-      "Arcade Games"
-    ],
-    "developer": "Electric Dreams",
-    "videoid": "h1wRyD86xxY",
-    "thumbnail": "r_type.jpg",
-    "manual": "https://drive.google.com/file/d/10VUB5oo4o6Zx_u1AfSCDMu_pbwoHjjgh/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1UFnA1jAqXvMKkrOXRoBafXwN10NwXdal/view?usp=drive_link"
-    ]
   },
   {
     "system": "C64",
@@ -12437,6 +12437,24 @@
     "description": ""
   },
   {
+    "id": "the_wombles",
+    "title": "The Wombles",
+    "year": 1990,
+    "system": "C64",
+    "genres": [
+      "Miscellaneous",
+      "Action Adventure Games",
+      "Licensed Games"
+    ],
+    "developer": "Enigma Variations",
+    "videoid": "jMsMna_ao2o",
+    "thumbnail": "the_wombles.jpg",
+    "manual": "",
+    "disk": [
+      "https://drive.google.com/file/d/18bTWBVn9M9X3iy50Z71ZBgcPKG44848Y/view?usp=drive_link"
+    ]
+  },
+  {
     "system": "C64",
     "id": "the_young_ones",
     "title": "The Young Ones",
@@ -13233,6 +13251,22 @@
       "https://drive.google.com/file/d/1QjacoFl6nbI9nm3GGl4-y4tJps7aIdbf/view?usp=drive_link"
     ],
     "description": ""
+  },
+  {
+    "id": "vendetta",
+    "title": "Vendetta",
+    "year": 1990,
+    "system": "C64",
+    "genres": [
+      "Action Adventure Games"
+    ],
+    "developer": "System 3",
+    "videoid": "9yMtxCQxw5A",
+    "thumbnail": "vendetta.jpg",
+    "manual": "https://drive.google.com/file/d/14HL5pfQZ1k9k1RlHhZisG_bH6CtJcWed/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1qjJRahdmQODFqz6gp75jUn8gWGdqP7qQ/view?usp=drive_link"
+    ]
   },
   {
     "system": "C64",
