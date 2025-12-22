@@ -11,8 +11,13 @@
    HERO & GRID
 ============================================================ */
 
+.ccg-page--quiz .ccg-main {
+    padding-top: 18px;
+}
+
 .ccg-page--quiz .ccg-hero {
-    margin-bottom: 28px;
+    margin-top: clamp(54px, 5vw + 26px, 98px);
+    margin-bottom: 22px;
     background:
         radial-gradient(circle at 20% 20%, rgba(var(--accent-rgb),0.26), transparent 40%),
         radial-gradient(circle at 80% 15%, rgba(255,255,255,0.1), transparent 42%),
@@ -21,6 +26,10 @@
     box-shadow: 0 20px 44px rgba(0,0,0,0.82), 0 0 26px rgba(var(--accent-rgb),0.3);
     border-radius: 22px;
     color: #f6f8ff;
+}
+
+.ccg-page--quiz .ccg-hero-inner {
+    padding: 30px 28px 28px;
 }
 
 .quiz-layout { gap: 26px; }

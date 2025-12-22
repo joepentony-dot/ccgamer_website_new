@@ -183,7 +183,9 @@ body.intro-body {
     left: 50%;
     transform: translate(-50%, -50%);
     width: min(820px, 92vw);
+    max-width: calc(100vw - 2.4rem);
     padding: 2.2rem 3rem;
+    box-sizing: border-box;
     border-radius: 18px;
     background: radial-gradient(circle at top,
         rgba(40, 70, 150, 0.85),
@@ -202,6 +204,31 @@ body.intro-body {
     visibility: hidden;
     transition: opacity 0.45s ease, transform 0.45s ease, visibility 0.45s ease;
     z-index: 8;
+}
+
+@media (max-width: 720px) {
+    .intro-c64-screen {
+        width: min(760px, 95vw);
+        max-width: calc(100vw - 2rem);
+        padding: 1.8rem 2.2rem;
+        font-size: 1.05rem;
+    }
+}
+
+@media (max-width: 540px) {
+    .intro-c64-screen {
+        width: min(640px, 96vw);
+        max-width: calc(100vw - 1.25rem);
+        padding: 1.2rem 1.35rem;
+        font-size: 0.94rem;
+        letter-spacing: 0.045em;
+    }
+
+    .intro-c64-line {
+        white-space: pre-wrap;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+    }
 }
 
 .intro-c64-screen--visible {

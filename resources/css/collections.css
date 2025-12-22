@@ -17,6 +17,12 @@
     border-radius: 22px;
     overflow: hidden;
     isolation: isolate;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: var(--ccg-hero-offset);
+    margin-bottom: 12px;
+    padding: clamp(14px, 1.6vw + 8px, 24px) clamp(14px, 1.6vw + 10px, 28px);
 
     background:
         radial-gradient(
@@ -70,7 +76,14 @@
 .ccg-page--collections-index .ccg-hero-inner--collections {
     position: relative;
     z-index: 2;
-    padding: 60px 54px 56px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    max-width: 840px;
+    margin: 0 auto;
+    padding: 22px 20px 20px;
+    text-align: center;
 }
 
 .ccg-page--collections-index .ccg-hero-actions {
@@ -88,7 +101,7 @@
 
 @media (max-width: 768px) {
     .ccg-page--collections-index .ccg-hero-inner--collections {
-        padding: 42px 20px 38px;
+        padding: 26px 16px 24px;
     }
 }
 
@@ -198,29 +211,13 @@
 ============================================================ */
 
 .ccg-page--collections-index .ccg-section {
-    margin-top: 58px;
+    margin-top: 46px;
     position: relative;
 }
 
 /* Soft divider glow between hero and grid */
 .ccg-page--collections-index .ccg-section::before {
-    content: "";
-    position: absolute;
-    top: -26px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(820px, 90%);
-    height: 1px;
-
-    background:
-        linear-gradient(
-            to right,
-            transparent,
-            rgba(var(--accent-rgb),0.42),
-            transparent
-        );
-
-    opacity: 0.55;
+    content: none;
 }
 
 @media (max-width: 768px) {
