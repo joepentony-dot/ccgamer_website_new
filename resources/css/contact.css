@@ -83,7 +83,7 @@
 .contact-grid {
     display: grid;
     gap: var(--contact-grid-gap);
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
 .contact-panel {
@@ -316,4 +316,8 @@
     .contact-panel__header { flex-direction: column; align-items: flex-start; }
     .contact-actions { flex-direction: column; align-items: flex-start; }
     .contact-status { width: 100%; }
+}
+
+@media (max-width: 560px) {
+    .contact-grid { grid-template-columns: 1fr; }
 }
