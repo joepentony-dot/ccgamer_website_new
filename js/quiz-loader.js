@@ -1,11 +1,13 @@
 /* ============================================================
-   QUIZ LOADER — COSMIC WOW EDITION (REMOTE SHEET VERSION)
+   QUIZ LOADER — OMEGA REMOTE + FALLBACK (IMPORTS OLD RULES)
    ------------------------------------------------------------
    • Loads packs + questions from Google Apps Script endpoint
    • Falls back to local quiz/quiz-data.json if remote fails
    • Exposes global callbacks consumed by quiz-engine.js
    • Adds live pack/question counts and recent score recap
-   • LocalStorage-backed score saver (client-side leaderboard)
+   • Saves scores REMOTELY (Apps Script) like old Google Sites quiz
+   • If remote save fails → falls back to LocalStorage
+   • Silent visitor/game tracking (best-effort)
    ============================================================ */
 
 (function () {
@@ -37,8 +39,24 @@
         return Math.min(Math.max(idx, 0), length - 1);
     }
 
+    function safeJsonParse(input, fallback) {
+        try {
+            return JSON.parse(input);
+        } catch {
+            return fallback;
+        }
+    }
+
+    function bestEffortPost(url) {
+        // Old quiz did this with fetch(..., {method:'POST'}).catch(()=>{})
+        // Keep it silent & non-blocking.
+        try {
+            fetch(url, { method: 'POST', cache: 'no-store' }).catch(() => {});
+        } catch (_) {}
+    }
+
     /* --------------------------------------------------------
-       LOCAL SCORE STORAGE (unchanged)
+       LOCAL SCORE STORAGE
     -------------------------------------------------------- */
     function loadSavedScores() {
         try {
@@ -60,6 +78,14 @@
         }
     }
 
+    function addLocalScore(payload) {
+        const scores = loadSavedScores();
+        const safe = Object.assign({ time: Date.now() }, payload || {});
+        scores.unshift(safe);
+        saveScores(scores.slice(0, 12));
+        renderRecentScores(scores);
+    }
+
     function renderRecentScores(list) {
         const container = document.querySelector('[data-quiz-recent-scores]');
         if (!container) return;
@@ -77,7 +103,7 @@
             li.className = 'quiz-recent-item';
             li.innerHTML = `
                 <span class="quiz-recent-name">${entry.name || 'Anonymous'}</span>
-                <span class="quiz-recent-pack">${entry.setId || 'Pack'}</span>
+                <span class="quiz-recent-pack">${entry.setId || entry.set || 'Pack'}</span>
                 <span class="quiz-recent-score">${entry.score || 0} pts</span>
             `;
             container.appendChild(li);
@@ -144,10 +170,11 @@
         return (Array.isArray(list) ? list : [])
             .map((q, index) => {
                 if (!q) return null;
-                const options = Array.isArray(q.options)
-                    ? q.options.filter(Boolean)
-                    : [];
+
+                const options = Array.isArray(q.options) ? q.options.filter(Boolean) : [];
                 let correctIndex = 0;
+
+                // Old quiz uses q.answer 1-based
                 if (typeof q.answer === 'number') correctIndex = q.answer - 1;
                 else if (typeof q.correctIndex === 'number') correctIndex = q.correctIndex;
                 else if (typeof q.correct === 'number') correctIndex = q.correct - 1;
@@ -171,6 +198,7 @@
         const data = await res.json();
         const sets = (data.sets || []).map(normaliseRemoteSet).filter(Boolean);
         if (!sets.length) throw new Error('No quiz sets available');
+
         cachedSets = sets;
         lastLoadContext = { source: 'remote', status: 'ready', error: null, fallback: false };
         return sets;
@@ -182,10 +210,47 @@
         const data = await res.json();
         const questions = normaliseRemoteQuestions(data.questions || [], setId);
         if (!questions.length) throw new Error('No questions found for this pack');
+
         questionCache.set(String(setId), questions);
         updateSetQuestionCount(setId, questions.length);
         lastLoadContext = { source: 'remote', status: 'ready', error: null, fallback: false };
         return questions;
+    }
+
+    /* --------------------------------------------------------
+       REMOTE SCORE SAVE (OLD GOOGLE SITES RULE)
+    -------------------------------------------------------- */
+    async function saveScoreRemote(payload) {
+        // Old quiz POSTs JSON as text/plain
+        const body = JSON.stringify({
+            action: 'saveScore',
+            set: payload.set || payload.setId || payload.packId || payload.pack || '',
+            name: payload.name || 'Anonymous',
+            score: Number(payload.score || 0),
+            total: Number(payload.total || payload.questionCount || 0),
+            duration: Number(payload.duration || payload.timeTaken || 0),
+            percent: Number(payload.percent || 0)
+        });
+
+        const res = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body
+        });
+
+        // Apps Script sometimes returns text; handle both.
+        const text = await res.text();
+        const json = safeJsonParse(text, null);
+
+        if (!res.ok) {
+            throw new Error(`Remote save failed (${res.status})`);
+        }
+
+        if (json && json.success === false) {
+            throw new Error(json.error || 'Remote save rejected');
+        }
+
+        return json || { success: true };
     }
 
     /* --------------------------------------------------------
@@ -243,9 +308,7 @@
 
     function updateSetQuestionCount(setId, count) {
         const target = cachedSets.find(p => String(p.id) === String(setId));
-        if (target) {
-            target.questionCount = count;
-        }
+        if (target) target.questionCount = count;
         renderStats(cachedSets);
     }
 
@@ -260,7 +323,12 @@
             return;
         }
 
+        // Old behaviour: track visitor (silent)
+        bestEffortPost(`${API_URL}?action=trackVisitor`);
+
         setPackStatus('loading', 'Loading quiz packs…');
+        lastLoadContext = { source: 'remote', status: 'loading', error: null, fallback: false };
+
         try {
             await fetchRemoteSets();
         } catch (err) {
@@ -286,6 +354,8 @@
         }
 
         setPackStatus('loading', 'Loading questions…');
+        lastLoadContext = { source: 'remote', status: 'loading', error: null, fallback: false };
+
         let questions = [];
 
         try {
@@ -293,24 +363,28 @@
         } catch (err) {
             console.warn('[Quiz] Remote question fetch failed', err);
             lastLoadContext = { source: 'local', status: 'ready', error: err.message || 'Remote fetch failed', fallback: true };
+
             const localPacks = normaliseLocalPacks(await fetchLocalData());
             const localPack = localPacks.find(p => String(p.id) === String(setId));
-            questions = (localPack && Array.isArray(localPack.questions)) ? localPack.questions.map((q, idx) => {
-                const options = Array.isArray(q.options) ? q.options : [];
-                let correct = 0;
-                if (typeof q.correctIndex === 'number') correct = q.correctIndex;
-                else if (typeof q.correctOption === 'number') correct = q.correctOption - 1;
 
-                return {
-                    id: q.id || q.questionId || q.qId || `${setId}-${idx + 1}`,
-                    question: q.question || q.text || '',
-                    options,
-                    correctIndex: clampIndex(correct, options.length),
-                    imageUrl: q.imageUrl || '',
-                    audioUrl: q.audioUrl || '',
-                    gameName: q.gameName || ''
-                };
-            }) : [];
+            questions = (localPack && Array.isArray(localPack.questions))
+                ? localPack.questions.map((q, idx) => {
+                    const options = Array.isArray(q.options) ? q.options : [];
+                    let correct = 0;
+                    if (typeof q.correctIndex === 'number') correct = q.correctIndex;
+                    else if (typeof q.correctOption === 'number') correct = q.correctOption - 1;
+
+                    return {
+                        id: q.id || q.questionId || q.qId || `${setId}-${idx + 1}`,
+                        question: q.question || q.text || '',
+                        options,
+                        correctIndex: clampIndex(correct, options.length),
+                        imageUrl: q.imageUrl || '',
+                        audioUrl: q.audioUrl || '',
+                        gameName: q.gameName || ''
+                    };
+                })
+                : [];
         }
 
         questionCache.set(String(setId), questions);
@@ -320,35 +394,60 @@
         if (typeof cb === 'function') cb(questions);
     };
 
-    window.saveQuizScore = function saveQuizScore(payload, cb) {
-        const scores = loadSavedScores();
-        const safe = Object.assign({ time: Date.now() }, payload || {});
+    window.saveQuizScore = async function saveQuizScore(payload, cb) {
+        // payload expected from quiz-engine:
+        // { setId, name, score, total, duration, percent, ... }
+        const safePayload = Object.assign({}, payload || {});
+        const setId = safePayload.setId || safePayload.set;
+        safePayload.setId = setId;
 
-        scores.unshift(safe);
-        saveScores(scores.slice(0, 12));
-        renderRecentScores(scores);
+        // Always keep a local record (recent runs) for UX/testing
+        addLocalScore(safePayload);
 
-        if (typeof cb === 'function') cb(true);
+        // Try remote save (old Google Sites behaviour)
+        let remoteOk = false;
+        try {
+            await saveScoreRemote({
+                set: safePayload.setId,
+                name: safePayload.name,
+                score: safePayload.score,
+                total: safePayload.total,
+                duration: safePayload.duration,
+                percent: safePayload.percent
+            });
+            remoteOk = true;
+        } catch (err) {
+            console.warn('[Quiz] Remote save failed, local fallback used', err);
+            remoteOk = false;
+        }
+
+        if (typeof cb === 'function') cb(remoteOk);
+        return remoteOk;
     };
 
     window.trackQuizEvent = function trackQuizEvent(name, data) {
         if (name === 'quiz_start') {
             document.body.dataset.quizActive = 'true';
+
+            // Old behaviour: track game start (silent)
+            bestEffortPost(`${API_URL}?action=trackGameStart`);
         }
+
         if (name === 'quiz_finished') {
             document.body.dataset.quizActive = 'false';
         }
+
         console.info('[Quiz]', name, data || {});
     };
 
     /* --------------------------------------------------------
-       BADGES + INIT
+       INIT
     -------------------------------------------------------- */
     function initQuizBadges() {
         const savedScores = loadSavedScores();
         renderRecentScores(savedScores);
 
-        loadQuizSets(() => {
+        window.loadQuizSets(() => {
             renderPackStatus(cachedSets);
         });
     }
