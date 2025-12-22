@@ -403,9 +403,11 @@ li {
     position: relative;
     z-index: 4;
     display: flex;
+    flex-direction: column;
     width: 100%;
     justify-content: flex-start;
     align-items: center;
+    gap: 8px;
     justify-self: stretch;
     pointer-events: auto;
 }
@@ -522,6 +524,14 @@ li {
 }
 
 .ccg-nav--more-open .ccg-nav__more-menu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.ccg-nav__more[data-open="true"] .ccg-nav__more-menu,
+.ccg-nav__more:focus-within .ccg-nav__more-menu,
+.ccg-nav__more:hover .ccg-nav__more-menu {
     opacity: 1;
     pointer-events: auto;
     transform: translateY(0);
