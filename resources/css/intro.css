@@ -204,6 +204,28 @@ body.intro-body {
     z-index: 8;
 }
 
+@media (max-width: 720px) {
+    .intro-c64-screen {
+        width: min(760px, 95vw);
+        padding: 1.8rem 2.2rem;
+        font-size: 1.05rem;
+    }
+}
+
+@media (max-width: 540px) {
+    .intro-c64-screen {
+        width: min(700px, 96vw);
+        padding: 1.4rem 1.5rem;
+        font-size: 0.94rem;
+        letter-spacing: 0.045em;
+    }
+
+    .intro-c64-line {
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+}
+
 .intro-c64-screen--visible {
     opacity: 1;
     visibility: visible;

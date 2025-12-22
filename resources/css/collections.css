@@ -17,6 +17,10 @@
     border-radius: 22px;
     overflow: hidden;
     isolation: isolate;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(34px, 4vw, 50px) clamp(22px, 3vw + 10px, 52px);
 
     background:
         radial-gradient(
@@ -70,7 +74,14 @@
 .ccg-page--collections-index .ccg-hero-inner--collections {
     position: relative;
     z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    max-width: 820px;
+    margin: 0 auto;
     padding: 60px 54px 56px;
+    text-align: center;
 }
 
 .ccg-page--collections-index .ccg-hero-actions {
