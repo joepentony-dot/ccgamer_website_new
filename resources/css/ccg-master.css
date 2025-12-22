@@ -29,6 +29,7 @@
 
     /* HEADER CONTRACT */
     --ccg-header-padding-y: 14px;
+    --ccg-header-padding-x: clamp(12px, 4vw, 18px);
     --ccg-header-offset: clamp(108px, 6vw + 88px, 168px);
 
     --ccg-nav-pill-pad-y: 8px;
@@ -186,7 +187,7 @@ li {
 @media (max-width: 640px) {
     .ccg-main {
         width: 100%;
-        padding: calc(var(--ccg-page-entry-pad) + 4px) 16px 40px;
+        padding: calc(var(--ccg-page-entry-pad) + 10px) 16px 42px;
         text-align: center;
     }
 
