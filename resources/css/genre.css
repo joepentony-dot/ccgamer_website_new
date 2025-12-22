@@ -120,13 +120,13 @@
 .ccg-genre-hero__inner {
     position: relative;
     z-index: 2;
-    padding: 60px 54px 56px;
+    padding: 44px 38px 40px;
 }
 
 /* Mobile discipline */
 @media (max-width: 768px) {
     .ccg-genre-hero__inner {
-        padding: 42px 20px 38px;
+        padding: 32px 18px 28px;
     }
 }
 
