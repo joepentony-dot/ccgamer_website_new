@@ -16,6 +16,14 @@ const COARSE_POINTER = window.matchMedia?.("(pointer: coarse)");
 document.addEventListener("DOMContentLoaded", () => initHomeDynamic());
 
 async function initHomeDynamic() {
+    if (shouldUseMobileLite()) {
+        applyMobileLiteMode();
+        syncModeLabel();
+        initModeObserver();
+        calmHeroCards();
+        return;
+    }
+
     const skipAnimations = shouldSkipHomeAnimations();
 
     await loadGamesForHome();
@@ -45,6 +53,25 @@ function shouldSkipHomeAnimations() {
         lowMemory ||
         lowCore
     );
+}
+
+function shouldUseMobileLite() {
+    return Boolean(MOBILE_MEDIA?.matches || COARSE_POINTER?.matches);
+}
+
+function applyMobileLiteMode() {
+    document.body.classList.add("ccg-mobile-lite");
+
+    const randomButtons = document.querySelectorAll("[data-ccg-random-game]");
+    randomButtons.forEach(btn => {
+        const mobileLabel = btn.dataset.mobileLabel || "Open quick library";
+        btn.textContent = mobileLabel;
+        btn.classList.add("is-disabled");
+        btn.setAttribute("disabled", "true");
+        btn.onclick = () => {
+            window.location.href = "games/index.html";
+        };
+    });
 }
 
 /* ============================================================
@@ -222,13 +249,18 @@ function buildMeta(game) {
 ============================================================ */
 
 function wireRandomGameButton() {
-    const btn = document.querySelector("[data-ccg-random-game]");
-    if (!btn) return;
+    const buttons = Array.from(document.querySelectorAll("[data-ccg-random-game]"));
+    if (!buttons.length) return;
 
-    btn.onclick = () => {
+    const launchRandom = () => {
+        if (!CCG_HOME_ALL_GAMES.length) return;
         const g = CCG_HOME_ALL_GAMES[Math.floor(Math.random() * CCG_HOME_ALL_GAMES.length)];
         if (g?.id) window.location.href = `games/game.html?id=${g.id}`;
     };
+
+    buttons.forEach(btn => {
+        btn.onclick = launchRandom;
+    });
 }
 
 function syncModeLabel() {

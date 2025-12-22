@@ -125,6 +125,10 @@
     color: var(--ccg-text-soft);
     letter-spacing: 0.08em;
     max-width: 760px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #d5e4ff;
+    text-shadow: 0 0 14px rgba(var(--accent-rgb),0.4);
 }
 
 .home-section--essentials {
@@ -139,15 +143,15 @@
 
 .home-essentials-card {
     position: relative;
-    padding: 18px 18px 20px;
+    padding: 20px 20px 22px;
     border-radius: 18px;
-    background: radial-gradient(circle at 14% 12%, rgba(var(--accent-rgb),0.22), transparent 42%),
-                radial-gradient(circle at 80% 8%, rgba(255,255,255,0.12), transparent 40%),
-                linear-gradient(135deg, rgba(0,0,0,0.9), rgba(0,0,0,0.72));
+    background: radial-gradient(circle at 14% 12%, rgba(var(--accent-rgb),0.3), transparent 44%),
+                radial-gradient(circle at 82% 8%, rgba(255,255,255,0.12), transparent 42%),
+                linear-gradient(155deg, rgba(11,18,38,0.92), rgba(5,9,24,0.8));
     border: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 0 18px 44px rgba(0,0,0,0.75), 0 0 18px rgba(var(--accent-rgb),0.24);
+    box-shadow: 0 18px 44px rgba(0,0,0,0.75), 0 0 26px rgba(var(--accent-rgb),0.26);
     display: grid;
-    gap: 10px;
+    gap: 12px;
     overflow: hidden;
 }
 
@@ -160,6 +164,27 @@
     pointer-events: none;
 }
 
+.home-essentials-card::after {
+    content: "";
+    position: absolute;
+    inset: 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: linear-gradient(120deg, rgba(120,183,255,0.14), rgba(255,255,255,0));
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.home-essentials__halo {
+    position: absolute;
+    inset: -30% -20% auto auto;
+    width: 240px;
+    height: 240px;
+    background: radial-gradient(circle, rgba(120,183,255,0.24), transparent 60%);
+    filter: blur(6px);
+    opacity: 0.7;
+}
+
 .home-essentials__eyebrow {
     letter-spacing: 0.18em;
     text-transform: uppercase;
@@ -168,13 +193,15 @@
 }
 
 .home-essentials__title {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
 .home-essentials__copy {
-    color: var(--ccg-text-soft);
+    color: #e1ecff;
     line-height: 1.6;
+    text-shadow: 0 0 12px rgba(0,0,0,0.4);
 }
 
 .home-essentials__chips {
@@ -187,9 +214,10 @@
     padding: 6px 10px;
     border-radius: 999px;
     background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.18);
     letter-spacing: 0.08em;
     font-size: 0.8rem;
+    box-shadow: inset 0 0 8px rgba(var(--accent-rgb),0.35);
 }
 
 .home-essentials__list {
@@ -209,6 +237,11 @@
 .home-essentials__actions .ccg-btn {
     flex: 1;
     justify-content: center;
+}
+
+.home-essentials__actions .ccg-btn.is-disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
 }
 
 /* ============================================================
@@ -238,6 +271,38 @@
     background: radial-gradient(circle at var(--glow-x,50%) var(--glow-y,50%), rgba(var(--accent-rgb),0.28), transparent 48%);
     opacity: 0.5;
     transition: opacity 200ms ease;
+}
+
+/* ============================================================
+   MOBILE + LITE EXPERIENCE
+============================================================ */
+
+.ccg-body.ccg-mobile-lite .home-essentials-card,
+.ccg-body.ccg-mobile-lite .home-highlight-card,
+.ccg-body.ccg-mobile-lite .home-link-tile {
+    box-shadow: 0 12px 28px rgba(0,0,0,0.6);
+    backdrop-filter: blur(3px);
+}
+
+.ccg-body.ccg-mobile-lite .home-essentials__actions .ccg-btn.is-disabled {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.1);
+    color: var(--ccg-text-soft);
+}
+
+@media (max-width: 760px) {
+    .home-section__subtitle {
+        text-align: center;
+        letter-spacing: 0.14em;
+    }
+
+    .home-essentials-card {
+        padding: 18px;
+    }
+
+    .home-essentials__actions {
+        width: 100%;
+    }
 }
 
 .home-curated-card:hover::before,
