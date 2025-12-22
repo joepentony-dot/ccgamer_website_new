@@ -235,7 +235,6 @@ li {
 
     width: 100%;
     max-width: 100vw;
-    margin-inline: auto;
     padding: var(--ccg-header-padding-y) clamp(10px, 2vw, 18px);
 
     display: flex;
@@ -786,15 +785,10 @@ li {
 @media (max-width: 640px) {
     .ccg-header {
         overflow: clip;
-        margin-inline: auto;
-        width: 100%;
-        max-width: 100%;
-        padding-inline: clamp(14px, 5vw, 18px);
     }
 
     .ccg-header-inner {
-        max-width: min(100%, calc(100vw - 32px));
-        padding-inline: clamp(10px, 4vw, 16px);
+        padding-inline: 0;
     }
 
     .ccg-brand {
