@@ -253,6 +253,29 @@ body[data-mode="amiga"] .home-hero .ccg-hero-image {
     }
 }
 
+@media (max-width: 640px) {
+    .ccg-hero,
+    .games-hero,
+    .game-hero,
+    .ccg-genre-hero {
+        will-change: auto;
+    }
+
+    .ccg-page--home .ccg-hero__backdrop img,
+    .games-hero img,
+    .game-hero__bg img,
+    .ccg-genre-hero__img {
+        animation: none;
+    }
+
+    .ccg-page--home .ccg-hero::before,
+    .games-hero::before,
+    .game-hero::before,
+    .ccg-genre-hero::before {
+        animation: none;
+    }
+}
+
 /* ------------------------------------------------------------
    VERY SMALL PHONES
 ------------------------------------------------------------ */
