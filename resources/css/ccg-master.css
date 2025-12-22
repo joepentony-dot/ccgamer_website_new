@@ -201,15 +201,14 @@ li {
     margin: 0 auto;
 
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-areas:
-        "brand actions"
-        "nav nav";
-    align-items: start;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: "brand nav actions";
+    align-items: center;
     row-gap: 12px;
 
-    gap: 18px;
+    gap: clamp(14px, 1.8vw, 22px);
     overflow: visible;
+    min-width: 0;
 }
 
 
@@ -328,9 +327,9 @@ li {
     z-index: 4;
     display: flex;
     width: 100%;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    justify-self: center;
+    justify-self: stretch;
     pointer-events: auto;
 }
 
@@ -603,25 +602,29 @@ li {
     align-items: center;
     justify-content: flex-end;
     gap: 14px;
-    flex-wrap: wrap;
-    row-gap: 10px;
+    flex-wrap: nowrap;
+    row-gap: 0;
     min-width: 0;
 }
 
 @media (max-width: 1180px) {
-    .ccg-header { 
+    .ccg-header {
         padding: 12px 0 10px;
     }
 
     .ccg-header-inner {
-        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-columns: auto minmax(0, 1fr);
         grid-template-areas:
             "brand actions"
             "nav nav";
+        align-items: center;
     }
 
     .ccg-header-actions {
         gap: 12px;
+        flex-wrap: wrap;
+        row-gap: 8px;
+        justify-content: flex-end;
     }
 
     .ccg-nav__list--secondary {
@@ -641,7 +644,7 @@ li {
             "brand toggle"
             "nav nav"
             "actions actions";
-        align-items: start;
+        align-items: center;
     }
 
     .ccg-brand {
@@ -696,7 +699,7 @@ li {
 
     .ccg-header-actions {
         width: 100%;
-        justify-content: flex-start;
+        justify-content: center;
         flex-wrap: wrap;
         gap: 10px;
     }
@@ -726,7 +729,7 @@ li {
     }
 
     .ccg-header-actions {
-        justify-content: flex-start;
+        justify-content: space-between;
         gap: 10px;
     }
 
