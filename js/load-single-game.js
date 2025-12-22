@@ -385,17 +385,13 @@ function initRelatedCarousel() {
 
     const scrollAmount = () => viewport.clientWidth * 0.9;
 
-    prevBtn.addEventListener("click", () => {
-        viewport.scrollBy({
-            left: -scrollAmount(),
+    const scrollBy = delta => {
+        track.scrollBy({
+            left: delta,
             behavior: "smooth"
         });
-    });
+    };
 
-    nextBtn.addEventListener("click", () => {
-        viewport.scrollBy({
-            left: scrollAmount(),
-            behavior: "smooth"
-        });
-    });
+    prevBtn.addEventListener("click", () => scrollBy(-scrollAmount()));
+    nextBtn.addEventListener("click", () => scrollBy(scrollAmount()));
 }
