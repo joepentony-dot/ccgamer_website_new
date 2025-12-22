@@ -1,4 +1,8 @@
+
 (function() {
+    const SCRIPT_URL =
+        'https://script.google.com/macros/s/AKfycbwhkSGA6HcSvCljqBA91JmQVsVVUPU5LCEO1HlifB_Cjwc0DTFCK3m6hG5ZFDSgVHw9/exec';
+
     const form = document.querySelector('[data-contact-form]');
     if (!form) return;
 
@@ -7,6 +11,7 @@
     const counterEl = form.querySelector('[data-char-counter]');
     const messageInput = form.querySelector('#contact-message');
     const maxChars = Number(counterEl?.dataset.max || messageInput?.maxLength || 800);
+    const submitBtn = form.querySelector('button[type="submit"]');
 
     if (counterEl) {
         counterEl.setAttribute('role', 'status');
@@ -113,6 +118,48 @@
         }
     }, true);
 
+    const sendForm = async () => {
+        const formData = new FormData();
+        formData.append('action', 'sendEmail');
+        formData.append('name', form.name.value.trim());
+        formData.append('email', form.email.value.trim());
+        formData.append('subject', form.subject?.value.trim() || 'General message');
+        formData.append('topics', form.subject?.value.trim() || 'General');
+        formData.append('message', form.message.value.trim());
+
+        try {
+            submitBtn?.setAttribute('disabled', 'true');
+            if (submitBtn) submitBtn.textContent = 'Sending...';
+            setStatus('success', 'Sending your message...');
+
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (response.ok && (data.success || data.result === 'success')) {
+                setStatus('success', 'Message sent! I will reply to your email as soon as possible.');
+                form.reset();
+                clearValidation();
+                updateCounter();
+                return;
+            }
+
+            const errorMessage = data.error || 'There was a problem sending your message. Please try again later.';
+            throw new Error(errorMessage);
+        } catch (error) {
+            const fallbackError = error instanceof Error ? error.message : 'Unexpected error occurred.';
+            setStatus('error', `Could not send: ${fallbackError}`);
+        } finally {
+            if (submitBtn) {
+                submitBtn.removeAttribute('disabled');
+                submitBtn.textContent = 'Send transmission';
+            }
+        }
+    };
+
     form.addEventListener('submit', (event) => {
         event.preventDefault();
         const inputs = Array.from(form.querySelectorAll('input, textarea'));
@@ -124,10 +171,7 @@
             return;
         }
 
-        setStatus('success', 'Message staged! I will reply to your email as soon as possible.');
-        form.reset();
-        clearValidation();
-        updateCounter();
+        sendForm();
     });
 
     updateCounter();
