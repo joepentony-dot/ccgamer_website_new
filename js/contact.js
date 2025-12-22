@@ -12,64 +12,82 @@
 (function () {
     "use strict";
 
+    // 🔧 EXISTING, WORKING GOOGLE APPS SCRIPT ENDPOINT
     const SCRIPT_URL =
         "https://script.google.com/macros/s/AKfycbwhkSGA6HcSvCljqBA91JmQVsVVUPU5LCEO1HlifB_Cjwc0DTFCK3m6hG5ZFDSgVHw9/exec";
 
+    // --------------------------------------------------------
+    // ELEMENT LOOKUPS
+    // --------------------------------------------------------
     const form = document.querySelector("[data-contact-form]");
     if (!form) return;
 
     const statusBox = document.querySelector("[data-contact-status]");
-    const statusText = statusBox?.querySelector(".contact-status__text") || null;
+    const statusText = statusBox
+        ? statusBox.querySelector(".contact-status__text")
+        : null;
+
     const submitBtn = form.querySelector('button[type="submit"]');
 
     const messageInput = form.querySelector("#contact-message");
     const counterEl = form.querySelector("[data-char-counter]");
     const maxChars = counterEl ? Number(counterEl.dataset.max || 0) : 0;
 
-    /* --------------------------------------------------------
-       STATUS HELPERS
-    -------------------------------------------------------- */
+    // --------------------------------------------------------
+    // STATUS UI
+    // --------------------------------------------------------
     function setStatus(state, message) {
         if (!statusBox || !statusText) return;
-
         statusBox.dataset.state = state;
         statusText.textContent = message;
     }
 
-    /* --------------------------------------------------------
-       CHARACTER COUNTER
-    -------------------------------------------------------- */
+    // --------------------------------------------------------
+    // CHARACTER COUNTER
+    // --------------------------------------------------------
     if (messageInput && counterEl && maxChars > 0) {
         const updateCounter = () => {
             const len = messageInput.value.length;
             counterEl.textContent = `${len} / ${maxChars}`;
         };
+
         messageInput.addEventListener("input", updateCounter);
         updateCounter();
     }
 
-    /* --------------------------------------------------------
-       FORM SUBMIT
-    -------------------------------------------------------- */
+    // --------------------------------------------------------
+    // FORM SUBMIT HANDLER
+    // --------------------------------------------------------
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
         if (!submitBtn) return;
 
         // Basic validation
-        if (!form.name.value.trim() || !form.email.value.trim() || !form.message.value.trim()) {
-            setStatus("error", "Missing required fields. Please check and try again.");
+        if (
+            !form.name.value.trim() ||
+            !form.email.value.trim() ||
+            !form.message.value.trim()
+        ) {
+            setStatus(
+                "error",
+                "Missing required fields. Please check and try again."
+            );
             return;
         }
 
         if (form.message.value.trim().length < 10) {
-            setStatus("error", "Message too short. Please add more detail.");
+            setStatus(
+                "error",
+                "Message too short. Please add more detail."
+            );
             return;
         }
 
         submitBtn.disabled = true;
         setStatus("sending", "Transmitting signal…");
 
+        // Payload (mirrors old Google Sites logic)
         const payload = {
             action: "sendEmail",
             name: form.name.value.trim(),
@@ -78,7 +96,7 @@
             message: form.message.value.trim()
         };
 
-        // Build FormData EXACTLY like old Google Sites form
+        // Build FormData EXACTLY as Apps Script expects
         const formData = new FormData();
         formData.append("action", payload.action);
         formData.append("name", payload.name);
@@ -86,8 +104,7 @@
         formData.append("topics", payload.topics);
         formData.append("message", payload.message);
 
-        // Some Apps Script implementations expect a JSON "contents" payload.
-        // Including it avoids backend errors like "Cannot read properties of undefined (reading 'contents')".
+        // Compatibility field for Apps Script implementations
         formData.append("contents", JSON.stringify(payload));
 
         try {
@@ -102,11 +119,16 @@
             try {
                 data = JSON.parse(text);
             } catch {
-                data = { success: true }; // Apps Script sometimes returns plain text
+                // Some Apps Script deployments return plain text
+                data = { success: true };
             }
 
             if (data.success || data.result === "success") {
-                setStatus("success", "Message received. I’ll be in touch soon.");
+                setStatus(
+                    "success",
+                    "Message received. I’ll be in touch soon."
+                );
+
                 form.reset();
 
                 if (counterEl && maxChars > 0) {
@@ -120,8 +142,11 @@
                 throw new Error(data.error || "Message delivery failed.");
             }
         } catch (err) {
-            console.error("[Contact]", err);
-            setStatus("error", `Transmission failed: ${err.message}`);
+            console.error("[CCG Contact]", err);
+            setStatus(
+                "error",
+                `Transmission failed: ${err.message}`
+            );
         } finally {
             submitBtn.disabled = false;
         }
