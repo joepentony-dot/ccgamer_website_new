@@ -12,6 +12,23 @@
    HERO — CURATED AUTHORITY
 ============================================================ */
 
+.ccg-page--collections-index .ccg-main {
+    padding-top: 0;
+}
+
+.ccg-page--collections-index .ccg-main > .ccg-section.ccg-collections-hero {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+
+.ccg-page--collections-index .ccg-collections-hero .ccg-hero {
+    margin-top: 0 !important;
+}
+
+.ccg-page--collections-index .ccg-collections-hero .ccg-hero-inner > :first-child {
+    margin-top: 0 !important;
+}
+
 .ccg-page--collections-index .ccg-hero--collections {
     position: relative;
     border-radius: 22px;

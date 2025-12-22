@@ -14,7 +14,21 @@
 
 .ccg-page--genres-index .ccg-main,
 .ccg-page--genre-single .ccg-main {
-    padding-top: 12px;
+    padding-top: 0;
+}
+
+/* Remove any inherited top padding/margins from the first hero block */
+.ccg-page--genres-index .ccg-main > .ccg-section.ccg-genres-hero {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+
+.ccg-page--genres-index .ccg-genres-hero .ccg-hero {
+    margin-top: 0 !important;
+}
+
+.ccg-page--genres-index .ccg-genres-hero .ccg-hero-inner > :first-child {
+    margin-top: 0 !important;
 }
 
 
