@@ -315,11 +315,14 @@ document.addEventListener("keydown", e => {
 function renderRelatedGames(game, allGames) {
 
     const section = document.querySelector(".game-section--related");
-    const container = document.getElementById("relatedGamesGrid");
-    if (!section || !container) return;
-    const titleEl = section.querySelector(".game-section__title");
+    const track = document.getElementById("relatedGamesTrack");
+    const titleEl = document.getElementById("relatedGamesTitle");
+    const kickerEl = document.getElementById("relatedGamesKicker");
+
+    if (!section || !track || !titleEl || !kickerEl) return;
 
     let related = [];
+    let sourceLabel = "Publisher";
 
     if (game.publisher) {
         related = allGames.filter(g =>
@@ -333,18 +336,20 @@ function renderRelatedGames(game, allGames) {
             g.developer === game.developer &&
             String(g.id) !== String(game.id)
         );
+        sourceLabel = "Developer";
     }
 
-    related = related.slice(0, 6);
+    related = related.slice(0, 10);
 
     if (!related.length) {
         section.hidden = true;
         return;
     }
 
-    titleEl.textContent = `Other Games by ${game.publisher || game.developer}`;
+    titleEl.textContent = `More From The Same ${sourceLabel}`;
+    kickerEl.textContent = `More from this ${sourceLabel.toLowerCase()}`;
 
-    container.innerHTML = related.map(g => {
+    track.innerHTML = related.map(g => {
         const thumb = resolveGameThumb(g.thumbnail || g.thumb || g.cover);
         return `
             <a href="game.html?id=${encodeURIComponent(g.id)}" class="ccg-game-card">
@@ -361,6 +366,7 @@ function renderRelatedGames(game, allGames) {
         `;
     }).join("");
 
+    section.hidden = false;
     initRelatedCarousel();
 }
 
