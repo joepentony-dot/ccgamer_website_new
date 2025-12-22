@@ -166,6 +166,8 @@
             delete moreWrap.dataset.open;
             moreButton.setAttribute("aria-expanded", "false");
             moreMenu.hidden = true;
+            moreMenu.style.display = "";
+            delete moreMenu.dataset.state;
         };
 
         const closeNav = () => {

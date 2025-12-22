@@ -523,6 +523,12 @@ li {
     z-index: 12;
 }
 
+.ccg-nav__more-menu[data-state="open"] {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
 .ccg-nav--more-open .ccg-nav__more-menu {
     opacity: 1;
     pointer-events: auto;
