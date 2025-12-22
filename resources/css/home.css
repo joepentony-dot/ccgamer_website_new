@@ -6,12 +6,12 @@
     --home-hero-art-c64: url("../images/hero/ccg-hero-c64.png");
     --home-hero-art-amiga: url("../images/hero/ccg-hero-amiga.png");
 
-    margin-top: clamp(12px, 3vw, 48px);
-    padding: 12px 0 14px;
+    margin-top: clamp(22px, 4vw, 60px);
+    padding: clamp(16px, 4vw, 28px) 0 clamp(16px, 4vw, 24px);
 }
 
 .ccg-main--home {
-    padding-top: 10px;
+    padding-top: clamp(24px, 6vw, 56px);
 }
 
 .home-highlights-grid {
@@ -409,13 +409,15 @@
 ============================================================ */
 
 .home-hero {
-    margin-top: clamp(12px, 3vw, 48px);
-    padding: 12px 0 14px;
+    margin-top: clamp(44px, 7vw, 104px);
+    padding: 18px 0 20px;
 }
 
 .home-hero__frame {
     position: relative;
     overflow: hidden;
+    width: min(1100px, 100%);
+    margin-inline: auto;
     border-radius: 26px;
     padding: clamp(24px, 4vw, 40px);
     background:
@@ -1394,8 +1396,8 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
 
 @media (max-width: 1024px) {
     .home-hero {
-        margin-top: clamp(10px, 2.5vw, 28px);
-        padding-top: 10px;
+        margin-top: clamp(48px, 8vw, 96px);
+        padding-top: 18px;
     }
 
     .home-hero__frame {
@@ -1419,12 +1421,12 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
 
 @media (max-width: 768px) {
     .home-hero {
-        margin-top: 8px;
-        padding-top: 8px;
+        margin-top: clamp(56px, 8vw + 10px, 108px);
+        padding-top: 20px;
     }
 
     .ccg-main--home {
-        padding-top: 6px;
+        padding-top: 18px;
     }
 
     .home-hero__mode-line {
@@ -1452,12 +1454,12 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
 
 @media (max-width: 540px) {
     .home-hero {
-        margin-top: 4px;
-        padding-top: 6px;
+        margin-top: clamp(64px, 10vw + 14px, 120px);
+        padding-top: 22px;
     }
 
     .ccg-main--home {
-        padding-top: 4px;
+        padding-top: 22px;
     }
 
     .home-hero__frame {
