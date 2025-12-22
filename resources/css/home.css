@@ -6,12 +6,12 @@
     --home-hero-art-c64: url("../images/hero/ccg-hero-c64.png");
     --home-hero-art-amiga: url("../images/hero/ccg-hero-amiga.png");
 
-    margin-top: clamp(12px, 3vw, 48px);
-    padding: 12px 0 14px;
+    margin-top: clamp(22px, 4vw, 60px);
+    padding: clamp(16px, 4vw, 28px) 0 clamp(16px, 4vw, 24px);
 }
 
 .ccg-main--home {
-    padding-top: 10px;
+    padding-top: clamp(24px, 6vw, 56px);
 }
 
 .home-highlights-grid {
