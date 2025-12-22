@@ -150,6 +150,46 @@ li {
     position: relative;
 }
 
+@media (max-width: 640px) {
+    .ccg-main {
+        width: 100%;
+        padding: calc(var(--ccg-page-entry-pad) + 4px) 16px 40px;
+        text-align: center;
+    }
+
+    .ccg-section,
+    .ccg-hero__inner,
+    .games-hero__inner,
+    .game-hero__inner,
+    .ccg-genre-hero__inner,
+    .ccg-hero-inner--collections {
+        margin-inline: auto;
+        text-align: center;
+    }
+
+    .ccg-hero-actions,
+    .ccg-header-actions,
+    .ccg-genre-meta {
+        justify-content: center;
+        text-align: center;
+        width: 100%;
+    }
+
+    .ccg-genre-meta__left,
+    .ccg-genre-meta__right {
+        justify-content: center;
+        text-align: center;
+    }
+
+    p,
+    .ccg-section__intro,
+    .ccg-hero__tagline,
+    .ccg-genre-hero__tagline {
+        word-break: break-word;
+        overflow-wrap: anywhere;
+    }
+}
+
 
 /* ============================================================
    HEADER — STRUCTURE (LOCKED, NO VISUAL CHANGE)
