@@ -45,6 +45,18 @@
     margin-top: 1rem;
 }
 
+.about-hero__actions .ccg-btn {
+    min-width: 190px;
+    padding: 14px 18px;
+    letter-spacing: 0.12em;
+    font-weight: 800;
+}
+
+.about-hero__actions .ccg-btn--ghost {
+    background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.05));
+    border-color: rgba(255,255,255,0.28);
+}
+
 .about-grid {
     display: grid;
     gap: 1rem;
@@ -90,6 +102,17 @@
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     align-items: start;
     gap: 1.25rem;
+}
+
+.about-quick-links .ccg-info-actions {
+    justify-content: flex-start;
+    gap: 0.65rem;
+}
+
+.about-quick-links .ccg-btn {
+    min-width: 140px;
+    text-align: center;
+    letter-spacing: 0.1em;
 }
 
 .about-figure {

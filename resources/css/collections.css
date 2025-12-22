@@ -17,6 +17,12 @@
     border-radius: 22px;
     overflow: hidden;
     isolation: isolate;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: clamp(54px, 3vw + 36px, 94px);
+    margin-bottom: 24px;
+    padding: clamp(20px, 2.6vw + 6px, 32px) clamp(16px, 2vw + 10px, 38px);
 
     background:
         radial-gradient(
@@ -70,7 +76,14 @@
 .ccg-page--collections-index .ccg-hero-inner--collections {
     position: relative;
     z-index: 2;
-    padding: 60px 54px 56px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    max-width: 840px;
+    margin: 0 auto;
+    padding: 34px 30px 30px;
+    text-align: center;
 }
 
 .ccg-page--collections-index .ccg-hero-actions {
@@ -88,7 +101,7 @@
 
 @media (max-width: 768px) {
     .ccg-page--collections-index .ccg-hero-inner--collections {
-        padding: 42px 20px 38px;
+        padding: 26px 16px 24px;
     }
 }
 
