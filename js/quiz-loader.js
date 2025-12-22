@@ -13,7 +13,7 @@
 (function () {
     'use strict';
 
-    const API_URL = 'https://script.google.com/macros/s/AKfycbwhkSGA6HcSvCljqBA91JmQVsVVUPU5LCEO1HlifB_Cjwc0DTFCK3m6hG5ZFDSgVHw9/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzLNCrU7aitYqr3eQ9S_vRKTea8Cpm2xfAcXRa-egi7pJX0ozMdqsJHfW77D2Tauojj/exec';
     const DATA_URL = './quiz-data.json';
     const SCORE_KEY = 'ccg_quiz_local_scores';
 
