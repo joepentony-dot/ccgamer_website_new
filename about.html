@@ -74,12 +74,26 @@
             </button>
 
             <nav class="ccg-nav" aria-label="Primary navigation" id="ccg-primary-nav">
-                <ul class="ccg-nav__list">
-                    <li><a href="home.html" class="ccg-nav__link">Home</a></li>
-                    <li><a href="games/index.html" class="ccg-nav__link">Browse Games</a></li>
-                    <li><a href="games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
-                    <li><a href="games/collections/index.html" class="ccg-nav__link">Collections</a></li>
-                    <li><a href="quiz/quiz.html" class="ccg-nav__link">Trivia &amp; Leaderboard</a></li>
+                <div class="ccg-nav__bar">
+                    <ul class="ccg-nav__list ccg-nav__list--primary" data-ccg-nav-primary>
+                        <li><a href="home.html" class="ccg-nav__link">Home</a></li>
+                        <li><a href="games/index.html" class="ccg-nav__link">Browse Games</a></li>
+                        <li><a href="games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
+                        <li><a href="games/collections/index.html" class="ccg-nav__link">Collections</a></li>
+                    </ul>
+                    <div class="ccg-nav__more">
+                        <button class="ccg-nav__more-toggle"
+                                type="button"
+                                aria-expanded="false"
+                                aria-controls="ccg-more-menu"
+                                data-ccg-more-toggle>
+                            More <span aria-hidden="true">▾</span>
+                        </button>
+                        <div class="ccg-nav__more-menu" id="ccg-more-menu" data-ccg-more-menu hidden></div>
+                    </div>
+                </div>
+                <ul class="ccg-nav__list ccg-nav__list--secondary" data-ccg-nav-secondary>
+                    <li><a href="quiz/quiz.html" class="ccg-nav__link">Quiz</a></li>
                     <li><a href="emulation.html" class="ccg-nav__link">Emulation</a></li>
                     <li><a href="about.html" class="ccg-nav__link ccg-nav__link--active">About</a></li>
                     <li><a href="contact.html" class="ccg-nav__link">Contact</a></li>
@@ -108,6 +122,24 @@
                     <a href="https://discord.gg/83Xw9ktAn4" aria-label="Discord"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
                 </div>
 
+            </div>
+        </div>
+
+        <div class="ccg-nav-drawer" data-ccg-nav-drawer aria-hidden="true">
+            <div class="ccg-nav-drawer__backdrop" data-ccg-drawer-close tabindex="-1"></div>
+            <div class="ccg-nav-drawer__panel" role="dialog" aria-modal="true" aria-label="Navigation menu">
+                <div class="ccg-nav-drawer__header">
+                    <span class="ccg-nav-drawer__title">Navigate</span>
+                    <button class="ccg-nav-drawer__close" type="button" aria-label="Close menu" data-ccg-drawer-close>
+                        <span aria-hidden="true">✕</span>
+                    </button>
+                </div>
+                <div class="ccg-nav-drawer__section" data-ccg-drawer-primary>
+                    <div class="ccg-nav-drawer__label">Primary</div>
+                </div>
+                <div class="ccg-nav-drawer__section" data-ccg-drawer-secondary>
+                    <div class="ccg-nav-drawer__label">Explore more</div>
+                </div>
             </div>
         </div>
 
