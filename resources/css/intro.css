@@ -183,7 +183,9 @@ body.intro-body {
     left: 50%;
     transform: translate(-50%, -50%);
     width: min(820px, 92vw);
+    max-width: calc(100vw - 2.4rem);
     padding: 2.2rem 3rem;
+    box-sizing: border-box;
     border-radius: 18px;
     background: radial-gradient(circle at top,
         rgba(40, 70, 150, 0.85),

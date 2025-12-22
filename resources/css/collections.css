@@ -209,29 +209,13 @@
 ============================================================ */
 
 .ccg-page--collections-index .ccg-section {
-    margin-top: 58px;
+    margin-top: 46px;
     position: relative;
 }
 
 /* Soft divider glow between hero and grid */
 .ccg-page--collections-index .ccg-section::before {
-    content: "";
-    position: absolute;
-    top: -26px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(820px, 90%);
-    height: 1px;
-
-    background:
-        linear-gradient(
-            to right,
-            transparent,
-            rgba(var(--accent-rgb),0.42),
-            transparent
-        );
-
-    opacity: 0.55;
+    content: none;
 }
 
 @media (max-width: 768px) {
