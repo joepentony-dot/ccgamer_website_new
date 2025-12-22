@@ -1,7 +1,8 @@
 /* ============================================================
-   QUIZ LOADER — COSMIC WOW EDITION
+   QUIZ LOADER — COSMIC WOW EDITION (REMOTE SHEET VERSION)
    ------------------------------------------------------------
-   • Loads packs + questions from quiz/quiz-data.json
+   • Loads packs + questions from Google Apps Script endpoint
+   • Falls back to local quiz/quiz-data.json if remote fails
    • Exposes global callbacks consumed by quiz-engine.js
    • Adds live pack/question counts and recent score recap
    • LocalStorage-backed score saver (client-side leaderboard)
@@ -10,16 +11,17 @@
 (function () {
     'use strict';
 
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwhkSGA6HcSvCljqBA91JmQVsVVUPU5LCEO1HlifB_Cjwc0DTFCK3m6hG5ZFDSgVHw9/exec';
     const DATA_URL = './quiz-data.json';
-    const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTEMPLATE/pub?output=csv';
     const SCORE_KEY = 'ccg_quiz_local_scores';
 
-    let cachedData = null;
-    let normalisedPacks = [];
-    let lastLoadContext = { source: 'local', status: 'idle', error: null, fallback: false };
+    let cachedSets = [];
+    let localData = null;
+    const questionCache = new Map();
+    let lastLoadContext = { source: 'remote', status: 'idle', error: null, fallback: false };
 
     /* --------------------------------------------------------
-       FETCH + NORMALISE
+       STATUS + HELPERS
     -------------------------------------------------------- */
     function setPackStatus(state, message) {
         const statusEl = document.querySelector('[data-quiz-pack-status]');
@@ -29,205 +31,14 @@
         if (message) statusEl.textContent = message;
     }
 
-    function parseCsvLine(line) {
-        const cells = [];
-        let current = '';
-        let inQuotes = false;
-
-        for (let i = 0; i < line.length; i++) {
-            const char = line[i];
-            if (char === '"') {
-                if (inQuotes && line[i + 1] === '"') {
-                    current += '"';
-                    i++;
-                } else {
-                    inQuotes = !inQuotes;
-                }
-            } else if (char === ',' && !inQuotes) {
-                cells.push(current.trim());
-                current = '';
-            } else {
-                current += char;
-            }
-        }
-        cells.push(current.trim());
-        return cells;
-    }
-
-    function parseCsv(text) {
-        const lines = (text || '')
-            .split(/\r?\n/)
-            .map(l => l.trim())
-            .filter(Boolean);
-
-        if (!lines.length) return [];
-
-        const headers = parseCsvLine(lines.shift());
-        return lines.map(line => {
-            const cells = parseCsvLine(line);
-            const obj = {};
-            headers.forEach((key, idx) => {
-                obj[key] = cells[idx] || '';
-            });
-            return obj;
-        });
-    }
-
-    function rowsToPacks(rows) {
-        const packsById = {};
-
-        rows.forEach((row, rowIndex) => {
-            if (!row) return;
-            const packId = row.packId || row.pack_id || row.id || row.pack || row.setId;
-            if (!packId) return;
-
-            const key = String(packId).trim();
-            const pack = packsById[key] || {
-                id: key,
-                name: (row.packName || row.pack_name || row.name || row.title || `Pack ${key}`).trim(),
-                description: (row.description || row.tagline || '').trim(),
-                difficulty: (row.difficulty || 'Normal').trim(),
-                questions: []
-            };
-
-            const qText = row.question || row.Question || row.q || row.prompt || '';
-            if (!qText) {
-                packsById[key] = pack;
-                return;
-            }
-
-            const optionFields = ['option1', 'option2', 'option3', 'option4', 'Option1', 'Option2', 'Option3', 'Option4'];
-            const options = optionFields
-                .map(key => row[key])
-                .map(opt => (typeof opt === 'string' ? opt.trim() : ''))
-                .filter(Boolean);
-
-            let correctIndex = parseInt(row.correctIndex || row.correctOption || row.correct || row.CorrectOption || row.answer, 10);
-            if (isNaN(correctIndex)) correctIndex = 0;
-
-            pack.questions.push({
-                id: row.qId || row.questionId || `${key}-${rowIndex + 1}`,
-                question: qText,
-                options,
-                correctIndex
-            });
-
-            packsById[key] = pack;
-        });
-
-        return { packs: Object.values(packsById).filter(p => p.questions.length) };
-    }
-
-    function tryParseJsonMaybe(text) {
-        try {
-            return JSON.parse(text);
-        } catch (err) {
-            return null;
-        }
-    }
-
-    async function tryFetchRemoteData() {
-        if (!GOOGLE_SHEET_URL) return null;
-
-        try {
-            const res = await fetch(GOOGLE_SHEET_URL, { cache: 'no-store' });
-            if (!res.ok) throw new Error(`Remote status ${res.status}`);
-
-            const contentType = res.headers.get('content-type') || '';
-            if (contentType.includes('application/json')) {
-                return await res.json();
-            }
-
-            const text = await res.text();
-            const maybeJson = tryParseJsonMaybe(text);
-            if (maybeJson) return maybeJson;
-
-            const rows = parseCsv(text);
-            if (rows.length) {
-                return rowsToPacks(rows);
-            }
-
-            return null;
-        } catch (err) {
-            console.warn('[Quiz] Remote sheet fetch failed', err);
-            return { error: err };
-        }
-    }
-
-    async function fetchQuizData() {
-        if (cachedData) return cachedData;
-
-        setPackStatus('loading', 'Loading quiz packs…');
-        let data = null;
-        let remoteError = null;
-
-        const remoteResult = await tryFetchRemoteData();
-        if (remoteResult && remoteResult.packs && remoteResult.packs.length) {
-            data = remoteResult;
-            lastLoadContext = { source: 'remote', status: 'ready', error: null, fallback: false };
-        } else if (remoteResult && remoteResult.error) {
-            remoteError = remoteResult.error;
-            lastLoadContext = {
-                source: 'remote',
-                status: 'error',
-                error: remoteError.message || 'Remote fetch failed',
-                fallback: true
-            };
-        }
-
-        if (!data) {
-            try {
-                const res = await fetch(DATA_URL, { cache: 'no-store' });
-                data = await res.json();
-                lastLoadContext = {
-                    source: 'local',
-                    status: 'ready',
-                    error: remoteError ? (remoteError.message || 'Remote fetch failed') : null,
-                    fallback: !!remoteError
-                };
-            } catch (err) {
-                console.error('[Quiz] Unable to load quiz-data.json', err);
-                data = { packs: [] };
-                lastLoadContext = {
-                    source: 'local',
-                    status: 'error',
-                    error: err.message || 'Local load failed',
-                    fallback: true
-                };
-            }
-        }
-
-        cachedData = data;
-
-        normalisedPacks = normalisePacks(cachedData);
-        return cachedData;
-    }
-
-    function normalisePacks(data) {
-        const rawPacks = (data && (data.packs || data.sets)) || [];
-
-        return rawPacks
-            .map(pack => {
-                if (!pack) return null;
-                const id = pack.id || pack.slug || pack.name;
-                if (!id) return null;
-
-                const questions = Array.isArray(pack.questions) ? pack.questions.slice() : [];
-
-                return {
-                    id: String(id),
-                    name: pack.name || pack.title || 'Quiz Pack',
-                    difficulty: pack.difficulty || 'Normal',
-                    description: pack.description || pack.tagline || '',
-                    questions
-                };
-            })
-            .filter(Boolean)
-            .filter(p => p.questions.length > 0);
+    function clampIndex(idx, length) {
+        if (!Number.isFinite(idx)) return 0;
+        if (length <= 0) return 0;
+        return Math.min(Math.max(idx, 0), length - 1);
     }
 
     /* --------------------------------------------------------
-       SCORE STORAGE (LOCAL)
+       LOCAL SCORE STORAGE (unchanged)
     -------------------------------------------------------- */
     function loadSavedScores() {
         try {
@@ -274,36 +85,237 @@
     }
 
     /* --------------------------------------------------------
+       LOCAL FALLBACK DATA
+    -------------------------------------------------------- */
+    async function fetchLocalData() {
+        if (localData) return localData;
+        try {
+            const res = await fetch(DATA_URL, { cache: 'no-store' });
+            localData = await res.json();
+        } catch (err) {
+            console.warn('[Quiz] Unable to load quiz-data.json', err);
+            localData = { packs: [] };
+        }
+        return localData;
+    }
+
+    function normaliseLocalPacks(data) {
+        const rawPacks = (data && (data.packs || data.sets)) || [];
+
+        return rawPacks
+            .map(pack => {
+                if (!pack) return null;
+                const id = pack.id || pack.slug || pack.name;
+                if (!id) return null;
+
+                const questions = Array.isArray(pack.questions) ? pack.questions.slice() : [];
+
+                return {
+                    id: String(id),
+                    name: pack.name || pack.title || 'Quiz Pack',
+                    difficulty: pack.difficulty || 'Normal',
+                    description: pack.description || pack.tagline || '',
+                    questionCount: questions.length,
+                    questions
+                };
+            })
+            .filter(Boolean)
+            .filter(p => p.questions.length > 0);
+    }
+
+    /* --------------------------------------------------------
+       REMOTE DATA HELPERS
+    -------------------------------------------------------- */
+    function normaliseRemoteSet(raw) {
+        if (!raw) return null;
+        const id = raw.id || raw.setId || raw.slug;
+        if (!id) return null;
+
+        return {
+            id: String(id),
+            name: raw.name || raw.title || 'Quiz Pack',
+            difficulty: raw.difficulty || 'Normal',
+            description: raw.description || raw.tagline || '',
+            questionCount: raw.questionCount || raw.totalQuestions || null
+        };
+    }
+
+    function normaliseRemoteQuestions(list, setId) {
+        return (Array.isArray(list) ? list : [])
+            .map((q, index) => {
+                if (!q) return null;
+                const options = Array.isArray(q.options)
+                    ? q.options.filter(Boolean)
+                    : [];
+                let correctIndex = 0;
+                if (typeof q.answer === 'number') correctIndex = q.answer - 1;
+                else if (typeof q.correctIndex === 'number') correctIndex = q.correctIndex;
+                else if (typeof q.correct === 'number') correctIndex = q.correct - 1;
+
+                return {
+                    id: q.id || q.qId || q.questionId || `${setId}-${index + 1}`,
+                    question: q.question || q.text || q.prompt || '',
+                    options,
+                    correctIndex: clampIndex(correctIndex, options.length),
+                    imageUrl: q.imageUrl || q.image || q.imageURL || '',
+                    audioUrl: q.audioUrl || q.audio || q.soundUrl || '',
+                    gameName: q.gameName || q.game || ''
+                };
+            })
+            .filter(q => q && q.question && q.options.length);
+    }
+
+    async function fetchRemoteSets() {
+        const res = await fetch(`${API_URL}?getQuizSets=true`, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`Remote status ${res.status}`);
+        const data = await res.json();
+        const sets = (data.sets || []).map(normaliseRemoteSet).filter(Boolean);
+        if (!sets.length) throw new Error('No quiz sets available');
+        cachedSets = sets;
+        lastLoadContext = { source: 'remote', status: 'ready', error: null, fallback: false };
+        return sets;
+    }
+
+    async function fetchRemoteQuestions(setId) {
+        const res = await fetch(`${API_URL}?set=${encodeURIComponent(setId)}`, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`Question load failed (${res.status})`);
+        const data = await res.json();
+        const questions = normaliseRemoteQuestions(data.questions || [], setId);
+        if (!questions.length) throw new Error('No questions found for this pack');
+        questionCache.set(String(setId), questions);
+        updateSetQuestionCount(setId, questions.length);
+        lastLoadContext = { source: 'remote', status: 'ready', error: null, fallback: false };
+        return questions;
+    }
+
+    /* --------------------------------------------------------
+       UI HELPERS
+    -------------------------------------------------------- */
+    function renderStats(packs) {
+        const packEls = document.querySelectorAll('[data-quiz-pack-count]');
+        const questionEls = document.querySelectorAll('[data-quiz-question-count]');
+
+        const totalPacks = Array.isArray(packs) ? packs.length : 0;
+        const totalQuestions = (packs || []).reduce((sum, pack) => {
+            const count = typeof pack.questionCount === 'number' ? pack.questionCount : 0;
+            return sum + count;
+        }, 0);
+
+        packEls.forEach(el => el.textContent = totalPacks);
+        questionEls.forEach(el => el.textContent = totalQuestions || '—');
+    }
+
+    function renderPackStatus(packs) {
+        const totalPacks = Array.isArray(packs) ? packs.length : (packs && packs.packs ? packs.packs.length : 0);
+
+        if (lastLoadContext.status === 'loading') {
+            setPackStatus('loading', 'Loading quiz packs…');
+            return;
+        }
+
+        if (lastLoadContext.status === 'error') {
+            const sourceLabel = lastLoadContext.source === 'remote' ? 'remote sheet' : 'local backup';
+            const fallbackMsg = lastLoadContext.fallback
+                ? `Using ${sourceLabel} fallback — ${lastLoadContext.error || 'Load issue'}`
+                : `Load issue: ${lastLoadContext.error || 'Unknown error'}`;
+            setPackStatus('error', fallbackMsg);
+            return;
+        }
+
+        const sourceLabel = lastLoadContext.source === 'remote' ? 'Google Sheet' : 'local backup';
+        const fallbackNote = lastLoadContext.fallback ? ' (fallback active)' : '';
+        setPackStatus('ready', `${totalPacks} packs ready from ${sourceLabel}${fallbackNote}`);
+    }
+
+    function updateActivePackLabel(pack) {
+        const labels = document.querySelectorAll('[data-quiz-active-pack]');
+        labels.forEach(label => {
+            if (!pack) {
+                label.textContent = 'Pick a pack to begin';
+                return;
+            }
+            const countText = typeof pack.questionCount === 'number' && pack.questionCount > 0
+                ? `${pack.questionCount} Qs`
+                : 'Live pack';
+            label.textContent = `${pack.name} (${countText})`;
+        });
+    }
+
+    function updateSetQuestionCount(setId, count) {
+        const target = cachedSets.find(p => String(p.id) === String(setId));
+        if (target) {
+            target.questionCount = count;
+        }
+        renderStats(cachedSets);
+    }
+
+    /* --------------------------------------------------------
        PUBLIC APIS FOR quiz-engine.js
     -------------------------------------------------------- */
     window.loadQuizSets = async function loadQuizSets(cb) {
+        if (cachedSets.length) {
+            renderStats(cachedSets);
+            renderPackStatus(cachedSets);
+            if (typeof cb === 'function') cb(cachedSets);
+            return;
+        }
+
         setPackStatus('loading', 'Loading quiz packs…');
-        await fetchQuizData();
+        try {
+            await fetchRemoteSets();
+        } catch (err) {
+            console.warn('[Quiz] Remote set fetch failed', err);
+            lastLoadContext = { source: 'local', status: 'ready', error: err.message || 'Remote fetch failed', fallback: true };
+            const local = normaliseLocalPacks(await fetchLocalData());
+            cachedSets = local;
+        }
 
-        const summary = normalisedPacks.map(pack => ({
-            id: pack.id,
-            name: pack.name,
-            title: pack.name,
-            questionCount: pack.questions.length,
-            difficulty: pack.difficulty,
-            description: pack.description
-        }));
-
-        renderStats(summary);
-        renderPackStatus(summary);
-
-        if (typeof cb === 'function') cb(summary);
+        renderStats(cachedSets);
+        renderPackStatus(cachedSets);
+        if (typeof cb === 'function') cb(cachedSets);
     };
 
     window.loadQuizQuestions = async function loadQuizQuestions(setId, cb) {
-        await fetchQuizData();
-        const pack = normalisedPacks.find(p => String(p.id) === String(setId));
-        const questions = pack ? pack.questions.slice() : [];
+        if (!setId) return cb && cb([]);
 
-        updateActivePackLabel(pack);
-        if (!pack) {
-            setPackStatus('error', 'Selected pack is unavailable. Please try another.');
+        const cached = questionCache.get(String(setId));
+        if (cached) {
+            updateActivePackLabel(cachedSets.find(p => String(p.id) === String(setId)) || null);
+            if (typeof cb === 'function') cb(cached);
+            return;
         }
+
+        setPackStatus('loading', 'Loading questions…');
+        let questions = [];
+
+        try {
+            questions = await fetchRemoteQuestions(setId);
+        } catch (err) {
+            console.warn('[Quiz] Remote question fetch failed', err);
+            lastLoadContext = { source: 'local', status: 'ready', error: err.message || 'Remote fetch failed', fallback: true };
+            const localPacks = normaliseLocalPacks(await fetchLocalData());
+            const localPack = localPacks.find(p => String(p.id) === String(setId));
+            questions = (localPack && Array.isArray(localPack.questions)) ? localPack.questions.map((q, idx) => {
+                const options = Array.isArray(q.options) ? q.options : [];
+                let correct = 0;
+                if (typeof q.correctIndex === 'number') correct = q.correctIndex;
+                else if (typeof q.correctOption === 'number') correct = q.correctOption - 1;
+
+                return {
+                    id: q.id || q.questionId || q.qId || `${setId}-${idx + 1}`,
+                    question: q.question || q.text || '',
+                    options,
+                    correctIndex: clampIndex(correct, options.length),
+                    imageUrl: q.imageUrl || '',
+                    audioUrl: q.audioUrl || '',
+                    gameName: q.gameName || ''
+                };
+            }) : [];
+        }
+
+        questionCache.set(String(setId), questions);
+        updateSetQuestionCount(setId, questions.length);
+        updateActivePackLabel(cachedSets.find(p => String(p.id) === String(setId)) || null);
 
         if (typeof cb === 'function') cb(questions);
     };
@@ -330,62 +342,14 @@
     };
 
     /* --------------------------------------------------------
-       UI HELPERS
+       BADGES + INIT
     -------------------------------------------------------- */
-    function renderStats(packs) {
-        const packEls = document.querySelectorAll('[data-quiz-pack-count]');
-        const questionEls = document.querySelectorAll('[data-quiz-question-count]');
-
-        const totalPacks = Array.isArray(packs) ? packs.length : 0;
-        const totalQuestions = (packs || []).reduce((sum, pack) => {
-            const count = pack.questionCount || (pack.questions ? pack.questions.length : 0) || 0;
-            return sum + count;
-        }, 0);
-
-        packEls.forEach(el => el.textContent = totalPacks);
-        questionEls.forEach(el => el.textContent = totalQuestions);
-    }
-
-    function renderPackStatus(packs) {
-        const totalPacks = Array.isArray(packs) ? packs.length : (packs && packs.packs ? packs.packs.length : 0);
-
-        if (lastLoadContext.status === 'loading') {
-            setPackStatus('loading', 'Loading quiz packs…');
-            return;
-        }
-
-        if (lastLoadContext.status === 'error') {
-            const isRemoteError = lastLoadContext.source === 'remote';
-            const fallbackMsg = isRemoteError
-                ? 'Using local backup — live sheet unreachable.'
-                : `Load issue: ${lastLoadContext.error || 'Unknown error'}`;
-            setPackStatus('error', fallbackMsg);
-            return;
-        }
-
-        const sourceLabel = lastLoadContext.source === 'remote' ? 'Google Sheet' : 'local backup';
-        const fallbackNote = lastLoadContext.fallback ? ' (fallback active)' : '';
-        setPackStatus('ready', `${totalPacks} packs ready from ${sourceLabel}${fallbackNote}`);
-    }
-
-    function updateActivePackLabel(pack) {
-        const labels = document.querySelectorAll('[data-quiz-active-pack]');
-        labels.forEach(label => {
-            label.textContent = pack ? `${pack.name} (${pack.questions.length} Qs)` : 'Pick a pack to begin';
-        });
-    }
-
     function initQuizBadges() {
         const savedScores = loadSavedScores();
         renderRecentScores(savedScores);
 
-        fetchQuizData().then(() => {
-            const summary = normalisedPacks.map(pack => ({
-                questionCount: pack.questions.length,
-                name: pack.name
-            }));
-            renderStats(summary);
-            renderPackStatus(summary);
+        loadQuizSets(() => {
+            renderPackStatus(cachedSets);
         });
     }
 

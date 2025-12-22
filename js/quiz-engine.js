@@ -337,12 +337,19 @@
 
         correctIndex = clamp(correctIndex, 0, options.length ? options.length - 1 : 0);
 
+        const imageUrl = raw.imageUrl || raw.image || raw.imageURL || '';
+        const audioUrl = raw.audioUrl || raw.audio || raw.soundUrl || '';
+        const gameName = raw.gameName || raw.game || '';
+
         return {
             id: raw.id || raw.ID || raw.rowId || null,
             raw,
             text: questionText,
             options,
-            correctIndex
+            correctIndex,
+            imageUrl,
+            audioUrl,
+            gameName
         };
     }
 
@@ -438,6 +445,7 @@
     function showQuestion() {
         const qEl = qs("#quiz-question-text");
         const optionsContainer = qs("#quiz-options");
+        const mediaContainer = qs("#quiz-media");
 
         if (!qEl || !optionsContainer) return;
 
@@ -450,6 +458,28 @@
         clearAnswersFx();
 
         qEl.textContent = q.text || "Untitled question";
+
+        if (mediaContainer) {
+            mediaContainer.innerHTML = "";
+
+            if (q.imageUrl) {
+                const img = document.createElement("img");
+                img.src = q.imageUrl;
+                img.alt = q.gameName ? `Screenshot or clue for ${q.gameName}` : "Quiz image";
+                img.loading = "lazy";
+                img.onerror = () => img.remove();
+                mediaContainer.appendChild(img);
+            }
+
+            if (q.audioUrl) {
+                const audio = document.createElement("audio");
+                audio.src = q.audioUrl;
+                audio.controls = true;
+                audio.preload = "none";
+                audio.onerror = () => audio.remove();
+                mediaContainer.appendChild(audio);
+            }
+        }
 
         optionsContainer.innerHTML = "";
 
