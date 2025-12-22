@@ -28,6 +28,171 @@
     box-shadow: 0 18px 42px rgba(0,0,0,0.7), 0 0 18px rgba(var(--accent-rgb),0.28);
 }
 
+.home-featured-videos {
+    margin-top: 20px;
+    padding: 16px 18px;
+    border-radius: 14px;
+    background: linear-gradient(140deg, rgba(0,0,0,0.86), rgba(0,0,0,0.72));
+    box-shadow: 0 18px 42px rgba(0,0,0,0.72), inset 0 0 0 1px rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    display: grid;
+    gap: 14px;
+}
+
+.home-featured-videos__title {
+    margin: 0 0 6px;
+    font-size: 1.2rem;
+    letter-spacing: 0.08em;
+}
+
+.home-featured-videos__text {
+    margin: 0;
+    color: var(--ccg-text-soft);
+}
+
+.home-video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.home-video-card {
+    --home-video-accent: rgba(var(--accent-rgb, 108, 94, 181), 0.3);
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(0,0,0,0.88), rgba(0,0,0,0.72));
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 18px 42px rgba(0,0,0,0.7), 0 0 18px var(--home-video-accent);
+    display: grid;
+    gap: 0;
+}
+
+.home-video-card__media {
+    position: relative;
+    min-height: 0;
+    padding-top: 56.25%;
+    background: radial-gradient(circle at 22% 26%, var(--home-video-accent), transparent 52%);
+}
+
+.home-video-card__badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 6px 10px;
+    background: rgba(0,0,0,0.7);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 999px;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+}
+
+.home-video-card__thumb {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    filter: saturate(1.1);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: grid;
+    place-items: center;
+    isolation: isolate;
+}
+
+.home-video-card__thumb::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.7));
+    mix-blend-mode: multiply;
+    transition: opacity 160ms ease;
+    z-index: 0;
+}
+
+.home-video-card__play {
+    position: relative;
+    z-index: 1;
+    padding: 12px 18px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.32);
+    background: rgba(0,0,0,0.65);
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.08);
+    transition: transform 120ms ease, box-shadow 160ms ease;
+}
+
+.home-video-card__play:hover,
+.home-video-card__play:focus-visible {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.75), 0 0 0 1px rgba(255,255,255,0.2);
+}
+
+.home-video-card__play:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.home-video-card__iframe {
+    position: absolute;
+    inset: 0;
+    display: none;
+    background: #000;
+}
+
+.home-video-card__iframe iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.home-video-card.is-playing .home-video-card__thumb {
+    display: none;
+}
+
+.home-video-card.is-playing .home-video-card__iframe {
+    display: block;
+}
+
+.home-video-card .ccg-card__body {
+    display: grid;
+    gap: 6px;
+}
+
+.home-video-card__label {
+    margin: 0;
+    font-size: 0.9rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.65);
+}
+
+.home-video-card__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+
+.home-video-card__links a[aria-disabled="true"] {
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+.home-video-card--loading .home-video-card__media {
+    background: linear-gradient(120deg, rgba(255,255,255,0.05), rgba(255,255,255,0.12), rgba(255,255,255,0.05));
+    height: 180px;
+    padding: 0;
+    animation: pulse-loading 1.8s ease-in-out infinite;
+}
+
+@keyframes pulse-loading {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
 @keyframes neonSweep {
     to { transform: rotate(360deg); }
 }

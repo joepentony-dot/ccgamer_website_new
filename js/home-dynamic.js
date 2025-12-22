@@ -18,10 +18,6 @@ document.addEventListener("DOMContentLoaded", () => initHomeDynamic());
 async function initHomeDynamic() {
     if (shouldUseMobileLite()) {
         applyMobileLiteMode();
-        syncModeLabel();
-        initModeObserver();
-        calmHeroCards();
-        return;
     }
 
     const skipAnimations = shouldSkipHomeAnimations();
@@ -29,6 +25,7 @@ async function initHomeDynamic() {
     await loadGamesForHome();
     renderFeaturedHighlights();
     renderFeaturedSpotlight();
+    renderFeaturedVideos();
     wireRandomGameButton();
     syncModeLabel();
     initModeObserver();
@@ -97,24 +94,20 @@ function renderFeaturedHighlights() {
 
     grid.innerHTML = "";
 
-    CCG_HOME_ALL_GAMES
-        .slice()
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 3)
-        .forEach(game => {
-            const card = document.createElement("a");
-            card.className = "ccg-card home-feature-card";
-            card.href = `games/game.html?id=${encodeURIComponent(game.id)}`;
+    sampleGames(3).forEach(game => {
+        const card = document.createElement("a");
+        card.className = "ccg-card home-feature-card";
+        card.href = `games/game.html?id=${encodeURIComponent(game.id)}`;
 
-            card.innerHTML = `
-                <img src="${resolveThumb(game.thumbnail)}" alt="${game.title}">
-                <div class="ccg-card__body">
-                    <h3 class="ccg-card__title">${game.title}</h3>
-                    <p class="ccg-card__text">${buildMeta(game)}</p>
-                </div>
-            `;
-            grid.appendChild(card);
-        });
+        card.innerHTML = `
+            <img src="${resolveThumb(game.thumbnail)}" alt="${game.title}">
+            <div class="ccg-card__body">
+                <h3 class="ccg-card__title">${game.title}</h3>
+                <p class="ccg-card__text">${buildMeta(game)}</p>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
 }
 
 function renderFeaturedSpotlight() {
@@ -244,12 +237,104 @@ function buildMeta(game) {
     return [game.system, game.year, game.developer].filter(Boolean).join(" · ");
 }
 
+function sampleGames(count, predicate = () => true) {
+    const pool = CCG_HOME_ALL_GAMES.filter(predicate);
+    return pool
+        .slice()
+        .sort(() => 0.5 - Math.random())
+        .slice(0, count);
+}
+
+function pickVideoGame(system) {
+    const systemMatch = sampleGames(1, g => Boolean(g.videoid) && g.system?.toLowerCase() === system?.toLowerCase());
+    if (systemMatch.length) return systemMatch[0];
+
+    const anyVideo = sampleGames(1, g => Boolean(g.videoid));
+    return anyVideo[0] || null;
+}
+
+function renderFeaturedVideos() {
+    const grid = document.querySelector("[data-ccg-video-grid]");
+    if (!grid) return;
+
+    const lanes = [
+        { system: "C64", label: "Commodore 64" },
+        { system: "Amiga", label: "Commodore Amiga" }
+    ];
+
+    grid.innerHTML = "";
+
+    lanes.forEach(lane => {
+        const game = pickVideoGame(lane.system);
+        const card = buildVideoCard(game, lane.label);
+        grid.appendChild(card);
+    });
+}
+
+function buildVideoCard(game, systemLabel) {
+    const card = document.createElement("article");
+    card.className = "ccg-card home-video-card";
+
+    const hasVideo = Boolean(game?.videoid);
+    const videoId = game?.videoid || "";
+    const thumb = hasVideo
+        ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
+        : resolveThumb(game?.thumbnail);
+    const meta = game ? (buildMeta(game) || systemLabel) : `${systemLabel} feature`;
+    const title = game?.title || `${systemLabel} pick`;
+    const gameUrl = game?.id ? `games/game.html?id=${encodeURIComponent(game.id)}` : "#";
+    const ytUrl = hasVideo ? `https://www.youtube.com/watch?v=${videoId}` : "#";
+
+    card.innerHTML = `
+        <div class="home-video-card__media">
+            <span class="home-video-card__badge">${systemLabel}</span>
+            <div class="home-video-card__thumb" style="background-image: url('${thumb}')">
+                <button class="home-video-card__play" type="button" data-ccg-video-play ${hasVideo ? "" : "disabled"}>Play video</button>
+            </div>
+            <div class="home-video-card__iframe" data-ccg-video-iframe-wrap hidden>
+                <iframe
+                    data-ccg-video-iframe
+                    title="${title} gameplay video"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
+            </div>
+        </div>
+        <div class="ccg-card__body">
+            <p class="home-video-card__label">Randomised pick</p>
+            <h3 class="ccg-card__title">${title}</h3>
+            <p class="ccg-card__text">${meta}</p>
+            <div class="home-video-card__links">
+                <a href="${gameUrl}" class="ccg-link" ${game ? "" : "aria-disabled=\"true\""}>View game</a>
+                <a href="${ytUrl}" class="ccg-link" target="_blank" rel="noopener" ${hasVideo ? "" : "aria-disabled=\"true\""}>Open on YouTube</a>
+            </div>
+        </div>
+    `;
+
+    const playButton = card.querySelector('[data-ccg-video-play]');
+    const iframeWrap = card.querySelector('[data-ccg-video-iframe-wrap]');
+    const iframe = card.querySelector('[data-ccg-video-iframe]');
+
+    if (hasVideo && playButton && iframeWrap && iframe) {
+        playButton.onclick = () => {
+            if (!iframe.dataset.loaded) {
+                iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&autoplay=1`;
+                iframe.dataset.loaded = "true";
+            }
+            card.classList.add("is-playing");
+            iframeWrap.hidden = false;
+        };
+    }
+
+    return card;
+}
+
 /* ============================================================
    RANDOM GAME + MODE
 ============================================================ */
 
 function wireRandomGameButton() {
-    const buttons = Array.from(document.querySelectorAll("[data-ccg-random-game]"));
+    const buttons = Array.from(document.querySelectorAll("[data-ccg-random-game]"))
+        .filter(btn => !btn.classList.contains("is-disabled"));
     if (!buttons.length) return;
 
     const launchRandom = () => {
@@ -278,7 +363,7 @@ function initModeObserver() {
 ============================================================ */
 
 function initHeroCardFX() {
-    const cards = document.querySelectorAll('.home-hero-card, .home-highlight-card, .home-spotlight-card, .home-link-tile');
+    const cards = document.querySelectorAll('.home-hero-card, .home-highlight-card, .home-spotlight-card, .home-link-tile, .home-video-card');
     const hasFinePointer = window.matchMedia?.('(hover: hover) and (pointer: fine)')?.matches;
     if (!cards.length || !hasFinePointer) return;
 
@@ -351,7 +436,7 @@ function initHomeEnergy() {
 }
 
 function calmHeroCards() {
-    const cards = document.querySelectorAll('.home-hero-card, .home-highlight-card, .home-spotlight-card, .home-link-tile');
+    const cards = document.querySelectorAll('.home-hero-card, .home-highlight-card, .home-spotlight-card, .home-link-tile, .home-video-card');
     if (!cards.length) return;
 
     cards.forEach(card => {
