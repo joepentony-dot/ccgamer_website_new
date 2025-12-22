@@ -70,17 +70,25 @@
         submitBtn.disabled = true;
         setStatus("sending", "Transmitting signal…");
 
+        const payload = {
+            action: "sendEmail",
+            name: form.name.value.trim(),
+            email: form.email.value.trim(),
+            topics: form.subject?.value?.trim() || "Website Contact",
+            message: form.message.value.trim()
+        };
+
         // Build FormData EXACTLY like old Google Sites form
         const formData = new FormData();
-        formData.append("action", "sendEmail");
-        formData.append("name", form.name.value.trim());
-        formData.append("email", form.email.value.trim());
+        formData.append("action", payload.action);
+        formData.append("name", payload.name);
+        formData.append("email", payload.email);
+        formData.append("topics", payload.topics);
+        formData.append("message", payload.message);
 
-        // Map subject → topics (Apps Script expects topics)
-        const subject = form.subject?.value?.trim();
-        formData.append("topics", subject || "Website Contact");
-
-        formData.append("message", form.message.value.trim());
+        // Some Apps Script implementations expect a JSON "contents" payload.
+        // Including it avoids backend errors like "Cannot read properties of undefined (reading 'contents')".
+        formData.append("contents", JSON.stringify(payload));
 
         try {
             const response = await fetch(SCRIPT_URL, {
