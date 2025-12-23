@@ -408,3 +408,17 @@ body.intro-body {
         padding-inline: clamp(1rem, 6vw, 2.5rem);
     }
 }
+
+/* ============================================================
+   MOBILE SAFETY — C64 BASIC TEXT SIZE ONLY
+   • No alignment changes
+   • No layout changes
+   • Font-size reduction only
+============================================================ */
+
+@media (max-width: 480px) {
+    .intro-c64-screen {
+        font-size: 0.75rem;
+    }
+}
+
