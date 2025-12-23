@@ -67,6 +67,7 @@ body {
     color: var(--ccg-text-light);
     font-family: var(--ccg-font-body);
     overflow-x: hidden;
+    overflow-y: auto;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
 
@@ -207,6 +208,19 @@ li {
     padding: calc(var(--ccg-page-entry-pad) + 8px) clamp(1rem, 2vw, 1.5rem) 48px;
     position: relative;
     overflow-x: hidden;
+}
+
+@media (max-width: 900px) {
+    .ccg-page,
+    .ccg-main,
+    .ccg-header {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .ccg-main {
+        padding-inline: 18px;
+    }
 }
 
 @media (max-width: 640px) {
