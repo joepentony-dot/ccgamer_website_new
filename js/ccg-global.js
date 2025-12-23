@@ -176,6 +176,11 @@
             delete moreMenu.dataset.state;
         };
 
+        const syncHeaderHeight = () => {
+            const headerRect = header.getBoundingClientRect();
+            nav.style.setProperty("--ccg-header-height", `${headerRect.height}px`);
+        };
+
         const closeNav = () => {
             header.classList.remove("ccg-header--nav-open");
             toggle.setAttribute("aria-expanded", "false");
@@ -200,8 +205,7 @@
             header.classList.toggle("ccg-header--nav-open", isOpen);
             toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
 
-            const headerRect = header.getBoundingClientRect();
-            nav.style.setProperty("--ccg-header-height", `${headerRect.height}px`);
+            syncHeaderHeight();
             mobilePanel.inert = !isOpen;
         });
 
@@ -236,6 +240,10 @@
                 closeMore();
             }
         });
+
+        window.addEventListener("resize", syncHeaderHeight);
+        window.addEventListener("orientationchange", syncHeaderHeight);
+        syncHeaderHeight();
 
         markActiveLinks(header);
     }
