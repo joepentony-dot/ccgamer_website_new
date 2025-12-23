@@ -393,3 +393,30 @@
             0 0 12px rgba(var(--accent-rgb), 0.24);
     }
 }
+
+/* ------------------------------------------------------------
+   MOBILE — REMOVE BUTTON ANIMATIONS COMPLETELY
+------------------------------------------------------------ */
+
+.ccg-is-mobile .ccg-btn,
+.ccg-is-mobile button.ccg-btn {
+    transition: none !important;
+    transform: none !important;
+    filter: none !important;
+    animation: none !important;
+}
+
+.ccg-is-mobile .ccg-btn::after {
+    animation: none !important;
+    opacity: 0 !important;
+}
+
+.ccg-is-mobile .ccg-btn:hover,
+.ccg-is-mobile .ccg-btn:active,
+.ccg-is-mobile .ccg-btn:focus-visible {
+    transform: none !important;
+    filter: none !important;
+    box-shadow:
+        0 0 0 1px rgba(var(--accent-rgb), 0.35),
+        0 0 8px rgba(var(--accent-rgb), 0.22);
+}
