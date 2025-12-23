@@ -11,7 +11,7 @@
 (function () {
     'use strict';
 
-    const DATA_URL = '/quiz/quiz-data.json';
+    const DATA_URL = './quiz-data.json';
     const SCORE_KEY = 'ccg_quiz_local_scores';
 
     let cachedSets = [];
@@ -216,19 +216,7 @@
 
         const local = normaliseLocalPacks(await fetchLocalData());
         cachedSets = local;
-
-        if (!cachedSets.length) {
-            lastLoadContext = {
-                source: 'local',
-                status: 'error',
-                error: 'quiz-data.json is empty. Build it from the spreadsheet via scripts/build_quiz_data.py.',
-                fallback: false
-            };
-            renderStats(cachedSets);
-            renderPackStatus(cachedSets);
-            if (typeof cb === 'function') cb(cachedSets);
-            return;
-        }
+        lastLoadContext = { source: 'local', status: 'ready', error: null, fallback: false };
 
         lastLoadContext = { source: 'local', status: 'ready', error: null, fallback: false };
 
@@ -274,17 +262,7 @@
             })
             : [];
 
-        if (!questions.length) {
-            lastLoadContext = {
-                source: 'local',
-                status: 'error',
-                error: 'No questions found for this set. Regenerate quiz-data.json from the Google Sheet.',
-                fallback: false
-            };
-            renderPackStatus(localPacks);
-            if (typeof cb === 'function') cb(questions);
-            return;
-        }
+        lastLoadContext = { source: 'local', status: 'ready', error: null, fallback: false };
 
         lastLoadContext = { source: 'local', status: 'ready', error: null, fallback: false };
 
