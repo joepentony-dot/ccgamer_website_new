@@ -28,3 +28,15 @@ The script parses quiz sets (ID, name, optional icon, question count, and
 difficulty/description if present) and builds questions grouped by set ID.
 Each question is assigned a stable ID of `<setId>-<n>` with trimmed options and
 a zero-based `correctIndex` derived from the spreadsheet's answer index.
+
+### Quick checklist
+
+1. Run `python scripts/download_quiz_sheets.py` in a networked environment to
+   pull the latest "Sheet1" and "Quiz Sets" CSV exports into `data/`.
+2. Run `python scripts/build_quiz_data.py --data-dir data --output quiz/quiz-data.json`
+   to regenerate the bundled quiz payload consumed by `quiz-loader.js`.
+3. Copy the refreshed `quiz/quiz-data.json` alongside the deployed `/quiz/`
+   folder so the quiz page can load without hitting the old Apps Script URL.
+
+The leaderboard view remains separate from this data pipeline; it reads from
+local storage only and does not rely on the spreadsheet or API responses.

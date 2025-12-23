@@ -108,6 +108,9 @@
         if (localData) return localData;
         try {
             const res = await fetch(DATA_URL, { cache: 'no-store' });
+            if (!res.ok) {
+                throw new Error(`HTTP ${res.status}`);
+            }
             localData = await res.json();
         } catch (err) {
             console.warn('[Quiz] Unable to load quiz-data.json', err);
@@ -215,6 +218,8 @@
         cachedSets = local;
         lastLoadContext = { source: 'local', status: 'ready', error: null, fallback: false };
 
+        lastLoadContext = { source: 'local', status: 'ready', error: null, fallback: false };
+
         renderStats(cachedSets);
         renderPackStatus(cachedSets);
         if (typeof cb === 'function') cb(cachedSets);
@@ -256,6 +261,8 @@
                 };
             })
             : [];
+
+        lastLoadContext = { source: 'local', status: 'ready', error: null, fallback: false };
 
         lastLoadContext = { source: 'local', status: 'ready', error: null, fallback: false };
 
