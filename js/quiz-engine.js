@@ -327,6 +327,7 @@
 
         if (isCorrect) {
             quizState.score = nextScore;
+            e.currentTarget.classList.add("quiz-answer--correct");
             sidBarsPulseCorrect();
             playCorrectSfx();
         } else {
@@ -346,7 +347,7 @@
             scoreAfter: nextScore
         });
 
-        setTimeout(nextQuestionOrFinish, 1100);
+        setTimeout(nextQuestionOrFinish, 900);
     }
 
     function nextQuestionOrFinish() {
