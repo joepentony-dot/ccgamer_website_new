@@ -37,6 +37,7 @@
         questions: [],
         currentIndex: 0,
         score: 0,
+        history: [],
         sfxEnabled: true,
         acceptingAnswers: false,
         currentQuestion: null,
@@ -66,6 +67,16 @@
 
     function clamp(val, min, max) {
         return Math.min(max, Math.max(min, val));
+    }
+
+    function escapeHtml(str) {
+        return String(str || "").replace(/[&<>"']/g, (m) => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            "\"": "&quot;",
+            "'": "&#39;"
+        }[m]));
     }
 
     // --------------------------------------------------
@@ -226,6 +237,7 @@
         quizState.questions = Array.isArray(questions) ? questions : [];
         quizState.currentIndex = 0;
         quizState.score = 0;
+        quizState.history = [];
         showQuizPanel();
         showQuestion();
     }
@@ -303,14 +315,16 @@
 
         const chosen = Number(e.currentTarget.dataset.index);
         const correct = quizState.currentQuestion.correctIndex;
+        const isCorrect = chosen === correct;
+        const nextScore = quizState.score + (isCorrect ? 1 : 0);
 
         qsa(".quiz-answer-btn").forEach((btn, idx) => {
             btn.disabled = true;
             if (idx === correct) btn.classList.add("quiz-answer--highlight-correct");
         });
 
-        if (chosen === correct) {
-            quizState.score++;
+        if (isCorrect) {
+            quizState.score = nextScore;
             e.currentTarget.classList.add("quiz-answer--correct");
             sidBarsPulseCorrect();
             playCorrectSfx();
@@ -319,6 +333,17 @@
             sidBarsPulseWrong();
             playWrongSfx();
         }
+
+        quizState.history.push({
+            questionNumber: quizState.currentIndex + 1,
+            question: quizState.currentQuestion.question || quizState.currentQuestion.text || "",
+            chosenIndex: chosen,
+            chosenOption: quizState.currentQuestion.options?.[chosen] || "",
+            correctIndex: correct,
+            correctOption: quizState.currentQuestion.options?.[correct] || "",
+            isCorrect,
+            scoreAfter: nextScore
+        });
 
         setTimeout(nextQuestionOrFinish, 900);
     }
@@ -339,6 +364,7 @@
         animateScoreTo(quizState.score);
         playScoreRevealSfx();
         setSidBarsIntensity(0.6);
+        renderScoreSummary();
 
         saveBestScore(quizState.currentSetId, quizState.score);
 
@@ -346,6 +372,62 @@
             setId: quizState.currentSetId,
             score: quizState.score,
             total: quizState.questions.length
+        });
+    }
+
+    function renderScoreSummary() {
+        const pack = quizState.sets.find((p) => String(p.id) === String(quizState.currentSetId));
+        const packName = pack ? pack.name : (quizState.currentSetId ? `Pack ${quizState.currentSetId}` : "—");
+
+        const packSummaryEl = qs("#quiz-pack-summary");
+        if (packSummaryEl) packSummaryEl.textContent = packName;
+
+        const total = quizState.questions.length;
+        const correct = quizState.history.filter((h) => h.isCorrect).length;
+        const accuracy = total ? Math.round((correct / total) * 100) : 0;
+        const durationSec = Math.max(0, Math.round((performance.now() - quizState._startTime) / 1000));
+
+        const summaryBindings = [
+            ["[data-quiz-summary-total]", total],
+            ["[data-quiz-summary-correct]", correct],
+            ["[data-quiz-summary-accuracy]", `${accuracy}%`],
+            ["[data-quiz-summary-duration]", `${durationSec}s`]
+        ];
+        summaryBindings.forEach(([sel, value]) => {
+            const el = qs(sel);
+            if (el) el.textContent = value;
+        });
+
+        const list = qs("#quiz-history-list");
+        if (!list) return;
+
+        list.innerHTML = "";
+        if (!quizState.history.length) {
+            const empty = document.createElement("li");
+            empty.className = "quiz-history-empty";
+            empty.textContent = "Play a round to see question-by-question progress.";
+            list.appendChild(empty);
+            return;
+        }
+
+        quizState.history.forEach((entry) => {
+            const li = document.createElement("li");
+            li.className = "quiz-history-item";
+            if (entry.isCorrect) li.classList.add("quiz-history-item--correct");
+            else li.classList.add("quiz-history-item--wrong");
+
+            li.innerHTML = `
+                <div class="quiz-history-top">
+                    <span class="quiz-history-question">Q${entry.questionNumber}: ${escapeHtml(entry.question)}</span>
+                    <span class="quiz-history-running">${entry.scoreAfter} pts</span>
+                </div>
+                <div class="quiz-history-answers">
+                    <span class="quiz-history-choice">Your answer: ${escapeHtml(entry.chosenOption || '—')}</span>
+                    <span class="quiz-history-correct">Correct: ${escapeHtml(entry.correctOption || '—')}</span>
+                </div>
+            `;
+
+            list.appendChild(li);
         });
     }
 

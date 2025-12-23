@@ -106,16 +106,30 @@
     -------------------------------------------------------- */
     async function fetchLocalData() {
         if (localData) return localData;
-        try {
-            const res = await fetch(DATA_URL, { cache: 'no-store' });
-            if (!res.ok) {
-                throw new Error(`HTTP ${res.status}`);
+
+        const candidateUrls = [
+            DATA_URL,
+            '/quiz/quiz-data.json',
+            '/quiz-data.json'
+        ];
+
+        for (const url of candidateUrls) {
+            try {
+                const res = await fetch(url, { cache: 'no-store' });
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}`);
+                }
+                localData = await res.json();
+                lastLoadContext = { source: url, status: 'ready', error: null, fallback: url !== DATA_URL };
+                return localData;
+            } catch (err) {
+                console.warn('[Quiz] Unable to load quiz-data.json from', url, err);
+                lastLoadContext = { source: url, status: 'error', error: err && err.message, fallback: false };
             }
-            localData = await res.json();
-        } catch (err) {
-            console.warn('[Quiz] Unable to load quiz-data.json', err);
-            localData = { packs: [] };
         }
+
+        localData = { packs: [] };
+        lastLoadContext = { source: 'local', status: 'error', error: 'No quiz data found', fallback: true };
         return localData;
     }
 
@@ -219,11 +233,9 @@
 
         const local = normaliseLocalPacks(await fetchLocalData());
         cachedSets = local;
-        lastLoadContext = { source: 'local', status: 'ready', error: null, fallback: false };
 
-        lastLoadContext = { source: 'local', status: 'ready', error: null, fallback: false };
-
-        lastLoadContext = { source: 'local', status: 'ready', error: null, fallback: false };
+        // Preserve fallback context from fetchLocalData while ensuring status is ready
+        lastLoadContext = Object.assign({}, lastLoadContext, { status: 'ready' });
 
         renderStats(cachedSets);
         renderPackStatus(cachedSets);
@@ -241,7 +253,7 @@
         }
 
         setPackStatus('loading', 'Loading questions…');
-        lastLoadContext = { source: 'local', status: 'loading', error: null, fallback: false };
+        lastLoadContext = { source: 'local', status: 'loading', error: null, fallback: lastLoadContext.fallback };
 
         let questions = [];
 
@@ -267,11 +279,7 @@
             })
             : [];
 
-        lastLoadContext = { source: 'local', status: 'ready', error: null, fallback: false };
-
-        lastLoadContext = { source: 'local', status: 'ready', error: null, fallback: false };
-
-        lastLoadContext = { source: 'local', status: 'ready', error: null, fallback: false };
+        lastLoadContext = Object.assign({}, lastLoadContext, { status: 'ready' });
 
         questionCache.set(String(setId), questions);
         updateSetQuestionCount(setId, questions.length);
