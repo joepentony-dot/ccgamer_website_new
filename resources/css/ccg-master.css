@@ -643,6 +643,11 @@ li {
     justify-content: flex-start;
 }
 
+.ccg-nav__link--mobile {
+    width: 100%;
+    justify-content: flex-start;
+}
+
 .ccg-nav-toggle {
     grid-area: toggle;
     display: none;
