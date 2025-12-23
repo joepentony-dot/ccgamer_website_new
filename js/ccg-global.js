@@ -159,8 +159,6 @@
             moreButton.setAttribute("aria-expanded", "true");
             moreMenu.hidden = false;
             moreMenu.removeAttribute("hidden");
-            moreMenu.style.display = "grid";
-            moreMenu.dataset.state = "open";
         };
 
         const closeMore = () => {
