@@ -153,7 +153,11 @@
         nav.innerHTML = "";
         nav.append(bar, mobilePanel);
 
+        let isMoreOpen = false;
+
         const openMore = () => {
+            if (isMoreOpen) return;
+            isMoreOpen = true;
             nav.classList.add("ccg-nav--more-open");
             moreWrap.dataset.open = "true";
             moreButton.setAttribute("aria-expanded", "true");
@@ -162,6 +166,8 @@
         };
 
         const closeMore = () => {
+            if (!isMoreOpen) return;
+            isMoreOpen = false;
             nav.classList.remove("ccg-nav--more-open");
             delete moreWrap.dataset.open;
             moreButton.setAttribute("aria-expanded", "false");
@@ -179,7 +185,7 @@
         if (!moreWrap.hidden) {
             moreButton.addEventListener("click", event => {
                 event.stopPropagation();
-                const willOpen = moreMenu.hidden;
+                const willOpen = !isMoreOpen;
 
                 if (willOpen) {
                     openMore();
