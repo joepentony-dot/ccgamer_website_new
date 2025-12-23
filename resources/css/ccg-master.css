@@ -27,6 +27,9 @@
     --ccg-text-soft: #b5bbdf;
     --ccg-soft: rgba(255, 255, 255, 0.5);
 
+     /* HEADER HEIGHT — REQUIRED FOR MOBILE OFFSET CALCS */
+    --ccg-header-height: 108px;
+
     /* HEADER CONTRACT */
     --ccg-header-padding-y: 14px;
     --ccg-header-padding-x: clamp(12px, 4vw, 18px);
