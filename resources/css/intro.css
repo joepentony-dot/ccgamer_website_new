@@ -374,6 +374,28 @@ body.intro-body {
     .intro-speech-text {
         font-size: clamp(2.3rem, 6vw, 3rem);
         letter-spacing: 0.18em;
+        width: min(1000px, 94vw);
+    }
+}
+
+@media (max-width: 520px) {
+
+    .intro-speech-text {
+        font-size: clamp(1.8rem, 8vw, 2.4rem);
+        letter-spacing: 0.14em;
+        width: min(900px, 92vw);
+        padding-inline: clamp(1rem, 6vw, 2.5rem);
+    }
+}
+
+@media (max-width: 420px) {
+
+    .intro-speech-text {
+        font-size: clamp(1.6rem, 9vw, 2rem);
+        letter-spacing: 0.1em;
+        width: min(820px, 90vw);
+        padding-inline: clamp(0.9rem, 6vw, 2rem);
+        line-height: 1.2;
     }
 }
 
