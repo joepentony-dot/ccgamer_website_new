@@ -372,6 +372,8 @@
     z-index: 1;
     display: grid;
     gap: 10px;
+    grid-auto-rows: min-content;
+    align-content: start;
 }
 
 .ccg-page--genre-single .ccg-game-card__title,
@@ -388,9 +390,65 @@
     font-size: 0.9rem;
 }
 
-.ccg-page--genre-single .ccg-game-card .ccg-btn,
-.ccg-page--collection-single .ccg-game-card .ccg-btn {
-    justify-self: start;
+.ccg-page--genre-single .ccg-game-card__actions,
+.ccg-page--collection-single .ccg-game-card__actions {
+    display: flex;
+    justify-content: center;
+    margin-top: auto;
+}
+
+.ccg-page--genre-single .ccg-game-card__btn,
+.ccg-page--collection-single .ccg-game-card__btn {
+    width: 100%;
+    max-width: 220px;
+    padding: 12px 18px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 800;
+    background: linear-gradient(135deg, rgba(var(--accent-rgb),0.9), rgba(255,255,255,0.16));
+    border: 1px solid rgba(var(--accent-rgb),0.85);
+    color: #0b0d10;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.35);
+    box-shadow:
+        0 14px 32px rgba(0,0,0,0.86),
+        0 0 30px rgba(var(--accent-rgb),0.4),
+        inset 0 1px 0 rgba(255,255,255,0.25);
+    position: relative;
+    overflow: hidden;
+    transition: transform 220ms ease, box-shadow 220ms ease, letter-spacing 220ms ease;
+}
+
+.ccg-page--genre-single .ccg-game-card__btn::after,
+.ccg-page--collection-single .ccg-game-card__btn::after {
+    content: "";
+    position: absolute;
+    inset: -12% -8% -16% -18%;
+    background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.42), transparent 55%);
+    opacity: 0.7;
+    transform: translateX(-12%);
+    transition: transform 240ms ease, opacity 240ms ease;
+    pointer-events: none;
+}
+
+.ccg-page--genre-single .ccg-game-card__btn:hover,
+.ccg-page--genre-single .ccg-game-card__btn:focus-visible,
+.ccg-page--collection-single .ccg-game-card__btn:hover,
+.ccg-page--collection-single .ccg-game-card__btn:focus-visible {
+    transform: translateY(-2px);
+    letter-spacing: 0.16em;
+    box-shadow:
+        0 18px 40px rgba(0,0,0,0.9),
+        0 0 38px rgba(var(--accent-rgb),0.55),
+        inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+.ccg-page--genre-single .ccg-game-card__btn:hover::after,
+.ccg-page--genre-single .ccg-game-card__btn:focus-visible::after,
+.ccg-page--collection-single .ccg-game-card__btn:hover::after,
+.ccg-page--collection-single .ccg-game-card__btn:focus-visible::after {
+    opacity: 1;
+    transform: translateX(6%);
 }
 
 
