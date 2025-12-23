@@ -50,22 +50,13 @@ function getViewportWidth() {
 }
 
 function shouldSkipHomeAnimations() {
-    const lowMemory = typeof navigator.deviceMemory === "number" && navigator.deviceMemory <= 3;
-    const lowCore = typeof navigator.hardwareConcurrency === "number" && navigator.hardwareConcurrency <= 4;
-
-    // Extra safety: treat smaller viewports as mobile even if matchMedia is unreliable on a device.
-    const vw = getViewportWidth();
-    const smallViewport = typeof vw === "number" && vw <= 900;
-
     return Boolean(
-        PREFERS_REDUCED_MOTION?.matches ||
-        COARSE_POINTER?.matches ||
         MOBILE_MEDIA?.matches ||
-        smallViewport ||
-        lowMemory ||
-        lowCore
+        COARSE_POINTER?.matches ||
+        PREFERS_REDUCED_MOTION?.matches
     );
 }
+
 
 function shouldUseMobileLite() {
     const vw = getViewportWidth();
