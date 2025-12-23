@@ -17,17 +17,26 @@
     /* ======================================================
        ENV / MOBILE DETECTION
     ====================================================== */
-    const MQ_MOBILE = window.matchMedia?.("(max-width: 820px)");
-    const MQ_COARSE = window.matchMedia?.("(pointer: coarse)");
-    const MQ_REDUCED = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+    const MQ_MOBILE = typeof window.matchMedia === "function"
+        ? window.matchMedia("(max-width: 820px)")
+        : null;
+    const MQ_COARSE = typeof window.matchMedia === "function"
+        ? window.matchMedia("(pointer: coarse)")
+        : null;
+    const MQ_REDUCED = typeof window.matchMedia === "function"
+        ? window.matchMedia("(prefers-reduced-motion: reduce)")
+        : null;
 
     function isMobileLike() {
-        return Boolean(MQ_MOBILE?.matches || MQ_COARSE?.matches);
+        return Boolean((MQ_MOBILE && MQ_MOBILE.matches) || (MQ_COARSE && MQ_COARSE.matches));
     }
 
     function safeNowMobileClass() {
-        document.documentElement.classList.toggle("ccg-is-mobile", isMobileLike());
-        document.body?.classList?.toggle("ccg-is-mobile", isMobileLike());
+        const mobile = isMobileLike();
+        document.documentElement.classList.toggle("ccg-is-mobile", mobile);
+        if (document.body && document.body.classList) {
+            document.body.classList.toggle("ccg-is-mobile", mobile);
+        }
     }
 
     /* ======================================================
@@ -143,117 +152,133 @@
 
         const toggle = header.querySelector("[data-ccg-nav-toggle]");
         const nav = header.querySelector(".ccg-nav");
-        const mobileMatch = window.matchMedia("(max-width: 960px)");
+        const drawer = header.querySelector("[data-ccg-nav-drawer]");
+        const drawerPrimary = drawer ? drawer.querySelector("[data-ccg-drawer-primary]") : null;
+        const drawerSecondary = drawer ? drawer.querySelector("[data-ccg-drawer-secondary]") : null;
+        const drawerCloseEls = drawer ? drawer.querySelectorAll("[data-ccg-drawer-close]") : [];
+        const mobileMatch = typeof window.matchMedia === "function"
+            ? window.matchMedia("(max-width: 960px)")
+            : { matches: isMobileLike() };
 
-        if (!toggle || !nav) return;
+        const primaryList = nav ? nav.querySelector("[data-ccg-nav-primary]") : null;
+        const secondaryList = nav ? nav.querySelector("[data-ccg-nav-secondary]") : null;
+        const moreWrap = nav ? nav.querySelector(".ccg-nav__more") : null;
+        const moreMenu = nav ? nav.querySelector("[data-ccg-more-menu]") : null;
 
-        const primaryLabels = ["home", "browse games", "browse by genre", "collections"];
-        const collectedItems = Array.from(nav.querySelectorAll(".ccg-nav__list li"));
-        if (!collectedItems.length) return;
+        if (!toggle || !nav || !primaryList || !moreWrap || !moreMenu) return;
 
-        /* --------------------------------------------
-           Build a consistent shell from all nav items
-        -------------------------------------------- */
-        const bar = document.createElement("div");
-        bar.className = "ccg-nav__bar";
+        const cloneLinksInto = (sourceList, targetNode) => {
+            if (!sourceList || !targetNode) return;
+            targetNode.innerHTML = "";
+            sourceList.querySelectorAll("a").forEach(link => {
+                const clone = link.cloneNode(true);
+                clone.classList.add("ccg-nav__link--overflow");
+                clone.setAttribute("role", "menuitem");
+                targetNode.appendChild(clone);
+            });
+        };
 
-        const primaryList = document.createElement("ul");
-        primaryList.className = "ccg-nav__list ccg-nav__list--primary";
-        primaryList.dataset.ccgNavPrimary = "";
+        const buildDrawer = () => {
+            if (!drawer) return;
+            if (drawerPrimary) drawerPrimary.innerHTML = "<div class=\"ccg-nav-drawer__label\">Primary</div>";
+            if (drawerSecondary) drawerSecondary.innerHTML = "<div class=\"ccg-nav-drawer__label\">Explore more</div>";
 
-        const secondaryList = document.createElement("ul");
-        secondaryList.className = "ccg-nav__list ccg-nav__list--secondary";
-        secondaryList.dataset.ccgNavSecondary = "";
+            const appendSet = (sourceList, targetSection) => {
+                if (!sourceList || !targetSection) return;
+                sourceList.querySelectorAll("a").forEach(link => {
+                    const btn = link.cloneNode(true);
+                    btn.classList.add("ccg-nav__link--mobile");
+                    targetSection.appendChild(btn);
+                });
+            };
 
-        const mobileList = document.createElement("ul");
-        mobileList.className = "ccg-nav__list ccg-nav__list--mobile";
+            appendSet(primaryList, drawerPrimary);
+            appendSet(secondaryList, drawerSecondary);
+        };
 
-        const moreWrap = document.createElement("div");
-        moreWrap.className = "ccg-nav__more";
-
-        const moreButton = document.createElement("button");
-        moreButton.type = "button";
-        moreButton.className = "ccg-nav__more-toggle";
-        moreButton.setAttribute("aria-haspopup", "true");
-        moreButton.setAttribute("aria-expanded", "false");
-        moreButton.setAttribute("data-ccg-more-toggle", "");
-        moreButton.innerHTML = "More <span aria-hidden=\"true\">▼</span>";
-
-        const moreMenu = document.createElement("div");
-        moreMenu.className = "ccg-nav__more-menu";
-        moreMenu.setAttribute("role", "menu");
-        moreMenu.setAttribute("data-ccg-more-menu", "");
-
-        collectedItems.forEach(li => {
-            const link = li.querySelector("a");
-            if (!link) return;
-
-            const normalisedLabel = link.textContent.trim().toLowerCase();
-            const primaryClone = li.cloneNode(true);
-            const secondaryClone = li.cloneNode(true);
-            const mobileClone = li.cloneNode(true);
-
-            if (primaryLabels.includes(normalisedLabel)) {
-                primaryList.appendChild(primaryClone);
-            } else {
-                secondaryList.appendChild(secondaryClone);
-                const overflowLink = link.cloneNode(true);
-                overflowLink.classList.add("ccg-nav__link--overflow");
-                overflowLink.setAttribute("role", "menuitem");
-                moreMenu.appendChild(overflowLink);
-            }
-
-            mobileList.appendChild(mobileClone);
-        });
-
-        if (!moreMenu.childElementCount) {
-            moreWrap.hidden = true;
-        } else {
-            moreMenu.hidden = true;
-        }
-
-        moreWrap.append(moreButton, moreMenu);
-        bar.append(primaryList, secondaryList, moreWrap);
-
-        const mobilePanel = document.createElement("div");
-        mobilePanel.className = "ccg-nav__mobile";
-        mobilePanel.appendChild(mobileList);
-        mobilePanel.inert = true;
-
-        nav.innerHTML = "";
-        nav.append(bar, mobilePanel);
+        cloneLinksInto(secondaryList, moreMenu);
+        moreWrap.hidden = !moreMenu.childElementCount;
+        moreMenu.hidden = !moreMenu.childElementCount;
 
         let isMoreOpen = false;
+        let isNavOpen = false;
 
         const openMore = () => {
-            if (isMoreOpen) return;
+            if (isMoreOpen || !moreMenu) return;
             isMoreOpen = true;
             nav.classList.add("ccg-nav--more-open");
             moreWrap.dataset.open = "true";
-            moreButton.setAttribute("aria-expanded", "true");
+            const moreToggle = moreWrap.querySelector("[data-ccg-more-toggle]");
+            if (moreToggle) moreToggle.setAttribute("aria-expanded", "true");
             moreMenu.hidden = false;
             moreMenu.removeAttribute("hidden");
         };
 
         const closeMore = () => {
-            if (!isMoreOpen) return;
+            if (!isMoreOpen || !moreMenu) return;
             isMoreOpen = false;
             nav.classList.remove("ccg-nav--more-open");
             delete moreWrap.dataset.open;
-            moreButton.setAttribute("aria-expanded", "false");
+            const moreToggle = moreWrap.querySelector("[data-ccg-more-toggle]");
+            if (moreToggle) moreToggle.setAttribute("aria-expanded", "false");
             moreMenu.hidden = true;
             moreMenu.style.display = "";
             delete moreMenu.dataset.state;
         };
 
-        const closeNav = () => {
-            header.classList.remove("ccg-header--nav-open");
-            toggle.setAttribute("aria-expanded", "false");
-            mobilePanel.inert = true;
+        const syncBodyLock = (locked) => {
+            if (document.body && document.body.classList) {
+                document.body.classList.toggle("ccg-body--nav-open", locked);
+                document.body.classList.toggle("ccg-body--locked", locked);
+            }
         };
 
-        if (!moreWrap.hidden) {
-            moreButton.addEventListener("click", event => {
+        const syncMobileNavState = () => {
+            const isMobile = Boolean(mobileMatch && mobileMatch.matches);
+            const hasOverflow = Boolean(moreMenu && moreMenu.childElementCount);
+
+            nav.classList.toggle("ccg-nav--drawer-only", isMobile);
+
+            if (secondaryList) {
+                secondaryList.hidden = isMobile;
+            }
+
+            if (moreWrap && moreMenu) {
+                if (isMobile) {
+                    moreWrap.hidden = true;
+                    moreWrap.style.display = "none";
+                    moreMenu.hidden = true;
+                } else {
+                    moreWrap.style.display = hasOverflow ? "" : "none";
+                    moreWrap.hidden = !hasOverflow;
+                    moreMenu.hidden = !hasOverflow || !isMoreOpen;
+                }
+            }
+        };
+
+        const closeNav = () => {
+            isNavOpen = false;
+            header.classList.remove("ccg-header--nav-open");
+            nav.classList.remove("ccg-nav--open");
+            if (drawer) drawer.setAttribute("aria-hidden", "true");
+            toggle.setAttribute("aria-expanded", "false");
+            syncBodyLock(false);
+        };
+
+        const openNav = () => {
+            isNavOpen = true;
+            buildDrawer();
+            header.classList.add("ccg-header--nav-open");
+            nav.classList.add("ccg-nav--open");
+            if (drawer) drawer.setAttribute("aria-hidden", "false");
+            toggle.setAttribute("aria-expanded", "true");
+            syncBodyLock(true);
+            setHeaderHeightVar();
+        };
+
+        const moreToggle = moreWrap.querySelector("[data-ccg-more-toggle]");
+        if (moreToggle) {
+            moreToggle.addEventListener("click", event => {
                 event.stopPropagation();
                 const willOpen = !isMoreOpen;
                 if (willOpen) openMore();
@@ -262,17 +287,16 @@
         }
 
         toggle.addEventListener("click", () => {
-            const isOpen = !header.classList.contains("ccg-header--nav-open");
-            header.classList.toggle("ccg-header--nav-open", isOpen);
-            toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
-
-            setHeaderHeightVar();
-            mobilePanel.inert = !isOpen;
+            const shouldOpen = !isNavOpen;
+            if (shouldOpen) openNav();
+            else closeNav();
         });
+
+        drawerCloseEls.forEach(btn => btn.addEventListener("click", closeNav));
 
         header.querySelectorAll(".ccg-nav__link").forEach(link => {
             link.addEventListener("click", () => {
-                if (mobileMatch.matches) closeNav();
+                if (mobileMatch && mobileMatch.matches) closeNav();
                 closeMore();
             });
         });
@@ -282,7 +306,7 @@
                 closeMore();
             }
             if (!mobileMatch.matches) return;
-            if (!header.contains(event.target)) {
+            if (isNavOpen && drawer && !drawer.contains(event.target) && !toggle.contains(event.target)) {
                 closeNav();
             }
         });
@@ -294,14 +318,16 @@
             }
         });
 
-        mobileMatch.addEventListener("change", () => {
-            if (!mobileMatch.matches) {
-                closeNav();
-                closeMore();
-            }
-            // Re-sync containment when crossing breakpoints
-            syncMobileHardening();
-        });
+        if (typeof mobileMatch.addEventListener === "function") {
+            mobileMatch.addEventListener("change", () => {
+                if (!mobileMatch.matches) {
+                    closeNav();
+                    closeMore();
+                }
+                syncMobileNavState();
+                syncMobileHardening();
+            });
+        }
 
         window.addEventListener("resize", () => {
             setHeaderHeightVar();
@@ -313,16 +339,18 @@
             syncMobileHardening();
         });
 
+        syncMobileNavState();
         setHeaderHeightVar();
         markActiveLinks(header);
+        nav.classList.add("ccg-nav--hydrated");
     }
 
     /* ======================================================
        LIGHTWEIGHT PARTICLE OVERLAY (GUARDED)
     ====================================================== */
     function shouldRenderParticles() {
-        const reducedMotionQuery = MQ_REDUCED || window.matchMedia?.("(prefers-reduced-motion: reduce)");
-        if (reducedMotionQuery?.matches) return false;
+        const reducedMotionQuery = MQ_REDUCED || (typeof window.matchMedia === "function" ? window.matchMedia("(prefers-reduced-motion: reduce)") : null);
+        if (reducedMotionQuery && reducedMotionQuery.matches) return false;
 
         // Mobile/coarse pointer: skip entirely to keep things smooth
         if (isMobileLike()) return false;
@@ -359,14 +387,16 @@
 
         bg.appendChild(particleField);
 
-        const reducedMotionQuery = MQ_REDUCED || window.matchMedia?.("(prefers-reduced-motion: reduce)");
-        reducedMotionQuery?.addEventListener?.("change", event => {
-            if (event.matches) {
-                particleField.remove();
-            } else {
-                setupParticleField();
-            }
-        });
+        const reducedMotionQuery = MQ_REDUCED || (typeof window.matchMedia === "function" ? window.matchMedia("(prefers-reduced-motion: reduce)") : null);
+        if (reducedMotionQuery && typeof reducedMotionQuery.addEventListener === "function") {
+            reducedMotionQuery.addEventListener("change", event => {
+                if (event.matches) {
+                    particleField.remove();
+                } else {
+                    setupParticleField();
+                }
+            });
+        }
     }
 
     /* ======================================================
