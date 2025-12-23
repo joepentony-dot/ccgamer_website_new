@@ -78,10 +78,7 @@ body {
 }
 
 .ccg-body--nav-open {
-    overflow: hidden;
-    position: fixed;
-    inset: 0;
-    width: 100%;
+    overflow-x: hidden;
 }
 
 img,
@@ -743,8 +740,6 @@ li {
     gap: 14px;
     transform: translateX(100%);
     transition: transform 0.32s ease;
-    max-height: 100vh;
-    overflow-y: auto;
 }
 
 .ccg-nav-drawer__header {
@@ -917,15 +912,12 @@ li {
         background: rgba(6,6,12,0.94);
         z-index: 9998;
         padding: 18px 20px max(24px, env(safe-area-inset-bottom));
-        overflow-y: auto;
         opacity: 0;
         transform: translateY(-6px);
         transition: opacity 0.26s ease, transform 0.26s ease;
         pointer-events: none;
         backdrop-filter: blur(12px);
         top: var(--ccg-header-height, 0px);
-        height: calc(100dvh - var(--ccg-header-height, 0px));
-        min-height: calc(100vh - var(--ccg-header-height, 0px));
         visibility: hidden;
     }
 

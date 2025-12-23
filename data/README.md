@@ -33,9 +33,6 @@ a zero-based `correctIndex` derived from the spreadsheet's answer index.
 
 1. Run `python scripts/download_quiz_sheets.py` in a networked environment to
    pull the latest "Sheet1" and "Quiz Sets" CSV exports into `data/`.
-   - The questions sheet column that links to a set can be named **Set ID**,
-     **Quiz Set ID**, **set_id**, or **Quiz Set** — the builder accepts all of
-     them.
 2. Run `python scripts/build_quiz_data.py --data-dir data --output quiz/quiz-data.json`
    to regenerate the bundled quiz payload consumed by `quiz-loader.js`.
 3. Copy the refreshed `quiz/quiz-data.json` alongside the deployed `/quiz/`
