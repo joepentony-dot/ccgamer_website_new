@@ -346,8 +346,8 @@ function renderRelatedGames(game, allGames) {
         return;
     }
 
-    titleEl.textContent = `More From The Same ${sourceLabel}`;
-    kickerEl.textContent = `More from this ${sourceLabel.toLowerCase()}`;
+    titleEl.textContent = "More From The Same Publisher";
+    kickerEl.textContent = "Related Games";
 
     track.innerHTML = related.map(g => {
         const thumb = resolveGameThumb(g.thumbnail || g.thumb || g.cover);

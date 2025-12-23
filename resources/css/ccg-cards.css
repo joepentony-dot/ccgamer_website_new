@@ -321,6 +321,11 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
 
 .ccg-page--games-index .ccg-game-card__body {
     padding: 12px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
 }
 
 .ccg-page--games-index .ccg-game-card__title {
@@ -343,6 +348,54 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
     font-size: 0.84rem;
     letter-spacing: 0.06em;
     color: rgba(232,236,255,0.72) !important;
+}
+
+.ccg-page--games-index .ccg-game-card__actions {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.ccg-page--games-index .ccg-game-card__btn {
+    width: 100%;
+    max-width: 180px;
+    padding: 12px 18px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, rgba(var(--accent-rgb),0.95), rgba(255,255,255,0.14));
+    border-color: rgba(var(--accent-rgb), 0.85);
+    box-shadow:
+        0 12px 26px rgba(0,0,0,0.85),
+        0 0 28px rgba(var(--accent-rgb),0.55),
+        inset 0 1px 0 rgba(255,255,255,0.25);
+    text-shadow: 0 1px 0 rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+.ccg-page--games-index .ccg-game-card__btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.35), rgba(255,255,255,0));
+    opacity: 0.75;
+    transition: transform 220ms ease, opacity 220ms ease;
+    transform: translateX(-8%);
+}
+
+.ccg-page--games-index .ccg-game-card__btn:hover,
+.ccg-page--games-index .ccg-game-card__btn:focus-visible {
+    transform: translateY(-2px);
+    box-shadow:
+        0 16px 34px rgba(0,0,0,0.9),
+        0 0 38px rgba(var(--accent-rgb),0.7),
+        inset 0 1px 0 rgba(255,255,255,0.35);
+}
+
+.ccg-page--games-index .ccg-game-card__btn:hover::after,
+.ccg-page--games-index .ccg-game-card__btn:focus-visible::after {
+    opacity: 1;
+    transform: translateX(6%);
 }
 
 @media (max-width: 768px) {

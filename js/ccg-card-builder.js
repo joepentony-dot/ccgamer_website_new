@@ -74,10 +74,12 @@ function ccgBuildGameCard(game) {
                     ${meta}
                 </div>
 
-                <a href="../game.html?id=${safeId}"
-                   class="ccg-btn ccg-btn--primary">
-                   View Game
-                </a>
+                <div class="ccg-game-card__actions">
+                    <a href="../game.html?id=${safeId}"
+                       class="ccg-btn ccg-btn--primary ccg-game-card__btn">
+                       View Game
+                    </a>
+                </div>
             </div>
         </div>
     `;
