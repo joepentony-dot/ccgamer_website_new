@@ -303,8 +303,10 @@ body.intro-body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -55%) scale(0.9);
-    width: 100%;
-    max-width: 1200px;
+    width: min(1100px, 92vw);
+    max-width: 100%;
+    padding-inline: clamp(1rem, 4vw, 3rem);
+    box-sizing: border-box;
     text-align: center;
     font-family: "C64 Pro Mono", monospace;
     font-size: clamp(3rem, 5vw, 4.2rem);
@@ -318,6 +320,8 @@ body.intro-body {
         0 0 70px rgba(0, 200, 255, 0.85);
     z-index: 30;
     transition: opacity 0.5s ease, transform 0.5s ease;
+    overflow-wrap: anywhere;
+    text-wrap: balance;
 }
 
 .intro-speech-text--visible {
@@ -371,5 +375,27 @@ body.intro-body {
     .intro-speech-text {
         font-size: clamp(2.3rem, 6vw, 3rem);
         letter-spacing: 0.18em;
+        width: min(1000px, 94vw);
+    }
+}
+
+@media (max-width: 520px) {
+
+    .intro-speech-text {
+        font-size: clamp(1.8rem, 8vw, 2.4rem);
+        letter-spacing: 0.14em;
+        width: min(900px, 92vw);
+        padding-inline: clamp(1rem, 6vw, 2.5rem);
+    }
+}
+
+@media (max-width: 420px) {
+
+    .intro-speech-text {
+        font-size: clamp(1.6rem, 9vw, 2rem);
+        letter-spacing: 0.1em;
+        width: min(820px, 90vw);
+        padding-inline: clamp(0.9rem, 6vw, 2rem);
+        line-height: 1.2;
     }
 }
