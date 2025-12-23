@@ -1,26 +1,23 @@
 /* ============================================================
-   QUIZ LOADER — OMEGA REMOTE + FALLBACK (IMPORTS OLD RULES)
+   QUIZ LOADER — LOCAL ONLY
    ------------------------------------------------------------
-   • Loads packs + questions from Google Apps Script endpoint
-   • Falls back to local quiz/quiz-data.json if remote fails
+   • Loads packs + questions from local quiz/quiz-data.json
    • Exposes global callbacks consumed by quiz-engine.js
    • Adds live pack/question counts and recent score recap
-   • Saves scores REMOTELY (Apps Script) like old Google Sites quiz
-   • If remote save fails → falls back to LocalStorage
+   • Saves scores to LocalStorage
    • Silent visitor/game tracking (best-effort)
    ============================================================ */
 
 (function () {
     'use strict';
 
-    const API_URL = 'https://script.google.com/macros/s/AKfycbzLNCrU7aitYqr3eQ9S_vRKTea8Cpm2xfAcXRa-egi7pJX0ozMdqsJHfW77D2Tauojj/exec';
     const DATA_URL = './quiz-data.json';
     const SCORE_KEY = 'ccg_quiz_local_scores';
 
     let cachedSets = [];
     let localData = null;
     const questionCache = new Map();
-    let lastLoadContext = { source: 'remote', status: 'idle', error: null, fallback: false };
+    let lastLoadContext = { source: 'local', status: 'idle', error: null, fallback: false };
 
     /* --------------------------------------------------------
        STATUS + HELPERS
@@ -47,13 +44,7 @@
         }
     }
 
-    function bestEffortPost(url) {
-        // Old quiz did this with fetch(..., {method:'POST'}).catch(()=>{})
-        // Keep it silent & non-blocking.
-        try {
-            fetch(url, { method: 'POST', cache: 'no-store' }).catch(() => {});
-        } catch (_) {}
-    }
+    function bestEffortPost() {}
 
     /* --------------------------------------------------------
        LOCAL SCORE STORAGE
@@ -150,110 +141,6 @@
     }
 
     /* --------------------------------------------------------
-       REMOTE DATA HELPERS
-    -------------------------------------------------------- */
-    function normaliseRemoteSet(raw) {
-        if (!raw) return null;
-        const id = raw.id || raw.setId || raw.slug;
-        if (!id) return null;
-
-        return {
-            id: String(id),
-            name: raw.name || raw.title || 'Quiz Pack',
-            difficulty: raw.difficulty || 'Normal',
-            description: raw.description || raw.tagline || '',
-            questionCount: raw.questionCount || raw.totalQuestions || null
-        };
-    }
-
-    function normaliseRemoteQuestions(list, setId) {
-        return (Array.isArray(list) ? list : [])
-            .map((q, index) => {
-                if (!q) return null;
-
-                const options = Array.isArray(q.options) ? q.options.filter(Boolean) : [];
-                let correctIndex = 0;
-
-                // Old quiz uses q.answer 1-based
-                if (typeof q.answer === 'number') correctIndex = q.answer - 1;
-                else if (typeof q.correctIndex === 'number') correctIndex = q.correctIndex;
-                else if (typeof q.correct === 'number') correctIndex = q.correct - 1;
-
-                return {
-                    id: q.id || q.qId || q.questionId || `${setId}-${index + 1}`,
-                    question: q.question || q.text || q.prompt || '',
-                    options,
-                    correctIndex: clampIndex(correctIndex, options.length),
-                    imageUrl: q.imageUrl || q.image || q.imageURL || '',
-                    audioUrl: q.audioUrl || q.audio || q.soundUrl || '',
-                    gameName: q.gameName || q.game || ''
-                };
-            })
-            .filter(q => q && q.question && q.options.length);
-    }
-
-    async function fetchRemoteSets() {
-        const res = await fetch(`${API_URL}?getQuizSets=true`, { cache: 'no-store' });
-        if (!res.ok) throw new Error(`Remote status ${res.status}`);
-        const data = await res.json();
-        const sets = (data.sets || []).map(normaliseRemoteSet).filter(Boolean);
-        if (!sets.length) throw new Error('No quiz sets available');
-
-        cachedSets = sets;
-        lastLoadContext = { source: 'remote', status: 'ready', error: null, fallback: false };
-        return sets;
-    }
-
-    async function fetchRemoteQuestions(setId) {
-        const res = await fetch(`${API_URL}?set=${encodeURIComponent(setId)}`, { cache: 'no-store' });
-        if (!res.ok) throw new Error(`Question load failed (${res.status})`);
-        const data = await res.json();
-        const questions = normaliseRemoteQuestions(data.questions || [], setId);
-        if (!questions.length) throw new Error('No questions found for this pack');
-
-        questionCache.set(String(setId), questions);
-        updateSetQuestionCount(setId, questions.length);
-        lastLoadContext = { source: 'remote', status: 'ready', error: null, fallback: false };
-        return questions;
-    }
-
-    /* --------------------------------------------------------
-       REMOTE SCORE SAVE (OLD GOOGLE SITES RULE)
-    -------------------------------------------------------- */
-    async function saveScoreRemote(payload) {
-        // Old quiz POSTs JSON as text/plain
-        const body = JSON.stringify({
-            action: 'saveScore',
-            set: payload.set || payload.setId || payload.packId || payload.pack || '',
-            name: payload.name || 'Anonymous',
-            score: Number(payload.score || 0),
-            total: Number(payload.total || payload.questionCount || 0),
-            duration: Number(payload.duration || payload.timeTaken || 0),
-            percent: Number(payload.percent || 0)
-        });
-
-        const res = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body
-        });
-
-        // Apps Script sometimes returns text; handle both.
-        const text = await res.text();
-        const json = safeJsonParse(text, null);
-
-        if (!res.ok) {
-            throw new Error(`Remote save failed (${res.status})`);
-        }
-
-        if (json && json.success === false) {
-            throw new Error(json.error || 'Remote save rejected');
-        }
-
-        return json || { success: true };
-    }
-
-    /* --------------------------------------------------------
        UI HELPERS
     -------------------------------------------------------- */
     function renderStats(packs) {
@@ -279,17 +166,15 @@
         }
 
         if (lastLoadContext.status === 'error') {
-            const sourceLabel = lastLoadContext.source === 'remote' ? 'remote sheet' : 'local backup';
             const fallbackMsg = lastLoadContext.fallback
-                ? `Using ${sourceLabel} fallback — ${lastLoadContext.error || 'Load issue'}`
+                ? `Using local data fallback — ${lastLoadContext.error || 'Load issue'}`
                 : `Load issue: ${lastLoadContext.error || 'Unknown error'}`;
             setPackStatus('error', fallbackMsg);
             return;
         }
 
-        const sourceLabel = lastLoadContext.source === 'remote' ? 'Google Sheet' : 'local backup';
         const fallbackNote = lastLoadContext.fallback ? ' (fallback active)' : '';
-        setPackStatus('ready', `${totalPacks} packs ready from ${sourceLabel}${fallbackNote}`);
+        setPackStatus('ready', `${totalPacks} packs ready from local data${fallbackNote}`);
     }
 
     function updateActivePackLabel(pack) {
@@ -323,20 +208,12 @@
             return;
         }
 
-        // Old behaviour: track visitor (silent)
-        bestEffortPost(`${API_URL}?action=trackVisitor`);
-
         setPackStatus('loading', 'Loading quiz packs…');
-        lastLoadContext = { source: 'remote', status: 'loading', error: null, fallback: false };
+        lastLoadContext = { source: 'local', status: 'loading', error: null, fallback: false };
 
-        try {
-            await fetchRemoteSets();
-        } catch (err) {
-            console.warn('[Quiz] Remote set fetch failed', err);
-            lastLoadContext = { source: 'local', status: 'ready', error: err.message || 'Remote fetch failed', fallback: true };
-            const local = normaliseLocalPacks(await fetchLocalData());
-            cachedSets = local;
-        }
+        const local = normaliseLocalPacks(await fetchLocalData());
+        cachedSets = local;
+        lastLoadContext = { source: 'local', status: 'ready', error: null, fallback: false };
 
         renderStats(cachedSets);
         renderPackStatus(cachedSets);
@@ -354,38 +231,33 @@
         }
 
         setPackStatus('loading', 'Loading questions…');
-        lastLoadContext = { source: 'remote', status: 'loading', error: null, fallback: false };
+        lastLoadContext = { source: 'local', status: 'loading', error: null, fallback: false };
 
         let questions = [];
 
-        try {
-            questions = await fetchRemoteQuestions(setId);
-        } catch (err) {
-            console.warn('[Quiz] Remote question fetch failed', err);
-            lastLoadContext = { source: 'local', status: 'ready', error: err.message || 'Remote fetch failed', fallback: true };
+        const localPacks = normaliseLocalPacks(await fetchLocalData());
+        const localPack = localPacks.find(p => String(p.id) === String(setId));
 
-            const localPacks = normaliseLocalPacks(await fetchLocalData());
-            const localPack = localPacks.find(p => String(p.id) === String(setId));
+        questions = (localPack && Array.isArray(localPack.questions))
+            ? localPack.questions.map((q, idx) => {
+                const options = Array.isArray(q.options) ? q.options : [];
+                let correct = 0;
+                if (typeof q.correctIndex === 'number') correct = q.correctIndex;
+                else if (typeof q.correctOption === 'number') correct = q.correctOption - 1;
 
-            questions = (localPack && Array.isArray(localPack.questions))
-                ? localPack.questions.map((q, idx) => {
-                    const options = Array.isArray(q.options) ? q.options : [];
-                    let correct = 0;
-                    if (typeof q.correctIndex === 'number') correct = q.correctIndex;
-                    else if (typeof q.correctOption === 'number') correct = q.correctOption - 1;
+                return {
+                    id: q.id || q.questionId || q.qId || `${setId}-${idx + 1}`,
+                    question: q.question || q.text || '',
+                    options,
+                    correctIndex: clampIndex(correct, options.length),
+                    imageUrl: q.imageUrl || '',
+                    audioUrl: q.audioUrl || '',
+                    gameName: q.gameName || ''
+                };
+            })
+            : [];
 
-                    return {
-                        id: q.id || q.questionId || q.qId || `${setId}-${idx + 1}`,
-                        question: q.question || q.text || '',
-                        options,
-                        correctIndex: clampIndex(correct, options.length),
-                        imageUrl: q.imageUrl || '',
-                        audioUrl: q.audioUrl || '',
-                        gameName: q.gameName || ''
-                    };
-                })
-                : [];
-        }
+        lastLoadContext = { source: 'local', status: 'ready', error: null, fallback: false };
 
         questionCache.set(String(setId), questions);
         updateSetQuestionCount(setId, questions.length);
@@ -404,25 +276,9 @@
         // Always keep a local record (recent runs) for UX/testing
         addLocalScore(safePayload);
 
-        // Try remote save (old Google Sites behaviour)
-        let remoteOk = false;
-        try {
-            await saveScoreRemote({
-                set: safePayload.setId,
-                name: safePayload.name,
-                score: safePayload.score,
-                total: safePayload.total,
-                duration: safePayload.duration,
-                percent: safePayload.percent
-            });
-            remoteOk = true;
-        } catch (err) {
-            console.warn('[Quiz] Remote save failed, local fallback used', err);
-            remoteOk = false;
-        }
-
-        if (typeof cb === 'function') cb(remoteOk);
-        return remoteOk;
+        // Remote save removed; acknowledge immediately after local save
+        if (typeof cb === 'function') cb(true);
+        return true;
     };
 
     window.trackQuizEvent = function trackQuizEvent(name, data) {
@@ -430,7 +286,7 @@
             document.body.dataset.quizActive = 'true';
 
             // Old behaviour: track game start (silent)
-            bestEffortPost(`${API_URL}?action=trackGameStart`);
+            bestEffortPost();
         }
 
         if (name === 'quiz_finished') {
