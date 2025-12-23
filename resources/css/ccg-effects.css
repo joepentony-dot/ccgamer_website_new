@@ -370,33 +370,6 @@
     }
 }
 
-html.ccg-is-mobile .ccg-btn,
-body.ccg-is-mobile .ccg-btn,
-html.ccg-is-mobile .ccg-nav__link,
-body.ccg-is-mobile .ccg-nav__link,
-html.ccg-is-mobile .ccg-nav__more-toggle,
-body.ccg-is-mobile .ccg-nav__more-toggle {
-    transition: none !important;
-    transform: none !important;
-    filter: none !important;
-    box-shadow: 0 10px 24px rgba(0,0,0,0.55);
-}
-
-html.ccg-is-mobile .ccg-btn::after,
-body.ccg-is-mobile .ccg-btn::after {
-    animation: none !important;
-    opacity: 0 !important;
-}
-
-html.ccg-is-mobile [data-ccg-wow] {
-    opacity: 1 !important;
-    transform: none !important;
-    filter: none !important;
-    animation: none !important;
-    transition: none !important;
-    box-shadow: none !important;
-}
-
 @media (hover: none) and (pointer: coarse) {
 
     .ccg-btn {

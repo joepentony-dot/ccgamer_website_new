@@ -153,17 +153,15 @@
         const toggle = header.querySelector("[data-ccg-nav-toggle]");
         const nav = header.querySelector(".ccg-nav");
         const drawer = header.querySelector("[data-ccg-nav-drawer]");
-        const drawerPrimary = drawer ? drawer.querySelector("[data-ccg-drawer-primary]") : null;
-        const drawerSecondary = drawer ? drawer.querySelector("[data-ccg-drawer-secondary]") : null;
-        const drawerCloseEls = drawer ? drawer.querySelectorAll("[data-ccg-drawer-close]") : [];
-        const mobileMatch = typeof window.matchMedia === "function"
-            ? window.matchMedia("(max-width: 960px)")
-            : { matches: isMobileLike() };
+        const drawerPrimary = drawer?.querySelector("[data-ccg-drawer-primary]");
+        const drawerSecondary = drawer?.querySelector("[data-ccg-drawer-secondary]");
+        const drawerCloseEls = drawer?.querySelectorAll("[data-ccg-drawer-close]") || [];
+        const mobileMatch = window.matchMedia("(max-width: 960px)");
 
-        const primaryList = nav ? nav.querySelector("[data-ccg-nav-primary]") : null;
-        const secondaryList = nav ? nav.querySelector("[data-ccg-nav-secondary]") : null;
-        const moreWrap = nav ? nav.querySelector(".ccg-nav__more") : null;
-        const moreMenu = nav ? nav.querySelector("[data-ccg-more-menu]") : null;
+        const primaryList = nav?.querySelector("[data-ccg-nav-primary]");
+        const secondaryList = nav?.querySelector("[data-ccg-nav-secondary]");
+        const moreWrap = nav?.querySelector(".ccg-nav__more");
+        const moreMenu = nav?.querySelector("[data-ccg-more-menu]");
 
         if (!toggle || !nav || !primaryList || !moreWrap || !moreMenu) return;
 
@@ -192,13 +190,15 @@
                 });
             };
 
-            appendSet(primaryList, drawerPrimary);
-            appendSet(secondaryList, drawerSecondary);
-        };
+        const mobilePanel = document.createElement("div");
+        mobilePanel.className = "ccg-nav__mobile";
+        mobilePanel.appendChild(mobileList);
+        mobilePanel.inert = true;
+        mobilePanel.setAttribute("aria-hidden", "true");
 
-        cloneLinksInto(secondaryList, moreMenu);
-        moreWrap.hidden = !moreMenu.childElementCount;
-        moreMenu.hidden = !moreMenu.childElementCount;
+        nav.innerHTML = "";
+        nav.append(bar, mobilePanel);
+        nav.classList.add("ccg-nav--hydrated");
 
         let isMoreOpen = false;
         let isNavOpen = false;
@@ -208,8 +208,7 @@
             isMoreOpen = true;
             nav.classList.add("ccg-nav--more-open");
             moreWrap.dataset.open = "true";
-            const moreToggle = moreWrap.querySelector("[data-ccg-more-toggle]");
-            if (moreToggle) moreToggle.setAttribute("aria-expanded", "true");
+            moreWrap.querySelector("[data-ccg-more-toggle]")?.setAttribute("aria-expanded", "true");
             moreMenu.hidden = false;
             moreMenu.removeAttribute("hidden");
         };
@@ -219,50 +218,24 @@
             isMoreOpen = false;
             nav.classList.remove("ccg-nav--more-open");
             delete moreWrap.dataset.open;
-            const moreToggle = moreWrap.querySelector("[data-ccg-more-toggle]");
-            if (moreToggle) moreToggle.setAttribute("aria-expanded", "false");
+            moreWrap.querySelector("[data-ccg-more-toggle]")?.setAttribute("aria-expanded", "false");
             moreMenu.hidden = true;
             moreMenu.style.display = "";
             delete moreMenu.dataset.state;
         };
 
         const syncBodyLock = (locked) => {
-            if (document.body && document.body.classList) {
-                document.body.classList.toggle("ccg-body--nav-open", locked);
-                document.body.classList.toggle("ccg-body--locked", locked);
-            }
-        };
-
-        const syncMobileNavState = () => {
-            const isMobile = Boolean(mobileMatch && mobileMatch.matches);
-            const hasOverflow = Boolean(moreMenu && moreMenu.childElementCount);
-
-            nav.classList.toggle("ccg-nav--drawer-only", isMobile);
-
-            if (secondaryList) {
-                secondaryList.hidden = isMobile;
-            }
-
-            if (moreWrap && moreMenu) {
-                if (isMobile) {
-                    moreWrap.hidden = true;
-                    moreWrap.style.display = "none";
-                    moreMenu.hidden = true;
-                } else {
-                    moreWrap.style.display = hasOverflow ? "" : "none";
-                    moreWrap.hidden = !hasOverflow;
-                    moreMenu.hidden = !hasOverflow || !isMoreOpen;
-                }
-            }
+            document.body?.classList.toggle("ccg-body--nav-open", locked);
+            document.body?.classList.toggle("ccg-body--locked", locked);
         };
 
         const closeNav = () => {
             isNavOpen = false;
             header.classList.remove("ccg-header--nav-open");
             nav.classList.remove("ccg-nav--open");
-            if (drawer) drawer.setAttribute("aria-hidden", "true");
             toggle.setAttribute("aria-expanded", "false");
-            syncBodyLock(false);
+            mobilePanel.inert = true;
+            mobilePanel.setAttribute("aria-hidden", "true");
         };
 
         const openNav = () => {
@@ -270,26 +243,21 @@
             buildDrawer();
             header.classList.add("ccg-header--nav-open");
             nav.classList.add("ccg-nav--open");
-            if (drawer) drawer.setAttribute("aria-hidden", "false");
+            drawer?.setAttribute("aria-hidden", "false");
             toggle.setAttribute("aria-expanded", "true");
             syncBodyLock(true);
             setHeaderHeightVar();
         };
 
-        const moreToggle = moreWrap.querySelector("[data-ccg-more-toggle]");
-        if (moreToggle) {
-            moreToggle.addEventListener("click", event => {
-                event.stopPropagation();
-                const willOpen = !isMoreOpen;
-                if (willOpen) openMore();
-                else closeMore();
-            });
-        }
-
         toggle.addEventListener("click", () => {
-            const shouldOpen = !isNavOpen;
-            if (shouldOpen) openNav();
-            else closeNav();
+            const isOpen = !header.classList.contains("ccg-header--nav-open");
+            header.classList.toggle("ccg-header--nav-open", isOpen);
+            nav.classList.toggle("ccg-nav--open", isOpen);
+            toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+
+            setHeaderHeightVar();
+            mobilePanel.inert = !isOpen;
+            mobilePanel.setAttribute("aria-hidden", isOpen ? "false" : "true");
         });
 
         drawerCloseEls.forEach(btn => btn.addEventListener("click", closeNav));
@@ -318,16 +286,13 @@
             }
         });
 
-        if (typeof mobileMatch.addEventListener === "function") {
-            mobileMatch.addEventListener("change", () => {
-                if (!mobileMatch.matches) {
-                    closeNav();
-                    closeMore();
-                }
-                syncMobileNavState();
-                syncMobileHardening();
-            });
-        }
+        mobileMatch.addEventListener("change", () => {
+            if (!mobileMatch.matches) {
+                closeNav();
+                closeMore();
+            }
+            syncMobileHardening();
+        });
 
         window.addEventListener("resize", () => {
             setHeaderHeightVar();
