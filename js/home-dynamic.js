@@ -9,7 +9,7 @@
 
 let CCG_HOME_ALL_GAMES = [];
 
-const MOBILE_MEDIA = window.matchMedia?.("(max-width: 820px)");
+const MOBILE_MEDIA = window.matchMedia?.("(max-width: 1024px)");
 const PREFERS_REDUCED_MOTION = window.matchMedia?.("(prefers-reduced-motion: reduce)");
 const COARSE_POINTER = window.matchMedia?.("(pointer: coarse)");
 
@@ -60,12 +60,13 @@ function shouldSkipHomeAnimations() {
 
 function shouldUseMobileLite() {
     const vw = getViewportWidth();
-    const smallViewport = typeof vw === "number" && vw <= 900;
+    const smallViewport = typeof vw === "number" && vw <= 1100;
     return Boolean(MOBILE_MEDIA?.matches || COARSE_POINTER?.matches || smallViewport);
 }
 
 function applyMobileLiteMode() {
     document.body.classList.add("ccg-mobile-lite");
+    document.documentElement.classList.add("ccg-mobile-lite");
 
     const randomButtons = document.querySelectorAll("[data-ccg-random-game]");
     randomButtons.forEach(btn => {
