@@ -369,3 +369,27 @@
         transition-duration: 0s;
     }
 }
+
+@media (hover: none) and (pointer: coarse) {
+
+    .ccg-btn {
+        transition: none !important;
+        transform: none !important;
+        filter: none !important;
+    }
+
+    .ccg-btn::after {
+        animation: none !important;
+        opacity: 0 !important;
+    }
+
+    .ccg-btn:hover,
+    .ccg-btn:active,
+    .ccg-btn:focus-visible {
+        transform: none !important;
+        filter: none !important;
+        box-shadow:
+            0 0 0 1px rgba(var(--accent-rgb), 0.4),
+            0 0 12px rgba(var(--accent-rgb), 0.24);
+    }
+}
