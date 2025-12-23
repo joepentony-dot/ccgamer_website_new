@@ -5,6 +5,7 @@
       "name": "C64 Legends",
       "difficulty": "Medium",
       "description": "SID-powered chart toppers every retro fan should know.",
+      "questionCount": 6,
       "questions": [
         {
           "id": "c64-1",
@@ -79,6 +80,7 @@
       "name": "Amiga Essentials",
       "difficulty": "Medium",
       "description": "Amiga 500/1200 highlights, demos and iconic studios.",
+      "questionCount": 6,
       "questions": [
         {
           "id": "amiga-1",
@@ -153,6 +155,7 @@
       "name": "Arcade Conversions",
       "difficulty": "Hard",
       "description": "Spot-on ports, infamous misses and trivia from the arcades.",
+      "questionCount": 6,
       "questions": [
         {
           "id": "arcade-1",
