@@ -219,9 +219,11 @@
         mobilePanel.className = "ccg-nav__mobile";
         mobilePanel.appendChild(mobileList);
         mobilePanel.inert = true;
+        mobilePanel.setAttribute("aria-hidden", "true");
 
         nav.innerHTML = "";
         nav.append(bar, mobilePanel);
+        nav.classList.add("ccg-nav--hydrated");
 
         let isMoreOpen = false;
 
@@ -248,8 +250,10 @@
 
         const closeNav = () => {
             header.classList.remove("ccg-header--nav-open");
+            nav.classList.remove("ccg-nav--open");
             toggle.setAttribute("aria-expanded", "false");
             mobilePanel.inert = true;
+            mobilePanel.setAttribute("aria-hidden", "true");
         };
 
         if (!moreWrap.hidden) {
@@ -264,10 +268,12 @@
         toggle.addEventListener("click", () => {
             const isOpen = !header.classList.contains("ccg-header--nav-open");
             header.classList.toggle("ccg-header--nav-open", isOpen);
+            nav.classList.toggle("ccg-nav--open", isOpen);
             toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
 
             setHeaderHeightVar();
             mobilePanel.inert = !isOpen;
+            mobilePanel.setAttribute("aria-hidden", isOpen ? "false" : "true");
         });
 
         header.querySelectorAll(".ccg-nav__link").forEach(link => {

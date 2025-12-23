@@ -177,6 +177,14 @@ li {
     gap: clamp(12px, 2vw, 20px);
 }
 
+.ccg-page,
+.ccg-main,
+.ccg-header,
+.ccg-hero,
+.home-hero {
+    max-width: 100vw;
+}
+
 .ccg-main {
     width: min(1240px, 95vw);
     margin: 0 auto;
@@ -420,9 +428,10 @@ li {
 
 .ccg-brand__kicker {
     font-size: 0.72rem;
-    letter-spacing: 0.26em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     color: rgba(255,255,255,0.72);
+    text-wrap: balance;
     text-shadow:
         0 0 10px rgba(var(--accent-rgb),0.48),
         0 0 16px rgba(var(--accent-rgb),0.28);
@@ -433,7 +442,8 @@ li {
     flex-direction: column;
     gap: 2px;
     font-size: 1.08rem;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.1em;
+    text-wrap: balance;
 }
 
 .ccg-brand__neon-cheeky {
@@ -509,6 +519,14 @@ li {
     pointer-events: auto;
     flex: 1 1 100%;
     max-width: 100%;
+}
+
+.ccg-nav__bar,
+.ccg-nav__list,
+.ccg-nav__link,
+.ccg-nav__more-toggle {
+    text-wrap: balance;
+    word-break: keep-all;
 }
 
 .ccg-nav__list--secondary {
@@ -819,6 +837,15 @@ li {
         display: none;
     }
 
+    .ccg-nav:not(.ccg-nav--hydrated) .ccg-nav__bar {
+        display: flex;
+    }
+
+    .ccg-nav:not(.ccg-nav--hydrated) .ccg-nav__list--secondary,
+    .ccg-nav:not(.ccg-nav--hydrated) .ccg-nav__more {
+        display: flex;
+    }
+
     .ccg-nav__list--secondary,
     .ccg-nav__more {
         display: none;
@@ -840,6 +867,7 @@ li {
         top: var(--ccg-header-height, 0px);
         height: calc(100dvh - var(--ccg-header-height, 0px));
         min-height: calc(100vh - var(--ccg-header-height, 0px));
+        visibility: hidden;
     }
 
     .ccg-nav__list--mobile .ccg-nav__link {
@@ -848,10 +876,12 @@ li {
         font-size: 0.78rem;
     }
 
-    .ccg-header--nav-open .ccg-nav__mobile {
+    .ccg-header--nav-open .ccg-nav__mobile,
+    .ccg-nav--open .ccg-nav__mobile {
         opacity: 1;
         transform: translateY(0);
         pointer-events: auto;
+        visibility: visible;
     }
 
     .ccg-header-actions {
@@ -959,7 +989,8 @@ li {
 
     font-family: var(--ccg-font-main);
     font-size: 0.64rem;
-    letter-spacing: 0.09em;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
     text-transform: uppercase;
 
     background:
@@ -984,7 +1015,7 @@ li {
     .ccg-nav__link {
         font-size: 0.64rem;
         padding: 9px 11px;
-        letter-spacing: 0.1em;
+        letter-spacing: 0.08em;
     }
 
     .ccg-nav__list {
@@ -995,7 +1026,7 @@ li {
 @media (max-width: 640px) {
     .ccg-nav__link {
         font-size: 0.7rem;
-        letter-spacing: 0.08em;
+        letter-spacing: 0.06em;
         padding: 10px 12px;
     }
 }
