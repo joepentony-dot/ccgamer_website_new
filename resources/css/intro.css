@@ -304,7 +304,9 @@ body.intro-body {
     left: 50%;
     transform: translate(-50%, -55%) scale(0.9);
     width: 100%;
-    max-width: 1200px;
+    max-width: min(1200px, 96vw);
+    padding-inline: clamp(1rem, 5vw, 3rem);
+    box-sizing: border-box;
     text-align: center;
     font-family: "C64 Pro Mono", monospace;
     font-size: clamp(3rem, 5vw, 4.2rem);
@@ -318,6 +320,7 @@ body.intro-body {
         0 0 70px rgba(0, 200, 255, 0.85);
     z-index: 30;
     transition: opacity 0.5s ease, transform 0.5s ease;
+    overflow-wrap: anywhere;
 }
 
 .intro-speech-text--visible {
@@ -371,5 +374,15 @@ body.intro-body {
     .intro-speech-text {
         font-size: clamp(2.3rem, 6vw, 3rem);
         letter-spacing: 0.18em;
+    }
+}
+
+@media (max-width: 520px) {
+
+    .intro-speech-text {
+        font-size: clamp(1.8rem, 8vw, 2.4rem);
+        letter-spacing: 0.14em;
+        max-width: min(1100px, 94vw);
+        padding-inline: clamp(1rem, 6vw, 2.5rem);
     }
 }
