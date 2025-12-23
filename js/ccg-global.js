@@ -141,6 +141,15 @@
         clampHorizontalOverflow();
         containHeaderOnMobile();
         setHeaderHeightVar();
+        resetBodyLockIfStuck();
+    }
+
+    function resetBodyLockIfStuck() {
+        const header = document.querySelector("[data-ccg-header]");
+        const navOpen = header?.classList.contains("ccg-header--nav-open");
+        if (!navOpen) {
+            document.body?.classList.remove("ccg-body--nav-open", "ccg-body--locked");
+        }
     }
 
     /* ======================================================
