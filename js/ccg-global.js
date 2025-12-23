@@ -141,6 +141,15 @@
         clampHorizontalOverflow();
         containHeaderOnMobile();
         setHeaderHeightVar();
+        resetBodyLockIfStuck();
+    }
+
+    function resetBodyLockIfStuck() {
+        const header = document.querySelector("[data-ccg-header]");
+        const navOpen = header?.classList.contains("ccg-header--nav-open");
+        if (!navOpen) {
+            document.body?.classList.remove("ccg-body--nav-open", "ccg-body--locked");
+        }
     }
 
     /* ======================================================
@@ -156,7 +165,7 @@
         const drawerPrimary = drawer?.querySelector("[data-ccg-drawer-primary]");
         const drawerSecondary = drawer?.querySelector("[data-ccg-drawer-secondary]");
         const drawerCloseEls = drawer?.querySelectorAll("[data-ccg-drawer-close]") || [];
-        const mobileMatch = window.matchMedia("(max-width: 960px)");
+        const mobileMatch = typeof window.matchMedia === "function" ? window.matchMedia("(max-width: 960px)") : null;
 
         const primaryList = nav?.querySelector("[data-ccg-nav-primary]");
         const secondaryList = nav?.querySelector("[data-ccg-nav-secondary]");
@@ -165,6 +174,8 @@
         const moreMenu = nav?.querySelector("[data-ccg-more-menu]");
 
         if (!toggle || !nav || !primaryList || !moreWrap || !moreMenu) return;
+
+        const isMobileViewport = () => mobileMatch ? mobileMatch.matches : window.innerWidth <= 960;
 
         const cloneLink = (link, extraClasses = []) => {
             const clone = link.cloneNode(true);
@@ -250,10 +261,16 @@
         };
 
         const syncMobileNavState = () => {
-            if (!mobileMatch.matches) {
+            if (!isMobileViewport()) {
                 closeNav();
                 closeMore();
+                return;
             }
+
+            buildDrawer();
+
+            const hasDrawerLinks = drawerPrimary?.querySelector(".ccg-nav__link") || drawerSecondary?.querySelector(".ccg-nav__link");
+            nav.classList.toggle("ccg-nav--mobile-fallback", !hasDrawerLinks);
         };
 
         toggle.addEventListener("click", () => {
@@ -277,7 +294,7 @@
 
         header.querySelectorAll(".ccg-nav__link").forEach(link => {
             link.addEventListener("click", () => {
-                if (mobileMatch && mobileMatch.matches) closeNav();
+                if (isMobileViewport()) closeNav();
                 closeMore();
             });
         });
@@ -287,7 +304,7 @@
                 closeMore();
             }
 
-            if (!mobileMatch.matches) return;
+            if (!isMobileViewport()) return;
 
             if (isNavOpen && drawer && !drawer.contains(event.target) && !toggle.contains(event.target)) {
                 closeNav();
@@ -301,20 +318,32 @@
             }
         });
 
-        mobileMatch.addEventListener("change", () => {
-            closeNav();
-            closeMore();
-            syncMobileHardening();
-        });
+        if (mobileMatch?.addEventListener) {
+            mobileMatch.addEventListener("change", () => {
+                closeNav();
+                closeMore();
+                syncMobileHardening();
+                syncMobileNavState();
+            });
+        } else if (mobileMatch?.addListener) {
+            mobileMatch.addListener(() => {
+                closeNav();
+                closeMore();
+                syncMobileHardening();
+                syncMobileNavState();
+            });
+        }
 
         window.addEventListener("resize", () => {
             setHeaderHeightVar();
             syncMobileHardening();
+            syncMobileNavState();
         });
 
         window.addEventListener("orientationchange", () => {
             setHeaderHeightVar();
             syncMobileHardening();
+            syncMobileNavState();
         });
 
         syncMobileNavState();

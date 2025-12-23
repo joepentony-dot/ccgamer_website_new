@@ -505,6 +505,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+    justify-content: center;
 }
 
 .game-pill {
@@ -559,10 +560,8 @@
 }
 
 .related-carousel {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: 12px;
+    position: relative;
+    display: block;
 }
 
 .related-carousel__viewport {
@@ -570,15 +569,15 @@
     border-radius: 14px;
     border: 1px solid var(--ccg-border);
     background: rgba(255,255,255,0.02);
-    padding: 6px;
+    padding: 10px 46px;
 }
 
 .related-carousel__track {
     display: flex;
-    gap: 12px;
+    gap: 14px;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    padding: 4px 2px;
+    padding: 4px 4px 10px;
     scrollbar-width: thin;
     scroll-behavior: smooth;
 }
@@ -602,9 +601,17 @@
     font-size: 22px;
     display: grid;
     place-items: center;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
     cursor: pointer;
     transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
 }
+
+.related-carousel__nav--prev { left: 10px; }
+
+.related-carousel__nav--next { right: 10px; }
 
 .related-carousel__nav:hover,
 .related-carousel__nav:focus-visible {
