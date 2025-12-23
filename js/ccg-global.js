@@ -181,13 +181,15 @@
                 });
             };
 
-            appendSet(primaryList, drawerPrimary);
-            appendSet(secondaryList, drawerSecondary);
-        };
+        const mobilePanel = document.createElement("div");
+        mobilePanel.className = "ccg-nav__mobile";
+        mobilePanel.appendChild(mobileList);
+        mobilePanel.inert = true;
+        mobilePanel.setAttribute("aria-hidden", "true");
 
-        cloneLinksInto(secondaryList, moreMenu);
-        moreWrap.hidden = !moreMenu.childElementCount;
-        moreMenu.hidden = !moreMenu.childElementCount;
+        nav.innerHTML = "";
+        nav.append(bar, mobilePanel);
+        nav.classList.add("ccg-nav--hydrated");
 
         let isMoreOpen = false;
         let isNavOpen = false;
@@ -222,9 +224,9 @@
             isNavOpen = false;
             header.classList.remove("ccg-header--nav-open");
             nav.classList.remove("ccg-nav--open");
-            drawer?.setAttribute("aria-hidden", "true");
             toggle.setAttribute("aria-expanded", "false");
-            syncBodyLock(false);
+            mobilePanel.inert = true;
+            mobilePanel.setAttribute("aria-hidden", "true");
         };
 
         const openNav = () => {
@@ -238,17 +240,15 @@
             setHeaderHeightVar();
         };
 
-        moreWrap.querySelector("[data-ccg-more-toggle]")?.addEventListener("click", event => {
-            event.stopPropagation();
-            const willOpen = !isMoreOpen;
-            if (willOpen) openMore();
-            else closeMore();
-        });
-
         toggle.addEventListener("click", () => {
-            const shouldOpen = !isNavOpen;
-            if (shouldOpen) openNav();
-            else closeNav();
+            const isOpen = !header.classList.contains("ccg-header--nav-open");
+            header.classList.toggle("ccg-header--nav-open", isOpen);
+            nav.classList.toggle("ccg-nav--open", isOpen);
+            toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+
+            setHeaderHeightVar();
+            mobilePanel.inert = !isOpen;
+            mobilePanel.setAttribute("aria-hidden", isOpen ? "false" : "true");
         });
 
         drawerCloseEls.forEach(btn => btn.addEventListener("click", closeNav));
