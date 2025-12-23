@@ -39,21 +39,38 @@ async function initHomeDynamic() {
     }
 }
 
+/* ------------------------------------------------------------
+   MOBILE/LOW-POWER DETECTION (ROBUST)
+   - Some devices report odd CSS pixel widths; use visualViewport/innerWidth as a fallback.
+------------------------------------------------------------ */
+
+function getViewportWidth() {
+    const vv = window.visualViewport?.width;
+    return typeof vv === "number" && vv > 0 ? vv : window.innerWidth;
+}
+
 function shouldSkipHomeAnimations() {
     const lowMemory = typeof navigator.deviceMemory === "number" && navigator.deviceMemory <= 3;
     const lowCore = typeof navigator.hardwareConcurrency === "number" && navigator.hardwareConcurrency <= 4;
+
+    // Extra safety: treat smaller viewports as mobile even if matchMedia is unreliable on a device.
+    const vw = getViewportWidth();
+    const smallViewport = typeof vw === "number" && vw <= 900;
 
     return Boolean(
         PREFERS_REDUCED_MOTION?.matches ||
         COARSE_POINTER?.matches ||
         MOBILE_MEDIA?.matches ||
+        smallViewport ||
         lowMemory ||
         lowCore
     );
 }
 
 function shouldUseMobileLite() {
-    return Boolean(MOBILE_MEDIA?.matches || COARSE_POINTER?.matches);
+    const vw = getViewportWidth();
+    const smallViewport = typeof vw === "number" && vw <= 900;
+    return Boolean(MOBILE_MEDIA?.matches || COARSE_POINTER?.matches || smallViewport);
 }
 
 function applyMobileLiteMode() {
