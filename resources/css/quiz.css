@@ -163,6 +163,42 @@
     padding: 14px;
 }
 
+.quiz-score-breakdown {
+    margin: 14px 0 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.quiz-score-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+}
+
+.quiz-score-chip {
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: linear-gradient(135deg, rgba(0,0,0,0.84), rgba(var(--accent-rgb),0.14));
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+.quiz-score-chip-label { color: var(--ccg-text-soft); font-size: 0.9rem; }
+.quiz-score-chip-value { display: block; font-size: 1.25rem; margin-top: 4px; }
+
+.quiz-score-history { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px; }
+.quiz-score-history-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.quiz-history-list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 10px; }
+.quiz-history-item { padding: 12px 14px; border-radius: 10px; background: linear-gradient(135deg, rgba(0,0,0,0.82), rgba(0,0,0,0.68)); border: 1px solid rgba(255,255,255,0.12); }
+.quiz-history-item--correct { border-color: rgba(120,255,188,0.55); box-shadow: 0 0 0 1px rgba(120,255,188,0.14); }
+.quiz-history-item--wrong { border-color: rgba(255,122,122,0.45); box-shadow: 0 0 0 1px rgba(255,122,122,0.12); }
+.quiz-history-top { display: flex; justify-content: space-between; gap: 12px; font-weight: 700; }
+.quiz-history-question { color: #f6f8ff; }
+.quiz-history-running { color: var(--ccg-text-soft); }
+.quiz-history-answers { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; color: var(--ccg-text-soft); }
+.quiz-history-empty { color: var(--ccg-text-soft); }
+
 .quiz-score-actions {
     display: flex;
     flex-wrap: wrap;
@@ -228,6 +264,18 @@
 .quiz-recent-name { font-weight: 700; }
 .quiz-recent-pack { color: var(--ccg-text-soft); }
 .quiz-recent-score { text-align: right; }
+
+.lb-status-note {
+    margin-bottom: 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.14);
+    background: linear-gradient(135deg, rgba(0,0,0,0.86), rgba(var(--accent-rgb),0.16));
+    color: #f6f8ff;
+}
+
+.lb-status-note[data-tone="warning"] { border-color: rgba(255,198,95,0.7); }
+.lb-status-note[data-tone="error"] { border-color: rgba(255,122,122,0.7); background: linear-gradient(135deg, rgba(40,0,0,0.9), rgba(0,0,0,0.85)); }
 
 /* ============================================================
    MOBILE RHYTHM — PRIMARY

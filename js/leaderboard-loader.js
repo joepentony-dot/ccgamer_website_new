@@ -24,6 +24,7 @@
         "https://script.google.com/macros/s/AKfycbwhkSGA6HcSvCljqBA91JmQVsVVUPU5LCEO1HlifB_CjNlywKPZHTP3FPGCKMNWDy6/exec";
 
     const BEST_STORE_KEY = "ccg_quiz_best_scores";
+    const LOCAL_SCORE_KEY = "ccg_quiz_local_scores";
 
     // -------------------------------------------------------------
     // STATE
@@ -43,6 +44,15 @@
     function qsa(sel) { return document.querySelectorAll(sel); }
     function clear(el) { if (el) el.innerHTML = ""; }
 
+    function setStatusNote(message, tone) {
+        const note = qs("#lb-status-note");
+        if (!note) return;
+
+        note.textContent = message || "";
+        note.dataset.tone = tone || "info";
+        note.hidden = !message;
+    }
+
     function loadBestScoresMap() {
         try {
             const raw = localStorage.getItem(BEST_STORE_KEY);
@@ -56,6 +66,65 @@
     function getBestScoreForPack(packId) {
         const map = loadBestScoresMap();
         return map[String(packId)] || 0;
+    }
+
+    function loadLocalScores() {
+        try {
+            const raw = localStorage.getItem(LOCAL_SCORE_KEY);
+            if (!raw) return [];
+            const parsed = JSON.parse(raw);
+            return Array.isArray(parsed) ? parsed : [];
+        } catch {
+            return [];
+        }
+    }
+
+    async function fetchLocalPacks() {
+        const candidates = ["./quiz-data.json", "/quiz/quiz-data.json", "/quiz-data.json"]; // relative to /quiz/
+        for (const url of candidates) {
+            try {
+                const res = await fetch(url, { cache: "no-store" });
+                if (!res.ok) continue;
+                const data = await res.json();
+                const packs = (data && (data.packs || data.sets)) || [];
+                return packs
+                    .map((p) => ({ id: p.id || p.slug || p.name, name: p.name || p.title || "Quiz Pack" }))
+                    .filter((p) => p.id);
+            } catch (_) { }
+        }
+        return [];
+    }
+
+    async function loadLocalFallback() {
+        const scores = loadLocalScores();
+        if (!scores.length) return false;
+
+        let packs = await fetchLocalPacks();
+
+        LB.rawScores = scores.map((s) => ({
+            name: s.name || "Anonymous",
+            score: Number(s.score) || 0,
+            setId: s.setId || s.set || "",
+            timestamp: s.time || s.timestamp || Date.now()
+        }));
+        if (!packs.length) {
+            const seen = new Set();
+            packs = LB.rawScores
+                .map((s) => s.setId)
+                .filter(Boolean)
+                .filter((id) => {
+                    const str = String(id);
+                    if (seen.has(str)) return false;
+                    seen.add(str);
+                    return true;
+                })
+                .map((id) => ({ id, name: `Pack ${id}` }));
+        }
+
+        LB.sets = packs;
+        LB.currentRange = "all";
+        LB.currentPack = LB.currentPack || "";
+        return true;
     }
 
     // -------------------------------------------------------------
@@ -304,11 +373,17 @@
 
     async function init() {
         const ok = await fetchScores();
+        let usingLocalFallback = false;
 
         if (!ok) {
-            const c = qs("#lb-table-container");
-            if (c) c.innerHTML = `<div class="lb-error">Failed to load leaderboard.</div>`;
-            return;
+            usingLocalFallback = await loadLocalFallback();
+
+            if (!usingLocalFallback) {
+                const c = qs("#lb-table-container");
+                if (c) c.innerHTML = `<div class="lb-error">Leaderboard unavailable right now. Finish a quiz to build a local history.</div>`;
+                setStatusNote("Live leaderboard unreachable. No local scores found yet.", "error");
+                return;
+            }
         }
 
         populatePackSelect();
@@ -316,6 +391,12 @@
         initPackSelect();
 
         refreshLeaderboard();
+
+        if (usingLocalFallback) {
+            setStatusNote("Showing scores saved in this browser. Connect online to see the global leaderboard.", "warning");
+        } else {
+            setStatusNote("Live leaderboard loaded.", "info");
+        }
     }
 
     // -------------------------------------------------------------

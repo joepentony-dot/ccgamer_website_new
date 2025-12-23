@@ -81,6 +81,10 @@ body {
     overflow-x: hidden;
 }
 
+body {
+    overflow-y: visible;
+}
+
 img,
 picture,
 video,
