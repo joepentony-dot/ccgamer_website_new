@@ -4,10 +4,31 @@
    • Depth-aware logo path fix
    • Priority navigation with responsive drawer + dropdown
    • No dependencies on page-specific JS
+
+   MOBILE HARDENING (NO PADDING HACKS)
+   • Clamp horizontal overflow (prevents right-side spill)
+   • Header containment on mobile (reduces visual bleed)
+   • Disable heavy effects on mobile (particles/glints/wow)
 ========================================================== */
 
 (function () {
-    'use strict';
+    "use strict";
+
+    /* ======================================================
+       ENV / MOBILE DETECTION
+    ====================================================== */
+    const MQ_MOBILE = window.matchMedia?.("(max-width: 820px)");
+    const MQ_COARSE = window.matchMedia?.("(pointer: coarse)");
+    const MQ_REDUCED = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+
+    function isMobileLike() {
+        return Boolean(MQ_MOBILE?.matches || MQ_COARSE?.matches);
+    }
+
+    function safeNowMobileClass() {
+        document.documentElement.classList.toggle("ccg-is-mobile", isMobileLike());
+        document.body?.classList?.toggle("ccg-is-mobile", isMobileLike());
+    }
 
     /* ======================================================
        DEPTH-AWARE LOGO PATH
@@ -62,6 +83,55 @@
                 });
             }
         });
+    }
+
+    /* ======================================================
+       MOBILE HARDENING — NO PADDING HACKS
+    ====================================================== */
+    function clampHorizontalOverflow() {
+        // Hard clamp overflow without altering layout alignment
+        const de = document.documentElement;
+        const body = document.body;
+
+        if (!de || !body) return;
+
+        de.style.overflowX = "hidden";
+        de.style.maxWidth = "100%";
+        body.style.overflowX = "hidden";
+        body.style.maxWidth = "100%";
+
+        // Prevent accidental transform-induced side scrolling on mobile
+        body.style.position = body.style.position || "relative";
+    }
+
+    function containHeaderOnMobile() {
+        const header = document.querySelector("[data-ccg-header]");
+        if (!header) return;
+
+        // Visual containment only
+        if (isMobileLike()) {
+            header.style.isolation = "isolate";
+            header.style.overflow = "hidden";
+        } else {
+            header.style.isolation = "";
+            header.style.overflow = "";
+        }
+    }
+
+    function setHeaderHeightVar() {
+        const header = document.querySelector("[data-ccg-header]");
+        if (!header) return;
+
+        const rect = header.getBoundingClientRect();
+        const h = Math.max(0, Math.round(rect.height));
+        document.documentElement.style.setProperty("--ccg-header-height", `${h}px`);
+    }
+
+    function syncMobileHardening() {
+        safeNowMobileClass();
+        clampHorizontalOverflow();
+        containHeaderOnMobile();
+        setHeaderHeightVar();
     }
 
     /* ======================================================
@@ -176,11 +246,6 @@
             delete moreMenu.dataset.state;
         };
 
-        const syncHeaderHeight = () => {
-            const headerRect = header.getBoundingClientRect();
-            nav.style.setProperty("--ccg-header-height", `${headerRect.height}px`);
-        };
-
         const closeNav = () => {
             header.classList.remove("ccg-header--nav-open");
             toggle.setAttribute("aria-expanded", "false");
@@ -191,12 +256,8 @@
             moreButton.addEventListener("click", event => {
                 event.stopPropagation();
                 const willOpen = !isMoreOpen;
-
-                if (willOpen) {
-                    openMore();
-                } else {
-                    closeMore();
-                }
+                if (willOpen) openMore();
+                else closeMore();
             });
         }
 
@@ -205,7 +266,7 @@
             header.classList.toggle("ccg-header--nav-open", isOpen);
             toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
 
-            syncHeaderHeight();
+            setHeaderHeightVar();
             mobilePanel.inert = !isOpen;
         });
 
@@ -220,7 +281,6 @@
             if (!mobileMatch.matches && !header.contains(event.target)) {
                 closeMore();
             }
-
             if (!mobileMatch.matches) return;
             if (!header.contains(event.target)) {
                 closeNav();
@@ -239,12 +299,21 @@
                 closeNav();
                 closeMore();
             }
+            // Re-sync containment when crossing breakpoints
+            syncMobileHardening();
         });
 
-        window.addEventListener("resize", syncHeaderHeight);
-        window.addEventListener("orientationchange", syncHeaderHeight);
-        syncHeaderHeight();
+        window.addEventListener("resize", () => {
+            setHeaderHeightVar();
+            syncMobileHardening();
+        });
 
+        window.addEventListener("orientationchange", () => {
+            setHeaderHeightVar();
+            syncMobileHardening();
+        });
+
+        setHeaderHeightVar();
         markActiveLinks(header);
     }
 
@@ -252,8 +321,11 @@
        LIGHTWEIGHT PARTICLE OVERLAY (GUARDED)
     ====================================================== */
     function shouldRenderParticles() {
-        const reducedMotionQuery = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+        const reducedMotionQuery = MQ_REDUCED || window.matchMedia?.("(prefers-reduced-motion: reduce)");
         if (reducedMotionQuery?.matches) return false;
+
+        // Mobile/coarse pointer: skip entirely to keep things smooth
+        if (isMobileLike()) return false;
 
         const isLowMemory = typeof navigator.deviceMemory === "number" && navigator.deviceMemory <= 2;
         const isLowCore = typeof navigator.hardwareConcurrency === "number" && navigator.hardwareConcurrency <= 2;
@@ -287,7 +359,7 @@
 
         bg.appendChild(particleField);
 
-        const reducedMotionQuery = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+        const reducedMotionQuery = MQ_REDUCED || window.matchMedia?.("(prefers-reduced-motion: reduce)");
         reducedMotionQuery?.addEventListener?.("change", event => {
             if (event.matches) {
                 particleField.remove();
@@ -316,6 +388,11 @@
             skipLink.textContent = "Skip to main content";
             document.body.prepend(skipLink);
         }
+
+        /* -------------------------------
+           MOBILE HARDENING (EARLY)
+        ------------------------------- */
+        syncMobileHardening();
 
         /* -------------------------------
            NORMALISE LOGO PATH
@@ -351,51 +428,61 @@
 
         /* ==================================================
            VIEWPORT WOW — LIGHT UP EVERYTHING
+           (MOBILE: DISABLED to avoid extra animation churn)
         ================================================== */
-        const wowSelectors = [
-            ".ccg-hero",
-            ".home-highlight-card",
-            ".home-genre-card",
-            ".games-accordion__section",
-            ".ccg-game-card",
-            ".ccg-panel",
-            ".emulation-cta",
-            ".quiz-card",
-            "footer",
-            ".ccg-brand",
-        ];
+        if (!isMobileLike()) {
+            const wowSelectors = [
+                ".ccg-hero",
+                ".home-highlight-card",
+                ".home-genre-card",
+                ".games-accordion__section",
+                ".ccg-game-card",
+                ".ccg-panel",
+                ".emulation-cta",
+                ".quiz-card",
+                "footer",
+                ".ccg-brand",
+            ];
 
-        const wowTargets = document.querySelectorAll(wowSelectors.join(","));
+            const wowTargets = document.querySelectorAll(wowSelectors.join(","));
 
-        if (wowTargets.length) {
-            const wowObserver = new IntersectionObserver(entries => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add("is-lit");
-                    } else {
-                        entry.target.classList.remove("is-lit");
-                    }
+            if (wowTargets.length) {
+                const wowObserver = new IntersectionObserver(entries => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add("is-lit");
+                        } else {
+                            entry.target.classList.remove("is-lit");
+                        }
+                    });
+                }, { threshold: 0.25 });
+
+                wowTargets.forEach(el => {
+                    el.setAttribute("data-ccg-wow", "");
+                    wowObserver.observe(el);
                 });
-            }, { threshold: 0.25 });
-
-            wowTargets.forEach(el => {
-                el.setAttribute("data-ccg-wow", "");
-                wowObserver.observe(el);
-            });
+            }
         }
 
         /* ==================================================
            MICRO-GLINTS — MODED NAV & LOGO
+           (MOBILE/COARSE: DISABLED)
         ================================================== */
-        const glintTargets = document.querySelectorAll(".ccg-brand__logo, .ccg-nav__link");
-
-        glintTargets.forEach(target => {
-            target.addEventListener("pointerenter", () => target.classList.add("is-glinting"));
-            target.addEventListener("pointerleave", () => target.classList.remove("is-glinting"));
-        });
+        if (!isMobileLike()) {
+            const glintTargets = document.querySelectorAll(".ccg-brand__logo, .ccg-nav__link");
+            glintTargets.forEach(target => {
+                target.addEventListener("pointerenter", () => target.classList.add("is-glinting"));
+                target.addEventListener("pointerleave", () => target.classList.remove("is-glinting"));
+            });
+        }
 
         setupParticleField();
 
+        /* -------------------------------
+           Keep header height var accurate
+        ------------------------------- */
+        setHeaderHeightVar();
+        window.addEventListener("load", setHeaderHeightVar, { passive: true });
     });
 
 })();
