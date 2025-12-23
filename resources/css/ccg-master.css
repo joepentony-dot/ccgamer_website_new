@@ -181,6 +181,7 @@ li {
     flex-direction: column;
     gap: clamp(12px, 2vw, 20px);
     overflow-x: hidden;
+    overflow-y: visible; /* avoid nested page scrollbars */
 }
 
 .ccg-page,
@@ -205,6 +206,7 @@ li {
     padding: calc(var(--ccg-page-entry-pad) + 8px) clamp(1rem, 2vw, 1.5rem) 48px;
     position: relative;
     overflow-x: hidden;
+    overflow-y: visible;
 }
 
 @media (max-width: 900px) {
@@ -734,10 +736,13 @@ li {
     background: rgba(6, 6, 14, 0.96);
     border-left: 1px solid rgba(255,255,255,0.14);
     box-shadow: -20px 0 38px rgba(0,0,0,0.72);
-    padding: 18px 18px 28px;
+    padding: 18px 18px calc(28px + env(safe-area-inset-bottom, 0px));
     display: flex;
     flex-direction: column;
     gap: 14px;
+    max-height: 100dvh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     transform: translateX(100%);
     transition: transform 0.32s ease;
 }
