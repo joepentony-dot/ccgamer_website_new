@@ -308,6 +308,25 @@ li {
     min-width: 0;
 }
 
+/* ============================================================
+   MOBILE VISUAL BLEED FIX — HORIZONTAL CONTAINMENT
+   • Prevents right-edge bleed from hero/cards
+   • No layout changes
+============================================================ */
+
+@media (max-width: 768px) {
+    .ccg-page,
+    .ccg-main,
+    .ccg-hero,
+    .ccg-hero__inner,
+    .games-hero,
+    .games-hero__inner,
+    .game-hero,
+    .game-hero__inner {
+        overflow-x: hidden;
+        max-width: 100%;
+    }
+}
 
 /* ============================================================
    BRAND — STRUCTURAL ONLY
