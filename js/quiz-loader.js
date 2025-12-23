@@ -129,13 +129,16 @@
                 if (!id) return null;
 
                 const questions = Array.isArray(pack.questions) ? pack.questions.slice() : [];
+                const questionCount = typeof pack.questionCount === 'number'
+                    ? pack.questionCount
+                    : questions.length;
 
                 return {
                     id: String(id),
                     name: pack.name || pack.title || 'Quiz Pack',
                     difficulty: pack.difficulty || 'Normal',
                     description: pack.description || pack.tagline || '',
-                    questionCount: questions.length,
+                    questionCount,
                     questions
                 };
             })
@@ -220,6 +223,8 @@
 
         lastLoadContext = { source: 'local', status: 'ready', error: null, fallback: false };
 
+        lastLoadContext = { source: 'local', status: 'ready', error: null, fallback: false };
+
         renderStats(cachedSets);
         renderPackStatus(cachedSets);
         if (typeof cb === 'function') cb(cachedSets);
@@ -261,6 +266,8 @@
                 };
             })
             : [];
+
+        lastLoadContext = { source: 'local', status: 'ready', error: null, fallback: false };
 
         lastLoadContext = { source: 'local', status: 'ready', error: null, fallback: false };
 
