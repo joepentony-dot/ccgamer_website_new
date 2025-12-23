@@ -329,6 +329,26 @@ li {
 }
 
 /* ============================================================
+   MOBILE VISUAL BLEED FIX — INTERACTIVE ELEMENT CLIP
+   • Fixes right-edge bleed from buttons & cards
+   • Mobile only
+   • No layout changes
+============================================================ */
+
+@media (max-width: 768px) {
+    .ccg-btn,
+    .ccg-link,
+    .home-hero-actions a,
+    .home-hero-actions button,
+    .home-link-tile,
+    .ccg-card {
+        overflow: hidden;
+        max-width: 100%;
+    }
+}
+
+
+/* ============================================================
    BRAND — STRUCTURAL ONLY
 ============================================================ */
 
