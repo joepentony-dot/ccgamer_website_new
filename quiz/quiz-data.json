@@ -1,229 +1,1249 @@
 {
   "packs": [
     {
-      "id": "c64-legends",
-      "name": "C64 Legends",
+      "id": "1",
+      "name": "Commodore Quiz",
       "difficulty": "Medium",
-      "description": "SID-powered chart toppers every retro fan should know.",
-      "questionCount": 6,
       "questions": [
         {
-          "id": "c64-1",
-          "question": "Which composer scored the original Last Ninja on C64?",
+          "question": "C64 Ghostbusters coder with David Crane",
           "options": [
-            "Ben Daglish",
-            "Chris Huelsbeck",
-            "Martin Galway",
-            "Rob Hubbard"
+            "Troy Lyndon",
+            "John Twiddy",
+            "Adam Bellin",
+            "Chris Butler"
           ],
-          "correctIndex": 0
+          "correctIndex": 2,
+          "id": "1-1"
         },
         {
-          "id": "c64-2",
-          "question": "Elite released 'Paperboy' on disk and tape in which year?",
+          "question": "Kernkraft 400 sample from Lazy Jones screen",
           "options": [
-            "1984",
-            "1986",
-            "1988",
-            "1990"
+            "Res-Q",
+            "Laser Jones",
+            "Star Dust",
+            "Wild Wafers"
           ],
-          "correctIndex": 1
+          "correctIndex": 2,
+          "id": "1-2"
         },
         {
-          "id": "c64-3",
-          "question": "The loading tune for 'Commando' was famously arranged by?",
+          "question": "Paradroid droid with disruptor",
           "options": [
-            "Jeroen Tel",
+            "476",
+            "833",
+            "614",
+            "711"
+          ],
+          "correctIndex": 3,
+          "id": "1-3"
+        },
+        {
+          "question": "Stavros Fasoulas birth country",
+          "options": [
+            "Norway",
+            "Sweden",
+            "Denmark",
+            "Finland"
+          ],
+          "correctIndex": 3,
+          "id": "1-4"
+        },
+        {
+          "question": "Crystal Castles hero",
+          "options": [
+            "Brave Bobby",
+            "Bentley Bear",
+            "Clyde Ratcliffe",
+            "Monty Mole"
+          ],
+          "correctIndex": 1,
+          "id": "1-5"
+        },
+        {
+          "question": "Headus & Footus game",
+          "options": [
+            "Mayhem In Monsterland",
+            "Creatures 2",
+            "Bubble Bobble",
+            "Head Over Heels"
+          ],
+          "correctIndex": 3,
+          "id": "1-6"
+        },
+        {
+          "question": "Bungeling Empire publisher",
+          "options": [
+            "Electronic Arts",
+            "Br\u00f8derbund",
+            "Melbourne House",
+            "Accolade"
+          ],
+          "correctIndex": 1,
+          "id": "1-7"
+        },
+        {
+          "question": "Wizball cat name before Catellite",
+          "options": [
+            "Fudge",
+            "Nifta",
+            "Sputnik",
+            "Zark"
+          ],
+          "correctIndex": 1,
+          "id": "1-8"
+        },
+        {
+          "question": "Double Dragon brothers",
+          "options": [
+            "Rizer & Bill",
+            "Cody & Guy",
+            "Bub & Bob",
+            "Billy & Jimmy"
+          ],
+          "correctIndex": 3,
+          "id": "1-9"
+        },
+        {
+          "question": "Cannon Fodder first three",
+          "options": [
+            "Jim, Dave, Petey",
+            "Jopps, Frank, Joseph",
+            "Stoo, Dave, Larry",
+            "Jools, Jops, Stoo"
+          ],
+          "correctIndex": 3,
+          "id": "1-10"
+        },
+        {
+          "question": "Original Gauntlet character",
+          "options": [
+            "Alizon",
+            "Thunar",
+            "Questor",
+            "Storm Axe"
+          ],
+          "correctIndex": 2,
+          "id": "1-11"
+        },
+        {
+          "question": "H.E.R.O. stands for",
+          "options": [
+            "Healthcare Emergency",
+            "Hazard Evaluation",
+            "Humanitarian Emergency",
+            "Helicopter Rescue"
+          ],
+          "correctIndex": 3,
+          "id": "1-12"
+        },
+        {
+          "question": "Llamasoft founder 'Yak'",
+          "options": [
+            "Jeff Minter",
+            "Tim Stamper",
+            "Tony Crowther",
+            "Richard Darling"
+          ],
+          "correctIndex": 0,
+          "id": "1-13"
+        },
+        {
+          "question": "First Ocean Loader game",
+          "options": [
+            "Green Beret",
+            "Rambo",
+            "Daley Decathlon",
+            "Platoon"
+          ],
+          "correctIndex": 2,
+          "id": "1-14"
+        },
+        {
+          "question": "C64 Friday the 13th publisher",
+          "options": [
+            "Domark",
+            "Ocean",
+            "Firebird",
+            "Activision"
+          ],
+          "correctIndex": 0,
+          "id": "1-15"
+        },
+        {
+          "question": "Geoff Crammond 3D racer",
+          "options": [
+            "Buggy Boy",
+            "Super Off Road",
+            "Power Drift",
+            "Stunt Car Racer"
+          ],
+          "correctIndex": 3,
+          "id": "1-16"
+        },
+        {
+          "question": "What does Guybrush use to stop ghost LeChuck?",
+          "options": [
+            "Grog",
+            "Rum",
+            "Root beer",
+            "Seawater"
+          ],
+          "correctIndex": 2,
+          "id": "1-17"
+        },
+        {
+          "question": "Master of Magic: escape item",
+          "options": [
+            "Amulet of Immortality",
+            "Kingdom of Creatures",
+            "Rescue Daughter",
+            "Magic Scroll"
+          ],
+          "correctIndex": 0,
+          "id": "1-18"
+        },
+        {
+          "question": "Jet Set Willy start room",
+          "options": [
+            "Master Bedroom",
+            "Top Landing",
+            "The Bathroom",
+            "Front Door"
+          ],
+          "correctIndex": 2,
+          "id": "1-19"
+        },
+        {
+          "question": "Yie Ar Kung-Fu hero",
+          "options": [
+            "Buchu",
+            "Tonfun",
+            "Blues",
+            "Oolong"
+          ],
+          "correctIndex": 3,
+          "id": "1-20"
+        }
+      ],
+      "icon": "\ud83e\udde0\u2753",
+      "questionCount": 20
+    },
+    {
+      "id": "2",
+      "name": "Guess Which Game",
+      "difficulty": "Medium",
+      "questions": [
+        {
+          "question": "Which Game Is This",
+          "options": [
+            "Wizard\u2019s Crown",
+            "Archon",
+            "Battle Chess",
+            "Conquest of the New World"
+          ],
+          "correctIndex": 1,
+          "imageUrl": "https://i.postimg.cc/Hrgp6Xdb/archon-03.png",
+          "id": "2-1"
+        },
+        {
+          "question": "Which Game Is This",
+          "options": [
+            "Spelunker",
+            "Rick Dangerous",
+            "Bruce Lee",
+            "Kung-Fu Master"
+          ],
+          "correctIndex": 2,
+          "imageUrl": "https://i.postimg.cc/G4xbVtm2/bruce-lee-03.png",
+          "id": "2-2"
+        },
+        {
+          "question": "Which Game Is This",
+          "options": [
+            "Bubble Bobble",
+            "Joust",
+            "Snow Bros",
+            "Rodland"
+          ],
+          "correctIndex": 0,
+          "imageUrl": "https://i.postimg.cc/SnhygCkY/bubble-bobble-04.png",
+          "id": "2-3"
+        },
+        {
+          "question": "Which Game Is This",
+          "options": [
+            "Defender Of The Crown",
+            "Barbarian",
+            "Champions of Krynn",
+            "King\u2019s Bounty"
+          ],
+          "correctIndex": 0,
+          "imageUrl": "https://i.postimg.cc/G4CcXGdB/defender-of-the-crown-07.png",
+          "id": "2-4"
+        },
+        {
+          "question": "Which Game Is This",
+          "options": [
+            "Frontier",
+            "Mercenary",
+            "Trade Wars",
+            "Elite"
+          ],
+          "correctIndex": 3,
+          "imageUrl": "https://i.postimg.cc/mPsbmCBF/elite-04.png",
+          "id": "2-5"
+        },
+        {
+          "question": "Which Game Is This",
+          "options": [
+            "Gary Linekers Superstar",
+            "International Soccer",
+            "Emlyn Hughes",
+            "Kick Off"
+          ],
+          "correctIndex": 2,
+          "imageUrl": "https://i.postimg.cc/0zs8VDPs/emlyn-hughes-international-soccer-04.png",
+          "id": "2-6"
+        },
+        {
+          "question": "Which Game Is This",
+          "options": [
+            "Bangkok Knights",
+            "Yie Ar Kung-Fu",
+            "Way of the Exploding Fist",
+            "IK+"
+          ],
+          "correctIndex": 3,
+          "imageUrl": "https://i.postimg.cc/sMrVT7s1/ik-plus-03.png",
+          "id": "2-7"
+        },
+        {
+          "question": "Which Game Is This",
+          "options": [
+            "Hero Of The Golden Talisman",
+            "Montezuma\u2019s Revenge",
+            "Impossible Mission",
+            "The Last Ninja"
+          ],
+          "correctIndex": 2,
+          "imageUrl": "https://i.postimg.cc/RWBMgK4H/impossible-mission-02.png",
+          "id": "2-8"
+        },
+        {
+          "question": "Which Game Is This",
+          "options": [
+            "Last Ninja",
+            "Shinobi",
+            "Shadow Dancer",
+            "Ninja Rabbits"
+          ],
+          "correctIndex": 0,
+          "imageUrl": "https://i.postimg.cc/VJ8YKnmP/last-ninja-03.png",
+          "id": "2-9"
+        },
+        {
+          "question": "Which Game Is This",
+          "options": [
+            "M.U.L.E",
+            "Stellar Conquest",
+            "The Seven Cities of Gold",
+            "Outpost"
+          ],
+          "correctIndex": 0,
+          "imageUrl": "https://i.postimg.cc/pmH2szRd/m-u-l-e-03.png",
+          "id": "2-10"
+        },
+        {
+          "question": "Which Game Is This",
+          "options": [
+            "Zak McKracken",
+            "Leisure Suit Larry",
+            "The Pawn",
+            "Maniac Mansion"
+          ],
+          "correctIndex": 3,
+          "imageUrl": "https://i.postimg.cc/rDk8fxMs/maniac-mansion-03.png",
+          "id": "2-11"
+        },
+        {
+          "question": "Which Game Is This",
+          "options": [
+            "Robotron",
+            "Paradroid",
+            "Mutant Zone",
+            "Cybernoid"
+          ],
+          "correctIndex": 1,
+          "imageUrl": "https://i.postimg.cc/jDbsMPKG/paradroid-06.png",
+          "id": "2-12"
+        },
+        {
+          "question": "Which Game Is This",
+          "options": [
+            "Project Firestart",
+            "The Eidolon",
+            "Psi-5 Trading Company",
+            "Forbidden Forest"
+          ],
+          "correctIndex": 0,
+          "imageUrl": "https://i.postimg.cc/k2v7zGg6/project-firestart-05.png",
+          "id": "2-13"
+        },
+        {
+          "question": "Which Game Is This",
+          "options": [
+            "Choplifter",
+            "Raid on Bungeling Bay",
+            "Airwolf",
+            "Gunship"
+          ],
+          "correctIndex": 1,
+          "imageUrl": "https://i.postimg.cc/DST2xLnF/raid-on-bungeling-bay-03.png",
+          "id": "2-14"
+        },
+        {
+          "question": "Which Game Is This",
+          "options": [
+            "R-Type",
+            "Exolon",
+            "Turrican",
+            "Wizball"
+          ],
+          "correctIndex": 2,
+          "imageUrl": "https://i.postimg.cc/zyFq6vGv/turrican-03.png",
+          "id": "2-15"
+        },
+        {
+          "question": "Which Game Is This",
+          "options": [
+            "Usagi Yojimbo",
+            "Shinobi",
+            "Ninja Rabbits",
+            "Shadow of the Beast"
+          ],
+          "correctIndex": 0,
+          "imageUrl": "https://i.postimg.cc/9DhWLZCC/usagi-yojimbo-05.png",
+          "id": "2-16"
+        },
+        {
+          "question": "Which Game Is This",
+          "options": [
+            "Skiing",
+            "Winter Challenge",
+            "Slalom",
+            "Winter Games"
+          ],
+          "correctIndex": 3,
+          "imageUrl": "https://i.postimg.cc/gxHGQj2n/winter-games-04.png",
+          "id": "2-17"
+        },
+        {
+          "question": "Which Game Is This",
+          "options": [
+            "Blackwyche",
+            "Wizard",
+            "The Sentinel",
+            "Atic Atac"
+          ],
+          "correctIndex": 1,
+          "imageUrl": "https://i.postimg.cc/pmH2szRV/wizard-electronic-arts-03.png",
+          "id": "2-18"
+        },
+        {
+          "question": "Which Game Is This",
+          "options": [
+            "Exile",
+            "Gorf",
+            "Wizard of Wor",
+            "Robotron"
+          ],
+          "correctIndex": 2,
+          "imageUrl": "https://i.postimg.cc/k2mnTK90/wizard-of-wor-04.png",
+          "id": "2-19"
+        },
+        {
+          "question": "Which Game Is This",
+          "options": [
+            "Uridium",
+            "Delta",
+            "Sanxion",
+            "Wizball"
+          ],
+          "correctIndex": 3,
+          "imageUrl": "https://i.postimg.cc/TK6RtgGF/wizball-02.png",
+          "id": "2-20"
+        }
+      ],
+      "icon": "\ud83d\udc41\ufe0f\ud83d\uddbc\ufe0f",
+      "questionCount": 20
+    },
+    {
+      "id": "3",
+      "name": "Commodore 64 SID",
+      "difficulty": "Medium",
+      "questions": [
+        {
+          "question": "Name That Game",
+          "options": [
+            "Monty On The Run",
+            "Son Of Blagger",
+            "Manic Miner",
+            "Jet Set Willy"
+          ],
+          "correctIndex": 0,
+          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Monty_on_the_Run-01 (mp3cut.net).mp3",
+          "id": "3-1"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Trap Door",
+            "Firelord",
+            "Dan Dare",
+            "Stormlord"
+          ],
+          "correctIndex": 2,
+          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Dan_Dare-Pilot_of_the_Future-01-[AudioTrimmer.com].mp3",
+          "id": "3-2"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Heartland",
+            "Pentagram",
+            "Feud",
+            "Shadow of the Beast"
+          ],
+          "correctIndex": 0,
+          "audioUrl": "https://joepentony-dot.github.io/mp3-host/heartland_2JV7tDQO.mp3",
+          "id": "3-3"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Thrust",
+            "Arkanoid",
+            "Joe Blade",
+            "Kane"
+          ],
+          "correctIndex": 1,
+          "audioUrl": "https://joepentony-dot.github.io/mp3-host/arkanoid-01_ypD9TQPf.mp3",
+          "id": "3-4"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Skate Or Die",
+            "720\u00b0",
+            "California Games",
+            "Hypersports"
+          ],
+          "correctIndex": 0,
+          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Skate_or_Die-02-[AudioTrimmer.com].mp3",
+          "id": "3-5"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Ikari Warriors",
+            "Who Dares Wins",
+            "Commando",
+            "Green Beret"
+          ],
+          "correctIndex": 3,
+          "audioUrl": "https://joepentony-dot.github.io/mp3-host/green-beret-01_1LrjKI6E.mp3",
+          "id": "3-6"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Robin Of The Wood",
+            "Sabre Wulf",
+            "The Legend of Blacksilver",
+            "Staff of Karnath"
+          ],
+          "correctIndex": 0,
+          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Robin_of_the_Wood-01-[AudioTrimmer.com].mp3",
+          "id": "3-7"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "R-Type",
+            "Delta",
+            "Cybernoid II",
+            "Armalyte"
+          ],
+          "correctIndex": 2,
+          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Cybernoid_II-01 (mp3cut.net).mp3",
+          "id": "3-8"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Flash Gordon",
+            "Ghostbusters II",
+            "Barbarian II",
+            "Gauntlet"
+          ],
+          "correctIndex": 0,
+          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Flash_Gordon-01-[AudioTrimmer.com].mp3",
+          "id": "3-9"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Frak",
+            "Thing On A Spring",
+            "Buggy Boy",
+            "Thing Bounces Back"
+          ],
+          "correctIndex": 1,
+          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Thing_on_a_Spring-01-[AudioTrimmer.com].mp3",
+          "id": "3-10"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Commando",
+            "Predator",
+            "Platoon",
+            "Rambo II: First Blood Part 2"
+          ],
+          "correctIndex": 3,
+          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Rambo_First_Blood_Part_II-01 (mp3cut.net).mp3",
+          "id": "3-11"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Parallax",
+            "Wizball",
+            "Mayhem in Monsterland",
+            "Chimera"
+          ],
+          "correctIndex": 1,
+          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Wizball-04 (mp3cut.net).mp3",
+          "id": "3-12"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Turbo Out Run",
+            "Out Run",
+            "Pitstop II",
+            "Chase HQ"
+          ],
+          "correctIndex": 0,
+          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Turbo_Outrun-02 (mp3cut.net).mp3",
+          "id": "3-13"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Fist II",
+            "The Way of the Exploding Fist",
+            "International Karate",
+            "Barbarian"
+          ],
+          "correctIndex": 0,
+          "audioUrl": "https://joepentony-dot.github.io/mp3-host/fist-ii-the-legend-continues-02_I4BlNbpQ.mp3",
+          "id": "3-14"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Impossible Mission",
+            "One Man And His Droid",
+            "Auf Wiedersehen Monty",
+            "Bounder"
+          ],
+          "correctIndex": 2,
+          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Auf_Wiedersehen_Monty-01-[AudioTrimmer.com].mp3",
+          "id": "3-15"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Lightforce",
+            "Delta",
+            "Sanxion",
+            "Armalyte"
+          ],
+          "correctIndex": 2,
+          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Sanxion-01 (mp3cut.net).mp3",
+          "id": "3-16"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Yie Ar Kung Fu",
+            "IK+",
+            "The Way of the Tiger",
+            "Kung Fu Master"
+          ],
+          "correctIndex": 0,
+          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Yie_Ar_Kung_Fu-18-[AudioTrimmer.com].mp3",
+          "id": "3-17"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Spindizzy",
+            "Master Of Magic",
+            "The Staff of Karnath",
+            "Times of Lore"
+          ],
+          "correctIndex": 1,
+          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Master_of_Magic-01-[AudioTrimmer.com].mp3",
+          "id": "3-18"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Commando",
+            "Ikari Warriors",
+            "Gryzor",
+            "Fernandez Must Die"
+          ],
+          "correctIndex": 0,
+          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Commando-01 (mp3cut.net).mp3",
+          "id": "3-19"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Hawkeye",
+            "Turrican",
+            "Flimbo\u2019s Quest",
+            "Hunter\u2019s Moon"
+          ],
+          "correctIndex": 0,
+          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Hawkeye-01 (mp3cut.net).mp3",
+          "id": "3-20"
+        }
+      ],
+      "icon": "\ud83c\udfb5\ud83d\udd79\ufe0f",
+      "questionCount": 20
+    },
+    {
+      "id": "4",
+      "name": "Amiga Music",
+      "difficulty": "Medium",
+      "questions": [
+        {
+          "question": "Name That Game",
+          "options": [
+            "R-Type",
+            "Alien Breed",
+            "Project-X",
+            "Smash TV"
+          ],
+          "correctIndex": 1,
+          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/alienbreed.mp3",
+          "id": "4-1"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Oddworld: Abes Oddysee",
+            "Rick Dangerous",
+            "Dreamweb",
+            "Another World"
+          ],
+          "correctIndex": 3,
+          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/anotherworld.mp3",
+          "id": "4-2"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Day Of The Tentacle",
+            "The Dig",
+            "Beneath A Steel Sky",
+            "Simon The Sorcerer"
+          ],
+          "correctIndex": 2,
+          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/beneathasteelsky.mp3",
+          "id": "4-3"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Rainbow Islands",
+            "Parasol Stars",
+            "Bubble Bobble",
+            "The New Zealand Story"
+          ],
+          "correctIndex": 2,
+          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/bubblebobble.mp3",
+          "id": "4-4"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Cannon Fodder",
+            "Lost Patrol",
+            "Escape from Colditz",
+            "B-17 Flying Fortress"
+          ],
+          "correctIndex": 0,
+          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/cannonfodder.mp3",
+          "id": "4-5"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Populous II",
+            "Dune",
+            "Civilization",
+            "North & South"
+          ],
+          "correctIndex": 1,
+          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/dune.mp3",
+          "id": "4-6"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Bomb Jack",
+            "Fire 'N Ice",
+            "Pengo",
+            "Dyna Blaster"
+          ],
+          "correctIndex": 3,
+          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/dynablaster.mp3",
+          "id": "4-7"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "B.A.T. II",
+            "Flashback",
+            "Rick Dangerous 2",
+            "Prince Of Persia"
+          ],
+          "correctIndex": 1,
+          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/flashback.mp3",
+          "id": "4-8"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Desert Strike",
+            "Rocket Ranger",
+            "It Came From The Desert",
+            "UFO: Enemy Unknown"
+          ],
+          "correctIndex": 2,
+          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/itcamefromthedesert.mp3",
+          "id": "4-9"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "The Humans",
+            "Pushover",
+            "Lemmings",
+            "Fury of the Furries"
+          ],
+          "correctIndex": 2,
+          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/lemmings.mp3",
+          "id": "4-10"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Maniac Mansion",
+            "Zak McKracken",
+            "Loom",
+            "Their Finest Hour"
+          ],
+          "correctIndex": 0,
+          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/maniacmansion.mp3",
+          "id": "4-11"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "King's Quest",
+            "Valhalla",
+            "Defender of the Crown",
+            "Mega Lo Mania"
+          ],
+          "correctIndex": 3,
+          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/megalomania.mp3",
+          "id": "4-12"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "HeroQuest",
+            "Sword of Sodan",
+            "Cadaver: The Pay Off",
+            "Moonstone"
+          ],
+          "correctIndex": 3,
+          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/moonstone.mp3",
+          "id": "4-13"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Goal!",
+            "Sensible Soccer",
+            "Kick Off 2",
+            "MicroProse Soccer"
+          ],
+          "correctIndex": 1,
+          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/sensiblesoccer.mp3",
+          "id": "4-14"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Caesar",
+            "Colonization",
+            "The Settlers",
+            "Railroad Tycoon"
+          ],
+          "correctIndex": 2,
+          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/settlers.mp3",
+          "id": "4-15"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "4D Sports Boxing",
+            "Speedball 2",
+            "Cyberball",
+            "Brutal Sports Football"
+          ],
+          "correctIndex": 1,
+          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/speedball2.mp3",
+          "id": "4-16"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Supercars 2",
+            "Micro Machines",
+            "Super Sprint",
+            "Test Drive II: The Duel"
+          ],
+          "correctIndex": 0,
+          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/supercars2.mp3",
+          "id": "4-17"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Syndicate",
+            "Laser Squad",
+            "Shadowrun",
+            "UFO: Enemy Unknown"
+          ],
+          "correctIndex": 0,
+          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/syndicate.mp3",
+          "id": "4-18"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Vroom",
+            "Badlands",
+            "Lotus Turbo Challenge 2",
+            "Out Run"
+          ],
+          "correctIndex": 2,
+          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/turbochallenge2.mp3",
+          "id": "4-19"
+        },
+        {
+          "question": "Name That Game",
+          "options": [
+            "Silkworm",
+            "Xenon 2",
+            "R-Type",
+            "Gods"
+          ],
+          "correctIndex": 3,
+          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/gods.mp3",
+          "id": "4-20"
+        }
+      ],
+      "icon": "\ud83c\udfb5\ud83d\udcbe",
+      "questionCount": 20
+    },
+    {
+      "id": "5",
+      "name": "SID Chip Wizards",
+      "difficulty": "Medium",
+      "questions": [
+        {
+          "question": "Which Legend Is This",
+          "options": [
             "Rob Hubbard",
-            "Tim Follin",
+            "Martin Galway",
+            "Jeroen Tel",
             "David Whittaker"
           ],
-          "correctIndex": 1
+          "correctIndex": 3,
+          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/whittaker/Knight_Games-01_cut_Whittaker.mp3",
+          "gameName": "Knight Games",
+          "id": "5-1"
         },
         {
-          "id": "c64-4",
-          "question": "Which joystick port does Player 1 usually use on the C64?",
+          "question": "Which Legend Is This",
           "options": [
-            "Port 1",
-            "Port 2",
-            "Both",
-            "Neither"
+            "Rob Hubbard",
+            "Martin Galway",
+            "Jeroen Tel",
+            "David Whittaker"
           ],
-          "correctIndex": 1
+          "correctIndex": 2,
+          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/jeroentel/Super_Monaco_Grand_Prix-01_jeroentel.mp3",
+          "gameName": "Super Monaco Grand Prix",
+          "id": "5-2"
         },
         {
-          "id": "c64-5",
-          "question": "'Impossible Mission' greets players with which phrase?",
+          "question": "Which Legend Is This",
           "options": [
-            "Stay a while, stay forever!",
-            "Mission accepted!",
-            "Welcome agent!",
-            "Enter the base!"
+            "Rob Hubbard",
+            "Martin Galway",
+            "Jeroen Tel",
+            "David Whittaker"
           ],
-          "correctIndex": 0
+          "correctIndex": 0,
+          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/hubbard/Monty_on_the_Run-01_cut_robhubbard.mp3",
+          "gameName": "Monty on the Run",
+          "id": "5-3"
         },
         {
-          "id": "c64-6",
-          "question": "Who published the cult shooter 'Armalyte'?",
+          "question": "Which Legend Is This",
           "options": [
-            "System 3",
-            "Thalamus",
-            "Ocean",
-            "Gremlin"
+            "Rob Hubbard",
+            "Martin Galway",
+            "Jeroen Tel",
+            "David Whittaker"
           ],
-          "correctIndex": 1
+          "correctIndex": 2,
+          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/jeroentel/Myth-01_jeroentel.mp3",
+          "gameName": "Myth",
+          "id": "5-4"
+        },
+        {
+          "question": "Which Legend Is This",
+          "options": [
+            "Rob Hubbard",
+            "Martin Galway",
+            "Jeroen Tel",
+            "David Whittaker"
+          ],
+          "correctIndex": 1,
+          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/galway/Yie_Ar_Kung_Fu-12_galway.mp3",
+          "gameName": "Yie Ar Kung Fu",
+          "id": "5-5"
+        },
+        {
+          "question": "Which Legend Is This",
+          "options": [
+            "Rob Hubbard",
+            "Martin Galway",
+            "Jeroen Tel",
+            "David Whittaker"
+          ],
+          "correctIndex": 0,
+          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/hubbard/Action_Biker-01_cut_robhubbard.mp3",
+          "gameName": "Action Biker",
+          "id": "5-6"
+        },
+        {
+          "question": "Which Legend Is This",
+          "options": [
+            "Rob Hubbard",
+            "Martin Galway",
+            "Jeroen Tel",
+            "David Whittaker"
+          ],
+          "correctIndex": 3,
+          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/whittaker/Max_Headroom-01_cut_Whittaker.mp3",
+          "gameName": "Max Headroom",
+          "id": "5-7"
+        },
+        {
+          "question": "Which Legend Is This",
+          "options": [
+            "Rob Hubbard",
+            "Martin Galway",
+            "Jeroen Tel",
+            "David Whittaker"
+          ],
+          "correctIndex": 2,
+          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/jeroentel/Hawkeye-01_jeroentel.mp3",
+          "gameName": "Hawkeye",
+          "id": "5-8"
+        },
+        {
+          "question": "Which Legend Is This",
+          "options": [
+            "Rob Hubbard",
+            "Martin Galway",
+            "Jeroen Tel",
+            "David Whittaker"
+          ],
+          "correctIndex": 0,
+          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/hubbard/5_Title_Tunes-01_cut_robhubbard.mp3",
+          "gameName": "Train Robbers",
+          "id": "5-9"
+        },
+        {
+          "question": "Which Legend Is This",
+          "options": [
+            "Rob Hubbard",
+            "Martin Galway",
+            "Jeroen Tel",
+            "David Whittaker"
+          ],
+          "correctIndex": 2,
+          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/jeroentel/Turbo_Outrun-01_jeroentel.mp3",
+          "gameName": "Turbo Outrun",
+          "id": "5-10"
+        },
+        {
+          "question": "Which Legend Is This",
+          "options": [
+            "Rob Hubbard",
+            "Martin Galway",
+            "Jeroen Tel",
+            "David Whittaker"
+          ],
+          "correctIndex": 1,
+          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/galway/Mikie-01_cut_galway.mp3",
+          "gameName": "Mikie",
+          "id": "5-11"
+        },
+        {
+          "question": "Which Legend Is This",
+          "options": [
+            "Rob Hubbard",
+            "Martin Galway",
+            "Jeroen Tel",
+            "David Whittaker"
+          ],
+          "correctIndex": 0,
+          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/hubbard/Flash_Gordon-01_cut_robhubbard.mp3",
+          "gameName": "Flash Gordon",
+          "id": "5-12"
+        },
+        {
+          "question": "Which Legend Is This",
+          "options": [
+            "Rob Hubbard",
+            "Martin Galway",
+            "Jeroen Tel",
+            "David Whittaker"
+          ],
+          "correctIndex": 3,
+          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/whittaker/Lazy_Jones-01_Whittaker.mp3",
+          "gameName": "Lazy Jones",
+          "id": "5-13"
+        },
+        {
+          "question": "Which Legend Is This",
+          "options": [
+            "Rob Hubbard",
+            "Martin Galway",
+            "Jeroen Tel",
+            "David Whittaker"
+          ],
+          "correctIndex": 2,
+          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/jeroentel/Supremacy-01_jeroentel.mp3",
+          "gameName": "Supremacy",
+          "id": "5-14"
+        },
+        {
+          "question": "Which Legend Is This",
+          "options": [
+            "Rob Hubbard",
+            "Martin Galway",
+            "Jeroen Tel",
+            "David Whittaker"
+          ],
+          "correctIndex": 1,
+          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/galway/TIMESOFLORE_cut_galway.mp3",
+          "gameName": "Times Of Lore",
+          "id": "5-15"
+        },
+        {
+          "question": "Which Legend Is This",
+          "options": [
+            "Rob Hubbard",
+            "Martin Galway",
+            "Jeroen Tel",
+            "David Whittaker"
+          ],
+          "correctIndex": 0,
+          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/hubbard/Bangkok_Knights_cut_robhubbard.mp3",
+          "gameName": "Bangkok Knights",
+          "id": "5-16"
+        },
+        {
+          "question": "Which Legend Is This",
+          "options": [
+            "Rob Hubbard",
+            "Martin Galway",
+            "Jeroen Tel",
+            "David Whittaker"
+          ],
+          "correctIndex": 2,
+          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/jeroentel/Golden_Axe-01_jeroentel.mp3",
+          "gameName": "Golden Axe",
+          "id": "5-17"
+        },
+        {
+          "question": "Which Legend Is This",
+          "options": [
+            "Rob Hubbard",
+            "Martin Galway",
+            "Jeroen Tel",
+            "David Whittaker"
+          ],
+          "correctIndex": 1,
+          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/galway/Daley_Thompsons_Decathlon-01_cut_galway.mp3",
+          "gameName": "Decathlon",
+          "id": "5-18"
+        },
+        {
+          "question": "Which Legend Is This",
+          "options": [
+            "Rob Hubbard",
+            "Martin Galway",
+            "Jeroen Tel",
+            "David Whittaker"
+          ],
+          "correctIndex": 1,
+          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/galway/Neverending_Story_cut_galway.mp3",
+          "gameName": "Neverending Story",
+          "id": "5-19"
+        },
+        {
+          "question": "Which Legend Is This",
+          "options": [
+            "Rob Hubbard",
+            "Martin Galway",
+            "Jeroen Tel",
+            "David Whittaker"
+          ],
+          "correctIndex": 0,
+          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/hubbard/Crazy_Comets-01_cut_robhubbard.mp3",
+          "gameName": "Crazy Comets",
+          "id": "5-20"
         }
-      ]
-    },
-    {
-      "id": "amiga-essentials",
-      "name": "Amiga Essentials",
-      "difficulty": "Medium",
-      "description": "Amiga 500/1200 highlights, demos and iconic studios.",
-      "questionCount": 6,
-      "questions": [
-        {
-          "id": "amiga-1",
-          "question": "Which developer created 'Shadow of the Beast'?",
-          "options": [
-            "Team17",
-            "Reflections",
-            "Bitmap Brothers",
-            "Delphine"
-          ],
-          "correctIndex": 1
-        },
-        {
-          "id": "amiga-2",
-          "question": "'Lemmings' was originally released by which studio?",
-          "options": [
-            "DMA Design",
-            "Psygnosis",
-            "Cinemaware",
-            "Gremlin"
-          ],
-          "correctIndex": 0
-        },
-        {
-          "id": "amiga-3",
-          "question": "What chipset powers the Amiga 1200 graphics?",
-          "options": [
-            "ECS",
-            "AGA",
-            "OCS",
-            "VGA"
-          ],
-          "correctIndex": 1
-        },
-        {
-          "id": "amiga-4",
-          "question": "Which magazine coverdisk popularised 'Worms' on Amiga?",
-          "options": [
-            "Amiga Power",
-            "Amiga Format",
-            "CU Amiga",
-            "The One"
-          ],
-          "correctIndex": 1
-        },
-        {
-          "id": "amiga-5",
-          "question": "The intro voice in 'Sensible World of Soccer' says?",
-          "options": [
-            "Let's play football",
-            "Kick off!",
-            "Sensible Soccer",
-            "Goal time"
-          ],
-          "correctIndex": 2
-        },
-        {
-          "id": "amiga-6",
-          "question": "Which tracker format became a demo-scene staple?",
-          "options": [
-            ".sid",
-            ".mod",
-            ".mid",
-            ".wav"
-          ],
-          "correctIndex": 1
-        }
-      ]
-    },
-    {
-      "id": "arcade-conversions",
-      "name": "Arcade Conversions",
-      "difficulty": "Hard",
-      "description": "Spot-on ports, infamous misses and trivia from the arcades.",
-      "questionCount": 6,
-      "questions": [
-        {
-          "id": "arcade-1",
-          "question": "Which arcade classic shipped on ROM cartridge for C64?",
-          "options": [
-            "Shinobi",
-            "Ghouls 'n Ghosts",
-            "Midnight Resistance",
-            "After Burner"
-          ],
-          "correctIndex": 3
-        },
-        {
-          "id": "arcade-2",
-          "question": "Ocean's version of 'Toki' is known for which feature?",
-          "options": [
-            "2-player simultaneous",
-            "Cartoon cutscenes",
-            "Excellent music",
-            "Password save"
-          ],
-          "correctIndex": 2
-        },
-        {
-          "id": "arcade-3",
-          "question": "'Out Run Europa' originally started as a sequel for which platform?",
-          "options": [
-            "Master System",
-            "Amiga",
-            "ZX Spectrum",
-            "Game Boy"
-          ],
-          "correctIndex": 2
-        },
-        {
-          "id": "arcade-4",
-          "question": "Which company handled many high-profile C64 arcade ports like 'Operation Wolf'?",
-          "options": [
-            "Taito",
-            "Imagine",
-            "Domark",
-            "US Gold"
-          ],
-          "correctIndex": 1
-        },
-        {
-          "id": "arcade-5",
-          "question": "The Amiga port of 'Street Fighter II' shipped on how many disks?",
-          "options": [
-            "2",
-            "3",
-            "4",
-            "5"
-          ],
-          "correctIndex": 2
-        },
-        {
-          "id": "arcade-6",
-          "question": "Which arcade racer inspired the superscaler feel of 'Lotus Turbo Challenge'?",
-          "options": [
-            "Hang-On",
-            "Pole Position",
-            "Out Run",
-            "Power Drift"
-          ],
-          "correctIndex": 2
-        }
-      ]
+      ],
+      "icon": "\ud83c\udfb5",
+      "questionCount": 20
     }
   ]
 }
