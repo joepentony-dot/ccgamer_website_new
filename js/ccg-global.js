@@ -295,6 +295,7 @@
             syncMobileHardening();
         });
 
+        syncMobileNavState();
         setHeaderHeightVar();
         markActiveLinks(header);
         nav.classList.add("ccg-nav--hydrated");

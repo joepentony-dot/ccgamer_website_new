@@ -1262,6 +1262,33 @@ body[data-ccg-mode="amiga"] {
     pointer-events: none !important;
 }
 
+.ccg-is-mobile,
+.ccg-is-mobile body,
+html.ccg-is-mobile,
+body.ccg-is-mobile {
+    max-width: 100%;
+    width: 100%;
+    overflow-x: clip;
+}
+
+html.ccg-is-mobile .ccg-page,
+body.ccg-is-mobile .ccg-page,
+html.ccg-is-mobile .ccg-main,
+body.ccg-is-mobile .ccg-main,
+html.ccg-is-mobile .ccg-header,
+body.ccg-is-mobile .ccg-header,
+html.ccg-is-mobile .ccg-hero,
+body.ccg-is-mobile .ccg-hero,
+html.ccg-is-mobile .home-hero,
+body.ccg-is-mobile .home-hero,
+html.ccg-is-mobile .home-hero__frame,
+body.ccg-is-mobile .home-hero__frame,
+html.ccg-is-mobile .home-hero__bg,
+body.ccg-is-mobile .home-hero__bg {
+    max-width: 100%;
+    overflow-x: clip;
+}
+
 /* ============================================================
    MOBILE SAFETY — HORIZONTAL OVERFLOW CLAMP
    • Prevents right-side spill on mobile
