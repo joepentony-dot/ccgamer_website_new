@@ -250,7 +250,7 @@ li {
 
     backdrop-filter: blur(10px);
     box-shadow: 0 20px 46px rgba(0,0,0,0.72), 0 0 18px rgba(var(--accent-rgb),0.24);
-    overflow: hidden;
+    overflow: visible;
     will-change: transform, opacity;
 }
 
