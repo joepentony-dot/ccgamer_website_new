@@ -1141,3 +1141,19 @@ body[data-ccg-mode="amiga"] {
         padding-top: calc(var(--ccg-header-height) + 8px);
     }
 }
+
+/* ============================================================
+   MOBILE SAFETY — HORIZONTAL OVERFLOW CLAMP
+   • Prevents right-side spill on mobile
+   • No layout or alignment changes
+   • Desktop untouched
+============================================================ */
+
+@media (max-width: 768px) {
+    html,
+    body {
+        overflow-x: hidden;
+        max-width: 100%;
+    }
+}
+
