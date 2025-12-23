@@ -271,6 +271,27 @@ li {
         );
 }
 
+/* ============================================================
+   MOBILE VISUAL BLEED FIX — HEADER / HERO
+   • No layout changes
+   • Visual containment only
+============================================================ */
+
+.ccg-header {
+    isolation: isolate;
+}
+
+@media (max-width: 768px) {
+    .ccg-header {
+        overflow: hidden;
+    }
+
+    .ccg-header::after {
+        height: 8px;
+        opacity: 0.6;
+    }
+}
+
 .ccg-header-inner {
     width: min(1320px, 100%);
     padding-inline: clamp(8px, 2vw, 14px);
