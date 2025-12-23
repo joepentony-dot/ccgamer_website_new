@@ -259,7 +259,7 @@ li {
     position: absolute;
     left: 0;
     right: 0;
-    bottom: -1px;
+    bottom: 0; /* was -1px — this caused bleed */
     height: 18px;
     pointer-events: none;
 
