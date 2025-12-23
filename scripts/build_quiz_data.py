@@ -81,7 +81,7 @@ def load_questions(csv_path: Path) -> Dict[str, List[Dict[str, Any]]]:
     with csv_path.open(newline="", encoding="utf-8") as fp:
         reader = csv.DictReader(fp)
         for row in reader:
-            set_id = _first_value(row, ["Set ID", "set_id", "Quiz Set ID"])
+            set_id = _first_value(row, ["Set ID", "set_id", "Quiz Set ID", "Quiz Set"])
             if not set_id:
                 # Skip rows we cannot associate with a set.
                 continue
