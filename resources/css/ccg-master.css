@@ -76,6 +76,13 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+.ccg-body--nav-open {
+    overflow: hidden;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+}
+
 img,
 picture,
 video,
@@ -175,6 +182,15 @@ li {
     display: flex;
     flex-direction: column;
     gap: clamp(12px, 2vw, 20px);
+    overflow-x: hidden;
+}
+
+.ccg-page,
+.ccg-main,
+.ccg-header,
+.ccg-hero,
+.home-hero {
+    max-width: 100vw;
 }
 
 .ccg-page,
@@ -190,6 +206,7 @@ li {
     margin: 0 auto;
     padding: calc(var(--ccg-page-entry-pad) + 8px) clamp(1rem, 2vw, 1.5rem) 48px;
     position: relative;
+    overflow-x: hidden;
 }
 
 @media (max-width: 640px) {
@@ -1042,6 +1059,26 @@ li {
     border-color: rgba(var(--accent-rgb),0.65);
     box-shadow: 0 16px 36px rgba(0,0,0,0.74), 0 0 18px rgba(var(--accent-rgb),0.28);
     outline: none;
+}
+
+@media (hover: none) and (pointer: coarse) {
+    .ccg-btn,
+    .ccg-nav__link,
+    .ccg-nav__more-toggle {
+        transition: none;
+        transform: none !important;
+        box-shadow: 0 10px 24px rgba(0,0,0,0.55);
+    }
+
+    .ccg-nav__link:hover,
+    .ccg-nav__link:focus-visible,
+    .ccg-nav__more-toggle:hover,
+    .ccg-nav__more-toggle:focus-visible,
+    .ccg-btn:hover,
+    .ccg-btn:focus-visible {
+        transform: none;
+        box-shadow: 0 10px 24px rgba(0,0,0,0.55);
+    }
 }
 
 
