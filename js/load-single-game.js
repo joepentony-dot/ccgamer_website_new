@@ -108,6 +108,19 @@ function resolveDiskUrl(game) {
     return resolvePrimaryLink(game.disk || game.tape || game.download);
 }
 
+function resolvePlayUrl(game) {
+    const disk = resolveDiskUrl(game);
+    if (disk) return disk;
+
+    const manual = resolveManualUrl(game);
+    if (manual) return normaliseManualUrl(manual);
+
+    const lemon = resolvePrimaryLink(game.lemon);
+    if (lemon) return lemon;
+
+    return "";
+}
+
 /* ============================================================
    RENDER GAME
 ============================================================ */
@@ -126,6 +139,18 @@ function renderGame(game) {
     document.getElementById("gameMetaSystem").textContent = game.system || "—";
     document.getElementById("gameMetaDeveloper").textContent =
         game.publisher || game.developer || "—";
+
+    const playUrl = resolvePlayUrl(game);
+    if (playUrl) {
+        const playBtn = document.getElementById("gamePlayBtn");
+        playBtn.href = playUrl;
+        playBtn.hidden = false;
+
+        const cta = document.getElementById("gamePlayCta");
+        const playText = document.getElementById("gamePlayText");
+        playText.textContent = `Jump into ${game.title || "this classic"} on ${game.system || "your favourite system"}.`;
+        cta.hidden = false;
+    }
 
     /* DESCRIPTION */
     if (game.description) {
