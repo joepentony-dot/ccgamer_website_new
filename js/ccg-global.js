@@ -221,13 +221,8 @@
         mobilePanel.inert = true;
         mobilePanel.setAttribute("aria-hidden", "true");
 
-        const fallbackBar = document.createElement("div");
-        fallbackBar.className = "ccg-nav__bar ccg-nav__bar--fallback";
-        fallbackBar.appendChild(primaryList.cloneNode(true));
-        fallbackBar.appendChild(secondaryList.cloneNode(true));
-
         nav.innerHTML = "";
-        nav.append(bar, mobilePanel, fallbackBar);
+        nav.append(bar, mobilePanel);
         nav.classList.add("ccg-nav--hydrated");
 
         let isMoreOpen = false;
@@ -259,7 +254,6 @@
             toggle.setAttribute("aria-expanded", "false");
             mobilePanel.inert = true;
             mobilePanel.setAttribute("aria-hidden", "true");
-            document.body?.classList.remove("ccg-body--nav-open");
         };
 
         if (!moreWrap.hidden) {
@@ -280,12 +274,6 @@
             setHeaderHeightVar();
             mobilePanel.inert = !isOpen;
             mobilePanel.setAttribute("aria-hidden", isOpen ? "false" : "true");
-
-            if (isOpen) {
-                document.body?.classList.add("ccg-body--nav-open");
-            } else {
-                document.body?.classList.remove("ccg-body--nav-open");
-            }
         });
 
         header.querySelectorAll(".ccg-nav__link").forEach(link => {
