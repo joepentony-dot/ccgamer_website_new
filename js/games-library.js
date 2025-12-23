@@ -16,6 +16,8 @@ let CCG_GAMES_TOTAL = 0;
 
 const ACCORDION_STATE_KEY = "ccgAccordionState";
 const THUMB_BASE_PATH = "../resources/images/thumbnails/all/";
+const THUMB_PLACEHOLDER =
+    "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
 const CCG_PREFERS_REDUCED_MOTION = window.matchMedia(
     "(prefers-reduced-motion: reduce)"
 );
@@ -159,6 +161,7 @@ function buildAccordion(groups) {
     });
 
     attachAccordionEvents();
+    initThumbLazyLoad();
 }
 
 /* ============================================================
@@ -412,7 +415,12 @@ function renderGameCard(game) {
         <a href="game.html?id=${encodeURIComponent(game.id)}"
            class="ccg-game-card">
             <div class="ccg-game-card__thumb">
-                <img src="${thumb}" alt="${game.title}">
+                <img src="${THUMB_PLACEHOLDER}"
+                     data-src="${thumb}"
+                     alt="${game.title}"
+                     data-game-thumb
+                     loading="lazy"
+                     decoding="async">
             </div>
             <div class="ccg-game-card__body">
                 <h3 class="ccg-game-card__title">${game.title}</h3>
@@ -434,4 +442,54 @@ function resolveGameThumb(raw) {
         .replace("resources/images/", "");
 
     return `${THUMB_BASE_PATH}${t}`;
+}
+
+/* ============================================================
+   THUMBNAIL LAZY LOAD (ROBUST / RESILIENT)
+============================================================ */
+
+let thumbObserver;
+
+function initThumbLazyLoad() {
+    if (thumbObserver) thumbObserver.disconnect();
+
+    if ("IntersectionObserver" in window) {
+        thumbObserver = new IntersectionObserver(handleThumbIntersections, {
+            rootMargin: "400px 0px",
+            threshold: 0.01,
+        });
+
+        document.querySelectorAll("[data-game-thumb]").forEach(img => {
+            if (img.dataset.loaded === "true") return;
+
+            img.addEventListener("error", () => {
+                img.src = `${THUMB_BASE_PATH}1942.jpg`;
+            }, { once: true });
+
+            thumbObserver.observe(img);
+        });
+    } else {
+        // Fallback: no IO support, set all immediately
+        document.querySelectorAll("[data-game-thumb]").forEach(loadThumbNow);
+    }
+}
+
+function handleThumbIntersections(entries) {
+    entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+
+        const img = entry.target;
+        loadThumbNow(img);
+        thumbObserver.unobserve(img);
+    });
+}
+
+function loadThumbNow(img) {
+    if (!img || img.dataset.loaded === "true") return;
+
+    const src = img.dataset.src;
+    if (!src) return;
+
+    img.src = src;
+    img.dataset.loaded = "true";
 }
