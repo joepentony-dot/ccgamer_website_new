@@ -320,7 +320,9 @@
 
         qsa(".quiz-answer-btn").forEach((btn, idx) => {
             btn.disabled = true;
-            if (idx === correct) btn.classList.add("quiz-answer--highlight-correct");
+            if (idx === correct) {
+                btn.classList.add("quiz-answer--correct", "quiz-answer--highlight-correct");
+            }
         });
 
         if (isCorrect) {
