@@ -161,44 +161,45 @@
         const primaryList = nav?.querySelector("[data-ccg-nav-primary]");
         const secondaryList = nav?.querySelector("[data-ccg-nav-secondary]");
         const moreWrap = nav?.querySelector(".ccg-nav__more");
+        const moreToggle = moreWrap?.querySelector("[data-ccg-more-toggle]");
         const moreMenu = nav?.querySelector("[data-ccg-more-menu]");
 
         if (!toggle || !nav || !primaryList || !moreWrap || !moreMenu) return;
 
-        const cloneLinksInto = (sourceList, targetNode) => {
-            if (!sourceList || !targetNode) return;
-            targetNode.innerHTML = "";
-            sourceList.querySelectorAll("a").forEach(link => {
-                const clone = link.cloneNode(true);
-                clone.classList.add("ccg-nav__link--overflow");
+        const cloneLink = (link, extraClasses = []) => {
+            const clone = link.cloneNode(true);
+            extraClasses.forEach(cls => clone.classList.add(cls));
+            return clone;
+        };
+
+        const buildMoreMenu = () => {
+            moreMenu.innerHTML = "";
+            secondaryList?.querySelectorAll("a").forEach(link => {
+                const clone = cloneLink(link, ["ccg-nav__link--overflow"]);
                 clone.setAttribute("role", "menuitem");
-                targetNode.appendChild(clone);
+                moreMenu.appendChild(clone);
             });
         };
 
         const buildDrawer = () => {
             if (!drawer) return;
-            if (drawerPrimary) drawerPrimary.innerHTML = "<div class=\"ccg-nav-drawer__label\">Primary</div>";
-            if (drawerSecondary) drawerSecondary.innerHTML = "<div class=\"ccg-nav-drawer__label\">Explore more</div>";
 
-            const appendSet = (sourceList, targetSection) => {
-                if (!sourceList || !targetSection) return;
-                sourceList.querySelectorAll("a").forEach(link => {
-                    const btn = link.cloneNode(true);
-                    btn.classList.add("ccg-nav__link--mobile");
-                    targetSection.appendChild(btn);
+            if (drawerPrimary) {
+                drawerPrimary.innerHTML = "<div class=\"ccg-nav-drawer__label\">Primary</div>";
+                primaryList?.querySelectorAll("a").forEach(link => {
+                    drawerPrimary.appendChild(cloneLink(link, ["ccg-nav__link--mobile"]));
                 });
-            };
+            }
 
-        const mobilePanel = document.createElement("div");
-        mobilePanel.className = "ccg-nav__mobile";
-        mobilePanel.appendChild(mobileList);
-        mobilePanel.inert = true;
-        mobilePanel.setAttribute("aria-hidden", "true");
+            if (drawerSecondary) {
+                drawerSecondary.innerHTML = "<div class=\"ccg-nav-drawer__label\">Explore more</div>";
+                secondaryList?.querySelectorAll("a").forEach(link => {
+                    drawerSecondary.appendChild(cloneLink(link, ["ccg-nav__link--mobile"]));
+                });
+            }
+        };
 
-        nav.innerHTML = "";
-        nav.append(bar, mobilePanel);
-        nav.classList.add("ccg-nav--hydrated");
+        buildMoreMenu();
 
         let isMoreOpen = false;
         let isNavOpen = false;
@@ -208,9 +209,9 @@
             isMoreOpen = true;
             nav.classList.add("ccg-nav--more-open");
             moreWrap.dataset.open = "true";
-            moreWrap.querySelector("[data-ccg-more-toggle]")?.setAttribute("aria-expanded", "true");
+            moreToggle?.setAttribute("aria-expanded", "true");
             moreMenu.hidden = false;
-            moreMenu.removeAttribute("hidden");
+            moreMenu.dataset.state = "open";
         };
 
         const closeMore = () => {
@@ -218,10 +219,9 @@
             isMoreOpen = false;
             nav.classList.remove("ccg-nav--more-open");
             delete moreWrap.dataset.open;
-            moreWrap.querySelector("[data-ccg-more-toggle]")?.setAttribute("aria-expanded", "false");
+            moreToggle?.setAttribute("aria-expanded", "false");
             moreMenu.hidden = true;
-            moreMenu.style.display = "";
-            delete moreMenu.dataset.state;
+            moreMenu.dataset.state = "closed";
         };
 
         const syncBodyLock = (locked) => {
@@ -233,9 +233,9 @@
             isNavOpen = false;
             header.classList.remove("ccg-header--nav-open");
             nav.classList.remove("ccg-nav--open");
+            drawer?.setAttribute("aria-hidden", "true");
             toggle.setAttribute("aria-expanded", "false");
-            mobilePanel.inert = true;
-            mobilePanel.setAttribute("aria-hidden", "true");
+            syncBodyLock(false);
         };
 
         const openNav = () => {
@@ -249,15 +249,28 @@
             setHeaderHeightVar();
         };
 
-        toggle.addEventListener("click", () => {
-            const isOpen = !header.classList.contains("ccg-header--nav-open");
-            header.classList.toggle("ccg-header--nav-open", isOpen);
-            nav.classList.toggle("ccg-nav--open", isOpen);
-            toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        const syncMobileNavState = () => {
+            if (!mobileMatch.matches) {
+                closeNav();
+                closeMore();
+            }
+        };
 
-            setHeaderHeightVar();
-            mobilePanel.inert = !isOpen;
-            mobilePanel.setAttribute("aria-hidden", isOpen ? "false" : "true");
+        toggle.addEventListener("click", () => {
+            if (isNavOpen) {
+                closeNav();
+            } else {
+                openNav();
+            }
+        });
+
+        moreToggle?.addEventListener("click", event => {
+            event.stopPropagation();
+            if (isMoreOpen) {
+                closeMore();
+            } else {
+                openMore();
+            }
         });
 
         drawerCloseEls.forEach(btn => btn.addEventListener("click", closeNav));
@@ -270,10 +283,12 @@
         });
 
         document.addEventListener("click", event => {
-            if (!mobileMatch.matches && !header.contains(event.target)) {
+            if (moreWrap && !moreWrap.contains(event.target)) {
                 closeMore();
             }
+
             if (!mobileMatch.matches) return;
+
             if (isNavOpen && drawer && !drawer.contains(event.target) && !toggle.contains(event.target)) {
                 closeNav();
             }
@@ -287,10 +302,8 @@
         });
 
         mobileMatch.addEventListener("change", () => {
-            if (!mobileMatch.matches) {
-                closeNav();
-                closeMore();
-            }
+            closeNav();
+            closeMore();
             syncMobileHardening();
         });
 
@@ -308,6 +321,7 @@
         setHeaderHeightVar();
         markActiveLinks(header);
         nav.classList.add("ccg-nav--hydrated");
+        closeMore();
     }
 
     /* ======================================================
