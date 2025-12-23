@@ -17,17 +17,26 @@
     /* ======================================================
        ENV / MOBILE DETECTION
     ====================================================== */
-    const MQ_MOBILE = window.matchMedia?.("(max-width: 820px)");
-    const MQ_COARSE = window.matchMedia?.("(pointer: coarse)");
-    const MQ_REDUCED = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+    const MQ_MOBILE = typeof window.matchMedia === "function"
+        ? window.matchMedia("(max-width: 820px)")
+        : null;
+    const MQ_COARSE = typeof window.matchMedia === "function"
+        ? window.matchMedia("(pointer: coarse)")
+        : null;
+    const MQ_REDUCED = typeof window.matchMedia === "function"
+        ? window.matchMedia("(prefers-reduced-motion: reduce)")
+        : null;
 
     function isMobileLike() {
-        return Boolean(MQ_MOBILE?.matches || MQ_COARSE?.matches);
+        return Boolean((MQ_MOBILE && MQ_MOBILE.matches) || (MQ_COARSE && MQ_COARSE.matches));
     }
 
     function safeNowMobileClass() {
-        document.documentElement.classList.toggle("ccg-is-mobile", isMobileLike());
-        document.body?.classList?.toggle("ccg-is-mobile", isMobileLike());
+        const mobile = isMobileLike();
+        document.documentElement.classList.toggle("ccg-is-mobile", mobile);
+        if (document.body && document.body.classList) {
+            document.body.classList.toggle("ccg-is-mobile", mobile);
+        }
     }
 
     /* ======================================================
@@ -255,7 +264,7 @@
 
         header.querySelectorAll(".ccg-nav__link").forEach(link => {
             link.addEventListener("click", () => {
-                if (mobileMatch.matches) closeNav();
+                if (mobileMatch && mobileMatch.matches) closeNav();
                 closeMore();
             });
         });
@@ -305,8 +314,8 @@
        LIGHTWEIGHT PARTICLE OVERLAY (GUARDED)
     ====================================================== */
     function shouldRenderParticles() {
-        const reducedMotionQuery = MQ_REDUCED || window.matchMedia?.("(prefers-reduced-motion: reduce)");
-        if (reducedMotionQuery?.matches) return false;
+        const reducedMotionQuery = MQ_REDUCED || (typeof window.matchMedia === "function" ? window.matchMedia("(prefers-reduced-motion: reduce)") : null);
+        if (reducedMotionQuery && reducedMotionQuery.matches) return false;
 
         // Mobile/coarse pointer: skip entirely to keep things smooth
         if (isMobileLike()) return false;
@@ -343,14 +352,16 @@
 
         bg.appendChild(particleField);
 
-        const reducedMotionQuery = MQ_REDUCED || window.matchMedia?.("(prefers-reduced-motion: reduce)");
-        reducedMotionQuery?.addEventListener?.("change", event => {
-            if (event.matches) {
-                particleField.remove();
-            } else {
-                setupParticleField();
-            }
-        });
+        const reducedMotionQuery = MQ_REDUCED || (typeof window.matchMedia === "function" ? window.matchMedia("(prefers-reduced-motion: reduce)") : null);
+        if (reducedMotionQuery && typeof reducedMotionQuery.addEventListener === "function") {
+            reducedMotionQuery.addEventListener("change", event => {
+                if (event.matches) {
+                    particleField.remove();
+                } else {
+                    setupParticleField();
+                }
+            });
+        }
     }
 
     /* ======================================================
