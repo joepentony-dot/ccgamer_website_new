@@ -20,6 +20,9 @@
     const MQ_MOBILE = typeof window.matchMedia === "function"
         ? window.matchMedia("(max-width: 820px)")
         : null;
+    const MQ_MOBILE_VIEWPORT = typeof window.matchMedia === "function"
+        ? window.matchMedia("(max-width: 768px)")
+        : null;
     const MQ_COARSE = typeof window.matchMedia === "function"
         ? window.matchMedia("(pointer: coarse)")
         : null;
@@ -27,8 +30,15 @@
         ? window.matchMedia("(prefers-reduced-motion: reduce)")
         : null;
 
+    function isMobileViewport() {
+        if (MQ_MOBILE_VIEWPORT) return MQ_MOBILE_VIEWPORT.matches;
+        return window.innerWidth <= 768;
+    }
+
+    window.isMobileViewport = isMobileViewport;
+
     function isMobileLike() {
-        return Boolean((MQ_MOBILE && MQ_MOBILE.matches) || (MQ_COARSE && MQ_COARSE.matches));
+        return Boolean(isMobileViewport() || (MQ_MOBILE && MQ_MOBILE.matches) || (MQ_COARSE && MQ_COARSE.matches));
     }
 
     function safeNowMobileClass() {

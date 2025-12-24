@@ -12,6 +12,15 @@ let CCG_HOME_ALL_GAMES = [];
 const MOBILE_MEDIA = window.matchMedia?.("(max-width: 1024px)");
 const PREFERS_REDUCED_MOTION = window.matchMedia?.("(prefers-reduced-motion: reduce)");
 const COARSE_POINTER = window.matchMedia?.("(pointer: coarse)");
+const FALLBACK_MOBILE_MEDIA = window.matchMedia?.("(max-width: 768px)");
+
+const isMobileViewport = () => {
+    if (typeof window.isMobileViewport === "function") {
+        return window.isMobileViewport();
+    }
+    if (FALLBACK_MOBILE_MEDIA) return FALLBACK_MOBILE_MEDIA.matches;
+    return window.innerWidth <= 768;
+};
 
 document.addEventListener("DOMContentLoaded", () => initHomeDynamic());
 
@@ -34,8 +43,13 @@ async function initHomeDynamic() {
         calmHeroCards();
     } else {
         initHeroCardFX();
-        initHeroGlowPulse();
-        initHomeEnergy();
+
+        if (!isMobileViewport()) {
+            runWhenIdle(() => {
+                initHeroGlowPulse();
+                initHomeEnergy();
+            });
+        }
     }
 }
 
@@ -51,6 +65,7 @@ function getViewportWidth() {
 
 function shouldSkipHomeAnimations() {
     return Boolean(
+        isMobileViewport() ||
         MOBILE_MEDIA?.matches ||
         COARSE_POINTER?.matches ||
         PREFERS_REDUCED_MOTION?.matches
@@ -61,7 +76,7 @@ function shouldSkipHomeAnimations() {
 function shouldUseMobileLite() {
     const vw = getViewportWidth();
     const smallViewport = typeof vw === "number" && vw <= 1100;
-    return Boolean(MOBILE_MEDIA?.matches || COARSE_POINTER?.matches || smallViewport);
+    return Boolean(isMobileViewport() || MOBILE_MEDIA?.matches || COARSE_POINTER?.matches || smallViewport);
 }
 
 function applyMobileLiteMode() {
@@ -78,6 +93,14 @@ function applyMobileLiteMode() {
             window.location.href = "games/index.html";
         };
     });
+}
+
+function runWhenIdle(task) {
+    if (typeof window.requestIdleCallback === "function") {
+        window.requestIdleCallback(() => task(), { timeout: 1200 });
+    } else {
+        window.setTimeout(task, 200);
+    }
 }
 
 /* ============================================================
