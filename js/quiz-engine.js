@@ -45,6 +45,10 @@
     };
 
     let audioCtx = null;
+    let activeAudio = null;
+
+    const ANSWER_REVEAL_DELAY_MS = 1600;
+    const WRONG_REVEAL_FLASH_MS = 350;
 
     // --------------------------------------------------
     // UTILITIES
@@ -279,9 +283,20 @@
         qs("#quiz-question-text").textContent = q.question || q.text || "";
         const optionsEl = qs("#quiz-options");
         const mediaEl = qs("#quiz-media");
+        const statusEl = qs("#quiz-status");
 
         optionsEl.innerHTML = "";
         mediaEl.innerHTML = "";
+
+        if (statusEl) {
+            renderStatus();
+        }
+
+        if (activeAudio) {
+            activeAudio.pause();
+            activeAudio.currentTime = 0;
+            activeAudio = null;
+        }
 
         if (q.imageUrl) {
             const img = document.createElement("img");
@@ -294,7 +309,15 @@
             const audio = document.createElement("audio");
             audio.src = q.audioUrl;
             audio.controls = true;
+            audio.preload = "auto";
+            audio.autoplay = true;
+            audio.playsInline = true;
+            audio.addEventListener("canplay", () => {
+                audio.play().catch(() => {});
+            }, { once: true });
+            audio.play().catch(() => {});
             mediaEl.appendChild(audio);
+            activeAudio = audio;
         }
 
         q.options.forEach((opt, idx) => {
@@ -318,23 +341,30 @@
         const isCorrect = chosen === correct;
         const nextScore = quizState.score + (isCorrect ? 1 : 0);
 
-        qsa(".quiz-answer-btn").forEach((btn, idx) => {
+        const buttons = qsa(".quiz-answer-btn");
+        buttons.forEach((btn) => {
             btn.disabled = true;
-            if (idx === correct) {
-                btn.classList.add("quiz-answer--correct", "quiz-answer--highlight-correct");
-            }
         });
 
         if (isCorrect) {
             quizState.score = nextScore;
             e.currentTarget.classList.add("quiz-answer--correct");
+            e.currentTarget.classList.add("quiz-answer--highlight-correct");
             sidBarsPulseCorrect();
             playCorrectSfx();
         } else {
-            e.currentTarget.classList.add("quiz-answer--wrong");
+            e.currentTarget.classList.add("quiz-answer--wrong", "quiz-answer--wrong-flash");
+            setTimeout(() => {
+                const correctBtn = buttons[correct];
+                if (correctBtn) {
+                    correctBtn.classList.add("quiz-answer--correct", "quiz-answer--highlight-correct");
+                }
+            }, WRONG_REVEAL_FLASH_MS);
             sidBarsPulseWrong();
             playWrongSfx();
         }
+
+        renderStatus();
 
         quizState.history.push({
             questionNumber: quizState.currentIndex + 1,
@@ -347,7 +377,7 @@
             scoreAfter: nextScore
         });
 
-        setTimeout(nextQuestionOrFinish, 900);
+        setTimeout(nextQuestionOrFinish, ANSWER_REVEAL_DELAY_MS);
     }
 
     function nextQuestionOrFinish() {
@@ -355,6 +385,17 @@
         quizState.currentIndex >= quizState.questions.length
             ? showFinalScore()
             : showQuestion();
+    }
+
+    function renderStatus() {
+        const statusEl = qs("#quiz-status");
+        if (!statusEl) return;
+
+        const total = quizState.questions.length;
+        const current = quizState.currentIndex + 1;
+        const score = quizState.score;
+        const totalText = total ? `${current} / ${total}` : `${current}`;
+        statusEl.textContent = `Question ${totalText} • Score ${score}`;
     }
 
     // --------------------------------------------------
@@ -473,10 +514,8 @@
     // FLOW INIT
     // --------------------------------------------------
     function startQuiz() {
-        const select = qs("#quiz-pack-select");
-        if (!select || !select.value) return playWrongSfx();
+        if (!quizState.currentSetId) return playWrongSfx();
 
-        quizState.currentSetId = select.value;
         quizState._startTime = performance.now();
 
         track("quiz_start", { setId: quizState.currentSetId });
@@ -498,14 +537,6 @@
         });
         qs("#quiz-restart-btn")?.addEventListener("click", restartQuiz);
 
-        const select = qs("#quiz-pack-select");
-        if (select) {
-            select.addEventListener("change", () => {
-                quizState.currentSetId = select.value || null;
-                updateSelectedPackLabel();
-            });
-        }
-
         requestQuizSets();
         showIntroPanel();
         setSidBarsIntensity(0.25);
@@ -515,52 +546,52 @@
     // PACK SELECT UI
     // --------------------------------------------------
     function renderPackSelect(sets) {
-        const select = qs("#quiz-pack-select");
-        if (!select) return;
+        const container = qs("[data-quiz-pack-list]");
+        if (!container) return;
 
-        select.innerHTML = "";
+        container.innerHTML = "";
 
         if (!sets.length) {
-            const emptyOpt = document.createElement("option");
-            emptyOpt.value = "";
-            emptyOpt.textContent = "No packs available";
-            select.appendChild(emptyOpt);
-            select.disabled = true;
+            const emptyBtn = document.createElement("button");
+            emptyBtn.type = "button";
+            emptyBtn.className = "quiz-pack-btn";
+            emptyBtn.textContent = "No packs available";
+            emptyBtn.disabled = true;
+            container.appendChild(emptyBtn);
             return;
         }
 
-        const placeholder = document.createElement("option");
-        placeholder.value = "";
-        placeholder.textContent = "Pick a pack to begin";
-        placeholder.disabled = true;
-        select.appendChild(placeholder);
-
         let defaultId = null;
         sets.forEach((set) => {
-            const option = document.createElement("option");
-            option.value = set.id;
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "quiz-pack-btn";
+            btn.dataset.packId = set.id;
             const count = typeof set.questionCount === "number"
                 ? set.questionCount
                 : (Array.isArray(set.questions) ? set.questions.length : 0);
-            option.textContent = count ? `${set.name} (${count} Qs)` : set.name;
-            select.appendChild(option);
+            btn.textContent = count ? `${set.name} (${count} Qs)` : set.name;
+            btn.addEventListener("click", () => {
+                quizState.currentSetId = set.id;
+                setActivePackButton(set.id);
+                updateSelectedPackLabel();
+                playClickSfx();
+            });
+            container.appendChild(btn);
 
             if (defaultId === null) {
-                defaultId = option.value;
+                defaultId = set.id;
             }
         });
 
         if (defaultId !== null) {
-            select.value = defaultId;
             quizState.currentSetId = defaultId;
+            setActivePackButton(defaultId);
         }
-
-        select.disabled = false;
     }
 
     function updateSelectedPackLabel() {
-        const select = qs("#quiz-pack-select");
-        const activeId = select?.value || quizState.currentSetId;
+        const activeId = quizState.currentSetId;
         const pack = quizState.sets.find((p) => String(p.id) === String(activeId));
         const label = (() => {
             if (!pack) return "Pick a pack to begin";
@@ -572,6 +603,12 @@
 
         qsa("[data-quiz-active-pack]").forEach((el) => {
             el.textContent = label;
+        });
+    }
+
+    function setActivePackButton(setId) {
+        qsa("[data-quiz-pack-list] .quiz-pack-btn").forEach((btn) => {
+            btn.classList.toggle("is-active", String(btn.dataset.packId) === String(setId));
         });
     }
 
