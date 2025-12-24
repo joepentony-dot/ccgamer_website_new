@@ -170,3 +170,10 @@
         display: none;
     }
 }
+
+@media (min-width: 1025px) {
+    .admin-table-body {
+        max-height: none;
+        overflow: visible;
+    }
+}
