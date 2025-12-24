@@ -45,6 +45,10 @@
     };
 
     let audioCtx = null;
+    let activeAudio = null;
+
+    const ANSWER_REVEAL_DELAY_MS = 1600;
+    const WRONG_REVEAL_FLASH_MS = 350;
 
     // --------------------------------------------------
     // UTILITIES
@@ -279,9 +283,20 @@
         qs("#quiz-question-text").textContent = q.question || q.text || "";
         const optionsEl = qs("#quiz-options");
         const mediaEl = qs("#quiz-media");
+        const statusEl = qs("#quiz-status");
 
         optionsEl.innerHTML = "";
         mediaEl.innerHTML = "";
+
+        if (statusEl) {
+            renderStatus();
+        }
+
+        if (activeAudio) {
+            activeAudio.pause();
+            activeAudio.currentTime = 0;
+            activeAudio = null;
+        }
 
         if (q.imageUrl) {
             const img = document.createElement("img");
@@ -294,7 +309,15 @@
             const audio = document.createElement("audio");
             audio.src = q.audioUrl;
             audio.controls = true;
+            audio.preload = "auto";
+            audio.autoplay = true;
+            audio.playsInline = true;
+            audio.addEventListener("canplay", () => {
+                audio.play().catch(() => {});
+            }, { once: true });
+            audio.play().catch(() => {});
             mediaEl.appendChild(audio);
+            activeAudio = audio;
         }
 
         q.options.forEach((opt, idx) => {
@@ -318,23 +341,30 @@
         const isCorrect = chosen === correct;
         const nextScore = quizState.score + (isCorrect ? 1 : 0);
 
-        qsa(".quiz-answer-btn").forEach((btn, idx) => {
+        const buttons = qsa(".quiz-answer-btn");
+        buttons.forEach((btn) => {
             btn.disabled = true;
-            if (idx === correct) {
-                btn.classList.add("quiz-answer--correct", "quiz-answer--highlight-correct");
-            }
         });
 
         if (isCorrect) {
             quizState.score = nextScore;
             e.currentTarget.classList.add("quiz-answer--correct");
+            e.currentTarget.classList.add("quiz-answer--highlight-correct");
             sidBarsPulseCorrect();
             playCorrectSfx();
         } else {
-            e.currentTarget.classList.add("quiz-answer--wrong");
+            e.currentTarget.classList.add("quiz-answer--wrong", "quiz-answer--wrong-flash");
+            setTimeout(() => {
+                const correctBtn = buttons[correct];
+                if (correctBtn) {
+                    correctBtn.classList.add("quiz-answer--correct", "quiz-answer--highlight-correct");
+                }
+            }, WRONG_REVEAL_FLASH_MS);
             sidBarsPulseWrong();
             playWrongSfx();
         }
+
+        renderStatus();
 
         quizState.history.push({
             questionNumber: quizState.currentIndex + 1,
@@ -347,7 +377,7 @@
             scoreAfter: nextScore
         });
 
-        setTimeout(nextQuestionOrFinish, 900);
+        setTimeout(nextQuestionOrFinish, ANSWER_REVEAL_DELAY_MS);
     }
 
     function nextQuestionOrFinish() {
@@ -355,6 +385,17 @@
         quizState.currentIndex >= quizState.questions.length
             ? showFinalScore()
             : showQuestion();
+    }
+
+    function renderStatus() {
+        const statusEl = qs("#quiz-status");
+        if (!statusEl) return;
+
+        const total = quizState.questions.length;
+        const current = quizState.currentIndex + 1;
+        const score = quizState.score;
+        const totalText = total ? `${current} / ${total}` : `${current}`;
+        statusEl.textContent = `Question ${totalText} • Score ${score}`;
     }
 
     // --------------------------------------------------
