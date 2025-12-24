@@ -10,11 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return window.matchMedia?.("(max-width: 768px)")?.matches || window.innerWidth <= 768;
     };
 
-    if (isMobileViewport()) {
-        window.location.href = "home.html";
-        return;
-    }
-
     const overlay        = document.getElementById("introOverlay");
     const idle           = document.getElementById("introIdle");
     const c64Screen      = document.getElementById("introC64");
