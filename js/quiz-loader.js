@@ -134,9 +134,12 @@
     }
 
     function normaliseLocalPacks(data) {
-        const rawPacks = (data && (data.packs || data.sets)) || [];
+        const rawPacks = (data && (data.packs || data.sets || data.quizSets)) || [];
+        const packList = Array.isArray(rawPacks)
+            ? rawPacks
+            : Object.values(rawPacks || {});
 
-        return rawPacks
+        return packList
             .map(pack => {
                 if (!pack) return null;
                 const id = pack.id || pack.slug || pack.name;

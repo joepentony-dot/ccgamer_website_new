@@ -367,6 +367,8 @@
             playWrongSfx();
         }
 
+        renderStatus();
+
         quizState.history.push({
             questionNumber: quizState.currentIndex + 1,
             question: quizState.currentQuestion.question || quizState.currentQuestion.text || "",
@@ -386,6 +388,17 @@
         quizState.currentIndex >= quizState.questions.length
             ? showFinalScore()
             : showQuestion();
+    }
+
+    function renderStatus() {
+        const statusEl = qs("#quiz-status");
+        if (!statusEl) return;
+
+        const total = quizState.questions.length;
+        const current = quizState.currentIndex + 1;
+        const score = quizState.score;
+        const totalText = total ? `${current} / ${total}` : `${current}`;
+        statusEl.textContent = `Question ${totalText} • Score ${score}`;
     }
 
     // --------------------------------------------------
