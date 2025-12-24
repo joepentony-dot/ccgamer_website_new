@@ -226,6 +226,18 @@ li {
     }
 }
 
+@media (min-width: 1025px) {
+    html {
+        overflow-y: visible;
+        height: auto;
+    }
+
+    body {
+        overflow-y: auto;
+        min-height: 100vh;
+    }
+}
+
 @media (max-width: 640px) {
     .ccg-main {
         width: 100%;
@@ -818,6 +830,13 @@ li {
         max-width: none;
         border-left: none;
         border-radius: 0;
+    }
+}
+
+@media (min-width: 1025px) {
+    .ccg-nav-drawer__panel {
+        max-height: none;
+        overflow-y: visible;
     }
 }
 
