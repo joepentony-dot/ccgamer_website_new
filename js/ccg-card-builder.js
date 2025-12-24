@@ -84,3 +84,8 @@ function ccgBuildGameCard(game) {
         </div>
     `;
 }
+
+if (typeof window !== "undefined") {
+    window.ccgBuildGameCard = ccgBuildGameCard;
+    window.dispatchEvent(new Event("ccg-card-builder-ready"));
+}
