@@ -108,6 +108,10 @@ function resolveDiskUrl(game) {
     return resolvePrimaryLink(game.disk || game.tape || game.download);
 }
 
+function resolveLemonUrl(game) {
+    return resolvePrimaryLink(game.lemon || game.lemonlink || game.lemonlinks);
+}
+
 /* ============================================================
    RENDER GAME
 ============================================================ */
@@ -146,6 +150,7 @@ function renderGame(game) {
     }
 
     /* DOWNLOADS */
+    const downloadsSection = document.querySelector(".game-downloads");
     const manual = normaliseManualUrl(resolveManualUrl(game));
     if (manual) {
         const btn = document.getElementById("gameManualBtn");
@@ -153,7 +158,7 @@ function renderGame(game) {
         btn.target = "_blank";
         btn.rel = "noopener";
         btn.hidden = false;
-        document.querySelector(".game-downloads").hidden = false;
+        downloadsSection.hidden = false;
 
         btn.addEventListener("click", e => {
             // Open inline for PDFs/Drive; fall back to normal links
@@ -170,7 +175,17 @@ function renderGame(game) {
         btn.target = "_blank";
         btn.rel = "noopener";
         btn.hidden = false;
-        document.querySelector(".game-downloads").hidden = false;
+        downloadsSection.hidden = false;
+    }
+
+    const lemon = resolveLemonUrl(game);
+    if (lemon) {
+        const btn = document.getElementById("gameLemonBtn");
+        btn.href = lemon;
+        btn.target = "_blank";
+        btn.rel = "noopener";
+        btn.hidden = false;
+        downloadsSection.hidden = false;
     }
 
     /* SCREENSHOTS */
