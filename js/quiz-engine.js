@@ -289,7 +289,10 @@
         mediaEl.innerHTML = "";
 
         if (statusEl) {
-            renderStatus();
+            const total = quizState.questions.length;
+            statusEl.textContent = total
+                ? `Question ${quizState.currentIndex + 1} / ${total}`
+                : `Question ${quizState.currentIndex + 1}`;
         }
 
         if (activeAudio) {
