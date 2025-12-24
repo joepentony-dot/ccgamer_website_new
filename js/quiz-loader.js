@@ -13,6 +13,9 @@
 
     const DATA_URL = './quiz-data.json';
     const SCORE_KEY = 'ccg_quiz_local_scores';
+    const CSV_SETS_URL = '/data/quiz_sets.csv';
+    const CSV_QUESTIONS_URL = '/data/questions.csv';
+    const MIN_PACK_COUNT = 2;
 
     let cachedSets = [];
     let localData = null;
@@ -41,6 +44,152 @@
             return JSON.parse(input);
         } catch {
             return fallback;
+        }
+    }
+
+    function parseCsv(text) {
+        const rows = [];
+        let current = '';
+        let row = [];
+        let inQuotes = false;
+
+        for (let i = 0; i < text.length; i += 1) {
+            const char = text[i];
+            const next = text[i + 1];
+
+            if (char === '"' && inQuotes && next === '"') {
+                current += '"';
+                i += 1;
+                continue;
+            }
+
+            if (char === '"') {
+                inQuotes = !inQuotes;
+                continue;
+            }
+
+            if (char === ',' && !inQuotes) {
+                row.push(current);
+                current = '';
+                continue;
+            }
+
+            if ((char === '\n' || char === '\r') && !inQuotes) {
+                if (current.length || row.length) {
+                    row.push(current);
+                    rows.push(row);
+                    row = [];
+                    current = '';
+                }
+                if (char === '\r' && next === '\n') {
+                    i += 1;
+                }
+                continue;
+            }
+
+            current += char;
+        }
+
+        if (current.length || row.length) {
+            row.push(current);
+            rows.push(row);
+        }
+
+        return rows;
+    }
+
+    function csvRowsToObjects(rows) {
+        if (!rows.length) return [];
+        const headers = rows[0].map((h) => h.trim());
+        return rows.slice(1).map((row) => {
+            const obj = {};
+            headers.forEach((header, idx) => {
+                obj[header] = row[idx] !== undefined ? row[idx].trim() : '';
+            });
+            return obj;
+        });
+    }
+
+    async function fetchCsvFallback() {
+        try {
+            const [setsRes, questionsRes] = await Promise.all([
+                fetch(CSV_SETS_URL, { cache: 'no-store' }),
+                fetch(CSV_QUESTIONS_URL, { cache: 'no-store' })
+            ]);
+
+            if (!setsRes.ok || !questionsRes.ok) {
+                throw new Error(`CSV HTTP ${setsRes.status}/${questionsRes.status}`);
+            }
+
+            const [setsText, questionsText] = await Promise.all([
+                setsRes.text(),
+                questionsRes.text()
+            ]);
+
+            const setRows = csvRowsToObjects(parseCsv(setsText));
+            const questionRows = csvRowsToObjects(parseCsv(questionsText));
+
+            const packsById = new Map();
+            setRows.forEach((row) => {
+                const id = row['Set ID'] || row['Set Id'] || row['SetID'] || row['Set'];
+                if (!id) return;
+                packsById.set(String(id), {
+                    id: String(id),
+                    name: row['Quiz Name'] || row['Name'] || `Pack ${id}`,
+                    icon: row['Icon'] || '',
+                    difficulty: row['Difficulty'] || row['Level'] || '',
+                    description: row['Description'] || '',
+                    questionCount: Number.parseInt(row['Question Count'], 10) || 0,
+                    questions: []
+                });
+            });
+
+            questionRows.forEach((row, index) => {
+                const setId = row['Quiz Set'] || row['Set ID'] || row['Set'];
+                if (!setId) return;
+                const id = String(setId);
+                if (!packsById.has(id)) {
+                    packsById.set(id, {
+                        id,
+                        name: `Pack ${id}`,
+                        icon: '',
+                        difficulty: '',
+                        description: '',
+                        questionCount: 0,
+                        questions: []
+                    });
+                }
+
+                const options = [
+                    row['Option 1'],
+                    row['Option 2'],
+                    row['Option 3'],
+                    row['Option 4']
+                ].filter(Boolean);
+
+                const rawIndex = Number.parseInt(row['Answer Index'], 10);
+                const correctIndex = Number.isFinite(rawIndex) ? clampIndex(rawIndex - 1, options.length) : 0;
+
+                packsById.get(id).questions.push({
+                    id: `${id}-${packsById.get(id).questions.length + 1}`,
+                    question: row['Question'] || '',
+                    options,
+                    correctIndex,
+                    imageUrl: row['Image URL'] || '',
+                    audioUrl: row['Audio URL'] || '',
+                    gameName: row['Game Name'] || ''
+                });
+            });
+
+            const packs = Array.from(packsById.values()).map((pack) => ({
+                ...pack,
+                questionCount: pack.questionCount || pack.questions.length
+            }));
+
+            return { packs };
+        } catch (err) {
+            console.warn('[Quiz] CSV fallback failed', err);
+            return null;
         }
     }
 
@@ -121,11 +270,30 @@
                 }
                 localData = await res.json();
                 lastLoadContext = { source: url, status: 'ready', error: null, fallback: url !== DATA_URL };
+
+                const normalised = normaliseLocalPacks(localData);
+                if (normalised.length >= MIN_PACK_COUNT) {
+                    return localData;
+                }
+
+                const csvFallback = await fetchCsvFallback();
+                if (csvFallback) {
+                    localData = csvFallback;
+                    lastLoadContext = { source: 'csv', status: 'ready', error: null, fallback: true };
+                }
+
                 return localData;
             } catch (err) {
                 console.warn('[Quiz] Unable to load quiz-data.json from', url, err);
                 lastLoadContext = { source: url, status: 'error', error: err && err.message, fallback: false };
             }
+        }
+
+        const csvFallback = await fetchCsvFallback();
+        if (csvFallback) {
+            localData = csvFallback;
+            lastLoadContext = { source: 'csv', status: 'ready', error: null, fallback: true };
+            return localData;
         }
 
         localData = { packs: [] };
