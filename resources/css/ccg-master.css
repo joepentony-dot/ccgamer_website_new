@@ -226,6 +226,16 @@ li {
     }
 }
 
+@media (min-width: 1025px) {
+    html {
+        overflow-y: visible;
+    }
+
+    body {
+        overflow-y: auto;
+    }
+}
+
 @media (max-width: 640px) {
     .ccg-main {
         width: 100%;
