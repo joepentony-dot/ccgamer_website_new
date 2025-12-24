@@ -227,11 +227,11 @@ li {
 
 @media (min-width: 1025px) {
     html {
-        overflow-y: hidden;
+        overflow-y: auto;
     }
 
     body {
-        overflow-y: auto;
+        overflow-y: visible;
     }
 }
 
