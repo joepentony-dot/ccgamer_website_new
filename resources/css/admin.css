@@ -128,8 +128,6 @@
 }
 
 .admin-table-body {
-    max-height: 420px;
-    overflow: auto;
     background: rgba(0,0,0,0.7);
 }
 
