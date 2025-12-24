@@ -110,35 +110,6 @@
         });
     }
 
-    function mergePackLists(primary, fallback) {
-        const merged = new Map();
-
-        primary.forEach((pack) => {
-            merged.set(String(pack.id), Object.assign({}, pack));
-        });
-
-        fallback.forEach((pack) => {
-            const id = String(pack.id);
-            const existing = merged.get(id);
-            if (!existing) {
-                merged.set(id, Object.assign({}, pack));
-                return;
-            }
-
-            const questions = (existing.questions && existing.questions.length)
-                ? existing.questions
-                : (pack.questions || []);
-            const questionCount = existing.questionCount || pack.questionCount || questions.length;
-
-            merged.set(id, Object.assign({}, pack, existing, {
-                questions,
-                questionCount
-            }));
-        });
-
-        return Array.from(merged.values());
-    }
-
     async function fetchCsvFallback() {
         try {
             const [setsRes, questionsRes] = await Promise.all([
@@ -301,20 +272,11 @@
                 lastLoadContext = { source: url, status: 'ready', error: null, fallback: url !== DATA_URL };
 
                 const normalised = normaliseLocalPacks(localData);
-                const csvFallback = await fetchCsvFallback();
-                const fallbackPacks = csvFallback ? normaliseLocalPacks(csvFallback) : [];
-
-                if (csvFallback && fallbackPacks.length > normalised.length) {
-                    const merged = mergePackLists(normalised, fallbackPacks);
-                    localData = { packs: merged };
-                    lastLoadContext = { source: 'csv', status: 'ready', error: null, fallback: true };
-                    return localData;
-                }
-
                 if (normalised.length >= MIN_PACK_COUNT) {
                     return localData;
                 }
 
+                const csvFallback = await fetchCsvFallback();
                 if (csvFallback) {
                     localData = csvFallback;
                     lastLoadContext = { source: 'csv', status: 'ready', error: null, fallback: true };
@@ -329,8 +291,7 @@
 
         const csvFallback = await fetchCsvFallback();
         if (csvFallback) {
-            const fallbackPacks = normaliseLocalPacks(csvFallback);
-            localData = { packs: fallbackPacks };
+            localData = csvFallback;
             lastLoadContext = { source: 'csv', status: 'ready', error: null, fallback: true };
             return localData;
         }
