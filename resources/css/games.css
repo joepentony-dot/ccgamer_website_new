@@ -665,6 +665,19 @@
 @media (max-width: 720px) {
     .games-search { flex-direction: column; align-items: stretch; }
     .games-hero, .games-tools, .games-library { width: 100%; }
+    .ccg-page--games-index .games-hero__inner {
+        text-align: center;
+        justify-items: center;
+    }
+
+    .ccg-page--games-index .games-hero__subtitle {
+        max-width: 420px;
+    }
+
+    .ccg-page--games-index .games-hero__stats {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
     #gamesAlphaStrip { grid-template-columns: repeat(auto-fit, minmax(52px, 1fr)); }
 }
 

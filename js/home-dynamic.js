@@ -85,7 +85,7 @@ function applyMobileLiteMode() {
 
     const randomButtons = document.querySelectorAll("[data-ccg-random-game]");
     randomButtons.forEach(btn => {
-        const mobileLabel = btn.dataset.mobileLabel || "Open quick library";
+        const mobileLabel = btn.dataset.mobileLabel || "Random Game";
         btn.textContent = mobileLabel;
         btn.onclick = () => {
             window.location.href = "games/index.html";
