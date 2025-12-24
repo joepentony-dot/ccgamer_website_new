@@ -38,6 +38,7 @@ button.ccg-btn {
 
     font-family: var(--ccg-font-main);
     font-size: 0.78rem;
+    font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
 

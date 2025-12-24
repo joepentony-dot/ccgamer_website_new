@@ -143,8 +143,10 @@
                 if (!id) return null;
 
                 const questions = Array.isArray(pack.questions) ? pack.questions.slice() : [];
-                const questionCount = typeof pack.questionCount === 'number'
-                    ? pack.questionCount
+                const rawCount = pack.questionCount;
+                const parsedCount = typeof rawCount === 'string' ? Number.parseInt(rawCount, 10) : rawCount;
+                const questionCount = Number.isFinite(parsedCount)
+                    ? parsedCount
                     : questions.length;
 
                 return {
@@ -156,8 +158,7 @@
                     questions
                 };
             })
-            .filter(Boolean)
-            .filter(p => p.questions.length > 0);
+            .filter(Boolean);
     }
 
     /* --------------------------------------------------------
