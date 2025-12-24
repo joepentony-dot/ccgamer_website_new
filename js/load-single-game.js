@@ -353,7 +353,7 @@ function renderRelatedGames(game, allGames) {
         const thumb = resolveGameThumb(g.thumbnail || g.thumb || g.cover);
         return `
             <a href="game.html?id=${encodeURIComponent(g.id)}" class="ccg-game-card">
-                <div class="ccg-game-card__thumb">
+                <div class="ccg-game-card__thumb ccg-game-card__thumb--related">
                     <img src="${thumb}" alt="${g.title}">
                 </div>
                 <div class="ccg-game-card__body">
