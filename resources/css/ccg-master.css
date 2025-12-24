@@ -67,7 +67,7 @@ body {
     color: var(--ccg-text-light);
     font-family: var(--ccg-font-body);
     overflow-x: hidden;
-    overflow-y: visible;
+    overflow-y: auto;
     scroll-behavior: smooth;
 
     text-size-adjust: 100%;
@@ -80,9 +80,6 @@ body {
     overflow-x: hidden;
 }
 
-body {
-    overflow-y: visible;
-}
 
 img,
 picture,
@@ -225,15 +222,6 @@ li {
     }
 }
 
-@media (min-width: 1025px) {
-    html {
-        overflow-y: hidden;
-    }
-
-    body {
-        overflow-y: auto;
-    }
-}
 
 @media (max-width: 640px) {
     .ccg-main {
