@@ -69,45 +69,11 @@ function ccgRunCollectionLoader() {
         }
     };
 
-    const ensureCardsRendered = () => {
-        if (!isMobile) return;
-        const hasButton = grid.querySelector(".ccg-game-card__btn");
-        if (!hasButton) {
-            loadCards();
-        }
-    };
-
-    let attempts = 0;
-    const maxAttempts = 40;
-    const waitForBuilder = () => {
-        if (typeof window.ccgBuildGameCard === "function") {
-            loadCards();
-            return;
-        }
-
-        attempts += 1;
-        if (attempts >= maxAttempts) {
-            console.error("[CCG COLLECTION] Card builder not ready after retry window.");
-            return;
-        }
-
-        window.setTimeout(waitForBuilder, 50);
-    };
-
-    waitForBuilder();
-
-    window.addEventListener("ccg-card-builder-ready", loadCards, { once: true });
-    window.addEventListener("pageshow", event => {
-        if (event.persisted) {
-            waitForBuilder();
-        }
-    });
-    window.addEventListener("load", ensureCardsRendered, { once: true });
-    document.addEventListener("visibilitychange", () => {
-        if (document.visibilityState === "visible") {
-            ensureCardsRendered();
-        }
-    });
+    if (typeof window.ccgBuildGameCard === "function") {
+        loadCards();
+    } else {
+        window.addEventListener("ccg-card-builder-ready", loadCards, { once: true });
+    }
 }
 
 if (document.readyState === "loading") {
