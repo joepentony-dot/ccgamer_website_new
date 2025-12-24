@@ -4518,7 +4518,7 @@
     "description": ""
   },
   {
-    "system": "AMIGA",
+    "system": "C64",
     "id": "frightmare",
     "title": "Frightmare",
     "sorttitle": "Frightmare",
@@ -4527,10 +4527,10 @@
       "Platform Games"
     ],
     "year": 1988,
-    "developer": "Microdeal",
+    "developer": "Cascade Games",
     "videoid": "MCSy-e2O3yw",
     "lemon": [
-      "https://www.lemonamiga.com/game/fright-night"
+      "https://www.lemon64.com/game/frightmare"
     ],
     "thumbnail": "resources/images/thumbnails/all/frightmare.png",
     "pdf": "https://drive.google.com/file/d/1RDOkZ2hFK28lScjzW01YRvcf6qC-hZNH/view?usp=drive_link",
