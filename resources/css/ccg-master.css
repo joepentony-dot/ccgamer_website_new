@@ -821,6 +821,13 @@ li {
     }
 }
 
+@media (min-width: 1025px) {
+    .ccg-nav-drawer__panel {
+        max-height: none;
+        overflow-y: visible;
+    }
+}
+
 .ccg-header-actions {
     grid-area: actions;
     display: flex;
