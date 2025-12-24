@@ -311,6 +311,9 @@
     position: relative;
     padding: 16px;
     border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 
     background:
         linear-gradient(160deg, rgba(255,255,255,0.06), rgba(255,255,255,0.01)),
@@ -354,6 +357,7 @@
     background: linear-gradient(140deg, rgba(var(--accent-rgb),0.35), rgba(255,255,255,0.08));
     overflow: hidden;
     display: block;
+    aspect-ratio: 4 / 3;
 }
 
 .ccg-page--genre-single .ccg-game-card__thumb img,
@@ -370,10 +374,10 @@
 .ccg-page--collection-single .ccg-game-card__body {
     position: relative;
     z-index: 1;
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: 10px;
-    grid-auto-rows: min-content;
-    align-content: start;
+    flex: 1;
 }
 
 .ccg-page--genre-single .ccg-game-card__title,
@@ -395,6 +399,8 @@
     display: flex;
     justify-content: center;
     margin-top: auto;
+    position: relative;
+    z-index: 2;
 }
 
 .ccg-page--genre-single .ccg-game-card__btn,
