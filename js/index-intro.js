@@ -10,11 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return window.matchMedia?.("(max-width: 768px)")?.matches || window.innerWidth <= 768;
     };
 
-    if (isMobileViewport()) {
-        window.location.href = "home.html";
-        return;
-    }
-
     const overlay        = document.getElementById("introOverlay");
     const idle           = document.getElementById("introIdle");
     const c64Screen      = document.getElementById("introC64");
@@ -68,6 +63,13 @@ document.addEventListener("DOMContentLoaded", () => {
         timers.push(id);
     }
 
+    function resumeLoaderVideo() {
+        if (!loaderVideo) return;
+        loaderVideo.muted = true;
+        if (!loaderVideo.paused) return;
+        loaderVideo.play().catch(() => {});
+    }
+
     function clearTimers() {
         while (timers.length) {
             window.clearTimeout(timers.pop());
@@ -88,9 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
             c64Screen.classList.add("intro-c64-screen--visible");
         }
 
-        if (loaderVideo && loaderVideo.paused) {
-            loaderVideo.play().catch(() => {});
-        }
+        resumeLoaderVideo();
 
         addTimer(beginTyping, 650);
     }
@@ -249,11 +249,28 @@ document.addEventListener("DOMContentLoaded", () => {
         startIntro();
     }
 
-    if (overlay) {
-        overlay.addEventListener("click", handleGlobalClick);
-    } else {
-        document.addEventListener("click", handleGlobalClick);
+    resumeLoaderVideo();
+
+    if (loaderVideo) {
+        loaderVideo.addEventListener("canplay", resumeLoaderVideo);
+        loaderVideo.addEventListener("loadeddata", resumeLoaderVideo);
     }
+
+    document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) {
+            resumeLoaderVideo();
+        }
+    });
+
+    const startEvents = ["click", "pointerdown", "keydown"];
+
+    startEvents.forEach(evt => {
+        if (overlay) {
+            overlay.addEventListener(evt, handleGlobalClick);
+        } else {
+            document.addEventListener(evt, handleGlobalClick);
+        }
+    });
 
     if (skipBtn) {
         skipBtn.addEventListener("click", (e) => {
