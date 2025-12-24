@@ -517,10 +517,8 @@
     // FLOW INIT
     // --------------------------------------------------
     function startQuiz() {
-        const select = qs("#quiz-pack-select");
-        if (!select || !select.value) return playWrongSfx();
+        if (!quizState.currentSetId) return playWrongSfx();
 
-        quizState.currentSetId = select.value;
         quizState._startTime = performance.now();
 
         track("quiz_start", { setId: quizState.currentSetId });
@@ -542,14 +540,6 @@
         });
         qs("#quiz-restart-btn")?.addEventListener("click", restartQuiz);
 
-        const select = qs("#quiz-pack-select");
-        if (select) {
-            select.addEventListener("change", () => {
-                quizState.currentSetId = select.value || null;
-                updateSelectedPackLabel();
-            });
-        }
-
         requestQuizSets();
         showIntroPanel();
         setSidBarsIntensity(0.25);
@@ -559,52 +549,52 @@
     // PACK SELECT UI
     // --------------------------------------------------
     function renderPackSelect(sets) {
-        const select = qs("#quiz-pack-select");
-        if (!select) return;
+        const container = qs("[data-quiz-pack-list]");
+        if (!container) return;
 
-        select.innerHTML = "";
+        container.innerHTML = "";
 
         if (!sets.length) {
-            const emptyOpt = document.createElement("option");
-            emptyOpt.value = "";
-            emptyOpt.textContent = "No packs available";
-            select.appendChild(emptyOpt);
-            select.disabled = true;
+            const emptyBtn = document.createElement("button");
+            emptyBtn.type = "button";
+            emptyBtn.className = "quiz-pack-btn";
+            emptyBtn.textContent = "No packs available";
+            emptyBtn.disabled = true;
+            container.appendChild(emptyBtn);
             return;
         }
 
-        const placeholder = document.createElement("option");
-        placeholder.value = "";
-        placeholder.textContent = "Pick a pack to begin";
-        placeholder.disabled = true;
-        select.appendChild(placeholder);
-
         let defaultId = null;
         sets.forEach((set) => {
-            const option = document.createElement("option");
-            option.value = set.id;
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "quiz-pack-btn";
+            btn.dataset.packId = set.id;
             const count = typeof set.questionCount === "number"
                 ? set.questionCount
                 : (Array.isArray(set.questions) ? set.questions.length : 0);
-            option.textContent = count ? `${set.name} (${count} Qs)` : set.name;
-            select.appendChild(option);
+            btn.textContent = count ? `${set.name} (${count} Qs)` : set.name;
+            btn.addEventListener("click", () => {
+                quizState.currentSetId = set.id;
+                setActivePackButton(set.id);
+                updateSelectedPackLabel();
+                playClickSfx();
+            });
+            container.appendChild(btn);
 
             if (defaultId === null) {
-                defaultId = option.value;
+                defaultId = set.id;
             }
         });
 
         if (defaultId !== null) {
-            select.value = defaultId;
             quizState.currentSetId = defaultId;
+            setActivePackButton(defaultId);
         }
-
-        select.disabled = false;
     }
 
     function updateSelectedPackLabel() {
-        const select = qs("#quiz-pack-select");
-        const activeId = select?.value || quizState.currentSetId;
+        const activeId = quizState.currentSetId;
         const pack = quizState.sets.find((p) => String(p.id) === String(activeId));
         const label = (() => {
             if (!pack) return "Pick a pack to begin";
@@ -616,6 +606,12 @@
 
         qsa("[data-quiz-active-pack]").forEach((el) => {
             el.textContent = label;
+        });
+    }
+
+    function setActivePackButton(setId) {
+        qsa("[data-quiz-pack-list] .quiz-pack-btn").forEach((btn) => {
+            btn.classList.toggle("is-active", String(btn.dataset.packId) === String(setId));
         });
     }
 
