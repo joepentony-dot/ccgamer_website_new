@@ -87,8 +87,6 @@ function applyMobileLiteMode() {
     randomButtons.forEach(btn => {
         const mobileLabel = btn.dataset.mobileLabel || "Open quick library";
         btn.textContent = mobileLabel;
-        btn.classList.add("is-disabled");
-        btn.setAttribute("disabled", "true");
         btn.onclick = () => {
             window.location.href = "games/index.html";
         };
