@@ -11,6 +11,9 @@ function ccgRunCollectionLoader() {
     const collectionName = document.body.dataset.collection;
     const grid = document.getElementById("genreGamesGrid");
     const countEl = document.getElementById("genreGamesCount");
+    const isMobile = typeof window.matchMedia === "function"
+        ? window.matchMedia("(max-width: 820px)").matches
+        : window.innerWidth <= 820;
 
     if (!collectionName || !grid) {
         console.warn("[CCG COLLECTION] Missing data-collection or grid");

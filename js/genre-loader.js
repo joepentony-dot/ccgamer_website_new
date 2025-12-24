@@ -6,6 +6,9 @@ function ccgRunGenreLoader() {
     const genreName = document.body.dataset.genre;
     const grid = document.getElementById("genreGamesGrid");
     const countEl = document.getElementById("genreGamesCount");
+    const isMobile = typeof window.matchMedia === "function"
+        ? window.matchMedia("(max-width: 820px)").matches
+        : window.innerWidth <= 820;
 
     if (!genreName || !grid) return;
 
