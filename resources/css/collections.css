@@ -101,6 +101,20 @@
     text-align: center;
 }
 
+.ccg-page--collections-index .ccg-hero-inner--collections .ccg-hero-kicker {
+    margin: 0;
+}
+
+.ccg-page--collections-index .ccg-hero-inner--collections .ccg-hero-title {
+    margin: 0;
+}
+
+.ccg-page--collections-index .ccg-hero-inner--collections .ccg-hero-tagline {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
 .ccg-page--collections-index .ccg-hero-actions {
     display: flex;
     flex-wrap: wrap;
