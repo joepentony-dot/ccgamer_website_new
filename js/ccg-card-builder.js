@@ -38,6 +38,18 @@ function ccgResolveThumb(raw) {
 }
 
 /* ------------------------------------------------------------
+   Safe HTML text (prevent malformed markup from data)
+------------------------------------------------------------ */
+function ccgEscapeHtml(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+
+/* ------------------------------------------------------------
    Build Omega game card (grid-safe)
 ------------------------------------------------------------ */
 function ccgBuildGameCard(game) {
@@ -53,21 +65,22 @@ function ccgBuildGameCard(game) {
 
     const safeId = encodeURIComponent(game.id);
 
+    const title = ccgEscapeHtml(game.title || "Unknown Game");
     const meta = [
-        game.year || "",
-        game.system || "",
-        game.developer || ""
+        ccgEscapeHtml(game.year || ""),
+        ccgEscapeHtml(game.system || ""),
+        ccgEscapeHtml(game.developer || "")
     ].filter(Boolean).join(" · ");
 
     return `
         <div class="ccg-game-card genre-card">
             <a href="../game.html?id=${safeId}" class="ccg-game-card__thumb">
-                <img src="${thumb}" alt="${game.title || "Game artwork"}">
+                <img src="${thumb}" alt="${title}">
             </a>
 
             <div class="ccg-game-card__body">
                 <h3 class="ccg-game-card__title">
-                    ${game.title || "Unknown Game"}
+                    ${title}
                 </h3>
 
                 <div class="ccg-game-card__meta">
