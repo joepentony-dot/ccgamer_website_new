@@ -568,9 +568,6 @@ body.quiz-focus .quiz-panel--active::after {
 
     .quiz-pack-list {
         grid-template-columns: 1fr;
-        max-height: min(240px, 38vh);
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
     }
 
     .quiz-layout { gap: 28px; }
