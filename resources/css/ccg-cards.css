@@ -21,6 +21,8 @@
 .ccg-genre-tile,
 .ccg-feature-card {
     position: relative;
+    z-index: 0;
+    isolation: isolate;
 
     background:
         radial-gradient(
@@ -61,6 +63,7 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
+    z-index: 0;
 
     background:
         radial-gradient(
@@ -91,6 +94,7 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
+    z-index: 0;
 
     background:
         radial-gradient(
@@ -98,6 +102,14 @@
             transparent 55%,
             rgba(0,0,0,0.55) 100%
         );
+}
+
+.ccg-game-card > *,
+.ccg-card > *,
+.ccg-genre-tile > *,
+.ccg-feature-card > * {
+    position: relative;
+    z-index: 1;
 }
 
 
