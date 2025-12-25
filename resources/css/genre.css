@@ -407,6 +407,9 @@
     margin-top: auto;
     position: relative;
     z-index: 2;
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
 }
 
 @media (max-width: 768px) {
@@ -418,6 +421,9 @@
 
 .ccg-page--genre-single .ccg-game-card__btn,
 .ccg-page--collection-single .ccg-game-card__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     max-width: 220px;
     padding: 12px 18px;
