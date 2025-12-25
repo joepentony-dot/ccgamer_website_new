@@ -218,6 +218,27 @@ body[data-ccg-mode] .ccg-header-neon-strip {
     z-index: 1;
 }
 
+body[data-ccg-mode="amiga"] .ccg-mode-toggle {
+    border: 1px solid #7f7f7f;
+    background: linear-gradient(145deg, #e7e7e7, #b9b9b9);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        inset 0 -2px 3px rgba(0, 0, 0, 0.3),
+        0 6px 14px rgba(0, 0, 0, 0.25);
+}
+
+body[data-ccg-mode="amiga"] .ccg-mode-toggle::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 10px;
+    right: 10px;
+    height: 3px;
+    background: linear-gradient(90deg, #2f6fd6, #7fb1ff);
+    box-shadow: 0 0 6px rgba(56, 120, 220, 0.6);
+    pointer-events: none;
+}
+
 /* ============================================================
    MODE TOGGLE THUMB
 ============================================================ */
@@ -231,9 +252,11 @@ body[data-ccg-mode="c64"] .ccg-mode-toggle__thumb {
 }
 
 body[data-ccg-mode="amiga"] .ccg-mode-toggle__thumb {
-    background: linear-gradient(135deg, #ff29e0, #ff7bff);
+    background: linear-gradient(145deg, #f1f1f1, #b3b3b3);
+    border: 1px solid #7a7a7a;
     transform: translateX(100%);
     box-shadow:
-        0 0 18px rgba(255, 41, 224, 0.55),
-        inset 0 0 10px rgba(0,0,0,0.45);
+        inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        inset 0 -2px 2px rgba(0, 0, 0, 0.35),
+        0 4px 8px rgba(0, 0, 0, 0.35);
 }
