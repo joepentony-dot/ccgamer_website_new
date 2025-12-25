@@ -411,24 +411,32 @@ function setEmptyState(isEmpty) {
 function renderGameCard(game) {
     const thumb = resolveGameThumb(game.thumbnail || game.thumb || game.cover);
 
+    const gameId = encodeURIComponent(game.id);
+
     return `
-        <a href="game.html?id=${encodeURIComponent(game.id)}"
-           class="ccg-game-card">
-            <div class="ccg-game-card__thumb">
+        <div class="ccg-game-card">
+            <a href="game.html?id=${gameId}"
+               class="ccg-game-card__thumb">
                 <img src="${THUMB_PLACEHOLDER}"
                      data-src="${thumb}"
                      alt="${game.title}"
                      data-game-thumb
                      loading="lazy"
                      decoding="async">
-            </div>
+            </a>
             <div class="ccg-game-card__body">
                 <h3 class="ccg-game-card__title">${game.title}</h3>
                 <div class="ccg-game-card__meta">
                     ${(game.year || "")} · ${(game.system || "")}
                 </div>
+                <div class="ccg-game-card__actions">
+                    <a href="game.html?id=${gameId}"
+                       class="ccg-btn ccg-btn--primary ccg-game-card__btn">
+                       View Game
+                    </a>
+                </div>
             </div>
-        </a>
+        </div>
     `;
 }
 
