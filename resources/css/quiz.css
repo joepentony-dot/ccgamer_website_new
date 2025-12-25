@@ -50,7 +50,7 @@
 
 body.quiz-focus .quiz-focus-overlay {
     opacity: 1;
-    pointer-events: none;
+    pointer-events: auto;
 }
 
 body.quiz-focus .ccg-header,
@@ -74,7 +74,6 @@ body.quiz-focus .quiz-section {
     justify-content: center;
     min-height: min(100vh, 980px);
     padding: 40px 20px;
-    pointer-events: auto;
 }
 
 body.quiz-focus .quiz-layout {
