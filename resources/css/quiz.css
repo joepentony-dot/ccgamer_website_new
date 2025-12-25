@@ -32,6 +32,19 @@
     padding: 30px 28px 28px;
 }
 
+.quiz-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 220px);
+    gap: 24px;
+    align-items: center;
+}
+
+.quiz-hero-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .quiz-layout { gap: 26px; }
 
 /* ============================================================
@@ -529,6 +542,30 @@ body.quiz-focus .quiz-panel--active::after {
     .ccg-page--quiz .ccg-main { padding-top: 6px; }
 
     .ccg-page--quiz .ccg-hero-inner { padding: 36px 18px 34px; }
+
+    .quiz-hero-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        text-align: center;
+    }
+
+    .quiz-hero-buttons {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .quiz-hero-buttons .ccg-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .quiz-pack-list {
+        grid-template-columns: 1fr;
+        max-height: 260px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
 
     .quiz-layout { gap: 28px; }
 
