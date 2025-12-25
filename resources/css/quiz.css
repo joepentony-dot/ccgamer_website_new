@@ -543,6 +543,11 @@ body.quiz-focus .quiz-panel--active::after {
 
     .ccg-page--quiz .ccg-hero-inner { padding: 36px 18px 34px; }
 
+    .quiz-hero-controls {
+        position: relative;
+        z-index: 1;
+    }
+
     .quiz-hero-grid {
         grid-template-columns: 1fr;
         gap: 18px;
@@ -558,11 +563,12 @@ body.quiz-focus .quiz-panel--active::after {
     .quiz-hero-buttons .ccg-btn {
         width: 100%;
         justify-content: center;
+        display: inline-flex;
     }
 
     .quiz-pack-list {
         grid-template-columns: 1fr;
-        max-height: 260px;
+        max-height: min(240px, 38vh);
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
     }
