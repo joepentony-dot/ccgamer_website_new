@@ -54,7 +54,7 @@
 .quiz-focus-overlay {
     position: fixed;
     inset: 0;
-    background: radial-gradient(circle at 50% 20%, rgba(var(--accent-rgb), 0.2), rgba(0,0,0,0.92) 65%);
+    background: radial-gradient(circle at 50% 20%, rgba(var(--accent-rgb), 0.16), rgba(0,0,0,0.78) 62%);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.35s ease;
@@ -62,8 +62,8 @@
 }
 
 body.quiz-focus .quiz-focus-overlay {
-    opacity: 1;
-    pointer-events: auto;
+    opacity: 0.7;
+    pointer-events: none;
 }
 
 body.quiz-focus .ccg-header,
@@ -72,8 +72,8 @@ body.quiz-focus .quiz-side-panels,
 body.quiz-focus .ccg-footer,
 body.quiz-focus #quiz-intro-panel,
 body.quiz-focus #quiz-score-panel {
-    opacity: 0.12;
-    filter: blur(2px);
+    opacity: 0.22;
+    filter: blur(1px);
     pointer-events: none;
     transition: opacity 0.3s ease, filter 0.3s ease;
 }
