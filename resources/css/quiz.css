@@ -63,12 +63,7 @@
 
 body.quiz-focus .quiz-focus-overlay {
     opacity: 1;
-    pointer-events: none;
-}
-
-html.quiz-focus,
-body.quiz-focus {
-    overflow: hidden;
+    pointer-events: auto;
 }
 
 body.quiz-focus .ccg-header,
@@ -92,11 +87,6 @@ body.quiz-focus .quiz-section {
     justify-content: center;
     min-height: min(100vh, 980px);
     padding: 40px 20px;
-    pointer-events: auto;
-    max-height: 100dvh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
 }
 
 body.quiz-focus .quiz-layout {
