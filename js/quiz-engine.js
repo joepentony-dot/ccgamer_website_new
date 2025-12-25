@@ -49,6 +49,7 @@
 
     const ANSWER_REVEAL_DELAY_MS = 1600;
     const WRONG_REVEAL_FLASH_MS = 350;
+    const SPEECH_RATE = 1.05;
 
     // --------------------------------------------------
     // UTILITIES
@@ -81,6 +82,19 @@
             "\"": "&quot;",
             "'": "&#39;"
         }[m]));
+    }
+
+    function speakFeedback(text) {
+        if (!quizState.sfxEnabled) return;
+        if (!("speechSynthesis" in window)) return;
+        if (!text) return;
+
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.rate = SPEECH_RATE;
+        utter.pitch = 1;
+        utter.volume = 0.9;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utter);
     }
 
     // --------------------------------------------------
@@ -258,18 +272,25 @@
         qs("#quiz-intro-panel").hidden = false;
         qs("#quiz-panel").hidden = true;
         qs("#quiz-score-panel").hidden = true;
+        setFocusMode(false);
     }
 
     function showQuizPanel() {
         qs("#quiz-intro-panel").hidden = true;
         qs("#quiz-panel").hidden = false;
         qs("#quiz-score-panel").hidden = true;
+        setFocusMode(true);
+        const panel = qs("#quiz-panel");
+        if (panel && typeof panel.scrollIntoView === "function") {
+            panel.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
     }
 
     function showScorePanel() {
         qs("#quiz-intro-panel").hidden = true;
         qs("#quiz-panel").hidden = true;
         qs("#quiz-score-panel").hidden = false;
+        setFocusMode(false);
     }
 
     // --------------------------------------------------
@@ -284,9 +305,14 @@
         const optionsEl = qs("#quiz-options");
         const mediaEl = qs("#quiz-media");
         const statusEl = qs("#quiz-status");
+        const feedbackEl = qs("#quiz-feedback");
 
         optionsEl.innerHTML = "";
         mediaEl.innerHTML = "";
+        if (feedbackEl) {
+            feedbackEl.textContent = "";
+            feedbackEl.className = "quiz-feedback";
+        }
 
         if (statusEl) {
             const total = quizState.questions.length;
@@ -343,6 +369,7 @@
         const correct = quizState.currentQuestion.correctIndex;
         const isCorrect = chosen === correct;
         const nextScore = quizState.score + (isCorrect ? 1 : 0);
+        const feedbackEl = qs("#quiz-feedback");
 
         const buttons = qsa(".quiz-answer-btn");
         buttons.forEach((btn) => {
@@ -353,6 +380,11 @@
             quizState.score = nextScore;
             e.currentTarget.classList.add("quiz-answer--correct");
             e.currentTarget.classList.add("quiz-answer--highlight-correct");
+            if (feedbackEl) {
+                feedbackEl.textContent = "Correct!";
+                feedbackEl.classList.add("quiz-feedback--correct", "is-visible");
+            }
+            speakFeedback("Correct");
             sidBarsPulseCorrect();
             playCorrectSfx();
         } else {
@@ -363,6 +395,11 @@
                     correctBtn.classList.add("quiz-answer--correct", "quiz-answer--highlight-correct");
                 }
             }, WRONG_REVEAL_FLASH_MS);
+            if (feedbackEl) {
+                feedbackEl.textContent = "Incorrect";
+                feedbackEl.classList.add("quiz-feedback--wrong", "is-visible");
+            }
+            speakFeedback("Incorrect");
             sidBarsPulseWrong();
             playWrongSfx();
         }
@@ -613,6 +650,15 @@
         qsa("[data-quiz-pack-list] .quiz-pack-btn").forEach((btn) => {
             btn.classList.toggle("is-active", String(btn.dataset.packId) === String(setId));
         });
+    }
+
+    function setFocusMode(active) {
+        document.body.classList.toggle("quiz-focus", active);
+        document.documentElement.classList.toggle("quiz-focus", active);
+        const overlay = qs("[data-quiz-focus-overlay]");
+        if (overlay) {
+            overlay.setAttribute("aria-hidden", active ? "false" : "true");
+        }
     }
 
     // --------------------------------------------------

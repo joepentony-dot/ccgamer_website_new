@@ -340,6 +340,11 @@
     z-index: 0;
 }
 
+.ccg-page--genre-single .ccg-game-card::after,
+.ccg-page--collection-single .ccg-game-card::after {
+    z-index: 0;
+}
+
 .ccg-page--genre-single .ccg-game-card:hover,
 .ccg-page--genre-single .ccg-game-card:focus-within,
 .ccg-page--collection-single .ccg-game-card:hover,
@@ -402,6 +407,13 @@
     margin-top: auto;
     position: relative;
     z-index: 2;
+}
+
+@media (max-width: 768px) {
+    .ccg-page--genre-single .ccg-game-card__actions,
+    .ccg-page--collection-single .ccg-game-card__actions {
+        padding-bottom: 6px;
+    }
 }
 
 .ccg-page--genre-single .ccg-game-card__btn,
