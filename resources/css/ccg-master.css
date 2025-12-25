@@ -80,7 +80,7 @@ html {
 }
 
 body {
-    overflow-y: visible;
+    overflow-y: auto;
 }
 
 .ccg-body--nav-open {
