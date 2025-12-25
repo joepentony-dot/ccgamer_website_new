@@ -654,7 +654,6 @@
 
     function setFocusMode(active) {
         document.body.classList.toggle("quiz-focus", active);
-        document.documentElement.classList.toggle("quiz-focus", active);
         const overlay = qs("[data-quiz-focus-overlay]");
         if (overlay) {
             overlay.setAttribute("aria-hidden", active ? "false" : "true");

@@ -54,7 +54,7 @@
 .quiz-focus-overlay {
     position: fixed;
     inset: 0;
-    background: radial-gradient(circle at 50% 20%, rgba(var(--accent-rgb), 0.16), rgba(0,0,0,0.72) 65%);
+    background: radial-gradient(circle at 50% 20%, rgba(var(--accent-rgb), 0.2), rgba(0,0,0,0.92) 65%);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.35s ease;
@@ -63,12 +63,7 @@
 
 body.quiz-focus .quiz-focus-overlay {
     opacity: 1;
-    pointer-events: none;
-}
-
-html.quiz-focus,
-body.quiz-focus {
-    overflow: hidden;
+    pointer-events: auto;
 }
 
 body.quiz-focus .ccg-header,
@@ -92,11 +87,6 @@ body.quiz-focus .quiz-section {
     justify-content: center;
     min-height: min(100vh, 980px);
     padding: 40px 20px;
-    pointer-events: auto;
-    max-height: 100dvh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
 }
 
 body.quiz-focus .quiz-layout {
@@ -253,11 +243,6 @@ body.quiz-focus .quiz-panel--active::after {
     box-shadow: 0 14px 30px rgba(0,0,0,0.72), inset 0 0 0 1px rgba(255,255,255,0.12);
 }
 
-.quiz-question-card > * {
-    position: relative;
-    z-index: 1;
-}
-
 .quiz-question-card::after {
     content: "";
     position: absolute;
@@ -266,7 +251,6 @@ body.quiz-focus .quiz-panel--active::after {
     background: linear-gradient(120deg, rgba(var(--accent-rgb),0.08), transparent 45%, rgba(120,255,188,0.12));
     mix-blend-mode: screen;
     opacity: 0.7;
-    z-index: 0;
     pointer-events: none;
 }
 
