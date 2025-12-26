@@ -302,11 +302,11 @@
 
         drawerCloseEls.forEach(btn => btn.addEventListener("click", closeNav));
 
-        header.querySelectorAll(".ccg-nav__link").forEach(link => {
-            link.addEventListener("click", () => {
-                if (isMobileViewport()) closeNav();
-                closeMore();
-            });
+        header.addEventListener("click", event => {
+            const link = event.target.closest(".ccg-nav__link");
+            if (!link) return;
+            if (isMobileViewport()) closeNav();
+            closeMore();
         });
 
         document.addEventListener("click", event => {
