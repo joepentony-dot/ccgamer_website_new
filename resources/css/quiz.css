@@ -565,10 +565,13 @@ body.quiz-focus .quiz-panel--active::after {
         text-align: center;
     }
 
+    .quiz-pack-select-wrap { order: 2; }
+
     .quiz-hero-buttons {
         width: 100%;
         flex-direction: column;
         align-items: stretch;
+        order: 1;
     }
 
     .quiz-hero-buttons .ccg-btn {
