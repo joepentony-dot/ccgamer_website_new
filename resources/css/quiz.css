@@ -276,6 +276,17 @@ body.quiz-focus .quiz-panel--active::after {
     justify-content: space-between;
 }
 
+.quiz-panel-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.quiz-panel-actions .ccg-btn {
+    padding: 8px 12px;
+    font-size: 0.72rem;
+}
+
 .quiz-feedback {
     padding: 8px 14px;
     border-radius: 999px;
@@ -589,6 +600,11 @@ body.quiz-focus .quiz-panel--active::after {
     .quiz-score-display { margin-bottom: 18px; }
 
     .quiz-score-actions { gap: 12px; }
+
+    .quiz-panel-actions {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 /* ============================================================

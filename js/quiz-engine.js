@@ -569,8 +569,22 @@
         requestQuestionsForCurrentSet();
     }
 
+    function quitQuiz() {
+        playClickSfx();
+        quizState.acceptingAnswers = false;
+        quizState.currentIndex = 0;
+        quizState.score = 0;
+        quizState.history = [];
+        quizState.questions = [];
+        quizState.currentQuestion = null;
+        quizState._startTime = performance.now();
+        track("quiz_quit", { setId: quizState.currentSetId });
+        showIntroPanel();
+    }
+
     function initQuiz() {
         qs("#quiz-start-btn")?.addEventListener("click", startQuiz);
+        qs("#quiz-quit-btn")?.addEventListener("click", quitQuiz);
         qs("#quiz-save-btn")?.addEventListener("click", () => {
             playClickSfx();
             handleSaveScore();
@@ -580,6 +594,23 @@
         requestQuizSets();
         showIntroPanel();
         setSidBarsIntensity(0.25);
+    }
+
+    function maybeRevealStartButton() {
+        const startBtn = qs("#quiz-start-btn");
+        if (!startBtn) return;
+        const isMobile = typeof window.isMobileViewport === "function"
+            ? window.isMobileViewport()
+            : window.matchMedia?.("(max-width: 768px)")?.matches;
+        if (!isMobile) return;
+        const rect = startBtn.getBoundingClientRect();
+        const inView = rect.top >= 0 && rect.bottom <= window.innerHeight;
+        if (inView) return;
+        const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+        startBtn.scrollIntoView({
+            behavior: prefersReducedMotion ? "auto" : "smooth",
+            block: "center"
+        });
     }
 
     // --------------------------------------------------
@@ -616,6 +647,7 @@
                 setActivePackButton(set.id);
                 updateSelectedPackLabel();
                 playClickSfx();
+                maybeRevealStartButton();
             });
             container.appendChild(btn);
 
