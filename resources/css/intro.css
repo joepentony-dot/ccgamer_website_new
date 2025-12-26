@@ -66,6 +66,10 @@ body.intro-body {
     z-index: 10;
 }
 
+.ccg-header + .intro-root .intro-logo {
+    top: calc(24px + var(--ccg-header-height, 80px));
+}
+
 .intro-logo img {
     height: 64px;
 }
@@ -92,6 +96,10 @@ body.intro-body {
     text-shadow:
         0 0 5px #ffffff,
         0 0 14px #ff324f;
+}
+
+.ccg-header + .intro-root .intro-skip {
+    top: calc(24px + var(--ccg-header-height, 80px));
 }
 
 .intro-skip:hover {
@@ -421,4 +429,3 @@ body.intro-body {
         font-size: 0.75rem;
     }
 }
-
