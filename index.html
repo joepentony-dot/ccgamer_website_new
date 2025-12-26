@@ -12,6 +12,11 @@
 
     <!-- GLOBAL SITE STYLES -->
     <link rel="stylesheet" href="resources/css/ccg-master.css" />
+    <link rel="stylesheet" href="resources/css/ccg-mode.css" />
+    <link rel="stylesheet" href="resources/css/ccg-effects.css" />
+    <link rel="stylesheet" href="resources/css/ccg-anim.css" />
+    <link rel="stylesheet" href="resources/css/ccg-overlays.css" />
+    <link rel="stylesheet" href="resources/css/ccg-socials.css" />
 
     <!-- C64 BLOCKY FONT -->
     <link rel="stylesheet" href="https://unpkg.com/@fontsource/c64-pro-mono/index.css" />
@@ -20,7 +25,7 @@
     <link rel="stylesheet" href="resources/css/intro.css?v=5" />
 </head>
 
-<body class="intro-body">
+<body class="intro-body ccg-body" data-ccg-mode="c64">
 
 <div class="intro-root">
 
@@ -68,6 +73,8 @@
 </div> <!-- /intro-root -->
 
 <!-- INTRO SCRIPT -->
+<script src="js/ccg-global.js" defer></script>
+<script src="js/ccg-mode-engine.js" defer></script>
 <script src="js/index-intro.js?v=5" defer></script>
 
 </body>
