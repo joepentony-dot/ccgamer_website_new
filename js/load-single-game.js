@@ -198,21 +198,65 @@ function renderGame(game) {
 
 function updateMeta(game) {
     const title = game.title || "Game";
-    document.title = `${title} | Cheeky Commodore Gamer`;
+    const metaTitleText = `${title} | Cheeky Commodore Gamer`;
+    document.title = metaTitleText;
 
     const metaTitle = document.getElementById("game-meta-title");
-    if (metaTitle) metaTitle.textContent = document.title;
+    if (metaTitle) metaTitle.textContent = metaTitleText;
 
     const desc = (game.description || "").replace(/<[^>]*>?/gm, "").slice(0, 160);
     const metaDesc = document.getElementById("game-meta-description");
-    if (metaDesc) metaDesc.setAttribute("content",
-        desc || `${title} on Commodore — screenshots, manual, downloads and video.`
-    );
+    const metaDescriptionText =
+        desc || `${title} on Commodore — screenshots, manual, downloads and video.`;
 
-    const canonical = document.getElementById("game-meta-canonical");
-    if (canonical) {
-        const slug = String(game.id || "").replace(/\//g, "-");
-        canonical.setAttribute("href", `https://www.cheekycommodoregamer.co.uk/games/seo/${slug}.html`);
+    if (metaDesc) metaDesc.setAttribute("content", metaDescriptionText);
+
+    const canonical = document.getElementById("game-canonical");
+    const canonicalUrl = new URL(
+        `game.html?id=${encodeURIComponent(game.id || "")}`,
+        window.location.href
+    ).toString();
+    if (canonical) canonical.setAttribute("href", canonicalUrl);
+
+    const thumb = resolveGameThumb(game.thumbnail || game.thumb || game.cover);
+    const imageUrl = new URL(thumb, window.location.href).toString();
+
+    const ogTitle = document.getElementById("game-og-title");
+    if (ogTitle) ogTitle.setAttribute("content", metaTitleText);
+    const ogDesc = document.getElementById("game-og-description");
+    if (ogDesc) ogDesc.setAttribute("content", metaDescriptionText);
+    const ogImage = document.getElementById("game-og-image");
+    if (ogImage) ogImage.setAttribute("content", imageUrl);
+    const ogUrl = document.getElementById("game-og-url");
+    if (ogUrl) ogUrl.setAttribute("content", canonicalUrl);
+
+    const twitterTitle = document.getElementById("game-twitter-title");
+    if (twitterTitle) twitterTitle.setAttribute("content", metaTitleText);
+    const twitterDesc = document.getElementById("game-twitter-description");
+    if (twitterDesc) twitterDesc.setAttribute("content", metaDescriptionText);
+    const twitterImage = document.getElementById("game-twitter-image");
+    if (twitterImage) twitterImage.setAttribute("content", imageUrl);
+
+    const jsonLd = document.getElementById("game-jsonld");
+    if (jsonLd) {
+        const jsonLdData = {
+            "@context": "https://schema.org",
+            "@type": "VideoGame",
+            "name": title,
+            "description": metaDescriptionText,
+            "url": canonicalUrl,
+            "image": imageUrl,
+            "gamePlatform": game.system || "Commodore",
+            "genre": Array.isArray(game.genres) ? game.genres : undefined,
+            "datePublished": game.year ? String(game.year) : undefined,
+            "publisher": game.publisher || game.developer || undefined
+        };
+
+        Object.keys(jsonLdData).forEach(key => {
+            if (jsonLdData[key] === undefined) delete jsonLdData[key];
+        });
+
+        jsonLd.textContent = JSON.stringify(jsonLdData);
     }
 }
 
