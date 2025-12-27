@@ -142,19 +142,8 @@ body[data-ccg-mode="c64"] .ccg-btn {
 
 body[data-ccg-mode="amiga"] .ccg-btn {
     --accent-rgb: 92,127,163;
-    color: #2f3b4d;
-    background:
-        linear-gradient(
-            to bottom,
-            rgba(235, 239, 246, 0.98),
-            rgba(198, 206, 219, 0.98)
-        );
-    border-color: rgba(120, 132, 150, 0.7);
-    text-shadow: 0 1px 0 rgba(255,255,255,0.75);
-    box-shadow:
-        0 8px 18px rgba(0,0,0,0.6),
-        inset 1px 1px 0 rgba(255,255,255,0.8),
-        inset -1px -1px 0 rgba(80, 92, 110, 0.35);
+    color: #e7edf7;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.45);
 }
 
 body[data-ccg-mode="c64"] .ccg-btn--primary {
@@ -188,30 +177,27 @@ body[data-ccg-mode="amiga"] .ccg-btn--primary {
     background:
         linear-gradient(
             to bottom,
-            rgba(245, 248, 252, 0.98),
-            rgba(206, 214, 226, 0.98)
+            rgba(205, 214, 228, 0.45),
+            rgba(12, 14, 22, 0.82)
         );
-    border-color: rgba(112, 124, 142, 0.75);
+    border-color: rgba(148, 170, 200, 0.65);
     box-shadow:
-        0 10px 22px rgba(0,0,0,0.7),
-        0 0 18px rgba(160, 178, 205, 0.45),
-        inset 1px 1px 0 rgba(255,255,255,0.85),
-        inset -1px -1px 0 rgba(80, 92, 110, 0.4);
+        0 10px 22px rgba(0,0,0,0.85),
+        0 0 20px rgba(92, 127, 163, 0.35),
+        inset 0 0 12px rgba(180, 198, 222, 0.25);
 }
 
 body[data-ccg-mode="amiga"] .ccg-btn--secondary {
     background:
         linear-gradient(
             to bottom,
-            rgba(230, 235, 244, 0.95),
-            rgba(188, 197, 210, 0.98)
+            rgba(150, 164, 182, 0.25),
+            rgba(8, 10, 18, 0.75)
         );
-    border-color: rgba(112, 124, 142, 0.65);
+    border-color: rgba(148, 170, 200, 0.45);
     box-shadow:
-        0 8px 18px rgba(0,0,0,0.6),
-        0 0 14px rgba(160, 178, 205, 0.35),
-        inset 1px 1px 0 rgba(255,255,255,0.75),
-        inset -1px -1px 0 rgba(80, 92, 110, 0.3);
+        0 8px 18px rgba(0,0,0,0.75),
+        0 0 16px rgba(92, 127, 163, 0.28);
 }
 
 /* ============================================================
