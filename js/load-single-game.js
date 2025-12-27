@@ -208,6 +208,12 @@ function updateMeta(game) {
     if (metaDesc) metaDesc.setAttribute("content",
         desc || `${title} on Commodore — screenshots, manual, downloads and video.`
     );
+
+    const canonical = document.getElementById("game-meta-canonical");
+    if (canonical) {
+        const slug = String(game.id || "").replace(/\//g, "-");
+        canonical.setAttribute("href", `https://www.cheekycommodoregamer.co.uk/games/seo/${slug}.html`);
+    }
 }
 
 /* ============================================================
