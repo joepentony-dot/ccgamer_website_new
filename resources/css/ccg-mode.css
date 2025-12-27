@@ -203,6 +203,7 @@ body[data-ccg-mode="amiga"] .ccg-feature-card {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    z-index: 10001;
     padding: 4px;
     border: 1px solid rgba(var(--accent-rgb), 0.35);
     border-radius: 999px;
@@ -238,8 +239,8 @@ body[data-ccg-mode="amiga"] .ccg-feature-card {
     z-index: 2;
 }
 
-.ccg-mode-toggle__label--c64 { color: #6de0ff; }
-.ccg-mode-toggle__label--amiga { color: #6aa5ff; }
+.ccg-mode-toggle__label--c64 { color: #7ff4ff; }
+.ccg-mode-toggle__label--amiga { color: #6f8fb4; }
 
 .ccg-mode-toggle__thumb {
     position: absolute;
@@ -274,6 +275,25 @@ body[data-ccg-mode="c64"] .ccg-mode-toggle__pill::before {
             rgba(0, 0, 0, 0) 3px
         );
     opacity: 0.35;
+}
+
+body[data-ccg-mode="c64"] .ccg-mode-toggle {
+    border-color: rgba(0, 220, 255, 0.6);
+    box-shadow:
+        0 0 0 1px rgba(0,0,0,0.4),
+        0 0 18px rgba(0, 220, 255, 0.55),
+        inset 0 0 20px rgba(0, 220, 255, 0.25);
+}
+
+body[data-ccg-mode="c64"] .ccg-mode-toggle__label--c64 {
+    text-shadow:
+        0 0 6px rgba(0, 220, 255, 0.75),
+        0 0 12px rgba(0, 180, 255, 0.55);
+}
+
+body[data-ccg-mode="amiga"] .ccg-mode-toggle__label--amiga {
+    color: #3a4a62;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.65);
 }
 
 body[data-ccg-mode="amiga"] .ccg-mode-toggle {
