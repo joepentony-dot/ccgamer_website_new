@@ -418,6 +418,31 @@
     }
 
     /* ======================================================
+       LOCAL VISITOR COUNTER (SIMPLE, FREE)
+    ====================================================== */
+    function setupVisitCounter() {
+        const counterEls = document.querySelectorAll("[data-ccg-visit-counter]");
+        if (!counterEls.length) return;
+
+        let count = 0;
+
+        try {
+            const storedValue = localStorage.getItem("ccg-visit-count");
+            count = storedValue ? Number(storedValue) : 0;
+            if (!Number.isFinite(count)) count = 0;
+            count += 1;
+            localStorage.setItem("ccg-visit-count", String(count));
+        } catch (error) {
+            count = 1;
+        }
+
+        const formatted = count.toLocaleString();
+        counterEls.forEach(el => {
+            el.textContent = formatted;
+        });
+    }
+
+    /* ======================================================
        DOM READY
     ====================================================== */
     document.addEventListener("DOMContentLoaded", () => {
@@ -473,6 +498,7 @@
         }
 
         setupNavToggle();
+        setupVisitCounter();
 
         /* ==================================================
            VIEWPORT WOW — LIGHT UP EVERYTHING
