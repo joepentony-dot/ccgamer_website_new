@@ -127,44 +127,30 @@
 
 .ccg-footer__counter {
     display: inline-flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    padding: 10px 18px;
+    min-width: 7ch;
+    padding: 6px 14px;
 
     font-family: var(--ccg-font-main, 'Orbitron', sans-serif);
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     font-weight: 600;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.18em;
+    font-variant-numeric: tabular-nums;
 
     color: rgba(232, 246, 255, 0.98);
 
     background:
         linear-gradient(160deg, rgba(8, 20, 40, 0.95), rgba(16, 34, 64, 0.75));
     border: 1px solid rgba(var(--accent-rgb), 0.55);
-    border-radius: 16px;
+    border-radius: 999px;
 
     box-shadow:
-        0 0 16px rgba(var(--accent-rgb), 0.4),
-        inset 0 0 14px rgba(0, 170, 255, 0.18);
+        0 0 14px rgba(var(--accent-rgb), 0.38),
+        inset 0 0 12px rgba(0, 170, 255, 0.15);
     text-shadow:
         0 0 12px rgba(120, 210, 255, 0.65),
         0 2px 4px rgba(0, 0, 0, 0.65);
-}
-
-.ccg-footer__counter img {
-    display: block;
-    height: auto;
-    max-width: 100%;
-    filter: drop-shadow(0 0 8px rgba(120, 210, 255, 0.45));
-}
-
-.ccg-footer__counter a {
-    font-size: 0.68rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    opacity: 0.55;
 }
 
 /* ------------------------------------------------------------
@@ -266,9 +252,9 @@
     }
 
     .ccg-footer__counter {
-        font-size: 0.98rem;
-        letter-spacing: 0.12em;
-        padding: 8px 14px;
+        font-size: 1rem;
+        letter-spacing: 0.14em;
+        min-width: 6.5ch;
     }
 }
 
