@@ -418,6 +418,30 @@
     }
 
     /* ======================================================
+       GLOBAL VISITOR COUNTER (COUNTAPI)
+    ====================================================== */
+    function setupVisitCounter() {
+        const counterEls = document.querySelectorAll("[data-ccg-visit-counter]");
+        if (!counterEls.length) return;
+
+        const BASE_COUNT = 3028;
+        const endpoint = "https://api.countapi.xyz/hit/ccgamer-website/home";
+
+        const renderCount = (value) => {
+            const safeValue = Number.isFinite(value) ? value : BASE_COUNT;
+            const formatted = safeValue.toLocaleString();
+            counterEls.forEach(el => {
+                el.textContent = formatted;
+            });
+        };
+
+        fetch(endpoint)
+            .then(response => response.json())
+            .then(data => renderCount(data?.value))
+            .catch(() => renderCount(BASE_COUNT));
+    }
+
+    /* ======================================================
        DOM READY
     ====================================================== */
     document.addEventListener("DOMContentLoaded", () => {
@@ -473,6 +497,7 @@
         }
 
         setupNavToggle();
+        setupVisitCounter();
 
         /* ==================================================
            VIEWPORT WOW — LIGHT UP EVERYTHING
