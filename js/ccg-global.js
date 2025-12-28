@@ -424,24 +424,16 @@
         const counterEls = document.querySelectorAll("[data-ccg-visit-counter]");
         if (!counterEls.length) return;
 
-        const BASE_COUNT = 3028;
-        const SESSION_KEY = "ccg-visit-counted";
-        let count = BASE_COUNT;
+        let count = 0;
 
         try {
             const storedValue = localStorage.getItem("ccg-visit-count");
-            const hasStored = storedValue !== null;
-            count = storedValue ? Number(storedValue) : BASE_COUNT;
-            if (!Number.isFinite(count)) count = BASE_COUNT;
-            if (!sessionStorage.getItem(SESSION_KEY)) {
-                if (hasStored) {
-                    count += 1;
-                }
-                sessionStorage.setItem(SESSION_KEY, "true");
-            }
+            count = storedValue ? Number(storedValue) : 0;
+            if (!Number.isFinite(count)) count = 0;
+            count += 1;
             localStorage.setItem("ccg-visit-count", String(count));
         } catch (error) {
-            count = BASE_COUNT;
+            count = 1;
         }
 
         const formatted = count.toLocaleString();
