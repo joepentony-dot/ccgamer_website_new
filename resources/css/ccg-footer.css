@@ -130,11 +130,11 @@
     align-items: center;
     justify-content: center;
     min-width: 7ch;
-    padding: 8px 16px;
+    padding: 6px 14px;
 
     font-family: var(--ccg-font-main, 'Orbitron', sans-serif);
     font-size: 1.1rem;
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: 0.18em;
     font-variant-numeric: tabular-nums;
 
@@ -143,11 +143,11 @@
     background:
         linear-gradient(160deg, rgba(8, 20, 40, 0.95), rgba(16, 34, 64, 0.75));
     border: 1px solid rgba(var(--accent-rgb), 0.55);
-    border-radius: 16px;
+    border-radius: 999px;
 
     box-shadow:
-        0 0 16px rgba(var(--accent-rgb), 0.4),
-        inset 0 0 14px rgba(0, 170, 255, 0.18);
+        0 0 14px rgba(var(--accent-rgb), 0.38),
+        inset 0 0 12px rgba(0, 170, 255, 0.15);
     text-shadow:
         0 0 12px rgba(120, 210, 255, 0.65),
         0 2px 4px rgba(0, 0, 0, 0.65);
@@ -255,7 +255,6 @@
         font-size: 1rem;
         letter-spacing: 0.14em;
         min-width: 6.5ch;
-        padding: 7px 12px;
     }
 }
 

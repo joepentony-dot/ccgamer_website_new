@@ -418,27 +418,28 @@
     }
 
     /* ======================================================
-       GLOBAL VISITOR COUNTER (COUNTAPI)
+       LOCAL VISITOR COUNTER (SIMPLE, FREE)
     ====================================================== */
     function setupVisitCounter() {
         const counterEls = document.querySelectorAll("[data-ccg-visit-counter]");
         if (!counterEls.length) return;
 
-        const BASE_COUNT = 3028;
-        const endpoint = "https://api.countapi.xyz/hit/ccgamer-website/home";
+        let count = 0;
 
-        const renderCount = (value) => {
-            const safeValue = Number.isFinite(value) ? value : BASE_COUNT;
-            const formatted = safeValue.toLocaleString();
-            counterEls.forEach(el => {
-                el.textContent = formatted;
-            });
-        };
+        try {
+            const storedValue = localStorage.getItem("ccg-visit-count");
+            count = storedValue ? Number(storedValue) : 0;
+            if (!Number.isFinite(count)) count = 0;
+            count += 1;
+            localStorage.setItem("ccg-visit-count", String(count));
+        } catch (error) {
+            count = 1;
+        }
 
-        fetch(endpoint)
-            .then(response => response.json())
-            .then(data => renderCount(data?.value))
-            .catch(() => renderCount(BASE_COUNT));
+        const formatted = count.toLocaleString();
+        counterEls.forEach(el => {
+            el.textContent = formatted;
+        });
     }
 
     /* ======================================================
