@@ -26,6 +26,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const kickOff = () => initHomeDynamic();
 
     if (shouldUseMobileLite()) {
+        runWhenIdle(kickOff);
+    } else {
+        kickOff();
+    }
+});
+
+    if (shouldUseMobileLite()) {
         applyMobileLiteMode();
         runWhenIdle(kickOff);
     } else {
