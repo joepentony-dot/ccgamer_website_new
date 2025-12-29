@@ -22,7 +22,15 @@ const isMobileViewport = () => {
     return window.innerWidth <= 768;
 };
 
-document.addEventListener("DOMContentLoaded", () => initHomeDynamic());
+document.addEventListener("DOMContentLoaded", () => {
+    const kickOff = () => initHomeDynamic();
+
+    if (shouldUseMobileLite()) {
+        runWhenIdle(kickOff);
+    } else {
+        kickOff();
+    }
+});
 
 async function initHomeDynamic() {
     if (shouldUseMobileLite()) {
