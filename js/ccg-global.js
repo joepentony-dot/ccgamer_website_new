@@ -474,8 +474,8 @@
         document.querySelectorAll(".ccg-brand__logo").forEach(img => {
             img.src = logoPath;
             img.loading = img.loading || "lazy";
-            img.alt ||= "Cheeky Commodore Gamer logo";
-            img.decoding ||= "async";
+            if (!img.alt) img.alt = "Cheeky Commodore Gamer logo";
+            if (!img.decoding) img.decoding = "async";
         });
 
         /* -------------------------------
@@ -484,12 +484,12 @@
         document.querySelectorAll("img:not([loading])").forEach(img => {
             const isAboveTheFold = img.closest("header") || img.closest(".ccg-hero") || img.closest(".home-hero") || img.closest(".ccg-info-hero");
             img.loading = isAboveTheFold ? "eager" : "lazy";
-            img.decoding ||= "async";
+            if (!img.decoding) img.decoding = "async";
         });
 
         document.querySelectorAll("iframe").forEach(frame => {
             frame.loading = frame.loading || "lazy";
-            frame.referrerPolicy ||= "strict-origin-when-cross-origin";
+            if (!frame.referrerPolicy) frame.referrerPolicy = "strict-origin-when-cross-origin";
         });
 
         const introVideo = document.querySelector(".intro-video");
