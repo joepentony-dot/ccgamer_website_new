@@ -32,11 +32,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-async function initHomeDynamic() {
     if (shouldUseMobileLite()) {
         applyMobileLiteMode();
+        runWhenIdle(kickOff);
+    } else {
+        kickOff();
     }
+});
 
+async function initHomeDynamic() {
     const skipAnimations = shouldSkipHomeAnimations();
 
     await loadGamesForHome();
