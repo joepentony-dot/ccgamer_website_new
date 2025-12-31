@@ -252,6 +252,10 @@ function animateAccordionContent(content, isOpening) {
 
     // Reset any running animations
     content.removeEventListener("transitionend", content._ccgMotionHandler);
+    if (content._ccgHeightTimer) {
+        clearTimeout(content._ccgHeightTimer);
+        content._ccgHeightTimer = null;
+    }
     content.style.height = "";
 
     if (prefersReduced) {
@@ -288,6 +292,15 @@ function animateAccordionContent(content, isOpening) {
 
     content._ccgMotionHandler = onTransitionEnd;
     content.addEventListener("transitionend", onTransitionEnd, { once: true });
+
+    if (isOpening) {
+        content._ccgHeightTimer = setTimeout(() => {
+            if (!content.hidden && content.classList.contains("is-visible")) {
+                content.style.height = "auto";
+            }
+            content._ccgHeightTimer = null;
+        }, 420);
+    }
 }
 
 /* ============================================================
