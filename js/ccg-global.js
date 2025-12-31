@@ -130,10 +130,12 @@
         // Visual containment only
         if (isMobileLike()) {
             header.style.isolation = "isolate";
-            header.style.overflow = "hidden";
+            header.style.overflowX = "hidden";
+            header.style.overflowY = "visible";
         } else {
             header.style.isolation = "";
-            header.style.overflow = "";
+            header.style.overflowX = "";
+            header.style.overflowY = "";
         }
     }
 
