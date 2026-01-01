@@ -1651,6 +1651,23 @@ body.ccg-is-mobile .home-hero__bg {
     animation: ccg-vhs-jitter 0.2s steps(2) infinite;
 }
 
+.ccg-vhs::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.04) 0,
+        rgba(255, 255, 255, 0.04) 1px,
+        transparent 1px,
+        transparent 4px
+    );
+    mix-blend-mode: overlay;
+    animation: ccg-vhs-lines 0.4s linear infinite;
+}
+
 .ccg-terminator .ccg-page,
 .ccg-terminator .intro-root {
     filter: hue-rotate(-35deg) saturate(1.3);
@@ -1727,27 +1744,11 @@ body.ccg-is-mobile .home-hero__bg {
     letter-spacing: 0.16em;
 }
 
-.ccg-press-play__label {
-    align-self: flex-start;
-    margin-left: 6vw;
-    padding: 4px 10px;
-    border: 2px solid rgba(255,255,255,0.8);
-    font-size: 0.9rem;
-    letter-spacing: 0.25em;
-    animation: ccg-vhs-blink 1s steps(2) infinite;
-}
-
 .ccg-press-play__bars {
     width: min(400px, 80vw);
     height: 8px;
     background: repeating-linear-gradient(90deg, #fff 0 18px, transparent 18px 28px);
     opacity: 0.6;
-}
-
-.ccg-press-play__sub {
-    font-size: 0.75rem;
-    opacity: 0.8;
-    letter-spacing: 0.3em;
 }
 
 .ccg-bsod {
@@ -1757,16 +1758,6 @@ body.ccg-is-mobile .home-hero__bg {
     padding: 80px 40px;
     font-size: 1rem;
     pointer-events: auto;
-}
-
-.ccg-bsod__title {
-    font-weight: bold;
-    margin-bottom: 18px;
-}
-
-.ccg-bsod__hint {
-    margin-top: 20px;
-    opacity: 0.8;
 }
 
 .ccg-c64-reset {
@@ -1843,75 +1834,6 @@ body.ccg-is-mobile .home-hero__bg {
     animation: ccg-zx-load 2s linear infinite;
 }
 
-.ccg-zx-emulator {
-    background: rgba(0, 0, 0, 0.92);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.ccg-zx-emulator__frame {
-    width: min(960px, 90vw);
-    height: min(600px, 70vh);
-    background: #000;
-    border: 2px solid #f9ff75;
-    position: relative;
-    box-shadow: 0 0 30px rgba(249, 255, 117, 0.4);
-}
-
-.ccg-zx-emulator__frame iframe {
-    width: 100%;
-    height: 100%;
-    border: 0;
-}
-
-.ccg-zx-emulator__label {
-    position: absolute;
-    top: -16px;
-    left: 20px;
-    background: #000;
-    padding: 4px 10px;
-    color: #f9ff75;
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-}
-
-.ccg-zx-message {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-family: "C64 Pro Mono", "Roboto Mono", monospace;
-    text-align: center;
-    background: rgba(0, 0, 0, 0.92);
-    color: #f9ff75;
-    letter-spacing: 0.18em;
-}
-
-.ccg-zx-message__line {
-    font-size: 1.1rem;
-    margin: 8px 0;
-    animation: ccg-zx-flicker 0.18s infinite alternate;
-}
-
-.ccg-warp-overlay {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(circle, rgba(140, 255, 255, 0.15), rgba(0, 0, 0, 0.92));
-    pointer-events: none;
-}
-
-.ccg-warp-overlay__stars {
-    width: 140%;
-    height: 140%;
-    background: radial-gradient(circle, rgba(255,255,255,0.6) 0 2px, transparent 2px);
-    background-size: 40px 40px;
-    animation: ccg-warp-stars 1.2s linear infinite;
-    transform: scale(0.6);
-    mix-blend-mode: screen;
-}
-
 .ccg-boing::before {
     content: "";
     position: absolute;
@@ -1921,27 +1843,6 @@ body.ccg-is-mobile .home-hero__bg {
     border-radius: 50%;
     animation: ccg-boing 2.4s ease-in-out infinite;
     box-shadow: 0 0 30px rgba(255, 61, 155, 0.5);
-}
-
-.ccg-boing__shadow {
-    position: absolute;
-    bottom: 20vh;
-    left: 50%;
-    width: 120px;
-    height: 40px;
-    transform: translateX(-50%);
-    background: radial-gradient(ellipse, rgba(0, 0, 0, 0.5), transparent 70%);
-    animation: ccg-boing-shadow 2.4s ease-in-out infinite;
-}
-
-.ccg-pacman__dots {
-    position: absolute;
-    top: 45%;
-    left: 0;
-    right: 0;
-    height: 6px;
-    background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.6) 0 10px, transparent 10px 20px);
-    opacity: 0.4;
 }
 
 .ccg-pacman__sprite,
@@ -1967,18 +1868,6 @@ body.ccg-is-mobile .home-hero__bg {
     box-shadow: 0 0 12px rgba(99, 247, 255, 0.6);
 }
 
-.ccg-pacman__ghost::before {
-    content: "";
-    position: absolute;
-    top: 14px;
-    left: 10px;
-    width: 10px;
-    height: 10px;
-    background: #000;
-    border-radius: 50%;
-    box-shadow: 20px 0 0 #000;
-}
-
 .ccg-pacman__ghost::after {
     content: "";
     position: absolute;
@@ -2002,16 +1891,10 @@ body.ccg-is-mobile .home-hero__bg {
 
 .ccg-lemmings__countdown {
     font-size: 3rem;
-    text-shadow: 0 0 12px rgba(255, 210, 77, 0.6);
 }
 
 .ccg-lemmings.is-boom {
     background: radial-gradient(circle, rgba(255, 94, 0, 0.85), rgba(0, 0, 0, 0.92));
-}
-
-.ccg-lemmings__label {
-    letter-spacing: 0.2em;
-    font-size: 0.9rem;
 }
 
 .ccg-konami {
@@ -2034,68 +1917,6 @@ body.ccg-is-mobile .home-hero__bg {
     animation: ccg-konami-fade 1.2s ease forwards;
 }
 
-.ccg-vhs::after {
-    content: "PLAY";
-    position: fixed;
-    top: 18px;
-    left: 24px;
-    color: rgba(255, 255, 255, 0.75);
-    font-family: "C64 Pro Mono", "Roboto Mono", monospace;
-    letter-spacing: 0.3em;
-    z-index: 6;
-    animation: ccg-vhs-blink 1s steps(2) infinite;
-}
-
-.ccg-vhs::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 5;
-    pointer-events: none;
-    background: linear-gradient(120deg, rgba(255, 255, 255, 0.06), transparent 40%),
-        repeating-linear-gradient(
-            180deg,
-            rgba(255, 255, 255, 0.04) 0,
-            rgba(255, 255, 255, 0.04) 1px,
-            transparent 1px,
-            transparent 4px
-        );
-    mix-blend-mode: overlay;
-    animation: ccg-vhs-lines 0.4s linear infinite;
-}
-
-.ccg-terminator::after {
-    content: "TARGET ACQUIRED";
-    position: fixed;
-    top: 20px;
-    right: 30px;
-    color: rgba(255, 80, 80, 0.8);
-    font-family: "C64 Pro Mono", "Roboto Mono", monospace;
-    letter-spacing: 0.25em;
-    z-index: 6;
-}
-
-.ccg-terminator::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    border: 2px solid rgba(255, 80, 80, 0.5);
-    box-shadow: inset 0 0 80px rgba(255, 30, 30, 0.25);
-    z-index: 5;
-    pointer-events: none;
-}
-
-.ccg-matrix__glyphs {
-    position: absolute;
-    inset: 0;
-    font-family: "Courier New", monospace;
-    font-size: 0.85rem;
-    color: rgba(0, 255, 140, 0.7);
-    animation: ccg-matrix-glyphs 1.6s steps(2) infinite;
-    letter-spacing: 0.4em;
-    text-shadow: 0 0 12px rgba(0, 255, 140, 0.6);
-}
-
 @keyframes ccg-vhs-jitter {
     0% { transform: translate(0); }
     50% { transform: translate(-2px, 1px); }
@@ -2106,11 +1927,6 @@ body.ccg-is-mobile .home-hero__bg {
     0% { opacity: 0.3; }
     50% { opacity: 0.6; }
     100% { opacity: 0.3; }
-}
-
-@keyframes ccg-vhs-blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0; }
 }
 
 @keyframes ccg-party-pulse {
@@ -2128,11 +1944,6 @@ body.ccg-is-mobile .home-hero__bg {
     0% { transform: scale(1) rotate(0deg); }
     50% { transform: scale(0.1) rotate(360deg); }
     100% { transform: scale(1) rotate(0deg); }
-}
-
-@keyframes ccg-warp-stars {
-    0% { transform: scale(0.5); opacity: 0.4; }
-    100% { transform: scale(1.4); opacity: 0.9; }
 }
 
 @keyframes ccg-matrix-fall {
@@ -2155,23 +1966,12 @@ body.ccg-is-mobile .home-hero__bg {
     100% { transform: translateX(100%); }
 }
 
-@keyframes ccg-zx-flicker {
-    0% { opacity: 0.6; }
-    100% { opacity: 1; }
-}
-
 @keyframes ccg-boing {
     0% { transform: translate(10vw, 20vh); }
     25% { transform: translate(70vw, 30vh); }
     50% { transform: translate(20vw, 70vh); }
     75% { transform: translate(60vw, 50vh); }
     100% { transform: translate(10vw, 20vh); }
-}
-
-@keyframes ccg-boing-shadow {
-    0% { transform: translateX(-50%) scale(0.6); opacity: 0.4; }
-    50% { transform: translateX(-50%) scale(1.1); opacity: 0.7; }
-    100% { transform: translateX(-50%) scale(0.6); opacity: 0.4; }
 }
 
 @keyframes ccg-pacman-run {
@@ -2182,9 +1982,4 @@ body.ccg-is-mobile .home-hero__bg {
 @keyframes ccg-konami-fade {
     0% { opacity: 1; }
     100% { opacity: 0; }
-}
-
-@keyframes ccg-matrix-glyphs {
-    0% { opacity: 0.4; transform: translateY(-10px); }
-    100% { opacity: 1; transform: translateY(10px); }
 }

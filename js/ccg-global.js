@@ -172,7 +172,6 @@
         consolePanel: null,
         consoleInput: null,
         audioCtx: null,
-        audioSamples: new Map(),
         inputBuffer: "",
         konamiIndex: 0,
     };
@@ -214,36 +213,12 @@
         oscillator.stop(ctx.currentTime + duration);
     }
 
-    function playSample(url, volume = 0.6) {
-        if (!url) return;
-        let audio = secretState.audioSamples.get(url);
-        if (!audio) {
-            audio = new Audio(url);
-            audio.preload = "auto";
-            secretState.audioSamples.set(url, audio);
-        }
-        audio.volume = volume;
-        audio.currentTime = 0;
-        audio.play().catch(() => {
-            // Ignore autoplay restrictions; fallback handled by tone-based cues.
-        });
-    }
-
     function createOverlay(className, html) {
         const overlay = document.createElement("div");
         overlay.className = className;
         if (html) overlay.innerHTML = html;
         document.body.appendChild(overlay);
         return overlay;
-    }
-
-    function toggleOverlay(selector, className, html) {
-        const existing = document.querySelector(selector);
-        if (existing) {
-            existing.remove();
-            return null;
-        }
-        return createOverlay(className, html);
     }
 
     function triggerC64Reset() {
@@ -260,20 +235,17 @@
 
     function triggerPressPlay() {
         const overlay = createOverlay("ccg-press-play", `
-            <div class="ccg-press-play__label">PLAY</div>
             <div class="ccg-press-play__bars"></div>
             <h1>PRESS PLAY ON TAPE</h1>
             <div class="ccg-press-play__bars"></div>
-            <div class="ccg-press-play__sub">LOADING TURBO TAPE • 00:00:03</div>
         `);
         setTimeout(() => overlay.remove(), 4200);
     }
 
     function triggerBSOD() {
         const bsod = createOverlay("ccg-bsod", `
-            <p class="ccg-bsod__title">A fatal exception 0E has occurred at 0028:C0011E36 in VXD VMM(01) + 00010E36.</p>
+            <p>A fatal exception 0E has occurred at 0028:C0011E36 in VXD VMM(01) + 00010E36.</p>
             <p>Press any key to continue...</p>
-            <p class="ccg-bsod__hint">If this is the first time you've seen this stop error screen, restart your computer.</p>
         `);
         const remove = () => bsod.remove();
         bsod.addEventListener("click", remove);
@@ -281,50 +253,41 @@
     }
 
     function triggerWarp() {
-        const warpOverlay = createOverlay("ccg-warp-overlay", `<div class="ccg-warp-overlay__stars"></div>`);
         document.body.classList.add("ccg-warp");
-        setTimeout(() => {
-            document.body.classList.remove("ccg-warp");
-            warpOverlay.remove();
-        }, 5200);
+        setTimeout(() => document.body.classList.remove("ccg-warp"), 5200);
     }
 
     function triggerPacman() {
-        const pacman = createOverlay("ccg-pacman", `
-            <div class="ccg-pacman__dots"></div>
+        const pacman = createOverlay("ccg-pacman");
+        pacman.innerHTML = `
             <div class="ccg-pacman__sprite"></div>
             <div class="ccg-pacman__ghost"></div>
-        `);
+        `;
         setTimeout(() => pacman.remove(), 13000);
     }
 
     function triggerBoing() {
-        const boing = createOverlay("ccg-boing", `<div class="ccg-boing__shadow"></div>`);
+        const boing = createOverlay("ccg-boing");
         setTimeout(() => boing.remove(), 10000);
     }
 
     function triggerLemmings() {
         const lemmings = createOverlay("ccg-lemmings", `
-            <div class="ccg-lemmings__countdown">5</div>
-            <div class="ccg-lemmings__label">COUNTDOWN INITIATED...</div>
+            <div class="ccg-lemmings__countdown">3</div>
+            <div class="ccg-lemmings__label">NUKE DEPLOYING...</div>
         `);
         const countdown = lemmings.querySelector(".ccg-lemmings__countdown");
-        let count = 5;
-        const countdownSample = "https://raw.githubusercontent.com/joepentony-dot/website-images/main/lemmings-countdown.mp3";
-        const ohNoSample = "https://raw.githubusercontent.com/joepentony-dot/website-images/main/lemmings-oh-no.mp3";
-        playSample(countdownSample, 0.6);
+        let count = 3;
         const timer = setInterval(() => {
             count -= 1;
             if (count >= 0) {
                 countdown.textContent = String(count);
-                playTone(420 + count * 40, "square", 0.12, 0.18);
             }
             if (count < 0) {
                 clearInterval(timer);
                 lemmings.classList.add("is-boom");
                 countdown.textContent = "💥";
                 lemmings.querySelector(".ccg-lemmings__label").textContent = "OH NO!";
-                playSample(ohNoSample, 0.7);
                 setTimeout(() => lemmings.remove(), 2500);
             }
         }, 800);
@@ -333,42 +296,32 @@
     function triggerZX() {
         const overlay = createOverlay("ccg-zx", `
             <div class="ccg-zx__screen">
-                <div class="ccg-zx__title">ZX SPECTRUM 128K</div>
+                <div class="ccg-zx__title">ZX SPECTRUM 48K</div>
                 <div class="ccg-zx__loader">LOADING... PLEASE WAIT</div>
                 <div class="ccg-zx__bar"><span></span></div>
-                <div class="ccg-zx__prompt">BOOTING JSSPECCY...</div>
+                <div class="ccg-zx__prompt">READY.</div>
             </div>
         `);
         setTimeout(() => overlay.classList.add("is-active"), 20);
-
-        setTimeout(() => {
-            overlay.remove();
-            const emulator = createOverlay("ccg-zx-emulator", `
-                <div class="ccg-zx-emulator__frame">
-                    <iframe src="https://jsspeccy.zxdemo.org/" title="ZX Spectrum Emulator"></iframe>
-                    <div class="ccg-zx-emulator__label">ZX SPECTRUM EMULATOR</div>
-                </div>
-            `);
-
-            setTimeout(() => {
-                const msg = createOverlay("ccg-zx-message", `
-                    <div class="ccg-zx-message__line">NO I DON'T THINK SO</div>
-                    <div class="ccg-zx-message__line">RETURNING YOU TO YOUR SENSES...</div>
-                `);
-                setTimeout(() => {
-                    msg.remove();
-                    emulator.remove();
-                }, 3600);
-            }, 4800);
-        }, 1800);
+        setTimeout(() => overlay.remove(), 5200);
     }
 
     function triggerMatrix() {
-        toggleOverlay(".ccg-matrix", "ccg-matrix", `<div class="ccg-matrix__glyphs">0101010101</div>`);
+        const existing = document.querySelector(".ccg-matrix");
+        if (existing) {
+            existing.remove();
+            return;
+        }
+        createOverlay("ccg-matrix");
     }
 
     function triggerInvaders() {
-        toggleOverlay(".ccg-invaders", "ccg-invaders");
+        const existing = document.querySelector(".ccg-invaders");
+        if (existing) {
+            existing.remove();
+            return;
+        }
+        createOverlay("ccg-invaders");
     }
 
     function triggerRainbow() {
@@ -389,7 +342,6 @@
     const cheats = {
         "sys64738": () => triggerC64Reset(),
         "pressplay": () => triggerPressPlay(),
-        "pressplayontape": () => triggerPressPlay(),
         "vhs": () => document.body.classList.toggle("ccg-vhs"),
         "terminator": () => {
             document.body.classList.toggle("ccg-terminator");
@@ -425,14 +377,13 @@
     };
 
     function normalizeCode(code) {
-        return code.toLowerCase().replace(/[^a-z0-9]/g, "");
+        return code.toLowerCase().replace(/\s+/g, "");
     }
 
     function triggerCheat(code) {
         const normalized = normalizeCode(code);
         if (cheats[normalized]) {
             cheats[normalized]();
-            closeSecretModal();
         }
     }
 
@@ -556,22 +507,12 @@
                 return;
             }
 
-            if (event.key.length === 1 || /^[a-zA-Z0-9]$/.test(event.key)) {
-                secretState.inputBuffer = normalizeCode(`${secretState.inputBuffer}${event.key}`);
-                secretState.inputBuffer = secretState.inputBuffer.slice(-24);
-
-                if (secretState.inputBuffer.endsWith("sys64738")) {
+            if (event.key.length === 1) {
+                secretState.inputBuffer = `${secretState.inputBuffer}${event.key}`.toLowerCase();
+                secretState.inputBuffer = secretState.inputBuffer.slice(-18);
+                if (secretState.inputBuffer.includes("sys64738")) {
                     openSecretModal();
-                    secretState.inputBuffer = "";
-                    return;
                 }
-
-                Object.keys(cheats).forEach(code => {
-                    if (secretState.inputBuffer.endsWith(code)) {
-                        triggerCheat(code);
-                        secretState.inputBuffer = "";
-                    }
-                });
             }
 
             const expected = konamiSequence[secretState.konamiIndex];
