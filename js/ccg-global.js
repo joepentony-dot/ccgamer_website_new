@@ -165,6 +165,429 @@
     }
 
     /* ======================================================
+       EASTER EGGS — SECRET COMMAND CONSOLE
+    ====================================================== */
+    const secretState = {
+        modal: null,
+        consolePanel: null,
+        consoleInput: null,
+        audioCtx: null,
+        audioSamples: new Map(),
+        inputBuffer: "",
+        konamiIndex: 0,
+    };
+
+    const konamiSequence = [
+        "ArrowUp",
+        "ArrowUp",
+        "ArrowDown",
+        "ArrowDown",
+        "ArrowLeft",
+        "ArrowRight",
+        "ArrowLeft",
+        "ArrowRight",
+        "b",
+        "a",
+    ];
+
+    function ensureAudioContext() {
+        if (!secretState.audioCtx) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) {
+                secretState.audioCtx = new AudioContext();
+            }
+        }
+        return secretState.audioCtx;
+    }
+
+    function playTone(frequency, type = "sine", duration = 0.2, gainValue = 0.2) {
+        const ctx = ensureAudioContext();
+        if (!ctx) return;
+        const oscillator = ctx.createOscillator();
+        const gain = ctx.createGain();
+        oscillator.type = type;
+        oscillator.frequency.value = frequency;
+        gain.gain.value = gainValue;
+        oscillator.connect(gain);
+        gain.connect(ctx.destination);
+        oscillator.start();
+        oscillator.stop(ctx.currentTime + duration);
+    }
+
+    function playSample(url, volume = 0.6) {
+        if (!url) return;
+        let audio = secretState.audioSamples.get(url);
+        if (!audio) {
+            audio = new Audio(url);
+            audio.preload = "auto";
+            secretState.audioSamples.set(url, audio);
+        }
+        audio.volume = volume;
+        audio.currentTime = 0;
+        audio.play().catch(() => {
+            // Ignore autoplay restrictions; fallback handled by tone-based cues.
+        });
+    }
+
+    function createOverlay(className, html) {
+        const overlay = document.createElement("div");
+        overlay.className = className;
+        if (html) overlay.innerHTML = html;
+        document.body.appendChild(overlay);
+        return overlay;
+    }
+
+    function toggleOverlay(selector, className, html) {
+        const existing = document.querySelector(selector);
+        if (existing) {
+            existing.remove();
+            return null;
+        }
+        return createOverlay(className, html);
+    }
+
+    function triggerC64Reset() {
+        const reset = createOverlay("ccg-c64-reset", `
+            <div class="ccg-c64-reset__screen">
+                <p>**** COMMODORE 64 BASIC V2 ****</p>
+                <p>64K RAM SYSTEM  38911 BASIC BYTES FREE</p>
+                <p class="ccg-c64-reset__ready">READY<span class="ccg-c64-reset__cursor"></span></p>
+            </div>
+        `);
+        setTimeout(() => reset.classList.add("is-active"), 30);
+        setTimeout(() => reset.remove(), 3200);
+    }
+
+    function triggerPressPlay() {
+        const overlay = createOverlay("ccg-press-play", `
+            <div class="ccg-press-play__label">PLAY</div>
+            <div class="ccg-press-play__bars"></div>
+            <h1>PRESS PLAY ON TAPE</h1>
+            <div class="ccg-press-play__bars"></div>
+            <div class="ccg-press-play__sub">LOADING TURBO TAPE • 00:00:03</div>
+        `);
+        setTimeout(() => overlay.remove(), 4200);
+    }
+
+    function triggerBSOD() {
+        const bsod = createOverlay("ccg-bsod", `
+            <p class="ccg-bsod__title">A fatal exception 0E has occurred at 0028:C0011E36 in VXD VMM(01) + 00010E36.</p>
+            <p>Press any key to continue...</p>
+            <p class="ccg-bsod__hint">If this is the first time you've seen this stop error screen, restart your computer.</p>
+        `);
+        const remove = () => bsod.remove();
+        bsod.addEventListener("click", remove);
+        document.addEventListener("keydown", remove, { once: true });
+    }
+
+    function triggerWarp() {
+        const warpOverlay = createOverlay("ccg-warp-overlay", `<div class="ccg-warp-overlay__stars"></div>`);
+        document.body.classList.add("ccg-warp");
+        setTimeout(() => {
+            document.body.classList.remove("ccg-warp");
+            warpOverlay.remove();
+        }, 5200);
+    }
+
+    function triggerPacman() {
+        const pacman = createOverlay("ccg-pacman", `
+            <div class="ccg-pacman__dots"></div>
+            <div class="ccg-pacman__sprite"></div>
+            <div class="ccg-pacman__ghost"></div>
+        `);
+        setTimeout(() => pacman.remove(), 13000);
+    }
+
+    function triggerBoing() {
+        const boing = createOverlay("ccg-boing", `<div class="ccg-boing__shadow"></div>`);
+        setTimeout(() => boing.remove(), 10000);
+    }
+
+    function triggerLemmings() {
+        const lemmings = createOverlay("ccg-lemmings", `
+            <div class="ccg-lemmings__countdown">5</div>
+            <div class="ccg-lemmings__label">COUNTDOWN INITIATED...</div>
+        `);
+        const countdown = lemmings.querySelector(".ccg-lemmings__countdown");
+        let count = 5;
+        const countdownSample = "https://raw.githubusercontent.com/joepentony-dot/website-images/main/lemmings-countdown.mp3";
+        const ohNoSample = "https://raw.githubusercontent.com/joepentony-dot/website-images/main/lemmings-oh-no.mp3";
+        playSample(countdownSample, 0.6);
+        const timer = setInterval(() => {
+            count -= 1;
+            if (count >= 0) {
+                countdown.textContent = String(count);
+                playTone(420 + count * 40, "square", 0.12, 0.18);
+            }
+            if (count < 0) {
+                clearInterval(timer);
+                lemmings.classList.add("is-boom");
+                countdown.textContent = "💥";
+                lemmings.querySelector(".ccg-lemmings__label").textContent = "OH NO!";
+                playSample(ohNoSample, 0.7);
+                setTimeout(() => lemmings.remove(), 2500);
+            }
+        }, 800);
+    }
+
+    function triggerZX() {
+        const overlay = createOverlay("ccg-zx", `
+            <div class="ccg-zx__screen">
+                <div class="ccg-zx__title">ZX SPECTRUM 128K</div>
+                <div class="ccg-zx__loader">LOADING... PLEASE WAIT</div>
+                <div class="ccg-zx__bar"><span></span></div>
+                <div class="ccg-zx__prompt">BOOTING JSSPECCY...</div>
+            </div>
+        `);
+        setTimeout(() => overlay.classList.add("is-active"), 20);
+
+        setTimeout(() => {
+            overlay.remove();
+            const emulator = createOverlay("ccg-zx-emulator", `
+                <div class="ccg-zx-emulator__frame">
+                    <iframe src="https://jsspeccy.zxdemo.org/" title="ZX Spectrum Emulator"></iframe>
+                    <div class="ccg-zx-emulator__label">ZX SPECTRUM EMULATOR</div>
+                </div>
+            `);
+
+            setTimeout(() => {
+                const msg = createOverlay("ccg-zx-message", `
+                    <div class="ccg-zx-message__line">NO I DON'T THINK SO</div>
+                    <div class="ccg-zx-message__line">RETURNING YOU TO YOUR SENSES...</div>
+                `);
+                setTimeout(() => {
+                    msg.remove();
+                    emulator.remove();
+                }, 3600);
+            }, 4800);
+        }, 1800);
+    }
+
+    function triggerMatrix() {
+        toggleOverlay(".ccg-matrix", "ccg-matrix", `<div class="ccg-matrix__glyphs">0101010101</div>`);
+    }
+
+    function triggerInvaders() {
+        toggleOverlay(".ccg-invaders", "ccg-invaders");
+    }
+
+    function triggerRainbow() {
+        document.body.classList.toggle("ccg-rainbow");
+    }
+
+    function triggerKonami() {
+        const overlay = createOverlay("ccg-konami", `
+            <div class="ccg-konami__card">
+                <h2>GOD MODE ENABLED</h2>
+                <p>POWER LEVELS MAXED • CRT SHUTDOWN INITIATED</p>
+            </div>
+        `);
+        setTimeout(() => overlay.classList.add("is-fade"), 2200);
+        setTimeout(() => overlay.remove(), 3800);
+    }
+
+    const cheats = {
+        "sys64738": () => triggerC64Reset(),
+        "pressplay": () => triggerPressPlay(),
+        "pressplayontape": () => triggerPressPlay(),
+        "vhs": () => document.body.classList.toggle("ccg-vhs"),
+        "terminator": () => {
+            document.body.classList.toggle("ccg-terminator");
+            playTone(100, "sawtooth", 0.5, 0.4);
+        },
+        "bsod": () => triggerBSOD(),
+        "mario": () => {
+            playTone(660, "square", 0.1, 0.25);
+            setTimeout(() => playTone(1320, "square", 0.3, 0.2), 150);
+        },
+        "nokia": () => {
+            const t = 150;
+            playTone(1318, "square", 0.1, 0.2);
+            setTimeout(() => playTone(1174, "square", 0.1, 0.2), t);
+            setTimeout(() => playTone(740, "square", 0.1, 0.2), t * 2);
+            setTimeout(() => playTone(830, "square", 0.2, 0.2), t * 3);
+        },
+        "sonic": () => {
+            playTone(1200, "sine", 0.3, 0.2);
+            setTimeout(() => playTone(1000, "sine", 0.4, 0.18), 300);
+        },
+        "warp": () => triggerWarp(),
+        "party": () => document.body.classList.toggle("ccg-party"),
+        "zxspectrum": () => triggerZX(),
+        "pacman": () => triggerPacman(),
+        "boing": () => triggerBoing(),
+        "matrix": () => triggerMatrix(),
+        "invaders": () => triggerInvaders(),
+        "rainbow": () => triggerRainbow(),
+        "lemmings": () => triggerLemmings(),
+        "cheeky": () => window.location.replace("https://gaydar.net/"),
+        "konamicode": () => triggerKonami(),
+    };
+
+    function normalizeCode(code) {
+        return code.toLowerCase().replace(/[^a-z0-9]/g, "");
+    }
+
+    function triggerCheat(code) {
+        const normalized = normalizeCode(code);
+        if (cheats[normalized]) {
+            cheats[normalized]();
+            closeSecretModal();
+        }
+    }
+
+    function buildSecretModal() {
+        if (secretState.modal) return secretState.modal;
+
+        const modal = document.createElement("div");
+        modal.className = "ccg-secret-modal";
+        modal.setAttribute("aria-hidden", "true");
+        modal.innerHTML = `
+            <div class="ccg-secret-modal__content" role="dialog" aria-label="Secret system commands">
+                <div class="ccg-secret-modal__actions">
+                    <button class="ccg-secret-btn" type="button" data-ccg-secret-open-input>ENTER CODES</button>
+                    <button class="ccg-secret-btn" type="button" data-ccg-secret-close>CLOSE EASTER EGGS</button>
+                </div>
+                <h2>SYSTEM COMMANDS</h2>
+                <p class="ccg-secret-modal__hint">Tap to activate, or type a code.</p>
+                <ul class="ccg-secret-list">
+                    <li data-ccg-secret-code="sys64738">SYS64738</li>
+                    <li data-ccg-secret-code="pressplay">PRESS PLAY</li>
+                    <li data-ccg-secret-code="vhs">VHS</li>
+                    <li data-ccg-secret-code="terminator">TERMINATOR</li>
+                    <li data-ccg-secret-code="bsod">BSOD</li>
+                    <li data-ccg-secret-code="mario">MARIO</li>
+                    <li data-ccg-secret-code="nokia">NOKIA</li>
+                    <li data-ccg-secret-code="sonic">SONIC</li>
+                    <li data-ccg-secret-code="warp">WARP</li>
+                    <li data-ccg-secret-code="party">PARTY</li>
+                    <li data-ccg-secret-code="zxspectrum">ZXSPECTRUM</li>
+                    <li data-ccg-secret-code="pacman">PACMAN</li>
+                    <li data-ccg-secret-code="boing">BOING</li>
+                    <li data-ccg-secret-code="matrix">MATRIX</li>
+                    <li data-ccg-secret-code="invaders">INVADERS</li>
+                    <li data-ccg-secret-code="rainbow">RAINBOW</li>
+                    <li data-ccg-secret-code="lemmings">LEMMINGS</li>
+                    <li data-ccg-secret-code="cheeky">CHEEKY</li>
+                    <li data-ccg-secret-code="konamicode">KONAMI CODE</li>
+                </ul>
+                <div class="ccg-secret-console" hidden>
+                    <label class="ccg-secret-console__label" for="ccg-secret-input">ENTER COMMAND:</label>
+                    <div class="ccg-secret-console__row">
+                        <input id="ccg-secret-input" class="ccg-secret-console__input" type="text" autocomplete="off" />
+                        <button class="ccg-secret-btn" type="button" data-ccg-secret-run>RUN</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+        secretState.modal = modal;
+        secretState.consolePanel = modal.querySelector(".ccg-secret-console");
+        secretState.consoleInput = modal.querySelector(".ccg-secret-console__input");
+
+        modal.addEventListener("click", event => {
+            if (event.target === modal) closeSecretModal();
+        });
+
+        modal.querySelectorAll("[data-ccg-secret-code]").forEach(item => {
+            item.addEventListener("click", () => {
+                triggerCheat(item.dataset.ccgSecretCode || "");
+            });
+        });
+
+        modal.querySelector("[data-ccg-secret-open-input]").addEventListener("click", () => {
+            secretState.consolePanel.hidden = false;
+            secretState.consoleInput.focus();
+        });
+
+        modal.querySelector("[data-ccg-secret-close]").addEventListener("click", closeSecretModal);
+
+        modal.querySelector("[data-ccg-secret-run]").addEventListener("click", () => {
+            triggerCheat(secretState.consoleInput.value);
+            secretState.consoleInput.value = "";
+            secretState.consoleInput.focus();
+        });
+
+        secretState.consoleInput.addEventListener("keydown", event => {
+            if (event.key === "Enter") {
+                triggerCheat(secretState.consoleInput.value);
+                secretState.consoleInput.value = "";
+            }
+        });
+
+        return modal;
+    }
+
+    function openSecretModal() {
+        const modal = buildSecretModal();
+        modal.classList.add("is-open");
+        modal.setAttribute("aria-hidden", "false");
+        document.body.classList.add("ccg-secret-modal-open");
+    }
+
+    function closeSecretModal() {
+        if (!secretState.modal) return;
+        secretState.modal.classList.remove("is-open");
+        secretState.modal.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("ccg-secret-modal-open");
+    }
+
+    function setupSecretHint() {
+        const footer = document.querySelector(".ccg-footer");
+        if (!footer || footer.querySelector(".ccg-footer__hint")) return;
+        const hint = document.createElement("button");
+        hint.type = "button";
+        hint.className = "ccg-footer__hint";
+        hint.innerHTML = `<span>SYS?</span><small>Type SYS64738</small>`;
+        hint.addEventListener("click", openSecretModal);
+        footer.appendChild(hint);
+    }
+
+    function setupSecretListeners() {
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape") {
+                closeSecretModal();
+                return;
+            }
+
+            const target = event.target;
+            if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) {
+                return;
+            }
+
+            if (event.key.length === 1 || /^[a-zA-Z0-9]$/.test(event.key)) {
+                secretState.inputBuffer = normalizeCode(`${secretState.inputBuffer}${event.key}`);
+                secretState.inputBuffer = secretState.inputBuffer.slice(-24);
+
+                if (secretState.inputBuffer.endsWith("sys64738")) {
+                    openSecretModal();
+                    secretState.inputBuffer = "";
+                    return;
+                }
+
+                Object.keys(cheats).forEach(code => {
+                    if (secretState.inputBuffer.endsWith(code)) {
+                        triggerCheat(code);
+                        secretState.inputBuffer = "";
+                    }
+                });
+            }
+
+            const expected = konamiSequence[secretState.konamiIndex];
+            if (event.key === expected) {
+                secretState.konamiIndex += 1;
+                if (secretState.konamiIndex >= konamiSequence.length) {
+                    secretState.konamiIndex = 0;
+                    triggerCheat("konamicode");
+                }
+            } else {
+                secretState.konamiIndex = event.key === konamiSequence[0] ? 1 : 0;
+            }
+        });
+    }
+
+    /* ======================================================
        NAV TOGGLE (MOBILE)
     ====================================================== */
     function setupNavToggle() {
@@ -501,6 +924,8 @@
 
         setupNavToggle();
         setupVisitCounter();
+        setupSecretHint();
+        setupSecretListeners();
 
         /* ==================================================
            VIEWPORT WOW — LIGHT UP EVERYTHING
