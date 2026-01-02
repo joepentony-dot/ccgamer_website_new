@@ -440,6 +440,18 @@ li {
     transition: filter 0.25s ease;
 }
 
+.ccg-brand__logo.ccg-logo-flash--neon {
+    animation:
+        ccgLogoGlow 3.4s ease-in-out infinite alternate,
+        ccgLogoFlashNeon 0.42s ease-out;
+}
+
+.ccg-brand__logo.ccg-logo-flash--red {
+    animation:
+        ccgLogoGlow 3.4s ease-in-out infinite alternate,
+        ccgLogoFlashRed 0.42s ease-out;
+}
+
 .ccg-brand:hover .ccg-brand__logo,
 .ccg-brand:focus-within .ccg-brand__logo {
     filter:
@@ -1193,6 +1205,36 @@ li {
 @keyframes ccgLogoGlow {
     from { filter: drop-shadow(0 0 10px rgba(var(--accent-rgb),0.4)) drop-shadow(0 12px 24px rgba(0,0,0,0.7)); }
     to   { filter: drop-shadow(0 0 18px rgba(var(--accent-rgb),0.65)) drop-shadow(0 18px 28px rgba(0,0,0,0.65)); }
+}
+
+@keyframes ccgLogoFlashNeon {
+    0%,
+    100% {
+        filter:
+            drop-shadow(0 0 14px rgba(var(--accent-rgb),0.45))
+            drop-shadow(0 10px 24px rgba(0,0,0,0.58));
+    }
+    50% {
+        filter:
+            drop-shadow(0 0 28px rgba(var(--accent-rgb),0.95))
+            drop-shadow(0 0 36px rgba(255,255,255,0.55))
+            drop-shadow(0 12px 26px rgba(0,0,0,0.58));
+    }
+}
+
+@keyframes ccgLogoFlashRed {
+    0%,
+    100% {
+        filter:
+            drop-shadow(0 0 14px rgba(var(--accent-rgb),0.45))
+            drop-shadow(0 10px 24px rgba(0,0,0,0.58));
+    }
+    50% {
+        filter:
+            drop-shadow(0 0 28px rgba(255,64,64,0.9))
+            drop-shadow(0 0 36px rgba(255,140,140,0.55))
+            drop-shadow(0 12px 26px rgba(0,0,0,0.58));
+    }
 }
 
 @keyframes ccgAurora {

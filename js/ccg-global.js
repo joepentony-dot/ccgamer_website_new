@@ -564,6 +564,67 @@
     }
 
     /* ======================================================
+       LOGO EASTER EGG (TRIPLE CLICK)
+    ====================================================== */
+    const logoClickState = {
+        count: 0,
+        resetTimer: null,
+    };
+
+    function resetLogoClickState() {
+        logoClickState.count = 0;
+        if (logoClickState.resetTimer) {
+            clearTimeout(logoClickState.resetTimer);
+            logoClickState.resetTimer = null;
+        }
+    }
+
+    function scheduleLogoReset() {
+        if (logoClickState.resetTimer) {
+            clearTimeout(logoClickState.resetTimer);
+        }
+        logoClickState.resetTimer = setTimeout(() => {
+            logoClickState.count = 0;
+            logoClickState.resetTimer = null;
+        }, 1400);
+    }
+
+    function flashLogo(logo, flashClass) {
+        logo.classList.remove("ccg-logo-flash--neon", "ccg-logo-flash--red");
+        void logo.offsetWidth;
+        logo.classList.add(flashClass);
+        setTimeout(() => logo.classList.remove(flashClass), 420);
+    }
+
+    function setupLogoEasterEgg() {
+        const logos = document.querySelectorAll(".ccg-brand__logo");
+        if (!logos.length) return;
+
+        logos.forEach(logo => {
+            logo.addEventListener("click", () => {
+                logoClickState.count += 1;
+
+                if (logoClickState.count === 1) {
+                    flashLogo(logo, "ccg-logo-flash--neon");
+                    scheduleLogoReset();
+                    return;
+                }
+
+                if (logoClickState.count === 2) {
+                    flashLogo(logo, "ccg-logo-flash--red");
+                    scheduleLogoReset();
+                    return;
+                }
+
+                if (logoClickState.count >= 3) {
+                    openSecretModal();
+                    resetLogoClickState();
+                }
+            });
+        });
+    }
+
+    /* ======================================================
        NAV TOGGLE (MOBILE)
     ====================================================== */
     function setupNavToggle() {
@@ -901,6 +962,7 @@
         setupNavToggle();
         setupVisitCounter();
         setupSecretListeners();
+        setupLogoEasterEgg();
 
         /* ==================================================
            VIEWPORT WOW — LIGHT UP EVERYTHING
