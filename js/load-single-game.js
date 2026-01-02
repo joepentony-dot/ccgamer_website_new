@@ -16,6 +16,7 @@ let CCG_SINGLE_ALL_GAMES = [];
 let CCG_SCREENSHOTS = [];
 let CCG_SCREENSHOT_INDEX = 0;
 let CCG_GAME_RESOLVED = false;
+let CCG_SINGLE_RENDERED = false;
 
 // Legacy slug fallback (SEO preservation)
 const LEGACY_SLUG_MAP = {
@@ -154,6 +155,10 @@ const LEGACY_COMPARE_MAP = buildLegacyCompareMap(LEGACY_SLUG_MAP);
    INIT
 ============================================================ */
 
+if (document.body) {
+    document.body.classList.add("ccg-loading-single");
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
     document.body.classList.add("ccg-loading-single");
 
@@ -186,7 +191,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const candidateSlug = slugParam || pathSlug;
     let resolvedGame = null;
     let resolvedGameId = gameId;
-    let shouldRenderNotFound = false;
+    let renderAction = null;
 
     const finalizeRenderGate = () => {
         requestAnimationFrame(() => {
@@ -195,6 +200,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                 loading.style.display = "none";
             }
         });
+    };
+
+    const finalizeRenderOnce = () => {
+        if (CCG_SINGLE_RENDERED) return;
+        CCG_SINGLE_RENDERED = true;
+        if (renderAction) {
+            renderAction();
+        }
+        finalizeRenderGate();
     };
 
     try {
@@ -232,24 +246,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         runSlugAudit(CCG_SINGLE_ALL_GAMES, slugIndex);
 
         if (!resolvedGame) {
-            shouldRenderNotFound = true;
+            renderAction = () => renderGameNotFound(resolvedGameId, candidateSlug);
         } else {
             syncPrettyUrl(resolvedGame);
+            renderAction = () => renderGame(resolvedGame);
         }
 
     } catch (err) {
-        shouldRenderNotFound = true;
+        renderAction = () => renderGameNotFound(resolvedGameId, candidateSlug);
     }
 
     CCG_GAME_RESOLVED = true;
-
-    if (shouldRenderNotFound) {
-        renderGameNotFound(resolvedGameId, candidateSlug);
-    } else if (resolvedGame) {
-        renderGame(resolvedGame);
-    }
-
-    finalizeRenderGate();
+    finalizeRenderOnce();
 });
 
 /* ============================================================
