@@ -530,17 +530,6 @@
         document.body.classList.remove("ccg-secret-modal-open");
     }
 
-    function setupSecretHint() {
-        const footer = document.querySelector(".ccg-footer");
-        if (!footer || footer.querySelector(".ccg-footer__hint")) return;
-        const hint = document.createElement("button");
-        hint.type = "button";
-        hint.className = "ccg-footer__hint";
-        hint.innerHTML = `<span>SYS?</span><small>Type SYS64738</small>`;
-        hint.addEventListener("click", openSecretModal);
-        footer.appendChild(hint);
-    }
-
     function setupSecretListeners() {
         document.addEventListener("keydown", event => {
             if (event.key === "Escape") {
@@ -911,7 +900,6 @@
 
         setupNavToggle();
         setupVisitCounter();
-        setupSecretHint();
         setupSecretListeners();
 
         /* ==================================================
