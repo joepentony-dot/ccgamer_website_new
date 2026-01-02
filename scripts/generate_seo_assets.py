@@ -138,6 +138,7 @@ def main() -> None:
         if not game_id:
             continue
         slug = seo_slug(game_id)
+        canonical_slug = str(game.get("slug") or "").strip() or pretty_slug(game_id)
 
         title = str(game.get("title") or "Game").strip()
         year = str(game.get("year") or "Unknown year").strip()
@@ -159,21 +160,21 @@ def main() -> None:
             "gamePlatform": system,
             "publisher": developer,
             "image": f"{BASE_URL}/{thumb}",
-            "url": f"{BASE_URL}/games/seo/{slug}.html",
+            "url": f"{BASE_URL}/games/{canonical_slug}/",
         }
 
         page_html = page_template.format(
             title=html.escape(title),
             description=html.escape(description),
             description_html=html.escape(description),
-            canonical=f"{BASE_URL}/games/seo/{slug}.html",
+            canonical=f"{BASE_URL}/games/{canonical_slug}/",
             base_url=BASE_URL,
             thumb=thumb,
             year=html.escape(year),
             system=html.escape(system),
             developer=html.escape(developer),
             game_id=html.escape(game_id),
-            pretty_slug=pretty_slug(game_id),
+            pretty_slug=canonical_slug,
             json_ld=html.escape(json.dumps(json_ld, ensure_ascii=False)),
         )
 
@@ -181,7 +182,7 @@ def main() -> None:
         with open(out_path, "w", encoding="utf-8") as f:
             f.write(page_html)
 
-        sitemap_urls.append(f"{BASE_URL}/games/seo/{slug}.html")
+        sitemap_urls.append(f"{BASE_URL}/games/{canonical_slug}/")
 
     static_urls = [
         f"{BASE_URL}/",

@@ -300,9 +300,13 @@ function resolveSingleGameThumbBasePath() {
         pathname = pathname.slice(pathname.indexOf(repoMarker) + repoMarker.length);
     }
 
-    const isDirectoryPath = pathname.endsWith("/") || pathname.endsWith("index.html");
+    const isTrailingSlashPath = pathname.endsWith("/") || pathname.endsWith("index.html");
     pathname = pathname.replace(/^\/+|\/+$/g, "");
     const segments = pathname ? pathname.split("/") : [];
+    const isPrettyGamePath = segments[0] === "games"
+        && segments.length >= 2
+        && !segments[1].includes(".html");
+    const isDirectoryPath = isTrailingSlashPath || isPrettyGamePath;
     const depth = Math.max(segments.length - (isDirectoryPath ? 0 : 1), 0);
     const prefix = "../".repeat(depth || 1);
 
