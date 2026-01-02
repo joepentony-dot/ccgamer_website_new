@@ -26,10 +26,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let gameId = decodeURIComponent(
         (params.get("id") || "").toString().trim()
     );
-    let gameSlug = extractSlugFromParams(params);
-    if (!gameSlug) {
-        gameSlug = normaliseGameSlugInput(getSlugFromPath());
-    }
+    const gameSlug = getSlugFromPath();
 
     if (!gameId && !gameSlug) {
         console.error("[CCG] No game ID or slug in URL");
@@ -45,29 +42,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         let game = null;
 
-        if (gameSlug) {
-            game = CCG_SINGLE_ALL_GAMES.find(g => {
-                const id = String(g.id || "");
-                const idSlug = resolveGameSlug(id);
-                return idSlug === gameSlug || id.toLowerCase() === gameSlug;
-            });
-            if (game) gameId = String(game.id);
-        }
-
-        if (!game && gameId) {
+        if (gameId) {
             game = CCG_SINGLE_ALL_GAMES.find(
-                g => String(g.id).toLowerCase() === gameId.toLowerCase()
+                g => String(g.id) === gameId
             );
         }
 
-        if (!game && gameId) {
-            const idSlug = normaliseGameSlugInput(gameId);
-            if (idSlug) {
-                game = CCG_SINGLE_ALL_GAMES.find(
-                    g => resolveGameSlug(g.id) === idSlug
-                );
-                if (game) gameId = String(game.id);
-            }
+        if (!game && gameSlug) {
+            game = CCG_SINGLE_ALL_GAMES.find(
+                g => resolveGameSlug(g.id) === gameSlug
+            );
+            if (game) gameId = String(game.id);
         }
 
         if (!game) {
@@ -154,26 +139,6 @@ function resolveGameSlug(gameId) {
     return slug;
 }
 
-function normaliseGameSlugInput(value) {
-    if (!value) return "";
-    let cleaned = String(value).trim();
-    cleaned = cleaned.replace(/^[^a-z0-9]+/i, "");
-    cleaned = cleaned.replace(/[#?].*$/, "");
-    cleaned = cleaned.replace(/\/+$/, "");
-    if (cleaned.includes("/")) {
-        cleaned = cleaned.split("/").filter(Boolean).pop() || "";
-    }
-    cleaned = cleaned.replace(/\.html$/i, "");
-    return resolveGameSlug(cleaned);
-}
-
-function extractSlugFromParams(params) {
-    const raw = decodeURIComponent(
-        (params.get("slug") || params.get("game") || "").toString().trim()
-    );
-    return normaliseGameSlugInput(raw);
-}
-
 function resolvePrettyGameUrl(gameId) {
     if (typeof window !== "undefined" && typeof window.ccgBuildGameUrl === "function") {
         return window.ccgBuildGameUrl(gameId);
@@ -195,9 +160,7 @@ function getSlugFromPath() {
 
     let slug = pathname.slice("games/".length);
     slug = slug.replace(/index\.html$/i, "").replace(/\.html$/i, "");
-    slug = slug.replace(/\/+$/g, "");
-    if (slug === "game") return "";
-    return slug;
+    return slug.replace(/\/+$/g, "");
 }
 
 function syncPrettyUrl(gameId) {
