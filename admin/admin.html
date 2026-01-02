@@ -165,6 +165,9 @@
                 <p class="ccg-section-subtitle">
                     Upload, merge and export games without leaving the site. Everything stays client-side so you can vet the JSON before committing.
                 </p>
+                <div class="admin-notice">
+                    Nothing is published automatically. You must download and commit manually.
+                </div>
                 <div class="admin-hero-grid">
                     <div class="admin-callout">
                         <h2 class="admin-callout-title">Quick start workflow</h2>
@@ -213,6 +216,14 @@
                 <article class="admin-card">
                     <h2>2) Add a new game</h2>
                     <form id="adminGameForm">
+                        <div class="admin-edit-banner">
+                            <div>
+                                <p class="admin-edit-state" data-admin-editing-label>Creating a new game</p>
+                                <p class="admin-help">When editing an existing game, the ID is locked to prevent accidental slug changes.</p>
+                            </div>
+                            <button class="ccg-btn ccg-btn--ghost" type="button" data-admin-edit-cancel hidden>Cancel Edit</button>
+                        </div>
+
                         <div class="admin-form-section">
                             <div class="admin-form-heading">
                                 <h3>Basics</h3>
@@ -225,12 +236,13 @@
                                 <p class="admin-error" data-admin-error="id" hidden></p>
                             </div>
                             <div class="admin-field">
-                                <label for="gameSlugPreview">Derived slug (read-only)</label>
+                                <label for="gameSlugPreview">Derived slug (preview only)</label>
                                 <input id="gameSlugPreview" class="admin-input" readonly placeholder="last-ninja-2">
                             </div>
                             <div class="admin-field">
-                                <label for="gameUrlPreview">Public URL (read-only)</label>
+                                <label for="gameUrlPreview">Public URL (preview only)</label>
                                 <input id="gameUrlPreview" class="admin-input" readonly placeholder="https://www.cheekycommodoregamer.co.uk/games/last-ninja-2/">
+                                <p class="admin-warning" data-admin-slug-warning hidden></p>
                             </div>
                             <div class="admin-field">
                                 <label for="gameTitle">Title *</label>
@@ -262,9 +274,14 @@
                                 <h3>Description</h3>
                             </div>
                             <div class="admin-field">
-                                <label for="gameDescription">Description *</label>
-                                <textarea id="gameDescription" name="description" class="admin-textarea" placeholder="A short, friendly summary of the game and its release." required></textarea>
-                                <p class="admin-help">Aim for 1–2 sentences. Mention the release year or publisher if you can.</p>
+                                <label for="gameDescription">Description</label>
+                                <textarea id="gameDescription" name="description" class="admin-textarea admin-textarea--lg" placeholder="A short, friendly summary of the game and its feel."></textarea>
+                                <div class="admin-description-meta">
+                                    <span data-admin-description-count>0</span> characters
+                                    <span class="admin-description-target">(target 180–350)</span>
+                                </div>
+                                <p class="admin-help">Write in a direct, personable tone (not “players”). Do not repeat the year (already stored separately). Describe gameplay, feel, and what makes the game notable.</p>
+                                <p class="admin-status-inline" data-admin-description-warning hidden></p>
                                 <p class="admin-error" data-admin-error="description" hidden></p>
                             </div>
                         </div>
@@ -274,16 +291,24 @@
                                 <h3>Media</h3>
                             </div>
                             <div class="admin-field">
-                                <label for="gameVideo">YouTube video ID</label>
-                                <input id="gameVideo" name="videoid" class="admin-input" placeholder="abc123xyz">
-                                <p class="admin-help">Use just the ID after <code>v=</code>, not the full URL.</p>
+                                <label for="gameVideo">YouTube video (URL or ID)</label>
+                                <input id="gameVideo" name="videoid" class="admin-input" placeholder="https://youtu.be/abc123xyz">
+                                <p class="admin-help">Paste a full URL, a short URL, or just the video ID. We will store the ID only.</p>
+                                <p class="admin-status-inline" data-admin-video-status hidden></p>
                                 <p class="admin-error" data-admin-error="videoid" hidden></p>
+                                <div class="admin-media-preview" data-admin-video-preview hidden>
+                                    <img alt="YouTube thumbnail preview" loading="lazy">
+                                </div>
                             </div>
                             <div class="admin-field">
                                 <label for="gameThumb">Thumbnail file name (resources/images/thumbnails/all)</label>
                                 <input id="gameThumb" name="thumbnail" class="admin-input" placeholder="last-ninja-2.jpg">
-                                <p class="admin-help">Filename only (.jpg or .png). The path is added automatically.</p>
+                                <p class="admin-help">Filename only (.jpg, .png, .webp). The path is added automatically.</p>
+                                <p class="admin-status-inline" data-admin-thumbnail-status hidden></p>
                                 <p class="admin-error" data-admin-error="thumbnail" hidden></p>
+                                <div class="admin-media-preview" data-admin-thumbnail-preview hidden>
+                                    <img alt="Thumbnail preview" loading="lazy">
+                                </div>
                             </div>
                         </div>
 
