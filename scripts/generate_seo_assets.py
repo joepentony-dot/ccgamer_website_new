@@ -36,6 +36,15 @@ def seo_slug(game_id: str) -> str:
     return slug
 
 
+def pretty_slug(game_id: str) -> str:
+    slug = str(game_id).strip().lower()
+    slug = re.sub(r"[_\s]+", "-", slug)
+    slug = re.sub(r"[:/]+", "-", slug)
+    slug = re.sub(r"[^a-z0-9-]", "", slug)
+    slug = re.sub(r"-+", "-", slug)
+    return slug.strip("-")
+
+
 page_template = """<!DOCTYPE html>
 <html lang=\"en\">
 <head>
@@ -100,7 +109,7 @@ page_template = """<!DOCTYPE html>
             <p class=\"game-section__kicker\">Explore</p>
             <h2 class=\"game-section__title\">More Details</h2>
             <div class=\"game-downloads\">
-                <a class=\"ccg-btn ccg-btn--primary\" href=\"../game.html?id={game_id}\">View the full interactive game page</a>
+                <a class=\"ccg-btn ccg-btn--primary\" href=\"../{pretty_slug}/\">View the full interactive game page</a>
                 <a class=\"ccg-btn ccg-btn--ghost\" href=\"../index.html\">Browse all games</a>
             </div>
         </section>
@@ -164,6 +173,7 @@ def main() -> None:
             system=html.escape(system),
             developer=html.escape(developer),
             game_id=html.escape(game_id),
+            pretty_slug=pretty_slug(game_id),
             json_ld=html.escape(json.dumps(json_ld, ensure_ascii=False)),
         )
 
