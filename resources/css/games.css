@@ -385,6 +385,13 @@
    SINGLE GAME — HERO & PANELS
    ============================================================ */
 
+.ccg-loading-single .ccg-main--single-game,
+.ccg-loading-single #gameNotFound {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
 .ccg-page--single-game .ccg-main {
     width: min(1100px, 96%);
 }
