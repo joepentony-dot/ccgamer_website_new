@@ -30,6 +30,7 @@
 
     const gameCountEl = document.querySelector("[data-admin-game-count]");
     const stagedCountEl = document.querySelector("[data-admin-staged-count]");
+    const latestEls = document.querySelectorAll("[data-admin-latest]");
 
     /* --------------------------------------------------------
        HELPERS
@@ -37,7 +38,7 @@
     function setStatus(msg, isError = false) {
         if (!statusEl) return;
         statusEl.textContent = msg;
-        statusEl.style.color = isError ? "#ff6b6b" : "";
+        statusEl.dataset.state = isError ? "error" : "success";
     }
 
     function updateBadges() {
@@ -55,11 +56,15 @@
                 ? raw.genres.split(",").map(g => g.trim()).filter(Boolean)
                 : [],
             developer: raw.developer || "",
+            description: raw.description ? String(raw.description).trim() : "",
             videoid: raw.videoid || "",
             thumbnail: raw.thumbnail || "",
             manual: raw.manual || "",
             disk: raw.disk
                 ? raw.disk.split(",").map(d => d.trim()).filter(Boolean)
+                : [],
+            lemon: raw.lemon
+                ? raw.lemon.split(",").map(l => l.trim()).filter(Boolean)
                 : []
         };
     }
@@ -135,6 +140,11 @@
                 return;
             }
 
+            if (!game.description) {
+                setStatus("Description is required.", true);
+                return;
+            }
+
             if (isDuplicateId(game.id)) {
                 setStatus(`Duplicate ID "${game.id}" detected.`, true);
                 return;
@@ -143,6 +153,7 @@
             stagedGames.unshift(game);
             updateBadges();
             renderPreview();
+            renderLatest();
             form.reset();
 
             setStatus(`Game "${game.title}" staged.`);
@@ -161,7 +172,7 @@
 
         if (!preview.length) {
             previewBody.innerHTML =
-                "<tr><td colspan='4'>Nothing staged yet.</td></tr>";
+                "<tr><td colspan='5'>Nothing staged yet.</td></tr>";
             return;
         }
 
@@ -172,8 +183,34 @@
                 <td>${game.system}</td>
                 <td>${game.year || "—"}</td>
                 <td>${game.genres.join(", ")}</td>
+                <td>${game.lemon.length || "—"}</td>
             `;
             previewBody.appendChild(tr);
+        });
+    }
+
+    function renderLatest() {
+        if (!latestEls.length) return;
+        const latest = stagedGames[0];
+        latestEls.forEach(el => {
+            const key = el.dataset.adminLatest;
+            if (!latest) {
+                el.textContent = "—";
+                return;
+            }
+            if (key === "lemon") {
+                el.textContent = latest.lemon.length
+                    ? latest.lemon.join(", ")
+                    : "—";
+                return;
+            }
+            if (key === "disk") {
+                el.textContent = latest.disk.length
+                    ? latest.disk.join(", ")
+                    : "—";
+                return;
+            }
+            el.textContent = latest[key] || "—";
         });
     }
 
@@ -208,6 +245,7 @@
         clearBtn.addEventListener("click", () => {
             stagedGames = [];
             renderPreview();
+            renderLatest();
             updateBadges();
             setStatus("Staged entries cleared.");
         });
@@ -221,4 +259,5 @@
     }
 
     fetchLiveGames();
+    renderLatest();
 })();
