@@ -427,9 +427,9 @@ li {
 }
 
 .ccg-brand__logo {
-    width: 56px;
-    height: auto;
-    aspect-ratio: 1 / 1;
+    width: auto;
+    height: 56px;
+    max-height: 56px;
     flex-shrink: 0;
 
     filter:
@@ -437,6 +437,15 @@ li {
         drop-shadow(0 10px 24px rgba(0,0,0,0.58));
 
     animation: ccgLogoGlow 3.4s ease-in-out infinite alternate;
+    transition: filter 0.25s ease;
+}
+
+.ccg-brand:hover .ccg-brand__logo,
+.ccg-brand:focus-within .ccg-brand__logo {
+    filter:
+        drop-shadow(0 0 18px rgba(var(--accent-rgb),0.6))
+        drop-shadow(0 0 32px rgba(69,216,255,0.4))
+        drop-shadow(0 12px 26px rgba(0,0,0,0.58));
 }
 
 .ccg-brand::before,
@@ -1022,7 +1031,8 @@ li {
     }
 
     .ccg-brand__logo {
-        width: 48px;
+        height: 48px;
+        max-height: 48px;
     }
 
     .ccg-header-actions {
