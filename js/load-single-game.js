@@ -161,6 +161,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
     const rawSlugParam = params.get("slug");
     const slugParam = rawSlugParam ? decodeURIComponent(rawSlugParam.toString()).trim() : "";
+    const pathSlug = getSlugFromPath();
+    const candidateSlug = slugParam || pathSlug;
 
     try {
         const response = await fetch("games.json", { cache: "no-store" });
@@ -169,49 +171,45 @@ document.addEventListener("DOMContentLoaded", async () => {
         const games = await response.json();
         CCG_SINGLE_ALL_GAMES = Array.isArray(games) ? games : [];
 
-        const compareIndex = buildCompareIndex(CCG_SINGLE_ALL_GAMES);
+        if (typeof window !== "undefined" && typeof window.ccgRegisterGameSlugs === "function") {
+            window.ccgRegisterGameSlugs(CCG_SINGLE_ALL_GAMES);
+        }
+
+        const idIndex = buildIdIndex(CCG_SINGLE_ALL_GAMES);
+        const slugIndex = buildSlugIndex(CCG_SINGLE_ALL_GAMES);
 
         let game = null;
 
         if (gameId) {
-            game = resolveGameByCompareKey(normaliseCompareKey(gameId), compareIndex);
+            game = idIndex.get(gameId) || null;
         }
 
-        if (!game && slugParam) {
-            const slugKey = normaliseCompareKey(slugParam);
-            game = resolveGameByCompareKey(slugKey, compareIndex);
+        if (!game && candidateSlug) {
+            game = slugIndex.get(candidateSlug) || null;
             if (game) gameId = String(game.id);
         }
 
-        if (!game && slugParam) {
+        if (!game && candidateSlug) {
             // Legacy slug fallback (SEO preservation)
-            const legacyId = LEGACY_COMPARE_MAP[normaliseCompareKey(slugParam)];
+            const legacyId = LEGACY_COMPARE_MAP[normaliseCompareKey(candidateSlug)];
             if (legacyId) {
-                game = resolveGameByCompareKey(normaliseCompareKey(legacyId), compareIndex);
+                game = idIndex.get(legacyId) || null;
             }
             if (game) gameId = String(game.id);
         }
 
-        if (!game && slugParam) {
-            const resolvedId = resolveGameIdFromSlug(slugParam);
-            if (resolvedId) {
-                game = resolveGameByCompareKey(normaliseCompareKey(resolvedId), compareIndex);
-            }
-            if (game) gameId = String(game.id);
-        }
-
-        runSlugAudit(CCG_SINGLE_ALL_GAMES, compareIndex);
+        runSlugAudit(CCG_SINGLE_ALL_GAMES, slugIndex);
 
         if (!game) {
-            renderGameNotFound(gameId, slugParam);
+            renderGameNotFound(gameId, candidateSlug);
             return;
         }
 
-        syncPrettyUrl(game.id);
+        syncPrettyUrl(game);
         renderGame(game);
 
     } catch (err) {
-        renderGameNotFound(gameId, slugParam);
+        renderGameNotFound(gameId, candidateSlug);
     }
 });
 
@@ -227,10 +225,10 @@ function normaliseCompareKey(input) {
     return key;
 }
 
-function buildCompareIndex(games) {
+function buildIdIndex(games) {
     const index = new Map();
     games.forEach(game => {
-        const key = normaliseCompareKey(game.id);
+        const key = String(game?.id ?? "").trim();
         if (key && !index.has(key)) {
             index.set(key, game);
         }
@@ -238,9 +236,15 @@ function buildCompareIndex(games) {
     return index;
 }
 
-function resolveGameByCompareKey(compareKey, compareIndex) {
-    if (!compareKey) return null;
-    return compareIndex.get(compareKey) || null;
+function buildSlugIndex(games) {
+    const index = new Map();
+    games.forEach(game => {
+        const key = String(game?.slug ?? "").trim();
+        if (key && !index.has(key)) {
+            index.set(key, game);
+        }
+    });
+    return index;
 }
 
 function buildLegacyCompareMap(legacyMap) {
@@ -252,25 +256,41 @@ function buildLegacyCompareMap(legacyMap) {
     return compareMap;
 }
 
-function runSlugAudit(games, compareIndex) {
-    const unresolved = [];
+function runSlugAudit(games, slugIndex) {
+    const missing = [];
+    const duplicates = [];
+    const counts = new Map();
 
     games.forEach(game => {
-        const canonicalSlug = resolveGameSlug(game.id);
-        const slugKey = normaliseCompareKey(canonicalSlug);
-        const resolved = resolveGameByCompareKey(slugKey, compareIndex);
-        if (!resolved) {
-            unresolved.push(game.id);
+        const slug = String(game?.slug ?? "").trim();
+        if (!slug) {
+            missing.push(game?.id ?? "unknown");
+            return;
         }
+        counts.set(slug, (counts.get(slug) || 0) + 1);
     });
 
-    const report = {
-        totalChecked: games.length,
-        totalResolved: games.length - unresolved.length,
-        unresolved
-    };
+    counts.forEach((count, slug) => {
+        if (count > 1) duplicates.push(slug);
+    });
 
-    console.log(JSON.stringify(report, null, 2));
+    if (!isDevMode()) return;
+
+    if (missing.length || duplicates.length) {
+        console.warn("[CCG SLUG AUDIT]", {
+            totalChecked: games.length,
+            missing,
+            duplicates
+        });
+    }
+}
+
+function isDevMode() {
+    const host = window.location.hostname || "";
+    return host === "localhost"
+        || host === "127.0.0.1"
+        || host.endsWith(".local")
+        || (window.location.pathname || "").includes("/ccgamer_website_new/");
 }
 
 function resolveSingleGameThumbBasePath() {
@@ -345,33 +365,22 @@ function resolveLemonUrl(game) {
     return resolvePrimaryLink(game.lemon || game.lemonlink || game.lemonlinks);
 }
 
-function resolveGameSlug(gameId) {
-    if (typeof window !== "undefined" && typeof window.ccgGameSlugFromId === "function") {
-        return window.ccgGameSlugFromId(gameId);
-    }
-
-    if (!gameId) return "";
-    let slug = String(gameId).trim().toLowerCase();
-    slug = slug.replace(/[_\s]+/g, "-");
-    slug = slug.replace(/[:/]+/g, "-");
-    slug = slug.replace(/[^a-z0-9-]/g, "");
-    slug = slug.replace(/-+/g, "-").replace(/^-+|-+$/g, "");
-    return slug;
-}
-
 function resolveGameIdFromSlug(slug) {
     if (!slug) return "";
     return String(slug).trim().toLowerCase().replace(/-+/g, "-").replace(/-/g, "_");
 }
 
-function resolvePrettyGameUrl(gameId) {
-    if (typeof window !== "undefined" && typeof window.ccgBuildGameUrl === "function") {
-        return window.ccgBuildGameUrl(gameId);
+function resolveGameSlug(gameId) {
+    if (typeof window !== "undefined" && typeof window.ccgGameSlugFromId === "function") {
+        return window.ccgGameSlugFromId(gameId);
     }
+    return "";
+}
 
-    const slug = resolveGameSlug(gameId);
+function resolvePrettyGameUrl(game) {
+    const slug = String(game?.slug ?? "").trim() || resolveGameSlug(game?.id);
     if (!slug) return "";
-    return `${slug}/`;
+    return resolveCanonicalGamePath(slug);
 }
 
 function getSlugFromPath() {
@@ -388,8 +397,15 @@ function getSlugFromPath() {
     return slug.replace(/\/+$/g, "");
 }
 
-function syncPrettyUrl(gameId) {
-    const pretty = resolvePrettyGameUrl(gameId);
+function resolveCanonicalGamePath(slug) {
+    const root = (typeof window !== "undefined" && typeof window.ccgGetSiteRoot === "function")
+        ? window.ccgGetSiteRoot()
+        : "/";
+    return `${root}games/${slug}/`;
+}
+
+function syncPrettyUrl(game) {
+    const pretty = resolvePrettyGameUrl(game);
     if (!pretty) return;
 
     const url = new URL(pretty, window.location.origin);
@@ -551,7 +567,7 @@ function renderRelatedGames(game) {
     related.forEach(rel => {
         const card = document.createElement("a");
         card.className = "related-card";
-        card.href = resolvePrettyGameUrl(rel.id);
+        card.href = resolvePrettyGameUrl(rel);
 
         const img = document.createElement("img");
         img.src = resolveGameThumb(rel.thumbnail || rel.thumb || rel.cover);

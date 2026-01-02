@@ -424,7 +424,7 @@ function setEmptyState(isEmpty) {
 function renderGameCard(game) {
     const thumb = resolveGameThumb(game.thumbnail || game.thumb || game.cover);
 
-    const gameUrl = resolveGameUrl(game.id);
+    const gameUrl = resolveGameUrl(game);
 
     return `
         <div class="ccg-game-card">
@@ -465,11 +465,14 @@ function resolveGameThumb(raw) {
     return `${THUMB_BASE_PATH}${t}`;
 }
 
-function resolveGameUrl(gameId) {
-    const slug = String(gameId || "").replace(/_/g, "-");
-    if (slug) return `game.html?slug=${encodeURIComponent(slug)}`;
+function resolveGameUrl(game) {
+    const slug = String(game?.slug || "").trim();
+    if (slug) return `${slug}/`;
 
-    return `game.html?id=${encodeURIComponent(gameId)}`;
+    const id = String(game?.id || "").trim();
+    if (id) return `game.html?id=${encodeURIComponent(id)}`;
+
+    return "#";
 }
 
 /* ============================================================
