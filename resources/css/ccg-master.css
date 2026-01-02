@@ -316,6 +316,30 @@ li {
         );
 }
 
+@media (min-width: 1024px) {
+    .ccg-header {
+        padding: 20px clamp(16px, 3vw, 32px);
+        background:
+            linear-gradient(140deg, rgba(5,8,18,0.96), rgba(6,10,24,0.92)),
+            radial-gradient(circle at 18% 15%, var(--ccg-header-halo), transparent 52%),
+            radial-gradient(circle at 82% 5%, var(--ccg-header-sheen), transparent 48%);
+        box-shadow:
+            0 26px 60px rgba(0,0,0,0.78),
+            0 0 22px var(--ccg-header-edge);
+    }
+
+    .ccg-header::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background:
+            linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.55)),
+            radial-gradient(circle at 50% 0%, var(--ccg-header-halo), transparent 60%);
+        opacity: 0.9;
+    }
+}
+
 /* ============================================================
    MOBILE VISUAL BLEED FIX — HEADER / HERO
    • No layout changes
@@ -426,6 +450,14 @@ li {
     isolation: isolate;
 }
 
+@media (min-width: 1024px) {
+    .ccg-brand {
+        justify-self: center;
+        padding: 10px 18px;
+        border-radius: 18px;
+    }
+}
+
 .ccg-brand__logo {
     width: auto;
     height: 56px;
@@ -438,6 +470,13 @@ li {
 
     animation: ccgLogoGlow 3.4s ease-in-out infinite alternate;
     transition: filter 0.25s ease;
+}
+
+@media (min-width: 1024px) {
+    .ccg-brand__logo {
+        height: clamp(70px, 7vw, 96px);
+        max-height: none;
+    }
 }
 
 .ccg-brand__logo.ccg-logo-flash--neon {
@@ -455,8 +494,8 @@ li {
 .ccg-brand:hover .ccg-brand__logo,
 .ccg-brand:focus-within .ccg-brand__logo {
     filter:
-        drop-shadow(0 0 18px rgba(var(--accent-rgb),0.6))
-        drop-shadow(0 0 32px rgba(69,216,255,0.4))
+        drop-shadow(0 0 18px var(--ccg-header-glow))
+        drop-shadow(0 0 32px var(--ccg-header-glow-strong))
         drop-shadow(0 12px 26px rgba(0,0,0,0.58));
 }
 
@@ -495,6 +534,13 @@ li {
         0 0 16px rgba(var(--accent-rgb),0.28);
 }
 
+@media (min-width: 1024px) {
+    .ccg-brand__kicker {
+        font-size: 0.8rem;
+        letter-spacing: 0.26em;
+    }
+}
+
 .ccg-brand__title {
     display: flex;
     flex-direction: column;
@@ -502,6 +548,12 @@ li {
     font-size: 1.08rem;
     letter-spacing: 0.1em;
     text-wrap: balance;
+}
+
+@media (min-width: 1024px) {
+    .ccg-brand__title {
+        font-size: 1.2rem;
+    }
 }
 
 .ccg-brand__neon-cheeky {
@@ -540,6 +592,15 @@ li {
     pointer-events: auto;
 }
 
+@media (min-width: 1024px) {
+    .ccg-nav {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: center;
+        gap: 12px;
+    }
+}
+
 
 .ccg-nav__bar {
     display: flex;
@@ -552,6 +613,12 @@ li {
     position: relative;
     z-index: 5;
     pointer-events: auto;
+}
+
+@media (min-width: 1024px) {
+    .ccg-nav__bar {
+        display: contents;
+    }
 }
 
 .ccg-nav__list {
@@ -577,6 +644,15 @@ li {
     pointer-events: auto;
     flex: 1 1 100%;
     max-width: 100%;
+}
+
+@media (min-width: 1024px) {
+    .ccg-nav__list {
+        flex-wrap: nowrap;
+        row-gap: 0;
+        padding-inline: 0;
+        flex: 0 0 auto;
+    }
 }
 
 .ccg-nav__bar,
@@ -1067,7 +1143,7 @@ li {
     .ccg-header-inner {
         grid-template-columns: 1fr auto 1fr;
         grid-template-areas:
-            ". brand mode"
+            ". brand actions"
             "nav nav nav"
             "socials socials socials";
         justify-items: center;
@@ -1080,12 +1156,12 @@ li {
         flex-direction: column;
         align-items: center;
         text-align: center;
-        padding: 12px 20px;
+        padding: 12px 22px;
     }
 
     .ccg-brand__logo {
-        height: auto;
-        max-height: 72px;
+        height: clamp(72px, 7vw, 96px);
+        max-height: none;
     }
 
     .ccg-brand__text {
@@ -1099,7 +1175,7 @@ li {
     }
 
     .ccg-mode-toggle {
-        grid-area: mode;
+        grid-area: actions;
         justify-self: end;
     }
 
@@ -1110,6 +1186,7 @@ li {
 
     .ccg-nav {
         width: min(1200px, 100%);
+        justify-content: center;
     }
 
     .ccg-nav__bar {
@@ -1125,15 +1202,30 @@ li {
         font-size: 0.82rem;
         font-weight: 800;
         letter-spacing: 0.12em;
+        text-transform: uppercase;
         padding: 12px 18px;
-        background:
-            radial-gradient(circle at 30% 30%, rgba(255,255,255,0.22), rgba(0,0,0,0.85)),
-            linear-gradient(135deg, rgba(255,255,255,0.12), rgba(var(--accent-rgb),0.2));
-        border: 1px solid rgba(255,255,255,0.32);
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(var(--accent-rgb),0.4);
+        background: rgba(var(--accent-rgb),0.12);
         box-shadow:
-            0 0 10px rgba(var(--accent-rgb),0.5),
             0 12px 26px rgba(0,0,0,0.72),
-            0 0 18px rgba(var(--accent-rgb),0.35);
+            0 0 18px var(--ccg-header-glow);
+    }
+
+    .ccg-nav__link:hover,
+    .ccg-nav__link:focus-visible {
+        transform: translateY(-2px);
+        border-color: rgba(var(--accent-rgb),0.7);
+        box-shadow:
+            0 16px 36px rgba(0,0,0,0.78),
+            0 0 24px var(--ccg-header-glow-strong);
+    }
+
+    .ccg-nav__link--active {
+        border-color: rgba(var(--accent-rgb),0.8);
+        box-shadow:
+            0 18px 40px rgba(0,0,0,0.8),
+            0 0 26px var(--ccg-header-glow-strong);
     }
 }
 

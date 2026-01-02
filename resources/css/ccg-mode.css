@@ -15,6 +15,11 @@ body[data-ccg-mode="c64"] {
     --accent-rgb: 0, 170, 255;
     --accent-main: var(--ccg-color-blue);
     --accent-soft: var(--ccg-color-cyan);
+    --ccg-header-glow: rgba(0,170,255,0.5);
+    --ccg-header-glow-strong: rgba(0,170,255,0.7);
+    --ccg-header-halo: rgba(0,170,255,0.22);
+    --ccg-header-sheen: rgba(69,216,255,0.22);
+    --ccg-header-edge: rgba(0,170,255,0.32);
 
     --ccg-neon-main:
         0 0 6px rgba(0,170,255,0.45),
@@ -35,6 +40,11 @@ body[data-ccg-mode="amiga"] {
     --accent-rgb: 92, 127, 163;
     --accent-main: #5c7fa3;
     --accent-soft: #8f9dad;
+    --ccg-header-glow: rgba(92,127,163,0.38);
+    --ccg-header-glow-strong: rgba(92,127,163,0.55);
+    --ccg-header-halo: rgba(92,127,163,0.18);
+    --ccg-header-sheen: rgba(148,170,200,0.18);
+    --ccg-header-edge: rgba(148,170,200,0.28);
 
     --amiga-surface: linear-gradient(160deg, rgba(28, 34, 48, 0.96), rgba(10, 12, 20, 0.98));
     --amiga-surface-strong: linear-gradient(165deg, rgba(36, 42, 58, 0.98), rgba(12, 14, 22, 0.99));
@@ -181,8 +191,13 @@ body[data-ccg-mode] .ccg-header-neon-strip {
 ============================================================ */
 
 body[data-ccg-mode="amiga"] .ccg-header {
-    background: var(--amiga-titlebar);
-    box-shadow: var(--amiga-header-shadow);
+    background:
+        var(--amiga-titlebar),
+        radial-gradient(circle at 18% 15%, var(--ccg-header-halo), transparent 52%),
+        radial-gradient(circle at 82% 5%, var(--ccg-header-sheen), transparent 48%);
+    box-shadow:
+        var(--amiga-header-shadow),
+        0 0 22px var(--ccg-header-edge);
 }
 
 body[data-ccg-mode="amiga"] .ccg-game-card,

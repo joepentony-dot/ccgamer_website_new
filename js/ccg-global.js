@@ -140,6 +140,39 @@
         });
     }
 
+    function normalizeHeaderNavLinks() {
+        const header = document.querySelector("[data-ccg-header]");
+        if (!header) return;
+
+        const rootPrefix = (() => {
+            const root = getSiteRoot();
+            return root.endsWith("/") ? root : `${root}/`;
+        })();
+
+        const normalizeTarget = (href) => {
+            let cleaned = href.replace(/^(\.\/|(\.\.\/)+)/, "");
+            cleaned = cleaned.replace(/^\/+/, "");
+            const trimmed = cleaned.replace(/\/+$/, "");
+
+            if (trimmed === "about") return "about.html";
+            if (trimmed === "contact") return "contact.html";
+            if (trimmed === "games/genres") return "games/genres/index.html";
+
+            return cleaned || trimmed;
+        };
+
+        header.querySelectorAll(".ccg-nav__link").forEach(link => {
+            const href = link.getAttribute("href") || "";
+            if (!href || href.startsWith("#") || href.startsWith("http") || href.startsWith("mailto:")) {
+                return;
+            }
+
+            const cleaned = normalizeTarget(href);
+            if (!cleaned) return;
+            link.setAttribute("href", `${rootPrefix}${cleaned}`);
+        });
+    }
+
     window.ccgGetSiteRoot = getSiteRoot;
     window.ccgRegisterGameSlugs = ccgRegisterGameSlugs;
     window.ccgGameSlugFromId = ccgGameSlugFromId;
@@ -539,39 +572,12 @@
         secretState.modal.classList.remove("is-open");
         secretState.modal.setAttribute("aria-hidden", "true");
         document.body.classList.remove("ccg-secret-modal-open");
+        resetSecretInputState();
     }
 
-    function setupSecretListeners() {
-        document.addEventListener("keydown", event => {
-            if (event.key === "Escape") {
-                closeSecretModal();
-                return;
-            }
-
-            const target = event.target;
-            if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) {
-                return;
-            }
-
-            if (event.key.length === 1) {
-                secretState.inputBuffer = `${secretState.inputBuffer}${event.key}`.toLowerCase();
-                secretState.inputBuffer = secretState.inputBuffer.slice(-18);
-                if (secretState.inputBuffer.includes("sys64738")) {
-                    openSecretModal();
-                }
-            }
-
-            const expected = konamiSequence[secretState.konamiIndex];
-            if (event.key === expected) {
-                secretState.konamiIndex += 1;
-                if (secretState.konamiIndex >= konamiSequence.length) {
-                    secretState.konamiIndex = 0;
-                    triggerCheat("konamicode");
-                }
-            } else {
-                secretState.konamiIndex = event.key === konamiSequence[0] ? 1 : 0;
-            }
-        });
+    function resetSecretInputState() {
+        secretState.inputBuffer = "";
+        secretState.konamiIndex = 0;
     }
 
     /* ======================================================
@@ -580,6 +586,7 @@
     const logoClickState = {
         count: 0,
         resetTimer: null,
+        navTimer: null,
     };
 
     function resetLogoClickState() {
@@ -587,6 +594,10 @@
         if (logoClickState.resetTimer) {
             clearTimeout(logoClickState.resetTimer);
             logoClickState.resetTimer = null;
+        }
+        if (logoClickState.navTimer) {
+            clearTimeout(logoClickState.navTimer);
+            logoClickState.navTimer = null;
         }
     }
 
@@ -607,23 +618,51 @@
         setTimeout(() => logo.classList.remove(flashClass), 420);
     }
 
+    function queueLogoNavigation(targetHref) {
+        if (!targetHref) return;
+        if (logoClickState.navTimer) clearTimeout(logoClickState.navTimer);
+        logoClickState.navTimer = setTimeout(() => {
+            window.location.href = targetHref;
+            resetLogoClickState();
+        }, 500);
+    }
+
     function setupLogoEasterEgg() {
         const logos = document.querySelectorAll(".ccg-brand__logo");
         if (!logos.length) return;
 
+        const desktopMatch = typeof window.matchMedia === "function"
+            ? window.matchMedia("(min-width: 1024px)")
+            : null;
+
+        if (desktopMatch && !desktopMatch.matches) return;
+
         logos.forEach(logo => {
-            logo.addEventListener("click", () => {
+            const brandLink = logo.closest("a");
+            const targetHref = brandLink?.getAttribute("href") || "";
+
+            logo.addEventListener("click", event => {
+                if (desktopMatch && !desktopMatch.matches) return;
+                if (event && targetHref) event.preventDefault();
+
                 logoClickState.count += 1;
+
+                if (logoClickState.navTimer) {
+                    clearTimeout(logoClickState.navTimer);
+                    logoClickState.navTimer = null;
+                }
 
                 if (logoClickState.count === 1) {
                     flashLogo(logo, "ccg-logo-flash--neon");
                     scheduleLogoReset();
+                    queueLogoNavigation(targetHref);
                     return;
                 }
 
                 if (logoClickState.count === 2) {
                     flashLogo(logo, "ccg-logo-flash--red");
                     scheduleLogoReset();
+                    queueLogoNavigation(targetHref);
                     return;
                 }
 
@@ -970,9 +1009,9 @@
             introVideo.preload = "metadata";
         }
 
+        normalizeHeaderNavLinks();
         setupNavToggle();
         setupVisitCounter();
-        setupSecretListeners();
         setupLogoEasterEgg();
 
         /* ==================================================

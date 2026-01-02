@@ -32,6 +32,7 @@ function lockSingleGameRender() {
     }
     if (document.body) {
         document.body.classList.add("ccg-loading-single");
+        document.body.classList.remove("ccg-single-ready");
     }
     CCG_RENDER_GATE.locked = true;
 }
@@ -44,6 +45,7 @@ function unlockSingleGameRender() {
     }
     if (document.body) {
         document.body.classList.remove("ccg-loading-single");
+        document.body.classList.add("ccg-single-ready");
     }
     CCG_RENDER_GATE.locked = false;
 }
