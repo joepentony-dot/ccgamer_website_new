@@ -12,8 +12,6 @@
 (function () {
     "use strict";
 
-    const LIVE_JSON_PATH = "../games/games.json";
-
     let liveGames = [];
     let stagedGames = [];
 
@@ -178,9 +176,10 @@
     -------------------------------------------------------- */
     async function fetchLiveGames() {
         setStatus("Fetching live games.json…");
+        const url = getSourceUrl();
         try {
-            const res = await fetch(LIVE_JSON_PATH, { cache: "no-store" });
-            if (!res.ok) throw new Error("Fetch failed");
+            const res = await fetch(url, { cache: "no-store" });
+            if (!res.ok) throw new Error(`Fetch failed (${res.status})`);
             const data = await res.json();
 
             if (!Array.isArray(data)) {
@@ -194,7 +193,7 @@
             resetForm();
         } catch (err) {
             console.error(err);
-            setStatus("Failed to load live games.json", true);
+            setStatus(`Failed to load live games.json from ${url}`, true);
         }
     }
 
@@ -220,6 +219,7 @@
                     renderEditList(editSearch ? editSearch.value : "");
                     resetForm();
                     setStatus("Uploaded JSON loaded successfully.");
+                    syncSourceLink();
                 } catch (err) {
                     setStatus("Invalid JSON file.", true);
                 }
@@ -410,6 +410,12 @@
         refreshBtn.addEventListener("click", fetchLiveGames);
     }
 
+    if (sourceInput) {
+        sourceInput.value = getDefaultSourceUrl();
+        sourceInput.addEventListener("change", syncSourceLink);
+    }
+
+    syncSourceLink();
     fetchLiveGames();
     renderLatest();
 })();
