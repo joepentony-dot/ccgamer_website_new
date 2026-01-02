@@ -14,7 +14,10 @@
 
     const ID_REGEX = /^[a-z0-9_]+$/;
     const THUMBNAIL_PREFIX = "resources/images/thumbnails/all/";
-    const MIN_DESCRIPTION_LENGTH = 40;
+    const DESCRIPTION_TARGET_MIN = 180;
+    const DESCRIPTION_TARGET_MAX = 350;
+    const DESCRIPTION_MIN_SOFT = 40;
+    const YOUTUBE_ID_REGEX = /^[a-zA-Z0-9_-]{6,}$/;
 
     let liveGames = [];
     let stagedGames = [];
@@ -52,6 +55,13 @@
     const videoInput = document.getElementById("gameVideo");
     const slugPreviewInput = document.getElementById("gameSlugPreview");
     const urlPreviewInput = document.getElementById("gameUrlPreview");
+    const slugWarning = document.querySelector("[data-admin-slug-warning]");
+    const descriptionCount = document.querySelector("[data-admin-description-count]");
+    const descriptionWarning = document.querySelector("[data-admin-description-warning]");
+    const videoStatus = document.querySelector("[data-admin-video-status]");
+    const videoPreview = document.querySelector("[data-admin-video-preview]");
+    const thumbnailStatus = document.querySelector("[data-admin-thumbnail-status]");
+    const thumbnailPreview = document.querySelector("[data-admin-thumbnail-preview]");
 
     const fieldErrors = {
         id: document.querySelector('[data-admin-error="id"]'),
@@ -96,6 +106,19 @@
         Object.keys(fieldErrors).forEach((field) => setFieldError(field, ""));
     }
 
+    function setInlineStatus(element, message, state) {
+        if (!element) return;
+        if (!message) {
+            element.textContent = "";
+            element.hidden = true;
+            element.removeAttribute("data-state");
+            return;
+        }
+        element.textContent = message;
+        element.hidden = false;
+        element.dataset.state = state;
+    }
+
     function updateBadges() {
         if (gameCountEl) gameCountEl.textContent = liveGames.length;
         if (stagedCountEl) stagedCountEl.textContent = stagedGames.length;
@@ -119,7 +142,14 @@
     }
 
     function deriveSlug(id) {
-        return id.replace(/_/g, "-");
+        return id
+            .toLowerCase()
+            .replace(/_/g, "-")
+            .replace(/[\s]+/g, "-")
+            .replace(/[:'!()]/g, "")
+            .replace(/[^a-z0-9-]/g, "")
+            .replace(/--+/g, "-")
+            .replace(/^-+|-+$/g, "");
     }
 
     function updateSlugPreview() {
@@ -133,6 +163,23 @@
             urlPreviewInput.value = trimmedId
                 ? `https://www.cheekycommodoregamer.co.uk/games/${slug}/`
                 : "";
+        }
+        if (!slugWarning) return;
+        if (!trimmedId) {
+            slugWarning.hidden = true;
+            slugWarning.textContent = "";
+            return;
+        }
+        const isSlugValid = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
+        if (!slug || !isSlugValid) {
+            slugWarning.textContent = "Slug preview is invalid. Adjust the ID to match lowercase letters, numbers, and underscores only.";
+            slugWarning.hidden = false;
+        } else if (!ID_REGEX.test(trimmedId)) {
+            slugWarning.textContent = "Slug will be generated, but the ID format is invalid. Fix the ID to avoid breaking URLs.";
+            slugWarning.hidden = false;
+        } else {
+            slugWarning.hidden = true;
+            slugWarning.textContent = "";
         }
     }
 
@@ -184,6 +231,14 @@
         if (editCancelBtn) {
             editCancelBtn.hidden = !isEditing;
         }
+        if (idInput) {
+            idInput.readOnly = isEditing;
+            if (isEditing) {
+                idInput.setAttribute("aria-readonly", "true");
+            } else {
+                idInput.removeAttribute("aria-readonly");
+            }
+        }
     }
 
     function fillForm(game) {
@@ -201,12 +256,18 @@
         form.querySelector("#gameDisk").value = game.disk.join(", ");
         form.querySelector("#gameLemon").value = game.lemon.join(", ");
         updateSlugPreview();
+        updateDescriptionCounter();
+        updateVideoPreview();
+        updateThumbnailPreview();
     }
 
     function resetForm() {
         if (form) form.reset();
         clearFieldErrors();
         updateSlugPreview();
+        updateDescriptionCounter();
+        updateVideoPreview();
+        updateThumbnailPreview();
         setEditingContext(null);
     }
 
@@ -267,6 +328,144 @@
         return [...liveGames, ...stagedGames].some(g => g.id === id);
     }
 
+    function extractYouTubeId(value) {
+        if (!value) return "";
+        const trimmed = String(value).trim();
+        if (!trimmed) return "";
+
+        const urlPattern = /(youtube\.com|youtu\.be|^https?:\/\/|^www\.)/i;
+        if (urlPattern.test(trimmed)) {
+            let normalized = trimmed;
+            if (!/^https?:\/\//i.test(normalized)) {
+                normalized = `https://${normalized}`;
+            }
+            try {
+                const url = new URL(normalized);
+                if (url.hostname.includes("youtu.be")) {
+                    return url.pathname.split("/").filter(Boolean)[0] || "";
+                }
+                if (url.hostname.includes("youtube.com")) {
+                    const paramId = url.searchParams.get("v");
+                    if (paramId) return paramId;
+                    const pathParts = url.pathname.split("/").filter(Boolean);
+                    const embedIndex = pathParts.indexOf("embed");
+                    if (embedIndex >= 0 && pathParts[embedIndex + 1]) {
+                        return pathParts[embedIndex + 1];
+                    }
+                    const shortsIndex = pathParts.indexOf("shorts");
+                    if (shortsIndex >= 0 && pathParts[shortsIndex + 1]) {
+                        return pathParts[shortsIndex + 1];
+                    }
+                }
+            } catch (err) {
+                return "";
+            }
+        }
+
+        return trimmed;
+    }
+
+    function updateDescriptionCounter() {
+        if (!descriptionInput) return;
+        const value = descriptionInput.value.trim();
+        const length = value.length;
+        if (descriptionCount) {
+            descriptionCount.textContent = length;
+        }
+        if (!descriptionWarning) return;
+
+        if (!value) {
+            setInlineStatus(descriptionWarning, "Description is empty. You can add it later, but SEO works best with 180–350 characters.", "warning");
+            return;
+        }
+        if (length < DESCRIPTION_TARGET_MIN) {
+            setInlineStatus(descriptionWarning, "Add more detail to reach the 180–350 character SEO target.", "warning");
+            return;
+        }
+        if (length > DESCRIPTION_TARGET_MAX) {
+            setInlineStatus(descriptionWarning, "Consider trimming the description to stay under 350 characters.", "warning");
+            return;
+        }
+        setInlineStatus(descriptionWarning, "SEO length looks good.", "success");
+    }
+
+    function updateVideoPreview() {
+        if (!videoInput) return;
+        const rawValue = videoInput.value.trim();
+        if (!rawValue) {
+            setInlineStatus(videoStatus, "", "");
+            if (videoPreview) {
+                videoPreview.hidden = true;
+                const img = videoPreview.querySelector("img");
+                if (img) img.removeAttribute("src");
+            }
+            return;
+        }
+        const videoId = extractYouTubeId(rawValue);
+        if (!videoId || !YOUTUBE_ID_REGEX.test(videoId)) {
+            setInlineStatus(videoStatus, "Invalid YouTube link or ID.", "error");
+            if (videoPreview) {
+                videoPreview.hidden = true;
+            }
+            return;
+        }
+        setInlineStatus(videoStatus, `Video ID detected: ${videoId}`, "success");
+        if (videoPreview) {
+            const img = videoPreview.querySelector("img");
+            if (img) {
+                img.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+            }
+            videoPreview.hidden = false;
+        }
+    }
+
+    function validateThumbnailFilename(filename) {
+        if (!filename) return { valid: true, message: "" };
+        if (/[/\\]/.test(filename)) {
+            return { valid: false, message: "Use the filename only, without folders." };
+        }
+        if (!/\.(jpg|png|webp)$/i.test(filename)) {
+            return { valid: false, message: "Thumbnail must be a .jpg, .png, or .webp file." };
+        }
+        return { valid: true, message: "" };
+    }
+
+    function updateThumbnailPreview() {
+        if (!thumbInput) return;
+        const rawValue = thumbInput.value.trim();
+        if (!rawValue) {
+            setInlineStatus(thumbnailStatus, "", "");
+            if (thumbnailPreview) {
+                thumbnailPreview.hidden = true;
+                const img = thumbnailPreview.querySelector("img");
+                if (img) img.removeAttribute("src");
+            }
+            return;
+        }
+
+        const validation = validateThumbnailFilename(rawValue);
+        if (!validation.valid) {
+            setInlineStatus(thumbnailStatus, validation.message, "error");
+            if (thumbnailPreview) thumbnailPreview.hidden = true;
+            return;
+        }
+
+        const imgPath = `../${THUMBNAIL_PREFIX}${rawValue}`;
+        if (thumbnailPreview) {
+            const img = thumbnailPreview.querySelector("img");
+            if (img) {
+                img.onload = () => {
+                    setInlineStatus(thumbnailStatus, "Thumbnail found.", "success");
+                };
+                img.onerror = () => {
+                    setInlineStatus(thumbnailStatus, "Thumbnail not found yet. Check the filename before publishing.", "warning");
+                };
+                img.src = imgPath;
+            }
+            thumbnailPreview.hidden = false;
+        }
+    }
+
     function validateGame(raw, game) {
         clearFieldErrors();
         let isValid = true;
@@ -282,35 +481,28 @@
             isValid = false;
         }
 
-        if (!game.description) {
-            setFieldError("description", "Description is required.");
-            isValid = false;
-        } else if (game.description.length < MIN_DESCRIPTION_LENGTH) {
+        if (game.description && game.description.length < DESCRIPTION_MIN_SOFT) {
             setFieldError(
                 "description",
-                `Description must be at least ${MIN_DESCRIPTION_LENGTH} characters.`
+                `Description should be at least ${DESCRIPTION_MIN_SOFT} characters for clarity.`
             );
             isValid = false;
         }
 
         const thumbnailInput = raw.thumbnail ? String(raw.thumbnail).trim() : "";
         if (thumbnailInput) {
-            if (/[/\\]/.test(thumbnailInput)) {
-                setFieldError("thumbnail", "Use the filename only, without folders.");
-                isValid = false;
-            } else if (!/\.(jpg|png)$/i.test(thumbnailInput)) {
-                setFieldError("thumbnail", "Thumbnail must be a .jpg or .png file.");
+            const validation = validateThumbnailFilename(thumbnailInput);
+            if (!validation.valid) {
+                setFieldError("thumbnail", validation.message);
                 isValid = false;
             }
         }
 
         const videoValue = raw.videoid ? String(raw.videoid).trim() : "";
         if (videoValue) {
-            if (/(https?:\/\/|www\.|youtube\.com|youtu\.be|[?&]v=)/i.test(videoValue)) {
-                setFieldError("videoid", "Paste only the YouTube ID, not the full URL.");
-                isValid = false;
-            } else if (!/^[a-zA-Z0-9_-]{6,}$/.test(videoValue)) {
-                setFieldError("videoid", "YouTube IDs use letters, numbers, dashes, or underscores only.");
+            const parsedVideoId = extractYouTubeId(videoValue);
+            if (!parsedVideoId || !YOUTUBE_ID_REGEX.test(parsedVideoId)) {
+                setFieldError("videoid", "Provide a valid YouTube URL or ID.");
                 isValid = false;
             }
         }
@@ -384,6 +576,14 @@
 
             const formData = new FormData(form);
             const raw = Object.fromEntries(formData.entries());
+            const parsedVideoId = extractYouTubeId(raw.videoid || "");
+            if (parsedVideoId) {
+                raw.videoid = parsedVideoId;
+                if (videoInput) {
+                    videoInput.value = parsedVideoId;
+                }
+            }
+
             const game = normaliseGame(raw);
 
             if (!game.id || !game.title) {
@@ -399,29 +599,25 @@
                 return;
             }
 
+            let statusMessage = `Game "${game.title}" staged.`;
             if (editingContext) {
                 const target = editingContext.source === "staged" ? stagedGames : liveGames;
                 const idx = target.findIndex(entry => entry.id === editingContext.id);
                 if (idx >= 0) {
                     target[idx] = game;
-                    setStatus(`Game "${game.title}" updated.`);
+                    statusMessage = `Game "${game.title}" updated.`;
                 } else {
                     stagedGames.unshift(game);
-                    setStatus(`Game "${game.title}" staged.`);
                 }
             } else {
                 stagedGames.unshift(game);
-                setStatus(`Game "${game.title}" staged.`);
             }
 
             updateBadges();
             renderPreview();
             renderLatest();
-            form.reset();
-            updateSlugPreview();
-            clearFieldErrors();
-
-            setStatus(`Game "${game.title}" staged.`);
+            resetForm();
+            setStatus(statusMessage);
         });
     }
 
@@ -561,6 +757,7 @@
 
     if (descriptionInput) {
         descriptionInput.addEventListener("input", () => {
+            updateDescriptionCounter();
             if (fieldErrors.description && !fieldErrors.description.hidden) {
                 setFieldError("description", "");
             }
@@ -569,6 +766,7 @@
 
     if (thumbInput) {
         thumbInput.addEventListener("input", () => {
+            updateThumbnailPreview();
             if (fieldErrors.thumbnail && !fieldErrors.thumbnail.hidden) {
                 setFieldError("thumbnail", "");
             }
@@ -577,6 +775,7 @@
 
     if (videoInput) {
         videoInput.addEventListener("input", () => {
+            updateVideoPreview();
             if (fieldErrors.videoid && !fieldErrors.videoid.hidden) {
                 setFieldError("videoid", "");
             }
@@ -599,4 +798,7 @@
     fetchLiveGames();
     renderLatest();
     updateSlugPreview();
+    updateDescriptionCounter();
+    updateVideoPreview();
+    updateThumbnailPreview();
 })();
