@@ -31,11 +31,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
     const gameSlug = getSlugFromPath() || slugParam;
 
-    if (!gameId && !gameSlug) {
-        console.error("[CCG] No game ID or slug in URL");
-        return;
-    }
-
     try {
         const response = await fetch("games.json", { cache: "no-store" });
         if (!response.ok) throw new Error(`games.json ${response.status}`);
@@ -52,14 +47,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         if (!game && gameSlug) {
-            game = CCG_SINGLE_ALL_GAMES.find(
-                g => resolveGameSlug(g.id) === gameSlug
-            );
+            const resolvedId = resolveGameIdFromSlug(gameSlug);
+            if (resolvedId) {
+                game = CCG_SINGLE_ALL_GAMES.find(
+                    g => String(g.id).toLowerCase() === resolvedId.toLowerCase()
+                );
+            }
             if (game) gameId = String(game.id);
         }
 
         if (!game) {
-            console.error(`[CCG] Game not found for id="${gameId}" slug="${gameSlug}"`);
+            renderGameNotFound(gameId, gameSlug);
             return;
         }
 
@@ -67,7 +65,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         renderGame(game);
 
     } catch (err) {
-        console.error("[CCG] Single game load failed:", err);
+        renderGameNotFound(gameId, gameSlug);
     }
 });
 
@@ -140,6 +138,11 @@ function resolveGameSlug(gameId) {
     slug = slug.replace(/[^a-z0-9-]/g, "");
     slug = slug.replace(/-+/g, "-").replace(/^-+|-+$/g, "");
     return slug;
+}
+
+function resolveGameIdFromSlug(slug) {
+    if (!slug) return "";
+    return String(slug).trim().toLowerCase().replace(/-+/g, "-").replace(/-/g, "_");
 }
 
 function resolvePrettyGameUrl(gameId) {
@@ -275,15 +278,8 @@ function updateMeta(game) {
 
     if (metaDesc) metaDesc.setAttribute("content", metaDescriptionText);
 
-    const canonical = document.getElementById("game-canonical");
-    const prettyUrl = resolvePrettyGameUrl(game.id);
-    const canonicalUrl = prettyUrl
-        ? new URL(prettyUrl, window.location.href).toString()
-        : new URL(
-            `game.html?id=${encodeURIComponent(game.id || "")}`,
-            window.location.href
-        ).toString();
-    if (canonical) canonical.setAttribute("href", canonicalUrl);
+    const canonicalUrl = buildCanonicalUrl(game.id);
+    ensureCanonicalLink(canonicalUrl);
 
     const thumb = resolveGameThumb(game.thumbnail || game.thumb || game.cover);
     const imageUrl = new URL(thumb, window.location.href).toString();
@@ -325,6 +321,81 @@ function updateMeta(game) {
 
         jsonLd.textContent = JSON.stringify(jsonLdData);
     }
+}
+
+function buildCanonicalUrl(gameId) {
+    const prettyUrl = resolvePrettyGameUrl(gameId);
+    if (prettyUrl) {
+        return new URL(prettyUrl, window.location.href).toString();
+    }
+
+    return new URL(
+        `game.html?id=${encodeURIComponent(gameId || "")}`,
+        window.location.href
+    ).toString();
+}
+
+function ensureCanonicalLink(canonicalUrl) {
+    if (!canonicalUrl) return;
+
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+        canonical = document.createElement("link");
+        canonical.rel = "canonical";
+        document.head.appendChild(canonical);
+    }
+
+    canonical.setAttribute("href", canonicalUrl);
+}
+
+function renderGameNotFound(gameId, gameSlug) {
+    document.title = "Game not found | Cheeky Commodore Gamer";
+
+    const heroTitle = document.getElementById("gameHeroTitle");
+    if (heroTitle) heroTitle.textContent = "Game not found";
+
+    const heroThumb = document.getElementById("gameHeroThumb");
+    if (heroThumb) {
+        heroThumb.src = resolveGameThumb();
+        heroThumb.alt = "Game not found";
+    }
+
+    const heroBg = document.getElementById("gameHeroBG");
+    if (heroBg) heroBg.style.backgroundImage = `url('${resolveGameThumb()}')`;
+
+    const metaYear = document.getElementById("gameMetaYear");
+    if (metaYear) metaYear.textContent = "—";
+    const metaSystem = document.getElementById("gameMetaSystem");
+    if (metaSystem) metaSystem.textContent = "—";
+    const metaDeveloper = document.getElementById("gameMetaDeveloper");
+    if (metaDeveloper) metaDeveloper.textContent = "—";
+
+    const description = document.getElementById("gameDescription");
+    if (description) {
+        const queryInfo = [gameId ? `id=${gameId}` : "", gameSlug ? `slug=${gameSlug}` : ""]
+            .filter(Boolean)
+            .join(" · ");
+        description.textContent = queryInfo
+            ? `Sorry, we couldn't find that game (${queryInfo}).`
+            : "Sorry, we couldn't find that game.";
+    }
+
+    const descriptionSection = document.getElementById("game-description-section");
+    if (descriptionSection) descriptionSection.hidden = false;
+
+    const videoSection = document.getElementById("game-video-section");
+    if (videoSection) videoSection.hidden = true;
+
+    const downloadsSection = document.querySelector(".game-downloads");
+    if (downloadsSection) downloadsSection.hidden = true;
+
+    const screenshotsSection = document.querySelector(".game-screenshots");
+    if (screenshotsSection) screenshotsSection.hidden = true;
+
+    const relatedSection = document.querySelector(".game-section--related");
+    if (relatedSection) relatedSection.hidden = true;
+
+    ensureCanonicalLink(buildCanonicalUrl(gameId || resolveGameIdFromSlug(gameSlug) || ""));
 }
 
 /* ============================================================
