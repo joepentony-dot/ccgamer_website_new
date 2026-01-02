@@ -479,3 +479,48 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
     object-position: center;
     display: block;
 }
+
+/* ------------------------------------------------------------
+   Phase 4B — RELATED CAROUSEL UNIFORMITY LOCK (SCOPED)
+------------------------------------------------------------ */
+
+.ccg-page--single-game .related-carousel {
+    --related-card-height: 236px;
+    --related-thumb-height: 140px;
+    --related-title-line-height: 1.25;
+}
+
+.ccg-page--single-game .related-carousel .related-carousel__viewport {
+    min-height: calc(var(--related-card-height) + 18px);
+}
+
+.ccg-page--single-game .related-carousel .related-carousel__track {
+    align-items: stretch;
+    min-height: calc(var(--related-card-height) + 14px);
+}
+
+.ccg-page--single-game .related-carousel .related-card {
+    height: var(--related-card-height);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.ccg-page--single-game .related-carousel .related-card img {
+    height: var(--related-thumb-height);
+    max-height: none;
+    object-fit: contain;
+    object-position: center;
+    background: rgba(0,0,0,0.45);
+}
+
+.ccg-page--single-game .related-carousel .related-card span {
+    line-height: var(--related-title-line-height);
+    height: calc(var(--related-title-line-height) * 2em);
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
