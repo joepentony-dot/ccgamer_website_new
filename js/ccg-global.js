@@ -383,6 +383,7 @@
     function triggerCheat(code) {
         const normalized = normalizeCode(code);
         if (cheats[normalized]) {
+            closeSecretModal();
             cheats[normalized]();
         }
     }
