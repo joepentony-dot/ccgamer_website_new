@@ -26,13 +26,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let gameId = decodeURIComponent(
         (params.get("id") || "").toString().trim()
     );
-    let gameSlug = getSlugFromPath();
-    if (!gameSlug) {
-        gameSlug = decodeURIComponent(
-            (params.get("slug") || "").toString().trim()
-        );
-    }
-    gameSlug = normaliseGameSlugInput(gameSlug);
+    const gameSlug = getSlugFromPath();
 
     if (!gameId && !gameSlug) {
         console.error("[CCG] No game ID or slug in URL");
@@ -50,7 +44,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (gameId) {
             game = CCG_SINGLE_ALL_GAMES.find(
-                g => String(g.id).toLowerCase() === gameId.toLowerCase()
+                g => String(g.id) === gameId
             );
         }
 
@@ -59,16 +53,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 g => resolveGameSlug(g.id) === gameSlug
             );
             if (game) gameId = String(game.id);
-        }
-
-        if (!game && gameId) {
-            const idSlug = normaliseGameSlugInput(gameId);
-            if (idSlug) {
-                game = CCG_SINGLE_ALL_GAMES.find(
-                    g => resolveGameSlug(g.id) === idSlug
-                );
-                if (game) gameId = String(game.id);
-            }
         }
 
         if (!game) {
@@ -155,11 +139,6 @@ function resolveGameSlug(gameId) {
     return slug;
 }
 
-function normaliseGameSlugInput(value) {
-    if (!value) return "";
-    return resolveGameSlug(String(value).trim());
-}
-
 function resolvePrettyGameUrl(gameId) {
     if (typeof window !== "undefined" && typeof window.ccgBuildGameUrl === "function") {
         return window.ccgBuildGameUrl(gameId);
@@ -181,9 +160,7 @@ function getSlugFromPath() {
 
     let slug = pathname.slice("games/".length);
     slug = slug.replace(/index\.html$/i, "").replace(/\.html$/i, "");
-    slug = slug.replace(/\/+$/g, "");
-    if (slug === "game") return "";
-    return slug;
+    return slug.replace(/\/+$/g, "");
 }
 
 function syncPrettyUrl(gameId) {
