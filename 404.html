@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page not found</title>
+    <style>
+        body {
+            opacity: 0;
+        }
+
+        body.ccg-404-ready {
+            opacity: 1;
+            transition: opacity 120ms ease;
+        }
+    </style>
 </head>
 <body>
     <main>
@@ -23,12 +33,18 @@
             }
 
             pathname = pathname.replace(/^\/+|\/+$/g, "");
-            if (!pathname.startsWith("games/")) return;
+            if (!pathname.startsWith("games/")) {
+                document.body.classList.add("ccg-404-ready");
+                return;
+            }
 
             let slug = pathname.slice("games/".length);
             slug = slug.replace(/index\.html$/i, "").replace(/\.html$/i, "");
             slug = slug.replace(/\/+$/g, "");
-            if (!slug) return;
+            if (!slug) {
+                document.body.classList.add("ccg-404-ready");
+                return;
+            }
 
             const target = `${window.location.origin}${basePath}games/game.html?slug=${encodeURIComponent(slug)}`;
             window.location.replace(target);

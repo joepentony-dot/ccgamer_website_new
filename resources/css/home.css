@@ -1177,6 +1177,11 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
     padding: 0;
     overflow: hidden;
     text-decoration: none;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    pointer-events: auto;
+    touch-action: manipulation;
 }
 
 .home-feature-card img {
@@ -1552,6 +1557,10 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
     .home-feature-video,
     .home-feature-card {
         padding: 16px;
+    }
+
+    .home-feature-card {
+        padding: 0;
     }
 }
 
