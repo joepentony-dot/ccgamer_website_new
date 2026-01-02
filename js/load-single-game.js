@@ -165,7 +165,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const candidateSlug = slugParam || pathSlug;
 
     try {
-        const response = await fetch("games.json", { cache: "no-store" });
+        const response = await fetch(resolveGamesDataUrl(), { cache: "no-store" });
         if (!response.ok) throw new Error(`games.json ${response.status}`);
 
         const games = await response.json();
@@ -291,6 +291,13 @@ function isDevMode() {
         || host === "127.0.0.1"
         || host.endsWith(".local")
         || (window.location.pathname || "").includes("/ccgamer_website_new/");
+}
+
+function resolveGamesDataUrl() {
+    const root = (typeof window !== "undefined" && typeof window.ccgGetSiteRoot === "function")
+        ? window.ccgGetSiteRoot()
+        : "/";
+    return `${root}games/games.json`;
 }
 
 function resolveSingleGameThumbBasePath() {
@@ -466,25 +473,30 @@ function renderGame(game) {
         btn.hidden = false;
         downloadsSection.hidden = false;
 
-        btn.addEventListener("click", e => {
-            // Open inline for PDFs/Drive; fall back to normal links
-            if (!manual.includes(".pdf") && !manual.includes("drive.google.com")) return;
-            e.preventDefault();
+        const manualModal = document.getElementById("manualModal");
+        const manualFrame = document.getElementById("gameManualEmbed");
+        const manualClose = document.getElementById("manualModalClose");
 
-            const frame = document.getElementById("gameManualEmbed");
-            frame.src = manual;
-            document.getElementById("manualModal").classList.add("open");
-        });
+        if (manualModal && manualFrame && manualClose) {
+            btn.addEventListener("click", e => {
+                // Open inline for PDFs/Drive; fall back to normal links
+                if (!manual.includes(".pdf") && !manual.includes("drive.google.com")) return;
+                e.preventDefault();
 
-        document.getElementById("manualModalClose").addEventListener("click", () => {
-            document.getElementById("manualModal").classList.remove("open");
-            document.getElementById("gameManualEmbed").src = "";
-        });
+                manualFrame.src = manual;
+                manualModal.classList.add("open");
+            });
+
+            manualClose.addEventListener("click", () => {
+                manualModal.classList.remove("open");
+                manualFrame.src = "";
+            });
+        }
     }
 
     const disk = resolveDiskUrl(game);
     if (disk) {
-        const btn = document.getElementById("gameDownloadBtn");
+        const btn = document.getElementById("gameDiskBtn");
         btn.href = disk;
         btn.target = "_blank";
         btn.rel = "noopener";
@@ -504,7 +516,7 @@ function renderGame(game) {
     /* SCREENSHOTS */
     const shots = Array.isArray(game.screenshots) ? game.screenshots : [];
     if (shots.length) {
-        const gallery = document.getElementById("gameScreens");
+        const gallery = document.getElementById("gameScreenshotsStrip");
         gallery.innerHTML = "";
         CCG_SCREENSHOTS = shots;
         shots.forEach((src, i) => {
@@ -517,7 +529,8 @@ function renderGame(game) {
             });
             gallery.appendChild(img);
         });
-        document.getElementById("gameScreenshots").hidden = false;
+        const screenshotsSection = document.querySelector(".game-screenshots");
+        if (screenshotsSection) screenshotsSection.hidden = false;
     }
 
     /* RELATED GAMES */
@@ -545,8 +558,8 @@ function updateMeta(game) {
 ============================================================ */
 
 function renderRelatedGames(game) {
-    const container = document.getElementById("relatedGamesList");
-    const section = document.getElementById("relatedGamesSection");
+    const container = document.getElementById("relatedGamesTrack");
+    const section = document.querySelector(".game-section--related");
 
     if (!container || !section) return;
 
@@ -593,17 +606,28 @@ function renderRelatedGames(game) {
 ============================================================ */
 
 function openScreenshotModal(index) {
-    const modal = document.getElementById("screenshotModal");
-    const img = document.getElementById("screenshotModalImg");
+    const modal = document.getElementById("ccgModal");
+    const frame = document.getElementById("ccgModalFrame");
 
-    if (!modal || !img) return;
+    if (!modal || !frame) return;
 
-    img.src = CCG_SCREENSHOTS[index];
+    const src = CCG_SCREENSHOTS[index];
+    if (!src) return;
+
+    frame.src = src;
     modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
 }
 
 function closeScreenshotModal() {
-    document.getElementById("screenshotModal").classList.remove("open");
+    const modal = document.getElementById("ccgModal");
+    const frame = document.getElementById("ccgModalFrame");
+
+    if (!modal || !frame) return;
+
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden", "true");
+    frame.src = "";
 }
 
 function showNextScreenshot() {
@@ -642,17 +666,17 @@ function renderGameNotFound(gameId, slug) {
    EVENT LISTENERS
 ============================================================ */
 
-document.getElementById("screenshotModalClose")
+document.querySelector(".ccg-modal-close")
     ?.addEventListener("click", closeScreenshotModal);
 
-document.getElementById("screenshotNext")
+document.querySelector(".ccg-modal-nav--next")
     ?.addEventListener("click", showNextScreenshot);
 
-document.getElementById("screenshotPrev")
+document.querySelector(".ccg-modal-nav--prev")
     ?.addEventListener("click", showPrevScreenshot);
 
 // Close modal on background click
-const screenshotModal = document.getElementById("screenshotModal");
+const screenshotModal = document.getElementById("ccgModal");
 if (screenshotModal) {
     screenshotModal.addEventListener("click", e => {
         if (e.target === screenshotModal) closeScreenshotModal();
