@@ -75,6 +75,32 @@
         return pathname;
     }
 
+    /* ======================================================
+       GAME URL HELPERS
+    ====================================================== */
+    function getSiteRoot() {
+        const path = window.location.pathname || "/";
+        const repoMarker = "/ccgamer_website_new/";
+        if (path.includes(repoMarker)) return repoMarker;
+        return "/";
+    }
+
+    function ccgGameSlugFromId(gameId) {
+        if (!gameId) return "";
+        let slug = String(gameId).trim().toLowerCase();
+        slug = slug.replace(/[_\s]+/g, "-");
+        slug = slug.replace(/[:/]+/g, "-");
+        slug = slug.replace(/[^a-z0-9-]/g, "");
+        slug = slug.replace(/-+/g, "-").replace(/^-+|-+$/g, "");
+        return slug;
+    }
+
+    function ccgBuildGameUrl(gameId) {
+        const slug = ccgGameSlugFromId(gameId);
+        if (!slug) return "";
+        return `${getSiteRoot()}games/${slug}/`;
+    }
+
     function markActiveLinks(header) {
         const current = normalisePath(window.location.href);
 
@@ -103,6 +129,10 @@
             }
         });
     }
+
+    window.ccgGetSiteRoot = getSiteRoot;
+    window.ccgGameSlugFromId = ccgGameSlugFromId;
+    window.ccgBuildGameUrl = ccgBuildGameUrl;
 
     /* ======================================================
        MOBILE HARDENING — NO PADDING HACKS
