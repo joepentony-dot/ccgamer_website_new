@@ -26,7 +26,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     let gameId = decodeURIComponent(
         (params.get("id") || "").toString().trim()
     );
-    const gameSlug = getSlugFromPath();
+    const slugParam = decodeURIComponent(
+        (params.get("slug") || "").toString().trim()
+    );
+    const gameSlug = getSlugFromPath() || slugParam;
 
     if (!gameId && !gameSlug) {
         console.error("[CCG] No game ID or slug in URL");
