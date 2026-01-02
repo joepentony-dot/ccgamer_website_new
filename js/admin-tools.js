@@ -41,8 +41,6 @@
     const stagedCountEl = document.querySelector("[data-admin-staged-count]");
     const latestEls = document.querySelectorAll("[data-admin-latest]");
 
-    let editingContext = null;
-
     /* --------------------------------------------------------
        HELPERS
     -------------------------------------------------------- */
@@ -274,8 +272,9 @@
             updateBadges();
             renderPreview();
             renderLatest();
-            renderEditList(editSearch ? editSearch.value : "");
-            resetForm();
+            form.reset();
+
+            setStatus(`Game "${game.title}" staged.`);
         });
     }
 
@@ -365,7 +364,6 @@
             stagedGames = [];
             renderPreview();
             renderLatest();
-            renderEditList(editSearch ? editSearch.value : "");
             updateBadges();
             setStatus("Staged entries cleared.");
             resetForm();
@@ -414,5 +412,4 @@
 
     fetchLiveGames();
     renderLatest();
-    renderEditList();
 })();
