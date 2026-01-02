@@ -26,10 +26,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     let gameId = decodeURIComponent(
         (params.get("id") || "").toString().trim()
     );
-    const slugParam = decodeURIComponent(
-        (params.get("slug") || "").toString().trim()
-    );
-    const gameSlug = getSlugFromPath() || slugParam;
+    const rawSlugParam = params.get("slug");
+    const slugParam = rawSlugParam ? decodeURIComponent(rawSlugParam.toString()).trim() : "";
+    const slugForMatch = slugParam ? slugParam.toLowerCase() : "";
 
     try {
         const response = await fetch("games.json", { cache: "no-store" });
@@ -46,18 +45,18 @@ document.addEventListener("DOMContentLoaded", async () => {
             );
         }
 
-        if (!game && gameSlug) {
-            const resolvedId = resolveGameIdFromSlug(gameSlug);
+        if (!game && slugForMatch) {
+            const resolvedId = resolveGameIdFromSlug(slugForMatch);
             if (resolvedId) {
                 game = CCG_SINGLE_ALL_GAMES.find(
-                    g => String(g.id).toLowerCase() === resolvedId.toLowerCase()
+                    g => String(g.id) === resolvedId
                 );
             }
             if (game) gameId = String(game.id);
         }
 
         if (!game) {
-            renderGameNotFound(gameId, gameSlug);
+            renderGameNotFound(gameId, slugParam);
             return;
         }
 
@@ -65,7 +64,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         renderGame(game);
 
     } catch (err) {
-        renderGameNotFound(gameId, gameSlug);
+        renderGameNotFound(gameId, slugParam);
     }
 });
 
@@ -324,15 +323,21 @@ function updateMeta(game) {
 }
 
 function buildCanonicalUrl(gameId) {
-    const prettyUrl = resolvePrettyGameUrl(gameId);
-    if (prettyUrl) {
-        return new URL(prettyUrl, window.location.href).toString();
+    const slug = resolveGameSlug(gameId);
+    if (!slug) {
+        return "https://www.cheekycommodoregamer.co.uk/games/";
     }
 
-    return new URL(
-        `game.html?id=${encodeURIComponent(gameId || "")}`,
-        window.location.href
-    ).toString();
+    return `https://www.cheekycommodoregamer.co.uk/games/${slug}/`;
+}
+
+function buildCanonicalUrlFromSlug(slug) {
+    const clean = String(slug || "").trim().toLowerCase().replace(/-+/g, "-");
+    if (!clean) {
+        return "https://www.cheekycommodoregamer.co.uk/games/";
+    }
+
+    return `https://www.cheekycommodoregamer.co.uk/games/${clean}/`;
 }
 
 function ensureCanonicalLink(canonicalUrl) {
@@ -395,7 +400,10 @@ function renderGameNotFound(gameId, gameSlug) {
     const relatedSection = document.querySelector(".game-section--related");
     if (relatedSection) relatedSection.hidden = true;
 
-    ensureCanonicalLink(buildCanonicalUrl(gameId || resolveGameIdFromSlug(gameSlug) || ""));
+    const canonicalUrl = gameId
+        ? buildCanonicalUrl(gameId)
+        : buildCanonicalUrlFromSlug(gameSlug);
+    ensureCanonicalLink(canonicalUrl);
 }
 
 /* ============================================================
