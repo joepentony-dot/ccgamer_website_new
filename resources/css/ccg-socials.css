@@ -83,3 +83,22 @@
         gap: 0.55rem;
     }
 }
+
+@media (min-width: 1024px) {
+    .ccg-header-socials {
+        gap: 0.9rem;
+    }
+
+    .ccg-header-socials a {
+        width: 38px;
+        height: 38px;
+        box-shadow:
+            0 0 10px rgba(var(--accent-rgb), 0.55),
+            0 0 18px rgba(var(--accent-rgb), 0.35);
+    }
+
+    .ccg-socials__icon {
+        width: 62%;
+        height: 62%;
+    }
+}
