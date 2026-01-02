@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const resolvedId = resolveGameIdFromSlug(gameSlug);
             if (resolvedId) {
                 game = CCG_SINGLE_ALL_GAMES.find(
-                    g => String(g.id) === resolvedId
+                    g => String(g.id).toLowerCase() === resolvedId.toLowerCase()
                 );
             }
             if (game) gameId = String(game.id);
@@ -142,7 +142,7 @@ function resolveGameSlug(gameId) {
 
 function resolveGameIdFromSlug(slug) {
     if (!slug) return "";
-    return String(slug).trim().toLowerCase().replace(/-/g, "_");
+    return String(slug).trim().toLowerCase().replace(/-+/g, "-").replace(/-/g, "_");
 }
 
 function resolvePrettyGameUrl(gameId) {
@@ -324,10 +324,15 @@ function updateMeta(game) {
 }
 
 function buildCanonicalUrl(gameId) {
-    const base = "https://www.cheekycommodoregamer.co.uk/games/";
-    const slug = resolveGameSlug(gameId);
-    if (!slug) return base;
-    return `${base}${slug}/`;
+    const prettyUrl = resolvePrettyGameUrl(gameId);
+    if (prettyUrl) {
+        return new URL(prettyUrl, window.location.href).toString();
+    }
+
+    return new URL(
+        `game.html?id=${encodeURIComponent(gameId || "")}`,
+        window.location.href
+    ).toString();
 }
 
 function ensureCanonicalLink(canonicalUrl) {
@@ -390,8 +395,7 @@ function renderGameNotFound(gameId, gameSlug) {
     const relatedSection = document.querySelector(".game-section--related");
     if (relatedSection) relatedSection.hidden = true;
 
-    const fallbackId = gameId || resolveGameIdFromSlug(gameSlug);
-    ensureCanonicalLink(buildCanonicalUrl(fallbackId));
+    ensureCanonicalLink(buildCanonicalUrl(gameId || resolveGameIdFromSlug(gameSlug) || ""));
 }
 
 /* ============================================================
