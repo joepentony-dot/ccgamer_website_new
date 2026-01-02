@@ -26,8 +26,6 @@
     const commitBtn = document.getElementById("adminCommit");
     const commitPanel = document.getElementById("adminCommitPanel");
     const commitCloseBtn = document.querySelector("[data-admin-commit-close]");
-    const sourceInput = document.getElementById("adminSourceUrl");
-    const sourceOpen = document.getElementById("adminSourceOpen");
     const form = document.getElementById("adminGameForm");
     const previewBody = document.getElementById("adminGamePreview");
     const submitBtn = document.querySelector("[data-admin-submit]");
@@ -41,8 +39,6 @@
     const stagedCountEl = document.querySelector("[data-admin-staged-count]");
     const latestEls = document.querySelectorAll("[data-admin-latest]");
 
-    let editingContext = null;
-
     /* --------------------------------------------------------
        HELPERS
     -------------------------------------------------------- */
@@ -50,22 +46,6 @@
         if (!statusEl) return;
         statusEl.textContent = msg;
         statusEl.dataset.state = isError ? "error" : "success";
-    }
-
-    function getDefaultSourceUrl() {
-        const origin = window.location.origin || "";
-        return `${origin}/games/games.json`;
-    }
-
-    function getSourceUrl() {
-        if (!sourceInput) return getDefaultSourceUrl();
-        const value = sourceInput.value.trim();
-        return value || getDefaultSourceUrl();
-    }
-
-    function syncSourceLink() {
-        if (!sourceOpen) return;
-        sourceOpen.href = getSourceUrl();
     }
 
     function updateBadges() {
@@ -211,7 +191,6 @@
             setStatus(`Loaded ${liveGames.length} live games.`);
             renderEditList(editSearch ? editSearch.value : "");
             resetForm();
-            syncSourceLink();
         } catch (err) {
             console.error(err);
             setStatus(`Failed to load live games.json from ${url}`, true);
@@ -293,8 +272,9 @@
             updateBadges();
             renderPreview();
             renderLatest();
-            renderEditList(editSearch ? editSearch.value : "");
-            resetForm();
+            form.reset();
+
+            setStatus(`Game "${game.title}" staged.`);
         });
     }
 
@@ -384,7 +364,6 @@
             stagedGames = [];
             renderPreview();
             renderLatest();
-            renderEditList(editSearch ? editSearch.value : "");
             updateBadges();
             setStatus("Staged entries cleared.");
             resetForm();
@@ -439,5 +418,4 @@
     syncSourceLink();
     fetchLiveGames();
     renderLatest();
-    renderEditList();
 })();

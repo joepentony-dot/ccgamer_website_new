@@ -117,18 +117,6 @@
     margin-bottom: 14px;
 }
 
-.admin-form-banner {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 12px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(0,0,0,0.65);
-    margin-bottom: 12px;
-    font-size: 0.9rem;
-}
-
 .admin-form-heading {
     display: flex;
     justify-content: space-between;
@@ -195,32 +183,6 @@
 .admin-status[data-state="error"] { color: #ff6b6b; }
 .admin-status[data-state="success"] { color: #7dffb3; }
 
-.admin-commit-panel {
-    margin-top: 12px;
-    padding: 14px 16px;
-    border-radius: 14px;
-    border: 1px solid rgba(255,255,255,0.12);
-    background: rgba(0,0,0,0.7);
-    display: grid;
-    gap: 10px;
-}
-
-.admin-commit-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-}
-
-.admin-commit-code {
-    font-size: 0.85rem;
-    color: var(--ccg-text-soft);
-    background: rgba(0,0,0,0.6);
-    border-radius: 10px;
-    padding: 10px 12px;
-    border: 1px solid rgba(255,255,255,0.08);
-}
-
 .admin-preview-grid {
     display: grid;
     grid-template-columns: minmax(0, 2.4fr) minmax(0, 1fr);
@@ -259,76 +221,6 @@
     font-size: 0.9rem;
     color: var(--ccg-text-light);
     word-break: break-word;
-}
-
-.admin-editor-card {
-    display: grid;
-    gap: 12px;
-}
-
-.admin-editor-header {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 12px;
-    align-items: center;
-}
-
-.admin-editor-count {
-    text-align: right;
-    min-width: 120px;
-}
-
-.admin-edit-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    gap: 8px;
-    max-height: 320px;
-    overflow: auto;
-}
-
-.admin-edit-item {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 8px;
-    align-items: center;
-    padding: 10px 12px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.08);
-    background: rgba(0,0,0,0.55);
-}
-
-.admin-edit-title {
-    font-size: 0.95rem;
-}
-
-.admin-edit-meta {
-    font-size: 0.75rem;
-    color: var(--ccg-text-soft);
-    margin-top: 4px;
-}
-
-.admin-edit-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 2px 8px;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,0.12);
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    background: rgba(255,255,255,0.05);
-}
-
-.admin-edit-empty {
-    text-align: center;
-    color: var(--ccg-text-soft);
-    padding: 16px;
-    border: 1px dashed rgba(255,255,255,0.2);
-    border-radius: 12px;
 }
 
 .admin-table-card {
@@ -389,15 +281,6 @@
 
     .admin-preview-grid {
         grid-template-columns: 1fr;
-    }
-
-    .admin-edit-item {
-        grid-template-columns: 1fr;
-        justify-items: start;
-    }
-
-    .admin-editor-count {
-        text-align: left;
     }
 }
 

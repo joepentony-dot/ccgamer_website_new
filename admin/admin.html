@@ -165,7 +165,6 @@
                             <li>Fetch the live <strong>games.json</strong> or upload a saved file.</li>
                             <li>Fill out the game form (required fields are flagged).</li>
                             <li>Stage multiple games, then download the merged JSON.</li>
-                            <li>Commit the downloaded file in your normal workflow (Git, FTP, etc).</li>
                         </ol>
                     </div>
                     <div class="admin-callout admin-callout--tips">
@@ -194,11 +193,6 @@
                 <article class="admin-card">
                     <h2>1) Load your library</h2>
                     <p>Start from the live <code>games.json</code> or drop in a replacement file to merge.</p>
-                    <div class="admin-field">
-                        <label for="adminSourceUrl">Live JSON URL</label>
-                        <input id="adminSourceUrl" class="admin-input" type="url" placeholder="https://www.cheekycommodoregamer.co.uk/games/games.json">
-                        <p class="admin-help">If the fetch fails, paste the full URL to the latest <code>games.json</code> here.</p>
-                    </div>
                     <div class="admin-inline-buttons">
                         <button id="adminRefresh" class="ccg-btn ccg-btn--primary" type="button">Fetch live games.json</button>
                         <label class="admin-upload">Upload JSON
@@ -212,10 +206,6 @@
                 <article class="admin-card">
                     <h2>2) Add a new game</h2>
                     <form id="adminGameForm">
-                        <div class="admin-form-banner" data-admin-edit-banner>
-                            <span data-admin-editing-label>Creating a new game</span>
-                            <button class="ccg-btn ccg-btn--ghost" type="button" data-admin-edit-cancel hidden>Cancel edit</button>
-                        </div>
                         <div class="admin-form-section">
                             <div class="admin-form-heading">
                                 <h3>Basics</h3>
