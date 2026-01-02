@@ -52,11 +52,14 @@ function ccgEscapeHtml(value) {
 /* ------------------------------------------------------------
    Game URL resolver (supports pretty URLs + fallback)
 ------------------------------------------------------------ */
-function ccgResolveGameUrl(gameId) {
-    const slug = String(gameId || "").replace(/_/g, "-");
-    if (slug) return `../game.html?slug=${encodeURIComponent(slug)}`;
+function ccgResolveGameUrl(game) {
+    const slug = String(game?.slug || "").trim();
+    if (slug) return `../${slug}/`;
 
-    return `../game.html?id=${encodeURIComponent(gameId)}`;
+    const id = String(game?.id || "").trim();
+    if (id) return `../game.html?id=${encodeURIComponent(id)}`;
+
+    return "#";
 }
 
 /* ------------------------------------------------------------
@@ -73,7 +76,7 @@ function ccgBuildGameCard(game) {
         game.thumbnail || game.thumb || game.cover
     );
 
-    const gameUrl = ccgResolveGameUrl(game.id);
+    const gameUrl = ccgResolveGameUrl(game);
 
     const title = ccgEscapeHtml(game.title || "Unknown Game");
     const meta = [

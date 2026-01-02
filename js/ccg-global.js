@@ -85,18 +85,28 @@
         return "/";
     }
 
-    function ccgGameSlugFromId(gameId) {
-        if (!gameId) return "";
-        let slug = String(gameId).trim().toLowerCase();
-        slug = slug.replace(/[_\s]+/g, "-");
-        slug = slug.replace(/[:/]+/g, "-");
-        slug = slug.replace(/[^a-z0-9-]/g, "");
-        slug = slug.replace(/-+/g, "-").replace(/^-+|-+$/g, "");
-        return slug;
+    const CCG_GAME_SLUGS = new Map();
+
+    function ccgRegisterGameSlugs(games) {
+        if (!Array.isArray(games)) return;
+
+        games.forEach(game => {
+            const id = String(game?.id ?? "").trim();
+            const slug = String(game?.slug ?? "").trim();
+            if (id && slug) {
+                CCG_GAME_SLUGS.set(id, slug);
+            }
+        });
     }
 
-    function ccgBuildGameUrl(gameId) {
-        const slug = ccgGameSlugFromId(gameId);
+    function ccgGameSlugFromId(gameId) {
+        if (!gameId) return "";
+        const key = String(gameId).trim();
+        return CCG_GAME_SLUGS.get(key) || "";
+    }
+
+    function ccgBuildGameUrl(gameId, fallbackSlug = "") {
+        const slug = ccgGameSlugFromId(gameId) || String(fallbackSlug || "").trim();
         if (!slug) return "";
         return `${getSiteRoot()}games/${slug}/`;
     }
@@ -131,6 +141,7 @@
     }
 
     window.ccgGetSiteRoot = getSiteRoot;
+    window.ccgRegisterGameSlugs = ccgRegisterGameSlugs;
     window.ccgGameSlugFromId = ccgGameSlugFromId;
     window.ccgBuildGameUrl = ccgBuildGameUrl;
 
