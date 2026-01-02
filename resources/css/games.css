@@ -385,6 +385,15 @@
    SINGLE GAME — HERO & PANELS
    ============================================================ */
 
+.ccg-page--single-game {
+    transition: opacity 220ms ease;
+}
+
+body:not(.ccg-single-ready) .ccg-page--single-game {
+    opacity: 0;
+    visibility: hidden;
+}
+
 .ccg-loading-single .ccg-main--single-game,
 .ccg-loading-single #gameNotFound {
     opacity: 0;
@@ -592,11 +601,26 @@
 .related-carousel .related-card {
     flex: 0 0 clamp(150px, 22vw, 200px);
     max-width: clamp(150px, 22vw, 200px);
+    display: grid;
+    gap: 8px;
 }
 
 .related-carousel .related-card img {
+    width: 100%;
+    height: auto;
     aspect-ratio: 3 / 4;
     object-fit: cover;
+}
+
+.related-carousel .related-card span {
+    min-height: 2.6em;
+    line-height: 1.3;
+    font-weight: 600;
+    color: var(--text-light);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .related-carousel__track::-webkit-scrollbar {
