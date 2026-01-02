@@ -25,8 +25,17 @@
     const refreshBtn = document.getElementById("adminRefresh");
     const downloadBtn = document.getElementById("adminDownload");
     const clearBtn = document.getElementById("adminClear");
+    const commitBtn = document.getElementById("adminCommit");
+    const commitPanel = document.getElementById("adminCommitPanel");
+    const commitCloseBtn = document.querySelector("[data-admin-commit-close]");
     const form = document.getElementById("adminGameForm");
     const previewBody = document.getElementById("adminGamePreview");
+    const submitBtn = document.querySelector("[data-admin-submit]");
+    const editBannerLabel = document.querySelector("[data-admin-editing-label]");
+    const editCancelBtn = document.querySelector("[data-admin-edit-cancel]");
+    const editSearch = document.getElementById("adminEditSearch");
+    const editList = document.querySelector("[data-admin-edit-list]");
+    const editCount = document.querySelector("[data-admin-edit-count]");
 
     const gameCountEl = document.querySelector("[data-admin-game-count]");
     const stagedCountEl = document.querySelector("[data-admin-staged-count]");
@@ -44,6 +53,7 @@
     function updateBadges() {
         if (gameCountEl) gameCountEl.textContent = liveGames.length;
         if (stagedCountEl) stagedCountEl.textContent = stagedGames.length;
+        if (editCount) editCount.textContent = liveGames.length + stagedGames.length;
     }
 
     function normaliseGame(raw) {
@@ -69,7 +79,97 @@
         };
     }
 
+    function setEditingContext(context) {
+        editingContext = context;
+        const isEditing = Boolean(context);
+        if (editBannerLabel) {
+            editBannerLabel.textContent = isEditing
+                ? `Editing: ${context.title} (${context.id})`
+                : "Creating a new game";
+        }
+        if (submitBtn) {
+            submitBtn.textContent = isEditing ? "Update Game" : "Stage Game";
+        }
+        if (editCancelBtn) {
+            editCancelBtn.hidden = !isEditing;
+        }
+    }
+
+    function fillForm(game) {
+        if (!form) return;
+        form.querySelector("#gameId").value = game.id || "";
+        form.querySelector("#gameTitle").value = game.title || "";
+        form.querySelector("#gameYear").value = game.year || "";
+        form.querySelector("#gameSystem").value = game.system || "C64";
+        form.querySelector("#gameGenres").value = game.genres.join(", ");
+        form.querySelector("#gameDeveloper").value = game.developer || "";
+        form.querySelector("#gameDescription").value = game.description || "";
+        form.querySelector("#gameVideo").value = game.videoid || "";
+        form.querySelector("#gameThumb").value = game.thumbnail || "";
+        form.querySelector("#gameManual").value = game.manual || "";
+        form.querySelector("#gameDisk").value = game.disk.join(", ");
+        form.querySelector("#gameLemon").value = game.lemon.join(", ");
+    }
+
+    function resetForm() {
+        if (form) form.reset();
+        setEditingContext(null);
+    }
+
+    function getEditableGames() {
+        const staged = stagedGames.map(game => ({ ...game, source: "staged" }));
+        const live = liveGames.map(game => ({ ...game, source: "live" }));
+        return [...staged, ...live];
+    }
+
+    function renderEditList(filter = "") {
+        if (!editList) return;
+        const term = filter.trim().toLowerCase();
+        const items = getEditableGames().filter(game => {
+            if (!term) return true;
+            return (
+                game.title.toLowerCase().includes(term) ||
+                game.id.toLowerCase().includes(term)
+            );
+        });
+
+        editList.innerHTML = "";
+
+        if (!items.length) {
+            const empty = document.createElement("li");
+            empty.className = "admin-edit-empty";
+            empty.textContent = term
+                ? "No games match that search."
+                : "Load games.json to begin editing.";
+            editList.appendChild(empty);
+            return;
+        }
+
+        items.slice(0, 60).forEach(game => {
+            const li = document.createElement("li");
+            li.className = "admin-edit-item";
+            li.innerHTML = `
+                <div>
+                    <div class="admin-edit-title">${game.title}</div>
+                    <div class="admin-edit-meta">${game.id} • ${game.system} • ${game.year || "Year unknown"}</div>
+                    <span class="admin-edit-tag">${game.source}</span>
+                </div>
+                <button class="ccg-btn ccg-btn--ghost" type="button">Edit</button>
+            `;
+            li.querySelector("button").addEventListener("click", () => {
+                fillForm(game);
+                setEditingContext({ id: game.id, source: game.source, title: game.title });
+                setStatus(`Editing "${game.title}".`);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            });
+            editList.appendChild(li);
+        });
+    }
+
     function isDuplicateId(id) {
+        if (editingContext && editingContext.id === id) {
+            return false;
+        }
         return [...liveGames, ...stagedGames].some(g => g.id === id);
     }
 
@@ -90,6 +190,8 @@
             liveGames = data;
             updateBadges();
             setStatus(`Loaded ${liveGames.length} live games.`);
+            renderEditList(editSearch ? editSearch.value : "");
+            resetForm();
         } catch (err) {
             console.error(err);
             setStatus("Failed to load live games.json", true);
@@ -115,6 +217,8 @@
                     stagedGames = [];
                     updateBadges();
                     renderPreview();
+                    renderEditList(editSearch ? editSearch.value : "");
+                    resetForm();
                     setStatus("Uploaded JSON loaded successfully.");
                 } catch (err) {
                     setStatus("Invalid JSON file.", true);
@@ -150,7 +254,21 @@
                 return;
             }
 
-            stagedGames.unshift(game);
+            if (editingContext) {
+                const target = editingContext.source === "staged" ? stagedGames : liveGames;
+                const idx = target.findIndex(entry => entry.id === editingContext.id);
+                if (idx >= 0) {
+                    target[idx] = game;
+                    setStatus(`Game "${game.title}" updated.`);
+                } else {
+                    stagedGames.unshift(game);
+                    setStatus(`Game "${game.title}" staged.`);
+                }
+            } else {
+                stagedGames.unshift(game);
+                setStatus(`Game "${game.title}" staged.`);
+            }
+
             updateBadges();
             renderPreview();
             renderLatest();
@@ -248,6 +366,40 @@
             renderLatest();
             updateBadges();
             setStatus("Staged entries cleared.");
+            resetForm();
+        });
+    }
+
+    if (commitBtn && commitPanel) {
+        commitBtn.addEventListener("click", () => {
+            const isOpen = !commitPanel.hasAttribute("hidden");
+            if (isOpen) {
+                commitPanel.setAttribute("hidden", "hidden");
+                commitBtn.setAttribute("aria-expanded", "false");
+            } else {
+                commitPanel.removeAttribute("hidden");
+                commitBtn.setAttribute("aria-expanded", "true");
+            }
+        });
+    }
+
+    if (commitCloseBtn && commitPanel && commitBtn) {
+        commitCloseBtn.addEventListener("click", () => {
+            commitPanel.setAttribute("hidden", "hidden");
+            commitBtn.setAttribute("aria-expanded", "false");
+        });
+    }
+
+    if (editCancelBtn) {
+        editCancelBtn.addEventListener("click", () => {
+            resetForm();
+            setStatus("Edit cancelled.");
+        });
+    }
+
+    if (editSearch) {
+        editSearch.addEventListener("input", () => {
+            renderEditList(editSearch.value);
         });
     }
 
