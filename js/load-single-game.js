@@ -72,15 +72,34 @@ document.addEventListener("DOMContentLoaded", async () => {
    RESOLVERS (LOCKED)
 ============================================================ */
 
+function resolveSingleGameThumbBasePath() {
+    let pathname = window.location.pathname || "";
+    const repoMarker = "/ccgamer_website_new/";
+    if (pathname.includes(repoMarker)) {
+        pathname = pathname.slice(pathname.indexOf(repoMarker) + repoMarker.length);
+    }
+
+    const isDirectoryPath = pathname.endsWith("/") || pathname.endsWith("index.html");
+    pathname = pathname.replace(/^\/+|\/+$/g, "");
+    const segments = pathname ? pathname.split("/") : [];
+    const depth = Math.max(segments.length - (isDirectoryPath ? 0 : 1), 0);
+    const prefix = "../".repeat(depth || 1);
+
+    return `${prefix}resources/images/thumbnails/all/`;
+}
+
 function resolveGameThumb(raw) {
-    if (!raw) return "../resources/images/thumbnails/all/1942.jpg";
+    const basePath = resolveSingleGameThumbBasePath();
+    let filename = "1942.jpg";
 
-    let t = String(raw).trim().replace(/^\/+/, "");
-    t = t.replace("resources/images/thumbnails/all/", "")
-         .replace("resources/images/thumbnails/", "")
-         .replace("resources/images/", "");
+    if (raw) {
+        filename = String(raw).trim().replace(/^\/+/, "");
+        filename = filename.replace("resources/images/thumbnails/all/", "")
+            .replace("resources/images/thumbnails/", "")
+            .replace("resources/images/", "");
+    }
 
-    return `../resources/images/thumbnails/all/${t}`;
+    return `${basePath}${filename}`;
 }
 
 function resolveVideoId(game) {
