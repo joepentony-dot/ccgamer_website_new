@@ -19,6 +19,13 @@
 
     <!-- PAGE CSS (Optional future styling) -->
     <link rel="stylesheet" href="../resources/css/admin.css">
+    <style>
+        .admin-error {
+            margin: 0;
+            font-size: 0.78rem;
+            color: #ff6b6b;
+        }
+    </style>
 </head>
 
 <body class="ccg-body" data-ccg-mode="c64">
@@ -170,7 +177,7 @@
                     <div class="admin-callout admin-callout--tips">
                         <h2 class="admin-callout-title">Handy tips</h2>
                         <ul class="admin-tips">
-                            <li><strong>Slug ID:</strong> lowercase, hyphenated (e.g. <code>last-ninja-2</code>).</li>
+                            <li><strong>Game ID:</strong> lowercase, underscore format (e.g. <code>last_ninja_2</code>).</li>
                             <li><strong>Lemon links:</strong> paste one or more Lemon64/LemonAmiga URLs.</li>
                             <li><strong>Description:</strong> 1–2 sentences about the game and release.</li>
                         </ul>
@@ -212,9 +219,18 @@
                                 <span class="admin-form-note">Required fields marked with *</span>
                             </div>
                             <div class="admin-field">
-                                <label for="gameId">ID (slug) *</label>
-                                <input id="gameId" name="id" class="admin-input" placeholder="last-ninja-2" required>
-                                <p class="admin-help">Use lowercase and hyphens. This must be unique.</p>
+                                <label for="gameId">ID (underscored) *</label>
+                                <input id="gameId" name="id" class="admin-input" placeholder="last_ninja_2" required>
+                                <p class="admin-help">Use lowercase letters, numbers, and underscores only. No spaces or hyphens.</p>
+                                <p class="admin-error" data-admin-error="id" hidden></p>
+                            </div>
+                            <div class="admin-field">
+                                <label for="gameSlugPreview">Derived slug (read-only)</label>
+                                <input id="gameSlugPreview" class="admin-input" readonly placeholder="last-ninja-2">
+                            </div>
+                            <div class="admin-field">
+                                <label for="gameUrlPreview">Public URL (read-only)</label>
+                                <input id="gameUrlPreview" class="admin-input" readonly placeholder="https://www.cheekycommodoregamer.co.uk/games/last-ninja-2/">
                             </div>
                             <div class="admin-field">
                                 <label for="gameTitle">Title *</label>
@@ -249,6 +265,7 @@
                                 <label for="gameDescription">Description *</label>
                                 <textarea id="gameDescription" name="description" class="admin-textarea" placeholder="A short, friendly summary of the game and its release." required></textarea>
                                 <p class="admin-help">Aim for 1–2 sentences. Mention the release year or publisher if you can.</p>
+                                <p class="admin-error" data-admin-error="description" hidden></p>
                             </div>
                         </div>
 
@@ -260,10 +277,13 @@
                                 <label for="gameVideo">YouTube video ID</label>
                                 <input id="gameVideo" name="videoid" class="admin-input" placeholder="abc123xyz">
                                 <p class="admin-help">Use just the ID after <code>v=</code>, not the full URL.</p>
+                                <p class="admin-error" data-admin-error="videoid" hidden></p>
                             </div>
                             <div class="admin-field">
                                 <label for="gameThumb">Thumbnail file name (resources/images/thumbnails/all)</label>
                                 <input id="gameThumb" name="thumbnail" class="admin-input" placeholder="last-ninja-2.jpg">
+                                <p class="admin-help">Filename only (.jpg or .png). The path is added automatically.</p>
+                                <p class="admin-error" data-admin-error="thumbnail" hidden></p>
                             </div>
                         </div>
 

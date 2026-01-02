@@ -12,8 +12,13 @@
 (function () {
     "use strict";
 
+    const ID_REGEX = /^[a-z0-9_]+$/;
+    const THUMBNAIL_PREFIX = "resources/images/thumbnails/all/";
+    const MIN_DESCRIPTION_LENGTH = 40;
+
     let liveGames = [];
     let stagedGames = [];
+    let editingContext = null;
 
     /* --------------------------------------------------------
        DOM REFERENCES
@@ -34,10 +39,33 @@
     const editSearch = document.getElementById("adminEditSearch");
     const editList = document.querySelector("[data-admin-edit-list]");
     const editCount = document.querySelector("[data-admin-edit-count]");
+    const sourceInput = document.getElementById("adminSourceInput");
+    const sourceOpen = document.getElementById("adminSourceOpen");
 
     const gameCountEl = document.querySelector("[data-admin-game-count]");
     const stagedCountEl = document.querySelector("[data-admin-staged-count]");
     const latestEls = document.querySelectorAll("[data-admin-latest]");
+
+    const idInput = document.getElementById("gameId");
+    const descriptionInput = document.getElementById("gameDescription");
+    const thumbInput = document.getElementById("gameThumb");
+    const videoInput = document.getElementById("gameVideo");
+    const slugPreviewInput = document.getElementById("gameSlugPreview");
+    const urlPreviewInput = document.getElementById("gameUrlPreview");
+
+    const fieldErrors = {
+        id: document.querySelector('[data-admin-error="id"]'),
+        description: document.querySelector('[data-admin-error="description"]'),
+        thumbnail: document.querySelector('[data-admin-error="thumbnail"]'),
+        videoid: document.querySelector('[data-admin-error="videoid"]')
+    };
+
+    const fieldInputs = {
+        id: idInput,
+        description: descriptionInput,
+        thumbnail: thumbInput,
+        videoid: videoInput
+    };
 
     /* --------------------------------------------------------
        HELPERS
@@ -48,13 +76,78 @@
         statusEl.dataset.state = isError ? "error" : "success";
     }
 
+    function setFieldError(field, message) {
+        const errorEl = fieldErrors[field];
+        const inputEl = fieldInputs[field];
+        if (errorEl) {
+            errorEl.textContent = message || "";
+            errorEl.hidden = !message;
+        }
+        if (inputEl) {
+            if (message) {
+                inputEl.setAttribute("aria-invalid", "true");
+            } else {
+                inputEl.removeAttribute("aria-invalid");
+            }
+        }
+    }
+
+    function clearFieldErrors() {
+        Object.keys(fieldErrors).forEach((field) => setFieldError(field, ""));
+    }
+
     function updateBadges() {
         if (gameCountEl) gameCountEl.textContent = liveGames.length;
         if (stagedCountEl) stagedCountEl.textContent = stagedGames.length;
         if (editCount) editCount.textContent = liveGames.length + stagedGames.length;
     }
 
+    function getDefaultSourceUrl() {
+        return "../games/games.json";
+    }
+
+    function getSourceUrl() {
+        if (sourceInput && sourceInput.value.trim()) {
+            return sourceInput.value.trim();
+        }
+        return getDefaultSourceUrl();
+    }
+
+    function syncSourceLink() {
+        if (!sourceOpen) return;
+        sourceOpen.href = getSourceUrl();
+    }
+
+    function deriveSlug(id) {
+        return id.replace(/_/g, "-");
+    }
+
+    function updateSlugPreview() {
+        if (!idInput) return;
+        const trimmedId = idInput.value.trim();
+        const slug = trimmedId ? deriveSlug(trimmedId) : "";
+        if (slugPreviewInput) {
+            slugPreviewInput.value = slug;
+        }
+        if (urlPreviewInput) {
+            urlPreviewInput.value = trimmedId
+                ? `https://www.cheekycommodoregamer.co.uk/games/${slug}/`
+                : "";
+        }
+    }
+
+    function extractThumbnailFilename(path) {
+        if (!path) return "";
+        const parts = String(path).split(/[/\\]/);
+        return parts[parts.length - 1];
+    }
+
     function normaliseGame(raw) {
+        const thumbnailInput = raw.thumbnail ? String(raw.thumbnail).trim() : "";
+        const thumbnail = thumbnailInput
+            ? `${THUMBNAIL_PREFIX}${thumbnailInput}`
+            : "";
+
         return {
             id: String(raw.id).trim(),
             title: String(raw.title || "").trim(),
@@ -65,8 +158,8 @@
                 : [],
             developer: raw.developer || "",
             description: raw.description ? String(raw.description).trim() : "",
-            videoid: raw.videoid || "",
-            thumbnail: raw.thumbnail || "",
+            videoid: raw.videoid ? String(raw.videoid).trim() : "",
+            thumbnail,
             manual: raw.manual || "",
             disk: raw.disk
                 ? raw.disk.split(",").map(d => d.trim()).filter(Boolean)
@@ -103,14 +196,17 @@
         form.querySelector("#gameDeveloper").value = game.developer || "";
         form.querySelector("#gameDescription").value = game.description || "";
         form.querySelector("#gameVideo").value = game.videoid || "";
-        form.querySelector("#gameThumb").value = game.thumbnail || "";
+        form.querySelector("#gameThumb").value = extractThumbnailFilename(game.thumbnail || "");
         form.querySelector("#gameManual").value = game.manual || "";
         form.querySelector("#gameDisk").value = game.disk.join(", ");
         form.querySelector("#gameLemon").value = game.lemon.join(", ");
+        updateSlugPreview();
     }
 
     function resetForm() {
         if (form) form.reset();
+        clearFieldErrors();
+        updateSlugPreview();
         setEditingContext(null);
     }
 
@@ -169,6 +265,57 @@
             return false;
         }
         return [...liveGames, ...stagedGames].some(g => g.id === id);
+    }
+
+    function validateGame(raw, game) {
+        clearFieldErrors();
+        let isValid = true;
+
+        if (!game.id) {
+            setFieldError("id", "Game ID is required.");
+            isValid = false;
+        } else if (!ID_REGEX.test(game.id)) {
+            setFieldError("id", "Use lowercase letters, numbers, and underscores only.");
+            isValid = false;
+        } else if (isDuplicateId(game.id)) {
+            setFieldError("id", `ID "${game.id}" is already in use.`);
+            isValid = false;
+        }
+
+        if (!game.description) {
+            setFieldError("description", "Description is required.");
+            isValid = false;
+        } else if (game.description.length < MIN_DESCRIPTION_LENGTH) {
+            setFieldError(
+                "description",
+                `Description must be at least ${MIN_DESCRIPTION_LENGTH} characters.`
+            );
+            isValid = false;
+        }
+
+        const thumbnailInput = raw.thumbnail ? String(raw.thumbnail).trim() : "";
+        if (thumbnailInput) {
+            if (/[/\\]/.test(thumbnailInput)) {
+                setFieldError("thumbnail", "Use the filename only, without folders.");
+                isValid = false;
+            } else if (!/\.(jpg|png)$/i.test(thumbnailInput)) {
+                setFieldError("thumbnail", "Thumbnail must be a .jpg or .png file.");
+                isValid = false;
+            }
+        }
+
+        const videoValue = raw.videoid ? String(raw.videoid).trim() : "";
+        if (videoValue) {
+            if (/(https?:\/\/|www\.|youtube\.com|youtu\.be|[?&]v=)/i.test(videoValue)) {
+                setFieldError("videoid", "Paste only the YouTube ID, not the full URL.");
+                isValid = false;
+            } else if (!/^[a-zA-Z0-9_-]{6,}$/.test(videoValue)) {
+                setFieldError("videoid", "YouTube IDs use letters, numbers, dashes, or underscores only.");
+                isValid = false;
+            }
+        }
+
+        return isValid;
     }
 
     /* --------------------------------------------------------
@@ -241,16 +388,14 @@
 
             if (!game.id || !game.title) {
                 setStatus("ID and Title are required.", true);
+                if (!game.id) {
+                    setFieldError("id", "Game ID is required.");
+                }
                 return;
             }
 
-            if (!game.description) {
-                setStatus("Description is required.", true);
-                return;
-            }
-
-            if (isDuplicateId(game.id)) {
-                setStatus(`Duplicate ID "${game.id}" detected.`, true);
+            if (!validateGame(raw, game)) {
+                setStatus("Fix the highlighted fields before staging.", true);
                 return;
             }
 
@@ -273,6 +418,8 @@
             renderPreview();
             renderLatest();
             form.reset();
+            updateSlugPreview();
+            clearFieldErrors();
 
             setStatus(`Game "${game.title}" staged.`);
         });
@@ -403,6 +550,39 @@
         });
     }
 
+    if (idInput) {
+        idInput.addEventListener("input", () => {
+            updateSlugPreview();
+            if (fieldErrors.id && !fieldErrors.id.hidden) {
+                setFieldError("id", "");
+            }
+        });
+    }
+
+    if (descriptionInput) {
+        descriptionInput.addEventListener("input", () => {
+            if (fieldErrors.description && !fieldErrors.description.hidden) {
+                setFieldError("description", "");
+            }
+        });
+    }
+
+    if (thumbInput) {
+        thumbInput.addEventListener("input", () => {
+            if (fieldErrors.thumbnail && !fieldErrors.thumbnail.hidden) {
+                setFieldError("thumbnail", "");
+            }
+        });
+    }
+
+    if (videoInput) {
+        videoInput.addEventListener("input", () => {
+            if (fieldErrors.videoid && !fieldErrors.videoid.hidden) {
+                setFieldError("videoid", "");
+            }
+        });
+    }
+
     /* --------------------------------------------------------
        INIT
     -------------------------------------------------------- */
@@ -418,4 +598,5 @@
     syncSourceLink();
     fetchLiveGames();
     renderLatest();
+    updateSlugPreview();
 })();
