@@ -132,7 +132,7 @@ function renderFeaturedHighlights() {
     sampleGames(3).forEach(game => {
         const card = document.createElement("a");
         card.className = "ccg-card home-feature-card";
-        card.href = `games/game.html?id=${encodeURIComponent(game.id)}`;
+        card.href = resolveGameUrl(game.id);
 
         card.innerHTML = `
             <img src="${resolveThumb(game.thumbnail)}" alt="${game.title}">
@@ -158,7 +158,7 @@ function renderFeaturedSpotlight() {
     const thumb = resolveThumb(game.thumbnail);
     const meta = buildMeta(game) || "Featured pick";
     const videoUrl = game.videoid ? `https://www.youtube.com/watch?v=${game.videoid}` : "";
-    const gameUrl = `games/game.html?id=${encodeURIComponent(game.id)}`;
+    const gameUrl = resolveGameUrl(game.id);
 
     const artEl = card.querySelector('[data-ccg-spotlight-art]');
     const metaEl = card.querySelector('[data-ccg-spotlight-meta]');
@@ -268,6 +268,15 @@ function resolveThumb(t) {
         : `resources/images/thumbnails/all/${t}`;
 }
 
+function resolveGameUrl(gameId) {
+    if (typeof window !== "undefined" && typeof window.ccgBuildGameUrl === "function") {
+        const pretty = window.ccgBuildGameUrl(gameId);
+        if (pretty) return pretty;
+    }
+
+    return `games/game.html?id=${encodeURIComponent(gameId)}`;
+}
+
 function buildMeta(game) {
     return [game.system, game.year, game.developer].filter(Boolean).join(" · ");
 }
@@ -317,7 +326,7 @@ function buildVideoCard(game, systemLabel) {
         : resolveThumb(game?.thumbnail);
     const meta = game ? (buildMeta(game) || systemLabel) : `${systemLabel} feature`;
     const title = game?.title || `${systemLabel} pick`;
-    const gameUrl = game?.id ? `games/game.html?id=${encodeURIComponent(game.id)}` : "#";
+    const gameUrl = game?.id ? resolveGameUrl(game.id) : "#";
     const ytUrl = hasVideo ? `https://www.youtube.com/watch?v=${videoId}` : "#";
 
     card.innerHTML = `
@@ -375,7 +384,7 @@ function wireRandomGameButton() {
     const launchRandom = () => {
         if (!CCG_HOME_ALL_GAMES.length) return;
         const g = CCG_HOME_ALL_GAMES[Math.floor(Math.random() * CCG_HOME_ALL_GAMES.length)];
-        if (g?.id) window.location.href = `games/game.html?id=${g.id}`;
+        if (g?.id) window.location.href = resolveGameUrl(g.id);
     };
 
     buttons.forEach(btn => {

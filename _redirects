@@ -1,0 +1,6 @@
+/games/genres/* /games/genres/:splat 200
+/games/collections/* /games/collections/:splat 200
+/games/seo/* /games/seo/:splat 200
+/games/index.html /games/index.html 200
+/games/game.html /games/game.html 200
+/games/* /games/game.html 200
