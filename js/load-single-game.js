@@ -15,6 +15,7 @@
 let CCG_SINGLE_ALL_GAMES = [];
 let CCG_SCREENSHOTS = [];
 let CCG_SCREENSHOT_INDEX = 0;
+let CCG_GAME_RESOLVED = false;
 
 // Legacy slug fallback (SEO preservation)
 const LEGACY_SLUG_MAP = {
@@ -154,6 +155,34 @@ const LEGACY_COMPARE_MAP = buildLegacyCompareMap(LEGACY_SLUG_MAP);
 ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
+    const main = document.querySelector(".ccg-main--single-game");
+    if (main) {
+        main.style.visibility = "hidden";
+    }
+
+    const existingLoading = document.getElementById("ccgGameLoading");
+    const loading = existingLoading || document.createElement("div");
+    if (!existingLoading) {
+        loading.id = "ccgGameLoading";
+        loading.textContent = "Loading game...";
+        loading.style.position = "fixed";
+        loading.style.inset = "0";
+        loading.style.display = "flex";
+        loading.style.alignItems = "center";
+        loading.style.justifyContent = "center";
+        loading.style.pointerEvents = "none";
+        loading.style.fontSize = "1rem";
+        loading.style.color = "inherit";
+        loading.style.background = "transparent";
+        document.body.appendChild(loading);
+    } else {
+        loading.style.display = "flex";
+    }
+
+    const notFoundSection = document.getElementById("gameNotFound");
+    if (notFoundSection) {
+        notFoundSection.style.display = "none";
+    }
 
     const params = new URLSearchParams(window.location.search);
     let gameId = decodeURIComponent(
@@ -201,14 +230,35 @@ document.addEventListener("DOMContentLoaded", async () => {
         runSlugAudit(CCG_SINGLE_ALL_GAMES, slugIndex);
 
         if (!game) {
+            CCG_GAME_RESOLVED = true;
+            if (main) {
+                main.style.visibility = "visible";
+            }
+            if (loading) {
+                loading.style.display = "none";
+            }
             renderGameNotFound(gameId, candidateSlug);
             return;
         }
 
         syncPrettyUrl(game);
+        CCG_GAME_RESOLVED = true;
+        if (main) {
+            main.style.visibility = "visible";
+        }
+        if (loading) {
+            loading.style.display = "none";
+        }
         renderGame(game);
 
     } catch (err) {
+        CCG_GAME_RESOLVED = true;
+        if (main) {
+            main.style.visibility = "visible";
+        }
+        if (loading) {
+            loading.style.display = "none";
+        }
         renderGameNotFound(gameId, candidateSlug);
     }
 });
@@ -657,6 +707,7 @@ function showPrevScreenshot() {
 ============================================================ */
 
 function renderGameNotFound(gameId, slug) {
+    if (!CCG_GAME_RESOLVED) return;
     const hero = document.querySelector(".game-hero");
     if (hero) hero.style.display = "none";
 
