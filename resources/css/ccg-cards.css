@@ -462,3 +462,20 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
 .ccg-page--single-game .related-carousel .ccg-game-card::after {
     opacity: 0.72;
 }
+
+/* ------------------------------------------------------------
+   Phase 5 — RELATED GAMES THUMBNAIL NORMALISATION (SCOPED)
+------------------------------------------------------------ */
+
+.ccg-page--single-game .related-carousel .related-card {
+    overflow: hidden;
+}
+
+.ccg-page--single-game .related-carousel .related-card img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: 180px;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
