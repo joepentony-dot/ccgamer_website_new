@@ -485,10 +485,19 @@ function renderGame(game) {
 
                 manualFrame.src = manual;
                 manualModal.classList.add("open");
+                manualModal.setAttribute("aria-hidden", "false");
             });
 
             manualClose.addEventListener("click", () => {
                 manualModal.classList.remove("open");
+                manualModal.setAttribute("aria-hidden", "true");
+                manualFrame.src = "";
+            });
+
+            manualModal.addEventListener("click", e => {
+                if (e.target !== manualModal) return;
+                manualModal.classList.remove("open");
+                manualModal.setAttribute("aria-hidden", "true");
                 manualFrame.src = "";
             });
         }
