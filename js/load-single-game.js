@@ -23,12 +23,16 @@ let CCG_SCREENSHOT_INDEX = 0;
 document.addEventListener("DOMContentLoaded", async () => {
 
     const params = new URLSearchParams(window.location.search);
-    const gameId = decodeURIComponent(
+    let gameId = decodeURIComponent(
         (params.get("id") || "").toString().trim()
     );
+    let gameSlug = extractSlugFromParams(params);
+    if (!gameSlug) {
+        gameSlug = normaliseGameSlugInput(getSlugFromPath());
+    }
 
-    if (!gameId) {
-        console.error("[CCG] No game ID in URL");
+    if (!gameId && !gameSlug) {
+        console.error("[CCG] No game ID or slug in URL");
         return;
     }
 
@@ -39,15 +43,44 @@ document.addEventListener("DOMContentLoaded", async () => {
         const games = await response.json();
         CCG_SINGLE_ALL_GAMES = Array.isArray(games) ? games : [];
 
-        const game = CCG_SINGLE_ALL_GAMES.find(
-            g => String(g.id) === gameId
-        );
+        let game = null;
+
+        if (gameSlug) {
+            game = CCG_SINGLE_ALL_GAMES.find(g => {
+                const id = String(g.id || "");
+                const idSlug = resolveGameSlug(id);
+                const titleSlug = resolveGameSlug(g.title || "");
+                return (
+                    idSlug === gameSlug ||
+                    titleSlug === gameSlug ||
+                    id.toLowerCase() === gameSlug
+                );
+            });
+            if (game) gameId = String(game.id);
+        }
+
+        if (!game && gameId) {
+            game = CCG_SINGLE_ALL_GAMES.find(
+                g => String(g.id).toLowerCase() === gameId.toLowerCase()
+            );
+        }
+
+        if (!game && gameId) {
+            const idSlug = normaliseGameSlugInput(gameId);
+            if (idSlug) {
+                game = CCG_SINGLE_ALL_GAMES.find(
+                    g => resolveGameSlug(g.id) === idSlug
+                );
+                if (game) gameId = String(game.id);
+            }
+        }
 
         if (!game) {
-            console.error(`[CCG] Game not found for id="${gameId}"`);
+            console.error(`[CCG] Game not found for id="${gameId}" slug="${gameSlug}"`);
             return;
         }
 
+        syncPrettyUrl(game.id);
         renderGame(game);
 
     } catch (err) {
@@ -112,13 +145,74 @@ function resolveLemonUrl(game) {
     return resolvePrimaryLink(game.lemon || game.lemonlink || game.lemonlinks);
 }
 
-function seoSlugFromId(gameId) {
+function resolveGameSlug(gameId) {
+    if (typeof window !== "undefined" && typeof window.ccgGameSlugFromId === "function") {
+        return window.ccgGameSlugFromId(gameId);
+    }
+
     if (!gameId) return "";
-    let slug = String(gameId).trim().replace(/\//g, "-");
-    slug = slug.replace(/:/g, "_").replace(/\*/g, "");
-    slug = slug.replace(/[?"<>|]/g, "");
-    slug = slug.replace(/__+/g, "_").replace(/^_+|_+$/g, "");
+    let slug = String(gameId).trim().toLowerCase();
+    slug = slug.replace(/[_\s]+/g, "-");
+    slug = slug.replace(/[:/]+/g, "-");
+    slug = slug.replace(/[^a-z0-9-]/g, "");
+    slug = slug.replace(/-+/g, "-").replace(/^-+|-+$/g, "");
     return slug;
+}
+
+function normaliseGameSlugInput(value) {
+    if (!value) return "";
+    let cleaned = String(value).trim();
+    cleaned = cleaned.replace(/^[^a-z0-9]+/i, "");
+    cleaned = cleaned.replace(/[#?].*$/, "");
+    cleaned = cleaned.replace(/\/+$/, "");
+    if (cleaned.includes("/")) {
+        cleaned = cleaned.split("/").filter(Boolean).pop() || "";
+    }
+    cleaned = cleaned.replace(/\.html$/i, "");
+    return resolveGameSlug(cleaned);
+}
+
+function extractSlugFromParams(params) {
+    const raw = decodeURIComponent(
+        (params.get("slug") || params.get("game") || "").toString().trim()
+    );
+    return normaliseGameSlugInput(raw);
+}
+
+function resolvePrettyGameUrl(gameId) {
+    if (typeof window !== "undefined" && typeof window.ccgBuildGameUrl === "function") {
+        return window.ccgBuildGameUrl(gameId);
+    }
+
+    const slug = resolveGameSlug(gameId);
+    if (!slug) return "";
+    return `${slug}/`;
+}
+
+function getSlugFromPath() {
+    let pathname = window.location.pathname || "";
+    const repoMarker = "/ccgamer_website_new/";
+    if (pathname.includes(repoMarker)) {
+        pathname = pathname.slice(pathname.indexOf(repoMarker) + repoMarker.length);
+    }
+    pathname = pathname.replace(/^\/+|\/+$/g, "");
+    if (!pathname.startsWith("games/")) return "";
+
+    let slug = pathname.slice("games/".length);
+    slug = slug.replace(/index\.html$/i, "").replace(/\.html$/i, "");
+    slug = slug.replace(/\/+$/g, "");
+    if (slug === "game") return "";
+    return slug;
+}
+
+function syncPrettyUrl(gameId) {
+    const pretty = resolvePrettyGameUrl(gameId);
+    if (!pretty) return;
+
+    const url = new URL(pretty, window.location.origin);
+    if (window.location.pathname !== url.pathname) {
+        window.history.replaceState({}, "", url.pathname);
+    }
 }
 
 /* ============================================================
@@ -221,9 +315,9 @@ function updateMeta(game) {
     if (metaDesc) metaDesc.setAttribute("content", metaDescriptionText);
 
     const canonical = document.getElementById("game-canonical");
-    const seoSlug = seoSlugFromId(game.id);
-    const canonicalUrl = seoSlug
-        ? new URL(`seo/${seoSlug}.html`, window.location.href).toString()
+    const prettyUrl = resolvePrettyGameUrl(game.id);
+    const canonicalUrl = prettyUrl
+        ? new URL(prettyUrl, window.location.href).toString()
         : new URL(
             `game.html?id=${encodeURIComponent(game.id || "")}`,
             window.location.href
@@ -429,7 +523,7 @@ function renderRelatedGames(game, allGames) {
     track.innerHTML = related.map(g => {
         const thumb = resolveGameThumb(g.thumbnail || g.thumb || g.cover);
         return `
-            <a href="game.html?id=${encodeURIComponent(g.id)}" class="ccg-game-card">
+            <a href="${resolvePrettyGameUrl(g.id) || `game.html?id=${encodeURIComponent(g.id)}`}" class="ccg-game-card">
                 <div class="ccg-game-card__thumb ccg-game-card__thumb--related">
                     <img src="${thumb}" alt="${g.title}">
                 </div>
