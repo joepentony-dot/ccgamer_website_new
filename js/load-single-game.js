@@ -741,6 +741,49 @@ function renderRelatedGames(game) {
     });
 
     section.hidden = false;
+    initRelatedCarousel();
+}
+
+function initRelatedCarousel() {
+    const track = document.getElementById("relatedGamesTrack");
+    const prevBtn = document.querySelector(".related-carousel__nav--prev");
+    const nextBtn = document.querySelector(".related-carousel__nav--next");
+
+    if (!track || !prevBtn || !nextBtn) return;
+    if (track.dataset.carouselReady === "true") return;
+    track.dataset.carouselReady = "true";
+
+    const getScrollStep = () => {
+        const card = track.querySelector(".related-card");
+        if (!card) return track.clientWidth || 0;
+        const gapValue = parseFloat(window.getComputedStyle(track).gap || "0");
+        const cardWidth = card.getBoundingClientRect().width || 0;
+        return cardWidth + (Number.isNaN(gapValue) ? 0 : gapValue);
+    };
+
+    const updateButtons = () => {
+        const maxScroll = track.scrollWidth - track.clientWidth;
+        const atStart = track.scrollLeft <= 1;
+        const atEnd = track.scrollLeft >= maxScroll - 1;
+
+        prevBtn.disabled = atStart;
+        nextBtn.disabled = atEnd;
+        prevBtn.setAttribute("aria-disabled", String(atStart));
+        nextBtn.setAttribute("aria-disabled", String(atEnd));
+    };
+
+    const handleScroll = (direction) => {
+        const step = getScrollStep();
+        if (!step) return;
+        track.scrollBy({ left: direction * step, behavior: "smooth" });
+    };
+
+    prevBtn.addEventListener("click", () => handleScroll(-1));
+    nextBtn.addEventListener("click", () => handleScroll(1));
+    track.addEventListener("scroll", updateButtons, { passive: true });
+    window.addEventListener("resize", updateButtons);
+
+    updateButtons();
 }
 
 /* ============================================================
