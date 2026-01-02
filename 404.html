@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page not found</title>
+</head>
+<body>
+    <main>
+        <h1>Page not found</h1>
+        <p>We could not find that page. If you are looking for a game, you will be redirected shortly.</p>
+        <p><a href="home.html">Go to home</a></p>
+    </main>
+    <script>
+        (function redirectPrettyGame() {
+            let pathname = window.location.pathname || "";
+            const repoMarker = "/ccgamer_website_new/";
+            let basePath = "/";
+
+            if (pathname.includes(repoMarker)) {
+                basePath = repoMarker;
+                pathname = pathname.slice(pathname.indexOf(repoMarker) + repoMarker.length);
+            }
+
+            pathname = pathname.replace(/^\/+|\/+$/g, "");
+            if (!pathname.startsWith("games/")) return;
+
+            let slug = pathname.slice("games/".length);
+            slug = slug.replace(/index\.html$/i, "").replace(/\.html$/i, "");
+            slug = slug.replace(/\/+$/g, "");
+            if (!slug) return;
+
+            const target = `${window.location.origin}${basePath}games/game.html?slug=${encodeURIComponent(slug)}`;
+            window.location.replace(target);
+        })();
+    </script>
+</body>
+</html>
