@@ -53,10 +53,8 @@ function ccgEscapeHtml(value) {
    Game URL resolver (supports pretty URLs + fallback)
 ------------------------------------------------------------ */
 function ccgResolveGameUrl(gameId) {
-    if (typeof window !== "undefined" && typeof window.ccgBuildGameUrl === "function") {
-        const pretty = window.ccgBuildGameUrl(gameId);
-        if (pretty) return pretty;
-    }
+    const slug = String(gameId || "").replace(/_/g, "-");
+    if (slug) return `../game.html?slug=${encodeURIComponent(slug)}`;
 
     return `../game.html?id=${encodeURIComponent(gameId)}`;
 }
