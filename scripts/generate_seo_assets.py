@@ -29,7 +29,11 @@ def resolve_thumb(raw: str) -> str:
 
 
 def seo_slug(game_id: str) -> str:
-    return str(game_id).strip().replace("/", "-")
+    slug = str(game_id).strip().replace("/", "-")
+    slug = slug.replace(":", "_").replace("*", "")
+    slug = re.sub(r"[?\"<>|]", "", slug)
+    slug = re.sub(r"__+", "_", slug).strip("_")
+    return slug
 
 
 page_template = """<!DOCTYPE html>
@@ -175,9 +179,11 @@ def main() -> None:
         f"{BASE_URL}/games/index.html",
         f"{BASE_URL}/games/genres/index.html",
         f"{BASE_URL}/games/collections/index.html",
+        f"{BASE_URL}/complete-index.html",
         f"{BASE_URL}/about.html",
         f"{BASE_URL}/contact.html",
         f"{BASE_URL}/emulation.html",
+        f"{BASE_URL}/quiz/quiz.html",
     ]
 
     sitemap_entries = static_urls + sitemap_urls

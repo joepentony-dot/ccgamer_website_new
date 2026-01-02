@@ -112,6 +112,15 @@ function resolveLemonUrl(game) {
     return resolvePrimaryLink(game.lemon || game.lemonlink || game.lemonlinks);
 }
 
+function seoSlugFromId(gameId) {
+    if (!gameId) return "";
+    let slug = String(gameId).trim().replace(/\//g, "-");
+    slug = slug.replace(/:/g, "_").replace(/\*/g, "");
+    slug = slug.replace(/[?"<>|]/g, "");
+    slug = slug.replace(/__+/g, "_").replace(/^_+|_+$/g, "");
+    return slug;
+}
+
 /* ============================================================
    RENDER GAME
 ============================================================ */
@@ -212,10 +221,13 @@ function updateMeta(game) {
     if (metaDesc) metaDesc.setAttribute("content", metaDescriptionText);
 
     const canonical = document.getElementById("game-canonical");
-    const canonicalUrl = new URL(
-        `game.html?id=${encodeURIComponent(game.id || "")}`,
-        window.location.href
-    ).toString();
+    const seoSlug = seoSlugFromId(game.id);
+    const canonicalUrl = seoSlug
+        ? new URL(`seo/${seoSlug}.html`, window.location.href).toString()
+        : new URL(
+            `game.html?id=${encodeURIComponent(game.id || "")}`,
+            window.location.href
+        ).toString();
     if (canonical) canonical.setAttribute("href", canonicalUrl);
 
     const thumb = resolveGameThumb(game.thumbnail || game.thumb || game.cover);
