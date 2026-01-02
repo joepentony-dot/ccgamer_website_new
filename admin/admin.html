@@ -156,8 +156,27 @@
             <section class="ccg-section admin-hero">
                 <h1 class="ccg-section-title">Admin Panel</h1>
                 <p class="ccg-section-subtitle">
-                    Upload, merge and export games without leaving the site. All changes are kept client-side so you can vet the JSON before committing.
+                    Upload, merge and export games without leaving the site. Everything stays client-side so you can vet the JSON before committing.
                 </p>
+                <div class="admin-hero-grid">
+                    <div class="admin-callout">
+                        <h2 class="admin-callout-title">Quick start workflow</h2>
+                        <ol class="admin-steps">
+                            <li>Fetch the live <strong>games.json</strong> or upload a saved file.</li>
+                            <li>Fill out the game form (required fields are flagged).</li>
+                            <li>Stage multiple games, then download the merged JSON.</li>
+                            <li>Commit the downloaded file in your normal workflow (Git, FTP, etc).</li>
+                        </ol>
+                    </div>
+                    <div class="admin-callout admin-callout--tips">
+                        <h2 class="admin-callout-title">Handy tips</h2>
+                        <ul class="admin-tips">
+                            <li><strong>Slug ID:</strong> lowercase, hyphenated (e.g. <code>last-ninja-2</code>).</li>
+                            <li><strong>Lemon links:</strong> paste one or more Lemon64/LemonAmiga URLs.</li>
+                            <li><strong>Description:</strong> 1–2 sentences about the game and release.</li>
+                        </ul>
+                    </div>
+                </div>
                 <div class="admin-badges">
                     <div class="admin-badge">
                         <span class="admin-badge-label">Games loaded</span>
@@ -173,8 +192,8 @@
             <section class="ccg-section admin-grid">
 
                 <article class="admin-card">
-                    <h2>Load Library / Upload JSON</h2>
-                    <p>Start from the live <code>games.json</code> or drop a replacement file to merge.</p>
+                    <h2>1) Load your library</h2>
+                    <p>Start from the live <code>games.json</code> or drop in a replacement file to merge.</p>
                     <div class="admin-inline-buttons">
                         <button id="adminRefresh" class="ccg-btn ccg-btn--primary" type="button">Fetch live games.json</button>
                         <label class="admin-upload">Upload JSON
@@ -185,85 +204,173 @@
                 </article>
 
                 <article class="admin-card">
-                    <h2>Add a new game</h2>
+                    <h2>2) Add a new game</h2>
                     <form id="adminGameForm">
-                        <div class="admin-field">
-                            <label for="gameId">ID (slug)</label>
-                            <input id="gameId" name="id" class="admin-input" placeholder="turrican" required>
+                        <div class="admin-form-banner" data-admin-edit-banner>
+                            <span data-admin-editing-label>Creating a new game</span>
+                            <button class="ccg-btn ccg-btn--ghost" type="button" data-admin-edit-cancel hidden>Cancel edit</button>
                         </div>
-                        <div class="admin-field">
-                            <label for="gameTitle">Title</label>
-                            <input id="gameTitle" name="title" class="admin-input" placeholder="Turrican" required>
+                        <div class="admin-form-section">
+                            <div class="admin-form-heading">
+                                <h3>Basics</h3>
+                                <span class="admin-form-note">Required fields marked with *</span>
+                            </div>
+                            <div class="admin-field">
+                                <label for="gameId">ID (slug) *</label>
+                                <input id="gameId" name="id" class="admin-input" placeholder="last-ninja-2" required>
+                                <p class="admin-help">Use lowercase and hyphens. This must be unique.</p>
+                            </div>
+                            <div class="admin-field">
+                                <label for="gameTitle">Title *</label>
+                                <input id="gameTitle" name="title" class="admin-input" placeholder="The Last Ninja 2" required>
+                            </div>
+                            <div class="admin-field">
+                                <label for="gameYear">Year</label>
+                                <input id="gameYear" name="year" class="admin-input" type="number" min="1977" max="2025" placeholder="1988">
+                            </div>
+                            <div class="admin-field">
+                                <label for="gameSystem">System</label>
+                                <select id="gameSystem" name="system" class="admin-select">
+                                    <option value="C64">C64</option>
+                                    <option value="Amiga">Amiga</option>
+                                </select>
+                            </div>
+                            <div class="admin-field">
+                                <label for="gameGenres">Genres (comma separated)</label>
+                                <input id="gameGenres" name="genres" class="admin-input" placeholder="Action, Adventure">
+                            </div>
+                            <div class="admin-field">
+                                <label for="gameDeveloper">Developer / Publisher</label>
+                                <input id="gameDeveloper" name="developer" class="admin-input" placeholder="System 3">
+                            </div>
                         </div>
-                        <div class="admin-field">
-                            <label for="gameYear">Year</label>
-                            <input id="gameYear" name="year" class="admin-input" type="number" min="1977" max="2025" placeholder="1990">
+
+                        <div class="admin-form-section">
+                            <div class="admin-form-heading">
+                                <h3>Description</h3>
+                            </div>
+                            <div class="admin-field">
+                                <label for="gameDescription">Description *</label>
+                                <textarea id="gameDescription" name="description" class="admin-textarea" placeholder="A short, friendly summary of the game and its release." required></textarea>
+                                <p class="admin-help">Aim for 1–2 sentences. Mention the release year or publisher if you can.</p>
+                            </div>
                         </div>
-                        <div class="admin-field">
-                            <label for="gameSystem">System</label>
-                            <select id="gameSystem" name="system" class="admin-select">
-                                <option value="C64">C64</option>
-                                <option value="Amiga">Amiga</option>
-                            </select>
+
+                        <div class="admin-form-section">
+                            <div class="admin-form-heading">
+                                <h3>Media</h3>
+                            </div>
+                            <div class="admin-field">
+                                <label for="gameVideo">YouTube video ID</label>
+                                <input id="gameVideo" name="videoid" class="admin-input" placeholder="abc123xyz">
+                                <p class="admin-help">Use just the ID after <code>v=</code>, not the full URL.</p>
+                            </div>
+                            <div class="admin-field">
+                                <label for="gameThumb">Thumbnail file name (resources/images/thumbnails/all)</label>
+                                <input id="gameThumb" name="thumbnail" class="admin-input" placeholder="last-ninja-2.jpg">
+                            </div>
                         </div>
-                        <div class="admin-field">
-                            <label for="gameGenres">Genres (comma separated)</label>
-                            <input id="gameGenres" name="genres" class="admin-input" placeholder="Arcade Games, Shooting Games">
+
+                        <div class="admin-form-section">
+                            <div class="admin-form-heading">
+                                <h3>Links &amp; downloads</h3>
+                            </div>
+                            <div class="admin-field">
+                                <label for="gameManual">Manual / PDF link</label>
+                                <input id="gameManual" name="manual" class="admin-input" placeholder="https://...pdf">
+                            </div>
+                            <div class="admin-field">
+                                <label for="gameDisk">Disk/Tape links (comma separated)</label>
+                                <input id="gameDisk" name="disk" class="admin-input" placeholder="https://...d64, https://...adf">
+                            </div>
+                            <div class="admin-field">
+                                <label for="gameLemon">Lemon links (comma separated)</label>
+                                <input id="gameLemon" name="lemon" class="admin-input" placeholder="https://www.lemon64.com/game/last-ninja-2">
+                                <p class="admin-help">Supports Lemon64 and LemonAmiga URLs. Add multiple links if needed.</p>
+                            </div>
                         </div>
-                        <div class="admin-field">
-                            <label for="gameDeveloper">Developer / Publisher</label>
-                            <input id="gameDeveloper" name="developer" class="admin-input" placeholder="Factor 5">
-                        </div>
-                        <div class="admin-field">
-                            <label for="gameVideo">YouTube video ID</label>
-                            <input id="gameVideo" name="videoid" class="admin-input" placeholder="abc123xyz">
-                        </div>
-                        <div class="admin-field">
-                            <label for="gameThumb">Thumbnail file name (resources/images/thumbnails/all)</label>
-                            <input id="gameThumb" name="thumbnail" class="admin-input" placeholder="turrican.jpg">
-                        </div>
-                        <div class="admin-field">
-                            <label for="gameManual">Manual / PDF link</label>
-                            <input id="gameManual" name="manual" class="admin-input" placeholder="https://...pdf">
-                        </div>
-                        <div class="admin-field">
-                            <label for="gameDisk">Disk/Tape links (comma separated)</label>
-                            <input id="gameDisk" name="disk" class="admin-input" placeholder="https://...d64, https://...adf">
-                        </div>
-                        <button class="ccg-btn ccg-btn--primary" type="submit">Stage Game</button>
+                        <button class="ccg-btn ccg-btn--primary" type="submit" data-admin-submit>Stage Game</button>
                     </form>
                 </article>
 
                 <article class="admin-card">
-                    <h2>Export &amp; Reset</h2>
+                    <h2>3) Export &amp; reset</h2>
                     <p>Download the merged JSON once you are happy with staged changes.</p>
                     <div class="admin-inline-buttons">
                         <button id="adminDownload" class="ccg-btn ccg-btn--secondary" type="button">Download games.json</button>
                         <button id="adminClear" class="ccg-btn ccg-btn--ghost" type="button">Clear staged entries</button>
                     </div>
+                    <p class="admin-help">This tool never commits for you. Download the file, then replace <code>games/games.json</code> and commit using your normal workflow.</p>
                 </article>
 
             </section>
 
             <section class="ccg-section">
-                <div class="admin-table-card">
-                    <div class="admin-table-head">Staged preview (latest 12)</div>
-                    <div class="admin-table-body">
-                        <table class="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>System</th>
-                                    <th>Year</th>
-                                    <th>Genres</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminGamePreview">
-                                <tr><td colspan="4">Nothing staged yet.</td></tr>
-                            </tbody>
-                        </table>
+                <div class="admin-preview-grid">
+                    <div class="admin-table-card">
+                        <div class="admin-table-head">Staged preview (latest 12)</div>
+                        <div class="admin-table-body">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>System</th>
+                                        <th>Year</th>
+                                        <th>Genres</th>
+                                        <th>Lemon links</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminGamePreview">
+                                    <tr><td colspan="5">Nothing staged yet.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
+                    <aside class="admin-card admin-detail-card">
+                        <h2>Latest staged detail</h2>
+                        <p class="admin-help">Quick sanity check before exporting.</p>
+                        <dl class="admin-detail-list">
+                            <div>
+                                <dt>Title</dt>
+                                <dd data-admin-latest="title">—</dd>
+                            </div>
+                            <div>
+                                <dt>Description</dt>
+                                <dd data-admin-latest="description">—</dd>
+                            </div>
+                            <div>
+                                <dt>Lemon links</dt>
+                                <dd data-admin-latest="lemon">—</dd>
+                            </div>
+                            <div>
+                                <dt>Downloads</dt>
+                                <dd data-admin-latest="disk">—</dd>
+                            </div>
+                        </dl>
+                    </aside>
                 </div>
+            </section>
+
+            <section class="ccg-section">
+                <article class="admin-card admin-editor-card">
+                    <div class="admin-editor-header">
+                        <div>
+                            <h2>4) Edit existing games</h2>
+                            <p class="admin-help">Load a game into the form, edit it, and click “Update Game”.</p>
+                        </div>
+                        <div class="admin-editor-count">
+                            <span class="admin-badge-label">Total games</span>
+                            <span class="admin-badge-value" data-admin-edit-count>0</span>
+                        </div>
+                    </div>
+                    <div class="admin-field">
+                        <label for="adminEditSearch">Search by title or ID</label>
+                        <input id="adminEditSearch" class="admin-input" placeholder="Start typing to filter...">
+                    </div>
+                    <ul class="admin-edit-list" data-admin-edit-list>
+                        <li class="admin-edit-empty">Load games.json to begin editing.</li>
+                    </ul>
+                </article>
             </section>
 
         </main>
