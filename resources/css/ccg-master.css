@@ -1845,6 +1845,12 @@ body.ccg-is-mobile .home-hero__bg {
     box-shadow: 0 0 30px rgba(255, 61, 155, 0.5);
 }
 
+@property --ccg-pacman-mouth {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 40deg;
+}
+
 .ccg-pacman__sprite,
 .ccg-pacman__ghost {
     position: absolute;
@@ -1852,13 +1858,17 @@ body.ccg-is-mobile .home-hero__bg {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    animation: ccg-pacman-run 12s linear infinite;
+    animation: ccg-pacman-run 8s linear infinite;
 }
 
 .ccg-pacman__sprite {
-    background: conic-gradient(#ffd24d 0 70%, transparent 70% 100%);
+    --ccg-pacman-mouth: 40deg;
+    background: conic-gradient(#ffd24d 0deg calc(360deg - var(--ccg-pacman-mouth)), transparent 0deg);
     left: -60px;
     box-shadow: 0 0 12px rgba(255, 210, 77, 0.6);
+    animation:
+        ccg-pacman-run 8s linear infinite,
+        ccg-pacman-chomp 0.35s steps(2, end) infinite;
 }
 
 .ccg-pacman__ghost {
@@ -1977,6 +1987,11 @@ body.ccg-is-mobile .home-hero__bg {
 @keyframes ccg-pacman-run {
     0% { transform: translateX(0); }
     100% { transform: translateX(120vw); }
+}
+
+@keyframes ccg-pacman-chomp {
+    0%, 100% { --ccg-pacman-mouth: 40deg; }
+    50% { --ccg-pacman-mouth: 8deg; }
 }
 
 @keyframes ccg-konami-fade {

@@ -263,7 +263,22 @@
             <div class="ccg-pacman__sprite"></div>
             <div class="ccg-pacman__ghost"></div>
         `;
-        setTimeout(() => pacman.remove(), 13000);
+        let chompInterval = null;
+        const startChomp = () => {
+            if (chompInterval) return;
+            let high = true;
+            chompInterval = setInterval(() => {
+                playTone(high ? 880 : 660, "square", 0.08, 0.12);
+                high = !high;
+            }, 180);
+        };
+        startChomp();
+        setTimeout(() => {
+            if (chompInterval) {
+                clearInterval(chompInterval);
+            }
+            pacman.remove();
+        }, 13000);
     }
 
     function triggerBoing() {
@@ -383,6 +398,7 @@
     function triggerCheat(code) {
         const normalized = normalizeCode(code);
         if (cheats[normalized]) {
+            closeSecretModal();
             cheats[normalized]();
         }
     }
