@@ -589,6 +589,16 @@
     scroll-behavior: smooth;
 }
 
+.related-carousel .related-card {
+    flex: 0 0 clamp(150px, 22vw, 200px);
+    max-width: clamp(150px, 22vw, 200px);
+}
+
+.related-carousel .related-card img {
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+}
+
 .related-carousel__track::-webkit-scrollbar {
     height: 8px;
 }
