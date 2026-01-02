@@ -155,10 +155,7 @@ const LEGACY_COMPARE_MAP = buildLegacyCompareMap(LEGACY_SLUG_MAP);
 ============================================================ */
 
 document.addEventListener("DOMContentLoaded", async () => {
-    const main = document.querySelector(".ccg-main--single-game");
-    if (main) {
-        main.style.visibility = "hidden";
-    }
+    document.body.classList.add("ccg-loading-single");
 
     const existingLoading = document.getElementById("ccgGameLoading");
     const loading = existingLoading || document.createElement("div");
@@ -179,11 +176,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         loading.style.display = "flex";
     }
 
-    const notFoundSection = document.getElementById("gameNotFound");
-    if (notFoundSection) {
-        notFoundSection.style.display = "none";
-    }
-
     const params = new URLSearchParams(window.location.search);
     let gameId = decodeURIComponent(
         (params.get("id") || "").toString().trim()
@@ -192,6 +184,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     const slugParam = rawSlugParam ? decodeURIComponent(rawSlugParam.toString()).trim() : "";
     const pathSlug = getSlugFromPath();
     const candidateSlug = slugParam || pathSlug;
+    let resolvedGame = null;
+    let resolvedGameId = gameId;
+    let shouldRenderNotFound = false;
+
+    const finalizeRenderGate = () => {
+        requestAnimationFrame(() => {
+            document.body.classList.remove("ccg-loading-single");
+            if (loading) {
+                loading.style.display = "none";
+            }
+        });
+    };
 
     try {
         const response = await fetch(resolveGamesDataUrl(), { cache: "no-store" });
@@ -207,60 +211,45 @@ document.addEventListener("DOMContentLoaded", async () => {
         const idIndex = buildIdIndex(CCG_SINGLE_ALL_GAMES);
         const slugIndex = buildSlugIndex(CCG_SINGLE_ALL_GAMES);
 
-        let game = null;
-
-        if (gameId) {
-            game = idIndex.get(gameId) || null;
-        }
-
-        if (!game && candidateSlug) {
-            game = slugIndex.get(candidateSlug) || null;
-            if (game) gameId = String(game.id);
-        }
-
-        if (!game && candidateSlug) {
-            // Legacy slug fallback (SEO preservation)
-            const legacyId = LEGACY_COMPARE_MAP[normaliseCompareKey(candidateSlug)];
-            if (legacyId) {
-                game = idIndex.get(legacyId) || null;
+        if (candidateSlug) {
+            resolvedGame = slugIndex.get(candidateSlug) || null;
+            if (!resolvedGame) {
+                // Legacy slug fallback (SEO preservation)
+                const legacyId = LEGACY_COMPARE_MAP[normaliseCompareKey(candidateSlug)];
+                if (legacyId) {
+                    resolvedGame = idIndex.get(legacyId) || null;
+                }
             }
-            if (game) gameId = String(game.id);
+            if (resolvedGame) {
+                resolvedGameId = String(resolvedGame.id);
+            }
+        }
+
+        if (!resolvedGame && resolvedGameId) {
+            resolvedGame = idIndex.get(resolvedGameId) || null;
         }
 
         runSlugAudit(CCG_SINGLE_ALL_GAMES, slugIndex);
 
-        if (!game) {
-            CCG_GAME_RESOLVED = true;
-            if (main) {
-                main.style.visibility = "visible";
-            }
-            if (loading) {
-                loading.style.display = "none";
-            }
-            renderGameNotFound(gameId, candidateSlug);
-            return;
+        if (!resolvedGame) {
+            shouldRenderNotFound = true;
+        } else {
+            syncPrettyUrl(resolvedGame);
         }
-
-        syncPrettyUrl(game);
-        CCG_GAME_RESOLVED = true;
-        if (main) {
-            main.style.visibility = "visible";
-        }
-        if (loading) {
-            loading.style.display = "none";
-        }
-        renderGame(game);
 
     } catch (err) {
-        CCG_GAME_RESOLVED = true;
-        if (main) {
-            main.style.visibility = "visible";
-        }
-        if (loading) {
-            loading.style.display = "none";
-        }
-        renderGameNotFound(gameId, candidateSlug);
+        shouldRenderNotFound = true;
     }
+
+    CCG_GAME_RESOLVED = true;
+
+    if (shouldRenderNotFound) {
+        renderGameNotFound(resolvedGameId, candidateSlug);
+    } else if (resolvedGame) {
+        renderGame(resolvedGame);
+    }
+
+    finalizeRenderGate();
 });
 
 /* ============================================================
