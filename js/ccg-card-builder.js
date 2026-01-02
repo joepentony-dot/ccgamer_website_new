@@ -50,6 +50,18 @@ function ccgEscapeHtml(value) {
 }
 
 /* ------------------------------------------------------------
+   Game URL resolver (supports pretty URLs + fallback)
+------------------------------------------------------------ */
+function ccgResolveGameUrl(gameId) {
+    if (typeof window !== "undefined" && typeof window.ccgBuildGameUrl === "function") {
+        const pretty = window.ccgBuildGameUrl(gameId);
+        if (pretty) return pretty;
+    }
+
+    return `../game.html?id=${encodeURIComponent(gameId)}`;
+}
+
+/* ------------------------------------------------------------
    Build Omega game card (grid-safe)
 ------------------------------------------------------------ */
 function ccgBuildGameCard(game) {
@@ -63,7 +75,7 @@ function ccgBuildGameCard(game) {
         game.thumbnail || game.thumb || game.cover
     );
 
-    const safeId = encodeURIComponent(game.id);
+    const gameUrl = ccgResolveGameUrl(game.id);
 
     const title = ccgEscapeHtml(game.title || "Unknown Game");
     const meta = [
@@ -74,7 +86,7 @@ function ccgBuildGameCard(game) {
 
     return `
         <div class="ccg-game-card genre-card">
-            <a href="../game.html?id=${safeId}" class="ccg-game-card__thumb">
+            <a href="${gameUrl}" class="ccg-game-card__thumb">
                 <img src="${thumb}" alt="${title}">
             </a>
 
@@ -88,7 +100,7 @@ function ccgBuildGameCard(game) {
                 </div>
 
                 <div class="ccg-game-card__actions">
-                    <a href="../game.html?id=${safeId}"
+                    <a href="${gameUrl}"
                        class="ccg-btn ccg-btn--primary ccg-game-card__btn">
                        View Game
                     </a>
