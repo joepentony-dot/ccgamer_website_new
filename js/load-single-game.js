@@ -18,6 +18,35 @@ let CCG_SCREENSHOT_INDEX = 0;
 let CCG_GAME_RESOLVED = false;
 let CCG_SINGLE_RENDERED = false;
 let resolved = false;
+const CCG_RENDER_GATE = {
+    container: null,
+    locked: false,
+};
+
+function lockSingleGameRender() {
+    if (CCG_RENDER_GATE.locked) return;
+    CCG_RENDER_GATE.container = document.querySelector(".ccg-page--single-game");
+    if (CCG_RENDER_GATE.container) {
+        CCG_RENDER_GATE.container.hidden = true;
+        CCG_RENDER_GATE.container.setAttribute("data-ccg-render-gate", "pending");
+    }
+    if (document.body) {
+        document.body.classList.add("ccg-loading-single");
+    }
+    CCG_RENDER_GATE.locked = true;
+}
+
+function unlockSingleGameRender() {
+    if (!CCG_RENDER_GATE.locked) return;
+    if (CCG_RENDER_GATE.container) {
+        CCG_RENDER_GATE.container.hidden = false;
+        CCG_RENDER_GATE.container.removeAttribute("data-ccg-render-gate");
+    }
+    if (document.body) {
+        document.body.classList.remove("ccg-loading-single");
+    }
+    CCG_RENDER_GATE.locked = false;
+}
 
 // Legacy slug fallback (SEO preservation)
 const LEGACY_SLUG_MAP = {
@@ -156,33 +185,12 @@ const LEGACY_COMPARE_MAP = buildLegacyCompareMap(LEGACY_SLUG_MAP);
    INIT
 ============================================================ */
 
-if (document.body) {
-    document.body.classList.add("ccg-loading-single");
-}
+lockSingleGameRender();
 
 document.addEventListener("DOMContentLoaded", async () => {
-    document.body.classList.add("ccg-loading-single");
+    lockSingleGameRender();
 
     ensureDirectNavLinks();
-
-    const existingLoading = document.getElementById("ccgGameLoading");
-    const loading = existingLoading || document.createElement("div");
-    if (!existingLoading) {
-        loading.id = "ccgGameLoading";
-        loading.textContent = "Loading game...";
-        loading.style.position = "fixed";
-        loading.style.inset = "0";
-        loading.style.display = "flex";
-        loading.style.alignItems = "center";
-        loading.style.justifyContent = "center";
-        loading.style.pointerEvents = "none";
-        loading.style.fontSize = "1rem";
-        loading.style.color = "inherit";
-        loading.style.background = "transparent";
-        document.body.appendChild(loading);
-    } else {
-        loading.style.display = "flex";
-    }
 
     const params = new URLSearchParams(window.location.search);
     let gameId = decodeURIComponent(
@@ -204,10 +212,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const finalizeRenderGate = () => {
         requestAnimationFrame(() => {
-            document.body.classList.remove("ccg-loading-single");
-            if (loading) {
-                loading.style.display = "none";
-            }
+            unlockSingleGameRender();
         });
     };
 
