@@ -424,11 +424,11 @@ function setEmptyState(isEmpty) {
 function renderGameCard(game) {
     const thumb = resolveGameThumb(game.thumbnail || game.thumb || game.cover);
 
-    const gameId = encodeURIComponent(game.id);
+    const gameUrl = resolveGameUrl(game.id);
 
     return `
         <div class="ccg-game-card">
-            <a href="game.html?id=${gameId}"
+            <a href="${gameUrl}"
                class="ccg-game-card__thumb">
                 <img src="${THUMB_PLACEHOLDER}"
                      data-src="${thumb}"
@@ -443,7 +443,7 @@ function renderGameCard(game) {
                     ${(game.year || "")} · ${(game.system || "")}
                 </div>
                 <div class="ccg-game-card__actions">
-                    <a href="game.html?id=${gameId}"
+                    <a href="${gameUrl}"
                        class="ccg-btn ccg-btn--primary ccg-game-card__btn">
                        View Game
                     </a>
@@ -463,6 +463,15 @@ function resolveGameThumb(raw) {
         .replace("resources/images/", "");
 
     return `${THUMB_BASE_PATH}${t}`;
+}
+
+function resolveGameUrl(gameId) {
+    if (typeof window !== "undefined" && typeof window.ccgBuildGameUrl === "function") {
+        const pretty = window.ccgBuildGameUrl(gameId);
+        if (pretty) return pretty;
+    }
+
+    return `game.html?id=${encodeURIComponent(gameId)}`;
 }
 
 /* ============================================================
