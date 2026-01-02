@@ -25,6 +25,9 @@
     const refreshBtn = document.getElementById("adminRefresh");
     const downloadBtn = document.getElementById("adminDownload");
     const clearBtn = document.getElementById("adminClear");
+    const commitBtn = document.getElementById("adminCommit");
+    const commitPanel = document.getElementById("adminCommitPanel");
+    const commitCloseBtn = document.querySelector("[data-admin-commit-close]");
     const form = document.getElementById("adminGameForm");
     const previewBody = document.getElementById("adminGamePreview");
     const submitBtn = document.querySelector("[data-admin-submit]");
@@ -366,6 +369,26 @@
             updateBadges();
             setStatus("Staged entries cleared.");
             resetForm();
+        });
+    }
+
+    if (commitBtn && commitPanel) {
+        commitBtn.addEventListener("click", () => {
+            const isOpen = !commitPanel.hasAttribute("hidden");
+            if (isOpen) {
+                commitPanel.setAttribute("hidden", "hidden");
+                commitBtn.setAttribute("aria-expanded", "false");
+            } else {
+                commitPanel.removeAttribute("hidden");
+                commitBtn.setAttribute("aria-expanded", "true");
+            }
+        });
+    }
+
+    if (commitCloseBtn && commitPanel && commitBtn) {
+        commitCloseBtn.addEventListener("click", () => {
+            commitPanel.setAttribute("hidden", "hidden");
+            commitBtn.setAttribute("aria-expanded", "false");
         });
     }
 

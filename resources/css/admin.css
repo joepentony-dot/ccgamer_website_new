@@ -195,6 +195,32 @@
 .admin-status[data-state="error"] { color: #ff6b6b; }
 .admin-status[data-state="success"] { color: #7dffb3; }
 
+.admin-commit-panel {
+    margin-top: 12px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(0,0,0,0.7);
+    display: grid;
+    gap: 10px;
+}
+
+.admin-commit-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.admin-commit-code {
+    font-size: 0.85rem;
+    color: var(--ccg-text-soft);
+    background: rgba(0,0,0,0.6);
+    border-radius: 10px;
+    padding: 10px 12px;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
 .admin-preview-grid {
     display: grid;
     grid-template-columns: minmax(0, 2.4fr) minmax(0, 1fr);

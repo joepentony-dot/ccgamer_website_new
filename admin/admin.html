@@ -299,8 +299,24 @@
                     <div class="admin-inline-buttons">
                         <button id="adminDownload" class="ccg-btn ccg-btn--secondary" type="button">Download games.json</button>
                         <button id="adminClear" class="ccg-btn ccg-btn--ghost" type="button">Clear staged entries</button>
+                        <button id="adminCommit" class="ccg-btn ccg-btn--primary" type="button" aria-expanded="false" aria-controls="adminCommitPanel">Commit changes</button>
                     </div>
                     <p class="admin-help">This tool never commits for you. Download the file, then replace <code>games/games.json</code> and commit using your normal workflow.</p>
+                    <div id="adminCommitPanel" class="admin-commit-panel" hidden>
+                        <div class="admin-commit-header">
+                            <h3>Commit checklist</h3>
+                            <button class="ccg-btn ccg-btn--ghost" type="button" data-admin-commit-close>Close</button>
+                        </div>
+                        <ol class="admin-steps">
+                            <li>Download the merged <strong>games.json</strong>.</li>
+                            <li>Replace <code>games/games.json</code> in your repo.</li>
+                            <li>Commit and push using your usual workflow.</li>
+                        </ol>
+                        <div class="admin-commit-code">
+                            <code>git add games/games.json</code><br>
+                            <code>git commit -m "Update games library"</code>
+                        </div>
+                    </div>
                 </article>
 
             </section>
