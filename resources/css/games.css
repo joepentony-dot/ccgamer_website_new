@@ -637,6 +637,15 @@
     transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
 }
 
+.related-card img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 10px;
+    background: rgba(0,0,0,0.4);
+    display: block;
+}
+
 .related-card:hover,
 .related-card:focus-visible {
     border-color: rgba(var(--accent-rgb),0.7);

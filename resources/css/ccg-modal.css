@@ -13,7 +13,8 @@
     backdrop-filter: blur(3px);
 }
 
-.ccg-modal.active {
+.ccg-modal.active,
+.ccg-modal.open {
     display: flex;
 }
 
