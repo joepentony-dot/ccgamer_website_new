@@ -147,6 +147,8 @@ const LEGACY_SLUG_MAP = {
     "yie_ar_kung_fu": "yie_ar_kung-fu"
 };
 
+const LEGACY_COMPARE_MAP = buildLegacyCompareMap(LEGACY_SLUG_MAP);
+
 /* ============================================================
    INIT
 ============================================================ */
@@ -159,7 +161,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
     const rawSlugParam = params.get("slug");
     const slugParam = rawSlugParam ? decodeURIComponent(rawSlugParam.toString()).trim() : "";
-    const slugForMatch = slugParam ? slugParam.toLowerCase() : "";
 
     try {
         const response = await fetch("games.json", { cache: "no-store" });
@@ -168,41 +169,38 @@ document.addEventListener("DOMContentLoaded", async () => {
         const games = await response.json();
         CCG_SINGLE_ALL_GAMES = Array.isArray(games) ? games : [];
 
+        const compareIndex = buildCompareIndex(CCG_SINGLE_ALL_GAMES);
+
         let game = null;
 
         if (gameId) {
-            game = CCG_SINGLE_ALL_GAMES.find(
-                g => String(g.id) === gameId
-            );
+            game = resolveGameByCompareKey(normaliseCompareKey(gameId), compareIndex);
         }
 
-        if (!game && slugForMatch) {
-            game = CCG_SINGLE_ALL_GAMES.find(
-                g => resolveGameSlug(g.id) === slugForMatch
-            );
+        if (!game && slugParam) {
+            const slugKey = normaliseCompareKey(slugParam);
+            game = resolveGameByCompareKey(slugKey, compareIndex);
             if (game) gameId = String(game.id);
         }
 
-        if (!game && slugForMatch) {
+        if (!game && slugParam) {
             // Legacy slug fallback (SEO preservation)
-            const legacyId = LEGACY_SLUG_MAP[slugForMatch];
+            const legacyId = LEGACY_COMPARE_MAP[normaliseCompareKey(slugParam)];
             if (legacyId) {
-                game = CCG_SINGLE_ALL_GAMES.find(
-                    g => String(g.id) === legacyId
-                );
+                game = resolveGameByCompareKey(normaliseCompareKey(legacyId), compareIndex);
             }
             if (game) gameId = String(game.id);
         }
 
-        if (!game && slugForMatch) {
-            const resolvedId = resolveGameIdFromSlug(slugForMatch);
+        if (!game && slugParam) {
+            const resolvedId = resolveGameIdFromSlug(slugParam);
             if (resolvedId) {
-                game = CCG_SINGLE_ALL_GAMES.find(
-                    g => String(g.id) === resolvedId
-                );
+                game = resolveGameByCompareKey(normaliseCompareKey(resolvedId), compareIndex);
             }
             if (game) gameId = String(game.id);
         }
+
+        runSlugAudit(CCG_SINGLE_ALL_GAMES, compareIndex);
 
         if (!game) {
             renderGameNotFound(gameId, slugParam);
@@ -220,6 +218,60 @@ document.addEventListener("DOMContentLoaded", async () => {
 /* ============================================================
    RESOLVERS (LOCKED)
 ============================================================ */
+
+function normaliseCompareKey(input) {
+    if (!input) return "";
+    let key = String(input).toLowerCase();
+    key = key.replace(/[^a-z0-9]/g, "");
+    key = key.replace(/iii/g, "3").replace(/iv/g, "4").replace(/ii/g, "2");
+    return key;
+}
+
+function buildCompareIndex(games) {
+    const index = new Map();
+    games.forEach(game => {
+        const key = normaliseCompareKey(game.id);
+        if (key && !index.has(key)) {
+            index.set(key, game);
+        }
+    });
+    return index;
+}
+
+function resolveGameByCompareKey(compareKey, compareIndex) {
+    if (!compareKey) return null;
+    return compareIndex.get(compareKey) || null;
+}
+
+function buildLegacyCompareMap(legacyMap) {
+    const compareMap = {};
+    Object.entries(legacyMap).forEach(([slug, id]) => {
+        const key = normaliseCompareKey(slug);
+        if (key) compareMap[key] = id;
+    });
+    return compareMap;
+}
+
+function runSlugAudit(games, compareIndex) {
+    const unresolved = [];
+
+    games.forEach(game => {
+        const canonicalSlug = resolveGameSlug(game.id);
+        const slugKey = normaliseCompareKey(canonicalSlug);
+        const resolved = resolveGameByCompareKey(slugKey, compareIndex);
+        if (!resolved) {
+            unresolved.push(game.id);
+        }
+    });
+
+    const report = {
+        totalChecked: games.length,
+        totalResolved: games.length - unresolved.length,
+        unresolved
+    };
+
+    console.log(JSON.stringify(report, null, 2));
+}
 
 function resolveSingleGameThumbBasePath() {
     let pathname = window.location.pathname || "";
@@ -398,13 +450,21 @@ function renderGame(game) {
             // Open inline for PDFs/Drive; fall back to normal links
             if (!manual.includes(".pdf") && !manual.includes("drive.google.com")) return;
             e.preventDefault();
-            openDocumentModal(manual);
+
+            const frame = document.getElementById("gameManualEmbed");
+            frame.src = manual;
+            document.getElementById("manualModal").classList.add("open");
+        });
+
+        document.getElementById("manualModalClose").addEventListener("click", () => {
+            document.getElementById("manualModal").classList.remove("open");
+            document.getElementById("gameManualEmbed").src = "";
         });
     }
 
     const disk = resolveDiskUrl(game);
     if (disk) {
-        const btn = document.getElementById("gameDiskBtn");
+        const btn = document.getElementById("gameDownloadBtn");
         btn.href = disk;
         btn.target = "_blank";
         btn.rel = "noopener";
@@ -419,358 +479,162 @@ function renderGame(game) {
         btn.target = "_blank";
         btn.rel = "noopener";
         btn.hidden = false;
-        downloadsSection.hidden = false;
     }
 
     /* SCREENSHOTS */
-    if (Array.isArray(game.screenshots) && game.screenshots.length) {
-        renderScreenshots(game.screenshots);
-    }
-
-    renderRelatedGames(game, CCG_SINGLE_ALL_GAMES);
-}
-
-function updateMeta(game) {
-    const title = game.title || "Game";
-    const metaTitleText = `${title} | Cheeky Commodore Gamer`;
-    document.title = metaTitleText;
-
-    const metaTitle = document.getElementById("game-meta-title");
-    if (metaTitle) metaTitle.textContent = metaTitleText;
-
-    const desc = (game.description || "").replace(/<[^>]*>?/gm, "").slice(0, 160);
-    const metaDesc = document.getElementById("game-meta-description");
-    const metaDescriptionText =
-        desc || `${title} on Commodore — screenshots, manual, downloads and video.`;
-
-    if (metaDesc) metaDesc.setAttribute("content", metaDescriptionText);
-
-    const canonicalUrl = buildCanonicalUrl(game.id);
-    ensureCanonicalLink(canonicalUrl);
-
-    const thumb = resolveGameThumb(game.thumbnail || game.thumb || game.cover);
-    const imageUrl = new URL(thumb, window.location.href).toString();
-
-    const ogTitle = document.getElementById("game-og-title");
-    if (ogTitle) ogTitle.setAttribute("content", metaTitleText);
-    const ogDesc = document.getElementById("game-og-description");
-    if (ogDesc) ogDesc.setAttribute("content", metaDescriptionText);
-    const ogImage = document.getElementById("game-og-image");
-    if (ogImage) ogImage.setAttribute("content", imageUrl);
-    const ogUrl = document.getElementById("game-og-url");
-    if (ogUrl) ogUrl.setAttribute("content", canonicalUrl);
-
-    const twitterTitle = document.getElementById("game-twitter-title");
-    if (twitterTitle) twitterTitle.setAttribute("content", metaTitleText);
-    const twitterDesc = document.getElementById("game-twitter-description");
-    if (twitterDesc) twitterDesc.setAttribute("content", metaDescriptionText);
-    const twitterImage = document.getElementById("game-twitter-image");
-    if (twitterImage) twitterImage.setAttribute("content", imageUrl);
-
-    const jsonLd = document.getElementById("game-jsonld");
-    if (jsonLd) {
-        const jsonLdData = {
-            "@context": "https://schema.org",
-            "@type": "VideoGame",
-            "name": title,
-            "description": metaDescriptionText,
-            "url": canonicalUrl,
-            "image": imageUrl,
-            "gamePlatform": game.system || "Commodore",
-            "genre": Array.isArray(game.genres) ? game.genres : undefined,
-            "datePublished": game.year ? String(game.year) : undefined,
-            "publisher": game.publisher || game.developer || undefined
-        };
-
-        Object.keys(jsonLdData).forEach(key => {
-            if (jsonLdData[key] === undefined) delete jsonLdData[key];
+    const shots = Array.isArray(game.screenshots) ? game.screenshots : [];
+    if (shots.length) {
+        const gallery = document.getElementById("gameScreens");
+        gallery.innerHTML = "";
+        CCG_SCREENSHOTS = shots;
+        shots.forEach((src, i) => {
+            const img = document.createElement("img");
+            img.src = src;
+            img.alt = `${game.title || "Game"} screenshot ${i + 1}`;
+            img.addEventListener("click", () => {
+                CCG_SCREENSHOT_INDEX = i;
+                openScreenshotModal(i);
+            });
+            gallery.appendChild(img);
         });
-
-        jsonLd.textContent = JSON.stringify(jsonLdData);
-    }
-}
-
-function buildCanonicalUrl(gameId) {
-    const slug = resolveGameSlug(gameId);
-    if (!slug) {
-        return "https://www.cheekycommodoregamer.co.uk/games/";
+        document.getElementById("gameScreenshots").hidden = false;
     }
 
-    return `https://www.cheekycommodoregamer.co.uk/games/${slug}/`;
-}
-
-function buildCanonicalUrlFromSlug(slug) {
-    const clean = String(slug || "").trim().toLowerCase().replace(/-+/g, "-");
-    if (!clean) {
-        return "https://www.cheekycommodoregamer.co.uk/games/";
-    }
-
-    return `https://www.cheekycommodoregamer.co.uk/games/${clean}/`;
-}
-
-function ensureCanonicalLink(canonicalUrl) {
-    if (!canonicalUrl) return;
-
-    let canonical = document.querySelector('link[rel="canonical"]');
-    if (!canonical) {
-        canonical = document.createElement("link");
-        canonical.rel = "canonical";
-        document.head.appendChild(canonical);
-    }
-
-    canonical.setAttribute("href", canonicalUrl);
-}
-
-function renderGameNotFound(gameId, gameSlug) {
-    document.title = "Game not found | Cheeky Commodore Gamer";
-
-    const heroTitle = document.getElementById("gameHeroTitle");
-    if (heroTitle) heroTitle.textContent = "Game not found";
-
-    const heroThumb = document.getElementById("gameHeroThumb");
-    if (heroThumb) {
-        heroThumb.src = resolveGameThumb();
-        heroThumb.alt = "Game not found";
-    }
-
-    const heroBg = document.getElementById("gameHeroBG");
-    if (heroBg) heroBg.style.backgroundImage = `url('${resolveGameThumb()}')`;
-
-    const metaYear = document.getElementById("gameMetaYear");
-    if (metaYear) metaYear.textContent = "—";
-    const metaSystem = document.getElementById("gameMetaSystem");
-    if (metaSystem) metaSystem.textContent = "—";
-    const metaDeveloper = document.getElementById("gameMetaDeveloper");
-    if (metaDeveloper) metaDeveloper.textContent = "—";
-
-    const description = document.getElementById("gameDescription");
-    if (description) {
-        const queryInfo = [gameId ? `id=${gameId}` : "", gameSlug ? `slug=${gameSlug}` : ""]
-            .filter(Boolean)
-            .join(" · ");
-        description.textContent = queryInfo
-            ? `Sorry, we couldn't find that game (${queryInfo}).`
-            : "Sorry, we couldn't find that game.";
-    }
-
-    const descriptionSection = document.getElementById("game-description-section");
-    if (descriptionSection) descriptionSection.hidden = false;
-
-    const videoSection = document.getElementById("game-video-section");
-    if (videoSection) videoSection.hidden = true;
-
-    const downloadsSection = document.querySelector(".game-downloads");
-    if (downloadsSection) downloadsSection.hidden = true;
-
-    const screenshotsSection = document.querySelector(".game-screenshots");
-    if (screenshotsSection) screenshotsSection.hidden = true;
-
-    const relatedSection = document.querySelector(".game-section--related");
-    if (relatedSection) relatedSection.hidden = true;
-
-    const canonicalUrl = gameId
-        ? buildCanonicalUrl(gameId)
-        : buildCanonicalUrlFromSlug(gameSlug);
-    ensureCanonicalLink(canonicalUrl);
+    /* RELATED GAMES */
+    renderRelatedGames(game);
 }
 
 /* ============================================================
-   SCREENSHOTS + MODAL NAVIGATION (SG-E4.1)
+   META
 ============================================================ */
 
-function renderScreenshots(screenshots) {
+function updateMeta(game) {
+    const title = `${game.title || "Game"} | Cheeky Commodore Gamer`;
+    document.title = title;
 
-    const section = document.querySelector(".game-screenshots");
-    const strip = document.getElementById("gameScreenshotsStrip");
-    if (!section || !strip) return;
+    const desc = game.description
+        ? game.description.replace(/<[^>]*>/g, "").slice(0, 160)
+        : `Play ${game.title || "this"} classic Commodore 64 game online.`;
 
-    CCG_SCREENSHOTS = screenshots.slice();
-    strip.innerHTML = "";
+    const metaDesc = document.querySelector("meta[name='description']");
+    if (metaDesc) metaDesc.setAttribute("content", desc);
+}
 
-    screenshots.forEach((src, index) => {
+/* ============================================================
+   RELATED GAMES (SG-E5)
+============================================================ */
+
+function renderRelatedGames(game) {
+    const container = document.getElementById("relatedGamesList");
+    const section = document.getElementById("relatedGamesSection");
+
+    if (!container || !section) return;
+
+    let related = Array.isArray(game.related) ? game.related : [];
+
+    // SG-E5: fallback on same system + same year if no explicit related
+    if (!related.length) {
+        related = CCG_SINGLE_ALL_GAMES.filter(g =>
+            g.id !== game.id &&
+            (g.system === game.system || g.year === game.year)
+        ).slice(0, 12);
+    } else {
+        related = related.map(id =>
+            CCG_SINGLE_ALL_GAMES.find(g => String(g.id) === String(id))
+        ).filter(Boolean);
+    }
+
+    if (!related.length) return;
+
+    container.innerHTML = "";
+
+    related.forEach(rel => {
+        const card = document.createElement("a");
+        card.className = "related-card";
+        card.href = resolvePrettyGameUrl(rel.id);
+
         const img = document.createElement("img");
-        img.src = src;
-        img.alt = `Screenshot ${index + 1}`;
-        img.loading = "lazy";
-        img.className = "game-screenshot-thumb";
+        img.src = resolveGameThumb(rel.thumbnail || rel.thumb || rel.cover);
+        img.alt = rel.title || "Game";
 
-        img.addEventListener("click", () => {
-            openScreenshotModal(index);
-        });
+        const title = document.createElement("span");
+        title.textContent = rel.title || "Unknown";
 
-        strip.appendChild(img);
+        card.appendChild(img);
+        card.appendChild(title);
+        container.appendChild(card);
     });
 
     section.hidden = false;
 }
 
 /* ============================================================
-   MODAL CONTROL
+   SCREENSHOT MODAL (SG-E3+)
 ============================================================ */
-
-const modal = document.getElementById("ccgModal");
-const modalFrame = document.getElementById("ccgModalFrame");
-const modalClose = document.querySelector(".ccg-modal-close");
-const modalNext = document.querySelector(".ccg-modal-nav--next");
-const modalPrev = document.querySelector(".ccg-modal-nav--prev");
-let modalMode = "gallery"; // "gallery" | "doc"
 
 function openScreenshotModal(index) {
-    CCG_SCREENSHOT_INDEX = index;
-    modalMode = "gallery";
-    modal.classList.remove("ccg-modal--doc");
-    modalFrame.src = CCG_SCREENSHOTS[index];
-    modal.classList.add("active");
-    modal.setAttribute("aria-hidden", "false");
+    const modal = document.getElementById("screenshotModal");
+    const img = document.getElementById("screenshotModalImg");
+
+    if (!modal || !img) return;
+
+    img.src = CCG_SCREENSHOTS[index];
+    modal.classList.add("open");
 }
 
-function openDocumentModal(src) {
-    modalMode = "doc";
-    modal.classList.add("ccg-modal--doc");
-    modalFrame.src = src;
-    modal.classList.add("active");
-    modal.setAttribute("aria-hidden", "false");
+function closeScreenshotModal() {
+    document.getElementById("screenshotModal").classList.remove("open");
 }
 
-function closeModal() {
-    modal.classList.remove("active");
-    modal.setAttribute("aria-hidden", "true");
-    modal.classList.remove("ccg-modal--doc");
-    modalMode = "gallery";
-    modalFrame.src = "";
-}
-
-function nextScreenshot() {
+function showNextScreenshot() {
     if (!CCG_SCREENSHOTS.length) return;
-
-    CCG_SCREENSHOT_INDEX =
-        (CCG_SCREENSHOT_INDEX + 1) % CCG_SCREENSHOTS.length;
-
-    modalFrame.src = CCG_SCREENSHOTS[CCG_SCREENSHOT_INDEX];
+    CCG_SCREENSHOT_INDEX = (CCG_SCREENSHOT_INDEX + 1) % CCG_SCREENSHOTS.length;
+    openScreenshotModal(CCG_SCREENSHOT_INDEX);
 }
 
-function prevScreenshot() {
+function showPrevScreenshot() {
     if (!CCG_SCREENSHOTS.length) return;
-
     CCG_SCREENSHOT_INDEX =
         (CCG_SCREENSHOT_INDEX - 1 + CCG_SCREENSHOTS.length) % CCG_SCREENSHOTS.length;
-
-    modalFrame.src = CCG_SCREENSHOTS[CCG_SCREENSHOT_INDEX];
+    openScreenshotModal(CCG_SCREENSHOT_INDEX);
 }
 
 /* ============================================================
-   EVENTS
+   NOT FOUND
 ============================================================ */
 
-modalClose.addEventListener("click", closeModal);
+function renderGameNotFound(gameId, slug) {
+    const hero = document.querySelector(".game-hero");
+    if (hero) hero.style.display = "none";
 
-modal.addEventListener("click", e => {
-    if (e.target === modal) closeModal();
-});
-
-if (modalNext) modalNext.addEventListener("click", () => {
-    if (modalMode === "doc") return;
-    nextScreenshot();
-});
-if (modalPrev) modalPrev.addEventListener("click", () => {
-    if (modalMode === "doc") return;
-    prevScreenshot();
-});
-
-document.addEventListener("keydown", e => {
-    if (!modal.classList.contains("active")) return;
-
-    if (e.key === "Escape") closeModal();
-    if (modalMode !== "doc") {
-        if (e.key === "ArrowRight") nextScreenshot();
-        if (e.key === "ArrowLeft") prevScreenshot();
+    const section = document.getElementById("gameNotFound");
+    if (section) {
+        section.style.display = "block";
+        const idEl = document.getElementById("notFoundId");
+        if (idEl) {
+            const fallback = slug || gameId || "Unknown";
+            idEl.textContent = fallback;
+        }
     }
-});
-
-/* ============================================================
-   RELATED GAMES
-============================================================ */
-
-function renderRelatedGames(game, allGames) {
-
-    const section = document.querySelector(".game-section--related");
-    const track = document.getElementById("relatedGamesTrack");
-    const titleEl = document.getElementById("relatedGamesTitle");
-    const kickerEl = document.getElementById("relatedGamesKicker");
-
-    if (!section || !track || !titleEl || !kickerEl) return;
-
-    let related = [];
-    let sourceLabel = "Publisher";
-
-    if (game.publisher) {
-        related = allGames.filter(g =>
-            g.publisher === game.publisher &&
-            String(g.id) !== String(game.id)
-        );
-    }
-
-    if (!related.length && game.developer) {
-        related = allGames.filter(g =>
-            g.developer === game.developer &&
-            String(g.id) !== String(game.id)
-        );
-        sourceLabel = "Developer";
-    }
-
-    related = related.slice(0, 10);
-
-    if (!related.length) {
-        section.hidden = true;
-        return;
-    }
-
-    titleEl.textContent = "More From The Same Publisher";
-    kickerEl.textContent = "Related Games";
-
-    track.innerHTML = related.map(g => {
-        const thumb = resolveGameThumb(g.thumbnail || g.thumb || g.cover);
-        return `
-            <a href="${resolvePrettyGameUrl(g.id) || `game.html?id=${encodeURIComponent(g.id)}`}" class="ccg-game-card">
-                <div class="ccg-game-card__thumb ccg-game-card__thumb--related">
-                    <img src="${thumb}" alt="${g.title}">
-                </div>
-                <div class="ccg-game-card__body">
-                    <h3 class="ccg-game-card__title">${g.title}</h3>
-                    <div class="ccg-game-card__meta">
-                        ${(g.year || "")} · ${(g.system || "")}
-                    </div>
-                </div>
-            </a>
-        `;
-    }).join("");
-
-    section.hidden = false;
-    initRelatedCarousel();
 }
 
 /* ============================================================
-   RELATED GAMES CAROUSEL BEHAVIOUR (SG-E5)
+   EVENT LISTENERS
 ============================================================ */
 
-function initRelatedCarousel() {
+document.getElementById("screenshotModalClose")
+    ?.addEventListener("click", closeScreenshotModal);
 
-    const track = document.querySelector(".related-carousel__track");
-    const viewport = document.querySelector(".related-carousel__viewport");
-    const prevBtn = document.querySelector(".related-carousel__nav--prev");
-    const nextBtn = document.querySelector(".related-carousel__nav--next");
+document.getElementById("screenshotNext")
+    ?.addEventListener("click", showNextScreenshot);
 
-    if (!track || !viewport || !prevBtn || !nextBtn) return;
+document.getElementById("screenshotPrev")
+    ?.addEventListener("click", showPrevScreenshot);
 
-    const scrollAmount = () => viewport.clientWidth * 0.9;
-
-    const scrollBy = delta => {
-        track.scrollBy({
-            left: delta,
-            behavior: "smooth"
-        });
-    };
-
-    prevBtn.addEventListener("click", () => scrollBy(-scrollAmount()));
-    nextBtn.addEventListener("click", () => scrollBy(scrollAmount()));
+// Close modal on background click
+const screenshotModal = document.getElementById("screenshotModal");
+if (screenshotModal) {
+    screenshotModal.addEventListener("click", e => {
+        if (e.target === screenshotModal) closeScreenshotModal();
+    });
 }
