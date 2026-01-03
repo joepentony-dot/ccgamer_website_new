@@ -354,8 +354,11 @@
         stopActiveEasterEgg();
 
         const overlay = createOverlay("ccg-egg-overlay");
+        overlay.classList.add("ccg-egg-overlay--letterbox");
         if (options.className) {
-            overlay.classList.add(options.className);
+            options.className.split(" ").forEach(className => {
+                if (className) overlay.classList.add(className);
+            });
         }
 
         overlay.innerHTML = `
@@ -464,7 +467,7 @@
         pacmanScreen.className = "ccg-egg-overlay__screen";
         const frame = createScreenFrame(getEasterEggAsset("pacman.html"));
         pacmanScreen.appendChild(frame);
-        openEasterEggOverlay(pacmanScreen, { media: [frame] });
+        openEasterEggOverlay(pacmanScreen, { media: [frame], className: "ccg-egg-overlay--square" });
     }
 
     function triggerBoing() {
@@ -492,12 +495,33 @@
         screen.appendChild(interrupt);
 
         const audio = createAudioElement(getEasterEggAsset("no_i_dont_think_sp.mp3"));
-        audio.addEventListener("ended", () => {
-            stopActiveEasterEgg();
-        });
+        audio.autoplay = false;
         screen.appendChild(audio);
 
-        openEasterEggOverlay(screen, { media: [frame, audio] });
+        const interruptTimers = {
+            start: null,
+            end: null,
+        };
+
+        const startInterrupt = () => {
+            screen.classList.add("is-interrupt");
+            audio.currentTime = 0;
+            audio.play().catch(() => {});
+            interruptTimers.end = setTimeout(() => {
+                stopActiveEasterEgg();
+            }, 5000);
+        };
+
+        interruptTimers.start = setTimeout(startInterrupt, 10000);
+
+        openEasterEggOverlay(screen, {
+            media: [frame, audio],
+            className: "ccg-egg-overlay--square",
+            cleanup: () => {
+                if (interruptTimers.start) clearTimeout(interruptTimers.start);
+                if (interruptTimers.end) clearTimeout(interruptTimers.end);
+            },
+        });
     }
 
     function triggerMatrix() {
@@ -515,12 +539,12 @@
         invadersScreen.className = "ccg-egg-overlay__screen";
         const frame = createScreenFrame("https://dwmkerr.github.io/spaceinvaders/");
         invadersScreen.appendChild(frame);
-        openEasterEggOverlay(invadersScreen, { media: [frame] });
+        openEasterEggOverlay(invadersScreen, { media: [frame], className: "ccg-egg-overlay--square" });
     }
 
     function triggerKonami() {
         const video = createVideoElement(getEasterEggAsset("konami-code.mp4"));
-        openEasterEggOverlay(video, { media: [video] });
+        openEasterEggOverlay(video, { media: [video], className: "ccg-egg-overlay--vertical" });
     }
 
     const cheats = {
@@ -529,7 +553,7 @@
             screen.className = "ccg-egg-overlay__screen";
             const frame = createScreenFrame("https://c64.krissz.hu/online-playable-games/");
             screen.appendChild(frame);
-            openEasterEggOverlay(screen, { media: [frame] });
+            openEasterEggOverlay(screen, { media: [frame], className: "ccg-egg-overlay--square" });
         },
         "pressplay": () => triggerPressPlay(),
         "vhs": () => {
@@ -542,7 +566,18 @@
             audioWrap.innerHTML = "<span>Terminator theme engaged.</span>";
             const audio = createAudioElement(getEasterEggAsset("terminator.mp3"));
             audioWrap.appendChild(audio);
-            openEasterEggOverlay(audioWrap, { media: [audio] });
+            let overlay = null;
+            const stopEffect = () => {
+                if (overlay) overlay.classList.remove("ccg-egg-overlay--terminator");
+            };
+            audio.addEventListener("ended", stopEffect);
+            overlay = openEasterEggOverlay(audioWrap, {
+                media: [audio],
+                className: "ccg-egg-overlay--terminator",
+                cleanup: () => {
+                    audio.removeEventListener("ended", stopEffect);
+                },
+            });
         },
         "bsod": () => triggerBSOD(),
         "mario": () => {
@@ -551,7 +586,18 @@
             audioWrap.innerHTML = "<span>Mario remix incoming.</span>";
             const audio = createAudioElement(getEasterEggAsset("mario.mp3"));
             audioWrap.appendChild(audio);
-            openEasterEggOverlay(audioWrap, { media: [audio] });
+            let overlay = null;
+            const stopEffect = () => {
+                if (overlay) overlay.classList.remove("ccg-egg-overlay--mario");
+            };
+            audio.addEventListener("ended", stopEffect);
+            overlay = openEasterEggOverlay(audioWrap, {
+                media: [audio],
+                className: "ccg-egg-overlay--mario",
+                cleanup: () => {
+                    audio.removeEventListener("ended", stopEffect);
+                },
+            });
         },
         "nokia": () => {
             const audioWrap = document.createElement("div");
@@ -559,7 +605,18 @@
             audioWrap.innerHTML = "<span>Nokia tone loading.</span>";
             const audio = createAudioElement(getEasterEggAsset("nokia.mp3"));
             audioWrap.appendChild(audio);
-            openEasterEggOverlay(audioWrap, { media: [audio] });
+            let overlay = null;
+            const stopEffect = () => {
+                if (overlay) overlay.classList.remove("ccg-egg-overlay--nokia");
+            };
+            audio.addEventListener("ended", stopEffect);
+            overlay = openEasterEggOverlay(audioWrap, {
+                media: [audio],
+                className: "ccg-egg-overlay--nokia",
+                cleanup: () => {
+                    audio.removeEventListener("ended", stopEffect);
+                },
+            });
         },
         "sonic": () => {
             const audioWrap = document.createElement("div");
@@ -567,7 +624,18 @@
             audioWrap.innerHTML = "<span>Sonic ring sound effect.</span>";
             const audio = createAudioElement(getEasterEggAsset("Sonic Ring Sound Effect.mp3"));
             audioWrap.appendChild(audio);
-            openEasterEggOverlay(audioWrap, { media: [audio] });
+            let overlay = null;
+            const stopEffect = () => {
+                if (overlay) overlay.classList.remove("ccg-egg-overlay--sonic");
+            };
+            audio.addEventListener("ended", stopEffect);
+            overlay = openEasterEggOverlay(audioWrap, {
+                media: [audio],
+                className: "ccg-egg-overlay--sonic",
+                cleanup: () => {
+                    audio.removeEventListener("ended", stopEffect);
+                },
+            });
         },
         "warp": () => triggerWarp(),
         "party": () => document.body.classList.toggle("ccg-party"),
@@ -582,24 +650,24 @@
         },
         "lemmings": () => triggerLemmings(),
         "cheeky": () => {
-            stopActiveEasterEgg();
+            const audioWrap = document.createElement("div");
+            audioWrap.className = "ccg-egg-overlay__audio";
+            audioWrap.innerHTML = "<span>Cheeky mode engaged.</span>";
             const audio = createAudioElement(getEasterEggAsset("gay.mp3"));
-            document.body.appendChild(audio);
-            const redirectTimer = setTimeout(() => {
+            audioWrap.appendChild(audio);
+            let overlay = null;
+            const handleEnded = () => {
+                if (!overlay || !secretState.activeEgg || secretState.activeEgg.overlay !== overlay) return;
+                stopActiveEasterEgg();
                 window.location.replace("https://gaydar.net/");
-            }, 200);
-            secretState.activeEgg = {
-                overlay: null,
-                media: [audio],
-                escHandler: null,
-                closeHandler: null,
-                exitButton: null,
-                cleanup: () => {
-                    clearTimeout(redirectTimer);
-                    if (audio.remove) audio.remove();
-                },
-                autoCloseTimer: null,
             };
+            audio.addEventListener("ended", handleEnded);
+            overlay = openEasterEggOverlay(audioWrap, {
+                media: [audio],
+                cleanup: () => {
+                    audio.removeEventListener("ended", handleEnded);
+                },
+            });
         },
         "konamicode": () => triggerKonami(),
     };
