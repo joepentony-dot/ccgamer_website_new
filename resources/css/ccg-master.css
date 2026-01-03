@@ -1922,6 +1922,27 @@ body.ccg-egg-open {
     position: relative;
     overflow: hidden;
     padding: 12px;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    aspect-ratio: 16 / 9;
+    max-height: 72vh;
+}
+
+.ccg-egg-overlay--square .ccg-egg-overlay__media {
+    aspect-ratio: 1 / 1;
+    height: min(72vh, 90vw);
+    width: auto;
+    min-height: 0;
+    max-height: none;
+}
+
+.ccg-egg-overlay--vertical .ccg-egg-overlay__media {
+    aspect-ratio: 9 / 16;
+    height: min(74vh, 92vw);
+    width: auto;
+    min-height: 0;
+    max-height: none;
 }
 
 .ccg-egg-overlay__screen,
@@ -1980,6 +2001,9 @@ body.ccg-egg-open {
     background: rgba(0, 0, 0, 0.75);
     padding: 20px;
     z-index: 2;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1.2s ease;
 }
 
 .ccg-egg-overlay__interrupt img {
@@ -1987,6 +2011,62 @@ body.ccg-egg-open {
     max-height: 100%;
     border-radius: 12px;
     box-shadow: 0 0 30px rgba(249, 255, 117, 0.3);
+}
+
+.ccg-egg-overlay__screen--zx .ccg-egg-overlay__iframe {
+    transition: opacity 1.2s ease;
+}
+
+.ccg-egg-overlay__screen--zx.is-interrupt .ccg-egg-overlay__iframe {
+    opacity: 0;
+}
+
+.ccg-egg-overlay__screen--zx.is-interrupt .ccg-egg-overlay__interrupt {
+    opacity: 1;
+}
+
+.ccg-egg-overlay--terminator::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, rgba(255, 40, 40, 0.24), rgba(25, 5, 5, 0.4));
+    mix-blend-mode: screen;
+    pointer-events: none;
+    z-index: 2;
+    animation: ccg-terminator-pulse 1.6s ease-in-out infinite, ccg-terminator-flicker 0.18s steps(2, end) infinite;
+}
+
+.ccg-egg-overlay--mario .ccg-egg-overlay__media {
+    animation: ccg-mario-bounce 2.8s ease-in-out infinite;
+    box-shadow: 0 0 24px rgba(255, 214, 77, 0.25);
+}
+
+.ccg-egg-overlay--mario .ccg-egg-overlay__media::after {
+    content: "";
+    position: absolute;
+    inset: 10%;
+    border-radius: 18px;
+    background: radial-gradient(circle, rgba(255, 227, 122, 0.22), transparent 70%);
+    opacity: 0.8;
+    animation: ccg-mario-sparkle 1.6s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.ccg-egg-overlay--sonic .ccg-egg-overlay__media::after {
+    content: "";
+    position: absolute;
+    inset: 12%;
+    border-radius: 50%;
+    border: 2px solid rgba(82, 196, 255, 0.6);
+    box-shadow: 0 0 30px rgba(82, 196, 255, 0.5);
+    opacity: 0;
+    animation: ccg-sonic-flash 0.7s ease-out 1;
+    pointer-events: none;
+}
+
+.ccg-egg-overlay--nokia .ccg-egg-overlay__media {
+    animation: ccg-nokia-flicker 0.24s steps(2, end) infinite;
+    box-shadow: inset 0 0 18px rgba(110, 255, 246, 0.2);
 }
 
 @media (max-width: 840px) {
@@ -1998,6 +2078,17 @@ body.ccg-egg-open {
 
     .ccg-egg-overlay__media {
         min-height: 46vh;
+        max-height: 68vh;
+    }
+
+    .ccg-egg-overlay--square .ccg-egg-overlay__media {
+        height: min(68vh, 92vw);
+        width: auto;
+    }
+
+    .ccg-egg-overlay--vertical .ccg-egg-overlay__media {
+        height: min(70vh, 92vw);
+        width: auto;
     }
 }
 
@@ -2033,6 +2124,18 @@ body.ccg-egg-open {
 .ccg-party .ccg-page,
 .ccg-party .intro-root {
     animation: ccg-party-pulse 2.6s linear infinite;
+}
+
+body.ccg-party::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(120deg, rgba(255, 92, 179, 0.18), rgba(86, 233, 255, 0.16), rgba(255, 214, 92, 0.16));
+    background-size: 220% 220%;
+    mix-blend-mode: screen;
+    animation: ccg-party-cycle 6s ease-in-out infinite;
 }
 
 .ccg-rainbow .ccg-page,
@@ -2197,7 +2300,7 @@ body.ccg-egg-open {
     height: 60px;
     background: radial-gradient(circle at top left, #fff, #ff3d9b);
     border-radius: 50%;
-    animation: ccg-boing 2.4s ease-in-out infinite;
+    animation: ccg-boing 2.4s ease-in-out infinite, ccg-boing-squash 0.6s ease-in-out infinite;
     box-shadow: 0 0 30px rgba(255, 61, 155, 0.5);
 }
 
@@ -2301,6 +2404,12 @@ body.ccg-egg-open {
     100% { filter: hue-rotate(360deg) saturate(1.1); }
 }
 
+@keyframes ccg-party-cycle {
+    0% { background-position: 0% 50%; opacity: 0.6; }
+    50% { background-position: 100% 50%; opacity: 0.9; }
+    100% { background-position: 0% 50%; opacity: 0.6; }
+}
+
 @keyframes ccg-rainbow-flow {
     0% { background-position: 0% 50%; }
     100% { background-position: 100% 50%; }
@@ -2340,6 +2449,45 @@ body.ccg-egg-open {
     100% { transform: translate(10vw, 20vh); }
 }
 
+@keyframes ccg-boing-squash {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15, 0.9); }
+}
+
+@keyframes ccg-terminator-pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+@keyframes ccg-terminator-flicker {
+    0% { opacity: 0.4; }
+    50% { opacity: 0.9; }
+    100% { opacity: 0.5; }
+}
+
+@keyframes ccg-mario-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+@keyframes ccg-mario-sparkle {
+    0%, 100% { opacity: 0.5; transform: scale(0.98); }
+    50% { opacity: 1; transform: scale(1.02); }
+}
+
+@keyframes ccg-sonic-flash {
+    0% { opacity: 0; transform: scale(0.6); }
+    30% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1.25); }
+}
+
+@keyframes ccg-nokia-flicker {
+    0% { filter: contrast(1.05) brightness(1); }
+    50% { filter: contrast(1.2) brightness(0.9); }
+    100% { filter: contrast(1.05) brightness(1); }
+}
+
 @keyframes ccg-pacman-run {
     0% { transform: translateX(0); }
     100% { transform: translateX(120vw); }
@@ -2353,4 +2501,18 @@ body.ccg-egg-open {
 @keyframes ccg-konami-fade {
     0% { opacity: 1; }
     100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ccg-egg-overlay--terminator::after,
+    .ccg-egg-overlay--mario .ccg-egg-overlay__media,
+    .ccg-egg-overlay--mario .ccg-egg-overlay__media::after,
+    .ccg-egg-overlay--sonic .ccg-egg-overlay__media::after,
+    .ccg-egg-overlay--nokia .ccg-egg-overlay__media,
+    body.ccg-party::before,
+    .ccg-party .ccg-page,
+    .ccg-party .intro-root,
+    .ccg-boing::before {
+        animation: none !important;
+    }
 }
