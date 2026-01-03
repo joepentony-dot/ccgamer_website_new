@@ -243,11 +243,10 @@
     ====================================================== */
     const secretState = {
         modal: null,
-        consolePanel: null,
-        consoleInput: null,
         audioCtx: null,
         inputBuffer: "",
         konamiIndex: 0,
+        activeEgg: null,
     };
 
     const konamiSequence = [
@@ -295,6 +294,139 @@
         return overlay;
     }
 
+    function getEasterEggAsset(filename) {
+        const root = getSiteRoot();
+        const prefix = root.endsWith("/") ? root : `${root}/`;
+        return `${prefix}resources/audio/easter-eggs/${encodeURI(filename)}`;
+    }
+
+    function stopMediaElement(media) {
+        if (!media) return;
+        if (media.pause) {
+            media.pause();
+            media.currentTime = 0;
+        }
+        if (media.removeAttribute) {
+            media.removeAttribute("src");
+        }
+        if (media.load) {
+            media.load();
+        }
+        if (media.remove) {
+            media.remove();
+        }
+    }
+
+    function stopActiveEasterEgg() {
+        if (!secretState.activeEgg) return;
+
+        const { overlay, media, escHandler, closeHandler, exitButton, cleanup, autoCloseTimer } = secretState.activeEgg;
+
+        if (escHandler) {
+            document.removeEventListener("keydown", escHandler);
+        }
+
+        if (exitButton && closeHandler) {
+            exitButton.removeEventListener("click", closeHandler);
+        }
+
+        if (autoCloseTimer) {
+            clearTimeout(autoCloseTimer);
+        }
+
+        if (Array.isArray(media)) {
+            media.forEach(stopMediaElement);
+        }
+
+        if (typeof cleanup === "function") {
+            cleanup();
+        }
+
+        if (overlay) {
+            overlay.remove();
+        }
+
+        document.body.classList.remove("ccg-egg-open");
+        secretState.activeEgg = null;
+    }
+
+    function openEasterEggOverlay(content, options = {}) {
+        stopActiveEasterEgg();
+
+        const overlay = createOverlay("ccg-egg-overlay");
+        if (options.className) {
+            overlay.classList.add(options.className);
+        }
+
+        overlay.innerHTML = `
+            <div class="ccg-egg-overlay__frame">
+                <button class="ccg-egg-overlay__exit" type="button">Exit to CCGAMER Website</button>
+                <div class="ccg-egg-overlay__media"></div>
+            </div>
+        `;
+
+        const mediaContainer = overlay.querySelector(".ccg-egg-overlay__media");
+        if (content) {
+            mediaContainer.appendChild(content);
+        }
+
+        const exitButton = overlay.querySelector(".ccg-egg-overlay__exit");
+        const closeHandler = () => stopActiveEasterEgg();
+        exitButton.addEventListener("click", closeHandler);
+
+        const escHandler = event => {
+            if (event.key === "Escape") {
+                stopActiveEasterEgg();
+            }
+        };
+        document.addEventListener("keydown", escHandler);
+
+        document.body.classList.add("ccg-egg-open");
+
+        secretState.activeEgg = {
+            overlay,
+            media: options.media || [],
+            escHandler,
+            closeHandler,
+            exitButton,
+            cleanup: options.cleanup || null,
+            autoCloseTimer: options.autoCloseTimer || null,
+        };
+
+        return overlay;
+    }
+
+    function createVideoElement(src, { muted = false, loop = false } = {}) {
+        const video = document.createElement("video");
+        video.className = "ccg-egg-overlay__video";
+        video.src = src;
+        video.autoplay = true;
+        video.controls = true;
+        video.playsInline = true;
+        video.muted = muted;
+        video.loop = loop;
+        return video;
+    }
+
+    function createAudioElement(src) {
+        const audio = document.createElement("audio");
+        audio.className = "ccg-egg-overlay__audio-media";
+        audio.src = src;
+        audio.autoplay = true;
+        audio.preload = "auto";
+        return audio;
+    }
+
+    function createScreenFrame(src, className) {
+        const frame = document.createElement("iframe");
+        frame.className = className || "ccg-egg-overlay__iframe";
+        frame.src = src;
+        frame.title = "CCG Easter Egg";
+        frame.allowFullscreen = true;
+        frame.referrerPolicy = "strict-origin-when-cross-origin";
+        return frame;
+    }
+
     function triggerC64Reset() {
         const reset = createOverlay("ccg-c64-reset", `
             <div class="ccg-c64-reset__screen">
@@ -308,12 +440,8 @@
     }
 
     function triggerPressPlay() {
-        const overlay = createOverlay("ccg-press-play", `
-            <div class="ccg-press-play__bars"></div>
-            <h1>PRESS PLAY ON TAPE</h1>
-            <div class="ccg-press-play__bars"></div>
-        `);
-        setTimeout(() => overlay.remove(), 4200);
+        const video = createVideoElement(getEasterEggAsset("press-play.mp4"));
+        openEasterEggOverlay(video, { media: [video] });
     }
 
     function triggerBSOD() {
@@ -332,27 +460,11 @@
     }
 
     function triggerPacman() {
-        const pacman = createOverlay("ccg-pacman");
-        pacman.innerHTML = `
-            <div class="ccg-pacman__sprite"></div>
-            <div class="ccg-pacman__ghost"></div>
-        `;
-        let chompInterval = null;
-        const startChomp = () => {
-            if (chompInterval) return;
-            let high = true;
-            chompInterval = setInterval(() => {
-                playTone(high ? 880 : 660, "square", 0.08, 0.12);
-                high = !high;
-            }, 180);
-        };
-        startChomp();
-        setTimeout(() => {
-            if (chompInterval) {
-                clearInterval(chompInterval);
-            }
-            pacman.remove();
-        }, 13000);
+        const pacmanScreen = document.createElement("div");
+        pacmanScreen.className = "ccg-egg-overlay__screen";
+        const frame = createScreenFrame(getEasterEggAsset("pacman.html"));
+        pacmanScreen.appendChild(frame);
+        openEasterEggOverlay(pacmanScreen, { media: [frame] });
     }
 
     function triggerBoing() {
@@ -361,96 +473,101 @@
     }
 
     function triggerLemmings() {
-        const lemmings = createOverlay("ccg-lemmings", `
-            <div class="ccg-lemmings__countdown">3</div>
-            <div class="ccg-lemmings__label">NUKE DEPLOYING...</div>
-        `);
-        const countdown = lemmings.querySelector(".ccg-lemmings__countdown");
-        let count = 3;
-        const timer = setInterval(() => {
-            count -= 1;
-            if (count >= 0) {
-                countdown.textContent = String(count);
-            }
-            if (count < 0) {
-                clearInterval(timer);
-                lemmings.classList.add("is-boom");
-                countdown.textContent = "💥";
-                lemmings.querySelector(".ccg-lemmings__label").textContent = "OH NO!";
-                setTimeout(() => lemmings.remove(), 2500);
-            }
-        }, 800);
+        const video = createVideoElement(getEasterEggAsset("lemmings.mp4"));
+        openEasterEggOverlay(video, { media: [video] });
     }
 
     function triggerZX() {
-        const overlay = createOverlay("ccg-zx", `
-            <div class="ccg-zx__screen">
-                <div class="ccg-zx__title">ZX SPECTRUM 48K</div>
-                <div class="ccg-zx__loader">LOADING... PLEASE WAIT</div>
-                <div class="ccg-zx__bar"><span></span></div>
-                <div class="ccg-zx__prompt">READY.</div>
-            </div>
-        `);
-        setTimeout(() => overlay.classList.add("is-active"), 20);
-        setTimeout(() => overlay.remove(), 5200);
+        const screen = document.createElement("div");
+        screen.className = "ccg-egg-overlay__screen ccg-egg-overlay__screen--zx";
+
+        const frame = createScreenFrame("https://jsspeccy.zxdemo.org/", "ccg-egg-overlay__iframe");
+        screen.appendChild(frame);
+
+        const interrupt = document.createElement("div");
+        interrupt.className = "ccg-egg-overlay__interrupt";
+        interrupt.innerHTML = `
+            <img src="${getEasterEggAsset("zx-clive.jpg")}" alt="ZX Spectrum interruption screen" />
+        `;
+        screen.appendChild(interrupt);
+
+        const audio = createAudioElement(getEasterEggAsset("no_i_dont_think_sp.mp3"));
+        audio.addEventListener("ended", () => {
+            stopActiveEasterEgg();
+        });
+        screen.appendChild(audio);
+
+        openEasterEggOverlay(screen, { media: [frame, audio] });
     }
 
     function triggerMatrix() {
-        const existing = document.querySelector(".ccg-matrix");
-        if (existing) {
-            existing.remove();
-            return;
-        }
-        createOverlay("ccg-matrix");
+        const mediaWrap = document.createElement("div");
+        mediaWrap.className = "ccg-egg-overlay__stack";
+        const video = createVideoElement(getEasterEggAsset("matrix.mp4"), { muted: true, loop: true });
+        const audio = createAudioElement(getEasterEggAsset("matrix_pills.mp3"));
+        mediaWrap.appendChild(video);
+        mediaWrap.appendChild(audio);
+        openEasterEggOverlay(mediaWrap, { media: [video, audio] });
     }
 
     function triggerInvaders() {
-        const existing = document.querySelector(".ccg-invaders");
-        if (existing) {
-            existing.remove();
-            return;
-        }
-        createOverlay("ccg-invaders");
-    }
-
-    function triggerRainbow() {
-        document.body.classList.toggle("ccg-rainbow");
+        const invadersScreen = document.createElement("div");
+        invadersScreen.className = "ccg-egg-overlay__screen";
+        const frame = createScreenFrame("https://dwmkerr.github.io/spaceinvaders/");
+        invadersScreen.appendChild(frame);
+        openEasterEggOverlay(invadersScreen, { media: [frame] });
     }
 
     function triggerKonami() {
-        const overlay = createOverlay("ccg-konami", `
-            <div class="ccg-konami__card">
-                <h2>GOD MODE ENABLED</h2>
-                <p>POWER LEVELS MAXED • CRT SHUTDOWN INITIATED</p>
-            </div>
-        `);
-        setTimeout(() => overlay.classList.add("is-fade"), 2200);
-        setTimeout(() => overlay.remove(), 3800);
+        const video = createVideoElement(getEasterEggAsset("konami-code.mp4"));
+        openEasterEggOverlay(video, { media: [video] });
     }
 
     const cheats = {
-        "sys64738": () => triggerC64Reset(),
+        "sys64738": () => {
+            const screen = document.createElement("div");
+            screen.className = "ccg-egg-overlay__screen";
+            const frame = createScreenFrame("https://c64.krissz.hu/online-playable-games/");
+            screen.appendChild(frame);
+            openEasterEggOverlay(screen, { media: [frame] });
+        },
         "pressplay": () => triggerPressPlay(),
-        "vhs": () => document.body.classList.toggle("ccg-vhs"),
+        "vhs": () => {
+            const video = createVideoElement(getEasterEggAsset("vhs.mp4"));
+            openEasterEggOverlay(video, { media: [video] });
+        },
         "terminator": () => {
-            document.body.classList.toggle("ccg-terminator");
-            playTone(100, "sawtooth", 0.5, 0.4);
+            const audioWrap = document.createElement("div");
+            audioWrap.className = "ccg-egg-overlay__audio";
+            audioWrap.innerHTML = "<span>Terminator theme engaged.</span>";
+            const audio = createAudioElement(getEasterEggAsset("terminator.mp3"));
+            audioWrap.appendChild(audio);
+            openEasterEggOverlay(audioWrap, { media: [audio] });
         },
         "bsod": () => triggerBSOD(),
         "mario": () => {
-            playTone(660, "square", 0.1, 0.25);
-            setTimeout(() => playTone(1320, "square", 0.3, 0.2), 150);
+            const audioWrap = document.createElement("div");
+            audioWrap.className = "ccg-egg-overlay__audio";
+            audioWrap.innerHTML = "<span>Mario remix incoming.</span>";
+            const audio = createAudioElement(getEasterEggAsset("mario.mp3"));
+            audioWrap.appendChild(audio);
+            openEasterEggOverlay(audioWrap, { media: [audio] });
         },
         "nokia": () => {
-            const t = 150;
-            playTone(1318, "square", 0.1, 0.2);
-            setTimeout(() => playTone(1174, "square", 0.1, 0.2), t);
-            setTimeout(() => playTone(740, "square", 0.1, 0.2), t * 2);
-            setTimeout(() => playTone(830, "square", 0.2, 0.2), t * 3);
+            const audioWrap = document.createElement("div");
+            audioWrap.className = "ccg-egg-overlay__audio";
+            audioWrap.innerHTML = "<span>Nokia tone loading.</span>";
+            const audio = createAudioElement(getEasterEggAsset("nokia.mp3"));
+            audioWrap.appendChild(audio);
+            openEasterEggOverlay(audioWrap, { media: [audio] });
         },
         "sonic": () => {
-            playTone(1200, "sine", 0.3, 0.2);
-            setTimeout(() => playTone(1000, "sine", 0.4, 0.18), 300);
+            const audioWrap = document.createElement("div");
+            audioWrap.className = "ccg-egg-overlay__audio";
+            audioWrap.innerHTML = "<span>Sonic ring sound effect.</span>";
+            const audio = createAudioElement(getEasterEggAsset("Sonic Ring Sound Effect.mp3"));
+            audioWrap.appendChild(audio);
+            openEasterEggOverlay(audioWrap, { media: [audio] });
         },
         "warp": () => triggerWarp(),
         "party": () => document.body.classList.toggle("ccg-party"),
@@ -459,9 +576,31 @@
         "boing": () => triggerBoing(),
         "matrix": () => triggerMatrix(),
         "invaders": () => triggerInvaders(),
-        "rainbow": () => triggerRainbow(),
+        "heman": () => {
+            const video = createVideoElement(getEasterEggAsset("heman.mp4"));
+            openEasterEggOverlay(video, { media: [video] });
+        },
         "lemmings": () => triggerLemmings(),
-        "cheeky": () => window.location.replace("https://gaydar.net/"),
+        "cheeky": () => {
+            stopActiveEasterEgg();
+            const audio = createAudioElement(getEasterEggAsset("gay.mp3"));
+            document.body.appendChild(audio);
+            const redirectTimer = setTimeout(() => {
+                window.location.replace("https://gaydar.net/");
+            }, 200);
+            secretState.activeEgg = {
+                overlay: null,
+                media: [audio],
+                escHandler: null,
+                closeHandler: null,
+                exitButton: null,
+                cleanup: () => {
+                    clearTimeout(redirectTimer);
+                    if (audio.remove) audio.remove();
+                },
+                autoCloseTimer: null,
+            };
+        },
         "konamicode": () => triggerKonami(),
     };
 
@@ -473,8 +612,52 @@
         const normalized = normalizeCode(code);
         if (cheats[normalized]) {
             closeSecretModal();
+            stopActiveEasterEgg();
             cheats[normalized]();
         }
+    }
+
+    function setupSecretTyping() {
+        const cheatKeys = Object.keys(cheats);
+        const maxBuffer = Math.max(...cheatKeys.map(key => key.length)) + 6;
+
+        document.addEventListener("keydown", event => {
+            if (event.defaultPrevented) return;
+
+            if (event.key === "Escape") {
+                if (secretState.activeEgg) {
+                    stopActiveEasterEgg();
+                }
+                return;
+            }
+
+            if (event.ctrlKey || event.metaKey || event.altKey) return;
+
+            if (event.key === konamiSequence[secretState.konamiIndex]) {
+                secretState.konamiIndex += 1;
+                if (secretState.konamiIndex >= konamiSequence.length) {
+                    secretState.konamiIndex = 0;
+                    triggerCheat("konamicode");
+                }
+                return;
+            }
+
+            secretState.konamiIndex = 0;
+
+            if (event.key.length !== 1) return;
+
+            secretState.inputBuffer += event.key;
+            if (secretState.inputBuffer.length > maxBuffer) {
+                secretState.inputBuffer = secretState.inputBuffer.slice(-maxBuffer);
+            }
+
+            const normalizedBuffer = normalizeCode(secretState.inputBuffer);
+            const matched = cheatKeys.find(key => normalizedBuffer.endsWith(key));
+            if (matched) {
+                triggerCheat(matched);
+                resetSecretInputState();
+            }
+        });
     }
 
     function buildSecretModal() {
@@ -486,7 +669,6 @@
         modal.innerHTML = `
             <div class="ccg-secret-modal__content" role="dialog" aria-label="Secret system commands">
                 <div class="ccg-secret-modal__actions">
-                    <button class="ccg-secret-btn" type="button" data-ccg-secret-open-input>ENTER CODES</button>
                     <button class="ccg-secret-btn" type="button" data-ccg-secret-close>CLOSE EASTER EGGS</button>
                 </div>
                 <h2>SYSTEM COMMANDS</h2>
@@ -507,26 +689,16 @@
                     <li data-ccg-secret-code="boing">BOING</li>
                     <li data-ccg-secret-code="matrix">MATRIX</li>
                     <li data-ccg-secret-code="invaders">INVADERS</li>
-                    <li data-ccg-secret-code="rainbow">RAINBOW</li>
+                    <li data-ccg-secret-code="heman">HEMAN</li>
                     <li data-ccg-secret-code="lemmings">LEMMINGS</li>
                     <li data-ccg-secret-code="cheeky">CHEEKY</li>
                     <li data-ccg-secret-code="konamicode">KONAMI CODE</li>
                 </ul>
-                <div class="ccg-secret-console" hidden>
-                    <label class="ccg-secret-console__label" for="ccg-secret-input">ENTER COMMAND:</label>
-                    <div class="ccg-secret-console__row">
-                        <input id="ccg-secret-input" class="ccg-secret-console__input" type="text" autocomplete="off" />
-                        <button class="ccg-secret-btn" type="button" data-ccg-secret-run>RUN</button>
-                    </div>
-                </div>
             </div>
         `;
 
         document.body.appendChild(modal);
         secretState.modal = modal;
-        secretState.consolePanel = modal.querySelector(".ccg-secret-console");
-        secretState.consoleInput = modal.querySelector(".ccg-secret-console__input");
-
         modal.addEventListener("click", event => {
             if (event.target === modal) closeSecretModal();
         });
@@ -537,25 +709,7 @@
             });
         });
 
-        modal.querySelector("[data-ccg-secret-open-input]").addEventListener("click", () => {
-            secretState.consolePanel.hidden = false;
-            secretState.consoleInput.focus();
-        });
-
         modal.querySelector("[data-ccg-secret-close]").addEventListener("click", closeSecretModal);
-
-        modal.querySelector("[data-ccg-secret-run]").addEventListener("click", () => {
-            triggerCheat(secretState.consoleInput.value);
-            secretState.consoleInput.value = "";
-            secretState.consoleInput.focus();
-        });
-
-        secretState.consoleInput.addEventListener("keydown", event => {
-            if (event.key === "Enter") {
-                triggerCheat(secretState.consoleInput.value);
-                secretState.consoleInput.value = "";
-            }
-        });
 
         return modal;
     }
@@ -1013,6 +1167,7 @@
         setupNavToggle();
         setupVisitCounter();
         setupLogoEasterEgg();
+        setupSecretTyping();
 
         /* ==================================================
            VIEWPORT WOW — LIGHT UP EVERYTHING
