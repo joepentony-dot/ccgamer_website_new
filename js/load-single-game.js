@@ -705,19 +705,12 @@ function renderRelatedGames(game) {
 
     if (!container || !section) return;
 
-    let related = Array.isArray(game.related) ? game.related : [];
+    const developer = game.developer;
+    if (!developer) return;
 
-    // SG-E5: fallback on same system + same year if no explicit related
-    if (!related.length) {
-        related = CCG_SINGLE_ALL_GAMES.filter(g =>
-            g.id !== game.id &&
-            (g.system === game.system || g.year === game.year)
-        ).slice(0, 12);
-    } else {
-        related = related.map(id =>
-            CCG_SINGLE_ALL_GAMES.find(g => String(g.id) === String(id))
-        ).filter(Boolean);
-    }
+    const related = CCG_SINGLE_ALL_GAMES.filter(g =>
+        g.id !== game.id && g.developer === developer
+    );
 
     if (!related.length) return;
 
