@@ -399,16 +399,20 @@
         return overlay;
     }
 
-    function createVideoElement(src, { muted = false, loop = false } = {}) {
+    function createVideoElement(src, { muted = false, loop = false, autoplay = true } = {}) {
         const video = document.createElement("video");
         video.className = "ccg-egg-overlay__video";
         video.src = src;
-        video.autoplay = true;
+        video.autoplay = autoplay;
         video.controls = true;
         video.playsInline = true;
         video.muted = muted;
         video.loop = loop;
         return video;
+    }
+
+    function prefersReducedMotion() {
+        return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     }
 
     function createAudioElement(src) {
@@ -471,8 +475,9 @@
     }
 
     function triggerBoing() {
-        const boing = createOverlay("ccg-boing");
-        setTimeout(() => boing.remove(), 10000);
+        const shouldReduceMotion = prefersReducedMotion();
+        const video = createVideoElement(getEasterEggAsset("boing.mp4"), { autoplay: !shouldReduceMotion });
+        openEasterEggOverlay(video, { media: [video] });
     }
 
     function triggerLemmings() {
@@ -601,8 +606,13 @@
         },
         "nokia": () => {
             const audioWrap = document.createElement("div");
-            audioWrap.className = "ccg-egg-overlay__audio";
-            audioWrap.innerHTML = "<span>Nokia tone loading.</span>";
+            audioWrap.className = "ccg-egg-overlay__audio ccg-egg-overlay__audio--nokia";
+            audioWrap.innerHTML = `
+                <div class="ccg-egg-overlay__nokia-screen">
+                    <img src="${getEasterEggAsset("nokia-image.jpg")}" alt="Nokia boot screen" />
+                </div>
+                <span class="ccg-egg-overlay__label">Nokia tone loading.</span>
+            `;
             const audio = createAudioElement(getEasterEggAsset("nokia.mp3"));
             audioWrap.appendChild(audio);
             let overlay = null;
@@ -625,20 +635,50 @@
             const audio = createAudioElement(getEasterEggAsset("Sonic Ring Sound Effect.mp3"));
             audioWrap.appendChild(audio);
             let overlay = null;
+            let pendingRing = false;
+            const triggerRing = () => {
+                if (!overlay) {
+                    pendingRing = true;
+                    return;
+                }
+                overlay.classList.remove("ccg-egg-overlay--sonic-ring");
+                void overlay.offsetWidth;
+                overlay.classList.add("ccg-egg-overlay--sonic-ring");
+            };
             const stopEffect = () => {
-                if (overlay) overlay.classList.remove("ccg-egg-overlay--sonic");
+                if (overlay) {
+                    overlay.classList.remove("ccg-egg-overlay--sonic");
+                    overlay.classList.remove("ccg-egg-overlay--sonic-ring");
+                }
+            };
+            const handlePlay = () => {
+                triggerRing();
             };
             audio.addEventListener("ended", stopEffect);
+            audio.addEventListener("play", handlePlay);
             overlay = openEasterEggOverlay(audioWrap, {
                 media: [audio],
                 className: "ccg-egg-overlay--sonic",
                 cleanup: () => {
                     audio.removeEventListener("ended", stopEffect);
+                    audio.removeEventListener("play", handlePlay);
                 },
             });
+            if (pendingRing) {
+                triggerRing();
+                pendingRing = false;
+            }
         },
         "warp": () => triggerWarp(),
-        "party": () => document.body.classList.toggle("ccg-party"),
+        "party": () => {
+            document.body.classList.remove("ccg-party");
+            const shouldReduceMotion = prefersReducedMotion();
+            const video = createVideoElement(getEasterEggAsset("party.mpg"), {
+                autoplay: !shouldReduceMotion,
+                loop: true,
+            });
+            openEasterEggOverlay(video, { media: [video], className: "ccg-egg-overlay--party" });
+        },
         "zxspectrum": () => triggerZX(),
         "pacman": () => triggerPacman(),
         "boing": () => triggerBoing(),
