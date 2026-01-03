@@ -673,7 +673,7 @@
         "party": () => {
             document.body.classList.remove("ccg-party");
             const shouldReduceMotion = prefersReducedMotion();
-            const video = createVideoElement(getEasterEggAsset("party.mpg"), {
+            const video = createVideoElement(getEasterEggAsset("party.mp4"), {
                 autoplay: !shouldReduceMotion,
                 loop: true,
             });
