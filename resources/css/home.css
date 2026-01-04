@@ -563,12 +563,22 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
     }
 
     .home-featured-videos .home-featured-video-media {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        aspect-ratio: 16 / 9;
+        min-height: 180px;
+        height: auto;
         position: relative;
         isolation: isolate;
         z-index: 20;
     }
 
     .home-featured-videos .home-video-card__iframe {
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        display: block;
         position: relative;
         z-index: 30;
         pointer-events: auto;
