@@ -529,6 +529,9 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     border: 1px solid var(--ccg-border);
     border-radius: 14px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+    position: relative;
+    z-index: 2;
+    pointer-events: auto;
 }
 
 .game-video__actions,
