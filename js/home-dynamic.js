@@ -8,6 +8,11 @@
 ============================================================ */
 
 let CCG_HOME_ALL_GAMES = [];
+const YT_API_SRC = "https://www.youtube.com/iframe_api";
+const CCG_HOME_YT_PLAYERS = new Map();
+const CCG_HOME_YT_QUEUE = new Set();
+let CCG_HOME_YT_API_READY = false;
+let CCG_HOME_YT_API_LOADING = false;
 
 const MOBILE_MEDIA = window.matchMedia?.("(max-width: 1024px)");
 const PREFERS_REDUCED_MOTION = window.matchMedia?.("(prefers-reduced-motion: reduce)");
@@ -56,6 +61,97 @@ async function initHomeDynamic() {
             });
         }
     }
+}
+
+function loadYouTubeIframeAPI() {
+    if (window.YT?.Player) {
+        CCG_HOME_YT_API_READY = true;
+        flushQueuedYouTubePlayers();
+        return;
+    }
+
+    if (CCG_HOME_YT_API_LOADING || CCG_HOME_YT_API_READY) return;
+
+    const existingScript = document.querySelector(`script[src="${YT_API_SRC}"]`);
+    const previousReady = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = () => {
+        if (typeof previousReady === "function") {
+            previousReady();
+        }
+        CCG_HOME_YT_API_READY = true;
+        CCG_HOME_YT_API_LOADING = false;
+        flushQueuedYouTubePlayers();
+    };
+
+    if (existingScript) {
+        CCG_HOME_YT_API_LOADING = true;
+        return;
+    }
+
+    const script = document.createElement("script");
+    script.src = YT_API_SRC;
+    script.async = true;
+    script.defer = true;
+    CCG_HOME_YT_API_LOADING = true;
+    document.head.appendChild(script);
+}
+
+function flushQueuedYouTubePlayers() {
+    if (!window.YT?.Player) return;
+    CCG_HOME_YT_QUEUE.forEach(iframe => {
+        createYouTubePlayer(iframe);
+    });
+    CCG_HOME_YT_QUEUE.clear();
+}
+
+function createYouTubePlayer(iframe) {
+    if (!iframe?.id || CCG_HOME_YT_PLAYERS.has(iframe.id) || !window.YT?.Player) return;
+    const player = new window.YT.Player(iframe, {
+        events: {
+            onReady: onYouTubePlayerReady
+        }
+    });
+    CCG_HOME_YT_PLAYERS.set(iframe.id, player);
+}
+
+function onYouTubePlayerReady(event) {
+    const player = event?.target;
+    const iframe = player?.getIframe?.();
+    if (iframe?.id) {
+        CCG_HOME_YT_PLAYERS.set(iframe.id, player);
+    }
+}
+
+function ensureYouTubePlayer(iframe) {
+    if (!iframe?.id) return;
+    if (CCG_HOME_YT_PLAYERS.has(iframe.id)) return;
+
+    if (window.YT?.Player) {
+        createYouTubePlayer(iframe);
+        return;
+    }
+
+    CCG_HOME_YT_QUEUE.add(iframe);
+    loadYouTubeIframeAPI();
+}
+
+function pauseVideo(player) {
+    if (player && typeof player.pauseVideo === "function") {
+        player.pauseVideo();
+    }
+}
+
+function playVideo(player) {
+    if (player && typeof player.playVideo === "function") {
+        player.playVideo();
+    }
+}
+
+function pauseOtherFeaturedVideos(activeIframe) {
+    CCG_HOME_YT_PLAYERS.forEach((player, id) => {
+        if (activeIframe?.id && id === activeIframe.id) return;
+        pauseVideo(player);
+    });
 }
 
 /* ------------------------------------------------------------
@@ -231,6 +327,9 @@ function pickSpotlightGame() {
 function hydrateSpotlightVideo(videoId, iframeWrap) {
     const watchButtons = document.querySelectorAll('[data-ccg-spotlight-watch]');
     const iframe = document.querySelector('[data-ccg-spotlight-iframe]');
+    if (iframe && !iframe.id) {
+        iframe.id = "yt-player-spotlight";
+    }
 
     if (!videoId || !iframeWrap || !iframe) {
         watchButtons.forEach(btn => {
@@ -240,13 +339,14 @@ function hydrateSpotlightVideo(videoId, iframeWrap) {
         return;
     }
 
-    const embedSrc = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&autoplay=1`;
+    const embedSrc = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&autoplay=1&enablejsapi=1`;
 
     const loadEmbed = () => {
         if (iframe.dataset.loaded === "true") return;
         iframe.src = embedSrc;
         iframe.dataset.loaded = "true";
         iframeWrap.classList.add("is-playing");
+        ensureYouTubePlayer(iframe);
     };
 
     watchButtons.forEach(btn => {
@@ -309,14 +409,14 @@ function renderFeaturedVideos() {
 
     grid.innerHTML = "";
 
-    lanes.forEach(lane => {
+    lanes.forEach((lane, index) => {
         const game = pickVideoGame(lane.system);
-        const card = buildVideoCard(game, lane.label);
+        const card = buildVideoCard(game, lane.label, index);
         grid.appendChild(card);
     });
 }
 
-function buildVideoCard(game, systemLabel) {
+function buildVideoCard(game, systemLabel, index) {
     const card = document.createElement("article");
     card.className = "ccg-card home-video-card";
 
@@ -329,6 +429,7 @@ function buildVideoCard(game, systemLabel) {
     const title = game?.title || `${systemLabel} pick`;
     const gameUrl = game ? resolveGameUrl(game) : "#";
     const ytUrl = hasVideo ? `https://www.youtube.com/watch?v=${videoId}` : "#";
+    const iframeId = hasVideo ? `yt-player-featured-${systemLabel.toLowerCase().replace(/\s+/g, "-")}-${index}` : "";
 
     card.innerHTML = `
         <div class="home-video-card__media">
@@ -339,6 +440,7 @@ function buildVideoCard(game, systemLabel) {
             <div class="home-video-card__iframe" data-ccg-video-iframe-wrap hidden>
                 <iframe
                     data-ccg-video-iframe
+                    ${iframeId ? `id="${iframeId}"` : ""}
                     title="${title} gameplay video"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
                     allowfullscreen></iframe>
@@ -362,11 +464,13 @@ function buildVideoCard(game, systemLabel) {
     if (hasVideo && playButton && iframeWrap && iframe) {
         playButton.onclick = () => {
             if (!iframe.dataset.loaded) {
-                iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&autoplay=1`;
+                iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&autoplay=1&enablejsapi=1`;
                 iframe.dataset.loaded = "true";
             }
             card.classList.add("is-playing");
             iframeWrap.hidden = false;
+            ensureYouTubePlayer(iframe);
+            pauseOtherFeaturedVideos(iframe);
         };
     }
 
