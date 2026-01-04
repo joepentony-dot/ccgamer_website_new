@@ -875,7 +875,7 @@
         logoClickState.resetTimer = setTimeout(() => {
             logoClickState.count = 0;
             logoClickState.resetTimer = null;
-        }, 1400);
+        }, 850);
     }
 
     function flashLogo(logo, flashClass) {
@@ -935,28 +935,31 @@
     }
 
     function setupLogoEasterEgg() {
-        const logos = document.querySelectorAll(".ccg-brand__logo");
+        const logos = document.querySelectorAll(".ccg-header .ccg-brand__logo");
         if (!logos.length) return;
 
-        const desktopMatch = typeof window.matchMedia === "function"
-            ? window.matchMedia("(min-width: 1024px)")
-            : null;
-
-        if (desktopMatch && !desktopMatch.matches) return;
-
         logos.forEach(logo => {
-            const brandLink = logo.closest("a");
-            if (brandLink) {
+            if (logo.dataset.ccgLogoEasterEgg === "true") return;
+            logo.dataset.ccgLogoEasterEgg = "true";
+
+            const brandLink = logo.closest(".ccg-brand");
+            if (brandLink && brandLink.tagName === "A") {
                 brandLink.removeAttribute("href");
                 brandLink.removeAttribute("target");
                 brandLink.removeAttribute("rel");
                 brandLink.setAttribute("role", "button");
                 brandLink.setAttribute("tabindex", "0");
+                if (!brandLink.getAttribute("aria-label")) {
+                    brandLink.setAttribute("aria-label", "Cheeky Commodore Gamer logo");
+                }
             }
 
             logo.addEventListener("click", event => {
-                if (desktopMatch && !desktopMatch.matches) return;
-                if (event) event.preventDefault();
+                if (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    event.stopImmediatePropagation();
+                }
 
                 logoClickState.count += 1;
 
