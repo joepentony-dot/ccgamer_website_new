@@ -1766,6 +1766,11 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
         gap: 14px;
     }
 
+    .home-hero__frame,
+    .home-hero__content {
+        overflow: visible;
+    }
+
     .home-hero__content::after,
     .home-hero__scanlines,
     .home-hero__visual {

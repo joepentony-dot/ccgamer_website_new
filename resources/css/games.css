@@ -745,6 +745,15 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
         flex-wrap: wrap;
     }
     #gamesAlphaStrip { grid-template-columns: repeat(auto-fit, minmax(52px, 1fr)); }
+
+    .related-carousel,
+    .related-carousel__viewport {
+        overflow: visible;
+    }
+
+    .related-carousel__nav {
+        z-index: 3;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
