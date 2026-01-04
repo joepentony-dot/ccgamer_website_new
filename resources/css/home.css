@@ -356,16 +356,32 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
     gap: 0;
 }
 
-.home-featured-videos .home-video-card {
-    pointer-events: none;
-}
-
 .home-video-card__media {
     position: relative;
     min-height: 0;
-    padding-top: 56.25%;
     background: radial-gradient(circle at 22% 26%, var(--home-video-accent), transparent 52%);
     z-index: 1;
+}
+
+.home-featured-video-media {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    position: relative;
+    overflow: hidden;
+    background: #000;
+}
+
+.home-featured-video-media iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+}
+
+.home-video-card__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
 }
 
 .home-video-card__badge {
@@ -432,53 +448,19 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
 }
 
 .home-video-card__iframe {
-    position: absolute;
-    inset: 0;
     display: none;
-    background: #000;
-    z-index: 4;
-    pointer-events: auto;
-}
-
-.home-video-card__iframe iframe {
-    width: 100%;
-    height: 100%;
-    border: 0;
-    pointer-events: auto;
-    position: relative;
-    z-index: 10;
-    transform: none;
-    filter: none;
-    will-change: auto;
-}
-
-.home-featured-videos .home-video-card__iframe {
-    pointer-events: auto;
-    position: relative;
-    z-index: 10;
-}
-
-.home-featured-videos .home-video-card__play {
-    pointer-events: auto;
-    position: relative;
-    z-index: 5;
 }
 
 .home-video-card.is-playing .home-video-card__thumb {
     display: none;
 }
 
+.home-video-card.is-playing .home-video-card__overlay {
+    display: none;
+}
+
 .home-video-card.is-playing .home-video-card__iframe {
     display: block;
-}
-
-.home-featured-videos .home-video-card.is-playing .home-video-card__media > :not(.home-video-card__iframe) {
-    pointer-events: none;
-}
-
-.home-featured-videos .home-video-card__iframe,
-.home-featured-videos .home-video-card__iframe iframe {
-    pointer-events: auto;
 }
 
 .home-video-card .ccg-card__body {
