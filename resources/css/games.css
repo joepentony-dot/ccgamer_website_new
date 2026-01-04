@@ -335,6 +335,8 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 16px;
+    align-items: start;
+    align-content: start;
 }
 
 .ccg-game-card {
@@ -365,6 +367,8 @@
     width: 100%;
     aspect-ratio: 16 / 9;
     overflow: hidden;
+    height: auto;
+    align-self: start;
 }
 
 .ccg-game-card__thumb img {
