@@ -356,6 +356,10 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
     gap: 0;
 }
 
+.home-featured-videos .home-video-card {
+    pointer-events: none;
+}
+
 .home-video-card__media {
     position: relative;
     min-height: 0;
@@ -442,7 +446,22 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
     border: 0;
     pointer-events: auto;
     position: relative;
-    z-index: 1;
+    z-index: 10;
+    transform: none;
+    filter: none;
+    will-change: auto;
+}
+
+.home-featured-videos .home-video-card__iframe {
+    pointer-events: auto;
+    position: relative;
+    z-index: 10;
+}
+
+.home-featured-videos .home-video-card__play {
+    pointer-events: auto;
+    position: relative;
+    z-index: 5;
 }
 
 .home-video-card.is-playing .home-video-card__thumb {
