@@ -449,6 +449,7 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
 
 .home-video-card__iframe {
     display: none;
+    pointer-events: none;
 }
 
 .home-video-card.is-playing .home-video-card__thumb {
@@ -461,6 +462,20 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
 
 .home-video-card.is-playing .home-video-card__iframe {
     display: block;
+    pointer-events: auto;
+}
+
+@media (hover: none) and (pointer: coarse) {
+    .home-video-card.is-playing,
+    .home-video-card.is-playing:focus-within,
+    .home-video-card.is-playing:active {
+        transform: none;
+        filter: none;
+    }
+
+    .home-video-card.is-playing .home-featured-video-media {
+        touch-action: manipulation;
+    }
 }
 
 .home-video-card .ccg-card__body {
