@@ -108,9 +108,9 @@ body[data-ccg-mode="amiga"] .ccg-main::before {
 
 body[data-ccg-mode] .ccg-nav__link {
     transition:
-        color 360ms var(--ccg-ease-ui),
-        text-shadow 360ms var(--ccg-ease-ui),
-        filter 360ms var(--ccg-ease-ui);
+        color var(--ccg-hover-duration) var(--ccg-ease-ui),
+        text-shadow var(--ccg-hover-duration) var(--ccg-ease-ui),
+        filter var(--ccg-hover-duration) var(--ccg-ease-ui);
 
     will-change: color, text-shadow;
 }
@@ -159,9 +159,9 @@ body[data-ccg-mode] .ccg-nav__link:focus-visible {
 
 body[data-ccg-mode] .ccg-btn--primary {
     transition:
-        box-shadow 420ms var(--ccg-ease-ui),
-        transform 420ms var(--ccg-ease-ui),
-        filter 420ms var(--ccg-ease-ui);
+        box-shadow var(--ccg-hover-duration) var(--ccg-ease-ui),
+        transform var(--ccg-hover-duration) var(--ccg-ease-ui),
+        filter var(--ccg-hover-duration) var(--ccg-ease-ui);
 
     box-shadow:
         0 0 10px rgba(var(--accent-rgb),0.45),

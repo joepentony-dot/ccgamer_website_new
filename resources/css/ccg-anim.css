@@ -16,6 +16,7 @@
     --ccg-ease-out-smooth: cubic-bezier(0.22, 0.61, 0.36, 1);
     --ccg-ease-out-lux: cubic-bezier(0.16, 1, 0.3, 1);
     --ccg-ease-soft: cubic-bezier(0.4, 0.0, 0.2, 1);
+    --ccg-hover-duration: 240ms;
 }
 
 /* ============================================================
@@ -131,4 +132,5 @@
 .ccg-nav__link,
 .ccg-genre-tile {
     transition-timing-function: var(--ccg-ease-out-lux);
+    transition-duration: var(--ccg-hover-duration);
 }
