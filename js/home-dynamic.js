@@ -340,7 +340,7 @@ function buildVideoCard(game, systemLabel) {
                 <iframe
                     data-ccg-video-iframe
                     title="${title} gameplay video"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
                     allowfullscreen></iframe>
             </div>
         </div>
