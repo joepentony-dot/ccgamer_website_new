@@ -204,8 +204,8 @@
 
 .ccg-logo-bubble {
     position: absolute;
-    top: -12px;
-    left: clamp(68px, 8vw, 120px);
+    top: 50%;
+    left: calc(100% + clamp(8px, 1.6vw, 16px));
     padding: 6px 12px;
     border-radius: 999px;
     border: 1px solid rgba(255,255,255,0.2);
@@ -222,9 +222,10 @@
     line-height: 1.2;
     white-space: nowrap;
     text-transform: none;
+    max-width: calc(100vw - 24px);
 
     opacity: 0;
-    transform: translateY(-8px) scale(0.95);
+    transform: translateY(calc(-50% - 8px)) scale(0.95);
     transition: opacity 180ms ease, transform 200ms ease, box-shadow 200ms ease;
     pointer-events: none;
     z-index: 3;
@@ -255,7 +256,7 @@
 
 .ccg-logo-bubble.is-visible {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(-50%) scale(1);
 }
 
 .ccg-logo-bubble__text {
