@@ -192,6 +192,11 @@ li {
 }
 
 .ccg-page,
+.ccg-main {
+    transform: none;
+}
+
+.ccg-page,
 .ccg-main,
 .ccg-header,
 .ccg-hero,
