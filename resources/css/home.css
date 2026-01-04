@@ -361,6 +361,7 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
     min-height: 0;
     padding-top: 56.25%;
     background: radial-gradient(circle at 22% 26%, var(--home-video-accent), transparent 52%);
+    z-index: 1;
 }
 
 .home-video-card__badge {
@@ -373,6 +374,7 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
     border-radius: 999px;
     font-size: 0.82rem;
     letter-spacing: 0.08em;
+    pointer-events: none;
 }
 
 .home-video-card__thumb {
@@ -430,7 +432,7 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
     inset: 0;
     display: none;
     background: #000;
-    z-index: 2;
+    z-index: 3;
     pointer-events: auto;
 }
 
@@ -439,6 +441,8 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
     height: 100%;
     border: 0;
     pointer-events: auto;
+    position: relative;
+    z-index: 1;
 }
 
 .home-video-card.is-playing .home-video-card__thumb {
