@@ -1705,6 +1705,27 @@
     "description": "From Alligata Software in 1983, Blagger delivers C64 platformer play."
   },
   {
+    "id": "blagger_goes_to_hollywood",
+    "title": "Blagger Goes To Hollywood",
+    "year": 1985,
+    "system": "C64",
+    "genres": [
+      "Action Games",
+      "Miscellaneous"
+    ],
+    "developer": "Alligata Software",
+    "description": "Blagger is back! This time he decided to take a tour of Hollywood, and to the movie sets of Steven Speilbum, in an attempt to steal Speilbum's latest film. Blagger's quest is not easy. Many movie characters such as James Bond, Batman, Superman, Jaws, Tarzan, Robin Hood, and the Incredible Hulk roam the movie set.",
+    "videoid": "S27IM7DGgC4",
+    "thumbnail": "resources/images/thumbnails/all/blagger_goes_to_hollywood.jpg",
+    "manual": "https://drive.google.com/file/d/1dugFb6qB5aR1M83xXhrl1KldLHcyN5Qk/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1Lvhb3KogQEhMSm0R8zz2tpQKjostoDuy/view?usp=drive_link"
+    ],
+    "lemon": [
+      "https://www.lemon64.com/game/blagger-goes-to-hollywood"
+    ]
+  },
+  {
     "system": "C64",
     "id": "blockbusters",
     "slug": "blockbusters",
