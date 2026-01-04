@@ -5,15 +5,17 @@
    ============================================================ */
 
 .about-shell {
-    max-width: 1200px;
+    max-width: 1120px;
     margin: var(--ccg-hero-offset) auto 0;
     display: grid;
-    gap: 1.5rem;
+    gap: 2.5rem;
+    padding: 0 1.5rem 2.5rem;
 }
 
 .about-hero {
     position: relative;
     overflow: hidden;
+    padding: 3rem 2.5rem;
 }
 
 .about-hero::before,
@@ -40,9 +42,15 @@
     letter-spacing: 0.05em;
 }
 
+.about-hero p {
+    line-height: 1.75;
+    max-width: 760px;
+}
+
 .about-hero .ccg-info-actions {
     justify-content: center;
-    margin-top: 1rem;
+    margin-top: 1.5rem;
+    gap: 0.9rem;
 }
 
 .about-hero__actions .ccg-btn {
@@ -59,7 +67,7 @@
 
 .about-grid {
     display: grid;
-    gap: 1rem;
+    gap: 1.8rem;
 }
 
 .about-panel {
@@ -67,17 +75,17 @@
     border: 1px solid var(--border-light);
     border-radius: var(--radius-lg);
     box-shadow: var(--panel-shadow);
-    padding: 1.4rem 1.6rem;
+    padding: 2rem 2.2rem;
     display: grid;
-    gap: 0.8rem;
+    gap: 1rem;
 }
 
 .about-panel__header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     flex-wrap: wrap;
-    gap: 0.6rem;
+    gap: 0.8rem;
 }
 
 .about-kicker {
@@ -91,17 +99,18 @@
 .about-panel__header h2 {
     margin: 0;
     letter-spacing: 0.03em;
+    font-size: clamp(1.35rem, 1.8vw, 1.6rem);
 }
 
 .about-panel__body {
     display: grid;
-    gap: 1rem;
+    gap: 1.4rem;
 }
 
 .about-panel__body--split {
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     align-items: start;
-    gap: 1.25rem;
+    gap: 1.8rem;
 }
 
 .about-quick-links .ccg-info-actions {
@@ -118,7 +127,7 @@
 .about-figure {
     margin: 0;
     display: grid;
-    gap: 0.45rem;
+    gap: 0.6rem;
 }
 
 .about-figure img {
@@ -131,18 +140,22 @@
 .about-figure figcaption {
     text-align: center;
     color: var(--text-dim);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1.4;
 }
 
 .about-copy {
     display: grid;
-    gap: 0.75rem;
+    gap: 1rem;
     color: var(--text-light);
+    font-size: 1rem;
 }
 
 .about-copy p {
     margin: 0;
-    line-height: 1.6;
+    line-height: 1.75;
 }
 
 .about-copy strong {
@@ -153,9 +166,9 @@
     background: var(--panel-bg);
     border: 1px solid rgba(var(--accent-rgb), 0.35);
     border-radius: var(--radius-md);
-    padding: 0.9rem;
+    padding: 1rem;
     display: grid;
-    gap: 0.4rem;
+    gap: 0.5rem;
     box-shadow: var(--panel-shadow);
 }
 
@@ -169,7 +182,7 @@
 
 .about-audio__caption {
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
     color: var(--text-dim);
     font-size: 0.9rem;
 }
@@ -177,7 +190,7 @@
 .about-gallery,
 .about-gallery--wide {
     display: grid;
-    gap: 0.9rem;
+    gap: 1.2rem;
 }
 
 .about-gallery {
@@ -200,6 +213,7 @@
     position: relative;
     padding-left: 1.25rem;
     color: var(--text-dim);
+    line-height: 1.7;
 }
 
 .about-list li::before {
@@ -212,7 +226,7 @@
 .about-cta-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 0.65rem;
+    gap: 0.9rem;
 }
 
 .about-cta-grid .about-cta,
@@ -228,7 +242,7 @@
     color: var(--text-light);
     text-decoration: none;
     font-weight: 700;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.08em;
     transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
@@ -248,14 +262,18 @@
     flex-wrap: wrap;
     color: var(--text-dim);
     font-size: 0.95rem;
+    letter-spacing: 0.06em;
 }
 
 .about-note {
-    padding: 0.75rem 0.9rem;
+    padding: 0.9rem 1rem;
     background: rgba(var(--accent-rgb), 0.08);
     border: 1px dashed rgba(var(--accent-rgb), 0.35);
     border-radius: var(--radius-md);
     color: var(--text-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1.5;
 }
 
 .about-divider {
@@ -266,6 +284,15 @@
 
 @media (max-width: 720px) {
     .about-panel {
-        padding: 1.2rem 1.1rem;
+        padding: 1.4rem 1.2rem;
+    }
+
+    .about-hero {
+        padding: 2.4rem 1.6rem;
+    }
+
+    .about-shell {
+        padding: 0 1rem 2rem;
+        gap: 2rem;
     }
 }
