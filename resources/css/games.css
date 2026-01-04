@@ -538,6 +538,9 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     .game-video {
         position: relative;
         isolation: isolate;
+        transform: none;
+        scale: 1;
+        zoom: 1;
     }
 
     .game-video__frame {
@@ -546,8 +549,13 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
         pointer-events: auto;
         touch-action: manipulation;
         transform: none;
+        scale: 1;
+        zoom: 1;
         filter: none;
         will-change: auto;
+        box-sizing: border-box;
+        min-width: 44px;
+        min-height: 44px;
     }
 }
 
