@@ -473,7 +473,7 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
 
 .ccg-page--single-game .related-carousel .related-card img {
     width: 100%;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 16 / 9;
     max-height: 180px;
     object-fit: cover;
     object-position: center;
@@ -509,9 +509,9 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
 }
 
 .ccg-page--single-game .related-carousel .related-card img {
-    height: var(--related-thumb-height);
+    height: auto;
     max-height: none;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 16 / 9;
     object-fit: cover;
     object-position: center;
     background: rgba(0,0,0,0.45);

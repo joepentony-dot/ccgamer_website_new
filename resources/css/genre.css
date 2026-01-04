@@ -363,7 +363,7 @@
     background: linear-gradient(140deg, rgba(var(--accent-rgb),0.35), rgba(255,255,255,0.08));
     overflow: hidden;
     display: block;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 16 / 9;
 }
 
 .ccg-page--genre-single .ccg-game-card__thumb img,
@@ -372,6 +372,7 @@
     height: 100%;
     display: block;
     object-fit: cover;
+    object-position: center;
     border-radius: 10px;
     box-shadow: 0 12px 28px rgba(0,0,0,0.68);
 }
