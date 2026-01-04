@@ -471,10 +471,38 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
     .home-video-card.is-playing:active {
         transform: none;
         filter: none;
+        will-change: auto;
     }
 
     .home-video-card.is-playing .home-featured-video-media {
+        position: relative;
+        isolation: isolate;
+        z-index: 2;
         touch-action: manipulation;
+        transform: none;
+        filter: none;
+        will-change: auto;
+    }
+
+    .home-video-card.is-playing .home-video-card__media {
+        position: relative;
+        isolation: isolate;
+        z-index: 2;
+        transform: none;
+        filter: none;
+        will-change: auto;
+    }
+
+    .home-video-card__iframe {
+        pointer-events: auto;
+        touch-action: manipulation;
+        position: relative;
+        z-index: 4;
+    }
+
+    .home-video-card.is-playing .home-video-card__overlay,
+    .home-video-card.is-playing .home-video-card__thumb {
+        pointer-events: none;
     }
 }
 

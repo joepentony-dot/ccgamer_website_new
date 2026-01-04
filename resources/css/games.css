@@ -534,6 +534,23 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     pointer-events: auto;
 }
 
+@media (hover: none) and (pointer: coarse) {
+    .game-video {
+        position: relative;
+        isolation: isolate;
+    }
+
+    .game-video__frame {
+        position: relative;
+        z-index: 2;
+        pointer-events: auto;
+        touch-action: manipulation;
+        transform: none;
+        filter: none;
+        will-change: auto;
+    }
+}
+
 .game-video__actions,
 .game-downloads__actions {
     margin-top: 12px;
