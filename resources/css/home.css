@@ -369,6 +369,8 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
     position: relative;
     overflow: hidden;
     background: #000;
+    pointer-events: auto;
+    touch-action: manipulation;
 }
 
 .home-featured-video-media iframe {
@@ -458,6 +460,7 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
 
 .home-video-card.is-playing .home-video-card__overlay {
     display: none;
+    pointer-events: none;
 }
 
 .home-video-card.is-playing .home-video-card__iframe {
@@ -466,6 +469,8 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
 }
 
 @media (hover: none) and (pointer: coarse) {
+    .home-featured-videos,
+    .home-video-grid,
     .home-video-card,
     .home-video-card:active,
     .home-video-card:focus-within,
@@ -474,12 +479,22 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
         transform: none;
         scale: 1;
         zoom: 1;
+        filter: none;
+        backdrop-filter: none;
+        will-change: auto;
     }
 
     .home-featured-video-media,
     .home-video-card__iframe {
         min-width: 44px;
         min-height: 44px;
+    }
+
+    .home-featured-video-media {
+        position: relative;
+        isolation: isolate;
+        pointer-events: auto;
+        touch-action: manipulation;
     }
 
     .home-video-card.is-playing,
