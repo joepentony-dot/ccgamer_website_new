@@ -1694,6 +1694,28 @@ body.ccg-is-mobile .home-hero__bg {
 }
 
 /* ============================================================
+   Mobile Visual Reliability Safeguard
+   • Mobile only
+   • Ensures header navigation remains visible & tappable
+============================================================ */
+
+@media (max-width: 640px) {
+    .ccg-header,
+    .ccg-header-inner,
+    .ccg-nav,
+    .ccg-nav__bar,
+    .ccg-nav__list,
+    .ccg-nav__link,
+    .ccg-nav-toggle {
+        z-index: 80;
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateZ(0);
+    }
+}
+
+/* ============================================================
    SECRET COMMAND CONSOLE — EASTER EGGS
 ============================================================ */
 

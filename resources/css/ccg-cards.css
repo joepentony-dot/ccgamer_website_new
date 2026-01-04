@@ -462,6 +462,34 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
     }
 }
 
+/* ============================================================
+   Mobile Visual Reliability Safeguard
+   • Mobile only
+   • Prevents View Game buttons from being hidden or clipped
+============================================================ */
+
+@media (max-width: 640px) {
+    .ccg-page--games-index .ccg-game-card__actions {
+        position: relative;
+        z-index: 4;
+        overflow: visible;
+        flex-shrink: 0;
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .ccg-page--games-index .ccg-game-card__btn {
+        position: relative;
+        z-index: 5;
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateZ(0);
+        flex-shrink: 0;
+    }
+}
+
 
 /* ============================================================
    W9 — SINGLE GAME RELATED CARDS (WOW-ONLY, SCOPED)
