@@ -433,17 +433,20 @@ function buildVideoCard(game, systemLabel, index) {
 
     card.innerHTML = `
         <div class="home-video-card__media">
-            <span class="home-video-card__badge">${systemLabel}</span>
-            <div class="home-video-card__thumb" style="background-image: url('${thumb}')">
-                <button class="home-video-card__play" type="button" data-ccg-video-play ${hasVideo ? "" : "disabled"}>Play video</button>
-            </div>
-            <div class="home-video-card__iframe" data-ccg-video-iframe-wrap hidden>
+            <div class="home-featured-video-media">
                 <iframe
+                    class="home-video-card__iframe"
                     data-ccg-video-iframe
                     ${iframeId ? `id="${iframeId}"` : ""}
                     title="${title} gameplay video"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
                     allowfullscreen></iframe>
+            </div>
+            <div class="home-video-card__overlay">
+                <span class="home-video-card__badge">${systemLabel}</span>
+                <div class="home-video-card__thumb" style="background-image: url('${thumb}')">
+                    <button class="home-video-card__play" type="button" data-ccg-video-play ${hasVideo ? "" : "disabled"}>Play video</button>
+                </div>
             </div>
         </div>
         <div class="ccg-card__body">
@@ -458,17 +461,15 @@ function buildVideoCard(game, systemLabel, index) {
     `;
 
     const playButton = card.querySelector('[data-ccg-video-play]');
-    const iframeWrap = card.querySelector('[data-ccg-video-iframe-wrap]');
     const iframe = card.querySelector('[data-ccg-video-iframe]');
 
-    if (hasVideo && playButton && iframeWrap && iframe) {
+    if (hasVideo && playButton && iframe) {
         playButton.onclick = () => {
             if (!iframe.dataset.loaded) {
                 iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&autoplay=1&enablejsapi=1`;
                 iframe.dataset.loaded = "true";
             }
             card.classList.add("is-playing");
-            iframeWrap.hidden = false;
             ensureYouTubePlayer(iframe);
             pauseOtherFeaturedVideos(iframe);
         };
