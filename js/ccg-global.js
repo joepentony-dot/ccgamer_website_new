@@ -848,7 +848,8 @@
     const logoClickState = {
         count: 0,
         resetTimer: null,
-        navTimer: null,
+        bubbleTimer: null,
+        lastBubble: null,
     };
 
     function resetLogoClickState() {
@@ -857,9 +858,13 @@
             clearTimeout(logoClickState.resetTimer);
             logoClickState.resetTimer = null;
         }
-        if (logoClickState.navTimer) {
-            clearTimeout(logoClickState.navTimer);
-            logoClickState.navTimer = null;
+        if (logoClickState.bubbleTimer) {
+            clearTimeout(logoClickState.bubbleTimer);
+            logoClickState.bubbleTimer = null;
+        }
+        if (logoClickState.lastBubble) {
+            logoClickState.lastBubble.classList.remove("is-visible", "ccg-logo-bubble--swap");
+            logoClickState.lastBubble = null;
         }
     }
 
@@ -880,13 +885,53 @@
         setTimeout(() => logo.classList.remove(flashClass), 420);
     }
 
-    function queueLogoNavigation(targetHref) {
-        if (!targetHref) return;
-        if (logoClickState.navTimer) clearTimeout(logoClickState.navTimer);
-        logoClickState.navTimer = setTimeout(() => {
-            window.location.href = targetHref;
-            resetLogoClickState();
-        }, 500);
+    function ensureLogoBubble(logo) {
+        const brand = logo.closest(".ccg-brand");
+        if (!brand) return null;
+
+        let bubble = brand.querySelector(".ccg-logo-bubble");
+        if (!bubble) {
+            bubble = document.createElement("div");
+            bubble.className = "ccg-logo-bubble";
+            bubble.setAttribute("role", "status");
+            bubble.setAttribute("aria-live", "polite");
+            bubble.innerHTML = "<span class=\"ccg-logo-bubble__text\"></span>";
+            brand.appendChild(bubble);
+        }
+        return bubble;
+    }
+
+    function showLogoBubble(logo, message, { swapText = false } = {}) {
+        const bubble = ensureLogoBubble(logo);
+        if (!bubble) return;
+
+        const textEl = bubble.querySelector(".ccg-logo-bubble__text");
+        if (!textEl) return;
+
+        if (logoClickState.bubbleTimer) {
+            clearTimeout(logoClickState.bubbleTimer);
+            logoClickState.bubbleTimer = null;
+        }
+
+        if (swapText) {
+            bubble.classList.add("ccg-logo-bubble--swap");
+            setTimeout(() => {
+                textEl.textContent = message;
+            }, 140);
+            setTimeout(() => {
+                bubble.classList.remove("ccg-logo-bubble--swap");
+            }, 320);
+        } else {
+            bubble.classList.remove("ccg-logo-bubble--swap");
+            textEl.textContent = message;
+        }
+
+        bubble.classList.add("is-visible");
+        logoClickState.lastBubble = bubble;
+        logoClickState.bubbleTimer = setTimeout(() => {
+            bubble.classList.remove("is-visible");
+            logoClickState.bubbleTimer = null;
+        }, 1800);
     }
 
     function setupLogoEasterEgg() {
@@ -901,34 +946,38 @@
 
         logos.forEach(logo => {
             const brandLink = logo.closest("a");
-            const targetHref = brandLink?.getAttribute("href") || "";
+            if (brandLink) {
+                brandLink.removeAttribute("href");
+                brandLink.removeAttribute("target");
+                brandLink.removeAttribute("rel");
+                brandLink.setAttribute("role", "button");
+                brandLink.setAttribute("tabindex", "0");
+            }
 
             logo.addEventListener("click", event => {
                 if (desktopMatch && !desktopMatch.matches) return;
-                if (event && targetHref) event.preventDefault();
+                if (event) event.preventDefault();
 
                 logoClickState.count += 1;
 
-                if (logoClickState.navTimer) {
-                    clearTimeout(logoClickState.navTimer);
-                    logoClickState.navTimer = null;
-                }
-
                 if (logoClickState.count === 1) {
                     flashLogo(logo, "ccg-logo-flash--neon");
+                    showLogoBubble(logo, "Dont Click Me Again");
                     scheduleLogoReset();
-                    queueLogoNavigation(targetHref);
                     return;
                 }
 
                 if (logoClickState.count === 2) {
                     flashLogo(logo, "ccg-logo-flash--red");
+                    showLogoBubble(logo, "DEFINITELY Dont Click Me Again", { swapText: true });
                     scheduleLogoReset();
-                    queueLogoNavigation(targetHref);
                     return;
                 }
 
                 if (logoClickState.count >= 3) {
+                    if (logoClickState.lastBubble) {
+                        logoClickState.lastBubble.classList.remove("is-visible", "ccg-logo-bubble--swap");
+                    }
                     openSecretModal();
                     resetLogoClickState();
                 }

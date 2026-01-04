@@ -180,6 +180,115 @@
 }
 
 /* ============================================================
+   NAVIGATION WOW PASS — GLOW INTENSITY ONLY
+   • Visual polish without layout impact
+============================================================ */
+
+.ccg-nav__link,
+.ccg-nav__more-toggle {
+    filter: drop-shadow(0 0 10px rgba(var(--accent-rgb), 0.22));
+}
+
+.ccg-nav__link:hover,
+.ccg-nav__link:focus-visible,
+.ccg-nav__more-toggle:hover,
+.ccg-nav__more-toggle:focus-visible {
+    filter: drop-shadow(0 0 16px rgba(var(--accent-rgb), 0.38));
+}
+
+/* ============================================================
+   LOGO CLICK FEEDBACK — SPEECH BUBBLE
+   • Positioned absolutely to avoid layout shifts
+   • Neon/CRT styling using existing palette
+============================================================ */
+
+.ccg-logo-bubble {
+    position: absolute;
+    top: -12px;
+    left: clamp(68px, 8vw, 120px);
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background:
+        linear-gradient(
+            135deg,
+            rgba(var(--accent-rgb), 0.28),
+            rgba(255,255,255,0.08)
+        );
+    color: #fff;
+    font-family: var(--ccg-font-main);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    white-space: nowrap;
+    text-transform: none;
+
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+    transition: opacity 180ms ease, transform 200ms ease, box-shadow 200ms ease;
+    pointer-events: none;
+    z-index: 3;
+
+    box-shadow:
+        0 10px 22px rgba(0,0,0,0.65),
+        0 0 16px rgba(var(--accent-rgb), 0.32);
+}
+
+.ccg-logo-bubble::after {
+    content: "";
+    position: absolute;
+    left: 18px;
+    bottom: -6px;
+    width: 12px;
+    height: 12px;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(var(--accent-rgb), 0.28),
+            rgba(255,255,255,0.08)
+        );
+    border-left: 1px solid rgba(255,255,255,0.2);
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    transform: rotate(45deg);
+    box-shadow: -2px 2px 6px rgba(0,0,0,0.35);
+}
+
+.ccg-logo-bubble.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.ccg-logo-bubble__text {
+    display: block;
+    text-shadow:
+        0 0 10px rgba(var(--accent-rgb), 0.45),
+        0 0 18px rgba(var(--accent-rgb), 0.25);
+}
+
+.ccg-logo-bubble--swap .ccg-logo-bubble__text {
+    animation: ccgLogoBubbleSwap 300ms ease;
+}
+
+@keyframes ccgLogoBubbleSwap {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    45% {
+        opacity: 0;
+        transform: translateY(-4px) scale(0.98);
+    }
+    55% {
+        opacity: 0;
+        transform: translateY(4px) scale(0.98);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ============================================================
    BUTTON PARITY PASS — GLOBAL
 ============================================================ */
 
@@ -364,6 +473,8 @@
     .ccg-effect-gridlines,
     .ccg-effect-scanlines,
     .ccg-bg-particles__spark,
+    .ccg-logo-bubble,
+    .ccg-logo-bubble__text,
     :where([data-ccg-wow], [data-ccg-glow])::after {
         animation: none !important;
         transition-duration: 0s;
