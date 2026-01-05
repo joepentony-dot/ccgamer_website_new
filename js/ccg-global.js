@@ -1267,6 +1267,28 @@
             el.textContent = formatted;
         });
     }
+/* ======================================================
+   FOOTER SIGNATURE ROTATOR (SAFE / LOCAL / NO NETWORK)
+====================================================== */
+function setupFooterSignatureRotator() {
+    const container = document.querySelector("[data-ccg-footer-signature]");
+    if (!container) return;
+
+    const items = Array.from(container.querySelectorAll("[data-ccg-signature-item]"));
+    if (items.length < 2) return;
+
+    let index = 0;
+
+    items.forEach((el, i) => {
+        el.hidden = i !== 0;
+    });
+
+    setInterval(() => {
+        items[index].hidden = true;
+        index = (index + 1) % items.length;
+        items[index].hidden = false;
+    }, 4200);
+}
 
     /* ======================================================
        DOM READY
