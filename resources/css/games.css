@@ -393,7 +393,7 @@
 .ccg-game-card__meta {
     color: var(--ccg-soft);
     font-size: 0.9rem;
-    line-height: 1.35;
+    line-height: 1.28;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -479,6 +479,7 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     font-family: var(--ccg-font-main);
     letter-spacing: 0.14em;
     font-size: clamp(1.8rem, 2vw + 1rem, 2.6rem);
+    line-height: 1.18;
 }
 
 .game-hero__meta {
@@ -490,6 +491,7 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     background: rgba(0,0,0,0.45);
     border: 1px solid var(--ccg-border);
     font-weight: 700;
+    line-height: 1.2;
 }
 
 .game-meta__item {
@@ -499,6 +501,7 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
 
 .game-meta__sep {
     color: var(--ccg-soft);
+    text-shadow: 0 0 10px rgba(var(--accent-rgb),0.3);
 }
 
 /* ------------------------------------------------------------
@@ -514,6 +517,16 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     box-shadow: var(--ccg-panel-shadow);
 }
 
+.ccg-page--single-game .game-section--related {
+    display: block;
+    visibility: visible;
+    opacity: 1;
+    height: auto;
+    overflow: visible;
+    transform: none;
+    animation: none;
+}
+
 .game-section__title {
     margin: 0 0 12px;
     font-family: var(--ccg-font-main);
@@ -522,6 +535,7 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     display: inline-flex;
     gap: 10px;
     align-items: center;
+    line-height: 1.22;
 }
 
 .game-section__kicker {
