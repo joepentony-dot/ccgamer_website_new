@@ -27,6 +27,26 @@
     pointer-events: none;
 }
 
+@media (hover: hover) and (pointer: fine) {
+    .ccg-bg-starfield,
+    .ccg-bg-grid,
+    .ccg-bg-crt-overlay,
+    .ccg-hero-scanlines,
+    .ccg-hero__backdrop,
+    .game-hero__bg,
+    .ccg-genre-hero__bg,
+    .ccg-genre-hero__overlay,
+    .home-hero__bg,
+    .home-hero__scanlines,
+    .home-hero__visual-plate,
+    .home-hero__visual-img,
+    .home-hero__visual-overlay,
+    .ccg-hero-overlay-grid,
+    .ccg-hero-overlay-starfield {
+        pointer-events: none;
+    }
+}
+
 
 /* ============================================================
    CCG OVERLAYS — OMEGA UNIVERSE LAYER (LOCKED)
@@ -72,7 +92,7 @@
 
     animation:
         ccg-star-drift 180s linear infinite,
-        ccg-star-breathe 16s ease-in-out infinite;
+        ccg-star-breathe 24s ease-in-out infinite;
 
     will-change: background-position, opacity;
 }
@@ -91,7 +111,7 @@
 
     animation:
         ccg-star-drift-alt 320s linear infinite,
-        ccg-star-breathe-alt 24s ease-in-out infinite;
+        ccg-star-breathe-alt 30s ease-in-out infinite;
 
     pointer-events: none;
 }
@@ -114,7 +134,9 @@
     opacity: 0.11;
     mix-blend-mode: screen;
 
-    animation: ccg-grid-drift 260s linear infinite;
+    animation:
+        ccg-grid-drift 260s linear infinite,
+        ccg-grid-breathe 28s ease-in-out infinite;
     will-change: background-position;
 }
 
@@ -255,7 +277,20 @@ html[data-ccg-page="home"] .ccg-page {
     50%      { opacity: 0.24; }
 }
 
+@keyframes ccg-grid-breathe {
+    0%, 100% { opacity: 0.1; }
+    50% { opacity: 0.14; }
+}
+
 @keyframes ccg-grid-drift {
     from { background-position: 0 0; }
     to   { background-position: 800px -800px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ccg-bg-starfield,
+    .ccg-bg-grid,
+    .ccg-bg-starfield::after {
+        animation: none !important;
+    }
 }
