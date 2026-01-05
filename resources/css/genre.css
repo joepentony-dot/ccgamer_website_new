@@ -170,12 +170,13 @@
     font-family: var(--ccg-font-main);
     letter-spacing: 0.12em;
     text-transform: uppercase;
+    line-height: 1.22;
 }
 
 /* Title confidence */
 .ccg-genre-hero__title {
     letter-spacing: 0.14em;
-    line-height: 1.12;
+    line-height: 1.16;
 
     text-shadow:
         0 22px 52px rgba(0,0,0,0.92),
