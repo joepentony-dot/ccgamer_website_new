@@ -823,3 +823,100 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
         transition: none;
     }
 }
+
+/* ============================================================
+   OMEGA POLISH — GAMES INDEX (VISUAL ONLY)
+   Append-only • Zero logic risk • Zero layout change
+============================================================ */
+
+/* HERO — TERMINAL AUTHORITY */
+.ccg-page--games-index .games-hero__title {
+    text-shadow:
+        0 0 22px rgba(var(--accent-rgb), 0.55),
+        0 0 44px rgba(var(--accent-rgb), 0.25);
+}
+
+.ccg-page--games-index .games-hero__stats {
+    box-shadow:
+        inset 0 0 0 1px rgba(var(--accent-rgb), 0.25),
+        0 12px 28px rgba(0,0,0,0.6);
+}
+
+/* HERO — SUBTLE SCANLINE ENERGY */
+.ccg-page--games-index .games-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.04),
+            rgba(255,255,255,0.04) 1px,
+            transparent 1px,
+            transparent 3px
+        );
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ENSURE HERO CONTENT STAYS ABOVE */
+.ccg-page--games-index .games-hero__inner {
+    position: relative;
+    z-index: 1;
+}
+
+/* GAME CARDS — SCAN CLARITY */
+.ccg-game-card__title {
+    text-shadow: 0 0 12px rgba(var(--accent-rgb), 0.25);
+}
+
+/* GAME CARDS — PREMIUM FRAME */
+.ccg-game-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow:
+        inset 0 0 0 1px rgba(var(--accent-rgb), 0.22),
+        inset 0 0 16px rgba(var(--accent-rgb), 0.18);
+    opacity: 0.6;
+}
+
+/* DESKTOP ONLY — ELEVATED HOVER ENERGY */
+@media (hover: hover) and (pointer: fine) {
+    .ccg-game-card:hover {
+        transform: translateY(-3px);
+        box-shadow:
+            0 30px 70px rgba(0,0,0,0.85),
+            0 0 42px rgba(var(--accent-rgb), 0.45);
+    }
+}
+
+/* ALPHABET STRIP — FEATURED FEEL */
+.games-alpha {
+    position: relative;
+}
+
+.games-alpha::after {
+    content: "";
+    position: absolute;
+    inset: -20%;
+    background: radial-gradient(
+        circle at 50% 50%,
+        rgba(var(--accent-rgb), 0.18),
+        transparent 55%
+    );
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+/* MOBILE — HARD SAFETY */
+@media (max-width: 820px) {
+    .ccg-game-card::after,
+    .games-alpha::after,
+    .ccg-page--games-index .games-hero::before {
+        display: none;
+    }
+}
