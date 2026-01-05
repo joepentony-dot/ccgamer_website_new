@@ -1279,14 +1279,16 @@ function setupFooterSignatureRotator() {
 
     let index = 0;
 
+    // Initialise
     items.forEach((el, i) => {
-        el.hidden = i !== 0;
+        el.classList.toggle("is-active", i === 0);
     });
 
+    // Rotate
     setInterval(() => {
-        items[index].hidden = true;
+        items[index].classList.remove("is-active");
         index = (index + 1) % items.length;
-        items[index].hidden = false;
+        items[index].classList.add("is-active");
     }, 4200);
 }
 
