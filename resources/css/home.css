@@ -2331,3 +2331,15 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
         display: block;
     }
 }
+
+/* ============================================================
+   MOBILE TEXT TIGHTENING — VIDEO METADATA
+============================================================ */
+
+@media (max-width: 820px) {
+    .home-video-card .ccg-card__text {
+        word-spacing: normal;
+        letter-spacing: 0.04em;
+        line-height: 1.4;
+    }
+}
