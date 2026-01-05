@@ -460,6 +460,16 @@ function buildVideoCard(game, systemLabel, index) {
 
     const playButton = card.querySelector('[data-ccg-video-play]');
     const iframe = card.querySelector('[data-ccg-video-iframe]');
+    const overlay = card.querySelector('.home-video-card__overlay');
+    const isMobileDevice = Boolean(isMobileViewport() || MOBILE_MEDIA?.matches || COARSE_POINTER?.matches);
+
+    if (hasVideo && iframe && isMobileDevice) {
+        iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&controls=1&playsinline=1&fs=1&enablejsapi=1`;
+        iframe.dataset.loaded = "true";
+        if (overlay) {
+            overlay.style.pointerEvents = "none";
+        }
+    }
 
     if (hasVideo && playButton && iframe) {
         playButton.onclick = () => {
