@@ -304,6 +304,12 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
     }
 }
 
+@media (max-width: 820px) {
+    .home-video-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .home-highlights-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
