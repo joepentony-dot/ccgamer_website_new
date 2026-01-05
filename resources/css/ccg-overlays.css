@@ -27,6 +27,26 @@
     pointer-events: none;
 }
 
+@media (hover: hover) and (pointer: fine) {
+    .ccg-bg-starfield,
+    .ccg-bg-grid,
+    .ccg-bg-crt-overlay,
+    .ccg-hero-scanlines,
+    .ccg-hero__backdrop,
+    .game-hero__bg,
+    .ccg-genre-hero__bg,
+    .ccg-genre-hero__overlay,
+    .home-hero__bg,
+    .home-hero__scanlines,
+    .home-hero__visual-plate,
+    .home-hero__visual-img,
+    .home-hero__visual-overlay,
+    .ccg-hero-overlay-grid,
+    .ccg-hero-overlay-starfield {
+        pointer-events: none;
+    }
+}
+
 
 /* ============================================================
    CCG OVERLAYS — OMEGA UNIVERSE LAYER (LOCKED)
