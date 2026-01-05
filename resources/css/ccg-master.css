@@ -192,7 +192,7 @@ li {
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: clamp(12px, 2vw, 20px);
+    gap: clamp(10px, 2vw, 18px);
     overflow-x: hidden;
     overflow-y: visible; /* avoid nested page scrollbars */
 }

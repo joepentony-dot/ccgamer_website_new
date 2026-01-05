@@ -459,7 +459,7 @@
         visibility: visible;
         opacity: 1;
         pointer-events: auto;
-        transform: translateZ(0);
+        transform: none;
         flex-shrink: 0;
     }
 }
