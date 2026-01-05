@@ -310,7 +310,7 @@
 
         </main>
 
-        <!-- FOOTER -->
+      <!-- FOOTER -->
 <footer class="ccg-footer">
 
     <p class="ccg-footer__text">
@@ -334,15 +334,17 @@
         </div>
 
         <div class="ccg-footer-phrase">
-            SYSTEM STATUS · MODE: <span id="footer-mode">C64</span> · COMMUNITY: ACTIVE
+            SYSTEM STATUS · MODE:
+            <span data-footer-mode>C64</span>
+            · COMMUNITY: ACTIVE
         </div>
 
-        <!-- uCounter Integration -->
+        <!-- uCounter (use at your own risk) -->
         <div class="ccg-footer__counter-wrap">
             <p>Visitor Counter:</p>
-            <div align="center">
-                <script language="javascript" src="https://yo.ucounter.com/26/rrjw/01/s/13/"></script>
-                <script language="javascript" src="https://ucounter.com/stat.js"></script>
+            <div>
+                <script src="https://yo.ucounter.com/26/rrjw/01/s/13/"></script>
+                <script src="https://ucounter.com/stat.js"></script>
             </div>
         </div>
 
@@ -350,12 +352,28 @@
 
 </footer>
 
-    </div>
+</div>
 
-    <!-- JS -->
-    <script src="js/ccg-global.js" defer></script>
-    <script src="js/ccg-mode-engine.js" defer></script>
-    <script src="js/home-dynamic.js" defer></script>
+<!-- JS -->
+<script src="js/ccg-global.js" defer></script>
+<script src="js/ccg-mode-engine.js" defer></script>
+<script src="js/home-dynamic.js" defer></script>
+
+<!-- FOOTER MODE SYNC -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const modeSpan = document.querySelector("[data-footer-mode]");
+    if (!modeSpan) return;
+
+    const update = () => {
+        const mode = document.body.getAttribute("data-ccg-mode");
+        modeSpan.textContent = mode === "amiga" ? "Amiga" : "C64";
+    };
+
+    update();
+    document.addEventListener("ccg:modechange", update);
+});
+</script>
 
 </body>
 </html>
