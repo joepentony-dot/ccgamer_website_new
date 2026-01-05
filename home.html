@@ -318,7 +318,7 @@
         Not affiliated with Commodore, Amiga or publishers.
     </p>
 
-    <div class="ccg-footer-signature" aria-label="Site status">
+    <div class="ccg-footer-signature" aria-label="Archive information">
 
         <div class="ccg-footer-archive-title">
             THE CHEEKY COMMODORE GAMER ARCHIVE
@@ -333,12 +333,6 @@
             Another visitor… stay a while, stay forever.
         </div>
 
-        <div class="ccg-footer-phrase">
-            SYSTEM STATUS · MODE:
-            <span data-footer-mode>C64</span>
-            · COMMUNITY: ACTIVE
-        </div>
-
     </div>
 
 </footer>
@@ -347,22 +341,6 @@
 <script src="js/ccg-global.js" defer></script>
 <script src="js/ccg-mode-engine.js" defer></script>
 <script src="js/home-dynamic.js" defer></script>
-
-<!-- FOOTER MODE SYNC -->
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    const modeSpan = document.querySelector("[data-footer-mode]");
-    if (!modeSpan) return;
-
-    const update = () => {
-        const mode = document.body.getAttribute("data-ccg-mode");
-        modeSpan.textContent = mode === "amiga" ? "Amiga" : "C64";
-    };
-
-    update();
-    document.addEventListener("ccg:modechange", update);
-});
-</script>
 
 <!-- GOATCOUNTER — SAFE ANALYTICS -->
 <script
@@ -373,4 +351,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
