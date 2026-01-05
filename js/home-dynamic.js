@@ -32,10 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (shouldUseMobileLite()) {
         applyMobileLiteMode();
-        runWhenIdle(kickOff);
-    } else {
-        kickOff();
     }
+    kickOff();
 });
 
 async function initHomeDynamic() {
