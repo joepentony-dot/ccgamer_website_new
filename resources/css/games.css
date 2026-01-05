@@ -517,6 +517,16 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     box-shadow: var(--ccg-panel-shadow);
 }
 
+.ccg-page--single-game .game-section--related {
+    display: block;
+    visibility: visible;
+    opacity: 1;
+    height: auto;
+    overflow: visible;
+    transform: none;
+    animation: none;
+}
+
 .game-section__title {
     margin: 0 0 12px;
     font-family: var(--ccg-font-main);
