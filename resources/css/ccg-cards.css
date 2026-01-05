@@ -40,7 +40,7 @@
     contain: layout paint;
 
     box-shadow:
-        0 10px 28px rgba(0,0,0,0.78),
+        var(--ccg-depth-card),
         inset 0 0 0 1px rgba(255,255,255,0.03);
 
     transition:
@@ -129,10 +129,32 @@
     filter: brightness(1.02);
 
     box-shadow:
-        0 14px 36px rgba(0,0,0,0.86);
+        var(--ccg-depth-card-hover);
 
     border-color: rgba(255,255,255,0.14);
     will-change: transform, box-shadow;
+}
+
+.ccg-feature-card {
+    box-shadow:
+        var(--ccg-depth-featured),
+        inset 0 0 0 1px rgba(255,255,255,0.04);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .ccg-game-card:hover,
+    .ccg-card:hover,
+    .ccg-genre-tile:hover,
+    .ccg-feature-card:hover,
+    .ccg-game-card:focus-within,
+    .ccg-card:focus-within,
+    .ccg-genre-tile:focus-within,
+    .ccg-feature-card:focus-within {
+        transform: translate3d(1px, -2px, 0) scale(1.008);
+        box-shadow:
+            var(--ccg-depth-card-hover),
+            0 0 20px rgba(var(--accent-rgb),0.22);
+    }
 }
 
 body[data-ccg-mode="c64"] .ccg-game-card:hover,
@@ -604,4 +626,23 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+}
+
+@media (max-width: 720px) {
+    .ccg-page--single-game .related-carousel {
+        --related-card-height: 200px;
+    }
+
+    .ccg-page--single-game .related-carousel .related-card {
+        justify-content: center;
+        padding: 10px;
+    }
+
+    .ccg-page--single-game .related-carousel .related-card img {
+        align-self: center;
+    }
+
+    .ccg-page--single-game .related-carousel .related-card span {
+        height: auto;
+    }
 }
