@@ -1138,7 +1138,7 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__bg--a
 .home-hero__title {
     font-family: var(--ccg-font-hero);
     letter-spacing: 0.1em;
-    line-height: 1.12;
+    line-height: 1.16;
     text-transform: uppercase;
     color: #f2f6ff;
     text-shadow:
@@ -1663,12 +1663,14 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
     font-family: var(--ccg-font-main);
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    line-height: 1.2;
 }
 
 .home-section__divider {
     flex: 1;
     height: 1px;
     background: linear-gradient(90deg, rgba(var(--accent-rgb),0.35), rgba(255,255,255,0));
+    box-shadow: 0 0 12px rgba(var(--accent-rgb),0.35);
 }
 
 .home-highlights-grid {
