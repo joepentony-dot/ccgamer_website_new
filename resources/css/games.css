@@ -518,13 +518,13 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
 }
 
 .ccg-page--single-game .game-section--related {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    height: auto !important;
-    overflow: visible !important;
-    transform: none !important;
-    animation: none !important;
+    display: block;
+    visibility: visible;
+    opacity: 1;
+    height: auto;
+    overflow: visible;
+    transform: none;
+    animation: none;
 }
 
 .game-section__title {
