@@ -569,3 +569,19 @@
         0 0 0 1px rgba(var(--accent-rgb), 0.35),
         0 0 8px rgba(var(--accent-rgb), 0.22);
 }
+
+/* ============================================================
+   EASTER EGG MENU SCROLL FIX FOR MOBILE
+   ------------------------------------------------------------
+   Ensure the Easter Egg menu is scrollable on mobile devices
+=========================================================== */
+
+@media (max-width: 820px) {
+    .ccg-easter-egg-menu { /* Change to your actual selector if different */
+        overflow-y: auto; /* Enables vertical scrolling */
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling */
+        touch-action: pan-y; /* Prevents any issues with touch interactions */
+        overscroll-behavior: contain; /* Prevents page scroll while interacting with the menu */
+        max-height: 90vh; /* Ensures the menu stays within the viewport height */
+    }
+}
