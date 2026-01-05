@@ -1350,6 +1350,7 @@ function setupFooterSignatureRotator() {
         setupVisitCounter();
         setupLogoEasterEgg();
         setupSecretTyping();
+        setupFooterSignatureRotator();
 
         /* ==================================================
            VIEWPORT WOW — LIGHT UP EVERYTHING
