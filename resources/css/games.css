@@ -510,11 +510,11 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
 
 .game-section {
     margin: 16px auto;
-    padding: 18px 20px;
+    padding: 16px 18px;
     border-radius: 16px;
     background: var(--ccg-surface-glass);
     border: 1px solid var(--ccg-border);
-    box-shadow: var(--ccg-panel-shadow);
+    box-shadow: var(--ccg-panel-shadow), 0 0 18px rgba(var(--accent-rgb), 0.12);
 }
 
 .ccg-page--single-game .game-section--related {

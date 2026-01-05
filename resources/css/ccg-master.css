@@ -26,12 +26,13 @@
     --ccg-text-light: #e8ecff;
     --ccg-text-soft: #b5bbdf;
     --ccg-soft: rgba(255, 255, 255, 0.5);
-    --ccg-depth-hero: 0 30px 76px rgba(0,0,0,0.84);
-    --ccg-depth-featured: 0 22px 52px rgba(0,0,0,0.78);
-    --ccg-depth-card: 0 10px 28px rgba(0,0,0,0.78);
-    --ccg-depth-card-hover: 0 16px 36px rgba(0,0,0,0.88);
+    --ccg-depth-hero: 0 30px 70px rgba(0,0,0,0.82);
+    --ccg-depth-featured: 0 20px 48px rgba(0,0,0,0.76);
+    --ccg-depth-card: 0 12px 30px rgba(0,0,0,0.78);
+    --ccg-depth-card-hover: 0 18px 40px rgba(0,0,0,0.88);
     --ccg-glow-soft: 0 0 14px rgba(var(--accent-rgb),0.18);
     --ccg-glow-strong: 0 0 28px rgba(var(--accent-rgb),0.38);
+    --ccg-section-divider: linear-gradient(90deg, rgba(255,255,255,0), rgba(var(--accent-rgb),0.35), rgba(255,255,255,0.16), rgba(255,255,255,0));
 
     /* HEADER CONTRACT */
     --ccg-header-padding-y: 14px;
@@ -42,7 +43,7 @@
     --ccg-nav-pill-pad-x: 12px;
 
     /* PAGE ENTRY */
-    --ccg-page-entry-pad: 32px;
+    --ccg-page-entry-pad: 28px;
 
     /* TOUCH & MOBILE SAFETY */
     --ccg-touch-size: 48px;
@@ -221,10 +222,26 @@ li {
 .ccg-main {
     width: min(1240px, 95vw);
     margin: 0 auto;
-    padding: calc(var(--ccg-page-entry-pad) + 8px) clamp(1rem, 2vw, 1.5rem) 48px;
+    padding: calc(var(--ccg-page-entry-pad) + 6px) clamp(1rem, 2vw, 1.5rem) 40px;
     position: relative;
     overflow-x: hidden;
     overflow-y: visible;
+}
+
+.ccg-page main > section {
+    position: relative;
+}
+
+.ccg-page main > section + section::before {
+    content: "";
+    position: absolute;
+    left: clamp(0px, 2vw, 18px);
+    right: clamp(0px, 2vw, 18px);
+    top: -12px;
+    height: 1px;
+    background: var(--ccg-section-divider);
+    opacity: 0.7;
+    pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -259,8 +276,15 @@ li {
 @media (max-width: 640px) {
     .ccg-main {
         width: 100%;
-        padding: calc(var(--ccg-page-entry-pad) + 10px) 16px 42px;
+        padding: calc(var(--ccg-page-entry-pad) + 8px) 16px 38px;
         text-align: center;
+    }
+
+    .ccg-page main > section + section::before {
+        left: 0;
+        right: 0;
+        top: -10px;
+        opacity: 0.55;
     }
 
     .ccg-section,

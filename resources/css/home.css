@@ -1735,7 +1735,8 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
 ============================================================ */
 
 .home-section {
-    margin: 28px 0;
+    margin: 24px 0;
+    position: relative;
 }
 
 .home-section__header {
@@ -1756,8 +1757,8 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
 .home-section__divider {
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, rgba(var(--accent-rgb),0.35), rgba(255,255,255,0));
-    box-shadow: 0 0 12px rgba(var(--accent-rgb),0.35);
+    background: linear-gradient(90deg, rgba(var(--accent-rgb),0.4), rgba(255,255,255,0.12), rgba(255,255,255,0));
+    box-shadow: 0 0 14px rgba(var(--accent-rgb),0.32);
 }
 
 .home-highlights-grid {
