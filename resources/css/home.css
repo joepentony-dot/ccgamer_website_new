@@ -2446,3 +2446,98 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
         width: 100%;
     }
 }
+
+/* ============================================================
+   OMEGA WOW — FEATURED GAMEPLAY VIDEOS (PHASE 2)
+   Cinematic depth • Zero layout risk • Append-only
+============================================================ */
+
+/* SECTION SPOTLIGHT — SUBTLE ENERGY FIELD */
+.home-featured-videos {
+    position: relative;
+    overflow: hidden;
+}
+
+.home-featured-videos::before {
+    content: "";
+    position: absolute;
+    inset: -40%;
+    background:
+        radial-gradient(circle at 30% 25%, rgba(var(--accent-rgb), 0.18), transparent 45%),
+        radial-gradient(circle at 70% 65%, rgba(255,255,255,0.08), transparent 40%);
+    opacity: 0.75;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ENSURE CONTENT STAYS ABOVE */
+.home-featured-videos > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* CARD FRAME — PREMIUM EDGE */
+.home-featured-videos .home-video-card {
+    position: relative;
+}
+
+.home-featured-videos .home-video-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow:
+        inset 0 0 0 1px rgba(var(--accent-rgb), 0.22),
+        inset 0 0 18px rgba(var(--accent-rgb), 0.18);
+    opacity: 0.65;
+}
+
+/* THUMBNAIL — MICRO-CONTRAST POLISH */
+.home-video-card__thumb {
+    filter: saturate(1.12) contrast(1.06);
+    transition: filter 240ms ease;
+}
+
+/* DESKTOP HOVER — ENERGY LIFT (SAFE) */
+@media (hover: hover) and (pointer: fine) {
+    .home-featured-videos .home-video-card:hover {
+        transform: translateY(-3px);
+        box-shadow:
+            0 28px 56px rgba(0,0,0,0.82),
+            0 0 48px var(--home-video-accent);
+    }
+
+    .home-featured-videos .home-video-card:hover .home-video-card__thumb {
+        filter: saturate(1.18) contrast(1.1);
+    }
+}
+
+/* PLATFORM GLOW BREATHING — VERY SUBTLE */
+@media (prefers-reduced-motion: no-preference) {
+    .home-featured-videos .home-video-card:nth-child(1),
+    .home-featured-videos .home-video-card:nth-child(2) {
+        animation: homeFeaturedGlow 7.5s ease-in-out infinite;
+    }
+}
+
+@keyframes homeFeaturedGlow {
+    0%, 100% {
+        box-shadow:
+            0 22px 48px rgba(0,0,0,0.78),
+            0 0 28px var(--home-video-accent);
+    }
+    50% {
+        box-shadow:
+            0 26px 54px rgba(0,0,0,0.82),
+            0 0 42px var(--home-video-accent);
+    }
+}
+
+/* MOBILE — NO MOTION, NO LIFT */
+@media (max-width: 820px) {
+    .home-featured-videos::before,
+    .home-featured-videos .home-video-card::after {
+        display: none;
+    }
+}
