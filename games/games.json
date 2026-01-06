@@ -138,6 +138,27 @@
     "description": "A young boy reads his favorite comic book about secret agent Steve Keene."
   },
   {
+    "id": "ace_of_aces",
+    "title": "Ace Of Aces",
+    "year": 1986,
+    "system": "C64",
+    "genres": [
+      "Strategy Games",
+      "Top Picks"
+    ],
+    "developer": "Accolade",
+    "description": "Ace of Aces is a 1st person, 2D flight simulation. You're onboard a British RAF Mosquito, maverick fighter bomber. Your mission ... stop enemy trains, intercept the terrible german V-1 buzz bombs, sink the german U-boats and down the Nazi bombers.",
+    "videoid": "yfBs1paNzpY",
+    "thumbnail": "resources/images/thumbnails/all/ace_of_aces.jpg",
+    "manual": "https://drive.google.com/file/d/1ybA6ddAoN8tRJsCM38BZfQ9iBL9ZKFc-/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1GfGfaaGN2_0BW-wce9ZscSiChJwzo_PR/view?usp=drive_link"
+    ],
+    "lemon": [
+      "https://www.lemon64.com/game/ace-of-aces"
+    ]
+  },
+  {
     "system": "C64",
     "id": "action_biker",
     "slug": "action-biker",
