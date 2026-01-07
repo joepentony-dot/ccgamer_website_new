@@ -21,7 +21,7 @@
     "disk": [
       "https://drive.google.com/file/d/1R0abvgK_aPQIo3W6eZ6LFbnb6IxPm9Mg/view?usp=drive_link"
     ],
-    "description": "The year is 1942, and you are a daring fighter pilot \"Super Ace\". You begin and end each of the numerous levels on an aircraft carrier and then fly your plane into battle."
+    "description": "Released for the Commodore 64 in 1986, 1942 is a vertically scrolling arcade shoot 'em up based on Capcom's World War II-themed arcade hit. Players take the role of an elite fighter pilot battling waves of enemy aircraft and naval forces, taking off from and landing on an aircraft carrier between missions. The game is remembered on the C64 for its fast-paced action and faithful conversion of the arcade experience."
   },
   {
     "system": "C64",
@@ -43,7 +43,7 @@
     "disk": [
       "https://drive.google.com/file/d/1_v23G9pXL73QhEeYS922nO0AGzfX23ze/view?usp=drive_link"
     ],
-    "description": "Released in 1985 by 64 Tape Computing, 20 Tons is a C64 arcade game."
+    "description": "20 Tons is a Commodore 64 arcade puzzle game released in 1985 by 64 Tape Computing. The objective is to manoeuvre heavy loads across a series of increasingly challenging screens while avoiding hazards and planning each move carefully. It is a classic example of the thoughtful, single-screen puzzle design popular on budget C64 releases"
   },
   {
     "system": "C64",
@@ -66,7 +66,7 @@
     "disk": [
       "https://drive.google.com/file/d/11GIYqcNbImJkn8UBKZQkT4F-Te9Hv3UQ/view?usp=drive_link"
     ],
-    "description": "You're a skateboarder in Skate City, one of the largest skateparks ever built. Ollie off of ramps, grind on rails, and swerve past pedestrians as you bust out tricks."
+    "description": "720 Degrees is a skateboarding sports game released on the Commodore 64 in 1987, based on Atari's arcade title. Set in the sprawling Skate City, players perform tricks, collect points, and avoid obstacles while racing against the clock. The C64 version is noted for capturing the arcade's free-roaming structure and energetic skating atmosphere."
   },
   {
     "system": "C64",
@@ -90,7 +90,7 @@
     "disk": [
       "https://drive.google.com/file/d/1HrvjFugCKx3e9nzey2kZ-AnxeYi4WRuT/view?usp=drive_link"
     ],
-    "description": "A Nightmare on Elm Street is an action game based on the movie of the same name, where you attempt to free your friends from the grasp of the evil Freddy Krueger."
+    "description": "A Nightmare on Elm Street is a Commodore 64 action game based on the popular horror film series. Players must rescue their friends from the dream world while avoiding the deadly Freddy Krueger, balancing arcade-style gameplay with light puzzle elements. The game stands out as one of the more atmospheric licensed horror titles on the C64."
   },
   {
     "system": "C64",
@@ -113,7 +113,7 @@
     "disk": [
       "https://drive.google.com/file/d/128MEDwS_PwIWjqd7pZV_7j3Sx7r0sIX2/view?usp=drive_link"
     ],
-    "description": "This is the game of the long running BBC quiz show of the same name. Two teams of three battle against each other by answering sports questions."
+    "description": "Based on the long-running BBC television quiz show, A Question of Sport brings competitive sports trivia to the Commodore 64. Two teams compete by answering questions drawn from a wide range of sporting topics, closely mirroring the format of the TV programme. It remains a popular quiz title among fans of British television adaptations."
   },
   {
     "system": "C64",
@@ -135,7 +135,7 @@
     "disk": [
       "https://drive.google.com/file/d/1KLjO9CFzK_sJw6TNBIG-M_N3XgXHZAKo/view?usp=drive_link"
     ],
-    "description": "A young boy reads his favorite comic book about secret agent Steve Keene."
+    "description": "Accolade's Comics is a narrative-driven adventure game for the Commodore 64 released in 1987. Players guide a young boy who becomes immersed in a comic-book story starring secret agent Steve Keene. The game blends interactive storytelling with puzzle-solving and is remembered for its comic-style presentation."
   },
   {
     "id": "ace_of_aces",
@@ -147,10 +147,10 @@
       "Top Picks"
     ],
     "developer": "Accolade",
-    "description": "Ace of Aces is a 1st person, 2D flight simulation. You're onboard a British RAF Mosquito, maverick fighter bomber. Your mission ... stop enemy trains, intercept the terrible german V-1 buzz bombs, sink the german U-boats and down the Nazi bombers.",
+    "description": "Ace of Aces is a 1986 Commodore 64 World War II flight combat game published by Accolade. Played from a first-person cockpit view, it places the player in control of a British RAF Mosquito fighter-bomber on a series of combat missions. Objectives include intercepting V-1 flying bombs, attacking trains and U-boats, and engaging enemy aircraft, combining arcade action with light simulation elements. The game is widely remembered for its cinematic presentation and immersive atmosphere on the C64.",
     "videoid": "yfBs1paNzpY",
     "thumbnail": "resources/images/thumbnails/all/ace_of_aces.jpg",
-    "manual": "https://drive.google.com/file/d/1ybA6ddAoN8tRJsCM38BZfQ9iBL9ZKFc-/view?usp=drive_link",
+    "pdf": "https://drive.google.com/file/d/1ybA6ddAoN8tRJsCM38BZfQ9iBL9ZKFc-/view?usp=drive_link",
     "disk": [
       "https://drive.google.com/file/d/1GfGfaaGN2_0BW-wce9ZscSiChJwzo_PR/view?usp=drive_link"
     ],
@@ -180,7 +180,7 @@
     "disk": [
       "https://drive.google.com/file/d/18gyJQyJF-DrneKFeHegdj8g-tITmNye-/view?usp=drive_link"
     ],
-    "description": "Action Biker is a game that uses the character Clumsy Colin from the British comic Buster, and he was also used as the mascot for the crisp range KP Skips."
+    "description": "Action Biker is a Commodore 64 arcade racing game featuring Clumsy Colin, a character from the British comic Buster and later used as the mascot for KP Skips. Players race against the clock across obstacle-filled courses, performing jumps and stunts to score points. The game is fondly remembered for its fast-paced gameplay and distinctive licensed character."
   },
   {
     "system": "C64",
@@ -203,7 +203,7 @@
     "disk": [
       "https://drive.google.com/file/d/1xATEMy12bnbkXuI_hEgIUdBmH2F4s3L-/view?usp=drive_link"
     ],
-    "description": "Lace up those boots soldier, and get ready for five levels of challenging action in this boot camp simulator."
+    "description": "Action Service is a Commodore 64 military-themed arcade strategy game released in 1989. Players undergo training across a series of boot camp-style challenges that test reflexes and timing. The game blends action sequences with mission-based progression, reflecting Infogrames' experimental approach to arcade design."
   },
   {
     "system": "C64",
@@ -227,7 +227,7 @@
     "disk": [
       "https://drive.google.com/file/d/1aHyx4hG3K5JNKwXTUjNGmadyEGCnOcAt/view?usp=drive_link"
     ],
-    "description": "After Burner is an aircraft shooter. The goal is simple: use your F-14 Tomcat and shoot as many enemies as you can. "
+    "description": "After Burner is a fast-paced Commodore 64 arcade shooter based on Sega's hugely popular coin-op. Players pilot an F-14 Tomcat through high-speed aerial combat, blasting enemy aircraft and ground targets across a series of scrolling battle zones. The C64 version is remembered for its ambitious attempt to recreate the scale, speed, and spectacle of the arcade original on home hardware.."
   },
   {
     "system": "AMIGA",
@@ -249,7 +249,7 @@
     "disk": [
       "https://drive.google.com/file/d/1a2VqvICLsCfYtbNmhRsIoI3K5p1Ne2ni/view?usp=drive_link"
     ],
-    "description": "This horizontally-scrolling shoot 'em up features six long levels, all with detailed and mellow background graphics, aiming for a less hectic feel than contemporaries such as Project X."
+    "description": "Agony is a horizontally scrolling shoot 'em up released for the Amiga in 1992 by Psygnosis. Featuring six lengthy levels, the game focuses on precision shooting and enemy patterns rather than overwhelming speed. Its dark fantasy setting, detailed artwork, and atmospheric presentation give it a more measured feel compared to faster, more frantic shooters of the era.."
   },
   {
     "system": "C64",
@@ -274,7 +274,7 @@
     "disk": [
       "https://drive.google.com/file/d/1NZBd7P2HviaZtmXyEGRrA5_-6TQTB5QN/view?usp=drive_link"
     ],
-    "description": "In this action/simulation game by Microprose you take the role of an U.S. Army airborne ranger.."
+    "description": "Airborne Ranger is a Commodore 64 action-simulation game developed by MicroProse in 1987. Players take on the role of a U.S. Army airborne ranger, planning and executing covert military missions behind enemy lines. Combining strategic planning with real-time action, the game stood out on the C64 for its tactical depth and realistic military theme."
   },
   {
     "system": "C64",
@@ -297,7 +297,7 @@
     "disk": [
       "https://drive.google.com/file/d/1H-GRBW5S23OByVd0VgVrfukvul3rIE9z/view?usp=drive_link"
     ],
-    "description": "Airwolf is a skill game where you need to steer a helicopter through a labyrinth"
+    "description": "Airwolf is a Commodore 64 action game based on the popular television series of the same name. Players pilot a high-tech attack helicopter through maze-like environments, avoiding obstacles while destroying enemy targets. The game is known for its emphasis on precise control and timing rather than straightforward shooting."
   },
   {
     "system": "AMIGA",
@@ -320,7 +320,7 @@
     "disk": [
       "https://drive.google.com/file/d/1cG5LnFpmqGiPzsXl-ZsnyCdB8tRLUOe_/view?usp=drive_link"
     ],
-    "description": "A drug baron took over Alcatraz prison and now you take the role of a U.S. Navy Seal to break in and neutralise him."
+    "description": "Alcatraz is an Amiga action-adventure game released in 1992. The story centres on a drug baron who has seized control of Alcatraz prison, with the player cast as a U.S. Navy SEAL sent in to stop him. The game blends arcade combat with exploration elements and is remembered for its gritty premise and varied mission structure."
   },
   {
     "system": "C64",
@@ -342,7 +342,7 @@
     "disk": [
       "https://drive.google.com/file/d/17D20nTs8uvDN6Bk7rWph3Bswq7M05SHt/view?usp=drive_link"
     ],
-    "description": "In this adventure game you control an explorer who's on his way to fortress Alcazar."
+    "description": "Alcazar: The Forgotten Fortress is a Commodore 64 action-adventure game released by Activision in 1985. Players guide an explorer on a dangerous journey through the ancient fortress of Alcazar, solving puzzles and avoiding traps along the way. The game is noted for its tense atmosphere and methodical, exploration-focused gameplay."
   },
   {
     "system": "C64",
@@ -366,7 +366,7 @@
     "disk": [
       "https://drive.google.com/file/d/1h1Wl8szHDMejQjoEMmxxKQUsLgXmHsr2/view?usp=drive_link"
     ],
-    "description": "In space no-one can hear you scream! That tagline from the movie is apt for this strategy adaptation that follows the plotline of the first movie in the franchise"
+    "description": "Alien is a Commodore 64 strategy game inspired by the 1979 science-fiction horror film. Following the events of the movie, players must manage resources, protect crew members, and survive the deadly alien threat aboard the spaceship. The game emphasises tension and planning, making it one of the more distinctive licensed horror titles on the C64."
   },
   {
     "system": "AMIGA",
@@ -389,7 +389,7 @@
     "disk": [
       "https://drive.google.com/file/d/1Vkf5U5dp8kABm9KW3VIDppYHm4MvpChB/view?usp=drive_link"
     ],
-    "description": "Alien Breed is a top-down science fiction shooter somewhat inspired by the movie Aliens in terms of plot and atmosphere."
+    "description": "Alien Breed is a top-down science-fiction shooter released for the Amiga in 1991 by Team17. Strongly inspired by the atmosphere of the Aliens films, the game combines intense action with exploration and light puzzle-solving. It became one of the Amiga's most recognisable shooters, praised for its graphics, sound, and moody presentation."
   },
   {
     "system": "C64",
@@ -416,7 +416,7 @@
       "https://drive.google.com/file/d/1WwEjIngbVpW0Fp0bhWwsaRzpOrxRQh16/view?usp=drive_link",
       "https://drive.google.com/file/d/1PynskVl35QY0z0H1mHbKEC5efUwcxnjY/view?usp=drive_link"
     ],
-    "description": "While the Electric Dreams version of Aliens is a simple action game, the USA version features six mini games which are related to the movie."
+    "description": "Aliens: The Computer Game is a Commodore 64 adaptation of the science-fiction film Aliens. The Electric Dreams version focuses on straightforward action gameplay, while the US release features a series of mini-games representing different scenes from the movie. Together, they offer a varied and ambitious licensed experience on the C64."
   },
   {
     "system": "C64",
@@ -439,7 +439,7 @@
     "disk": [
       "https://drive.google.com/file/d/1NymJRSeCTYW819bEOexm9zDd0JccUA-s/view?usp=drive_link"
     ],
-    "description": "Alleykat is a vertically-scrolling racer with elements of a shoot-em up game"
+    "description": "Alleykat is a Commodore 64 arcade game released in 1986 that blends elements of racing and shoot 'em up gameplay. Players guide a mischievous cat through a variety of fast-paced challenges, dodging hazards and completing objectives across multiple screens. The game is remembered for its humour, variety, and colourful presentation."
   },
   {
     "system": "C64",
@@ -464,7 +464,7 @@
     "disk": [
       "https://drive.google.com/file/d/1qR9NY7seLQ9y-A0UcEPMwxfOOWf7msnf/view?usp=drive_link"
     ],
-    "description": "Alter Ego is a game which tries to simulate life itself!"
+    "description": "Alter Ego is a unique Commodore 64 life-simulation game released by Activision in 1986. Players guide a character from childhood through adulthood, making decisions that shape their personality, career, and relationships. Unusual for its time, the game focuses on choice and consequence rather than traditional action, earning it a lasting reputation as an experimental classic."
   },
   {
     "system": "C64",
@@ -487,7 +487,7 @@
     "disk": [
       "https://drive.google.com/file/d/1mNy5wBFkBvpnP17ffvjNrNCv3rNEEvuc/view?usp=drive_link"
     ],
-    "description": "American 3D Pool is a one or two player game featuring both pool and billiards"
+    "description": "American 3D Pool is a Commodore 64 sports game released in 1991 by Zeppelin Games. Offering both pool and billiards, the game uses a distinctive pseudo-3D viewpoint to simulate realistic table play. It is widely regarded as one of the most accomplished cue sports games available on the C64."
   },
   {
     "system": "C64",
@@ -509,7 +509,7 @@
     "disk": [
       "https://drive.google.com/file/d/1C8pu3F1lUNiV2Y34ni_wrGnIirDAN0rB/view?usp=drive_link"
     ],
-    "description": "Android 2 is a C64 arcade game by Ocean, released in 1983."
+    "description": "Android 2 is an arcade-style Commodore 64 game released by Ocean in 1983. Players navigate hazardous environments while avoiding enemies and traps, relying on quick reflexes and careful movement. As an early C64 release, it reflects the straightforward yet challenging design common to the platform's formative years."
   },
   {
     "system": "C64",
@@ -533,7 +533,7 @@
     "disk": [
       "https://drive.google.com/file/d/1rwYNqs05MqD3x1F-jouaAVJKE4VjhGeC/view?usp=drive_link"
     ],
-    "description": "Android Nim is a C64 puzzle game from 64 Tape Computing (1985)."
+    "description": "Android Nim is a Commodore 64 puzzle and strategy game released in 1985 by 64 Tape Computing. Based on the classic mathematical game of Nim, players must outthink their opponent by removing objects according to strict rules. The game offers a cerebral alternative to arcade action, focusing on logic and planning."
   },
   {
     "system": "C64",
@@ -555,7 +555,7 @@
     "disk": [
       "https://drive.google.com/file/d/17gjZPbVV2haq8SSxwEL-fJfcc9KzCkSx/view?usp=drive_link"
     ],
-    "description": "In 1987, Mirrorsoft released Andy Capp, a C64 adventure game."
+    "description": "Andy Capp is a Commodore 64 adventure game released in 1987 by Mirrorsoft, based on the long-running British comic strip. Players take control of the famously lazy and mischievous character, navigating everyday situations through exploration and problem-solving. The game is remembered for its humour and strong British cultural identity."
   },
   {
     "system": "AMIGA",
@@ -569,7 +569,7 @@
       "Top Picks"
     ],
     "year": 1991,
-    "developer": "US Gold",
+    "developer": "Delphine Software",
     "videoid": "lvsIHyI_Ir4",
     "lemon": [
       "https://www.lemonamiga.com/games/details.php?id=72"
@@ -579,7 +579,7 @@
     "disk": [
       "https://drive.google.com/file/d/1lixY5fKZLSAVt21qHoViCSJx9uatuf-x/view?usp=drive_link"
     ],
-    "description": "Another World is a AMIGA action-adventure game released in 1991 by US Gold."
+    "description": "Another World is a cinematic action-adventure game released on the Amiga in 1991. Players follow scientist Lester Knight Chaykin as he is transported to a mysterious alien world filled with danger and intrigue. Renowned for its storytelling, animation, and atmosphere, the game is widely regarded as one of the Amiga's defining titles."
   },
   {
     "system": "C64",
@@ -602,7 +602,7 @@
     "disk": [
       "https://drive.google.com/file/d/1ytiwjwLmdQrVPR5hRtQSYH20S0j6y6DQ/view?usp=drive_link"
     ],
-    "description": "Ant Attack is a C64 arcade game released in 1984 by Quicksilva."
+    "description": "Ant Attack is a Commodore 64 arcade game released in 1984 by Quicksilva. Set in a city overrun by giant ants, players must rescue survivors while avoiding relentless enemies. Its isometric viewpoint and sense of tension made it a highly influential title and a standout early horror-themed game on the C64."
   },
   {
     "system": "AMIGA",
@@ -625,7 +625,7 @@
     "disk": [
       "https://drive.google.com/file/d/1ATXb4QANb28JCdD9yAcvTH7Kx6FNbzd5/view?usp=drive_link"
     ],
-    "description": "Antheads: It Came From The Desert II arrived in 1990 as a AMIGA adventure game from Cinemaware."
+    "description": "Antheads: It Came From The Desert II is an Amiga adventure game released in 1990 by Cinemaware. Serving as a sequel to the original, it expands on the pulp sci-fi storyline with new locations, characters, and gameplay mechanics. The game continues Cinemaware's trademark cinematic approach to interactive storytelling."
   },
   {
     "system": "AMIGA",
@@ -647,7 +647,7 @@
     "disk": [
       "https://drive.google.com/file/d/13-4oR7aLlkFxDoSAolTIvBgz9wl_KWO8/view?usp=drive_link"
     ],
-    "description": "Apocalypse is a AMIGA shooting game from 1994, developed by Virgin Interactive."
+    "description": "Apocalypse is a vertically scrolling shoot 'em up released for the Amiga in 1994 by Virgin Interactive. Players battle waves of enemies across futuristic environments, relying on fast reflexes and heavy firepower. The game is noted for its smooth scrolling, detailed visuals, and late-era Amiga polish."
   },
   {
     "system": "C64",
@@ -670,7 +670,7 @@
     "disk": [
       "https://drive.google.com/file/d/1uDfUNKN2iZsl6xE93jXZWzFC4hEURsvS/view?usp=drive_link"
     ],
-    "description": "Apollo 18: Mission To The Moon is a C64 strategy game from Accolade (1987)."
+    "description": "Apollo 18: Mission To The Moon is a Commodore 64 strategy and simulation game released by Accolade in 1987. Players manage a space mission inspired by the Apollo programme, balancing planning, resource management, and decision-making. The game is praised for its educational angle and thoughtful approach to space exploration."
   },
   {
     "system": "C64",
@@ -694,7 +694,7 @@
     "disk": [
       "https://drive.google.com/file/d/17yBoWAp8fUb3BOT7X-ogvDIwkju0eHOf/view?usp=drive_link"
     ],
-    "description": "Arachnophobia is a C64 arcade game by Titus, released in 1991."
+    "description": "Arachnophobia is a Commodore 64 arcade game released in 1991 by Titus, based on the horror film of the same name. Players must eliminate giant spiders while protecting civilians and navigating maze-like environments. The game blends action with tension, making it a memorable licensed horror title on the C64."
   },
   {
     "system": "C64",
@@ -716,7 +716,7 @@
     "disk": [
       "https://drive.google.com/file/d/1B41CY4NUc111VAd66FbNMm2jBead8viJ/view?usp=drive_link"
     ],
-    "description": "Arcade Classics is a C64 arcade game from Firebird (1987)."
+    "description": "Arcade Classics is a Commodore 64 compilation released by Firebird in 1987. The collection brings together a selection of fast-paced arcade-style games, each focusing on reflex-based gameplay and score chasing. It reflects Firebird's budget-label approach, offering accessible arcade action in a single package for C64 owners."
   },
   {
     "system": "C64",
@@ -738,7 +738,7 @@
     "disk": [
       "https://drive.google.com/file/d/1N88ZIhoSpC9zLcA9v-SZ2uk3t69ddJyR/view?usp=drive_link"
     ],
-    "description": "In 1989, Codemasters released Arcade Flight Simulator, a C64 arcade game."
+    "description": "Arcade Flight Simulator is a Commodore 64 action game released by Codemasters in 1989. Designed to be more accessible than traditional flight simulators, it combines simple controls with fast-paced aerial combat. The game focuses on arcade-style dogfighting rather than realism, making it easy to pick up and play."
   },
   {
     "system": "AMIGA",
@@ -762,7 +762,7 @@
     "disk": [
       "https://drive.google.com/file/d/171F-pm0Iixdaeq40Gr8z4CUmjMz0F3hL/view?usp=drive_link"
     ],
-    "description": "Team 17's 1994 release Arcade Pool is a AMIGA sports game."
+    "description": "Arcade Pool is an Amiga sports and strategy game released by Team17 in 1994. Featuring a realistic pool simulation with an intuitive interface, the game allows players to compete across a variety of rule sets and table layouts. It is widely regarded as one of the finest cue sports games on the Amiga."
   },
   {
     "system": "C64",
@@ -785,7 +785,7 @@
     "disk": [
       "https://drive.google.com/file/d/1DxuYCJrp0-XQiU3XbWJHD_zIEJ37eEb9/view?usp=drive_link"
     ],
-    "description": "Developed by Ariolasoft and released in 1983, Archon: The Light And The Dark is a C64 strategy game."
+    "description": "Archon: The Light and the Dark is a Commodore 64 strategy game released in 1983 by Ariolasoft. Combining board-game strategy with real-time arcade combat, players command opposing fantasy forces battling for control of a shifting chessboard-like arena. The game is celebrated as a pioneering hybrid that influenced strategy design for years to come."
   },
   {
     "system": "C64",
@@ -807,7 +807,7 @@
     "disk": [
       "https://drive.google.com/file/d/1xHqX1V7Nc0Hh8xxXkfBdB9WG55Oramwf/view?usp=drive_link"
     ],
-    "description": "Developed by Commodore and released in 1983, Arctic Shipwreck is a C64 arcade game."
+    "description": "Arctic Shipwreck is a Commodore 64 arcade game released by Commodore in 1983. Players must navigate icy waters and hazardous conditions while rescuing survivors from a stranded vessel. As an early C64 title, it showcases simple mechanics paired with steadily increasing difficulty."
   },
   {
     "system": "C64",
@@ -830,7 +830,7 @@
     "disk": [
       "https://drive.google.com/file/d/1rojnga2cw-Zq0TLRqYy-mALDf4tavhP2/view?usp=drive_link"
     ],
-    "description": "Arkanoid is a C64 arcade game from Imagine (1987)."
+    "description": "Arkanoid is a Commodore 64 conversion of Taito's hugely successful arcade block-breaking game, released in 1987. Players control a paddle to deflect a ball, clearing screens of bricks while collecting power-ups that alter gameplay. The C64 version remains a favourite thanks to its addictive mechanics and faithful arcade feel."
   },
   {
     "system": "C64",
@@ -853,7 +853,7 @@
     "disk": [
       "https://drive.google.com/file/d/1-S383tkiDZQnPIrBMddEVttZHJ5mSrNW/view?usp=drive_link"
     ],
-    "description": "Army Moves is a C64 shooting game released in 1987 by Imagine."
+    "description": "Army Moves is a Commodore 64 action game released in 1987 by Imagine. Players guide a soldier through hostile territory across multiple stages, combining side-scrolling action with shooting sequences. The game is known for its high difficulty and striking visual style."
   },
   {
     "system": "C64",
@@ -876,7 +876,7 @@
     "disk": [
       "https://drive.google.com/file/d/1zW6dFrfwbXo7h5hr1_4pl3gQfIKi_4r-/view?usp=drive_link"
     ],
-    "description": "Arnie arrived in 1992 as a C64 arcade game from Zeppelin Games."
+    "description": "Arnie is a Commodore 64 arcade shooter released by Zeppelin Games in 1992. Clearly inspired by action film heroes of the era, the game features fast-paced shooting and enemy-filled stages. It represents one of the later arcade-style releases for the C64, arriving late in the system's commercial life."
   },
   {
     "system": "C64",
@@ -900,7 +900,7 @@
     "disk": [
       "https://drive.google.com/file/d/1Tjf7N3nfIUzH9g_46Qu_F0Pu-mNE0Vb4/view?usp=drive_link"
     ],
-    "description": "Asterix And The Magic Cauldron is a C64 arcade game released in 1986 by Melbourne House."
+    "description": "Asterix and the Magic Cauldron is a Commodore 64 action-adventure game released in 1986 by Melbourne House. Based on the famous comic series, players control Asterix as he journeys through Gaul collecting ingredients while avoiding enemies. The game is remembered for its colourful presentation and faithful use of the Asterix licence."
   },
   {
     "system": "C64",
@@ -923,7 +923,7 @@
     "disk": [
       "https://drive.google.com/file/d/1vEXuiVo7DZucoW7VOXwYu4c8uaQECVQR/view?usp=drive_link"
     ],
-    "description": "Llamasoft's 1983 release Attack Of The Mutant Camels is a C64 shooting game."
+    "description": "Attack of the Mutant Camels is a Commodore 64 arcade shooter created by Llamasoft in 1983. Players defend their base from waves of bizarre, laser-firing camels in a fast and chaotic battle. The game is an early example of Jeff Minter's distinctive style, blending surreal themes with intense arcade action."
   },
   {
     "system": "C64",
@@ -945,7 +945,7 @@
     "disk": [
       "https://drive.google.com/file/d/1pAWBZYUYE3HJdy1OXpn7MFM9lEDbEd_e/view?usp=drive_link"
     ],
-    "description": "From Gremlin Graphics in 1987, Auf Wiedersehen Monty delivers C64 platformer play."
+    "description": "Auf Wiedersehen Monty is a Commodore 64 platform game released by Gremlin Graphics in 1987. Continuing Monty Mole's adventures, the game challenges players to explore large levels, collect items, and manage resources carefully. It is often praised for its depth, humour, and strong European flavour."
   },
   {
     "system": "C64",
@@ -967,7 +967,7 @@
     "disk": [
       "https://drive.google.com/file/d/1wbuwK8amPjeMJYyqiyk2LVKQXvxdD5ee/view?usp=drive_link"
     ],
-    "description": "Aussie Games is a C64 sports game released in 1989 by Mindscape."
+    "description": "Aussie Games is a Commodore 64 sports compilation released by Mindscape in 1989. Inspired by Australian sporting events, the game features a variety of skill-based challenges that test timing and precision. It offers light-hearted competitive play in a distinctly regional setting."
   },
   {
     "system": "C64",
@@ -989,7 +989,7 @@
     "disk": [
       "https://drive.google.com/file/d/1RgVMLGcPmrS31v9KuIFbjS3G3luXWgB0/view?usp=drive_link"
     ],
-    "description": "Automania is a C64 platformer by Mikro-Gen, released in 1984."
+    "description": "Automania is a Commodore 64 platform game released by Mikro-Gen in 1984. Players take on the role of a mechanic racing against time to assemble cars while navigating hazardous factory environments. Known for its quirky presentation and demanding gameplay, it later inspired the similarly themed Manic Mechanic."
   },
   {
     "system": "C64",
@@ -1012,7 +1012,7 @@
     "disk": [
       "https://drive.google.com/file/d/1xPe5vbnYJbLpZ_phdYS9Kyc-cY_qWuLD/view?usp=drive_link"
     ],
-    "description": "Developed by Cosmi and released in 1983, Aztec Challenge is a C64 arcade game."
+    "description": "Aztec Challenge is a Commodore 64 arcade game released by Cosmi in 1983. Players attempt to survive a series of deadly trials inspired by ancient Aztec rituals, relying on precise timing and quick reactions. Its brutal difficulty made it one of the more notorious early C64 titles."
   },
   {
     "system": "C64",
@@ -1035,7 +1035,7 @@
     "disk": [
       "https://drive.google.com/file/d/1eot6RylOZx68YUNtNkcqYusUSUZHUiqP/view?usp=drive_link"
     ],
-    "description": "Developed by Imagine and released in 1984, B.C. Bill is a C64 arcade game."
+    "description": "B.C. Bill is a Commodore 64 arcade game released by Imagine in 1984. Set in a prehistoric world, players guide a caveman through obstacle-filled levels while collecting items and avoiding hazards. The game is remembered for its simple mechanics and cartoon-style presentation."
   },
   {
     "system": "C64",
@@ -1058,7 +1058,7 @@
     "disk": [
       "https://drive.google.com/file/d/1aUlTkh0T2JfIM9oLLEuXqrazW0pjAU4O/view?usp=drive_link"
     ],
-    "description": "Developed by Software Projects and released in 1984, B.C. II: Grog's Revenge is a C64 arcade game."
+    "description": "B.C. II: Grog's Revenge is a Commodore 64 arcade game released in 1984 by Software Projects. Acting as a sequel to B.C.'s Quest for Tires, it expands on the prehistoric theme with new challenges and enemies. The game retains the fast-paced action that made the original popular."
   },
   {
     "system": "C64",
@@ -1083,7 +1083,7 @@
     "disk": [
       "https://drive.google.com/file/d/1-fyuVeV5h6mZwPBfMqnW0h6T6G0crTRI/view?usp=drive_link"
     ],
-    "description": "B.C.'S Quest For Tires is a C64 arcade game by Software Projects, released in 1984."
+    "description": "B.C.'s Quest for Tires is a Commodore 64 arcade platform game released in 1984 by Software Projects. Players control Thor, a caveman searching for missing stone wheels across dangerous landscapes. The game became a classic thanks to its tight controls, clever level design, and strong personality."
   },
   {
     "system": "C64",
@@ -1106,7 +1106,7 @@
     "disk": [
       "https://drive.google.com/file/d/1j5FbtK0a-S_C77yRemgalJCY2quVp6tz/view?usp=drive_link"
     ],
-    "description": "Mastertronic's 1986 release Back To Reality is a C64 arcade game."
+    "description": "Back to Reality is a Commodore 64 arcade action game released by Mastertronic in 1986. Players navigate surreal environments filled with hazards and enemies, relying on quick reflexes to survive. Like many Mastertronic titles, it delivers straightforward action at a budget price point."
   },
   {
     "system": "C64",
@@ -1129,7 +1129,7 @@
     "disk": [
       "https://drive.google.com/file/d/1848FzCCyMfUfzojmhgrbYGYL_AfzJlU1/view?usp=drive_link"
     ],
-    "description": "Developed by Electric Dreams and released in 1986, Back To The Future is a C64 action-adventure game."
+    "description": "Back to the Future is a Commodore 64 action-adventure game released in 1986 by Electric Dreams, based on the hit film. Players guide Marty McFly through a variety of gameplay sections inspired by key scenes from the movie. The game is notable for its ambition in translating a major film licence to the C64."
   },
   {
     "system": "C64",
@@ -1151,7 +1151,7 @@
     "disk": [
       "https://drive.google.com/file/d/1O4Op5e7XeVfvCLuZx-IG4TNd2WHntOtH/view?usp=drive_link"
     ],
-    "description": "From Imagine in 1989, Bad Dudes Vs Dragonninja delivers C64 fighting game play."
+    "description": "Bad Dudes vs Dragon Ninja is a Commodore 64 beat 'em up released in 1989 by Imagine. A conversion of the Data East arcade hit, the game tasks players with fighting through waves of enemies using punches, kicks, and special moves. It captures the arcade brawler formula that defined late-1980s action games."
   },
   {
     "system": "C64",
@@ -1175,7 +1175,7 @@
     "disk": [
       "https://drive.google.com/file/d/1pGu4QIYpWxuniHmd8ngGyZ971ZW4EC5N/view?usp=drive_link"
     ],
-    "description": "Badlands is a C64 arcade game released in 1990 by Domark."
+    "description": "Badlands is a Commodore 64 racing and arcade action game released by Domark in 1990. Set in a post-apocalyptic wasteland, players race armed vehicles across hazardous tracks while battling rival drivers. The game blends high-speed racing with vehicular combat for intense arcade-style gameplay."
   },
   {
     "system": "C64",
@@ -1198,7 +1198,7 @@
     "disk": [
       "https://drive.google.com/file/d/1zMEX-iU0w9AINQgTwiulVdgfomrEPc7u/view?usp=drive_link"
     ],
-    "description": "Bangkok Knights is a C64 fighting game from 1987, developed by System 3."
+    "description": "Bangkok Knights is a Commodore 64 fighting game released in 1987 by System 3. Combining martial arts combat with light adventure elements, players progress through levels by defeating enemies and collecting items. The game is remembered for its large character sprites and distinctive setting."
   },
   {
     "system": "C64",
@@ -1220,7 +1220,7 @@
     "disk": [
       "https://drive.google.com/file/d/1V-X9SFWfjcZdG4hywYlBrIOlBiuakx9G/view?usp=drive_link"
     ],
-    "description": "Barbarian II: The Dungeon Of Drax is a C64 fighting game from 1988, developed by Palace Software."
+    "description": "Barbarian II: The Dungeon of Drax is a Commodore 64 fighting game released in 1988 by Palace Software. Acting as a sequel to Barbarian: The Ultimate Warrior, it expands the combat system with new enemies and locations while retaining the brutal sword-based duels of the original."
   },
   {
     "system": "C64",
@@ -1244,7 +1244,7 @@
     "disk": [
       "https://drive.google.com/file/d/10XfUy8YnimlB68Lfk3U-8s8mpIr2vjI-/view?usp=drive_link"
     ],
-    "description": "Released in 1987 by Palace Software, Barbarian: The Ultimate Warrior is a C64 fighting game."
+    "description": "Barbarian: The Ultimate Warrior is a Commodore 64 fighting game released in 1987 by Palace Software. Featuring one-on-one sword combat, players battle opponents using timed strikes, blocks, and decapitation moves. The game became infamous for its violent gameplay and striking presentation."
   },
   {
     "system": "C64",
@@ -1267,7 +1267,7 @@
     "disk": [
       "https://drive.google.com/file/d/1bnvKNIN4aANkMg8tDCQIH1TZNNb35ASm/view?usp=drive_link"
     ],
-    "description": "Barry Mcguigan World Championship Boxing is a C64 sports game by Activision, released in 1985."
+    "description": "Barry McGuigan World Championship Boxing is a Commodore 64 sports game released by Activision in 1985. Based on the real-life boxing champion, the game simulates professional bouts with tactical movement, punching, and stamina management. It was one of the more detailed boxing titles of its era."
   },
   {
     "system": "C64",
@@ -1290,7 +1290,7 @@
     "disk": [
       "https://drive.google.com/file/d/1dlHIwfP-3hElXJwuYMvW2HKOGwsN8X9P/view?usp=drive_link"
     ],
-    "description": "Released in 1988 by Data East, Batman: The Caped Crusader is a C64 action-adventure game."
+    "description": "Batman: The Caped Crusader is a Commodore 64 action-adventure game released in 1988 by Data East. Players take on the role of Batman across multiple missions, each featuring different gameplay styles and villains from the comic universe. The game is praised for its ambition and varied structure."
   },
   {
     "system": "C64",
@@ -1314,7 +1314,7 @@
     "disk": [
       "https://drive.google.com/file/d/1avQMDc6kWjpe1eVV0nAyD_o-Xc9Yi9YS/view?usp=drive_link"
     ],
-    "description": "Ocean's 1986 release Batman: The Movie is a C64 action-adventure game."
+    "description": "Batman: The Movie is a Commodore 64 action-adventure game released by Ocean in 1986. Inspired by the iconic film character rather than a specific movie plot, the game mixes side-scrolling action with puzzle elements. It became one of Ocean's most recognisable licensed releases."
   },
   {
     "system": "AMIGA",
@@ -1337,7 +1337,7 @@
     "disk": [
       "https://drive.google.com/file/d/1LgIK4wn56ANfABAbd9u0pgn9-KfRe7t1/view?usp=drive_link"
     ],
-    "description": "Electronic Arts's 1988 release Battle Chess is a AMIGA strategy game."
+    "description": "Battle Chess is an Amiga strategy game released in 1988 by Electronic Arts. It features traditional chess rules enhanced with animated battles that play out whenever pieces capture one another. The game became a showcase title for the Amiga's graphics and animation capabilities."
   },
   {
     "system": "C64",
@@ -1361,7 +1361,7 @@
     "disk": [
       "https://drive.google.com/file/d/1l93u6wlP76A_0OKUgcJSM0PwPfjqtfGi/view?usp=drive_link"
     ],
-    "description": "From Access Software in 1983, Beach-Head delivers C64 arcade game play."
+    "description": "Beach-Head is a Commodore 64 arcade and strategy hybrid released in 1983 by Access Software. Players attempt to invade and capture an enemy island through a series of action sequences, including artillery defense and ground assaults. It is regarded as one of the most influential early C64 titles."
   },
   {
     "system": "C64",
@@ -1384,7 +1384,7 @@
     "disk": [
       "https://drive.google.com/file/d/1KOtBnhOvU1h3G6AvsVyd5MbmwOzl9NAe/view?usp=drive_link"
     ],
-    "description": "Released in 1985 by Access Software, Beach-Head II is a C64 arcade game."
+    "description": "Beach-Head II is a Commodore 64 arcade game released in 1985 by Access Software. Expanding on the original, the sequel introduces new action scenarios as players confront a returning dictator. The game is known for its variety of gameplay styles and dramatic presentation."
   },
   {
     "system": "C64",
@@ -1408,7 +1408,7 @@
     "disk": [
       "https://drive.google.com/file/d/1xlaD8tjJVPgvIlQWCb9MSCKRo5sL1UH5/view?usp=drive_link"
     ],
-    "description": "Windham Classics's 1984 release Below The Root is a C64 adventure game."
+    "description": "Below the Root is a Commodore 64 adventure game released in 1984 by Windham Classics. Based on the fantasy novels by Zilpha Keatley Snyder, the game emphasises exploration, communication, and moral choices over combat. It stands out as an unusually thoughtful title for its time."
   },
   {
     "system": "AMIGA",
@@ -1430,7 +1430,7 @@
     "disk": [
       "https://drive.google.com/file/d/1djjoF79f2q2HlBES3mem9vDbQ4pf3E7F/view?usp=drive_link"
     ],
-    "description": "In 1994, Virgin Interactive released Beneath A Steel Sky, a AMIGA adventure game."
+    "description": "Beneath a Steel Sky is an Amiga point-and-click adventure released in 1994 by Virgin Interactive. Set in a dystopian cyberpunk world, the game follows protagonist Robert Foster as he uncovers dark secrets beneath a futuristic city. It is widely regarded as one of the finest adventure games on the Amiga."
   },
   {
     "system": "AMIGA",
@@ -1453,7 +1453,7 @@
     "disk": [
       "https://drive.google.com/file/d/1-RWkIfhAS5908Y7_hTxPiZFQvRIrmqo_/view?usp=drive_link"
     ],
-    "description": "Benefactor is a AMIGA platformer by Psygnosis, released in 1994."
+    "description": "Benefactor is an Amiga platform-puzzle game released in 1994 by Psygnosis. Players guide a robotic character through intricate levels that emphasise problem-solving over reflexes. The game is known for its clean design, inventive puzzles, and polished presentation."
   },
   {
     "system": "C64",
@@ -1476,7 +1476,7 @@
     "disk": [
       "https://drive.google.com/file/d/1jZ_ZgkaQKIwx7mQAonT57h1gYrLwx13J/view?usp=drive_link"
     ],
-    "description": "Released in 1985 by Cosmi, Beyond The Forbidden Forest is a C64 arcade game."
+    "description": "Beyond the Forbidden Forest is a Commodore 64 arcade game released in 1985 by Cosmi. A sequel to Forbidden Forest, it places players in dark, hostile environments filled with monsters and hazards. The game builds on the eerie atmosphere and difficulty of its predecessor."
   },
   {
     "system": "C64",
@@ -1500,7 +1500,7 @@
     "disk": [
       "https://drive.google.com/file/d/1m_1pFC6zcvFuCZFsUrzl7awod5vVHD06/view?usp=drive_link"
     ],
-    "description": "Big Trouble In Little China is a C64 arcade game released in 1987 by Electric Dreams."
+    "description": "Big Trouble in Little China is a Commodore 64 arcade action game released in 1987 by Electric Dreams. Based on the cult film, players battle enemies across side-scrolling stages inspired by scenes from the movie. The game blends beat 'em up mechanics with platform action."
   },
   {
     "system": "C64",
@@ -1523,7 +1523,7 @@
     "disk": [
       "https://drive.google.com/file/d/1dNXtdLkeIbF-s5ZxWFXMnq2Hg4qdiICv/view?usp=drive_link"
     ],
-    "description": "From GO! in 1988, Bionic Commando delivers C64 arcade game play."
+    "description": "Bionic Commando is a Commodore 64 arcade platform game released in 1988 by GO!. Adapted from the Capcom arcade hit, the game replaces jumping with a grappling arm used to swing across levels. This unique mechanic set it apart from other platformers of the era."
   },
   {
     "system": "C64",
@@ -1545,7 +1545,7 @@
     "disk": [
       "https://drive.google.com/file/d/10a0hNbVBmdU5r8w8RDb02DIsNEThoFEL/view?usp=drive_link"
     ],
-    "description": "Bionic Granny is a C64 arcade game from 1984, developed by Mastertronic."
+    "description": "Bionic Granny is a Commodore 64 arcade platform game released by Mastertronic in 1984. Players control an unlikely elderly heroine who leaps across platforms while avoiding hazards. The game is remembered for its humour and surprisingly demanding gameplay."
   },
   {
     "system": "C64",
@@ -1565,7 +1565,7 @@
     "disk": [
       "https://drive.google.com/file/d/1BLFQt7gDLE0wWPXUaNSf2aYUte7-GHB4/view?usp=drive_link"
     ],
-    "description": "Bismark is a C64 strategy game released in 1984 by Argus Press Software."
+    "description": "Bismark is a Commodore 64 strategy game released in 1984 by Argus Press Software. Inspired by naval warfare, players command forces in tactical engagements that require planning and careful decision-making. It reflects early attempts at bringing strategic depth to home computers."
   },
   {
     "system": "C64",
@@ -1589,7 +1589,7 @@
     "disk": [
       "https://drive.google.com/file/d/10-yQwrooq5quTY9LG2maol2wSkdsTDyd/view?usp=drive_link"
     ],
-    "description": "Developed by Creative Sparks and released in 1984, Black Hawk is a C64 arcade game."
+    "description": "Black Hawk is a Commodore 64 arcade shooter released in 1984 by Creative Sparks. Players pilot a helicopter through hostile territory, destroying enemy forces while avoiding incoming fire. The game offers fast-paced action and straightforward controls."
   },
   {
     "system": "C64",
@@ -1611,7 +1611,7 @@
     "disk": [
       "https://drive.google.com/file/d/1dy0hZt-CPc5MHIPK7yftYbJxYNkIzahF/view?usp=drive_link"
     ],
-    "description": "From Interdisc in 1984, Black Knight delivers C64 arcade game play."
+    "description": "Black Knight is a Commodore 64 arcade action game released in 1984 by Interdisc. Players battle through medieval-themed environments filled with enemies and traps. The game focuses on reflex-based combat typical of early home computer arcade titles."
   },
   {
     "system": "AMIGA",
@@ -1634,7 +1634,7 @@
     "disk": [
       "https://drive.google.com/file/d/18sHxwBw_N5owekUrvvCvUZYoGjuBKpqP/view?usp=drive_link"
     ],
-    "description": "In 1990, US Gold released Black Tiger, a AMIGA arcade game."
+    "description": "Black Tiger is an Amiga arcade platform game released in 1990 by US Gold. A conversion of the Capcom arcade original, it features sword-based combat, large scrolling levels, and fantasy-themed enemies. The Amiga version delivers faithful arcade-style action."
   },
   {
     "system": "C64",
@@ -1656,7 +1656,7 @@
     "disk": [
       "https://drive.google.com/file/d/103Uy8j0LfGGP0fr6LXfdSYdZOvoLNwSW/view?usp=drive_link"
     ],
-    "description": "Blackwyche is a C64 action-adventure game from 1985, developed by Ultimate."
+    "description": "Blackwyche is a Commodore 64 action-adventure game released in 1985 by Ultimate. Featuring an expansive world viewed from an isometric perspective, players explore a castle complex while solving puzzles and avoiding enemies. It is often compared to Knight Lore for its style and depth."
   },
   {
     "system": "C64",
@@ -1679,7 +1679,7 @@
     "disk": [
       "https://drive.google.com/file/d/1b9Mq1fjj9ZGwk4vcaL1s3J19Auf8_ElA/view?usp=drive_link"
     ],
-    "description": "CRL's 1985 release Blade Runner is a C64 arcade game."
+    "description": "Blade Runner is a Commodore 64 arcade game released in 1985 by CRL. Inspired by the science fiction film, the game focuses on fast-paced action rather than narrative. It is one of several C64 titles to loosely adapt popular cinema themes of the era."
   },
   {
     "system": "C64",
@@ -1701,7 +1701,7 @@
     "disk": [
       "https://drive.google.com/file/d/1lptrHCxm6b53p-SFDqrlgTypf4QUHAPb/view?usp=drive_link"
     ],
-    "description": "Blades Of Steel is a C64 sports game from 1990, developed by Konami."
+    "description": "Blades Of Steel brings fast-paced ice hockey action to the Commodore 64, featuring arcade-style matches, aggressive checking, and responsive controls. Konamis home conversion captures the speed and intensity of the rink while keeping the gameplay accessible and competitive."
   },
   {
     "system": "C64",
@@ -1723,7 +1723,7 @@
     "disk": [
       "https://drive.google.com/file/d/1zz7lANjLfjCFAWrVX_30niUsNBTTonIA/view?usp=drive_link"
     ],
-    "description": "From Alligata Software in 1983, Blagger delivers C64 platformer play."
+    "description": "Blagger is a classic single-screen platformer where players guide a mischievous thief through maze-like levels, collecting valuables while avoiding patrolling guards. Tight controls, clever level layouts, and increasing difficulty made it a standout early C64 platform game."
   },
   {
     "id": "blagger_goes_to_hollywood",
@@ -1735,10 +1735,10 @@
       "Miscellaneous"
     ],
     "developer": "Alligata Software",
-    "description": "Blagger is back! This time he decided to take a tour of Hollywood, and to the movie sets of Steven Speilbum, in an attempt to steal Speilbum's latest film. Blagger's quest is not easy. Many movie characters such as James Bond, Batman, Superman, Jaws, Tarzan, Robin Hood, and the Incredible Hulk roam the movie set.",
+    "description": "Blagger heads to the movie sets of Hollywood in this ambitious sequel, combining arcade action with themed stages inspired by famous film genres. Each section introduces new mechanics and challenges, giving the game variety while retaining the original's fast-paced feel.",
     "videoid": "S27IM7DGgC4",
     "thumbnail": "resources/images/thumbnails/all/blagger_goes_to_hollywood.jpg",
-    "manual": "https://drive.google.com/file/d/1dugFb6qB5aR1M83xXhrl1KldLHcyN5Qk/view?usp=drive_link",
+    "pdf": "https://drive.google.com/file/d/1dugFb6qB5aR1M83xXhrl1KldLHcyN5Qk/view?usp=drive_link",
     "disk": [
       "https://drive.google.com/file/d/1Lvhb3KogQEhMSm0R8zz2tpQKjostoDuy/view?usp=drive_link"
     ],
@@ -1767,7 +1767,7 @@
     "disk": [
       "https://drive.google.com/file/d/1rN8WgTLzSQpE9XQDFFL6LxvsbyVkzuLp/view?usp=drive_link"
     ],
-    "description": "Blockbusters is a C64 quiz game by TV Games, released in 1988."
+    "description": "Based on the popular television quiz show, Blockbusters challenges players with general knowledge questions presented in a game-show format. Faithful presentation and competitive gameplay make it a solid trivia experience on the Commodore 64."
   },
   {
     "system": "C64",
@@ -1790,7 +1790,7 @@
     "disk": [
       "https://drive.google.com/file/d/1ILOrwwIvWIH0SNM_bXYX9lReH8HK9Szh/view?usp=drive_link"
     ],
-    "description": "In 1986, American Action released Blood 'N Guts, a C64 sports game."
+    "description": "Blood 'N Guts is a Commodore 64 medieval combat game that combines jousting, sword fighting, and arena-based battles against computer or human opponents. Rather than a traditional sports title, the game focuses on one-on-one duels, timing-based attacks, and brutal close-range combat, making it a distinctive early C64 action experience."
   },
   {
     "system": "C64",
@@ -1813,7 +1813,7 @@
     "disk": [
       "https://drive.google.com/file/d/1uaIwEOzwkSxANqEpqAsG5o76TtgpnEe0/view?usp=drive_link"
     ],
-    "description": "Bloodwych is a C64 role-playing game from Image Works (1990)."
+    "description": "Bloodwych is a deep first-person dungeon crawler featuring real-time movement, puzzle solving, and spell-based combat. Its cooperative two-player mode and atmospheric presentation helped it stand out among C64 role-playing games."
   },
   {
     "system": "C64",
@@ -1836,7 +1836,7 @@
     "disk": [
       "https://drive.google.com/file/d/1njPUv-7G6mQAtwHDExYWjaig-hL1NlAX/view?usp=drive_link"
     ],
-    "description": "Synapse Software's 1983 release Blue Max is a C64 arcade game."
+    "description": "Inspired by World War I aerial combat, Blue Max places players in control of a biplane tasked with strafing ground targets while avoiding enemy fire. Smooth scrolling and fluid controls make it one of the most respected early C64 action games."
   },
   {
     "system": "C64",
@@ -1859,7 +1859,7 @@
     "disk": [
       "https://drive.google.com/file/d/1MN3oVb1jpTPj0qwx9Lw7018zsopjjuDv/view?usp=drive_link"
     ],
-    "description": "BMX Kidz arrived in 1987 as a C64 racing game from Firebird."
+    "description": "BMX Kidz blends racing and stunt gameplay as players compete across obstacle-filled courses, performing jumps and tricks to gain speed. Bright visuals and varied tracks give it an energetic arcade feel."
   },
   {
     "system": "C64",
@@ -1881,7 +1881,7 @@
     "disk": [
       "https://drive.google.com/file/d/1J-ZK4Fwpn_xHnsgvKQG9erky0ccc-Pot/view?usp=drive_link"
     ],
-    "description": "BMX Simulator is a C64 racing game released in 1986 by Codemasters."
+    "description": "BMX Simulator focuses on competitive racing across dirt tracks, ramps, and hazards, requiring precise timing and balance. Its split-screen multiplayer and fast controls made it a popular C64 sports title."
   },
   {
     "system": "C64",
@@ -1903,7 +1903,7 @@
     "disk": [
       "https://drive.google.com/file/d/1numk3_c1ODDCaT2I-Mk_QBK2qBLq8K1s/view?usp=drive_link"
     ],
-    "description": "In 1987, Simulmondo released Bocce, a C64 sports game."
+    "description": "Bocce adapts the traditional ball sport into a straightforward digital form, emphasizing accuracy and tactical placement. Simple rules and turn-based play make it an accessible sports game on the Commodore 64."
   },
   {
     "system": "C64",
@@ -1926,7 +1926,7 @@
     "disk": [
       "https://drive.google.com/file/d/1xzLboHTTk0VfrXQKwXelxA1BU6ts-_EV/view?usp=drive_link"
     ],
-    "description": "Bomb Jack is a C64 arcade game released in 1986 by Elite."
+    "description": "Bomb Jack challenges players to collect bombs across vertically stacked platforms while dodging relentless enemies. Fast movement, precise timing, and escalating difficulty deliver classic arcade intensity."
   },
   {
     "system": "C64",
@@ -1948,7 +1948,7 @@
     "disk": [
       "https://drive.google.com/file/d/1-XQw-iGidq4MVSyVc0CrkeVO9mllJmK7/view?usp=drive_link"
     ],
-    "description": "Booty arrived in 1984 as a C64 platformer from Firebird."
+    "description": "Booty is a pirate-themed platformer where players explore a multi-screen ship, collecting treasure while avoiding traps and enemies. Clever level design and exploration elements give it lasting appeal."
   },
   {
     "system": "C64",
@@ -1970,7 +1970,7 @@
     "disk": [
       "https://drive.google.com/file/d/1pA4o-O9zblkpEAsekM871HCRh8AWdloR/view?usp=drive_link"
     ],
-    "description": "Boulder Dash is a C64 puzzle game released in 1984 by First Star Software."
+    "description": "Boulder Dash combines puzzle solving and arcade action as players dig through caves, collecting diamonds while avoiding falling rocks and hostile creatures. Its inventive mechanics and tension-filled gameplay made it a defining C64 classic."
   },
   {
     "system": "C64",
@@ -1992,7 +1992,7 @@
     "disk": [
       "https://drive.google.com/file/d/1hjk0qMZZWPHubmm6DRVUztvCDkAqNtvv/view?usp=drive_link"
     ],
-    "description": "Bounces is a C64 sports game from Beyond (1986)."
+    "description": "Bounces offers fast-paced sports action focused on timing and precision, with simple mechanics that are easy to learn but difficult to master. Its arcade-style presentation keeps matches lively and competitive."
   },
   {
     "system": "C64",
@@ -2015,7 +2015,7 @@
     "disk": [
       "https://drive.google.com/file/d/1o5PHu9e2rBg7NKpFDGpaF80nKBBbs9QQ/view?usp=drive_link"
     ],
-    "description": "Bounder is a C64 arcade game from Gremlin Graphics (1986)."
+    "description": "Bounder mixes arcade action with strategic movement as players guide a bouncing ball across floating tiles and shifting platforms. Careful planning and reflexes are required to progress through its challenging levels."
   },
   {
     "system": "C64",
@@ -2037,7 +2037,7 @@
     "disk": [
       "https://drive.google.com/file/d/1Wf0UOVC0jvkAhSpVayhb15hLLn8wIPCw/view?usp=drive_link"
     ],
-    "description": "In 1984, Taskset released Bozo's Night Out, a C64 arcade game."
+    "description": "Bozo's Night Out follows a drunk navigating city streets filled with hazards, enemies, and timed obstacles. Quick reactions and route planning are essential as the difficulty steadily increases."
   },
   {
     "system": "C64",
@@ -2059,7 +2059,7 @@
     "disk": [
       "https://drive.google.com/file/d/196alWUJxzm849g6MYAov9ZFTY2UiiVT4/view?usp=drive_link"
     ],
-    "description": "From CBS Electronics Software Epyx in 1984, Breakdance delivers C64 arcade game play."
+    "description": "Breakdance centres on rhythmic movement and timing, challenging players to perform precise actions across animated stages. Its colourful style and unusual theme made it a memorable early arcade title."
   },
   {
     "system": "C64",
@@ -2081,7 +2081,7 @@
     "disk": [
       "https://drive.google.com/file/d/1o0K_9gPVDAfPafMHEXd_GYmJ7aS3t_BT/view?usp=drive_link"
     ],
-    "description": "In 1987, US Gold released Breakthru, a C64 arcade game."
+    "description": "Breakthru is a fast-scrolling action game where players race forward while blasting enemies and obstacles. Constant pressure and high speed create an intense arcade experience on the Commodore 64."
   },
   {
     "system": "C64",
@@ -2104,7 +2104,7 @@
     "disk": [
       "https://drive.google.com/file/d/1sw-vqZF4NVAUBFzuPNrWgxKS_W2MML3M/view?usp=drive_link"
     ],
-    "description": "Martech's 1985 release Brian Jacks Superstar Challenge is a C64 sports game."
+    "description": "Based on the Olympic athlete, this game features multiple sporting events testing reflexes, timing, and coordination. Each discipline offers distinct mechanics, creating variety within a sports format."
   },
   {
     "system": "C64",
@@ -2130,7 +2130,7 @@
     "disk": [
       "https://drive.google.com/file/d/1XL82wsPg1kG1Dy-rM9Z1g8zzo3BCOVW9/view?usp=drive_link"
     ],
-    "description": "Bruce Lee is a C64 arcade game by Datasoft, released in 1984."
+    "description": "Bruce Lee blends martial arts combat with platforming as players explore a mysterious pagoda, fighting enemies and collecting lanterns. Smooth animation, memorable sound, and balanced gameplay earned it classic status on the C64."
   },
   {
     "system": "C64",
@@ -2154,7 +2154,7 @@
     "disk": [
       "https://drive.google.com/file/d/1jIrMDdEvz8pP0CeUKX_7-IAmYzWbcU4l/view?usp=drive_link"
     ],
-    "description": "From Firebird in 1987, Bubble Bobble delivers C64 arcade game play."
+    "description": "Bubble Bobble delivers cooperative arcade action as players trap enemies in bubbles and pop them for points. Charming presentation, inventive levels, and strong multiplayer appeal make it a timeless favourite."
   },
   {
     "system": "C64",
@@ -2176,7 +2176,7 @@
     "disk": [
       "https://drive.google.com/file/d/1XuydkDjHbX2dou6E57HVudfJw-xjpWii/view?usp=drive_link"
     ],
-    "description": "Released in 1987 by Elite, Buggy Boy is a C64 racing game."
+    "description": "Buggy Boy brings fast, forward-scrolling racing to the Commodore 64, featuring varied tracks and smooth handling. Precision driving and course memorisation are key to mastering its arcade-style challenges."
   },
   {
     "system": "C64",
@@ -2199,7 +2199,7 @@
     "disk": [
       "https://drive.google.com/file/d/18jODEBKDsQTfM91j3ETVBTtaK6tGXglv/view?usp=drive_link"
     ],
-    "description": "From Alternative Software in 1992, Bully's Sporting Darts delivers C64 sports game play."
+    "description": "This darts simulation focuses on accuracy and competitive play, offering multiple game modes and realistic scoring. Straightforward controls and clean presentation make it one of the stronger C64 darts games."
   },
   {
     "system": "C64",
@@ -2221,7 +2221,7 @@
     "disk": [
       "https://drive.google.com/file/d/1o1Kbn4t5qjsJYLNLkXp1AIs4HBQOUQQl/view?usp=drive_link"
     ],
-    "description": "Released in 1988 by Superior Software, By Fair Means Or Foul is a C64 sports game."
+    "description": "By Fair Means Or Foul recreates rugby with an emphasis on strategy, positioning, and physical play. The game balances arcade pacing with sporting structure for an engaging sports experience."
   },
   {
     "system": "C64",
@@ -2243,7 +2243,7 @@
     "disk": [
       "https://drive.google.com/file/d/1BYcqRRlmQTgg6-RoRFH4f2uQsu8vJJCU/view?usp=drive_link"
     ],
-    "description": "Cabal is a C64 shooting game by Ocean, released in 1989."
+    "description": "Cabal is an intense run-and-gun shooter where players advance through enemy-filled zones, destroying fortifications and soldiers. Explosive action and constant movement define its arcade-style gameplay."
   },
   {
     "system": "AMIGA",
@@ -2266,7 +2266,7 @@
     "disk": [
       "https://drive.google.com/file/d/10Ze4wbtz6mb9BFwuWsJC053_z-7oLRMA/view?usp=drive_link"
     ],
-    "description": "Developed by Image Works and released in 1990, Cadaver is a AMIGA adventure game."
+    "description": "Cadaver is an isometric puzzle-adventure that challenges players to explore interconnected rooms, solve logical puzzles, and collect items. Its clever design and depth made it a standout on the Amiga."
   },
   {
     "system": "C64",
@@ -2288,7 +2288,7 @@
     "disk": [
       "https://drive.google.com/file/d/1y5C9ccK2xUyX2zzlgzMI_jvwHXAyMAKv/view?usp=drive_link"
     ],
-    "description": "California Games is a C64 sports game from 1987, developed by Epyx."
+    "description": "California Games recreates a variety of extreme sports, including surfing, skateboarding, and BMX cycling. Accessible controls and multiplayer support helped it become a hugely popular sports title."
   },
   {
     "system": "AMIGA",
@@ -2313,7 +2313,7 @@
     "disk": [
       "https://drive.google.com/file/d/1wHeTqzAfWhKAEZae6QCsuMZc1IPR5eF5/view?usp=drive_link"
     ],
-    "description": "Cannon Fodder is a AMIGA arcade game released in 1993 by Virgin Interactive."
+    "description": "Cannon Fodder blends action and strategy as players command squads of soldiers across war-torn battlefields. Its distinctive style, dark humour, and tactical depth made it one of the Amiga's most iconic games. War has never been so much fun!"
   },
   {
     "system": "AMIGA",
@@ -2336,7 +2336,7 @@
     "disk": [
       "https://drive.google.com/file/d/1Nr_3LSZyuxePD2aGmhlsioQmqNnzSa82/view?usp=drive_link"
     ],
-    "description": "Cannon Fodder 2 arrived in 1994 as a AMIGA arcade game from Virgin Interactive."
+    "description": "Building on the original, Cannon Fodder 2 introduces new missions, weapons, and environments while retaining the fast tactical gameplay. Expanded content keeps the action fresh and challenging."
   },
   {
     "system": "C64",
@@ -2358,7 +2358,7 @@
     "disk": [
       "https://drive.google.com/file/d/1ZvVpgiJuQmYoVphXa8RqU5v8q5wgM47F/view?usp=drive_link"
     ],
-    "description": "Released in 1988 by Accolade, Card Sharks is a C64 casino-style game."
+    "description": "Card Sharks offers a selection of casino-style card games, focusing on strategy, probability, and careful decision-making. Clear rules and multiple variations provide long-term replay value."
   },
   {
     "system": "C64",
@@ -2381,7 +2381,7 @@
     "disk": [
       "https://drive.google.com/file/d/1vYOOl2mgzlkNafWFWZdkXAkpvWrJcaAL/view?usp=drive_link"
     ],
-    "description": "In 1990, Domark released Castle Master, a C64 adventure game."
+    "description": "Castle Master presents a fully 3D first-person adventure where players explore a vast castle, solving puzzles and uncovering secrets. Its wireframe graphics and open exploration were ambitious for the C64."
   },
   {
     "system": "C64",
@@ -2393,7 +2393,7 @@
       "Platform Games"
     ],
     "year": 1985,
-    "developer": "Broderbund",
+    "developer": "Palace Software",
     "videoid": "uyCf5lb8OOg",
     "lemon": [
       "https://www.lemon64.com/game/cauldron"
@@ -2403,7 +2403,7 @@
     "disk": [
       "https://drive.google.com/file/d/1arDS8Jpssd0VpZ1EQu8bui4t-vXqkZJz/view?usp=drive_link"
     ],
-    "description": "Developed by Broderbund and released in 1985, Cauldron is a C64 platformer."
+    "description": "Cauldron combines arcade platforming with spellcasting and item collection, challenging players to master both reflexes and resource management. Its varied gameplay helps keep the action engaging."
   },
   {
     "system": "C64",
@@ -2425,7 +2425,7 @@
     "disk": [
       "https://drive.google.com/file/d/1TcwiPtGt_mb7V7r_brdgWLBR0K019QWH/view?usp=drive_link"
     ],
-    "description": "Cauldron II: The Pumpkin Strikes Back is a C64 platformer by Palace Software, released in 1986."
+    "description": "The sequel refines the original formula with improved controls, new levels, and a greater emphasis on precision platforming. Difficulty is high, rewarding careful movement and timing."
   },
   {
     "system": "C64",
@@ -2447,7 +2447,7 @@
     "disk": [
       "https://drive.google.com/file/d/18-O6-63fAvTyRDufSL59JE9xmads4uDV/view?usp=drive_link"
     ],
-    "description": "Timeworks's 1983 release Cave Of The Word Wizard is a C64 quiz game."
+    "description": "Cave Of The Word Wizard is an educational quiz game that challenges players' spelling and vocabulary skills. Word-based puzzles provide a learning-focused alternative to traditional arcade action."
   },
   {
     "system": "C64",
@@ -2459,7 +2459,7 @@
       "Arcade Games"
     ],
     "year": 1984,
-    "developer": "Corgi (Australia & New Zealand)",
+    "developer": "Ocean",
     "videoid": "dGggW6SW5Ow",
     "lemon": [
       "https://www.lemon64.com/game/cavelon"
@@ -2469,7 +2469,7 @@
     "disk": [
       "https://drive.google.com/file/d/1YOAhiU9qVzFjHnaVGYT5B7PlkzkZhQhM/view?usp=drive_link"
     ],
-    "description": "From Corgi (Australia & New Zealand) in 1984, Cavelon delivers C64 arcade game play."
+    "description": "Cavelon tasks players with navigating vertical caverns filled with moving platforms, enemies, and hazards. Fast reactions and careful timing are essential to reach the exit safely."
   },
   {
     "system": "C64",
@@ -2491,7 +2491,7 @@
     "disk": [
       "https://drive.google.com/file/d/1-SpqKGo886DxslcOHbIyPa2HJGta-1VU/view?usp=drive_link"
     ],
-    "description": "Caveman Ugh-Lympics arrived in 1988 as a C64 sports game from Electronic Arts."
+    "description": "Caveman Ugh-Lympics presents prehistoric sporting events with humorous twists, including club throwing and fire making. Competitive multiplayer and comedic presentation define this sports title."
   },
   {
     "system": "AMIGA",
@@ -2513,7 +2513,7 @@
     "disk": [
       "https://drive.google.com/file/d/1nZn5unOHEpMGzzIk7UFPkHgPhN5I_V90/view?usp=drive_link"
     ],
-    "description": "Developed by Ubi Soft and released in 1991, Celtic Legends is a AMIGA strategy game."
+    "description": "Celtic Legends is a turn-based strategy game set in ancient Britain, focusing on territorial control and tactical decision-making. Strategic planning and long-term thinking are central to success."
   },
   {
     "system": "C64",
@@ -2525,7 +2525,7 @@
       "Sports Games"
     ],
     "year": 1986,
-    "developer": "d3m Software (France)",
+    "developer": "Epyx",
     "videoid": "pJgWcdyRseE",
     "lemon": [
       "https://www.lemon64.com/game/championship-wrestling"
@@ -2535,7 +2535,7 @@
     "disk": [
       "https://drive.google.com/file/d/14-apQidra1qq4ntUzw_cxMdxfmnXydYl/view?usp=drive_link"
     ],
-    "description": "From d3m Software (France) in 1986, Championship Wrestling delivers C64 sports game play."
+    "description": "Championship Wrestling recreates professional wrestling with a range of moves, holds, and match types. Timing and positioning play a major role in defeating opponents and winning titles."
   },
   {
     "system": "C64",
@@ -2558,7 +2558,7 @@
     "disk": [
       "https://drive.google.com/file/d/1X3PKMvRiKUoa0c9h8Q9EdjDy1jaaq7yM/view?usp=drive_link"
     ],
-    "description": "Chase H.Q. is a C64 arcade game from 1989, developed by Ocean."
+    "description": "Chase H.Q. puts players behind the wheel of a high-speed police car, tasked with ramming criminals off the road before time runs out. Fast scrolling and arcade pacing deliver constant pressure."
   },
   {
     "system": "C64",
@@ -2581,7 +2581,7 @@
     "disk": [
       "https://drive.google.com/file/d/1UzMuHddl9qmdDhFbnK7dziypwl5ihDAn/view?usp=drive_link"
     ],
-    "description": "Chiller is a C64 arcade game by Mastertronic, released in 1984."
+    "description": "Chiller is a fast arcade shooter that challenges players to react quickly as enemies appear across the screen. High difficulty and simple controls keep the focus on reflex-based gameplay."
   },
   {
     "system": "C64",
@@ -2603,7 +2603,7 @@
     "disk": [
       "https://drive.google.com/file/d/1FkFrUlXyeU7DKY0tGFWTJrs5WLuWniyZ/view?usp=drive_link"
     ],
-    "description": "Chimera is a C64 action-adventure game by Firebird, released in 1986."
+    "description": "Chimera blends exploration and action as players navigate dangerous environments filled with traps and enemies. Careful movement and combat strategy are required to progress."
   },
   {
     "system": "C64",
@@ -2626,7 +2626,7 @@
     "disk": [
       "https://drive.google.com/file/d/1nhNTAdRAztkIBz4FDmRbdPc9sHeqAb7u/view?usp=drive_link"
     ],
-    "description": "From Interceptor Software in 1984, China Miner delivers C64 arcade game play."
+    "description": "China Miner is a platformer set in underground caverns, where players collect treasure while avoiding falling rocks and enemies. Precise movement and timing are key to survival."
   },
   {
     "system": "C64",
@@ -2648,7 +2648,7 @@
     "disk": [
       "https://drive.google.com/file/d/1nEUuAFTPjdTGdlSVJZbhJll7rEkbQO3I/view?usp=drive_link"
     ],
-    "description": "In 1989, Cosmi released Chomp!, a C64 arcade game."
+    "description": "Chomp! offers fast, arcade-style action focused on movement and enemy avoidance. Simple mechanics and escalating challenge keep the gameplay intense and accessible."
   },
   {
     "system": "C64",
@@ -2663,7 +2663,7 @@
       "Top Picks"
     ],
     "year": 1982,
-    "developer": "Ariolasoft",
+    "developer": "Broderbund",
     "videoid": "rYqY8c9V-Ak",
     "lemon": [
       "https://www.lemon64.com/game/choplifter"
@@ -2673,7 +2673,7 @@
     "disk": [
       "https://drive.google.com/file/d/1cwn7DMP-y5MEvoJVlZVxXn5aXEZAYltN/view?usp=drive_link"
     ],
-    "description": "Released in 1982 by Ariolasoft, Choplifter is a C64 arcade game."
+    "description": "Choplifter places players in control of a rescue helicopter, tasked with saving hostages from enemy territory. Balancing fuel, firepower, and landing precision creates constant tension."
   },
   {
     "system": "C64",
@@ -2696,7 +2696,7 @@
     "disk": [
       "https://drive.google.com/file/d/1TlV3K1bB85UNY_8ObrNKrk7qyoMPfBnL/view?usp=drive_link"
     ],
-    "description": "Chopper is a C64 arcade game from 1985, developed by Sparklers."
+    "description": "Chopper is a vertically scrolling shooter where players fly a helicopter through hostile zones, blasting enemies and avoiding terrain. Quick reflexes and precise control are essential to survive."
   },
   {
     "system": "C64",
@@ -2718,7 +2718,7 @@
     "disk": [
       "https://drive.google.com/file/d/1e2Rndg3kYIO2pPdzN3DenzIc7ruiA_9e/view?usp=drive_link"
     ],
-    "description": "Chuckie Egg is a C64 platformer by A'n'F Software, released in 1984."
+    "description": "Chuckie Egg is a Commodore 64 platform game in which players guide Hen-House Harry across multi-screen levels collecting eggs while avoiding birds, moving lifts, and deadly drops. Precision timing and route planning are key, making it one of the most recognisable early C64 platformers."
   },
   {
     "system": "AMIGA",
@@ -2741,7 +2741,7 @@
     "disk": [
       "https://drive.google.com/file/d/1aIlpa_LQMdYvCc9m68DNlf40fIQwpCvS/view?usp=drive_link"
     ],
-    "description": "Civilization is a AMIGA strategy game from MicroProse Software (1992)."
+    "description": "Sid Meier's Civilization on the Amiga is a deep, turn-based strategy game where players build and guide a civilisation from ancient times to the modern era. Gameplay revolves around exploration, diplomacy, warfare, and technological advancement, delivering long-form strategic depth."
   },
   {
     "system": "C64",
@@ -2764,7 +2764,7 @@
     "disk": [
       "https://drive.google.com/file/d/1LtSR4SpBw1aa5lv62gjK9ry5mBdSKddC/view?usp=drive_link"
     ],
-    "description": "Cliff Hanger is a C64 arcade game released in 1984 by New Generation Software."
+    "description": "Cliff Hanger is a Commodore 64 arcade-puzzle game focused on climbing hazardous structures while avoiding falling debris and environmental traps. The game blends timing-based movement with spatial awareness across increasingly difficult stages."
   },
   {
     "system": "C64",
@@ -2788,7 +2788,7 @@
     "disk": [
       "https://drive.google.com/file/d/1oMTvbcyRyTSRX7EndZbucueNWnmiDV3z/view?usp=drive_link"
     ],
-    "description": "Cobra is a C64 arcade game by Ocean, released in 1986."
+    "description": "Cobra is a Commodore 64 arcade action game based on the 1986 film, featuring side-scrolling combat, shooting, and enemy-heavy levels. Players control Marion Cobretti as he battles criminals using firearms and melee attacks in fast-paced arcade fashion."
   },
   {
     "system": "C64",
@@ -2811,7 +2811,7 @@
     "disk": [
       "https://drive.google.com/file/d/1JBAjIQCuk6qzF5O1yues46ERq8AqhE8J/view?usp=drive_link"
     ],
-    "description": "In 1987, Ocean released Combat School, a C64 arcade game."
+    "description": "Combat School is a Commodore 64 arcade sports-action game inspired by military training drills. Players compete in a series of joystick-waggling and timing-based events, testing reflexes across obstacle courses, combat runs, and endurance challenges."
   },
   {
     "system": "C64",
@@ -2836,7 +2836,7 @@
     "disk": [
       "https://drive.google.com/file/d/1e-c0WPUalMLTd6L2Q2BhQ5lPmz37EKXJ/view?usp=drive_link"
     ],
-    "description": "Developed by Elite and released in 1985, Commando is a C64 arcade game."
+    "description": "Commando is a classic Commodore 64 vertically scrolling shooter where players battle through enemy-infested jungle environments using grenades and rapid-fire weapons. Known for its relentless action and difficulty, it remains a landmark C64 arcade conversion."
   },
   {
     "system": "C64",
@@ -2859,7 +2859,7 @@
     "disk": [
       "https://drive.google.com/file/d/18DUc3SiB9ytCmu9UbopoWPkHOpFnb_Kt/view?usp=drive_link"
     ],
-    "description": "Congo Bongo arrived in 1983 as a C64 arcade game from Sega."
+    "description": "Congo Bongo is a Commodore 64 arcade platform game based on the Sega coin-op. Players navigate isometric jungle stages, dodging enemies and obstacles while collecting items, combining platforming with puzzle-like movement challenges."
   },
   {
     "system": "C64",
@@ -2881,7 +2881,7 @@
     "disk": [
       "https://drive.google.com/file/d/1nNi5gtOQNMpy-4apE0KcX7JmrY_h7O_u/view?usp=drive_link"
     ],
-    "description": "Developed by Atlantis Software and released in 1985, Cops 'N' Robbers is a C64 arcade game."
+    "description": "Cops 'N' Robbers is a Commodore 64 maze-based arcade game inspired by the classic Pac-Man formula. Players navigate a maze collecting items while avoiding pursuing police officers, relying on timing, route planning, and temporary power-ups to turn the tables on enemies."
   },
   {
     "system": "C64",
@@ -2903,7 +2903,7 @@
     "disk": [
       "https://drive.google.com/file/d/1Wxwne1fpakuBTnWnfguOX91Z32xXdhfC/view?usp=drive_link"
     ],
-    "description": "In 1983, Taskset released Cosmic Convoy, a C64 shooting game."
+    "description": "Cosmic Convoy is a Commodore 64 fixed-screen shooter where players defend supply convoys from waves of alien attackers. The game blends strategic positioning with arcade shooting mechanics common to early 1980s C64 titles."
   },
   {
     "system": "C64",
@@ -2926,7 +2926,7 @@
     "disk": [
       "https://drive.google.com/file/d/1_LdpM5O7K204ZOHwlcVBhGCCbvAi6T2P/view?usp=drive_link"
     ],
-    "description": "Cosmic Tunnels is a C64 arcade game released in 1984 by Datamost."
+    "description": "Cosmic Tunnels is a Commodore 64 arcade shooter featuring tunnel-based combat and fast-moving enemy formations. Players must navigate tight spaces while managing speed, firepower, and precise movement."
   },
   {
     "system": "C64",
@@ -2948,7 +2948,7 @@
     "disk": [
       "https://drive.google.com/file/d/1tCDkWw5f1isMxkmL_cb2PlLqPfgcXMHr/view?usp=drive_link"
     ],
-    "description": "Countdown To Meltdown, Arcade Games is a C64 adventure game from Activision (1984)."
+    "description": "Countdown to Meltdown is a Commodore 64 adventure game with a strong science-fiction theme, tasking players with preventing a nuclear disaster. Gameplay combines exploration, problem-solving, and time-sensitive decision-making."
   },
   {
     "system": "C64",
@@ -2971,7 +2971,7 @@
     "disk": [
       "https://drive.google.com/file/d/1iM90iv6-gWLL8Af_GGotodiUkNr9GxxU/view?usp=drive_link"
     ],
-    "description": "From Martech in 1985, Crazy Comets delivers C64 arcade game play."
+    "description": "Crazy Comets is a Commodore 64 arcade shooter where players defend a planet against incoming waves of comets and enemy craft. The game focuses on reflex-driven shooting and escalating difficulty."
   },
   {
     "system": "C64",
@@ -2995,7 +2995,7 @@
     "disk": [
       "https://drive.google.com/file/d/1SBZjZhedJbqlu2NR1JCOuPeyQCAKuCq6/view?usp=drive_link"
     ],
-    "description": "From Thalamus in 1990, Creatures delivers C64 platformer play."
+    "description": "Creatures is a Commodore 64 platform-puzzle game known for its advanced graphics and parallax scrolling. Players guide Mayhem and Mayhem through non-linear levels, solving environmental puzzles and avoiding hazards."
   },
   {
     "system": "C64",
@@ -3019,7 +3019,7 @@
     "disk": [
       "https://drive.google.com/file/d/1rJOI0pNZbBaxnSTrFtPlVfNDAEHlv3Ho/view?usp=drive_link"
     ],
-    "description": "In 1992, Thalamus released Creatures 2: Torture Trouble, a C64 platformer."
+    "description": "Creatures 2 is a Commodore 64 platform-puzzle sequel that expands on the original with larger levels, new mechanics, and increased complexity. Exploration, puzzle-solving, and precise movement are central to progress."
   },
   {
     "system": "C64",
@@ -3042,7 +3042,7 @@
     "disk": [
       "https://drive.google.com/file/d/109xNGyPTtlrZB8FOzost324f3dHAaHQV/view?usp=drive_link"
     ],
-    "description": "Developed by Sierra On-Line and released in 1983, Crossfire is a C64 arcade game."
+    "description": "Crossfire is a Commodore 64 arcade shooter featuring intense, fast-paced combat against enemy waves. The game emphasises quick reactions and screen control rather than long-term strategy."
   },
   {
     "system": "C64",
@@ -3065,7 +3065,7 @@
     "disk": [
       "https://drive.google.com/file/d/1rMoxL1E-DFvyk4zz1K6PawpgxYyLSgG_/view?usp=drive_link"
     ],
-    "description": "Crystal Castles is a C64 arcade game from US Gold (1986)."
+    "description": "Crystal Castles is a Commodore 64 arcade maze game based on the Atari coin-op, featuring isometric movement and fast enemy pursuit. Players navigate complex castles while collecting gems under constant pressure."
   },
   {
     "system": "AMIGA",
@@ -3087,7 +3087,7 @@
     "disk": [
       "https://drive.google.com/file/d/1i24w5QyVdhKJzNOs8mXCLoOMUA2xQLT8/view?usp=drive_link"
     ],
-    "description": "Crystal Dragon is a AMIGA role-playing game released in 1994 by Black Legend."
+    "description": "Crystal Dragon is an Amiga role-playing game with traditional fantasy themes, focusing on character progression, exploration, and turn-based combat. The game delivers a classic RPG experience tailored to the Amiga's strengths."
   },
   {
     "system": "C64",
@@ -3109,7 +3109,7 @@
     "disk": [
       "https://drive.google.com/file/d/1nI74PW1zlrDABGYqD_MFY6dzK8i9SNmA/view?usp=drive_link"
     ],
-    "description": "Rainbow Arts's 1990 release Curse Of Ra is a C64 puzzle game."
+    "description": "Curse of Ra is a Commodore 64 puzzle game set inside an Egyptian pyramid. Players must rotate rooms to guide an explorer safely through traps and obstacles, combining logic with spatial reasoning."
   },
   {
     "system": "AMIGA",
@@ -3132,7 +3132,7 @@
     "disk": [
       "https://drive.google.com/file/d/1tGmGH-iVveovBhWEVl12EkL0eAEBzr-k/view?usp=drive_link"
     ],
-    "description": "D/Generation is a AMIGA action-adventure game from 1992, developed by Mindscape."
+    "description": "D/Generation is an Amiga action-adventure puzzle game with a strong science-fiction atmosphere. Players explore a hostile corporate complex, solving environmental puzzles while avoiding deadly traps and enemies."
   },
   {
     "system": "C64",
@@ -3155,7 +3155,7 @@
     "disk": [
       "https://drive.google.com/file/d/1gvpjrHAbsoPEpfl7p9r6JZqtCOwevi1k/view?usp=drive_link"
     ],
-    "description": "Daley Thompson's Decathlon is a C64 sports game released in 1984 by Ocean."
+    "description": "Daley Thompson's Decathlon is a Commodore 64 sports game based on Olympic events, using joystick-waggling mechanics to simulate athletic performance. Timing and endurance are essential to success."
   },
   {
     "system": "C64",
@@ -3179,7 +3179,7 @@
     "disk": [
       "https://drive.google.com/file/d/15ANT2aH2hoTp0DnEzs1k7OPnypboR8A6/view?usp=drive_link"
     ],
-    "description": "Dan Dare II: Mekon's Revenge is a C64 arcade game released in 1988 by Virgin Games."
+    "description": "Dan Dare II is a Commodore 64 arcade shooter based on the classic comic series. Players battle through enemy-filled levels using a variety of weapons, with fast scrolling and high difficulty."
   },
   {
     "system": "C64",
@@ -3193,7 +3193,7 @@
       "Top Picks"
     ],
     "year": 1986,
-    "developer": "Electronic Arts",
+    "developer": "Virgin games",
     "videoid": "3Sc3WB40iK4",
     "lemon": [
       "https://www.lemon64.com/game/dan-dare"
@@ -3203,7 +3203,7 @@
     "disk": [
       "https://drive.google.com/file/d/1MDAxvtehfMvvGi0gOiO3lXTniH8n0GQc/view?usp=drive_link"
     ],
-    "description": "Electronic Arts's 1986 release Dan Dare: Pilot Of The Future is a C64 action-adventure game."
+    "description": "Dan Dare: Pilot of the Future is a Commodore 64 action-adventure game combining shooting, exploration, and puzzle-solving. The game is known for its ambitious design and varied gameplay styles."
   },
   {
     "system": "C64",
@@ -3227,7 +3227,7 @@
     "disk": [
       "https://drive.google.com/file/d/1u9yLVt3ManijhZr9Lu0lxVD1_eV1FiiU/view?usp=drive_link"
     ],
-    "description": "Commodore's 1983 release Dancing Monster is a C64 arcade game."
+    "description": "Dancing Monster is a Commodore 64 arcade action game released in 1983 by Commodore. The game centres on a large on-screen monster made up of individual body parts. The player must shoot and destroy the monster piece by piece, with each section behaving independently and adding to the chaos on screen.."
   },
   {
     "system": "AMIGA",
@@ -3250,7 +3250,7 @@
     "disk": [
       "https://drive.google.com/file/d/1kDGFvqmUZcDwGyKo273npMebhfL9XrU-/view?usp=drive_link"
     ],
-    "description": "Danny Sullivans Indy Heat is a AMIGA racing game released in 1992 by Storm."
+    "description": "Danny Sullivan's Indy Heat is an Amiga top-down racing game featuring fast-paced arcade-style competition. Players race across multiple tracks with tight handling and multiplayer support."
   },
   {
     "system": "AMIGA",
@@ -3273,7 +3273,7 @@
     "disk": [
       "https://drive.google.com/file/d/1LYcGRrsO6WX2Wy0W87venn_4Y38bVdHc/view?usp=drive_link"
     ],
-    "description": "Darkseed is a AMIGA adventure game released in 1992 by Cyberdreams."
+    "description": "Darkseed is an Amiga horror adventure game inspired by the artwork of H.R. Giger. The game emphasises atmosphere, exploration, and puzzle-solving within a dark, surreal narrative."
   },
   {
     "system": "C64",
@@ -3295,7 +3295,7 @@
     "disk": [
       "https://drive.google.com/file/d/1QYI7OlbI-SP1m7069eKxw8ooblj4w73I/view?usp=drive_link"
     ],
-    "description": "In 1985, Cascade Games released Davy: King Of The Wild Frontier, a C64 arcade game."
+    "description": "Davy is a Commodore 64 arcade action game where players explore hostile environments, avoiding enemies and traps while progressing through single-screen challenges."
   },
   {
     "system": "C64",
@@ -3317,7 +3317,7 @@
     "disk": [
       "https://drive.google.com/file/d/1lKoShTLm3ozRMl85-nxs4MfIwc2sB4Ks/view?usp=drive_link"
     ],
-    "description": "Deactivators is a C64 strategy game by Reaktor Software, released in 1986."
+    "description": "Deactivators is a Commodore 64 strategy-puzzle game that tasks players with controlling multiple robots to disarm security systems. Planning and precise coordination are essential to completing each level."
   },
   {
     "system": "C64",
@@ -3340,7 +3340,7 @@
     "disk": [
       "https://drive.google.com/file/d/1bj3aZCQwAoVwIACMa-3WVK0osfXQScfq/view?usp=drive_link"
     ],
-    "description": "Defender is a C64 arcade game by Atarisoft, released in 1983."
+    "description": "Defender is a Commodore 64 arcade shooter based on the Williams coin-op, featuring horizontal scrolling, fast enemies, and intense action. It is widely regarded as a demanding but faithful home conversion."
   },
   {
     "system": "C64",
@@ -3363,7 +3363,7 @@
     "disk": [
       "https://drive.google.com/file/d/1usjnHI5c4Ph8gvpi6zq-4JceM9S49Bv6/view?usp=drive_link"
     ],
-    "description": "Developed by Cinemaware and released in 1987, Defender Of The Crown is a C64 strategy game."
+    "description": "Defender of the Crown is a Commodore 64 strategy game blending tactical decision-making with arcade-style battles. Players compete for control of medieval England through warfare, diplomacy, and economy management."
   },
   {
     "system": "C64",
@@ -3387,7 +3387,7 @@
     "disk": [
       "https://drive.google.com/file/d/1C6jI-XL1XFjBsziFe1dDSIR810wC2xBJ/view?usp=drive_link"
     ],
-    "description": "Enigma Variations's 1990 release Defenders Of The Earth is a C64 arcade game."
+    "description": "Defenders of the Earth is a Commodore 64 arcade shooter based on the animated series, featuring side-scrolling action and multiple playable characters with different abilities."
   },
   {
     "system": "C64",
@@ -3409,7 +3409,7 @@
     "disk": [
       "https://drive.google.com/file/d/1usl1qKvpenUh5sarwoAl_aXp44A3GrLz/view?usp=drive_link"
     ],
-    "description": "Gremlin Graphics's 1987 release Deflektor is a C64 puzzle game."
+    "description": "Deflektor is a Commodore 64 puzzle game focused on redirecting laser beams using mirrors and switches. The game requires logical thinking and careful planning across increasingly complex stages."
   },
   {
     "system": "C64",
@@ -3431,7 +3431,7 @@
     "disk": [
       "https://drive.google.com/file/d/1vg5ytGvUO0V6FytlmpD9U4SpluIQa-Mp/view?usp=drive_link"
     ],
-    "description": "Released in 1987 by Thalamus, Delta is a C64 shooting game."
+    "description": "Delta is a Commodore 64 vertically scrolling shooter noted for its fast action and distinctive audio-visual presentation. Players battle enemy formations while navigating tight scrolling environments."
   },
   {
     "system": "C64",
@@ -3455,7 +3455,7 @@
     "disk": [
       "https://drive.google.com/file/d/1Ge2XLszDJouW9bGPuCno_DwA6C7jiedl/view?usp=drive_link"
     ],
-    "description": "Released in 1984 by CRL, Derby Day is a C64 casino-style game."
+    "description": "Derby Day is a Commodore 64 sports and betting game centred on horse racing. Players manage wagers and race outcomes rather than directly controlling the action."
   },
   {
     "system": "AMIGA",
@@ -3479,7 +3479,7 @@
     "disk": [
       "https://drive.google.com/file/d/14DSOdbvIB9vJJSN5D1wy5ZhBUSCNh4To/view?usp=drive_link"
     ],
-    "description": "Desert Strike is a AMIGA arcade game released in 1993 by Electronic Arts."
+    "description": "Desert Strike is an Amiga action shooter where players pilot a helicopter across open missions, completing objectives such as rescues and enemy base destruction in a semi-open world environment."
   },
   {
     "system": "C64",
@@ -3503,7 +3503,7 @@
     "disk": [
       "https://drive.google.com/file/d/1IW_rQCUr8vLcK2-sDWNftoAE7W-KVbNA/view?usp=drive_link"
     ],
-    "description": "Die Hard is a C64 arcade game from Activision (1990)."
+    "description": "Die Hard is a Commodore 64 arcade action-adventure game based on the film, combining shooting, exploration, and timed objectives within a multi-level building setting."
   },
   {
     "system": "C64",
@@ -3526,7 +3526,7 @@
     "disk": [
       "https://drive.google.com/file/d/1K10nVLnhSNVLxFTmhOpxFWGbTpHHDjq9/view?usp=drive_link"
     ],
-    "description": "Codemasters's 1988 release Dizzy is a C64 action-adventure game."
+    "description": "Dizzy is a Commodore 64 action-adventure platform game starring the iconic egg-shaped hero. Gameplay focuses on exploration, item collection, and puzzle-solving rather than combat."
   },
   {
     "system": "C64",
@@ -3548,7 +3548,7 @@
     "disk": [
       "https://drive.google.com/file/d/1h5Ro1hrjl3LK42ShVX9M4FCFyvTiqY29/view?usp=drive_link"
     ],
-    "description": "Developed by Micro Power and released in 1986, Doctor Who And The Mines Of Terror is a C64 action-adventure game."
+    "description": "Doctor Who and the Mines of Terror is a Commodore 64 action-adventure game featuring exploration, puzzle-solving, and enemy encounters within a maze-like underground setting."
   },
   {
     "system": "C64",
@@ -3561,7 +3561,7 @@
       "Licensed Games"
     ],
     "year": 1984,
-    "developer": "Kids!",
+    "developer": "Disney",
     "videoid": "FLfMBp1nTe8",
     "lemon": [
       "https://www.lemon64.com/game/donald-ducks-playground"
@@ -3571,7 +3571,7 @@
     "disk": [
       "https://drive.google.com/file/d/1O5mcEFizTJZmgjCnbKix2Rk9xIA9C8OC/view?usp=drive_link"
     ],
-    "description": "Developed by Kids! and released in 1984, Donald Duck's Playground is a C64 quiz game."
+    "description": "Donald Duck's Playground is a Commodore 64 educational quiz-adventure game aimed at younger players, combining mini-games with basic money management and problem-solving tasks."
   },
   {
     "system": "C64",
@@ -3594,7 +3594,7 @@
     "disk": [
       "https://drive.google.com/file/d/1Yfve87fVB4tJL8SMiDMEcVr25r9gaaPy/view?usp=drive_link"
     ],
-    "description": "Donkey Kong is a C64 arcade game from Atarisoft (1983)."
+    "description": "Donkey Kong is a Commodore 64 arcade platform game based on the Nintendo classic, featuring multi-screen levels focused on climbing, timing, and avoiding hazards."
   },
   {
     "system": "C64",
@@ -3617,7 +3617,7 @@
     "disk": [
       "https://drive.google.com/file/d/1NJp-RkL3f9OBVgoV-Bj5E7eqttCQTuid/view?usp=drive_link"
     ],
-    "description": "Doriath arrived in 1985 as a C64 action-adventure game from Rabbit Software."
+    "description": "Doriath is a Commodore 64 action-adventure game blending platforming, exploration, and combat across a large interconnected world."
   },
   {
     "system": "C64",
@@ -3641,7 +3641,7 @@
     "disk": [
       "https://drive.google.com/file/d/1OTceGGiSRkIT7A9tQr3RkEiisARW2V4c/view?usp=drive_link"
     ],
-    "description": "Double Dare arrived in 1988 as a C64 quiz game from Gametek."
+    "description": "Double Dare is a Commodore 64 quiz game based on the television show, testing players' general knowledge through multiple-choice questions and game-show styled challenges."
   },
   {
     "system": "C64",
@@ -3664,7 +3664,7 @@
     "disk": [
       "https://drive.google.com/file/d/1cPT0RZ5-ItElA89kFAjtAO-P3N-DEes1/view?usp=drive_link"
     ],
-    "description": "Ocean's 1991 release Double Dragon is a C64 fighting game."
+    "description": "Double Dragon is a Commodore 64 beat 'em up featuring side-scrolling combat and hand-to-hand fighting. Players face waves of enemies using punches, kicks, and weapons."
   },
   {
     "system": "C64",
@@ -3686,7 +3686,7 @@
     "disk": [
       "https://drive.google.com/file/d/1MA87OWJzKYVGUY3RHkEKznJKDjCqbdyA/view?usp=drive_link"
     ],
-    "description": "Double Dragon II: The Revenge is a C64 fighting game released in 1989 by Virgin Mastertronic."
+    "description": "Double Dragon II is a Commodore 64 fighting game that refines the original formula with new moves, improved combat flow, and tougher enemy encounters."
   },
   {
     "system": "C64",
@@ -3708,7 +3708,7 @@
     "disk": [
       "https://drive.google.com/file/d/107ZBQQ4W_b2NZ3TBFgdJXhKdSNoQfdC6/view?usp=drive_link"
     ],
-    "description": "Dragon Skulle is a C64 action-adventure game from Ultimate (1986)."
+    "description": "Dragon Skulle is a Commodore 64 action-adventure game with isometric graphics, combining exploration, puzzle-solving, and enemy avoidance inside a hostile fortress."
   },
   {
     "system": "C64",
@@ -3720,7 +3720,7 @@
       "Arcade Games"
     ],
     "year": 1986,
-    "developer": "Electronic Arts",
+    "developer": "Software Projects",
     "videoid": "g6UIT7E97Jc",
     "lemon": [
       "https://www.lemon64.com/game/dragons-lair"
@@ -3730,7 +3730,7 @@
     "disk": [
       "https://drive.google.com/file/d/17GJDET_7oH9c-mr14WlMtwzj5fos2lK_/view?usp=drive_link"
     ],
-    "description": "Dragon's Lair is a C64 arcade game from 1986, developed by Electronic Arts."
+    "description": "Dragon's Lair on the Commodore 64 is an arcade-style adaptation of the laserdisc classic, focusing on timing-based inputs rather than free movement."
   },
   {
     "system": "C64",
@@ -3742,7 +3742,7 @@
       "Arcade Games"
     ],
     "year": 1987,
-    "developer": "Electronic Arts (US version)",
+    "developer": "Software Projects",
     "videoid": "nwOZE4paqn0",
     "lemon": [
       "https://www.lemon64.com/game/dragons-lair-2"
@@ -3752,7 +3752,7 @@
     "disk": [
       "https://drive.google.com/file/d/1R-rQCsmscmxSBuxw-DOHByKEXfhNkVcg/view?usp=drive_link"
     ],
-    "description": "From Electronic Arts (US version) in 1987, Dragon's Lair II : Escape From Singe'S Castle delivers C64 arcade game play."
+    "description": "Dragon's Lair II is a Commodore 64 arcade game continuing the quick-reaction gameplay style, requiring precise input timing to survive animated danger sequences."
   },
   {
     "system": "AMIGA",
@@ -3775,7 +3775,7 @@
     "disk": [
       "https://drive.google.com/file/d/1-536kGrLhouF5yzTVOOYA9bfVfB8fCAm/view?usp=drive_link"
     ],
-    "description": "Dreamweb is a AMIGA adventure game by Empire Interactive, released in 1994."
+    "description": "Dreamweb is an Amiga point-and-click adventure game with dark cyberpunk themes, combining investigation, puzzle-solving, and mature storytelling."
   },
   {
     "system": "C64",
@@ -3788,7 +3788,7 @@
       "Shooting Games"
     ],
     "year": 1985,
-    "developer": "UK Gold",
+    "developer": "US Gold",
     "videoid": "0RtRUCc5SDo",
     "lemon": [
       "https://www.lemon64.com/game/dropzone"
@@ -3798,7 +3798,7 @@
     "disk": [
       "https://drive.google.com/file/d/1e4hxHkSTlUjGFV4enM4f4nsPTDzjqca8/view?usp=drive_link"
     ],
-    "description": "Dropzone is a C64 arcade game from UK Gold (1985)."
+    "description": "Dropzone is a Commodore 64 arcade shooter inspired by Defender, featuring gravity-based movement, jetpack control, and intense enemy waves."
   },
   {
     "system": "AMIGA",
@@ -3822,7 +3822,7 @@
     "disk": [
       "https://drive.google.com/file/d/1bbNkblkcoDMSnoaQOAS3OkN10i7XOAC9/view?usp=drive_link"
     ],
-    "description": "Titus Software's 1990 release Ducktales: The Quest For Gold is a AMIGA platformer."
+    "description": "DuckTales: The Quest for Gold is an Amiga platform-adventure game that combines exploration, light strategy, and puzzle-solving within an open-ended structure."
   },
   {
     "system": "AMIGA",
@@ -3846,7 +3846,7 @@
     "disk": [
       "https://drive.google.com/file/d/1ZKLXGDtMeyrduDWduDtvaFlzw2kuODZk/view?usp=drive_link"
     ],
-    "description": "In 1992, Virgin Games released Dune, a AMIGA adventure game."
+    "description": "Dune is an Amiga adventure-strategy hybrid blending narrative progression with economic management and tactical decision-making on the planet Arrakis."
   },
   {
     "system": "AMIGA",
@@ -3870,7 +3870,7 @@
     "disk": [
       "https://drive.google.com/file/d/1_AUoDgCPs2rzgto5X55lRNGkEzpjrj7n/view?usp=drive_link"
     ],
-    "description": "Dune II: The Battle For Arrakis arrived in 1993 as a AMIGA strategy game from Virgin Games."
+    "description": "Dune II is an Amiga real-time strategy game that laid the foundations for the modern RTS genre, featuring base-building, resource management, and unit-based combat."
   },
   {
     "system": "AMIGA",
@@ -3894,7 +3894,7 @@
     "disk": [
       "https://drive.google.com/file/d/18TVuI9za9NyLhwVb_5sRfqjaqUNE-DM8/view?usp=drive_link"
     ],
-    "description": "Dynablaster arrived in 1991 as a AMIGA arcade game from Hudson Soft."
+    "description": "Dynablaster is an Amiga arcade-strategy game based on the Bomberman formula, focusing on grid-based movement, bomb placement, and multiplayer competition."
   },
   {
     "system": "C64",
@@ -3916,7 +3916,7 @@
     "disk": [
       "https://drive.google.com/file/d/13IIb0BfnLkTGpHk7JRiAgCCwFfTwFGzR/view?usp=drive_link"
     ],
-    "description": "Developed by Mirrorsoft and released in 1985, Dynamite Dan is a C64 platformer."
+    "description": "Dynamite Dan is a Commodore 64 platform game set inside a hazardous industrial complex, requiring careful timing and explosive problem-solving."
   },
   {
     "system": "C64",
@@ -3941,7 +3941,7 @@
     "disk": [
       "https://drive.google.com/file/d/1YGTTifyF_lO0f93Ye3tHPBMKWFUfHMrn/view?usp=drive_link"
     ],
-    "description": "From Martech in 1984, Eddie Kidd Jump Challenge delivers C64 arcade game play."
+    "description": "Eddie Kidd Jump Challenge is a Commodore 64 arcade sports game focused on stunt-based motorcycle jumps, demanding precise speed control and timing."
   },
   {
     "system": "C64",
@@ -3964,7 +3964,7 @@
     "disk": [
       "https://drive.google.com/file/d/1xkjAFLf-AaqqimhizmvJIcqjo3sSYMES/view?usp=drive_link"
     ],
-    "description": "Elite is a C64 strategy game from Firebird (1985)."
+    "description": "Elite is a Commodore 64 space trading and combat game featuring open galaxy exploration, trading, piracy, and space battles, offering unprecedented freedom for its time."
   },
   {
     "system": "C64",
@@ -3988,7 +3988,7 @@
     "disk": [
       "https://drive.google.com/file/d/17VOOiKE-0meLURywRwTa_uqV6jP498Uq/view?usp=drive_link"
     ],
-    "description": "Released in 1988 by Audiogenic, Emlyn Hughes International Soccer is a C64 sports game."
+    "description": "Emlyn Hughes International Soccer is a Commodore 64 football game known for its fast-paced arcade-style gameplay and accessible controls."
   },
   {
     "system": "C64",
@@ -4010,7 +4010,7 @@
     "disk": [
       "https://drive.google.com/file/d/1pHLu91QMApjIVxBT49C7kP9GukB4XtKX/view?usp=drive_link"
     ],
-    "description": "Developed by Ultimate and released in 1985, Entombed is a C64 action-adventure game."
+    "description": "Entombed is a Commodore 64 action-adventure game where players explore dangerous tombs, collecting items while avoiding traps and enemies."
   },
   {
     "system": "AMIGA",
@@ -4032,7 +4032,7 @@
     "disk": [
       "https://drive.google.com/file/d/14PoiZ88eTVN6haHIi34PtGYoJf1OBpCK/view?usp=drive_link"
     ],
-    "description": "Released in 1991 by Digital Magic Software, Escape From Colditz is a AMIGA action-adventure game."
+    "description": "Escape from Colditz is an Amiga action-adventure game focused on stealth, planning, and prisoner escape attempts within the infamous WWII prison camp."
   },
   {
     "system": "C64",
@@ -4054,7 +4054,7 @@
     "disk": [
       "https://drive.google.com/file/d/1wAl7lPjIMTDR_zXpW_SsUS5zo7ahxURD/view?usp=drive_link"
     ],
-    "description": "Escape From The Planet Of The Robot Monsters is a C64 arcade game from Domark (1990)."
+    "description": "Escape from the Planet of the Robot Monsters is a Commodore 64 arcade shooter featuring isometric combat and relentless enemy waves."
   },
   {
     "system": "AMIGA",
@@ -4076,7 +4076,7 @@
     "disk": [
       "https://drive.google.com/file/d/1EWoRYv0zNf0Fsudii_tYSZngMX1dJVVm/view?usp=drive_link"
     ],
-    "description": "Eve Of The Beholder II: The Legend Of Darkmoon is a AMIGA role-playing game from 1992, developed by Strategic Simulations Inc.."
+    "description": "Eye of the Beholder II is an Amiga role-playing game offering first-person dungeon exploration, character progression, and tactical combat based on Dungeons & Dragons rules."
   },
   {
     "system": "C64",
@@ -4098,7 +4098,7 @@
     "disk": [
       "https://drive.google.com/file/d/1jI7KCvXsmvVwsVNqjLC49nmLuFBrYY6i/view?usp=drive_link"
     ],
-    "description": "Everyone's A Wally is a C64 action-adventure game from Mikro-Gen (1985)."
+    "description": "Everyone's a Wally is a Commodore 64 action-adventure game featuring multiple characters and time-based objectives across a shared world."
   },
   {
     "system": "C64",
@@ -4122,7 +4122,7 @@
     "disk": [
       "https://drive.google.com/file/d/1MkwdE-6_3L2UnwjbCRPv65-d9Odi993Q/view?usp=drive_link"
     ],
-    "description": "Exile is a C64 action-adventure game released in 1991 by Audiogenic."
+    "description": "Exile is a Commodore 64 action-adventure platform game known for its physics-driven movement and large, interconnected environments."
   },
   {
     "system": "C64",
@@ -4144,7 +4144,7 @@
     "disk": [
       "https://drive.google.com/file/d/1kr7zE5gCO1t0p3T4qJImmbBfw2ZGrJK8/view?usp=drive_link"
     ],
-    "description": "Face Off! arrived in 1989 as a C64 sports game from Gamestar."
+    "description": "Face Off! is a Commodore 64 ice hockey game focused on arcade-style sports action rather than simulation accuracy."
   },
   {
     "system": "C64",
@@ -4167,7 +4167,7 @@
     "disk": [
       "https://drive.google.com/file/d/1sRmrBIVClIw38S9d3p7zr6zZ8DUUunqt/view?usp=drive_link"
     ],
-    "description": "Falcon Patrol is a C64 shooting game released in 1983 by Virgin Games."
+    "description": "Falcon Patrol is a Commodore 64 vertical scrolling shooter set in a desert combat zone, emphasising fast reflexes and aerial dogfights."
   },
   {
     "system": "C64",
@@ -4190,7 +4190,7 @@
     "disk": [
       "https://drive.google.com/file/d/1t3shO-JzZf0udUhghRYMI6mpTk-hcuX3/view?usp=drive_link"
     ],
-    "description": "Image Works's 1988 release Fernandez Must Die is a C64 shooting game."
+    "description": "Fernandez Must Die is a Commodore 64 run-and-gun shooter combining platforming with heavy enemy fire and fast scrolling levels."
   },
   {
     "system": "C64",
@@ -4202,7 +4202,7 @@
       "Action Adventure Games"
     ],
     "year": 1987,
-    "developer": "Bulldog Software",
+    "developer": "Mastertronic",
     "videoid": "Qh2eQdSnUHk",
     "lemon": [
       "https://www.lemon64.com/game/feud"
@@ -4212,7 +4212,7 @@
     "disk": [
       "https://drive.google.com/file/d/1XzTwJ0HcVV0WQzBVVwD8KFH7dO57YP7A/view?usp=drive_link"
     ],
-    "description": "Bulldog Software's 1987 release Feud is a C64 action-adventure game."
+    "description": "Feud is a Commodore 64 action-adventure game centred on magical duels, resource gathering, and strategic spell use between rival wizards."
   },
   {
     "system": "C64",
@@ -4236,7 +4236,7 @@
     "disk": [
       "https://drive.google.com/file/d/11LwL4QNiytx9UT0Es2_Z0zpSTLlicTJm/view?usp=drive_link"
     ],
-    "description": "In 1990, Mindscape released Fiendish Freddy's Big Top O' Fun, a C64 sports game."
+    "description": "Fiendish Freddy's Big Top O' Fun is a Commodore 64 circus-themed action game that combines fast reactions with precise joystick control. Players take part in a series of carnival challenges set inside a chaotic big top, making it a distinctive and highly polished late-era C64 cartridge title."
   },
   {
     "system": "C64",
@@ -4258,7 +4258,7 @@
     "disk": [
       "https://drive.google.com/file/d/1gUbKlyNsTwcHZO8BdH3KVPBAkbT74X1s/view?usp=drive_link"
     ],
-    "description": "Released in 1985 by Melbourne House, Fighting Warrior is a C64 fighting game."
+    "description": "Fighting Warrior is a Commodore 64 one-on-one martial arts game that emphasises timing, positioning, and directional attacks. Rather than a traditional beat 'em up, it focuses on deliberate combat and stamina management inspired by classic kung fu cinema."
   },
   {
     "system": "AMIGA",
@@ -4280,7 +4280,7 @@
     "disk": [
       "https://drive.google.com/file/d/112YxhtlFkuM-Gc_j4Fa4woYG74wlsA4F/view?usp=drive_link"
     ],
-    "description": "Released in 1991 by US Gold, Final Fight is a AMIGA fighting game."
+    "description": "Final Fight is an Amiga side-scrolling beat 'em up, adapting Capcom's arcade hit to home computers. While scaled back from the arcade original, the Amiga version retains street-fighting action, large sprites, and multi-stage brawling."
   },
   {
     "system": "C64",
@@ -4303,7 +4303,7 @@
     "disk": [
       "https://drive.google.com/file/d/1z069bHxK0CmTSP0zzzBN9yci_70GzHWb/view?usp=drive_link"
     ],
-    "description": "In 1985, Mastertronic released Finders Keepers, a C64 action-adventure game."
+    "description": "Finders Keepers is a Commodore 64 action-adventure platform game where players explore a wizard's tower filled with traps, monsters, and hidden treasure. Fast movement and precise jumps are key to surviving its multi-screen levels."
   },
   {
     "system": "C64",
@@ -4325,7 +4325,7 @@
     "disk": [
       "https://drive.google.com/file/d/1AsZP2-sjca9GqCK7ejuqWuMBawVNx9Yp/view?usp=drive_link"
     ],
-    "description": "Fire Ant is a C64 arcade game released in 1983 by Mogul Communications."
+    "description": "Fire Ant is a Commodore 64 arcade action game played from an overhead perspective. The player controls an ant defending its nest against waves of enemies, relying on quick movement and continuous shooting."
   },
   {
     "system": "C64",
@@ -4347,7 +4347,7 @@
     "disk": [
       "https://drive.google.com/file/d/1jRGelp4ofke5rsirOPdVk1CP9sDSX2Mm/view?usp=drive_link"
     ],
-    "description": "Firelord is a C64 action-adventure game released in 1986 by Hewson."
+    "description": "Firelord is a Commodore 64 action-adventure game that blends exploration, combat, and item collection. Set in a fantasy world, the game is known for its strong atmosphere, open-ended structure, and distinctive audiovisual presentation."
   },
   {
     "system": "C64",
@@ -4372,7 +4372,7 @@
     "disk": [
       "https://drive.google.com/file/d/1WSEpyCyyFceMWkiIjX597WNJTsA7mXMQ/view?usp=drive_link"
     ],
-    "description": "Developed by Image Works and released in 1992, First Samurai is a C64 arcade game."
+    "description": "First Samurai is a Commodore 64 action platform game featuring large sprites, scrolling levels, and sword-based combat. Players explore a mythic world while collecting items and abilities needed to progress."
   },
   {
     "system": "C64",
@@ -4395,7 +4395,7 @@
     "disk": [
       "https://drive.google.com/file/d/1-a7H0wxRBuPeXbMPhRgJWk78-u4vKn4c/view?usp=drive_link"
     ],
-    "description": "Released in 1986 by Melbourne House, Fist II: The Legend Continues is a C64 action-adventure game."
+    "description": "Fist II is a Commodore 64 action-adventure and martial arts game that combines free-roaming exploration with hand-to-hand combat. Its non-linear structure and skill-based fighting distinguish it from standard fighters."
   },
   {
     "system": "C64",
@@ -4418,7 +4418,7 @@
     "disk": [
       "https://drive.google.com/file/d/1HC3OetC4TcoSJvuUIozcjYk9U_tpKlvF/view?usp=drive_link"
     ],
-    "description": "Flash Gordon is a C64 action-adventure game released in 1986 by MAD (Mastertronic)."
+    "description": "Flash Gordon is a Commodore 64 action-adventure game based on the classic science fiction hero. The game features multiple gameplay styles, including platforming and combat, loosely tied together by the film's storyline. Also known as Captain ZZap in the USA"
   },
   {
     "system": "AMIGA",
@@ -4432,7 +4432,7 @@
       "Top Picks"
     ],
     "year": 1992,
-    "developer": "US Gold",
+    "developer": "Delphine Software",
     "videoid": "F5QHpwnSSko",
     "lemon": [
       "https://www.lemonamiga.com/games/details.php?id=414"
@@ -4442,7 +4442,7 @@
     "disk": [
       "https://drive.google.com/file/d/1sAOFsStLSakZfU8X19aEqrbASyhhOSC_/view?usp=drive_link"
     ],
-    "description": "Flashback: The Quest For Identity is a AMIGA action-adventure game by US Gold, released in 1992."
+    "description": "Flashback is an Amiga cinematic action-adventure platform game known for its rotoscoped animation, atmospheric presentation, and precise movement. Players navigate futuristic environments while solving puzzles and surviving hostile encounters."
   },
   {
     "system": "C64",
@@ -4465,7 +4465,7 @@
     "disk": [
       "https://drive.google.com/file/d/11LwL4QNiytx9UT0Es2_Z0zpSTLlicTJm/view?usp=drive_link"
     ],
-    "description": "Flimbo's Quest is a C64 platformer by System 3, released in 1990."
+    "description": "Flimbo's Quest is a Commodore 64 platform game that combines smooth scrolling levels with tight jumping mechanics. Its colourful graphics, memorable music, and responsive controls make it one of the strongest late-era C64 platformers."
   },
   {
     "system": "C64",
@@ -4488,7 +4488,7 @@
     "disk": [
       "https://drive.google.com/file/d/1BP8hxk7HyTsXCvbdnAQktZbzrDPdmRk0/view?usp=drive_link"
     ],
-    "description": "Flip And Flop arrived in 1984 as a C64 arcade game from State Soft."
+    "description": "Flip And Flop is a Commodore 64 arcade platform game where players guide a frog across single-screen levels, avoiding enemies and hazards. Precise movement and timing are essential to complete each stage."
   },
   {
     "system": "AMIGA",
@@ -4510,7 +4510,7 @@
     "disk": [
       "https://drive.google.com/file/d/1YlbN2h5X0fk9t5cjufAEQ0Ehtc5RuXXD/view?usp=drive_link"
     ],
-    "description": "In 1992, Virgin Games released Floor 13, a AMIGA strategy game."
+    "description": "Floor 13 is an Amiga political strategy simulation focused on covert operations, surveillance, and damage control. Players manage government resources while responding to crises under constant pressure."
   },
   {
     "system": "C64",
@@ -4533,7 +4533,7 @@
     "disk": [
       "https://drive.google.com/file/d/1YM6YQVzBvy9uee1L1j2ER6f6sVRmDEWg/view?usp=drive_link"
     ],
-    "description": "Floyd Of The Jungle is a C64 arcade game from MicroProse Software (1983)."
+    "description": "Floyd Of The Jungle is a Commodore 64 arcade platform game featuring vine swinging, climbing, and single-screen challenges. Fast reflexes and careful timing define its jungle-themed action."
   },
   {
     "system": "C64",
@@ -4555,7 +4555,7 @@
     "disk": [
       "https://drive.google.com/file/d/1O9Io4674fx88Y3ZF6Yk3vts1Jhs_uLLX/view?usp=drive_link"
     ],
-    "description": "Flunky is a C64 action-adventure game released in 1987 by Piranha."
+    "description": "Flunky is a Commodore 64 single-screen platform game released in 1987 by Piranha. The game is set inside a castle where the player controls a servant tasked with cleaning rooms while avoiding guards, traps, and moving hazards. Gameplay focuses on precise jumping, ladder climbing, and careful timing across static screens rather than exploration or adventure mechanics."
   },
   {
     "system": "C64",
@@ -4577,7 +4577,7 @@
     "disk": [
       "https://drive.google.com/file/d/1FNWnB27QyIlcisTeJdYsNgVe5w5IP_N3/view?usp=drive_link"
     ],
-    "description": "Flying Feathers is a C64 arcade game by Bubble Bus, released in 1984."
+    "description": "Flying Feathers is a Commodore 64 arcade shooter where players control a bird battling enemies across vertically scrolling stages. Continuous movement and accurate shooting are required to survive."
   },
   {
     "system": "C64",
@@ -4601,7 +4601,7 @@
     "disk": [
       "https://drive.google.com/file/d/1CI61FBoXmrA8qgHs__8h6CBfr_VvzIVy/view?usp=drive_link"
     ],
-    "description": "Cosmi's 1983 release Forbidden Forest is a C64 arcade game."
+    "description": "Forbidden Forest is a Commodore 64 arcade shooter with a strong horror theme. Players face giant spiders, snakes, and other creatures using a bow, with tense sound design and escalating difficulty."
   },
   {
     "system": "C64",
@@ -4623,7 +4623,7 @@
     "disk": [
       "https://drive.google.com/file/d/1f0xcbpyCGyJCnUx85qtOs3arZNn-CvAG/view?usp=drive_link"
     ],
-    "description": "Released in 1987 by Datasoft, Force Seven is a C64 strategy game."
+    "description": "Force Seven is a Commodore 64 turn-based strategy game focused on global defence planning. Players allocate resources and respond to threats across a world map, emphasising tactical decision-making."
   },
   {
     "system": "C64",
@@ -4647,7 +4647,7 @@
     "disk": [
       "https://drive.google.com/file/d/1nLzb9Qf_DvrWn9pOKVmwAubukbdgW7xC/view?usp=drive_link"
     ],
-    "description": "Fort Apocalypse, Arcade Games is a C64 shooting game from 1982, developed by Synapse Software."
+    "description": "Fort Apocalypse is a Commodore 64 scrolling shooter viewed from above, placing players in control of a helicopter navigating underground tunnels. Fuel management and precise shooting are central to its challenge."
   },
   {
     "system": "C64",
@@ -4669,7 +4669,7 @@
     "disk": [
       "https://drive.google.com/file/d/16-M6ySzR2Cc_wL7TV28lUzLz-ULMjSOI/view?usp=drive_link"
     ],
-    "description": "Frak! is a C64 platformer from 1985, developed by State Soft."
+    "description": "Frak is a Commodore 64 single-screen arcade platform game released in 1985 by State Soft. The player controls Trogg, a caveman, whose defining feature is a yo-yo used purely as a weapon."
   },
   {
     "system": "C64",
@@ -4692,7 +4692,7 @@
     "disk": [
       "https://drive.google.com/file/d/1xunEn2uPIddY56Bv9p1kO_i0S-dG4D7X/view?usp=drive_link"
     ],
-    "description": "Developed by Ocean and released in 1985, Frankie Goes To Hollywood is a C64 action-adventure game."
+    "description": "Frankie Goes To Hollywood is a Commodore 64 experimental action-adventure game blending puzzle-solving with surreal arcade sequences. Its abstract design and adult themes made it one of the era's most unconventional titles."
   },
   {
     "system": "C64",
@@ -4714,7 +4714,7 @@
     "disk": [
       "https://drive.google.com/file/d/13sBYvzsNgc9H758f-6Zk6n5d8QE8Wp3q/view?usp=drive_link"
     ],
-    "description": "Freak Factory is a C64 arcade game from Firebird (1986)."
+    "description": "Freak Factory is a Commodore 64 arcade shooter focused on fast reflexes and enemy prioritisation. Players blast waves of creatures across compact, single-screen arenas."
   },
   {
     "system": "C64",
@@ -4739,7 +4739,7 @@
     "disk": [
       "https://drive.google.com/file/d/170FK5LthMEKyI5yU3N7S6wsHxugE7ppv/view?usp=drive_link"
     ],
-    "description": "Released in 1986 by Domark, Friday The 13th is a C64 action-adventure game."
+    "description": "Friday The 13th is a Commodore 64 action-adventure horror game where players explore Camp Crystal Lake, avoiding Jason while rescuing victims. Time pressure and resource management are key to survival."
   },
   {
     "system": "AMIGA",
@@ -4763,7 +4763,7 @@
     "disk": [
       "https://drive.google.com/file/d/1DBWlTegeDyYjPtqXqwuxP7cRFpox7oqn/view?usp=drive_link"
     ],
-    "description": "Released in 1988 by Microdeal, Fright Night is a AMIGA action-adventure game."
+    "description": "Fright Night is an Amiga horror-themed action-adventure game based on the film license. Players explore haunted locations while avoiding enemies and solving environmental challenges."
   },
   {
     "system": "C64",
@@ -4786,7 +4786,7 @@
     "disk": [
       "https://drive.google.com/file/d/1N8gJ21F9vArI-oeiOXszcE6EvHhwNXMs/view?usp=drive_link"
     ],
-    "description": "Frightmare is a C64 horror-themed game released in 1988 by Cascade Games."
+    "description": "Frightmare is a Commodore 64 horror platform game featuring grotesque enemy designs and surreal visuals. Precision jumping and careful movement are essential in its hostile environments."
   },
   {
     "system": "C64",
@@ -4808,7 +4808,7 @@
     "disk": [
       "https://drive.google.com/file/d/17JQB59JzMbGwSQXbpWnBpc-X2LncBjNX/view?usp=drive_link"
     ],
-    "description": "Fruit Machine Simulator is a C64 casino-style game from Codemasters (1987)."
+    "description": "Fruit Machine Simulator is a Commodore 64 gambling simulation that faithfully recreates British fruit machines. Timing, nudging, and risk management are central to gameplay."
   },
   {
     "system": "AMIGA",
@@ -4820,7 +4820,7 @@
       "Adventure Games"
     ],
     "year": 1989,
-    "developer": "Palace Software",
+    "developer": "Delphine Software",
     "videoid": "Pa8d9OA95uQ",
     "lemon": [
       "https://www.lemonamiga.com/games/details.php?id=1285"
@@ -4830,7 +4830,7 @@
     "disk": [
       "https://drive.google.com/file/d/1tikUyeCPxzfcve_tjaeV-LC_b_g4k75G/view?usp=drive_link"
     ],
-    "description": "Released in 1989 by Palace Software, Future Wars is a AMIGA adventure game."
+    "description": "Future Wars is an Amiga point-and-click adventure game featuring time travel, humour, and puzzle-solving. Its sci-fi narrative and cartoon style define its distinctive tone."
   },
   {
     "system": "C64",
@@ -4852,7 +4852,7 @@
     "disk": [
       "https://drive.google.com/file/d/1fslF7tDJZ0SgXY8hEUUy4yurbJeHjrVP/view?usp=drive_link"
     ],
-    "description": "From Software Projects in 1984, Galactic Gardener delivers C64 arcade game play."
+    "description": "Galactic Gardener is a Commodore 64 arcade shooter where players have to roam a planet and collect plants. Movement, aim control, and pattern recognition drive the action."
   },
   {
     "system": "C64",
@@ -4875,7 +4875,7 @@
     "disk": [
       "https://drive.google.com/file/d/1xuAWceKjwNdYsbRdhD6QLCt3kAz-ohfu/view?usp=drive_link"
     ],
-    "description": "Gary Lineker's Superstar Soccer is a C64 sports game released in 1987 by Gremlin Graphics."
+    "description": "Gary Lineker's Superstar Soccer is a Commodore 64 football game combining arcade-style play with team-based tactics. Fast matches and simple controls define its accessible approach."
   },
   {
     "system": "C64",
@@ -4888,7 +4888,7 @@
       "Role Playing Games"
     ],
     "year": 1983,
-    "developer": "CBS Electronics Software Epyx",
+    "developer": "Epyx",
     "videoid": "b7yDLt43Pwk",
     "lemon": [
       "https://www.lemon64.com/game/gateway-to-apshai"
@@ -4898,7 +4898,7 @@
     "disk": [
       "https://drive.google.com/file/d/1cOwowvgnp0wAo2aUt2BbQPvTcOPx1tSe/view?usp=drive_link"
     ],
-    "description": "Gateway To Apshai is a C64 role-playing game from CBS Electronics Software Epyx (1983)."
+    "description": "Gateway To Apshai is a Commodore 64 role-playing dungeon crawler featuring real-time combat and exploration. Character statistics, loot, and tactical movement shape its gameplay."
   },
   {
     "system": "C64",
@@ -4921,7 +4921,7 @@
     "disk": [
       "https://drive.google.com/file/d/11-IPHa8IR-6nlZwrOfrn2QcwE96buAJO/view?usp=drive_link"
     ],
-    "description": "In 1986, US Gold released Gauntlet, a C64 arcade game."
+    "description": "Gauntlet is a Commodore 64 top-down arcade action game supporting multiple character classes and cooperative play. Continuous enemy waves and resource management drive its frantic pace."
   },
   {
     "system": "C64",
@@ -4943,7 +4943,7 @@
     "disk": [
       "https://drive.google.com/file/d/11g-JUkIYTz-CME9Qd4CAY6yPZggeOeMx/view?usp=drive_link"
     ],
-    "description": "Strategic Simulations Inc.'s 1984 release Gemstone Warrior is a C64 role-playing game."
+    "description": "Gemstone Warrior is a Commodore 64 role-playing game blending real-time combat with character progression. Players explore a large world while gathering equipment and abilities."
   },
   {
     "system": "C64",
@@ -4966,7 +4966,7 @@
     "disk": [
       "https://drive.google.com/file/d/1blKnPeUwuw3iTeiWmUZn-w1vyASQWnDE/view?usp=drive_link"
     ],
-    "description": "Virgin Games's 1985 release Ghetto Blaster is a C64 arcade game."
+    "description": "Ghetto Blaster (also known as Street Beat) is a Commodore 64 arcade-style action game released in 1985 by Virgin Games. Set on the streets of London, the player carries a ghetto blaster and must roam urban areas getting pedestrians to dance to the music. Once enough people are dancing, the player delivers the tape to a record company to complete the objective."
   },
   {
     "system": "C64",
@@ -4991,7 +4991,7 @@
     "disk": [
       "https://drive.google.com/file/d/1adZDcPKlP_-UwpoLArZoZUsyqdC2fLWf/view?usp=drive_link"
     ],
-    "description": "Developed by Codemasters and released in 1987, Ghost Hunters is a C64 arcade game."
+    "description": "Ghost Hunters is a Commodore 64 single-screen arcade action game released in 1987 by Codemasters. Players navigate enclosed rooms, using weapons to eliminate waves of ghosts and monsters while avoiding contact in tight, trap-filled spaces."
   },
   {
     "system": "C64",
@@ -5017,7 +5017,7 @@
     "disk": [
       "https://drive.google.com/file/d/1fWgTh1NlKk2iJQWX3WOOdSGwIP3FtfBP/view?usp=drive_link"
     ],
-    "description": "Ghostbusters is a C64 arcade game released in 1984 by Activision."
+    "description": "Ghostbusters is a Commodore 64 arcade-action game combining driving, strategy, and ghost-catching sequences. Its varied gameplay and licensed presentation made it one of the system's most recognisable titles."
   },
   {
     "system": "C64",
@@ -5041,7 +5041,7 @@
     "disk": [
       "https://drive.google.com/file/d/1gJXlaw64rok9Hf858ljFHFCIMZ_6w318/view?usp=drive_link"
     ],
-    "description": "Ghostbusters II is a C64 arcade game from 1989, developed by Activision."
+    "description": "Ghostbusters II is a Commodore 64 arcade-action game featuring multiple gameplay styles inspired by the film. Players switch between shooting, platforming, and puzzle-based challenges."
   },
   {
     "system": "C64",
@@ -5065,7 +5065,7 @@
     "disk": [
       "https://drive.google.com/file/d/174VODtVJ6O8XkwSc8o4AwkG8sm9bMq58/view?usp=drive_link"
     ],
-    "description": "Ghosts 'N Goblins is a C64 arcade game from 1986, developed by Elite."
+    "description": "Ghosts 'N Goblins is a Commodore 64 arcade platform game known for its high difficulty, enemy-heavy levels, and precision-based combat. It remains one of the toughest conversions on the system."
   },
   {
     "system": "C64",
@@ -5089,7 +5089,7 @@
     "disk": [
       "https://drive.google.com/file/d/1DLRRqVJaR4WG2CT-HMcPusGI0VPlIcxz/view?usp=drive_link"
     ],
-    "description": "Give My Regards To Broad Street is a C64 puzzle game from Mastertronic (1985)."
+    "description": "Give My Regards to Broad Street (also known as Paul McCartney's Give My Regards to Broad Street) is a Commodore 64 licensed arcade-style puzzle game released in 1985 by Mastertronic, based on the Paul McCartney film of the same name."
   },
   {
     "system": "AMIGA",
@@ -5112,7 +5112,7 @@
     "disk": [
       "https://drive.google.com/file/d/1RC9iB3Bk7QDV7VbLEfNke8Edi7BxrCsQ/view?usp=drive_link"
     ],
-    "description": "Coktel Vision's 1992 release Gobliiins is a AMIGA adventure game."
+    "description": "Gobliiins is a point-and-click puzzle adventure game for the Commodore Amiga, released in 1992 by Coktel Vision. The game places the player in control of three distinct goblins, each with unique abilities, who must be used together to solve surreal environmental puzzles through cooperation rather than combat."
   },
   {
     "system": "AMIGA",
@@ -5135,7 +5135,7 @@
     "disk": [
       "https://drive.google.com/file/d/1NL-T9l87LLvYLB2f0RYS_h7JTOt_RNh0/view?usp=drive_link"
     ],
-    "description": "Gods is a AMIGA platformer by Renegade, released in 1991."
+    "description": "Gods is an Amiga action platform game blending combat, exploration, and puzzle elements. Large sprites, atmospheric visuals, and deliberate pacing define its mythological setting."
   },
   {
     "system": "C64",
@@ -5158,7 +5158,7 @@
     "disk": [
       "https://drive.google.com/file/d/1KJKdf57H4bmNKks_z263lh-c-P98F4Mo/view?usp=drive_link"
     ],
-    "description": "Golden Axe is a C64 fighting game from Sega (1990)."
+    "description": "Golden Axe is a Commodore 64 side-scrolling beat 'em up adapting Sega's arcade fantasy brawler. Players fight through enemy-filled stages using melee combat and magic attacks."
   },
   {
     "system": "C64",
@@ -5182,7 +5182,7 @@
     "disk": [
       "https://drive.google.com/file/d/15isMjzLK5Yq8_hmG_wAxQnvsV76j2dEs/view?usp=drive_link"
     ],
-    "description": "Commodore's 1983 release Gorf is a C64 arcade game."
+    "description": "Gorf is a Commodore 64 multi-stage arcade shooter combining several space-combat styles. Each phase introduces different mechanics, increasing variety and challenge."
   },
   {
     "system": "C64",
@@ -5205,7 +5205,7 @@
     "disk": [
       "https://drive.google.com/file/d/1ckWBmM2DAZ3i7CfAAG4xYKGD2A6eYrGx/view?usp=drive_link"
     ],
-    "description": "Accolade's 1989 release Grand Prix Circuit is a C64 racing game."
+    "description": "Grand Prix Circuit is a Commodore 64 Formula One racing game released in 1989 by Accolade. The game combines top-down circuit racing with career progression, allowing players to compete across multiple international tracks while managing car upgrades, qualifying laps, and race strategy. It stands out on C64 for blending arcade handling with a structured championship format."
   },
   {
     "system": "C64",
@@ -5227,7 +5227,7 @@
     "disk": [
       "https://drive.google.com/file/d/1MbAtZHXNoBV1SW0l4zR-5eQvwYRm59F0/view?usp=drive_link"
     ],
-    "description": "Grand Prix Simulator arrived in 1987 as a C64 racing game from Codemasters."
+    "description": "Grand Prix Simulator is a Commodore 64 racing game released in 1987 by Codemasters. Focused on single-seater Formula racing, it features fast-paced circuit action viewed from an overhead perspective, with emphasis on lap times, car control, and endurance rather than progression systems. It reflects Codemasters' early arcade-racing design style."
   },
   {
     "system": "C64",
@@ -5250,7 +5250,7 @@
     "disk": [
       "https://drive.google.com/file/d/1AOD4sNK7Jny1K3Ys5hz5-pz1v4LeArKt/view?usp=drive_link"
     ],
-    "description": "Grange Hill is a C64 adventure game from 1987, developed by Argus Press Software."
+    "description": "Grange Hill is a Commodore 64 licensed adventure game released in 1987 by Argus Press Software, based on the long-running British TV series. Gameplay revolves around exploration, item use, and avoiding authority figures within a school setting, capturing the mischievous tone of the show rather than traditional action mechanics."
   },
   {
     "system": "C64",
@@ -5274,7 +5274,7 @@
     "disk": [
       "https://drive.google.com/file/d/1lpQNSEcnZHYolAUukHZ5ObN0wHp-OeKW/view?usp=drive_link"
     ],
-    "description": "From Satchel Software in 1987, Granny's Garden delivers C64 adventure game play."
+    "description": "Granny's Garden is a Commodore 64 educational adventure and puzzle game released in 1987 by Satchel Software. Designed for schools, it mixes logic puzzles, riddles, and simple navigation with fairy-tale presentation, focusing on problem-solving and memory rather than reflex-based gameplay."
   },
   {
     "system": "C64",
@@ -5298,7 +5298,7 @@
     "disk": [
       "https://drive.google.com/file/d/1zPdgd_P47t8Ni14REPLhL8613-0kJgYm/view?usp=drive_link"
     ],
-    "description": "Green Beret is a C64 arcade game by Imagine, released in 1986."
+    "description": "Green Beret is a Commodore 64 arcade action game released in 1986 by Imagine, based on Konami's coin-op. Players control a lone commando infiltrating enemy bases using melee combat, grenades, and precise movement, with gameplay built around pattern memorisation and timing rather than shooting alone."
   },
   {
     "system": "C64",
@@ -5321,7 +5321,7 @@
     "disk": [
       "https://drive.google.com/file/d/1JTadBzPDIoMDtwb_sK-5zixfLlzCGC8W/view?usp=drive_link"
     ],
-    "description": "Gribbly's Day Out is a C64 arcade game from 1985, developed by Hewson."
+    "description": "Gribbly's Day Out is a Commodore 64 single-screen arcade platform game released in 1985 by Hewson. Set inside a flooded cavern, players guide Gribbly through one large continuous maze, managing air supply while avoiding creatures and navigating tricky jumps. It is remembered for its distinctive atmosphere and demanding precision."
   },
   {
     "system": "C64",
@@ -5345,7 +5345,7 @@
     "disk": [
       "https://drive.google.com/file/d/1XAytjxkyubtNl_1p9dMsxgEVKkzVrsvx/view?usp=drive_link"
     ],
-    "description": "Gryzor is a C64 platformer released in 1988 by Ocean."
+    "description": "Gryzor is a Commodore 64 run-and-gun action game released in 1988 by Ocean, based on Konami's arcade hit (known as Contra). Gameplay features side-scrolling shooting, enemy waves, and platforming sections, demanding fast reflexes and careful positioning throughout enemy-filled environments."
   },
   {
     "system": "C64",
@@ -5367,7 +5367,7 @@
     "disk": [
       "https://drive.google.com/file/d/14ZOMoAowzUFg9NGkkx002ZqzS_1-0riS/view?usp=drive_link"
     ],
-    "description": "Guzzler arrived in 1984 as a C64 arcade game from Interceptor Software."
+    "description": "Guzzler is a Commodore 64 arcade action game released in 1984 by Interceptor Software. Players control a creature that must consume enemies to increase size and strength, while managing movement through maze-like levels. The core challenge lies in balancing growth with mobility as screens become increasingly dangerous."
   },
   {
     "system": "C64",
@@ -5390,7 +5390,7 @@
     "disk": [
       "https://drive.google.com/file/d/1NvgxmqFI65RPiGvM34KtecSveIa7HkkZ/view?usp=drive_link"
     ],
-    "description": "Released in 1984 by Taskset, Gyropod is a C64 arcade game."
+    "description": "Gyropod is a Commodore 64 arcade shooter released in 1984 by Taskset. The game features rotational movement and directional shooting, requiring players to manage momentum while destroying enemies across confined playfields. Its control system sets it apart from more conventional fixed shooters of the era."
   },
   {
     "system": "C64",
@@ -5414,7 +5414,7 @@
     "disk": [
       "https://drive.google.com/file/d/12I86mQRC1U19c55Kfir4zXJ6-sCjnbP8/view?usp=drive_link"
     ],
-    "description": "In 1984, Activision released H.E.R.O., a C64 arcade game."
+    "description": "H.E.R.O. is a Commodore 64 arcade action game where players descend into caverns using a jetpack, bombs, and a laser. Fuel management and careful movement are essential to progress."
   },
   {
     "system": "C64",
@@ -5620,7 +5620,7 @@
     "disk": [
       "https://drive.google.com/file/d/1qCjBwZdDAFaMVDSJwH8AT_AhU-ymi6ij/view?usp=drive_link"
     ],
-    "description": "Released in 1991 by Core Design, Heimdall is a AMIGA role-playing game."
+    "description": "Heimdall is an Amiga role-playing and strategy game inspired by Norse mythology. Players manage resources, explore large maps, and complete quests across multiple realms."
   },
   {
     "system": "C64",
@@ -5954,7 +5954,7 @@
     "developer": "Ocean",
     "videoid": "dTe4AscaMOU",
     "thumbnail": "hunchback_2.jpg",
-    "manual": "https://drive.google.com/file/d/1re4dlg5zHdtyooCPhhRrPXb2lKA6bxOM/view?usp=drive_link",
+    "pdf": "https://drive.google.com/file/d/1re4dlg5zHdtyooCPhhRrPXb2lKA6bxOM/view?usp=drive_link",
     "disk": [
       "https://drive.google.com/file/d/1JQRAwfq_K55aSFKw5TqHkyn7fi3sggRT/view?usp=drive_link"
     ],
@@ -8480,7 +8480,7 @@
     "description": "Ninja Rabbits is a fighting platform game where you usually go to the right, except sometimes you must go down into the sewers or metro and fight there",
     "videoid": "UU8anIRgXkk",
     "thumbnail": "resources/images/thumbnails/all/ninja_rabbits.jpg",
-    "manual": "https://drive.google.com/file/d/1UQShQpjgHJbGEIgP6XdRPsKFyp2y0flO/view?usp=drive_link",
+    "pdf": "https://drive.google.com/file/d/1UQShQpjgHJbGEIgP6XdRPsKFyp2y0flO/view?usp=drive_link",
     "disk": [
       "https://drive.google.com/file/d/1SBMLsaf_SKmGSyKB0zq40L_BQkKYlB_q/view?usp=drive_link"
     ],
@@ -13082,7 +13082,7 @@
     "developer": "Enigma Variations",
     "videoid": "jMsMna_ao2o",
     "thumbnail": "the_wombles.jpg",
-    "manual": "",
+    "pdf": "",
     "disk": [
       "https://drive.google.com/file/d/18bTWBVn9M9X3iy50Z71ZBgcPKG44848Y/view?usp=drive_link"
     ],
@@ -13934,7 +13934,7 @@
     "developer": "System 3",
     "videoid": "9yMtxCQxw5A",
     "thumbnail": "vendetta.jpg",
-    "manual": "https://drive.google.com/file/d/14HL5pfQZ1k9k1RlHhZisG_bH6CtJcWed/view?usp=drive_link",
+    "pdf": "https://drive.google.com/file/d/14HL5pfQZ1k9k1RlHhZisG_bH6CtJcWed/view?usp=drive_link",
     "disk": [
       "https://drive.google.com/file/d/1qjJRahdmQODFqz6gp75jUn8gWGdqP7qQ/view?usp=drive_link"
     ],
@@ -14432,7 +14432,7 @@
       "Shooting Games"
     ],
     "year": 1988,
-    "developer": "Rack-It (Hewson)",
+    "developer": "Hewson",
     "videoid": "TZIkHOUGBzE",
     "lemon": [
       "https://www.lemon64.com/game/zamzara"
