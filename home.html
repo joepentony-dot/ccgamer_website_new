@@ -356,7 +356,7 @@
         if (el) el.textContent = count;
     }
 
-    fetch('https://cheekycommodoregamer.goatcounter.com/counter/TOTAL.json')
+    fetch('https://gc.zgo.at/counter/TOTAL.json')
         .then(r => {
             if (!r.ok) throw new Error('Counter fetch failed');
             return r.json();
