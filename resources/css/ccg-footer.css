@@ -377,3 +377,52 @@ body[data-ccg-mode="amiga"] .ccg-footer-signature {
         transform: none;
     }
 }
+
+/* ============================================================
+   GOATCOUNTER VIEW COUNTER — NEON GREEN ENHANCEMENT
+   (OMEGA SAFE ADDITIVE PATCH)
+============================================================ */
+
+/* Base neon green counter (C64 default) */
+.ccg-footer__counter {
+    color: rgba(210, 255, 235, 0.98);
+
+    border-color: rgba(0, 255, 170, 0.65);
+
+    box-shadow:
+        0 0 16px rgba(0, 255, 170, 0.55),
+        inset 0 0 14px rgba(0, 255, 170, 0.22);
+
+    text-shadow:
+        0 0 14px rgba(0, 255, 170, 0.85),
+        0 2px 4px rgba(0, 0, 0, 0.65);
+}
+
+/* C64 MODE — GREEN / TEAL CRT */
+body[data-ccg-mode="c64"] .ccg-footer__counter {
+    border-color: rgba(0, 255, 190, 0.7);
+    box-shadow:
+        0 0 18px rgba(0, 255, 190, 0.6),
+        inset 0 0 16px rgba(0, 255, 190, 0.25);
+}
+
+/* AMIGA MODE — PINK / PURPLE (PARITY) */
+body[data-ccg-mode="amiga"] .ccg-footer__counter {
+    border-color: rgba(255, 80, 220, 0.6);
+    box-shadow:
+        0 0 16px rgba(255, 80, 220, 0.5),
+        inset 0 0 14px rgba(255, 80, 220, 0.22);
+
+    text-shadow:
+        0 0 14px rgba(255, 80, 220, 0.8),
+        0 2px 4px rgba(0, 0, 0, 0.65);
+}
+
+/* Reduced motion — no glow pulsing */
+@media (prefers-reduced-motion: reduce) {
+    .ccg-footer__counter {
+        box-shadow:
+            0 0 10px rgba(var(--accent-rgb), 0.35),
+            inset 0 0 8px rgba(var(--accent-rgb), 0.18);
+    }
+}
