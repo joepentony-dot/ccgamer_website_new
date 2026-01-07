@@ -347,36 +347,25 @@
 <script src="js/ccg-mode-engine.js" defer></script>
 <script src="js/home-dynamic.js" defer></script>
 
-<!-- GOATCOUNTER VIEW COUNTER LOGIC (NO BRANDING) -->
-<script>
-(function loadTotalCounter() {
+<!-- GOATCOUNTER TOTAL VISITOR COUNTER (SVG — CSP SAFE) -->
+<div class="ccg-footer__counter-wrap" aria-label="Total site visits">
+    <img
+        src="https://cheekycommodoregamer.goatcounter.com/counter/TOTAL.svg?no_branding=1"
+        alt="Total site visits"
+        class="ccg-footer__counter-svg"
+        loading="lazy">
+</div>
 
-    function render(count) {
-        const el = document.getElementById('ccg-view-counter');
-        if (el) el.textContent = count;
-    }
-
-    fetch('https://gc.zgo.at/cheekycommodoregamer/counter/TOTAL.json')
-        .then(r => {
-            if (!r.ok) throw new Error('Counter fetch failed');
-            return r.json();
-        })
-        .then(data => {
-            render(data.count);
-        })
-        .catch(() => {
-            render('—');
-        });
-
-})();
-</script>
-
-<!-- GOATCOUNTER — SAFE ANALYTICS -->
+<!-- GOATCOUNTER — SAFE ANALYTICS (TRACKING ONLY) -->
 <script
   data-goatcounter="https://cheekycommodoregamer.goatcounter.com/count"
   async
   src="https://gc.zgo.at/count.js">
 </script>
+
+</body>
+</html>
+
 
 
 </body>
