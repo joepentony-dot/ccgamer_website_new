@@ -352,9 +352,10 @@
 (function waitForGoatCounter() {
     if (window.goatcounter && window.goatcounter.visit_count) {
         window.goatcounter.visit_count({
-            append: '#ccg-view-counter',
-            no_branding: true
-        });
+    append: '#ccg-view-counter',
+    path: 'TOTAL',
+    no_branding: true
+});
     } else {
         setTimeout(waitForGoatCounter, 100);
     }
