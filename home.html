@@ -318,6 +318,11 @@
         Not affiliated with Commodore, Amiga or publishers.
     </p>
 
+    <!-- PAGE VIEW COUNTER -->
+    <div class="ccg-footer__counter-wrap" aria-label="Page views">
+        <div id="ccg-view-counter" class="ccg-footer__counter"></div>
+    </div>
+
     <div class="ccg-footer-signature" aria-label="Archive information">
 
         <div class="ccg-footer-archive-title">
@@ -342,6 +347,20 @@
 <script src="js/ccg-mode-engine.js" defer></script>
 <script src="js/home-dynamic.js" defer></script>
 
+<!-- GOATCOUNTER VIEW COUNTER LOGIC (NO BRANDING) -->
+<script>
+(function waitForGoatCounter() {
+    if (window.goatcounter && window.goatcounter.visit_count) {
+        window.goatcounter.visit_count({
+            append: '#ccg-view-counter',
+            no_branding: true
+        });
+    } else {
+        setTimeout(waitForGoatCounter, 100);
+    }
+})();
+</script>
+
 <!-- GOATCOUNTER — SAFE ANALYTICS -->
 <script
   data-goatcounter="https://cheekycommodoregamer.goatcounter.com/count"
@@ -351,5 +370,6 @@
 
 </body>
 </html>
+
 
 
