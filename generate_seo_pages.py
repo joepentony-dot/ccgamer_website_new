@@ -58,7 +58,6 @@ def to_abs_url(domain: str, path: str) -> str:
 def make_description(title: str) -> str:
     return f"{title} on Commodore — screenshots, manual, downloads and video."
 
-
 def seo_template(
     *,
     title: str,
@@ -84,6 +83,17 @@ def seo_template(
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
+
+    <!-- Auto-redirect SEO page to full interactive game page -->
+    <script>
+      (function () {{
+        var target = "{interactive_href}";
+        if (target) {{
+          window.location.replace(target);
+        }}
+      }})();
+    </script>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>{title} | Cheeky Commodore Gamer</title>
@@ -124,7 +134,6 @@ def seo_template(
     }}
     </script>
 </head>
-
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
 
 <div class="ccg-bg">
