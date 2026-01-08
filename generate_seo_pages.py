@@ -2,24 +2,26 @@
 """
 generate_seo_pages.py
 ---------------------
-Offline generator for Cheeky Commodore Gamer (GitHub Pages) SEO landing pages.
+Offline SEO + pretty-URL generator for Cheeky Commodore Gamer (GitHub Pages).
 
-What it does (SAFE / ADDITIVE-ONLY):
-- Reads:   ccgamer_website_new/games/games.json
-- Creates: ccgamer_website_new/games/seo/{id}.html              (if missing)
-- Creates: ccgamer_website_new/games/{slug}/index.html          (if missing)
+SAFE / ADDITIVE-ONLY BEHAVIOUR
+-----------------------------
+✔ Reads:   games/games.json
+✔ Creates: games/seo/{id}.html            (SEO landing + redirect)
+✔ Creates: games/{slug}/index.html        (Pretty URL entry)
 
-What it will NOT do:
-- It will NOT modify games.json
-- It will NOT overwrite any existing HTML files
-- It will NOT change your site's JS, routing, or loaders
+✖ Does NOT modify games.json
+✖ Does NOT overwrite existing HTML
+✖ Does NOT touch JS, loaders, routing, or navigation
 
-Usage (run from repo root):
-  python generate_seo_pages.py
+IMPORTANT:
+- Explicitly excludes non-game navigation routes (genres, collections)
+- Designed to be run after adding new games only
+
+Usage:
+  python generate_seo_pages.py --root .
 
 Optional:
-  python generate_seo_pages.py --root "C:\\path\\to\\ccgamer_website_new"
-  python generate_seo_pages.py --domain "https://www.cheekycommodoregamer.co.uk"
   python generate_seo_pages.py --dry-run
 """
 
@@ -33,30 +35,32 @@ from typing import Any, Dict, List
 
 DEFAULT_DOMAIN = "https://www.cheekycommodoregamer.co.uk"
 
+# Slugs that must NEVER be treated as games
+NON_GAME_SLUGS = {"genres", "collections"}
+
 
 def slugify_fallback(value: str) -> str:
-    """Fallback slugify if a game has no 'slug' field."""
+    """Generate a safe slug if none is provided."""
     v = (value or "").strip().lower()
     v = v.replace("_", "-")
     v = re.sub(r"[^a-z0-9\-]+", "-", v)
     v = re.sub(r"-{2,}", "-", v).strip("-")
     return v or "game"
 
+
 def safe_filename(value: str) -> str:
-    """
-    Make a Windows-safe filename from an ID.
-    Replaces illegal characters with hyphens.
-    """
-    return re.sub(r'[\\/:*?"<>|]+', '-', value)
+    """Windows-safe filename for SEO HTML."""
+    return re.sub(r'[\\/:*?"<>|]+', "-", value)
+
 
 def to_abs_url(domain: str, path: str) -> str:
-    """Join domain with a repo-relative path like 'resources/images/..'."""
-    p = (path or "").lstrip("/")
-    return f"{domain.rstrip('/')}/{p}"
+    """Convert repo-relative path to absolute URL."""
+    return f"{domain.rstrip('/')}/{path.lstrip('/')}"
 
 
 def make_description(title: str) -> str:
     return f"{title} on Commodore — screenshots, manual, downloads and video."
+
 
 def seo_template(
     *,
@@ -72,19 +76,16 @@ def seo_template(
     schema_image: str,
     thumb_src_rel: str,
     thumb_alt: str,
-    h1: str,
     interactive_href: str,
     browse_href: str,
-    favicon_href: str = "../../favicon.ico",
-    css_prefix: str = "../../",
-    js_base_href: str = "../../js/ccg-base.js",
 ) -> str:
+    """SEO landing page that immediately redirects to the interactive game page."""
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
 
-    <!-- Auto-redirect SEO page to full interactive game page -->
+    <!-- SEO landing page → redirect to interactive game page -->
     <script>
       (function () {{
         var target = "{interactive_href}";
@@ -107,19 +108,6 @@ def seo_template(
     <meta property="og:url" content="{og_url}" />
     <meta property="og:image" content="{og_image}" />
 
-    <link rel="icon" href="{favicon_href}" />
-
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
-
-    <link rel="stylesheet" href="{css_prefix}resources/css/ccg-master.css" />
-    <link rel="stylesheet" href="{css_prefix}resources/css/ccg-mode.css" />
-    <link rel="stylesheet" href="{css_prefix}resources/css/ccg-effects.css" />
-    <link rel="stylesheet" href="{css_prefix}resources/css/ccg-anim.css" />
-    <link rel="stylesheet" href="{css_prefix}resources/css/ccg-overlays.css" />
-    <link rel="stylesheet" href="{css_prefix}resources/css/ccg-cards.css" />
-    <link rel="stylesheet" href="{css_prefix}resources/css/games.css" />
-    <link rel="stylesheet" href="{css_prefix}resources/css/ccg-footer.css" />
-
     <script type="application/ld+json">
     {{
         "@context": "https://schema.org",
@@ -134,83 +122,7 @@ def seo_template(
     }}
     </script>
 </head>
-<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
-
-<div class="ccg-bg">
-    <div class="ccg-bg-starfield"></div>
-    <div class="ccg-bg-grid"></div>
-    <div class="ccg-bg-crt-overlay"></div>
-</div>
-
-<div class="ccg-page">
-    <main class="ccg-main">
-
-        <section class="game-hero">
-            <div class="game-hero__inner">
-
-                <div class="game-hero__media">
-                    <img
-                        class="game-hero__thumb"
-                        src="{thumb_src_rel}"
-                        alt="{thumb_alt}"
-                        loading="lazy"
-                    />
-                </div>
-
-                <div class="game-hero__content">
-                    <h1 class="game-hero__title">{h1}</h1>
-
-                    <div class="game-hero__meta">
-                        <span class="game-meta__item">{year}</span>
-                        <span class="game-meta__sep">•</span>
-                        <span class="game-meta__item">{platform}</span>
-                        <span class="game-meta__sep">•</span>
-                        <span class="game-meta__item">{publisher}</span>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <section class="game-section">
-            <p class="game-section__kicker">Overview</p>
-            <h2 class="game-section__title">Game Summary</h2>
-
-            <div class="game-description">
-                {description}
-            </div>
-        </section>
-
-        <section class="game-section">
-            <p class="game-section__kicker">Explore</p>
-            <h2 class="game-section__title">More Details</h2>
-
-            <div class="game-downloads">
-                <a class="ccg-btn ccg-btn--primary"
-                   href="{interactive_href}">
-                    View the full interactive game page
-                </a>
-
-                <a class="ccg-btn ccg-btn--ghost"
-                   href="{browse_href}">
-                    Browse all games
-                </a>
-            </div>
-        </section>
-
-    </main>
-
-    <footer class="ccg-footer">
-        <p class="ccg-footer__text">
-            © <span data-ccg-year></span> Cheeky Commodore Gamer.
-            Not affiliated with Commodore, Amiga or publishers.
-        </p>
-    </footer>
-</div>
-
-<script src="{js_base_href}" defer></script>
-
-</body>
+<body></body>
 </html>
 """
 
@@ -223,7 +135,7 @@ def load_games(json_path: Path) -> List[Dict[str, Any]]:
         for key in ("games", "items", "data"):
             if key in data and isinstance(data[key], list):
                 return data[key]
-    raise ValueError(f"Unsupported games.json shape in {json_path}")
+    raise ValueError("Unsupported games.json format")
 
 
 def write_if_missing(path: Path, content: str, dry_run: bool) -> bool:
@@ -238,23 +150,20 @@ def write_if_missing(path: Path, content: str, dry_run: bool) -> bool:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--root", default="ccgamer_website_new", help="Path to repo root folder (default: ccgamer_website_new)")
-    ap.add_argument("--domain", default=DEFAULT_DOMAIN, help=f"Public site domain (default: {DEFAULT_DOMAIN})")
-    ap.add_argument("--dry-run", action="store_true", help="Do not write files, just report what would be generated")
+    ap.add_argument("--root", default=".", help="Path to repo root")
+    ap.add_argument("--domain", default=DEFAULT_DOMAIN)
+    ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
     root = Path(args.root).resolve()
     games_json = root / "games" / "games.json"
     if not games_json.exists():
-        raise FileNotFoundError(f"Could not find games.json at: {games_json}")
+        raise FileNotFoundError(f"games.json not found: {games_json}")
 
-    domain = args.domain.rstrip("/")
     games = load_games(games_json)
+    domain = args.domain.rstrip("/")
 
-    seo_dir = root / "games" / "seo"
-    created_seo = 0
-    created_pretty = 0
-    skipped = 0
+    created_seo = created_pretty = skipped = 0
 
     for g in games:
         game_id = str(g.get("id", "")).strip()
@@ -262,24 +171,25 @@ def main() -> int:
             skipped += 1
             continue
 
-        slug = str(g.get("slug", "")).strip()
-        if not slug:
-            slug = slugify_fallback(game_id)
+        slug = str(g.get("slug", "")).strip() or slugify_fallback(game_id)
 
-        title = str(g.get("title", game_id)).strip() or game_id
-        year = str(g.get("year", "")).strip() or ""
-        platform = str(g.get("system", "")).strip().upper() or ""
-        publisher = str(g.get("developer", "")).strip() or ""
-        thumb_rel = str(g.get("thumbnail", "")).lstrip("/")  # e.g. resources/images/thumbnails/all/x.jpg
-        if not thumb_rel:
-            thumb_rel = "resources/images/thumbnails/all/placeholder.jpg"
+        # 🚫 CRITICAL SAFETY CHECK
+        if slug in NON_GAME_SLUGS:
+            continue
+
+        title = str(g.get("title", game_id)).strip()
+        year = str(g.get("year", ""))
+        platform = str(g.get("system", "")).upper()
+        publisher = str(g.get("developer", ""))
+        thumb_rel = g.get("thumbnail", "resources/images/thumbnails/all/placeholder.jpg")
 
         desc = make_description(title)
 
-        # 1) SEO file (keeps your existing /games/seo/ pattern)
-        seo_filename = safe_filename(game_id)
-        seo_file = seo_dir / f"{seo_filename}.html"
-        seo_url = f"{domain}/games/seo/{seo_filename}.html"
+        # SEO file
+        seo_name = safe_filename(game_id)
+        seo_file = root / "games" / "seo" / f"{seo_name}.html"
+        seo_url = f"{domain}/games/seo/{seo_name}.html"
+
         seo_html = seo_template(
             title=title,
             description=desc,
@@ -293,7 +203,6 @@ def main() -> int:
             schema_image=to_abs_url(domain, thumb_rel),
             thumb_src_rel=f"../../{thumb_rel}",
             thumb_alt=f"{title} cover",
-            h1=title,
             interactive_href=f"../game.html?id={game_id}",
             browse_href="../index.html",
         )
@@ -301,10 +210,10 @@ def main() -> int:
         if write_if_missing(seo_file, seo_html, args.dry_run):
             created_seo += 1
 
-        # 2) Pretty URL folder index (THIS enables /games/{slug}/)
-        pretty_dir = root / "games" / slug
-        pretty_index = pretty_dir / "index.html"
+        # Pretty URL
+        pretty_index = root / "games" / slug / "index.html"
         pretty_url = f"{domain}/games/{slug}/"
+
         pretty_html = seo_template(
             title=title,
             description=desc,
@@ -318,7 +227,6 @@ def main() -> int:
             schema_image=to_abs_url(domain, thumb_rel),
             thumb_src_rel=f"../../{thumb_rel}",
             thumb_alt=f"{title} cover",
-            h1=title,
             interactive_href=f"../game.html?id={game_id}",
             browse_href="../index.html",
         )
@@ -327,15 +235,11 @@ def main() -> int:
             created_pretty += 1
 
     print("=== CCG SEO Generation Report ===")
-    print(f"Repo root: {root}")
-    print(f"games.json: {games_json}")
-    print(f"SEO pages created: {created_seo}  (games/seo/)")
-    print(f"Pretty URL pages created: {created_pretty}  (games/{{slug}}/index.html)")
-    print(f"Skipped entries (missing id): {skipped}")
-    if args.dry_run:
-        print("DRY RUN: No files were written.")
-    else:
-        print("Done. Commit and push the generated files to publish them.")
+    print(f"SEO pages created: {created_seo}")
+    print(f"Pretty URL pages created: {created_pretty}")
+    print(f"Skipped entries: {skipped}")
+    print("DRY RUN" if args.dry_run else "Done. Commit and push.")
+
     return 0
 
 
