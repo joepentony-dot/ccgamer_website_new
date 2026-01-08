@@ -2,6 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
+
+    <!-- Auto-redirect SEO page to full interactive game page -->
+    <script>
+      (function () {
+        var target = "../game.html?id=pit-fighter";
+        if (target) {
+          window.location.replace(target);
+        }
+      })();
+    </script>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Pit-Fighter | Cheeky Commodore Gamer</title>
@@ -42,7 +53,6 @@
     }
     </script>
 </head>
-
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
 
 <div class="ccg-bg">
