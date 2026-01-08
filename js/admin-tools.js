@@ -18,10 +18,12 @@
     const DESCRIPTION_TARGET_MAX = 350;
     const DESCRIPTION_MIN_SOFT = 40;
     const YOUTUBE_ID_REGEX = /^[a-zA-Z0-9_-]{6,}$/;
+    const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
     let liveGames = [];
     let stagedGames = [];
     let editingContext = null;
+    let slugAuto = true;
 
     /* --------------------------------------------------------
        DOM REFERENCES
@@ -50,10 +52,11 @@
     const latestEls = document.querySelectorAll("[data-admin-latest]");
 
     const idInput = document.getElementById("gameId");
+    const titleInput = document.getElementById("gameTitle");
     const descriptionInput = document.getElementById("gameDescription");
     const thumbInput = document.getElementById("gameThumb");
     const videoInput = document.getElementById("gameVideo");
-    const slugPreviewInput = document.getElementById("gameSlugPreview");
+    const slugInput = document.getElementById("gameSlug");
     const urlPreviewInput = document.getElementById("gameUrlPreview");
     const slugWarning = document.querySelector("[data-admin-slug-warning]");
     const descriptionCount = document.querySelector("[data-admin-description-count]");
@@ -65,6 +68,7 @@
 
     const fieldErrors = {
         id: document.querySelector('[data-admin-error="id"]'),
+        slug: document.querySelector('[data-admin-error="slug"]'),
         description: document.querySelector('[data-admin-error="description"]'),
         thumbnail: document.querySelector('[data-admin-error="thumbnail"]'),
         videoid: document.querySelector('[data-admin-error="videoid"]')
@@ -72,6 +76,7 @@
 
     const fieldInputs = {
         id: idInput,
+        slug: slugInput,
         description: descriptionInput,
         thumbnail: thumbInput,
         videoid: videoInput
@@ -141,41 +146,34 @@
         sourceOpen.href = getSourceUrl();
     }
 
-    function deriveSlug(id) {
-        return id
+    function deriveSlug(title) {
+        return String(title || "")
             .toLowerCase()
+            .trim()
             .replace(/_/g, "-")
-            .replace(/[\s]+/g, "-")
-            .replace(/[:'!()]/g, "")
-            .replace(/[^a-z0-9-]/g, "")
-            .replace(/--+/g, "-")
+            .replace(/[^a-z0-9\s-]/g, "")
+            .replace(/\s+/g, "-")
+            .replace(/-+/g, "-")
             .replace(/^-+|-+$/g, "");
     }
 
     function updateSlugPreview() {
-        if (!idInput) return;
-        const trimmedId = idInput.value.trim();
-        const slug = trimmedId ? deriveSlug(trimmedId) : "";
-        if (slugPreviewInput) {
-            slugPreviewInput.value = slug;
-        }
+        if (!slugInput) return;
+        const slug = slugInput.value.trim();
         if (urlPreviewInput) {
-            urlPreviewInput.value = trimmedId
+            urlPreviewInput.value = slug
                 ? `https://www.cheekycommodoregamer.co.uk/games/${slug}/`
                 : "";
         }
         if (!slugWarning) return;
-        if (!trimmedId) {
-            slugWarning.hidden = true;
-            slugWarning.textContent = "";
+        if (!slug) {
+            slugWarning.textContent = "Slug is required to generate the SEO URL.";
+            slugWarning.hidden = false;
             return;
         }
-        const isSlugValid = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
-        if (!slug || !isSlugValid) {
-            slugWarning.textContent = "Slug preview is invalid. Adjust the ID to match lowercase letters, numbers, and underscores only.";
-            slugWarning.hidden = false;
-        } else if (!ID_REGEX.test(trimmedId)) {
-            slugWarning.textContent = "Slug will be generated, but the ID format is invalid. Fix the ID to avoid breaking URLs.";
+        const isSlugValid = SLUG_REGEX.test(slug);
+        if (!isSlugValid) {
+            slugWarning.textContent = "Slug is invalid. Use lowercase letters, numbers, and single hyphens only.";
             slugWarning.hidden = false;
         } else {
             slugWarning.hidden = true;
@@ -197,6 +195,9 @@
 
         return {
             id: String(raw.id).trim(),
+            slug: raw.slug
+                ? String(raw.slug).trim()
+                : deriveSlug(raw.title || ""),
             title: String(raw.title || "").trim(),
             year: raw.year ? Number(raw.year) : "",
             system: raw.system || "C64",
@@ -244,6 +245,15 @@
     function fillForm(game) {
         if (!form) return;
         form.querySelector("#gameId").value = game.id || "";
+        if (slugInput) {
+            if (game.slug) {
+                slugInput.value = game.slug;
+                slugAuto = false;
+            } else {
+                slugAuto = true;
+                slugInput.value = deriveSlug(game.title || "");
+            }
+        }
         form.querySelector("#gameTitle").value = game.title || "";
         form.querySelector("#gameYear").value = game.year || "";
         form.querySelector("#gameSystem").value = game.system || "C64";
@@ -264,6 +274,7 @@
     function resetForm() {
         if (form) form.reset();
         clearFieldErrors();
+        slugAuto = true;
         updateSlugPreview();
         updateDescriptionCounter();
         updateVideoPreview();
@@ -481,6 +492,14 @@
             isValid = false;
         }
 
+        if (!game.slug) {
+            setFieldError("slug", "Slug is required.");
+            isValid = false;
+        } else if (!SLUG_REGEX.test(game.slug)) {
+            setFieldError("slug", "Slug must use lowercase letters, numbers, and single hyphens only.");
+            isValid = false;
+        }
+
         if (game.description && game.description.length < DESCRIPTION_MIN_SOFT) {
             setFieldError(
                 "description",
@@ -683,6 +702,14 @@
             const merged = [...stagedGames, ...liveGames]
                 .sort((a, b) => a.title.localeCompare(b.title));
 
+            const invalidSlugs = merged.filter(game =>
+                !game.slug || !SLUG_REGEX.test(String(game.slug).trim())
+            );
+            if (invalidSlugs.length) {
+                setStatus("Export blocked: every game must have a valid slug before downloading.", true);
+                return;
+            }
+
             const blob = new Blob(
                 [JSON.stringify(merged, null, 2)],
                 { type: "application/json" }
@@ -751,6 +778,25 @@
             updateSlugPreview();
             if (fieldErrors.id && !fieldErrors.id.hidden) {
                 setFieldError("id", "");
+            }
+        });
+    }
+
+    if (titleInput) {
+        titleInput.addEventListener("input", () => {
+            if (slugAuto && slugInput) {
+                slugInput.value = deriveSlug(titleInput.value);
+            }
+            updateSlugPreview();
+        });
+    }
+
+    if (slugInput) {
+        slugInput.addEventListener("input", () => {
+            slugAuto = false;
+            updateSlugPreview();
+            if (fieldErrors.slug && !fieldErrors.slug.hidden) {
+                setFieldError("slug", "");
             }
         });
     }
