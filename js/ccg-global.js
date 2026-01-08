@@ -1414,3 +1414,29 @@ function setupFooterSignatureRotator() {
     });
 
 })();
+
+/* ============================================================
+   VISITOR COUNTER — GOATCOUNTER (JSON)
+   ------------------------------------------------------------
+   • Footer-only (safe if missing)
+   • Not blocked by ad blockers
+   • Silent failure (never breaks UI)
+============================================================ */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const counterEl = document.getElementById("ccg-visit-count");
+    if (!counterEl) return;
+
+    fetch("https://cheekycommodoregamer.goatcounter.com/counter/TOTAL.json")
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.count) {
+                counterEl.textContent = Number(data.count).toLocaleString();
+            }
+        })
+        .catch(() => {
+            /* analytics should never affect UX */
+        });
+
+});
