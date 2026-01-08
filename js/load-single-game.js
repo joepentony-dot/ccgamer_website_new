@@ -574,7 +574,10 @@ function renderGame(game) {
 
     /* DOWNLOADS */
     const downloadsSection = document.querySelector(".game-downloads");
-    const manual = normaliseManualUrl(resolveManualUrl(game));
+    const rawManual = resolveManualUrl(game);
+    const manual = (typeof rawManual === "string" && rawManual.trim())
+        ? normaliseManualUrl(rawManual)
+        : "";
     if (manual) {
         const btn = document.getElementById("gameManualBtn");
         btn.href = manual;

@@ -219,7 +219,7 @@
                         <div class="admin-edit-banner">
                             <div>
                                 <p class="admin-edit-state" data-admin-editing-label>Creating a new game</p>
-                                <p class="admin-help">When editing an existing game, the ID is locked to prevent accidental slug changes.</p>
+                                <p class="admin-help">When editing an existing game, the ID is locked to prevent accidental changes.</p>
                             </div>
                             <button class="ccg-btn ccg-btn--ghost" type="button" data-admin-edit-cancel hidden>Cancel Edit</button>
                         </div>
@@ -236,8 +236,10 @@
                                 <p class="admin-error" data-admin-error="id" hidden></p>
                             </div>
                             <div class="admin-field">
-                                <label for="gameSlugPreview">Derived slug (preview only)</label>
-                                <input id="gameSlugPreview" class="admin-input" readonly placeholder="last-ninja-2">
+                                <label for="gameSlug">Slug (SEO URL) *</label>
+                                <input id="gameSlug" name="slug" class="admin-input" placeholder="last-ninja-2" required>
+                                <p class="admin-help">This controls the SEO URL: <code>/games/your-slug-here/</code></p>
+                                <p class="admin-error" data-admin-error="slug" hidden></p>
                             </div>
                             <div class="admin-field">
                                 <label for="gameUrlPreview">Public URL (preview only)</label>
