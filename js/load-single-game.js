@@ -460,6 +460,17 @@ function resolvePrettyGameUrl(game) {
     return resolveCanonicalGamePath(slug);
 }
 
+function isSeoReferrer() {
+    const referrer = document.referrer || "";
+    if (!referrer) return false;
+    try {
+        const refUrl = new URL(referrer, window.location.origin);
+        return refUrl.pathname.includes("/games/seo/");
+    } catch (err) {
+        return false;
+    }
+}
+
 function getSlugFromPath() {
     let pathname = window.location.pathname || "";
     const repoMarker = "/ccgamer_website_new/";
@@ -484,6 +495,7 @@ function resolveCanonicalGamePath(slug) {
 }
 
 function syncPrettyUrl(game) {
+    if (!isSeoReferrer()) return;
     const pretty = resolvePrettyGameUrl(game);
     if (!pretty) return;
 
@@ -574,7 +586,10 @@ function renderGame(game) {
 
     /* DOWNLOADS */
     const downloadsSection = document.querySelector(".game-downloads");
-    const manual = normaliseManualUrl(resolveManualUrl(game));
+    const rawManual = resolveManualUrl(game);
+    const manual = (typeof rawManual === "string" && rawManual.trim())
+        ? normaliseManualUrl(rawManual)
+        : "";
     if (manual) {
         const btn = document.getElementById("gameManualBtn");
         btn.href = manual;
