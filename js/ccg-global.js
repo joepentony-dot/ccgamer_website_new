@@ -45,8 +45,10 @@
     function safeNowMobileClass() {
         const mobile = isMobileLike();
         document.documentElement.classList.toggle("ccg-is-mobile", mobile);
+        document.documentElement.classList.toggle("ccg-lite-mobile", mobile);
         if (document.body && document.body.classList) {
             document.body.classList.toggle("ccg-is-mobile", mobile);
+            document.body.classList.toggle("ccg-lite-mobile", mobile);
         }
     }
 

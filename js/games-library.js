@@ -139,7 +139,6 @@ function buildAccordion(groups) {
     if (!container) return;
 
     container.innerHTML = "";
-
     const letters = Object.keys(groups).sort((a, b) => {
         if (a === "#") return -1;
         if (b === "#") return 1;
@@ -274,6 +273,7 @@ function animateAccordionContent(content, isOpening) {
         content.hidden = !isOpening;
         content.classList.toggle("is-visible", isOpening);
         content.setAttribute("aria-hidden", String(!isOpening));
+        content.style.height = isOpening ? "auto" : "0px";
         return;
     }
 
