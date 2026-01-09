@@ -327,16 +327,18 @@
             activeAudio = null;
         }
 
-        if (q.imageUrl) {
+        const imageSrc = q.imageUrl || q.image || "";
+        if (imageSrc) {
             const img = document.createElement("img");
-            img.src = q.imageUrl;
+            img.src = imageSrc;
             img.alt = q.gameName ? `Screenshot for ${q.gameName}` : "Quiz image";
             mediaEl.appendChild(img);
         }
 
-        if (q.audioUrl) {
+        const audioSrc = q.audioUrl || q.audio || "";
+        if (audioSrc) {
             const audio = document.createElement("audio");
-            audio.src = q.audioUrl;
+            audio.src = audioSrc;
             audio.controls = true;
             audio.preload = "auto";
             audio.autoplay = true;

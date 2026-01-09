@@ -444,8 +444,8 @@
                     question: q.question || q.text || '',
                     options,
                     correctIndex: clampIndex(correct, options.length),
-                    imageUrl: q.imageUrl || '',
-                    audioUrl: q.audioUrl || '',
+                    imageUrl: q.imageUrl || q.image || '',
+                    audioUrl: q.audioUrl || q.audio || '',
                     gameName: q.gameName || ''
                 };
             })
