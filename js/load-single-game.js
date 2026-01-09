@@ -266,9 +266,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!resolvedGame) {
             setRenderAction(() => renderGameNotFound(resolvedGameId, candidateSlug));
         } else {
-            if (slugRoutingAllowed) {
-                syncPrettyUrl(resolvedGame);
-            }
             setRenderAction(() => renderGame(resolvedGame));
         }
 
@@ -460,17 +457,6 @@ function resolvePrettyGameUrl(game) {
     return resolveCanonicalGamePath(slug);
 }
 
-function isSeoReferrer() {
-    const referrer = document.referrer || "";
-    if (!referrer) return false;
-    try {
-        const refUrl = new URL(referrer, window.location.origin);
-        return refUrl.pathname.includes("/games/seo/");
-    } catch (err) {
-        return false;
-    }
-}
-
 function getSlugFromPath() {
     let pathname = window.location.pathname || "";
     const repoMarker = "/ccgamer_website_new/";
@@ -494,8 +480,7 @@ function resolveCanonicalGamePath(slug) {
     return `${root}games/${slug}/`;
 }
 
-function syncPrettyUrl(game) {
-    if (!isSeoReferrer()) return;
+function updatePrettyUrlAfterResolve(game) {
     const pretty = resolvePrettyGameUrl(game);
     if (!pretty) return;
 
@@ -553,6 +538,7 @@ function ensureDirectNavLinks() {
 
 function renderGame(game) {
 
+    updatePrettyUrlAfterResolve(game);
     updateMeta(game);
 
     /* HERO */
