@@ -243,7 +243,7 @@
             "Conquest of the New World"
           ],
           "correctIndex": 1,
-          "imageUrl": "https://i.postimg.cc/Hrgp6Xdb/archon-03.png",
+          "imageUrl": "images/quiz/archon-03.png",
           "id": "2-1"
         },
         {
@@ -255,7 +255,7 @@
             "Kung-Fu Master"
           ],
           "correctIndex": 2,
-          "imageUrl": "https://i.postimg.cc/G4xbVtm2/bruce-lee-03.png",
+          "imageUrl": "images/quiz/bruce-lee-03.png",
           "id": "2-2"
         },
         {
@@ -267,7 +267,7 @@
             "Rodland"
           ],
           "correctIndex": 0,
-          "imageUrl": "https://i.postimg.cc/SnhygCkY/bubble-bobble-04.png",
+          "imageUrl": "images/quiz/bubble-bobble-04.png",
           "id": "2-3"
         },
         {
@@ -279,7 +279,7 @@
             "King\u2019s Bounty"
           ],
           "correctIndex": 0,
-          "imageUrl": "https://i.postimg.cc/G4CcXGdB/defender-of-the-crown-07.png",
+          "imageUrl": "images/quiz/defender-of-the-crown-07.png",
           "id": "2-4"
         },
         {
@@ -291,7 +291,7 @@
             "Elite"
           ],
           "correctIndex": 3,
-          "imageUrl": "https://i.postimg.cc/mPsbmCBF/elite-04.png",
+          "imageUrl": "images/quiz/elite-04.png",
           "id": "2-5"
         },
         {
@@ -303,7 +303,7 @@
             "Kick Off"
           ],
           "correctIndex": 2,
-          "imageUrl": "https://i.postimg.cc/0zs8VDPs/emlyn-hughes-international-soccer-04.png",
+          "imageUrl": "images/quiz/emlyn-hughes-international-soccer-04.png",
           "id": "2-6"
         },
         {
@@ -315,7 +315,7 @@
             "IK+"
           ],
           "correctIndex": 3,
-          "imageUrl": "https://i.postimg.cc/sMrVT7s1/ik-plus-03.png",
+          "imageUrl": "images/quiz/ik-plus-03.png",
           "id": "2-7"
         },
         {
@@ -327,7 +327,7 @@
             "The Last Ninja"
           ],
           "correctIndex": 2,
-          "imageUrl": "https://i.postimg.cc/RWBMgK4H/impossible-mission-02.png",
+          "imageUrl": "images/quiz/impossible-mission-02.png",
           "id": "2-8"
         },
         {
@@ -339,7 +339,7 @@
             "Ninja Rabbits"
           ],
           "correctIndex": 0,
-          "imageUrl": "https://i.postimg.cc/VJ8YKnmP/last-ninja-03.png",
+          "imageUrl": "images/quiz/last-ninja-03.png",
           "id": "2-9"
         },
         {
@@ -351,7 +351,7 @@
             "Outpost"
           ],
           "correctIndex": 0,
-          "imageUrl": "https://i.postimg.cc/pmH2szRd/m-u-l-e-03.png",
+          "imageUrl": "images/quiz/m-u-l-e-03.png",
           "id": "2-10"
         },
         {
@@ -363,7 +363,7 @@
             "Maniac Mansion"
           ],
           "correctIndex": 3,
-          "imageUrl": "https://i.postimg.cc/rDk8fxMs/maniac-mansion-03.png",
+          "imageUrl": "images/quiz/maniac-mansion-03.png",
           "id": "2-11"
         },
         {
@@ -375,7 +375,7 @@
             "Cybernoid"
           ],
           "correctIndex": 1,
-          "imageUrl": "https://i.postimg.cc/jDbsMPKG/paradroid-06.png",
+          "imageUrl": "images/quiz/paradroid-06.png",
           "id": "2-12"
         },
         {
@@ -387,7 +387,7 @@
             "Forbidden Forest"
           ],
           "correctIndex": 0,
-          "imageUrl": "https://i.postimg.cc/k2v7zGg6/project-firestart-05.png",
+          "imageUrl": "images/quiz/project-firestart-05.png",
           "id": "2-13"
         },
         {
@@ -399,7 +399,7 @@
             "Gunship"
           ],
           "correctIndex": 1,
-          "imageUrl": "https://i.postimg.cc/DST2xLnF/raid-on-bungeling-bay-03.png",
+          "imageUrl": "images/quiz/raid-on-bungeling-bay-03.png",
           "id": "2-14"
         },
         {
@@ -411,7 +411,7 @@
             "Wizball"
           ],
           "correctIndex": 2,
-          "imageUrl": "https://i.postimg.cc/zyFq6vGv/turrican-03.png",
+          "imageUrl": "images/quiz/turrican-03.png",
           "id": "2-15"
         },
         {
@@ -423,7 +423,7 @@
             "Shadow of the Beast"
           ],
           "correctIndex": 0,
-          "imageUrl": "https://i.postimg.cc/9DhWLZCC/usagi-yojimbo-05.png",
+          "imageUrl": "images/quiz/usagi-yojimbo-05.png",
           "id": "2-16"
         },
         {
@@ -435,7 +435,7 @@
             "Winter Games"
           ],
           "correctIndex": 3,
-          "imageUrl": "https://i.postimg.cc/gxHGQj2n/winter-games-04.png",
+          "imageUrl": "images/quiz/winter-games-04.png",
           "id": "2-17"
         },
         {
@@ -447,7 +447,7 @@
             "Atic Atac"
           ],
           "correctIndex": 1,
-          "imageUrl": "https://i.postimg.cc/pmH2szRV/wizard-electronic-arts-03.png",
+          "imageUrl": "images/quiz/wizard-electronic-arts-03.png",
           "id": "2-18"
         },
         {
@@ -459,7 +459,7 @@
             "Robotron"
           ],
           "correctIndex": 2,
-          "imageUrl": "https://i.postimg.cc/k2mnTK90/wizard-of-wor-04.png",
+          "imageUrl": "images/quiz/wizard-of-wor-04.png",
           "id": "2-19"
         },
         {
@@ -471,7 +471,7 @@
             "Wizball"
           ],
           "correctIndex": 3,
-          "imageUrl": "https://i.postimg.cc/TK6RtgGF/wizball-02.png",
+          "imageUrl": "images/quiz/wizball-02.png",
           "id": "2-20"
         }
       ],
@@ -492,7 +492,7 @@
             "Jet Set Willy"
           ],
           "correctIndex": 0,
-          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Monty_on_the_Run-01 (mp3cut.net).mp3",
+          "audioUrl": "audio/quiz/sid-monty-on-the-run.mp3",
           "id": "3-1"
         },
         {
@@ -504,7 +504,7 @@
             "Stormlord"
           ],
           "correctIndex": 2,
-          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Dan_Dare-Pilot_of_the_Future-01-[AudioTrimmer.com].mp3",
+          "audioUrl": "audio/quiz/sid-dan-dare-pilot-of-the-future.mp3",
           "id": "3-2"
         },
         {
@@ -516,7 +516,7 @@
             "Shadow of the Beast"
           ],
           "correctIndex": 0,
-          "audioUrl": "https://joepentony-dot.github.io/mp3-host/heartland_2JV7tDQO.mp3",
+          "audioUrl": "audio/quiz/sid-heartland.mp3",
           "id": "3-3"
         },
         {
@@ -528,7 +528,7 @@
             "Kane"
           ],
           "correctIndex": 1,
-          "audioUrl": "https://joepentony-dot.github.io/mp3-host/arkanoid-01_ypD9TQPf.mp3",
+          "audioUrl": "audio/quiz/sid-arkanoid.mp3",
           "id": "3-4"
         },
         {
@@ -540,7 +540,7 @@
             "Hypersports"
           ],
           "correctIndex": 0,
-          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Skate_or_Die-02-[AudioTrimmer.com].mp3",
+          "audioUrl": "audio/quiz/sid-skate-or-die.mp3",
           "id": "3-5"
         },
         {
@@ -552,7 +552,7 @@
             "Green Beret"
           ],
           "correctIndex": 3,
-          "audioUrl": "https://joepentony-dot.github.io/mp3-host/green-beret-01_1LrjKI6E.mp3",
+          "audioUrl": "audio/quiz/sid-green-beret.mp3",
           "id": "3-6"
         },
         {
@@ -564,7 +564,7 @@
             "Staff of Karnath"
           ],
           "correctIndex": 0,
-          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Robin_of_the_Wood-01-[AudioTrimmer.com].mp3",
+          "audioUrl": "audio/quiz/sid-robin-of-the-wood.mp3",
           "id": "3-7"
         },
         {
@@ -576,7 +576,7 @@
             "Armalyte"
           ],
           "correctIndex": 2,
-          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Cybernoid_II-01 (mp3cut.net).mp3",
+          "audioUrl": "audio/quiz/sid-cybernoid-ii.mp3",
           "id": "3-8"
         },
         {
@@ -588,7 +588,7 @@
             "Gauntlet"
           ],
           "correctIndex": 0,
-          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Flash_Gordon-01-[AudioTrimmer.com].mp3",
+          "audioUrl": "audio/quiz/sid-flash-gordon.mp3",
           "id": "3-9"
         },
         {
@@ -600,7 +600,7 @@
             "Thing Bounces Back"
           ],
           "correctIndex": 1,
-          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Thing_on_a_Spring-01-[AudioTrimmer.com].mp3",
+          "audioUrl": "audio/quiz/sid-thing-on-a-spring.mp3",
           "id": "3-10"
         },
         {
@@ -612,7 +612,7 @@
             "Rambo II: First Blood Part 2"
           ],
           "correctIndex": 3,
-          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Rambo_First_Blood_Part_II-01 (mp3cut.net).mp3",
+          "audioUrl": "audio/quiz/sid-rambo-first-blood-part-ii.mp3",
           "id": "3-11"
         },
         {
@@ -624,7 +624,7 @@
             "Chimera"
           ],
           "correctIndex": 1,
-          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Wizball-04 (mp3cut.net).mp3",
+          "audioUrl": "audio/quiz/sid-wizball.mp3",
           "id": "3-12"
         },
         {
@@ -636,7 +636,7 @@
             "Chase HQ"
           ],
           "correctIndex": 0,
-          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Turbo_Outrun-02 (mp3cut.net).mp3",
+          "audioUrl": "audio/quiz/sid-turbo-outrun.mp3",
           "id": "3-13"
         },
         {
@@ -648,7 +648,7 @@
             "Barbarian"
           ],
           "correctIndex": 0,
-          "audioUrl": "https://joepentony-dot.github.io/mp3-host/fist-ii-the-legend-continues-02_I4BlNbpQ.mp3",
+          "audioUrl": "audio/quiz/sid-fist-ii-the-legend-continues.mp3",
           "id": "3-14"
         },
         {
@@ -660,7 +660,7 @@
             "Bounder"
           ],
           "correctIndex": 2,
-          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Auf_Wiedersehen_Monty-01-[AudioTrimmer.com].mp3",
+          "audioUrl": "audio/quiz/sid-auf-wiedersehen-monty.mp3",
           "id": "3-15"
         },
         {
@@ -672,7 +672,7 @@
             "Armalyte"
           ],
           "correctIndex": 2,
-          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Sanxion-01 (mp3cut.net).mp3",
+          "audioUrl": "audio/quiz/sid-sanxion.mp3",
           "id": "3-16"
         },
         {
@@ -684,7 +684,7 @@
             "Kung Fu Master"
           ],
           "correctIndex": 0,
-          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Yie_Ar_Kung_Fu-18-[AudioTrimmer.com].mp3",
+          "audioUrl": "audio/quiz/sid-yie-ar-kung-fu.mp3",
           "id": "3-17"
         },
         {
@@ -696,7 +696,7 @@
             "Times of Lore"
           ],
           "correctIndex": 1,
-          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Master_of_Magic-01-[AudioTrimmer.com].mp3",
+          "audioUrl": "audio/quiz/sid-master-of-magic.mp3",
           "id": "3-18"
         },
         {
@@ -708,7 +708,7 @@
             "Fernandez Must Die"
           ],
           "correctIndex": 0,
-          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Commando-01 (mp3cut.net).mp3",
+          "audioUrl": "audio/quiz/sid-commando.mp3",
           "id": "3-19"
         },
         {
@@ -720,7 +720,7 @@
             "Hunter\u2019s Moon"
           ],
           "correctIndex": 0,
-          "audioUrl": "https://joepentony-dot.github.io/mp3-host/Hawkeye-01 (mp3cut.net).mp3",
+          "audioUrl": "audio/quiz/sid-hawkeye.mp3",
           "id": "3-20"
         }
       ],
@@ -741,7 +741,7 @@
             "Smash TV"
           ],
           "correctIndex": 1,
-          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/alienbreed.mp3",
+          "audioUrl": "audio/quiz/amiga-alien-breed.mp3",
           "id": "4-1"
         },
         {
@@ -753,7 +753,7 @@
             "Another World"
           ],
           "correctIndex": 3,
-          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/anotherworld.mp3",
+          "audioUrl": "audio/quiz/amiga-another-world.mp3",
           "id": "4-2"
         },
         {
@@ -765,7 +765,7 @@
             "Simon The Sorcerer"
           ],
           "correctIndex": 2,
-          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/beneathasteelsky.mp3",
+          "audioUrl": "audio/quiz/amiga-beneath-a-steel-sky.mp3",
           "id": "4-3"
         },
         {
@@ -777,7 +777,7 @@
             "The New Zealand Story"
           ],
           "correctIndex": 2,
-          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/bubblebobble.mp3",
+          "audioUrl": "audio/quiz/amiga-bubble-bobble.mp3",
           "id": "4-4"
         },
         {
@@ -789,7 +789,7 @@
             "B-17 Flying Fortress"
           ],
           "correctIndex": 0,
-          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/cannonfodder.mp3",
+          "audioUrl": "audio/quiz/amiga-cannon-fodder.mp3",
           "id": "4-5"
         },
         {
@@ -801,7 +801,7 @@
             "North & South"
           ],
           "correctIndex": 1,
-          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/dune.mp3",
+          "audioUrl": "audio/quiz/amiga-dune.mp3",
           "id": "4-6"
         },
         {
@@ -813,7 +813,7 @@
             "Dyna Blaster"
           ],
           "correctIndex": 3,
-          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/dynablaster.mp3",
+          "audioUrl": "audio/quiz/amiga-dyna-blaster.mp3",
           "id": "4-7"
         },
         {
@@ -825,7 +825,7 @@
             "Prince Of Persia"
           ],
           "correctIndex": 1,
-          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/flashback.mp3",
+          "audioUrl": "audio/quiz/amiga-flashback.mp3",
           "id": "4-8"
         },
         {
@@ -837,7 +837,7 @@
             "UFO: Enemy Unknown"
           ],
           "correctIndex": 2,
-          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/itcamefromthedesert.mp3",
+          "audioUrl": "audio/quiz/amiga-it-came-from-the-desert.mp3",
           "id": "4-9"
         },
         {
@@ -849,7 +849,7 @@
             "Fury of the Furries"
           ],
           "correctIndex": 2,
-          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/lemmings.mp3",
+          "audioUrl": "audio/quiz/amiga-lemmings.mp3",
           "id": "4-10"
         },
         {
@@ -861,7 +861,7 @@
             "Their Finest Hour"
           ],
           "correctIndex": 0,
-          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/maniacmansion.mp3",
+          "audioUrl": "audio/quiz/amiga-maniac-mansion.mp3",
           "id": "4-11"
         },
         {
@@ -873,7 +873,7 @@
             "Mega Lo Mania"
           ],
           "correctIndex": 3,
-          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/megalomania.mp3",
+          "audioUrl": "audio/quiz/amiga-mega-lo-mania.mp3",
           "id": "4-12"
         },
         {
@@ -885,7 +885,7 @@
             "Moonstone"
           ],
           "correctIndex": 3,
-          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/moonstone.mp3",
+          "audioUrl": "audio/quiz/amiga-moonstone.mp3",
           "id": "4-13"
         },
         {
@@ -897,7 +897,7 @@
             "MicroProse Soccer"
           ],
           "correctIndex": 1,
-          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/sensiblesoccer.mp3",
+          "audioUrl": "audio/quiz/amiga-sensible-soccer.mp3",
           "id": "4-14"
         },
         {
@@ -909,7 +909,7 @@
             "Railroad Tycoon"
           ],
           "correctIndex": 2,
-          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/settlers.mp3",
+          "audioUrl": "audio/quiz/amiga-settlers.mp3",
           "id": "4-15"
         },
         {
@@ -921,7 +921,7 @@
             "Brutal Sports Football"
           ],
           "correctIndex": 1,
-          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/speedball2.mp3",
+          "audioUrl": "audio/quiz/amiga-speedball-2.mp3",
           "id": "4-16"
         },
         {
@@ -933,7 +933,7 @@
             "Test Drive II: The Duel"
           ],
           "correctIndex": 0,
-          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/supercars2.mp3",
+          "audioUrl": "audio/quiz/amiga-supercars-2.mp3",
           "id": "4-17"
         },
         {
@@ -945,7 +945,7 @@
             "UFO: Enemy Unknown"
           ],
           "correctIndex": 0,
-          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/syndicate.mp3",
+          "audioUrl": "audio/quiz/amiga-syndicate.mp3",
           "id": "4-18"
         },
         {
@@ -957,7 +957,7 @@
             "Out Run"
           ],
           "correctIndex": 2,
-          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/turbochallenge2.mp3",
+          "audioUrl": "audio/quiz/amiga-turbo-challenge-2.mp3",
           "id": "4-19"
         },
         {
@@ -969,7 +969,7 @@
             "Gods"
           ],
           "correctIndex": 3,
-          "audioUrl": "https://joepentony-dot.github.io/amiga-mp3-host/gods.mp3",
+          "audioUrl": "audio/quiz/amiga-gods.mp3",
           "id": "4-20"
         }
       ],
@@ -990,7 +990,7 @@
             "David Whittaker"
           ],
           "correctIndex": 3,
-          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/whittaker/Knight_Games-01_cut_Whittaker.mp3",
+          "audioUrl": "audio/quiz/david-whittaker-knight-games.mp3",
           "gameName": "Knight Games",
           "id": "5-1"
         },
@@ -1003,7 +1003,7 @@
             "David Whittaker"
           ],
           "correctIndex": 2,
-          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/jeroentel/Super_Monaco_Grand_Prix-01_jeroentel.mp3",
+          "audioUrl": "audio/quiz/jeroen-tel-super-monaco-grand-prix.mp3",
           "gameName": "Super Monaco Grand Prix",
           "id": "5-2"
         },
@@ -1016,7 +1016,7 @@
             "David Whittaker"
           ],
           "correctIndex": 0,
-          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/hubbard/Monty_on_the_Run-01_cut_robhubbard.mp3",
+          "audioUrl": "audio/quiz/rob-hubbard-monty-on-the-run.mp3",
           "gameName": "Monty on the Run",
           "id": "5-3"
         },
@@ -1029,7 +1029,7 @@
             "David Whittaker"
           ],
           "correctIndex": 2,
-          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/jeroentel/Myth-01_jeroentel.mp3",
+          "audioUrl": "audio/quiz/jeroen-tel-myth.mp3",
           "gameName": "Myth",
           "id": "5-4"
         },
@@ -1042,7 +1042,7 @@
             "David Whittaker"
           ],
           "correctIndex": 1,
-          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/galway/Yie_Ar_Kung_Fu-12_galway.mp3",
+          "audioUrl": "audio/quiz/martin-galway-yie-ar-kung-fu.mp3",
           "gameName": "Yie Ar Kung Fu",
           "id": "5-5"
         },
@@ -1055,7 +1055,7 @@
             "David Whittaker"
           ],
           "correctIndex": 0,
-          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/hubbard/Action_Biker-01_cut_robhubbard.mp3",
+          "audioUrl": "audio/quiz/rob-hubbard-action-biker.mp3",
           "gameName": "Action Biker",
           "id": "5-6"
         },
@@ -1068,7 +1068,7 @@
             "David Whittaker"
           ],
           "correctIndex": 3,
-          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/whittaker/Max_Headroom-01_cut_Whittaker.mp3",
+          "audioUrl": "audio/quiz/david-whittaker-max-headroom.mp3",
           "gameName": "Max Headroom",
           "id": "5-7"
         },
@@ -1081,7 +1081,7 @@
             "David Whittaker"
           ],
           "correctIndex": 2,
-          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/jeroentel/Hawkeye-01_jeroentel.mp3",
+          "audioUrl": "audio/quiz/jeroen-tel-hawkeye.mp3",
           "gameName": "Hawkeye",
           "id": "5-8"
         },
@@ -1094,7 +1094,7 @@
             "David Whittaker"
           ],
           "correctIndex": 0,
-          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/hubbard/5_Title_Tunes-01_cut_robhubbard.mp3",
+          "audioUrl": "audio/quiz/rob-hubbard-train-robbers.mp3",
           "gameName": "Train Robbers",
           "id": "5-9"
         },
@@ -1107,7 +1107,7 @@
             "David Whittaker"
           ],
           "correctIndex": 2,
-          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/jeroentel/Turbo_Outrun-01_jeroentel.mp3",
+          "audioUrl": "audio/quiz/jeroen-tel-turbo-outrun.mp3",
           "gameName": "Turbo Outrun",
           "id": "5-10"
         },
@@ -1120,7 +1120,7 @@
             "David Whittaker"
           ],
           "correctIndex": 1,
-          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/galway/Mikie-01_cut_galway.mp3",
+          "audioUrl": "audio/quiz/martin-galway-mikie.mp3",
           "gameName": "Mikie",
           "id": "5-11"
         },
@@ -1133,7 +1133,7 @@
             "David Whittaker"
           ],
           "correctIndex": 0,
-          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/hubbard/Flash_Gordon-01_cut_robhubbard.mp3",
+          "audioUrl": "audio/quiz/rob-hubbard-flash-gordon.mp3",
           "gameName": "Flash Gordon",
           "id": "5-12"
         },
@@ -1146,7 +1146,7 @@
             "David Whittaker"
           ],
           "correctIndex": 3,
-          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/whittaker/Lazy_Jones-01_Whittaker.mp3",
+          "audioUrl": "audio/quiz/david-whittaker-lazy-jones.mp3",
           "gameName": "Lazy Jones",
           "id": "5-13"
         },
@@ -1159,7 +1159,7 @@
             "David Whittaker"
           ],
           "correctIndex": 2,
-          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/jeroentel/Supremacy-01_jeroentel.mp3",
+          "audioUrl": "audio/quiz/jeroen-tel-supremacy.mp3",
           "gameName": "Supremacy",
           "id": "5-14"
         },
@@ -1172,7 +1172,7 @@
             "David Whittaker"
           ],
           "correctIndex": 1,
-          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/galway/TIMESOFLORE_cut_galway.mp3",
+          "audioUrl": "audio/quiz/martin-galway-times-of-lore.mp3",
           "gameName": "Times Of Lore",
           "id": "5-15"
         },
@@ -1185,7 +1185,7 @@
             "David Whittaker"
           ],
           "correctIndex": 0,
-          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/hubbard/Bangkok_Knights_cut_robhubbard.mp3",
+          "audioUrl": "audio/quiz/rob-hubbard-bangkok-knights.mp3",
           "gameName": "Bangkok Knights",
           "id": "5-16"
         },
@@ -1198,7 +1198,7 @@
             "David Whittaker"
           ],
           "correctIndex": 2,
-          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/jeroentel/Golden_Axe-01_jeroentel.mp3",
+          "audioUrl": "audio/quiz/jeroen-tel-golden-axe.mp3",
           "gameName": "Golden Axe",
           "id": "5-17"
         },
@@ -1211,7 +1211,7 @@
             "David Whittaker"
           ],
           "correctIndex": 1,
-          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/galway/Daley_Thompsons_Decathlon-01_cut_galway.mp3",
+          "audioUrl": "audio/quiz/martin-galway-daley-thompsons-decathlon.mp3",
           "gameName": "Decathlon",
           "id": "5-18"
         },
@@ -1224,7 +1224,7 @@
             "David Whittaker"
           ],
           "correctIndex": 1,
-          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/galway/Neverending_Story_cut_galway.mp3",
+          "audioUrl": "audio/quiz/martin-galway-neverending-story.mp3",
           "gameName": "Neverending Story",
           "id": "5-19"
         },
@@ -1237,7 +1237,7 @@
             "David Whittaker"
           ],
           "correctIndex": 0,
-          "audioUrl": "https://joepentony-dot.github.io/quiz-audio-assets/hubbard/Crazy_Comets-01_cut_robhubbard.mp3",
+          "audioUrl": "audio/quiz/rob-hubbard-crazy-comets.mp3",
           "gameName": "Crazy Comets",
           "id": "5-20"
         }
