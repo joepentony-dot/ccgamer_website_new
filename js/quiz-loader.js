@@ -310,6 +310,7 @@
         return packList
             .map(pack => {
                 if (!pack) return null;
+                if (pack.disabled === true || pack.disabled === 'true') return null;
                 const id = pack.id || pack.slug || pack.name;
                 if (!id) return null;
 
@@ -325,6 +326,7 @@
                     name: pack.name || pack.title || 'Quiz Pack',
                     difficulty: pack.difficulty || 'Normal',
                     description: pack.description || pack.tagline || '',
+                    icon: pack.icon || '',
                     questionCount,
                     questions
                 };
@@ -446,6 +448,7 @@
                     correctIndex: clampIndex(correct, options.length),
                     imageUrl: q.imageUrl || q.image || '',
                     audioUrl: q.audioUrl || q.audio || '',
+                    videoUrl: q.videoUrl || q.video || '',
                     gameName: q.gameName || ''
                 };
             })

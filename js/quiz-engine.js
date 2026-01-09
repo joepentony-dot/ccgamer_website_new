@@ -304,7 +304,6 @@
         qs("#quiz-question-text").textContent = q.question || q.text || "";
         const optionsEl = qs("#quiz-options");
         const mediaEl = qs("#quiz-media");
-        const statusEl = qs("#quiz-status");
         const feedbackEl = qs("#quiz-feedback");
 
         optionsEl.innerHTML = "";
@@ -314,12 +313,7 @@
             feedbackEl.className = "quiz-feedback";
         }
 
-        if (statusEl) {
-            const total = quizState.questions.length;
-            statusEl.textContent = total
-                ? `Question ${quizState.currentIndex + 1} / ${total}`
-                : `Question ${quizState.currentIndex + 1}`;
-        }
+        updateStatusDisplay();
 
         if (activeAudio) {
             activeAudio.pause();
@@ -349,6 +343,16 @@
             audio.play().catch(() => {});
             mediaEl.appendChild(audio);
             activeAudio = audio;
+        }
+
+        const videoSrc = q.videoUrl || q.video || "";
+        if (videoSrc) {
+            const video = document.createElement("video");
+            video.src = videoSrc;
+            video.controls = true;
+            video.preload = "metadata";
+            video.playsInline = true;
+            mediaEl.appendChild(video);
         }
 
         q.options.forEach((opt, idx) => {
@@ -430,12 +434,32 @@
     }
 
     function renderStatus() {
+        updateStatusDisplay();
+    }
+
+    function updateStatusDisplay() {
         const statusEl = qs("#quiz-status");
         if (!statusEl) return;
 
         const total = quizState.questions.length;
         const current = quizState.currentIndex + 1;
         const score = quizState.score;
+        const pack = quizState.sets.find((p) => String(p.id) === String(quizState.currentSetId));
+        const packName = pack ? pack.name : (quizState.currentSetId ? `Pack ${quizState.currentSetId}` : "—");
+
+        const currentEl = statusEl.querySelector("[data-quiz-status-current]");
+        const totalEl = statusEl.querySelector("[data-quiz-status-total]");
+        const scoreEl = statusEl.querySelector("[data-quiz-status-score]");
+        const packEl = statusEl.querySelector("[data-quiz-status-pack]");
+
+        if (currentEl || totalEl || scoreEl || packEl) {
+            if (currentEl) currentEl.textContent = current;
+            if (totalEl) totalEl.textContent = total || "—";
+            if (scoreEl) scoreEl.textContent = score;
+            if (packEl) packEl.textContent = packName;
+            return;
+        }
+
         const totalText = total ? `${current} / ${total}` : `${current}`;
         statusEl.textContent = `Question ${totalText} • Score ${score}`;
     }
