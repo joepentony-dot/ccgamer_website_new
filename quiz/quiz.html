@@ -251,7 +251,24 @@
                     <!-- ACTIVE QUIZ PANEL -->
                     <article id="quiz-panel" class="quiz-panel quiz-panel--active" hidden>
                         <header class="quiz-panel-header">
-                            <div id="quiz-status" class="quiz-status"></div>
+                            <div id="quiz-status" class="quiz-status" aria-live="polite">
+                                <div class="quiz-status-block">
+                                    <span class="quiz-status-label">Question</span>
+                                    <div class="quiz-status-value">
+                                        <span data-quiz-status-current>1</span>
+                                        <span class="quiz-status-divider">/</span>
+                                        <span data-quiz-status-total>—</span>
+                                    </div>
+                                </div>
+                                <div class="quiz-status-block">
+                                    <span class="quiz-status-label">Score</span>
+                                    <div class="quiz-status-value" data-quiz-status-score>0</div>
+                                </div>
+                                <div class="quiz-status-block">
+                                    <span class="quiz-status-label">Pack</span>
+                                    <div class="quiz-status-value" data-quiz-status-pack>—</div>
+                                </div>
+                            </div>
                             <div id="quiz-feedback" class="quiz-feedback" aria-live="assertive"></div>
                             <div class="quiz-panel-actions">
                                 <button id="quiz-quit-btn"

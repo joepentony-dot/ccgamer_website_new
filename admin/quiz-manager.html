@@ -95,11 +95,23 @@
             background: rgba(0, 0, 0, 0.45);
         }
 
+        .quiz-pack.is-disabled {
+            opacity: 0.75;
+        }
+
         .quiz-pack-header {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 0.75rem;
             margin-bottom: 1rem;
+        }
+
+        .quiz-pack-header-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .quiz-pack-meta {
@@ -122,11 +134,44 @@
             justify-content: space-between;
         }
 
+        .quiz-question-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
         .quiz-question-options {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 0.75rem;
             margin-top: 0.75rem;
+        }
+
+        .quiz-option-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            padding: 0.6rem 0.65rem;
+        }
+
+        .quiz-option-item.is-correct {
+            border-color: rgba(123, 216, 143, 0.6);
+            box-shadow: 0 0 12px rgba(123, 216, 143, 0.35);
+        }
+
+        .quiz-option-radio {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.85rem;
+            color: #9ad0ff;
+        }
+
+        .quiz-option-radio input {
+            accent-color: #7bd88f;
         }
 
         .quiz-question-extra {
@@ -186,6 +231,41 @@
             flex-wrap: wrap;
             gap: 0.5rem;
             margin-top: 0.5rem;
+        }
+
+        .quiz-admin-note {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.75);
+            margin: 0.4rem 0 0;
+        }
+
+        .quiz-admin-warning {
+            font-size: 0.85rem;
+            color: #ffc857;
+        }
+
+        .quiz-admin-media-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+        }
+
+        .quiz-admin-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.25rem 0.6rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .quiz-admin-chip--disabled {
+            border-color: rgba(255, 122, 122, 0.6);
+            color: #ffbdbd;
         }
     </style>
 </head>
@@ -314,7 +394,7 @@
                             Read-only mode
                         </label>
                         <button id="quizValidate" class="ccg-btn ccg-btn--secondary" type="button">Run validation</button>
-                        <button id="quizExport" class="ccg-btn ccg-btn--primary" type="button">Download quiz.json</button>
+                        <button id="quizExport" class="ccg-btn ccg-btn--primary" type="button">Export quiz-data.json</button>
                     </div>
                     <div id="quizWarnings" class="quiz-admin-status" aria-live="polite"></div>
                 </div>
@@ -359,6 +439,10 @@
                 readOnly: false
             };
 
+            const MEDIA_FIELDS = ['imageUrl', 'audioUrl', 'videoUrl'];
+            const MEDIA_PREFIXES = ['quiz/audio/', 'quiz/images/', 'quiz/videos/'];
+            const PACK_ID_REGEX = /^[a-zA-Z0-9_-]+$/;
+
             const quizStatus = document.getElementById('quizStatus');
             const quizWarnings = document.getElementById('quizWarnings');
             const packsContainer = document.getElementById('packsContainer');
@@ -398,9 +482,23 @@
                 name: pack.name ?? '',
                 difficulty: pack.difficulty ?? '',
                 icon: pack.icon ?? '',
+                disabled: Boolean(pack.disabled),
                 questions: Array.isArray(pack.questions) ? pack.questions : [],
                 questionCount: Number.isFinite(pack.questionCount) ? pack.questionCount : 0
             });
+
+            const normalizeOptions = (options = []) => {
+                const list = Array.isArray(options) ? options.slice() : [];
+                while (list.length < 4) list.push('');
+                return list;
+            };
+
+            const getMediaType = (question) => {
+                if (question.videoUrl) return 'videoUrl';
+                if (question.audioUrl) return 'audioUrl';
+                if (question.imageUrl) return 'imageUrl';
+                return 'none';
+            };
 
             // Load quiz JSON from either fetch or file input and normalize minimally for safe rendering.
             const loadData = (data) => {
@@ -459,13 +557,22 @@
                 state.data.packs.forEach((pack, packIndex) => {
                     const packSection = document.createElement('section');
                     packSection.className = 'quiz-pack';
+                    if (pack.disabled) packSection.classList.add('is-disabled');
                     packSection.dataset.packIndex = packIndex;
 
                     const packHeader = document.createElement('div');
                     packHeader.className = 'quiz-pack-header';
-                    packHeader.innerHTML = `
+
+                    const headerRow = document.createElement('div');
+                    headerRow.className = 'quiz-pack-header-row';
+                    headerRow.innerHTML = `
                         <h3>Pack <span class="quiz-admin-tag"><strong>${pack.id}</strong></span> — ${pack.name}</h3>
-                        <div class="quiz-admin-tag">Questions: <strong>${pack.questionCount}</strong></div>
+                        <div class="quiz-admin-controls">
+                            ${pack.disabled ? '<span class="quiz-admin-chip quiz-admin-chip--disabled">Disabled</span>' : ''}
+                            <button class="ccg-btn ccg-btn--ghost" type="button" data-pack-index="${packIndex}" data-action="toggle-pack">
+                                ${pack.disabled ? 'Re-enable pack' : 'Disable pack'}
+                            </button>
+                        </div>
                     `;
 
                     const packMeta = document.createElement('div');
@@ -493,8 +600,9 @@
                         </label>
                     `;
 
+                    packHeader.appendChild(headerRow);
+                    packHeader.appendChild(packMeta);
                     packSection.appendChild(packHeader);
-                    packSection.appendChild(packMeta);
 
                     const addQuestionButton = document.createElement('button');
                     addQuestionButton.type = 'button';
@@ -519,26 +627,17 @@
                         idStrong.textContent = question.id;
                         idTag.appendChild(idStrong);
 
-                        const correctLabel = document.createElement('label');
-                        correctLabel.className = 'quiz-admin-inline';
-                        correctLabel.textContent = 'Correct index';
-                        const correctSelect = document.createElement('select');
-                        correctSelect.dataset.packIndex = packIndex;
-                        correctSelect.dataset.questionIndex = questionIndex;
-                        correctSelect.dataset.questionField = 'correctIndex';
-                        question.options.forEach((_, optionIndex) => {
-                            const option = document.createElement('option');
-                            option.value = optionIndex;
-                            option.textContent = optionIndex;
-                            if (optionIndex === question.correctIndex) {
-                                option.selected = true;
-                            }
-                            correctSelect.appendChild(option);
-                        });
-                        correctLabel.appendChild(correctSelect);
+                        const actions = document.createElement('div');
+                        actions.className = 'quiz-question-actions';
+                        actions.innerHTML = `
+                            <button class="ccg-btn ccg-btn--ghost" type="button" data-pack-index="${packIndex}" data-question-index="${questionIndex}" data-action="move-up">Move up</button>
+                            <button class="ccg-btn ccg-btn--ghost" type="button" data-pack-index="${packIndex}" data-question-index="${questionIndex}" data-action="move-down">Move down</button>
+                            <button class="ccg-btn ccg-btn--ghost" type="button" data-pack-index="${packIndex}" data-question-index="${questionIndex}" data-action="duplicate-question">Duplicate</button>
+                            <button class="ccg-btn ccg-btn--ghost" type="button" data-pack-index="${packIndex}" data-question-index="${questionIndex}" data-action="delete-question">Delete</button>
+                        `;
 
                         header.appendChild(idTag);
-                        header.appendChild(correctLabel);
+                        header.appendChild(actions);
 
                         const questionText = document.createElement('label');
                         questionText.textContent = 'Question text';
@@ -551,7 +650,14 @@
 
                         const optionsGrid = document.createElement('div');
                         optionsGrid.className = 'quiz-question-options';
-                        question.options.forEach((optionValue, optionIndex) => {
+                        const normalizedOptions = normalizeOptions(question.options);
+                        normalizedOptions.slice(0, 4).forEach((optionValue, optionIndex) => {
+                            const optionWrap = document.createElement('div');
+                            optionWrap.className = 'quiz-option-item';
+                            if (optionIndex === question.correctIndex) {
+                                optionWrap.classList.add('is-correct');
+                            }
+
                             const optionLabel = document.createElement('label');
                             optionLabel.textContent = `Option ${optionIndex + 1}`;
                             const optionInput = document.createElement('input');
@@ -561,55 +667,99 @@
                             optionInput.dataset.questionIndex = questionIndex;
                             optionInput.dataset.optionIndex = optionIndex;
                             optionLabel.appendChild(optionInput);
-                            optionsGrid.appendChild(optionLabel);
+
+                            const correctLabel = document.createElement('label');
+                            correctLabel.className = 'quiz-option-radio';
+                            const correctInput = document.createElement('input');
+                            correctInput.type = 'radio';
+                            correctInput.name = `correct-${packIndex}-${questionIndex}`;
+                            correctInput.value = optionIndex;
+                            correctInput.checked = optionIndex === question.correctIndex;
+                            correctInput.dataset.packIndex = packIndex;
+                            correctInput.dataset.questionIndex = questionIndex;
+                            correctInput.dataset.questionField = 'correctIndex';
+                            correctLabel.appendChild(correctInput);
+                            correctLabel.appendChild(document.createTextNode('Correct answer'));
+
+                            optionWrap.appendChild(optionLabel);
+                            optionWrap.appendChild(correctLabel);
+                            optionsGrid.appendChild(optionWrap);
                         });
 
                         const optionButtons = document.createElement('div');
                         optionButtons.className = 'quiz-admin-btn-group';
-                        const addOptionButton = document.createElement('button');
-                        addOptionButton.type = 'button';
-                        addOptionButton.className = 'ccg-btn ccg-btn--ghost';
-                        addOptionButton.dataset.packIndex = packIndex;
-                        addOptionButton.dataset.questionIndex = questionIndex;
-                        addOptionButton.dataset.action = 'add-option';
-                        addOptionButton.textContent = 'Add option';
-                        const removeOptionButton = document.createElement('button');
-                        removeOptionButton.type = 'button';
-                        removeOptionButton.className = 'ccg-btn ccg-btn--ghost';
-                        removeOptionButton.dataset.packIndex = packIndex;
-                        removeOptionButton.dataset.questionIndex = questionIndex;
-                        removeOptionButton.dataset.action = 'remove-option';
-                        removeOptionButton.textContent = 'Remove last option';
-                        optionButtons.appendChild(addOptionButton);
-                        optionButtons.appendChild(removeOptionButton);
+                        const normalizeOptionButton = document.createElement('button');
+                        normalizeOptionButton.type = 'button';
+                        normalizeOptionButton.className = 'ccg-btn ccg-btn--ghost';
+                        normalizeOptionButton.dataset.packIndex = packIndex;
+                        normalizeOptionButton.dataset.questionIndex = questionIndex;
+                        normalizeOptionButton.dataset.action = 'normalize-options';
+                        normalizeOptionButton.textContent = 'Normalize answers to 4';
+                        optionButtons.appendChild(normalizeOptionButton);
+
+                        if (Array.isArray(question.options) && question.options.length !== 4) {
+                            const warning = document.createElement('div');
+                            warning.className = 'quiz-admin-warning';
+                            warning.textContent = `This question currently has ${question.options.length} answers.`;
+                            optionButtons.appendChild(warning);
+                        }
+
+                        const mediaRow = document.createElement('div');
+                        mediaRow.className = 'quiz-admin-media-row';
+                        const mediaType = getMediaType(question);
+                        const mediaTypeLabel = document.createElement('label');
+                        mediaTypeLabel.textContent = 'Media type';
+                        const mediaSelect = document.createElement('select');
+                        mediaSelect.dataset.packIndex = packIndex;
+                        mediaSelect.dataset.questionIndex = questionIndex;
+                        mediaSelect.dataset.questionField = 'mediaType';
+                        mediaSelect.dataset.currentType = mediaType;
+                        ['none', 'imageUrl', 'audioUrl', 'videoUrl'].forEach((type) => {
+                            const option = document.createElement('option');
+                            option.value = type;
+                            option.textContent = type === 'none' ? 'None' : type;
+                            if (type === mediaType) option.selected = true;
+                            mediaSelect.appendChild(option);
+                        });
+                        mediaTypeLabel.appendChild(mediaSelect);
+
+                        const mediaUrlLabel = document.createElement('label');
+                        mediaUrlLabel.textContent = 'Media URL';
+                        const mediaInput = document.createElement('input');
+                        mediaInput.type = 'url';
+                        mediaInput.placeholder = 'quiz/images/example.png';
+                        mediaInput.value = mediaType === 'none' ? '' : (question[mediaType] || '');
+                        mediaInput.dataset.packIndex = packIndex;
+                        mediaInput.dataset.questionIndex = questionIndex;
+                        mediaInput.dataset.questionField = 'mediaUrl';
+                        mediaInput.dataset.mediaType = mediaType;
+                        if (mediaType === 'none') {
+                            mediaInput.disabled = true;
+                        }
+                        mediaUrlLabel.appendChild(mediaInput);
+
+                        mediaRow.appendChild(mediaTypeLabel);
+                        mediaRow.appendChild(mediaUrlLabel);
 
                         const extraFields = document.createElement('div');
                         extraFields.className = 'quiz-question-extra';
-                        const knownExtras = ['imageUrl', 'audioUrl', 'gameName'];
-                        let hasExtras = false;
-                        knownExtras.forEach((field) => {
-                            if (!(field in question)) return;
-                            hasExtras = true;
-                            const labelText = field.replace(/([A-Z])/g, ' $1');
-                            const extraLabel = document.createElement('label');
-                            extraLabel.textContent = labelText.charAt(0).toUpperCase() + labelText.slice(1);
-                            const extraInput = document.createElement('input');
-                            extraInput.type = 'text';
-                            extraInput.value = question[field] ?? '';
-                            extraInput.dataset.packIndex = packIndex;
-                            extraInput.dataset.questionIndex = questionIndex;
-                            extraInput.dataset.questionField = field;
-                            extraLabel.appendChild(extraInput);
-                            extraFields.appendChild(extraLabel);
-                        });
+                        const gameLabel = document.createElement('label');
+                        gameLabel.textContent = 'Game name (optional)';
+                        const gameInput = document.createElement('input');
+                        gameInput.type = 'text';
+                        gameInput.value = question.gameName ?? '';
+                        gameInput.dataset.packIndex = packIndex;
+                        gameInput.dataset.questionIndex = questionIndex;
+                        gameInput.dataset.questionField = 'gameName';
+                        gameLabel.appendChild(gameInput);
+                        extraFields.appendChild(gameLabel);
 
                         questionBlock.appendChild(header);
                         questionBlock.appendChild(questionText);
                         questionBlock.appendChild(optionsGrid);
                         questionBlock.appendChild(optionButtons);
-                        if (hasExtras) {
-                            questionBlock.appendChild(extraFields);
-                        }
+                        questionBlock.appendChild(mediaRow);
+                        questionBlock.appendChild(extraFields);
 
                         packSection.appendChild(questionBlock);
                     });
@@ -655,22 +805,48 @@
                 render();
             };
 
-            const addOption = (packIndex, questionIndex) => {
+            const normalizeOptionsToFour = (packIndex, questionIndex) => {
                 const question = state.data.packs[packIndex].questions[questionIndex];
-                question.options.push(`Option ${question.options.length + 1}`);
+                question.options = normalizeOptions(question.options).slice(0, 4);
+                if (question.correctIndex >= 4) question.correctIndex = 0;
                 render();
             };
 
-            const removeOption = (packIndex, questionIndex) => {
-                const question = state.data.packs[packIndex].questions[questionIndex];
-                if (question.options.length <= 2) {
-                    setStatus('Each question must keep at least two options.', 'quiz-admin-status--warning');
-                    return;
-                }
-                question.options.pop();
-                if (question.correctIndex >= question.options.length) {
-                    question.correctIndex = question.options.length - 1;
-                }
+            const moveQuestion = (packIndex, questionIndex, direction) => {
+                const pack = state.data.packs[packIndex];
+                const newIndex = questionIndex + direction;
+                if (newIndex < 0 || newIndex >= pack.questions.length) return;
+                const updated = pack.questions.slice();
+                const [moved] = updated.splice(questionIndex, 1);
+                updated.splice(newIndex, 0, moved);
+                pack.questions = updated;
+                render();
+            };
+
+            const duplicateQuestion = (packIndex, questionIndex) => {
+                const pack = state.data.packs[packIndex];
+                const original = pack.questions[questionIndex];
+                const nextNumber = getNextQuestionNumber(pack);
+                const duplicate = {
+                    ...original,
+                    id: `${pack.id}-${nextNumber}`,
+                    options: Array.isArray(original.options) ? original.options.slice() : []
+                };
+                pack.questions.splice(questionIndex + 1, 0, duplicate);
+                updateDerivedCounts();
+                render();
+            };
+
+            const deleteQuestion = (packIndex, questionIndex) => {
+                const pack = state.data.packs[packIndex];
+                pack.questions.splice(questionIndex, 1);
+                updateDerivedCounts();
+                render();
+            };
+
+            const togglePackDisabled = (packIndex) => {
+                const pack = state.data.packs[packIndex];
+                pack.disabled = !pack.disabled;
                 render();
             };
 
@@ -700,6 +876,7 @@
                     name,
                     difficulty,
                     icon,
+                    disabled: false,
                     questions: [],
                     questionCount: 0
                 });
@@ -718,8 +895,20 @@
 
                 const warnings = [];
                 const ids = new Set();
+                const packIds = new Set();
 
                 state.data.packs.forEach((pack) => {
+                    const packId = String(pack.id || '').trim();
+                    if (!packId) {
+                        warnings.push('A pack is missing an ID.');
+                    } else if (!PACK_ID_REGEX.test(packId)) {
+                        warnings.push(`Pack ID “${packId}” should only include letters, numbers, dashes, or underscores.`);
+                    } else if (packIds.has(packId)) {
+                        warnings.push(`Duplicate pack ID found: ${packId}.`);
+                    } else {
+                        packIds.add(packId);
+                    }
+
                     if (pack.questionCount !== pack.questions.length) {
                         warnings.push(`Pack ${pack.id} questionCount (${pack.questionCount}) does not match questions length (${pack.questions.length}).`);
                     }
@@ -733,11 +922,24 @@
                             ids.add(question.id);
                         }
 
-                        if (!Array.isArray(question.options) || question.options.length === 0) {
-                            warnings.push(`Question ${question.id} has no answer options.`);
-                        } else if (question.correctIndex < 0 || question.correctIndex >= question.options.length) {
-                            warnings.push(`Question ${question.id} has correctIndex outside range (0-${question.options.length - 1}).`);
+                        if (!Array.isArray(question.options) || question.options.length !== 4) {
+                            warnings.push(`Question ${question.id} must have exactly 4 answer options.`);
                         }
+
+                        if (!Number.isFinite(question.correctIndex) || question.correctIndex < 0 || question.correctIndex > 3) {
+                            warnings.push(`Question ${question.id} must have exactly one correct answer (index 0-3).`);
+                        }
+
+                        MEDIA_FIELDS.forEach((field) => {
+                            const value = question[field];
+                            if (!value) return;
+                            const trimmed = String(value).trim();
+                            if (!trimmed) return;
+                            const isValid = MEDIA_PREFIXES.some((prefix) => trimmed.startsWith(prefix));
+                            if (!isValid) {
+                                warnings.push(`Question ${question.id} ${field} must start with quiz/audio/, quiz/images/, or quiz/videos/.`);
+                            }
+                        });
                     });
                 });
 
@@ -764,7 +966,7 @@
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.href = url;
-                link.download = 'quiz.json';
+                link.download = 'quiz-data.json';
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -832,6 +1034,12 @@
                     if (target.dataset.questionField) {
                         if (target.dataset.questionField === 'correctIndex') {
                             question.correctIndex = Number(target.value);
+                            render();
+                        } else if (target.dataset.questionField === 'mediaUrl') {
+                            const mediaType = target.dataset.mediaType;
+                            if (mediaType && mediaType !== 'none') {
+                                question[mediaType] = target.value;
+                            }
                         } else {
                             question[target.dataset.questionField] = target.value;
                         }
@@ -840,6 +1048,7 @@
 
                     if (target.dataset.optionIndex !== undefined) {
                         const optionIndex = Number(target.dataset.optionIndex);
+                        if (!Array.isArray(question.options)) question.options = [];
                         question.options[optionIndex] = target.value;
                     }
                 }
@@ -847,7 +1056,30 @@
 
             packsContainer.addEventListener('change', (event) => {
                 if (!state.data || state.readOnly) return;
-                if (event.target.dataset.packField) {
+
+                const target = event.target;
+                if (target.dataset.questionField === 'mediaType') {
+                    const packIndex = Number(target.dataset.packIndex);
+                    const questionIndex = Number(target.dataset.questionIndex);
+                    if (Number.isNaN(packIndex) || Number.isNaN(questionIndex)) return;
+                    const question = state.data.packs[packIndex].questions[questionIndex];
+                    const nextType = target.value;
+                    const previousType = target.dataset.currentType || getMediaType(question);
+                    const previousValue = previousType !== 'none' ? (question[previousType] || '') : '';
+
+                    MEDIA_FIELDS.forEach((field) => {
+                        if (field !== nextType) question[field] = '';
+                    });
+
+                    if (nextType !== 'none') {
+                        question[nextType] = question[nextType] || previousValue || '';
+                    }
+
+                    target.dataset.currentType = nextType;
+                    render();
+                }
+
+                if (target.dataset.packField) {
                     render();
                 }
             });
@@ -865,12 +1097,28 @@
                     addQuestionToPack(packIndex);
                 }
 
-                if (target.dataset.action === 'add-option') {
-                    addOption(packIndex, questionIndex);
+                if (target.dataset.action === 'normalize-options') {
+                    normalizeOptionsToFour(packIndex, questionIndex);
                 }
 
-                if (target.dataset.action === 'remove-option') {
-                    removeOption(packIndex, questionIndex);
+                if (target.dataset.action === 'move-up') {
+                    moveQuestion(packIndex, questionIndex, -1);
+                }
+
+                if (target.dataset.action === 'move-down') {
+                    moveQuestion(packIndex, questionIndex, 1);
+                }
+
+                if (target.dataset.action === 'duplicate-question') {
+                    duplicateQuestion(packIndex, questionIndex);
+                }
+
+                if (target.dataset.action === 'delete-question') {
+                    deleteQuestion(packIndex, questionIndex);
+                }
+
+                if (target.dataset.action === 'toggle-pack') {
+                    togglePackDisabled(packIndex);
                 }
             });
 
