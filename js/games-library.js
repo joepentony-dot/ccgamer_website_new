@@ -21,6 +21,16 @@ const THUMB_PLACEHOLDER =
 const CCG_PREFERS_REDUCED_MOTION = window.matchMedia(
     "(prefers-reduced-motion: reduce)"
 );
+const CCG_MOBILE_QUERY = window.matchMedia?.("(max-width: 820px)");
+const CCG_COARSE_QUERY = window.matchMedia?.("(pointer: coarse)");
+
+function isMobileLikeViewport() {
+    if (typeof window.ccgIsMobileLike === "function") {
+        return window.ccgIsMobileLike();
+    }
+    if (CCG_MOBILE_QUERY?.matches) return true;
+    return Boolean(CCG_COARSE_QUERY?.matches || window.innerWidth <= 820);
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
@@ -209,7 +219,8 @@ function toggleAccordion(letter, opts = {}) {
         setSpineActive(letter);
 
         if (!opts.silent) {
-            target.scrollIntoView({ behavior: "smooth", block: "start" });
+            const behavior = isMobileLikeViewport() ? "auto" : "smooth";
+            target.scrollIntoView({ behavior, block: "start" });
         }
     } else {
         // Closing current open section
@@ -249,6 +260,7 @@ function updateSectionState(section, isOpen) {
 function animateAccordionContent(content, isOpening) {
     const prefersReduced = CCG_PREFERS_REDUCED_MOTION.matches;
     const isVisible = content.classList.contains("is-visible");
+    const isMobileLike = isMobileLikeViewport();
 
     // Reset any running animations
     content.removeEventListener("transitionend", content._ccgMotionHandler);
@@ -258,7 +270,7 @@ function animateAccordionContent(content, isOpening) {
     }
     content.style.height = "";
 
-    if (prefersReduced) {
+    if (prefersReduced || isMobileLike) {
         content.hidden = !isOpening;
         content.classList.toggle("is-visible", isOpening);
         content.setAttribute("aria-hidden", String(!isOpening));
@@ -359,7 +371,8 @@ function scrollToTop() {
         document.querySelector(".games-hero") ||
         document.body;
 
-    anchor.scrollIntoView({ behavior: "smooth", block: "start" });
+    const behavior = isMobileLikeViewport() ? "auto" : "smooth";
+    anchor.scrollIntoView({ behavior, block: "start" });
 }
 
 /* ============================================================
@@ -483,6 +496,11 @@ let thumbObserver;
 
 function initThumbLazyLoad() {
     if (thumbObserver) thumbObserver.disconnect();
+
+    if (isMobileLikeViewport()) {
+        document.querySelectorAll("[data-game-thumb]").forEach(loadThumbNow);
+        return;
+    }
 
     if ("IntersectionObserver" in window) {
         thumbObserver = new IntersectionObserver(handleThumbIntersections, {

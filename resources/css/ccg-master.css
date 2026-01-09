@@ -1561,6 +1561,29 @@ li {
     box-shadow: 0 18px 38px rgba(0,0,0,0.7), 0 0 22px rgba(var(--accent-rgb),0.26);
 }
 
+html.ccg-is-mobile [data-ccg-wow] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+    box-shadow: none;
+}
+
+html.ccg-is-mobile [data-ccg-wow]::after {
+    opacity: 0;
+}
+
+html.ccg-is-mobile .ccg-nav__mobile {
+    transition: none;
+    transform: none;
+}
+
+html.ccg-is-mobile .is-glinting {
+    transform: none;
+    filter: none;
+    text-shadow: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

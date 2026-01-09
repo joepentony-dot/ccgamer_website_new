@@ -36,6 +36,7 @@
     }
 
     window.isMobileViewport = isMobileViewport;
+    window.ccgIsMobileLike = isMobileLike;
 
     function isMobileLike() {
         return Boolean(isMobileViewport() || (MQ_MOBILE && MQ_MOBILE.matches) || (MQ_COARSE && MQ_COARSE.matches));
@@ -48,6 +49,8 @@
             document.body.classList.toggle("ccg-is-mobile", mobile);
         }
     }
+
+    safeNowMobileClass();
 
     /* ======================================================
        DEPTH-AWARE LOGO PATH
