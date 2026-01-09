@@ -13,6 +13,7 @@
 
 let CCG_ALL_GAMES = [];
 let CCG_GAMES_TOTAL = 0;
+let CCG_GAME_CACHE = new Map();
 
 const ACCORDION_STATE_KEY = "ccgAccordionState";
 const THUMB_BASE_PATH = "../resources/images/thumbnails/all/";
@@ -139,6 +140,9 @@ function buildAccordion(groups) {
     if (!container) return;
 
     container.innerHTML = "";
+    CCG_GAME_CACHE = new Map();
+    let gameIndex = 0;
+
     const letters = Object.keys(groups).sort((a, b) => {
         if (a === "#") return -1;
         if (b === "#") return 1;
@@ -161,7 +165,11 @@ function buildAccordion(groups) {
             </button>
             <div class="games-accordion__content" id="${contentId}" role="region" aria-labelledby="${headerId}" hidden>
                 <div class="games-grid">
-                    ${groups[letter].map(renderGameCard).join("")}
+                    ${groups[letter].map(game => {
+                        const key = getGameKey(game, gameIndex++);
+                        CCG_GAME_CACHE.set(key, game);
+                        return renderGameCardShell(key);
+                    }).join("")}
                 </div>
             </div>
         `;
@@ -170,6 +178,7 @@ function buildAccordion(groups) {
     });
 
     attachAccordionEvents();
+    initCardLazyRender();
     initThumbLazyLoad();
 }
 
@@ -435,12 +444,29 @@ function setEmptyState(isEmpty) {
 ============================================================ */
 
 function renderGameCard(game) {
+    return renderGameCardMarkup(game);
+}
+
+function getGameKey(game, index) {
+    const slug = String(game?.slug || "").trim();
+    if (slug) return `slug:${slug}`;
+
+    const id = String(game?.id || "").trim();
+    if (id) return `id:${id}`;
+
+    return `idx:${index}`;
+}
+
+function renderGameCardMarkup(game, opts = {}) {
     const thumb = resolveGameThumb(game.thumbnail || game.thumb || game.cover);
 
     const gameUrl = resolveGameUrl(game);
+    const keyAttr = opts.key ? ` data-game-key="${opts.key}"` : "";
+    const classNames = ["ccg-game-card"];
+    if (opts.rendered) classNames.push("rendered");
 
     return `
-        <div class="ccg-game-card">
+        <div class="${classNames.join(" ")}"${keyAttr}>
             <a href="${gameUrl}"
                class="ccg-game-card__thumb">
                 <img src="${THUMB_PLACEHOLDER}"
@@ -463,6 +489,12 @@ function renderGameCard(game) {
                 </div>
             </div>
         </div>
+    `;
+}
+
+function renderGameCardShell(key) {
+    return `
+        <div class="ccg-game-card ccg-game-card--shell" data-game-key="${key}"></div>
     `;
 }
 
@@ -498,7 +530,7 @@ function initThumbLazyLoad() {
     if (thumbObserver) thumbObserver.disconnect();
 
     if (isMobileLikeViewport()) {
-        document.querySelectorAll("[data-game-thumb]").forEach(loadThumbNow);
+        document.querySelectorAll("[data-game-thumb]").forEach(registerThumbForLazyLoad);
         return;
     }
 
@@ -508,18 +540,10 @@ function initThumbLazyLoad() {
             threshold: 0.01,
         });
 
-        document.querySelectorAll("[data-game-thumb]").forEach(img => {
-            if (img.dataset.loaded === "true") return;
-
-            img.addEventListener("error", () => {
-                img.src = `${THUMB_BASE_PATH}1942.jpg`;
-            }, { once: true });
-
-            thumbObserver.observe(img);
-        });
+        document.querySelectorAll("[data-game-thumb]").forEach(registerThumbForLazyLoad);
     } else {
         // Fallback: no IO support, set all immediately
-        document.querySelectorAll("[data-game-thumb]").forEach(loadThumbNow);
+        document.querySelectorAll("[data-game-thumb]").forEach(registerThumbForLazyLoad);
     }
 }
 
@@ -541,4 +565,103 @@ function loadThumbNow(img) {
 
     img.src = src;
     img.dataset.loaded = "true";
+}
+
+/* ============================================================
+   CARD LAZY RENDER (DESKTOP) + MOBILE FORCE RENDER
+============================================================ */
+
+let cardObserver;
+
+function initCardLazyRender() {
+    if (cardObserver) cardObserver.disconnect();
+
+    const cards = Array.from(document.querySelectorAll(".ccg-game-card"));
+    if (!cards.length) return;
+
+    if (isMobileLikeViewport()) {
+        renderAllGameCards(cards);
+        return;
+    }
+
+    if ("IntersectionObserver" in window) {
+        cardObserver = new IntersectionObserver(handleCardIntersections, {
+            rootMargin: "400px 0px",
+            threshold: 0.01,
+        });
+
+        cards.forEach(card => {
+            if (card.classList.contains("rendered")) return;
+            cardObserver.observe(card);
+        });
+    } else {
+        renderAllGameCards(cards);
+    }
+}
+
+function handleCardIntersections(entries) {
+    entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const card = entry.target;
+        renderGameCardNow(card);
+        cardObserver?.unobserve(card);
+    });
+}
+
+function renderAllGameCards(cards) {
+    const render = () => cards.forEach(renderGameCardNow);
+
+    if ("requestIdleCallback" in window) {
+        requestIdleCallback(render, { timeout: 200 });
+    } else {
+        setTimeout(render, 0);
+    }
+}
+
+function renderGameCardNow(card) {
+    if (!card || card.classList.contains("rendered")) return;
+
+    const key = card.dataset.gameKey;
+    if (!key) return;
+
+    const game = CCG_GAME_CACHE.get(key);
+    if (!game) return;
+
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = renderGameCardMarkup(game, { key, rendered: true }).trim();
+    const renderedCard = wrapper.firstElementChild;
+    if (!renderedCard) return;
+
+    card.replaceWith(renderedCard);
+
+    const thumb = renderedCard.querySelector("[data-game-thumb]");
+    if (thumb) {
+        registerThumbForLazyLoad(thumb);
+    }
+}
+
+function registerThumbForLazyLoad(img) {
+    if (!img || img.dataset.loaded === "true") return;
+
+    img.addEventListener("error", () => {
+        img.src = `${THUMB_BASE_PATH}1942.jpg`;
+    }, { once: true });
+
+    if (isMobileLikeViewport()) {
+        loadThumbNow(img);
+        return;
+    }
+
+    if ("IntersectionObserver" in window) {
+        if (!thumbObserver) {
+            thumbObserver = new IntersectionObserver(handleThumbIntersections, {
+                rootMargin: "400px 0px",
+                threshold: 0.01,
+            });
+        }
+        thumbObserver.observe(img);
+        return;
+    }
+
+    loadThumbNow(img);
 }
