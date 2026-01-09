@@ -158,6 +158,13 @@ body.intro-body {
     pointer-events: none;
 }
 
+@media (max-width: 820px) {
+    .intro-root {
+        height: 100svh;
+        min-height: 100svh;
+    }
+}
+
 @keyframes introIdlePulse {
     0% {
         opacity: 0.55;
