@@ -12,9 +12,11 @@ SAFE / ADDITIVE-ONLY BEHAVIOUR
 ✖ Does NOT modify games.json
 ✖ Does NOT overwrite existing HTML
 ✖ Does NOT touch JS, loaders, routing, or navigation
+✖ Does NOT create per-game folders
 
 IMPORTANT:
 - Designed to be run after adding new games only
+- Flat SEO stubs are required for GitHub Pages (no server rewrites)
 
 Usage:
   python generate_seo_pages.py --root .
@@ -82,8 +84,9 @@ def seo_template(
     mode: str,
     interactive_href: str,
     browse_href: str,
+    display_slug: str,
 ) -> str:
-    """SEO landing page that immediately redirects to the interactive game page."""
+    """SEO landing page that immediately updates the visible URL without redirect."""
     safe_title = html.escape(title)
     safe_description = html.escape(description)
     safe_year = html.escape(year)
@@ -97,7 +100,7 @@ def seo_template(
 <head>
     <meta charset=\"UTF-8\" />
 
-    <!-- Auto-redirect SEO page to full interactive game page -->
+    <!-- Flat SEO stub for GitHub Pages: show /games/{{slug}}/ without server rewrites -->
     <script>
       (function () {{
         var target = \"{safe_interactive_href}\";
@@ -305,7 +308,7 @@ def main() -> int:
             publisher=publisher,
             schema_url=page_url,
             schema_image=to_abs_url(domain, thumb_rel),
-            thumb_src_rel=f"../../{thumb_rel}",
+            thumb_src_rel=f"../{thumb_rel}",
             thumb_alt=f"{title} cover",
             mode=mode,
             interactive_href=f"/games/game.html?id={game_id}",
