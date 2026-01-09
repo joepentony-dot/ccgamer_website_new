@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en" data-ccg-page="admin-quiz-manager">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Quiz Manager (Admin) | Cheeky Commodore Gamer</title>
+    <meta name="description" content="Offline quiz pack manager for editing quiz JSON without touching live data.">
+
+    <link rel="icon" href="../favicon.ico">
+
+    <!-- GLOBAL CSS -->
+    <link rel="stylesheet" href="../resources/css/ccg-master.css">
+    <link rel="stylesheet" href="../resources/css/ccg-mode.css">
+    <link rel="stylesheet" href="../resources/css/ccg-effects.css">
+    <link rel="stylesheet" href="../resources/css/ccg-anim.css">
+    <link rel="stylesheet" href="../resources/css/ccg-overlays.css">
+    <link rel="stylesheet" href="../resources/css/ccg-modal.css">
+    <link rel="stylesheet" href="../resources/css/admin.css">
+
+    <style>
+        .quiz-admin-shell {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .quiz-admin-panel {
+            background: rgba(10, 10, 10, 0.82);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        .quiz-admin-panel h2,
+        .quiz-admin-panel h3 {
+            margin-top: 0;
+        }
+
+        .quiz-admin-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .quiz-admin-row label {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            min-width: 220px;
+        }
+
+        .quiz-admin-row input[type="text"],
+        .quiz-admin-row input[type="number"],
+        .quiz-admin-row input[type="url"],
+        .quiz-admin-row textarea,
+        .quiz-admin-row select {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 8px;
+            color: #fff;
+            padding: 0.5rem 0.75rem;
+            font: inherit;
+        }
+
+        .quiz-admin-row textarea {
+            min-height: 70px;
+            resize: vertical;
+        }
+
+        .quiz-admin-status {
+            margin: 0.5rem 0 0;
+            font-size: 0.95rem;
+        }
+
+        .quiz-admin-status--warning {
+            color: #ffc857;
+        }
+
+        .quiz-admin-status--error {
+            color: #ff6b6b;
+        }
+
+        .quiz-admin-status--success {
+            color: #7bd88f;
+        }
+
+        .quiz-pack {
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            background: rgba(0, 0, 0, 0.45);
+        }
+
+        .quiz-pack-header {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .quiz-pack-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .quiz-question {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1rem;
+            margin-top: 1rem;
+        }
+
+        .quiz-question-header {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .quiz-question-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+        }
+
+        .quiz-question-extra {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+        }
+
+        .quiz-admin-warning-list {
+            margin: 0.5rem 0 0;
+            padding-left: 1.25rem;
+        }
+
+        .quiz-admin-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .quiz-admin-inline {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .quiz-admin-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.9rem;
+            color: #9ad0ff;
+        }
+
+        .quiz-admin-tag strong {
+            color: #fff;
+        }
+
+        .quiz-admin-divider {
+            margin: 1.25rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .quiz-admin-disabled {
+            opacity: 0.55;
+            pointer-events: none;
+        }
+
+        .quiz-admin-footer {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .quiz-admin-btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+
+<body class="ccg-body" data-ccg-mode="c64">
+    <div class="ccg-bg">
+        <div class="ccg-bg-starfield"></div>
+        <div class="ccg-bg-grid"></div>
+        <div class="ccg-bg-crt-overlay"></div>
+    </div>
+
+    <div class="ccg-page ccg-page--admin">
+        <header class="ccg-header" data-ccg-header>
+            <div class="ccg-header-inner">
+                <a href="../home.html" class="ccg-brand">
+                    <img src="../resources/images/ccgamer-logo.png"
+                         alt="Cheeky Commodore Gamer logo"
+                         class="ccg-brand__logo"
+                         loading="lazy">
+
+                    <div class="ccg-brand__text">
+                        <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
+                        <div class="ccg-brand__title">
+                            <span class="ccg-brand__neon-cheeky">CHEEKY COMMODORE</span>
+                            <span class="ccg-brand__neon-sub">GAMER</span>
+                        </div>
+                    </div>
+                </a>
+
+                <button class="ccg-nav-toggle"
+                        type="button"
+                        aria-label="Toggle navigation"
+                        aria-expanded="false"
+                        aria-controls="ccg-primary-nav"
+                        data-ccg-nav-toggle>
+                    <span class="ccg-nav-toggle__bars" aria-hidden="true">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
+                    <span class="ccg-nav-toggle__label">Menu</span>
+                </button>
+
+                <nav class="ccg-nav" aria-label="Primary navigation" id="ccg-primary-nav">
+                    <div class="ccg-nav__bar">
+                        <ul class="ccg-nav__list ccg-nav__list--primary" data-ccg-nav-primary>
+                            <li><a href="../home.html" class="ccg-nav__link">Home</a></li>
+                            <li><a href="../games/index.html" class="ccg-nav__link">Browse Games</a></li>
+                            <li><a href="../games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
+                            <li><a href="../games/collections/index.html" class="ccg-nav__link">Collections</a></li>
+                        </ul>
+                        <div class="ccg-nav__more">
+                            <button class="ccg-nav__more-toggle"
+                                    type="button"
+                                    aria-expanded="false"
+                                    aria-controls="ccg-more-menu"
+                                    data-ccg-more-toggle>
+                                More <span aria-hidden="true">▾</span>
+                            </button>
+                            <div class="ccg-nav__more-menu" id="ccg-more-menu" data-ccg-more-menu hidden></div>
+                        </div>
+                    </div>
+                    <ul class="ccg-nav__list ccg-nav__list--secondary" data-ccg-nav-secondary>
+                        <li><a href="../quiz/quiz.html" class="ccg-nav__link">Quiz</a></li>
+                        <li><a href="../emulation.html" class="ccg-nav__link">Emulation</a></li>
+                        <li><a href="../about.html" class="ccg-nav__link">About</a></li>
+                        <li><a href="../contact.html" class="ccg-nav__link">Contact</a></li>
+                    </ul>
+                </nav>
+
+                <div class="ccg-header-actions">
+                    <button class="ccg-mode-toggle"
+                            type="button"
+                            aria-label="Toggle between C64 and Amiga modes"
+                            data-ccg-mode-toggle>
+                        <span class="ccg-mode-toggle__pill">
+                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64</span>
+                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">Amiga</span>
+                            <span class="ccg-mode-toggle__thumb"></span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="ccg-header-neon-strip"></div>
+        </header>
+
+        <main class="ccg-main ccg-main--admin">
+            <section class="ccg-section admin-hero">
+                <div class="admin-hero-grid">
+                    <div class="admin-callout">
+                        <h1 class="admin-callout-title">Quiz Manager (Admin)</h1>
+                        <p class="admin-help">
+                            This tool edits quiz JSON locally in your browser only. It never writes to disk automatically,
+                            never commits anything, and never touches the live site until you manually upload the exported file.
+                        </p>
+                        <ul class="admin-tips">
+                            <li>Load a quiz JSON file (upload or fetch).</li>
+                            <li>Edit questions, add new questions at the end of a pack, or add new packs.</li>
+                            <li>Export the updated JSON and replace <code>quiz/quiz-data.json</code> manually.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="ccg-section quiz-admin-shell">
+                <div class="quiz-admin-panel">
+                    <h2>Load quiz data</h2>
+                    <div class="quiz-admin-row">
+                        <label>
+                            Fetch path
+                            <input id="quizFetchPath" type="text" value="../quiz/quiz-data.json">
+                        </label>
+                        <button id="quizFetch" class="ccg-btn ccg-btn--primary" type="button">Fetch JSON</button>
+                        <label class="admin-upload">
+                            Upload JSON
+                            <input id="quizFileInput" type="file" accept="application/json">
+                        </label>
+                        <a id="quizOpenSource" class="ccg-btn ccg-btn--ghost" href="../quiz/quiz-data.json" target="_blank" rel="noopener">Open live JSON</a>
+                    </div>
+                    <p id="quizStatus" class="quiz-admin-status">Waiting for data…</p>
+                    <div class="quiz-admin-divider"></div>
+                    <div class="quiz-admin-controls">
+                        <label class="quiz-admin-inline">
+                            <input id="quizReadOnly" type="checkbox">
+                            Read-only mode
+                        </label>
+                        <button id="quizValidate" class="ccg-btn ccg-btn--secondary" type="button">Run validation</button>
+                        <button id="quizExport" class="ccg-btn ccg-btn--primary" type="button">Download quiz.json</button>
+                    </div>
+                    <div id="quizWarnings" class="quiz-admin-status" aria-live="polite"></div>
+                </div>
+
+                <div class="quiz-admin-panel">
+                    <h2>Add a new pack</h2>
+                    <div class="quiz-admin-row">
+                        <label>
+                            Pack ID
+                            <input id="newPackId" type="text" placeholder="6">
+                        </label>
+                        <label>
+                            Pack name
+                            <input id="newPackName" type="text" placeholder="Retro Roundup">
+                        </label>
+                        <label>
+                            Difficulty
+                            <input id="newPackDifficulty" type="text" placeholder="Medium">
+                        </label>
+                        <label>
+                            Icon (emoji)
+                            <input id="newPackIcon" type="text" placeholder="🎯">
+                        </label>
+                        <button id="addPack" class="ccg-btn ccg-btn--secondary" type="button">Add pack</button>
+                    </div>
+                    <p class="quiz-admin-footer">New packs start empty. Add questions below to append them to the end of the pack.</p>
+                </div>
+
+                <div class="quiz-admin-panel">
+                    <h2>Quiz packs</h2>
+                    <div id="packsContainer" class="quiz-admin-disabled"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        (() => {
+            // In-browser-only admin tool. All edits stay in memory until you export a JSON file manually.
+            const state = {
+                data: null,
+                readOnly: false
+            };
+
+            const quizStatus = document.getElementById('quizStatus');
+            const quizWarnings = document.getElementById('quizWarnings');
+            const packsContainer = document.getElementById('packsContainer');
+            const quizFetchPath = document.getElementById('quizFetchPath');
+            const quizFetch = document.getElementById('quizFetch');
+            const quizFileInput = document.getElementById('quizFileInput');
+            const quizExport = document.getElementById('quizExport');
+            const quizValidate = document.getElementById('quizValidate');
+            const quizReadOnly = document.getElementById('quizReadOnly');
+
+            const newPackId = document.getElementById('newPackId');
+            const newPackName = document.getElementById('newPackName');
+            const newPackDifficulty = document.getElementById('newPackDifficulty');
+            const newPackIcon = document.getElementById('newPackIcon');
+            const addPackButton = document.getElementById('addPack');
+
+            const setStatus = (message, tone = '') => {
+                quizStatus.textContent = message;
+                quizStatus.className = `quiz-admin-status ${tone}`.trim();
+            };
+
+            const setWarnings = (messages = []) => {
+                if (!messages.length) {
+                    quizWarnings.innerHTML = '<span class="quiz-admin-status--success">Validation passed. Ready to export.</span>';
+                    return;
+                }
+
+                const items = messages.map((message) => `<li>${message}</li>`).join('');
+                quizWarnings.innerHTML = `
+                    <div class="quiz-admin-status--error"><strong>Validation warnings:</strong></div>
+                    <ul class="quiz-admin-warning-list">${items}</ul>
+                `;
+            };
+
+            const sanitizePack = (pack) => ({
+                id: String(pack.id ?? ''),
+                name: pack.name ?? '',
+                difficulty: pack.difficulty ?? '',
+                icon: pack.icon ?? '',
+                questions: Array.isArray(pack.questions) ? pack.questions : [],
+                questionCount: Number.isFinite(pack.questionCount) ? pack.questionCount : 0
+            });
+
+            // Load quiz JSON from either fetch or file input and normalize minimally for safe rendering.
+            const loadData = (data) => {
+                if (!data || !Array.isArray(data.packs)) {
+                    setStatus('Invalid JSON: expected a top-level { packs: [] } object.', 'quiz-admin-status--error');
+                    state.data = null;
+                    packsContainer.innerHTML = '';
+                    packsContainer.classList.add('quiz-admin-disabled');
+                    return;
+                }
+
+                state.data = {
+                    packs: data.packs.map((pack) => {
+                        const normalizedPack = {
+                            ...pack,
+                            ...sanitizePack(pack)
+                        };
+
+                        normalizedPack.questions = Array.isArray(pack.questions)
+                            ? pack.questions.map((question) => {
+                                const parsedIndex = Number(question.correctIndex);
+                                return {
+                                    ...question,
+                                    options: Array.isArray(question.options) ? question.options : [],
+                                    correctIndex: Number.isFinite(parsedIndex) ? parsedIndex : 0
+                                };
+                            })
+                            : [];
+
+                        return normalizedPack;
+                    })
+                };
+
+                updateDerivedCounts();
+                setStatus(`Loaded ${state.data.packs.length} pack(s).`, 'quiz-admin-status--success');
+                render();
+            };
+
+            const updateDerivedCounts = () => {
+                if (!state.data) return;
+                state.data.packs.forEach((pack) => {
+                    pack.questionCount = pack.questions.length;
+                });
+            };
+
+            const render = () => {
+                if (!state.data) {
+                    packsContainer.innerHTML = '';
+                    packsContainer.classList.add('quiz-admin-disabled');
+                    return;
+                }
+
+                packsContainer.classList.toggle('quiz-admin-disabled', state.readOnly);
+                packsContainer.innerHTML = '';
+
+                state.data.packs.forEach((pack, packIndex) => {
+                    const packSection = document.createElement('section');
+                    packSection.className = 'quiz-pack';
+                    packSection.dataset.packIndex = packIndex;
+
+                    const packHeader = document.createElement('div');
+                    packHeader.className = 'quiz-pack-header';
+                    packHeader.innerHTML = `
+                        <h3>Pack <span class="quiz-admin-tag"><strong>${pack.id}</strong></span> — ${pack.name}</h3>
+                        <div class="quiz-admin-tag">Questions: <strong>${pack.questionCount}</strong></div>
+                    `;
+
+                    const packMeta = document.createElement('div');
+                    packMeta.className = 'quiz-pack-meta';
+                    packMeta.innerHTML = `
+                        <label>
+                            Pack ID
+                            <input type="text" value="${pack.id}" data-pack-index="${packIndex}" data-pack-field="id" readonly>
+                        </label>
+                        <label>
+                            Pack name
+                            <input type="text" value="${pack.name}" data-pack-index="${packIndex}" data-pack-field="name">
+                        </label>
+                        <label>
+                            Difficulty
+                            <input type="text" value="${pack.difficulty}" data-pack-index="${packIndex}" data-pack-field="difficulty">
+                        </label>
+                        <label>
+                            Icon
+                            <input type="text" value="${pack.icon}" data-pack-index="${packIndex}" data-pack-field="icon">
+                        </label>
+                        <label>
+                            Question count
+                            <input type="number" value="${pack.questionCount}" readonly>
+                        </label>
+                    `;
+
+                    packSection.appendChild(packHeader);
+                    packSection.appendChild(packMeta);
+
+                    const addQuestionButton = document.createElement('button');
+                    addQuestionButton.type = 'button';
+                    addQuestionButton.className = 'ccg-btn ccg-btn--secondary';
+                    addQuestionButton.textContent = 'Add question to end';
+                    addQuestionButton.dataset.packIndex = packIndex;
+                    addQuestionButton.dataset.action = 'add-question';
+                    packSection.appendChild(addQuestionButton);
+
+                    pack.questions.forEach((question, questionIndex) => {
+                        const questionBlock = document.createElement('div');
+                        questionBlock.className = 'quiz-question';
+                        questionBlock.dataset.questionIndex = questionIndex;
+
+                        const header = document.createElement('div');
+                        header.className = 'quiz-question-header';
+
+                        const idTag = document.createElement('div');
+                        idTag.className = 'quiz-admin-tag';
+                        idTag.textContent = 'Question ID: ';
+                        const idStrong = document.createElement('strong');
+                        idStrong.textContent = question.id;
+                        idTag.appendChild(idStrong);
+
+                        const correctLabel = document.createElement('label');
+                        correctLabel.className = 'quiz-admin-inline';
+                        correctLabel.textContent = 'Correct index';
+                        const correctSelect = document.createElement('select');
+                        correctSelect.dataset.packIndex = packIndex;
+                        correctSelect.dataset.questionIndex = questionIndex;
+                        correctSelect.dataset.questionField = 'correctIndex';
+                        question.options.forEach((_, optionIndex) => {
+                            const option = document.createElement('option');
+                            option.value = optionIndex;
+                            option.textContent = optionIndex;
+                            if (optionIndex === question.correctIndex) {
+                                option.selected = true;
+                            }
+                            correctSelect.appendChild(option);
+                        });
+                        correctLabel.appendChild(correctSelect);
+
+                        header.appendChild(idTag);
+                        header.appendChild(correctLabel);
+
+                        const questionText = document.createElement('label');
+                        questionText.textContent = 'Question text';
+                        const questionArea = document.createElement('textarea');
+                        questionArea.dataset.packIndex = packIndex;
+                        questionArea.dataset.questionIndex = questionIndex;
+                        questionArea.dataset.questionField = 'question';
+                        questionArea.value = question.question ?? '';
+                        questionText.appendChild(questionArea);
+
+                        const optionsGrid = document.createElement('div');
+                        optionsGrid.className = 'quiz-question-options';
+                        question.options.forEach((optionValue, optionIndex) => {
+                            const optionLabel = document.createElement('label');
+                            optionLabel.textContent = `Option ${optionIndex + 1}`;
+                            const optionInput = document.createElement('input');
+                            optionInput.type = 'text';
+                            optionInput.value = optionValue;
+                            optionInput.dataset.packIndex = packIndex;
+                            optionInput.dataset.questionIndex = questionIndex;
+                            optionInput.dataset.optionIndex = optionIndex;
+                            optionLabel.appendChild(optionInput);
+                            optionsGrid.appendChild(optionLabel);
+                        });
+
+                        const optionButtons = document.createElement('div');
+                        optionButtons.className = 'quiz-admin-btn-group';
+                        const addOptionButton = document.createElement('button');
+                        addOptionButton.type = 'button';
+                        addOptionButton.className = 'ccg-btn ccg-btn--ghost';
+                        addOptionButton.dataset.packIndex = packIndex;
+                        addOptionButton.dataset.questionIndex = questionIndex;
+                        addOptionButton.dataset.action = 'add-option';
+                        addOptionButton.textContent = 'Add option';
+                        const removeOptionButton = document.createElement('button');
+                        removeOptionButton.type = 'button';
+                        removeOptionButton.className = 'ccg-btn ccg-btn--ghost';
+                        removeOptionButton.dataset.packIndex = packIndex;
+                        removeOptionButton.dataset.questionIndex = questionIndex;
+                        removeOptionButton.dataset.action = 'remove-option';
+                        removeOptionButton.textContent = 'Remove last option';
+                        optionButtons.appendChild(addOptionButton);
+                        optionButtons.appendChild(removeOptionButton);
+
+                        const extraFields = document.createElement('div');
+                        extraFields.className = 'quiz-question-extra';
+                        const knownExtras = ['imageUrl', 'audioUrl', 'gameName'];
+                        let hasExtras = false;
+                        knownExtras.forEach((field) => {
+                            if (!(field in question)) return;
+                            hasExtras = true;
+                            const labelText = field.replace(/([A-Z])/g, ' $1');
+                            const extraLabel = document.createElement('label');
+                            extraLabel.textContent = labelText.charAt(0).toUpperCase() + labelText.slice(1);
+                            const extraInput = document.createElement('input');
+                            extraInput.type = 'text';
+                            extraInput.value = question[field] ?? '';
+                            extraInput.dataset.packIndex = packIndex;
+                            extraInput.dataset.questionIndex = questionIndex;
+                            extraInput.dataset.questionField = field;
+                            extraLabel.appendChild(extraInput);
+                            extraFields.appendChild(extraLabel);
+                        });
+
+                        questionBlock.appendChild(header);
+                        questionBlock.appendChild(questionText);
+                        questionBlock.appendChild(optionsGrid);
+                        questionBlock.appendChild(optionButtons);
+                        if (hasExtras) {
+                            questionBlock.appendChild(extraFields);
+                        }
+
+                        packSection.appendChild(questionBlock);
+                    });
+
+                    packsContainer.appendChild(packSection);
+                });
+
+                applyReadOnlyState();
+            };
+
+            const applyReadOnlyState = () => {
+                const disabled = state.readOnly;
+                packsContainer.querySelectorAll('input, textarea, select, button').forEach((element) => {
+                    if (element.dataset.action || element.dataset.packField || element.dataset.questionField || element.dataset.optionIndex !== undefined) {
+                        element.disabled = disabled;
+                    }
+                });
+                addPackButton.disabled = disabled;
+                [newPackId, newPackName, newPackDifficulty, newPackIcon].forEach((input) => {
+                    input.disabled = disabled;
+                });
+            };
+
+            const getNextQuestionNumber = (pack) => {
+                const numbers = pack.questions
+                    .map((question) => parseInt(String(question.id).split('-')[1], 10))
+                    .filter((value) => Number.isFinite(value));
+                const maxNumber = numbers.length ? Math.max(...numbers) : pack.questions.length;
+                return maxNumber + 1;
+            };
+
+            const addQuestionToPack = (packIndex) => {
+                const pack = state.data.packs[packIndex];
+                const nextNumber = getNextQuestionNumber(pack);
+                const newQuestion = {
+                    id: `${pack.id}-${nextNumber}`,
+                    question: 'New question',
+                    options: ['Option 1', 'Option 2', 'Option 3', 'Option 4'],
+                    correctIndex: 0
+                };
+                pack.questions.push(newQuestion);
+                updateDerivedCounts();
+                render();
+            };
+
+            const addOption = (packIndex, questionIndex) => {
+                const question = state.data.packs[packIndex].questions[questionIndex];
+                question.options.push(`Option ${question.options.length + 1}`);
+                render();
+            };
+
+            const removeOption = (packIndex, questionIndex) => {
+                const question = state.data.packs[packIndex].questions[questionIndex];
+                if (question.options.length <= 2) {
+                    setStatus('Each question must keep at least two options.', 'quiz-admin-status--warning');
+                    return;
+                }
+                question.options.pop();
+                if (question.correctIndex >= question.options.length) {
+                    question.correctIndex = question.options.length - 1;
+                }
+                render();
+            };
+
+            const addPack = () => {
+                if (!state.data) {
+                    setStatus('Load quiz JSON before adding a pack.', 'quiz-admin-status--warning');
+                    return;
+                }
+
+                const id = newPackId.value.trim();
+                const name = newPackName.value.trim();
+                const difficulty = newPackDifficulty.value.trim();
+                const icon = newPackIcon.value.trim();
+
+                if (!id || !name) {
+                    setStatus('Pack ID and name are required.', 'quiz-admin-status--warning');
+                    return;
+                }
+
+                if (state.data.packs.some((pack) => String(pack.id) === id)) {
+                    setStatus(`Pack ID “${id}” already exists.`, 'quiz-admin-status--error');
+                    return;
+                }
+
+                state.data.packs.push({
+                    id,
+                    name,
+                    difficulty,
+                    icon,
+                    questions: [],
+                    questionCount: 0
+                });
+
+                newPackId.value = '';
+                newPackName.value = '';
+                newPackDifficulty.value = '';
+                newPackIcon.value = '';
+
+                setStatus(`Added pack ${id}.`, 'quiz-admin-status--success');
+                render();
+            };
+
+            const validateData = () => {
+                if (!state.data) return ['No quiz data loaded.'];
+
+                const warnings = [];
+                const ids = new Set();
+
+                state.data.packs.forEach((pack) => {
+                    if (pack.questionCount !== pack.questions.length) {
+                        warnings.push(`Pack ${pack.id} questionCount (${pack.questionCount}) does not match questions length (${pack.questions.length}).`);
+                    }
+
+                    pack.questions.forEach((question, questionIndex) => {
+                        if (!question.id) {
+                            warnings.push(`Pack ${pack.id} question ${questionIndex + 1} is missing an ID.`);
+                        } else if (ids.has(question.id)) {
+                            warnings.push(`Duplicate question ID found: ${question.id}.`);
+                        } else {
+                            ids.add(question.id);
+                        }
+
+                        if (!Array.isArray(question.options) || question.options.length === 0) {
+                            warnings.push(`Question ${question.id} has no answer options.`);
+                        } else if (question.correctIndex < 0 || question.correctIndex >= question.options.length) {
+                            warnings.push(`Question ${question.id} has correctIndex outside range (0-${question.options.length - 1}).`);
+                        }
+                    });
+                });
+
+                return warnings;
+            };
+
+            // Validate before export, then download a replacement quiz JSON file.
+            const exportData = () => {
+                if (!state.data) {
+                    setStatus('Load a quiz JSON file before exporting.', 'quiz-admin-status--warning');
+                    return;
+                }
+
+                updateDerivedCounts();
+                const warnings = validateData();
+                setWarnings(warnings);
+
+                if (warnings.length) {
+                    setStatus('Fix validation warnings before exporting.', 'quiz-admin-status--error');
+                    return;
+                }
+
+                const blob = new Blob([JSON.stringify(state.data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'quiz.json';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+
+                setStatus('Download started. Replace quiz/quiz-data.json manually when ready.', 'quiz-admin-status--success');
+            };
+
+            quizFetch.addEventListener('click', async () => {
+                const path = quizFetchPath.value.trim();
+                if (!path) {
+                    setStatus('Enter a path to fetch from.', 'quiz-admin-status--warning');
+                    return;
+                }
+
+                setStatus('Fetching quiz JSON…');
+
+                try {
+                    const response = await fetch(path, { cache: 'no-store' });
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    const json = await response.json();
+                    loadData(json);
+                } catch (error) {
+                    setStatus(`Fetch failed: ${error.message}`, 'quiz-admin-status--error');
+                }
+            });
+
+            quizFileInput.addEventListener('change', (event) => {
+                const [file] = event.target.files;
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = () => {
+                    try {
+                        const json = JSON.parse(reader.result);
+                        loadData(json);
+                    } catch (error) {
+                        setStatus('Uploaded file is not valid JSON.', 'quiz-admin-status--error');
+                    }
+                };
+                reader.readAsText(file);
+            });
+
+            packsContainer.addEventListener('input', (event) => {
+                if (!state.data || state.readOnly) return;
+
+                const target = event.target;
+                const packIndex = Number(target.dataset.packIndex);
+                const questionIndex = Number(target.dataset.questionIndex);
+
+                if (Number.isNaN(packIndex)) return;
+
+                const pack = state.data.packs[packIndex];
+
+                if (target.dataset.packField) {
+                    pack[target.dataset.packField] = target.value;
+                    return;
+                }
+
+                if (!Number.isNaN(questionIndex)) {
+                    const question = pack.questions[questionIndex];
+
+                    if (target.dataset.questionField) {
+                        if (target.dataset.questionField === 'correctIndex') {
+                            question.correctIndex = Number(target.value);
+                        } else {
+                            question[target.dataset.questionField] = target.value;
+                        }
+                        return;
+                    }
+
+                    if (target.dataset.optionIndex !== undefined) {
+                        const optionIndex = Number(target.dataset.optionIndex);
+                        question.options[optionIndex] = target.value;
+                    }
+                }
+            });
+
+            packsContainer.addEventListener('change', (event) => {
+                if (!state.data || state.readOnly) return;
+                if (event.target.dataset.packField) {
+                    render();
+                }
+            });
+
+            packsContainer.addEventListener('click', (event) => {
+                if (!state.data || state.readOnly) return;
+
+                const target = event.target.closest('button');
+                if (!target) return;
+
+                const packIndex = Number(target.dataset.packIndex);
+                const questionIndex = Number(target.dataset.questionIndex);
+
+                if (target.dataset.action === 'add-question') {
+                    addQuestionToPack(packIndex);
+                }
+
+                if (target.dataset.action === 'add-option') {
+                    addOption(packIndex, questionIndex);
+                }
+
+                if (target.dataset.action === 'remove-option') {
+                    removeOption(packIndex, questionIndex);
+                }
+            });
+
+            addPackButton.addEventListener('click', addPack);
+
+            quizExport.addEventListener('click', exportData);
+
+            quizValidate.addEventListener('click', () => {
+                updateDerivedCounts();
+                const warnings = validateData();
+                setWarnings(warnings);
+                if (!warnings.length) {
+                    setStatus('Validation passed.', 'quiz-admin-status--success');
+                } else {
+                    setStatus('Validation warnings found. Review before exporting.', 'quiz-admin-status--error');
+                }
+            });
+
+            quizReadOnly.addEventListener('change', (event) => {
+                state.readOnly = event.target.checked;
+                applyReadOnlyState();
+            });
+        })();
+    </script>
+
+    <script src="../js/nav.js" defer></script>
+    <script src="../js/mode-toggle.js" defer></script>
+</body>
+</html>
