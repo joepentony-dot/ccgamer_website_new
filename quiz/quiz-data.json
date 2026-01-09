@@ -741,7 +741,7 @@
             "Smash TV"
           ],
           "correctIndex": 1,
-          "audioUrl": "audio/quiz/amiga-alien-breed.mp3",
+          "audioUrl": "audio/quiz/amiga-alienbreed.mp3",
           "id": "4-1"
         },
         {
@@ -753,7 +753,7 @@
             "Another World"
           ],
           "correctIndex": 3,
-          "audioUrl": "audio/quiz/amiga-another-world.mp3",
+          "audioUrl": "audio/quiz/amiga-anotherworld.mp3",
           "id": "4-2"
         },
         {
@@ -765,7 +765,7 @@
             "Simon The Sorcerer"
           ],
           "correctIndex": 2,
-          "audioUrl": "audio/quiz/amiga-beneath-a-steel-sky.mp3",
+          "audioUrl": "audio/quiz/amiga-beneathasteelsky.mp3",
           "id": "4-3"
         },
         {
@@ -777,7 +777,7 @@
             "The New Zealand Story"
           ],
           "correctIndex": 2,
-          "audioUrl": "audio/quiz/amiga-bubble-bobble.mp3",
+          "audioUrl": "audio/quiz/amiga-bubblebobble.mp3",
           "id": "4-4"
         },
         {
@@ -789,7 +789,7 @@
             "B-17 Flying Fortress"
           ],
           "correctIndex": 0,
-          "audioUrl": "audio/quiz/amiga-cannon-fodder.mp3",
+          "audioUrl": "audio/quiz/amiga-cannonfodder.mp3",
           "id": "4-5"
         },
         {
@@ -813,7 +813,7 @@
             "Dyna Blaster"
           ],
           "correctIndex": 3,
-          "audioUrl": "audio/quiz/amiga-dyna-blaster.mp3",
+          "audioUrl": "audio/quiz/amiga-dynablaster.mp3",
           "id": "4-7"
         },
         {
@@ -837,7 +837,7 @@
             "UFO: Enemy Unknown"
           ],
           "correctIndex": 2,
-          "audioUrl": "audio/quiz/amiga-it-came-from-the-desert.mp3",
+          "audioUrl": "audio/quiz/amiga-itcamefromthedesert.mp3",
           "id": "4-9"
         },
         {
@@ -861,7 +861,7 @@
             "Their Finest Hour"
           ],
           "correctIndex": 0,
-          "audioUrl": "audio/quiz/amiga-maniac-mansion.mp3",
+          "audioUrl": "audio/quiz/amiga-maniacmansion.mp3",
           "id": "4-11"
         },
         {
@@ -873,7 +873,7 @@
             "Mega Lo Mania"
           ],
           "correctIndex": 3,
-          "audioUrl": "audio/quiz/amiga-mega-lo-mania.mp3",
+          "audioUrl": "audio/quiz/amiga-megalomania.mp3",
           "id": "4-12"
         },
         {
@@ -897,7 +897,7 @@
             "MicroProse Soccer"
           ],
           "correctIndex": 1,
-          "audioUrl": "audio/quiz/amiga-sensible-soccer.mp3",
+          "audioUrl": "audio/quiz/amiga-sensiblesoccer.mp3",
           "id": "4-14"
         },
         {
@@ -921,7 +921,7 @@
             "Brutal Sports Football"
           ],
           "correctIndex": 1,
-          "audioUrl": "audio/quiz/amiga-speedball-2.mp3",
+          "audioUrl": "audio/quiz/amiga-speedball2.mp3",
           "id": "4-16"
         },
         {
@@ -933,7 +933,7 @@
             "Test Drive II: The Duel"
           ],
           "correctIndex": 0,
-          "audioUrl": "audio/quiz/amiga-supercars-2.mp3",
+          "audioUrl": "audio/quiz/amiga-supercars2.mp3",
           "id": "4-17"
         },
         {
@@ -957,7 +957,7 @@
             "Out Run"
           ],
           "correctIndex": 2,
-          "audioUrl": "audio/quiz/amiga-turbo-challenge-2.mp3",
+          "audioUrl": "audio/quiz/amiga-turbochallenge2.mp3",
           "id": "4-19"
         },
         {
@@ -990,7 +990,7 @@
             "David Whittaker"
           ],
           "correctIndex": 3,
-          "audioUrl": "audio/quiz/david-whittaker-knight-games.mp3",
+          "audioUrl": "audio/quiz/whittaker-Knight_Games-01_cut_Whittaker.mp3",
           "gameName": "Knight Games",
           "id": "5-1"
         },
@@ -1003,7 +1003,7 @@
             "David Whittaker"
           ],
           "correctIndex": 2,
-          "audioUrl": "audio/quiz/jeroen-tel-super-monaco-grand-prix.mp3",
+          "audioUrl": "audio/quiz/jeroentel-Super_Monaco_Grand_Prix-01_jeroentel.mp3",
           "gameName": "Super Monaco Grand Prix",
           "id": "5-2"
         },
@@ -1016,7 +1016,7 @@
             "David Whittaker"
           ],
           "correctIndex": 0,
-          "audioUrl": "audio/quiz/rob-hubbard-monty-on-the-run.mp3",
+          "audioUrl": "audio/quiz/hubbard-Monty_on_the_Run-01_cut_robhubbard.mp3",
           "gameName": "Monty on the Run",
           "id": "5-3"
         },
@@ -1029,7 +1029,7 @@
             "David Whittaker"
           ],
           "correctIndex": 2,
-          "audioUrl": "audio/quiz/jeroen-tel-myth.mp3",
+          "audioUrl": "audio/quiz/jeroentel-Myth-01_jeroentel.mp3",
           "gameName": "Myth",
           "id": "5-4"
         },
@@ -1042,7 +1042,7 @@
             "David Whittaker"
           ],
           "correctIndex": 1,
-          "audioUrl": "audio/quiz/martin-galway-yie-ar-kung-fu.mp3",
+          "audioUrl": "audio/quiz/galway-Yie_Ar_Kung_Fu-12_galway.mp3",
           "gameName": "Yie Ar Kung Fu",
           "id": "5-5"
         },
@@ -1055,7 +1055,7 @@
             "David Whittaker"
           ],
           "correctIndex": 0,
-          "audioUrl": "audio/quiz/rob-hubbard-action-biker.mp3",
+          "audioUrl": "audio/quiz/hubbard-Action_Biker-01_cut_robhubbard.mp3",
           "gameName": "Action Biker",
           "id": "5-6"
         },
@@ -1068,7 +1068,7 @@
             "David Whittaker"
           ],
           "correctIndex": 3,
-          "audioUrl": "audio/quiz/david-whittaker-max-headroom.mp3",
+          "audioUrl": "audio/quiz/whittaker-Max_Headroom-01_cut_Whittaker.mp3",
           "gameName": "Max Headroom",
           "id": "5-7"
         },
@@ -1081,7 +1081,7 @@
             "David Whittaker"
           ],
           "correctIndex": 2,
-          "audioUrl": "audio/quiz/jeroen-tel-hawkeye.mp3",
+          "audioUrl": "audio/quiz/jeroentel-Hawkeye-01_jeroentel.mp3",
           "gameName": "Hawkeye",
           "id": "5-8"
         },
@@ -1094,7 +1094,7 @@
             "David Whittaker"
           ],
           "correctIndex": 0,
-          "audioUrl": "audio/quiz/rob-hubbard-train-robbers.mp3",
+          "audioUrl": "audio/quiz/hubbard-5_Title_Tunes-01_cut_robhubbard.mp3",
           "gameName": "Train Robbers",
           "id": "5-9"
         },
@@ -1107,7 +1107,7 @@
             "David Whittaker"
           ],
           "correctIndex": 2,
-          "audioUrl": "audio/quiz/jeroen-tel-turbo-outrun.mp3",
+          "audioUrl": "audio/quiz/jeroentel-Turbo_Outrun-01_jeroentel.mp3",
           "gameName": "Turbo Outrun",
           "id": "5-10"
         },
@@ -1120,7 +1120,7 @@
             "David Whittaker"
           ],
           "correctIndex": 1,
-          "audioUrl": "audio/quiz/martin-galway-mikie.mp3",
+          "audioUrl": "audio/quiz/galway-Mikie-01_cut_galway.mp3",
           "gameName": "Mikie",
           "id": "5-11"
         },
@@ -1133,7 +1133,7 @@
             "David Whittaker"
           ],
           "correctIndex": 0,
-          "audioUrl": "audio/quiz/rob-hubbard-flash-gordon.mp3",
+          "audioUrl": "audio/quiz/hubbard-Flash_Gordon-01_cut_robhubbard.mp3",
           "gameName": "Flash Gordon",
           "id": "5-12"
         },
@@ -1146,7 +1146,7 @@
             "David Whittaker"
           ],
           "correctIndex": 3,
-          "audioUrl": "audio/quiz/david-whittaker-lazy-jones.mp3",
+          "audioUrl": "audio/quiz/whittaker-Lazy_Jones-01_Whittaker.mp3",
           "gameName": "Lazy Jones",
           "id": "5-13"
         },
@@ -1159,7 +1159,7 @@
             "David Whittaker"
           ],
           "correctIndex": 2,
-          "audioUrl": "audio/quiz/jeroen-tel-supremacy.mp3",
+          "audioUrl": "audio/quiz/jeroentel-Supremacy-01_jeroentel.mp3",
           "gameName": "Supremacy",
           "id": "5-14"
         },
@@ -1172,7 +1172,7 @@
             "David Whittaker"
           ],
           "correctIndex": 1,
-          "audioUrl": "audio/quiz/martin-galway-times-of-lore.mp3",
+          "audioUrl": "audio/quiz/galway-TIMESOFLORE_cut_galway.mp3",
           "gameName": "Times Of Lore",
           "id": "5-15"
         },
@@ -1185,7 +1185,7 @@
             "David Whittaker"
           ],
           "correctIndex": 0,
-          "audioUrl": "audio/quiz/rob-hubbard-bangkok-knights.mp3",
+          "audioUrl": "audio/quiz/hubbard-Bangkok_Knights_cut_robhubbard.mp3",
           "gameName": "Bangkok Knights",
           "id": "5-16"
         },
@@ -1198,7 +1198,7 @@
             "David Whittaker"
           ],
           "correctIndex": 2,
-          "audioUrl": "audio/quiz/jeroen-tel-golden-axe.mp3",
+          "audioUrl": "audio/quiz/jeroentel-Golden_Axe-01_jeroentel.mp3",
           "gameName": "Golden Axe",
           "id": "5-17"
         },
@@ -1211,7 +1211,7 @@
             "David Whittaker"
           ],
           "correctIndex": 1,
-          "audioUrl": "audio/quiz/martin-galway-daley-thompsons-decathlon.mp3",
+          "audioUrl": "audio/quiz/galway-Daley_Thompsons_Decathlon-01_cut_galway.mp3",
           "gameName": "Decathlon",
           "id": "5-18"
         },
@@ -1224,7 +1224,7 @@
             "David Whittaker"
           ],
           "correctIndex": 1,
-          "audioUrl": "audio/quiz/martin-galway-neverending-story.mp3",
+          "audioUrl": "audio/quiz/galway-Neverending_Story_cut_galway.mp3",
           "gameName": "Neverending Story",
           "id": "5-19"
         },
@@ -1237,7 +1237,7 @@
             "David Whittaker"
           ],
           "correctIndex": 0,
-          "audioUrl": "audio/quiz/rob-hubbard-crazy-comets.mp3",
+          "audioUrl": "audio/quiz/hubbard-Crazy_Comets-01_cut_robhubbard.mp3",
           "gameName": "Crazy Comets",
           "id": "5-20"
         }
