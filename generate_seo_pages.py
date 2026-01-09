@@ -7,7 +7,7 @@ Offline SEO generator for Cheeky Commodore Gamer (GitHub Pages).
 SAFE / ADDITIVE-ONLY BEHAVIOUR
 ------------------------------
 ✔ Reads:   games/games.json
-✔ Creates: games/{slug}.html              (SEO landing + history replace)
+✔ Creates: games/{slug}/index.html        (SEO landing + redirect)
 
 ✖ Does NOT modify games.json
 ✖ Does NOT overwrite existing HTML
@@ -35,7 +35,6 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 DEFAULT_DOMAIN = "https://www.cheekycommodoregamer.co.uk"
-# These are protected directories/pages and must never receive flat game stubs.
 RESERVED_SLUGS = {"genres", "collections", "seo", "index", "game"}
 
 
@@ -61,6 +60,9 @@ def slugify(value: str) -> str:
 
 
 def resolve_slug(game: Dict[str, Any]) -> str:
+    raw_slug = str(game.get("slug", "")).strip()
+    if raw_slug:
+        return raw_slug
     title = str(game.get("title", "")).strip() or str(game.get("id", "")).strip()
     return slugify(title)
 
@@ -93,7 +95,6 @@ def seo_template(
     safe_thumb_alt = html.escape(thumb_alt)
     safe_interactive_href = html.escape(interactive_href, quote=True)
     safe_browse_href = html.escape(browse_href, quote=True)
-    safe_display_slug = html.escape(display_slug, quote=True)
     return f"""<!DOCTYPE html>
 <html lang=\"en\">
 <head>
@@ -102,7 +103,10 @@ def seo_template(
     <!-- Flat SEO stub for GitHub Pages: show /games/{{slug}}/ without server rewrites -->
     <script>
       (function () {{
-        history.replaceState(null, "", \"{safe_display_slug}\");
+        var target = \"{safe_interactive_href}\";
+        if (target) {{
+          window.location.replace(target);
+        }}
       }})();
     </script>
 
@@ -119,18 +123,18 @@ def seo_template(
     <meta property=\"og:url\" content=\"{og_url}\" />
     <meta property=\"og:image\" content=\"{og_image}\" />
 
-    <link rel=\"icon\" href=\"../favicon.ico\" />
+    <link rel=\"icon\" href=\"../../favicon.ico\" />
 
     <link href=\"https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap\" rel=\"stylesheet\" />
 
-    <link rel=\"stylesheet\" href=\"../resources/css/ccg-master.css\" />
-    <link rel=\"stylesheet\" href=\"../resources/css/ccg-mode.css\" />
-    <link rel=\"stylesheet\" href=\"../resources/css/ccg-effects.css\" />
-    <link rel=\"stylesheet\" href=\"../resources/css/ccg-anim.css\" />
-    <link rel=\"stylesheet\" href=\"../resources/css/ccg-overlays.css\" />
-    <link rel=\"stylesheet\" href=\"../resources/css/ccg-cards.css\" />
-    <link rel=\"stylesheet\" href=\"../resources/css/games.css\" />
-    <link rel=\"stylesheet\" href=\"../resources/css/ccg-footer.css\" />
+    <link rel=\"stylesheet\" href=\"../../resources/css/ccg-master.css\" />
+    <link rel=\"stylesheet\" href=\"../../resources/css/ccg-mode.css\" />
+    <link rel=\"stylesheet\" href=\"../../resources/css/ccg-effects.css\" />
+    <link rel=\"stylesheet\" href=\"../../resources/css/ccg-anim.css\" />
+    <link rel=\"stylesheet\" href=\"../../resources/css/ccg-overlays.css\" />
+    <link rel=\"stylesheet\" href=\"../../resources/css/ccg-cards.css\" />
+    <link rel=\"stylesheet\" href=\"../../resources/css/games.css\" />
+    <link rel=\"stylesheet\" href=\"../../resources/css/ccg-footer.css\" />
 
     <script type=\"application/ld+json\">
     {{
@@ -220,7 +224,7 @@ def seo_template(
     </footer>
 </div>
 
-<script src=\"../js/ccg-base.js\" defer></script>
+<script src=\"../../js/ccg-base.js\" defer></script>
 
 </body>
 </html>
@@ -263,25 +267,20 @@ def main() -> int:
     games = load_games(games_json)
     domain = args.domain.rstrip("/")
 
-    created_files = skipped_files = exclusions_skipped = 0
+    created_folders = skipped_folders = exclusions_skipped = 0
 
     for game in games:
         game_id = str(game.get("id", "")).strip()
         if not game_id:
-            skipped_files += 1
+            skipped_folders += 1
             continue
 
         slug = resolve_slug(game)
         if not slug:
-            skipped_files += 1
+            skipped_folders += 1
             continue
 
         if slug.lower() in RESERVED_SLUGS:
-            exclusions_skipped += 1
-            continue
-        # Guardrail: flat files only, never create /games/{slug}/ folders.
-        slug_dir = root / "games" / slug
-        if slug_dir.exists() and slug_dir.is_dir():
             exclusions_skipped += 1
             continue
 
@@ -296,8 +295,7 @@ def main() -> int:
         mode = resolve_mode(str(game.get("system", "")))
 
         desc = make_description(title)
-        page_url = f"{domain}/games/{slug}.html"
-        display_slug = f"/games/{slug}/"
+        page_url = f"{domain}/games/{slug}/"
 
         page_html = seo_template(
             title=title,
@@ -315,19 +313,18 @@ def main() -> int:
             mode=mode,
             interactive_href=f"/games/game.html?id={game_id}",
             browse_href="/games/index.html",
-            display_slug=display_slug,
         )
 
-        page_file = root / "games" / f"{slug}.html"
+        page_file = root / "games" / slug / "index.html"
         if write_if_missing(page_file, page_html, args.dry_run):
-            created_files += 1
+            created_folders += 1
         else:
-            skipped_files += 1
+            skipped_folders += 1
 
     print("=== CCG SEO Generation Report ===")
     print(f"Total games: {len(games)}")
-    print(f"Files created: {created_files}")
-    print(f"Files skipped: {skipped_files}")
+    print(f"Folders created: {created_folders}")
+    print(f"Folders skipped: {skipped_folders}")
     print(f"Exclusions skipped: {exclusions_skipped}")
     print("DRY RUN" if args.dry_run else "Done. Commit and push.")
 
