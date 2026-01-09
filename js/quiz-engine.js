@@ -50,6 +50,16 @@
     const ANSWER_REVEAL_DELAY_MS = 1600;
     const WRONG_REVEAL_FLASH_MS = 350;
     const SPEECH_RATE = 1.05;
+    const QUIZ_MOBILE_QUERY = window.matchMedia?.("(max-width: 820px)");
+    const QUIZ_COARSE_QUERY = window.matchMedia?.("(pointer: coarse)");
+
+    function isMobileLikeViewport() {
+        if (typeof window.ccgIsMobileLike === "function") {
+            return window.ccgIsMobileLike();
+        }
+        if (QUIZ_MOBILE_QUERY?.matches) return true;
+        return Boolean(QUIZ_COARSE_QUERY?.matches || window.innerWidth <= 820);
+    }
 
     // --------------------------------------------------
     // UTILITIES
@@ -281,7 +291,7 @@
         qs("#quiz-score-panel").hidden = true;
         setFocusMode(true);
         const panel = qs("#quiz-panel");
-        if (panel && typeof panel.scrollIntoView === "function") {
+        if (panel && typeof panel.scrollIntoView === "function" && !isMobileLikeViewport()) {
             panel.scrollIntoView({ behavior: "smooth", block: "center" });
         }
     }

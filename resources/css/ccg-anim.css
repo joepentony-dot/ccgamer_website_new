@@ -134,3 +134,17 @@
     transition-timing-function: var(--ccg-ease-out-lux);
     transition-duration: var(--ccg-hover-duration);
 }
+
+/* ============================================================
+   MOBILE HARDENING — DISABLE ENTRANCE MOTION
+============================================================ */
+
+html.ccg-is-mobile .ccg-fade-in,
+html.ccg-is-mobile .ccg-slide-up,
+html.ccg-is-mobile .ccg-anim-in,
+html.ccg-is-mobile .ccg-pulse {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+}
