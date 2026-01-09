@@ -198,6 +198,23 @@
                 </div>
             </section>
 
+            <section class="ccg-section admin-callout">
+                <h2 class="ccg-section-title">Adding a New Game — SEO Checklist</h2>
+                <ol class="admin-steps">
+                    <li>Add the game using this admin page.</li>
+                    <li>Ensure the title, thumbnail, and description are filled in.</li>
+                    <li>The slug is auto-derived from the title.</li>
+                    <li>
+                        After saving <code>games.json</code>:
+                        <ul class="admin-tips">
+                            <li>Run the local SEO generator script to create <code>/games/&lt;slug&gt;.html</code>.</li>
+                            <li>Flat files only — GitHub Pages does not support per-game folders.</li>
+                        </ul>
+                    </li>
+                    <li>Commit and push.</li>
+                </ol>
+            </section>
+
             <section class="ccg-section admin-grid">
 
                 <article class="admin-card">

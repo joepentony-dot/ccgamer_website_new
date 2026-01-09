@@ -5,16 +5,18 @@ generate_seo_pages.py
 Offline SEO generator for Cheeky Commodore Gamer (GitHub Pages).
 
 SAFE / ADDITIVE-ONLY BEHAVIOUR
------------------------------
+------------------------------
 ✔ Reads:   games/games.json
-✔ Creates: games/seo/{id}.html            (SEO landing + redirect)
+✔ Creates: games/{slug}.html              (SEO landing + history replace)
 
 ✖ Does NOT modify games.json
 ✖ Does NOT overwrite existing HTML
 ✖ Does NOT touch JS, loaders, routing, or navigation
+✖ Does NOT create per-game folders
 
 IMPORTANT:
 - Designed to be run after adding new games only
+- Flat SEO stubs are required for GitHub Pages (no server rewrites)
 
 Usage:
   python generate_seo_pages.py --root .
@@ -28,11 +30,13 @@ from __future__ import annotations
 import argparse
 import html
 import json
+import re
 from pathlib import Path
 from typing import Any, Dict, List
 
 DEFAULT_DOMAIN = "https://www.cheekycommodoregamer.co.uk"
-
+# These are protected directories/pages and must never receive flat game stubs.
+RESERVED_SLUGS = {"genres", "collections", "seo", "index", "game"}
 
 
 def to_abs_url(domain: str, path: str) -> str:
@@ -47,6 +51,18 @@ def make_description(title: str) -> str:
 def resolve_mode(system: str) -> str:
     system_value = (system or "").strip().lower()
     return "amiga" if "amiga" in system_value else "c64"
+
+
+def slugify(value: str) -> str:
+    normalized = value.strip().lower()
+    normalized = normalized.replace("_", "-")
+    normalized = re.sub(r"[^a-z0-9]+", "-", normalized)
+    return normalized.strip("-")
+
+
+def resolve_slug(game: Dict[str, Any]) -> str:
+    title = str(game.get("title", "")).strip() or str(game.get("id", "")).strip()
+    return slugify(title)
 
 
 def seo_template(
@@ -66,128 +82,129 @@ def seo_template(
     mode: str,
     interactive_href: str,
     browse_href: str,
+    display_slug: str,
 ) -> str:
-    """SEO landing page that immediately redirects to the interactive game page."""
+    """SEO landing page that immediately updates the visible URL without redirect."""
     safe_title = html.escape(title)
     safe_description = html.escape(description)
     safe_year = html.escape(year)
     safe_platform = html.escape(platform)
     safe_publisher = html.escape(publisher)
     safe_thumb_alt = html.escape(thumb_alt)
+    safe_interactive_href = html.escape(interactive_href, quote=True)
+    safe_browse_href = html.escape(browse_href, quote=True)
+    safe_display_slug = html.escape(display_slug, quote=True)
     return f"""<!DOCTYPE html>
-<html lang="en">
+<html lang=\"en\">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset=\"UTF-8\" />
 
-    <!-- Auto-redirect SEO page to full interactive game page -->
+    <!-- Flat SEO stub for GitHub Pages: show /games/{{slug}}/ without server rewrites -->
     <script>
       (function () {{
-        var target = "{interactive_href}";
-        if (target) {{
-          window.location.replace(target);
-        }}
+        history.replaceState(null, "", \"{safe_display_slug}\");
       }})();
     </script>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />
 
     <title>{safe_title} | Cheeky Commodore Gamer</title>
-    <meta name="description" content="{safe_description}" />
+    <meta name=\"description\" content=\"{safe_description}\" />
 
-    <link rel="canonical" href="{canonical_url}" />
+    <link rel=\"canonical\" href=\"{canonical_url}\" />
 
-    <meta property="og:title" content="{safe_title} | Cheeky Commodore Gamer" />
-    <meta property="og:description" content="{safe_description}" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="{og_url}" />
-    <meta property="og:image" content="{og_image}" />
+    <meta property=\"og:title\" content=\"{safe_title} | Cheeky Commodore Gamer\" />
+    <meta property=\"og:description\" content=\"{safe_description}\" />
+    <meta property=\"og:type\" content=\"website\" />
+    <meta property=\"og:url\" content=\"{og_url}\" />
+    <meta property=\"og:image\" content=\"{og_image}\" />
 
-    <link rel="icon" href="../../favicon.ico" />
+    <link rel=\"icon\" href=\"../favicon.ico\" />
 
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+    <link href=\"https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap\" rel=\"stylesheet\" />
 
-    <link rel="stylesheet" href="../../resources/css/ccg-master.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-mode.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-effects.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-anim.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-overlays.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-cards.css" />
-    <link rel="stylesheet" href="../../resources/css/games.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-footer.css" />
+    <link rel=\"stylesheet\" href=\"../resources/css/ccg-master.css\" />
+    <link rel=\"stylesheet\" href=\"../resources/css/ccg-mode.css\" />
+    <link rel=\"stylesheet\" href=\"../resources/css/ccg-effects.css\" />
+    <link rel=\"stylesheet\" href=\"../resources/css/ccg-anim.css\" />
+    <link rel=\"stylesheet\" href=\"../resources/css/ccg-overlays.css\" />
+    <link rel=\"stylesheet\" href=\"../resources/css/ccg-cards.css\" />
+    <link rel=\"stylesheet\" href=\"../resources/css/games.css\" />
+    <link rel=\"stylesheet\" href=\"../resources/css/ccg-footer.css\" />
 
-    <script type="application/ld+json">
+    <script type=\"application/ld+json\">
     {{
-        "@context": "https://schema.org",
-        "@type": "VideoGame",
-        "name": "{safe_title}",
-        "description": "{safe_description}",
-        "datePublished": "{safe_year}",
-        "gamePlatform": "{safe_platform}",
-        "publisher": "{safe_publisher}",
-        "image": "{schema_image}",
-        "url": "{schema_url}"
+        \"@context\": \"https://schema.org\",
+        \"@type\": \"VideoGame\",
+        \"name\": \"{safe_title}\",
+        \"description\": \"{safe_description}\",
+        \"datePublished\": \"{safe_year}\",
+        \"gamePlatform\": \"{safe_platform}\",
+        \"publisher\": \"{safe_publisher}\",
+        \"image\": \"{schema_image}\",
+        \"url\": \"{schema_url}\"
     }}
     </script>
 </head>
-<body class="ccg-body" data-ccg-mode="{mode}" data-mode="{mode}">
+<body class=\"ccg-body\" data-ccg-mode=\"{mode}\" data-mode=\"{mode}\">
 
-<div class="ccg-bg">
-    <div class="ccg-bg-starfield"></div>
-    <div class="ccg-bg-grid"></div>
-    <div class="ccg-bg-crt-overlay"></div>
+<div class=\"ccg-bg\">
+    <div class=\"ccg-bg-starfield\"></div>
+    <div class=\"ccg-bg-grid\"></div>
+    <div class=\"ccg-bg-crt-overlay\"></div>
 </div>
 
-<div class="ccg-page">
-    <main class="ccg-main">
+<div class=\"ccg-page\">
+    <main class=\"ccg-main\">
 
-        <section class="game-hero">
-            <div class="game-hero__inner">
+        <section class=\"game-hero\">
+            <div class=\"game-hero__inner\">
 
-                <div class="game-hero__media">
+                <div class=\"game-hero__media\">
                     <img
-                        class="game-hero__thumb"
-                        src="{thumb_src_rel}"
-                        alt="{safe_thumb_alt}"
-                        loading="lazy"
+                        class=\"game-hero__thumb\"
+                        src=\"{thumb_src_rel}\"
+                        alt=\"{safe_thumb_alt}\"
+                        loading=\"lazy\"
                     />
                 </div>
 
-                <div class="game-hero__content">
-                    <h1 class="game-hero__title">{safe_title}</h1>
+                <div class=\"game-hero__content\">
+                    <h1 class=\"game-hero__title\">{safe_title}</h1>
 
-                    <div class="game-hero__meta">
-                        <span class="game-meta__item">{safe_year}</span>
-                        <span class="game-meta__sep">•</span>
-                        <span class="game-meta__item">{safe_platform}</span>
-                        <span class="game-meta__sep">•</span>
-                        <span class="game-meta__item">{safe_publisher}</span>
+                    <div class=\"game-hero__meta\">
+                        <span class=\"game-meta__item\">{safe_year}</span>
+                        <span class=\"game-meta__sep\">•</span>
+                        <span class=\"game-meta__item\">{safe_platform}</span>
+                        <span class=\"game-meta__sep\">•</span>
+                        <span class=\"game-meta__item\">{safe_publisher}</span>
                     </div>
                 </div>
 
             </div>
         </section>
 
-        <section class="game-section">
-            <p class="game-section__kicker">Overview</p>
-            <h2 class="game-section__title">Game Summary</h2>
+        <section class=\"game-section\">
+            <p class=\"game-section__kicker\">Overview</p>
+            <h2 class=\"game-section__title\">Game Summary</h2>
 
-            <div class="game-description">
+            <div class=\"game-description\">
                 {safe_description}
             </div>
         </section>
 
-        <section class="game-section">
-            <p class="game-section__kicker">Explore</p>
-            <h2 class="game-section__title">More Details</h2>
+        <section class=\"game-section\">
+            <p class=\"game-section__kicker\">Explore</p>
+            <h2 class=\"game-section__title\">More Details</h2>
 
-            <div class="game-downloads">
-                <a class="ccg-btn ccg-btn--primary"
-                   href="{interactive_href}">
+            <div class=\"game-downloads\">
+                <a class=\"ccg-btn ccg-btn--primary\"
+                   href=\"{safe_interactive_href}\">
                     View the full interactive game page
                 </a>
 
-                <a class="ccg-btn ccg-btn--ghost"
-                   href="{browse_href}">
+                <a class=\"ccg-btn ccg-btn--ghost\"
+                   href=\"{safe_browse_href}\">
                     Browse all games
                 </a>
             </div>
@@ -195,15 +212,15 @@ def seo_template(
 
     </main>
 
-    <footer class="ccg-footer">
-        <p class="ccg-footer__text">
+    <footer class=\"ccg-footer\">
+        <p class=\"ccg-footer__text\">
             © <span data-ccg-year></span> Cheeky Commodore Gamer.
             Not affiliated with Commodore, Amiga or publishers.
         </p>
     </footer>
 </div>
 
-<script src="../../js/ccg-base.js" defer></script>
+<script src=\"../js/ccg-base.js\" defer></script>
 
 </body>
 </html>
@@ -246,52 +263,72 @@ def main() -> int:
     games = load_games(games_json)
     domain = args.domain.rstrip("/")
 
-    created_seo = skipped = 0
+    created_files = skipped_files = exclusions_skipped = 0
 
-    for g in games:
-        game_id = str(g.get("id", "")).strip()
+    for game in games:
+        game_id = str(game.get("id", "")).strip()
         if not game_id:
-            skipped += 1
+            skipped_files += 1
             continue
 
-        title = str(g.get("title", game_id)).strip()
-        year = str(g.get("year", ""))
-        platform = str(g.get("system", "")).upper()
-        publisher = str(g.get("developer", g.get("publisher", "")))
-        thumb_rel = g.get("thumbnail", "resources/images/thumbnails/all/placeholder.jpg")
-        mode = resolve_mode(str(g.get("system", "")))
+        slug = resolve_slug(game)
+        if not slug:
+            skipped_files += 1
+            continue
+
+        if slug.lower() in RESERVED_SLUGS:
+            exclusions_skipped += 1
+            continue
+        # Guardrail: flat files only, never create /games/{slug}/ folders.
+        slug_dir = root / "games" / slug
+        if slug_dir.exists() and slug_dir.is_dir():
+            exclusions_skipped += 1
+            continue
+
+        title = str(game.get("title", game_id)).strip()
+        year = str(game.get("year", ""))
+        platform = str(game.get("system", "")).upper()
+        publisher = str(game.get("developer", game.get("publisher", "")))
+        thumb_rel = game.get(
+            "thumbnail",
+            "resources/images/thumbnails/all/placeholder.jpg",
+        )
+        mode = resolve_mode(str(game.get("system", "")))
 
         desc = make_description(title)
+        page_url = f"{domain}/games/{slug}.html"
+        display_slug = f"/games/{slug}/"
 
-        # SEO file
-        seo_name = game_id
-        seo_file = root / "games" / "seo" / f"{seo_name}.html"
-        seo_url = f"{domain}/games/seo/{seo_name}.html"
-
-        seo_html = seo_template(
+        page_html = seo_template(
             title=title,
             description=desc,
-            canonical_url=seo_url,
-            og_url=seo_url,
+            canonical_url=page_url,
+            og_url=page_url,
             og_image=to_abs_url(domain, thumb_rel),
             year=year,
             platform=platform,
             publisher=publisher,
-            schema_url=seo_url,
+            schema_url=page_url,
             schema_image=to_abs_url(domain, thumb_rel),
-            thumb_src_rel=f"../../{thumb_rel}",
+            thumb_src_rel=f"../{thumb_rel}",
             thumb_alt=f"{title} cover",
             mode=mode,
-            interactive_href=f"../game.html?id={game_id}",
-            browse_href="../index.html",
+            interactive_href=f"/games/game.html?id={game_id}",
+            browse_href="/games/index.html",
+            display_slug=display_slug,
         )
 
-        if write_if_missing(seo_file, seo_html, args.dry_run):
-            created_seo += 1
+        page_file = root / "games" / f"{slug}.html"
+        if write_if_missing(page_file, page_html, args.dry_run):
+            created_files += 1
+        else:
+            skipped_files += 1
 
     print("=== CCG SEO Generation Report ===")
-    print(f"SEO pages created: {created_seo}")
-    print(f"Skipped entries: {skipped}")
+    print(f"Total games: {len(games)}")
+    print(f"Files created: {created_files}")
+    print(f"Files skipped: {skipped_files}")
+    print(f"Exclusions skipped: {exclusions_skipped}")
     print("DRY RUN" if args.dry_run else "Done. Commit and push.")
 
     return 0
