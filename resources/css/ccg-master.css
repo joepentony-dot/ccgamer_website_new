@@ -75,6 +75,8 @@ body {
     font-family: var(--ccg-font-body);
     overflow-x: hidden;
     scroll-behavior: smooth;
+    height: auto;
+    min-height: 100%;
 
     text-size-adjust: 100%;
 
