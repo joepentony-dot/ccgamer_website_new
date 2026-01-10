@@ -189,7 +189,6 @@ li {
 .ccg-page {
     min-height: 100vh;
     position: relative;
-    -webkit-overflow-scrolling: touch;
 
     max-width: 1420px;
     margin: 0 auto;
