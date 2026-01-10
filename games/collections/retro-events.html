@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" data-ccg-page="collections-index">
+<html lang="en" data-ccg-page="collection-single">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Curated Collections | Cheeky Commodore Gamer</title>
+    <title>Retro Events – Shows, Expos &amp; Retro Gaming Experiences | Cheeky Commodore Gamer</title>
+
     <meta name="description"
-          content="Explore curated collections of Commodore 64 and Amiga games — cartridge classics, licensed titles, BPjS/BPjM indexed entries and top picks." />
+          content="Retro Events is a curated collection of retro gaming shows, expos, museum visits and special retro-themed videos. From Play Expo Blackpool and Arcade Club to community meetups and hardware history, this collection captures the people, places and moments that keep classic gaming alive." />
 
     <link rel="icon" href="../../favicon.ico" />
 
@@ -20,26 +21,28 @@
     <link rel="stylesheet" href="../../resources/css/ccg-anim.css" />
     <link rel="stylesheet" href="../../resources/css/ccg-overlays.css" />
     <link rel="stylesheet" href="../../resources/css/ccg-socials.css" />
+
+    <!-- CARD + PAGE CSS -->
     <link rel="stylesheet" href="../../resources/css/ccg-cards.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-hero.css" />
+    <link rel="stylesheet" href="../../resources/css/genre.css" />
+    <link rel="stylesheet" href="../../resources/css/retro-events.css" />
 
-    <!-- PAGE CSS -->
-    <link rel="stylesheet" href="../../resources/css/collections.css" />
-
-    <!-- FOOTER -->
+    <!-- FOOTER CSS -->
     <link rel="stylesheet" href="../../resources/css/ccg-footer.css" />
 </head>
 
-<body class="ccg-body" data-ccg-mode="c64">
+<body class="ccg-body"
+      data-ccg-mode="c64"
+      data-collection="Retro Events">
 
-<!-- BACKGROUND -->
+<!-- BACKGROUNDS -->
 <div class="ccg-bg">
     <div class="ccg-bg-starfield"></div>
     <div class="ccg-bg-grid"></div>
     <div class="ccg-bg-crt-overlay"></div>
 </div>
 
-<div class="ccg-page ccg-page--collections-index">
+<div class="ccg-page ccg-page--collection-single">
 
 <!-- HEADER (LOCKED CANONICAL) -->
         <!-- HEADER -->
@@ -153,65 +156,53 @@
 
 
 
-<!-- MAIN -->
 <main class="ccg-main">
 
     <!-- HERO -->
-    <section class="ccg-section ccg-collections-hero">
-        <div class="ccg-hero ccg-hero--collections">
-            <div class="ccg-hero-image"></div>
-            <div class="ccg-hero-scanlines"></div>
+    <section class="ccg-genre-hero ccg-collection-hero">
+        <div class="ccg-genre-hero__bg">
+            <div class="ccg-genre-hero__overlay"></div>
+        </div>
+        <div class="ccg-genre-hero__inner">
+            <h1 class="ccg-genre-hero__title">Retro Events</h1>
 
-            <div class="ccg-hero-inner ccg-hero-inner--collections">
-                <p class="ccg-hero-kicker">Curated Sets · C64 &amp; Amiga</p>
-                <h1 class="ccg-hero-title">Curated Collections</h1>
-                <p class="ccg-hero-tagline">
-                    Themed bundles for quick browsing — cartridge showcases, licensed tie-ins, BPjS/BPjM indexed curiosities, and CCG favourites highlighted below.
-                </p>
+            <p class="ccg-genre-hero__tagline">
+                Shows, expos, museums and moments from the world of retro gaming
+            </p>
+
+            <div class="ccg-genre-meta">
+                <div class="ccg-genre-meta__left">
+                    <span id="genreGamesCount">0</span> videos in this collection
+                </div>
+                <div class="ccg-genre-meta__right">
+                    <span>Real-world retro experiences</span>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- COLLECTIONS GRID -->
-    <section class="ccg-section">
-        <div class="ccg-genre-grid">
+    <!-- INTRO -->
+    <section class="ccg-section ccg-section--intro">
+        <p class="ccg-section__intro">
+            Retro Events is a growing archive of retro gaming shows, exhibitions, arcade visits and community gatherings. From bustling expo halls and legendary guest appearances to quiet museum visits and personal retro memories, this collection focuses on the culture, history and people behind classic gaming — captured through real-world events and special feature videos.
+        </p>
+    </section>
 
-            <a href="cartridge-games.html" class="ccg-card ccg-genre-card">
-                <img src="../../resources/images/collections/cartridge-collection.png"
-                     alt="Cartridge Games">
-                <span>Cartridge Games</span>
-            </a>
+    <!-- GRID -->
+    <section class="ccg-genre-main">
+        <div id="genreGamesGrid" class="ccg-genre-grid"></div>
+    </section>
 
-            <a href="licensed-games.html" class="ccg-card ccg-genre-card">
-                <img src="../../resources/images/collections/licensed-collection.png"
-                     alt="Licensed Games">
-                <span>Licensed Games</span>
-            </a>
-
-            <a href="bpjs-indexed-games.html" class="ccg-card ccg-genre-card">
-                <img src="../../resources/images/collections/bpjs-collection.png"
-                     alt="BPjS / BPjM Indexed Games">
-                <span>BPjS / BPjM Indexed</span>
-            </a>
-
-            <a href="top-picks.html" class="ccg-card ccg-genre-card">
-                <img src="../../resources/images/collections/top-picks-collection.png"
-                     alt="Top Picks">
-                <span>Top Picks</span>
-            </a>
-
-            <a href="retro-events.html" class="ccg-card ccg-genre-card">
-                <img src="../../resources/images/collections/retro-events.png"
-                     alt="Retro Events">
-                <span>Retro Events</span>
-            </a>
-
+    <!-- WAYFINDING -->
+    <section class="ccg-section ccg-genre-wayfinding">
+        <div class="game-hero__buttons">
+            <a href="index.html" class="ccg-btn ccg-btn--secondary">← Back to Collections</a>
+            <a href="../index.html" class="ccg-btn ccg-btn--secondary">Browse All Games</a>
         </div>
     </section>
 
 </main>
 
-<!-- FOOTER -->
 <footer class="ccg-footer">
     <p class="ccg-footer__text">
         © <span data-ccg-year></span> Cheeky Commodore Gamer.
@@ -221,9 +212,9 @@
 
 </div>
 
-<!-- JS -->
 <script src="../../js/ccg-global.js" defer></script>
 <script src="../../js/ccg-mode-engine.js" defer></script>
+<script src="../../js/retro-events-loader.js" defer></script>
 
 <!-- GOATCOUNTER — SAFE ANALYTICS -->
 <script
