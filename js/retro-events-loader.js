@@ -7,22 +7,70 @@
 ============================================================ */
 
 const ccgRetroEventsVideos = [
-    { id: "6IYw6wRW3-0" },
-    { id: "_KRx_UxPWTM" },
-    { id: "C7_aTXHJ4iI" },
-    { id: "Z6iXT4iPqs8" },
-    { id: "6PmRNlqIdFY" },
-    { id: "n_ZymsSyDAg" },
-    { id: "1S-gaWInghY" },
-    { id: "qody-Yqd19o" },
-    { id: "QwJKwDVd2h8" },
-    { id: "uLAK4KLYkEA" },
-    { id: "PDomaOW-1-c" },
-    { id: "sAU3CPCCpvE" },
-    { id: "SiMgKvZeXws" },
-    { id: "smVNHlm_jM0" },
-    { id: "2OG2tPx5gnU" },
-    { id: "rRKBcyiWO2I" }
+    {
+        id: "6PmRNlqIdFY",
+        title: "Arcade Club Bury, Greater Manchester – Europe’s Largest Free-Play Arcade Visit"
+    },
+    {
+        id: "qody-Yqd19o",
+        title: "Guru Meditation – Commodore Amiga Error That Became a Legend"
+    },
+    {
+        id: "PDomaOW-1-c",
+        title: "Memories of the Commodore 64 – A Brother’s 1982 Retro Gaming Journey"
+    },
+    {
+        id: "QwJKwDVd2h8",
+        title: "North West Computer Museum, Leigh – Visiting with the Yorkshire Amiga Group"
+    },
+    {
+        id: "smVNHlm_jM0",
+        title: "Play Expo Blackpool 2025 – Retro Gaming Weekend at the Norbreck Castle"
+    },
+    {
+        id: "_KRx_UxPWTM",
+        title: "Play Expo Blackpool Norbreck Castle – John Romero & Retro Gaming Weekend Highlights"
+    },
+    {
+        id: "C7_aTXHJ4iI",
+        title: "Play Expo Blackpool Norbreck Castle – Retro Gaming Highlights & Legendary Guests"
+    },
+    {
+        id: "Z6iXT4iPqs8",
+        title: "Play Expo Blackpool Norbreck Castle – Romero, Rare Consoles & Retro Gaming Gold"
+    },
+    {
+        id: "n_ZymsSyDAg",
+        title: "Play Expo Blackpool – Cutting Room Floor Bonus Retro Gaming Footage"
+    },
+    {
+        id: "uLAK4KLYkEA",
+        title: "Retro Games Day – Gaming with Family from Amiga to PlayStation 5"
+    },
+    {
+        id: "6IYw6wRW3-0",
+        title: "TOP 15 Commodore 64 Games – Essential C64 Classics You Must Play"
+    },
+    {
+        id: "rRKBcyiWO2I",
+        title: "The SID Chip – Commodore 64 Sound Interface Device & 8-Bit Music Revolution"
+    },
+    {
+        id: "sAU3CPCCpvE",
+        title: "Video Game Market Leeds 2024 – Royal Armouries Retro Gaming Finds"
+    },
+    {
+        id: "2OG2tPx5gnU",
+        title: "X-Copy – The Ultimate Commodore Amiga Disk Copier Story (1988–1993)"
+    },
+    {
+        id: "SiMgKvZeXws",
+        title: "Yorkshire Amiga Group – North West Retro Computing Meetup"
+    },
+    {
+        id: "1S-gaWInghY",
+        title: "ZX Spectrum Memories – Rewinding 8-Bit History with Hodgy"
+    }
 ];
 
 function ccgEscapeHtml(value) {
