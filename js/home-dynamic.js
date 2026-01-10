@@ -206,7 +206,7 @@ function runWhenIdle(task) {
 
 async function loadGamesForHome() {
     try {
-        const res = await fetch("games/games.json", { cache: "no-store" });
+        const res = await fetch("games/games.json", { cache: "force-cache" });
         CCG_HOME_ALL_GAMES = await res.json();
     } catch {
         CCG_HOME_ALL_GAMES = [];
@@ -229,7 +229,12 @@ function renderFeaturedHighlights() {
         card.href = resolveGameUrl(game);
 
         card.innerHTML = `
-            <img src="${resolveThumb(game.thumbnail)}" alt="${game.title}">
+            <img src="${resolveThumb(game.thumbnail)}"
+                 alt="${game.title}"
+                 loading="lazy"
+                 decoding="async"
+                 width="320"
+                 height="180">
             <div class="ccg-card__body">
                 <h3 class="ccg-card__title">${game.title}</h3>
                 <p class="ccg-card__text">${buildMeta(game)}</p>
@@ -437,6 +442,7 @@ function buildVideoCard(game, systemLabel, index) {
                     data-ccg-video-iframe
                     ${iframeId ? `id="${iframeId}"` : ""}
                     title="${title} gameplay video"
+                    loading="lazy"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
                     allowfullscreen></iframe>
             </div>
