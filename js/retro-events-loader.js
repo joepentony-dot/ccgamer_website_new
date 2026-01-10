@@ -49,11 +49,13 @@ const ccgRetroEventsVideos = [
     },
     {
         id: "6IYw6wRW3-0",
-        title: "TOP 15 Commodore 64 Games – Essential C64 Classics You Must Play"
+        title: "TOP 15 Commodore 64 Games – Essential C64 Classics You Must Play",
+        membersOnly: true
     },
     {
         id: "rRKBcyiWO2I",
-        title: "The SID Chip – Commodore 64 Sound Interface Device & 8-Bit Music Revolution"
+        title: "The SID Chip – Commodore 64 Sound Interface Device & 8-Bit Music Revolution",
+        membersOnly: true
     },
     {
         id: "sAU3CPCCpvE",
@@ -61,7 +63,8 @@ const ccgRetroEventsVideos = [
     },
     {
         id: "2OG2tPx5gnU",
-        title: "X-Copy – The Ultimate Commodore Amiga Disk Copier Story (1988–1993)"
+        title: "X-Copy – The Ultimate Commodore Amiga Disk Copier Story (1988–1993)",
+        membersOnly: true
     },
     {
         id: "SiMgKvZeXws",
@@ -97,14 +100,20 @@ function ccgBuildRetroEventCard(video, index) {
     const title = video?.title || `Retro Event Video ${String(index + 1).padStart(2, "0")}`;
     const safeTitle = ccgEscapeHtml(title);
     const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+    const isMembersOnly = video?.membersOnly === true;
+    const membersOnlyAttr = isMembersOnly ? ' data-members-only="true"' : "";
+    const membersOnlyBadge = isMembersOnly
+        ? '<span class="ccg-collection-badge ccg-collection-badge--members" aria-hidden="true">Members Only</span>'
+        : "";
 
     const localThumb = ccgRetroEventsThumbLocal(videoId);
     const ytThumb = ccgRetroEventsThumbYouTube(videoId);
 
     return `
-        <div class="ccg-game-card genre-card">
+        <div class="ccg-game-card genre-card"${membersOnlyAttr}>
             <a href="${videoUrl}" class="ccg-game-card__thumb" target="_blank" rel="noopener">
                 <img src="${localThumb}" data-ccg-thumb-fallback="${ytThumb}" alt="${safeTitle}">
+                ${membersOnlyBadge}
             </a>
 
             <div class="ccg-game-card__body">
