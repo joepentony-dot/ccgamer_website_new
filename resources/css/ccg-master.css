@@ -1006,10 +1006,39 @@ li {
     flex-direction: column;
     gap: 14px;
     max-height: 100dvh;
+    position: relative;
     overflow-y: visible;
     overscroll-behavior: auto;
     transform: translateX(100%);
     transition: transform 0.32s ease;
+}
+
+/* Mobile-only scroll affordance for the nav drawer (JS toggles class). */
+.ccg-nav-drawer__panel::before,
+.ccg-nav-drawer__panel::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 48px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.ccg-nav-drawer__panel::before {
+    top: 0;
+    background: linear-gradient(180deg, rgba(6,6,14,0.92), rgba(6,6,14,0));
+}
+
+.ccg-nav-drawer__panel::after {
+    bottom: 0;
+    background: linear-gradient(0deg, rgba(6,6,14,0.92), rgba(6,6,14,0));
+}
+
+.ccg-nav-drawer__panel--scroll-hint::before,
+.ccg-nav-drawer__panel--scroll-hint::after {
+    opacity: 0.75;
 }
 
 .ccg-nav-drawer__header {

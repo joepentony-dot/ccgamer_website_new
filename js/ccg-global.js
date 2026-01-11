@@ -1013,10 +1013,37 @@
         const moreWrap = nav?.querySelector(".ccg-nav__more");
         const moreToggle = moreWrap?.querySelector("[data-ccg-more-toggle]");
         const moreMenu = nav?.querySelector("[data-ccg-more-menu]");
+        const drawerPanel = drawer?.querySelector(".ccg-nav-drawer__panel");
 
         if (!toggle || !nav || !primaryList || !moreWrap || !moreMenu) return;
 
         const isMobileViewport = () => mobileMatch ? mobileMatch.matches : window.innerWidth <= 960;
+
+        let navScrollCueHandler = null;
+
+        const clearNavScrollCue = () => {
+            if (!drawerPanel) return;
+            drawerPanel.classList.remove("ccg-nav-drawer__panel--scroll-hint");
+            if (navScrollCueHandler) {
+                drawerPanel.removeEventListener("scroll", navScrollCueHandler);
+                drawerPanel.removeEventListener("touchmove", navScrollCueHandler);
+                navScrollCueHandler = null;
+            }
+        };
+
+        const setupNavScrollCue = () => {
+            // Mobile-only cue to hint the drawer is vertically scrollable.
+            if (!drawerPanel || !isMobileViewport()) return;
+            clearNavScrollCue();
+            const hasOverflow = drawerPanel.scrollHeight - drawerPanel.clientHeight > 12;
+            if (!hasOverflow) return;
+            drawerPanel.classList.add("ccg-nav-drawer__panel--scroll-hint");
+            navScrollCueHandler = () => {
+                clearNavScrollCue();
+            };
+            drawerPanel.addEventListener("scroll", navScrollCueHandler, { passive: true });
+            drawerPanel.addEventListener("touchmove", navScrollCueHandler, { passive: true });
+        };
 
         const cloneLink = (link, extraClasses = []) => {
             const clone = link.cloneNode(true);
@@ -1088,6 +1115,7 @@
             drawer?.setAttribute("aria-hidden", "true");
             toggle.setAttribute("aria-expanded", "false");
             syncBodyLock(false);
+            clearNavScrollCue();
         };
 
         const openNav = () => {
@@ -1099,12 +1127,14 @@
             toggle.setAttribute("aria-expanded", "true");
             syncBodyLock(true);
             setHeaderHeightVar();
+            requestAnimationFrame(() => setupNavScrollCue());
         };
 
         const syncMobileNavState = () => {
             if (!isMobileViewport()) {
                 closeNav();
                 closeMore();
+                clearNavScrollCue();
                 return;
             }
 
