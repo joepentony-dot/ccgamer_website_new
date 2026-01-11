@@ -97,11 +97,25 @@
         if (!panel) return;
         const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
         const headerOffset = getHeaderOffset();
-        const rect = panel.getBoundingClientRect();
         const viewportHeight = window.innerHeight || 0;
-        const availableHeight = Math.max(0, viewportHeight - headerOffset);
-        const offset = (availableHeight - rect.height) / 2;
-        const target = window.scrollY + rect.top - headerOffset - offset;
+        const extraOffset = 56; // Mobile-only: nudge down so the first question clears the header.
+        const questionCard = panel.querySelector(".quiz-question-card") || panel.querySelector("#quiz-question-text");
+        const headerEl = panel.querySelector(".quiz-panel-header");
+        let target;
+
+        if (questionCard) {
+            const rect = questionCard.getBoundingClientRect();
+            target = window.scrollY + rect.top - headerOffset - extraOffset;
+        } else if (headerEl) {
+            const rect = headerEl.getBoundingClientRect();
+            target = window.scrollY + rect.bottom - headerOffset - extraOffset;
+        } else {
+            const rect = panel.getBoundingClientRect();
+            const availableHeight = Math.max(0, viewportHeight - headerOffset);
+            const offset = (availableHeight - rect.height) / 2;
+            target = window.scrollY + rect.top - headerOffset - offset;
+        }
+
         const maxScroll = document.documentElement.scrollHeight - viewportHeight;
         const clamped = clamp(target, 0, Math.max(0, maxScroll));
         window.scrollTo({
