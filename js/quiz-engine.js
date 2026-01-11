@@ -84,6 +84,73 @@
         return Math.min(max, Math.max(min, val));
     }
 
+    function getHeaderOffset() {
+        const rootStyles = window.getComputedStyle(document.documentElement);
+        const raw = rootStyles.getPropertyValue("--ccg-header-height");
+        const parsed = Number.parseFloat(raw);
+        if (Number.isFinite(parsed)) return parsed;
+        const header = document.querySelector("[data-ccg-header]") || document.querySelector(".ccg-header");
+        return header ? header.getBoundingClientRect().height : 0;
+    }
+
+    function scrollQuizPanelIntoView(panel) {
+        if (!panel) return;
+        const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+        const headerOffset = getHeaderOffset();
+        const rect = panel.getBoundingClientRect();
+        const viewportHeight = window.innerHeight || 0;
+        const availableHeight = Math.max(0, viewportHeight - headerOffset);
+        const offset = (availableHeight - rect.height) / 2;
+        const target = window.scrollY + rect.top - headerOffset - offset;
+        const maxScroll = document.documentElement.scrollHeight - viewportHeight;
+        const clamped = clamp(target, 0, Math.max(0, maxScroll));
+        window.scrollTo({
+            top: clamped,
+            behavior: prefersReducedMotion ? "auto" : "smooth"
+        });
+    }
+
+    let quizFocusPulseTimer = null;
+    let quizFocusPulseCleanup = null;
+    const QUIZ_FOCUS_PULSE_CLASS = "quiz-focus-pulse";
+
+    function clearQuizFocusPulse() {
+        document.body.classList.remove(QUIZ_FOCUS_PULSE_CLASS);
+        if (quizFocusPulseCleanup) {
+            quizFocusPulseCleanup();
+            quizFocusPulseCleanup = null;
+        }
+        if (quizFocusPulseTimer) {
+            clearTimeout(quizFocusPulseTimer);
+            quizFocusPulseTimer = null;
+        }
+    }
+
+    function triggerMobileFocusPulse() {
+        if (!isMobileLikeViewport()) return;
+        clearQuizFocusPulse();
+
+        // Mobile-only cue: temporary vignette + glow to show quiz focus.
+        document.body.classList.add(QUIZ_FOCUS_PULSE_CLASS);
+
+        const onInteract = () => clearQuizFocusPulse();
+        window.addEventListener("scroll", onInteract, { passive: true, once: true });
+        window.addEventListener("touchstart", onInteract, { passive: true, once: true });
+        window.addEventListener("pointerdown", onInteract, { passive: true, once: true });
+        window.addEventListener("keydown", onInteract, { once: true });
+
+        quizFocusPulseCleanup = () => {
+            window.removeEventListener("scroll", onInteract);
+            window.removeEventListener("touchstart", onInteract);
+            window.removeEventListener("pointerdown", onInteract);
+            window.removeEventListener("keydown", onInteract);
+        };
+
+        quizFocusPulseTimer = window.setTimeout(() => {
+            clearQuizFocusPulse();
+        }, 1800);
+    }
+
     function escapeHtml(str) {
         return String(str || "").replace(/[&<>"']/g, (m) => ({
             "&": "&amp;",
@@ -291,9 +358,20 @@
         qs("#quiz-score-panel").hidden = true;
         setFocusMode(true);
         const panel = qs("#quiz-panel");
-        if (panel && typeof panel.scrollIntoView === "function" && !isMobileLikeViewport()) {
-            panel.scrollIntoView({ behavior: "smooth", block: "center" });
+        if (!panel) return;
+        if (!isMobileLikeViewport()) {
+            if (typeof panel.scrollIntoView === "function") {
+                panel.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+            return;
         }
+        // Mobile-only: wait for layout, then center the quiz panel with header-safe offset.
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                scrollQuizPanelIntoView(panel);
+                window.setTimeout(() => triggerMobileFocusPulse(), 220);
+            });
+        });
     }
 
     function showScorePanel() {

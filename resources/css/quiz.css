@@ -103,6 +103,16 @@ body.quiz-focus .quiz-panel--active::after {
     opacity: 1;
 }
 
+/* Mobile-only quiz start cue: brief vignette + glow (JS toggles .quiz-focus-pulse). */
+body.quiz-focus.quiz-focus-pulse .quiz-focus-overlay {
+    opacity: 0.82;
+}
+
+body.quiz-focus.quiz-focus-pulse .quiz-panel--active {
+    box-shadow: 0 32px 70px rgba(0,0,0,0.88), 0 0 44px rgba(var(--accent-rgb),0.45);
+    border-color: rgba(var(--accent-rgb),0.7);
+}
+
 .quiz-hero-controls {
     display: grid;
     gap: 16px;
