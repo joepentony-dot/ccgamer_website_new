@@ -1033,12 +1033,40 @@ li {
 
 .ccg-nav-drawer__panel::after {
     bottom: 0;
+    content: "⌄";
     background: linear-gradient(0deg, rgba(6,6,14,0.92), rgba(6,6,14,0));
+    color: rgba(255,255,255,0.6);
+    font-size: 18px;
+    line-height: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 8px;
+    text-shadow: 0 6px 12px rgba(0,0,0,0.6);
 }
 
 .ccg-nav-drawer__panel--scroll-hint::before,
 .ccg-nav-drawer__panel--scroll-hint::after {
     opacity: 0.75;
+}
+
+.ccg-nav-drawer__panel--scroll-hint::after {
+    animation: ccg-nav-scroll-arrow 1.8s ease-in-out infinite;
+}
+
+@keyframes ccg-nav-scroll-arrow {
+    0% {
+        transform: translateY(0);
+        opacity: 0.55;
+    }
+    50% {
+        transform: translateY(6px);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 0.55;
+    }
 }
 
 .ccg-nav-drawer__header {

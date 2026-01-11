@@ -1032,11 +1032,12 @@
         };
 
         const setupNavScrollCue = () => {
-            // Mobile-only cue to hint the drawer is vertically scrollable.
+            // Mobile-only cue to hint the drawer is vertically scrollable (plus arrow indicator).
             if (!drawerPanel || !isMobileViewport()) return;
             clearNavScrollCue();
             const hasOverflow = drawerPanel.scrollHeight - drawerPanel.clientHeight > 12;
-            if (!hasOverflow) return;
+            const atBottom = drawerPanel.scrollTop + drawerPanel.clientHeight >= drawerPanel.scrollHeight - 4;
+            if (!hasOverflow || atBottom) return;
             drawerPanel.classList.add("ccg-nav-drawer__panel--scroll-hint");
             navScrollCueHandler = () => {
                 clearNavScrollCue();
