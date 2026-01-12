@@ -127,17 +127,16 @@
     z-index: 1;
 
     background-image: url("../images/bg-grid_new.jpg");
-    background-repeat: repeat;
-    background-size: 800px 800px;
+    background-repeat: no-repeat;
+    background-size: 100% auto;
+    background-position: center bottom;
 
     /* Slightly reduced so content glow leads */
     opacity: 0.11;
     mix-blend-mode: screen;
 
-    animation:
-        ccg-grid-drift 260s linear infinite,
-        ccg-grid-breathe 28s ease-in-out infinite;
-    will-change: background-position;
+    animation: none;
+    will-change: auto;
 }
 
 
@@ -234,6 +233,12 @@ html[data-ccg-page="home"] .ccg-page {
         animation: none;
         will-change: auto;
         background-position: center;
+    }
+
+    .ccg-bg-grid {
+        background-repeat: no-repeat;
+        background-size: 100% auto;
+        background-position: center bottom;
     }
 
     .ccg-bg-crt-overlay {
