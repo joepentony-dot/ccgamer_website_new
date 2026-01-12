@@ -117,16 +117,6 @@ body {
    • Prevents page shells from becoming scroll containers
    • Ensures document scrolling is the only vertical scroll
    • Audit scope: page shells + main + footer wrappers
-============================================================ */
-
-/* ============================================================
-   SCROLL OWNERSHIP FAILSAFE (REMOVE TO DISABLE)
-   ------------------------------------------------------------
-   This block enforces document-only scrolling across site shells.
-   If a rare page requires an internal scroller, remove this block
-   and add a local override instead of weakening the global rule.
-============================================================ */
-
 :where(.ccg-page, .ccg-main, main, .ccg-section, .ccg-info-shell, .ccg-footer) {
     height: auto;
     max-height: none;
@@ -407,13 +397,6 @@ li {
             rgba(0,0,0,0.86)),
         radial-gradient(circle at 15% 20%, rgba(var(--accent-rgb),0.16), transparent 40%),
         radial-gradient(circle at 80% 10%, rgba(255,255,255,0.08), transparent 45%);
-}
-
-.ccg-header,
-.ccg-hero,
-.ccg-hero__inner {
-    overflow-y: visible;
-    max-height: none;
 }
 
 .ccg-header,
@@ -716,6 +699,7 @@ li {
         inset 0 -2px 6px rgba(0,0,0,0.55);
     backdrop-filter: blur(14px);
     transition: background 240ms ease, border-color 240ms ease, box-shadow 240ms ease;
+    overscroll-behavior: none;
 }
 
 .ccg-nav::before {
@@ -811,12 +795,9 @@ li {
     row-gap: 8px;
     padding-inline: 12px;
 
-    overflow-x: auto;
-    overflow-y: hidden;
-    overscroll-behavior-x: contain;
-    overscroll-behavior-y: none;
-    touch-action: pan-x;
-    scrollbar-width: none;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    overscroll-behavior: none;
     position: relative;
     z-index: 5;
     pointer-events: auto;
@@ -1511,10 +1492,6 @@ li {
             0 18px 40px rgba(0,0,0,0.8),
             0 0 26px var(--ccg-header-glow-strong);
     }
-}
-
-.ccg-nav__list::-webkit-scrollbar {
-    display: none;
 }
 
 .ccg-nav__link {
