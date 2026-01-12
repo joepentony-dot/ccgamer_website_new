@@ -117,16 +117,6 @@ body {
    • Prevents page shells from becoming scroll containers
    • Ensures document scrolling is the only vertical scroll
    • Audit scope: page shells + main + footer wrappers
-============================================================ */
-
-/* ============================================================
-   SCROLL OWNERSHIP FAILSAFE (REMOVE TO DISABLE)
-   ------------------------------------------------------------
-   This block enforces document-only scrolling across site shells.
-   If a rare page requires an internal scroller, remove this block
-   and add a local override instead of weakening the global rule.
-============================================================ */
-
 :where(.ccg-page, .ccg-main, main, .ccg-section, .ccg-info-shell, .ccg-footer) {
     height: auto;
     max-height: none;
