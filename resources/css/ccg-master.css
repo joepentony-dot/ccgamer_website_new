@@ -112,6 +112,12 @@ body {
     pointer-events: none;
 }
 
+:where(.ccg-page, .ccg-main, main) {
+    height: auto;
+    max-height: none;
+    overflow-y: visible;
+}
+
 :where(
     .ccg-hero,
     .games-hero,
