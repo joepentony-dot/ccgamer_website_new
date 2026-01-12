@@ -133,9 +133,10 @@
     letter-spacing: 0.12em;
     line-height: 1.08;
     font-weight: 700;
+    -webkit-text-stroke: 1px rgba(0,0,0,0.45);
     text-shadow:
-        0 12px 34px rgba(0,0,0,0.84),
-        0 0 26px rgba(var(--accent-rgb),0.28);
+        0 14px 36px rgba(0,0,0,0.88),
+        0 0 28px rgba(var(--accent-rgb),0.32);
 }
 
 .ccg-page--collections-index .ccg-hero-inner--collections .ccg-hero-tagline {
@@ -144,6 +145,8 @@
     font-size: 1.05rem;
     line-height: 1.5;
     color: rgba(255,255,255,0.86);
+    -webkit-text-stroke: 0.6px rgba(0,0,0,0.4);
+    text-shadow: 0 2px 18px rgba(0,0,0,0.82);
 }
 
 .ccg-page--collections-index .ccg-hero-actions {
