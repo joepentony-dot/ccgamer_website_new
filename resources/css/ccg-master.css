@@ -80,6 +80,10 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+    scroll-behavior: auto;
+}
+
 /* ============================================================
    GLOBAL SCROLL OWNERSHIP (AUTHORITATIVE)
    ------------------------------------------------------------
@@ -384,17 +388,32 @@ li {
     display: flex;
     align-items: center;
 
+    background: transparent;
+    backdrop-filter: none;
+    box-shadow: 0 20px 46px rgba(0,0,0,0.72), 0 0 18px rgba(var(--accent-rgb),0.24);
+    overflow: visible;
+    will-change: auto;
+}
+
+.ccg-header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    backdrop-filter: blur(10px);
     background:
         linear-gradient(120deg,
             rgba(0,0,0,0.94),
             rgba(0,0,0,0.86)),
         radial-gradient(circle at 15% 20%, rgba(var(--accent-rgb),0.16), transparent 40%),
         radial-gradient(circle at 80% 10%, rgba(255,255,255,0.08), transparent 45%);
+}
 
-    backdrop-filter: blur(10px);
-    box-shadow: 0 20px 46px rgba(0,0,0,0.72), 0 0 18px rgba(var(--accent-rgb),0.24);
-    overflow: visible;
-    will-change: transform, opacity;
+.ccg-header,
+.ccg-hero,
+.ccg-hero__inner {
+    overflow-y: visible;
+    max-height: none;
 }
 
 .ccg-header,
@@ -424,20 +443,12 @@ li {
 @media (min-width: 1024px) {
     .ccg-header {
         padding: 20px clamp(16px, 3vw, 32px);
-        background:
-            linear-gradient(140deg, rgba(5,8,18,0.96), rgba(6,10,24,0.92)),
-            radial-gradient(circle at 18% 15%, var(--ccg-header-halo), transparent 52%),
-            radial-gradient(circle at 82% 5%, var(--ccg-header-sheen), transparent 48%);
         box-shadow:
             0 26px 60px rgba(0,0,0,0.78),
             0 0 22px var(--ccg-header-edge);
     }
 
     .ccg-header::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
         background:
             linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.55)),
             radial-gradient(circle at 50% 0%, var(--ccg-header-halo), transparent 60%);
