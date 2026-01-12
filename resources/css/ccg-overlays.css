@@ -16,6 +16,7 @@
 /* Decorative hero/glow layers must never intercept taps */
 .ccg-hero-scanlines,
 .ccg-hero__backdrop,
+.ccg-hero-image,
 .game-hero__bg,
 .ccg-genre-hero__bg,
 .ccg-genre-hero__overlay,

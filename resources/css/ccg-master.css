@@ -92,6 +92,63 @@ body {
     overflow-y: auto;
 }
 
+/* ============================================================
+   GLOBAL SCROLL & EVENT PASS-THROUGH SAFETY
+   ------------------------------------------------------------
+   • Ensure document-level scrolling remains active everywhere
+   • Prevent decorative/hidden layers from intercepting wheel
+   • Keeps modal/nav lock states intact
+============================================================ */
+
+html,
+body {
+    overflow-y: auto;
+    overscroll-behavior-y: auto;
+    height: auto;
+    min-height: 100%;
+}
+
+:where([aria-hidden="true"]) {
+    pointer-events: none;
+}
+
+:where(.ccg-page, .ccg-main, main) {
+    height: auto;
+    max-height: none;
+    overflow-y: visible;
+}
+
+:where(
+    .ccg-hero,
+    .games-hero,
+    .game-hero,
+    .ccg-genre-hero,
+    .ccg-info-hero,
+    .about-hero,
+    .home-hero__frame,
+    .home-hero__content,
+    .ccg-card,
+    .ccg-game-card,
+    .ccg-genre-tile,
+    .ccg-feature-card
+)::before,
+:where(
+    .ccg-hero,
+    .games-hero,
+    .game-hero,
+    .ccg-genre-hero,
+    .ccg-info-hero,
+    .about-hero,
+    .home-hero__frame,
+    .home-hero__content,
+    .ccg-card,
+    .ccg-game-card,
+    .ccg-genre-tile,
+    .ccg-feature-card
+)::after {
+    pointer-events: none;
+}
+
 .ccg-body--nav-open {
     overflow-x: hidden;
 }
