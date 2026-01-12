@@ -370,27 +370,31 @@ body:not([data-collection="Retro Events"]) .ccg-page--collection-single .ccg-gen
         0 2px 14px rgba(0,0,0,0.80);
 }
 
-/* Collection hero banners (exclude Retro Events) */
-body:not([data-collection="Retro Events"]) .ccg-page--collection-single .ccg-collection-hero .ccg-genre-hero__bg {
+/* Collection hero banners */
+.ccg-page--collection-single .ccg-collection-hero .ccg-genre-hero__bg {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
 }
 
 body[data-collection="Cartridge Games"] .ccg-page--collection-single .ccg-collection-hero .ccg-genre-hero__bg {
-    background-image: url("../images/collections/cartridge-collection.png");
+    background-image: url("../images/genres/banners/cartridge-games-banner.png");
 }
 
 body[data-collection="Licensed Games"] .ccg-page--collection-single .ccg-collection-hero .ccg-genre-hero__bg {
-    background-image: url("../images/collections/licensed-collection.png");
+    background-image: url("../images/genres/banners/licensed-games-banner.png");
 }
 
 body[data-collection="BPJS Games"] .ccg-page--collection-single .ccg-collection-hero .ccg-genre-hero__bg {
-    background-image: url("../images/collections/bpjs-collection.png");
+    background-image: url("../images/genres/banners/bpjs-indexed-games-banner.png");
 }
 
 body[data-collection="Top Picks"] .ccg-page--collection-single .ccg-collection-hero .ccg-genre-hero__bg {
-    background-image: url("../images/collections/top-picks-collection.png");
+    background-image: url("../images/genres/banners/top-picks-banner.png");
+}
+
+body[data-collection="Retro Events"] .ccg-page--collection-single .ccg-collection-hero .ccg-genre-hero__bg {
+    background-image: url("../images/genres/banners/retro-events-banner.png");
 }
 /* ============================================================
    GENRE HERO TEXT REFINEMENTS — FOR 'Browse by Genre'
