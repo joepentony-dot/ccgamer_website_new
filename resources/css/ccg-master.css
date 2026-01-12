@@ -118,6 +118,19 @@ body {
     overflow-y: visible;
 }
 
+/* ============================================================
+   DOCUMENT-ONLY SCROLLING (OMEGA SAFETY NET)
+   ------------------------------------------------------------
+   • Prevents page shells from becoming scroll containers
+   • Ensures document scrolling is the only vertical scroll
+============================================================ */
+
+:where(.ccg-page, .ccg-main, main, .ccg-section, .ccg-info-shell) {
+    height: auto;
+    max-height: none;
+    overflow-y: visible;
+}
+
 :where(
     .ccg-hero,
     .games-hero,
