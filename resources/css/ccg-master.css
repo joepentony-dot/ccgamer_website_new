@@ -73,11 +73,7 @@ body {
         linear-gradient(135deg, #05060f, #060714 48%, #05060f);
     color: var(--ccg-text-light);
     font-family: var(--ccg-font-body);
-    overflow-x: hidden;
     scroll-behavior: smooth;
-    height: auto;
-    min-height: 100%;
-
     text-size-adjust: 100%;
 
     -webkit-font-smoothing: antialiased;
@@ -85,15 +81,11 @@ body {
 }
 
 html {
-    overflow-y: auto;
-}
-
-body {
-    overflow-y: auto;
+    scroll-behavior: auto;
 }
 
 /* ============================================================
-   GLOBAL SCROLL & EVENT PASS-THROUGH SAFETY
+   GLOBAL SCROLL OWNERSHIP (AUTHORITATIVE)
    ------------------------------------------------------------
    • Ensure document-level scrolling remains active everywhere
    • Prevent decorative/hidden layers from intercepting wheel
@@ -102,10 +94,11 @@ body {
 
 html,
 body {
-    overflow-y: auto;
-    overscroll-behavior-y: auto;
     height: auto;
     min-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior-y: auto;
 }
 
 :where([aria-hidden="true"]) {
@@ -123,42 +116,29 @@ body {
    ------------------------------------------------------------
    • Prevents page shells from becoming scroll containers
    • Ensures document scrolling is the only vertical scroll
+   • Audit scope: page shells + main + footer wrappers
 ============================================================ */
 
-:where(.ccg-page, .ccg-main, main, .ccg-section, .ccg-info-shell) {
+/* ============================================================
+   SCROLL OWNERSHIP FAILSAFE (REMOVE TO DISABLE)
+   ------------------------------------------------------------
+   This block enforces document-only scrolling across site shells.
+   If a rare page requires an internal scroller, remove this block
+   and add a local override instead of weakening the global rule.
+============================================================ */
+
+:where(.ccg-page, .ccg-main, main, .ccg-section, .ccg-info-shell, .ccg-footer) {
     height: auto;
     max-height: none;
     overflow-y: visible;
 }
 
-:where(
-    .ccg-hero,
-    .games-hero,
-    .game-hero,
-    .ccg-genre-hero,
-    .ccg-info-hero,
-    .about-hero,
-    .home-hero__frame,
-    .home-hero__content,
-    .ccg-card,
-    .ccg-game-card,
-    .ccg-genre-tile,
-    .ccg-feature-card
-)::before,
-:where(
-    .ccg-hero,
-    .games-hero,
-    .game-hero,
-    .ccg-genre-hero,
-    .ccg-info-hero,
-    .about-hero,
-    .home-hero__frame,
-    .home-hero__content,
-    .ccg-card,
-    .ccg-game-card,
-    .ccg-genre-tile,
-    .ccg-feature-card
-)::after {
+.ccg-hero::before,
+.ccg-hero::after,
+.home-hero__frame::before,
+.home-hero__frame::after,
+.ccg-background::before,
+.ccg-background::after {
     pointer-events: none;
 }
 
@@ -408,17 +388,32 @@ li {
     display: flex;
     align-items: center;
 
+    background: transparent;
+    backdrop-filter: none;
+    box-shadow: 0 20px 46px rgba(0,0,0,0.72), 0 0 18px rgba(var(--accent-rgb),0.24);
+    overflow: visible;
+    will-change: auto;
+}
+
+.ccg-header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    backdrop-filter: blur(10px);
     background:
         linear-gradient(120deg,
             rgba(0,0,0,0.94),
             rgba(0,0,0,0.86)),
         radial-gradient(circle at 15% 20%, rgba(var(--accent-rgb),0.16), transparent 40%),
         radial-gradient(circle at 80% 10%, rgba(255,255,255,0.08), transparent 45%);
+}
 
-    backdrop-filter: blur(10px);
-    box-shadow: 0 20px 46px rgba(0,0,0,0.72), 0 0 18px rgba(var(--accent-rgb),0.24);
-    overflow: visible;
-    will-change: transform, opacity;
+.ccg-header,
+.ccg-hero,
+.ccg-hero__inner {
+    overflow-y: visible;
+    max-height: none;
 }
 
 .ccg-header::after {
@@ -441,20 +436,12 @@ li {
 @media (min-width: 1024px) {
     .ccg-header {
         padding: 20px clamp(16px, 3vw, 32px);
-        background:
-            linear-gradient(140deg, rgba(5,8,18,0.96), rgba(6,10,24,0.92)),
-            radial-gradient(circle at 18% 15%, var(--ccg-header-halo), transparent 52%),
-            radial-gradient(circle at 82% 5%, var(--ccg-header-sheen), transparent 48%);
         box-shadow:
             0 26px 60px rgba(0,0,0,0.78),
             0 0 22px var(--ccg-header-edge);
     }
 
     .ccg-header::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
         background:
             linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.55)),
             radial-gradient(circle at 50% 0%, var(--ccg-header-halo), transparent 60%);
@@ -788,6 +775,11 @@ li {
     position: relative;
     z-index: 5;
     pointer-events: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: none;
+    touch-action: pan-x;
 }
 
 @media (min-width: 1024px) {
@@ -812,7 +804,11 @@ li {
     row-gap: 8px;
     padding-inline: 12px;
 
-    overflow: visible;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: none;
+    touch-action: pan-x;
     scrollbar-width: none;
     position: relative;
     z-index: 5;
@@ -1077,8 +1073,8 @@ li {
     gap: 14px;
     max-height: 100dvh;
     position: relative;
-    overflow-y: visible;
-    overscroll-behavior: auto;
+    overflow-y: auto;
+    overscroll-behavior: contain;
     transform: translateX(100%);
     transition: transform 0.32s ease;
 }
@@ -1206,13 +1202,6 @@ li {
         max-width: none;
         border-left: none;
         border-radius: 0;
-    }
-}
-
-@media (min-width: 1025px) {
-    .ccg-nav-drawer__panel {
-        max-height: none;
-        overflow-y: visible;
     }
 }
 
