@@ -2160,24 +2160,33 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
     position: relative;
     display: grid;
     gap: 10px;
+    text-align: center;
+    align-items: center;
+    justify-items: center;
 }
 
 .home-bottom-cta__eyebrow {
     letter-spacing: 0.2em;
     text-transform: uppercase;
     font-size: 0.82rem;
-    color: rgba(var(--accent-rgb),0.88);
+    color: rgba(255, 105, 235, 0.9);
+    text-shadow:
+        0 0 10px rgba(255, 105, 235, 0.45),
+        0 0 18px rgba(255, 105, 235, 0.25);
 }
 
 .home-bottom-cta__headline {
     font-size: clamp(1.3rem, 2.3vw, 1.8rem);
     letter-spacing: 0.08em;
+    text-align: center;
+    max-width: 760px;
 }
 
 .home-bottom-cta__copy {
     color: var(--ccg-text-soft);
-    max-width: 840px;
+    max-width: 740px;
     line-height: 1.68;
+    text-align: center;
 }
 
 .home-bottom-cta__actions {
@@ -2207,7 +2216,8 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
 
 .home-bottom-cta__actions .ccg-btn--neon {
     background: linear-gradient(145deg, rgba(var(--accent-rgb),0.64), rgba(16,20,34,0.88));
-    color: #0a1020;
+    color: #f5f8ff;
+    text-shadow: 0 0 12px rgba(255,255,255,0.35);
     border-color: rgba(var(--accent-rgb),0.74);
 }
 
