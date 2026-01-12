@@ -416,6 +416,13 @@ li {
     max-height: none;
 }
 
+.ccg-header,
+.ccg-hero,
+.ccg-hero__inner {
+    overflow-y: visible;
+    max-height: none;
+}
+
 .ccg-header::after {
     content: "";
     position: absolute;
