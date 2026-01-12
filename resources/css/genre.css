@@ -777,6 +777,71 @@ body[data-collection="Retro Events"] .ccg-page--collection-single .ccg-collectio
     transform: translateX(6%);
 }
 
+/* ============================================================
+   WAYFINDING — PREMIUM NAVIGATION
+============================================================ */
+
+.ccg-genre-wayfinding {
+    position: relative;
+    margin-top: clamp(32px, 4vw, 56px);
+    padding: clamp(20px, 3.2vw, 30px) clamp(18px, 4vw, 36px);
+    border-radius: 20px;
+    background:
+        linear-gradient(135deg, rgba(255,255,255,0.05), rgba(6,8,16,0.72));
+    box-shadow:
+        0 24px 60px rgba(0,0,0,0.6),
+        inset 0 0 0 1px rgba(255,255,255,0.06);
+    overflow: hidden;
+}
+
+.ccg-genre-wayfinding::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 8%;
+    right: 8%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(var(--accent-rgb),0.45), transparent);
+    opacity: 0.7;
+}
+
+.ccg-genre-wayfinding .game-hero__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(12px, 2.4vw, 24px);
+}
+
+.ccg-genre-wayfinding .ccg-btn--secondary {
+    min-width: clamp(190px, 22vw, 240px);
+    padding: 12px 24px;
+    letter-spacing: 0.1em;
+    border-color: rgba(255,255,255,0.22);
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.07),
+            rgba(0,0,0,0.55)
+        );
+}
+
+@media (max-width: 768px) {
+    .ccg-genre-wayfinding {
+        padding: 18px;
+    }
+
+    .ccg-genre-wayfinding .game-hero__buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .ccg-genre-wayfinding .ccg-btn--secondary {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
 
 /* ============================================================
    EMPTY STATES — LUXE SUPPORT
