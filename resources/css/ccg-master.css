@@ -73,27 +73,15 @@ body {
         linear-gradient(135deg, #05060f, #060714 48%, #05060f);
     color: var(--ccg-text-light);
     font-family: var(--ccg-font-body);
-    overflow-x: hidden;
     scroll-behavior: smooth;
-    height: auto;
-    min-height: 100%;
-
     text-size-adjust: 100%;
 
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-html {
-    overflow-y: auto;
-}
-
-body {
-    overflow-y: auto;
-}
-
 /* ============================================================
-   GLOBAL SCROLL & EVENT PASS-THROUGH SAFETY
+   GLOBAL SCROLL OWNERSHIP (AUTHORITATIVE)
    ------------------------------------------------------------
    • Ensure document-level scrolling remains active everywhere
    • Prevent decorative/hidden layers from intercepting wheel
@@ -102,10 +90,11 @@ body {
 
 html,
 body {
-    overflow-y: auto;
-    overscroll-behavior-y: auto;
     height: auto;
     min-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior-y: auto;
 }
 
 :where([aria-hidden="true"]) {
@@ -123,42 +112,29 @@ body {
    ------------------------------------------------------------
    • Prevents page shells from becoming scroll containers
    • Ensures document scrolling is the only vertical scroll
+   • Audit scope: page shells + main + footer wrappers
 ============================================================ */
 
-:where(.ccg-page, .ccg-main, main, .ccg-section, .ccg-info-shell) {
+/* ============================================================
+   SCROLL OWNERSHIP FAILSAFE (REMOVE TO DISABLE)
+   ------------------------------------------------------------
+   This block enforces document-only scrolling across site shells.
+   If a rare page requires an internal scroller, remove this block
+   and add a local override instead of weakening the global rule.
+============================================================ */
+
+:where(.ccg-page, .ccg-main, main, .ccg-section, .ccg-info-shell, .ccg-footer) {
     height: auto;
     max-height: none;
     overflow-y: visible;
 }
 
-:where(
-    .ccg-hero,
-    .games-hero,
-    .game-hero,
-    .ccg-genre-hero,
-    .ccg-info-hero,
-    .about-hero,
-    .home-hero__frame,
-    .home-hero__content,
-    .ccg-card,
-    .ccg-game-card,
-    .ccg-genre-tile,
-    .ccg-feature-card
-)::before,
-:where(
-    .ccg-hero,
-    .games-hero,
-    .game-hero,
-    .ccg-genre-hero,
-    .ccg-info-hero,
-    .about-hero,
-    .home-hero__frame,
-    .home-hero__content,
-    .ccg-card,
-    .ccg-game-card,
-    .ccg-genre-tile,
-    .ccg-feature-card
-)::after {
+.ccg-hero::before,
+.ccg-hero::after,
+.home-hero__frame::before,
+.home-hero__frame::after,
+.ccg-background::before,
+.ccg-background::after {
     pointer-events: none;
 }
 
@@ -1077,8 +1053,8 @@ li {
     gap: 14px;
     max-height: 100dvh;
     position: relative;
-    overflow-y: visible;
-    overscroll-behavior: auto;
+    overflow-y: auto;
+    overscroll-behavior: contain;
     transform: translateX(100%);
     transition: transform 0.32s ease;
 }
@@ -1206,13 +1182,6 @@ li {
         max-width: none;
         border-left: none;
         border-radius: 0;
-    }
-}
-
-@media (min-width: 1025px) {
-    .ccg-nav-drawer__panel {
-        max-height: none;
-        overflow-y: visible;
     }
 }
 
