@@ -397,6 +397,13 @@ li {
     will-change: transform, opacity;
 }
 
+.ccg-header,
+.ccg-hero,
+.ccg-hero__inner {
+    overflow-y: visible;
+    max-height: none;
+}
+
 .ccg-header::after {
     content: "";
     position: absolute;
@@ -764,6 +771,11 @@ li {
     position: relative;
     z-index: 5;
     pointer-events: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: none;
+    touch-action: pan-x;
 }
 
 @media (min-width: 1024px) {
@@ -788,7 +800,11 @@ li {
     row-gap: 8px;
     padding-inline: 12px;
 
-    overflow: visible;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: none;
+    touch-action: pan-x;
     scrollbar-width: none;
     position: relative;
     z-index: 5;
