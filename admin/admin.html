@@ -193,7 +193,7 @@
                         <div class="admin-field">
                             <label for="gameSortTitle">Sort title *</label>
                             <input id="gameSortTitle" name="sorttitle" class="admin-input" placeholder="Adventures of Robin Hood" required>
-                            <p class="admin-help">Auto-removes leading “The”, “A”, or “An” from the title. Edit if needed.</p>
+                            <p class="admin-help">Defaults to the title. Edit if needed.</p>
                             <p class="admin-error" data-admin-error="sorttitle" hidden></p>
                         </div>
                         <div class="admin-field">
@@ -217,9 +217,37 @@
                             <label for="gameDeveloper">Developer / Publisher</label>
                             <input id="gameDeveloper" name="developer" class="admin-input" placeholder="Codemasters">
                         </div>
-                        <div class="admin-field">
-                            <label for="gameGenres">Genres (comma separated)</label>
-                            <input id="gameGenres" name="genres" class="admin-input" placeholder="Platform Games, Adventure">
+                        <div class="admin-field" data-admin-genre-field>
+                            <label for="gameGenreSelect">Genres *</label>
+                            <div class="admin-inline-buttons">
+                                <select id="gameGenreSelect" class="admin-select">
+                                    <option value="">Select genre...</option>
+                                    <option value="Action Adventure Games">Action Adventure Games</option>
+                                    <option value="Adventure Games">Adventure Games</option>
+                                    <option value="Arcade Games">Arcade Games</option>
+                                    <option value="BPJS Games">BPJS Games</option>
+                                    <option value="Cartridge Games">Cartridge Games</option>
+                                    <option value="Casino Games">Casino Games</option>
+                                    <option value="Fighting Games">Fighting Games</option>
+                                    <option value="Horror Games">Horror Games</option>
+                                    <option value="Licensed Games">Licensed Games</option>
+                                    <option value="Miscellaneous">Miscellaneous</option>
+                                    <option value="Platform Games">Platform Games</option>
+                                    <option value="Puzzle Games">Puzzle Games</option>
+                                    <option value="Quiz Games">Quiz Games</option>
+                                    <option value="Racing Games">Racing Games</option>
+                                    <option value="Role Playing Games">Role Playing Games</option>
+                                    <option value="Shooting Games">Shooting Games</option>
+                                    <option value="Sports Games">Sports Games</option>
+                                    <option value="Strategy Games">Strategy Games</option>
+                                    <option value="Top Picks">Top Picks</option>
+                                </select>
+                                <button class="ccg-btn ccg-btn--ghost" type="button" data-admin-clear-genres>Clear all genres</button>
+                            </div>
+                            <div class="admin-genre-selected" data-admin-genre-selected>
+                                <p class="admin-help" data-admin-genre-empty>No genres selected</p>
+                            </div>
+                            <p class="admin-error" data-admin-error="genres" hidden></p>
                         </div>
                     </div>
 
@@ -290,11 +318,16 @@
                     <p id="adminStatus" class="admin-status">Waiting for data…</p>
                     <div class="admin-inline-buttons admin-inline-buttons--export">
                         <button id="adminDownload" class="ccg-btn ccg-btn--secondary" type="button">Download games.json</button>
+                        <button id="adminDownloadStubs" class="ccg-btn ccg-btn--ghost" type="button">Download SEO stub HTML files (zip)</button>
                         <button id="adminClear" class="ccg-btn ccg-btn--ghost" type="button">Clear added games</button>
                     </div>
                     <div class="admin-errors" data-admin-errors hidden>
                         <h3>Export blocked</h3>
                         <ul data-admin-error-list></ul>
+                    </div>
+                    <div class="admin-notice" data-admin-warnings hidden>
+                        <p class="admin-warning">Warnings found in legacy entries (won’t block export). New entries will be created in the clean format.</p>
+                        <ul data-admin-warning-list></ul>
                     </div>
                 </article>
 
@@ -375,6 +408,7 @@
     ========================================================= -->
     <script src="../js/ccg-mode-engine.js" defer></script>
     <script src="../js/ccg-global.js" defer></script>
+    <script src="./jszip.min.js" defer></script>
     <script src="../js/admin-tools.js" defer></script>
 
 </body>
