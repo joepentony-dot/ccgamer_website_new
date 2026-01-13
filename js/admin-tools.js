@@ -20,27 +20,6 @@
     const YEAR_MIN = 1977;
     const YEAR_MAX = 2026;
     const SITE_BASE_URL = "https://www.cheekycommodoregamer.co.uk";
-    const CANONICAL_GENRES = [
-        "Action Adventure Games",
-        "Adventure Games",
-        "Arcade Games",
-        "BPJS Games",
-        "Cartridge Games",
-        "Casino Games",
-        "Fighting Games",
-        "Horror Games",
-        "Licensed Games",
-        "Miscellaneous",
-        "Platform Games",
-        "Puzzle Games",
-        "Quiz Games",
-        "Racing Games",
-        "Role Playing Games",
-        "Shooting Games",
-        "Sports Games",
-        "Strategy Games",
-        "Top Picks"
-    ];
     const SEO_STUB_FALLBACK = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -180,11 +159,6 @@
     let autoSlug = true;
     let autoSortTitle = true;
     let stubTemplateCache = null;
-    let selectedGenres = [];
-    let genreTouched = false;
-    let genreCleared = false;
-    const removedCharacterWarnings = new Set();
-    const genreIntentById = new Map();
 
     /* --------------------------------------------------------
        DOM REFERENCES
@@ -312,13 +286,6 @@
         warningPanel.hidden = false;
     }
 
-    function handleGenreExportErrors(errors) {
-        const hasGenreError = errors.some(error => error.includes("Select at least one genre before exporting"));
-        if (hasGenreError) {
-            setFieldError("genres", "Select at least one genre before exporting.");
-        }
-    }
-
     function updateBadges() {
         if (gameCountEl) gameCountEl.textContent = baseGames.length;
         if (addedCountEl) addedCountEl.textContent = addedGames.length;
@@ -333,67 +300,6 @@
         const hasGames = workingGames.length > 0;
         if (downloadBtn) downloadBtn.disabled = hasErrors || !hasGames;
         if (downloadStubsBtn) downloadStubsBtn.disabled = hasErrors || !hasGames;
-    }
-
-    function normalizeText(value) {
-        const original = String(value || "");
-        let text = original;
-        let removed = false;
-        if (typeof text.normalize === "function") {
-            text = text.normalize("NFC");
-        }
-        text = text.replace(/\r\n?/g, "\n");
-        text = text.replace(/\u00A0/g, " ");
-        text = text.replace(/[“”]/g, "\"");
-        text = text.replace(/[‘’]/g, "'");
-        text = text.replace(/[–—]/g, "-");
-        text = text.replace(/…/g, "...");
-        const beforeZeroWidth = text;
-        text = text.replace(/[\u200B\u200C\u200D\uFEFF]/g, "");
-        if (text !== beforeZeroWidth) {
-            removed = true;
-        }
-        const beforeControl = text;
-        text = text.replace(/[\u0000-\u0009\u000B\u000C\u000E-\u001F\u007F]/g, "");
-        if (text !== beforeControl) {
-            removed = true;
-        }
-        text = text.replace(/\n{3,}/g, "\n\n");
-        text = text.trim();
-        return { value: text, removed };
-    }
-
-    function normalizeTextField(value, warningKey) {
-        const { value: normalized, removed } = normalizeText(value);
-        if (removed && warningKey) {
-            removedCharacterWarnings.add(warningKey);
-        }
-        return normalized;
-    }
-
-    function normalizeNewEntryTextFields(raw) {
-        const normalized = { ...raw };
-        normalized.title = normalizeTextField(raw.title, "new-entry");
-        normalized.sorttitle = normalizeTextField(raw.sorttitle, "new-entry");
-        normalized.description = normalizeTextField(raw.description, "new-entry");
-        normalized.developer = normalizeTextField(raw.developer, "new-entry");
-        return normalized;
-    }
-
-    function normalizeInputValue(inputEl, warningKey) {
-        if (!inputEl) return;
-        const { value, removed } = normalizeText(inputEl.value);
-        if (removed && warningKey) {
-            removedCharacterWarnings.add(warningKey);
-        }
-        if (inputEl.value !== value) {
-            inputEl.value = value;
-        }
-    }
-
-    function hasUnsupportedCharacters(value) {
-        if (value === null || value === undefined || value === "") return false;
-        return normalizeText(value).removed;
     }
 
     function getDefaultSourceUrl() {
@@ -540,14 +446,13 @@
     function normalizeGame(raw) {
         const title = String(raw.title || "").trim();
         const sorttitle = String(raw.sorttitle || "").trim() || title;
-        const genres = normalizeArrayField(raw.genres).sort((a, b) => a.localeCompare(b, "en", { sensitivity: "base" }));
         return {
             system: normalizeSystem(raw.system),
             id: String(raw.id || "").trim(),
             slug: String(raw.slug || "").trim(),
             title,
             sorttitle,
-            genres,
+            genres: parseCommaList(raw.genres),
             year: raw.year ? Number(raw.year) : "",
             developer: String(raw.developer || "").trim(),
             videoid: String(raw.videoid || "").trim(),
@@ -609,61 +514,6 @@
             }
         });
         return normalized;
-    }
-
-    function renderSelectedGenres() {
-        if (!genreSelectedList) return;
-        const existingButtons = genreSelectedList.querySelectorAll("button[data-genre-remove]");
-        existingButtons.forEach(button => button.remove());
-
-        if (!selectedGenres.length) {
-            if (genreEmptyState) {
-                genreEmptyState.hidden = false;
-            }
-            return;
-        }
-
-        if (genreEmptyState) {
-            genreEmptyState.hidden = true;
-        }
-
-        const sorted = [...selectedGenres].sort((a, b) => a.localeCompare(b, "en", { sensitivity: "base" }));
-        sorted.forEach(genre => {
-            const button = document.createElement("button");
-            button.type = "button";
-            button.className = "ccg-btn ccg-btn--ghost";
-            button.textContent = `${genre} ×`;
-            button.setAttribute("aria-label", `Remove ${genre}`);
-            button.dataset.genreRemove = genre;
-            genreSelectedList.appendChild(button);
-        });
-    }
-
-    function addGenre(genre) {
-        if (!genre) return;
-        if (!CANONICAL_GENRES.includes(genre)) return;
-        if (selectedGenres.includes(genre)) return;
-        selectedGenres = [...selectedGenres, genre];
-        genreTouched = true;
-        genreCleared = false;
-        renderSelectedGenres();
-        setFieldError("genres", "");
-    }
-
-    function removeGenre(genre) {
-        selectedGenres = selectedGenres.filter(item => item !== genre);
-        genreTouched = true;
-        if (!selectedGenres.length) {
-            genreCleared = true;
-        }
-        renderSelectedGenres();
-    }
-
-    function clearGenres() {
-        selectedGenres = [];
-        genreTouched = true;
-        genreCleared = true;
-        renderSelectedGenres();
     }
 
     function validateThumbnail(path) {
@@ -769,9 +619,6 @@
             const id = String(game.id || "").trim();
             const slug = String(game.slug || "").trim();
             const title = String(game.title || "").trim();
-            const genres = Array.isArray(game.genres) ? game.genres : [];
-            const isNewEntry = addedIds.has(id.toLowerCase());
-            const intentState = genreIntentById.get(game.id) || "untouched";
 
             if (!game.system) {
                 errors.push(`${prefix}: system is required.`);
@@ -812,40 +659,7 @@
                     warnings.push(`${prefix}: slug "${slug}" does not match the clean format.`);
                 }
             }
-
-            if (!genres.length) {
-                if (isNewEntry && (intentState === "modified" || intentState === "cleared")) {
-                    errors.push(`${prefix}: Select at least one genre before exporting.`);
-                } else {
-                    warnings.push(`${prefix}: genres are missing or empty.`);
-                }
-            } else {
-                const invalidGenres = genres.filter(genre => !CANONICAL_GENRES.includes(genre));
-                if (invalidGenres.length) {
-                    if (isNewEntry) {
-                        errors.push(`${prefix}: genres must use the approved list.`);
-                    } else {
-                        warnings.push(`${prefix}: genres include non-canonical values.`);
-                    }
-                }
-            }
-
-            const hasUnsafeText = [
-                game.title,
-                game.sorttitle,
-                game.description,
-                game.developer,
-                game.publisher,
-                ...genres
-            ].some(value => hasUnsupportedCharacters(value));
-            if (hasUnsafeText) {
-                warnings.push(`${prefix}: Some unsupported characters were removed for JSON safety.`);
-            }
         });
-
-        if (removedCharacterWarnings.size) {
-            warnings.push("Some unsupported characters were removed for JSON safety.");
-        }
 
         return { errors, warnings };
     }
@@ -986,32 +800,6 @@
         }
 
         return `<!DOCTYPE html>\n${doc.documentElement.outerHTML}`;
-    }
-
-    function normalizeExportEntry(game) {
-        const normalized = { ...game };
-        normalized.title = normalizeTextField(game.title, `export-${game.id}`);
-        normalized.sorttitle = normalizeTextField(game.sorttitle, `export-${game.id}`);
-        normalized.description = normalizeTextField(game.description, `export-${game.id}`);
-        normalized.developer = normalizeTextField(game.developer, `export-${game.id}`);
-        if (game.publisher) {
-            normalized.publisher = normalizeTextField(game.publisher, `export-${game.id}`);
-        }
-        if (Array.isArray(game.genres)) {
-            normalized.genres = [...game.genres].sort((a, b) => a.localeCompare(b, "en", { sensitivity: "base" }));
-        }
-        return normalized;
-    }
-
-    function prepareExportGames() {
-        const addedIds = new Set(addedGames.map(game => String(game.id || "").toLowerCase()).filter(Boolean));
-        return workingGames.map(game => {
-            const id = String(game.id || "").toLowerCase();
-            if (!addedIds.has(id)) {
-                return game;
-            }
-            return normalizeExportEntry(game);
-        }).sort(compareSortTitle);
     }
 
     function renderAddedPreview() {
@@ -1171,13 +959,12 @@
     -------------------------------------------------------- */
     if (downloadBtn) {
         downloadBtn.addEventListener("click", () => {
-            const merged = prepareExportGames();
+            const merged = [...workingGames].sort(compareSortTitle);
             const { errors, warnings } = validateGameLibrary(merged);
             if (errors.length) {
                 setStatus("Export blocked. Fix errors before downloading.", "error");
                 setExportErrors(errors);
                 setExportWarnings(warnings);
-                handleGenreExportErrors(errors);
                 return;
             }
             setExportErrors([]);
@@ -1202,13 +989,12 @@
 
     if (downloadStubsBtn) {
         downloadStubsBtn.addEventListener("click", async () => {
-            const merged = prepareExportGames();
+            const merged = [...workingGames].sort(compareSortTitle);
             const { errors, warnings } = validateGameLibrary(merged);
             if (errors.length) {
                 setStatus("Stub export blocked. Fix errors before downloading.", "error");
                 setExportErrors(errors);
                 setExportWarnings(warnings);
-                handleGenreExportErrors(errors);
                 return;
             }
             setExportErrors([]);
