@@ -155,10 +155,11 @@
     let baseGames = [];
     let workingGames = [];
     let addedGames = [];
-    let autoId = true;
-    let autoSlug = true;
     let autoSortTitle = true;
     let stubTemplateCache = null;
+    let hasSourceData = false;
+    const SHOW_ALL_WARNINGS = new URLSearchParams(window.location.search).has("adminDebugWarnings");
+    const MAX_WARNING_ITEMS = 20;
 
     /* --------------------------------------------------------
        DOM REFERENCES
@@ -278,11 +279,18 @@
             return;
         }
         warningList.innerHTML = "";
-        warnings.forEach(warning => {
+        const warningsToShow = SHOW_ALL_WARNINGS ? warnings : warnings.slice(0, MAX_WARNING_ITEMS);
+        warningsToShow.forEach(warning => {
             const li = document.createElement("li");
             li.textContent = warning;
             warningList.appendChild(li);
         });
+        if (!SHOW_ALL_WARNINGS && warnings.length > MAX_WARNING_ITEMS) {
+            const li = document.createElement("li");
+            const remainingCount = warnings.length - MAX_WARNING_ITEMS;
+            li.textContent = `...and ${remainingCount} more legacy warnings hidden (add ?adminDebugWarnings=1 to view).`;
+            warningList.appendChild(li);
+        }
         warningPanel.hidden = false;
     }
 
@@ -293,9 +301,13 @@
     }
 
     function updateExportState() {
-        const { errors, warnings } = validateGameLibrary(workingGames);
+        const { errors, warnings } = validateGameLibrary(workingGames, { includeLegacyWarnings: hasSourceData });
         setExportErrors(errors);
-        setExportWarnings(warnings);
+        if (hasSourceData) {
+            setExportWarnings(warnings);
+        } else {
+            setExportWarnings([]);
+        }
         const hasErrors = errors.length > 0;
         const hasGames = workingGames.length > 0;
         if (downloadBtn) downloadBtn.disabled = hasErrors || !hasGames;
@@ -321,9 +333,8 @@
             .toLowerCase()
             .trim()
             .replace(/&/g, "and")
-            .replace(/[’'“”"]/g, "")
-            .replace(/\./g, "")
-            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/[^a-z0-9\s]/g, "")
+            .replace(/\s+/g, "-")
             .replace(/-+/g, "-")
             .replace(/^-+|-+$/g, "");
     }
@@ -333,8 +344,8 @@
             .toLowerCase()
             .trim()
             .replace(/&/g, "and")
-            .replace(/[’'“”".:,]/g, "")
-            .replace(/[^a-z0-9]+/g, "_")
+            .replace(/[^a-z0-9\s]/g, "")
+            .replace(/\s+/g, "_")
             .replace(/_+/g, "_")
             .replace(/^_+|_+$/g, "");
     }
@@ -418,8 +429,6 @@
     function clearForm() {
         if (!form) return;
         form.reset();
-        autoId = true;
-        autoSlug = true;
         autoSortTitle = true;
         selectedGenres = [];
         genreTouched = false;
@@ -428,19 +437,32 @@
         clearFieldErrors();
     }
 
+    function getAutoIdSlug(title) {
+        const trimmedTitle = String(title || "").trim();
+        if (!trimmedTitle) {
+            return { id: "", slug: "" };
+        }
+        const baseId = toSnake(trimmedTitle) || "untitled";
+        const baseSlug = toSlug(trimmedTitle) || "untitled";
+        return {
+            id: getUniqueId(baseId),
+            slug: getUniqueSlug(baseSlug)
+        };
+    }
+
     function updateAutoFields() {
         if (!titleInput) return;
-        const title = normalizeText(titleInput.value).value;
+        const titleValue = String(titleInput.value || "");
+        const normalizedTitle = normalizeText(titleValue).value;
         if (autoSortTitle && sortTitleInput) {
-            sortTitleInput.value = deriveSortTitle(title);
+            sortTitleInput.value = deriveSortTitle(normalizedTitle);
         }
-        if (autoId && idInput) {
-            const baseId = toSnake(title);
-            idInput.value = getUniqueId(baseId);
+        const autoValues = getAutoIdSlug(titleValue);
+        if (idInput) {
+            idInput.value = autoValues.id;
         }
-        if (autoSlug && slugInput) {
-            const baseSlug = toSlug(title);
-            slugInput.value = getUniqueSlug(baseSlug);
+        if (slugInput) {
+            slugInput.value = autoValues.slug;
         }
     }
 
@@ -598,7 +620,8 @@
         return isValid;
     }
 
-    function validateGameLibrary(games) {
+    function validateGameLibrary(games, options = {}) {
+        const { includeLegacyWarnings = true } = options;
         const errors = [];
         const warnings = [];
         if (!Array.isArray(games)) {
@@ -644,7 +667,7 @@
                 } else {
                     seenIds.add(idKey);
                 }
-                if (!CLEAN_ID_REGEX.test(id)) {
+                if (includeLegacyWarnings && !CLEAN_ID_REGEX.test(id)) {
                     warnings.push(`${prefix}: id "${id}" does not match the clean format.`);
                 }
             }
@@ -656,7 +679,7 @@
                 } else {
                     seenSlugs.add(slugKey);
                 }
-                if (!CLEAN_SLUG_REGEX.test(slug)) {
+                if (includeLegacyWarnings && !CLEAN_SLUG_REGEX.test(slug)) {
                     warnings.push(`${prefix}: slug "${slug}" does not match the clean format.`);
                 }
             }
@@ -873,6 +896,7 @@
             baseGames = prepared;
             workingGames = [...prepared].sort(compareSortTitle);
             addedGames = [];
+            hasSourceData = true;
             updateBadges();
             setStatus(`Loaded ${baseGames.length} live games.`);
             renderGamesList(searchInput ? searchInput.value : "");
@@ -881,7 +905,7 @@
             updateExportState();
         } catch (err) {
             console.error(`[CCG ADMIN] Failed to load live games.json from ${url}`, err);
-            setStatus("Unable to load games.json. Check relative path and deployment.", "error");
+            setStatus("Live games.json could not be loaded (expected on static hosting). Use Upload JSON to edit existing entries.", "info");
         }
     }
 
@@ -904,6 +928,7 @@
                     baseGames = prepared;
                     workingGames = [...prepared].sort(compareSortTitle);
                     addedGames = [];
+                    hasSourceData = true;
                     updateBadges();
                     renderGamesList(searchInput ? searchInput.value : "");
                     renderAddedPreview();
@@ -930,10 +955,15 @@
             let raw = Object.fromEntries(formData.entries());
             raw.genres = [...selectedGenres];
             raw = normalizeNewEntryTextFields(raw);
+            const autoValues = getAutoIdSlug(raw.title);
+            raw.id = autoValues.id;
+            raw.slug = autoValues.slug;
             if (titleInput) titleInput.value = raw.title || "";
             if (sortTitleInput) sortTitleInput.value = raw.sorttitle || "";
             if (descriptionInput) descriptionInput.value = raw.description || "";
             if (developerInput) developerInput.value = raw.developer || "";
+            if (idInput) idInput.value = raw.id || "";
+            if (slugInput) slugInput.value = raw.slug || "";
             const game = normalizeGame(raw);
 
             if (!validateNewGame(raw, game)) {
@@ -961,15 +991,23 @@
     if (downloadBtn) {
         downloadBtn.addEventListener("click", () => {
             const merged = [...workingGames].sort(compareSortTitle);
-            const { errors, warnings } = validateGameLibrary(merged);
+            const { errors, warnings } = validateGameLibrary(merged, { includeLegacyWarnings: hasSourceData });
             if (errors.length) {
                 setStatus("Export blocked. Fix errors before downloading.", "error");
                 setExportErrors(errors);
-                setExportWarnings(warnings);
+                if (hasSourceData) {
+                    setExportWarnings(warnings);
+                } else {
+                    setExportWarnings([]);
+                }
                 return;
             }
             setExportErrors([]);
-            setExportWarnings(warnings);
+            if (hasSourceData) {
+                setExportWarnings(warnings);
+            } else {
+                setExportWarnings([]);
+            }
 
             const blob = new Blob([JSON.stringify(merged, null, 2)], {
                 type: "application/json"
@@ -996,15 +1034,23 @@
             }
 
             const sessionGames = [...addedGames].sort(compareSortTitle);
-            const { errors, warnings } = validateGameLibrary(sessionGames);
+            const { errors, warnings } = validateGameLibrary(sessionGames, { includeLegacyWarnings: hasSourceData });
             if (errors.length) {
                 setStatus("Stub export blocked. Fix errors before downloading.", "error");
                 setExportErrors(errors);
-                setExportWarnings(warnings);
+                if (hasSourceData) {
+                    setExportWarnings(warnings);
+                } else {
+                    setExportWarnings([]);
+                }
                 return;
             }
             setExportErrors([]);
-            setExportWarnings(warnings);
+            if (hasSourceData) {
+                setExportWarnings(warnings);
+            } else {
+                setExportWarnings([]);
+            }
 
             if (typeof JSZip === "undefined") {
                 setStatus("JSZip is not available for zip generation.", "error");
@@ -1052,7 +1098,11 @@
             renderAddedPreview();
             renderGamesList(searchInput ? searchInput.value : "");
             updateExportState();
-            setStatus("Added games cleared. Live games remain loaded.");
+            if (hasSourceData) {
+                setStatus("Added games cleared. Existing dataset remains loaded.");
+            } else {
+                setStatus("No existing dataset loaded. New entries cleared.", "info");
+            }
         });
     }
 
@@ -1087,12 +1137,7 @@
     }
 
     if (idInput) {
-        idInput.addEventListener("input", () => {
-            autoId = false;
-            const normalized = toSnake(idInput.value);
-            if (idInput.value !== normalized) {
-                idInput.value = normalized;
-            }
+        idInput.addEventListener("focus", () => {
             if (fieldErrors.id && !fieldErrors.id.hidden) {
                 setFieldError("id", "");
             }
@@ -1100,12 +1145,7 @@
     }
 
     if (slugInput) {
-        slugInput.addEventListener("input", () => {
-            autoSlug = false;
-            const normalized = toSlug(slugInput.value);
-            if (slugInput.value !== normalized) {
-                slugInput.value = normalized;
-            }
+        slugInput.addEventListener("focus", () => {
             if (fieldErrors.slug && !fieldErrors.slug.hidden) {
                 setFieldError("slug", "");
             }
@@ -1172,8 +1212,6 @@
 
     if (resetAutoBtn) {
         resetAutoBtn.addEventListener("click", () => {
-            autoId = true;
-            autoSlug = true;
             autoSortTitle = true;
             updateAutoFields();
             setStatus("Auto fields regenerated from title.");
