@@ -881,10 +881,7 @@
             updateExportState();
         } catch (err) {
             console.error(`[CCG ADMIN] Failed to load live games.json from ${url}`, err);
-            setStatus(
-                "Unable to load games.json.\nExpected location: ../games/games.json\nCheck that games.json exists in /games/ and is published.",
-                "error"
-            );
+            setStatus("Unable to load games.json. Check relative path and deployment.", "error");
         }
     }
 
