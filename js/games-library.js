@@ -14,8 +14,12 @@
 let CCG_ALL_GAMES = [];
 let CCG_GAMES_TOTAL = 0;
 let CCG_GAME_CACHE = new Map();
+let CCG_ALL_LETTERS = [];
+let CCG_ACTIVE_QUERY = "";
+let CCG_ACTIVE_SYSTEM_FILTER = "all";
 
 const ACCORDION_STATE_KEY = "ccgAccordionState";
+const SYSTEM_FILTER_STORAGE_KEY = "ccgGamesSystemFilter";
 const THUMB_BASE_PATH = "../resources/images/thumbnails/all/";
 const THUMB_PLACEHOLDER =
     "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
@@ -41,10 +45,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         CCG_ALL_GAMES = await res.json();
         CCG_GAMES_TOTAL = CCG_ALL_GAMES.length;
 
-        buildGamesIndex(CCG_ALL_GAMES);
-        setupSearch(CCG_ALL_GAMES);
+        const masterGroups = groupGamesByLetter(CCG_ALL_GAMES);
+        CCG_ALL_LETTERS = sortLetters(Object.keys(masterGroups));
 
-        updateCounts(CCG_ALL_GAMES.length);
+        setupSearch();
+        setupSystemFilter();
+        applyActiveFilters({ preserveScroll: true });
 
         // Restore without scroll jump
         restoreAccordionState({ silent: true });
@@ -101,6 +107,32 @@ function groupGamesByLetter(games) {
     return groups;
 }
 
+function sortLetters(letters) {
+    return letters.sort((a, b) => {
+        if (a === "#") return -1;
+        if (b === "#") return 1;
+        return a.localeCompare(b);
+    });
+}
+
+function normalizeSystemValue(raw) {
+    const value = String(raw || "").trim().toUpperCase();
+    if (value === "C64") return "C64";
+    if (value === "AMIGA") return "AMIGA";
+    return value || "UNKNOWN";
+}
+
+function getSystemFilterLabel(filter) {
+    switch (filter) {
+        case "c64":
+            return "Commodore 64 only";
+        case "amiga":
+            return "Amiga only";
+        default:
+            return "All Games (C64 + Amiga)";
+    }
+}
+
 /* ============================================================
    A–Z SPINE (LETTERS ONLY)
 ============================================================ */
@@ -111,19 +143,22 @@ function buildAlphaSpine(groups) {
 
     strip.innerHTML = "";
 
-    const letters = Object.keys(groups).sort((a, b) => {
-        if (a === "#") return -1;
-        if (b === "#") return 1;
-        return a.localeCompare(b);
-    });
+    const letters = CCG_ALL_LETTERS.length
+        ? [...CCG_ALL_LETTERS]
+        : sortLetters(Object.keys(groups));
 
     letters.forEach(letter => {
         const btn = document.createElement("button");
         btn.className = "games-alpha__btn";
         btn.textContent = letter;
         btn.dataset.letter = letter;
+        const hasResults = Boolean(groups[letter]?.length);
+        btn.disabled = !hasResults;
+        btn.classList.toggle("is-disabled", !hasResults);
+        btn.setAttribute("aria-disabled", String(!hasResults));
 
         btn.addEventListener("click", () => {
+            if (btn.disabled) return;
             toggleAccordion(letter);
         });
 
@@ -143,13 +178,23 @@ function buildAccordion(groups) {
     CCG_GAME_CACHE = new Map();
     let gameIndex = 0;
 
-    const letters = Object.keys(groups).sort((a, b) => {
-        if (a === "#") return -1;
-        if (b === "#") return 1;
-        return a.localeCompare(b);
-    });
+    const letters = sortLetters(Object.keys(groups));
 
     letters.forEach(letter => {
+        const gamesForLetter = groups[letter] || [];
+        const systemBuckets = {
+            C64: gamesForLetter.filter(game => normalizeSystemValue(game.system) === "C64"),
+            AMIGA: gamesForLetter.filter(game => normalizeSystemValue(game.system) === "AMIGA"),
+        };
+        const hasC64 = systemBuckets.C64.length > 0;
+        const hasAmiga = systemBuckets.AMIGA.length > 0;
+        const hasMixedSystems = hasC64 && hasAmiga;
+
+        const hintMarkup =
+            CCG_ACTIVE_SYSTEM_FILTER === "all" && !hasMixedSystems
+                ? renderSystemBiasHint(hasC64 ? "C64" : hasAmiga ? "AMIGA" : null)
+                : "";
+
         const section = document.createElement("section");
         section.className = "games-accordion__section";
         section.dataset.letter = letter;
@@ -160,26 +205,67 @@ function buildAccordion(groups) {
 
         section.innerHTML = `
             <button class="games-accordion__header" data-letter="${letter}" type="button" id="${headerId}" aria-controls="${contentId}">
-                <span class="games-accordion__letter">${letter}</span>
+                <span class="games-accordion__letter">${letter}${hintMarkup}</span>
                 <span class="games-accordion__chevron">⌄</span>
             </button>
             <div class="games-accordion__content" id="${contentId}" role="region" aria-labelledby="${headerId}" hidden>
-                <div class="games-grid">
-                    ${groups[letter].map(game => {
-                        const key = getGameKey(game, gameIndex++);
-                        CCG_GAME_CACHE.set(key, game);
-                        return renderGameCardShell(key);
-                    }).join("")}
-                </div>
+                ${renderAccordionContent({
+                    gamesForLetter,
+                    systemBuckets,
+                    hasMixedSystems,
+                    gameIndexRef: { value: gameIndex }
+                })}
             </div>
         `;
 
+        gameIndex = CCG_GAME_CACHE.size;
         container.appendChild(section);
     });
 
     attachAccordionEvents();
     initCardLazyRender();
     initThumbLazyLoad();
+}
+
+function renderSystemBiasHint(system) {
+    if (!system) return "";
+    const label = system === "C64" ? "C64 only" : "Amiga only";
+    return `<span class="games-accordion__hint">${label}</span>`;
+}
+
+function renderGameShells(games, gameIndexRef) {
+    return games.map(game => {
+        const key = getGameKey(game, gameIndexRef.value++);
+        CCG_GAME_CACHE.set(key, game);
+        return renderGameCardShell(key);
+    }).join("");
+}
+
+function renderAccordionContent({ gamesForLetter, systemBuckets, hasMixedSystems, gameIndexRef }) {
+    if (CCG_ACTIVE_SYSTEM_FILTER === "all" && hasMixedSystems) {
+        return `
+            ${renderSystemGroup("Commodore 64", systemBuckets.C64, gameIndexRef)}
+            ${renderSystemGroup("Amiga", systemBuckets.AMIGA, gameIndexRef)}
+        `;
+    }
+
+    return `
+        <div class="games-grid">
+            ${renderGameShells(gamesForLetter, gameIndexRef)}
+        </div>
+    `;
+}
+
+function renderSystemGroup(label, games, gameIndexRef) {
+    if (!games.length) return "";
+    return `
+        <div class="games-system-group">
+            <div class="games-system-group__title">${label}</div>
+            <div class="games-grid">
+                ${renderGameShells(games, gameIndexRef)}
+            </div>
+        </div>
+    `;
 }
 
 /* ============================================================
@@ -388,28 +474,95 @@ function scrollToTop() {
    SEARCH (REBUILD SAFE)
 ============================================================ */
 
-function setupSearch(allGames) {
+function setupSearch() {
     const input = document.getElementById("gamesSearchInput");
     const clearBtn = document.getElementById("gamesSearchClear");
     if (!input) return;
 
     input.addEventListener("input", () => {
-        const query = input.value.toLowerCase();
-        filterGames(query, allGames);
+        CCG_ACTIVE_QUERY = input.value.toLowerCase();
+        applyActiveFilters({ preserveScroll: true });
     });
 
     if (clearBtn) {
         clearBtn.addEventListener("click", () => {
             input.value = "";
-            filterGames("", allGames);
+            CCG_ACTIVE_QUERY = "";
+            applyActiveFilters({ preserveScroll: true });
         });
     }
 }
 
-function filterGames(query, allGames) {
-    const filtered = allGames.filter(game =>
-        (game.title || "").toLowerCase().includes(query)
-    );
+function setupSystemFilter() {
+    const buttons = document.querySelectorAll("[data-system-filter]");
+    const hint = document.getElementById("gamesBrowseHint");
+    if (!buttons.length) return;
+
+    const initial = getInitialSystemFilter();
+    setSystemFilter(initial, { persist: true, updateButtons: true, hintEl: hint });
+
+    buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            const system = btn.dataset.systemFilter || "all";
+            setSystemFilter(system, { persist: true, updateButtons: true, hintEl: hint });
+            applyActiveFilters({ preserveScroll: true });
+        });
+    });
+}
+
+function getInitialSystemFilter() {
+    const stored = localStorage.getItem(SYSTEM_FILTER_STORAGE_KEY);
+    if (isValidSystemFilter(stored)) return stored;
+
+    const inferred = inferSystemFromReferrer();
+    if (inferred) return inferred;
+
+    const modeHint = document.body?.dataset?.ccgMode || document.body?.dataset?.mode || "";
+    if (modeHint.toLowerCase() === "amiga") return "amiga";
+    if (modeHint.toLowerCase() === "c64") return "c64";
+
+    return "all";
+}
+
+function inferSystemFromReferrer() {
+    const referrer = document.referrer || "";
+    if (!referrer) return null;
+    if (!/\/games\/(genres|collections)\//i.test(referrer)) return null;
+
+    if (/amiga/i.test(referrer)) return "amiga";
+    if (/c64/i.test(referrer)) return "c64";
+
+    return null;
+}
+
+function isValidSystemFilter(value) {
+    return ["all", "c64", "amiga"].includes(String(value || "").toLowerCase());
+}
+
+function setSystemFilter(filter, opts = {}) {
+    const next = String(filter || "all").toLowerCase();
+    CCG_ACTIVE_SYSTEM_FILTER = isValidSystemFilter(next) ? next : "all";
+
+    if (opts.persist) {
+        localStorage.setItem(SYSTEM_FILTER_STORAGE_KEY, CCG_ACTIVE_SYSTEM_FILTER);
+    }
+
+    if (opts.updateButtons) {
+        document.querySelectorAll("[data-system-filter]").forEach(btn => {
+            const isActive = btn.dataset.systemFilter === CCG_ACTIVE_SYSTEM_FILTER;
+            btn.classList.toggle("is-active", isActive);
+            btn.setAttribute("aria-pressed", String(isActive));
+        });
+    }
+
+    if (opts.hintEl) {
+        opts.hintEl.textContent = `Browsing: ${getSystemFilterLabel(CCG_ACTIVE_SYSTEM_FILTER)}`;
+    }
+}
+
+function applyActiveFilters({ preserveScroll } = {}) {
+    const scrollY = preserveScroll ? window.scrollY : null;
+    const filtered = getFilteredGames();
 
     buildGamesIndex(filtered);
 
@@ -417,8 +570,28 @@ function filterGames(query, allGames) {
         setSpineActive(null);
     }
 
-    // If user searches, we should not force scroll jumps
+    if (preserveScroll && scrollY !== null) {
+        requestAnimationFrame(() => {
+            window.scrollTo({ top: scrollY, behavior: "auto" });
+        });
+    }
+
+    // If user searches or filters, we should not force scroll jumps
     // (state will reapply silently if possible)
+}
+
+function getFilteredGames() {
+    const query = CCG_ACTIVE_QUERY.trim();
+    const systemFilter = CCG_ACTIVE_SYSTEM_FILTER;
+
+    return CCG_ALL_GAMES.filter(game => {
+        const title = (game.title || "").toLowerCase();
+        const matchesQuery = !query || title.includes(query);
+        const matchesSystem =
+            systemFilter === "all" ||
+            normalizeSystemValue(game.system) === systemFilter.toUpperCase();
+        return matchesQuery && matchesSystem;
+    });
 }
 
 /* ============================================================

@@ -177,6 +177,21 @@
                 <button id="gamesSearchClear" type="button">×</button>
             </div>
 
+            <div class="games-filter" data-games-filter>
+                <div class="games-filter__controls" role="group" aria-label="Filter games by system">
+                    <button class="games-filter__btn is-active" type="button" data-system-filter="all" aria-pressed="true">
+                        All Games
+                    </button>
+                    <button class="games-filter__btn" type="button" data-system-filter="c64" aria-pressed="false">
+                        Commodore 64
+                    </button>
+                    <button class="games-filter__btn" type="button" data-system-filter="amiga" aria-pressed="false">
+                        Amiga
+                    </button>
+                </div>
+                <div class="games-filter__status" id="gamesBrowseHint">Browsing: All Games (C64 + Amiga)</div>
+            </div>
+
             <div class="games-alpha">
                 <div id="gamesAlphaStrip"></div>
             </div>
