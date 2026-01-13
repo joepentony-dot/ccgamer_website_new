@@ -194,6 +194,12 @@
     const yearInput = document.getElementById("gameYear");
     const videoInput = document.getElementById("gameVideo");
     const thumbnailInput = document.getElementById("gameThumbnail");
+    const descriptionInput = document.getElementById("gameDescription");
+    const developerInput = document.getElementById("gameDeveloper");
+    const genreSelect = document.getElementById("gameGenreSelect");
+    const genreSelectedList = document.querySelector("[data-admin-genre-selected]");
+    const genreEmptyState = document.querySelector("[data-admin-genre-empty]");
+    const clearGenresBtn = document.querySelector("[data-admin-clear-genres]");
 
     const fieldErrors = {
         system: document.querySelector('[data-admin-error="system"]'),
@@ -203,7 +209,8 @@
         slug: document.querySelector('[data-admin-error="slug"]'),
         year: document.querySelector('[data-admin-error="year"]'),
         videoid: document.querySelector('[data-admin-error="videoid"]'),
-        thumbnail: document.querySelector('[data-admin-error="thumbnail"]')
+        thumbnail: document.querySelector('[data-admin-error="thumbnail"]'),
+        genres: document.querySelector('[data-admin-error="genres"]')
     };
 
     const fieldInputs = {
@@ -214,7 +221,8 @@
         slug: slugInput,
         year: yearInput,
         videoid: videoInput,
-        thumbnail: thumbnailInput
+        thumbnail: thumbnailInput,
+        genres: genreSelect
     };
 
     /* --------------------------------------------------------
@@ -412,12 +420,16 @@
         autoId = true;
         autoSlug = true;
         autoSortTitle = true;
+        selectedGenres = [];
+        genreTouched = false;
+        genreCleared = false;
+        renderSelectedGenres();
         clearFieldErrors();
     }
 
     function updateAutoFields() {
         if (!titleInput) return;
-        const title = titleInput.value;
+        const title = normalizeText(titleInput.value).value;
         if (autoSortTitle && sortTitleInput) {
             sortTitleInput.value = deriveSortTitle(title);
         }
@@ -531,6 +543,14 @@
             isValid = false;
         }
 
+        if (!game.genres || !game.genres.length) {
+            setFieldError("genres", "At least one genre is required.");
+            isValid = false;
+        } else if (game.genres.some(genre => !CANONICAL_GENRES.includes(genre))) {
+            setFieldError("genres", "Genres must be selected from the approved list.");
+            isValid = false;
+        }
+
         if (!game.id) {
             setFieldError("id", "ID is required.");
             isValid = false;
@@ -587,6 +607,7 @@
 
         const seenIds = new Set();
         const seenSlugs = new Set();
+        const addedIds = new Set(addedGames.map(game => String(game.id || "").toLowerCase()).filter(Boolean));
 
         games.forEach((game, index) => {
             const prefix = `Entry ${index + 1}`;
@@ -905,7 +926,13 @@
             setExportErrors([]);
 
             const formData = new FormData(form);
-            const raw = Object.fromEntries(formData.entries());
+            let raw = Object.fromEntries(formData.entries());
+            raw.genres = [...selectedGenres];
+            raw = normalizeNewEntryTextFields(raw);
+            if (titleInput) titleInput.value = raw.title || "";
+            if (sortTitleInput) sortTitleInput.value = raw.sorttitle || "";
+            if (descriptionInput) descriptionInput.value = raw.description || "";
+            if (developerInput) developerInput.value = raw.developer || "";
             const game = normalizeGame(raw);
 
             if (!validateNewGame(raw, game)) {
@@ -915,6 +942,8 @@
 
             insertSorted(game);
             addedGames = [game, ...addedGames];
+            const intentState = genreCleared ? "cleared" : (genreTouched ? "modified" : "untouched");
+            genreIntentById.set(game.id, intentState);
 
             updateBadges();
             renderGamesList(searchInput ? searchInput.value : "");
@@ -1034,6 +1063,9 @@
                 setFieldError("title", "");
             }
         });
+        titleInput.addEventListener("blur", () => {
+            normalizeInputValue(titleInput, "title");
+        });
     }
 
     if (sortTitleInput) {
@@ -1042,6 +1074,9 @@
             if (fieldErrors.sorttitle && !fieldErrors.sorttitle.hidden) {
                 setFieldError("sorttitle", "");
             }
+        });
+        sortTitleInput.addEventListener("blur", () => {
+            normalizeInputValue(sortTitleInput, "sorttitle");
         });
     }
 
@@ -1079,6 +1114,18 @@
         });
     }
 
+    if (descriptionInput) {
+        descriptionInput.addEventListener("blur", () => {
+            normalizeInputValue(descriptionInput, "description");
+        });
+    }
+
+    if (developerInput) {
+        developerInput.addEventListener("blur", () => {
+            normalizeInputValue(developerInput, "developer");
+        });
+    }
+
     if (videoInput) {
         videoInput.addEventListener("input", () => {
             if (fieldErrors.videoid && !fieldErrors.videoid.hidden) {
@@ -1092,6 +1139,28 @@
             if (fieldErrors.thumbnail && !fieldErrors.thumbnail.hidden) {
                 setFieldError("thumbnail", "");
             }
+        });
+    }
+
+    if (genreSelect) {
+        genreSelect.addEventListener("change", () => {
+            addGenre(genreSelect.value);
+            genreSelect.value = "";
+        });
+    }
+
+    if (genreSelectedList) {
+        genreSelectedList.addEventListener("click", (event) => {
+            const button = event.target.closest("button[data-genre-remove]");
+            if (!button) return;
+            removeGenre(button.dataset.genreRemove);
+        });
+    }
+
+    if (clearGenresBtn) {
+        clearGenresBtn.addEventListener("click", () => {
+            clearGenres();
+            setFieldError("genres", "");
         });
     }
 
@@ -1114,5 +1183,6 @@
 
     syncSourceLink();
     fetchLiveGames();
+    renderSelectedGenres();
     updateAutoFields();
 })();

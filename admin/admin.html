@@ -217,9 +217,37 @@
                             <label for="gameDeveloper">Developer / Publisher</label>
                             <input id="gameDeveloper" name="developer" class="admin-input" placeholder="Codemasters">
                         </div>
-                        <div class="admin-field">
-                            <label for="gameGenres">Genres (comma separated)</label>
-                            <input id="gameGenres" name="genres" class="admin-input" placeholder="Platform Games, Adventure">
+                        <div class="admin-field" data-admin-genre-field>
+                            <label for="gameGenreSelect">Genres *</label>
+                            <div class="admin-inline-buttons">
+                                <select id="gameGenreSelect" class="admin-select">
+                                    <option value="">Select genre...</option>
+                                    <option value="Action Adventure Games">Action Adventure Games</option>
+                                    <option value="Adventure Games">Adventure Games</option>
+                                    <option value="Arcade Games">Arcade Games</option>
+                                    <option value="BPJS Games">BPJS Games</option>
+                                    <option value="Cartridge Games">Cartridge Games</option>
+                                    <option value="Casino Games">Casino Games</option>
+                                    <option value="Fighting Games">Fighting Games</option>
+                                    <option value="Horror Games">Horror Games</option>
+                                    <option value="Licensed Games">Licensed Games</option>
+                                    <option value="Miscellaneous">Miscellaneous</option>
+                                    <option value="Platform Games">Platform Games</option>
+                                    <option value="Puzzle Games">Puzzle Games</option>
+                                    <option value="Quiz Games">Quiz Games</option>
+                                    <option value="Racing Games">Racing Games</option>
+                                    <option value="Role Playing Games">Role Playing Games</option>
+                                    <option value="Shooting Games">Shooting Games</option>
+                                    <option value="Sports Games">Sports Games</option>
+                                    <option value="Strategy Games">Strategy Games</option>
+                                    <option value="Top Picks">Top Picks</option>
+                                </select>
+                                <button class="ccg-btn ccg-btn--ghost" type="button" data-admin-clear-genres>Clear all genres</button>
+                            </div>
+                            <div class="admin-genre-selected" data-admin-genre-selected>
+                                <p class="admin-help" data-admin-genre-empty>No genres selected</p>
+                            </div>
+                            <p class="admin-error" data-admin-error="genres" hidden></p>
                         </div>
                     </div>
 
