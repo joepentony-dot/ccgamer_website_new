@@ -457,7 +457,7 @@
         if (autoSortTitle && sortTitleInput) {
             sortTitleInput.value = deriveSortTitle(normalizedTitle);
         }
-        const autoValues = getAutoIdSlug(titleValue);
+        const autoValues = getAutoIdSlug(title);
         if (idInput) {
             idInput.value = autoValues.id;
         }
