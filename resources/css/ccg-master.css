@@ -800,16 +800,6 @@ li {
 
     .ccg-nav__bar {
         touch-action: auto;
-        overflow-x: visible;
-        overflow-y: visible;
-    }
-
-    .ccg-nav__list {
-        overflow: visible !important;
-    }
-
-    .ccg-nav__bar::-webkit-scrollbar {
-        display: none;
     }
 }
 
