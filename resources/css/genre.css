@@ -17,6 +17,28 @@
     padding-top: 0;
 }
 
+/* ============================================================
+   SCROLL OWNERSHIP — COLLECTION SINGLE PARITY
+============================================================ */
+
+html[data-ccg-page="collection-single"],
+html[data-ccg-page="collection-single"] body {
+    height: auto;
+    min-height: 100%;
+    overflow-y: auto;
+    overscroll-behavior-y: auto;
+}
+
+.ccg-page--collection-single,
+.ccg-page--collection-single .ccg-main,
+.ccg-page--collection-single .ccg-section,
+.ccg-page--collection-single .ccg-genre-main,
+.ccg-page--collection-single .ccg-genre-grid {
+    height: auto;
+    max-height: none;
+    overflow-y: visible;
+}
+
 /* Remove any inherited top padding/margins from the first hero block */
 .ccg-page--genres-index .ccg-main > .ccg-section.ccg-genres-hero {
     padding-top: 0 !important;

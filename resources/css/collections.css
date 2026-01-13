@@ -9,6 +9,27 @@
 ============================================================ */
 
 /* ============================================================
+   SCROLL OWNERSHIP — MATCH GENRE BEHAVIOUR
+============================================================ */
+
+html[data-ccg-page="collections-index"],
+html[data-ccg-page="collections-index"] body {
+    height: auto;
+    min-height: 100%;
+    overflow-y: auto;
+    overscroll-behavior-y: auto;
+}
+
+.ccg-page--collections-index,
+.ccg-page--collections-index .ccg-main,
+.ccg-page--collections-index .ccg-section,
+.ccg-page--collections-index .ccg-genre-grid {
+    height: auto;
+    max-height: none;
+    overflow-y: visible;
+}
+
+/* ============================================================
    HERO — CURATED AUTHORITY
 ============================================================ */
 
