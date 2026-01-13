@@ -320,6 +320,15 @@
                         <a id="adminSourceOpen" class="ccg-btn ccg-btn--ghost" href="#" target="_blank" rel="noopener">Open live JSON</a>
                     </div>
                     <p id="adminStatus" class="admin-status">Waiting for data…</p>
+                    <div class="admin-notice" data-admin-next-steps hidden>
+                        <p><strong>Download complete.</strong></p>
+                        <p>Next steps:</p>
+                        <ol>
+                            <li>Replace <code>/games/games.json</code> in your repo with the downloaded file.</li>
+                            <li>Extract the SEO HTML files into <code>/games/</code>.</li>
+                            <li>Commit and push via GitHub Desktop.</li>
+                        </ol>
+                    </div>
                     <div class="admin-inline-buttons admin-inline-buttons--export">
                         <button id="adminDownload" class="ccg-btn ccg-btn--secondary" type="button">Download games.json</button>
                         <button id="adminDownloadStubs" class="ccg-btn ccg-btn--ghost" type="button">Download SEO stub HTML files (zip)</button>
@@ -413,7 +422,7 @@
     <script src="../js/ccg-mode-engine.js" defer></script>
     <script src="../js/ccg-global.js" defer></script>
     <script src="./jszip.min.js" defer></script>
-    <script src="../js/admin-tools.js" defer></script>
+    <script src="./admin.js" defer></script>
 
 </body>
 </html>
