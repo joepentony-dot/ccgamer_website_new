@@ -337,3 +337,15 @@ html[data-ccg-page="collections-index"] body {
         top: -20px;
     }
 }
+
+/* ============================================================
+   SCROLL STABILITY FIX — COLLECTIONS INDEX ONLY
+   Prevent transform-based scroll suppression
+============================================================ */
+
+.ccg-page--collections-index main > section {
+    transform: none !important;
+    animation: none !important;
+    opacity: 1 !important;
+}
+
