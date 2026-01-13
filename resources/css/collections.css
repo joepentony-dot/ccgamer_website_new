@@ -33,6 +33,13 @@ html[data-ccg-page="collections-index"] body {
    HERO — CURATED AUTHORITY
 ============================================================ */
 
+html[data-ccg-page="collections-index"],
+html[data-ccg-page="collections-index"] body {
+    height: auto;
+    overflow-y: auto;
+    overscroll-behavior-y: auto;
+}
+
 .ccg-page--collections-index .ccg-main {
     padding-top: 0;
 }

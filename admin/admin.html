@@ -17,15 +17,8 @@
     <link rel="stylesheet" href="../resources/css/ccg-overlays.css">
     <link rel="stylesheet" href="../resources/css/ccg-modal.css">
 
-    <!-- PAGE CSS (Optional future styling) -->
+    <!-- PAGE CSS -->
     <link rel="stylesheet" href="../resources/css/admin.css">
-    <style>
-        .admin-error {
-            margin: 0;
-            font-size: 0.78rem;
-            color: #ff6b6b;
-        }
-    </style>
 </head>
 
 <body class="ccg-body" data-ccg-mode="c64">
@@ -44,116 +37,110 @@
         <!-- =====================================================
              UNIVERSAL SUBPAGE HEADER — MATCHES ALL OTHER PAGES
         ===================================================== -->
-                <!-- HEADER -->
-        
+        <header class="ccg-header" data-ccg-header>
+            <div class="ccg-header-inner">
 
-<header class="ccg-header" data-ccg-header>
-    <div class="ccg-header-inner">
+                <a href="../home.html" class="ccg-brand">
+                    <img src="../resources/images/ccgamer-logo.png"
+                         alt="Cheeky Commodore Gamer logo"
+                         class="ccg-brand__logo"
+                         loading="lazy">
 
-        <a href="../home.html" class="ccg-brand">
-            <img src="../resources/images/ccgamer-logo.png"
-                 alt="Cheeky Commodore Gamer logo"
-                 class="ccg-brand__logo"
-                 loading="lazy">
+                    <div class="ccg-brand__text">
+                        <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
+                        <div class="ccg-brand__title">
+                            <span class="ccg-brand__neon-cheeky">CHEEKY COMMODORE</span>
+                            <span class="ccg-brand__neon-sub">GAMER</span>
+                        </div>
+                    </div>
+                </a>
 
-            <div class="ccg-brand__text">
-                <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
-                <div class="ccg-brand__title">
-                    <span class="ccg-brand__neon-cheeky">CHEEKY COMMODORE</span>
-                    <span class="ccg-brand__neon-sub">GAMER</span>
-                </div>
-            </div>
-        </a>
-
-        <button class="ccg-nav-toggle"
-                type="button"
-                aria-label="Toggle navigation"
-                aria-expanded="false"
-                aria-controls="ccg-primary-nav"
-                data-ccg-nav-toggle>
-            <span class="ccg-nav-toggle__bars" aria-hidden="true">
-                <span></span>
-                <span></span>
-                <span></span>
-            </span>
-            <span class="ccg-nav-toggle__label">Menu</span>
-        </button>
-
-        <nav class="ccg-nav" aria-label="Primary navigation" id="ccg-primary-nav">
-            <div class="ccg-nav__bar">
-                <ul class="ccg-nav__list ccg-nav__list--primary" data-ccg-nav-primary>
-                    <li><a href="../home.html" class="ccg-nav__link">Home</a></li>
-                    <li><a href="../games/index.html" class="ccg-nav__link">Browse Games</a></li>
-                    <li><a href="../games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
-                    <li><a href="../games/collections/index.html" class="ccg-nav__link">Collections</a></li>
-                </ul>
-                <div class="ccg-nav__more">
-                    <button class="ccg-nav__more-toggle"
-                            type="button"
-                            aria-expanded="false"
-                            aria-controls="ccg-more-menu"
-                            data-ccg-more-toggle>
-                        More <span aria-hidden="true">▾</span>
-                    </button>
-                    <div class="ccg-nav__more-menu" id="ccg-more-menu" data-ccg-more-menu hidden></div>
-                </div>
-            </div>
-            <ul class="ccg-nav__list ccg-nav__list--secondary" data-ccg-nav-secondary>
-                <li><a href="../quiz/quiz.html" class="ccg-nav__link">Quiz</a></li>
-                <li><a href="../emulation.html" class="ccg-nav__link">Emulation</a></li>
-                <li><a href="../about.html" class="ccg-nav__link">About</a></li>
-                <li><a href="../contact.html" class="ccg-nav__link">Contact</a></li>
-            </ul>
-        </nav>
-
-        <div class="ccg-header-actions">
-
-            <button class="ccg-mode-toggle"
-                    type="button"
-                    aria-label="Toggle between C64 and Amiga modes"
-                    data-ccg-mode-toggle>
-                <span class="ccg-mode-toggle__pill">
-                    <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64 MODE</span>
-                    <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">AMIGA MODE</span>
-                    <span class="ccg-mode-toggle__thumb"></span>
-                </span>
-            </button>
-
-            <div class="ccg-header-socials" aria-label="Social links">
-                <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>
-                <a href="https://patreon.com/CheekyCommodoreGamer" aria-label="Patreon"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>
-                <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" aria-label="PayPal"><span class="ccg-socials__icon ccg-socials__icon--paypal"></span></a>
-                <a href="https://twitter.com/CheekyC64Gamer" aria-label="X/Twitter"><span class="ccg-socials__icon ccg-socials__icon--x"></span></a>
-                <a href="https://www.facebook.com/cheekycommodoregamer" aria-label="Facebook"><span class="ccg-socials__icon ccg-socials__icon--fb"></span></a>
-                <a href="https://discord.gg/83Xw9ktAn4" aria-label="Discord"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
-            </div>
-
-        </div>
-    </div>
-
-    <div class="ccg-nav-drawer" data-ccg-nav-drawer aria-hidden="true">
-        <div class="ccg-nav-drawer__backdrop" data-ccg-drawer-close tabindex="-1"></div>
-        <div class="ccg-nav-drawer__panel" role="dialog" aria-modal="true" aria-label="Navigation menu">
-            <div class="ccg-nav-drawer__header">
-                <span class="ccg-nav-drawer__title">Navigate</span>
-                <button class="ccg-nav-drawer__close" type="button" aria-label="Close menu" data-ccg-drawer-close>
-                    <span aria-hidden="true">✕</span>
+                <button class="ccg-nav-toggle"
+                        type="button"
+                        aria-label="Toggle navigation"
+                        aria-expanded="false"
+                        aria-controls="ccg-primary-nav"
+                        data-ccg-nav-toggle>
+                    <span class="ccg-nav-toggle__bars" aria-hidden="true">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
+                    <span class="ccg-nav-toggle__label">Menu</span>
                 </button>
+
+                <nav class="ccg-nav" aria-label="Primary navigation" id="ccg-primary-nav">
+                    <div class="ccg-nav__bar">
+                        <ul class="ccg-nav__list ccg-nav__list--primary" data-ccg-nav-primary>
+                            <li><a href="../home.html" class="ccg-nav__link">Home</a></li>
+                            <li><a href="../games/index.html" class="ccg-nav__link">Browse Games</a></li>
+                            <li><a href="../games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
+                            <li><a href="../games/collections/index.html" class="ccg-nav__link">Collections</a></li>
+                        </ul>
+                        <div class="ccg-nav__more">
+                            <button class="ccg-nav__more-toggle"
+                                    type="button"
+                                    aria-expanded="false"
+                                    aria-controls="ccg-more-menu"
+                                    data-ccg-more-toggle>
+                                More <span aria-hidden="true">▾</span>
+                            </button>
+                            <div class="ccg-nav__more-menu" id="ccg-more-menu" data-ccg-more-menu hidden></div>
+                        </div>
+                    </div>
+                    <ul class="ccg-nav__list ccg-nav__list--secondary" data-ccg-nav-secondary>
+                        <li><a href="../quiz/quiz.html" class="ccg-nav__link">Quiz</a></li>
+                        <li><a href="../emulation.html" class="ccg-nav__link">Emulation</a></li>
+                        <li><a href="../about.html" class="ccg-nav__link">About</a></li>
+                        <li><a href="../contact.html" class="ccg-nav__link">Contact</a></li>
+                    </ul>
+                </nav>
+
+                <div class="ccg-header-actions">
+
+                    <button class="ccg-mode-toggle"
+                            type="button"
+                            aria-label="Toggle between C64 and Amiga modes"
+                            data-ccg-mode-toggle>
+                        <span class="ccg-mode-toggle__pill">
+                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64 MODE</span>
+                            <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">AMIGA MODE</span>
+                            <span class="ccg-mode-toggle__thumb"></span>
+                        </span>
+                    </button>
+
+                    <div class="ccg-header-socials" aria-label="Social links">
+                        <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>
+                        <a href="https://patreon.com/CheekyCommodoreGamer" aria-label="Patreon"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>
+                        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" aria-label="PayPal"><span class="ccg-socials__icon ccg-socials__icon--paypal"></span></a>
+                        <a href="https://twitter.com/CheekyC64Gamer" aria-label="X/Twitter"><span class="ccg-socials__icon ccg-socials__icon--x"></span></a>
+                        <a href="https://www.facebook.com/cheekycommodoregamer" aria-label="Facebook"><span class="ccg-socials__icon ccg-socials__icon--fb"></span></a>
+                        <a href="https://discord.gg/83Xw9ktAn4" aria-label="Discord"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
+                    </div>
+
+                </div>
             </div>
-            <div class="ccg-nav-drawer__section" data-ccg-drawer-primary>
-                <div class="ccg-nav-drawer__label">Primary</div>
+
+            <div class="ccg-nav-drawer" data-ccg-nav-drawer aria-hidden="true">
+                <div class="ccg-nav-drawer__backdrop" data-ccg-drawer-close tabindex="-1"></div>
+                <div class="ccg-nav-drawer__panel" role="dialog" aria-modal="true" aria-label="Navigation menu">
+                    <div class="ccg-nav-drawer__header">
+                        <span class="ccg-nav-drawer__title">Navigate</span>
+                        <button class="ccg-nav-drawer__close" type="button" aria-label="Close menu" data-ccg-drawer-close>
+                            <span aria-hidden="true">✕</span>
+                        </button>
+                    </div>
+                    <div class="ccg-nav-drawer__section" data-ccg-drawer-primary>
+                        <div class="ccg-nav-drawer__label">Primary</div>
+                    </div>
+                    <div class="ccg-nav-drawer__section" data-ccg-drawer-secondary>
+                        <div class="ccg-nav-drawer__label">Explore more</div>
+                    </div>
+                </div>
             </div>
-            <div class="ccg-nav-drawer__section" data-ccg-drawer-secondary>
-                <div class="ccg-nav-drawer__label">Explore more</div>
-            </div>
-        </div>
-    </div>
 
-    <div class="ccg-header-neon-strip"></div>
-</header>
-
-
-
+            <div class="ccg-header-neon-strip"></div>
+        </header>
 
         <!-- =====================================================
              MAIN ADMIN CONTENT
@@ -163,63 +150,136 @@
             <section class="ccg-section admin-hero">
                 <h1 class="ccg-section-title">Admin Panel</h1>
                 <p class="ccg-section-subtitle">
-                    Upload, merge and export games without leaving the site. Everything stays client-side so you can vet the JSON before committing.
+                    This page never writes to disk. Load <code>games.json</code>, add a game locally, then download the updated file and commit manually.
                 </p>
                 <div class="admin-notice">
-                    Nothing is published automatically. You must download and commit manually.
-                </div>
-                <div class="admin-hero-grid">
-                    <div class="admin-callout">
-                        <h2 class="admin-callout-title">Quick start workflow</h2>
-                        <ol class="admin-steps">
-                            <li>Fetch the live <strong>games.json</strong> or upload a saved file.</li>
-                            <li>Fill out the game form (required fields are flagged).</li>
-                            <li>Stage multiple games, then download the merged JSON.</li>
-                        </ol>
-                    </div>
-                    <div class="admin-callout admin-callout--tips">
-                        <h2 class="admin-callout-title">Handy tips</h2>
-                        <ul class="admin-tips">
-                            <li><strong>Game ID:</strong> lowercase, underscore format (e.g. <code>last_ninja_2</code>).</li>
-                            <li><strong>Lemon links:</strong> paste one or more Lemon64/LemonAmiga URLs.</li>
-                            <li><strong>Description:</strong> 1–2 sentences about the game and release.</li>
-                        </ul>
-                    </div>
+                    Admin workflow: Load → Add New Game → Download updated <code>games.json</code>.
                 </div>
                 <div class="admin-badges">
                     <div class="admin-badge">
-                        <span class="admin-badge-label">Games loaded</span>
+                        <span class="admin-badge-label">Loaded games</span>
                         <span class="admin-badge-value" data-admin-game-count>0</span>
                     </div>
                     <div class="admin-badge">
-                        <span class="admin-badge-label">Staged additions</span>
-                        <span class="admin-badge-value" data-admin-staged-count>0</span>
+                        <span class="admin-badge-label">Added this session</span>
+                        <span class="admin-badge-value" data-admin-added-count>0</span>
                     </div>
                 </div>
             </section>
 
-            <section class="ccg-section admin-callout">
-                <h2 class="ccg-section-title">Adding a New Game — SEO Checklist</h2>
-                <ol class="admin-steps">
-                    <li>Add the game using this admin page.</li>
-                    <li>Ensure the title, thumbnail, and description are filled in.</li>
-                    <li>The slug is auto-derived from the title.</li>
-                    <li>
-                        After saving <code>games.json</code>:
-                        <ul class="admin-tips">
-                            <li>Run the local SEO generator script to create <code>/games/&lt;slug&gt;.html</code>.</li>
-                            <li>Flat files only — GitHub Pages does not support per-game folders.</li>
-                        </ul>
-                    </li>
-                    <li>Commit and push.</li>
-                </ol>
+            <section class="ccg-section admin-card admin-card--priority">
+                <h2>Add a New Game</h2>
+                <p class="admin-help">Fill in the form, review the auto-generated ID/slug/sort title, and click “Add Game”.</p>
+
+                <form id="adminGameForm" class="admin-form" novalidate>
+                    <div class="admin-form-section">
+                        <div class="admin-form-heading">
+                            <h3>Core details</h3>
+                            <span class="admin-form-note">Required fields marked with *</span>
+                        </div>
+                        <div class="admin-field">
+                            <label for="gameSystem">System *</label>
+                            <select id="gameSystem" name="system" class="admin-select" required>
+                                <option value="C64">C64</option>
+                                <option value="AMIGA">AMIGA</option>
+                            </select>
+                            <p class="admin-error" data-admin-error="system" hidden></p>
+                        </div>
+                        <div class="admin-field">
+                            <label for="gameTitle">Title *</label>
+                            <input id="gameTitle" name="title" class="admin-input" placeholder="The Adventures of Robin Hood" required>
+                            <p class="admin-error" data-admin-error="title" hidden></p>
+                        </div>
+                        <div class="admin-field">
+                            <label for="gameSortTitle">Sort title *</label>
+                            <input id="gameSortTitle" name="sorttitle" class="admin-input" placeholder="Adventures of Robin Hood" required>
+                            <p class="admin-help">Auto-removes leading “The”, “A”, or “An” from the title. Edit if needed.</p>
+                            <p class="admin-error" data-admin-error="sorttitle" hidden></p>
+                        </div>
+                        <div class="admin-field">
+                            <label for="gameId">ID (snake_case) *</label>
+                            <input id="gameId" name="id" class="admin-input" placeholder="adventures_of_robin_hood" required>
+                            <p class="admin-help">Lowercase letters, numbers, and underscores only.</p>
+                            <p class="admin-error" data-admin-error="id" hidden></p>
+                        </div>
+                        <div class="admin-field">
+                            <label for="gameSlug">Slug (kebab-case) *</label>
+                            <input id="gameSlug" name="slug" class="admin-input" placeholder="adventures-of-robin-hood" required>
+                            <p class="admin-help">Used for SEO URLs.</p>
+                            <p class="admin-error" data-admin-error="slug" hidden></p>
+                        </div>
+                        <div class="admin-field">
+                            <label for="gameYear">Year</label>
+                            <input id="gameYear" name="year" class="admin-input" type="number" min="1977" max="2026" placeholder="1987">
+                            <p class="admin-error" data-admin-error="year" hidden></p>
+                        </div>
+                        <div class="admin-field">
+                            <label for="gameDeveloper">Developer / Publisher</label>
+                            <input id="gameDeveloper" name="developer" class="admin-input" placeholder="Codemasters">
+                        </div>
+                        <div class="admin-field">
+                            <label for="gameGenres">Genres (comma separated)</label>
+                            <input id="gameGenres" name="genres" class="admin-input" placeholder="Platform Games, Adventure">
+                        </div>
+                    </div>
+
+                    <div class="admin-form-section">
+                        <div class="admin-form-heading">
+                            <h3>Description</h3>
+                        </div>
+                        <div class="admin-field">
+                            <label for="gameDescription">Description</label>
+                            <textarea id="gameDescription" name="description" class="admin-textarea admin-textarea--lg" placeholder="Short, friendly summary of the game."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="admin-form-section">
+                        <div class="admin-form-heading">
+                            <h3>Media</h3>
+                        </div>
+                        <div class="admin-field">
+                            <label for="gameVideo">YouTube video ID</label>
+                            <input id="gameVideo" name="videoid" class="admin-input" placeholder="oQhQdlsAQR4">
+                            <p class="admin-help">Paste only the video ID (no full URL).</p>
+                            <p class="admin-error" data-admin-error="videoid" hidden></p>
+                        </div>
+                        <div class="admin-field">
+                            <label for="gameThumbnail">Thumbnail path</label>
+                            <input id="gameThumbnail" name="thumbnail" class="admin-input" placeholder="resources/images/thumbnails/all/super_robin_hood.jpg">
+                            <p class="admin-help">Full path recommended. If you enter only a filename, the default thumbnail folder is applied.</p>
+                            <p class="admin-error" data-admin-error="thumbnail" hidden></p>
+                        </div>
+                    </div>
+
+                    <div class="admin-form-section">
+                        <div class="admin-form-heading">
+                            <h3>Links &amp; downloads</h3>
+                        </div>
+                        <div class="admin-field">
+                            <label for="gamePdf">PDF/manual link</label>
+                            <input id="gamePdf" name="pdf" class="admin-input" placeholder="https://...">
+                        </div>
+                        <div class="admin-field">
+                            <label for="gameDisk">Disk URL(s) (comma separated)</label>
+                            <input id="gameDisk" name="disk" class="admin-input" placeholder="https://...d64, https://...adf">
+                        </div>
+                        <div class="admin-field">
+                            <label for="gameLemon">Lemon URL(s) (comma separated)</label>
+                            <input id="gameLemon" name="lemon" class="admin-input" placeholder="https://www.lemon64.com/game/super-robin-hood">
+                        </div>
+                    </div>
+
+                    <div class="admin-inline-buttons">
+                        <button class="ccg-btn ccg-btn--primary" type="submit">Add Game</button>
+                        <button class="ccg-btn ccg-btn--ghost" type="button" data-admin-reset-auto>Reset auto fields</button>
+                    </div>
+                </form>
             </section>
 
             <section class="ccg-section admin-grid">
-
                 <article class="admin-card">
-                    <h2>1) Load your library</h2>
-                    <p>Start from the live <code>games.json</code> or drop in a replacement file to merge.</p>
+                    <h2>Import / Export</h2>
+                    <p class="admin-help">Load the live <code>games.json</code> or upload a local copy. Download only when validation passes.</p>
                     <div class="admin-inline-buttons">
                         <button id="adminRefresh" class="ccg-btn ccg-btn--primary" type="button">Fetch live games.json</button>
                         <label class="admin-upload">Upload JSON
@@ -228,233 +288,69 @@
                         <a id="adminSourceOpen" class="ccg-btn ccg-btn--ghost" href="#" target="_blank" rel="noopener">Open live JSON</a>
                     </div>
                     <p id="adminStatus" class="admin-status">Waiting for data…</p>
-                </article>
-
-                <article class="admin-card">
-                    <h2>Quiz Manager (admin-only)</h2>
-                    <p>Manage quiz packs offline without touching live files. Export the JSON and replace <code>quiz/quiz-data.json</code> manually.</p>
-                    <div class="admin-inline-buttons">
-                        <a class="ccg-btn ccg-btn--secondary" href="quiz-manager.html">Open Quiz Manager</a>
-                        <a class="ccg-btn ccg-btn--ghost" href="../quiz/quiz-data.json" target="_blank" rel="noopener">View live quiz JSON</a>
-                    </div>
-                </article>
-
-                <article class="admin-card">
-                    <h2>2) Add a new game</h2>
-                    <form id="adminGameForm">
-                        <div class="admin-edit-banner">
-                            <div>
-                                <p class="admin-edit-state" data-admin-editing-label>Creating a new game</p>
-                                <p class="admin-help">When editing an existing game, the ID is locked to prevent accidental changes.</p>
-                            </div>
-                            <button class="ccg-btn ccg-btn--ghost" type="button" data-admin-edit-cancel hidden>Cancel Edit</button>
-                        </div>
-
-                        <div class="admin-form-section">
-                            <div class="admin-form-heading">
-                                <h3>Basics</h3>
-                                <span class="admin-form-note">Required fields marked with *</span>
-                            </div>
-                            <div class="admin-field">
-                                <label for="gameId">ID (underscored) *</label>
-                                <input id="gameId" name="id" class="admin-input" placeholder="last_ninja_2" required>
-                                <p class="admin-help">Use lowercase letters, numbers, and underscores only. No spaces or hyphens.</p>
-                                <p class="admin-error" data-admin-error="id" hidden></p>
-                            </div>
-                            <div class="admin-field">
-                                <label for="gameSlug">Slug (SEO URL) *</label>
-                                <input id="gameSlug" name="slug" class="admin-input" placeholder="last-ninja-2" required>
-                                <p class="admin-help">This controls the SEO URL: <code>/games/your-slug-here/</code></p>
-                                <p class="admin-error" data-admin-error="slug" hidden></p>
-                            </div>
-                            <div class="admin-field">
-                                <label for="gameUrlPreview">Public URL (preview only)</label>
-                                <input id="gameUrlPreview" class="admin-input" readonly placeholder="https://www.cheekycommodoregamer.co.uk/games/last-ninja-2/">
-                                <p class="admin-warning" data-admin-slug-warning hidden></p>
-                            </div>
-                            <div class="admin-field">
-                                <label for="gameTitle">Title *</label>
-                                <input id="gameTitle" name="title" class="admin-input" placeholder="The Last Ninja 2" required>
-                            </div>
-                            <div class="admin-field">
-                                <label for="gameYear">Year</label>
-                                <input id="gameYear" name="year" class="admin-input" type="number" min="1977" max="2025" placeholder="1988">
-                            </div>
-                            <div class="admin-field">
-                                <label for="gameSystem">System</label>
-                                <select id="gameSystem" name="system" class="admin-select">
-                                    <option value="C64">C64</option>
-                                    <option value="Amiga">Amiga</option>
-                                </select>
-                            </div>
-                            <div class="admin-field">
-                                <label for="gameGenres">Genres (comma separated)</label>
-                                <input id="gameGenres" name="genres" class="admin-input" placeholder="Action, Adventure">
-                            </div>
-                            <div class="admin-field">
-                                <label for="gameDeveloper">Developer / Publisher</label>
-                                <input id="gameDeveloper" name="developer" class="admin-input" placeholder="System 3">
-                            </div>
-                        </div>
-
-                        <div class="admin-form-section">
-                            <div class="admin-form-heading">
-                                <h3>Description</h3>
-                            </div>
-                            <div class="admin-field">
-                                <label for="gameDescription">Description</label>
-                                <textarea id="gameDescription" name="description" class="admin-textarea admin-textarea--lg" placeholder="A short, friendly summary of the game and its feel."></textarea>
-                                <div class="admin-description-meta">
-                                    <span data-admin-description-count>0</span> characters
-                                    <span class="admin-description-target">(target 180–350)</span>
-                                </div>
-                                <p class="admin-help">Write in a direct, personable tone (not “players”). Do not repeat the year (already stored separately). Describe gameplay, feel, and what makes the game notable.</p>
-                                <p class="admin-status-inline" data-admin-description-warning hidden></p>
-                                <p class="admin-error" data-admin-error="description" hidden></p>
-                            </div>
-                        </div>
-
-                        <div class="admin-form-section">
-                            <div class="admin-form-heading">
-                                <h3>Media</h3>
-                            </div>
-                            <div class="admin-field">
-                                <label for="gameVideo">YouTube video (URL or ID)</label>
-                                <input id="gameVideo" name="videoid" class="admin-input" placeholder="https://youtu.be/abc123xyz">
-                                <p class="admin-help">Paste a full URL, a short URL, or just the video ID. We will store the ID only.</p>
-                                <p class="admin-status-inline" data-admin-video-status hidden></p>
-                                <p class="admin-error" data-admin-error="videoid" hidden></p>
-                                <div class="admin-media-preview" data-admin-video-preview hidden>
-                                    <img alt="YouTube thumbnail preview" loading="lazy">
-                                </div>
-                            </div>
-                            <div class="admin-field">
-                                <label for="gameThumb">Thumbnail file name (resources/images/thumbnails/all)</label>
-                                <input id="gameThumb" name="thumbnail" class="admin-input" placeholder="last-ninja-2.jpg">
-                                <p class="admin-help">Filename only (.jpg, .png, .webp). The path is added automatically.</p>
-                                <p class="admin-status-inline" data-admin-thumbnail-status hidden></p>
-                                <p class="admin-error" data-admin-error="thumbnail" hidden></p>
-                                <div class="admin-media-preview" data-admin-thumbnail-preview hidden>
-                                    <img alt="Thumbnail preview" loading="lazy">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="admin-form-section">
-                            <div class="admin-form-heading">
-                                <h3>Links &amp; downloads</h3>
-                            </div>
-                            <div class="admin-field">
-                                <label for="gameManual">Manual / PDF link</label>
-                                <input id="gameManual" name="manual" class="admin-input" placeholder="https://...pdf">
-                            </div>
-                            <div class="admin-field">
-                                <label for="gameDisk">Disk/Tape links (comma separated)</label>
-                                <input id="gameDisk" name="disk" class="admin-input" placeholder="https://...d64, https://...adf">
-                            </div>
-                            <div class="admin-field">
-                                <label for="gameLemon">Lemon links (comma separated)</label>
-                                <input id="gameLemon" name="lemon" class="admin-input" placeholder="https://www.lemon64.com/game/last-ninja-2">
-                                <p class="admin-help">Supports Lemon64 and LemonAmiga URLs. Add multiple links if needed.</p>
-                            </div>
-                        </div>
-                        <button class="ccg-btn ccg-btn--primary" type="submit" data-admin-submit>Stage Game</button>
-                    </form>
-                </article>
-
-                <article class="admin-card">
-                    <h2>3) Export &amp; reset</h2>
-                    <p>Download the merged JSON once you are happy with staged changes.</p>
-                    <div class="admin-inline-buttons">
+                    <div class="admin-inline-buttons admin-inline-buttons--export">
                         <button id="adminDownload" class="ccg-btn ccg-btn--secondary" type="button">Download games.json</button>
-                        <button id="adminClear" class="ccg-btn ccg-btn--ghost" type="button">Clear staged entries</button>
-                        <button id="adminCommit" class="ccg-btn ccg-btn--primary" type="button" aria-expanded="false" aria-controls="adminCommitPanel">Commit changes</button>
+                        <button id="adminClear" class="ccg-btn ccg-btn--ghost" type="button">Clear added games</button>
                     </div>
-                    <p class="admin-help">This tool never commits for you. Download the file, then replace <code>games/games.json</code> and commit using your normal workflow.</p>
-                    <div id="adminCommitPanel" class="admin-commit-panel" hidden>
-                        <div class="admin-commit-header">
-                            <h3>Commit checklist</h3>
-                            <button class="ccg-btn ccg-btn--ghost" type="button" data-admin-commit-close>Close</button>
-                        </div>
-                        <ol class="admin-steps">
-                            <li>Download the merged <strong>games.json</strong>.</li>
-                            <li>Replace <code>games/games.json</code> in your repo.</li>
-                            <li>Commit and push using your usual workflow.</li>
-                        </ol>
-                        <div class="admin-commit-code">
-                            <code>git add games/games.json</code><br>
-                            <code>git commit -m "Update games library"</code>
-                        </div>
+                    <div class="admin-errors" data-admin-errors hidden>
+                        <h3>Export blocked</h3>
+                        <ul data-admin-error-list></ul>
                     </div>
                 </article>
 
-            </section>
-
-            <section class="ccg-section">
-                <div class="admin-preview-grid">
-                    <div class="admin-table-card">
-                        <div class="admin-table-head">Staged preview (latest 12)</div>
-                        <div class="admin-table-body">
-                            <table class="admin-table">
-                                <thead>
-                                    <tr>
-                                        <th>Title</th>
-                                        <th>System</th>
-                                        <th>Year</th>
-                                        <th>Genres</th>
-                                        <th>Lemon links</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="adminGamePreview">
-                                    <tr><td colspan="5">Nothing staged yet.</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
+                <article class="admin-card">
+                    <h2>Added games (session preview)</h2>
+                    <p class="admin-help">Read-only preview of games added in this session.</p>
+                    <div class="admin-table-body admin-table-body--compact">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>System</th>
+                                    <th>Year</th>
+                                    <th>Sort title</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminAddedPreview">
+                                <tr><td colspan="4">Nothing added yet.</td></tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <aside class="admin-card admin-detail-card">
-                        <h2>Latest staged detail</h2>
-                        <p class="admin-help">Quick sanity check before exporting.</p>
-                        <dl class="admin-detail-list">
-                            <div>
-                                <dt>Title</dt>
-                                <dd data-admin-latest="title">—</dd>
-                            </div>
-                            <div>
-                                <dt>Description</dt>
-                                <dd data-admin-latest="description">—</dd>
-                            </div>
-                            <div>
-                                <dt>Lemon links</dt>
-                                <dd data-admin-latest="lemon">—</dd>
-                            </div>
-                            <div>
-                                <dt>Downloads</dt>
-                                <dd data-admin-latest="disk">—</dd>
-                            </div>
-                        </dl>
-                    </aside>
-                </div>
+                </article>
             </section>
 
             <section class="ccg-section">
-                <article class="admin-card admin-editor-card">
-                    <div class="admin-editor-header">
+                <article class="admin-card">
+                    <div class="admin-table-header">
                         <div>
-                            <h2>4) Edit existing games</h2>
-                            <p class="admin-help">Load a game into the form, edit it, and click “Update Game”.</p>
+                            <h2>Existing games (read-only)</h2>
+                            <p class="admin-help">Search and sanity-check the library without editing.</p>
                         </div>
-                        <div class="admin-editor-count">
-                            <span class="admin-badge-label">Total games</span>
-                            <span class="admin-badge-value" data-admin-edit-count>0</span>
+                        <div class="admin-table-count">
+                            <span class="admin-badge-label">Total</span>
+                            <span class="admin-badge-value" data-admin-total-count>0</span>
                         </div>
                     </div>
                     <div class="admin-field">
-                        <label for="adminEditSearch">Search by title or ID</label>
-                        <input id="adminEditSearch" class="admin-input" placeholder="Start typing to filter...">
+                        <label for="adminSearch">Search by title, ID, or system</label>
+                        <input id="adminSearch" class="admin-input" placeholder="Start typing to filter...">
                     </div>
-                    <ul class="admin-edit-list" data-admin-edit-list>
-                        <li class="admin-edit-empty">Load games.json to begin editing.</li>
-                    </ul>
+                    <div class="admin-table-body">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>System</th>
+                                    <th>Year</th>
+                                    <th>ID</th>
+                                    <th>Slug</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminGameList">
+                                <tr><td colspan="5">Load games.json to view entries.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </article>
             </section>
 
