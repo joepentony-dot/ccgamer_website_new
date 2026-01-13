@@ -859,8 +859,9 @@
     async function fetchLiveGames() {
         setStatus("Fetching live games.json…");
         const url = getDefaultSourceUrl();
+        const resolvedUrl = new URL(url, window.location.href).toString();
         try {
-            const res = await fetch(url, { cache: "no-store" });
+            const res = await fetch(resolvedUrl, { cache: "no-store" });
             if (!res.ok) throw new Error(`Fetch failed (${res.status})`);
             const data = await res.json();
 
@@ -879,8 +880,8 @@
             clearForm();
             updateExportState();
         } catch (err) {
-            console.error(err);
-            setStatus(`Failed to load live games.json from ${url}`, "error");
+            console.error(`[CCG ADMIN] Failed to load live games.json from ${resolvedUrl}`, err);
+            setStatus(`Failed to load live games.json from ${resolvedUrl}`, "error");
         }
     }
 
