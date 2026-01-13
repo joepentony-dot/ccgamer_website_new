@@ -441,7 +441,9 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     margin: 18px auto 22px;
     padding: 18px;
     border-radius: 20px;
-    overflow: hidden;
+    height: auto;
+    max-height: none;
+    overflow: visible;
     background: radial-gradient(circle at 20% 20%, rgba(var(--accent-rgb),0.18), rgba(0,0,0,0.75)), #05070d;
     border: 1px solid rgba(var(--accent-rgb),0.32);
     box-shadow: var(--ccg-panel-shadow);
