@@ -299,7 +299,8 @@
         const hasErrors = errors.length > 0;
         const hasGames = workingGames.length > 0;
         if (downloadBtn) downloadBtn.disabled = hasErrors || !hasGames;
-        if (downloadStubsBtn) downloadStubsBtn.disabled = hasErrors || !hasGames;
+        const hasAddedGames = addedGames.length > 0;
+        if (downloadStubsBtn) downloadStubsBtn.disabled = hasErrors || !hasAddedGames;
     }
 
     function getDefaultSourceUrl() {
@@ -859,8 +860,9 @@
     async function fetchLiveGames() {
         setStatus("Fetching live games.json…");
         const url = getDefaultSourceUrl();
+        const resolvedUrl = new URL(url, window.location.href).toString();
         try {
-            const res = await fetch(url, { cache: "no-store" });
+            const res = await fetch(resolvedUrl, { cache: "no-store" });
             if (!res.ok) throw new Error(`Fetch failed (${res.status})`);
             const data = await res.json();
 
@@ -879,8 +881,8 @@
             clearForm();
             updateExportState();
         } catch (err) {
-            console.error(err);
-            setStatus(`Failed to load live games.json from ${url}`, "error");
+            console.error(`[CCG ADMIN] Failed to load live games.json from ${resolvedUrl}`, err);
+            setStatus(`Failed to load live games.json from ${resolvedUrl}`, "error");
         }
     }
 
@@ -989,8 +991,13 @@
 
     if (downloadStubsBtn) {
         downloadStubsBtn.addEventListener("click", async () => {
-            const merged = [...workingGames].sort(compareSortTitle);
-            const { errors, warnings } = validateGameLibrary(merged);
+            if (!addedGames.length) {
+                setStatus("No new games added for stub export.", "error");
+                return;
+            }
+
+            const sessionGames = [...addedGames].sort(compareSortTitle);
+            const { errors, warnings } = validateGameLibrary(sessionGames);
             if (errors.length) {
                 setStatus("Stub export blocked. Fix errors before downloading.", "error");
                 setExportErrors(errors);
@@ -1005,7 +1012,7 @@
                 return;
             }
 
-            const gamesWithSlugs = merged.filter(game => game && game.slug);
+            const gamesWithSlugs = sessionGames.filter(game => game && game.slug);
             if (!gamesWithSlugs.length) {
                 setStatus("No games with slugs found for stub export.", "error");
                 return;
