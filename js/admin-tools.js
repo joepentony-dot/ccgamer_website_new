@@ -450,21 +450,25 @@
         };
     }
 
-    function updateAutoFields() {
-        if (!titleInput) return;
-        const titleValue = String(titleInput.value || "");
-        const normalizedTitle = normalizeText(titleValue).value;
-        if (autoSortTitle && sortTitleInput) {
-            sortTitleInput.value = deriveSortTitle(normalizedTitle);
-        }
-        const autoValues = getAutoIdSlug(title);
-        if (idInput) {
-            idInput.value = autoValues.id;
-        }
-        if (slugInput) {
-            slugInput.value = autoValues.slug;
-        }
+   function updateAutoFields() {
+    if (!titleInput) return;
+
+    const titleValue = String(titleInput.value || "").trim();
+
+    if (autoSortTitle && sortTitleInput) {
+        sortTitleInput.value = deriveSortTitle(titleValue);
     }
+
+    const autoValues = getAutoIdSlug(titleValue);
+
+    if (idInput) {
+        idInput.value = autoValues.id;
+    }
+
+    if (slugInput) {
+        slugInput.value = autoValues.slug;
+    }
+}
 
     function normalizeGame(raw) {
         const title = String(raw.title || "").trim();
