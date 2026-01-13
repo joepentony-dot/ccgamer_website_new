@@ -333,9 +333,8 @@
             .toLowerCase()
             .trim()
             .replace(/&/g, "and")
-            .replace(/[’'“”"]/g, "")
-            .replace(/\./g, "")
-            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/[^a-z0-9\s]/g, "")
+            .replace(/\s+/g, "-")
             .replace(/-+/g, "-")
             .replace(/^-+|-+$/g, "");
     }
@@ -345,8 +344,8 @@
             .toLowerCase()
             .trim()
             .replace(/&/g, "and")
-            .replace(/[’'“”".:,]/g, "")
-            .replace(/[^a-z0-9]+/g, "_")
+            .replace(/[^a-z0-9\s]/g, "")
+            .replace(/\s+/g, "_")
             .replace(/_+/g, "_")
             .replace(/^_+|_+$/g, "");
     }
@@ -453,9 +452,10 @@
 
     function updateAutoFields() {
         if (!titleInput) return;
-        const title = normalizeText(titleInput.value).value;
+        const titleValue = String(titleInput.value || "");
+        const normalizedTitle = normalizeText(titleValue).value;
         if (autoSortTitle && sortTitleInput) {
-            sortTitleInput.value = deriveSortTitle(title);
+            sortTitleInput.value = deriveSortTitle(normalizedTitle);
         }
         const autoValues = getAutoIdSlug(title);
         if (idInput) {
