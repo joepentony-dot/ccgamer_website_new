@@ -70,53 +70,6 @@
   },
   {
     "system": "C64",
-    "id": "a_nightmare_on_elm_street",
-    "slug": "a-nightmare-on-elm-street",
-    "title": "A Nightmare On Elm Street",
-    "sorttitle": "Nightmare On Elm Street",
-    "genres": [
-      "Arcade Games",
-      "Horror Games",
-      "Licensed Games"
-    ],
-    "year": 1989,
-    "developer": "Monarch Software",
-    "videoid": "dlmPNOw5TPk",
-    "lemon": [
-      "https://www.lemon64.com/game/nightmare-on-elm-street"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/nightmare_on_elm_street_a.jpg",
-    "pdf": "https://drive.google.com/file/d/1QAaAPIEHEGyt4ajae-ytzMOJq2gi3MLN/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1HrvjFugCKx3e9nzey2kZ-AnxeYi4WRuT/view?usp=drive_link"
-    ],
-    "description": "A Nightmare on Elm Street is a Commodore 64 action game based on the popular horror film series. Players must rescue their friends from the dream world while avoiding the deadly Freddy Krueger, balancing arcade-style gameplay with light puzzle elements. The game stands out as one of the more atmospheric licensed horror titles on the C64."
-  },
-  {
-    "system": "C64",
-    "id": "a_question_of_sport",
-    "slug": "a-question-of-sport",
-    "title": "A Question Of Sport",
-    "sorttitle": "Question Of Sport",
-    "genres": [
-      "Quiz Games",
-      "Licensed Games"
-    ],
-    "year": 1988,
-    "developer": "Elite",
-    "videoid": "7u3SudOJymE",
-    "lemon": [
-      "https://www.lemon64.com/game/question-of-sport"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/question_of_sport_a_europe.jpg",
-    "pdf": "https://drive.google.com/file/d/1Cj6Gm_VwyEIUe6GImBIGLfSO8W6bcfy8/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/128MEDwS_PwIWjqd7pZV_7j3Sx7r0sIX2/view?usp=drive_link"
-    ],
-    "description": "Based on the long-running BBC television quiz show, A Question of Sport brings competitive sports trivia to the Commodore 64. Two teams compete by answering questions drawn from a wide range of sporting topics, closely mirroring the format of the TV programme. It remains a popular quiz title among fans of British television adaptations."
-  },
-  {
-    "system": "C64",
     "id": "accolades_comics",
     "slug": "accolade-s-comics",
     "title": "Accolade's Comics",
@@ -156,7 +109,9 @@
     ],
     "lemon": [
       "https://www.lemon64.com/game/ace-of-aces"
-    ]
+    ],
+    "slug": "ace-of-aces",
+    "sorttitle": "Ace Of Aces"
   },
   {
     "system": "C64",
@@ -603,29 +558,6 @@
       "https://drive.google.com/file/d/1ytiwjwLmdQrVPR5hRtQSYH20S0j6y6DQ/view?usp=drive_link"
     ],
     "description": "Ant Attack is a Commodore 64 arcade game released in 1984 by Quicksilva. Set in a city overrun by giant ants, players must rescue survivors while avoiding relentless enemies. Its isometric viewpoint and sense of tension made it a highly influential title and a standout early horror-themed game on the C64."
-  },
-  {
-    "system": "AMIGA",
-    "id": "antheads",
-    "slug": "antheads-it-came-from-the-desert-2",
-    "title": "Antheads: It Came From The Desert II",
-    "sorttitle": "It Came From The Desert II",
-    "genres": [
-      "Adventure Games",
-      "Action Adventure Games"
-    ],
-    "year": 1990,
-    "developer": "Cinemaware",
-    "videoid": "QPgBi5vrU4o",
-    "lemon": [
-      "https://www.lemonamiga.com/games/details.php?id=2289"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/antheads.png",
-    "pdf": "https://drive.google.com/file/d/1WlBK8XS2q7yNUvk-5WXqgVT-cJLkiFda/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1ATXb4QANb28JCdD9yAcvTH7Kx6FNbzd5/view?usp=drive_link"
-    ],
-    "description": "Antheads: It Came From The Desert II is an Amiga adventure game released in 1990 by Cinemaware. Serving as a sequel to the original, it expands on the pulp sci-fi storyline with new locations, characters, and gameplay mechanics. The game continues Cinemaware's trademark cinematic approach to interactive storytelling."
   },
   {
     "system": "AMIGA",
@@ -1744,7 +1676,9 @@
     ],
     "lemon": [
       "https://www.lemon64.com/game/blagger-goes-to-hollywood"
-    ]
+    ],
+    "slug": "blagger-goes-to-hollywood",
+    "sorttitle": "Blagger Goes To Hollywood"
   },
   {
     "system": "C64",
@@ -2340,6 +2274,29 @@
   },
   {
     "system": "C64",
+    "id": "the_captive",
+    "slug": "the-captive",
+    "title": "The Captive",
+    "sorttitle": "Captive",
+    "genres": [
+      "Action Adventure Games",
+      "Puzzle Games"
+    ],
+    "year": 1985,
+    "developer": "Mastertronic",
+    "videoid": "Q1_BVJ2ktLc",
+    "lemon": [
+      "https://www.lemon64.com/game/captive"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/captive_the.jpg",
+    "pdf": "https://drive.google.com/file/d/1xroFr6lljKp67OFnDmJlvZfT1-byxdbB/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1rd0OJiQLUITqJ4P6Xo6A4d-P9EalWPME/view?usp=drive_link"
+    ],
+    "description": "The Captive is a 1985 Commodore 64 action-adventure from Mastertronic that focuses on exploration, environmental puzzles, and real-time problem-solving."
+  },
+  {
+    "system": "C64",
     "id": "card_sharks",
     "slug": "card-sharks",
     "title": "Card Sharks",
@@ -2382,6 +2339,29 @@
       "https://drive.google.com/file/d/1vYOOl2mgzlkNafWFWZdkXAkpvWrJcaAL/view?usp=drive_link"
     ],
     "description": "Castle Master presents a fully 3D first-person adventure where players explore a vast castle, solving puzzles and uncovering secrets. Its wireframe graphics and open exploration were ambitious for the C64."
+  },
+  {
+    "system": "C64",
+    "id": "the_castles_of_dr._creep",
+    "slug": "the-castles-of-dr-creep",
+    "title": "The Castles Of Dr. Creep",
+    "sorttitle": "Castles Of Dr. Creep",
+    "genres": [
+      "Puzzle Games",
+      "Miscellaneous"
+    ],
+    "year": 1984,
+    "developer": "Ariolasoft",
+    "videoid": "6YmY5EVvXNM",
+    "lemon": [
+      "https://www.lemon64.com/game/castles-of-doctor-creep"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/castles_of_doctor_creep_the.jpg",
+    "pdf": "https://drive.google.com/file/d/18xjbd6ZoOwGSvQhPMeqkMh5sRAbRP-Fu/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1zDQnqZH20uuIDX61lINW-2KeS_i8tYvs/view?usp=drive_link"
+    ],
+    "description": "The Castles Of Dr. Creep is a 1984 Commodore 64 puzzle adventure from Ariolasoft that challenges players to escape deadly mansions filled with traps and timed mechanisms."
   },
   {
     "system": "C64",
@@ -2536,6 +2516,28 @@
       "https://drive.google.com/file/d/14-apQidra1qq4ntUzw_cxMdxfmnXydYl/view?usp=drive_link"
     ],
     "description": "Championship Wrestling recreates professional wrestling with a range of moves, holds, and match types. Timing and positioning play a major role in defeating opponents and winning titles."
+  },
+  {
+    "system": "AMIGA",
+    "id": "the_chaos_engine",
+    "slug": "the-chaos-engine",
+    "title": "The Chaos Engine",
+    "sorttitle": "Chaos Engine",
+    "genres": [
+      "Arcade Games"
+    ],
+    "year": 1993,
+    "developer": "Renegade",
+    "videoid": "vyTeLuzjRmQ",
+    "lemon": [
+      "https://www.lemonamiga.com/games/details.php?id=252"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/the_chaos_engine_2.png",
+    "pdf": "https://drive.google.com/file/d/1H2yv7hIjMZdCuIJW3c8VckMfn_CCpwSn/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1LuwxVFv5pJGOI8PUHsHRWovzoEVEiClz/view?usp=drive_link"
+    ],
+    "description": "The Chaos Engine is a 1993 Amiga top-down arcade shooter from Renegade that features selectable characters, cooperative play, and intense steampunk-themed action."
   },
   {
     "system": "C64",
@@ -3231,29 +3233,6 @@
   },
   {
     "system": "AMIGA",
-    "id": "danny_sullivans_indy_heat",
-    "slug": "danny-sullivans-indy-heat",
-    "title": "Danny Sullivans Indy Heat",
-    "sorttitle": "Indy Heat",
-    "genres": [
-      "Licensed Games",
-      "Racing Games"
-    ],
-    "year": 1992,
-    "developer": "Storm",
-    "videoid": "1G1MCNNynVg",
-    "lemon": [
-      "https://www.lemonamiga.com/game/indy-heat"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/indy_heat.png",
-    "pdf": "https://drive.google.com/file/d/1ebF8HC0-5GKPgre2DV8vXy1LVE8-wPWD/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1kDGFvqmUZcDwGyKo273npMebhfL9XrU-/view?usp=drive_link"
-    ],
-    "description": "Danny Sullivan's Indy Heat is an Amiga top-down racing game featuring fast-paced arcade-style competition. Players race across multiple tracks with tight handling and multiplayer support."
-  },
-  {
-    "system": "AMIGA",
     "id": "darkseed",
     "slug": "darkseed",
     "title": "Darkseed",
@@ -3318,6 +3297,29 @@
       "https://drive.google.com/file/d/1lKoShTLm3ozRMl85-nxs4MfIwc2sB4Ks/view?usp=drive_link"
     ],
     "description": "Deactivators is a Commodore 64 strategy-puzzle game that tasks players with controlling multiple robots to disarm security systems. Planning and precise coordination are essential to completing each level."
+  },
+  {
+    "system": "C64",
+    "id": "the_activision_decathlon",
+    "slug": "the-activision-decathlon",
+    "title": "The Activision Decathlon",
+    "sorttitle": "Decathlon",
+    "genres": [
+      "Cartridge Games",
+      "Sports Games"
+    ],
+    "year": 1984,
+    "developer": "Activision",
+    "videoid": "zKdXbca2b8o",
+    "lemon": [
+      "https://www.lemon64.com/game/decathlon"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/decathlon_activision.jpg",
+    "pdf": "https://drive.google.com/file/d/1JhfnWD8w6b8ooUlur2EVabRN0cPuNJxm/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1tW162yKLpNBUKavrynINIcE1ThsIzw8k/view?usp=drive_link"
+    ],
+    "description": "The Activision Decathlon is a 1984 Commodore 64 sports game from Activision that recreates Olympic decathlon events using joystick-intensive, timing-based controls."
   },
   {
     "system": "C64",
@@ -3549,6 +3551,29 @@
       "https://drive.google.com/file/d/1h5Ro1hrjl3LK42ShVX9M4FCFyvTiqY29/view?usp=drive_link"
     ],
     "description": "Doctor Who and the Mines of Terror is a Commodore 64 action-adventure game featuring exploration, puzzle-solving, and enemy encounters within a maze-like underground setting."
+  },
+  {
+    "system": "C64",
+    "id": "the_dolphin's_rune",
+    "slug": "the-dolphin-s-rune",
+    "title": "The Dolphin's Rune",
+    "sorttitle": "Dolphin's Rune",
+    "genres": [
+      "Puzzle Games",
+      "Miscellaneous"
+    ],
+    "year": 1985,
+    "developer": "Mindscape",
+    "videoid": "y58m3nrHqvg",
+    "lemon": [
+      "https://www.lemon64.com/game/dolphins-rune"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/dolphin_s_rune_the.jpg",
+    "pdf": "https://drive.google.com/file/d/1jsMbdVqwpifZoeAdWJfCfQKgWeete2Es/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/112_Otd7J76GhOe_C3nBq87wuLVStxpX2/view?usp=drive_link"
+    ],
+    "description": "The Dolphin's Rune is a 1985 Commodore 64 puzzle game from Mindscape that blends exploration with abstract logic challenges and environmental problem-solving."
   },
   {
     "system": "C64",
@@ -3945,6 +3970,29 @@
   },
   {
     "system": "C64",
+    "id": "the_eidolon",
+    "slug": "the-eidolon",
+    "title": "The Eidolon",
+    "sorttitle": "Eidolon",
+    "genres": [
+      "Adventure Games",
+      "Top Picks"
+    ],
+    "year": 1985,
+    "developer": "Activision",
+    "videoid": "rKy95VWGmug",
+    "lemon": [
+      "https://www.lemon64.com/game/eidolon"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/eidolon.jpg",
+    "pdf": "https://drive.google.com/file/d/1heiIFqdwATpVYFLcdhHtWkTzvQlFkoDm/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/18SKvLp40Q39paVuR0vyDD2P35kHBxiXJ/view?usp=drive_link"
+    ],
+    "description": "The Eidolon is a 1985 Commodore 64 first-person adventure from Activision that combines dungeon exploration with real-time combat in a fantasy setting."
+  },
+  {
+    "system": "C64",
     "id": "elite",
     "slug": "elite",
     "title": "Elite",
@@ -4102,6 +4150,30 @@
   },
   {
     "system": "C64",
+    "id": "the_evil_dead",
+    "slug": "the-evil-dead",
+    "title": "The Evil Dead",
+    "sorttitle": "Evil Dead",
+    "genres": [
+      "Arcade Games",
+      "Horror Games",
+      "Licensed Games"
+    ],
+    "year": 1984,
+    "developer": "Palace Software",
+    "videoid": "tHJwS_1Ntfc",
+    "lemon": [
+      "https://www.lemon64.com/game/evil-dead"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/the_evil_dead_new.png",
+    "pdf": "https://drive.google.com/file/d/1bVj1UNcz2gpPgsa1MgCUiF3p9azAVNvf/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1o9YdtRdQHON0Wwxm2IhGS2v9imKBhLp2/view?usp=drive_link"
+    ],
+    "description": "The Evil Dead is a 1984 Commodore 64 arcade horror game from Palace Software that adapts the cult film into action-focused gameplay with dark atmospheric elements."
+  },
+  {
+    "system": "C64",
     "id": "exile",
     "slug": "exile",
     "title": "Exile",
@@ -4145,6 +4217,29 @@
       "https://drive.google.com/file/d/1kr7zE5gCO1t0p3T4qJImmbBfw2ZGrJK8/view?usp=drive_link"
     ],
     "description": "Face Off! is a Commodore 64 ice hockey game focused on arcade-style sports action rather than simulation accuracy."
+  },
+  {
+    "system": "C64",
+    "id": "the_faces_of_haarne",
+    "slug": "the-faces-of-haarne",
+    "title": "The Faces Of Haarne",
+    "sorttitle": "Faces Of Haarne",
+    "genres": [
+      "Arcade Games",
+      "Shooting Games"
+    ],
+    "year": 1984,
+    "developer": "Software Projects",
+    "videoid": "b9X33fo_D2M",
+    "lemon": [
+      "https://www.lemon64.com/game/faces-of-haarne"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/faces_of_haarne_new.png",
+    "pdf": "",
+    "disk": [
+      "https://drive.google.com/file/d/16B3r6JZ0Q7a9j2HweS6uDbjmZyOf4SbT/view?usp=drive_link"
+    ],
+    "description": "The Faces Of Haarne is a 1984 Commodore 64 vertical shooter from Software Projects that delivers continuous scrolling action and fast enemy attack patterns."
   },
   {
     "system": "C64",
@@ -5162,6 +5257,30 @@
   },
   {
     "system": "C64",
+    "id": "the_goonies",
+    "slug": "the-goonies",
+    "title": "The Goonies",
+    "sorttitle": "Goonies",
+    "genres": [
+      "Arcade Games",
+      "Licensed Games",
+      "Platform Games"
+    ],
+    "year": 1985,
+    "developer": "Datasift",
+    "videoid": "GJcAP5E7XHU",
+    "lemon": [
+      "https://www.lemon64.com/game/goonies"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/goonies_the.jpg",
+    "pdf": "https://drive.google.com/file/d/1JEXR1oCgjkt_-pHxv8YHvBcEsJ91qln6/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1f6jA8OfS42eDbeJRz-3K0PH0egZtftDP/view?usp=drive_link"
+    ],
+    "description": "The Goonies is a 1985 Commodore 64 arcade platform game from Datasoft that adapts the film licence into multi-level exploration and action gameplay."
+  },
+  {
+    "system": "C64",
     "id": "gorf",
     "slug": "gorf",
     "title": "Gorf",
@@ -5278,6 +5397,50 @@
   },
   {
     "system": "C64",
+    "id": "the_great_escape",
+    "slug": "the-great-escape",
+    "title": "The Great Escape",
+    "sorttitle": "Great Escape",
+    "genres": [
+      "Action Adventure Games"
+    ],
+    "year": 1986,
+    "developer": "Ocean",
+    "videoid": "GFgp2ToRer8",
+    "lemon": [
+      "https://www.lemon64.com/game/great-escape"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/great_escape_the.jpg",
+    "pdf": "https://drive.google.com/file/d/1A9YVcxncQjuZH9u_LQYjZkQ7JLsiycQG/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1lkWuR1pY9aUgSIqhuae8akhEu6knJIEb/view?usp=drive_link"
+    ],
+    "description": "The Great Escape is a 1986 Commodore 64 action-adventure from Ocean that recreates the film narrative through stealth-based missions and varied gameplay sections."
+  },
+  {
+    "system": "C64",
+    "id": "the_great_giana_sisters",
+    "slug": "the-great-giana-sisters",
+    "title": "The Great Giana Sisters",
+    "sorttitle": "Great Giana Sisters",
+    "genres": [
+      "Platform Games"
+    ],
+    "year": 1987,
+    "developer": "Rainbow Arts",
+    "videoid": "53G587np6co",
+    "lemon": [
+      "https://www.lemon64.com/game/great-giana-sisters"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/great_giana_sisters_the_crazy_hack.jpg",
+    "pdf": "https://drive.google.com/file/d/1_YqkwIV5QRIdPqnOHtKz1J3KGkz7XKFe/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/10ePGPZktAB_UUGdxZDybG01YxGp5T7Vn/view?usp=drive_link"
+    ],
+    "description": "The Great Giana Sisters is a 1987 Commodore 64 platform game from Rainbow Arts. known for smooth scrolling, precise jumping mechanics, and expansive level design."
+  },
+  {
+    "system": "C64",
     "id": "green_beret",
     "slug": "green-beret",
     "title": "Green Beret",
@@ -5346,6 +5509,28 @@
       "https://drive.google.com/file/d/1XAytjxkyubtNl_1p9dMsxgEVKkzVrsvx/view?usp=drive_link"
     ],
     "description": "Gryzor is a Commodore 64 run-and-gun action game released in 1988 by Ocean, based on Konami's arcade hit (known as Contra). Gameplay features side-scrolling shooting, enemy waves, and platforming sections, demanding fast reflexes and careful positioning throughout enemy-filled environments."
+  },
+  {
+    "system": "AMIGA",
+    "id": "the_guild_of_thieves",
+    "slug": "the-guild-of-thieves",
+    "title": "The Guild Of Thieves",
+    "sorttitle": "Guild Of Thieves",
+    "genres": [
+      "Adventure Games"
+    ],
+    "year": 1987,
+    "developer": "Rainbird",
+    "videoid": "QT3Jw3_QQTg",
+    "lemon": [
+      "https://www.lemonamiga.com/games/details.php?id=477"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/the_guild_of_thieves_amiga.png",
+    "pdf": "https://drive.google.com/file/d/10gIqn9Yg0Fu19QF7F8q7NXmIweIvYEsr/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1oLVXCNLfLGAlgeVb1yNZiLwEMw516We_/view?usp=drive_link"
+    ],
+    "description": "The Guild Of Thieves is a 1987 Amiga text adventure from Rainbird that delivers complex puzzles, rich storytelling, and deep interactive exploration."
   },
   {
     "system": "C64",
@@ -5461,6 +5646,28 @@
       "https://drive.google.com/file/d/1iuwJAyAE52UcDsGpTNV0MkTgbAcQS02y/view?usp=drive_link"
     ],
     "description": "Halls Of The Things is a Commodore 64 action-adventure released in 1984 by Design Design, combining maze exploration, real-time combat, and puzzle-solving within a fantasy setting inspired by classic tabletop role-playing games. Known for its atmospheric presentation and unforgiving difficulty, the C64 version rewards careful planning and mapping as players delve deeper into its interconnected halls."
+  },
+  {
+    "system": "C64",
+    "id": "the_happiest_days_of_your_life",
+    "slug": "the-happiest-days-of-your-life",
+    "title": "The Happiest Days Of Your Life",
+    "sorttitle": "Happiest Days Of Your Life",
+    "genres": [
+      "Action Adventure Games"
+    ],
+    "year": 1986,
+    "developer": "Firebird",
+    "videoid": "FZmn5VuQvpo",
+    "lemon": [
+      "https://www.lemon64.com/game/happiest-days-of-your-life"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/happiest_days_of_your_life_the.jpg",
+    "pdf": "https://drive.google.com/file/d/1PJ6UBgjIcG8kM6DpOnXNTBRHwHLzGhmy/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1RIjhzn0qnDn6uRYzcxrPCY0ZE5M8f_Db/view?usp=drive_link"
+    ],
+    "description": "The Happiest Days Of Your Life is a 1986 Commodore 64 action-adventure from Firebird set in a school environment focused on stealth, timing, and task completion."
   },
   {
     "system": "C64",
@@ -5899,6 +6106,29 @@
   },
   {
     "system": "C64",
+    "id": "the_human_race",
+    "slug": "the-human-race",
+    "title": "The Human Race",
+    "sorttitle": "Human Race",
+    "genres": [
+      "Arcade Games",
+      "Platform Games"
+    ],
+    "year": 1985,
+    "developer": "Mastertronic",
+    "videoid": "iW2AvpF7NfQ",
+    "lemon": [
+      "https://www.lemon64.com/game/human-race"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/human_race_the.jpg",
+    "pdf": "",
+    "disk": [
+      "https://drive.google.com/file/d/1EEywTk376rz3jB_rhNYQGaG_q57oTbec/view?usp=drive_link"
+    ],
+    "description": "The Human Race is a 1985 Commodore 64 arcade platform game from Mastertronic that emphasises obstacle avoidance, timing, and fast-paced level progression."
+  },
+  {
+    "system": "C64",
     "id": "hunchback",
     "slug": "hunchback",
     "title": "Hunchback",
@@ -5953,12 +6183,14 @@
     ],
     "developer": "Ocean",
     "videoid": "dTe4AscaMOU",
-    "thumbnail": "hunchback_2.jpg",
+    "thumbnail": "resources/images/thumbnails/all/hunchback_2.jpg",
     "pdf": "https://drive.google.com/file/d/1re4dlg5zHdtyooCPhhRrPXb2lKA6bxOM/view?usp=drive_link",
     "disk": [
       "https://drive.google.com/file/d/1JQRAwfq_K55aSFKw5TqHkyn7fi3sggRT/view?usp=drive_link"
     ],
-    "description": "Released on the Commodore 64 in 1985 by Ocean, Hunchback II: Quasimodo’s Revenge expands on the original with new levels, mechanics, and refined controls. The C64 version maintains the tough platforming focus while adding variety and depth, making it a popular follow-up among fans."
+    "description": "Released on the Commodore 64 in 1985 by Ocean, Hunchback II: Quasimodo’s Revenge expands on the original with new levels, mechanics, and refined controls. The C64 version maintains the tough platforming focus while adding variety and depth, making it a popular follow-up among fans.",
+    "sorttitle": "Hunchback II: Quasimodo's Revenge",
+    "lemon": []
   },
   {
     "system": "AMIGA",
@@ -6073,6 +6305,28 @@
       "https://drive.google.com/file/d/1vzvlQ5FXLDKjs-P9fDFqg8liP1-ZvK_y/view?usp=drive_link"
     ],
     "description": "Ikari Warriors arrived on the Commodore 64 in 1988 from Elite, adapting SNK’s arcade shooter into a vertically scrolling, combat-heavy experience. The C64 version features large levels, constant enemy pressure, and the use of vehicles, offering a slower, more deliberate take on the arcade original."
+  },
+  {
+    "system": "AMIGA",
+    "id": "the_immortal",
+    "slug": "the-immortal",
+    "title": "The Immortal",
+    "sorttitle": "Immortal",
+    "genres": [
+      "Action Adventure Games"
+    ],
+    "year": 1990,
+    "developer": "Electronic Arts",
+    "videoid": "VFhshKqyD9U",
+    "lemon": [
+      "https://www.lemonamiga.com/games/details.php?id=555"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/the_immortal_new.png",
+    "pdf": "https://drive.google.com/file/d/1Smj50K4sWkaXdpi4Pts9ClyWw1YH81wz/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1Yso5YP2VeO-d1UH1bGpgUZaqR9Z_7xrF/view?usp=drive_link"
+    ],
+    "description": "The Immortal is a 1990 Amiga action-adventure from Electronic Arts that combines isometric exploration with combat, traps, and puzzle-solving."
   },
   {
     "system": "C64",
@@ -6214,6 +6468,29 @@
       "https://drive.google.com/file/d/1Y14yJZiVdUJBZBg2ossknVqx2sDJjG2L/view?usp=drive_link"
     ],
     "description": "Released for the Commodore 64 in 1984 by Mindscape, Indiana Jones In The Lost Kingdom blends arcade action with puzzle-solving across maze-like environments. The C64 version stands out for its emphasis on exploration and problem-solving rather than straightforward combat."
+  },
+  {
+    "system": "AMIGA",
+    "id": "danny_sullivans_indy_heat",
+    "slug": "danny-sullivans-indy-heat",
+    "title": "Danny Sullivans Indy Heat",
+    "sorttitle": "Indy Heat",
+    "genres": [
+      "Licensed Games",
+      "Racing Games"
+    ],
+    "year": 1992,
+    "developer": "Storm",
+    "videoid": "1G1MCNNynVg",
+    "lemon": [
+      "https://www.lemonamiga.com/game/indy-heat"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/indy_heat.png",
+    "pdf": "https://drive.google.com/file/d/1ebF8HC0-5GKPgre2DV8vXy1LVE8-wPWD/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1kDGFvqmUZcDwGyKo273npMebhfL9XrU-/view?usp=drive_link"
+    ],
+    "description": "Danny Sullivan's Indy Heat is an Amiga top-down racing game featuring fast-paced arcade-style competition. Players race across multiple tracks with tight handling and multiplayer support."
   },
   {
     "system": "C64",
@@ -6424,27 +6701,27 @@
     "description": "It Came From The Desert is an Amiga adventure released in 1989 by Cinemaware, blending narrative-driven gameplay with action sequences inspired by 1950s science fiction films. On the Amiga, players investigate a desert town threatened by giant insects, with time-based decisions, cinematic presentation, and varied gameplay styles creating a highly immersive experience."
   },
   {
-    "system": "C64",
-    "id": "ivan_'ironman'_stewart's_super_off_road",
-    "slug": "ivan-ironman-stewart-s-super-off-road",
-    "title": "Ivan 'Ironman' Stewart's Super Off Road",
-    "sorttitle": "Super Off Road",
+    "system": "AMIGA",
+    "id": "antheads",
+    "slug": "antheads-it-came-from-the-desert-2",
+    "title": "Antheads: It Came From The Desert II",
+    "sorttitle": "It Came From The Desert II",
     "genres": [
-      "Licensed Games",
-      "Racing Games"
+      "Adventure Games",
+      "Action Adventure Games"
     ],
     "year": 1990,
-    "developer": "Virgin Mastertronic",
-    "videoid": "1_4jorsBdCM",
+    "developer": "Cinemaware",
+    "videoid": "QPgBi5vrU4o",
     "lemon": [
-      "https://www.lemon64.com/game/ironman-super-off-road"
+      "https://www.lemonamiga.com/games/details.php?id=2289"
     ],
-    "thumbnail": "resources/images/thumbnails/all/ivan_ironman_stewart_s_super_off_road.jpg",
-    "pdf": "https://drive.google.com/file/d/1ZuANK9-Ujd61p9MIeVKtGH4jrXBixYBh/view?usp=drive_link",
+    "thumbnail": "resources/images/thumbnails/all/antheads.png",
+    "pdf": "https://drive.google.com/file/d/1WlBK8XS2q7yNUvk-5WXqgVT-cJLkiFda/view?usp=drive_link",
     "disk": [
-      "https://drive.google.com/file/d/1kU0rKSDkD-hnQqzNRlq4lK1wnfc2av7U/view?usp=drive_link"
+      "https://drive.google.com/file/d/1ATXb4QANb28JCdD9yAcvTH7Kx6FNbzd5/view?usp=drive_link"
     ],
-    "description": "Released for the Commodore 64 in 1990 by Virgin Mastertronic, Ivan Ironman Stewart’s Super Off Road is an overhead racing game based on the arcade hit, featuring tight tracks, vehicle upgrades, and competitive AI. The C64 version captures the essence of short, frantic races while adding a strategic layer through cash-earned performance improvements."
+    "description": "Antheads: It Came From The Desert II is an Amiga adventure game released in 1990 by Cinemaware. Serving as a sequel to the original, it expands on the pulp sci-fi storyline with new locations, characters, and gameplay mechanics. The game continues Cinemaware's trademark cinematic approach to interactive storytelling."
   },
   {
     "system": "C64",
@@ -7157,6 +7434,29 @@
   },
   {
     "system": "C64",
+    "id": "the_last_ninja",
+    "slug": "the-last-ninja",
+    "title": "The Last Ninja",
+    "sorttitle": "Last Ninja",
+    "genres": [
+      "Action Adventure Games",
+      "Top Picks"
+    ],
+    "year": 1987,
+    "developer": "System 3",
+    "videoid": "npAyIErZWJc",
+    "lemon": [
+      "https://www.lemon64.com/game/last-ninja"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/the_last_ninja.jpg",
+    "pdf": "https://drive.google.com/file/d/1MVvCvqiiF_r2fwOFF7FTqZmmFe8Gw1vl/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1is0ggh5UMghkEGh7Y-7rfPQ_oxW7ytsL/view?usp=drive_link"
+    ],
+    "description": "The Last Ninja is a 1987 Commodore 64 action-adventure classic from System 3 that blends isometric exploration, combat, and atmospheric presentation."
+  },
+  {
+    "system": "C64",
     "id": "last_ninja_2:_back_with_a_vengeance",
     "slug": "last-ninja-2-back-with-a-vengeance",
     "title": "Last Ninja 2: Back With A Vengeance",
@@ -7176,6 +7476,29 @@
       "https://drive.google.com/file/d/1rZdvvt6pIFiYw22-959H6w9WxI7p9RDl/view?usp=drive_link"
     ],
     "description": "Released on the Commodore 64 in 1988 by Activision, Last Ninja 2 Back With A Vengeance expands the series with refined controls, larger environments, and a stronger narrative focus. The C64 version is celebrated for its isometric presentation, exploration-heavy design, and memorable soundtrack."
+  },
+  {
+    "system": "C64",
+    "id": "the_last_v8",
+    "slug": "the-last-v8",
+    "title": "The Last V8",
+    "sorttitle": "Last V8",
+    "genres": [
+      "Arcade Games",
+      "Racing Games"
+    ],
+    "year": 1985,
+    "developer": "Mastertronic",
+    "videoid": "gKdrM75TWwY",
+    "lemon": [
+      "https://www.lemon64.com/game/last-v8"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/last_v8_the.jpg",
+    "pdf": "https://drive.google.com/file/d/1tJ2573Bx_crhBz_c0YrPtxBvWRzHuXeh/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/112588hjDKLLOdF6V_JrdfG95x8OWT_o6/view?usp=drive_link"
+    ],
+    "description": "The Last V8 is a 1985 Commodore 64 arcade racing game from Mastertronic that focuses on obstacle-filled tracks and time-based driving challenges."
   },
   {
     "system": "C64",
@@ -7407,6 +7730,54 @@
       "https://drive.google.com/file/d/14wF1q1N5pRPYL3YtkK4NvHg5vXJJXK5F/view?usp=drive_link"
     ],
     "description": "Loom is an Amiga adventure released in 1990 by Lucasfilm Games, presenting a story-driven experience centred around music-based magic rather than traditional item collection. The Amiga version stands out for its distinctive narrative style, elegant interface, and strong audiovisual presentation inspired by classical composition."
+  },
+  {
+    "system": "C64",
+    "id": "the_lords_of_midnight",
+    "slug": "the-lords-of-midnight",
+    "title": "The Lords Of Midnight",
+    "sorttitle": "Lords Of Midnight",
+    "genres": [
+      "Role Playing Games",
+      "Strategy Games",
+      "Top Picks"
+    ],
+    "year": 1985,
+    "developer": "Beyond",
+    "videoid": "a7Ji5dmfvXU",
+    "lemon": [
+      "https://www.lemon64.com/game/lords-of-midnight"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/lords_of_midnight.jpg",
+    "pdf": "https://drive.google.com/file/d/1wxyvgs9FZ-YfbsxTrZ0wI8za803k93_1/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/17GORhX7RQJYleBTTq6E7NOsuBBRY_kD3/view?usp=drive_link"
+    ],
+    "description": "The Lords Of Midnight is a 1985 Commodore 64 strategy role-playing game from Beyond that combines large-scale fantasy warfare with character-led exploration."
+  },
+  {
+    "system": "AMIGA",
+    "id": "the_lost_patrol",
+    "slug": "the-lost-patrol",
+    "title": "The Lost Patrol",
+    "sorttitle": "Lost Patrol",
+    "genres": [
+      "BPJS Games",
+      "Action Adventure Games",
+      "Role Playing Games"
+    ],
+    "year": 1990,
+    "developer": "Ocean",
+    "videoid": "RcrAuSiGHzU",
+    "lemon": [
+      "https://www.lemonamiga.com/games/details.php?id=698"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/lost_patrol.png",
+    "pdf": "https://drive.google.com/file/d/1z4uva6Hna5xs17oPJcbJuO-Ip6mkgPOV/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1KMqJeioNjmdEjnSD2eUiTkmxdbE03Tyh/view?usp=drive_link"
+    ],
+    "description": "The Lost Patrol is a 1990 Amiga action-adventure from Ocean that mixes survival strategy with exploration behind enemy lines during wartime missions."
   },
   {
     "system": "AMIGA",
@@ -7959,6 +8330,29 @@
   },
   {
     "system": "AMIGA",
+    "id": "the_secret_of_monkey_island",
+    "slug": "the-secret-of-monkey-island",
+    "title": "The Secret Of Monkey Island",
+    "sorttitle": "Monkey Island",
+    "genres": [
+      "Adventure Games",
+      "Top Picks"
+    ],
+    "year": 1991,
+    "developer": "Lucasfilm Games",
+    "videoid": "tSafH6osy50",
+    "lemon": [
+      "https://www.lemonamiga.com/games/details.php?id=935"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/monkey_island.png",
+    "pdf": "https://drive.google.com/file/d/1fAHTPV1zAnyThxvh8X8j1jn5h9PZT0KI/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1CWg4TPSDGxsxzgJCvm7xzaEp3O_E4QIT/view?usp=drive_link"
+    ],
+    "description": "The Secret Of Monkey Island is a 1991 Amiga point-and-click adventure classic that delivers puzzle-solving, memorable characters, and narrative-driven gameplay."
+  },
+  {
+    "system": "AMIGA",
     "id": "monkey_island_2",
     "slug": "monkey-island-2-lechuck-s-revenge",
     "title": "Monkey Island 2: Lechuck'S Revenge",
@@ -8097,6 +8491,29 @@
   },
   {
     "system": "C64",
+    "id": "the_movie_monster_game",
+    "slug": "the-movie-monster-game",
+    "title": "The Movie Monster Game",
+    "sorttitle": "Movie Monster Game",
+    "genres": [
+      "Arcade Games",
+      "Horror Games"
+    ],
+    "year": 1986,
+    "developer": "Epyx",
+    "videoid": "3r2Xu8_dQXY",
+    "lemon": [
+      "https://www.lemon64.com/game/movie-monster-game"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/movie_monster_game_the.jpg",
+    "pdf": "https://drive.google.com/file/d/11AoUGk5wY_36Rb1z5vF5qJpJIaUg9gss/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1V3F1ZOF1sUlLmStg38npfZ_wwWPHW28r/view?usp=drive_link"
+    ],
+    "description": "The Movie Monster Game is a 1986 Commodore 64 arcade game from Epyx that brings classic horror characters together in fast-paced action challenges."
+  },
+  {
+    "system": "C64",
     "id": "mr_robot_and_his_robot_factory",
     "slug": "mr-robot-and-his-robot-factory",
     "title": "Mr Robot And His Robot Factory",
@@ -8117,6 +8534,28 @@
       "https://drive.google.com/file/d/1d0fTMbuMXfSL1wHLx6ImQY8ihymReEIP/view?usp=drive_link"
     ],
     "description": "Mr Robot And His Robot Factory is a Commodore 64 platform game released in 1984 by Beyond, combining fast movement with screen-based puzzles and enemy avoidance. The C64 version is widely praised for its fluid controls, clever level design, and strong sense of momentum."
+  },
+  {
+    "system": "C64",
+    "id": "the_muncher",
+    "slug": "the-muncher",
+    "title": "The Muncher",
+    "sorttitle": "Muncher",
+    "genres": [
+      "Arcade Games"
+    ],
+    "year": 1988,
+    "developer": "Gremlin Graphics",
+    "videoid": "32LzquxJ7o4",
+    "lemon": [
+      "https://www.lemon64.com/game/muncher-eats-chewits"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/muncher_eats_chewits_the.jpg",
+    "pdf": "",
+    "disk": [
+      "https://drive.google.com/file/d/1b7LGOG1dZYzuQutPOC6a87ed014hkS8q/view?usp=drive_link"
+    ],
+    "description": "The Muncher is a 1988 Commodore 64 arcade game from Gremlin Graphics that adapts a popular snack brand into maze-based action gameplay."
   },
   {
     "system": "C64",
@@ -8308,6 +8747,51 @@
   },
   {
     "system": "C64",
+    "id": "the_neverending_story",
+    "slug": "the-neverending-story",
+    "title": "The Neverending Story",
+    "sorttitle": "Neverending Story",
+    "genres": [
+      "Adventure Games",
+      "Licensed Games"
+    ],
+    "year": 1985,
+    "developer": "Ocean",
+    "videoid": "hl73ekoTjSk",
+    "lemon": [
+      "https://www.lemon64.com/game/neverending-story"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/neverending_story.jpg",
+    "pdf": "https://drive.google.com/file/d/1-2UTcT6pAS1sGbAGWK6wTUFgcc0QZSBb/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1SQP35PhfwVuJUSWF4hVUydNWWmH_iagn/view?usp=drive_link"
+    ],
+    "description": "The Neverending Story is a 1985 Commodore 64 adventure game from Ocean that adapts the fantasy film into exploration-focused gameplay."
+  },
+  {
+    "system": "C64",
+    "id": "the_new_zealand_story",
+    "slug": "the-new-zealand-story",
+    "title": "The New Zealand Story",
+    "sorttitle": "New Zealand Story",
+    "genres": [
+      "Platform Games"
+    ],
+    "year": 1989,
+    "developer": "Ocean",
+    "videoid": "mna3Miumywg",
+    "lemon": [
+      "https://www.lemon64.com/game/newzealand-story"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/new_zealand_story_new.png",
+    "pdf": "https://drive.google.com/file/d/1HqxrBMs26T6THkaUHNHHjA9RVlM5bg1s/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1rCeB3Sn-xJaIwQF_MIZ8k-tT57xAXJek/view?usp=drive_link"
+    ],
+    "description": "The New Zealand Story is a 1989 Commodore 64 platform game from Ocean that features colourful worlds, vehicle mechanics, and varied enemy encounters."
+  },
+  {
+    "system": "C64",
     "id": "nexus",
     "slug": "nexus",
     "title": "Nexus",
@@ -8400,6 +8884,30 @@
   },
   {
     "system": "C64",
+    "id": "a_nightmare_on_elm_street",
+    "slug": "a-nightmare-on-elm-street",
+    "title": "A Nightmare On Elm Street",
+    "sorttitle": "Nightmare On Elm Street",
+    "genres": [
+      "Arcade Games",
+      "Horror Games",
+      "Licensed Games"
+    ],
+    "year": 1989,
+    "developer": "Monarch Software",
+    "videoid": "dlmPNOw5TPk",
+    "lemon": [
+      "https://www.lemon64.com/game/nightmare-on-elm-street"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/nightmare_on_elm_street_a.jpg",
+    "pdf": "https://drive.google.com/file/d/1QAaAPIEHEGyt4ajae-ytzMOJq2gi3MLN/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1HrvjFugCKx3e9nzey2kZ-AnxeYi4WRuT/view?usp=drive_link"
+    ],
+    "description": "A Nightmare on Elm Street is a Commodore 64 action game based on the popular horror film series. Players must rescue their friends from the dream world while avoiding the deadly Freddy Krueger, balancing arcade-style gameplay with light puzzle elements. The game stands out as one of the more atmospheric licensed horror titles on the C64."
+  },
+  {
+    "system": "C64",
     "id": "nightshade",
     "slug": "nightshade",
     "title": "Nightshade",
@@ -8486,7 +8994,8 @@
     ],
     "lemon": [
       "https://www.lemon64.com/game/ninja-rabbits"
-    ]
+    ],
+    "sorttitle": "Ninja Rabbits"
   },
   {
     "system": "AMIGA",
@@ -8580,6 +9089,28 @@
       "https://drive.google.com/file/d/1pg614RLglqXpaXzmbiYArEXZ-PXXbNAZ/view?usp=drive_link"
     ],
     "description": "Nosferatu The Vampyre is a Commodore 64 adventure released in 1986 by Piranha, inspired by classic horror cinema and centred around exploration and puzzle-solving. The C64 version places a strong emphasis on atmosphere and narrative tension."
+  },
+  {
+    "system": "C64",
+    "id": "the_official_father_christmas",
+    "slug": "the-official-father-christmas",
+    "title": "The Official Father Christmas",
+    "sorttitle": "Official Father Christmas",
+    "genres": [
+      "Arcade Games"
+    ],
+    "year": 1989,
+    "developer": "Alternative Software",
+    "videoid": "YpDPAaLJlfc",
+    "lemon": [
+      "https://www.lemon64.com/game/official-father-christmas"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/official_father_christmas_the.jpg",
+    "pdf": "https://drive.google.com/file/d/1HG2mrUGf7f61GnoArXfIVI4U8XQGZfs4/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/13f_yy73f-CdJYCHr5BNxqGGDXsCAhwZ9/view?usp=drive_link"
+    ],
+    "description": "The Official Father Christmas is a 1989 Commodore 64 arcade game from Alternative Software built around festive-themed platform action and obstacle navigation."
   },
   {
     "system": "C64",
@@ -8788,6 +9319,29 @@
       "https://drive.google.com/file/d/1ENI0InT043M4bQH7QxJKZmn-iJlI6mcc/view?usp=drive_link"
     ],
     "description": "Pinball Dreams is an Amiga pinball simulation released in 1992 by 21st Century Entertainment, featuring multiple themed tables with smooth scrolling and realistic physics. The Amiga version is widely regarded as a benchmark for digital pinball, praised for its fluid animation, responsive controls, and atmospheric sound design."
+  },
+  {
+    "system": "C64",
+    "id": "sid_meier's_pirates!",
+    "slug": "sid-meier-s-pirates",
+    "title": "Sid Meier's Pirates!",
+    "sorttitle": "Pirates",
+    "genres": [
+      "Strategy Games",
+      "Top Picks"
+    ],
+    "year": 1987,
+    "developer": "MicroProse Software",
+    "videoid": "s6erJrCw-dY",
+    "lemon": [
+      "https://www.lemon64.com/game/pirates"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/pirates.jpg",
+    "pdf": "https://drive.google.com/file/d/1dA4P4zLthbMVF3aTtwcE8htB5deAWuFt/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1-xCpeuqlAqlS_TiBNg8YbXJb16SSqF9K/view?usp=drive_link"
+    ],
+    "description": "Sid Meier's Pirates! is a 1987 Commodore 64 strategy classic from MicroProse Software that blends open-world exploration, naval combat, and role-playing elements into a highly replayable experience. My personal favourite Commodore 64 game of all time"
   },
   {
     "system": "C64",
@@ -9093,6 +9647,28 @@
   },
   {
     "system": "C64",
+    "id": "the_prince",
+    "slug": "the-prince",
+    "title": "The Prince",
+    "sorttitle": "Prince",
+    "genres": [
+      "Action Adventure Games"
+    ],
+    "year": 1986,
+    "developer": "Firebird",
+    "videoid": "VUO0SNrq9w4",
+    "lemon": [
+      "https://www.lemon64.com/game/prince"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/prince_the.jpg",
+    "pdf": "",
+    "disk": [
+      "https://drive.google.com/file/d/1ByrCcqcW8gLEk7f_nOJ5wAdP05cjZOK7/view?usp=drive_link"
+    ],
+    "description": "The Prince is a 1986 Commodore 64 action-adventure from Firebird that combines exploration, combat, and fantasy-themed puzzle elements."
+  },
+  {
+    "system": "C64",
     "id": "prince_clumsy",
     "slug": "prince-clumsy",
     "title": "Prince Clumsy",
@@ -9316,6 +9892,29 @@
       "https://drive.google.com/file/d/1gvfuuqwp3HwXkW0WZiyll3Lf9V0SF5nJ/view?usp=drive_link"
     ],
     "description": "QBert is a Commodore 64 action game released in 1983 by Parker Brothers, adapting the arcade hit’s isometric puzzle mechanics. The C64 version focuses on precise movement and pattern avoidance across increasingly complex levels."
+  },
+  {
+    "system": "C64",
+    "id": "a_question_of_sport",
+    "slug": "a-question-of-sport",
+    "title": "A Question Of Sport",
+    "sorttitle": "Question Of Sport",
+    "genres": [
+      "Quiz Games",
+      "Licensed Games"
+    ],
+    "year": 1988,
+    "developer": "Elite",
+    "videoid": "7u3SudOJymE",
+    "lemon": [
+      "https://www.lemon64.com/game/question-of-sport"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/question_of_sport_a_europe.jpg",
+    "pdf": "https://drive.google.com/file/d/1Cj6Gm_VwyEIUe6GImBIGLfSO8W6bcfy8/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/128MEDwS_PwIWjqd7pZV_7j3Sx7r0sIX2/view?usp=drive_link"
+    ],
+    "description": "Based on the long-running BBC television quiz show, A Question of Sport brings competitive sports trivia to the Commodore 64. Two teams compete by answering questions drawn from a wide range of sporting topics, closely mirroring the format of the TV programme. It remains a popular quiz title among fans of British television adaptations."
   },
   {
     "system": "C64",
@@ -9598,6 +10197,54 @@
   },
   {
     "system": "C64",
+    "id": "the_rats",
+    "slug": "the-rats",
+    "title": "The Rats",
+    "sorttitle": "Rats",
+    "genres": [
+      "Horror Games",
+      "Licensed Games",
+      "Strategy Games"
+    ],
+    "year": 1985,
+    "developer": "Hodder and Stoughton",
+    "videoid": "Xrsif8ZFGd8",
+    "lemon": [
+      "https://www.lemon64.com/game/rats"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/the_rats.jpg",
+    "pdf": "https://drive.google.com/file/d/17AEoT2c925TG4wGHdbl8SJ_AvwwhDsrA/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1eDmO3Ux1SjB3yMLveiyoNBbpNGilMVUs/view?usp=drive_link"
+    ],
+    "description": "The Rats is a 1985 Commodore 64 horror strategy game from Hodder and Stoughton that focuses on survival planning, resource management, and escalating threats."
+  },
+  {
+    "system": "C64",
+    "id": "the_real_ghostbusters",
+    "slug": "the-real-ghostbusters",
+    "title": "The Real Ghostbusters",
+    "sorttitle": "Real Ghostbusters",
+    "genres": [
+      "Arcade Games",
+      "Horror Games",
+      "Licensed Games"
+    ],
+    "year": 1989,
+    "developer": "Activision",
+    "videoid": "qBfF_eZwOo8",
+    "lemon": [
+      "https://www.lemon64.com/game/real-ghostbusters"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/the_real_ghostbusters.jpg",
+    "pdf": "https://drive.google.com/file/d/1knM7D-AjGPL_1-TOYv8p4Yya1OW8LyoG/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/16jew7NAT7Cbjehuyxhdv61rT0PEllybn/view?usp=drive_link"
+    ],
+    "description": "The Real Ghostbusters is a 1989 Commodore 64 arcade action game from Activision that adapts the animated series into ghost-catching gameplay."
+  },
+  {
+    "system": "C64",
     "id": "realm_of_impossibility",
     "slug": "realm-of-impossibility",
     "title": "Realm Of Impossibility",
@@ -9803,6 +10450,28 @@
     "description": "Road Runner is a 1987 Commodore 64 arcade game from US Gold that adapts the cartoon licence into fast reflex-based gameplay, focusing on timing, avoidance, and constant pursuit."
   },
   {
+    "system": "AMIGA",
+    "id": "the_adventures_of_robin_hood",
+    "slug": "the-adventures-of-robin-hood",
+    "title": "The Adventures Of Robin Hood",
+    "sorttitle": "Robin Hood",
+    "genres": [
+      "Strategy Games"
+    ],
+    "year": 1991,
+    "developer": "Millennium",
+    "videoid": "KG1TAzyYc3U",
+    "lemon": [
+      "https://www.lemonamiga.com/game/adventures-of-robin-hood"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/the_adventures_of_robin_hood.png",
+    "pdf": "https://drive.google.com/file/d/1AmWons_HR15MHOMKteWD2Qv1_Rgh7FLV/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1_bvs-Nx8TjXK-kblB7rSAnsTNhFLpnhN/view?usp=drive_link"
+    ],
+    "description": "The Adventures of Robin Hood on the Commodore Amiga challenges players to restore Robin's reputation, transforming him from outlaw to hero through a series of brave acts across Sherwood. The overarching goal is to reclaim Robin's stolen castle by assembling the Merry Men and eliminating the Sheriff of Nottingham and his forces."
+  },
+  {
     "system": "C64",
     "id": "robin_of_the_wood",
     "slug": "robin-of-the-wood",
@@ -9992,6 +10661,29 @@
     "description": "Rocket Ranger is a 1988 Commodore 64 action-adventure from Cinemaware that blends strategy, combat, and cinematic presentation, tasking players with stopping a global invasion through careful planning."
   },
   {
+    "system": "C64",
+    "id": "the_rocky_horror_show",
+    "slug": "the-rocky-horror-show",
+    "title": "The Rocky Horror Show",
+    "sorttitle": "Rocky Horror Show",
+    "genres": [
+      "Action Adventure Games",
+      "Licensed Games"
+    ],
+    "year": 1985,
+    "developer": "CRL",
+    "videoid": "H5SSC2GAobk",
+    "lemon": [
+      "https://www.lemon64.com/game/rocky-horror-show"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/rocky_horror_show_the.jpg",
+    "pdf": "https://drive.google.com/file/d/1EbQfWp1dBj84B87or1rL0vSauwktGtCj/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1hfLu33F0rBekmkYU1BagymLqY6kK7Whn/view?usp=drive_link"
+    ],
+    "description": "The Rocky Horror Show is a 1985 Commodore 64 action-adventure from CRL that adapts the cult film into exploration-based gameplay with varied challenges."
+  },
+  {
     "system": "AMIGA",
     "id": "rodland",
     "slug": "rodland",
@@ -10060,6 +10752,29 @@
   },
   {
     "system": "C64",
+    "id": "the_running_man",
+    "slug": "the-running-man",
+    "title": "The Running Man",
+    "sorttitle": "Running Man",
+    "genres": [
+      "Arcade Games",
+      "Licensed Games"
+    ],
+    "year": 1989,
+    "developer": "Grandslam",
+    "videoid": "UL1IsL0hXu8",
+    "lemon": [
+      "https://www.lemon64.com/game/running-man"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/running_man_the.jpg",
+    "pdf": "",
+    "disk": [
+      "https://drive.google.com/file/d/15wnvGpI-4fDLPrrgYHX6iZrCM2GfXs8C/view?usp=drive_link"
+    ],
+    "description": "The Running Man is a 1989 Commodore 64 arcade action game from Grandslam that adapts the film licence into obstacle-heavy, fast-paced gameplay."
+  },
+  {
+    "system": "C64",
     "id": "s.w.i.v.",
     "slug": "s-w-1-5",
     "title": "S.W.I.V.",
@@ -10123,6 +10838,28 @@
       "https://drive.google.com/file/d/1XQ2GStSjH7Ag5BhTypZWAJjeoAn7gNbb/view?usp=drive_link"
     ],
     "description": "Saboteur II: Avenging Angel is a 1987 Commodore 64 action-adventure sequel from Durell Software that expands the original with larger environments, improved controls, and more varied mission objectives."
+  },
+  {
+    "system": "C64",
+    "id": "the_sacred_armour_of_antiriad",
+    "slug": "the-sacred-armour-of-antiriad",
+    "title": "The Sacred Armour Of Antiriad",
+    "sorttitle": "Sacred Armour Of Antiriad",
+    "genres": [
+      "Action Adventure Games"
+    ],
+    "year": 1986,
+    "developer": "Palace Software",
+    "videoid": "MzZ-uzenHXI",
+    "lemon": [
+      "https://www.lemon64.com/game/sacred-armour-of-antiriad"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/sacred_armour_of_antiriad_new.png",
+    "pdf": "https://drive.google.com/file/d/1MIrxX82WiSUY-xYG4sSC1UQxwgrVlatq/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1XwPQ1rip0jSLTX94fCSFPbZaq2Myyo_v/view?usp=drive_link"
+    ],
+    "description": "The Sacred Armour Of Antiriad is a 1986 Commodore 64 action-adventure from Palace Software that blends exploration, combat, and environmental puzzles."
   },
   {
     "system": "C64",
@@ -10402,6 +11139,30 @@
   },
   {
     "system": "C64",
+    "id": "the_sentinel",
+    "slug": "the-sentinel",
+    "title": "The Sentinel",
+    "sorttitle": "Sentinel",
+    "genres": [
+      "Puzzle Games",
+      "Strategy Games",
+      "Top Picks"
+    ],
+    "year": 1986,
+    "developer": "Firebird",
+    "videoid": "dDpqixaUnvY",
+    "lemon": [
+      "https://www.lemon64.com/game/sentinel-firebird"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/the_sentinel_new.png",
+    "pdf": "https://drive.google.com/file/d/1KM2qfGL5GqUtSwbjJd9UKyDRH1sC7tAG/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1aMSeV8CIBIM1C3RxqL1ydKrVYQv6TDRG/view?usp=drive_link"
+    ],
+    "description": "The Sentinel is a 1986 Commodore 64 puzzle strategy game from Firebird that focuses on abstract 3D landscapes and resource-based problem-solving."
+  },
+  {
+    "system": "C64",
     "id": "serenade",
     "slug": "serenade",
     "title": "Serenade",
@@ -10422,6 +11183,29 @@
       "https://drive.google.com/file/d/1UjeyQ2BEQ-V8-oakSIvGHY7E3GwgS098/view?usp=drive_link"
     ],
     "description": "Serenade is a 1986 Commodore 64 puzzle game from VIFI International that centres on logical challenges and abstract design, rewarding patience and methodical thinking."
+  },
+  {
+    "system": "AMIGA",
+    "id": "the_settlers",
+    "slug": "the-settlers",
+    "title": "The Settlers",
+    "sorttitle": "Settlers",
+    "genres": [
+      "Strategy Games",
+      "Top Picks"
+    ],
+    "year": 1993,
+    "developer": "Blue Byte",
+    "videoid": "g0v_xWBBJtU",
+    "lemon": [
+      "https://www.lemonamiga.com/games/details.php?id=1032"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/the_settlers_new.png",
+    "pdf": "https://drive.google.com/file/d/1VEIGQZde5KM7GX0_8GWIEc7tmowxKCVc/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1gJYrvHKvZMtqHWkKg_ItJT-L6JL1bKY_/view?usp=drive_link"
+    ],
+    "description": "The Settlers is a 1993 Amiga strategy game from Blue Byte that centres on city building, economic simulation, and long-term resource management."
   },
   {
     "system": "C64",
@@ -10463,7 +11247,7 @@
     "lemon": [
       "https://www.lemonamiga.com/games/details.php?id=953"
     ],
-    "thumbnail": "Shadow Fighter is a 1995 Amiga arcade fighting game from Gremlin Graphics that delivers fluid animation, large character sprites, and competitive one-on-one combat inspired by contemporary arcade fighters.",
+    "thumbnail": "resources/images/thumbnails/all/Shadow Fighter is a 1995 Amiga arcade fighting game from Gremlin Graphics that delivers fluid animation, large character sprites, and competitive one-on-one combat inspired by contemporary arcade fighters.",
     "pdf": "https://drive.google.com/file/d/1pY0nGqx0-RWPRVRHpniLbo0a4oFaXB34/view?usp=drive_link",
     "disk": [
       "https://drive.google.com/file/d/13s0Nb5ewVx2tQMacC2T9gcWhNVDYU-ED/view?usp=drive_link"
@@ -10606,29 +11390,6 @@
       "https://drive.google.com/file/d/1ZrHREJNn4FmdqaLx398vwpzKENgNDTqs/view?usp=drive_link"
     ],
     "description": "Short Circuit is a 1987 Commodore 64 action-adventure from Ocean that adapts the film licence into platform-based exploration and combat, featuring varied level objectives and enemy encounters."
-  },
-  {
-    "system": "C64",
-    "id": "sid_meier's_pirates!",
-    "slug": "sid-meier-s-pirates",
-    "title": "Sid Meier's Pirates!",
-    "sorttitle": "Pirates",
-    "genres": [
-      "Strategy Games",
-      "Top Picks"
-    ],
-    "year": 1987,
-    "developer": "MicroProse Software",
-    "videoid": "s6erJrCw-dY",
-    "lemon": [
-      "https://www.lemon64.com/game/pirates"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/pirates.jpg",
-    "pdf": "https://drive.google.com/file/d/1dA4P4zLthbMVF3aTtwcE8htB5deAWuFt/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1-xCpeuqlAqlS_TiBNg8YbXJb16SSqF9K/view?usp=drive_link"
-    ],
-    "description": "Sid Meier's Pirates! is a 1987 Commodore 64 strategy classic from MicroProse Software that blends open-world exploration, naval combat, and role-playing elements into a highly replayable experience. My personal favourite Commodore 64 game of all time"
   },
   {
     "system": "C64",
@@ -10928,6 +11689,29 @@
       "https://drive.google.com/file/d/1ZsPWPlnwAK18q34MR78DmKRcMi-YJErr/view?usp=drive_link"
     ],
     "description": "Smash T.V. is a 1992 Commodore 64 arcade shooter from Ocean Software that delivers intense arena combat, twin-stick-style action, and relentless enemy waves inspired by the arcade hit."
+  },
+  {
+    "system": "C64",
+    "id": "the_snowman",
+    "slug": "the-snowman",
+    "title": "The Snowman",
+    "sorttitle": "Snowman",
+    "genres": [
+      "Arcade Games",
+      "Licensed Games"
+    ],
+    "year": 1985,
+    "developer": "Quicksilva",
+    "videoid": "Kzm6FmywXpw",
+    "lemon": [
+      "https://www.lemon64.com/game/snowman-quicksilva"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/the_snowman_new.png",
+    "pdf": "",
+    "disk": [
+      "https://drive.google.com/file/d/1nw6EUpo7-TNmDDfhkhnwOpudVNDT2TYW/view?usp=drive_link"
+    ],
+    "description": "The Snowman is a 1985 Commodore 64 arcade game from Quicksilva that adapts the animated film into gentle platform-based action."
   },
   {
     "system": "C64",
@@ -11288,6 +12072,28 @@
       "https://drive.google.com/file/d/1m401tCgzalnVUi6z55rXmPBprvxBgagC/view?usp=drive_link"
     ],
     "description": "Spy Vs Spy III: Arctic Antics is a 1987 Commodore 64 strategy game from First Star Software that adds icy hazards and refined mechanics to the competitive spy formula."
+  },
+  {
+    "system": "C64",
+    "id": "the_staff_of_karnath",
+    "slug": "the-staff-of-karnath",
+    "title": "The Staff Of Karnath",
+    "sorttitle": "Staff Of Karnath",
+    "genres": [
+      "Action Adventure Games"
+    ],
+    "year": 1984,
+    "developer": "Ultimate",
+    "videoid": "cxRHAOQrp5g",
+    "lemon": [
+      "https://www.lemon64.com/game/staff-of-karnath"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/staff_of_karnath_the.jpg",
+    "pdf": "https://drive.google.com/file/d/1oG030DHZzfYy7boIvFU_5HOR234Lv7vX/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1dO6-93qjYSFOciNo9MxKoV2WnVEEWU4v/view?usp=drive_link"
+    ],
+    "description": "The Staff Of Karnath is a 1984 Commodore 64 action-adventure from Ultimate that combines exploration, item collection, and enemy encounters."
   },
   {
     "system": "C64",
@@ -11693,6 +12499,29 @@
   },
   {
     "system": "C64",
+    "id": "ivan_'ironman'_stewart's_super_off_road",
+    "slug": "ivan-ironman-stewart-s-super-off-road",
+    "title": "Ivan 'Ironman' Stewart's Super Off Road",
+    "sorttitle": "Super Off Road",
+    "genres": [
+      "Licensed Games",
+      "Racing Games"
+    ],
+    "year": 1990,
+    "developer": "Virgin Mastertronic",
+    "videoid": "1_4jorsBdCM",
+    "lemon": [
+      "https://www.lemon64.com/game/ironman-super-off-road"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/ivan_ironman_stewart_s_super_off_road.jpg",
+    "pdf": "https://drive.google.com/file/d/1ZuANK9-Ujd61p9MIeVKtGH4jrXBixYBh/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1kU0rKSDkD-hnQqzNRlq4lK1wnfc2av7U/view?usp=drive_link"
+    ],
+    "description": "Released for the Commodore 64 in 1990 by Virgin Mastertronic, Ivan Ironman Stewart’s Super Off Road is an overhead racing game based on the arcade hit, featuring tight tracks, vehicle upgrades, and competitive AI. The C64 version captures the essence of short, frantic races while adding a strategic layer through cash-earned performance improvements."
+  },
+  {
+    "system": "C64",
     "id": "super_pipeline",
     "slug": "super-pipeline",
     "title": "Super Pipeline",
@@ -11802,6 +12631,29 @@
       "https://drive.google.com/file/d/1ysmU3f9QNIl_ZONIPE9eppns1vInqMWk/view?usp=drive_link"
     ],
     "description": "Switchblade is a 1991 Commodore 64 arcade platform game from Gremlin Graphics that blends exploration, combat, and item collection across large scrolling levels."
+  },
+  {
+    "system": "C64",
+    "id": "sword_of_fargoal",
+    "slug": "the-sword-of-fargoal",
+    "title": "The Sword Of Fargoal",
+    "sorttitle": "Sword Of Fargoal",
+    "genres": [
+      "Role Playing Games",
+      "Top Picks"
+    ],
+    "year": 1983,
+    "developer": "Epyx",
+    "videoid": "-HboijbzCDc",
+    "lemon": [
+      "https://www.lemon64.com/game/sword-of-fargoal"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/sword_of_fargoal_the.jpg",
+    "pdf": "https://drive.google.com/file/d/1RNHLPkEyYV4vLGRzBSG4_MWxmU2LKEdq/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1s3jmWejkeobtWFr1akA5Pjbtte7Rv3gp/view?usp=drive_link"
+    ],
+    "description": "The Sword Of Fargoal is a 1983 Commodore 64 role-playing game from Epyx that delivers dungeon exploration, character progression, and replayable quests."
   },
   {
     "system": "AMIGA",
@@ -12061,761 +12913,6 @@
   },
   {
     "system": "C64",
-    "id": "the_activision_decathlon",
-    "slug": "the-activision-decathlon",
-    "title": "The Activision Decathlon",
-    "sorttitle": "Decathlon",
-    "genres": [
-      "Cartridge Games",
-      "Sports Games"
-    ],
-    "year": 1984,
-    "developer": "Activision",
-    "videoid": "zKdXbca2b8o",
-    "lemon": [
-      "https://www.lemon64.com/game/decathlon"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/decathlon_activision.jpg",
-    "pdf": "https://drive.google.com/file/d/1JhfnWD8w6b8ooUlur2EVabRN0cPuNJxm/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1tW162yKLpNBUKavrynINIcE1ThsIzw8k/view?usp=drive_link"
-    ],
-    "description": "The Activision Decathlon is a 1984 Commodore 64 sports game from Activision that recreates Olympic decathlon events using joystick-intensive, timing-based controls."
-  },
-  {
-    "system": "C64",
-    "id": "the_captive",
-    "slug": "the-captive",
-    "title": "The Captive",
-    "sorttitle": "Captive",
-    "genres": [
-      "Action Adventure Games",
-      "Puzzle Games"
-    ],
-    "year": 1985,
-    "developer": "Mastertronic",
-    "videoid": "Q1_BVJ2ktLc",
-    "lemon": [
-      "https://www.lemon64.com/game/captive"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/captive_the.jpg",
-    "pdf": "https://drive.google.com/file/d/1xroFr6lljKp67OFnDmJlvZfT1-byxdbB/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1rd0OJiQLUITqJ4P6Xo6A4d-P9EalWPME/view?usp=drive_link"
-    ],
-    "description": "The Captive is a 1985 Commodore 64 action-adventure from Mastertronic that focuses on exploration, environmental puzzles, and real-time problem-solving."
-  },
-  {
-    "system": "C64",
-    "id": "the_castles_of_dr._creep",
-    "slug": "the-castles-of-dr-creep",
-    "title": "The Castles Of Dr. Creep",
-    "sorttitle": "Castles Of Dr. Creep",
-    "genres": [
-      "Puzzle Games",
-      "Miscellaneous"
-    ],
-    "year": 1984,
-    "developer": "Ariolasoft",
-    "videoid": "6YmY5EVvXNM",
-    "lemon": [
-      "https://www.lemon64.com/game/castles-of-doctor-creep"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/castles_of_doctor_creep_the.jpg",
-    "pdf": "https://drive.google.com/file/d/18xjbd6ZoOwGSvQhPMeqkMh5sRAbRP-Fu/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1zDQnqZH20uuIDX61lINW-2KeS_i8tYvs/view?usp=drive_link"
-    ],
-    "description": "The Castles Of Dr. Creep is a 1984 Commodore 64 puzzle adventure from Ariolasoft that challenges players to escape deadly mansions filled with traps and timed mechanisms."
-  },
-  {
-    "system": "AMIGA",
-    "id": "the_chaos_engine",
-    "slug": "the-chaos-engine",
-    "title": "The Chaos Engine",
-    "sorttitle": "Chaos Engine",
-    "genres": [
-      "Arcade Games"
-    ],
-    "year": 1993,
-    "developer": "Renegade",
-    "videoid": "vyTeLuzjRmQ",
-    "lemon": [
-      "https://www.lemonamiga.com/games/details.php?id=252"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/the_chaos_engine_2.png",
-    "pdf": "https://drive.google.com/file/d/1H2yv7hIjMZdCuIJW3c8VckMfn_CCpwSn/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1LuwxVFv5pJGOI8PUHsHRWovzoEVEiClz/view?usp=drive_link"
-    ],
-    "description": "The Chaos Engine is a 1993 Amiga top-down arcade shooter from Renegade that features selectable characters, cooperative play, and intense steampunk-themed action."
-  },
-  {
-    "system": "C64",
-    "id": "the_dolphin's_rune",
-    "slug": "the-dolphin-s-rune",
-    "title": "The Dolphin's Rune",
-    "sorttitle": "Dolphin's Rune",
-    "genres": [
-      "Puzzle Games",
-      "Miscellaneous"
-    ],
-    "year": 1985,
-    "developer": "Mindscape",
-    "videoid": "y58m3nrHqvg",
-    "lemon": [
-      "https://www.lemon64.com/game/dolphins-rune"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/dolphin_s_rune_the.jpg",
-    "pdf": "https://drive.google.com/file/d/1jsMbdVqwpifZoeAdWJfCfQKgWeete2Es/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/112_Otd7J76GhOe_C3nBq87wuLVStxpX2/view?usp=drive_link"
-    ],
-    "description": "The Dolphin's Rune is a 1985 Commodore 64 puzzle game from Mindscape that blends exploration with abstract logic challenges and environmental problem-solving."
-  },
-  {
-    "system": "C64",
-    "id": "the_eidolon",
-    "slug": "the-eidolon",
-    "title": "The Eidolon",
-    "sorttitle": "Eidolon",
-    "genres": [
-      "Adventure Games",
-      "Top Picks"
-    ],
-    "year": 1985,
-    "developer": "Activision",
-    "videoid": "rKy95VWGmug",
-    "lemon": [
-      "https://www.lemon64.com/game/eidolon"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/eidolon.jpg",
-    "pdf": "https://drive.google.com/file/d/1heiIFqdwATpVYFLcdhHtWkTzvQlFkoDm/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/18SKvLp40Q39paVuR0vyDD2P35kHBxiXJ/view?usp=drive_link"
-    ],
-    "description": "The Eidolon is a 1985 Commodore 64 first-person adventure from Activision that combines dungeon exploration with real-time combat in a fantasy setting."
-  },
-  {
-    "system": "C64",
-    "id": "the_evil_dead",
-    "slug": "the-evil-dead",
-    "title": "The Evil Dead",
-    "sorttitle": "Evil Dead",
-    "genres": [
-      "Arcade Games",
-      "Horror Games",
-      "Licensed Games"
-    ],
-    "year": 1984,
-    "developer": "Palace Software",
-    "videoid": "tHJwS_1Ntfc",
-    "lemon": [
-      "https://www.lemon64.com/game/evil-dead"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/the_evil_dead_new.png",
-    "pdf": "https://drive.google.com/file/d/1bVj1UNcz2gpPgsa1MgCUiF3p9azAVNvf/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1o9YdtRdQHON0Wwxm2IhGS2v9imKBhLp2/view?usp=drive_link"
-    ],
-    "description": "The Evil Dead is a 1984 Commodore 64 arcade horror game from Palace Software that adapts the cult film into action-focused gameplay with dark atmospheric elements."
-  },
-  {
-    "system": "C64",
-    "id": "the_faces_of_haarne",
-    "slug": "the-faces-of-haarne",
-    "title": "The Faces Of Haarne",
-    "sorttitle": "Faces Of Haarne",
-    "genres": [
-      "Arcade Games",
-      "Shooting Games"
-    ],
-    "year": 1984,
-    "developer": "Software Projects",
-    "videoid": "b9X33fo_D2M",
-    "lemon": [
-      "https://www.lemon64.com/game/faces-of-haarne"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/faces_of_haarne_new.png",
-    "pdf": "",
-    "disk": [
-      "https://drive.google.com/file/d/16B3r6JZ0Q7a9j2HweS6uDbjmZyOf4SbT/view?usp=drive_link"
-    ],
-    "description": "The Faces Of Haarne is a 1984 Commodore 64 vertical shooter from Software Projects that delivers continuous scrolling action and fast enemy attack patterns."
-  },
-  {
-    "system": "C64",
-    "id": "the_goonies",
-    "slug": "the-goonies",
-    "title": "The Goonies",
-    "sorttitle": "Goonies",
-    "genres": [
-      "Arcade Games",
-      "Licensed Games",
-      "Platform Games"
-    ],
-    "year": 1985,
-    "developer": "Datasift",
-    "videoid": "GJcAP5E7XHU",
-    "lemon": [
-      "https://www.lemon64.com/game/goonies"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/goonies_the.jpg",
-    "pdf": "https://drive.google.com/file/d/1JEXR1oCgjkt_-pHxv8YHvBcEsJ91qln6/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1f6jA8OfS42eDbeJRz-3K0PH0egZtftDP/view?usp=drive_link"
-    ],
-    "description": "The Goonies is a 1985 Commodore 64 arcade platform game from Datasoft that adapts the film licence into multi-level exploration and action gameplay."
-  },
-  {
-    "system": "C64",
-    "id": "the_great_escape",
-    "slug": "the-great-escape",
-    "title": "The Great Escape",
-    "sorttitle": "Great Escape",
-    "genres": [
-      "Action Adventure Games"
-    ],
-    "year": 1986,
-    "developer": "Ocean",
-    "videoid": "GFgp2ToRer8",
-    "lemon": [
-      "https://www.lemon64.com/game/great-escape"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/great_escape_the.jpg",
-    "pdf": "https://drive.google.com/file/d/1A9YVcxncQjuZH9u_LQYjZkQ7JLsiycQG/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1lkWuR1pY9aUgSIqhuae8akhEu6knJIEb/view?usp=drive_link"
-    ],
-    "description": "The Great Escape is a 1986 Commodore 64 action-adventure from Ocean that recreates the film narrative through stealth-based missions and varied gameplay sections."
-  },
-  {
-    "system": "C64",
-    "id": "the_great_giana_sisters",
-    "slug": "the-great-giana-sisters",
-    "title": "The Great Giana Sisters",
-    "sorttitle": "Great Giana Sisters",
-    "genres": [
-      "Platform Games"
-    ],
-    "year": 1987,
-    "developer": "Rainbow Arts",
-    "videoid": "53G587np6co",
-    "lemon": [
-      "https://www.lemon64.com/game/great-giana-sisters"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/great_giana_sisters_the_crazy_hack.jpg",
-    "pdf": "https://drive.google.com/file/d/1_YqkwIV5QRIdPqnOHtKz1J3KGkz7XKFe/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/10ePGPZktAB_UUGdxZDybG01YxGp5T7Vn/view?usp=drive_link"
-    ],
-    "description": "The Great Giana Sisters is a 1987 Commodore 64 platform game from Rainbow Arts. known for smooth scrolling, precise jumping mechanics, and expansive level design."
-  },
-  {
-    "system": "AMIGA",
-    "id": "the_guild_of_thieves",
-    "slug": "the-guild-of-thieves",
-    "title": "The Guild Of Thieves",
-    "sorttitle": "Guild Of Thieves",
-    "genres": [
-      "Adventure Games"
-    ],
-    "year": 1987,
-    "developer": "Rainbird",
-    "videoid": "QT3Jw3_QQTg",
-    "lemon": [
-      "https://www.lemonamiga.com/games/details.php?id=477"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/the_guild_of_thieves_amiga.png",
-    "pdf": "https://drive.google.com/file/d/10gIqn9Yg0Fu19QF7F8q7NXmIweIvYEsr/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1oLVXCNLfLGAlgeVb1yNZiLwEMw516We_/view?usp=drive_link"
-    ],
-    "description": "The Guild Of Thieves is a 1987 Amiga text adventure from Rainbird that delivers complex puzzles, rich storytelling, and deep interactive exploration."
-  },
-  {
-    "system": "C64",
-    "id": "the_happiest_days_of_your_life",
-    "slug": "the-happiest-days-of-your-life",
-    "title": "The Happiest Days Of Your Life",
-    "sorttitle": "Happiest Days Of Your Life",
-    "genres": [
-      "Action Adventure Games"
-    ],
-    "year": 1986,
-    "developer": "Firebird",
-    "videoid": "FZmn5VuQvpo",
-    "lemon": [
-      "https://www.lemon64.com/game/happiest-days-of-your-life"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/happiest_days_of_your_life_the.jpg",
-    "pdf": "https://drive.google.com/file/d/1PJ6UBgjIcG8kM6DpOnXNTBRHwHLzGhmy/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1RIjhzn0qnDn6uRYzcxrPCY0ZE5M8f_Db/view?usp=drive_link"
-    ],
-    "description": "The Happiest Days Of Your Life is a 1986 Commodore 64 action-adventure from Firebird set in a school environment focused on stealth, timing, and task completion."
-  },
-  {
-    "system": "C64",
-    "id": "the_human_race",
-    "slug": "the-human-race",
-    "title": "The Human Race",
-    "sorttitle": "Human Race",
-    "genres": [
-      "Arcade Games",
-      "Platform Games"
-    ],
-    "year": 1985,
-    "developer": "Mastertronic",
-    "videoid": "iW2AvpF7NfQ",
-    "lemon": [
-      "https://www.lemon64.com/game/human-race"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/human_race_the.jpg",
-    "pdf": "",
-    "disk": [
-      "https://drive.google.com/file/d/1EEywTk376rz3jB_rhNYQGaG_q57oTbec/view?usp=drive_link"
-    ],
-    "description": "The Human Race is a 1985 Commodore 64 arcade platform game from Mastertronic that emphasises obstacle avoidance, timing, and fast-paced level progression."
-  },
-  {
-    "system": "AMIGA",
-    "id": "the_immortal",
-    "slug": "the-immortal",
-    "title": "The Immortal",
-    "sorttitle": "Immortal",
-    "genres": [
-      "Action Adventure Games"
-    ],
-    "year": 1990,
-    "developer": "Electronic Arts",
-    "videoid": "VFhshKqyD9U",
-    "lemon": [
-      "https://www.lemonamiga.com/games/details.php?id=555"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/the_immortal_new.png",
-    "pdf": "https://drive.google.com/file/d/1Smj50K4sWkaXdpi4Pts9ClyWw1YH81wz/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1Yso5YP2VeO-d1UH1bGpgUZaqR9Z_7xrF/view?usp=drive_link"
-    ],
-    "description": "The Immortal is a 1990 Amiga action-adventure from Electronic Arts that combines isometric exploration with combat, traps, and puzzle-solving."
-  },
-  {
-    "system": "C64",
-    "id": "the_last_ninja",
-    "slug": "the-last-ninja",
-    "title": "The Last Ninja",
-    "sorttitle": "Last Ninja",
-    "genres": [
-      "Action Adventure Games",
-      "Top Picks"
-    ],
-    "year": 1987,
-    "developer": "System 3",
-    "videoid": "npAyIErZWJc",
-    "lemon": [
-      "https://www.lemon64.com/game/last-ninja"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/the_last_ninja.jpg",
-    "pdf": "https://drive.google.com/file/d/1MVvCvqiiF_r2fwOFF7FTqZmmFe8Gw1vl/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1is0ggh5UMghkEGh7Y-7rfPQ_oxW7ytsL/view?usp=drive_link"
-    ],
-    "description": "The Last Ninja is a 1987 Commodore 64 action-adventure classic from System 3 that blends isometric exploration, combat, and atmospheric presentation."
-  },
-  {
-    "system": "C64",
-    "id": "the_last_v8",
-    "slug": "the-last-v8",
-    "title": "The Last V8",
-    "sorttitle": "Last V8",
-    "genres": [
-      "Arcade Games",
-      "Racing Games"
-    ],
-    "year": 1985,
-    "developer": "Mastertronic",
-    "videoid": "gKdrM75TWwY",
-    "lemon": [
-      "https://www.lemon64.com/game/last-v8"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/last_v8_the.jpg",
-    "pdf": "https://drive.google.com/file/d/1tJ2573Bx_crhBz_c0YrPtxBvWRzHuXeh/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/112588hjDKLLOdF6V_JrdfG95x8OWT_o6/view?usp=drive_link"
-    ],
-    "description": "The Last V8 is a 1985 Commodore 64 arcade racing game from Mastertronic that focuses on obstacle-filled tracks and time-based driving challenges."
-  },
-  {
-    "system": "C64",
-    "id": "the_lords_of_midnight",
-    "slug": "the-lords-of-midnight",
-    "title": "The Lords Of Midnight",
-    "sorttitle": "Lords Of Midnight",
-    "genres": [
-      "Role Playing Games",
-      "Strategy Games",
-      "Top Picks"
-    ],
-    "year": 1985,
-    "developer": "Beyond",
-    "videoid": "a7Ji5dmfvXU",
-    "lemon": [
-      "https://www.lemon64.com/game/lords-of-midnight"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/lords_of_midnight.jpg",
-    "pdf": "https://drive.google.com/file/d/1wxyvgs9FZ-YfbsxTrZ0wI8za803k93_1/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/17GORhX7RQJYleBTTq6E7NOsuBBRY_kD3/view?usp=drive_link"
-    ],
-    "description": "The Lords Of Midnight is a 1985 Commodore 64 strategy role-playing game from Beyond that combines large-scale fantasy warfare with character-led exploration."
-  },
-  {
-    "system": "AMIGA",
-    "id": "the_lost_patrol",
-    "slug": "the-lost-patrol",
-    "title": "The Lost Patrol",
-    "sorttitle": "Lost Patrol",
-    "genres": [
-      "BPJS Games",
-      "Action Adventure Games",
-      "Role Playing Games"
-    ],
-    "year": 1990,
-    "developer": "Ocean",
-    "videoid": "RcrAuSiGHzU",
-    "lemon": [
-      "https://www.lemonamiga.com/games/details.php?id=698"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/lost_patrol.png",
-    "pdf": "https://drive.google.com/file/d/1z4uva6Hna5xs17oPJcbJuO-Ip6mkgPOV/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1KMqJeioNjmdEjnSD2eUiTkmxdbE03Tyh/view?usp=drive_link"
-    ],
-    "description": "The Lost Patrol is a 1990 Amiga action-adventure from Ocean that mixes survival strategy with exploration behind enemy lines during wartime missions."
-  },
-  {
-    "system": "C64",
-    "id": "the_movie_monster_game",
-    "slug": "the-movie-monster-game",
-    "title": "The Movie Monster Game",
-    "sorttitle": "Movie Monster Game",
-    "genres": [
-      "Arcade Games",
-      "Horror Games"
-    ],
-    "year": 1986,
-    "developer": "Epyx",
-    "videoid": "3r2Xu8_dQXY",
-    "lemon": [
-      "https://www.lemon64.com/game/movie-monster-game"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/movie_monster_game_the.jpg",
-    "pdf": "https://drive.google.com/file/d/11AoUGk5wY_36Rb1z5vF5qJpJIaUg9gss/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1V3F1ZOF1sUlLmStg38npfZ_wwWPHW28r/view?usp=drive_link"
-    ],
-    "description": "The Movie Monster Game is a 1986 Commodore 64 arcade game from Epyx that brings classic horror characters together in fast-paced action challenges."
-  },
-  {
-    "system": "C64",
-    "id": "the_muncher",
-    "slug": "the-muncher",
-    "title": "The Muncher",
-    "sorttitle": "Muncher",
-    "genres": [
-      "Arcade Games"
-    ],
-    "year": 1988,
-    "developer": "Gremlin Graphics",
-    "videoid": "32LzquxJ7o4",
-    "lemon": [
-      "https://www.lemon64.com/game/muncher-eats-chewits"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/muncher_eats_chewits_the.jpg",
-    "pdf": "",
-    "disk": [
-      "https://drive.google.com/file/d/1b7LGOG1dZYzuQutPOC6a87ed014hkS8q/view?usp=drive_link"
-    ],
-    "description": "The Muncher is a 1988 Commodore 64 arcade game from Gremlin Graphics that adapts a popular snack brand into maze-based action gameplay."
-  },
-  {
-    "system": "C64",
-    "id": "the_neverending_story",
-    "slug": "the-neverending-story",
-    "title": "The Neverending Story",
-    "sorttitle": "Neverending Story",
-    "genres": [
-      "Adventure Games",
-      "Licensed Games"
-    ],
-    "year": 1985,
-    "developer": "Ocean",
-    "videoid": "hl73ekoTjSk",
-    "lemon": [
-      "https://www.lemon64.com/game/neverending-story"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/neverending_story.jpg",
-    "pdf": "https://drive.google.com/file/d/1-2UTcT6pAS1sGbAGWK6wTUFgcc0QZSBb/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1SQP35PhfwVuJUSWF4hVUydNWWmH_iagn/view?usp=drive_link"
-    ],
-    "description": "The Neverending Story is a 1985 Commodore 64 adventure game from Ocean that adapts the fantasy film into exploration-focused gameplay."
-  },
-  {
-    "system": "C64",
-    "id": "the_new_zealand_story",
-    "slug": "the-new-zealand-story",
-    "title": "The New Zealand Story",
-    "sorttitle": "New Zealand Story",
-    "genres": [
-      "Platform Games"
-    ],
-    "year": 1989,
-    "developer": "Ocean",
-    "videoid": "mna3Miumywg",
-    "lemon": [
-      "https://www.lemon64.com/game/newzealand-story"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/new_zealand_story_new.png",
-    "pdf": "https://drive.google.com/file/d/1HqxrBMs26T6THkaUHNHHjA9RVlM5bg1s/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1rCeB3Sn-xJaIwQF_MIZ8k-tT57xAXJek/view?usp=drive_link"
-    ],
-    "description": "The New Zealand Story is a 1989 Commodore 64 platform game from Ocean that features colourful worlds, vehicle mechanics, and varied enemy encounters."
-  },
-  {
-    "system": "C64",
-    "id": "the_official_father_christmas",
-    "slug": "the-official-father-christmas",
-    "title": "The Official Father Christmas",
-    "sorttitle": "Official Father Christmas",
-    "genres": [
-      "Arcade Games"
-    ],
-    "year": 1989,
-    "developer": "Alternative Software",
-    "videoid": "YpDPAaLJlfc",
-    "lemon": [
-      "https://www.lemon64.com/game/official-father-christmas"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/official_father_christmas_the.jpg",
-    "pdf": "https://drive.google.com/file/d/1HG2mrUGf7f61GnoArXfIVI4U8XQGZfs4/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/13f_yy73f-CdJYCHr5BNxqGGDXsCAhwZ9/view?usp=drive_link"
-    ],
-    "description": "The Official Father Christmas is a 1989 Commodore 64 arcade game from Alternative Software built around festive-themed platform action and obstacle navigation."
-  },
-  {
-    "system": "C64",
-    "id": "the_prince",
-    "slug": "the-prince",
-    "title": "The Prince",
-    "sorttitle": "Prince",
-    "genres": [
-      "Action Adventure Games"
-    ],
-    "year": 1986,
-    "developer": "Firebird",
-    "videoid": "VUO0SNrq9w4",
-    "lemon": [
-      "https://www.lemon64.com/game/prince"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/prince_the.jpg",
-    "pdf": "",
-    "disk": [
-      "https://drive.google.com/file/d/1ByrCcqcW8gLEk7f_nOJ5wAdP05cjZOK7/view?usp=drive_link"
-    ],
-    "description": "The Prince is a 1986 Commodore 64 action-adventure from Firebird that combines exploration, combat, and fantasy-themed puzzle elements."
-  },
-  {
-    "system": "C64",
-    "id": "the_rats",
-    "slug": "the-rats",
-    "title": "The Rats",
-    "sorttitle": "Rats",
-    "genres": [
-      "Horror Games",
-      "Licensed Games",
-      "Strategy Games"
-    ],
-    "year": 1985,
-    "developer": "Hodder and Stoughton",
-    "videoid": "Xrsif8ZFGd8",
-    "lemon": [
-      "https://www.lemon64.com/game/rats"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/the_rats.jpg",
-    "pdf": "https://drive.google.com/file/d/17AEoT2c925TG4wGHdbl8SJ_AvwwhDsrA/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1eDmO3Ux1SjB3yMLveiyoNBbpNGilMVUs/view?usp=drive_link"
-    ],
-    "description": "The Rats is a 1985 Commodore 64 horror strategy game from Hodder and Stoughton that focuses on survival planning, resource management, and escalating threats."
-  },
-  {
-    "system": "C64",
-    "id": "the_real_ghostbusters",
-    "slug": "the-real-ghostbusters",
-    "title": "The Real Ghostbusters",
-    "sorttitle": "Real Ghostbusters",
-    "genres": [
-      "Arcade Games",
-      "Horror Games",
-      "Licensed Games"
-    ],
-    "year": 1989,
-    "developer": "Activision",
-    "videoid": "qBfF_eZwOo8",
-    "lemon": [
-      "https://www.lemon64.com/game/real-ghostbusters"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/the_real_ghostbusters.jpg",
-    "pdf": "https://drive.google.com/file/d/1knM7D-AjGPL_1-TOYv8p4Yya1OW8LyoG/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/16jew7NAT7Cbjehuyxhdv61rT0PEllybn/view?usp=drive_link"
-    ],
-    "description": "The Real Ghostbusters is a 1989 Commodore 64 arcade action game from Activision that adapts the animated series into ghost-catching gameplay."
-  },
-  {
-    "system": "C64",
-    "id": "the_rocky_horror_show",
-    "slug": "the-rocky-horror-show",
-    "title": "The Rocky Horror Show",
-    "sorttitle": "Rocky Horror Show",
-    "genres": [
-      "Action Adventure Games",
-      "Licensed Games"
-    ],
-    "year": 1985,
-    "developer": "CRL",
-    "videoid": "H5SSC2GAobk",
-    "lemon": [
-      "https://www.lemon64.com/game/rocky-horror-show"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/rocky_horror_show_the.jpg",
-    "pdf": "https://drive.google.com/file/d/1EbQfWp1dBj84B87or1rL0vSauwktGtCj/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1hfLu33F0rBekmkYU1BagymLqY6kK7Whn/view?usp=drive_link"
-    ],
-    "description": "The Rocky Horror Show is a 1985 Commodore 64 action-adventure from CRL that adapts the cult film into exploration-based gameplay with varied challenges."
-  },
-  {
-    "system": "C64",
-    "id": "the_running_man",
-    "slug": "the-running-man",
-    "title": "The Running Man",
-    "sorttitle": "Running Man",
-    "genres": [
-      "Arcade Games",
-      "Licensed Games"
-    ],
-    "year": 1989,
-    "developer": "Grandslam",
-    "videoid": "UL1IsL0hXu8",
-    "lemon": [
-      "https://www.lemon64.com/game/running-man"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/running_man_the.jpg",
-    "pdf": "",
-    "disk": [
-      "https://drive.google.com/file/d/15wnvGpI-4fDLPrrgYHX6iZrCM2GfXs8C/view?usp=drive_link"
-    ],
-    "description": "The Running Man is a 1989 Commodore 64 arcade action game from Grandslam that adapts the film licence into obstacle-heavy, fast-paced gameplay."
-  },
-  {
-    "system": "C64",
-    "id": "the_sacred_armour_of_antiriad",
-    "slug": "the-sacred-armour-of-antiriad",
-    "title": "The Sacred Armour Of Antiriad",
-    "sorttitle": "Sacred Armour Of Antiriad",
-    "genres": [
-      "Action Adventure Games"
-    ],
-    "year": 1986,
-    "developer": "Palace Software",
-    "videoid": "MzZ-uzenHXI",
-    "lemon": [
-      "https://www.lemon64.com/game/sacred-armour-of-antiriad"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/sacred_armour_of_antiriad_new.png",
-    "pdf": "https://drive.google.com/file/d/1MIrxX82WiSUY-xYG4sSC1UQxwgrVlatq/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1XwPQ1rip0jSLTX94fCSFPbZaq2Myyo_v/view?usp=drive_link"
-    ],
-    "description": "The Sacred Armour Of Antiriad is a 1986 Commodore 64 action-adventure from Palace Software that blends exploration, combat, and environmental puzzles."
-  },
-  {
-    "system": "AMIGA",
-    "id": "the_secret_of_monkey_island",
-    "slug": "the-secret-of-monkey-island",
-    "title": "The Secret Of Monkey Island",
-    "sorttitle": "Monkey Island",
-    "genres": [
-      "Adventure Games",
-      "Top Picks"
-    ],
-    "year": 1991,
-    "developer": "Lucasfilm Games",
-    "videoid": "tSafH6osy50",
-    "lemon": [
-      "https://www.lemonamiga.com/games/details.php?id=935"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/monkey_island.png",
-    "pdf": "https://drive.google.com/file/d/1fAHTPV1zAnyThxvh8X8j1jn5h9PZT0KI/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1CWg4TPSDGxsxzgJCvm7xzaEp3O_E4QIT/view?usp=drive_link"
-    ],
-    "description": "The Secret Of Monkey Island is a 1991 Amiga point-and-click adventure classic that delivers puzzle-solving, memorable characters, and narrative-driven gameplay."
-  },
-  {
-    "system": "C64",
-    "id": "the_sentinel",
-    "slug": "the-sentinel",
-    "title": "The Sentinel",
-    "sorttitle": "Sentinel",
-    "genres": [
-      "Puzzle Games",
-      "Strategy Games",
-      "Top Picks"
-    ],
-    "year": 1986,
-    "developer": "Firebird",
-    "videoid": "dDpqixaUnvY",
-    "lemon": [
-      "https://www.lemon64.com/game/sentinel-firebird"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/the_sentinel_new.png",
-    "pdf": "https://drive.google.com/file/d/1KM2qfGL5GqUtSwbjJd9UKyDRH1sC7tAG/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1aMSeV8CIBIM1C3RxqL1ydKrVYQv6TDRG/view?usp=drive_link"
-    ],
-    "description": "The Sentinel is a 1986 Commodore 64 puzzle strategy game from Firebird that focuses on abstract 3D landscapes and resource-based problem-solving."
-  },
-  {
-    "system": "AMIGA",
-    "id": "the_settlers",
-    "slug": "the-settlers",
-    "title": "The Settlers",
-    "sorttitle": "Settlers",
-    "genres": [
-      "Strategy Games",
-      "Top Picks"
-    ],
-    "year": 1993,
-    "developer": "Blue Byte",
-    "videoid": "g0v_xWBBJtU",
-    "lemon": [
-      "https://www.lemonamiga.com/games/details.php?id=1032"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/the_settlers_new.png",
-    "pdf": "https://drive.google.com/file/d/1VEIGQZde5KM7GX0_8GWIEc7tmowxKCVc/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1gJYrvHKvZMtqHWkKg_ItJT-L6JL1bKY_/view?usp=drive_link"
-    ],
-    "description": "The Settlers is a 1993 Amiga strategy game from Blue Byte that centres on city building, economic simulation, and long-term resource management."
-  },
-  {
-    "system": "C64",
     "id": "the_smiths_are_dead",
     "slug": "the-smiths-are-dead",
     "title": "The Smiths Are Dead",
@@ -12838,237 +12935,6 @@
     "description": "The Smiths Are Dead is a 2023 Commodore 64 adventure game from Commodore Plus that blends modern design with classic text-driven gameplay."
   },
   {
-    "system": "C64",
-    "id": "the_snowman",
-    "slug": "the-snowman",
-    "title": "The Snowman",
-    "sorttitle": "Snowman",
-    "genres": [
-      "Arcade Games",
-      "Licensed Games"
-    ],
-    "year": 1985,
-    "developer": "Quicksilva",
-    "videoid": "Kzm6FmywXpw",
-    "lemon": [
-      "https://www.lemon64.com/game/snowman-quicksilva"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/the_snowman_new.png",
-    "pdf": "",
-    "disk": [
-      "https://drive.google.com/file/d/1nw6EUpo7-TNmDDfhkhnwOpudVNDT2TYW/view?usp=drive_link"
-    ],
-    "description": "The Snowman is a 1985 Commodore 64 arcade game from Quicksilva that adapts the animated film into gentle platform-based action."
-  },
-  {
-    "system": "C64",
-    "id": "the_staff_of_karnath",
-    "slug": "the-staff-of-karnath",
-    "title": "The Staff Of Karnath",
-    "sorttitle": "Staff Of Karnath",
-    "genres": [
-      "Action Adventure Games"
-    ],
-    "year": 1984,
-    "developer": "Ultimate",
-    "videoid": "cxRHAOQrp5g",
-    "lemon": [
-      "https://www.lemon64.com/game/staff-of-karnath"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/staff_of_karnath_the.jpg",
-    "pdf": "https://drive.google.com/file/d/1oG030DHZzfYy7boIvFU_5HOR234Lv7vX/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1dO6-93qjYSFOciNo9MxKoV2WnVEEWU4v/view?usp=drive_link"
-    ],
-    "description": "The Staff Of Karnath is a 1984 Commodore 64 action-adventure from Ultimate that combines exploration, item collection, and enemy encounters."
-  },
-  {
-    "system": "C64",
-    "id": "sword_of_fargoal",
-    "slug": "the-sword-of-fargoal",
-    "title": "The Sword Of Fargoal",
-    "sorttitle": "Sword Of Fargoal",
-    "genres": [
-      "Role Playing Games",
-      "Top Picks"
-    ],
-    "year": 1983,
-    "developer": "Epyx",
-    "videoid": "-HboijbzCDc",
-    "lemon": [
-      "https://www.lemon64.com/game/sword-of-fargoal"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/sword_of_fargoal_the.jpg",
-    "pdf": "https://drive.google.com/file/d/1RNHLPkEyYV4vLGRzBSG4_MWxmU2LKEdq/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1s3jmWejkeobtWFr1akA5Pjbtte7Rv3gp/view?usp=drive_link"
-    ],
-    "description": "The Sword Of Fargoal is a 1983 Commodore 64 role-playing game from Epyx that delivers dungeon exploration, character progression, and replayable quests."
-  },
-  {
-    "system": "AMIGA",
-    "id": "the_three_stooges",
-    "slug": "the-three-stooges",
-    "title": "The Three Stooges",
-    "sorttitle": "Three Stooges",
-    "genres": [
-      "Adventure Games",
-      "Arcade Games",
-      "Licensed Games",
-      "Puzzle Games"
-    ],
-    "year": 1987,
-    "developer": "Cinemaware",
-    "videoid": "vTbgeLzWGto",
-    "lemon": [
-      "https://www.lemonamiga.com/games/details.php?id=1241"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/three_stooges.png",
-    "pdf": "https://drive.google.com/file/d/1J4lt3yXNj4SxXJLaH_pIOYl_6s9cMbvm/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1NtBhkllcLIUyc1QKCNcTgBvLOlArG9e1/view?usp=drive_link"
-    ],
-    "description": "The Three Stooges is a 1987 Amiga adventure from Cinemaware that adapts the comedy licence into a mix of arcade challenges and puzzle-based gameplay."
-  },
-  {
-    "system": "C64",
-    "id": "the_train:_escape_to_normandy",
-    "slug": "the-train-escape-to-normandy",
-    "title": "The Train: Escape To Normandy",
-    "sorttitle": "Train: Escape To Normandy",
-    "genres": [
-      "Arcade Games",
-      "Strategy Games",
-      "Top Picks"
-    ],
-    "year": 1987,
-    "developer": "Accolade",
-    "videoid": "_GIULKywK78",
-    "lemon": [
-      "https://www.lemon64.com/game/train-escape-to-normandy"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/train_the_escape_to_normandy.jpg",
-    "pdf": "https://drive.google.com/file/d/1E-0zLUGrYKAtxg68_59DtMiBdqix6hie/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1FfefjBpfRsXD7wMZqh-GiClSrHC28Yqr/view?usp=drive_link"
-    ],
-    "description": "The Train: Escape To Normandy is a 1987 Commodore 64 arcade strategy game from Accolade that blends wartime action with time-critical objectives."
-  },
-  {
-    "system": "C64",
-    "id": "the_transformers",
-    "slug": "the-transformers",
-    "title": "The Transformers",
-    "sorttitle": "Transformers",
-    "genres": [
-      "Arcade Games",
-      "Licensed Games"
-    ],
-    "year": 1985,
-    "developer": "Ocean",
-    "videoid": "wnEkRaXDjp8",
-    "lemon": [
-      "https://www.lemon64.com/game/transformers"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/transformers.jpg",
-    "pdf": "https://drive.google.com/file/d/1DtN9ovUA9nRKJpMryDQbDZ-iz4f9KPJb/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1FInRI9Y0np_YHREfOpwoIsqqSbxVTonF/view?usp=drive_link"
-    ],
-    "description": "The Transformers is a 1985 Commodore 64 arcade action game from Ocean that adapts the animated series into fast-paced shooting gameplay."
-  },
-  {
-    "system": "C64",
-    "id": "the_trap_door",
-    "slug": "the-trap-door",
-    "title": "The Trap Door",
-    "sorttitle": "Trap Door",
-    "genres": [
-      "Action Adventure Games",
-      "Licensed Games",
-      "Puzzle Games"
-    ],
-    "year": 1986,
-    "developer": "Piranha",
-    "videoid": "V65XiDDDRGY",
-    "lemon": [
-      "https://www.lemon64.com/game/trapdoor"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/trap_door_the.jpg",
-    "pdf": "https://drive.google.com/file/d/18Zj9KNfRwVJz6qiskFF8AN09WDSFA12Q/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/10r-sa7vwQNzXJGgqZa_lGcIqygJUXA30/view?usp=drive_link"
-    ],
-    "description": "The Trap Door is a 1986 Commodore 64 action-adventure puzzle game from Piranha, based on the TV series, where players manage objects and timing to keep Berk alive while dealing with unpredictable monsters."
-  },
-  {
-    "system": "C64",
-    "id": "the_untouchables",
-    "slug": "the-untouchables",
-    "title": "The Untouchables",
-    "sorttitle": "Untouchables",
-    "genres": [
-      "Arcade Games",
-      "Licensed Games"
-    ],
-    "year": 1989,
-    "developer": "Ocean",
-    "videoid": "fUXNeTf9Oe4",
-    "lemon": [
-      "https://www.lemon64.com/game/untouchables"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/untouchables_the.jpg",
-    "pdf": "https://drive.google.com/file/d/19ybyfm9lwvnINtfwxzhQCGzi-lbdoDe7/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1w15nUsU4xJEzU7TgbTkUY7w4hpJshi9c/view?usp=drive_link"
-    ],
-    "description": "he Untouchables is a 1989 Commodore 64 arcade game from Ocean that adapts the crime film into a sequence of action-heavy stages featuring shooting, driving, and reflex-based challenges."
-  },
-  {
-    "system": "C64",
-    "id": "the_way_of_the_exploding_fist",
-    "slug": "the-way-of-the-exploding-fist",
-    "title": "The Way Of The Exploding Fist",
-    "sorttitle": "Way Of The Exploding Fist",
-    "genres": [
-      "Fighting Games"
-    ],
-    "year": 1985,
-    "developer": "Melbourne House",
-    "videoid": "gtCbWDfsUCs",
-    "lemon": [
-      "https://www.lemon64.com/game/way-of-the-exploding-fist"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/kung_fu_the_way_of_the_exploding_fist_europe.jpg",
-    "pdf": "https://drive.google.com/file/d/1jLvCueUJXbibEII2YCsstcG5F0mnMn8E/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/163oWSi2cv8wa4qW_MqcpxhgoZXLHvAi8/view?usp=drive_link"
-    ],
-    "description": "The Way Of The Exploding Fist is a 1985 Commodore 64 martial arts fighting game from Melbourne House, renowned for its realistic animations, precise controls, and one-on-one combat focus."
-  },
-  {
-    "system": "C64",
-    "id": "willow_pattern",
-    "slug": "the-willow-pattern-adventure",
-    "title": "The Willow Pattern Adventure",
-    "sorttitle": "Willow Pattern",
-    "genres": [
-      "Action Adventure Games"
-    ],
-    "year": 1985,
-    "developer": "Firebird",
-    "videoid": "4XXjyNo_Woo",
-    "lemon": [
-      "https://www.lemon64.com/game/willow-pattern-adventure"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/willow_pattern_adventure_the.jpg",
-    "pdf": "https://drive.google.com/file/d/1N8GmUpaAIEdUMtuJm8OFc0leBszt4DjJ/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1ZL9zWlEEE_4t5GPZDOpz_HkHBXTgnXtF/view?usp=drive_link"
-    ],
-    "description": "The Willow Pattern Adventure is a 1985 Commodore 64 action-adventure from Firebird that blends exploration, environmental puzzles, and real-time decision making within a surreal fantasy setting."
-  },
-  {
     "id": "the_wombles",
     "slug": "the-wombles",
     "title": "The Wombles",
@@ -13081,35 +12947,14 @@
     ],
     "developer": "Enigma Variations",
     "videoid": "jMsMna_ao2o",
-    "thumbnail": "the_wombles.jpg",
+    "thumbnail": "resources/images/thumbnails/all/the_wombles.jpg",
     "pdf": "",
     "disk": [
       "https://drive.google.com/file/d/18bTWBVn9M9X3iy50Z71ZBgcPKG44848Y/view?usp=drive_link"
     ],
-    "description": "The Wombles is a 1990 Commodore 64 licensed game from Enigma Variations that mixes light action and task-based gameplay inspired by the popular children’s television series."
-  },
-  {
-    "system": "C64",
-    "id": "the_young_ones",
-    "slug": "the-young-ones",
-    "title": "The Young Ones",
-    "sorttitle": "Young Ones",
-    "genres": [
-      "Action Adventure Games",
-      "Licensed Games"
-    ],
-    "year": 1986,
-    "developer": "Orpheus",
-    "videoid": "qwgHCTGldr0",
-    "lemon": [
-      "https://www.lemon64.com/game/young-ones"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/the_young_ones_new.png",
-    "pdf": "https://drive.google.com/file/d/1LDHck3abjKpC3lK7X00hGViVrMQSN1bE/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/18K-WkLM4dJi_6L3eGk12t7oZQoU3kZQr/view?usp=drive_link"
-    ],
-    "description": "The Young Ones is a 1986 Commodore 64 action-adventure from Orpheus that adapts the TV comedy into multi-character gameplay built around problem solving, timing, and humour-driven objectives."
+    "description": "The Wombles is a 1990 Commodore 64 licensed game from Enigma Variations that mixes light action and task-based gameplay inspired by the popular children’s television series.",
+    "sorttitle": "The Wombles",
+    "lemon": []
   },
   {
     "system": "AMIGA",
@@ -13178,28 +13023,29 @@
     "description": "Thing On A Spring is a 1985 Commodore 64 platform game from Epyx that features fast-paced jumping, spring-based movement mechanics, and tightly designed arcade-style levels."
   },
   {
-    "system": "C64",
-    "id": "through_the_trap_door",
-    "slug": "through-the-trap-door",
-    "title": "Through The Trap Door",
-    "sorttitle": "Trap Door 2",
+    "system": "AMIGA",
+    "id": "the_three_stooges",
+    "slug": "the-three-stooges",
+    "title": "The Three Stooges",
+    "sorttitle": "Three Stooges",
     "genres": [
-      "Action Adventure Games",
+      "Adventure Games",
+      "Arcade Games",
       "Licensed Games",
       "Puzzle Games"
     ],
-    "year": 1988,
-    "developer": "Piranha",
-    "videoid": "WCnLv9ry9Ds",
+    "year": 1987,
+    "developer": "Cinemaware",
+    "videoid": "vTbgeLzWGto",
     "lemon": [
-      "https://www.lemon64.com/game/through-the-trapdoor"
+      "https://www.lemonamiga.com/games/details.php?id=1241"
     ],
-    "thumbnail": "resources/images/thumbnails/all/through_the_trapdoor.jpg",
-    "pdf": "",
+    "thumbnail": "resources/images/thumbnails/all/three_stooges.png",
+    "pdf": "https://drive.google.com/file/d/1J4lt3yXNj4SxXJLaH_pIOYl_6s9cMbvm/view?usp=drive_link",
     "disk": [
-      "https://drive.google.com/file/d/10Hzy-iNASd-mVqrLP5F0LmAurKYxzXlt/view?usp=drive_link"
+      "https://drive.google.com/file/d/1NtBhkllcLIUyc1QKCNcTgBvLOlArG9e1/view?usp=drive_link"
     ],
-    "description": "Through The Trap Door is a 1988 Commodore 64 action-adventure puzzle sequel from Piranha that expands the original formula with new locations, creatures, and increasingly complex item management."
+    "description": "The Three Stooges is a 1987 Amiga adventure from Cinemaware that adapts the comedy licence into a mix of arcade challenges and puzzle-based gameplay."
   },
   {
     "system": "C64",
@@ -13596,6 +13442,30 @@
   },
   {
     "system": "C64",
+    "id": "the_train:_escape_to_normandy",
+    "slug": "the-train-escape-to-normandy",
+    "title": "The Train: Escape To Normandy",
+    "sorttitle": "Train: Escape To Normandy",
+    "genres": [
+      "Arcade Games",
+      "Strategy Games",
+      "Top Picks"
+    ],
+    "year": 1987,
+    "developer": "Accolade",
+    "videoid": "_GIULKywK78",
+    "lemon": [
+      "https://www.lemon64.com/game/train-escape-to-normandy"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/train_the_escape_to_normandy.jpg",
+    "pdf": "https://drive.google.com/file/d/1E-0zLUGrYKAtxg68_59DtMiBdqix6hie/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1FfefjBpfRsXD7wMZqh-GiClSrHC28Yqr/view?usp=drive_link"
+    ],
+    "description": "The Train: Escape To Normandy is a 1987 Commodore 64 arcade strategy game from Accolade that blends wartime action with time-critical objectives."
+  },
+  {
+    "system": "C64",
     "id": "trains",
     "slug": "trains",
     "title": "Trains",
@@ -13615,6 +13485,77 @@
       "https://drive.google.com/file/d/1-PkW7HrR114aCW6E7DlA_OUFI7zJ_Tkn/view?usp=drive_link"
     ],
     "description": "Trains is a 1983 Commodore 64 strategy simulation from Spinnaker Software that focuses on route planning, logistics management, and efficient railway operation."
+  },
+  {
+    "system": "C64",
+    "id": "the_transformers",
+    "slug": "the-transformers",
+    "title": "The Transformers",
+    "sorttitle": "Transformers",
+    "genres": [
+      "Arcade Games",
+      "Licensed Games"
+    ],
+    "year": 1985,
+    "developer": "Ocean",
+    "videoid": "wnEkRaXDjp8",
+    "lemon": [
+      "https://www.lemon64.com/game/transformers"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/transformers.jpg",
+    "pdf": "https://drive.google.com/file/d/1DtN9ovUA9nRKJpMryDQbDZ-iz4f9KPJb/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1FInRI9Y0np_YHREfOpwoIsqqSbxVTonF/view?usp=drive_link"
+    ],
+    "description": "The Transformers is a 1985 Commodore 64 arcade action game from Ocean that adapts the animated series into fast-paced shooting gameplay."
+  },
+  {
+    "system": "C64",
+    "id": "the_trap_door",
+    "slug": "the-trap-door",
+    "title": "The Trap Door",
+    "sorttitle": "Trap Door",
+    "genres": [
+      "Action Adventure Games",
+      "Licensed Games",
+      "Puzzle Games"
+    ],
+    "year": 1986,
+    "developer": "Piranha",
+    "videoid": "V65XiDDDRGY",
+    "lemon": [
+      "https://www.lemon64.com/game/trapdoor"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/trap_door_the.jpg",
+    "pdf": "https://drive.google.com/file/d/18Zj9KNfRwVJz6qiskFF8AN09WDSFA12Q/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/10r-sa7vwQNzXJGgqZa_lGcIqygJUXA30/view?usp=drive_link"
+    ],
+    "description": "The Trap Door is a 1986 Commodore 64 action-adventure puzzle game from Piranha, based on the TV series, where players manage objects and timing to keep Berk alive while dealing with unpredictable monsters."
+  },
+  {
+    "system": "C64",
+    "id": "through_the_trap_door",
+    "slug": "through-the-trap-door",
+    "title": "Through The Trap Door",
+    "sorttitle": "Trap Door 2",
+    "genres": [
+      "Action Adventure Games",
+      "Licensed Games",
+      "Puzzle Games"
+    ],
+    "year": 1988,
+    "developer": "Piranha",
+    "videoid": "WCnLv9ry9Ds",
+    "lemon": [
+      "https://www.lemon64.com/game/through-the-trapdoor"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/through_the_trapdoor.jpg",
+    "pdf": "",
+    "disk": [
+      "https://drive.google.com/file/d/10Hzy-iNASd-mVqrLP5F0LmAurKYxzXlt/view?usp=drive_link"
+    ],
+    "description": "Through The Trap Door is a 1988 Commodore 64 action-adventure puzzle sequel from Piranha that expands the original formula with new locations, creatures, and increasingly complex item management."
   },
   {
     "system": "C64",
@@ -13807,6 +13748,29 @@
   },
   {
     "system": "C64",
+    "id": "the_untouchables",
+    "slug": "the-untouchables",
+    "title": "The Untouchables",
+    "sorttitle": "Untouchables",
+    "genres": [
+      "Arcade Games",
+      "Licensed Games"
+    ],
+    "year": 1989,
+    "developer": "Ocean",
+    "videoid": "fUXNeTf9Oe4",
+    "lemon": [
+      "https://www.lemon64.com/game/untouchables"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/untouchables_the.jpg",
+    "pdf": "https://drive.google.com/file/d/19ybyfm9lwvnINtfwxzhQCGzi-lbdoDe7/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1w15nUsU4xJEzU7TgbTkUY7w4hpJshi9c/view?usp=drive_link"
+    ],
+    "description": "he Untouchables is a 1989 Commodore 64 arcade game from Ocean that adapts the crime film into a sequence of action-heavy stages featuring shooting, driving, and reflex-based challenges."
+  },
+  {
+    "system": "C64",
     "id": "up_up_and_away",
     "slug": "up-up-and-away",
     "title": "Up Up And Away",
@@ -13933,12 +13897,14 @@
     ],
     "developer": "System 3",
     "videoid": "9yMtxCQxw5A",
-    "thumbnail": "vendetta.jpg",
+    "thumbnail": "resources/images/thumbnails/all/vendetta.jpg",
     "pdf": "https://drive.google.com/file/d/14HL5pfQZ1k9k1RlHhZisG_bH6CtJcWed/view?usp=drive_link",
     "disk": [
       "https://drive.google.com/file/d/1qjJRahdmQODFqz6gp75jUn8gWGdqP7qQ/view?usp=drive_link"
     ],
-    "description": "Vendetta is a 1990 Commodore 64 action-adventure from System 3 that features side-scrolling combat, exploration, and cinematic presentation."
+    "description": "Vendetta is a 1990 Commodore 64 action-adventure from System 3 that features side-scrolling combat, exploration, and cinematic presentation.",
+    "sorttitle": "Vendetta",
+    "lemon": []
   },
   {
     "system": "C64",
@@ -14031,6 +13997,28 @@
     "description": "Water Polo is a 1987 Commodore 64 sports game from Gremlin Graphics that simulates fast-paced competitive water polo using overhead play, team positioning, and timing-based controls."
   },
   {
+    "system": "C64",
+    "id": "the_way_of_the_exploding_fist",
+    "slug": "the-way-of-the-exploding-fist",
+    "title": "The Way Of The Exploding Fist",
+    "sorttitle": "Way Of The Exploding Fist",
+    "genres": [
+      "Fighting Games"
+    ],
+    "year": 1985,
+    "developer": "Melbourne House",
+    "videoid": "gtCbWDfsUCs",
+    "lemon": [
+      "https://www.lemon64.com/game/way-of-the-exploding-fist"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/kung_fu_the_way_of_the_exploding_fist_europe.jpg",
+    "pdf": "https://drive.google.com/file/d/1jLvCueUJXbibEII2YCsstcG5F0mnMn8E/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/163oWSi2cv8wa4qW_MqcpxhgoZXLHvAi8/view?usp=drive_link"
+    ],
+    "description": "The Way Of The Exploding Fist is a 1985 Commodore 64 martial arts fighting game from Melbourne House, renowned for its realistic animations, precise controls, and one-on-one combat focus."
+  },
+  {
     "system": "AMIGA",
     "id": "ween",
     "slug": "ween-the-prophecy",
@@ -14121,6 +14109,28 @@
       "https://drive.google.com/file/d/1VWL9uZPUt9WPAzkH10IAtshe5gri85th/view?usp=drive_link"
     ],
     "description": "Who Dares Wins II is a 1985 Commodore 64 arcade action game from Alligata Software featuring military-themed missions focused on precision movement, shooting, and tactical timing."
+  },
+  {
+    "system": "C64",
+    "id": "willow_pattern",
+    "slug": "the-willow-pattern-adventure",
+    "title": "The Willow Pattern Adventure",
+    "sorttitle": "Willow Pattern",
+    "genres": [
+      "Action Adventure Games"
+    ],
+    "year": 1985,
+    "developer": "Firebird",
+    "videoid": "4XXjyNo_Woo",
+    "lemon": [
+      "https://www.lemon64.com/game/willow-pattern-adventure"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/willow_pattern_adventure_the.jpg",
+    "pdf": "https://drive.google.com/file/d/1N8GmUpaAIEdUMtuJm8OFc0leBszt4DjJ/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1ZL9zWlEEE_4t5GPZDOpz_HkHBXTgnXtF/view?usp=drive_link"
+    ],
+    "description": "The Willow Pattern Adventure is a 1985 Commodore 64 action-adventure from Firebird that blends exploration, environmental puzzles, and real-time decision making within a surreal fantasy setting."
   },
   {
     "system": "AMIGA",
@@ -14400,6 +14410,29 @@
   },
   {
     "system": "C64",
+    "id": "the_young_ones",
+    "slug": "the-young-ones",
+    "title": "The Young Ones",
+    "sorttitle": "Young Ones",
+    "genres": [
+      "Action Adventure Games",
+      "Licensed Games"
+    ],
+    "year": 1986,
+    "developer": "Orpheus",
+    "videoid": "qwgHCTGldr0",
+    "lemon": [
+      "https://www.lemon64.com/game/young-ones"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/the_young_ones_new.png",
+    "pdf": "https://drive.google.com/file/d/1LDHck3abjKpC3lK7X00hGViVrMQSN1bE/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/18K-WkLM4dJi_6L3eGk12t7oZQoU3kZQr/view?usp=drive_link"
+    ],
+    "description": "The Young Ones is a 1986 Commodore 64 action-adventure from Orpheus that adapts the TV comedy into multi-character gameplay built around problem solving, timing, and humour-driven objectives."
+  },
+  {
+    "system": "C64",
     "id": "zak_mckracken",
     "slug": "zak-mckracken-and-the-alien-mindbenders",
     "title": "Zak Mckracken And The Alien Mindbenders",
@@ -14505,7 +14538,7 @@
     "lemon": [
       "https://www.lemon64.com/game/zone-trooper"
     ],
-    "thumbnail": "Zone Trooper is a 1988 Commodore 64 arcade action game from Gamebusters featuring fast scrolling stages, continuous enemy waves, and score-driven shooting gameplay.",
+    "thumbnail": "resources/images/thumbnails/all/Zone Trooper is a 1988 Commodore 64 arcade action game from Gamebusters featuring fast scrolling stages, continuous enemy waves, and score-driven shooting gameplay.",
     "pdf": "",
     "disk": [
       "https://drive.google.com/file/d/12iVk7ljD5DYUH2FuS2wPIdYORzizKrPB/view?usp=drive_link"
