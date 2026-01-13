@@ -1356,20 +1356,7 @@ function setupFooterSignatureRotator() {
     ====================================================== */
     document.addEventListener("DOMContentLoaded", () => {
 
-        /* -------------------------------
-           SKIP LINK FOR KEYBOARD USERS
-        ------------------------------- */
-        const main = document.querySelector("main");
-        if (main) {
-            if (!main.id) main.id = "ccg-main-content";
-            main.setAttribute("tabindex", "-1");
-
-            const skipLink = document.createElement("a");
-            skipLink.className = "ccg-skip-link";
-            skipLink.href = `#${main.id}`;
-            skipLink.textContent = "Skip to main content";
-            document.body.prepend(skipLink);
-        }
+        // Skip link injection removed to keep the top-left edge clean.
 
         /* -------------------------------
            MOBILE HARDENING (EARLY)
