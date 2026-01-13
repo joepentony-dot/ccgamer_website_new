@@ -173,14 +173,15 @@
 
                 <form id="adminGameForm" class="admin-form" novalidate>
                     <div class="admin-form-section">
-                        <div class="admin-form-heading">
-                            <h3>Core details</h3>
-                            <span class="admin-form-note">Required fields marked with *</span>
-                        </div>
-                        <div class="admin-field">
-                            <label for="gameSystem">System *</label>
-                            <select id="gameSystem" name="system" class="admin-select" required>
-                                <option value="C64">C64</option>
+                    <div class="admin-form-heading">
+                        <h3>Core details</h3>
+                        <span class="admin-form-note">Required fields marked with *</span>
+                    </div>
+                    <p class="admin-help">The Game Title drives the ID and Slug automatically. Those fields are read-only and update live as you type.</p>
+                    <div class="admin-field">
+                        <label for="gameSystem">System *</label>
+                        <select id="gameSystem" name="system" class="admin-select" required>
+                            <option value="C64">C64</option>
                                 <option value="AMIGA">AMIGA</option>
                             </select>
                             <p class="admin-error" data-admin-error="system" hidden></p>
@@ -198,14 +199,14 @@
                         </div>
                         <div class="admin-field">
                             <label for="gameId">ID (snake_case) *</label>
-                            <input id="gameId" name="id" class="admin-input" placeholder="adventures_of_robin_hood" required>
-                            <p class="admin-help">Lowercase letters, numbers, and underscores only.</p>
+                            <input id="gameId" name="id" class="admin-input" placeholder="adventures_of_robin_hood" readonly aria-readonly="true" title="Auto-generated from the Game Title" style="cursor: default;" required>
+                            <p class="admin-help">Auto-generated from the title (read-only).</p>
                             <p class="admin-error" data-admin-error="id" hidden></p>
                         </div>
                         <div class="admin-field">
                             <label for="gameSlug">Slug (kebab-case) *</label>
-                            <input id="gameSlug" name="slug" class="admin-input" placeholder="adventures-of-robin-hood" required>
-                            <p class="admin-help">Used for SEO URLs.</p>
+                            <input id="gameSlug" name="slug" class="admin-input" placeholder="adventures-of-robin-hood" readonly aria-readonly="true" title="Auto-generated from the Game Title" style="cursor: default;" required>
+                            <p class="admin-help">Auto-generated from the title for SEO URLs (read-only).</p>
                             <p class="admin-error" data-admin-error="slug" hidden></p>
                         </div>
                         <div class="admin-field">
@@ -244,6 +245,7 @@
                                 </select>
                                 <button class="ccg-btn ccg-btn--ghost" type="button" data-admin-clear-genres>Clear all genres</button>
                             </div>
+                            <p class="admin-help">Select one or more genres; the list is fixed and curated.</p>
                             <div class="admin-genre-selected" data-admin-genre-selected>
                                 <p class="admin-help" data-admin-genre-empty>No genres selected</p>
                             </div>
@@ -265,6 +267,7 @@
                         <div class="admin-form-heading">
                             <h3>Media</h3>
                         </div>
+                        <p class="admin-help">YouTube expects the video ID only. Links below are optional.</p>
                         <div class="admin-field">
                             <label for="gameVideo">YouTube video ID</label>
                             <input id="gameVideo" name="videoid" class="admin-input" placeholder="oQhQdlsAQR4">
@@ -283,6 +286,7 @@
                         <div class="admin-form-heading">
                             <h3>Links &amp; downloads</h3>
                         </div>
+                        <p class="admin-help">All links are optional; add only what you have.</p>
                         <div class="admin-field">
                             <label for="gamePdf">PDF/manual link</label>
                             <input id="gamePdf" name="pdf" class="admin-input" placeholder="https://...">
@@ -307,7 +311,7 @@
             <section class="ccg-section admin-grid">
                 <article class="admin-card">
                     <h2>Import / Export</h2>
-                    <p class="admin-help">Load the live <code>games.json</code> or upload a local copy. Download only when validation passes.</p>
+                    <p class="admin-help">Download, manually replace <code>/games/games.json</code>, and commit. Admin never edits live files.</p>
                     <div class="admin-inline-buttons">
                         <button id="adminRefresh" class="ccg-btn ccg-btn--primary" type="button">Fetch live games.json</button>
                         <label class="admin-upload">Upload JSON

@@ -155,8 +155,6 @@
     let baseGames = [];
     let workingGames = [];
     let addedGames = [];
-    let autoId = true;
-    let autoSlug = true;
     let autoSortTitle = true;
     let stubTemplateCache = null;
 
@@ -418,8 +416,6 @@
     function clearForm() {
         if (!form) return;
         form.reset();
-        autoId = true;
-        autoSlug = true;
         autoSortTitle = true;
         selectedGenres = [];
         genreTouched = false;
@@ -428,19 +424,31 @@
         clearFieldErrors();
     }
 
+    function getAutoIdSlug(title) {
+        const trimmedTitle = String(title || "").trim();
+        if (!trimmedTitle) {
+            return { id: "", slug: "" };
+        }
+        const baseId = toSnake(trimmedTitle) || "untitled";
+        const baseSlug = toSlug(trimmedTitle) || "untitled";
+        return {
+            id: getUniqueId(baseId),
+            slug: getUniqueSlug(baseSlug)
+        };
+    }
+
     function updateAutoFields() {
         if (!titleInput) return;
         const title = normalizeText(titleInput.value).value;
         if (autoSortTitle && sortTitleInput) {
             sortTitleInput.value = deriveSortTitle(title);
         }
-        if (autoId && idInput) {
-            const baseId = toSnake(title);
-            idInput.value = getUniqueId(baseId);
+        const autoValues = getAutoIdSlug(title);
+        if (idInput) {
+            idInput.value = autoValues.id;
         }
-        if (autoSlug && slugInput) {
-            const baseSlug = toSlug(title);
-            slugInput.value = getUniqueSlug(baseSlug);
+        if (slugInput) {
+            slugInput.value = autoValues.slug;
         }
     }
 
@@ -930,10 +938,15 @@
             let raw = Object.fromEntries(formData.entries());
             raw.genres = [...selectedGenres];
             raw = normalizeNewEntryTextFields(raw);
+            const autoValues = getAutoIdSlug(raw.title);
+            raw.id = autoValues.id;
+            raw.slug = autoValues.slug;
             if (titleInput) titleInput.value = raw.title || "";
             if (sortTitleInput) sortTitleInput.value = raw.sorttitle || "";
             if (descriptionInput) descriptionInput.value = raw.description || "";
             if (developerInput) developerInput.value = raw.developer || "";
+            if (idInput) idInput.value = raw.id || "";
+            if (slugInput) slugInput.value = raw.slug || "";
             const game = normalizeGame(raw);
 
             if (!validateNewGame(raw, game)) {
@@ -1087,12 +1100,7 @@
     }
 
     if (idInput) {
-        idInput.addEventListener("input", () => {
-            autoId = false;
-            const normalized = toSnake(idInput.value);
-            if (idInput.value !== normalized) {
-                idInput.value = normalized;
-            }
+        idInput.addEventListener("focus", () => {
             if (fieldErrors.id && !fieldErrors.id.hidden) {
                 setFieldError("id", "");
             }
@@ -1100,12 +1108,7 @@
     }
 
     if (slugInput) {
-        slugInput.addEventListener("input", () => {
-            autoSlug = false;
-            const normalized = toSlug(slugInput.value);
-            if (slugInput.value !== normalized) {
-                slugInput.value = normalized;
-            }
+        slugInput.addEventListener("focus", () => {
             if (fieldErrors.slug && !fieldErrors.slug.hidden) {
                 setFieldError("slug", "");
             }
@@ -1172,8 +1175,6 @@
 
     if (resetAutoBtn) {
         resetAutoBtn.addEventListener("click", () => {
-            autoId = true;
-            autoSlug = true;
             autoSortTitle = true;
             updateAutoFields();
             setStatus("Auto fields regenerated from title.");
