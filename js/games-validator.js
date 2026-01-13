@@ -9,7 +9,7 @@ window.ccgValidateGames = async function ccgValidateGames() {
 
     try {
         // Load games.json
-        const response = await fetch("/ccgamer_website_new/games/games.json");
+        const response = await fetch("../games/games.json");
         if (!response.ok) {
             console.error("❌ Unable to load games.json:", response.status);
             return;
