@@ -384,21 +384,6 @@
         });
     }
 
-    function populateGenreOptions() {
-        if (!genreSelect) return;
-        genreSelect.innerHTML = "";
-        const placeholder = document.createElement("option");
-        placeholder.value = "";
-        placeholder.textContent = "Select genre...";
-        genreSelect.appendChild(placeholder);
-        CANONICAL_GENRES.forEach(genre => {
-            const option = document.createElement("option");
-            option.value = genre;
-            option.textContent = genre;
-            genreSelect.appendChild(option);
-        });
-    }
-
     function addGenre(value) {
         const genre = String(value || "").trim();
         if (!genre) return;
@@ -1377,7 +1362,6 @@
 
     syncSourceLink();
     fetchLiveGames();
-    populateGenreOptions();
     renderSelectedGenres();
     updateAutoFields();
 })();
