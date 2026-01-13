@@ -358,7 +358,29 @@
         if (totalCountEl) totalCountEl.textContent = workingGames.length;
     }
 
-    function renderSelectedGenres() {
+    
+    function populateGenreSelect() {
+        if (!genreSelect) return;
+
+        // Rebuild from the canonical list every time to prevent placeholder-only regressions.
+        genreSelect.innerHTML = "";
+
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = "Select genre...";
+        placeholder.disabled = true;
+        placeholder.selected = true;
+        genreSelect.appendChild(placeholder);
+
+        CANONICAL_GENRES.forEach((genre) => {
+            const option = document.createElement("option");
+            option.value = genre;
+            option.textContent = genre;
+            genreSelect.appendChild(option);
+        });
+    }
+
+function renderSelectedGenres() {
         if (!genreSelectedList) return;
         genreSelectedList.innerHTML = "";
         if (!selectedGenres.length) {
@@ -544,6 +566,7 @@
     function clearForm() {
         if (!form) return;
         form.reset();
+        populateGenreSelect();
         autoSortTitle = true;
         selectedGenres = [];
         genreTouched = false;
@@ -805,10 +828,24 @@
                 }
             }
 
-            if (!Array.isArray(game.genres) || game.genres.length === 0) {
-                errors.push(`${prefix}: at least one genre is required.`);
-            } else if (game.genres.some(genre => !CANONICAL_GENRES.includes(genre))) {
-                errors.push(`${prefix}: genres must be from the approved list.`);
+            const genreList = Array.isArray(game.genres) ? game.genres : [];
+            const hasGenres = genreList.length > 0;
+            const hasInvalidGenres = hasGenres && genreList.some((genre) => !CANONICAL_GENRES.includes(genre));
+            const idKeyForGenre = id ? id.toLowerCase() : "";
+            const isNewEntry = idKeyForGenre ? addedIds.has(idKeyForGenre) : false;
+
+            if (!hasGenres) {
+                if (isNewEntry) {
+                    errors.push(`${prefix}: at least one genre is required.`);
+                } else if (includeLegacyWarnings) {
+                    warnings.push(`${prefix}: genres missing (legacy entry preserved).`);
+                }
+            } else if (hasInvalidGenres) {
+                if (isNewEntry) {
+                    errors.push(`${prefix}: genres must be from the approved list.`);
+                } else if (includeLegacyWarnings) {
+                    warnings.push(`${prefix}: genres include non-canonical values (legacy entry preserved).`);
+                }
             }
         });
 
@@ -1361,6 +1398,7 @@
     }
 
     syncSourceLink();
+    populateGenreSelect();
     fetchLiveGames();
     renderSelectedGenres();
     updateAutoFields();
