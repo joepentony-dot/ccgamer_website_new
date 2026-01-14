@@ -2847,3 +2847,23 @@ body.ccg-party::before {
         animation: none !important;
     }
 }
+
+/* ============================================================
+   NAV PANEL VISUAL REMOVAL — DESKTOP ONLY
+   Buttons float, no background slab
+============================================================ */
+
+@media (min-width: 1024px) {
+    .ccg-nav {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        padding: 0 !important;
+    }
+
+    .ccg-nav::before,
+    .ccg-nav::after {
+        display: none !important;
+    }
+}
