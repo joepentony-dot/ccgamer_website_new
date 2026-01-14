@@ -2962,3 +2962,26 @@ body.ccg-party::before {
         display: none !important;
     }
 }
+
+/* ============================================================
+   NAVIGATION HARD SCROLL LOCK — DESKTOP (FINAL)
+   Prevents scrollbar flash & drag behaviour
+============================================================ */
+
+@media (min-width: 1024px) {
+
+    .ccg-nav,
+    .ccg-nav__bar,
+    .ccg-nav__list {
+        overflow: hidden !important;
+        overscroll-behavior: none !important;
+        scrollbar-width: none !important;
+        touch-action: manipulation !important;
+    }
+
+    .ccg-nav__list::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+    }
+}
