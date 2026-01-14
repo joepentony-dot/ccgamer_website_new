@@ -3114,6 +3114,29 @@
     "description": "Curse of Ra is a Commodore 64 puzzle game set inside an Egyptian pyramid. Players must rotate rooms to guide an explorer safely through traps and obstacles, combining logic with spatial reasoning."
   },
   {
+    "system": "C64",
+    "id": "curse_of_the_azure_bonds",
+    "slug": "curse-of-the-azure-bonds",
+    "title": "Curse of the Azure Bonds",
+    "sorttitle": "Curse of the Azure Bonds",
+    "genres": [
+      "Top Picks",
+      "Strategy Games"
+    ],
+    "year": 1989,
+    "developer": "Strategic Simulations Inc.",
+    "videoid": "Yp9LAgnCU28",
+    "lemon": [
+      "https://www.lemon64.com/game/curse-of-the-azure-bonds"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/curse-of-the-azure-bonds.jpg",
+    "pdf": "https://drive.google.com/file/d/1x45mC7tT6XggVT-um6f19U7sgyhDBddJ/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1OYGqiGys3UxaBgWSn843qA8hsbGMmD7A/view?usp=drive_link"
+    ],
+    "description": "Curse of the Azure Bonds on the Commodore 64 is a classic Gold Box RPG sequel set in the Moonsea. Featuring turn-based tactical combat, deep AD&D rules, imported characters, and a sprawling political storyline, it delivers a rich, quest-driven fantasy adventure."
+  },
+  {
     "system": "AMIGA",
     "id": "d/generation",
     "slug": "d-generation",
