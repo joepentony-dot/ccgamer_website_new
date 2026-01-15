@@ -1,0 +1,87 @@
+/* ============================================================
+   LIVESTREAM STATUS STRIP
+============================================================ */
+
+.ccg-livestream-strip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: clamp(16px, 4vw, 26px) auto 18px;
+    padding: 8px 16px;
+    min-height: 36px;
+    max-width: min(1100px, 92vw);
+    border-radius: 999px;
+    background: linear-gradient(160deg, rgba(8, 12, 20, 0.88), rgba(8, 14, 26, 0.72));
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #e7f3ff;
+    font-size: clamp(0.78rem, 0.7rem + 0.35vw, 0.95rem);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    text-align: center;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+}
+
+.ccg-livestream-strip:focus-visible {
+    outline: 2px solid rgba(var(--accent-rgb), 0.85);
+    outline-offset: 3px;
+}
+
+.ccg-livestream-strip:hover {
+    border-color: rgba(255, 255, 255, 0.28);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.45);
+}
+
+.ccg-livestream-strip__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.78em;
+}
+
+.ccg-livestream-strip__status--live {
+    color: #ffd9d9;
+}
+
+.ccg-livestream-strip__divider {
+    opacity: 0.7;
+}
+
+.ccg-livestream-strip__live-dot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1em;
+    height: 1em;
+    font-size: 0.95em;
+    filter: drop-shadow(0 0 6px rgba(255, 60, 60, 0.65));
+    animation: ccg-live-pulse 1.8s ease-in-out infinite;
+}
+
+.ccg-livestream-strip--live {
+    border-color: rgba(255, 80, 80, 0.45);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.45), 0 0 18px rgba(255, 70, 70, 0.25);
+}
+
+@keyframes ccg-live-pulse {
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.9;
+    }
+    50% {
+        transform: scale(1.12);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 640px) {
+    .ccg-livestream-strip {
+        border-radius: 18px;
+        padding: 10px 14px;
+    }
+}
