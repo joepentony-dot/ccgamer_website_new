@@ -14585,12 +14585,12 @@
     "lemon": [
       "https://www.lemon64.com/game/zone-trooper"
     ],
-    "thumbnail": "resources/images/thumbnails/all/Zone Trooper is a 1988 Commodore 64 arcade action game from Gamebusters featuring fast scrolling stages, continuous enemy waves, and score-driven shooting gameplay.",
+    "thumbnail": "resources/images/thumbnails/all/zone_trooper.png",
     "pdf": "",
     "disk": [
       "https://drive.google.com/file/d/12iVk7ljD5DYUH2FuS2wPIdYORzizKrPB/view?usp=drive_link"
     ],
-    "description": "Zone Trooper is a C64 arcade game from 1988, developed by Gamebusters."
+    "description": "Zone Trooper is a 1988 Commodore 64 arcade action game from Gamebusters featuring fast scrolling stages, continuous enemy waves, and score-driven shooting gameplay"
   },
   {
     "system": "C64",
