@@ -10775,6 +10775,29 @@
   },
   {
     "system": "C64",
+    "id": "rtype",
+    "slug": "rtype",
+    "title": "R-Type",
+    "sorttitle": "RType",
+    "genres": [
+      "Arcade Games",
+      "Shooting Games"
+    ],
+    "year": 1988,
+    "developer": "Electric Dreams",
+    "videoid": "h1wRyD86xxY",
+    "lemon": [
+      "https://www.lemon64.com/game/r-type"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/r_type.jpg",
+    "pdf": "https://drive.google.com/file/d/10VUB5oo4o6Zx_u1AfSCDMu_pbwoHjjgh/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1UFnA1jAqXvMKkrOXRoBafXwN10NwXdal/view?usp=drive_link"
+    ],
+    "description": "R-Type on Commodore 64 delivers a demanding horizontal shoot ’em up based on Irem’s arcade classic, featuring memorisation-driven level design, the iconic Force pod weapon system, relentless enemy patterns, and tense boss encounters that push the C64 hard."
+  },
+  {
+    "system": "C64",
     "id": "the_running_man",
     "slug": "the-running-man",
     "title": "The Running Man",
@@ -10795,28 +10818,6 @@
       "https://drive.google.com/file/d/15wnvGpI-4fDLPrrgYHX6iZrCM2GfXs8C/view?usp=drive_link"
     ],
     "description": "The Running Man is a 1989 Commodore 64 arcade action game from Grandslam that adapts the film licence into obstacle-heavy, fast-paced gameplay."
-  },
-  {
-    "system": "C64",
-    "id": "s.w.i.v.",
-    "slug": "swiv",
-    "title": "S.W.I.V.",
-    "sorttitle": "swiv.",
-    "genres": [
-      "Shooting Games"
-    ],
-    "year": 1991,
-    "developer": "Storm",
-    "videoid": "Pgkd0jKPL6U",
-    "lemon": [
-      "https://www.lemon64.com/game/swiv"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/swiv.jpg",
-    "pdf": "https://drive.google.com/file/d/1DccVfHPcA0j3ECr1a48iyFv8TMzTSA78/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1K8NW1qbTmxLzGhRxlowZIMzEhEVmNhb2/view?usp=drive_link"
-    ],
-    "description": "S.W.I.V. is a 1991 Commodore 64 vertically scrolling shooter from Storm that delivers intense single- or two-player action, packed with heavy firepower, constant enemy pressure, and a strong emphasis on reflex-driven combat."
   },
   {
     "system": "C64",
@@ -12654,6 +12655,28 @@
       "https://drive.google.com/file/d/1ysmU3f9QNIl_ZONIPE9eppns1vInqMWk/view?usp=drive_link"
     ],
     "description": "Switchblade is a 1991 Commodore 64 arcade platform game from Gremlin Graphics that blends exploration, combat, and item collection across large scrolling levels."
+  },
+  {
+    "system": "C64",
+    "id": "s.w.i.v.",
+    "slug": "swiv",
+    "title": "S.W.I.V.",
+    "sorttitle": "swiv.",
+    "genres": [
+      "Shooting Games"
+    ],
+    "year": 1991,
+    "developer": "Storm",
+    "videoid": "Pgkd0jKPL6U",
+    "lemon": [
+      "https://www.lemon64.com/game/swiv"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/swiv.jpg",
+    "pdf": "https://drive.google.com/file/d/1DccVfHPcA0j3ECr1a48iyFv8TMzTSA78/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1K8NW1qbTmxLzGhRxlowZIMzEhEVmNhb2/view?usp=drive_link"
+    ],
+    "description": "S.W.I.V. is a 1991 Commodore 64 vertically scrolling shooter from Storm that delivers intense single- or two-player action, packed with heavy firepower, constant enemy pressure, and a strong emphasis on reflex-driven combat."
   },
   {
     "system": "C64",
