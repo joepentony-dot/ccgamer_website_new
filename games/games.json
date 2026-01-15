@@ -14365,9 +14365,9 @@
     "description": "WWF Wrestlemania is a 1991 Commodore 64 licensed fighting game from Ocean Software featuring digitised wrestlers, grappling mechanics, and arcade-style wrestling bouts."
   },
   {
-    "system": "AMIGA",
-    "id": "x-out",
-    "slug": "10-out",
+    "system": "C64",
+    "id": "x_out",
+    "slug": "x-out",
     "title": "X-Out",
     "sorttitle": "X-Out",
     "genres": [
