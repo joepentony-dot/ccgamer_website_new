@@ -1,9 +1,8 @@
 /* ============================================================
    CCG MOBILE LITE MODE
-   • Zero impact on desktop
-   • Activates on phones + reduced motion
+   • Desktop untouched
+   • Mobile performance first
 ============================================================ */
-
 (function () {
     const isMobile =
         window.matchMedia("(max-width: 900px)").matches ||

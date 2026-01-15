@@ -7,7 +7,7 @@ html.ccg-mobile-lite {
     scroll-behavior: auto !important;
 }
 
-/* Kill continuous animations */
+/* Kill continuous animations/transitions on mobile */
 html.ccg-mobile-lite *,
 html.ccg-mobile-lite *::before,
 html.ccg-mobile-lite *::after {
@@ -15,7 +15,7 @@ html.ccg-mobile-lite *::after {
     transition: none !important;
 }
 
-/* Disable heavy background layers */
+/* Disable heavy background layers used site-wide */
 html.ccg-mobile-lite .ccg-bg-starfield,
 html.ccg-mobile-lite .ccg-bg-grid,
 html.ccg-mobile-lite .ccg-bg-crt-overlay,
@@ -25,7 +25,7 @@ html.ccg-mobile-lite .ccg-bg-particles {
     display: none !important;
 }
 
-/* Remove backdrop-filter (major mobile GPU killer) */
+/* Remove backdrop-filter blur (major mobile GPU cost) */
 html.ccg-mobile-lite .ccg-header::before,
 html.ccg-mobile-lite .ccg-nav,
 html.ccg-mobile-lite .ccg-nav__more-menu {
@@ -33,7 +33,7 @@ html.ccg-mobile-lite .ccg-nav__more-menu {
     -webkit-backdrop-filter: none !important;
 }
 
-/* Flatten shadows & glows */
+/* Flatten very expensive shadows/glows */
 html.ccg-mobile-lite .ccg-header,
 html.ccg-mobile-lite .ccg-card,
 html.ccg-mobile-lite .ccg-game-card,
@@ -42,12 +42,11 @@ html.ccg-mobile-lite .ccg-brand {
     box-shadow: none !important;
 }
 
-/* Keep branding readable but cheaper */
 html.ccg-mobile-lite .ccg-brand__logo {
     filter: none !important;
 }
 
-/* Disable section reveal animation */
+/* Disable section reveal animation used in ccg-master.css */
 html.ccg-mobile-lite .ccg-page main > section {
     opacity: 1 !important;
     transform: none !important;
