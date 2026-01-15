@@ -17,6 +17,10 @@ let CCG_GAME_CACHE = new Map();
 let CCG_ALL_LETTERS = [];
 let CCG_ACTIVE_QUERY = "";
 let CCG_ACTIVE_SYSTEM_FILTER = "all";
+let CCG_YEAR_MIN = null;
+let CCG_YEAR_MAX = null;
+let CCG_ACTIVE_YEAR_MIN = null;
+let CCG_ACTIVE_YEAR_MAX = null;
 
 const ACCORDION_STATE_KEY = "ccgAccordionState";
 const SYSTEM_FILTER_STORAGE_KEY = "ccgGamesSystemFilter";
@@ -50,6 +54,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         setupSearch();
         setupSystemFilter();
+        setupYearFilter();
         applyActiveFilters({ preserveScroll: true });
 
         // Restore without scroll jump
@@ -147,14 +152,22 @@ function buildAlphaSpine(groups) {
         ? [...CCG_ALL_LETTERS]
         : sortLetters(Object.keys(groups));
 
+    const counts = letters.map(letter => groups[letter]?.length || 0);
+    const maxCount = Math.max(0, ...counts);
+    const highThreshold = Math.max(8, Math.round(maxCount * 0.6));
+
     letters.forEach(letter => {
         const btn = document.createElement("button");
         btn.className = "games-alpha__btn";
         btn.textContent = letter;
         btn.dataset.letter = letter;
         const hasResults = Boolean(groups[letter]?.length);
+        const count = groups[letter]?.length || 0;
+        btn.dataset.count = String(count);
         btn.disabled = !hasResults;
         btn.classList.toggle("is-disabled", !hasResults);
+        btn.classList.toggle("is-muted", !hasResults);
+        btn.classList.toggle("is-busy", hasResults && count >= highThreshold);
         btn.setAttribute("aria-disabled", String(!hasResults));
 
         btn.addEventListener("click", () => {
@@ -206,6 +219,7 @@ function buildAccordion(groups) {
         section.innerHTML = `
             <button class="games-accordion__header" data-letter="${letter}" type="button" id="${headerId}" aria-controls="${contentId}">
                 <span class="games-accordion__letter">${letter}${hintMarkup}</span>
+                <span class="games-accordion__meta">${gamesForLetter.length.toLocaleString("en-US")} titles</span>
                 <span class="games-accordion__chevron">⌄</span>
             </button>
             <div class="games-accordion__content" id="${contentId}" role="region" aria-labelledby="${headerId}" hidden>
@@ -510,6 +524,49 @@ function setupSystemFilter() {
     });
 }
 
+function setupYearFilter() {
+    const minInput = document.getElementById("gamesYearMin");
+    const maxInput = document.getElementById("gamesYearMax");
+    const valueEl = document.getElementById("gamesYearValue");
+    if (!minInput || !maxInput) return;
+
+    const years = CCG_ALL_GAMES
+        .map(game => parseGameYear(game.year))
+        .filter(year => Number.isFinite(year));
+
+    CCG_YEAR_MIN = years.length ? Math.min(...years) : 1980;
+    CCG_YEAR_MAX = years.length ? Math.max(...years) : 1995;
+    CCG_ACTIVE_YEAR_MIN = CCG_YEAR_MIN;
+    CCG_ACTIVE_YEAR_MAX = CCG_YEAR_MAX;
+
+    minInput.min = String(CCG_YEAR_MIN);
+    minInput.max = String(CCG_YEAR_MAX);
+    maxInput.min = String(CCG_YEAR_MIN);
+    maxInput.max = String(CCG_YEAR_MAX);
+    minInput.value = String(CCG_ACTIVE_YEAR_MIN);
+    maxInput.value = String(CCG_ACTIVE_YEAR_MAX);
+
+    const updateRange = (source) => {
+        const nextMin = Math.min(parseInt(minInput.value, 10), parseInt(maxInput.value, 10));
+        const nextMax = Math.max(parseInt(minInput.value, 10), parseInt(maxInput.value, 10));
+
+        if (source === "min") {
+            minInput.value = String(nextMin);
+        } else if (source === "max") {
+            maxInput.value = String(nextMax);
+        }
+
+        CCG_ACTIVE_YEAR_MIN = nextMin;
+        CCG_ACTIVE_YEAR_MAX = nextMax;
+        updateYearRangeLabel(valueEl);
+        applyActiveFilters({ preserveScroll: true });
+    };
+
+    minInput.addEventListener("input", () => updateRange("min"));
+    maxInput.addEventListener("input", () => updateRange("max"));
+    updateYearRangeLabel(valueEl);
+}
+
 function getInitialSystemFilter() {
     const stored = localStorage.getItem(SYSTEM_FILTER_STORAGE_KEY);
     if (isValidSystemFilter(stored)) return stored;
@@ -565,6 +622,7 @@ function applyActiveFilters({ preserveScroll } = {}) {
     const filtered = getFilteredGames();
 
     buildGamesIndex(filtered);
+    updateFocusPanel(filtered.length);
 
     if (!filtered.length) {
         setSpineActive(null);
@@ -590,7 +648,8 @@ function getFilteredGames() {
         const matchesSystem =
             systemFilter === "all" ||
             normalizeSystemValue(game.system) === systemFilter.toUpperCase();
-        return matchesQuery && matchesSystem;
+        const matchesYear = matchesYearRange(game.year);
+        return matchesQuery && matchesSystem && matchesYear;
     });
 }
 
@@ -604,6 +663,102 @@ function updateCounts(filteredCount) {
 
     if (totalEl) totalEl.textContent = CCG_GAMES_TOTAL.toLocaleString("en-US");
     if (resultsEl) resultsEl.textContent = filteredCount.toLocaleString("en-US");
+}
+
+function updateYearRangeLabel(labelEl) {
+    if (!labelEl) return;
+    if (CCG_YEAR_MIN === null || CCG_YEAR_MAX === null) {
+        labelEl.textContent = "All years";
+        return;
+    }
+
+    const isFullRange =
+        CCG_ACTIVE_YEAR_MIN === CCG_YEAR_MIN && CCG_ACTIVE_YEAR_MAX === CCG_YEAR_MAX;
+
+    if (isFullRange) {
+        labelEl.textContent = "All years";
+        return;
+    }
+
+    if (CCG_ACTIVE_YEAR_MIN === CCG_ACTIVE_YEAR_MAX) {
+        labelEl.textContent = `${CCG_ACTIVE_YEAR_MIN}`;
+        return;
+    }
+
+    labelEl.textContent = `${CCG_ACTIVE_YEAR_MIN}–${CCG_ACTIVE_YEAR_MAX}`;
+}
+
+function parseGameYear(year) {
+    const parsed = parseInt(year, 10);
+    return Number.isFinite(parsed) ? parsed : null;
+}
+
+function matchesYearRange(yearValue) {
+    if (CCG_YEAR_MIN === null || CCG_YEAR_MAX === null) return true;
+    if (CCG_ACTIVE_YEAR_MIN === null || CCG_ACTIVE_YEAR_MAX === null) return true;
+    if (CCG_ACTIVE_YEAR_MIN === CCG_YEAR_MIN && CCG_ACTIVE_YEAR_MAX === CCG_YEAR_MAX) {
+        return true;
+    }
+
+    const year = parseGameYear(yearValue);
+    if (!Number.isFinite(year)) return false;
+    return year >= CCG_ACTIVE_YEAR_MIN && year <= CCG_ACTIVE_YEAR_MAX;
+}
+
+function getSystemFocusLabel() {
+    switch (CCG_ACTIVE_SYSTEM_FILTER) {
+        case "c64":
+            return "C64";
+        case "amiga":
+            return "AMIGA";
+        default:
+            return "C64 & AMIGA";
+    }
+}
+
+function getYearFocusLabel() {
+    if (CCG_YEAR_MIN === null || CCG_YEAR_MAX === null) return "";
+    if (CCG_ACTIVE_YEAR_MIN === CCG_YEAR_MIN && CCG_ACTIVE_YEAR_MAX === CCG_YEAR_MAX) {
+        return "";
+    }
+    if (CCG_ACTIVE_YEAR_MIN === CCG_ACTIVE_YEAR_MAX) {
+        return `${CCG_ACTIVE_YEAR_MIN}`;
+    }
+    return `${CCG_ACTIVE_YEAR_MIN}–${CCG_ACTIVE_YEAR_MAX}`;
+}
+
+function updateFocusPanel(filteredCount) {
+    const panel = document.getElementById("gamesFocusPanel");
+    if (!panel) return;
+
+    const labelEl = panel.querySelector(".games-focus-panel__label");
+    const countEl = panel.querySelector(".games-focus-panel__count");
+    if (!labelEl || !countEl) return;
+
+    const query = CCG_ACTIVE_QUERY.trim();
+    const systemLabel = getSystemFocusLabel();
+    const yearLabel = getYearFocusLabel();
+    const parts = [];
+
+    if (query) {
+        parts.push(`SEARCH RESULTS: "${query.toUpperCase()}"`);
+        parts.push(systemLabel);
+        if (yearLabel) parts.push(yearLabel);
+        labelEl.textContent = parts.join(" · ");
+        countEl.textContent = `${filteredCount.toLocaleString("en-US")} matches`;
+        return;
+    }
+
+    if (CCG_ACTIVE_SYSTEM_FILTER === "all" && !yearLabel) {
+        labelEl.textContent = "ALL GAMES";
+        countEl.textContent = `${CCG_GAMES_TOTAL.toLocaleString("en-US")} total`;
+        return;
+    }
+
+    const browseParts = [systemLabel];
+    if (yearLabel) browseParts.push(yearLabel);
+    labelEl.textContent = `BROWSING: ${browseParts.join(" · ")}`;
+    countEl.textContent = `${filteredCount.toLocaleString("en-US")} games`;
 }
 
 function setEmptyState(isEmpty) {
