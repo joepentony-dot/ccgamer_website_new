@@ -157,6 +157,17 @@
             </div>
         </section>
 
+        <section class="ccg-share" data-ccg-share>
+            <button class="ccg-share-btn" type="button" data-ccg-share-btn>Share this game</button>
+            <div class="ccg-share-fallback" data-ccg-share-fallback aria-hidden="true">
+                <a data-ccg-share-email target="_blank" rel="noopener">Email</a>
+                <a data-ccg-share-whatsapp target="_blank" rel="noopener">WhatsApp</a>
+                <a data-ccg-share-x target="_blank" rel="noopener">X</a>
+                <a data-ccg-share-facebook target="_blank" rel="noopener">Facebook</a>
+                <button type="button" data-ccg-share-copy>Copy link</button>
+            </div>
+        </section>
+
     </main>
 
     <footer class="ccg-footer">
@@ -167,6 +178,7 @@
     </footer>
 </div>
 
+<script src="../resources/js/ccg-share.js" defer></script>
 <script src="../js/ccg-base.js" defer></script>
 
 </body>
@@ -876,6 +888,11 @@ function renderSelectedGenres() {
         return `../${trimmed}`;
     }
 
+    function getResourcePrefix(depth) {
+        const safeDepth = Number.isFinite(depth) && depth > 0 ? Math.floor(depth) : 0;
+        return "../".repeat(safeDepth);
+    }
+
     async function loadStubTemplate() {
         if (stubTemplateCache) return stubTemplateCache;
         const slug = workingGames.find(game => game && game.slug)?.slug;
@@ -894,7 +911,7 @@ function renderSelectedGenres() {
         return stubTemplateCache;
     }
 
-    function buildSeoStubHtml(templateHtml, game) {
+    function buildSeoStubHtml(templateHtml, game, outputDepth = 1) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(templateHtml, "text/html");
         const titleText = `${game.title} | Cheeky Commodore Gamer`;
@@ -978,6 +995,36 @@ function renderSelectedGenres() {
 
         const descriptionEl = doc.querySelector(".game-description");
         if (descriptionEl) descriptionEl.textContent = descriptionText;
+
+        const shareSection = doc.querySelector("[data-ccg-share]");
+        if (!shareSection) {
+            const mainEl = doc.querySelector("main");
+            if (mainEl) {
+                const shareEl = doc.createElement("section");
+                shareEl.className = "ccg-share";
+                shareEl.setAttribute("data-ccg-share", "");
+                shareEl.innerHTML = `
+            <button class="ccg-share-btn" type="button" data-ccg-share-btn>Share this game</button>
+            <div class="ccg-share-fallback" data-ccg-share-fallback aria-hidden="true">
+                <a data-ccg-share-email target="_blank" rel="noopener">Email</a>
+                <a data-ccg-share-whatsapp target="_blank" rel="noopener">WhatsApp</a>
+                <a data-ccg-share-x target="_blank" rel="noopener">X</a>
+                <a data-ccg-share-facebook target="_blank" rel="noopener">Facebook</a>
+                <button type="button" data-ccg-share-copy>Copy link</button>
+            </div>
+        `.trim();
+                mainEl.appendChild(shareEl);
+            }
+        }
+
+        const shareScript = doc.querySelector('script[src*="ccg-share.js"]');
+        if (!shareScript && doc.body) {
+            const scriptEl = doc.createElement("script");
+            const prefix = getResourcePrefix(outputDepth);
+            scriptEl.setAttribute("src", `${prefix}resources/js/ccg-share.js`);
+            scriptEl.setAttribute("defer", "");
+            doc.body.appendChild(scriptEl);
+        }
 
         const viewLink = doc.querySelector('.game-downloads a[href*="game.html"]');
         if (viewLink) viewLink.setAttribute("href", `/games/game.html?id=${game.id}`);

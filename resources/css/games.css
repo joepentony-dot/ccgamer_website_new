@@ -798,6 +798,79 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     font-size: 1.02rem;
 }
 
+/* ------------------------------------------------------------
+   Share widget
+   ------------------------------------------------------------ */
+
+.ccg-share {
+    margin: 18px auto 10px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: rgba(5, 8, 16, 0.6);
+    border: 1px solid var(--ccg-border);
+    box-shadow: var(--ccg-panel-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ccg-share-btn,
+.ccg-share-fallback a,
+.ccg-share-fallback button {
+    font-family: var(--ccg-font-body);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 10px 16px;
+    border: 1px solid rgba(var(--accent-rgb), 0.4);
+    background: rgba(var(--accent-rgb), 0.12);
+    color: #fff;
+    cursor: pointer;
+    transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.ccg-share-btn:hover,
+.ccg-share-btn:focus-visible,
+.ccg-share-fallback a:hover,
+.ccg-share-fallback a:focus-visible,
+.ccg-share-fallback button:hover,
+.ccg-share-fallback button:focus-visible {
+    border-color: rgba(var(--accent-rgb), 0.9);
+    box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.25);
+    transform: translateY(-1px);
+}
+
+.ccg-share-fallback {
+    display: none;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.ccg-share--fallback .ccg-share-fallback {
+    display: flex;
+}
+
+.ccg-share-fallback[aria-hidden="true"] {
+    display: none;
+}
+
+.ccg-share-fallback button.is-copied {
+    border-color: rgba(130, 255, 190, 0.8);
+    box-shadow: 0 0 0 2px rgba(130, 255, 190, 0.25);
+}
+
+.ccg-share-copy-buffer {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+}
+
 .game-video__frame {
     width: 100%;
     aspect-ratio: 16 / 9;
