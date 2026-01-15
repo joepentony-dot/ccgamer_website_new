@@ -951,7 +951,7 @@
     "id": "b.c._bill",
     "slug": "b-c-bill",
     "title": "B.C. Bill",
-    "sorttitle": "B.C. Bill",
+    "sorttitle": "BC Bill",
     "genres": [
       "Arcade Games",
       "Miscellaneous"
@@ -974,7 +974,7 @@
     "id": "b.c._ii:_grog's_revenge",
     "slug": "b-c-2-grog-s-revenge",
     "title": "B.C. II: Grog's Revenge",
-    "sorttitle": "B.C. II: Grog's Revenge",
+    "sorttitle": "BC Quest 2",
     "genres": [
       "Arcade Games",
       "Licensed Games"
@@ -997,7 +997,7 @@
     "id": "b.c.'s_quest_for_tires",
     "slug": "b-c-s-quest-for-tires",
     "title": "B.C.'S Quest For Tires",
-    "sorttitle": "B.C.'S Quest For Tires",
+    "sorttitle": "BC Quest",
     "genres": [
       "Cartridge Games",
       "Arcade Games",
@@ -1159,7 +1159,7 @@
     "id": "barbarian:_the_ultimate_warrior",
     "slug": "barbarian-the-ultimate-warrior",
     "title": "Barbarian: The Ultimate Warrior",
-    "sorttitle": "Barbarian: The Ultimate Warrior",
+    "sorttitle": "Barbarian",
     "genres": [
       "BPJS Games",
       "Fighting Games",
@@ -3164,7 +3164,7 @@
     "id": "daley_thompson's_decathlon",
     "slug": "daley-thompson-s-decathlon",
     "title": "Daley Thompson's Decathlon",
-    "sorttitle": "Daley Thompson's Decathlon",
+    "sorttitle": "Decathlon",
     "genres": [
       "Licensed Games",
       "Sports Games"
@@ -3211,7 +3211,7 @@
     "id": "dan_dare:_pilot_of_the_future",
     "slug": "dan-dare-pilot-of-the-future",
     "title": "Dan Dare: Pilot Of The Future",
-    "sorttitle": "Dan Dare: Pilot Of The Future",
+    "sorttitle": "Dan Dare",
     "genres": [
       "Action Adventure Games",
       "Licensed Games",
@@ -5091,7 +5091,7 @@
     "id": "ghost_hunters",
     "slug": "ghost-hunters",
     "title": "Ghost Hunters",
-    "sorttitle": "Ghost Hunters",
+    "sorttitle": "GhostHunters",
     "genres": [
       "Arcade Games",
       "Action Adventure Games",
@@ -6197,7 +6197,7 @@
   {
     "id": "hunchback_2",
     "slug": "hunchback-2-quasimodo-s-revenge",
-    "title": "Hunchback II: Quasimodo's Revenge",
+    "title": "Hunchback 2",
     "year": 1985,
     "system": "C64",
     "genres": [
@@ -9393,7 +9393,7 @@
     "id": "pitfall_ii:_lost_caverns",
     "slug": "pitfall-2-lost-caverns",
     "title": "Pitfall II: Lost Caverns",
-    "sorttitle": "Pitfall II: Lost Caverns",
+    "sorttitle": "Pitfall 2",
     "genres": [
       "Cartridge Games",
       "Arcade Games",
@@ -9417,7 +9417,7 @@
     "id": "pitfall!",
     "slug": "pitfall",
     "title": "Pitfall!",
-    "sorttitle": "Pitfall!",
+    "sorttitle": "Pitfall",
     "genres": [
       "Cartridge Games",
       "Arcade Games",
