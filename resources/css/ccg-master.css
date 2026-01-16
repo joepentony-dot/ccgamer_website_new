@@ -3274,3 +3274,12 @@ body.ccg-party::before {
     width: 18px;
     height: 18px;
 }
+
+@media (max-width: 720px) {
+    .ccg-rating--single .ccg-rating__label {
+        font-size: clamp(0.6rem, 2.8vw, 0.75rem);
+        line-height: 1.35;
+        white-space: normal;
+        overflow-wrap: break-word;
+    }
+}

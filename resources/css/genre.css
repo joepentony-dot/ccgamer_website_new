@@ -687,6 +687,15 @@ body[data-collection="Retro Events"] .ccg-page--collection-single .ccg-collectio
     .ccg-page--collection-single .ccg-game-card__actions {
         padding-bottom: 6px;
     }
+
+    .ccg-page--genre-single .ccg-game-card__title,
+    .ccg-page--collection-single .ccg-game-card__title {
+        font-size: clamp(0.98rem, 3.6vw, 1.05rem);
+        line-height: 1.35;
+        letter-spacing: 0.06em;
+        white-space: normal;
+        overflow-wrap: break-word;
+    }
 }
 
 /* ============================================================
