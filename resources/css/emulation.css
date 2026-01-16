@@ -6,7 +6,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 :root {
-    --emu-electric: #00ffff;
+    --emu-electric: var(--accent);
     --emu-amber: #ffcc00;
     --emu-magenta: #ff00ff;
     --emu-link-glow: rgba(var(--accent-rgb), 0.5);
