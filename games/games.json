@@ -116,7 +116,8 @@
     ],
     "slug": "ace-of-aces",
     "sorttitle": "Ace Of Aces",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Feels complete in every way"
   },
   {
     "system": "C64",
@@ -239,7 +240,8 @@
       "https://drive.google.com/file/d/1NZBd7P2HviaZtmXyEGRrA5_-6TQTB5QN/view?usp=drive_link"
     ],
     "description": "Airborne Ranger is a Commodore 64 action-simulation game developed by MicroProse in 1987. Players take on the role of a U.S. Army airborne ranger, planning and executing covert military missions behind enemy lines. Combining strategic planning with real-time action, the game stood out on the C64 for its tactical depth and realistic military theme.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "A landmark release"
   },
   {
     "system": "C64",
@@ -387,7 +389,8 @@
       "https://drive.google.com/file/d/1PynskVl35QY0z0H1mHbKEC5efUwcxnjY/view?usp=drive_link"
     ],
     "description": "Aliens: The Computer Game is a Commodore 64 adaptation of the science-fiction film Aliens. The Electric Dreams version focuses on straightforward action gameplay, while the US release features a series of mini-games representing different scenes from the movie. Together, they offer a varied and ambitious licensed experience on the C64.",
-    "ccg_rating": 8
+  "ccg_rating": 10,
+    "ccg_rating_reason": "Iconic for good reason"
   },
   {
     "system": "C64",
@@ -437,7 +440,8 @@
       "https://drive.google.com/file/d/1qR9NY7seLQ9y-A0UcEPMwxfOOWf7msnf/view?usp=drive_link"
     ],
     "description": "Alter Ego is a unique Commodore 64 life-simulation game released by Activision in 1986. Players guide a character from childhood through adulthood, making decisions that shape their personality, career, and relationships. Unusual for its time, the game focuses on choice and consequence rather than traditional action, earning it a lasting reputation as an experimental classic.",
-    "ccg_rating": 7
+    "ccg_rating": 10,
+    "ccg_rating_reason": "A landmark release"
   },
   {
     "system": "C64",
@@ -461,7 +465,8 @@
       "https://drive.google.com/file/d/1mNy5wBFkBvpnP17ffvjNrNCv3rNEEvuc/view?usp=drive_link"
     ],
     "description": "American 3D Pool is a Commodore 64 sports game released in 1991 by Zeppelin Games. Offering both pool and billiards, the game uses a distinctive pseudo-3D viewpoint to simulate realistic table play. It is widely regarded as one of the most accomplished cue sports games available on the C64.",
-    "ccg_rating": 7
+    "ccg_rating": 10,
+    "ccg_rating_reason": "A landmark release"
   },
   {
     "system": "C64",
@@ -557,7 +562,8 @@
       "https://drive.google.com/file/d/1lixY5fKZLSAVt21qHoViCSJx9uatuf-x/view?usp=drive_link"
     ],
     "description": "Another World is a cinematic action-adventure game released on the Amiga in 1991. Players follow scientist Lester Knight Chaykin as he is transported to a mysterious alien world filled with danger and intrigue. Renowned for its storytelling, animation, and atmosphere, the game is widely regarded as one of the Amiga's defining titles.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Essential gaming history"
   },
   {
     "system": "C64",
@@ -628,7 +634,8 @@
       "https://drive.google.com/file/d/1uDfUNKN2iZsl6xE93jXZWzFC4hEURsvS/view?usp=drive_link"
     ],
     "description": "Apollo 18: Mission To The Moon is a Commodore 64 strategy and simulation game released by Accolade in 1987. Players manage a space mission inspired by the Apollo programme, balancing planning, resource management, and decision-making. The game is praised for its educational angle and thoughtful approach to space exploration.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "You’d defend it without hesitation"
   },
   {
     "system": "C64",
@@ -724,7 +731,8 @@
       "https://drive.google.com/file/d/171F-pm0Iixdaeq40Gr8z4CUmjMz0F3hL/view?usp=drive_link"
     ],
     "description": "Arcade Pool is an Amiga sports and strategy game released by Team17 in 1994. Featuring a realistic pool simulation with an intuitive interface, the game allows players to compete across a variety of rule sets and table layouts. It is widely regarded as one of the finest cue sports games on the Amiga.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Perfect balance of design elements"
   },
   {
     "system": "C64",
@@ -748,7 +756,8 @@
       "https://drive.google.com/file/d/1DxuYCJrp0-XQiU3XbWJHD_zIEJ37eEb9/view?usp=drive_link"
     ],
     "description": "Archon: The Light and the Dark is a Commodore 64 strategy game released in 1983 by Ariolasoft. Combining board-game strategy with real-time arcade combat, players command opposing fantasy forces battling for control of a shifting chessboard-like arena. The game is celebrated as a pioneering hybrid that influenced strategy design for years to come.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "You’d defend it without hesitation"
   },
   {
     "system": "C64",
@@ -795,7 +804,8 @@
       "https://drive.google.com/file/d/1rojnga2cw-Zq0TLRqYy-mALDf4tavhP2/view?usp=drive_link"
     ],
     "description": "Arkanoid is a Commodore 64 conversion of Taito's hugely successful arcade block-breaking game, released in 1987. Players control a paddle to deflect a ball, clearing screens of bricks while collecting power-ups that alter gameplay. The C64 version remains a favourite thanks to its addictive mechanics and faithful arcade feel.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Impossible to replace"
   },
   {
     "system": "C64",
@@ -985,7 +995,81 @@
       "https://drive.google.com/file/d/1xPe5vbnYJbLpZ_phdYS9Kyc-cY_qWuLD/view?usp=drive_link"
     ],
     "description": "Aztec Challenge is a Commodore 64 arcade game released by Cosmi in 1983. Players attempt to survive a series of deadly trials inspired by ancient Aztec rituals, relying on precise timing and quick reactions. Its brutal difficulty made it one of the more notorious early C64 titles.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Still thrilling today"
+  },
+  {
+    "system": "C64",
+    "id": "b.c._bill",
+    "slug": "b-c-bill",
+    "title": "B.C. Bill",
+    "sorttitle": "BC Bill",
+    "genres": [
+      "Arcade Games",
+      "Miscellaneous"
+    ],
+    "year": 1984,
+    "developer": "Imagine",
+    "videoid": "PlbS2Q4IgTg",
+    "lemon": [
+      "https://www.lemon64.com/game/bc-bill"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/bc_bill.jpg",
+    "pdf": "https://drive.google.com/file/d/1GaezpNjUvFY9z10tRYtlrRK0SWTnjY2x/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1eot6RylOZx68YUNtNkcqYusUSUZHUiqP/view?usp=drive_link"
+    ],
+    "description": "B.C. Bill is a Commodore 64 arcade game released by Imagine in 1984. Set in a prehistoric world, players guide a caveman through obstacle-filled levels while collecting items and avoiding hazards. The game is remembered for its simple mechanics and cartoon-style presentation."
+  },
+  {
+    "system": "C64",
+    "id": "b.c._ii:_grog's_revenge",
+    "slug": "b-c-2-grog-s-revenge",
+    "title": "B.C. II: Grog's Revenge",
+    "sorttitle": "BC Quest 2",
+    "genres": [
+      "Arcade Games",
+      "Licensed Games"
+    ],
+    "year": 1984,
+    "developer": "Software Projects",
+    "videoid": "iXJM3Tz_-JQ",
+    "lemon": [
+      "https://www.lemon64.com/game/bcs-quest-for-tires"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/bc_ii_grog_s_revenge.jpg",
+    "pdf": "https://drive.google.com/file/d/1n4JisEpwTy_ciAe7Rh33vPPOxzBxR06t/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1aUlTkh0T2JfIM9oLLEuXqrazW0pjAU4O/view?usp=drive_link"
+    ],
+    "description": "B.C. II: Grog's Revenge is a Commodore 64 arcade game released in 1984 by Software Projects. Acting as a sequel to B.C.'s Quest for Tires, it expands on the prehistoric theme with new challenges and enemies. The game retains the fast-paced action that made the original popular."
+  },
+  {
+    "system": "C64",
+    "id": "b.c.'s_quest_for_tires",
+    "slug": "b-c-s-quest-for-tires",
+    "title": "B.C.'S Quest For Tires",
+    "sorttitle": "BC Quest",
+    "genres": [
+      "Cartridge Games",
+      "Arcade Games",
+      "Licensed Games",
+      "Top Picks"
+    ],
+    "year": 1984,
+    "developer": "Software Projects",
+    "videoid": "5xSrBvtaWDc",
+    "lemon": [
+      "https://www.lemon64.com/game/bcs-quest-for-tires"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/bc_quest_for_tires.jpg",
+    "pdf": "https://drive.google.com/file/d/1n4JisEpwTy_ciAe7Rh33vPPOxzBxR06t/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1-fyuVeV5h6mZwPBfMqnW0h6T6G0crTRI/view?usp=drive_link"
+    ],
+    "description": "B.C.'s Quest for Tires is a Commodore 64 arcade platform game released in 1984 by Software Projects. Players control Thor, a caveman searching for missing stone wheels across dangerous landscapes. The game became a classic thanks to its tight controls, clever level design, and strong personality.",
+    "ccg_rating": 10,
+    "ccg_rating_reason": "A landmark release"
   },
   {
     "system": "C64",
@@ -1105,7 +1189,30 @@
       "https://drive.google.com/file/d/1zMEX-iU0w9AINQgTwiulVdgfomrEPc7u/view?usp=drive_link"
     ],
     "description": "Bangkok Knights is a Commodore 64 fighting game released in 1987 by System 3. Combining martial arts combat with light adventure elements, players progress through levels by defeating enemies and collecting items. The game is remembered for its large character sprites and distinctive setting.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Iconic for good reason"
+  },
+  {
+    "system": "C64",
+    "id": "barbarian_ii:_the_dungeon_of_drax",
+    "slug": "barbarian-2-the-dungeon-of-drax",
+    "title": "Barbarian II: The Dungeon Of Drax",
+    "sorttitle": "Barbarian 2",
+    "genres": [
+      "Fighting Games"
+    ],
+    "year": 1988,
+    "developer": "Palace Software",
+    "videoid": "FqYwaYMLOXk",
+    "lemon": [
+      "https://www.lemon64.com/game/barbarian-2"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/barbarian_2_new.png",
+    "pdf": "https://drive.google.com/file/d/1u90ZKinAph4hqBRiX4T6NApG0AAQy1-v/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1V-X9SFWfjcZdG4hywYlBrIOlBiuakx9G/view?usp=drive_link"
+    ],
+    "description": "Barbarian II: The Dungeon of Drax is a Commodore 64 fighting game released in 1988 by Palace Software. Acting as a sequel to Barbarian: The Ultimate Warrior, it expands the combat system with new enemies and locations while retaining the brutal sword-based duels of the original."
   },
   {
     "system": "C64",
@@ -1130,30 +1237,8 @@
       "https://drive.google.com/file/d/10XfUy8YnimlB68Lfk3U-8s8mpIr2vjI-/view?usp=drive_link"
     ],
     "description": "Barbarian: The Ultimate Warrior is a Commodore 64 fighting game released in 1987 by Palace Software. Featuring one-on-one sword combat, players battle opponents using timed strikes, blocks, and decapitation moves. The game became infamous for its violent gameplay and striking presentation.",
-    "ccg_rating": 10
-  },
-  {
-    "system": "C64",
-    "id": "barbarian_ii:_the_dungeon_of_drax",
-    "slug": "barbarian-2-the-dungeon-of-drax",
-    "title": "Barbarian II: The Dungeon Of Drax",
-    "sorttitle": "Barbarian 2",
-    "genres": [
-      "Fighting Games"
-    ],
-    "year": 1988,
-    "developer": "Palace Software",
-    "videoid": "FqYwaYMLOXk",
-    "lemon": [
-      "https://www.lemon64.com/game/barbarian-2"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/barbarian_2_new.png",
-    "pdf": "https://drive.google.com/file/d/1u90ZKinAph4hqBRiX4T6NApG0AAQy1-v/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1V-X9SFWfjcZdG4hywYlBrIOlBiuakx9G/view?usp=drive_link"
-    ],
-    "description": "Barbarian II: The Dungeon of Drax is a Commodore 64 fighting game released in 1988 by Palace Software. Acting as a sequel to Barbarian: The Ultimate Warrior, it expands the combat system with new enemies and locations while retaining the brutal sword-based duels of the original.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Still thrilling today"
   },
   {
     "system": "C64",
@@ -1349,7 +1434,8 @@
       "https://drive.google.com/file/d/1l93u6wlP76A_0OKUgcJSM0PwPfjqtfGi/view?usp=drive_link"
     ],
     "description": "Beach-Head is a Commodore 64 arcade and strategy hybrid released in 1983 by Access Software. Players attempt to invade and capture an enemy island through a series of action sequences, including artillery defense and ground assaults. It is regarded as one of the most influential early C64 titles.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Defines the platform"
   },
   {
     "system": "C64",
@@ -1587,7 +1673,8 @@
       "https://drive.google.com/file/d/10-yQwrooq5quTY9LG2maol2wSkdsTDyd/view?usp=drive_link"
     ],
     "description": "Black Hawk is a Commodore 64 arcade shooter released in 1984 by Creative Sparks. Players pilot a helicopter through hostile territory, destroying enemy forces while avoiding incoming fire. The game offers fast-paced action and straightforward controls.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "You’d defend it without hesitation"
   },
   {
     "system": "C64",
@@ -1823,7 +1910,8 @@
       "https://drive.google.com/file/d/1uaIwEOzwkSxANqEpqAsG5o76TtgpnEe0/view?usp=drive_link"
     ],
     "description": "Bloodwych is a deep first-person dungeon crawler featuring real-time movement, puzzle solving, and spell-based combat. Its cooperative two-player mode and atmospheric presentation helped it stand out among C64 role-playing games.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Still inspires discussion"
   },
   {
     "system": "C64",
@@ -2154,7 +2242,8 @@
       "https://drive.google.com/file/d/1XL82wsPg1kG1Dy-rM9Z1g8zzo3BCOVW9/view?usp=drive_link"
     ],
     "description": "Bruce Lee blends martial arts combat with platforming as players explore a mysterious pagoda, fighting enemies and collecting lanterns. Smooth animation, memorable sound, and balanced gameplay earned it classic status on the C64.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "A landmark release"
   },
   {
     "system": "C64",
@@ -2179,7 +2268,8 @@
       "https://drive.google.com/file/d/1jIrMDdEvz8pP0CeUKX_7-IAmYzWbcU4l/view?usp=drive_link"
     ],
     "description": "Bubble Bobble delivers cooperative arcade action as players trap enemies in bubbles and pop them for points. Charming presentation, inventive levels, and strong multiplayer appeal make it a timeless favourite.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Universally respected"
   },
   {
     "system": "C64",
@@ -2226,7 +2316,8 @@
       "https://drive.google.com/file/d/18jODEBKDsQTfM91j3ETVBTtaK6tGXglv/view?usp=drive_link"
     ],
     "description": "This darts simulation focuses on accuracy and competitive play, offering multiple game modes and realistic scoring. Straightforward controls and clean presentation make it one of the stronger C64 darts games.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Still thrilling today"
   },
   {
     "system": "C64",
@@ -2345,7 +2436,8 @@
       "https://drive.google.com/file/d/1wHeTqzAfWhKAEZae6QCsuMZc1IPR5eF5/view?usp=drive_link"
     ],
     "description": "Cannon Fodder blends action and strategy as players command squads of soldiers across war-torn battlefields. Its distinctive style, dark humour, and tactical depth made it one of the Amiga's most iconic games. War has never been so much fun!",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Defines the platform"
   },
   {
     "system": "AMIGA",
@@ -2792,7 +2884,8 @@
       "https://drive.google.com/file/d/1cwn7DMP-y5MEvoJVlZVxXn5aXEZAYltN/view?usp=drive_link"
     ],
     "description": "Choplifter places players in control of a rescue helicopter, tasked with saving hostages from enemy territory. Balancing fuel, firepower, and landing precision creates constant tension.",
-    "ccg_rating": 7
+    "ccg_rating": 10,
+    "ccg_rating_reason": "This is why the machine matters"
   },
   {
     "system": "C64",
@@ -2863,7 +2956,8 @@
       "https://drive.google.com/file/d/1aIlpa_LQMdYvCc9m68DNlf40fIQwpCvS/view?usp=drive_link"
     ],
     "description": "Sid Meier's Civilization on the Amiga is a deep, turn-based strategy game where players build and guide a civilisation from ancient times to the modern era. Gameplay revolves around exploration, diplomacy, warfare, and technological advancement, delivering long-form strategic depth.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Feels complete in every way"
   },
   {
     "system": "C64",
@@ -2962,7 +3056,8 @@
       "https://drive.google.com/file/d/1e-c0WPUalMLTd6L2Q2BhQ5lPmz37EKXJ/view?usp=drive_link"
     ],
     "description": "Commando is a classic Commodore 64 vertically scrolling shooter where players battle through enemy-infested jungle environments using grenades and rapid-fire weapons. Known for its relentless action and difficulty, it remains a landmark C64 arcade conversion.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "A defining experience"
   },
   {
     "system": "C64",
@@ -3128,7 +3223,8 @@
       "https://drive.google.com/file/d/1SBZjZhedJbqlu2NR1JCOuPeyQCAKuCq6/view?usp=drive_link"
     ],
     "description": "Creatures is a Commodore 64 platform-puzzle game known for its advanced graphics and parallax scrolling. Players guide Mayhem and Mayhem through non-linear levels, solving environmental puzzles and avoiding hazards.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Perfect balance of design elements"
   },
   {
     "system": "C64",
@@ -3153,7 +3249,8 @@
       "https://drive.google.com/file/d/1rJOI0pNZbBaxnSTrFtPlVfNDAEHlv3Ho/view?usp=drive_link"
     ],
     "description": "Creatures 2 is a Commodore 64 platform-puzzle sequel that expands on the original with larger levels, new mechanics, and increased complexity. Exploration, puzzle-solving, and precise movement are central to progress.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Timeless masterpiece"
   },
   {
     "system": "C64",
@@ -3271,7 +3368,8 @@
       "https://drive.google.com/file/d/1OYGqiGys3UxaBgWSn843qA8hsbGMmD7A/view?usp=drive_link"
     ],
     "description": "Curse of the Azure Bonds on the Commodore 64 is a classic Gold Box RPG sequel set in the Moonsea. Featuring turn-based tactical combat, deep AD&D rules, imported characters, and a sprawling political storyline, it delivers a rich, quest-driven fantasy adventure.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "This is why the machine matters"
   },
   {
     "system": "AMIGA",
@@ -3344,8 +3442,33 @@
     "disk": [
       "https://drive.google.com/file/d/15ANT2aH2hoTp0DnEzs1k7OPnypboR8A6/view?usp=drive_link"
     ],
-    "description": "Dan Dare II is a Commodore 64 arcade shooter based on the classic comic series. Players battle through enemy-filled levels using a variety of weapons, with fast scrolling and high difficulty.",
-    "ccg_rating": 5
+    "description": "Dan Dare II is a Commodore 64 arcade shooter based on the classic comic series. Players battle through enemy-filled levels using a variety of weapons, with fast scrolling and high difficulty."
+  },
+  {
+    "system": "C64",
+    "id": "dan_dare:_pilot_of_the_future",
+    "slug": "dan-dare-pilot-of-the-future",
+    "title": "Dan Dare: Pilot Of The Future",
+    "sorttitle": "Dan Dare",
+    "genres": [
+      "Action Adventure Games",
+      "Licensed Games",
+      "Top Picks"
+    ],
+    "year": 1986,
+    "developer": "Virgin games",
+    "videoid": "3Sc3WB40iK4",
+    "lemon": [
+      "https://www.lemon64.com/game/dan-dare"
+    ],
+    "thumbnail": "resources/images/thumbnails/all/dan_dare_pilot_of_the_future.jpg",
+    "pdf": "https://drive.google.com/file/d/1PDEOOuqWmU0qQd6sDAFygX1VQ6irzyd0/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1MDAxvtehfMvvGi0gOiO3lXTniH8n0GQc/view?usp=drive_link"
+    ],
+    "description": "Dan Dare: Pilot of the Future is a Commodore 64 action-adventure game combining shooting, exploration, and puzzle-solving. The game is known for its ambitious design and varied gameplay styles.",
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Had fun with this as a kid"
   },
   {
     "system": "C64",
@@ -3536,7 +3659,8 @@
       "https://drive.google.com/file/d/1usjnHI5c4Ph8gvpi6zq-4JceM9S49Bv6/view?usp=drive_link"
     ],
     "description": "Defender of the Crown is a Commodore 64 strategy game blending tactical decision-making with arcade-style battles. Players compete for control of medieval England through warfare, diplomacy, and economy management.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Who doesn't love this classic"
   },
   {
     "system": "C64",
@@ -3657,7 +3781,8 @@
       "https://drive.google.com/file/d/14DSOdbvIB9vJJSN5D1wy5ZhBUSCNh4To/view?usp=drive_link"
     ],
     "description": "Desert Strike is an Amiga action shooter where players pilot a helicopter across open missions, completing objectives such as rescues and enemy base destruction in a semi-open world environment.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Great fun blasting terrorists!"
   },
   {
     "system": "C64",
@@ -3990,7 +4115,8 @@
       "https://drive.google.com/file/d/1-536kGrLhouF5yzTVOOYA9bfVfB8fCAm/view?usp=drive_link"
     ],
     "description": "Dreamweb is an Amiga point-and-click adventure game with dark cyberpunk themes, combining investigation, puzzle-solving, and mature storytelling.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Bewbies!"
   },
   {
     "system": "C64",
@@ -4064,7 +4190,8 @@
       "https://drive.google.com/file/d/1ZKLXGDtMeyrduDWduDtvaFlzw2kuODZk/view?usp=drive_link"
     ],
     "description": "Dune is an Amiga adventure-strategy hybrid blending narrative progression with economic management and tactical decision-making on the planet Arrakis.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Deserves top rating for the music alone!"
   },
   {
     "system": "AMIGA",
@@ -4089,7 +4216,8 @@
       "https://drive.google.com/file/d/1_AUoDgCPs2rzgto5X55lRNGkEzpjrj7n/view?usp=drive_link"
     ],
     "description": "Dune II is an Amiga real-time strategy game that laid the foundations for the modern RTS genre, featuring base-building, resource management, and unit-based combat.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "A genre-defining landmark release"
   },
   {
     "system": "AMIGA",
@@ -4114,7 +4242,8 @@
       "https://drive.google.com/file/d/18TVuI9za9NyLhwVb_5sRfqjaqUNE-DM8/view?usp=drive_link"
     ],
     "description": "Dynablaster is an Amiga arcade-strategy game based on the Bomberman formula, focusing on grid-based movement, bomb placement, and multiplayer competition.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Superb in multi-player mode"
   },
   {
     "system": "C64",
@@ -4187,7 +4316,8 @@
       "https://drive.google.com/file/d/18SKvLp40Q39paVuR0vyDD2P35kHBxiXJ/view?usp=drive_link"
     ],
     "description": "The Eidolon is a 1985 Commodore 64 first-person adventure from Activision that combines dungeon exploration with real-time combat in a fantasy setting.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Very unusual concept but what a game"
   },
   {
     "system": "C64",
@@ -4211,7 +4341,8 @@
       "https://drive.google.com/file/d/1xkjAFLf-AaqqimhizmvJIcqjo3sSYMES/view?usp=drive_link"
     ],
     "description": "Elite is a Commodore 64 space trading and combat game featuring open galaxy exploration, trading, piracy, and space battles, offering unprecedented freedom for its time.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "An absolute classic"
   },
   {
     "system": "C64",
@@ -4236,7 +4367,8 @@
       "https://drive.google.com/file/d/17VOOiKE-0meLURywRwTa_uqV6jP498Uq/view?usp=drive_link"
     ],
     "description": "Emlyn Hughes International Soccer is a Commodore 64 football game known for its fast-paced arcade-style gameplay and accessible controls.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "One of the best footy games on the C64"
   },
   {
     "system": "C64",
@@ -4401,7 +4533,8 @@
       "https://drive.google.com/file/d/1MkwdE-6_3L2UnwjbCRPv65-d9Odi993Q/view?usp=drive_link"
     ],
     "description": "Exile is a Commodore 64 action-adventure platform game known for its physics-driven movement and large, interconnected environments.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "The graphics alone are superb"
   },
   {
     "system": "C64",
@@ -4544,7 +4677,8 @@
       "https://drive.google.com/file/d/11LwL4QNiytx9UT0Es2_Z0zpSTLlicTJm/view?usp=drive_link"
     ],
     "description": "Fiendish Freddy's Big Top O' Fun is a Commodore 64 circus-themed action game that combines fast reactions with precise joystick control. Players take part in a series of carnival challenges set inside a chaotic big top, making it a distinctive and highly polished late-era C64 cartridge title.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "So much fun was had with this one"
   },
   {
     "system": "C64",
@@ -4686,7 +4820,8 @@
       "https://drive.google.com/file/d/1WSEpyCyyFceMWkiIjX597WNJTsA7mXMQ/view?usp=drive_link"
     ],
     "description": "First Samurai is a Commodore 64 action platform game featuring large sprites, scrolling levels, and sword-based combat. Players explore a mythic world while collecting items and abilities needed to progress.",
-    "ccg_rating": 7
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Near-perfect at what it attempts"
   },
   {
     "system": "C64",
@@ -4759,7 +4894,8 @@
       "https://drive.google.com/file/d/1sAOFsStLSakZfU8X19aEqrbASyhhOSC_/view?usp=drive_link"
     ],
     "description": "Flashback is an Amiga cinematic action-adventure platform game known for its rotoscoped animation, atmospheric presentation, and precise movement. Players navigate futuristic environments while solving puzzles and surviving hostile encounters.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Conan B Hart, such an epic character"
   },
   {
     "system": "C64",
@@ -4925,7 +5061,8 @@
       "https://drive.google.com/file/d/1CI61FBoXmrA8qgHs__8h6CBfr_VvzIVy/view?usp=drive_link"
     ],
     "description": "Forbidden Forest is a Commodore 64 arcade shooter with a strong horror theme. Players face giant spiders, snakes, and other creatures using a bow, with tense sound design and escalating difficulty.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Nostalgic, creepy... perfect"
   },
   {
     "system": "C64",
@@ -4973,7 +5110,8 @@
       "https://drive.google.com/file/d/1nLzb9Qf_DvrWn9pOKVmwAubukbdgW7xC/view?usp=drive_link"
     ],
     "description": "Fort Apocalypse is a Commodore 64 scrolling shooter viewed from above, placing players in control of a helicopter navigating underground tunnels. Fuel management and precise shooting are central to its challenge.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Tough as nails but what a belter for 1982"
   },
   {
     "system": "C64",
@@ -5259,7 +5397,8 @@
       "https://drive.google.com/file/d/11-IPHa8IR-6nlZwrOfrn2QcwE96buAJO/view?usp=drive_link"
     ],
     "description": "Gauntlet is a Commodore 64 top-down arcade action game supporting multiple character classes and cooperative play. Continuous enemy waves and resource management drive its frantic pace.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Spent many hours playing this with my brother"
   },
   {
     "system": "C64",
@@ -5333,7 +5472,8 @@
       "https://drive.google.com/file/d/1fWgTh1NlKk2iJQWX3WOOdSGwIP3FtfBP/view?usp=drive_link"
     ],
     "description": "Ghostbusters is a Commodore 64 arcade-action game combining driving, strategy, and ghost-catching sequences. Its varied gameplay and licensed presentation made it one of the system's most recognisable titles.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Timeless masterpiece"
   },
   {
     "system": "C64",
@@ -5482,7 +5622,8 @@
       "https://drive.google.com/file/d/1NL-T9l87LLvYLB2f0RYS_h7JTOt_RNh0/view?usp=drive_link"
     ],
     "description": "Gods is an Amiga action platform game blending combat, exploration, and puzzle elements. Large sprites, atmospheric visuals, and deliberate pacing define its mythological setting.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Into... The Wonderful!"
   },
   {
     "system": "C64",
@@ -5580,7 +5721,8 @@
       "https://drive.google.com/file/d/1ckWBmM2DAZ3i7CfAAG4xYKGD2A6eYrGx/view?usp=drive_link"
     ],
     "description": "Grand Prix Circuit is a Commodore 64 Formula One racing game released in 1989 by Accolade. The game combines top-down circuit racing with career progression, allowing players to compete across multiple international tracks while managing car upgrades, qualifying laps, and race strategy. It stands out on C64 for blending arcade handling with a structured championship format.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Technically brilliant on for its time"
   },
   {
     "system": "C64",
@@ -6392,7 +6534,8 @@
       "https://drive.google.com/file/d/1wb1h735BHjbfK6veu3kzYJR9ZMLZv63y/view?usp=drive_link"
     ],
     "description": "Hudson Hawk is a Commodore 64 arcade-platform game released in 1991 by Ocean, adapting the film into a series of side-scrolling action stages. The C64 version features tightly structured levels, constant enemy pressure, and a focus on memorisation and precise movement.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "A very fun platformer"
   },
   {
     "system": "C64",
@@ -6554,7 +6697,8 @@
       "https://drive.google.com/file/d/16WtS4K41VomL7wZs0sadNA3cKXg1lXCD/view?usp=drive_link"
     ],
     "description": "IK+ is a Commodore 64 fighting game released in 1987 by System 3, refining the original International Karate with smoother controls, improved visuals, and expanded movesets. The C64 version is widely regarded as one of the system’s finest one-on-one fighters, balancing accessibility with technical depth.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Nobody could argue with this score"
   },
   {
     "system": "AMIGA",
@@ -6578,7 +6722,8 @@
       "https://drive.google.com/file/d/1KsllmbMayc5c0kIH1tJyhEYYLBxR3RyX/view?usp=drive_link"
     ],
     "description": "Released on the Amiga in 1988 by System 3, IK+ builds on the success of its Commodore 64 counterpart with enhanced graphics, sound, and animation. The Amiga version delivers fluid martial arts combat with precise controls, cementing its status as a benchmark for home computer fighting games.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Captures the magic of the era"
   },
   {
     "system": "C64",
@@ -6650,7 +6795,8 @@
       "https://drive.google.com/file/d/1XvefbJseSivMJxm9jduXAYKbUDpqXNR1/view?usp=drive_link"
     ],
     "description": "Impossible Mission is a Commodore 64 action-adventure released in 1984 by Epyx, combining platforming, puzzle-solving, and exploration within a villain’s futuristic complex. The C64 version is iconic for its digitised speech, tense atmosphere, and demanding gameplay that rewards observation and memory. You might recognise the iconic speech in the opening of my website",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Still inspires discussion. Stay a while, stay forever"
   },
   {
     "system": "C64",
@@ -6699,7 +6845,8 @@
       "https://drive.google.com/file/d/1OzXMqy9zImO7GmRFuZJycSmGusWIdYOY/view?usp=drive_link"
     ],
     "description": "Indiana Jones And The Last Crusade (Adventure) is an Amiga graphic adventure released in 1989 by US Gold, closely following the film’s narrative through exploration, puzzles, and dialogue-driven progression. The Amiga version benefits from improved visuals and interface design, delivering a faithful computer-based adventure experience.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Another golden era point & click classic"
   },
   {
     "system": "C64",
@@ -6847,7 +6994,8 @@
       "https://drive.google.com/file/d/17EABvMWgP3N1a1_wjcQXoMuYk3aCSvDI/view?usp=drive_link"
     ],
     "description": "Infiltrator is a Commodore 64 strategy-action game released in 1986 by Mindscape, blending flight simulation, stealth infiltration, and puzzle elements. The C64 version offers a multi-layered experience, requiring careful planning and execution across its varied mission phases.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Universally respected"
   },
   {
     "system": "C64",
@@ -6895,7 +7043,8 @@
       "https://drive.google.com/file/d/1Ko-U0MJ3Z6c21R3oGS4A6SPxrp9JlYF2/view?usp=drive_link"
     ],
     "description": "International Soccer is a Commodore 64 sports classic released in 1983 by Commodore, widely regarded as one of the system’s most influential football games. The C64 version introduced smooth scrolling, intuitive controls, and a convincing sense of pitch movement that shaped many later football titles.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "My first ever football game on any computer"
   },
   {
     "system": "C64",
@@ -6989,7 +7138,8 @@
       "https://drive.google.com/file/d/1uNXYicFOwxNTTF29rGrVWNn-ULvPURDP/view?usp=drive_link"
     ],
     "description": "Released on the Commodore 64 in 1986 by Hewson, Iridis Alpha is a fast-paced shooter that combines twitch reflexes with strategic positioning across horizontally scrolling arenas. The C64 version is widely praised for its fluid movement, distinctive colour cycling effects, and tightly tuned gameplay that rewards skill and concentration",
-    "ccg_rating": 7
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Mindboggling and masterful programming"
   },
   {
     "system": "AMIGA",
@@ -7014,7 +7164,8 @@
       "https://drive.google.com/file/d/1ZoqU0K24X41ibcjXusk7BJtqf0ezbcGa/view?usp=drive_link"
     ],
     "description": "It Came From The Desert is an Amiga adventure released in 1989 by Cinemaware, blending narrative-driven gameplay with action sequences inspired by 1950s science fiction films. On the Amiga, players investigate a desert town threatened by giant insects, with time-based decisions, cinematic presentation, and varied gameplay styles creating a highly immersive experience.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Thats the guy! Get him!"
   },
   {
     "system": "AMIGA",
@@ -7155,7 +7306,8 @@
       "https://drive.google.com/file/d/1XWC2D6M5sFUn_6ADHi_nZEqyHwH54CFL/view?usp=drive_link"
     ],
     "description": "Released on the Commodore 64 in 1984 by Software Projects thanks to the great conversion by Shahid Ahmad, Jet Set Willy is a sprawling platform adventure built around exploring a vast mansion filled with interconnected rooms. The C64 version became iconic for its non-linear structure, demanding precision, and memorable audiovisual presentation.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Iconic for good reason"
   },
   {
     "system": "AMIGA",
@@ -7179,7 +7331,8 @@
       "https://drive.google.com/file/d/1i0iWjiF31db5wDHX7DVakSVUaPhg2ECs/view?usp=drive_link"
     ],
     "description": "Jimmy White’s Whirlwind Snooker is an Amiga sports simulation released in 1991 by Virgin Games, offering a detailed and authentic take on professional snooker. The Amiga version stands out for its smooth table physics, tactical depth, and faithful recreation of televised snooker presentation.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Technically brilliant for its time"
   },
   {
     "system": "C64",
@@ -7278,7 +7431,8 @@
       "https://drive.google.com/file/d/1tAUfUQj5UivyUOD7cCC0AfufCKZ5if2K/view?usp=drive_link"
     ],
     "description": "Jumpman is a Commodore 64 platform-puzzle classic released in 1983 by Epyx, built around navigating single-screen levels while defusing explosives. The C64 version is celebrated for its precise controls, inventive level design, and longevity, thanks to its focus on skill rather than speed alone.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Still worth firing up even todya"
   },
   {
     "system": "C64",
@@ -7683,7 +7837,8 @@
       "https://drive.google.com/file/d/1seAQzo1VqPkYunuBHQspEKXZ4-9_7VZV/view?usp=drive_link"
     ],
     "description": "Koronis Rift is a Commodore 64 action-adventure released in 1986 by Activision, featuring a 3D-like landscape where players explore alien terrain and engage in vehicular combat. The C64 version is notable for its ambition, combining free exploration with strategic encounters.",
-    "ccg_rating": 7
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Brilliant concept"
   },
   {
     "system": "C64",
@@ -7778,7 +7933,8 @@
       "https://drive.google.com/file/d/1KWZl7MS_xaCX5FXCR3uyH8InBrQmzXwK/view?usp=drive_link"
     ],
     "description": "Laser Squad is a Commodore 64 strategy game released in 1989 by Blade Software, featuring turn-based tactical combat across detailed, mission-driven scenarios. The C64 version is highly regarded for its depth, destructible environments, and emphasis on careful planning.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Essential gaming history - played this loads as a kid"
   },
   {
     "system": "C64",
@@ -7802,7 +7958,8 @@
       "https://drive.google.com/file/d/1is0ggh5UMghkEGh7Y-7rfPQ_oxW7ytsL/view?usp=drive_link"
     ],
     "description": "The Last Ninja is a 1987 Commodore 64 action-adventure classic from System 3 that blends isometric exploration, combat, and atmospheric presentation.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Only minor flaw was those river jumps!"
   },
   {
     "system": "C64",
@@ -7993,7 +8150,8 @@
       "https://drive.google.com/file/d/19ifm7Dlw_mJ3l7uqCvG_QXuvqSTdWeb-/view?usp=drive_link"
     ],
     "description": "Lemmings is an Amiga puzzle classic released in 1991 by Psygnosis, tasking players with guiding groups of creatures to safety using limited abilities. The Amiga version is widely regarded as definitive, thanks to its smooth animation, clear visuals, and perfectly balanced difficulty curve.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Lets go!"
   },
   {
     "system": "C64",
@@ -8115,7 +8273,8 @@
       "https://drive.google.com/file/d/17GORhX7RQJYleBTTq6E7NOsuBBRY_kD3/view?usp=drive_link"
     ],
     "description": "The Lords Of Midnight is a 1985 Commodore 64 strategy role-playing game from Beyond that combines large-scale fantasy warfare with character-led exploration.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Still inspires discussion"
   },
   {
     "system": "AMIGA",
@@ -8210,7 +8369,8 @@
       "https://drive.google.com/file/d/17dhb9RC53a8ydSv_0XJ-7GLXTFm-Ji3D/view?usp=drive_link"
     ],
     "description": "M.U.L.E. is a Commodore 64 strategy game released in 1983 by Ariolasoft, combining economic simulation, resource management, and competitive multiplayer. The C64 version became legendary for its balance, accessibility, and depth, supporting both cooperative and adversarial play across repeated sessions.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Stands above its peers"
   },
   {
     "system": "C64",
@@ -8306,7 +8466,8 @@
       "https://drive.google.com/file/d/1fswHfXw2v_-OmKJL4bKnK8o65vqVd5xF/view?usp=drive_link"
     ],
     "description": "Mail Order Monsters is a Commodore 64 strategy game released in 1985 by Ariolasoft, allowing players to create, customise, and battle monsters in turn-based arena combat. The C64 version is praised for its depth, customisation options, and strong multiplayer focus.",
-    "ccg_rating": 6
+    "ccg_rating": 10,
+    "ccg_rating_reason": "A unique little classic"
   },
   {
     "system": "C64",
@@ -8331,7 +8492,8 @@
       "https://drive.google.com/file/d/1xUoxoR7-ZkUgGy_vtUG6irX0P8mkFOMF/view?usp=drive_link"
     ],
     "description": "Maniac Mansion is a Commodore 64 adventure released in 1987 by Lucasfilm Games, introducing a revolutionary point-and-click style interface and multiple story paths. The C64 version stands out for its non-linear structure, dark humour, and replay value driven by different character abilities.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Dont be a tuna head"
   },
   {
     "system": "C64",
@@ -8403,7 +8565,8 @@
       "https://drive.google.com/file/d/1-khy155C9cWJk4vi_75b2poDyzr74Uit/view?usp=drive_link"
     ],
     "description": "Master Of Magic is a Commodore 64 action-adventure released in 1985 by Mastertronic, combining exploration, combat, and puzzle elements within a fantasy setting. The C64 version focuses on navigating interconnected areas while managing hazards and enemies through careful timing.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Rob Hubbards music still sends shivers"
   },
   {
     "system": "C64",
@@ -8594,7 +8757,8 @@
       "https://drive.google.com/file/d/1TdGrWNT_uGhOPTOvAML-VhmmSkXznZul/view?usp=drive_link"
     ],
     "description": "Microprose Soccer is a Commodore 64 sports classic released in 1988 by MicroProse Software, delivering fast, fluid football gameplay with an emphasis on control and positioning. The C64 version is widely praised for its smooth scrolling, responsive controls, and competitive depth.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Another superb football game on the C64"
   },
   {
     "system": "C64",
@@ -8737,7 +8901,8 @@
       "https://drive.google.com/file/d/1CWg4TPSDGxsxzgJCvm7xzaEp3O_E4QIT/view?usp=drive_link"
     ],
     "description": "The Secret Of Monkey Island is a 1991 Amiga point-and-click adventure classic that delivers puzzle-solving, memorable characters, and narrative-driven gameplay.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Probably the best point & click ever made"
   },
   {
     "system": "AMIGA",
@@ -8761,7 +8926,8 @@
       "https://drive.google.com/file/d/1pb9cEzW7a8n9_QZ_xBvnB8XPeb6GZIRk/view?usp=drive_link"
     ],
     "description": "Monkey Island 2 LeChuck’s Revenge is an Amiga adventure released in 1992 by US Gold, adapting the acclaimed point-and-click sequel for home computers. The Amiga version delivers rich storytelling, intricate puzzles, and polished audiovisual presentation.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "What a way to follow up a classic"
   },
   {
     "system": "C64",
@@ -8856,7 +9022,8 @@
       "https://drive.google.com/file/d/14z1ywXlMmtrpz1HfBGGKnnFQKCWteCLS/view?usp=drive_link"
     ],
     "description": "Moonstone A Hard Days Knight is an Amiga role-playing game released in 1991 by Mindscape, combining exploration, brutal combat, and competitive progression within a dark fantasy setting. The Amiga version is particularly noted for its violent duels, atmospheric presentation, and high-risk reward structure.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Better in multiplayer"
   },
   {
     "system": "C64",
@@ -8929,7 +9096,8 @@
       "https://drive.google.com/file/d/1d0fTMbuMXfSL1wHLx6ImQY8ihymReEIP/view?usp=drive_link"
     ],
     "description": "Mr Robot And His Robot Factory is a Commodore 64 platform game released in 1984 by Beyond, combining fast movement with screen-based puzzles and enemy avoidance. The C64 version is widely praised for its fluid controls, clever level design, and strong sense of momentum.",
-    "ccg_rating": 7
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Brilliant little platformer"
   },
   {
     "system": "C64",
@@ -8976,7 +9144,8 @@
       "https://drive.google.com/file/d/1hz1FNGIrpPojLTIhHrKfdoHwG_kg21O2/view?usp=drive_link"
     ],
     "description": "Released on the Commodore 64 in 1986 by Activision, Murder On The Mississippi is a narrative-driven adventure set aboard a riverboat, tasking players with solving a murder through investigation and deduction. The C64 version stands out for its atmospheric setting, structured storytelling, and emphasis on logic over reflexes.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Kept me busy for hours this game"
   },
   {
     "system": "C64",
@@ -9098,7 +9267,8 @@
       "https://drive.google.com/file/d/1tuHeV2R9riPMnYx8em5IbLA45JhKn6UC/view?usp=drive_link"
     ],
     "description": "Released on the Commodore 64 in 1986 by Konami, Nemesis is a horizontally scrolling shooter known for its power-up system and escalating difficulty. The C64 version captures the arcade feel through tight enemy patterns and demanding reflex-based gameplay.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Played it to death as a kid"
   },
   {
     "system": "C64",
@@ -9148,7 +9318,8 @@
       "https://drive.google.com/file/d/1VtLQrd_Y66PdiO7ELajooWZ91RnOGHpO/view?usp=drive_link"
     ],
     "description": "Neuromancer is a Commodore 64 adventure released in 1988 by Electronic Arts, inspired by William Gibson’s cyberpunk novel and blending exploration with hacking and combat systems. The C64 version is noted for its atmosphere, multiple gameplay layers, and ambitious design.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Superb cyberpunk adventure"
   },
   {
     "system": "C64",
@@ -9483,7 +9654,8 @@
       "https://drive.google.com/file/d/1kjRJTN9EQUCLr8wAbkC3tot_cQ9valWs/view?usp=drive_link"
     ],
     "description": "North & South is an Amiga strategy game released in 1989 by Inforgrames, based on the comic series and blending turn-based conquest with arcade-style battles. The Amiga version balances strategic planning with real-time action sequences.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Funny little stretegy game"
   },
   {
     "system": "C64",
@@ -9627,7 +9799,8 @@
       "https://drive.google.com/file/d/1b4Jih2cEEhth4w3-BjLOD7aJHmVCgkdX/view?usp=drive_link"
     ],
     "description": "Orc Attack is a Commodore 64 arcade game released in 1984 by Creative Sparks, featuring fast-paced combat against waves of fantasy enemies. The C64 version delivers straightforward action driven by reflexes and increasing difficulty.",
-    "ccg_rating": 7
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Simple, yet brilliant"
   },
   {
     "system": "C64",
@@ -9700,7 +9873,8 @@
       "https://drive.google.com/file/d/1RptP5zq-OeSFWfjQrgJmHKHs9jFiK8yU/view?usp=drive_link"
     ],
     "description": "Released on the Commodore 64 in 1985 by Hewson, Paradroid is a genre-defining action-adventure that blends real-time exploration with tactical decision-making aboard a hostile spaceship. The C64 version is especially renowned for its innovative droid takeover mechanic, non-linear structure, and tense atmosphere, making it one of the system’s most influential and respected titles.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Always a classic - Capturing the 999 droid"
   },
   {
     "system": "C64",
@@ -9772,7 +9946,8 @@
       "https://drive.google.com/file/d/1-xCpeuqlAqlS_TiBNg8YbXJb16SSqF9K/view?usp=drive_link"
     ],
     "description": "Sid Meier's Pirates! is a 1987 Commodore 64 strategy classic from MicroProse Software that blends open-world exploration, naval combat, and role-playing elements into a highly replayable experience. My personal favourite Commodore 64 game of all time",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "My favourite C64 game ever"
   },
   {
     "system": "C64",
@@ -9869,7 +10044,8 @@
       "https://drive.google.com/file/d/1j1OTvbzV66kl7wBY25yiwIYgSc-YLYJL/view?usp=drive_link"
     ],
     "description": "Pitstop II is a Commodore 64 racing game released in 1984 by Epyx, introducing real-time pit stops and split-screen multiplayer to the genre. The C64 version is celebrated for its technical ambition, strategic depth, and competitive head-to-head racing.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Those pits were brilliant. Great in 2 player mode"
   },
   {
     "system": "C64",
@@ -10016,7 +10192,8 @@
       "https://drive.google.com/file/d/1YBAy0HHIw9iCwaYfzWDAVZPKyDKR5b2g/view?usp=drive_link"
     ],
     "description": "Populous is an Amiga strategy classic released in 1989 by Electronic Arts, introducing the god game genre where players manipulate terrain and guide followers to dominance. The Amiga version is especially noted for its smooth interface, scalable gameplay, and long-term strategic depth.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Set standards others could only follow"
   },
   {
     "system": "C64",
@@ -10181,7 +10358,8 @@
       "https://drive.google.com/file/d/1rWNj3sU_8xr-RPUj5LyXiDMOPM-fSJdQ/view?usp=drive_link"
     ],
     "description": "Project Firestart is a Commodore 64 action-adventure released in 1989 by Electronic Arts, blending exploration with survival horror elements aboard a derelict space station. The C64 version is widely regarded as groundbreaking for its use of atmosphere, sound, and narrative tension.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "A very atmospheric horror title"
   },
   {
     "system": "C64",
@@ -10205,7 +10383,8 @@
       "https://drive.google.com/file/d/12MJKozBLAQogesQ954axmdnx_NynQM77/view?usp=drive_link"
     ],
     "description": "Project Stealth Fighter is a Commodore 64 combat flight simulation released in 1987 by MicroProse Software, placing players in control of advanced military aircraft. The C64 version balances realism with accessibility, offering detailed missions and strategic planning.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "One of the best flight sims out there"
   },
   {
     "system": "AMIGA",
@@ -10230,7 +10409,8 @@
       "https://drive.google.com/file/d/1r49NmicGrpFwTrq2tX_eI6U_PP8A7IyR/view?usp=drive_link"
     ],
     "description": "Project-X is an Amiga scrolling shooter released in 1992 by Team17, known for its heavy enemy patterns and upgrade-driven progression. The Amiga version is celebrated for its audiovisual intensity, challenging design, and polished presentation.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Tough as nails but brilliant"
   },
   {
     "system": "C64",
@@ -10299,7 +10479,8 @@
       "https://drive.google.com/file/d/1wFNADV_gIvYPrJ25Z_i6jq7I5suwZXn1/view?usp=drive_link"
     ],
     "description": "Push-Over is an Amiga puzzle game released in 1992 by Ocean, centred around toppling domino chains in the correct order. The Amiga version is praised for its clever level design, smooth controls, and steadily increasing complexity.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "You could get hooked on this, quickly"
   },
   {
     "system": "C64",
@@ -10540,7 +10721,8 @@
       "https://drive.google.com/file/d/1N-h4pHEAITkIbbaD6CpayjhYtoSAwUKK/view?usp=drive_link"
     ],
     "description": "Raid Over Moscow is a Commodore 64 arcade action game released in 1984 by Access Software, structured around multiple mission types and escalating tension. The C64 version is notable for its pacing, thematic intensity, and varied gameplay sequences.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Brilliant - once you make it out of the hangar!"
   },
   {
     "system": "AMIGA",
@@ -10590,7 +10772,8 @@
       "https://drive.google.com/file/d/1uP7SFiEglyPlmljANEd1evlww6HjmqSp/view?usp=drive_link"
     ],
     "description": "Rambo First Blood Part II is a Commodore 64 arcade action game released in 1986 by Ocean, based on the film and featuring mission-based shooting and exploration. The C64 version is widely remembered for its scale, difficulty, and cinematic ambition.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Superb music and loading screen. Very nostalgic"
   },
   {
     "system": "C64",
@@ -10973,7 +11156,8 @@
       "https://drive.google.com/file/d/1cYq7BNeS6Y_jXtnonTulq8zkme6RHSCd/view?usp=drive_link"
     ],
     "description": "Robin Of The Wood is a 1985 Commodore 64 action-adventure from Odin Computer Graphics that combines exploration, combat, and problem-solving within a medieval fantasy setting.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "The Fred Gray music loop is incredibly nostalgic"
   },
   {
     "system": "AMIGA",
@@ -11072,7 +11256,8 @@
       "https://drive.google.com/file/d/1JweFYlYgtXChlaVnUNdJZVskTUIFWgWQ/view?usp=drive_link"
     ],
     "description": "Rock Star Ate My Hamster is a 1989 Commodore 64 strategy game from Codemasters that puts players in charge of managing a pop band, balancing finances, publicity, and touring decisions.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Funny funny funny. Great game"
   },
   {
     "system": "C64",
@@ -11097,7 +11282,8 @@
       "https://drive.google.com/file/d/18uVq0D45RJWjtEJ2BJIL2NKNG6GVE4dD/view?usp=drive_link"
     ],
     "description": "Rock'n Wrestle is a 1985 Commodore 64 wrestling game from Melbourne House that mixes arcade-style action with sports presentation, offering character variety and exaggerated in-ring combat.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Brilliant if you have a pal to beat up in 2 player mode"
   },
   {
     "system": "C64",
@@ -11121,7 +11307,8 @@
       "https://drive.google.com/file/d/1telAgGoHnqIkZqK00_XuCEHciSAsO9ri/view?usp=drive_link"
     ],
     "description": "Rocket Ball is a 1985 Commodore 64 sports game from IJK Software that delivers a fast, arcade-style take on futuristic football, prioritising speed and aggressive play.",
-    "ccg_rating": 7
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Once mastered, becomes very addictive"
   },
   {
     "system": "C64",
@@ -11146,7 +11333,8 @@
       "https://drive.google.com/file/d/1sWOPnOjlMf4a2i9mFBY2VpIL-kq2nkff/view?usp=drive_link"
     ],
     "description": "Rocket Ranger is a 1988 Commodore 64 action-adventure from Cinemaware that blends strategy, combat, and cinematic presentation, tasking players with stopping a global invasion through careful planning.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Brilliant game and graphics"
   },
   {
     "system": "C64",
@@ -11477,7 +11665,8 @@
       "https://drive.google.com/file/d/1daevUfPNcCQh5ZW1CGydYvZqrLHGZMnl/view?usp=drive_link"
     ],
     "description": "Sanxion is a 1986 Commodore 64 shooter from Thalamus known for its smooth scrolling and technical polish, offering challenging enemy patterns and a strong audio-visual presentation.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "One of the best shooters around on the C64"
   },
   {
     "system": "C64",
@@ -11526,7 +11715,8 @@
       "https://drive.google.com/file/d/1KOpj9Aae2S2s5wKYhe1H5N5Jwr_qUmnp/view?usp=drive_link"
     ],
     "description": "Scarabaeus is a 1985 Commodore 64 adventure from Ariolasoft that blends puzzle-solving with horror themes, creating a tense experience built around exploration and logical progression.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Very innovative design for such an early title"
   },
   {
     "system": "C64",
@@ -11645,7 +11835,8 @@
       "https://drive.google.com/file/d/1QQsPvqJNkJy4WrAvWSg_zJ1seoEjemzX/view?usp=drive_link"
     ],
     "description": "Sensible Soccer is a 1995 Amiga football classic from Renegade that combines fast-paced matches with deep tactical control, widely regarded as one of the most influential sports games on the platform.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "I used to play this using my FEET as a kid - seriously"
   },
   {
     "system": "C64",
@@ -11670,7 +11861,8 @@
       "https://drive.google.com/file/d/1aMSeV8CIBIM1C3RxqL1ydKrVYQv6TDRG/view?usp=drive_link"
     ],
     "description": "The Sentinel is a 1986 Commodore 64 puzzle strategy game from Firebird that focuses on abstract 3D landscapes and resource-based problem-solving.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Brilliant game - watch the video to learn how to play it"
   },
   {
     "system": "C64",
@@ -11718,7 +11910,8 @@
       "https://drive.google.com/file/d/1gJYrvHKvZMtqHWkKg_ItJT-L6JL1bKY_/view?usp=drive_link"
     ],
     "description": "The Settlers is a 1993 Amiga strategy game from Blue Byte that centres on city building, economic simulation, and long-term resource management.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Hours turn into days with this game. Many late nights"
   },
   {
     "system": "C64",
@@ -11743,7 +11936,8 @@
       "https://drive.google.com/file/d/1DKdGoRydzXuqmsyNtvtQ3qCAHwls9sqL/view?usp=drive_link"
     ],
     "description": "Shadow Dancer is a 1991 Commodore 64 arcade conversion from US Gold that brings ninja-themed action to the system, combining fast movement, enemy encounters, and arcade-style level design.",
-    "ccg_rating": 5
+    "ccg_rating": 10,
+    "ccg_rating_reason": "I liked this even more than Shinobi as a kid"
   },
   {
     "system": "AMIGA",
@@ -11793,7 +11987,8 @@
       "https://drive.google.com/file/d/1saZJxAN2f_aXXyU2gu5fthKWQ1WPJJiZ/view?usp=drive_link"
     ],
     "description": "Shadow Of The Beast is a 1990 Commodore 64 arcade platformer from developer Psygnosis that adapts the striking visual style and brutal difficulty of its Amiga counterpart into a demanding side-scrolling experience.",
-    "ccg_rating": 7
+    "ccg_rating": 10,
+    "ccg_rating_reason": "That parallax scrolling!"
   },
   {
     "system": "C64",
@@ -11935,7 +12130,8 @@
       "https://drive.google.com/file/d/1jbtgz1KDXruAdBSmdRBbPB1JDaaMF7W2/view?usp=drive_link"
     ],
     "description": "Silent Service is a 1985 Commodore 64 strategy simulation from MicroProse Software that focuses on submarine warfare, emphasising tactical decision-making, realism, and tension over arcade action.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Brilliant if you have the patience"
   },
   {
     "system": "C64",
@@ -11982,7 +12178,8 @@
       "https://drive.google.com/file/d/107quez4q1GlRlKjR2QLnBtc7cpaTUOcu/view?usp=drive_link"
     ],
     "description": "SimCity is a 1989 Commodore 64 strategy game from Infogrames that tasks players with building and managing a growing city, balancing resources, infrastructure, and long-term planning.",
-    "ccg_rating": 7
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Impossible to replace"
   },
   {
     "system": "AMIGA",
@@ -12076,7 +12273,8 @@
       "https://drive.google.com/file/d/12Yx0uUZXb24qvVTCtyPBtkL2uEd4aSoB/view?usp=drive_link"
     ],
     "description": "Skidmarks is a 1993 Amiga top-down racing game from Acid Software that focuses on fast-paced multiplayer action, loose handling, and track-based competition.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "An awesome racing game when it was first released"
   },
   {
     "system": "C64",
@@ -12101,7 +12299,8 @@
       "https://drive.google.com/file/d/1H3F4DSWxhOG_wTAQ7OrfGUvTXHEwILXw/view?usp=drive_link"
     ],
     "description": "Skool Daze is a 1985 Commodore 64 action-adventure from Microsphere that places players inside a living school environment, encouraging mischief, exploration, and creative problem-solving.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Iconic.. shame we never got Back To Skool on the C64"
   },
   {
     "system": "C64",
@@ -12363,7 +12562,8 @@
       "https://drive.google.com/file/d/1whhtYKNBEOv-Z6mw1iD1nU54fmvY8NvD/view?usp=drive_link"
     ],
     "description": "Space Taxi is a 1984 Commodore 64 arcade classic from Muse Software that challenges players to pilot a taxi through hazardous caverns while managing fuel, gravity, and impatient passengers.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Hey... Taxi! Pad 4 Pweeese"
   },
   {
     "system": "C64",
@@ -12766,7 +12966,8 @@
       "https://drive.google.com/file/d/1KxMUf0Kbd0rd_gbM3pZzx5Z8KOKACryz/view?usp=drive_link"
     ],
     "description": "Starquake is a 1986 Commodore 64 action-adventure from Bubble Bus that focuses on exploration, environmental puzzles, and real-time combat within a hostile alien structure.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Me & my buddy mapped this game on post-it notes"
   },
   {
     "system": "C64",
@@ -13182,7 +13383,8 @@
       "https://drive.google.com/file/d/1nNDVwp8ayWf8Hd-OzO1dURTEOwQQggb_/view?usp=drive_link"
     ],
     "description": "Superfrog is a 1993 Amiga platform classic from Team17 that features fast scrolling levels, responsive controls, vibrant environments, and arcade-style difficulty.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Lucozade guzzling frogs deserve top marks"
   },
   {
     "system": "C64",
@@ -13253,7 +13455,8 @@
       "https://drive.google.com/file/d/1s3jmWejkeobtWFr1akA5Pjbtte7Rv3gp/view?usp=drive_link"
     ],
     "description": "The Sword Of Fargoal is a 1983 Commodore 64 role-playing game from Epyx that delivers dungeon exploration, character progression, and replayable quests.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Twank! Thud! Ugh! Ouch! You Died... Brilliant"
   },
   {
     "system": "AMIGA",
@@ -13301,7 +13504,8 @@
       "https://drive.google.com/file/d/14ZBbLbtqmG7UfAjELTy_KmVMrgVpjLMV/view?usp=drive_link"
     ],
     "description": "System 15000 is a 1984 Commodore 64 text-based adventure from Craig Communications that emphasises exploration, logical problem-solving, and player choice.",
-    "ccg_rating": 7
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Makes you feel like a real hacker"
   },
   {
     "system": "C64",
@@ -13829,7 +14033,8 @@
       "https://drive.google.com/file/d/1qduOjJF0PoEMRbO7IaJq6ktR3-voktm6/view?usp=drive_link"
     ],
     "description": "Times Of Lore is a 1988 Commodore 64 action-adventure role-playing game from Origin Systems that features open exploration, character progression, and a large fantasy world.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "A fine game from Origin Systems"
   },
   {
     "system": "C64",
@@ -14097,7 +14302,8 @@
       "https://drive.google.com/file/d/1FfefjBpfRsXD7wMZqh-GiClSrHC28Yqr/view?usp=drive_link"
     ],
     "description": "The Train: Escape To Normandy is a 1987 Commodore 64 arcade strategy game from Accolade that blends wartime action with time-critical objectives.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "So much going on it reels you right in"
   },
   {
     "system": "C64",
@@ -14268,7 +14474,8 @@
       "https://drive.google.com/file/d/15AKpxnknvtONlgyKC3VJGptJUZ6QSxsq/view?usp=drive_link"
     ],
     "description": "Turbo Out Run is a 1989 Commodore 64 arcade racing game from Sega that emphasises speed, branching routes, and time-based progression across long distance courses.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Brilliant sound and gameplay"
   },
   {
     "system": "C64",
@@ -14293,7 +14500,8 @@
       "https://drive.google.com/file/d/11jCHB0oeFQ6-u92-Uav1_QFS7n3WjICw/view?usp=drive_link"
     ],
     "description": "Turrican is a 1990 Commodore 64 arcade shooter from Rainbow Arts featuring large scrolling levels, heavy weaponry, and exploration-driven action.",
-    "ccg_rating": 10
+    "ccg_rating": 10,
+    "ccg_rating_reason": "One of the best platform shooters ever made"
   },
   {
     "system": "C64",
@@ -14318,7 +14526,8 @@
       "https://drive.google.com/file/d/1XR2xqdxAsoEQT2WjbLdZTfSk2tk80xy1/view?usp=drive_link"
     ],
     "description": "Turrican II The Final Fight is a 1991 Commodore 64 arcade shooter from Rainbow Arts that expands the series with larger levels, refined controls, and increased enemy variety.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "A very nice follow-up indeed"
   },
   {
     "system": "C64",
@@ -14367,7 +14576,8 @@
       "https://drive.google.com/file/d/1ZBLCE7fWulUWAc5yNAzqx3x1XMcfZKC9/view?usp=drive_link"
     ],
     "description": "Ultima I The First Age Of Darkness is a 1986 Commodore 64 role-playing game from Origin Systems that established open-world exploration, character development, and fantasy adventure gameplay.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Iconic for good reason"
   },
   {
     "system": "C64",
@@ -14487,7 +14697,8 @@
       "https://drive.google.com/file/d/1nkKVqT90i9ziCb8osHFu7m9Q_6bThZoN/view?usp=drive_link"
     ],
     "description": "Uridium is a 1986 Commodore 64 scrolling shooter from Hewson celebrated for its speed, directional movement, and innovative level design.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Tough but superb. Steve Turners music is brilliant too"
   },
   {
     "system": "C64",
@@ -14514,7 +14725,8 @@
       "https://drive.google.com/file/d/1mFskiA_roptp-OJSjhKNpLOkR4C2g-kx/view?usp=drive_link"
     ],
     "description": "Uuno Turhapuro Muuttaa Maalle is a 1986 Commodore 64 licensed arcade game from Amersoft that blends sports, action, and humour based on the Finnish film character.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Hullu peli, mutta pidin siita!"
   },
   {
     "system": "C64",
@@ -14892,7 +15104,8 @@
       "https://drive.google.com/file/d/1miQHjKCK77TpHisWJ5w_pVwGS7vU_NZ7/view?usp=drive_link"
     ],
     "description": "Wizard is a 1984 Commodore 64 arcade puzzle platform game from Ariolasoft that focuses on precise movement, spell-based mechanics, and enemy avoidance across single-screen levels.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Fast frantic platforming fun"
   },
   {
     "system": "C64",
@@ -14940,7 +15153,8 @@
       "https://drive.google.com/file/d/1Vn-RJ7fKtVjs9vISp1gVy-qmbNeHCr2v/view?usp=drive_link"
     ],
     "description": "Wizball is a 1987 Commodore 64 scrolling shooter from Ocean that blends free-form movement with colour-restoration objectives and innovative physics-based control.",
-    "ccg_rating": 8
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Was a game everyone talked about back in the day"
   },
   {
     "system": "C64",
@@ -15035,7 +15249,8 @@
       "https://drive.google.com/file/d/1s8sgMLDkqkv71yP6rrrE7RxXFp-Plf2N/view?usp=drive_link"
     ],
     "description": "Xybots is a 1989 Amiga arcade shooter from Domark that blends isometric maze navigation with twin-direction shooting and cooperative multiplayer support.",
-    "ccg_rating": 7
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Humans are neutralised!"
   },
   {
     "system": "C64",
@@ -15130,7 +15345,8 @@
       "https://drive.google.com/file/d/1QPaVvxfcE8GWSyHjzMPVuivtvkaae7dG/view?usp=drive_link"
     ],
     "description": "Zak Mckracken And The Alien Mindbenders is a 1988 Commodore 64 graphic adventure from Lucasfilm Games featuring globe-spanning exploration, inventory puzzles, and comedic science fiction storytelling.",
-    "ccg_rating": 9
+    "ccg_rating": 10,
+    "ccg_rating_reason": "Another deep, polished Lucasfilm classic adventure"
   },
   {
     "system": "C64",
