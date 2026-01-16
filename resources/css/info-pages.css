@@ -9,15 +9,18 @@
     margin: var(--ccg-hero-offset) auto 0;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 2.2rem;
+    padding: 0 1.5rem 2.5rem;
 }
 
 .ccg-info-hero {
-    background: var(--panel-bg-strong);
+    background:
+        linear-gradient(140deg, rgba(var(--accent-rgb), 0.14), rgba(0, 0, 0, 0.5)),
+        var(--panel-bg-strong);
     border: 1px solid var(--border-light);
-    box-shadow: var(--panel-shadow);
+    box-shadow: var(--panel-shadow), 0 0 26px rgba(var(--accent-rgb), 0.2);
     border-radius: var(--radius-lg);
-    padding: 2.5rem 2rem;
+    padding: clamp(2.2rem, 4vw, 2.8rem) clamp(1.6rem, 3vw, 2.4rem);
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -31,6 +34,7 @@
                 radial-gradient(circle at 80% 80%, rgba(var(--accent-rgb), 0.08), transparent 38%);
     pointer-events: none;
     mix-blend-mode: screen;
+    opacity: 0.85;
 }
 
 .ccg-info-hero h1 {
@@ -66,8 +70,8 @@
     border: 1px solid rgba(var(--accent-rgb), 0.4);
     border-radius: 999px;
     padding: 0.35rem 0.85rem;
-    font-weight: 600;
-    letter-spacing: 0.03em;
+    font-weight: 700;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
 }
 
@@ -78,7 +82,9 @@
 }
 
 .ccg-info-card {
-    background: var(--panel-bg);
+    background:
+        linear-gradient(150deg, rgba(var(--accent-rgb), 0.08), rgba(0, 0, 0, 0.25)),
+        var(--panel-bg);
     border: 1px solid var(--border-light);
     box-shadow: var(--panel-shadow);
     border-radius: var(--radius-md);
@@ -119,9 +125,11 @@
 }
 
 .ccg-info-panel {
-    padding: 1.5rem;
+    padding: clamp(1.4rem, 2.2vw, 1.75rem);
     border-radius: var(--radius-lg);
-    background: var(--panel-bg-strong);
+    background:
+        linear-gradient(150deg, rgba(var(--accent-rgb), 0.1), rgba(0, 0, 0, 0.3)),
+        var(--panel-bg-strong);
     border: 1px solid var(--border-light);
     box-shadow: var(--panel-shadow);
     display: grid;
@@ -203,4 +211,5 @@
 @media (max-width: 720px) {
     .ccg-info-hero { padding: 2rem 1.25rem; }
     .ccg-info-card { padding: 1.1rem; }
+    .ccg-info-shell { padding: 0 1rem 2rem; }
 }
