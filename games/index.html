@@ -194,30 +194,34 @@
                 </div>
                 <div class="games-filter__range" data-games-year-filter>
                     <div class="games-filter__range-header">
-                        <span class="games-filter__range-label">Year range</span>
+                        <span class="games-filter__range-label">Year</span>
                         <span class="games-filter__range-value" id="gamesYearValue">All years</span>
                     </div>
-                    <div class="games-filter__range-inputs">
-                        <label class="games-filter__range-field">
-                            <span>From</span>
-                            <input type="number" id="gamesYearMinInput" min="1978" max="1999" step="1" inputmode="numeric" />
+                    <div class="games-filter__year-row">
+                        <label class="games-filter__year-slider">
+                            <span class="visually-hidden">Year</span>
+                            <input type="range" id="gamesYearSlider" min="1978" max="1999" step="1" value="1988" />
                         </label>
-                        <label class="games-filter__range-field">
-                            <span>To</span>
-                            <input type="number" id="gamesYearMaxInput" min="1978" max="1999" step="1" inputmode="numeric" />
-                        </label>
-                    </div>
-                    <div class="games-filter__range-sliders">
-                        <label class="games-filter__range-control">
-                            <span class="visually-hidden">Start year</span>
-                            <input type="range" id="gamesYearMin" min="1978" max="1999" step="1" value="1978" />
-                        </label>
-                        <label class="games-filter__range-control">
-                            <span class="visually-hidden">End year</span>
-                            <input type="range" id="gamesYearMax" min="1978" max="1999" step="1" value="1999" />
+                        <label class="games-filter__year-input">
+                            <span>Year</span>
+                            <input type="number" id="gamesYearInput" min="1978" max="1999" step="1" inputmode="numeric" />
                         </label>
                     </div>
-                    <div class="games-filter__range-hint">Drag or tap the endpoints to refine the era.</div>
+                    <div class="games-filter__range-toggle" role="group" aria-label="Show range around year">
+                        <button class="games-filter__range-btn is-active" type="button" data-year-span="0" aria-pressed="true">
+                            This year
+                        </button>
+                        <button class="games-filter__range-btn" type="button" data-year-span="5" aria-pressed="false">
+                            ±5 years
+                        </button>
+                        <button class="games-filter__range-btn" type="button" data-year-span="10" aria-pressed="false">
+                            ±10 years
+                        </button>
+                        <button class="games-filter__range-btn" type="button" data-year-span="all" aria-pressed="false">
+                            All years
+                        </button>
+                    </div>
+                    <div class="games-filter__range-hint">Choose a year, then pick how wide to browse.</div>
                 </div>
                 <div class="games-filter__status" id="gamesBrowseHint">Browsing: All Games (C64 + Amiga)</div>
             </div>

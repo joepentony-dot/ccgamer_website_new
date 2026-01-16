@@ -55,29 +55,6 @@
     safeNowMobileClass();
 
     /* ======================================================
-       GLOBAL WHEEL SAFETY OVERRIDE
-       - Ensure native scroll remains in full control.
-       - Stop downstream handlers from cancelling wheel events.
-       - Keep listener passive to avoid blocking scrolling.
-    ====================================================== */
-    function setupWheelScrollSafety() {
-        if (window.__ccgWheelSafetyInstalled) return;
-        window.__ccgWheelSafetyInstalled = true;
-
-        const wheelGuard = (event) => {
-            if (!event || typeof event.deltaY !== "number") return;
-            if (event.deltaY > 0) {
-                event.stopImmediatePropagation();
-            }
-        };
-
-        window.addEventListener("wheel", wheelGuard, { passive: true, capture: true });
-        document.addEventListener("wheel", wheelGuard, { passive: true, capture: true });
-    }
-
-    setupWheelScrollSafety();
-
-    /* ======================================================
        DEPTH-AWARE LOGO PATH
     ====================================================== */
     function getLogoPath() {
