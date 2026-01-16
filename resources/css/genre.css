@@ -690,11 +690,15 @@ body[data-collection="Retro Events"] .ccg-page--collection-single .ccg-collectio
 
     .ccg-page--genre-single .ccg-game-card__title,
     .ccg-page--collection-single .ccg-game-card__title {
+        /* Mobile clip fix: allow long card titles to wrap without truncation. */
         font-size: clamp(0.98rem, 3.6vw, 1.05rem);
         line-height: 1.35;
         letter-spacing: 0.06em;
         white-space: normal;
-        overflow-wrap: break-word;
+        overflow-wrap: anywhere;
+        height: auto;
+        max-height: none;
+        overflow: visible;
     }
 }
 

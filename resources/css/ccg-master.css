@@ -3279,10 +3279,22 @@ body.ccg-party::before {
 }
 
 @media (max-width: 720px) {
+    .ccg-rating__label {
+        /* Mobile clip fix: labels can be long; allow wrapping within narrow columns. */
+        display: block;
+        max-width: 100%;
+        line-height: 1.35;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        height: auto;
+        max-height: none;
+        overflow: visible;
+    }
+
     .ccg-rating--single .ccg-rating__label {
         font-size: clamp(0.6rem, 2.8vw, 0.75rem);
         line-height: 1.35;
         white-space: normal;
-        overflow-wrap: break-word;
+        overflow-wrap: anywhere;
     }
 }
