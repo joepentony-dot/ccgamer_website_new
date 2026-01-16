@@ -318,6 +318,28 @@
                         </label>
                     </div>
                     <p id="adminStatus" class="admin-status">Waiting for data…</p>
+                    <div class="admin-notice" data-admin-rating-download hidden>
+                        <p><strong>Rating sheet ready.</strong> <a href="#" class="ccg-link" data-admin-rating-link download="ccg-game-ratings.csv">Download ccg-game-ratings.csv</a></p>
+                        <p>Columns: <code>game_id</code>, <code>game_title</code>, <code>ccg_rating</code>, <code>ccg_rating_reason</code>.</p>
+                        <p>Next steps:</p>
+                        <ol>
+                            <li>Edit the CSV (ratings 1–10, optional single-line reason).</li>
+                            <li>Upload the edited CSV using “Upload rating sheet”.</li>
+                            <li>Download the updated <code>games.json</code> and commit it.</li>
+                        </ol>
+                    </div>
+                    <div class="admin-notice" data-admin-rating-summary hidden>
+                        <p><strong>Rating sheet import complete.</strong></p>
+                        <ul>
+                            <li>Total rows processed: <span data-admin-rating-total>0</span></li>
+                            <li>Ratings applied: <span data-admin-rating-applied>0</span></li>
+                            <li>Rows skipped: <span data-admin-rating-skipped>0</span></li>
+                        </ul>
+                    </div>
+                    <div class="admin-notice" data-admin-rating-skipped-panel hidden>
+                        <p><strong>Rows skipped</strong> <span data-admin-rating-skipped-note></span></p>
+                        <ul data-admin-rating-skipped-list></ul>
+                    </div>
                     <div class="admin-notice" data-admin-next-steps hidden>
                         <p><strong>Download complete.</strong></p>
                         <p>Next steps:</p>
