@@ -148,3 +148,33 @@ html.ccg-is-mobile .ccg-pulse {
     transform: none !important;
     filter: none !important;
 }
+
+/* ============================================================
+   DESKTOP PERFORMANCE SMOOTHING (NON-HERO ONLY)
+============================================================ */
+
+@media (min-width: 1024px) {
+    html.ccg-perf-desktop .ccg-pulse {
+        animation-duration: 3.1s;
+        opacity: 0.82;
+    }
+}
+
+html.ccg-perf-paused .ccg-fade-in,
+html.ccg-perf-paused .ccg-slide-up,
+html.ccg-perf-paused .ccg-anim-in,
+html.ccg-perf-paused .ccg-pulse {
+    animation-play-state: paused !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ccg-fade-in,
+    .ccg-slide-up,
+    .ccg-anim-in,
+    .ccg-pulse {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
+    }
+}

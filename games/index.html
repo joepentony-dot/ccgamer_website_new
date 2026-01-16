@@ -197,6 +197,16 @@
                         <span class="games-filter__range-label">Year range</span>
                         <span class="games-filter__range-value" id="gamesYearValue">All years</span>
                     </div>
+                    <div class="games-filter__range-inputs">
+                        <label class="games-filter__range-field">
+                            <span>From</span>
+                            <input type="number" id="gamesYearMinInput" min="1978" max="1999" step="1" inputmode="numeric" />
+                        </label>
+                        <label class="games-filter__range-field">
+                            <span>To</span>
+                            <input type="number" id="gamesYearMaxInput" min="1978" max="1999" step="1" inputmode="numeric" />
+                        </label>
+                    </div>
                     <div class="games-filter__range-sliders">
                         <label class="games-filter__range-control">
                             <span class="visually-hidden">Start year</span>
@@ -247,6 +257,7 @@
 <script src="../js/ccg-mode-engine.js" defer></script>
 <script src="../resources/js/ccg-performance.js" defer></script>
 <script src="../js/games-library.js" defer></script>
+<script src="../resources/js/ccg-year-filter.js" defer></script>
 
 </body>
 </html>

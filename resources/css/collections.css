@@ -15,8 +15,18 @@
 html[data-ccg-page="collections-index"],
 html[data-ccg-page="collections-index"] body {
     height: auto;
+    min-height: 100%;
     overflow-y: auto;
     overscroll-behavior-y: auto;
+}
+
+html[data-ccg-page="collections-index"] .ccg-page,
+html[data-ccg-page="collections-index"] .ccg-main,
+html[data-ccg-page="collections-index"] main,
+html[data-ccg-page="collections-index"] .ccg-section {
+    height: auto;
+    max-height: none;
+    overflow-y: visible;
 }
 
 .ccg-page--collections-index .ccg-main {
@@ -348,4 +358,3 @@ html[data-ccg-page="collections-index"] body {
     animation: none !important;
     opacity: 1 !important;
 }
-
