@@ -1582,17 +1582,11 @@ function renderSelectedGenres() {
                 URL.revokeObjectURL(ratingCsvUrl);
             }
             ratingCsvUrl = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = ratingCsvUrl;
-            link.download = "ccg-game-ratings.csv";
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
             renderRatingCsvDownload(ratingCsvUrl);
             if (ratingDownloadLink) {
                 ratingDownloadLink.download = "ccg-game-ratings.csv";
             }
-            setStatus("Rating sheet downloaded.");
+            setStatus("Rating sheet ready for download.");
             clearRatingSummary();
         });
     }
