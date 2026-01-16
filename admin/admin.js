@@ -19,6 +19,9 @@
     const SYSTEMS = ["C64", "AMIGA"];
     const YEAR_MIN = 1977;
     const YEAR_MAX = 2026;
+    const RATING_MIN = 1;
+    const RATING_MAX = 10;
+    const CCG_STAR_PATH = "M12 2.2l3.09 6.26 6.9 1-4.99 4.86 1.18 6.88L12 17.96 5.82 21.2l1.18-6.88-4.99-4.86 6.9-1z";
     const CANONICAL_GENRES = [
         "Action Adventure Games",
         "Adventure Games",
@@ -125,6 +128,14 @@
                         <span class="game-meta__item">C64</span>
                         <span class="game-meta__sep">•</span>
                         <span class="game-meta__item">64 Tape Computing</span>
+                    </div>
+                    <div class="game-hero__rating">
+                        <div class="ccg-rating ccg-rating--single" data-ccg-rating>
+                            <span class="ccg-rating__label">Cheeky Commodore Gamer Rating</span>
+                            <span class="ccg-rating__stars" data-ccg-rating-stars aria-hidden="true"></span>
+                            <span class="ccg-rating__status" data-ccg-rating-status hidden>Not Yet Rated</span>
+                            <span class="ccg-rating__reason" data-ccg-rating-reason hidden></span>
+                        </div>
                     </div>
                 </div>
 
@@ -235,10 +246,15 @@
     const thumbnailInput = document.getElementById("gameThumbnail");
     const descriptionInput = document.getElementById("gameDescription");
     const developerInput = document.getElementById("gameDeveloper");
+    const ratingInput = document.getElementById("gameRating");
+    const ratingReasonInput = document.getElementById("gameRatingReason");
+    const ratingHelp = document.querySelector("[data-admin-rating-help]");
     const genreSelect = document.getElementById("gameGenreSelect");
     const genreSelectedList = document.querySelector("[data-admin-genre-selected]");
     const genreEmptyState = document.querySelector("[data-admin-genre-empty]");
     const clearGenresBtn = document.querySelector("[data-admin-clear-genres]");
+    const ratingsDownloadBtn = document.getElementById("adminRatingsDownload");
+    const ratingsUploadInput = document.getElementById("adminRatingsUpload");
 
     const fieldErrors = {
         system: document.querySelector('[data-admin-error="system"]'),
@@ -249,7 +265,9 @@
         year: document.querySelector('[data-admin-error="year"]'),
         videoid: document.querySelector('[data-admin-error="videoid"]'),
         thumbnail: document.querySelector('[data-admin-error="thumbnail"]'),
-        genres: document.querySelector('[data-admin-error="genres"]')
+        genres: document.querySelector('[data-admin-error="genres"]'),
+        ccg_rating: document.querySelector('[data-admin-error="ccg_rating"]'),
+        ccg_rating_reason: document.querySelector('[data-admin-error="ccg_rating_reason"]')
     };
 
     const fieldInputs = {
@@ -261,7 +279,9 @@
         year: yearInput,
         videoid: videoInput,
         thumbnail: thumbnailInput,
-        genres: genreSelect
+        genres: genreSelect,
+        ccg_rating: ratingInput,
+        ccg_rating_reason: ratingReasonInput
     };
 
     /* --------------------------------------------------------
@@ -321,8 +341,21 @@
             description: String(raw.description || "").trim(),
             pdf: String(raw.pdf || "").trim(),
             disk: String(raw.disk || "").trim(),
-            lemon: String(raw.lemon || "").trim()
+            lemon: String(raw.lemon || "").trim(),
+            ccg_rating: raw.ccg_rating !== undefined && raw.ccg_rating !== null ? String(raw.ccg_rating).trim() : "",
+            ccg_rating_reason: String(raw.ccg_rating_reason || "").trim()
         };
+    }
+
+    function parseRatingValue(value) {
+        if (value === undefined || value === null || value === "") return null;
+        const parsed = Number(value);
+        if (!Number.isFinite(parsed)) return NaN;
+        return Math.round(parsed);
+    }
+
+    function normalizeRatingReason(value) {
+        return String(value || "").replace(/\s+/g, " ").trim();
     }
 
     function setExportErrors(errors) {
@@ -400,6 +433,7 @@ function renderSelectedGenres() {
                 genreEmptyState.hidden = false;
                 genreSelectedList.appendChild(genreEmptyState);
             }
+            syncRatingLock();
             return;
         }
         if (genreEmptyState) {
@@ -416,6 +450,7 @@ function renderSelectedGenres() {
             `;
             genreSelectedList.appendChild(chip);
         });
+        syncRatingLock();
     }
 
     function addGenre(value) {
@@ -447,6 +482,16 @@ function renderSelectedGenres() {
         genreTouched = true;
         genreCleared = true;
         renderSelectedGenres();
+    }
+
+    function syncRatingLock() {
+        if (!ratingInput) return;
+        ratingInput.min = String(RATING_MIN);
+        ratingInput.max = String(RATING_MAX);
+        ratingInput.disabled = false;
+        if (ratingHelp) {
+            ratingHelp.textContent = "Required. 1–10 only.";
+        }
     }
 
     function updateExportState() {
@@ -507,6 +552,59 @@ function renderSelectedGenres() {
             .filter(Boolean);
     }
 
+    function escapeCsvValue(value) {
+        const text = String(value ?? "");
+        if (/[",\r\n]/.test(text)) {
+            return `"${text.replace(/"/g, "\"\"")}"`;
+        }
+        return text;
+    }
+
+    function parseCsv(text) {
+        const rows = [];
+        let current = "";
+        let row = [];
+        let inQuotes = false;
+        for (let i = 0; i < text.length; i += 1) {
+            const char = text[i];
+            const next = text[i + 1];
+            if (char === "\"" && inQuotes && next === "\"") {
+                current += "\"";
+                i += 1;
+                continue;
+            }
+            if (char === "\"") {
+                inQuotes = !inQuotes;
+                continue;
+            }
+            if (char === "," && !inQuotes) {
+                row.push(current);
+                current = "";
+                continue;
+            }
+            if ((char === "\n" || char === "\r") && !inQuotes) {
+                if (char === "\r" && next === "\n") {
+                    i += 1;
+                }
+                row.push(current);
+                current = "";
+                if (row.length > 1 || row.some(cell => cell.trim() !== "")) {
+                    rows.push(row);
+                }
+                row = [];
+                continue;
+            }
+            current += char;
+        }
+        if (current.length || row.length) {
+            row.push(current);
+            if (row.length > 1 || row.some(cell => cell.trim() !== "")) {
+                rows.push(row);
+            }
+        }
+        return rows;
+    }
+
     function normalizeThumbnail(path) {
         const value = String(path || "").trim();
         if (!value) return "";
@@ -524,6 +622,102 @@ function renderSelectedGenres() {
         if (upper === "AMIGA") return "AMIGA";
         if (upper === "C64") return "C64";
         return trimmed;
+    }
+
+    function buildRatingSheetCsv(games) {
+        const sorted = [...games].sort((a, b) => {
+            const aTitle = String(a.sorttitle || a.title || "");
+            const bTitle = String(b.sorttitle || b.title || "");
+            return aTitle.localeCompare(bTitle);
+        });
+        const rows = [
+            ["Game Title", "CCG Rating (1-10)", "CCG Rating Reason"]
+        ];
+        sorted.forEach(game => {
+            rows.push([game.title || "", "", ""]);
+        });
+        return rows.map(row => row.map(escapeCsvValue).join(",")).join("\n");
+    }
+
+    function applyRatingSheet(rows) {
+        const errors = [];
+        const updates = [];
+        const titleLookup = new Map();
+
+        workingGames.forEach(game => {
+            const title = String(game.title || "").trim().toLowerCase();
+            if (!title) return;
+            if (!titleLookup.has(title)) {
+                titleLookup.set(title, []);
+            }
+            titleLookup.get(title).push(game);
+        });
+
+        let startIndex = 0;
+        if (rows.length) {
+            const header = rows[0].map(cell => String(cell || "").trim().toLowerCase());
+            if (header[0] === "game title") {
+                startIndex = 1;
+            }
+        }
+
+        for (let i = startIndex; i < rows.length; i += 1) {
+            const row = rows[i];
+            const title = String(row[0] || "").trim();
+            if (!title) continue;
+            const lookup = titleLookup.get(title.toLowerCase()) || [];
+            if (!lookup.length) {
+                errors.push(`Rating sheet row ${i + 1}: "${title}" not found in library.`);
+                continue;
+            }
+            if (lookup.length > 1) {
+                errors.push(`Rating sheet row ${i + 1}: "${title}" matches multiple games. Use unique titles.`);
+                continue;
+            }
+            const game = lookup[0];
+            const ratingRaw = String(row[1] || "").trim();
+            const reasonRaw = String(row[2] || "").trim();
+            const ratingValue = ratingRaw ? parseRatingValue(ratingRaw) : null;
+
+            if (ratingRaw) {
+                if (!Number.isFinite(ratingValue)) {
+                    errors.push(`Rating sheet row ${i + 1}: "${title}" has invalid rating.`);
+                    continue;
+                }
+                if (ratingValue < RATING_MIN || ratingValue > RATING_MAX) {
+                    errors.push(`Rating sheet row ${i + 1}: "${title}" rating must be between 1 and 10.`);
+                    continue;
+                }
+            }
+
+            if (reasonRaw.match(/[\r\n]/)) {
+                errors.push(`Rating sheet row ${i + 1}: "${title}" rating reason must be one line.`);
+                continue;
+            }
+
+            updates.push({
+                game,
+                ratingValue,
+                reason: normalizeRatingReason(reasonRaw),
+                hasRating: Boolean(ratingRaw),
+                hasReason: Boolean(reasonRaw)
+            });
+        }
+
+        if (errors.length) {
+            return { errors, updated: 0 };
+        }
+
+        updates.forEach(update => {
+            if (update.hasRating) {
+                update.game.ccg_rating = update.ratingValue;
+            }
+            if (update.hasReason) {
+                update.game.ccg_rating_reason = update.reason;
+            }
+        });
+
+        return { errors: [], updated: updates.length };
     }
 
     function isValidYear(value) {
@@ -624,13 +818,16 @@ function renderSelectedGenres() {
     function normalizeGame(raw) {
         const title = String(raw.title || "").trim();
         const sorttitle = String(raw.sorttitle || "").trim() || title;
-        return {
+        const genres = normalizeArrayField(raw.genres);
+        const ratingValue = parseRatingValue(raw.ccg_rating);
+        const ratingReason = normalizeRatingReason(raw.ccg_rating_reason);
+        const normalized = {
             system: normalizeSystem(raw.system),
             id: String(raw.id || "").trim(),
             slug: String(raw.slug || "").trim(),
             title,
             sorttitle,
-            genres: normalizeArrayField(raw.genres),
+            genres,
             year: raw.year ? Number(raw.year) : "",
             developer: String(raw.developer || "").trim(),
             videoid: String(raw.videoid || "").trim(),
@@ -638,8 +835,14 @@ function renderSelectedGenres() {
             thumbnail: normalizeThumbnail(raw.thumbnail),
             pdf: String(raw.pdf || "").trim(),
             disk: normalizeArrayField(raw.disk),
-            description: String(raw.description || "").trim()
+            description: String(raw.description || "").trim(),
+            ccg_rating: Number.isFinite(ratingValue) ? ratingValue : undefined,
+            ccg_rating_reason: ratingReason || undefined
         };
+        if (!ratingReason) {
+            delete normalized.ccg_rating_reason;
+        }
+        return normalized;
     }
 
     function normalizeArrayField(value) {
@@ -654,7 +857,9 @@ function renderSelectedGenres() {
         const title = String(raw.title || "").trim();
         const sorttitle = String(raw.sorttitle || "").trim() || title;
         const yearValue = raw.year !== undefined && raw.year !== null && raw.year !== "" ? Number(raw.year) : "";
-        return {
+        const ratingValue = parseRatingValue(raw.ccg_rating);
+        const ratingReason = normalizeRatingReason(raw.ccg_rating_reason);
+        const normalized = {
             ...raw,
             system: normalizeSystem(raw.system),
             id: String(raw.id || "").trim(),
@@ -669,8 +874,17 @@ function renderSelectedGenres() {
             thumbnail: normalizeThumbnail(raw.thumbnail),
             pdf: String(raw.pdf || "").trim(),
             disk: normalizeArrayField(raw.disk),
-            description: String(raw.description || "").trim()
+            description: String(raw.description || "").trim(),
+            ccg_rating: ratingValue,
+            ccg_rating_reason: ratingReason || undefined
         };
+        if (!Number.isFinite(ratingValue)) {
+            delete normalized.ccg_rating;
+        }
+        if (!ratingReason) {
+            delete normalized.ccg_rating_reason;
+        }
+        return normalized;
     }
 
     function prepareImportedGames(rawGames) {
@@ -726,6 +940,20 @@ function renderSelectedGenres() {
             isValid = false;
         } else if (game.genres.some(genre => !CANONICAL_GENRES.includes(genre))) {
             setFieldError("genres", "Genres must be selected from the approved list.");
+            isValid = false;
+        }
+
+        const ratingValue = parseRatingValue(raw.ccg_rating);
+        if (ratingValue === null) {
+            setFieldError("ccg_rating", "Rating is required for new games.");
+            isValid = false;
+        } else if (!Number.isFinite(ratingValue) || ratingValue < RATING_MIN || ratingValue > RATING_MAX) {
+            setFieldError("ccg_rating", "Rating must be between 1 and 10.");
+            isValid = false;
+        }
+
+        if (String(raw.ccg_rating_reason || "").match(/[\r\n]/)) {
+            setFieldError("ccg_rating_reason", "Rating reason must be a single line.");
             isValid = false;
         }
 
@@ -859,6 +1087,21 @@ function renderSelectedGenres() {
                     warnings.push(`${prefix}: genres include non-canonical values (legacy entry preserved).`);
                 }
             }
+
+            const ratingValue = parseRatingValue(game.ccg_rating);
+            const hasRating = ratingValue !== null && Number.isFinite(ratingValue);
+
+            if (isNewEntry && !hasRating) {
+                errors.push(`${prefix}: rating is required for new games.`);
+            }
+
+            if (hasRating && (ratingValue < RATING_MIN || ratingValue > RATING_MAX)) {
+                errors.push(`${prefix}: rating must be between 1 and 10.`);
+            }
+
+            if (String(game.ccg_rating_reason || "").match(/[\r\n]/)) {
+                errors.push(`${prefix}: rating reason must be a single line.`);
+            }
         });
 
         return { errors, warnings };
@@ -871,6 +1114,43 @@ function renderSelectedGenres() {
 
     function getPublisher(game) {
         return game.developer || "Unknown";
+    }
+
+    function resolveRatingForGame(game) {
+        const ratingValue = parseRatingValue(game.ccg_rating);
+        if (!Number.isFinite(ratingValue)) {
+            return { value: null, isRated: false };
+        }
+        const clamped = Math.min(Math.max(ratingValue, RATING_MIN), RATING_MAX);
+        return { value: clamped, isRated: true };
+    }
+
+    function buildStarSvg(type) {
+        if (type === "empty") {
+            return `
+                <svg class="ccg-rating__star ccg-rating__star--empty" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path class="ccg-rating__star-shape ccg-rating__star-shape--empty" d="${CCG_STAR_PATH}"></path>
+                </svg>
+            `;
+        }
+        return `
+            <svg class="ccg-rating__star ccg-rating__star--full" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path class="ccg-rating__star-shape ccg-rating__star-shape--full" d="${CCG_STAR_PATH}"></path>
+            </svg>
+        `;
+    }
+
+    function buildRatingStarsMarkup(ratingData) {
+        if (!ratingData.isRated) {
+            return Array.from({ length: 5 }, () => buildStarSvg("empty")).join("");
+        }
+        const ratingValue = ratingData.value || 0;
+        const fullCount = Math.ceil(ratingValue / 2);
+        const emptyCount = Math.max(0, 5 - fullCount);
+        return [
+            ...Array.from({ length: fullCount }, () => buildStarSvg("full")),
+            ...Array.from({ length: emptyCount }, () => buildStarSvg("empty"))
+        ].join("");
     }
 
     function getAbsoluteUrl(path) {
@@ -986,6 +1266,50 @@ function renderSelectedGenres() {
         if (heroItems[0]) heroItems[0].textContent = String(game.year);
         if (heroItems[1]) heroItems[1].textContent = game.system;
         if (heroItems[2]) heroItems[2].textContent = getPublisher(game);
+
+        const heroContent = doc.querySelector(".game-hero__content");
+        let ratingContainer = doc.querySelector("[data-ccg-rating]");
+        if (!ratingContainer && heroContent) {
+            const ratingWrapper = doc.createElement("div");
+            ratingWrapper.className = "game-hero__rating";
+            ratingWrapper.innerHTML = `
+                <div class="ccg-rating ccg-rating--single" data-ccg-rating>
+                    <span class="ccg-rating__label">Cheeky Commodore Gamer Rating</span>
+                    <span class="ccg-rating__stars" data-ccg-rating-stars aria-hidden="true"></span>
+                    <span class="ccg-rating__status" data-ccg-rating-status hidden>Not Yet Rated</span>
+                    <span class="ccg-rating__reason" data-ccg-rating-reason hidden></span>
+                </div>
+            `.trim();
+            heroContent.appendChild(ratingWrapper);
+            ratingContainer = ratingWrapper.querySelector("[data-ccg-rating]");
+        }
+
+        if (ratingContainer) {
+            const ratingData = resolveRatingForGame(game);
+            const starsEl = ratingContainer.querySelector("[data-ccg-rating-stars]");
+            const statusEl = ratingContainer.querySelector("[data-ccg-rating-status]");
+            const reasonEl = ratingContainer.querySelector("[data-ccg-rating-reason]");
+            if (starsEl) {
+                starsEl.innerHTML = buildRatingStarsMarkup(ratingData);
+            }
+            if (statusEl) {
+                statusEl.hidden = ratingData.isRated;
+            }
+            const reason = normalizeRatingReason(game.ccg_rating_reason);
+            if (reasonEl) {
+                if (reason) {
+                    reasonEl.textContent = reason;
+                    reasonEl.hidden = false;
+                } else {
+                    reasonEl.textContent = "";
+                    reasonEl.hidden = true;
+                }
+            }
+            const ariaLabel = ratingData.isRated
+                ? `Cheeky Commodore Gamer Rating: ${ratingData.value}/10`
+                : "Cheeky Commodore Gamer Rating: Not Yet Rated";
+            ratingContainer.setAttribute("aria-label", ariaLabel);
+        }
 
         const heroThumb = doc.querySelector(".game-hero__thumb");
         if (heroThumb) {
@@ -1153,6 +1477,52 @@ function renderSelectedGenres() {
                 }
             };
             reader.readAsText(file);
+        });
+    }
+
+    if (ratingsDownloadBtn) {
+        ratingsDownloadBtn.addEventListener("click", () => {
+            if (!workingGames.length) {
+                setStatus("Load games.json before downloading the rating sheet.", "error");
+                return;
+            }
+            const csv = buildRatingSheetCsv(workingGames);
+            const blob = new Blob([csv], { type: "text/csv" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "ccg_ratings.csv";
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(url);
+            setStatus("Rating sheet downloaded.");
+        });
+    }
+
+    if (ratingsUploadInput) {
+        ratingsUploadInput.addEventListener("change", () => {
+            const file = ratingsUploadInput.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    const rows = parseCsv(reader.result || "");
+                    const result = applyRatingSheet(rows);
+                    if (result.errors.length) {
+                        setStatus("Rating sheet import blocked. Fix errors and retry.", "error");
+                        setExportErrors(result.errors);
+                        return;
+                    }
+                    setExportErrors([]);
+                    updateExportState();
+                    setStatus(`Rating sheet applied to ${result.updated} games.`);
+                } catch (err) {
+                    setStatus("Rating sheet import failed.", "error");
+                }
+            };
+            reader.readAsText(file);
+            ratingsUploadInput.value = "";
         });
     }
 
@@ -1404,6 +1774,20 @@ function renderSelectedGenres() {
             if (fieldErrors.thumbnail && !fieldErrors.thumbnail.hidden) {
                 setFieldError("thumbnail", "");
             }
+        });
+    }
+
+    if (ratingInput) {
+        ratingInput.addEventListener("input", () => {
+            if (fieldErrors.ccg_rating && !fieldErrors.ccg_rating.hidden) {
+                setFieldError("ccg_rating", "");
+            }
+        });
+    }
+
+    if (ratingReasonInput) {
+        ratingReasonInput.addEventListener("blur", () => {
+            normalizeInputValue(ratingReasonInput, "ccg_rating_reason");
         });
     }
 

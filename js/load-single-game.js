@@ -551,6 +551,7 @@ function renderGame(game) {
     document.getElementById("gameMetaSystem").textContent = game.system || "—";
     document.getElementById("gameMetaDeveloper").textContent =
         game.publisher || game.developer || "—";
+    renderGameRating(game);
 
     /* DESCRIPTION */
     if (game.description) {
@@ -655,6 +656,40 @@ function renderGame(game) {
 
     /* RELATED GAMES */
     renderRelatedGames(game);
+}
+
+function renderGameRating(game) {
+    const ratingContainer = document.querySelector("[data-ccg-rating]");
+    const starsEl = document.getElementById("gameRatingStars");
+    const statusEl = document.getElementById("gameRatingStatus");
+    const reasonEl = document.getElementById("gameRatingReason");
+
+    if (!ratingContainer || !starsEl || !statusEl || !reasonEl) return;
+
+    const ratingData = typeof window.ccgResolveRatingValue === "function"
+        ? window.ccgResolveRatingValue(game)
+        : { value: Number(game?.ccg_rating), isRated: Number.isFinite(Number(game?.ccg_rating)) };
+
+    if (typeof window.ccgBuildRatingStars === "function") {
+        starsEl.innerHTML = window.ccgBuildRatingStars(ratingData);
+    }
+
+    if (ratingData.isRated) {
+        statusEl.hidden = true;
+        ratingContainer.setAttribute("aria-label", `Cheeky Commodore Gamer Rating: ${ratingData.value}/10`);
+    } else {
+        statusEl.hidden = false;
+        ratingContainer.setAttribute("aria-label", "Cheeky Commodore Gamer Rating: Not Yet Rated");
+    }
+
+    const reason = String(game?.ccg_rating_reason || "").replace(/\s+/g, " ").trim();
+    if (reason) {
+        reasonEl.textContent = reason;
+        reasonEl.hidden = false;
+    } else {
+        reasonEl.textContent = "";
+        reasonEl.hidden = true;
+    }
 }
 
 /* ============================================================

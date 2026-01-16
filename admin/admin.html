@@ -232,6 +232,17 @@
                             </div>
                             <p class="admin-error" data-admin-error="genres" hidden></p>
                         </div>
+                        <div class="admin-field">
+                            <label for="gameRating">Cheeky Commodore Gamer Rating *</label>
+                            <input id="gameRating" name="ccg_rating" class="admin-input" type="number" min="1" max="10" placeholder="1–10" required>
+                            <p class="admin-help" data-admin-rating-help>Required. 1–10 only.</p>
+                            <p class="admin-error" data-admin-error="ccg_rating" hidden></p>
+                        </div>
+                        <div class="admin-field">
+                            <label for="gameRatingReason">Rating reason (optional)</label>
+                            <input id="gameRatingReason" name="ccg_rating_reason" class="admin-input" placeholder="One-line editorial note">
+                            <p class="admin-error" data-admin-error="ccg_rating_reason" hidden></p>
+                        </div>
                     </div>
 
                     <div class="admin-form-section">
@@ -299,6 +310,12 @@
                             <input type="file" id="adminFileInput" accept="application/json">
                         </label>
                         <a id="adminSourceOpen" class="ccg-btn ccg-btn--ghost" href="#" target="_blank" rel="noopener">Open live JSON</a>
+                    </div>
+                    <div class="admin-inline-buttons">
+                        <button id="adminRatingsDownload" class="ccg-btn ccg-btn--ghost" type="button">Download rating sheet (CSV)</button>
+                        <label class="admin-upload">Upload rating sheet
+                            <input type="file" id="adminRatingsUpload" accept=".csv,text/csv">
+                        </label>
                     </div>
                     <p id="adminStatus" class="admin-status">Waiting for data…</p>
                     <div class="admin-notice" data-admin-next-steps hidden>

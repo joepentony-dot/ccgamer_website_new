@@ -313,6 +313,7 @@ body[data-ccg-mode="amiga"] {
     color: var(--ccg-soft);
 }
 
+
 .games-alpha {
     padding: calc(14px * var(--ui-density));
     border-radius: calc(14px * var(--ui-radius-scale));
@@ -726,6 +727,10 @@ body[data-ccg-mode="amiga"] {
 
 .ccg-page--single-game {
     transition: opacity 220ms ease;
+}
+
+.game-hero__rating {
+    margin-top: 12px;
 }
 
 body:not(.ccg-single-ready) .ccg-page--single-game {
