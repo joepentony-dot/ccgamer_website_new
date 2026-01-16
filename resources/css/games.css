@@ -1177,6 +1177,33 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     .game-hero__content { order: 1; }
 }
 
+@media (max-width: 768px) {
+    .game-hero__meta,
+    .game-video__actions,
+    .game-downloads__actions {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .game-hero__content,
+    .game-hero__meta,
+    .game-meta__item,
+    .ccg-rating,
+    .ccg-rating__label,
+    .ccg-rating__status,
+    .ccg-rating__reason {
+        min-width: 0;
+        max-width: 100%;
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+
+    .game-hero__title {
+        white-space: normal;
+        max-width: 100%;
+    }
+}
+
 @media (max-width: 720px) {
     .games-search { flex-direction: column; align-items: stretch; }
     .games-hero, .games-tools, .games-library { width: 100%; }
