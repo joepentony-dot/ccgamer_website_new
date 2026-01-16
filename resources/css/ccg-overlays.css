@@ -295,10 +295,47 @@ html[data-ccg-page="home"] .ccg-page {
     to   { background-position: 800px -800px; }
 }
 
+/* ============================================================
+   PERFORMANCE PAUSE STATE (DESKTOP)
+============================================================ */
+
+html.ccg-perf-paused .ccg-bg-starfield,
+html.ccg-perf-paused .ccg-bg-starfield::after,
+html.ccg-perf-paused .ccg-bg-grid,
+html.ccg-perf-paused .ccg-hero-scanlines,
+html.ccg-perf-paused .ccg-hero__backdrop,
+html.ccg-perf-paused .ccg-hero-overlay-grid,
+html.ccg-perf-paused .ccg-hero-overlay-starfield,
+html.ccg-perf-paused .home-hero__scanlines,
+html.ccg-perf-paused .home-hero__visual-glow {
+    animation-play-state: paused !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
     .ccg-bg-starfield,
     .ccg-bg-grid,
     .ccg-bg-starfield::after {
         animation: none !important;
+    }
+
+    .ccg-bg-starfield {
+        opacity: 0.4;
+    }
+
+    .ccg-bg-starfield::after {
+        opacity: 0.16;
+    }
+
+    .ccg-bg-grid {
+        opacity: 0.08;
+    }
+
+    .ccg-bg-crt-overlay {
+        opacity: 0.2;
+    }
+
+    .ccg-hero-scanlines,
+    .home-hero__scanlines {
+        opacity: 0.15;
     }
 }
