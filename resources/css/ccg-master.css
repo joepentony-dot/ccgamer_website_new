@@ -1214,14 +1214,14 @@ html:not([data-ccg-page="home"]) .ccg-nav__more {
 }
 
 /* Mobile-only scroll affordance for the nav drawer (JS toggles class). */
-@media (max-width: 960px) {
+@media (max-width: 640px) and (pointer: coarse) {
     .ccg-nav-drawer__panel::before,
     .ccg-nav-drawer__panel::after {
         content: "";
         position: absolute;
         left: 0;
         right: 0;
-        height: 44px;
+        height: 64px;
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.35s ease;
@@ -1234,15 +1234,18 @@ html:not([data-ccg-page="home"]) .ccg-nav__more {
 
     .ccg-nav-drawer__panel::after {
         bottom: 0;
-        content: "⌄";
-        background: linear-gradient(0deg, rgba(6,6,14,0.92), rgba(6,6,14,0));
-        color: rgba(var(--accent-rgb), 0.78);
+        content: "↓\A More options below — scroll";
+        background: linear-gradient(0deg, rgba(6,6,14,0.94), rgba(6,6,14,0));
+        color: rgba(var(--accent-rgb), 0.82);
         font-size: 18px;
-        line-height: 1;
+        font-weight: 600;
+        line-height: 1.2;
         display: flex;
         align-items: flex-end;
         justify-content: center;
-        padding-bottom: 8px;
+        text-align: center;
+        white-space: pre-line;
+        padding: 0 16px 10px;
         text-shadow:
             0 0 10px rgba(var(--accent-rgb), 0.45),
             0 6px 12px rgba(0,0,0,0.6);
