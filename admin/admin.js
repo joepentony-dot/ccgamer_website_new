@@ -205,6 +205,7 @@
     let genreCleared = false;
     let stubTemplateCache = null;
     let hasSourceData = false;
+    let ratingCsvUrl = null;
     const genreIntentById = new Map();
     const SHOW_ALL_WARNINGS = new URLSearchParams(window.location.search).has("adminDebugWarnings");
     const MAX_WARNING_ITEMS = 20;
@@ -255,6 +256,15 @@
     const clearGenresBtn = document.querySelector("[data-admin-clear-genres]");
     const ratingsDownloadBtn = document.getElementById("adminRatingsDownload");
     const ratingsUploadInput = document.getElementById("adminRatingsUpload");
+    const ratingDownloadNotice = document.querySelector("[data-admin-rating-download]");
+    const ratingDownloadLink = document.querySelector("[data-admin-rating-link]");
+    const ratingSummaryNotice = document.querySelector("[data-admin-rating-summary]");
+    const ratingTotalEl = document.querySelector("[data-admin-rating-total]");
+    const ratingAppliedEl = document.querySelector("[data-admin-rating-applied]");
+    const ratingSkippedEl = document.querySelector("[data-admin-rating-skipped]");
+    const ratingSkippedNotice = document.querySelector("[data-admin-rating-skipped-panel]");
+    const ratingSkippedNote = document.querySelector("[data-admin-rating-skipped-note]");
+    const ratingSkippedList = document.querySelector("[data-admin-rating-skipped-list]");
 
     const fieldErrors = {
         system: document.querySelector('[data-admin-error="system"]'),
@@ -626,98 +636,174 @@ function renderSelectedGenres() {
 
     function buildRatingSheetCsv(games) {
         const sorted = [...games].sort((a, b) => {
-            const aTitle = String(a.sorttitle || a.title || "");
-            const bTitle = String(b.sorttitle || b.title || "");
-            return aTitle.localeCompare(bTitle);
+            const aTitle = String(a.title || "");
+            const bTitle = String(b.title || "");
+            return aTitle.localeCompare(bTitle, "en", { sensitivity: "base" });
         });
         const rows = [
-            ["Game Title", "CCG Rating (1-10)", "CCG Rating Reason"]
+            ["game_id", "game_title", "ccg_rating", "ccg_rating_reason"]
         ];
         sorted.forEach(game => {
-            rows.push([game.title || "", "", ""]);
+            rows.push([game.id || "", game.title || "", "", ""]);
         });
         return rows.map(row => row.map(escapeCsvValue).join(",")).join("\n");
     }
 
-    function applyRatingSheet(rows) {
-        const errors = [];
-        const updates = [];
-        const titleLookup = new Map();
+    function renderRatingCsvDownload(url) {
+        if (!ratingDownloadLink || !ratingDownloadNotice) return;
+        ratingDownloadLink.href = url;
+        ratingDownloadNotice.hidden = false;
+    }
 
+    function clearRatingCsvDownload() {
+        if (ratingDownloadNotice) {
+            ratingDownloadNotice.hidden = true;
+        }
+        if (ratingDownloadLink) {
+            ratingDownloadLink.removeAttribute("href");
+        }
+        if (ratingCsvUrl) {
+            URL.revokeObjectURL(ratingCsvUrl);
+            ratingCsvUrl = null;
+        }
+    }
+
+    function setRatingSummary(summary) {
+        if (!ratingSummaryNotice) return;
+        const total = summary.total || 0;
+        const applied = summary.applied || 0;
+        const skipped = summary.skipped ? summary.skipped.length : 0;
+        if (ratingTotalEl) ratingTotalEl.textContent = String(total);
+        if (ratingAppliedEl) ratingAppliedEl.textContent = String(applied);
+        if (ratingSkippedEl) ratingSkippedEl.textContent = String(skipped);
+        ratingSummaryNotice.hidden = false;
+
+        if (ratingSkippedNotice) {
+            ratingSkippedNotice.hidden = skipped === 0;
+        }
+        if (ratingSkippedList) {
+            ratingSkippedList.innerHTML = "";
+            (summary.skipped || []).forEach(item => {
+                const li = document.createElement("li");
+                li.textContent = item;
+                ratingSkippedList.appendChild(li);
+            });
+        }
+        if (ratingSkippedNote) {
+            ratingSkippedNote.textContent = skipped ? `(${skipped})` : "";
+        }
+    }
+
+    function clearRatingSummary() {
+        if (ratingSummaryNotice) {
+            ratingSummaryNotice.hidden = true;
+        }
+        if (ratingSkippedNotice) {
+            ratingSkippedNotice.hidden = true;
+        }
+        if (ratingSkippedList) {
+            ratingSkippedList.innerHTML = "";
+        }
+        if (ratingSkippedNote) {
+            ratingSkippedNote.textContent = "";
+        }
+    }
+
+    function applyRatingSheet(rows) {
+        const skipped = [];
+        const updates = [];
+        let processed = 0;
+        let ratingApplied = 0;
+
+        const idLookup = new Map();
         workingGames.forEach(game => {
-            const title = String(game.title || "").trim().toLowerCase();
-            if (!title) return;
-            if (!titleLookup.has(title)) {
-                titleLookup.set(title, []);
-            }
-            titleLookup.get(title).push(game);
+            const id = String(game.id || "").trim();
+            if (!id) return;
+            idLookup.set(id, game);
         });
 
         let startIndex = 0;
         if (rows.length) {
             const header = rows[0].map(cell => String(cell || "").trim().toLowerCase());
-            if (header[0] === "game title") {
+            if (header[0] === "game_id") {
                 startIndex = 1;
             }
         }
 
         for (let i = startIndex; i < rows.length; i += 1) {
-            const row = rows[i];
-            const title = String(row[0] || "").trim();
-            if (!title) continue;
-            const lookup = titleLookup.get(title.toLowerCase()) || [];
-            if (!lookup.length) {
-                errors.push(`Rating sheet row ${i + 1}: "${title}" not found in library.`);
+            const row = rows[i] || [];
+            const id = String(row[0] || "").trim();
+            const title = String(row[1] || "").trim();
+            if (!id && !title) {
                 continue;
             }
-            if (lookup.length > 1) {
-                errors.push(`Rating sheet row ${i + 1}: "${title}" matches multiple games. Use unique titles.`);
+            processed += 1;
+
+            if (!id) {
+                skipped.push(`Row ${i + 1}: missing game_id.`);
                 continue;
             }
-            const game = lookup[0];
-            const ratingRaw = String(row[1] || "").trim();
-            const reasonRaw = String(row[2] || "").trim();
-            const ratingValue = ratingRaw ? parseRatingValue(ratingRaw) : null;
+
+            const game = idLookup.get(id);
+            if (!game) {
+                skipped.push(`Row ${i + 1}: game_id "${id}" not found.`);
+                continue;
+            }
+
+            const ratingRaw = String(row[2] || "").trim();
+            const reasonRaw = String(row[3] || "").trim();
+            const ratingValue = ratingRaw ? Number(ratingRaw) : null;
+            const reasonValue = reasonRaw ? normalizeRatingReason(reasonRaw) : "";
+
+            let hasUpdate = false;
+
+            if (reasonRaw && reasonRaw.match(/[\r\n]/)) {
+                skipped.push(`Row ${i + 1}: game_id "${id}" rating reason must be one line.`);
+                continue;
+            }
 
             if (ratingRaw) {
-                if (!Number.isFinite(ratingValue)) {
-                    errors.push(`Rating sheet row ${i + 1}: "${title}" has invalid rating.`);
+                if (!/^-?\d+$/.test(ratingRaw)) {
+                    skipped.push(`Row ${i + 1}: game_id "${id}" invalid rating.`);
+                    continue;
+                }
+                if (!Number.isFinite(ratingValue) || !Number.isInteger(ratingValue)) {
+                    skipped.push(`Row ${i + 1}: game_id "${id}" invalid rating.`);
                     continue;
                 }
                 if (ratingValue < RATING_MIN || ratingValue > RATING_MAX) {
-                    errors.push(`Rating sheet row ${i + 1}: "${title}" rating must be between 1 and 10.`);
+                    skipped.push(`Row ${i + 1}: game_id "${id}" rating must be 1-10.`);
                     continue;
                 }
+                updates.push({ game, ratingValue, reasonValue, applyRating: true, applyReason: Boolean(reasonRaw) });
+                ratingApplied += 1;
+                hasUpdate = true;
             }
 
-            if (reasonRaw.match(/[\r\n]/)) {
-                errors.push(`Rating sheet row ${i + 1}: "${title}" rating reason must be one line.`);
-                continue;
+            if (reasonRaw && !ratingRaw) {
+                updates.push({ game, ratingValue: null, reasonValue, applyRating: false, applyReason: true });
+                hasUpdate = true;
             }
 
-            updates.push({
-                game,
-                ratingValue,
-                reason: normalizeRatingReason(reasonRaw),
-                hasRating: Boolean(ratingRaw),
-                hasReason: Boolean(reasonRaw)
-            });
-        }
-
-        if (errors.length) {
-            return { errors, updated: 0 };
+            if (!hasUpdate) {
+                skipped.push(`Row ${i + 1}: game_id "${id}" has no rating or reason.`);
+            }
         }
 
         updates.forEach(update => {
-            if (update.hasRating) {
+            if (update.applyRating) {
                 update.game.ccg_rating = update.ratingValue;
             }
-            if (update.hasReason) {
-                update.game.ccg_rating_reason = update.reason;
+            if (update.applyReason) {
+                update.game.ccg_rating_reason = update.reasonValue;
             }
         });
 
-        return { errors: [], updated: updates.length };
+        return {
+            total: processed,
+            applied: ratingApplied,
+            skipped
+        };
     }
 
     function isValidYear(value) {
@@ -1438,6 +1524,8 @@ function renderSelectedGenres() {
             renderGamesList(searchInput ? searchInput.value : "");
             renderAddedPreview();
             clearForm();
+            clearRatingCsvDownload();
+            clearRatingSummary();
             updateExportState();
         } catch (err) {
             console.error(`[CCG ADMIN] Failed to load live games.json from ${url}`, err);
@@ -1470,6 +1558,8 @@ function renderSelectedGenres() {
                     renderGamesList(searchInput ? searchInput.value : "");
                     renderAddedPreview();
                     clearForm();
+                    clearRatingCsvDownload();
+                    clearRatingSummary();
                     updateExportState();
                     setStatus("Uploaded JSON loaded successfully.");
                 } catch (err) {
@@ -1488,15 +1578,16 @@ function renderSelectedGenres() {
             }
             const csv = buildRatingSheetCsv(workingGames);
             const blob = new Blob([csv], { type: "text/csv" });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = "ccg_ratings.csv";
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            URL.revokeObjectURL(url);
-            setStatus("Rating sheet downloaded.");
+            if (ratingCsvUrl) {
+                URL.revokeObjectURL(ratingCsvUrl);
+            }
+            ratingCsvUrl = URL.createObjectURL(blob);
+            renderRatingCsvDownload(ratingCsvUrl);
+            if (ratingDownloadLink) {
+                ratingDownloadLink.download = "ccg-game-ratings.csv";
+            }
+            setStatus("Rating sheet ready for download.");
+            clearRatingSummary();
         });
     }
 
@@ -1509,14 +1600,9 @@ function renderSelectedGenres() {
                 try {
                     const rows = parseCsv(reader.result || "");
                     const result = applyRatingSheet(rows);
-                    if (result.errors.length) {
-                        setStatus("Rating sheet import blocked. Fix errors and retry.", "error");
-                        setExportErrors(result.errors);
-                        return;
-                    }
-                    setExportErrors([]);
                     updateExportState();
-                    setStatus(`Rating sheet applied to ${result.updated} games.`);
+                    setRatingSummary(result);
+                    setStatus(`Rating sheet import complete. Ratings applied: ${result.applied}.`);
                 } catch (err) {
                     setStatus("Rating sheet import failed.", "error");
                 }
