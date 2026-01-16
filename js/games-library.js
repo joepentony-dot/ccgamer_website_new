@@ -693,7 +693,6 @@ function applyActiveFilters({ preserveScroll } = {}) {
 function getFilteredGames() {
     const query = CCG_ACTIVE_QUERY.trim();
     const systemFilter = CCG_ACTIVE_SYSTEM_FILTER;
-
     return CCG_ALL_GAMES.filter(game => {
         const title = (game.title || "").toLowerCase();
         const matchesQuery = !query || title.includes(query);
@@ -844,6 +843,12 @@ function renderGameCardMarkup(game, opts = {}) {
     const keyAttr = opts.key ? ` data-game-key="${opts.key}"` : "";
     const classNames = ["ccg-game-card"];
     if (opts.rendered) classNames.push("rendered");
+    const ratingMarkup = typeof window.ccgBuildRatingMarkup === "function"
+        ? window.ccgBuildRatingMarkup(game, {
+            label: "CCG Rating",
+            className: "ccg-rating--card"
+        })
+        : "";
 
     return `
         <div class="${classNames.join(" ")}"${keyAttr}>
@@ -855,6 +860,7 @@ function renderGameCardMarkup(game, opts = {}) {
                      data-game-thumb
                      loading="lazy"
                      decoding="async">
+                ${ratingMarkup}
             </a>
             <div class="ccg-game-card__body">
                 <h3 class="ccg-game-card__title">${game.title}</h3>

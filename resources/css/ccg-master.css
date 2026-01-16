@@ -3185,3 +3185,92 @@ body.ccg-party::before {
         height: 0 !important;
     }
 }
+
+/* ============================================================
+   CCG RATING — EDITORIAL STARS
+============================================================ */
+
+.ccg-rating {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-family: var(--ccg-font-body);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.78);
+}
+
+.ccg-rating__label {
+    font-size: 0.68rem;
+    color: rgba(255,255,255,0.7);
+}
+
+.ccg-rating__stars {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.ccg-rating__star {
+    width: 14px;
+    height: 14px;
+    flex: 0 0 auto;
+}
+
+.ccg-rating__star-shape--full {
+    fill: rgba(255,255,255,0.92);
+    filter: drop-shadow(0 0 6px rgba(var(--accent-rgb),0.3));
+}
+
+.ccg-rating__star-shape--empty {
+    fill: rgba(255,255,255,0.16);
+    stroke: rgba(255,255,255,0.5);
+    stroke-width: 1;
+}
+
+.ccg-rating__status {
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    color: rgba(255,255,255,0.6);
+}
+
+.ccg-rating__reason {
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    color: rgba(255,255,255,0.75);
+}
+
+.ccg-game-card__thumb .ccg-rating--card {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.55);
+    pointer-events: none;
+}
+
+.ccg-rating--card .ccg-rating__label {
+    font-size: 0.52rem;
+}
+
+.ccg-rating--card .ccg-rating__star {
+    width: 12px;
+    height: 12px;
+}
+
+.ccg-rating--card .ccg-rating__status {
+    font-size: 0.52rem;
+}
+
+.ccg-rating--single .ccg-rating__label {
+    font-size: 0.75rem;
+}
+
+.ccg-rating--single .ccg-rating__star {
+    width: 18px;
+    height: 18px;
+}

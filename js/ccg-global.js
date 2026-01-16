@@ -184,6 +184,111 @@
     window.ccgBuildGameUrl = ccgBuildGameUrl;
 
     /* ======================================================
+       CCG RATING UTILITIES (EDITORIAL LOCK)
+    ====================================================== */
+    const CCG_RATING_MIN = 1;
+    const CCG_RATING_MAX = 10;
+    const CCG_STAR_PATH = "M12 2.2l3.09 6.26 6.9 1-4.99 4.86 1.18 6.88L12 17.96 5.82 21.2l1.18-6.88-4.99-4.86 6.9-1z";
+
+    function ccgEscapeHtml(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
+
+    function ccgResolveRatingValue(game) {
+        const raw = game?.ccg_rating;
+        if (raw === undefined || raw === null || raw === "") {
+            return {
+                value: null,
+                isRated: false
+            };
+        }
+
+        const parsed = Number(raw);
+        if (!Number.isFinite(parsed)) {
+            return {
+                value: null,
+                isRated: false
+            };
+        }
+
+        const rounded = Math.round(parsed);
+        const clamped = Math.min(Math.max(rounded, CCG_RATING_MIN), CCG_RATING_MAX);
+
+        return {
+            value: clamped,
+            isRated: true
+        };
+    }
+
+    function ccgBuildStarSvg(type) {
+        if (type === "empty") {
+            return `
+                <svg class="ccg-rating__star ccg-rating__star--empty" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path class="ccg-rating__star-shape ccg-rating__star-shape--empty" d="${CCG_STAR_PATH}"></path>
+                </svg>
+            `;
+        }
+
+        return `
+            <svg class="ccg-rating__star ccg-rating__star--full" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path class="ccg-rating__star-shape ccg-rating__star-shape--full" d="${CCG_STAR_PATH}"></path>
+            </svg>
+        `;
+    }
+
+    function ccgBuildRatingStars(ratingData) {
+        const isRated = ratingData?.isRated;
+        if (!isRated) {
+            return Array.from({ length: 5 }, () => ccgBuildStarSvg("empty")).join("");
+        }
+
+        const ratingValue = ratingData.value || 0;
+        const fullCount = Math.ceil(ratingValue / 2);
+        const emptyCount = Math.max(0, 5 - fullCount);
+
+        return [
+            ...Array.from({ length: fullCount }, () => ccgBuildStarSvg("full")),
+            ...Array.from({ length: emptyCount }, () => ccgBuildStarSvg("empty"))
+        ].join("");
+    }
+
+    function ccgBuildRatingMarkup(game, opts = {}) {
+        const ratingData = ccgResolveRatingValue(game);
+        const label = opts.label || "CCG Rating";
+        const reason = opts.showReason ? String(game?.ccg_rating_reason || "").trim() : "";
+        const showStatus = opts.showStatus ?? true;
+        const ariaLabel = ratingData.isRated
+            ? `${label}: ${ratingData.value}/10`
+            : `${label}: Not Yet Rated`;
+        const labelMarkup = label ? `<span class="ccg-rating__label">${ccgEscapeHtml(label)}</span>` : "";
+        const reasonMarkup = reason ? `<span class="ccg-rating__reason">${ccgEscapeHtml(reason)}</span>` : "";
+        const statusMarkup = showStatus && !ratingData.isRated
+            ? `<span class="ccg-rating__status">Not Yet Rated</span>`
+            : "";
+
+        return `
+            <div class="ccg-rating ${opts.className || ""}" data-ccg-rating-state="${ratingData.isRated ? "rated" : "unrated"}" aria-label="${ccgEscapeHtml(ariaLabel)}">
+                ${labelMarkup}
+                <span class="ccg-rating__stars" aria-hidden="true">
+                    ${ccgBuildRatingStars(ratingData)}
+                </span>
+                ${statusMarkup}
+                ${reasonMarkup}
+            </div>
+        `;
+    }
+
+    window.ccgEscapeHtml = ccgEscapeHtml;
+    window.ccgResolveRatingValue = ccgResolveRatingValue;
+    window.ccgBuildRatingStars = ccgBuildRatingStars;
+    window.ccgBuildRatingMarkup = ccgBuildRatingMarkup;
+
+    /* ======================================================
        MOBILE HARDENING — NO PADDING HACKS
     ====================================================== */
     function clampHorizontalOverflow() {

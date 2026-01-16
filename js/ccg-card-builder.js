@@ -77,6 +77,12 @@ function ccgBuildGameCard(game) {
     );
 
     const gameUrl = ccgResolveGameUrl(game);
+    const ratingMarkup = typeof window !== "undefined" && typeof window.ccgBuildRatingMarkup === "function"
+        ? window.ccgBuildRatingMarkup(game, {
+            label: "CCG Rating",
+            className: "ccg-rating--card"
+        })
+        : "";
 
     const title = ccgEscapeHtml(game.title || "Unknown Game");
     const meta = [
@@ -89,6 +95,7 @@ function ccgBuildGameCard(game) {
         <div class="ccg-game-card genre-card">
             <a href="${gameUrl}" class="ccg-game-card__thumb">
                 <img src="${thumb}" alt="${title}">
+                ${ratingMarkup}
             </a>
 
             <div class="ccg-game-card__body">
