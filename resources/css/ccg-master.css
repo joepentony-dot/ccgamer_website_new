@@ -265,9 +265,9 @@ li {
 
 @media (prefers-reduced-motion: no-preference) {
     .ccg-page main > section {
-        opacity: 0;
-        transform: translateY(8px);
-        animation: ccg-section-reveal 720ms ease forwards;
+        opacity: 1;
+        transform: none;
+        animation: none;
     }
 }
 
