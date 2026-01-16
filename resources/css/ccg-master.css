@@ -1234,17 +1234,21 @@ html:not([data-ccg-page="home"]) .ccg-nav__more {
 
     .ccg-nav-drawer__panel::after {
         bottom: 0;
-        content: var(--ccg-nav-scroll-symbol, "⌄⌄");
+        content: "↓\A More options below — scroll";
         background: linear-gradient(0deg, rgba(6,6,14,0.94), rgba(6,6,14,0));
-        color: rgba(var(--accent-rgb), 0.72);
-        font-size: 24px;
+        color: rgba(var(--accent-rgb), 0.82);
+        font-size: 18px;
         font-weight: 600;
-        line-height: 1;
+        line-height: 1.2;
         display: flex;
         align-items: flex-end;
         justify-content: center;
-        padding: 0 16px 12px;
-        text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.3);
+        text-align: center;
+        white-space: pre-line;
+        padding: 0 16px 10px;
+        text-shadow:
+            0 0 10px rgba(var(--accent-rgb), 0.45),
+            0 6px 12px rgba(0,0,0,0.6);
     }
 
     .ccg-nav-drawer__panel--scroll-hint::before,
@@ -1263,6 +1267,10 @@ html:not([data-ccg-page="home"]) .ccg-nav__more {
             0 0 12px rgba(var(--accent-rgb), 0.7),
             0 0 22px rgba(var(--accent-rgb), 0.45);
         animation: ccg-nav-scroll-arrow-strong 2s ease-in-out;
+    }
+
+    .ccg-nav-drawer__panel--scroll-hint-repeat {
+        --ccg-nav-scroll-symbol: "⌄";
     }
 
     .ccg-nav-drawer__panel--scroll-hint-repeat::after {
@@ -3307,10 +3315,22 @@ body.ccg-party::before {
 }
 
 @media (max-width: 720px) {
+    .ccg-rating__label {
+        /* Mobile clip fix: labels can be long; allow wrapping within narrow columns. */
+        display: block;
+        max-width: 100%;
+        line-height: 1.35;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        height: auto;
+        max-height: none;
+        overflow: visible;
+    }
+
     .ccg-rating--single .ccg-rating__label {
         font-size: clamp(0.6rem, 2.8vw, 0.75rem);
         line-height: 1.35;
         white-space: normal;
-        overflow-wrap: break-word;
+        overflow-wrap: anywhere;
     }
 }
