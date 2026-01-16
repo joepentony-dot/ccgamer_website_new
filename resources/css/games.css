@@ -1206,19 +1206,43 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
 
     .ccg-page--games-index .ccg-game-card__title,
     .ccg-page--single-game .ccg-game-card__title {
+        /* Mobile clip fix: base card styles rely on tight spacing; allow multi-line titles to expand. */
         font-size: clamp(0.95rem, 3.4vw, 1.05rem);
         line-height: 1.35;
         letter-spacing: 0.08em;
         white-space: normal;
-        overflow-wrap: break-word;
+        overflow-wrap: anywhere;
+        height: auto;
+        max-height: none;
+        overflow: visible;
     }
 
     .game-hero__title {
+        /* Mobile clip fix: hero titles must wrap without being cut off on narrow screens. */
         font-size: clamp(1.45rem, 4.6vw, 2rem);
         line-height: 1.25;
         letter-spacing: 0.1em;
         word-break: normal;
-        overflow-wrap: break-word;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        height: auto;
+        max-height: none;
+        overflow: visible;
+    }
+
+    .related-carousel .related-card span {
+        /* Mobile clip fix: base rule clamps titles with overflow hidden; remove clamp to show full text. */
+        font-size: clamp(0.85rem, 3.6vw, 1rem);
+        line-height: 1.35;
+        min-height: 0;
+        height: auto;
+        max-height: none;
+        display: block;
+        overflow: visible;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        -webkit-line-clamp: unset;
+        -webkit-box-orient: initial;
     }
 }
 
