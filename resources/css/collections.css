@@ -135,6 +135,7 @@ html[data-ccg-page="collections-index"] .ccg-section {
     padding: 36px 34px 34px;
     text-align: center;
     text-shadow: 0 16px 40px rgba(0,0,0,0.78);
+    pointer-events: none;
 }
 
 .ccg-page--collections-index .ccg-hero-inner--collections .ccg-hero-kicker {
