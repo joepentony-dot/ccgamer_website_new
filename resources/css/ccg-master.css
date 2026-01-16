@@ -101,6 +101,44 @@ body {
     overscroll-behavior-y: auto;
 }
 
+/* ============================================================
+   SCROLL CONTAINER FAILSAFE (SITE-WIDE)
+   ------------------------------------------------------------
+   • Force document scrolling (html/body only)
+   • Prevent any wrapper/hero from becoming a scroll container
+   • Sacrifices overflow-clipped hero visuals if necessary
+============================================================ */
+
+html,
+body {
+    position: static;
+    height: auto !important;
+    min-height: 100%;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+
+:where(.ccg-page,
+       .ccg-main,
+       main,
+       .ccg-section,
+       .ccg-hero,
+       .games-hero,
+       .game-hero,
+       .ccg-genre-hero,
+       .ccg-collections-hero,
+       .home-hero,
+       .home-hero__frame) {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+.ccg-page,
+.ccg-main {
+    overflow-x: hidden !important;
+}
+
 :where([aria-hidden="true"]) {
     pointer-events: none;
 }
@@ -265,9 +303,9 @@ li {
 
 @media (prefers-reduced-motion: no-preference) {
     .ccg-page main > section {
-        opacity: 0;
-        transform: translateY(8px);
-        animation: ccg-section-reveal 720ms ease forwards;
+        opacity: 1;
+        transform: none;
+        animation: none;
     }
 }
 

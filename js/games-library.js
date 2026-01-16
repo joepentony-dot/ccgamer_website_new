@@ -21,6 +21,8 @@ let CCG_YEAR_MIN = null;
 let CCG_YEAR_MAX = null;
 let CCG_ACTIVE_YEAR_MIN = null;
 let CCG_ACTIVE_YEAR_MAX = null;
+let CCG_ACTIVE_YEAR_FOCUS = null;
+let CCG_ACTIVE_YEAR_SPAN = "all";
 
 const ACCORDION_STATE_KEY = "ccgAccordionState";
 const SYSTEM_FILTER_STORAGE_KEY = "ccgGamesSystemFilter";
@@ -525,10 +527,11 @@ function setupSystemFilter() {
 }
 
 function setupYearFilter() {
-    const minInput = document.getElementById("gamesYearMin");
-    const maxInput = document.getElementById("gamesYearMax");
+    const slider = document.getElementById("gamesYearSlider");
+    const yearInput = document.getElementById("gamesYearInput");
     const valueEl = document.getElementById("gamesYearValue");
-    if (!minInput || !maxInput) return;
+    const spanButtons = Array.from(document.querySelectorAll("[data-year-span]"));
+    if (!slider || !yearInput) return;
 
     const years = CCG_ALL_GAMES
         .map(game => parseGameYear(game.year))
@@ -538,32 +541,81 @@ function setupYearFilter() {
     CCG_YEAR_MAX = years.length ? Math.max(...years) : 1995;
     CCG_ACTIVE_YEAR_MIN = CCG_YEAR_MIN;
     CCG_ACTIVE_YEAR_MAX = CCG_YEAR_MAX;
+    CCG_ACTIVE_YEAR_FOCUS = CCG_YEAR_MAX;
+    CCG_ACTIVE_YEAR_SPAN = "all";
 
-    minInput.min = String(CCG_YEAR_MIN);
-    minInput.max = String(CCG_YEAR_MAX);
-    maxInput.min = String(CCG_YEAR_MIN);
-    maxInput.max = String(CCG_YEAR_MAX);
-    minInput.value = String(CCG_ACTIVE_YEAR_MIN);
-    maxInput.value = String(CCG_ACTIVE_YEAR_MAX);
+    slider.min = String(CCG_YEAR_MIN);
+    slider.max = String(CCG_YEAR_MAX);
+    slider.value = String(CCG_ACTIVE_YEAR_FOCUS);
 
-    const updateRange = (source) => {
-        const nextMin = Math.min(parseInt(minInput.value, 10), parseInt(maxInput.value, 10));
-        const nextMax = Math.max(parseInt(minInput.value, 10), parseInt(maxInput.value, 10));
+    yearInput.min = String(CCG_YEAR_MIN);
+    yearInput.max = String(CCG_YEAR_MAX);
+    yearInput.value = String(CCG_ACTIVE_YEAR_FOCUS);
 
-        if (source === "min") {
-            minInput.value = String(nextMin);
-        } else if (source === "max") {
-            maxInput.value = String(nextMax);
+    const clampYear = (value) => {
+        if (!Number.isFinite(value)) return CCG_YEAR_MAX;
+        return Math.min(Math.max(value, CCG_YEAR_MIN), CCG_YEAR_MAX);
+    };
+
+    const syncActiveRange = () => {
+        if (CCG_ACTIVE_YEAR_SPAN === "all") {
+            CCG_ACTIVE_YEAR_MIN = CCG_YEAR_MIN;
+            CCG_ACTIVE_YEAR_MAX = CCG_YEAR_MAX;
+            return;
         }
 
-        CCG_ACTIVE_YEAR_MIN = nextMin;
-        CCG_ACTIVE_YEAR_MAX = nextMax;
+        const span = Number.parseInt(CCG_ACTIVE_YEAR_SPAN, 10);
+        const focus = clampYear(CCG_ACTIVE_YEAR_FOCUS ?? CCG_YEAR_MAX);
+        CCG_ACTIVE_YEAR_MIN = clampYear(focus - span);
+        CCG_ACTIVE_YEAR_MAX = clampYear(focus + span);
+    };
+
+    const syncButtons = () => {
+        spanButtons.forEach(btn => {
+            const isActive = btn.dataset.yearSpan === String(CCG_ACTIVE_YEAR_SPAN);
+            btn.classList.toggle("is-active", isActive);
+            btn.setAttribute("aria-pressed", String(isActive));
+        });
+    };
+
+    const applyYearChange = () => {
+        syncActiveRange();
         updateYearRangeLabel(valueEl);
         applyActiveFilters({ preserveScroll: true });
     };
 
-    minInput.addEventListener("input", () => updateRange("min"));
-    maxInput.addEventListener("input", () => updateRange("max"));
+    const setFocusYear = (value) => {
+        const next = clampYear(Number.parseInt(value, 10));
+        CCG_ACTIVE_YEAR_FOCUS = next;
+        slider.value = String(next);
+        yearInput.value = String(next);
+        if (CCG_ACTIVE_YEAR_SPAN === "all") {
+            CCG_ACTIVE_YEAR_SPAN = "0";
+            syncButtons();
+        }
+        applyYearChange();
+    };
+
+    const setSpan = (nextSpan) => {
+        CCG_ACTIVE_YEAR_SPAN = nextSpan;
+        syncButtons();
+        applyYearChange();
+    };
+
+    slider.addEventListener("input", () => setFocusYear(slider.value));
+    yearInput.addEventListener("input", () => {
+        if (!yearInput.value) return;
+        setFocusYear(yearInput.value);
+    });
+
+    spanButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            const span = btn.dataset.yearSpan || "all";
+            setSpan(span);
+        });
+    });
+
+    syncButtons();
     updateYearRangeLabel(valueEl);
 }
 
