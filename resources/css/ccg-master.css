@@ -1214,14 +1214,14 @@ html:not([data-ccg-page="home"]) .ccg-nav__more {
 }
 
 /* Mobile-only scroll affordance for the nav drawer (JS toggles class). */
-@media (max-width: 960px) {
+@media (max-width: 640px) and (pointer: coarse) {
     .ccg-nav-drawer__panel::before,
     .ccg-nav-drawer__panel::after {
         content: "";
         position: absolute;
         left: 0;
         right: 0;
-        height: 44px;
+        height: 64px;
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.35s ease;
@@ -1234,18 +1234,17 @@ html:not([data-ccg-page="home"]) .ccg-nav__more {
 
     .ccg-nav-drawer__panel::after {
         bottom: 0;
-        content: "⌄";
-        background: linear-gradient(0deg, rgba(6,6,14,0.92), rgba(6,6,14,0));
-        color: rgba(var(--accent-rgb), 0.78);
-        font-size: 18px;
+        content: var(--ccg-nav-scroll-symbol, "⌄⌄");
+        background: linear-gradient(0deg, rgba(6,6,14,0.94), rgba(6,6,14,0));
+        color: rgba(var(--accent-rgb), 0.72);
+        font-size: 24px;
+        font-weight: 600;
         line-height: 1;
         display: flex;
         align-items: flex-end;
         justify-content: center;
-        padding-bottom: 8px;
-        text-shadow:
-            0 0 10px rgba(var(--accent-rgb), 0.45),
-            0 6px 12px rgba(0,0,0,0.6);
+        padding: 0 16px 12px;
+        text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.3);
     }
 
     .ccg-nav-drawer__panel--scroll-hint::before,
@@ -1253,8 +1252,21 @@ html:not([data-ccg-page="home"]) .ccg-nav__more {
         opacity: 0.85;
     }
 
-    .ccg-nav-drawer__panel--scroll-hint::after {
-        animation: ccg-nav-scroll-arrow 2.4s ease-in-out infinite;
+    .ccg-nav-drawer__panel--scroll-hint-first {
+        --ccg-nav-scroll-symbol: "⌄⌄";
+    }
+
+    .ccg-nav-drawer__panel--scroll-hint-first::after {
+        font-size: 30px;
+        color: rgba(var(--accent-rgb), 0.9);
+        text-shadow:
+            0 0 12px rgba(var(--accent-rgb), 0.7),
+            0 0 22px rgba(var(--accent-rgb), 0.45);
+        animation: ccg-nav-scroll-arrow-strong 2s ease-in-out;
+    }
+
+    .ccg-nav-drawer__panel--scroll-hint-repeat::after {
+        animation: ccg-nav-scroll-arrow 2.8s ease-in-out infinite;
     }
 
     @keyframes ccg-nav-scroll-arrow {
@@ -1269,6 +1281,25 @@ html:not([data-ccg-page="home"]) .ccg-nav__more {
         100% {
             transform: translateY(0);
             opacity: 0.55;
+        }
+    }
+
+    @keyframes ccg-nav-scroll-arrow-strong {
+        0% {
+            transform: translateY(0) scale(1);
+            opacity: 0.7;
+        }
+        30% {
+            transform: translateY(6px) scale(1.05);
+            opacity: 1;
+        }
+        60% {
+            transform: translateY(2px) scale(1.02);
+            opacity: 0.95;
+        }
+        100% {
+            transform: translateY(0) scale(1);
+            opacity: 0.85;
         }
     }
 }
