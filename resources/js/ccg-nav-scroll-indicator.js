@@ -9,7 +9,7 @@
         ? window.matchMedia("(max-width: 640px) and (pointer: coarse)")
         : null;
 
-    const STORAGE_KEY = "ccgNavScrollHintSeen";
+    const STORAGE_KEY = "ccgNavScrollIndicatorSeen";
 
     const readStoredFlag = () => {
         try {
@@ -39,100 +39,142 @@
 
     const isNavOpen = () => header.classList.contains("ccg-header--nav-open") || drawer.getAttribute("aria-hidden") === "false";
 
-    const shouldShowHint = () => {
-        if (!isPhoneViewport()) return false;
-        const hasOverflow = panel.scrollHeight - panel.clientHeight > 12;
-        const atTop = panel.scrollTop <= 6;
-        return hasOverflow && atTop;
+    const hasOverflow = () => panel.scrollHeight - panel.clientHeight > 12;
+
+    const atTop = () => panel.scrollTop <= 0;
+
+    const INDICATOR_CLASS = "ccg-menu-scroll-indicator";
+    const VISIBLE_CLASS = "ccg-menu-scroll-indicator--visible";
+    const ATTENTION_CLASS = "ccg-menu-scroll-indicator--attention";
+    const SUBTLE_CLASS = "ccg-menu-scroll-indicator--subtle";
+    const DISMISSED_CLASS = "ccg-menu-scroll-indicator--dismissed";
+
+    let indicator = null;
+    let hasSeenAttention = readStoredFlag();
+    let attentionTimeout = null;
+    let scrollHandler = null;
+    let dismissedForOpen = false;
+
+    const ensureIndicator = () => {
+        if (indicator && indicator.parentElement) return indicator;
+        const wrapper = document.createElement("div");
+        wrapper.className = INDICATOR_CLASS;
+        wrapper.setAttribute("aria-hidden", "true");
+
+        const chevronTop = document.createElement("span");
+        chevronTop.className = `${INDICATOR_CLASS}__chevron`;
+        const chevronBottom = document.createElement("span");
+        chevronBottom.className = `${INDICATOR_CLASS}__chevron`;
+
+        wrapper.appendChild(chevronTop);
+        wrapper.appendChild(chevronBottom);
+        panel.appendChild(wrapper);
+        indicator = wrapper;
+        return indicator;
     };
 
-    const clearHintClasses = () => {
-        panel.classList.remove(
-            "ccg-nav-drawer__panel--scroll-hint",
-            "ccg-nav-drawer__panel--scroll-hint-first",
-            "ccg-nav-drawer__panel--scroll-hint-repeat"
+    const clearIndicatorClasses = () => {
+        if (!indicator) return;
+        indicator.classList.remove(
+            VISIBLE_CLASS,
+            ATTENTION_CLASS,
+            SUBTLE_CLASS,
+            DISMISSED_CLASS
         );
     };
 
-    const applyHintClass = (variant) => {
-        clearHintClasses();
-        if (!shouldShowHint()) return;
-        panel.classList.add("ccg-nav-drawer__panel--scroll-hint", variant);
+    const hideIndicator = () => {
+        if (!indicator) return;
+        indicator.classList.remove(VISIBLE_CLASS, ATTENTION_CLASS, SUBTLE_CLASS);
+        indicator.classList.add(DISMISSED_CLASS);
     };
 
-    let hasSeenAttention = readStoredFlag();
-    let scrollHandler = null;
-    let attentionTimeout = null;
+    const showIndicator = (variant) => {
+        if (!indicator) return;
+        indicator.classList.remove(ATTENTION_CLASS, SUBTLE_CLASS, DISMISSED_CLASS);
+        indicator.classList.add(VISIBLE_CLASS, variant);
+    };
 
-    const showAttentionHint = () => {
-        applyHintClass("ccg-nav-drawer__panel--scroll-hint-first");
-        if (!hasSeenAttention) {
-            hasSeenAttention = true;
-            writeStoredFlag();
-        }
+    const handleAttentionTimeout = () => {
         if (attentionTimeout) {
             window.clearTimeout(attentionTimeout);
         }
         attentionTimeout = window.setTimeout(() => {
             attentionTimeout = null;
-            if (isNavOpen() && shouldShowHint()) {
-                applyHintClass("ccg-nav-drawer__panel--scroll-hint-repeat");
+            if (isNavOpen() && hasOverflow() && atTop() && !dismissedForOpen) {
+                showIndicator(SUBTLE_CLASS);
             } else {
-                clearHintClasses();
+                hideIndicator();
             }
         }, 2000);
     };
 
-    const showRepeatHint = () => {
-        applyHintClass("ccg-nav-drawer__panel--scroll-hint-repeat");
+    const updateIndicator = () => {
+        if (!indicator) return;
+        if (!isPhoneViewport() || !isNavOpen()) {
+            hideIndicator();
+            return;
+        }
+
+        if (!hasOverflow()) {
+            hideIndicator();
+            return;
+        }
+
+        if (!atTop() || dismissedForOpen) {
+            hideIndicator();
+            return;
+        }
+
+        if (!hasSeenAttention) {
+            showIndicator(ATTENTION_CLASS);
+            hasSeenAttention = true;
+            writeStoredFlag();
+            handleAttentionTimeout();
+            return;
+        }
+
+        showIndicator(SUBTLE_CLASS);
     };
 
     const handleNavOpen = () => {
         if (!isPhoneViewport()) {
-            clearHintClasses();
+            clearIndicatorClasses();
             return;
         }
+
+        ensureIndicator();
 
         if (!scrollHandler) {
             scrollHandler = () => {
                 if (!isNavOpen()) return;
-                if (panel.classList.contains("ccg-nav-drawer__panel--scroll-hint-first")) {
-                    if (!shouldShowHint()) {
-                        clearHintClasses();
-                    }
+                if (panel.scrollTop > 0) {
+                    dismissedForOpen = true;
+                    hideIndicator();
                     return;
                 }
-                if (shouldShowHint()) {
-                    showRepeatHint();
-                } else {
-                    clearHintClasses();
-                }
+                updateIndicator();
             };
             panel.addEventListener("scroll", scrollHandler, { passive: true });
             panel.addEventListener("touchmove", scrollHandler, { passive: true });
         }
 
-        if (!shouldShowHint()) {
-            clearHintClasses();
-            return;
-        }
-
-        if (!hasSeenAttention) {
-            showAttentionHint();
-        } else if (!panel.classList.contains("ccg-nav-drawer__panel--scroll-hint-first")) {
-            showRepeatHint();
-        }
+        dismissedForOpen = false;
+        updateIndicator();
     };
 
     const handleNavClose = () => {
-        clearHintClasses();
         if (attentionTimeout) {
             window.clearTimeout(attentionTimeout);
             attentionTimeout = null;
         }
+        if (indicator?.parentElement) {
+            indicator.parentElement.removeChild(indicator);
+        }
+        indicator = null;
     };
 
-    const refreshHint = () => {
+    const refreshIndicator = () => {
         if (!isNavOpen()) {
             handleNavClose();
             return;
@@ -152,13 +194,13 @@
     observer.observe(drawer, { attributes: true, attributeFilter: ["aria-hidden"] });
 
     if (phoneQuery?.addEventListener) {
-        phoneQuery.addEventListener("change", () => refreshHint());
+        phoneQuery.addEventListener("change", () => refreshIndicator());
     } else if (phoneQuery?.addListener) {
-        phoneQuery.addListener(() => refreshHint());
+        phoneQuery.addListener(() => refreshIndicator());
     }
 
-    window.addEventListener("resize", () => refreshHint());
-    window.addEventListener("orientationchange", () => refreshHint());
+    window.addEventListener("resize", () => refreshIndicator());
+    window.addEventListener("orientationchange", () => refreshIndicator());
 
     if (isNavOpen()) {
         handleNavOpen();

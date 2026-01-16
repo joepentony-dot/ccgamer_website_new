@@ -1215,98 +1215,93 @@ html:not([data-ccg-page="home"]) .ccg-nav__more {
 
 /* Mobile-only scroll affordance for the nav drawer (JS toggles class). */
 @media (max-width: 640px) and (pointer: coarse) {
-    .ccg-nav-drawer__panel::before,
-    .ccg-nav-drawer__panel::after {
-        content: "";
+    .ccg-menu-scroll-indicator {
         position: absolute;
-        left: 0;
-        right: 0;
-        height: 64px;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.35s ease;
-    }
-
-    .ccg-nav-drawer__panel::before {
-        top: 0;
-        background: linear-gradient(180deg, rgba(6,6,14,0.92), rgba(6,6,14,0));
-    }
-
-    .ccg-nav-drawer__panel::after {
-        bottom: 0;
-        content: "↓\A More options below — scroll";
-        background: linear-gradient(0deg, rgba(6,6,14,0.94), rgba(6,6,14,0));
-        color: rgba(var(--accent-rgb), 0.82);
-        font-size: 18px;
-        font-weight: 600;
-        line-height: 1.2;
+        left: 50%;
+        bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+        transform: translateX(-50%);
         display: flex;
-        align-items: flex-end;
-        justify-content: center;
-        text-align: center;
-        white-space: pre-line;
-        padding: 0 16px 10px;
-        text-shadow:
-            0 0 10px rgba(var(--accent-rgb), 0.45),
-            0 6px 12px rgba(0,0,0,0.6);
+        flex-direction: column;
+        gap: 6px;
+        align-items: center;
+        pointer-events: none;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        z-index: 2;
+        filter: drop-shadow(0 0 10px rgba(var(--accent-rgb), 0.45));
     }
 
-    .ccg-nav-drawer__panel--scroll-hint::before,
-    .ccg-nav-drawer__panel--scroll-hint::after {
+    .ccg-menu-scroll-indicator__chevron {
+        width: 22px;
+        height: 22px;
+        border-right: 3px solid rgba(var(--accent-rgb), 0.9);
+        border-bottom: 3px solid rgba(var(--accent-rgb), 0.9);
+        transform: rotate(45deg);
+        box-shadow:
+            0 0 8px rgba(var(--accent-rgb), 0.5),
+            0 0 16px rgba(var(--accent-rgb), 0.35);
+    }
+
+    .ccg-menu-scroll-indicator__chevron:last-child {
         opacity: 0.85;
+        width: 26px;
+        height: 26px;
     }
 
-    .ccg-nav-drawer__panel--scroll-hint-first {
-        --ccg-nav-scroll-symbol: "⌄⌄";
+    .ccg-menu-scroll-indicator--visible {
+        opacity: 1;
+        visibility: visible;
     }
 
-    .ccg-nav-drawer__panel--scroll-hint-first::after {
-        font-size: 30px;
-        color: rgba(var(--accent-rgb), 0.9);
-        text-shadow:
-            0 0 12px rgba(var(--accent-rgb), 0.7),
-            0 0 22px rgba(var(--accent-rgb), 0.45);
-        animation: ccg-nav-scroll-arrow-strong 2s ease-in-out;
+    .ccg-menu-scroll-indicator--attention .ccg-menu-scroll-indicator__chevron {
+        animation: ccg-menu-scroll-attention 2s ease-in-out;
     }
 
-    .ccg-nav-drawer__panel--scroll-hint-repeat {
-        --ccg-nav-scroll-symbol: "⌄";
+    .ccg-menu-scroll-indicator--subtle .ccg-menu-scroll-indicator__chevron {
+        animation: ccg-menu-scroll-subtle 2.8s ease-in-out infinite;
     }
 
-    .ccg-nav-drawer__panel--scroll-hint-repeat::after {
-        animation: ccg-nav-scroll-arrow 2.8s ease-in-out infinite;
+    .ccg-menu-scroll-indicator--subtle .ccg-menu-scroll-indicator__chevron:last-child {
+        animation-delay: 0.2s;
     }
 
-    @keyframes ccg-nav-scroll-arrow {
+    .ccg-menu-scroll-indicator--dismissed {
+        opacity: 0;
+        visibility: hidden;
+        filter: none;
+    }
+
+    @keyframes ccg-menu-scroll-subtle {
         0% {
-            transform: translateY(0);
-            opacity: 0.55;
+            transform: translateY(0) rotate(45deg);
+            opacity: 0.6;
         }
         50% {
-            transform: translateY(3px);
-            opacity: 0.88;
+            transform: translateY(4px) rotate(45deg);
+            opacity: 1;
         }
         100% {
-            transform: translateY(0);
-            opacity: 0.55;
+            transform: translateY(0) rotate(45deg);
+            opacity: 0.6;
         }
     }
 
-    @keyframes ccg-nav-scroll-arrow-strong {
+    @keyframes ccg-menu-scroll-attention {
         0% {
-            transform: translateY(0) scale(1);
-            opacity: 0.7;
+            transform: translateY(0) scale(1) rotate(45deg);
+            opacity: 0.75;
         }
         30% {
-            transform: translateY(6px) scale(1.05);
+            transform: translateY(8px) scale(1.08) rotate(45deg);
             opacity: 1;
         }
         60% {
-            transform: translateY(2px) scale(1.02);
+            transform: translateY(3px) scale(1.04) rotate(45deg);
             opacity: 0.95;
         }
         100% {
-            transform: translateY(0) scale(1);
+            transform: translateY(0) scale(1) rotate(45deg);
             opacity: 0.85;
         }
     }
