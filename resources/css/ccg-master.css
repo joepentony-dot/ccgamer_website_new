@@ -1821,22 +1821,22 @@ html.ccg-is-mobile .is-glinting {
 ============================================================ */
 
 @media (min-width: 1024px) {
-    html.ccg-perf-desktop .ccg-section:not(.ccg-hero),
     html.ccg-perf-desktop .ccg-card,
+    html.ccg-perf-desktop .ccg-game-card,
+    html.ccg-perf-desktop .ccg-genre-tile,
+    html.ccg-perf-desktop .ccg-feature-card,
     html.ccg-perf-desktop .ccg-footer,
     html.ccg-perf-desktop .game-section,
     html.ccg-perf-desktop .ccg-info-shell,
-    html.ccg-perf-desktop .ccg-info-hero,
-    html.ccg-perf-desktop .ccg-collections-hero,
     html.ccg-perf-desktop .ccg-panel {
-        --ccg-depth-card: 0 10px 24px rgba(0,0,0,0.7);
-        --ccg-depth-card-hover: 0 14px 30px rgba(0,0,0,0.82);
-        --ccg-glow-soft: 0 0 12px rgba(var(--accent-rgb),0.14);
-        --ccg-glow-strong: 0 0 22px rgba(var(--accent-rgb),0.3);
+        --ccg-depth-card: 0 9px 22px rgba(0,0,0,0.68);
+        --ccg-depth-card-hover: 0 13px 28px rgba(0,0,0,0.8);
+        --ccg-glow-soft: 0 0 10px rgba(var(--accent-rgb),0.12);
+        --ccg-glow-strong: 0 0 18px rgba(var(--accent-rgb),0.26);
     }
 
     html.ccg-perf-desktop [data-ccg-wow] {
-        transition-duration: 620ms;
+        transition-duration: 700ms;
     }
 }
 

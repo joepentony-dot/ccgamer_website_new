@@ -444,6 +444,17 @@
     }
 }
 
+@media (min-width: 1024px) {
+    html.ccg-perf-desktop :where([data-ccg-wow], [data-ccg-glow])::after {
+        opacity: 0.5;
+        filter: blur(6px);
+    }
+
+    html.ccg-perf-desktop :where([data-ccg-wow], [data-ccg-glow]).is-lit::after {
+        opacity: 0.62;
+    }
+}
+
 /* ------------------------------------------------------------
    SOFT GLOW PULSE — CTA LIVENESS (RESPECTS REDUCED MOTION)
 ------------------------------------------------------------ */
@@ -516,6 +527,18 @@
     :where([data-ccg-wow], [data-ccg-glow])::after {
         animation: none !important;
         transition-duration: 0s;
+    }
+
+    .ccg-effect-gridlines,
+    .ccg-effect-scanlines,
+    .ccg-bg-crt-overlay,
+    .ccg-hero-scanlines,
+    .home-hero__scanlines {
+        opacity: 0.14;
+    }
+
+    :where([data-ccg-wow], [data-ccg-glow])::after {
+        opacity: 0.3;
     }
 }
 

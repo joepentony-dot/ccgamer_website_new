@@ -60,9 +60,11 @@
     }
 
     window.addEventListener("mousemove", markActive, { passive: true });
+    window.addEventListener("pointermove", markActive, { passive: true });
     window.addEventListener("pointerdown", markActive, { passive: true });
     window.addEventListener("keydown", markActive, { passive: true });
     window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("focus", markActive, { passive: true });
     document.addEventListener("visibilitychange", handleVisibility);
 
     resetIdleTimer();
@@ -78,13 +80,15 @@
             return originalRaf(callback);
         }
 
-        return originalRaf((timestamp) => {
+        const wrapped = (timestamp) => {
             if (timestamp - lastFrameTime >= frameInterval) {
                 lastFrameTime = timestamp;
                 callback(timestamp);
                 return;
             }
-            originalRaf(callback);
-        });
+            originalRaf(wrapped);
+        };
+
+        return originalRaf(wrapped);
     };
 })();
