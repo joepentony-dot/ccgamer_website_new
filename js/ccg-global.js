@@ -184,6 +184,55 @@
     window.ccgBuildGameUrl = ccgBuildGameUrl;
 
     /* ======================================================
+       SCROLL FAILSAFE (DESKTOP-FIRST)
+       ------------------------------------------------------
+       • Guarantees wheel scrolling even when layers block
+       • Does not override native scrolling unless blocked
+    ====================================================== */
+    function setupScrollFailsafe() {
+        const getScrollTop = () => window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+        const getMaxScroll = () => Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+        const canScroll = () => document.documentElement.scrollHeight - window.innerHeight > 1;
+
+        let ticking = false;
+
+        const normalizeDelta = (event) => {
+            let deltaY = event.deltaY || 0;
+            if (event.deltaMode === 1) {
+                deltaY *= 16;
+            } else if (event.deltaMode === 2) {
+                deltaY *= window.innerHeight;
+            }
+            return deltaY;
+        };
+
+        const handleWheel = (event) => {
+            if (event.defaultPrevented || event.ctrlKey) return;
+            if (!canScroll()) return;
+
+            const deltaY = normalizeDelta(event);
+            if (!deltaY) return;
+
+            const startTop = getScrollTop();
+            const maxScroll = getMaxScroll();
+            const targetTop = Math.min(Math.max(startTop + deltaY, 0), maxScroll);
+
+            if (targetTop === startTop || ticking) return;
+            ticking = true;
+
+            requestAnimationFrame(() => {
+                const currentTop = getScrollTop();
+                if (currentTop === startTop) {
+                    window.scrollTo({ top: targetTop, behavior: "auto" });
+                }
+                ticking = false;
+            });
+        };
+
+        window.addEventListener("wheel", handleWheel, { passive: true, capture: true });
+    }
+
+    /* ======================================================
        CCG RATING UTILITIES (EDITORIAL LOCK)
     ====================================================== */
     const CCG_RATING_MIN = 1;
@@ -1503,6 +1552,7 @@ function setupFooterSignatureRotator() {
         }
 
         setupParticleField();
+        setupScrollFailsafe();
 
         /* -------------------------------
            Keep header height var accurate

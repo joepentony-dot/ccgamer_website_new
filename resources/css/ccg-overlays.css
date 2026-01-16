@@ -357,6 +357,13 @@ overflow: hidden;
 touch-action: none;
 }
 
+@media (hover: hover) and (pointer: fine) {
+    body.ccg-secret-modal-open {
+        overflow-y: auto;
+        touch-action: auto;
+    }
+}
+
 /* Subtle visual cue indicating scrollable content */
 .ccg-secret-modal__content::after {
 content: "";
