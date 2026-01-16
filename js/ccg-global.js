@@ -1240,7 +1240,6 @@
             drawer?.setAttribute("aria-hidden", "true");
             toggle.setAttribute("aria-expanded", "false");
             syncBodyLock(false);
-            clearNavScrollCue();
         };
 
         const openNav = () => {
@@ -1252,14 +1251,12 @@
             toggle.setAttribute("aria-expanded", "true");
             syncBodyLock(true);
             setHeaderHeightVar();
-            requestAnimationFrame(() => setupNavScrollCue());
         };
 
         const syncMobileNavState = () => {
             if (!isMobileViewport()) {
                 closeNav();
                 closeMore();
-                clearNavScrollCue();
                 return;
             }
 
