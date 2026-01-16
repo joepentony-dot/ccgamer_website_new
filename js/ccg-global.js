@@ -1112,6 +1112,9 @@
         const drawerSecondary = drawer?.querySelector("[data-ccg-drawer-secondary]");
         const drawerCloseEls = drawer?.querySelectorAll("[data-ccg-drawer-close]") || [];
         const mobileMatch = typeof window.matchMedia === "function" ? window.matchMedia("(max-width: 960px)") : null;
+        const phoneMatch = typeof window.matchMedia === "function"
+            ? window.matchMedia("(max-width: 640px) and (pointer: coarse)")
+            : null;
 
         const primaryList = nav?.querySelector("[data-ccg-nav-primary]");
         const secondaryList = nav?.querySelector("[data-ccg-nav-secondary]");
@@ -1123,6 +1126,7 @@
         if (!toggle || !nav || !primaryList || !moreWrap || !moreMenu) return;
 
         const isMobileViewport = () => mobileMatch ? mobileMatch.matches : window.innerWidth <= 960;
+        const isPhoneViewport = () => phoneMatch ? phoneMatch.matches : window.innerWidth <= 640;
 
         let navScrollCueHandler = null;
 
@@ -1136,19 +1140,34 @@
             }
         };
 
-        const setupNavScrollCue = () => {
-            // Mobile-only cue to hint the drawer is vertically scrollable (plus arrow indicator).
-            if (!drawerPanel || !isMobileViewport()) return;
-            clearNavScrollCue();
+        const updateNavScrollCue = () => {
+            if (!drawerPanel) return;
+            if (!isPhoneViewport()) {
+                drawerPanel.classList.remove("ccg-nav-drawer__panel--scroll-hint");
+                return;
+            }
             const hasOverflow = drawerPanel.scrollHeight - drawerPanel.clientHeight > 12;
-            const atBottom = drawerPanel.scrollTop + drawerPanel.clientHeight >= drawerPanel.scrollHeight - 4;
-            if (!hasOverflow || atBottom) return;
-            drawerPanel.classList.add("ccg-nav-drawer__panel--scroll-hint");
-            navScrollCueHandler = () => {
+            const atTop = drawerPanel.scrollTop <= 6;
+            if (hasOverflow && atTop) {
+                drawerPanel.classList.add("ccg-nav-drawer__panel--scroll-hint");
+            } else {
+                drawerPanel.classList.remove("ccg-nav-drawer__panel--scroll-hint");
+            }
+        };
+
+        const setupNavScrollCue = () => {
+            // Phone-only cue to hint the drawer is vertically scrollable (plus arrow indicator).
+            if (!drawerPanel || !isMobileViewport()) return;
+            if (!isPhoneViewport()) {
                 clearNavScrollCue();
-            };
-            drawerPanel.addEventListener("scroll", navScrollCueHandler, { passive: true });
-            drawerPanel.addEventListener("touchmove", navScrollCueHandler, { passive: true });
+                return;
+            }
+            if (!navScrollCueHandler) {
+                navScrollCueHandler = () => updateNavScrollCue();
+                drawerPanel.addEventListener("scroll", navScrollCueHandler, { passive: true });
+                drawerPanel.addEventListener("touchmove", navScrollCueHandler, { passive: true });
+            }
+            updateNavScrollCue();
         };
 
         const cloneLink = (link, extraClasses = []) => {
@@ -1311,16 +1330,40 @@
             });
         }
 
+        if (phoneMatch?.addEventListener) {
+            phoneMatch.addEventListener("change", () => {
+                if (isNavOpen) {
+                    setupNavScrollCue();
+                } else {
+                    clearNavScrollCue();
+                }
+            });
+        } else if (phoneMatch?.addListener) {
+            phoneMatch.addListener(() => {
+                if (isNavOpen) {
+                    setupNavScrollCue();
+                } else {
+                    clearNavScrollCue();
+                }
+            });
+        }
+
         window.addEventListener("resize", () => {
             setHeaderHeightVar();
             syncMobileHardening();
             syncMobileNavState();
+            if (isNavOpen) {
+                requestAnimationFrame(() => setupNavScrollCue());
+            }
         });
 
         window.addEventListener("orientationchange", () => {
             setHeaderHeightVar();
             syncMobileHardening();
             syncMobileNavState();
+            if (isNavOpen) {
+                requestAnimationFrame(() => setupNavScrollCue());
+            }
         });
 
         syncMobileNavState();
