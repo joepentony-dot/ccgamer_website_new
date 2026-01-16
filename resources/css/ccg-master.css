@@ -1368,6 +1368,12 @@ html:not([data-ccg-page="home"]) .ccg-nav__more {
     overflow: hidden;
 }
 
+@media (hover: hover) and (pointer: fine) {
+    .ccg-body--locked {
+        overflow-y: auto !important;
+    }
+}
+
 @media (max-width: 768px) {
     .ccg-nav-drawer__panel {
         width: 100vw;
