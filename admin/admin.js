@@ -649,6 +649,19 @@ function renderSelectedGenres() {
         return rows.map(row => row.map(escapeCsvValue).join(",")).join("\n");
     }
 
+    async function fetchRatingTemplateGames() {
+        const url = getDefaultSourceUrl();
+        const res = await fetch(url, { cache: "no-store" });
+        if (!res.ok) {
+            throw new Error(`Fetch failed (${res.status})`);
+        }
+        const data = await res.json();
+        if (!Array.isArray(data)) {
+            throw new Error("Invalid games.json format");
+        }
+        return prepareImportedGames(data);
+    }
+
     function renderRatingCsvDownload(url) {
         if (!ratingDownloadLink || !ratingDownloadNotice) return;
         ratingDownloadLink.href = url;
@@ -1572,26 +1585,32 @@ function renderSelectedGenres() {
 
     if (ratingsDownloadBtn) {
         ratingsDownloadBtn.addEventListener("click", async () => {
-            if (!workingGames.length) {
-                setStatus("Loading games.json for rating sheet…", "info");
-                await fetchLiveGames();
+            setNextStepsVisible(false);
+            setStatus("Loading games.json for rating template…", "info");
+            try {
+                const ratingGames = await fetchRatingTemplateGames();
+                const csv = buildRatingSheetCsv(ratingGames);
+                const blob = new Blob([csv], { type: "text/csv" });
+                if (ratingCsvUrl) {
+                    URL.revokeObjectURL(ratingCsvUrl);
+                }
+                ratingCsvUrl = URL.createObjectURL(blob);
+                renderRatingCsvDownload(ratingCsvUrl);
+                if (ratingDownloadLink) {
+                    ratingDownloadLink.download = "ccg-game-ratings.csv";
+                }
+                const tempLink = document.createElement("a");
+                tempLink.href = ratingCsvUrl;
+                tempLink.download = "ccg-game-ratings.csv";
+                document.body.appendChild(tempLink);
+                tempLink.click();
+                tempLink.remove();
+                setStatus("Rating template downloaded. Fill in ratings (1–10) and re-upload.");
+                clearRatingSummary();
+            } catch (err) {
+                console.error("[CCG ADMIN] Failed to build rating template.", err);
+                setStatus("Rating template download failed. Check games.json availability.", "error");
             }
-            if (!workingGames.length) {
-                setStatus("Load games.json before downloading the rating sheet.", "error");
-                return;
-            }
-            const csv = buildRatingSheetCsv(workingGames);
-            const blob = new Blob([csv], { type: "text/csv" });
-            if (ratingCsvUrl) {
-                URL.revokeObjectURL(ratingCsvUrl);
-            }
-            ratingCsvUrl = URL.createObjectURL(blob);
-            renderRatingCsvDownload(ratingCsvUrl);
-            if (ratingDownloadLink) {
-                ratingDownloadLink.download = "ccg-game-ratings.csv";
-            }
-            setStatus("Rating sheet ready for download.");
-            clearRatingSummary();
         });
     }
 
