@@ -1571,7 +1571,11 @@ function renderSelectedGenres() {
     }
 
     if (ratingsDownloadBtn) {
-        ratingsDownloadBtn.addEventListener("click", () => {
+        ratingsDownloadBtn.addEventListener("click", async () => {
+            if (!workingGames.length) {
+                setStatus("Loading games.json for rating sheet…", "info");
+                await fetchLiveGames();
+            }
             if (!workingGames.length) {
                 setStatus("Load games.json before downloading the rating sheet.", "error");
                 return;
