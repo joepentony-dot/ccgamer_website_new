@@ -171,6 +171,10 @@
     opacity: 0.32;
 }
 
+html[data-ccg-page="home"] .ccg-bg-crt-overlay {
+    display: none;
+}
+
 
 /* ============================================================
    DESKTOP DEPTH CORRECTION (NON-HOME PAGES)
