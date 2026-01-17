@@ -175,6 +175,12 @@ html[data-ccg-page="home"] .ccg-bg-crt-overlay {
     display: none;
 }
 
+@media (min-width: 769px) {
+    .ccg-bg-crt-overlay {
+        opacity: 0;
+    }
+}
+
 
 /* ============================================================
    DESKTOP DEPTH CORRECTION (NON-HOME PAGES)
