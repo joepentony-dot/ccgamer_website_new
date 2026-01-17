@@ -1042,6 +1042,12 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
     touch-action: pan-y;
 }
 
+.home-hero,
+.home-hero__frame {
+    overscroll-behavior: auto;
+    touch-action: auto;
+}
+
 .home-hero__frame {
     position: relative;
     overflow: hidden;
