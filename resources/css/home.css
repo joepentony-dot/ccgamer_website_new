@@ -1152,6 +1152,26 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__bg--a
     animation: homeHudSweep 9s ease-in-out infinite;
 }
 
+html.ccg-perf-paused .home-hero__bg {
+    filter: none;
+}
+
+html.ccg-perf-paused .home-hero__scanlines {
+    mix-blend-mode: normal;
+    opacity: 0.12;
+}
+
+html.ccg-perf-paused .home-hero__content {
+    backdrop-filter: none;
+}
+
+html.ccg-perf-paused .home-hero__content::after {
+    animation: none;
+    filter: none;
+    mix-blend-mode: normal;
+    opacity: 0.35;
+}
+
 .home-hero__layout {
     position: relative;
     display: grid;

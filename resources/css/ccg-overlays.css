@@ -311,6 +311,19 @@ html.ccg-perf-paused .home-hero__visual-glow {
     animation-play-state: paused !important;
 }
 
+html.ccg-perf-paused .ccg-bg-grid,
+html.ccg-perf-paused .ccg-bg-crt-overlay {
+    mix-blend-mode: normal;
+}
+
+html.ccg-perf-paused .ccg-bg-grid {
+    opacity: 0.08;
+}
+
+html.ccg-perf-paused .ccg-bg-crt-overlay {
+    opacity: 0.22;
+}
+
 @media (prefers-reduced-motion: reduce) {
     .ccg-bg-starfield,
     .ccg-bg-grid,
