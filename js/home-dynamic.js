@@ -46,6 +46,7 @@ async function initHomeDynamic() {
     wireRandomGameButton();
     syncModeLabel();
     initModeObserver();
+    setupHomeScrollPerfPause();
 
     if (skipAnimations) {
         calmHeroCards();
@@ -176,6 +177,31 @@ function shouldUseMobileLite() {
     const vw = getViewportWidth();
     const smallViewport = typeof vw === "number" && vw <= 1100;
     return Boolean(isMobileViewport() || MOBILE_MEDIA?.matches || COARSE_POINTER?.matches || smallViewport);
+}
+
+function setupHomeScrollPerfPause() {
+    const root = document.documentElement;
+    if (!root?.matches?.('[data-ccg-page="home"]')) return;
+
+    const PAUSE_CLASS = "ccg-home-perf-paused";
+    const resumeDelay = 200;
+    let resumeTimer = null;
+
+    const setPaused = (paused) => {
+        root.classList.toggle(PAUSE_CLASS, paused);
+        window.dispatchEvent(new CustomEvent("ccg-home-perf-pause", { detail: { paused } }));
+    };
+
+    const onScroll = () => {
+        setPaused(true);
+        if (resumeTimer) {
+            window.clearTimeout(resumeTimer);
+        }
+        resumeTimer = window.setTimeout(() => setPaused(false), resumeDelay);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("touchmove", onScroll, { passive: true });
 }
 
 function applyMobileLiteMode() {

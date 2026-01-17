@@ -1078,6 +1078,7 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
     filter: saturate(1.12) contrast(1.05);
     will-change: opacity, transform;
     pointer-events: none;
+    touch-action: pan-y;
 }
 
 .home-hero__bg--c64 {
@@ -1107,6 +1108,7 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__bg--a
     mix-blend-mode: overlay;
     opacity: 0.22;
     pointer-events: none;
+    touch-action: pan-y;
 }
 
 .home-hero__content {
