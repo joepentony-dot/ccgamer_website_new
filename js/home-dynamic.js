@@ -46,6 +46,7 @@ async function initHomeDynamic() {
     wireRandomGameButton();
     syncModeLabel();
     initModeObserver();
+    setupHomeScrollPerfPause();
 
     if (skipAnimations) {
         calmHeroCards();
@@ -176,6 +177,31 @@ function shouldUseMobileLite() {
     const vw = getViewportWidth();
     const smallViewport = typeof vw === "number" && vw <= 1100;
     return Boolean(isMobileViewport() || MOBILE_MEDIA?.matches || COARSE_POINTER?.matches || smallViewport);
+}
+
+function setupHomeScrollPerfPause() {
+    const root = document.documentElement;
+    if (!root?.matches?.('[data-ccg-page="home"]')) return;
+
+    const PAUSE_CLASS = "ccg-home-perf-paused";
+    const resumeDelay = 200;
+    let resumeTimer = null;
+
+    const setPaused = (paused) => {
+        root.classList.toggle(PAUSE_CLASS, paused);
+        window.dispatchEvent(new CustomEvent("ccg-home-perf-pause", { detail: { paused } }));
+    };
+
+    const onScroll = () => {
+        setPaused(true);
+        if (resumeTimer) {
+            window.clearTimeout(resumeTimer);
+        }
+        resumeTimer = window.setTimeout(() => setPaused(false), resumeDelay);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("touchmove", onScroll, { passive: true });
 }
 
 function applyMobileLiteMode() {
@@ -573,13 +599,36 @@ function initHeroGlowPulse() {
     if (!cards.length || PREFERS_REDUCED_MOTION?.matches) return;
 
     let tick = 0;
-    function loop() {
+    let frameId = null;
+    let paused = false;
+
+    const loop = () => {
+        if (paused) {
+            frameId = null;
+            return;
+        }
         tick += 0.02;
         const pulse = 0.30 + Math.sin(tick) * 0.05;
         cards.forEach(card => card.style.setProperty('--glow-alpha', pulse.toFixed(3)));
-        requestAnimationFrame(loop);
-    }
-    requestAnimationFrame(loop);
+        frameId = requestAnimationFrame(loop);
+    };
+
+    const setPaused = (next) => {
+        paused = next;
+        if (paused && frameId) {
+            cancelAnimationFrame(frameId);
+            frameId = null;
+        }
+        if (!paused && !frameId) {
+            frameId = requestAnimationFrame(loop);
+        }
+    };
+
+    window.addEventListener("ccg-home-perf-pause", (event) => {
+        setPaused(Boolean(event?.detail?.paused));
+    }, { passive: true });
+
+    frameId = requestAnimationFrame(loop);
 }
 
 /* ============================================================

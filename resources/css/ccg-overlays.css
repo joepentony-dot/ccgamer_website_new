@@ -299,16 +299,40 @@ html[data-ccg-page="home"] .ccg-page {
    PERFORMANCE PAUSE STATE (DESKTOP)
 ============================================================ */
 
-html.ccg-perf-paused .ccg-bg-starfield,
-html.ccg-perf-paused .ccg-bg-starfield::after,
-html.ccg-perf-paused .ccg-bg-grid,
-html.ccg-perf-paused .ccg-hero-scanlines,
-html.ccg-perf-paused .ccg-hero__backdrop,
-html.ccg-perf-paused .ccg-hero-overlay-grid,
-html.ccg-perf-paused .ccg-hero-overlay-starfield,
-html.ccg-perf-paused .home-hero__scanlines,
-html.ccg-perf-paused .home-hero__visual-glow {
+html[data-ccg-page="home"].ccg-home-perf-paused .ccg-bg-starfield,
+html[data-ccg-page="home"].ccg-home-perf-paused .ccg-bg-starfield::after,
+html[data-ccg-page="home"].ccg-home-perf-paused .ccg-bg-grid,
+html[data-ccg-page="home"].ccg-home-perf-paused .ccg-hero-scanlines,
+html[data-ccg-page="home"].ccg-home-perf-paused .ccg-hero__backdrop,
+html[data-ccg-page="home"].ccg-home-perf-paused .ccg-hero-overlay-grid,
+html[data-ccg-page="home"].ccg-home-perf-paused .ccg-hero-overlay-starfield,
+html[data-ccg-page="home"].ccg-home-perf-paused .home-hero__scanlines,
+html[data-ccg-page="home"].ccg-home-perf-paused .home-hero__visual-glow {
     animation-play-state: paused !important;
+}
+
+html[data-ccg-page="home"].ccg-home-perf-paused .ccg-bg-grid,
+html[data-ccg-page="home"].ccg-home-perf-paused .ccg-bg-crt-overlay {
+    mix-blend-mode: normal;
+}
+
+html[data-ccg-page="home"].ccg-home-perf-paused .ccg-bg-grid {
+    opacity: 0.08;
+}
+
+html[data-ccg-page="home"].ccg-home-perf-paused .ccg-bg-crt-overlay {
+    opacity: 0.22;
+}
+
+html[data-ccg-page="home"] .ccg-bg-starfield,
+html[data-ccg-page="home"] .ccg-bg-starfield::after {
+    animation: none;
+    will-change: auto;
+}
+
+html[data-ccg-page="home"] .ccg-bg-grid,
+html[data-ccg-page="home"] .ccg-bg-crt-overlay {
+    mix-blend-mode: normal;
 }
 
 @media (prefers-reduced-motion: reduce) {
