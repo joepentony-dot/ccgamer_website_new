@@ -94,8 +94,8 @@ body[data-ccg-mode] .ccg-main::before {
     inset: -24px;
     z-index: -1;
     border-radius: 28px;
-    filter: blur(26px);
-    opacity: 0.7;
+    filter: none;
+    opacity: 0;
     transition: opacity 320ms ease;
     pointer-events: none;
 }

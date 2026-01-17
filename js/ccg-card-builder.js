@@ -99,12 +99,14 @@ function ccgBuildGameCard(game) {
             </a>
 
             <div class="ccg-game-card__body">
-                <h3 class="ccg-game-card__title">
-                    ${title}
-                </h3>
+                <div class="game-title-wrapper">
+                    <h3 class="ccg-game-card__title">
+                        ${title}
+                    </h3>
 
-                <div class="ccg-game-card__meta">
-                    ${meta}
+                    <div class="ccg-game-card__meta">
+                        ${meta}
+                    </div>
                 </div>
 
                 <div class="ccg-game-card__actions">
