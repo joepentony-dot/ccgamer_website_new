@@ -573,13 +573,36 @@ function initHeroGlowPulse() {
     if (!cards.length || PREFERS_REDUCED_MOTION?.matches) return;
 
     let tick = 0;
-    function loop() {
+    let frameId = null;
+    let paused = false;
+
+    const loop = () => {
+        if (paused) {
+            frameId = null;
+            return;
+        }
         tick += 0.02;
         const pulse = 0.30 + Math.sin(tick) * 0.05;
         cards.forEach(card => card.style.setProperty('--glow-alpha', pulse.toFixed(3)));
-        requestAnimationFrame(loop);
-    }
-    requestAnimationFrame(loop);
+        frameId = requestAnimationFrame(loop);
+    };
+
+    const setPaused = (next) => {
+        paused = next;
+        if (paused && frameId) {
+            cancelAnimationFrame(frameId);
+            frameId = null;
+        }
+        if (!paused && !frameId) {
+            frameId = requestAnimationFrame(loop);
+        }
+    };
+
+    window.addEventListener("ccg-perf-pause", (event) => {
+        setPaused(Boolean(event?.detail?.paused));
+    }, { passive: true });
+
+    frameId = requestAnimationFrame(loop);
 }
 
 /* ============================================================
