@@ -709,7 +709,7 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
         z-index: 30;
         pointer-events: auto;
         touch-action: manipulation;
-        -webkit-transform: translateZ(0);
+        transform: none;
     }
 
     .home-featured-videos .home-featured-video-media > iframe,
@@ -862,7 +862,7 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
 .ccg-body.ccg-mobile-lite .home-highlight-card,
 .ccg-body.ccg-mobile-lite .home-link-tile {
     box-shadow: 0 12px 28px rgba(0,0,0,0.6);
-    backdrop-filter: blur(3px);
+    backdrop-filter: none;
 }
 
 .home-curated-card:hover::before,
@@ -1148,8 +1148,9 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__bg--a
         rgba(0,0,0,0) 2px,
         rgba(0,0,0,0) 3px
     );
-    mix-blend-mode: overlay;
-    opacity: 0.22;
+    z-index: 0;
+    mix-blend-mode: normal;
+    opacity: 0.12;
     pointer-events: none;
     touch-action: pan-y;
 }
@@ -1172,8 +1173,8 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__bg--a
             transparent 1px,
             transparent 3px
         );
-    mix-blend-mode: overlay;
-    opacity: 0.32;
+    mix-blend-mode: normal;
+    opacity: 0.18;
     pointer-events: none;
     touch-action: pan-y;
 }
@@ -1194,7 +1195,7 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__bg--a
         0 18px 40px rgba(0,0,0,0.72),
         0 0 28px rgba(var(--accent-rgb),0.26),
         inset 0 0 0 1px rgba(255,255,255,0.05);
-    backdrop-filter: blur(6px);
+    backdrop-filter: none;
     pointer-events: auto;
 }
 
@@ -1215,6 +1216,7 @@ body.page-home .home-hero__actions button {
     inset: 12px;
     border-radius: 14px;
     pointer-events: none;
+    z-index: 0;
 }
 
 .home-hero__content::before {
@@ -1226,9 +1228,15 @@ body.page-home .home-hero__actions button {
     inset: 6px;
     border-radius: 12px;
     background: linear-gradient(90deg, rgba(var(--accent-rgb),0.16), rgba(255,255,255,0.04), rgba(var(--accent-rgb),0.18));
-    mix-blend-mode: screen;
-    filter: blur(12px);
+    mix-blend-mode: normal;
+    filter: none;
+    opacity: 0.18;
     animation: homeHudSweep 9s ease-in-out infinite;
+}
+
+.home-hero__content > * {
+    position: relative;
+    z-index: 1;
 }
 
 html.ccg-perf-paused .home-hero__bg {
@@ -1310,7 +1318,7 @@ html.ccg-perf-paused .home-hero__content::after {
     box-shadow:
         inset 0 0 0 1px rgba(var(--accent-rgb),0.26),
         0 0 18px rgba(var(--accent-rgb),0.22);
-    backdrop-filter: blur(4px);
+    backdrop-filter: none;
 }
 
 .home-hero__badge {
@@ -2150,7 +2158,7 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
     color: white;
     text-decoration: none;
     background: radial-gradient(circle at 50% 45%, rgba(0,0,0,0.32), rgba(0,0,0,0.78));
-    backdrop-filter: blur(3px);
+    backdrop-filter: none;
     transition: background 200ms ease, transform 200ms ease;
 }
 
