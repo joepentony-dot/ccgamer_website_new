@@ -800,6 +800,8 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
 .game-hero__meta {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+    align-content: center;
     gap: 10px;
     padding: 10px 14px;
     border-radius: 12px;
