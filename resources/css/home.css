@@ -1065,6 +1065,22 @@ body.page-home .ccg-page--home > footer {
     position: static;
 }
 
+/* ============================================================
+   HOME — OVERLAY CLARITY LOCK (HOME ONLY)
+   Prevent global background layers from glazing main content.
+============================================================ */
+
+body.page-home .ccg-bg {
+    pointer-events: none;
+}
+
+.ccg-page--home .ccg-main,
+.ccg-page--home .ccg-main > section:not(.home-hero) {
+    filter: none;
+    backdrop-filter: none;
+    opacity: 1;
+}
+
 .home-hero,
 .home-hero__frame {
     overscroll-behavior: auto;
