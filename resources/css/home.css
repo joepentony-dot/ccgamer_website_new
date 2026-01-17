@@ -1154,28 +1154,24 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__bg--a
     animation: homeHudSweep 9s ease-in-out infinite;
 }
 
-html[data-ccg-page="home"] .home-hero__bg {
+html.ccg-perf-paused .home-hero__bg {
     filter: none;
 }
 
-html[data-ccg-page="home"] .home-hero__scanlines {
+html.ccg-perf-paused .home-hero__scanlines {
     mix-blend-mode: normal;
     opacity: 0.12;
 }
 
-html[data-ccg-page="home"] .home-hero__content {
+html.ccg-perf-paused .home-hero__content {
     backdrop-filter: none;
 }
 
-html[data-ccg-page="home"] .home-hero__content::after {
+html.ccg-perf-paused .home-hero__content::after {
     animation: none;
     filter: none;
     mix-blend-mode: normal;
     opacity: 0.35;
-}
-
-html[data-ccg-page="home"].ccg-home-perf-paused .home-hero__content::after {
-    opacity: 0.2;
 }
 
 .home-hero__layout {

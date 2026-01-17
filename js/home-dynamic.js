@@ -624,7 +624,7 @@ function initHeroGlowPulse() {
         }
     };
 
-    window.addEventListener("ccg-home-perf-pause", (event) => {
+    window.addEventListener("ccg-perf-pause", (event) => {
         setPaused(Boolean(event?.detail?.paused));
     }, { passive: true });
 
