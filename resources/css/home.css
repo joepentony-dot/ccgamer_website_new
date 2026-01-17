@@ -1042,6 +1042,11 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
     touch-action: pan-y;
 }
 
+html[data-ccg-page="home"],
+body.page-home {
+    overflow: visible;
+}
+
 .home-hero,
 .home-hero__frame {
     overscroll-behavior: auto;
@@ -1067,6 +1072,10 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
     touch-action: pan-y;
 }
 
+html[data-ccg-page="home"] .home-hero__frame {
+    box-shadow: none;
+}
+
 .home-hero__bg {
     position: absolute;
     inset: 0;
@@ -1078,6 +1087,7 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
     filter: saturate(1.12) contrast(1.05);
     will-change: opacity, transform;
     pointer-events: none;
+    touch-action: pan-y;
 }
 
 .home-hero__bg--c64 {
@@ -1107,6 +1117,7 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__bg--a
     mix-blend-mode: overlay;
     opacity: 0.22;
     pointer-events: none;
+    touch-action: pan-y;
 }
 
 .home-hero__content {
@@ -1150,6 +1161,32 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__bg--a
     mix-blend-mode: screen;
     filter: blur(12px);
     animation: homeHudSweep 9s ease-in-out infinite;
+}
+
+html[data-ccg-page="home"] .home-hero__bg {
+    filter: none;
+    contain: paint;
+}
+
+html[data-ccg-page="home"] .home-hero__scanlines {
+    mix-blend-mode: normal;
+    opacity: 0.12;
+    contain: paint;
+}
+
+html[data-ccg-page="home"] .home-hero__content {
+    backdrop-filter: none;
+}
+
+html[data-ccg-page="home"] .home-hero__content::after {
+    animation: none;
+    filter: none;
+    mix-blend-mode: normal;
+    opacity: 0.35;
+}
+
+html[data-ccg-page="home"].ccg-home-perf-paused .home-hero__content::after {
+    opacity: 0.2;
 }
 
 .home-hero__layout {
@@ -1438,6 +1475,10 @@ body[data-ccg-mode="amiga"] .home-hero__cta--ghost {
     pointer-events: none;
     opacity: 0.32;
     filter: saturate(1.08);
+}
+
+html[data-ccg-page="home"] .home-hero__visual {
+    display: none;
 }
 
 .home-hero__visual-plate {
