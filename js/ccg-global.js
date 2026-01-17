@@ -235,6 +235,42 @@
     }
 
     /* ======================================================
+       SCROLL PERFORMANCE PAUSE (DESKTOP-FIRST)
+       ------------------------------------------------------
+       • Temporarily pauses decorative animations during scroll
+       • Passive listeners only (no preventDefault)
+    ====================================================== */
+    function setupScrollPerfPause() {
+        const root = document.documentElement;
+        const PAUSE_CLASS = "ccg-perf-paused";
+        const resumeDelay = 160;
+        let resumeTimer = null;
+
+        const setPaused = (paused) => {
+            if (paused) {
+                root.classList.add(PAUSE_CLASS);
+            } else {
+                root.classList.remove(PAUSE_CLASS);
+            }
+            window.dispatchEvent(new CustomEvent("ccg-perf-pause", { detail: { paused } }));
+        };
+
+        const onScroll = () => {
+            if (!root.classList.contains(PAUSE_CLASS)) {
+                setPaused(true);
+            }
+            if (resumeTimer) {
+                window.clearTimeout(resumeTimer);
+            }
+            resumeTimer = window.setTimeout(() => {
+                setPaused(false);
+            }, resumeDelay);
+        };
+
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("touchmove", onScroll, { passive: true });
+    }
+    /* ======================================================
        CCG RATING UTILITIES (EDITORIAL LOCK)
     ====================================================== */
     const CCG_RATING_MIN = 1;
@@ -1774,6 +1810,7 @@ function setupFooterSignatureRotator() {
 
         setupParticleField();
         setupScrollFailsafe();
+        setupScrollPerfPause();
 
         /* -------------------------------
            Keep header height var accurate

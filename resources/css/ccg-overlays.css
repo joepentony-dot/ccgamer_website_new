@@ -311,32 +311,17 @@ html[data-ccg-page="home"].ccg-home-perf-paused .home-hero__visual-glow {
     animation-play-state: paused !important;
 }
 
-html[data-ccg-page="home"].ccg-home-perf-paused .ccg-bg-grid,
-html[data-ccg-page="home"].ccg-home-perf-paused .ccg-bg-crt-overlay {
+html.ccg-perf-paused .ccg-bg-grid,
+html.ccg-perf-paused .ccg-bg-crt-overlay {
     mix-blend-mode: normal;
 }
 
-html[data-ccg-page="home"].ccg-home-perf-paused .ccg-bg-grid {
+html.ccg-perf-paused .ccg-bg-grid {
     opacity: 0.08;
 }
 
-html[data-ccg-page="home"].ccg-home-perf-paused .ccg-bg-crt-overlay {
+html.ccg-perf-paused .ccg-bg-crt-overlay {
     opacity: 0.22;
-}
-
-html[data-ccg-page="home"] .ccg-bg-starfield,
-html[data-ccg-page="home"] .ccg-bg-starfield::after {
-    animation: none;
-    will-change: auto;
-}
-
-html[data-ccg-page="home"] .ccg-bg-grid,
-html[data-ccg-page="home"] .ccg-bg-crt-overlay {
-    mix-blend-mode: normal;
-}
-
-html[data-ccg-page="home"] .ccg-bg {
-    display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
