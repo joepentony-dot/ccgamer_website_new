@@ -1140,6 +1140,16 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__bg--a
     pointer-events: auto;
 }
 
+body.page-home .home-hero__content {
+    pointer-events: none;
+}
+
+body.page-home .home-hero__actions,
+body.page-home .home-hero__actions a,
+body.page-home .home-hero__actions button {
+    pointer-events: auto;
+}
+
 .home-hero__content::before,
 .home-hero__content::after {
     content: "";
