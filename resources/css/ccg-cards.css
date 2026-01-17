@@ -403,6 +403,16 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
     text-align: center;
 }
 
+.game-title-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    flex: 1;
+}
+
 .ccg-page--games-index .ccg-game-card__title {
     margin: 0 0 6px;
 

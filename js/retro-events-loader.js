@@ -117,12 +117,14 @@ function ccgBuildRetroEventCard(video, index) {
             </a>
 
             <div class="ccg-game-card__body">
-                <h3 class="ccg-game-card__title">
-                    ${safeTitle}
-                </h3>
+                <div class="game-title-wrapper">
+                    <h3 class="ccg-game-card__title">
+                        ${safeTitle}
+                    </h3>
 
-                <div class="ccg-game-card__meta">
-                    Retro Events · YouTube
+                    <div class="ccg-game-card__meta">
+                        Retro Events · YouTube
+                    </div>
                 </div>
 
                 <div class="ccg-game-card__actions">

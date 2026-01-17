@@ -863,9 +863,11 @@ function renderGameCardMarkup(game, opts = {}) {
                 ${ratingMarkup}
             </a>
             <div class="ccg-game-card__body">
-                <h3 class="ccg-game-card__title">${game.title}</h3>
-                <div class="ccg-game-card__meta">
-                    ${(game.year || "")} · ${(game.system || "")}
+                <div class="game-title-wrapper">
+                    <h3 class="ccg-game-card__title">${game.title}</h3>
+                    <div class="ccg-game-card__meta">
+                        ${(game.year || "")} · ${(game.system || "")}
+                    </div>
                 </div>
                 <div class="ccg-game-card__actions">
                     <a href="${gameUrl}"
