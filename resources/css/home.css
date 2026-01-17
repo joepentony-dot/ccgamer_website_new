@@ -15,7 +15,7 @@
 }
 
 html[data-ccg-page="home"] {
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
 }
 
 /* ============================================================
@@ -1046,16 +1046,23 @@ html[data-ccg-page="home"],
 body.page-home {
     height: auto;
     min-height: 100%;
-    overflow-y: auto;
+    overflow-y: visible;
     overflow-x: hidden;
 }
 
 body.page-home .ccg-page--home,
 body.page-home .ccg-main--home {
+    position: static;
     height: auto;
-    min-height: 0;
+    min-height: auto;
     max-height: none;
     overflow: visible;
+}
+
+body.page-home .ccg-main--home > section,
+body.page-home .ccg-page--home > header,
+body.page-home .ccg-page--home > footer {
+    position: static;
 }
 
 .home-hero,
@@ -1619,6 +1626,7 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
     transform: rotate(12deg);
     animation: homeVisitorSweep 9s linear infinite;
     opacity: 0.8;
+    pointer-events: none;
 }
 
 .home-visitor-callout__kicker {
