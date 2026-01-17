@@ -190,6 +190,8 @@
        • Does not override native scrolling unless blocked
     ====================================================== */
     function setupScrollFailsafe() {
+        const root = document.documentElement;
+        if (root?.matches?.('[data-ccg-page="home"]')) return;
         const getScrollTop = () => window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
         const getMaxScroll = () => Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
         const canScroll = () => document.documentElement.scrollHeight - window.innerHeight > 1;
