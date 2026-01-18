@@ -1113,6 +1113,7 @@ html[data-ccg-page="home"] .home-hero__frame {
 .home-hero__bg {
     position: absolute;
     inset: 0;
+    z-index: 0;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -1181,7 +1182,7 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__bg--a
 
 .home-hero__content {
     position: relative;
-    z-index: 1;
+    z-index: 3;
     display: grid;
     gap: clamp(18px, 2vw, 28px);
     max-width: 1180px;
@@ -1195,8 +1196,23 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__bg--a
         0 18px 40px rgba(0,0,0,0.72),
         0 0 28px rgba(var(--accent-rgb),0.26),
         inset 0 0 0 1px rgba(255,255,255,0.05);
+    isolation: isolate;
+    filter: none;
     backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     pointer-events: auto;
+}
+
+.home-hero__content,
+.home-hero__copy,
+.home-hero__actions,
+.home-hero__title,
+.home-hero__tagline,
+.home-hero__bullets,
+.home-hero__cta {
+    filter: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 }
 
 body.page-home .home-hero__content {
