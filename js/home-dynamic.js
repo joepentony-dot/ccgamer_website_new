@@ -28,6 +28,8 @@ const isMobileViewport = () => {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
+    // Defensive guard: lock HOME visuals to the initial crisp state (no post-load haze reactivation).
+    document.documentElement.matches?.('[data-ccg-page="home"]') && document.documentElement.classList.add("ccg-home-no-haze");
     const kickOff = () => initHomeDynamic();
 
     if (shouldUseMobileLite()) {
@@ -595,6 +597,10 @@ function initHeroCardFX() {
 }
 
 function initHeroGlowPulse() {
+    if (document.documentElement.classList.contains("ccg-home-no-haze")) {
+        // HOME haze fix: never escalate glow after first paint (keep visuals crisp and stable).
+        return;
+    }
     const cards = document.querySelectorAll('.home-hero-card');
     if (!cards.length || PREFERS_REDUCED_MOTION?.matches) return;
 
@@ -636,6 +642,10 @@ function initHeroGlowPulse() {
 ============================================================ */
 
 function initHomeEnergy() {
+    if (document.documentElement.classList.contains("ccg-home-no-haze")) {
+        // HOME haze fix: prevent post-load ignition classes from reintroducing background haze.
+        return;
+    }
     const tagline = document.querySelector('.home-tagline');
     const brand = document.querySelector('.ccg-brand');
 
