@@ -2895,3 +2895,6 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
         display: none;
     }
 }
+html[data-ccg-page="home"] body#top {
+    background: linear-gradient(135deg, #05070d 0%, #050812 48%, #05070d 100%) !important;
+}
