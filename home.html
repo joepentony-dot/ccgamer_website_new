@@ -11,6 +11,15 @@
     <link rel="icon" href="favicon.ico" />
 
     <!-- Fonts loaded globally via ccg-master (Robotron) -->
+    <script>
+        document.documentElement.classList.add('ccg-prepaint');
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                document.documentElement.classList.remove('ccg-prepaint');
+                document.documentElement.classList.add('ccg-postpaint');
+            }, 50);
+        });
+    </script>
 
     <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="resources/css/ccg-master.css" />
