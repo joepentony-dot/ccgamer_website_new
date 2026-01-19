@@ -13,6 +13,7 @@ const CCG_HOME_YT_PLAYERS = new Map();
 const CCG_HOME_YT_QUEUE = new Set();
 let CCG_HOME_YT_API_READY = false;
 let CCG_HOME_YT_API_LOADING = false;
+let CCG_HOME_VISUAL_LOCKED = false;
 
 const MOBILE_MEDIA = window.matchMedia?.("(max-width: 1024px)");
 const PREFERS_REDUCED_MOTION = window.matchMedia?.("(prefers-reduced-motion: reduce)");
@@ -62,6 +63,48 @@ async function initHomeDynamic() {
             });
         }
     }
+
+    lockHomeVisualState();
+}
+
+function lockHomeVisualState() {
+    const root = document.documentElement;
+    if (!root?.matches?.('[data-ccg-page="home"]') || CCG_HOME_VISUAL_LOCKED) return;
+    CCG_HOME_VISUAL_LOCKED = true;
+
+    const targets = [
+        root,
+        document.body,
+        document.querySelector(".ccg-page--home"),
+        document.querySelector(".ccg-main--home")
+    ].filter(Boolean);
+
+    targets.forEach(target => {
+        target.style.filter = "none";
+        target.style.backdropFilter = "none";
+        target.style.opacity = "1";
+        target.style.mixBlendMode = "normal";
+        target.style.transform = "none";
+    });
+
+    const enforceReset = (node) => {
+        node.style.filter = "none";
+        node.style.backdropFilter = "none";
+        node.style.opacity = "1";
+        node.style.mixBlendMode = "normal";
+        node.style.transform = "none";
+    };
+
+    const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+            if (mutation.type !== "attributes" || mutation.attributeName !== "style") return;
+            enforceReset(mutation.target);
+        });
+    });
+
+    targets.forEach(target => {
+        observer.observe(target, { attributes: true, attributeFilter: ["style"] });
+    });
 }
 
 function loadYouTubeIframeAPI() {
