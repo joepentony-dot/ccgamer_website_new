@@ -2979,6 +2979,20 @@ html[data-ccg-page="home"] body#top {
 }
 
 /* ============================================================
+   HOME — DEFENSIVE VISUAL LOCK (NO GLOBAL FILTERS/OPACITY)
+============================================================ */
+
+html[data-ccg-page="home"],
+html[data-ccg-page="home"] body,
+html[data-ccg-page="home"] .ccg-page--home,
+html[data-ccg-page="home"] .ccg-main--home {
+    filter: none !important;
+    backdrop-filter: none !important;
+    opacity: 1 !important;
+    mix-blend-mode: normal !important;
+}
+
+/* ============================================================
    HOME — FORCE CPU RASTER (PREVENT GPU DOWNSAMPLING HAZE)
    ------------------------------------------------------------
    Chromium fix: prevent page-wide GPU layer promotion
