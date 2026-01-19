@@ -40,7 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function initHomeDynamic() {
-    if (document.body.dataset.ccgVisualLock === "true") return;
     const skipAnimations = shouldSkipHomeAnimations();
 
     await loadGamesForHome();
