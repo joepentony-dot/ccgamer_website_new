@@ -6,8 +6,10 @@
     --home-hero-art-c64: url("../images/hero/ccg-hero-c64.png");
     --home-hero-art-amiga: url("../images/hero/ccg-hero-amiga.png");
 
-    margin-top: clamp(22px, 4vw, 60px);
-    padding: clamp(16px, 4vw, 28px) 0 clamp(16px, 4vw, 24px);
+    margin-top: clamp(32px, 6vw, 88px);
+    padding: 16px 0 18px;
+    touch-action: pan-y;
+    isolation: isolate;
 }
 
 .ccg-main--home {
@@ -446,34 +448,6 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
     }
 }
 
-.home-featured-videos .home-video-card:nth-child(1) {
-    --home-video-accent: rgba(0, 220, 255, 0.35);
-    box-shadow: 0 18px 42px rgba(0,0,0,0.7), 0 0 22px rgba(0, 220, 255, 0.35);
-    border-color: rgba(0, 220, 255, 0.18);
-}
-
-.home-featured-videos .home-video-card:nth-child(2) {
-    --home-video-accent: rgba(148, 170, 200, 0.28);
-    box-shadow: 0 18px 42px rgba(0,0,0,0.7), 0 0 18px rgba(148, 170, 200, 0.28);
-    border-color: rgba(148, 170, 200, 0.22);
-}
-
-.home-featured-videos .home-video-card + .home-video-card {
-    box-shadow:
-        0 18px 42px rgba(0,0,0,0.7),
-        0 0 18px var(--home-video-accent),
-        inset 0 1px 0 rgba(255,255,255,0.06);
-}
-
-@media (min-width: 821px) {
-    .home-featured-videos .home-video-card + .home-video-card {
-        box-shadow:
-            0 18px 42px rgba(0,0,0,0.7),
-            0 0 18px var(--home-video-accent),
-            inset 1px 0 0 rgba(255,255,255,0.08);
-    }
-}
-
 .home-video-card__media {
     position: relative;
     min-height: 0;
@@ -667,102 +641,6 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
     .home-video-card.is-playing .home-video-card__overlay,
     .home-video-card.is-playing .home-video-card__thumb {
         pointer-events: none;
-    }
-}
-
-@media (max-width: 820px) {
-    /* Diagnostic report (mobile invisibility)
-       - Affected selectors: .home-featured-videos .home-video-card__media,
-         .home-featured-videos .home-featured-video-media, .home-featured-videos .home-video-card__iframe
-       - Computed values causing invisibility: .home-video-card__media height: 0px / min-height: 0;
-         .home-video-card__iframe display: none (so no intrinsic height), leaving the media box collapsed.
-       - Rule responsible: .home-video-card__media { min-height: 0; } and
-         .home-video-card__iframe { display: none; } in resources/css/home.css (base rules). */
-    .home-featured-videos,
-    .home-featured-videos .home-video-grid,
-    .home-featured-videos .home-video-card,
-    .home-featured-videos .home-video-card__media,
-    .home-featured-videos .home-featured-video-media {
-        transform: none !important;
-        filter: none !important;
-        backdrop-filter: none !important;
-        will-change: auto !important;
-        perspective: none !important;
-        box-sizing: border-box;
-        max-width: 100%;
-    }
-
-    .home-featured-videos .home-video-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .home-featured-videos .home-video-card__media,
-    .home-featured-videos .home-featured-video-media {
-        display: block;
-        visibility: visible;
-        opacity: 1;
-        min-height: 180px;
-    }
-
-    .home-featured-videos .home-featured-video-media {
-        display: block;
-        width: 100%;
-        max-width: 100%;
-        aspect-ratio: 16 / 9;
-        min-height: 180px;
-        height: auto;
-        position: relative;
-        isolation: isolate;
-        z-index: 20;
-        overflow: hidden;
-    }
-
-    .home-featured-videos .home-video-card__iframe {
-        /* Offending rule: .home-featured-video-media iframe { margin: 0 auto; } caused rightward bias on mobile. */
-        position: absolute !important;
-        inset: 0 !important;
-        width: 100%;
-        height: 100%;
-        max-width: 100%;
-        display: block;
-        visibility: visible;
-        opacity: 1;
-        position: relative;
-        z-index: 30;
-        pointer-events: auto;
-        touch-action: manipulation;
-        transform: none;
-    }
-
-    .home-featured-videos .home-featured-video-media > iframe,
-    .home-featured-videos .home-video-card__iframe {
-        position: absolute !important;
-        inset: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-        display: block !important;
-        box-sizing: border-box !important;
-    }
-
-    .home-featured-videos .home-video-card__badge,
-    .home-featured-videos .home-video-card__thumb::after {
-        pointer-events: none !important;
-    }
-
-    .home-featured-videos .home-video-card__play {
-        pointer-events: auto;
-    }
-
-    .home-featured-videos .home-video-card.is-playing .home-video-card__thumb,
-    .home-featured-videos .home-video-card.is-playing .home-video-card__overlay {
-        pointer-events: none !important;
-    }
-
-    .home-featured-videos .home-video-card.is-playing .home-video-card__iframe {
-        display: block;
-        visibility: visible;
-        opacity: 1;
-        min-height: 1px;
     }
 }
 
@@ -1058,130 +936,21 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
    HOME — HERO + FEATURE REFRESH
 ============================================================ */
 
-.home-hero {
-    margin-top: clamp(32px, 6vw, 88px);
-    padding: 16px 0 18px;
-    touch-action: pan-y;
-    isolation: isolate;
-}
-
-html[data-ccg-page="home"],
-body.page-home {
-    height: auto;
-    min-height: auto;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
-body.page-home .ccg-page--home {
-    position: relative;
-    z-index: 10;
-    height: auto;
-    min-height: auto;
-    max-height: none;
-    overflow: visible;
-    isolation: isolate;
-    transform: translateZ(0);
-    will-change: auto;
-    filter: none;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    opacity: 1;
-}
-
-body.page-home .ccg-main--home {
-    position: relative;
-    z-index: 3;
-    height: auto;
-    min-height: auto;
-    max-height: none;
-    overflow: visible;
-    isolation: isolate;
-    filter: none;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    opacity: 1;
-}
-
-body.page-home .ccg-main--home > section,
-body.page-home .ccg-page--home > header,
-body.page-home .ccg-page--home > footer {
-    position: static;
-}
-
-body.page-home .ccg-page--home *,
-body.page-home .ccg-page--home::before,
-body.page-home .ccg-page--home::after {
-    filter: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-}
-
-/* ============================================================
-   HOME — OVERLAY CLARITY LOCK (HOME ONLY)
-   Prevent global background layers from glazing main content.
-============================================================ */
-
-body.page-home .ccg-bg {
-    pointer-events: none;
-    isolation: isolate;
-}
-
-html[data-ccg-page="home"] .ccg-bg,
-html[data-ccg-page="home"] .ccg-bg * {
-    z-index: 0 !important;
-    pointer-events: none;
-    will-change: auto !important;
-    transform: none !important;
-}
-
-/* Home clarity: ensure background universe never blends with content plane. */
-html[data-ccg-page="home"] .ccg-bg,
-html[data-ccg-page="home"] .ccg-bg-starfield,
-html[data-ccg-page="home"] .ccg-bg-grid,
-html[data-ccg-page="home"] .ccg-bg-particles {
-    z-index: 0;
-    mix-blend-mode: normal;
-    filter: none;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-}
-
-html[data-ccg-page="home"] .ccg-bg-starfield {
-    opacity: 0.26;
-    mix-blend-mode: normal;
-    animation: none;
-}
-
-html[data-ccg-page="home"] .ccg-bg-starfield::after {
-    opacity: 0.08;
-    animation: none;
-}
-
-html[data-ccg-page="home"] .ccg-bg-grid {
-    opacity: 0.03;
-    mix-blend-mode: normal;
-}
-
+/* Desktop home clarity: keep the fixed universe behind content
+   without the mix-blend screen wash from the grid layer. */
 @media (min-width: 821px) {
+    html[data-ccg-page="home"] .ccg-bg-grid {
+        mix-blend-mode: normal;
+        opacity: 0.03;
+    }
+
     html[data-ccg-page="home"] .ccg-bg-starfield {
-        opacity: 0.14;
+        opacity: 0.18;
     }
 
     html[data-ccg-page="home"] .ccg-bg-starfield::after {
-        opacity: 0.04;
+        opacity: 0.05;
     }
-
-    html[data-ccg-page="home"] .ccg-bg-grid {
-        opacity: 0.012;
-    }
-}
-
-.ccg-page--home .ccg-main,
-.ccg-page--home .ccg-main > section:not(.home-hero) {
-    filter: none;
-    backdrop-filter: none;
-    opacity: 1;
 }
 
 .home-hero,
@@ -2750,16 +2519,16 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
 
     /* 1. Let the featured video section span the viewport */
     .home-featured-videos {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
+        padding-left: 0;
+        padding-right: 0;
+        margin-left: 0;
+        margin-right: 0;
     }
 
     /* 2. Remove card side margins that cause clipping */
     .home-featured-videos .home-video-card {
-        margin-left: 0 !important;
-        margin-right: 0 !important;
+        margin-left: 0;
+        margin-right: 0;
         border-radius: 0;
     }
 
@@ -2784,7 +2553,7 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
         inset: 0;
         width: 100%;
         height: 100%;
-        margin: 0 !important;
+        margin: 0;
         max-width: 100%;
         display: block;
     }
@@ -2999,41 +2768,5 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
     }
 }
 html[data-ccg-page="home"] body#top {
-    background: linear-gradient(135deg, #05070d 0%, #050812 48%, #05070d 100%) !important;
-}
-
-/* ============================================================
-   HOME — DEFENSIVE VISUAL LOCK (NO GLOBAL FILTERS/OPACITY)
-============================================================ */
-
-html[data-ccg-page="home"],
-html[data-ccg-page="home"] body,
-html[data-ccg-page="home"] .ccg-page--home,
-html[data-ccg-page="home"] .ccg-main--home {
-    filter: none !important;
-    backdrop-filter: none !important;
-    opacity: 1 !important;
-    mix-blend-mode: normal !important;
-}
-
-/* ============================================================
-   HOME — FORCE CPU RASTER (PREVENT GPU DOWNSAMPLING HAZE)
-   ------------------------------------------------------------
-   Chromium fix: prevent page-wide GPU layer promotion
-============================================================ */
-
-/* Never GPU-promote full-page containers */
-.page-home,
-.ccg-page--home,
-.ccg-bg {
-  transform: none !important;
-  will-change: auto !important;
-  contain: none !important;
-}
-
-/* Allow GPU only on SMALL animated elements */
-.ccg-bg-starfield,
-.ccg-bg-grid,
-.ccg-bg-particles {
-  will-change: opacity, transform;
+    background: linear-gradient(135deg, #05070d 0%, #050812 48%, #05070d 100%);
 }
