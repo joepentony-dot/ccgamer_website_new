@@ -523,6 +523,7 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
     inset: 0;
     background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.7));
     mix-blend-mode: multiply;
+    opacity: 0.45;
     transition: opacity 160ms ease;
     z-index: 0;
     pointer-events: none;
@@ -1090,7 +1091,7 @@ html[data-ccg-page="home"] .ccg-bg-starfield {
 }
 
 html[data-ccg-page="home"] .ccg-bg-starfield::after {
-    opacity: 0.12;
+    opacity: 0.08;
     animation: ccg-star-drift-alt 320s linear infinite;
 }
 
@@ -1173,7 +1174,7 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__bg--a
     );
     z-index: 0;
     mix-blend-mode: normal;
-    opacity: 0.12;
+    opacity: 0.08;
     pointer-events: none;
     touch-action: pan-y;
 }
@@ -1197,7 +1198,7 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__bg--a
             transparent 3px
         );
     mix-blend-mode: normal;
-    opacity: 0.18;
+    opacity: 0.12;
     pointer-events: none;
     touch-action: pan-y;
 }
@@ -1708,11 +1709,12 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
     position: absolute;
     inset: -30%;
     background: conic-gradient(from 90deg, rgba(120,183,255,0.05), rgba(194,139,255,0.08), rgba(120,183,255,0.05));
-    filter: blur(14px) saturate(1.2);
+    filter: blur(8px) saturate(1.1);
     transform: rotate(12deg);
     animation: homeVisitorSweep 9s linear infinite;
-    opacity: 0.8;
+    opacity: 0.35;
     pointer-events: none;
+    z-index: 0;
 }
 
 .home-visitor-callout__kicker {
@@ -1798,8 +1800,14 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
     position: absolute;
     inset: -40%;
     background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.18), transparent 55%);
-    opacity: 0.5;
+    opacity: 0.25;
     pointer-events: none;
+    z-index: 0;
+}
+
+.home-support-cta__card > * {
+    position: relative;
+    z-index: 1;
 }
 
 .home-support-cta__copy {
@@ -2092,8 +2100,10 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
     position: absolute;
     inset: -40%;
     background: radial-gradient(ellipse at var(--glow-x, 50%) var(--glow-y, 50%), rgba(var(--accent-rgb), 0.25), transparent 55%);
-    opacity: 0.45;
+    opacity: 0.28;
     transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 0;
 }
 
 .home-highlight-card:hover::before,
@@ -2315,6 +2325,7 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
     filter: blur(32px);
     opacity: 0.75;
     pointer-events: none;
+    z-index: 0;
 }
 
 .home-bottom-cta__content {
@@ -2324,6 +2335,7 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
     text-align: center;
     align-items: center;
     justify-items: center;
+    z-index: 1;
 }
 
 .home-bottom-cta__eyebrow {
@@ -2819,7 +2831,7 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
     background:
         radial-gradient(circle at 30% 25%, rgba(var(--accent-rgb), 0.18), transparent 45%),
         radial-gradient(circle at 70% 65%, rgba(255,255,255,0.08), transparent 40%);
-    opacity: 0.75;
+    opacity: 0.35;
     pointer-events: none;
     z-index: 0;
 }
