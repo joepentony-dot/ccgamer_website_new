@@ -1050,9 +1050,18 @@ body.page-home {
     overflow-x: hidden;
 }
 
-body.page-home .ccg-page--home,
+body.page-home .ccg-page--home {
+    position: relative;
+    z-index: 2;
+    height: auto;
+    min-height: auto;
+    max-height: none;
+    overflow: visible;
+}
+
 body.page-home .ccg-main--home {
-    position: static;
+    position: relative;
+    z-index: 3;
     height: auto;
     min-height: auto;
     max-height: none;
