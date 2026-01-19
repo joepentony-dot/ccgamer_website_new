@@ -333,7 +333,7 @@ html.ccg-perf-paused .ccg-bg-crt-overlay {
     mix-blend-mode: normal;
 }
 
-html.ccg-perf-paused .ccg-bg-grid {
+html.ccg-perf-paused:not([data-ccg-page="home"]) .ccg-bg-grid {
     opacity: 0.08;
 }
 
