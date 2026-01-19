@@ -1163,6 +1163,20 @@ html[data-ccg-page="home"] .ccg-bg-grid {
     mix-blend-mode: normal;
 }
 
+@media (min-width: 821px) {
+    html[data-ccg-page="home"] .ccg-bg-starfield {
+        opacity: 0.2;
+    }
+
+    html[data-ccg-page="home"] .ccg-bg-starfield::after {
+        opacity: 0.06;
+    }
+
+    html[data-ccg-page="home"] .ccg-bg-grid {
+        opacity: 0.02;
+    }
+}
+
 .ccg-page--home .ccg-main,
 .ccg-page--home .ccg-main > section:not(.home-hero) {
     filter: none;
@@ -1264,6 +1278,16 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__bg--a
     opacity: 0.12;
     pointer-events: none;
     touch-action: pan-y;
+}
+
+@media (min-width: 821px) {
+    .home-hero__scanlines {
+        opacity: 0.06;
+    }
+
+    .home-hero__crt-overlay {
+        opacity: 0.09;
+    }
 }
 
 .home-hero__content {
