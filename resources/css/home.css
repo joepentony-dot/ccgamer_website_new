@@ -1083,6 +1083,19 @@ body.page-home .ccg-bg {
     pointer-events: none;
 }
 
+html[data-ccg-page="home"] .ccg-bg-starfield {
+    opacity: 0.46;
+}
+
+html[data-ccg-page="home"] .ccg-bg-starfield::after {
+    opacity: 0.16;
+}
+
+html[data-ccg-page="home"] .ccg-bg-grid {
+    opacity: 0.06;
+    mix-blend-mode: normal;
+}
+
 .ccg-page--home .ccg-main,
 .ccg-page--home .ccg-main > section:not(.home-hero) {
     filter: none;
