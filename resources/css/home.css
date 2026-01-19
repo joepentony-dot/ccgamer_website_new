@@ -1165,15 +1165,15 @@ html[data-ccg-page="home"] .ccg-bg-grid {
 
 @media (min-width: 821px) {
     html[data-ccg-page="home"] .ccg-bg-starfield {
-        opacity: 0.2;
+        opacity: 0.14;
     }
 
     html[data-ccg-page="home"] .ccg-bg-starfield::after {
-        opacity: 0.06;
+        opacity: 0.04;
     }
 
     html[data-ccg-page="home"] .ccg-bg-grid {
-        opacity: 0.02;
+        opacity: 0.012;
     }
 }
 
