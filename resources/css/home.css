@@ -19,6 +19,27 @@ html[data-ccg-page="home"] {
 }
 
 /* ============================================================
+   HOME PRE-PAINT GPU GUARD
+============================================================ */
+
+html[data-ccg-page="home"].ccg-prepaint .ccg-bg,
+html[data-ccg-page="home"].ccg-prepaint .ccg-bg-starfield,
+html[data-ccg-page="home"].ccg-prepaint .ccg-bg-starfield::after,
+html[data-ccg-page="home"].ccg-prepaint .ccg-bg-grid,
+html[data-ccg-page="home"].ccg-prepaint .ccg-bg-crt-overlay,
+html[data-ccg-page="home"].ccg-prepaint .home-hero__bg,
+html[data-ccg-page="home"].ccg-prepaint .home-hero__scanlines,
+html[data-ccg-page="home"].ccg-prepaint .home-hero__crt-overlay,
+html[data-ccg-page="home"].ccg-prepaint .home-hero__visual-glow,
+html[data-ccg-page="home"].ccg-prepaint .home-hero__visual-overlay,
+html[data-ccg-page="home"].ccg-prepaint .home-bottom-cta__beam,
+html[data-ccg-page="home"].ccg-prepaint .home-visitor-callout__beam {
+    opacity: 0;
+    filter: none;
+    transform: none;
+}
+
+/* ============================================================
    HOME HEADER NAV — NEON EXTRAORDINAIRE PANEL
 ============================================================ */
 
