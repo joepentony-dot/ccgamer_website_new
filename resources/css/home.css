@@ -521,8 +521,8 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.7));
-    mix-blend-mode: multiply;
+    background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.45));
+    mix-blend-mode: normal;
     opacity: 0.45;
     transition: opacity 160ms ease;
     z-index: 0;
@@ -976,8 +976,8 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(0,0,0,0.08), rgba(0,0,0,0.45));
-    mix-blend-mode: multiply;
+    background: linear-gradient(135deg, rgba(0,0,0,0.08), rgba(0,0,0,0.35));
+    mix-blend-mode: normal;
     transition: opacity 200ms ease;
 }
 
@@ -1127,18 +1127,18 @@ html[data-ccg-page="home"] .ccg-bg-particles {
 }
 
 html[data-ccg-page="home"] .ccg-bg-starfield {
-    opacity: 0.38;
+    opacity: 0.26;
     mix-blend-mode: normal;
-    animation: ccg-star-drift 180s linear infinite;
+    animation: none;
 }
 
 html[data-ccg-page="home"] .ccg-bg-starfield::after {
     opacity: 0.08;
-    animation: ccg-star-drift-alt 320s linear infinite;
+    animation: none;
 }
 
 html[data-ccg-page="home"] .ccg-bg-grid {
-    opacity: 0.05;
+    opacity: 0.03;
     mix-blend-mode: normal;
 }
 
@@ -2368,8 +2368,8 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
     position: absolute;
     inset: 0;
     background: radial-gradient(circle at 50% 35%, rgba(120,183,255,0.18), transparent 48%);
-    filter: blur(12px);
-    opacity: 0.35;
+    filter: blur(18px);
+    opacity: 0.45;
     pointer-events: none;
     z-index: 0;
 }
