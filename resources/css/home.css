@@ -2938,3 +2938,25 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
 html[data-ccg-page="home"] body#top {
     background: linear-gradient(135deg, #05070d 0%, #050812 48%, #05070d 100%) !important;
 }
+
+/* ============================================================
+   HOME — FORCE CPU RASTER (PREVENT GPU DOWNSAMPLING HAZE)
+   ------------------------------------------------------------
+   Chromium fix: prevent page-wide GPU layer promotion
+============================================================ */
+
+/* Never GPU-promote full-page containers */
+.page-home,
+.ccg-page--home,
+.ccg-bg {
+  transform: none !important;
+  will-change: auto !important;
+  contain: none !important;
+}
+
+/* Allow GPU only on SMALL animated elements */
+.ccg-bg-starfield,
+.ccg-bg-grid,
+.ccg-bg-particles {
+  will-change: opacity, transform;
+}
