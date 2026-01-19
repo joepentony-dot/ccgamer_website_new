@@ -1084,15 +1084,18 @@ body.page-home .ccg-bg {
 }
 
 html[data-ccg-page="home"] .ccg-bg-starfield {
-    opacity: 0.46;
+    opacity: 0.38;
+    mix-blend-mode: normal;
+    animation: ccg-star-drift 180s linear infinite;
 }
 
 html[data-ccg-page="home"] .ccg-bg-starfield::after {
-    opacity: 0.16;
+    opacity: 0.12;
+    animation: ccg-star-drift-alt 320s linear infinite;
 }
 
 html[data-ccg-page="home"] .ccg-bg-grid {
-    opacity: 0.06;
+    opacity: 0.05;
     mix-blend-mode: normal;
 }
 
