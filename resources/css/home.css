@@ -1131,9 +1131,6 @@ html[data-ccg-page="home"] .ccg-bg-grid {
     touch-action: pan-y;
 }
 
-html[data-ccg-page="home"] .home-hero__frame {
-    box-shadow: none;
-}
 
 .home-hero__bg {
     position: absolute;

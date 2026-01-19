@@ -173,9 +173,8 @@
     background-size: cover;
     background-position: center;
     filter: saturate(1.1) drop-shadow(0 0 14px rgba(0,0,0,0.35));
-    opacity: 0.95;
-    mix-blend-mode: screen;
-    transition: opacity 480ms ease, transform 620ms ease;
+    opacity: 0.65;
+     mix-blend-mode: normal;
 }
 
 body[data-ccg-mode="c64"] .home-hero .ccg-hero-image,
