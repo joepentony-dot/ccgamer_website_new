@@ -2898,3 +2898,16 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
 html[data-ccg-page="home"] body#top {
     background: linear-gradient(135deg, #05070d 0%, #050812 48%, #05070d 100%) !important;
 }
+
+/* ============================================================
+   HOME — CTA BEAM CLARITY FIX
+   ------------------------------------------------------------
+   Prevent large blurred CTA beam from hazing main content.
+   Visual remains, haze removed.
+============================================================ */
+
+html[data-ccg-page="home"] .home-bottom-cta__beam {
+    filter: blur(12px) !important;   /* was 32px */
+    opacity: 0.35 !important;        /* was 0.75 */
+    pointer-events: none;
+}
