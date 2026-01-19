@@ -13,6 +13,17 @@
     pointer-events: none !important;
 }
 
+/* ============================================================
+   VISUAL LOCK — PREVENT RUNTIME HAZE / OVERLAY BUGS (HOME ONLY)
+============================================================ */
+
+html[data-ccg-page="home"] body[data-ccg-visual-lock="true"] * {
+    filter: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    mix-blend-mode: normal !important;
+}
+
 /* Decorative hero/glow layers must never intercept taps */
 .ccg-hero-scanlines,
 .ccg-hero__backdrop,
