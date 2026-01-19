@@ -1082,6 +1082,12 @@ body.page-home .ccg-page--home > footer {
 
 body.page-home .ccg-bg {
     pointer-events: none;
+    isolation: isolate;
+}
+
+body.page-home .ccg-page--home,
+body.page-home .ccg-main--home {
+    isolation: isolate;
 }
 
 html[data-ccg-page="home"] .ccg-bg-starfield {
