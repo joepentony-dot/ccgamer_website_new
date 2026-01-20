@@ -54,9 +54,9 @@ html[data-ccg-page="collections-index"] .ccg-section {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: clamp(30px, 3.4vw, 46px) clamp(24px, 3.4vw + 12px, 56px);
+    padding: clamp(26px, 3.2vw, 40px) clamp(20px, 3.2vw + 10px, 48px);
     min-height: clamp(220px, 30vw, 330px);
-    margin-bottom: 44px;
+    margin-bottom: 32px;
 
     background:
         radial-gradient(ellipse at 18% 12%, rgba(var(--accent-rgb), 0.28), transparent 56%),
@@ -129,10 +129,10 @@ html[data-ccg-page="collections-index"] .ccg-section {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     max-width: 860px;
     margin: 0 auto;
-    padding: 36px 34px 34px;
+    padding: 30px 28px 30px;
     text-align: center;
     text-shadow: 0 16px 40px rgba(0,0,0,0.78);
     pointer-events: none;
@@ -171,7 +171,7 @@ html[data-ccg-page="collections-index"] .ccg-section {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin-top: 20px;
+    margin-top: 16px;
 }
 
 .ccg-page--collections-index .ccg-hero-actions .ccg-btn {
@@ -182,7 +182,7 @@ html[data-ccg-page="collections-index"] .ccg-section {
 
 @media (max-width: 768px) {
     .ccg-page--collections-index .ccg-hero-inner--collections {
-        padding: 26px 16px 24px;
+        padding: 22px 14px 20px;
     }
 }
 
@@ -211,7 +211,7 @@ html[data-ccg-page="collections-index"] .ccg-section {
 
 @media (max-width: 768px) {
     .ccg-page--collections-index .ccg-hero--collections {
-        padding: 26px 18px 32px;
+        padding: 22px 16px 26px;
         min-height: 200px;
     }
 
@@ -228,15 +228,15 @@ html[data-ccg-page="collections-index"] .ccg-section {
 .ccg-page--collections-index .ccg-genre-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 28px;
+    gap: 22px;
     align-items: stretch;
 
-    margin-top: 18px;
+    margin-top: 12px;
 }
 
 @media (min-width: 1024px) {
     .ccg-page--collections-index .ccg-genre-grid {
-        gap: 36px;
+        gap: 30px;
     }
 }
 
@@ -277,7 +277,7 @@ html[data-ccg-page="collections-index"] .ccg-section {
 /* Title — curated authority */
 .ccg-page--collections-index .ccg-card span {
     display: block;
-    padding: 16px 18px 18px;
+    padding: 14px 16px 16px;
 
     font-family: var(--ccg-font-main);
     font-size: 0.9rem;
@@ -330,7 +330,7 @@ html[data-ccg-page="collections-index"] .ccg-section {
 ============================================================ */
 
 .ccg-page--collections-index .ccg-section {
-    margin-top: 46px;
+    margin-top: 34px;
     position: relative;
 }
 
@@ -341,7 +341,7 @@ html[data-ccg-page="collections-index"] .ccg-section {
 
 @media (max-width: 768px) {
     .ccg-page--collections-index .ccg-section {
-        margin-top: 38px;
+        margin-top: 30px;
     }
 
     .ccg-page--collections-index .ccg-section::before {

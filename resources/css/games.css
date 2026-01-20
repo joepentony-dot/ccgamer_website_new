@@ -48,7 +48,7 @@ body[data-ccg-mode="amiga"] {
 
 .ccg-page--games-index .games-hero {
     margin: var(--ccg-hero-offset) auto 10px;
-    padding: calc(28px * var(--ui-density)) calc(32px * var(--ui-density));
+    padding: calc(24px * var(--ui-density)) calc(28px * var(--ui-density));
     border-radius: calc(18px * var(--ui-radius-scale));
     position: relative;
     overflow: hidden;
@@ -79,7 +79,7 @@ body[data-ccg-mode="amiga"] {
     position: relative;
     z-index: 1;
     display: grid;
-    gap: calc(10px * var(--ui-density));
+    gap: calc(8px * var(--ui-density));
 }
 
 .ccg-page--games-index .games-hero__title {
@@ -99,8 +99,8 @@ body[data-ccg-mode="amiga"] {
 .ccg-page--games-index .games-hero__stats {
     display: inline-flex;
     align-items: center;
-    gap: calc(10px * var(--ui-density));
-    padding: calc(10px * var(--ui-density)) calc(14px * var(--ui-density));
+    gap: calc(8px * var(--ui-density));
+    padding: calc(8px * var(--ui-density)) calc(12px * var(--ui-density));
     border-radius: calc(12px * var(--ui-radius-scale));
     background: rgba(0, 0, 0, 0.28);
     border: 1px solid var(--ccg-border);
@@ -114,16 +114,16 @@ body[data-ccg-mode="amiga"] {
 
 .ccg-page--games-index .games-tools {
     width: min(1200px, 96%);
-    margin: 10px auto 26px;
+    margin: 8px auto 20px;
     display: grid;
-    gap: calc(16px * var(--ui-density));
+    gap: calc(14px * var(--ui-density));
 }
 
 .games-search {
     display: flex;
     align-items: center;
-    gap: calc(12px * var(--ui-density));
-    padding: calc(14px * var(--ui-density)) calc(16px * var(--ui-density));
+    gap: calc(10px * var(--ui-density));
+    padding: calc(12px * var(--ui-density)) calc(14px * var(--ui-density));
     border-radius: calc(14px * var(--ui-radius-scale));
     background: var(--ccg-deep-glass);
     border: 1px solid var(--ccg-border);
@@ -166,8 +166,8 @@ body[data-ccg-mode="amiga"] {
 .games-filter {
     display: flex;
     flex-direction: column;
-    gap: calc(10px * var(--ui-density));
-    padding: calc(14px * var(--ui-density)) calc(16px * var(--ui-density));
+    gap: calc(8px * var(--ui-density));
+    padding: calc(12px * var(--ui-density)) calc(14px * var(--ui-density));
     border-radius: calc(14px * var(--ui-radius-scale));
     background: var(--ccg-deep-glass);
     border: 1px solid var(--ccg-border);
