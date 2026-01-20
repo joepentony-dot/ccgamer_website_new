@@ -39,15 +39,15 @@
     --border-light: rgba(var(--accent-rgb), 0.28);
 
     /* HEADER CONTRACT */
-    --ccg-header-padding-y: 14px;
+    --ccg-header-padding-y: 12px;
     --ccg-header-padding-x: clamp(12px, 4vw, 18px);
-    --ccg-header-offset: clamp(108px, 6vw + 88px, 168px);
+    --ccg-header-offset: clamp(96px, 6vw + 78px, 150px);
 
     --ccg-nav-pill-pad-y: 8px;
     --ccg-nav-pill-pad-x: 12px;
 
     /* PAGE ENTRY */
-    --ccg-page-entry-pad: 28px;
+    --ccg-page-entry-pad: 24px;
 
     /* TOUCH & MOBILE SAFETY */
     --ccg-touch-size: 48px;
@@ -283,7 +283,7 @@ li {
 .ccg-main {
     width: min(1240px, 95vw);
     margin: 0 auto;
-    padding: calc(var(--ccg-page-entry-pad) + 6px) clamp(1rem, 2vw, 1.5rem) 40px;
+    padding: calc(var(--ccg-page-entry-pad) + 6px) clamp(1rem, 2vw, 1.5rem) 32px;
     position: relative;
     overflow-x: hidden;
     overflow-y: visible;
@@ -337,7 +337,7 @@ li {
 @media (max-width: 640px) {
     .ccg-main {
         width: 100%;
-        padding: calc(var(--ccg-page-entry-pad) + 8px) 16px 38px;
+        padding: calc(var(--ccg-page-entry-pad) + 8px) 16px 32px;
         text-align: center;
     }
 
@@ -2051,7 +2051,7 @@ html.ccg-perf-paused [data-ccg-wow] {
 
 /* HOME — hero docks closer */
 html[data-ccg-page="home"] .ccg-main {
-    padding-top: 18px;
+    padding-top: 14px;
 }
 
 /* INDEX PAGES */
@@ -2063,7 +2063,7 @@ html[data-ccg-page="home"] .ccg-main {
 
 /* SINGLE GAME */
 .ccg-page--single-game .ccg-main {
-    padding-top: 14px;
+    padding-top: 10px;
 }
 
 

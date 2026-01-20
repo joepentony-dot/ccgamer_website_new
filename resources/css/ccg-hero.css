@@ -13,24 +13,24 @@
 ------------------------------------------------------------- */
 
 :root {
-    --ccg-hero-offset: clamp(88px, 4vw + 70px, 140px);
+    --ccg-hero-offset: clamp(82px, 4vw + 64px, 132px);
 }
 
 @media (max-width: 1024px) {
     :root {
-        --ccg-hero-offset: clamp(82px, 4vw + 64px, 128px);
+        --ccg-hero-offset: clamp(76px, 4vw + 58px, 120px);
     }
 }
 
 @media (max-width: 820px) {
     :root {
-        --ccg-hero-offset: clamp(72px, 5vw + 56px, 118px);
+        --ccg-hero-offset: clamp(68px, 5vw + 52px, 110px);
     }
 }
 
 @media (max-width: 540px) {
     :root {
-        --ccg-hero-offset: clamp(68px, 6vw + 50px, 104px);
+        --ccg-hero-offset: clamp(64px, 6vw + 46px, 98px);
     }
 }
 
@@ -46,7 +46,7 @@
     border-radius: 20px;
 
     margin-top: var(--ccg-hero-offset);
-    margin-bottom: 32px;
+    margin-bottom: 24px;
 
     background:
         linear-gradient(
@@ -156,7 +156,7 @@
 .ccg-page--home .ccg-hero__inner {
     position: relative;
     z-index: 2;
-    padding: 42px 42px 48px;
+    padding: 36px 36px 40px;
 
     text-shadow:
         0 2px 14px rgba(0,0,0,0.85);
@@ -246,7 +246,7 @@ body[data-mode="amiga"] .home-hero .ccg-hero-image {
 .ccg-genre-hero__inner {
     position: relative;
     z-index: 2;
-    padding: 36px 36px 42px;
+    padding: 32px 32px 36px;
 }
 
 /* ============================================================
@@ -270,7 +270,7 @@ body[data-mode="amiga"] .home-hero .ccg-hero-image {
     }
 
     .ccg-page--home .ccg-hero__inner {
-        padding: 34px 30px 40px;
+        padding: 30px 26px 34px;
     }
 }
 

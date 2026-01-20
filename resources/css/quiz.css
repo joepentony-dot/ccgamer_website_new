@@ -12,12 +12,12 @@
 ============================================================ */
 
 .ccg-page--quiz .ccg-main {
-    padding-top: 18px;
+    padding-top: 12px;
 }
 
 .ccg-page--quiz .ccg-hero {
-    margin-top: clamp(54px, 5vw + 26px, 98px);
-    margin-bottom: 22px;
+    margin-top: clamp(46px, 5vw + 22px, 86px);
+    margin-bottom: 16px;
     background:
         radial-gradient(circle at 20% 20%, rgba(var(--accent-rgb),0.26), transparent 40%),
         radial-gradient(circle at 80% 15%, rgba(255,255,255,0.1), transparent 42%),
@@ -29,13 +29,13 @@
 }
 
 .ccg-page--quiz .ccg-hero-inner {
-    padding: 30px 28px 28px;
+    padding: 24px 24px 24px;
 }
 
 .quiz-hero-grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 220px);
-    gap: 24px;
+    gap: 18px;
     align-items: center;
 }
 
@@ -45,7 +45,7 @@
     align-items: center;
 }
 
-.quiz-layout { gap: 26px; }
+.quiz-layout { gap: 20px; }
 
 /* ============================================================
    FOCUS MODE (ACTIVE QUIZ SPOTLIGHT)
@@ -86,7 +86,7 @@ body.quiz-focus .quiz-section {
     align-items: center;
     justify-content: center;
     min-height: min(100vh, 980px);
-    padding: 40px 20px;
+    padding: 32px 20px;
 }
 
 body.quiz-focus .quiz-layout {
@@ -115,8 +115,8 @@ body.quiz-focus.quiz-focus-pulse .quiz-panel--active {
 
 .quiz-hero-controls {
     display: grid;
-    gap: 16px;
-    margin-top: 16px;
+    gap: 12px;
+    margin-top: 12px;
 }
 
 .quiz-hero-buttons {
@@ -129,8 +129,8 @@ body.quiz-focus.quiz-focus-pulse .quiz-panel--active {
 .quiz-hero-meta {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 12px;
-    margin-top: 14px;
+    gap: 10px;
+    margin-top: 10px;
 }
 
 .quiz-pack-select-wrap {
@@ -148,7 +148,7 @@ body.quiz-focus.quiz-focus-pulse .quiz-panel--active {
 .quiz-pack-list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
+    gap: 10px;
 }
 
 .quiz-pack-btn {
@@ -156,7 +156,7 @@ body.quiz-focus.quiz-focus-pulse .quiz-panel--active {
     border: 1px solid rgba(255,255,255,0.26);
     background: linear-gradient(135deg, rgba(var(--accent-rgb),0.22), rgba(0,0,0,0.84));
     box-shadow: 0 10px 24px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.12);
-    padding: 12px 14px;
+    padding: 10px 12px;
     color: var(--text-light);
     text-align: left;
     cursor: pointer;
