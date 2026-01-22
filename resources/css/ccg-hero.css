@@ -179,13 +179,17 @@
 
 body[data-ccg-mode="c64"] .home-hero .ccg-hero-image,
 body[data-mode="c64"] .home-hero .ccg-hero-image {
-    background-image: url("../images/hero/ccg-hero-c64.png");
+    background-image: image-set(
+        url("../images/hero/ccg-hero-c64.png") type("image/png")
+    );
     transform: scale(1.02);
 }
 
 body[data-ccg-mode="amiga"] .home-hero .ccg-hero-image,
 body[data-mode="amiga"] .home-hero .ccg-hero-image {
-    background-image: url("../images/hero/ccg-hero-amiga.png");
+    background-image: image-set(
+        url("../images/hero/ccg-hero-amiga.png") type("image/png")
+    );
     transform: scale(1.05);
 }
 
