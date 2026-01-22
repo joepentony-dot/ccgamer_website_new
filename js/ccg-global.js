@@ -1822,10 +1822,10 @@ function setupFooterSignatureRotator() {
 })();
 
 /* ============================================================
-   VISITOR COUNTER — GOATCOUNTER (JSON)
+   VISITOR COUNTER — GOATCOUNTER STATISTICS API
    ------------------------------------------------------------
    • Footer-only (safe if missing)
-   • Not blocked by ad blockers
+   • Cached for 1 hour (localStorage)
    • Silent failure (never breaks UI)
 ============================================================ */
 
@@ -1834,21 +1834,45 @@ document.addEventListener("DOMContentLoaded", () => {
     const counterEl = document.getElementById("ccg-visit-count");
     if (!counterEl) return;
 
+    const GOATCOUNTER_API_URL = "https://cheekycommodoregamer.goatcounter.com/api/v0/stats/total";
+    const GOATCOUNTER_API_TOKEN = "1h55dk144yvt99xms45tiubge13ctobm2ezngxfwd0a64az1cm";
+    const GOATCOUNTER_CACHE_KEY = "ccg_goatcounter_total";
+    const GOATCOUNTER_CACHE_TTL = 60 * 60 * 1000;
+
     const parseCount = value => {
         if (value === null || value === undefined || value === "") {
             return null;
         }
 
         const numeric = Number(value);
-        if (isNaN(numeric)) {
+        if (!Number.isFinite(numeric)) {
             return null;
         }
 
         return numeric;
     };
 
+    const extractCount = data => {
+        if (!data || typeof data !== "object") return null;
+
+        const candidates = [
+            data.total,
+            data.count,
+            data.counts ? data.counts.total : null,
+            data.stats ? data.stats.total : null,
+            data.pageviews,
+        ];
+
+        for (const candidate of candidates) {
+            const parsed = parseCount(candidate);
+            if (parsed !== null) return parsed;
+        }
+
+        return null;
+    };
+
     const setDisplay = value => {
-        if (value === null) {
+        if (!Number.isFinite(value)) {
             counterEl.textContent = "—";
             return;
         }
@@ -1856,41 +1880,61 @@ document.addEventListener("DOMContentLoaded", () => {
         counterEl.textContent = value.toLocaleString();
     };
 
-    let retryTimer = null;
-    let retryDelay = 2000;
-    const maxRetryDelay = 60000;
-
-    const scheduleRetry = () => {
-        if (retryTimer) return;
-
-        retryTimer = window.setTimeout(() => {
-            retryTimer = null;
-            retryDelay = Math.min(retryDelay * 2, maxRetryDelay);
-            requestCount();
-        }, retryDelay);
+    const readCache = () => {
+        try {
+            const raw = localStorage.getItem(GOATCOUNTER_CACHE_KEY);
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            const cachedAt = Number(parsed && parsed.cachedAt);
+            const cachedValue = Number(parsed && parsed.value);
+            if (!Number.isFinite(cachedAt) || !Number.isFinite(cachedValue)) return null;
+            if (Date.now() - cachedAt > GOATCOUNTER_CACHE_TTL) return null;
+            return cachedValue;
+        } catch (error) {
+            return null;
+        }
     };
 
-    const requestCount = () => {
-        fetch("https://cheekycommodoregamer.goatcounter.com/counter/TOTAL.json")
-            .then(response => response.json())
-            .then(data => {
-                const count = parseCount(data ? data.count : null);
-                if (count === null) {
-                    setDisplay(null);
-                    scheduleRetry();
-                    return;
-                }
+    const writeCache = value => {
+        try {
+            localStorage.setItem(GOATCOUNTER_CACHE_KEY, JSON.stringify({
+                value,
+                cachedAt: Date.now(),
+            }));
+        } catch (error) {
+            // Ignore cache write failures.
+        }
+    };
 
-                retryDelay = 2000;
-                setDisplay(count);
-            })
-            .catch(() => {
+    const cachedValue = readCache();
+    if (cachedValue !== null) {
+        setDisplay(cachedValue);
+        return;
+    }
+
+    fetch(GOATCOUNTER_API_URL, {
+        headers: {
+            Authorization: `Bearer ${GOATCOUNTER_API_TOKEN}`,
+            "Content-Type": "application/json",
+        },
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("GoatCounter stats request failed.");
+            }
+            return response.json();
+        })
+        .then(data => {
+            const total = extractCount(data);
+            if (total === null) {
                 setDisplay(null);
-                scheduleRetry();
-            });
-    };
-
-    setDisplay(null);
-    requestCount();
+                return;
+            }
+            writeCache(total);
+            setDisplay(total);
+        })
+        .catch(() => {
+            setDisplay(null);
+        });
 
 });
