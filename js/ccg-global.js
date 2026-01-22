@@ -217,7 +217,9 @@
 
             const startTop = getScrollTop();
             const maxScroll = getMaxScroll();
-            const targetTop = Math.min(Math.max(startTop + deltaY, 0), maxScroll);
+            const isMouseWheel = !isMobileLike() && (event.deltaMode === 1 || event.deltaMode === 2 || Math.abs(deltaY) >= 80);
+            const dampenedDelta = isMouseWheel ? deltaY * 0.85 : deltaY;
+            const targetTop = Math.min(Math.max(startTop + dampenedDelta, 0), maxScroll);
 
             if (targetTop === startTop || ticking) return;
             ticking = true;
@@ -225,6 +227,8 @@
             requestAnimationFrame(() => {
                 const currentTop = getScrollTop();
                 if (currentTop === startTop) {
+                    window.scrollTo({ top: targetTop, behavior: "auto" });
+                } else if (isMouseWheel && Math.abs(currentTop - targetTop) > 2) {
                     window.scrollTo({ top: targetTop, behavior: "auto" });
                 }
                 ticking = false;
@@ -1202,9 +1206,9 @@
 
         const primaryList = nav?.querySelector("[data-ccg-nav-primary]");
         const secondaryList = nav?.querySelector("[data-ccg-nav-secondary]");
-        const moreWrap = nav?.querySelector(".ccg-nav__more");
-        const moreToggle = moreWrap?.querySelector("[data-ccg-more-toggle]");
-        const moreMenu = nav?.querySelector("[data-ccg-more-menu]");
+        let moreWrap = nav?.querySelector(".ccg-nav__more");
+        let moreToggle = moreWrap?.querySelector("[data-ccg-more-toggle]");
+        let moreMenu = nav?.querySelector("[data-ccg-more-menu]");
         const drawerPanel = drawer?.querySelector(".ccg-nav-drawer__panel");
 
         if (!toggle || !nav || !primaryList || !moreWrap || !moreMenu) return;
@@ -1244,10 +1248,24 @@
             }
         };
 
-        buildMoreMenu();
-
         let isMoreOpen = false;
         let isNavOpen = false;
+
+        const refreshMoreRefs = (sourceEl = null) => {
+            const nextWrap = sourceEl?.closest(".ccg-nav__more") || nav?.querySelector(".ccg-nav__more");
+            if (nextWrap) {
+                moreWrap = nextWrap;
+                moreToggle = nextWrap.querySelector("[data-ccg-more-toggle]");
+                moreMenu = nextWrap.querySelector("[data-ccg-more-menu]");
+            } else {
+                moreWrap = nav?.querySelector(".ccg-nav__more");
+                moreToggle = moreWrap?.querySelector("[data-ccg-more-toggle]") || null;
+                moreMenu = nav?.querySelector("[data-ccg-more-menu]") || null;
+            }
+        };
+
+        buildMoreMenu();
+        refreshMoreRefs();
 
         const openMore = () => {
             if (isMoreOpen || !moreMenu) return;
@@ -1315,14 +1333,24 @@
             }
         });
 
-        moreToggle?.addEventListener("click", event => {
-            event.stopPropagation();
-            if (isMoreOpen) {
-                closeMore();
-            } else {
-                openMore();
-            }
-        });
+        if (!header.dataset.ccgMoreToggleBound) {
+            header.addEventListener("click", event => {
+                const toggleTarget = event.target.closest("[data-ccg-more-toggle]");
+                if (!toggleTarget) return;
+                event.stopPropagation();
+                if (toggleTarget.tagName === "A") {
+                    event.preventDefault();
+                }
+                refreshMoreRefs(toggleTarget);
+                if (!moreWrap || !moreMenu) return;
+                if (isMoreOpen) {
+                    closeMore();
+                } else {
+                    openMore();
+                }
+            });
+            header.dataset.ccgMoreToggleBound = "true";
+        }
 
         drawerCloseEls.forEach(btn => btn.addEventListener("click", closeNav));
 
