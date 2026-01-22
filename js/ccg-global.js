@@ -1834,15 +1834,63 @@ document.addEventListener("DOMContentLoaded", () => {
     const counterEl = document.getElementById("ccg-visit-count");
     if (!counterEl) return;
 
-    fetch("https://cheekycommodoregamer.goatcounter.com/counter/TOTAL.json")
-        .then(response => response.json())
-        .then(data => {
-            if (data && data.count) {
-                counterEl.textContent = Number(data.count).toLocaleString();
-            }
-        })
-        .catch(() => {
-            /* analytics should never affect UX */
-        });
+    const parseCount = value => {
+        if (value === null || value === undefined || value === "") {
+            return null;
+        }
+
+        const numeric = Number(value);
+        if (isNaN(numeric)) {
+            return null;
+        }
+
+        return numeric;
+    };
+
+    const setDisplay = value => {
+        if (value === null) {
+            counterEl.textContent = "—";
+            return;
+        }
+
+        counterEl.textContent = value.toLocaleString();
+    };
+
+    let retryTimer = null;
+    let retryDelay = 2000;
+    const maxRetryDelay = 60000;
+
+    const scheduleRetry = () => {
+        if (retryTimer) return;
+
+        retryTimer = window.setTimeout(() => {
+            retryTimer = null;
+            retryDelay = Math.min(retryDelay * 2, maxRetryDelay);
+            requestCount();
+        }, retryDelay);
+    };
+
+    const requestCount = () => {
+        fetch("https://cheekycommodoregamer.goatcounter.com/counter/TOTAL.json")
+            .then(response => response.json())
+            .then(data => {
+                const count = parseCount(data ? data.count : null);
+                if (count === null) {
+                    setDisplay(null);
+                    scheduleRetry();
+                    return;
+                }
+
+                retryDelay = 2000;
+                setDisplay(count);
+            })
+            .catch(() => {
+                setDisplay(null);
+                scheduleRetry();
+            });
+    };
+
+    setDisplay(null);
+    requestCount();
 
 });
