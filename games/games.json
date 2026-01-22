@@ -13237,14 +13237,16 @@
     "year": 1985,
     "developer": "Tynesoft",
     "videoid": "b44DHPl97LI",
-    "lemon": [],
+    "lemon": [
+      "https://www.lemon64.com/game/super-gran-the-adventure"
+    ],
     "thumbnail": "resources/images/thumbnails/all/super_gran_adventure.png",
     "pdf": "https://drive.google.com/file/d/1Pf1qHOBLI5gV1GGO3CHCmrF1qiIuE6P_/view?usp=drive_link",
     "disk": [
       "https://drive.google.com/file/d/1CyvSEE_p2DqKjYgyq-PU7GEMsRPFVXz0/view?usp=drive_link"
     ],
     "description": "Super Gran: The Adventure is a 1985 Commodore 64 adventure game from Tynesoft based on the television series, centred on exploration, item use, and simple puzzle-solving.",
-    "ccg_rating": 3
+    "ccg_rating": 2
   },
   {
     "system": "C64",
