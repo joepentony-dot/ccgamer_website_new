@@ -859,7 +859,9 @@ function renderGameCardMarkup(game, opts = {}) {
                      alt="${game.title}"
                      data-game-thumb
                      loading="lazy"
-                     decoding="async">
+                     decoding="async"
+                     width="320"
+                     height="180">
                 ${ratingMarkup}
             </a>
             <div class="ccg-game-card__body">
@@ -871,8 +873,9 @@ function renderGameCardMarkup(game, opts = {}) {
                 </div>
                 <div class="ccg-game-card__actions">
                     <a href="${gameUrl}"
-                       class="ccg-btn ccg-btn--primary ccg-game-card__btn">
-                       View Game
+                       class="ccg-btn ccg-btn--primary ccg-game-card__btn"
+                       aria-label="View ${game.title}">
+                       View ${game.title}
                     </a>
                 </div>
             </div>

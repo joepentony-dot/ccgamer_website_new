@@ -3,8 +3,12 @@
 ============================================================ */
 
 .home-hero {
-    --home-hero-art-c64: url("../images/hero/ccg-hero-c64.png");
-    --home-hero-art-amiga: url("../images/hero/ccg-hero-amiga.png");
+    --home-hero-art-c64: image-set(
+        url("../images/hero/ccg-hero-c64.png") type("image/png")
+    );
+    --home-hero-art-amiga: image-set(
+        url("../images/hero/ccg-hero-amiga.png") type("image/png")
+    );
 
     margin-top: clamp(24px, 5vw, 72px);
     padding: 12px 0 14px;
@@ -39,6 +43,20 @@ html[data-ccg-page="home"].ccg-prepaint .home-visitor-callout__beam {
     opacity: 0;
     filter: none;
     transform: none;
+}
+
+html.ccg-mobile-defer-visuals .home-hero__bg {
+    opacity: 0;
+    filter: none;
+    transform: none;
+    background-image: none;
+}
+
+html.ccg-mobile-defer-visuals .home-hero__scanlines,
+html.ccg-mobile-defer-visuals .home-hero__crt-overlay,
+html.ccg-mobile-defer-visuals .home-hero__visual-glow,
+html.ccg-mobile-defer-visuals .home-hero__visual-overlay {
+    opacity: 0;
 }
 
 /* ============================================================
@@ -966,6 +984,7 @@ html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-socials__icon {
     margin-inline: auto;
     border-radius: 26px;
     padding: clamp(24px, 4vw, 40px);
+    min-height: clamp(420px, 68vh, 640px);
     background:
         radial-gradient(circle at 18% 18%, rgba(var(--accent-rgb),0.22), transparent 42%),
         radial-gradient(circle at 82% 24%, rgba(120,183,255,0.16), transparent 38%),
@@ -2048,7 +2067,7 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
     position: relative;
     border-radius: 16px;
     overflow: hidden;
-    background: linear-gradient(145deg, rgba(0,0,0,0.7), rgba(0,0,0,0.45)), url("../images/hero/ccg-hero-c64.png");
+    background: linear-gradient(145deg, rgba(0,0,0,0.7), rgba(0,0,0,0.45)), var(--home-hero-art-c64);
     background-size: cover;
     background-position: center;
     box-shadow: 0 14px 32px rgba(0,0,0,0.7), 0 0 18px rgba(var(--accent-rgb),0.22);

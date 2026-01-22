@@ -13,6 +13,23 @@
     pointer-events: none !important;
 }
 
+html.ccg-mobile-defer-visuals .ccg-bg-starfield,
+html.ccg-mobile-defer-visuals .ccg-bg-starfield::after,
+html.ccg-mobile-defer-visuals .ccg-bg-grid,
+html.ccg-mobile-defer-visuals .ccg-bg-crt-overlay {
+    opacity: 0;
+}
+
+html.ccg-mobile-defer-visuals .ccg-bg-starfield,
+html.ccg-mobile-defer-visuals .ccg-bg-starfield::after,
+html.ccg-mobile-defer-visuals .ccg-bg-grid {
+    background-image: none;
+}
+
+html.ccg-mobile-defer-visuals .ccg-bg-crt-overlay {
+    background: none;
+}
+
 /* ============================================================
    VISUAL LOCK — PREVENT RUNTIME HAZE / OVERLAY BUGS (HOME ONLY)
 ============================================================ */

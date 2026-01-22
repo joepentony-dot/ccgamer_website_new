@@ -94,7 +94,7 @@ function ccgBuildGameCard(game) {
     return `
         <div class="ccg-game-card genre-card">
             <a href="${gameUrl}" class="ccg-game-card__thumb">
-                <img src="${thumb}" alt="${title}">
+                <img src="${thumb}" alt="${title}" loading="lazy" decoding="async" width="320" height="180">
                 ${ratingMarkup}
             </a>
 
@@ -111,8 +111,9 @@ function ccgBuildGameCard(game) {
 
                 <div class="ccg-game-card__actions">
                     <a href="${gameUrl}"
-                       class="ccg-btn ccg-btn--primary ccg-game-card__btn">
-                       View Game
+                       class="ccg-btn ccg-btn--primary ccg-game-card__btn"
+                       aria-label="View ${title}">
+                       View ${title}
                     </a>
                 </div>
             </div>
