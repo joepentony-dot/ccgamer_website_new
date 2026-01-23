@@ -439,6 +439,61 @@ function resolveLemonUrl(game) {
     return resolvePrimaryLink(game.lemon || game.lemonlink || game.lemonlinks);
 }
 
+function resolveLemonLinks(game) {
+    const raw = game.lemon || game.lemonlink || game.lemonlinks;
+    if (!raw) return [];
+    if (Array.isArray(raw)) {
+        return raw.map(link => String(link || "").trim()).filter(Boolean);
+    }
+    const link = String(raw || "").trim();
+    return link ? [link] : [];
+}
+
+function resolveCreditsEntries(game) {
+    const credits = game?.credits;
+    if (!credits || typeof credits !== "object") return [];
+
+    const normaliseCreditValue = (value) => {
+        if (!value) return "";
+        if (Array.isArray(value)) {
+            const cleaned = value.map(item => String(item || "").trim()).filter(Boolean);
+            return cleaned.length ? cleaned.join(", ") : "";
+        }
+        return String(value || "").trim();
+    };
+
+    const entries = [
+        { label: "Publisher", value: normaliseCreditValue(credits.publisher) },
+        { label: "Producer", value: normaliseCreditValue(credits.producer) },
+        { label: "Programmer", value: normaliseCreditValue(credits.coder) },
+        { label: "Graphics", value: normaliseCreditValue(credits.graphics) },
+        { label: "Music", value: normaliseCreditValue(credits.musician) },
+        { label: "Re-release", value: normaliseCreditValue(credits.re_releaser) }
+    ];
+
+    return entries.filter(entry => entry.value);
+}
+
+function resolveGenres(game) {
+    const raw = game?.genres || game?.genre || [];
+    if (Array.isArray(raw)) return raw.map(item => String(item || "").trim()).filter(Boolean);
+    if (typeof raw === "string") {
+        return raw.split(",").map(item => item.trim()).filter(Boolean);
+    }
+    return [];
+}
+
+function hasTopPickGenre(game) {
+    return resolveGenres(game).some(genre => genre.toLowerCase() === "top picks");
+}
+
+function formatRatingValue(value) {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) return "";
+    if (Number.isInteger(numeric)) return `${numeric}/10`;
+    return `${numeric.toFixed(1)}/10`;
+}
+
 function resolveGameIdFromSlug(slug) {
     if (!slug) return "";
     return String(slug).trim().toLowerCase().replace(/-+/g, "-").replace(/-/g, "_");
@@ -547,17 +602,22 @@ function renderGame(game) {
     document.getElementById("gameHeroThumb").src = thumb;
     document.getElementById("gameHeroThumb").alt = `${game.title || "Game"} cover art`;
     document.getElementById("gameHeroTitle").textContent = game.title || "Unknown";
-    document.getElementById("gameMetaYear").textContent = game.year || "—";
-    document.getElementById("gameMetaSystem").textContent = game.system || "—";
-    document.getElementById("gameMetaDeveloper").textContent =
-        game.publisher || game.developer || "—";
+    renderHeroMeta(game);
     renderGameRating(game);
+    renderHeroBadges(game);
 
     /* DESCRIPTION */
     if (game.description) {
         document.getElementById("gameDescription").innerHTML = game.description;
         document.getElementById("game-description-section").hidden = false;
+    } else {
+        document.getElementById("game-description-section").hidden = true;
     }
+
+    renderCreditsPanel(game);
+    renderVerdictPanel(game);
+
+    const mediaPanel = ensureMediaPanel();
 
     /* VIDEO */
     const vid = resolveVideoId(game);
@@ -569,6 +629,11 @@ function renderGame(game) {
         const btn = document.getElementById("gameVideoBtn");
         btn.href = `https://www.youtube.com/watch?v=${vid}`;
         btn.hidden = false;
+    } else {
+        document.getElementById("game-video-embed").src = "";
+        document.getElementById("game-video-section").hidden = true;
+        const btn = document.getElementById("gameVideoBtn");
+        if (btn) btn.hidden = true;
     }
 
     /* DOWNLOADS */
@@ -613,6 +678,9 @@ function renderGame(game) {
                 manualFrame.src = "";
             });
         }
+    } else if (downloadsSection) {
+        const btn = document.getElementById("gameManualBtn");
+        if (btn) btn.hidden = true;
     }
 
     const disk = resolveDiskUrl(game);
@@ -623,16 +691,24 @@ function renderGame(game) {
         btn.rel = "noopener";
         btn.hidden = false;
         downloadsSection.hidden = false;
+    } else if (downloadsSection) {
+        const btn = document.getElementById("gameDiskBtn");
+        if (btn) btn.hidden = true;
     }
 
-    const lemon = resolveLemonUrl(game);
-    if (lemon) {
-        const btn = document.getElementById("gameLemonBtn");
-        btn.href = lemon;
-        btn.target = "_blank";
-        btn.rel = "noopener";
-        btn.hidden = false;
+    if (downloadsSection && !manual && !disk) {
+        downloadsSection.hidden = true;
     }
+
+    const lemonLinks = resolveLemonLinks(game);
+    renderMediaLinksPanel(mediaPanel, lemonLinks);
+
+    const lemonBtn = document.getElementById("gameLemonBtn");
+    if (lemonBtn) {
+        lemonBtn.hidden = true;
+    }
+
+    updateMediaPanelVisibility(mediaPanel);
 
     /* SCREENSHOTS */
     const shots = Array.isArray(game.screenshots) ? game.screenshots : [];
@@ -652,6 +728,9 @@ function renderGame(game) {
         });
         const screenshotsSection = document.querySelector(".game-screenshots");
         if (screenshotsSection) screenshotsSection.hidden = false;
+    } else {
+        const screenshotsSection = document.querySelector(".game-screenshots");
+        if (screenshotsSection) screenshotsSection.hidden = true;
     }
 
     /* RELATED GAMES */
@@ -660,6 +739,7 @@ function renderGame(game) {
 
 function renderGameRating(game) {
     const ratingContainer = document.querySelector("[data-ccg-rating]");
+    const heroRating = document.getElementById("gameHeroRating");
     const starsEl = document.getElementById("gameRatingStars");
     const statusEl = document.getElementById("gameRatingStatus");
     const reasonEl = document.getElementById("gameRatingReason");
@@ -675,11 +755,13 @@ function renderGameRating(game) {
     }
 
     if (ratingData.isRated) {
+        ratingContainer.hidden = false;
+        if (heroRating) heroRating.hidden = false;
         statusEl.hidden = true;
         ratingContainer.setAttribute("aria-label", `Cheeky Commodore Gamer Rating: ${ratingData.value}/10`);
     } else {
-        statusEl.hidden = false;
-        ratingContainer.setAttribute("aria-label", "Cheeky Commodore Gamer Rating: Not Yet Rated");
+        ratingContainer.hidden = true;
+        if (heroRating) heroRating.hidden = true;
     }
 
     const reason = String(game?.ccg_rating_reason || "").replace(/\s+/g, " ").trim();
@@ -690,6 +772,273 @@ function renderGameRating(game) {
         reasonEl.textContent = "";
         reasonEl.hidden = true;
     }
+}
+
+function renderHeroMeta(game) {
+    const meta = document.querySelector(".game-hero__meta");
+    const yearEl = document.getElementById("gameMetaYear");
+    const systemEl = document.getElementById("gameMetaSystem");
+    const developerEl = document.getElementById("gameMetaDeveloper");
+
+    if (!meta || !yearEl || !systemEl || !developerEl) return;
+
+    const year = String(game?.year || "").trim();
+    const system = String(game?.system || "").trim();
+    const developer = String(game?.publisher || game?.developer || "").trim();
+
+    yearEl.textContent = year;
+    yearEl.hidden = !year;
+    systemEl.textContent = system;
+    systemEl.hidden = !system;
+    developerEl.textContent = developer;
+    developerEl.hidden = !developer;
+
+    const separators = meta.querySelectorAll(".game-meta__sep");
+    const items = [yearEl, systemEl, developerEl];
+
+    if (separators.length >= 2) {
+        separators[0].hidden = !(items[0] && !items[0].hidden && items[1] && !items[1].hidden);
+        separators[1].hidden = !(items[1] && !items[1].hidden && items[2] && !items[2].hidden);
+    }
+
+    meta.hidden = items.every(item => item.hidden);
+}
+
+function renderHeroBadges(game) {
+    const heroContent = document.querySelector(".game-hero__content");
+    if (!heroContent) return;
+
+    let badgeWrap = heroContent.querySelector(".game-hero__badges");
+    if (!badgeWrap) {
+        badgeWrap = document.createElement("div");
+        badgeWrap.className = "game-hero__badges";
+        const title = heroContent.querySelector(".game-hero__title");
+        if (title && title.nextSibling) {
+            heroContent.insertBefore(badgeWrap, title.nextSibling);
+        } else {
+            heroContent.appendChild(badgeWrap);
+        }
+    }
+
+    badgeWrap.innerHTML = "";
+
+    const system = String(game?.system || "").trim();
+    const year = String(game?.year || "").trim();
+    const ratingData = typeof window.ccgResolveRatingValue === "function"
+        ? window.ccgResolveRatingValue(game)
+        : { value: Number(game?.ccg_rating), isRated: Number.isFinite(Number(game?.ccg_rating)) };
+    const ratingLabel = ratingData.isRated ? formatRatingValue(ratingData.value) : "";
+    const topPick = hasTopPickGenre(game);
+
+    const addBadge = (text, className) => {
+        if (!text) return;
+        const badge = document.createElement("span");
+        badge.className = `game-badge ${className || ""}`.trim();
+        badge.textContent = text;
+        badgeWrap.appendChild(badge);
+    };
+
+    addBadge(system, "game-badge--system");
+    addBadge(year, "game-badge--year");
+    addBadge(ratingLabel, "game-badge--rating");
+    if (topPick) {
+        addBadge("Top Picks", "game-badge--top");
+    }
+
+    badgeWrap.hidden = badgeWrap.children.length === 0;
+}
+
+function ensureMediaPanel() {
+    const main = document.querySelector(".ccg-main--single-game");
+    const videoSection = document.getElementById("game-video-section");
+    const downloadsSection = document.querySelector(".game-downloads");
+
+    if (!main || !videoSection || !downloadsSection) return null;
+
+    let mediaSection = document.getElementById("gameMediaSection");
+    if (!mediaSection) {
+        mediaSection = document.createElement("section");
+        mediaSection.id = "gameMediaSection";
+        mediaSection.className = "game-section game-media";
+        mediaSection.hidden = true;
+        mediaSection.innerHTML = `
+            <p class="game-section__kicker">Media Vault</p>
+            <h2 class="game-section__title">Media &amp; Resources</h2>
+            <div class="game-media__grid"></div>
+        `;
+
+        const verdictSection = document.getElementById("gameVerdictSection");
+        const creditsSection = document.getElementById("gameCreditsSection");
+        const descriptionSection = document.getElementById("game-description-section");
+        const insertTarget = verdictSection || creditsSection || descriptionSection;
+        if (insertTarget && insertTarget.parentNode) {
+            insertTarget.parentNode.insertBefore(mediaSection, insertTarget.nextSibling);
+        } else {
+            main.appendChild(mediaSection);
+        }
+    }
+
+    const grid = mediaSection.querySelector(".game-media__grid");
+    if (grid) {
+        if (!grid.contains(videoSection)) {
+            grid.appendChild(videoSection);
+        }
+        if (!grid.contains(downloadsSection)) {
+            grid.appendChild(downloadsSection);
+        }
+    }
+
+    videoSection.classList.add("game-media__item");
+    downloadsSection.classList.add("game-media__item");
+
+    let linksPanel = mediaSection.querySelector(".game-media__links");
+    if (!linksPanel) {
+        linksPanel = document.createElement("div");
+        linksPanel.className = "game-media__item game-media__links";
+        linksPanel.innerHTML = `
+            <p class="game-media__kicker">More Information</p>
+            <h3 class="game-media__title">Further Reading</h3>
+            <div class="game-media__links-list"></div>
+        `;
+        if (grid) {
+            grid.appendChild(linksPanel);
+        }
+    }
+
+    return {
+        section: mediaSection,
+        linksPanel
+    };
+}
+
+function renderMediaLinksPanel(mediaPanel, links) {
+    if (!mediaPanel || !mediaPanel.linksPanel) return;
+    const list = mediaPanel.linksPanel.querySelector(".game-media__links-list");
+    if (!list) return;
+
+    list.innerHTML = "";
+    const uniqueLinks = Array.from(new Set(links || []));
+
+    if (!uniqueLinks.length) {
+        mediaPanel.linksPanel.hidden = true;
+        return;
+    }
+
+    uniqueLinks.forEach((link, index) => {
+        const anchor = document.createElement("a");
+        anchor.className = "game-pill";
+        anchor.href = link;
+        anchor.target = "_blank";
+        anchor.rel = "noopener";
+        anchor.textContent = uniqueLinks.length > 1
+            ? `More Info ${index + 1}`
+            : "More Info";
+        list.appendChild(anchor);
+    });
+
+    mediaPanel.linksPanel.hidden = false;
+}
+
+function updateMediaPanelVisibility(mediaPanel) {
+    if (!mediaPanel || !mediaPanel.section) return;
+    const videoSection = document.getElementById("game-video-section");
+    const downloadsSection = document.querySelector(".game-downloads");
+    const linksPanel = mediaPanel.linksPanel;
+
+    const hasVideo = videoSection && !videoSection.hidden;
+    const hasDownloads = downloadsSection && !downloadsSection.hidden;
+    const hasLinks = linksPanel && !linksPanel.hidden;
+
+    mediaPanel.section.hidden = !(hasVideo || hasDownloads || hasLinks);
+}
+
+function renderCreditsPanel(game) {
+    const entries = resolveCreditsEntries(game);
+    let creditsSection = document.getElementById("gameCreditsSection");
+
+    if (!creditsSection) {
+        creditsSection = document.createElement("section");
+        creditsSection.id = "gameCreditsSection";
+        creditsSection.className = "game-section game-credits";
+        creditsSection.hidden = true;
+        creditsSection.innerHTML = `
+            <p class="game-section__kicker">Behind the Pixels</p>
+            <h2 class="game-section__title">Credits</h2>
+            <dl class="game-credits__list"></dl>
+        `;
+
+        const descriptionSection = document.getElementById("game-description-section");
+        if (descriptionSection && descriptionSection.parentNode) {
+            descriptionSection.parentNode.insertBefore(creditsSection, descriptionSection.nextSibling);
+        }
+    }
+
+    const list = creditsSection.querySelector(".game-credits__list");
+    if (!list) return;
+
+    list.innerHTML = "";
+
+    if (!entries.length) {
+        creditsSection.hidden = true;
+        return;
+    }
+
+    entries.forEach(entry => {
+        const term = document.createElement("dt");
+        term.textContent = entry.label;
+        const detail = document.createElement("dd");
+        detail.textContent = entry.value;
+        list.appendChild(term);
+        list.appendChild(detail);
+    });
+
+    creditsSection.hidden = false;
+}
+
+function renderVerdictPanel(game) {
+    const ratingData = typeof window.ccgResolveRatingValue === "function"
+        ? window.ccgResolveRatingValue(game)
+        : { value: Number(game?.ccg_rating), isRated: Number.isFinite(Number(game?.ccg_rating)) };
+
+    let verdictSection = document.getElementById("gameVerdictSection");
+    if (!verdictSection) {
+        verdictSection = document.createElement("section");
+        verdictSection.id = "gameVerdictSection";
+        verdictSection.className = "game-section game-verdict";
+        verdictSection.hidden = true;
+        verdictSection.innerHTML = `
+            <p class="game-section__kicker">CCG Verdict</p>
+            <h2 class="game-section__title">Omega Rating</h2>
+            <div class="game-verdict__body">
+                <div class="game-verdict__score" aria-label="Cheeky Commodore Gamer rating"></div>
+                <p class="game-verdict__reason"></p>
+            </div>
+        `;
+
+        const creditsSection = document.getElementById("gameCreditsSection");
+        const descriptionSection = document.getElementById("game-description-section");
+        const insertTarget = creditsSection || descriptionSection;
+        if (insertTarget && insertTarget.parentNode) {
+            insertTarget.parentNode.insertBefore(verdictSection, insertTarget.nextSibling);
+        }
+    }
+
+    if (!ratingData.isRated) {
+        verdictSection.hidden = true;
+        return;
+    }
+
+    const scoreEl = verdictSection.querySelector(".game-verdict__score");
+    const reasonEl = verdictSection.querySelector(".game-verdict__reason");
+    if (scoreEl) scoreEl.textContent = formatRatingValue(ratingData.value);
+
+    const reason = String(game?.ccg_rating_reason || "").replace(/\s+/g, " ").trim();
+    if (reasonEl) {
+        reasonEl.textContent = reason;
+        reasonEl.hidden = !reason;
+    }
+
+    verdictSection.hidden = false;
 }
 
 /* ============================================================

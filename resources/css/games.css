@@ -849,6 +849,40 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     text-shadow: 0 0 10px rgba(var(--accent-rgb),0.3);
 }
 
+.game-hero__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.game-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(var(--accent-rgb), 0.45);
+    background: rgba(var(--accent-rgb), 0.16);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.game-badge--rating {
+    background: rgba(255, 196, 64, 0.22);
+    border-color: rgba(255, 196, 64, 0.7);
+    color: #ffd975;
+}
+
+.game-badge--top {
+    background: rgba(255, 64, 129, 0.2);
+    border-color: rgba(255, 64, 129, 0.6);
+    color: #ff8bbd;
+}
+
 /* ------------------------------------------------------------
    Sections (description, video, downloads)
    ------------------------------------------------------------ */
@@ -895,6 +929,95 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     line-height: 1.7;
     color: var(--ccg-bright-2);
     font-size: 1.02rem;
+}
+
+/* ------------------------------------------------------------
+   Media panel
+   ------------------------------------------------------------ */
+
+.game-media {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.game-media__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.game-media__grid .game-section {
+    margin: 0;
+    background: rgba(5, 10, 18, 0.7);
+}
+
+.game-media__kicker {
+    margin: 0 0 6px;
+    color: var(--ccg-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.85rem;
+}
+
+.game-media__title {
+    margin: 0 0 12px;
+    font-family: var(--ccg-font-main);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.game-media__links-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* ------------------------------------------------------------
+   Credits panel
+   ------------------------------------------------------------ */
+
+.game-credits__list {
+    display: grid;
+    grid-template-columns: minmax(120px, 180px) 1fr;
+    gap: 8px 16px;
+    margin: 0;
+}
+
+.game-credits__list dt {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ccg-soft);
+}
+
+.game-credits__list dd {
+    margin: 0;
+    color: var(--ccg-bright-2);
+}
+
+/* ------------------------------------------------------------
+   Verdict panel
+   ------------------------------------------------------------ */
+
+.game-verdict__body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.game-verdict__score {
+    font-size: clamp(2rem, 3vw, 3rem);
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #ffd975;
+    text-shadow: 0 0 20px rgba(255, 217, 117, 0.35);
+}
+
+.game-verdict__reason {
+    margin: 0;
+    color: var(--ccg-bright-2);
+    line-height: 1.6;
 }
 
 /* ------------------------------------------------------------
