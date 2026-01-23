@@ -502,7 +502,7 @@ function buildVideoCard(game, systemLabel, index) {
     const meta = game ? (buildMeta(game) || systemLabel) : `${systemLabel} feature`;
     const title = game?.title || `${systemLabel} pick`;
     const viewLabel = game ? `View ${title}` : "View game";
-    const viewAria = game ? `aria-label="View ${title} game page"` : "aria-disabled="true"";
+    const viewAria = game ? `aria-label="View ${title} game page"` : "aria-disabled=\"true\"";
     const gameUrl = game ? resolveGameUrl(game) : "#";
     const ytUrl = hasVideo ? `https://www.youtube.com/watch?v=${videoId}` : "#";
     const iframeId = hasVideo ? `yt-player-featured-${systemLabel.toLowerCase().replace(/\s+/g, "-")}-${index}` : "";
