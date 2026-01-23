@@ -461,9 +461,33 @@ function resolveCreditsEntries(game) {
         return String(value || "").trim();
     };
 
+    const normaliseCreditTokens = (value) => {
+        if (!value) return [];
+        const values = Array.isArray(value) ? value : [value];
+        return values
+            .map(item => String(item || "").trim())
+            .filter(Boolean)
+            .map(item => item.replace(/\s+/g, " ").toLowerCase());
+    };
+
+    const publisherTokens = normaliseCreditTokens(credits?.publisher);
+    const developerTokens = normaliseCreditTokens(credits?.developer ?? game?.developer);
+
+    const tokensMatch = (source, target) => {
+        if (!source.length || !target.length) return false;
+        if (source.length !== target.length) return false;
+        const sourceSet = new Set(source);
+        const targetSet = new Set(target);
+        if (sourceSet.size !== targetSet.size) return false;
+        return Array.from(sourceSet).every(token => targetSet.has(token));
+    };
+
+    const showPublisher = publisherTokens.length > 0;
+    const showDeveloper = developerTokens.length > 0 && !tokensMatch(publisherTokens, developerTokens);
+
     const entries = [
-        { label: "Publisher", value: normaliseCreditValue(credits?.publisher) },
-        { label: "Developer", value: normaliseCreditValue(game?.developer) },
+        { label: "Publisher", value: showPublisher ? normaliseCreditValue(credits?.publisher) : "" },
+        { label: "Developer", value: showDeveloper ? normaliseCreditValue(credits?.developer ?? game?.developer) : "" },
         { label: "Producer", value: normaliseCreditValue(credits?.producer) },
         { label: "Programmer", value: normaliseCreditValue(credits?.coder) },
         { label: "Graphics", value: normaliseCreditValue(credits?.graphics) },
@@ -702,7 +726,7 @@ function renderGame(game) {
     }
 
     const lemonLinks = resolveLemonLinks(game);
-    renderMediaLinksPanel(mediaPanel, lemonLinks);
+    renderMediaLinksPanel(mediaPanel, lemonLinks, game);
 
     const lemonBtn = document.getElementById("gameLemonBtn");
     if (lemonBtn) {
@@ -895,10 +919,10 @@ function ensureMediaPanel() {
     let linksPanel = mediaSection.querySelector(".game-media__links");
     if (!linksPanel) {
         linksPanel = document.createElement("div");
-        linksPanel.className = "game-media__item game-media__item--links game-media__links";
+        linksPanel.className = "game-section game-media__item game-media__item--links game-media__links";
         linksPanel.innerHTML = `
-            <p class="game-media__kicker">More Information</p>
-            <h3 class="game-media__title">Further Reading</h3>
+            <p class="game-section__kicker">More Information</p>
+            <h3 class="game-section__title">Further Reading</h3>
             <div class="game-media__links-list"></div>
         `;
         if (grid) {
@@ -912,7 +936,7 @@ function ensureMediaPanel() {
     };
 }
 
-function renderMediaLinksPanel(mediaPanel, links) {
+function renderMediaLinksPanel(mediaPanel, links, game) {
     if (!mediaPanel || !mediaPanel.linksPanel) return;
     const list = mediaPanel.linksPanel.querySelector(".game-media__links-list");
     if (!list) return;
@@ -925,6 +949,9 @@ function renderMediaLinksPanel(mediaPanel, links) {
         return;
     }
 
+    const system = String(game?.system || "").trim().toUpperCase();
+    const baseLabel = system === "AMIGA" ? "LEMON AMIGA" : "LEMON 64";
+
     uniqueLinks.forEach((link, index) => {
         const anchor = document.createElement("a");
         anchor.className = "game-pill";
@@ -932,8 +959,8 @@ function renderMediaLinksPanel(mediaPanel, links) {
         anchor.target = "_blank";
         anchor.rel = "noopener";
         anchor.textContent = uniqueLinks.length > 1
-            ? `Lemon64 Link ${index + 1}`
-            : "Lemon64";
+            ? `${baseLabel} LINK ${index + 1}`
+            : baseLabel;
         list.appendChild(anchor);
     });
 
