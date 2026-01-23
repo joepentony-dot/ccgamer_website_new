@@ -1499,6 +1499,8 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
         width: 100%;
         max-width: 100%;
         padding-inline: 16px;
+        overflow-x: hidden;
+        box-sizing: border-box;
     }
 
     .ccg-page--single-game .game-hero,
@@ -1513,6 +1515,34 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
         box-sizing: border-box;
         margin-left: auto;
         margin-right: auto;
+    }
+
+    .ccg-page--single-game .game-hero,
+    .ccg-page--single-game .game-section,
+    .ccg-page--single-game .game-media,
+    .ccg-page--single-game .ccg-share,
+    .ccg-page--single-game .related-carousel {
+        overflow-x: hidden;
+    }
+
+    .ccg-page--single-game .related-carousel__viewport {
+        overflow: hidden;
+    }
+
+    .ccg-page--single-game .related-carousel__track {
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .ccg-page--single-game .related-carousel .related-card,
+    .ccg-page--single-game .related-carousel .ccg-game-card {
+        flex: 0 0 auto;
+        max-width: 85vw;
+        box-sizing: border-box;
     }
 
     .game-hero__inner,
@@ -1619,7 +1649,7 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
 
     .related-carousel,
     .related-carousel__viewport {
-        overflow: visible;
+        overflow: hidden;
     }
 
     .related-carousel__nav {
