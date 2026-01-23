@@ -17,7 +17,8 @@ const ccgRetroEventsVideos = [
     },
     {
         id: "PDomaOW-1-c",
-        title: "Memories of the Commodore 64 – A Brother’s 1982 Retro Gaming Journey"
+        title: "Memories of the Commodore 64 – A Brother’s 1982 Retro Gaming Journey",
+        membersOnly: true
     },
     {
         id: "QwJKwDVd2h8",
@@ -41,21 +42,21 @@ const ccgRetroEventsVideos = [
     },
     {
         id: "n_ZymsSyDAg",
-        title: "Play Expo Blackpool – Cutting Room Floor Bonus Retro Gaming Footage"
+        title: "Play Expo Blackpool – Cutting Room Floor Bonus Retro Gaming Footage",
+        membersOnly: true
     },
     {
         id: "uLAK4KLYkEA",
-        title: "Retro Games Day – Gaming with Family from Amiga to PlayStation 5"
+        title: "Retro Games Day – Gaming with Family from Amiga to PlayStation 5",
+        membersOnly: true
     },
     {
         id: "6IYw6wRW3-0",
-        title: "TOP 15 Commodore 64 Games – Essential C64 Classics You Must Play",
-        membersOnly: true
+        title: "TOP 15 Commodore 64 Games – Essential C64 Classics You Must Play"
     },
     {
         id: "rRKBcyiWO2I",
-        title: "The SID Chip – Commodore 64 Sound Interface Device & 8-Bit Music Revolution",
-        membersOnly: true
+        title: "The SID Chip – Commodore 64 Sound Interface Device & 8-Bit Music Revolution"
     },
     {
         id: "sAU3CPCCpvE",
@@ -63,16 +64,17 @@ const ccgRetroEventsVideos = [
     },
     {
         id: "2OG2tPx5gnU",
-        title: "X-Copy – The Ultimate Commodore Amiga Disk Copier Story (1988–1993)",
-        membersOnly: true
+        title: "X-Copy – The Ultimate Commodore Amiga Disk Copier Story (1988–1993)"
     },
     {
         id: "SiMgKvZeXws",
-        title: "Yorkshire Amiga Group – North West Retro Computing Meetup"
+        title: "Yorkshire Amiga Group – North West Retro Computing Meetup",
+        membersOnly: true
     },
     {
         id: "1S-gaWInghY",
-        title: "ZX Spectrum Memories – Rewinding 8-Bit History with Hodgy"
+        title: "ZX Spectrum Memories – Rewinding 8-Bit History with Hodgy",
+        membersOnly: true
     }
 ];
 
