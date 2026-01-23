@@ -1908,6 +1908,59 @@ document.addEventListener("DOMContentLoaded", () => {
         counterEl.textContent = value.toLocaleString();
     };
 
+    const counterContainer = counterEl.closest(".ccg-footer__counter") || counterEl.parentElement;
+    const visitorTokenRegex = /\bvisitors?\b/gi;
+    const visitorTokenTestRegex = /\bvisitors?\b/i;
+
+    const removeVisitorLabel = () => {
+        if (!counterContainer) return;
+
+        const walker = document.createTreeWalker(
+            counterContainer,
+            NodeFilter.SHOW_TEXT,
+            {
+                acceptNode: node => visitorTokenTestRegex.test(node.nodeValue || "")
+                    ? NodeFilter.FILTER_ACCEPT
+                    : NodeFilter.FILTER_REJECT,
+            }
+        );
+
+        const nodes = [];
+        while (walker.nextNode()) {
+            nodes.push(walker.currentNode);
+        }
+
+        nodes.forEach(node => {
+            const cleaned = (node.nodeValue || "")
+                .replace(visitorTokenRegex, "")
+                .replace(/\s{2,}/g, " ")
+                .trim();
+
+            if (!cleaned) {
+                node.remove();
+                return;
+            }
+
+            node.nodeValue = cleaned;
+        });
+    };
+
+    if (counterContainer) {
+        removeVisitorLabel();
+
+        const observer = new MutationObserver(() => {
+            removeVisitorLabel();
+        });
+
+        observer.observe(counterContainer, {
+            childList: true,
+            characterData: true,
+            subtree: true,
+        });
+
+        window.addEventListener("load", removeVisitorLabel, { once: true });
+    }
+
     const readCache = () => {
         try {
             const raw = localStorage.getItem(GOATCOUNTER_CACHE_KEY);
