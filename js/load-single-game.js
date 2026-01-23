@@ -1145,6 +1145,96 @@ function hasPublisherMatch(source, target) {
     return source.some(value => targetSet.has(value));
 }
 
+function resolvePrimaryGenre(game) {
+    const genres = resolveGenres(game)
+        .map(genre => String(genre || "").trim())
+        .filter(Boolean);
+    if (!genres.length) return "";
+    const primary = genres.find(genre => genre.toLowerCase() !== "top picks") || genres[0];
+    return String(primary || "").trim().toLowerCase();
+}
+
+function resolveYearValue(game) {
+    const year = Number(String(game?.year || "").trim());
+    return Number.isFinite(year) ? year : null;
+}
+
+function resolveRatingValue(game) {
+    const ratingData = typeof window.ccgResolveRatingValue === "function"
+        ? window.ccgResolveRatingValue(game?.ccg_rating)
+        : { value: Number(game?.ccg_rating), isRated: Number.isFinite(Number(game?.ccg_rating)) };
+    return ratingData?.isRated ? ratingData.value : null;
+}
+
+function getPopularityScore(game) {
+    const rating = resolveRatingValue(game);
+    const year = resolveYearValue(game);
+    const topPickBoost = hasTopPickGenre(game) ? 1 : 0;
+    return (topPickBoost * 1000) + (rating ?? 0) * 10 + (year ?? 0) / 10;
+}
+
+function buildSuggestedGames(game, limit = 10) {
+    const candidates = [];
+    const seen = new Set();
+
+    CCG_SINGLE_ALL_GAMES.forEach((candidate) => {
+        if (!candidate || candidate.id === game?.id) return;
+        if (seen.has(candidate.id)) return;
+        seen.add(candidate.id);
+        candidates.push(candidate);
+    });
+
+    const primaryGenre = resolvePrimaryGenre(game);
+    const currentYear = resolveYearValue(game);
+    const currentRating = resolveRatingValue(game);
+
+    const suggestions = [];
+    const used = new Set();
+
+    const compareByScore = (a, b) => {
+        const scoreDiff = getPopularityScore(b) - getPopularityScore(a);
+        if (scoreDiff !== 0) return scoreDiff;
+        const titleA = String(a?.title || "").toLowerCase();
+        const titleB = String(b?.title || "").toLowerCase();
+        return titleA.localeCompare(titleB);
+    };
+
+    const addMatches = (filter) => {
+        if (suggestions.length >= limit) return;
+        candidates
+            .filter(filter)
+            .sort(compareByScore)
+            .forEach((candidate) => {
+                if (suggestions.length >= limit) return;
+                if (used.has(candidate.id)) return;
+                used.add(candidate.id);
+                suggestions.push(candidate);
+            });
+    };
+
+    if (primaryGenre) {
+        addMatches(candidate => resolvePrimaryGenre(candidate) === primaryGenre);
+    }
+
+    if (currentYear !== null) {
+        addMatches((candidate) => {
+            const year = resolveYearValue(candidate);
+            return year !== null && Math.abs(year - currentYear) <= 3;
+        });
+    }
+
+    if (currentRating !== null) {
+        addMatches((candidate) => {
+            const rating = resolveRatingValue(candidate);
+            return rating !== null && Math.abs(rating - currentRating) <= 1;
+        });
+    }
+
+    addMatches(() => true);
+
+    return suggestions.slice(0, limit);
+}
+
 /* ============================================================
    RELATED GAMES (SG-E5)
 ============================================================ */
@@ -1152,33 +1242,36 @@ function hasPublisherMatch(source, target) {
 function renderRelatedGames(game) {
     const container = document.getElementById("relatedGamesTrack");
     const section = document.querySelector(".game-section--related");
+    const kicker = document.getElementById("relatedGamesKicker");
 
     if (!container || !section) return;
 
     const currentPublishers = resolvePublisherCandidates(game);
-    if (!currentPublishers.length) {
-        section.hidden = true;
-        container.innerHTML = "";
-        return;
-    }
 
     if (container.dataset.relatedFor === String(game?.id || "")) return;
 
     const related = [];
     const seen = new Set();
 
-    CCG_SINGLE_ALL_GAMES.forEach((candidate) => {
-        if (!candidate || candidate.id === game.id) return;
-        if (seen.has(candidate.id)) return;
-        const candidatePublishers = resolvePublisherCandidates(candidate);
-        if (!hasPublisherMatch(currentPublishers, candidatePublishers)) return;
-        seen.add(candidate.id);
-        related.push(candidate);
-    });
+    if (currentPublishers.length) {
+        CCG_SINGLE_ALL_GAMES.forEach((candidate) => {
+            if (!candidate || candidate.id === game.id) return;
+            if (seen.has(candidate.id)) return;
+            const candidatePublishers = resolvePublisherCandidates(candidate);
+            if (!hasPublisherMatch(currentPublishers, candidatePublishers)) return;
+            seen.add(candidate.id);
+            related.push(candidate);
+        });
+    }
 
-    const limitedRelated = related.slice(0, 12);
+    const publisherMatches = related.slice(0, 12);
+    const usePublisherMode = publisherMatches.length >= 2;
 
-    if (!limitedRelated.length) {
+    const items = usePublisherMode
+        ? publisherMatches
+        : buildSuggestedGames(game, 10);
+
+    if (!items.length) {
         section.hidden = true;
         container.innerHTML = "";
         return;
@@ -1186,7 +1279,13 @@ function renderRelatedGames(game) {
 
     container.innerHTML = "";
 
-    limitedRelated.forEach(rel => {
+    if (kicker) {
+        kicker.textContent = usePublisherMode
+            ? "MORE FROM THE SAME PUBLISHER"
+            : "SUGGESTED GAMES YOU SHOULD TRY";
+    }
+
+    items.forEach(rel => {
         const card = document.createElement("a");
         card.className = "related-card";
         card.href = resolvePrettyGameUrl(rel);
