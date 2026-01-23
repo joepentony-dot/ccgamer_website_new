@@ -754,6 +754,26 @@ body[data-ccg-mode="amiga"] {
     transition: opacity 220ms ease;
 }
 
+@media (min-width: 901px) {
+    .ccg-page--single-game {
+        --ccg-hero-offset: clamp(40px, 3vw + 24px, 90px);
+    }
+
+    .ccg-page--single-game .game-hero {
+        min-height: clamp(220px, 26vw, 360px);
+    }
+
+    .ccg-page--single-game .game-hero__content {
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .ccg-page--single-game .game-hero__meta,
+    .ccg-page--single-game .game-hero__badges {
+        justify-content: flex-start;
+    }
+}
+
 .game-hero__rating {
     margin-top: 4px;
 }
