@@ -498,6 +498,11 @@ function resolveCreditsEntries(game) {
     return entries.filter(entry => entry.value);
 }
 
+function insertAfter(target, node) {
+    if (!target || !target.parentNode) return;
+    target.parentNode.insertBefore(node, target.nextSibling);
+}
+
 function resolveGenres(game) {
     const raw = game?.genres || game?.genre || [];
     if (Array.isArray(raw)) return raw.map(item => String(item || "").trim()).filter(Boolean);
@@ -641,6 +646,7 @@ function renderGame(game) {
 
     renderCreditsPanel(game);
     renderVerdictPanel(game);
+    moveSpotlightSection();
 
     const mediaPanel = ensureMediaPanel();
 
@@ -892,10 +898,8 @@ function ensureMediaPanel() {
             <div class="game-media__grid"></div>
         `;
 
-        const verdictSection = document.getElementById("gameVerdictSection");
-        const creditsSection = document.getElementById("gameCreditsSection");
-        const descriptionSection = document.getElementById("game-description-section");
-        const insertTarget = verdictSection || creditsSection || descriptionSection;
+        const shareSection = document.querySelector(".ccg-share");
+        const insertTarget = shareSection || main;
         if (insertTarget && insertTarget.parentNode) {
             insertTarget.parentNode.insertBefore(mediaSection, insertTarget.nextSibling);
         } else {
@@ -982,45 +986,51 @@ function updateMediaPanelVisibility(mediaPanel) {
 
 function renderCreditsPanel(game) {
     const entries = resolveCreditsEntries(game);
-    let creditsSection = document.getElementById("gameCreditsSection");
+    const heroContent = document.querySelector(".game-hero__content");
+    if (!heroContent) return;
 
-    if (!creditsSection) {
-        creditsSection = document.createElement("section");
-        creditsSection.id = "gameCreditsSection";
-        creditsSection.className = "game-section game-credits";
-        creditsSection.hidden = true;
-        creditsSection.innerHTML = `
-            <p class="game-section__kicker">Behind the Pixels</p>
-            <h2 class="game-section__title">Credits</h2>
-            <dl class="game-credits__list"></dl>
+    const legacySection = document.getElementById("gameCreditsSection");
+    if (legacySection) legacySection.remove();
+
+    let inlineCredits = heroContent.querySelector(".ccg-behind-pixels-inline");
+    if (!inlineCredits) {
+        inlineCredits = document.createElement("div");
+        inlineCredits.className = "ccg-behind-pixels-inline";
+        inlineCredits.hidden = true;
+        inlineCredits.innerHTML = `
+            <p class="ccg-behind-pixels-inline__title">Behind the Pixels</p>
+            <dl class="ccg-behind-pixels-inline__list"></dl>
         `;
-
-        const descriptionSection = document.getElementById("game-description-section");
-        if (descriptionSection && descriptionSection.parentNode) {
-            descriptionSection.parentNode.insertBefore(creditsSection, descriptionSection.nextSibling);
-        }
     }
 
-    const list = creditsSection.querySelector(".game-credits__list");
+    const list = inlineCredits.querySelector(".ccg-behind-pixels-inline__list");
     if (!list) return;
 
     list.innerHTML = "";
 
     if (!entries.length) {
-        creditsSection.hidden = true;
-        return;
+        inlineCredits.hidden = true;
+    } else {
+        entries.forEach(entry => {
+            const term = document.createElement("dt");
+            term.textContent = entry.label;
+            const detail = document.createElement("dd");
+            detail.textContent = entry.value;
+            list.appendChild(term);
+            list.appendChild(detail);
+        });
+
+        inlineCredits.hidden = false;
     }
 
-    entries.forEach(entry => {
-        const term = document.createElement("dt");
-        term.textContent = entry.label;
-        const detail = document.createElement("dd");
-        detail.textContent = entry.value;
-        list.appendChild(term);
-        list.appendChild(detail);
-    });
+    if (!heroContent.contains(inlineCredits)) {
+        heroContent.appendChild(inlineCredits);
+    }
 
-    creditsSection.hidden = false;
+    const anchor = heroContent.querySelector(".game-hero__rating") || heroContent.querySelector(".game-hero__meta");
+    if (anchor) {
+        insertAfter(anchor, inlineCredits);
+    }
 }
 
 function renderVerdictPanel(game) {
@@ -1041,13 +1051,6 @@ function renderVerdictPanel(game) {
                 <p class="game-verdict__reason"></p>
             </div>
         `;
-
-        const creditsSection = document.getElementById("gameCreditsSection");
-        const descriptionSection = document.getElementById("game-description-section");
-        const insertTarget = creditsSection || descriptionSection;
-        if (insertTarget && insertTarget.parentNode) {
-            insertTarget.parentNode.insertBefore(verdictSection, insertTarget.nextSibling);
-        }
     }
 
     if (!ratingData.isRated) {
@@ -1066,6 +1069,26 @@ function renderVerdictPanel(game) {
     }
 
     verdictSection.hidden = false;
+
+    const heroContent = document.querySelector(".game-hero__content");
+    if (heroContent && !heroContent.contains(verdictSection)) {
+        const creditsBlock = heroContent.querySelector(".ccg-behind-pixels-inline");
+        if (creditsBlock) {
+            insertAfter(creditsBlock, verdictSection);
+        } else {
+            heroContent.appendChild(verdictSection);
+        }
+    }
+}
+
+function moveSpotlightSection() {
+    const heroContent = document.querySelector(".game-hero__content");
+    const descriptionSection = document.getElementById("game-description-section");
+    if (!heroContent || !descriptionSection) return;
+
+    if (!heroContent.contains(descriptionSection)) {
+        heroContent.appendChild(descriptionSection);
+    }
 }
 
 /* ============================================================
