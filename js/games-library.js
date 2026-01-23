@@ -23,6 +23,8 @@ let CCG_ACTIVE_YEAR_MIN = null;
 let CCG_ACTIVE_YEAR_MAX = null;
 let CCG_ACTIVE_YEAR_FOCUS = null;
 let CCG_ACTIVE_YEAR_SPAN = "all";
+let CCG_LIBRARY_INITIALIZED = false;
+let CCG_GAMES_LOAD_PROMISE = null;
 
 const ACCORDION_STATE_KEY = "ccgAccordionState";
 const SYSTEM_FILTER_STORAGE_KEY = "ccgGamesSystemFilter";
@@ -43,13 +45,16 @@ function isMobileLikeViewport() {
     return Boolean(CCG_COARSE_QUERY?.matches || window.innerWidth <= 820);
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-    try {
-        const res = await fetch("../games/games.json", { cache: "no-store" });
-        if (!res.ok) throw new Error("Failed to load games.json");
+document.addEventListener("DOMContentLoaded", () => {
+    initGamesLibrary();
+});
 
-        CCG_ALL_GAMES = await res.json();
-        CCG_GAMES_TOTAL = CCG_ALL_GAMES.length;
+async function initGamesLibrary() {
+    if (CCG_LIBRARY_INITIALIZED) return;
+    CCG_LIBRARY_INITIALIZED = true;
+
+    try {
+        await loadGamesOnce();
 
         const masterGroups = groupGamesByLetter(CCG_ALL_GAMES);
         CCG_ALL_LETTERS = sortLetters(Object.keys(masterGroups));
@@ -65,7 +70,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     } catch (err) {
         console.error("[CCG] Games index load failed:", err);
     }
-});
+}
+
+function loadGamesOnce() {
+    if (CCG_GAMES_LOAD_PROMISE) return CCG_GAMES_LOAD_PROMISE;
+
+    CCG_GAMES_LOAD_PROMISE = (async () => {
+        resetGamesState();
+        const res = await fetch("../games/games.json", { cache: "no-store" });
+        if (!res.ok) throw new Error("Failed to load games.json");
+
+        const data = await res.json();
+        CCG_ALL_GAMES = Array.isArray(data) ? data : [];
+        CCG_GAMES_TOTAL = CCG_ALL_GAMES.length;
+    })();
+
+    return CCG_GAMES_LOAD_PROMISE;
+}
+
+function resetGamesState() {
+    CCG_ALL_GAMES = [];
+    CCG_GAMES_TOTAL = 0;
+    CCG_GAME_CACHE = new Map();
+    CCG_ALL_LETTERS = [];
+}
 
 /* ============================================================
    CORE BUILD
@@ -493,7 +521,8 @@ function scrollToTop() {
 function setupSearch() {
     const input = document.getElementById("gamesSearchInput");
     const clearBtn = document.getElementById("gamesSearchClear");
-    if (!input) return;
+    if (!input || input.dataset.ccgBound === "true") return;
+    input.dataset.ccgBound = "true";
 
     input.addEventListener("input", () => {
         CCG_ACTIVE_QUERY = input.value.toLowerCase();
@@ -513,11 +542,13 @@ function setupSystemFilter() {
     const buttons = document.querySelectorAll("[data-system-filter]");
     const hint = document.getElementById("gamesBrowseHint");
     if (!buttons.length) return;
+    if (buttons[0].dataset.ccgBound === "true") return;
 
     const initial = getInitialSystemFilter();
     setSystemFilter(initial, { persist: true, updateButtons: true, hintEl: hint });
 
     buttons.forEach(btn => {
+        btn.dataset.ccgBound = "true";
         btn.addEventListener("click", () => {
             const system = btn.dataset.systemFilter || "all";
             setSystemFilter(system, { persist: true, updateButtons: true, hintEl: hint });
@@ -531,7 +562,8 @@ function setupYearFilter() {
     const yearInput = document.getElementById("gamesYearInput");
     const valueEl = document.getElementById("gamesYearValue");
     const spanButtons = Array.from(document.querySelectorAll("[data-year-span]"));
-    if (!slider || !yearInput) return;
+    if (!slider || !yearInput || slider.dataset.ccgBound === "true") return;
+    slider.dataset.ccgBound = "true";
 
     const years = CCG_ALL_GAMES
         .map(game => parseGameYear(game.year))
@@ -609,6 +641,7 @@ function setupYearFilter() {
     });
 
     spanButtons.forEach(btn => {
+        btn.dataset.ccgBound = "true";
         btn.addEventListener("click", () => {
             const span = btn.dataset.yearSpan || "all";
             setSpan(span);
