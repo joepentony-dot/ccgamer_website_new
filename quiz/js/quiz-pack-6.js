@@ -52,6 +52,7 @@
         answerImage: document.querySelector("[data-hangman-answer]"),
         wordDisplay: document.querySelector("[data-hangman-word]"),
         feedback: document.querySelector("[data-hangman-feedback]"),
+        replay: document.querySelector("[data-hangman-replay]"),
         attempts: document.querySelector("[data-hangman-attempts]"),
         keyboard: document.querySelector("[data-hangman-keyboard]"),
         newGameButton: document.querySelector("[data-hangman-new]"),
@@ -67,6 +68,34 @@
         wrongGuesses: 0,
         isOver: false
     };
+
+    const SFX_STORAGE_KEY = "ccg_quiz_sfx_enabled";
+    const SFX_SOURCES = {
+        correct: "../resources/css/audio/amiga_boot_chime.mp3",
+        wrong: "../resources/css/audio/static_burst.mp3"
+    };
+    const sfx = {
+        correct: new Audio(SFX_SOURCES.correct),
+        wrong: new Audio(SFX_SOURCES.wrong)
+    };
+
+    function isSfxEnabled() {
+        try {
+            const stored = localStorage.getItem(SFX_STORAGE_KEY);
+            if (stored === null) return true;
+            return stored === "true";
+        } catch {
+            return true;
+        }
+    }
+
+    function playSfx(type) {
+        if (!isSfxEnabled()) return;
+        const audio = sfx[type];
+        if (!audio) return;
+        audio.currentTime = 0;
+        audio.play().catch(() => {});
+    }
 
     function setFocusMode(active) {
         document.body.classList.toggle("quiz-focus", active);
@@ -144,7 +173,8 @@
                     char,
                     isLetter,
                     isSpace: false,
-                    autoReveal
+                    autoReveal,
+                    wordIndex: tokenIndex
                 });
             }
             if (tokenIndex < tokens.length - 1) {
@@ -152,7 +182,8 @@
                     char: " ",
                     isLetter: false,
                     isSpace: true,
-                    autoReveal: true
+                    autoReveal: true,
+                    wordIndex: tokenIndex
                 });
             }
         });
@@ -164,21 +195,30 @@
         if (!elements.wordDisplay) return;
         elements.wordDisplay.innerHTML = "";
 
+        let group = null;
         state.charMeta.forEach((meta) => {
+            if (meta.isSpace) {
+                group = null;
+                return;
+            }
+
+            if (!group) {
+                group = document.createElement("span");
+                group.className = "hangman-word-group";
+                elements.wordDisplay.appendChild(group);
+            }
+
             const span = document.createElement("span");
             span.className = "hangman-letter";
 
-            if (meta.isSpace) {
-                span.classList.add("hangman-letter--space");
-                span.textContent = "\u00A0";
-            } else if (meta.autoReveal || state.guessedLetters.has(meta.char.toUpperCase())) {
+            if (meta.autoReveal || state.guessedLetters.has(meta.char.toUpperCase())) {
                 span.textContent = meta.char.toUpperCase();
                 span.classList.add("is-revealed");
             } else {
                 span.textContent = "_";
             }
 
-            elements.wordDisplay.appendChild(span);
+            group.appendChild(span);
         });
     }
 
@@ -219,6 +259,9 @@
             revealAnswerImage();
         }
         setFeedback(message, status);
+        if (elements.replay) {
+            elements.replay.classList.remove("is-hidden");
+        }
         document.querySelectorAll(".hangman-key").forEach((btn) => {
             btn.disabled = true;
         });
@@ -245,6 +288,7 @@
         }
 
         if (isCorrect) {
+            playSfx("correct");
             setFeedback("Correct", "correct");
             renderWord();
             if (checkForWin()) {
@@ -254,6 +298,7 @@
         }
 
         state.wrongGuesses += 1;
+        playSfx("wrong");
         setFeedback("Incorrect", "wrong");
         updateAttempts();
         updateHangmanStages();
@@ -319,6 +364,9 @@
         });
 
         setFeedback("", "");
+        if (elements.replay) {
+            elements.replay.classList.add("is-hidden");
+        }
         updateAttempts();
         updateHangmanStages();
         renderWord();
@@ -331,6 +379,7 @@
         buildKeyboard();
         setupKeyboardInput();
         elements.newGameButton?.addEventListener("click", selectRandomGame);
+        elements.replay?.addEventListener("click", selectRandomGame);
         selectRandomGame();
     }
 
