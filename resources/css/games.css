@@ -219,6 +219,16 @@ body[data-ccg-mode="amiga"] {
     border: 1px solid rgba(255,255,255,0.08);
 }
 
+.games-filter__range.is-active {
+    border-color: rgba(var(--accent-rgb), 0.5);
+    box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.18);
+}
+
+.games-filter__range.is-idle .games-filter__year-row,
+.games-filter__range.is-idle .games-filter__range-toggle {
+    opacity: 0.75;
+}
+
 .games-filter__range-header {
     display: flex;
     align-items: center;
@@ -630,6 +640,21 @@ body[data-ccg-mode="amiga"] {
     gap: calc(16px * var(--ui-density));
     align-items: start;
     align-content: start;
+}
+
+.games-library--single-result .games-grid {
+    grid-template-columns: minmax(220px, 320px);
+    justify-content: center;
+}
+
+.games-library--single-result .ccg-game-card {
+    width: 100%;
+    max-width: 320px;
+    justify-self: center;
+}
+
+.games-library--single-result .games-system-group {
+    justify-items: center;
 }
 
 .ccg-game-card {

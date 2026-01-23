@@ -16,6 +16,7 @@ let CCG_GAMES_TOTAL = 0;
 let CCG_GAME_CACHE = new Map();
 let CCG_ALL_LETTERS = [];
 let CCG_ACTIVE_QUERY = "";
+let CCG_ACTIVE_QUERY_RAW = "";
 let CCG_ACTIVE_SYSTEM_FILTER = "all";
 let CCG_YEAR_MIN = null;
 let CCG_YEAR_MAX = null;
@@ -25,6 +26,8 @@ let CCG_ACTIVE_YEAR_FOCUS = null;
 let CCG_ACTIVE_YEAR_SPAN = "all";
 let CCG_LIBRARY_INITIALIZED = false;
 let CCG_GAMES_LOAD_PROMISE = null;
+let CCG_YEAR_FILTER_ELEMENTS = null;
+let CCG_SEARCH_CACHE = new WeakMap();
 
 const ACCORDION_STATE_KEY = "ccgAccordionState";
 const SYSTEM_FILTER_STORAGE_KEY = "ccgGamesSystemFilter";
@@ -94,6 +97,7 @@ function resetGamesState() {
     CCG_GAMES_TOTAL = 0;
     CCG_GAME_CACHE = new Map();
     CCG_ALL_LETTERS = [];
+    CCG_SEARCH_CACHE = new WeakMap();
 }
 
 function dedupeGames(games) {
@@ -551,13 +555,21 @@ function setupSearch() {
     input.dataset.ccgBound = "true";
 
     input.addEventListener("input", () => {
-        CCG_ACTIVE_QUERY = input.value.toLowerCase();
+        const raw = input.value.trim();
+        CCG_ACTIVE_QUERY_RAW = raw;
+        CCG_ACTIVE_QUERY = normalizeSearchText(raw);
+        if (raw) {
+            clearAccordionState();
+            setSpineActive(null);
+            setYearFilterSpan("all", { silent: true });
+        }
         applyActiveFilters({ preserveScroll: true });
     });
 
     if (clearBtn) {
         clearBtn.addEventListener("click", () => {
             input.value = "";
+            CCG_ACTIVE_QUERY_RAW = "";
             CCG_ACTIVE_QUERY = "";
             applyActiveFilters({ preserveScroll: true });
         });
@@ -591,6 +603,14 @@ function setupYearFilter() {
     if (!slider || !yearInput || slider.dataset.ccgBound === "true") return;
     slider.dataset.ccgBound = "true";
 
+    CCG_YEAR_FILTER_ELEMENTS = {
+        slider,
+        yearInput,
+        valueEl,
+        spanButtons,
+        rangePanel: document.querySelector("[data-games-year-filter]")
+    };
+
     const years = CCG_ALL_GAMES
         .map(game => parseGameYear(game.year))
         .filter(year => Number.isFinite(year));
@@ -608,37 +628,17 @@ function setupYearFilter() {
 
     yearInput.min = String(CCG_YEAR_MIN);
     yearInput.max = String(CCG_YEAR_MAX);
-    yearInput.value = String(CCG_ACTIVE_YEAR_FOCUS);
+    yearInput.value = "";
+    yearInput.placeholder = "Any";
 
     const clampYear = (value) => {
         if (!Number.isFinite(value)) return CCG_YEAR_MAX;
         return Math.min(Math.max(value, CCG_YEAR_MIN), CCG_YEAR_MAX);
     };
 
-    const syncActiveRange = () => {
-        if (CCG_ACTIVE_YEAR_SPAN === "all") {
-            CCG_ACTIVE_YEAR_MIN = CCG_YEAR_MIN;
-            CCG_ACTIVE_YEAR_MAX = CCG_YEAR_MAX;
-            return;
-        }
-
-        const span = Number.parseInt(CCG_ACTIVE_YEAR_SPAN, 10);
-        const focus = clampYear(CCG_ACTIVE_YEAR_FOCUS ?? CCG_YEAR_MAX);
-        CCG_ACTIVE_YEAR_MIN = clampYear(focus - span);
-        CCG_ACTIVE_YEAR_MAX = clampYear(focus + span);
-    };
-
-    const syncButtons = () => {
-        spanButtons.forEach(btn => {
-            const isActive = btn.dataset.yearSpan === String(CCG_ACTIVE_YEAR_SPAN);
-            btn.classList.toggle("is-active", isActive);
-            btn.setAttribute("aria-pressed", String(isActive));
-        });
-    };
-
     const applyYearChange = () => {
-        syncActiveRange();
-        updateYearRangeLabel(valueEl);
+        syncActiveYearRange();
+        updateYearFilterUI();
         applyActiveFilters({ preserveScroll: true });
     };
 
@@ -649,15 +649,12 @@ function setupYearFilter() {
         yearInput.value = String(next);
         if (CCG_ACTIVE_YEAR_SPAN === "all") {
             CCG_ACTIVE_YEAR_SPAN = "0";
-            syncButtons();
         }
         applyYearChange();
     };
 
     const setSpan = (nextSpan) => {
-        CCG_ACTIVE_YEAR_SPAN = nextSpan;
-        syncButtons();
-        applyYearChange();
+        setYearFilterSpan(nextSpan);
     };
 
     slider.addEventListener("input", () => setFocusYear(slider.value));
@@ -674,21 +671,10 @@ function setupYearFilter() {
         });
     });
 
-    syncButtons();
-    updateYearRangeLabel(valueEl);
+    updateYearFilterUI();
 }
 
 function getInitialSystemFilter() {
-    const stored = localStorage.getItem(SYSTEM_FILTER_STORAGE_KEY);
-    if (isValidSystemFilter(stored)) return stored;
-
-    const inferred = inferSystemFromReferrer();
-    if (inferred) return inferred;
-
-    const modeHint = document.body?.dataset?.ccgMode || document.body?.dataset?.mode || "";
-    if (modeHint.toLowerCase() === "amiga") return "amiga";
-    if (modeHint.toLowerCase() === "c64") return "c64";
-
     return "all";
 }
 
@@ -723,9 +709,7 @@ function setSystemFilter(filter, opts = {}) {
         });
     }
 
-    if (opts.hintEl) {
-        opts.hintEl.textContent = `Browsing: ${getSystemFilterLabel(CCG_ACTIVE_SYSTEM_FILTER)}`;
-    }
+    updateBrowseHint(opts.hintEl);
 }
 
 function applyActiveFilters({ preserveScroll } = {}) {
@@ -734,6 +718,8 @@ function applyActiveFilters({ preserveScroll } = {}) {
 
     buildGamesIndex(filtered);
     updateFocusPanel(filtered.length);
+    updateSingleResultLayout(filtered.length);
+    updateBrowseHint();
 
     if (!filtered.length) {
         setSpineActive(null);
@@ -751,10 +737,10 @@ function applyActiveFilters({ preserveScroll } = {}) {
 
 function getFilteredGames() {
     const query = CCG_ACTIVE_QUERY.trim();
+    const queryData = getSearchQueryData(query);
     const systemFilter = CCG_ACTIVE_SYSTEM_FILTER;
     return CCG_ALL_GAMES.filter(game => {
-        const title = (game.title || "").toLowerCase();
-        const matchesQuery = !query || title.includes(query);
+        const matchesQuery = matchesSearchQuery(game, queryData);
         const matchesSystem =
             systemFilter === "all" ||
             normalizeSystemValue(game.system) === systemFilter.toUpperCase();
@@ -796,6 +782,64 @@ function updateYearRangeLabel(labelEl) {
     }
 
     labelEl.textContent = `${CCG_ACTIVE_YEAR_MIN}–${CCG_ACTIVE_YEAR_MAX}`;
+}
+
+function normalizeSearchText(text) {
+    return String(text || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+function getSearchQueryData(query) {
+    const normalized = normalizeSearchText(query);
+    const tokens = normalized ? normalized.split(" ") : [];
+    const condensed = tokens.join("");
+    return { normalized, tokens, condensed };
+}
+
+function getGameSearchData(game) {
+    if (!game || typeof game !== "object") {
+        return { normalizedTitle: "", tokens: [], condensedTitle: "", initials: "" };
+    }
+    if (CCG_SEARCH_CACHE.has(game)) {
+        return CCG_SEARCH_CACHE.get(game);
+    }
+
+    const title = String(game.sorttitle || game.title || "");
+    const normalizedTitle = normalizeSearchText(title);
+    const tokens = normalizedTitle ? normalizedTitle.split(" ") : [];
+    const condensedTitle = tokens.join("");
+    const initials = tokens.map(token => token[0]).join("");
+    const data = { normalizedTitle, tokens, condensedTitle, initials };
+    CCG_SEARCH_CACHE.set(game, data);
+    return data;
+}
+
+function matchesSearchQuery(game, queryData) {
+    if (!queryData.normalized) return true;
+    const { tokens, condensedTitle, initials } = getGameSearchData(game);
+    const condensedQuery = queryData.condensed;
+
+    if (condensedQuery && condensedTitle.includes(condensedQuery)) {
+        return true;
+    }
+
+    if (condensedQuery && initials.startsWith(condensedQuery)) {
+        return true;
+    }
+
+    if (queryData.tokens.length > 1 && initials.startsWith(queryData.tokens[0])) {
+        const remainingTokens = queryData.tokens.slice(1);
+        if (remainingTokens.every(token => tokens.some(titleToken => titleToken.startsWith(token)))) {
+            return true;
+        }
+    }
+
+    return queryData.tokens.every(token =>
+        tokens.some(titleToken => titleToken.startsWith(token))
+    );
 }
 
 function parseGameYear(year) {
@@ -845,7 +889,7 @@ function updateFocusPanel(filteredCount) {
     const countEl = panel.querySelector(".games-focus-panel__count");
     if (!labelEl || !countEl) return;
 
-    const query = CCG_ACTIVE_QUERY.trim();
+    const query = CCG_ACTIVE_QUERY_RAW.trim();
     const systemLabel = getSystemFocusLabel();
     const yearLabel = getYearFocusLabel();
     const parts = [];
@@ -875,6 +919,91 @@ function setEmptyState(isEmpty) {
     const empty = document.getElementById("gamesEmptyState");
     if (!empty) return;
     empty.hidden = !isEmpty;
+}
+
+function updateSingleResultLayout(filteredCount) {
+    const library = document.querySelector(".games-library");
+    if (!library) return;
+    library.classList.toggle("games-library--single-result", filteredCount === 1);
+}
+
+function syncActiveYearRange() {
+    if (CCG_ACTIVE_YEAR_SPAN === "all") {
+        CCG_ACTIVE_YEAR_MIN = CCG_YEAR_MIN;
+        CCG_ACTIVE_YEAR_MAX = CCG_YEAR_MAX;
+        return;
+    }
+
+    const span = Number.parseInt(CCG_ACTIVE_YEAR_SPAN, 10);
+    const focus = Number.isFinite(CCG_ACTIVE_YEAR_FOCUS)
+        ? CCG_ACTIVE_YEAR_FOCUS
+        : CCG_YEAR_MAX;
+    const clampedFocus = Math.min(Math.max(focus, CCG_YEAR_MIN), CCG_YEAR_MAX);
+    CCG_ACTIVE_YEAR_MIN = Math.min(Math.max(clampedFocus - span, CCG_YEAR_MIN), CCG_YEAR_MAX);
+    CCG_ACTIVE_YEAR_MAX = Math.min(Math.max(clampedFocus + span, CCG_YEAR_MIN), CCG_YEAR_MAX);
+}
+
+function updateYearFilterUI() {
+    const elements = CCG_YEAR_FILTER_ELEMENTS;
+    if (!elements) return;
+
+    elements.spanButtons.forEach(btn => {
+        const isActive = btn.dataset.yearSpan === String(CCG_ACTIVE_YEAR_SPAN);
+        btn.classList.toggle("is-active", isActive);
+        btn.setAttribute("aria-pressed", String(isActive));
+    });
+
+    const isAllYears = CCG_ACTIVE_YEAR_SPAN === "all";
+    if (elements.rangePanel) {
+        elements.rangePanel.classList.toggle("is-active", !isAllYears);
+        elements.rangePanel.classList.toggle("is-idle", isAllYears);
+    }
+
+    if (elements.yearInput) {
+        if (isAllYears) {
+            elements.yearInput.value = "";
+            elements.yearInput.placeholder = "Any";
+        } else {
+            elements.yearInput.value = String(CCG_ACTIVE_YEAR_FOCUS ?? CCG_YEAR_MAX);
+        }
+    }
+
+    updateYearRangeLabel(elements.valueEl);
+    updateBrowseHint();
+}
+
+function setYearFilterSpan(nextSpan, { silent } = {}) {
+    if (!CCG_YEAR_FILTER_ELEMENTS) return;
+    const next = nextSpan === undefined ? "all" : String(nextSpan);
+    if (next === "all") {
+        CCG_ACTIVE_YEAR_SPAN = "all";
+        syncActiveYearRange();
+        updateYearFilterUI();
+        if (!silent) applyActiveFilters({ preserveScroll: true });
+        return;
+    }
+
+    const spanValue = Number.parseInt(next, 10);
+    if (!Number.isFinite(spanValue)) return;
+    CCG_ACTIVE_YEAR_SPAN = String(spanValue);
+    syncActiveYearRange();
+    updateYearFilterUI();
+    if (!silent) applyActiveFilters({ preserveScroll: true });
+}
+
+function updateBrowseHint(hintEl) {
+    const hint = hintEl || document.getElementById("gamesBrowseHint");
+    if (!hint) return;
+    const systemLabel = getSystemFilterLabel(CCG_ACTIVE_SYSTEM_FILTER);
+    const yearLabel = getYearFocusLabel() || "All years";
+    const query = CCG_ACTIVE_QUERY_RAW.trim();
+
+    if (query) {
+        hint.textContent = `Search: “${query}” · ${systemLabel} · Year: ${yearLabel}`;
+        return;
+    }
+
+    hint.textContent = `Browsing: ${systemLabel} · Year: ${yearLabel}`;
 }
 
 /* ============================================================
