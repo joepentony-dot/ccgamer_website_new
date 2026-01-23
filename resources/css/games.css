@@ -1495,6 +1495,33 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
 }
 
 @media (max-width: 768px) {
+    .ccg-page--single-game .ccg-main {
+        width: 100%;
+        max-width: 100%;
+        padding-inline: 16px;
+    }
+
+    .ccg-page--single-game .game-hero,
+    .ccg-page--single-game .game-section,
+    .ccg-page--single-game .game-media,
+    .ccg-page--single-game .ccg-share,
+    .ccg-page--single-game .related-carousel,
+    .ccg-page--single-game .related-carousel__viewport,
+    .ccg-page--single-game .related-carousel__track {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .game-hero__inner,
+    .game-media__grid,
+    .game-screenshots__strip {
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
     .game-hero__meta,
     .game-video__actions,
     .game-downloads__actions {
@@ -1536,6 +1563,39 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
 
     .ccg-behind-pixels-inline__list dt {
         font-size: 0.74rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .ccg-page--single-game .game-hero {
+        padding: 1.5rem 1.25rem 1.75rem;
+    }
+
+    .ccg-page--single-game .game-section {
+        padding: 12px 14px;
+    }
+
+    .ccg-page--single-game .related-carousel__viewport {
+        padding: 10px 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ccg-page--single-game .ccg-main {
+        padding-inline: 14px;
+    }
+
+    .ccg-page--single-game .game-hero {
+        padding: 1.35rem 1.1rem 1.6rem;
+    }
+
+    .ccg-page--single-game .game-section,
+    .ccg-page--single-game .ccg-share {
+        padding: 12px;
+    }
+
+    .ccg-page--single-game .related-carousel__viewport {
+        padding: 10px 12px;
     }
 }
 
