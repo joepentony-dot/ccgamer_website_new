@@ -977,7 +977,9 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
 }
 
 .game-media__item--downloads .game-section__kicker,
-.game-media__item--downloads .game-section__title {
+.game-media__item--downloads .game-section__title,
+.game-media__item--links .game-section__kicker,
+.game-media__item--links .game-section__title {
     justify-content: center;
     text-align: center;
     width: 100%;
