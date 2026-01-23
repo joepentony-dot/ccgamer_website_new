@@ -94,7 +94,7 @@ function ccgBuildGameCard(game) {
     return `
         <div class="ccg-game-card genre-card">
             <a href="${gameUrl}" class="ccg-game-card__thumb">
-                <img src="${thumb}" alt="${title}" loading="lazy" decoding="async" width="320" height="180">
+                <img src="${thumb}" srcset="${thumb} 320w" sizes="(max-width: 720px) 48vw, 320px" alt="${title}" loading="lazy" decoding="async" width="320" height="180">
                 ${ratingMarkup}
             </a>
 

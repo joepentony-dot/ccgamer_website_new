@@ -38,9 +38,53 @@
         }
     };
 
+    const loadDeferredScripts = () => {
+        const deferred = Array.from(document.querySelectorAll("script[data-ccg-defer]"));
+        if (!deferred.length) return;
+
+        deferred.forEach((script) => {
+            const src = script.dataset.ccgSrc || script.getAttribute("data-ccg-src");
+            if (!src) return;
+
+            const newScript = document.createElement("script");
+            newScript.src = src;
+            if (script.hasAttribute("data-ccg-defer")) {
+                newScript.setAttribute("data-ccg-defer", script.getAttribute("data-ccg-defer") || "");
+            }
+            if (script.hasAttribute("data-ccg-scope")) {
+                newScript.setAttribute("data-ccg-scope", script.getAttribute("data-ccg-scope"));
+            }
+            newScript.defer = true;
+            document.body.appendChild(newScript);
+        });
+    };
+
+    const scheduleDeferredScripts = () => {
+        if (!isMobile) {
+            loadDeferredScripts();
+            return;
+        }
+
+        const runDeferred = () => {
+            if ("requestIdleCallback" in window) {
+                window.requestIdleCallback(loadDeferredScripts, { timeout: 2000 });
+            } else {
+                setTimeout(loadDeferredScripts, 400);
+            }
+        };
+
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", runDeferred, { once: true });
+        } else {
+            runDeferred();
+        }
+    };
+
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", scheduleVisuals, { once: true });
     } else {
         scheduleVisuals();
     }
+
+    scheduleDeferredScripts();
 })();
