@@ -12,15 +12,20 @@
     <link rel="icon" href="../../favicon.ico" />
 
     <!-- REQUIRED FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="../../resources/css/ccg-master.css" />
     <link rel="stylesheet" href="../../resources/css/ccg-mode.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-effects.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-anim.css" />
+    <link rel="preload" href="../../resources/css/ccg-effects.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="../../resources/css/ccg-effects.css" /></noscript>
+    <link rel="preload" href="../../resources/css/ccg-anim.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="../../resources/css/ccg-anim.css" /></noscript>
     <link rel="stylesheet" href="../../resources/css/ccg-overlays.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-socials.css" />
+    <link rel="preload" href="../../resources/css/ccg-socials.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="../../resources/css/ccg-socials.css" /></noscript>
     <link rel="stylesheet" href="../../resources/css/ccg-cards.css" />
     <link rel="stylesheet" href="../../resources/css/ccg-hero.css" />
 

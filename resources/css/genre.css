@@ -801,6 +801,7 @@ body[data-collection="Retro Events"] .ccg-page--collection-single .ccg-collectio
     position: relative;
     margin-top: clamp(32px, 4vw, 56px);
     padding: clamp(20px, 3.2vw, 30px) clamp(18px, 4vw, 36px);
+    min-height: clamp(120px, 14vw, 200px);
     border-radius: 20px;
     background:
         linear-gradient(135deg, rgba(255,255,255,0.05), rgba(6,8,16,0.72));

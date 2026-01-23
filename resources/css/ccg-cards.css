@@ -113,6 +113,26 @@
     z-index: 1;
 }
 
+/* ------------------------------------------------------------
+   Thumbnail Layout Stability (global)
+------------------------------------------------------------ */
+
+.ccg-game-card__thumb,
+.ccg-card__thumb,
+.ccg-feature-card__thumb {
+    aspect-ratio: 16 / 9;
+    display: block;
+    width: 100%;
+}
+
+.ccg-game-card__thumb img,
+.ccg-card__thumb img,
+.ccg-feature-card__thumb img {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
 
 /* ============================================================
    HOVER / FOCUS — CINEMATIC LIFT (W5 TUNED)
