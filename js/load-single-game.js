@@ -888,13 +888,13 @@ function ensureMediaPanel() {
         }
     }
 
-    videoSection.classList.add("game-media__item");
-    downloadsSection.classList.add("game-media__item");
+    videoSection.classList.add("game-media__item", "game-media__item--video");
+    downloadsSection.classList.add("game-media__item", "game-media__item--downloads");
 
     let linksPanel = mediaSection.querySelector(".game-media__links");
     if (!linksPanel) {
         linksPanel = document.createElement("div");
-        linksPanel.className = "game-media__item game-media__links";
+        linksPanel.className = "game-media__item game-media__item--links game-media__links";
         linksPanel.innerHTML = `
             <p class="game-media__kicker">More Information</p>
             <h3 class="game-media__title">Further Reading</h3>
@@ -1008,7 +1008,6 @@ function renderVerdictPanel(game) {
         verdictSection.hidden = true;
         verdictSection.innerHTML = `
             <p class="game-section__kicker">CCG Verdict</p>
-            <h2 class="game-section__title">Omega Rating</h2>
             <div class="game-verdict__body">
                 <div class="game-verdict__score" aria-label="Cheeky Commodore Gamer rating"></div>
                 <p class="game-verdict__reason"></p>
