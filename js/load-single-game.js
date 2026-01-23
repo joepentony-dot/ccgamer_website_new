@@ -536,6 +536,7 @@ function resolveCanonicalGamePath(slug) {
 }
 
 function updatePrettyUrlAfterResolve(game) {
+    if (!isSlugRoutingAllowed()) return;
     const pretty = resolvePrettyGameUrl(game);
     if (!pretty) return;
 
