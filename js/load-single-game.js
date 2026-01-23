@@ -450,8 +450,7 @@ function resolveLemonLinks(game) {
 }
 
 function resolveCreditsEntries(game) {
-    const credits = game?.credits;
-    if (!credits || typeof credits !== "object") return [];
+    const credits = (game?.credits && typeof game.credits === "object") ? game.credits : null;
 
     const normaliseCreditValue = (value) => {
         if (!value) return "";
@@ -463,12 +462,13 @@ function resolveCreditsEntries(game) {
     };
 
     const entries = [
-        { label: "Publisher", value: normaliseCreditValue(credits.publisher) },
-        { label: "Producer", value: normaliseCreditValue(credits.producer) },
-        { label: "Programmer", value: normaliseCreditValue(credits.coder) },
-        { label: "Graphics", value: normaliseCreditValue(credits.graphics) },
-        { label: "Music", value: normaliseCreditValue(credits.musician) },
-        { label: "Re-release", value: normaliseCreditValue(credits.re_releaser) }
+        { label: "Publisher", value: normaliseCreditValue(credits?.publisher) },
+        { label: "Developer", value: normaliseCreditValue(game?.developer) },
+        { label: "Producer", value: normaliseCreditValue(credits?.producer) },
+        { label: "Programmer", value: normaliseCreditValue(credits?.coder) },
+        { label: "Graphics", value: normaliseCreditValue(credits?.graphics) },
+        { label: "Music", value: normaliseCreditValue(credits?.musician) },
+        { label: "Re-release", value: normaliseCreditValue(credits?.re_releaser) }
     ];
 
     return entries.filter(entry => entry.value);
@@ -931,8 +931,8 @@ function renderMediaLinksPanel(mediaPanel, links) {
         anchor.target = "_blank";
         anchor.rel = "noopener";
         anchor.textContent = uniqueLinks.length > 1
-            ? `More Info ${index + 1}`
-            : "More Info";
+            ? `Lemon64 Link ${index + 1}`
+            : "Lemon64";
         list.appendChild(anchor);
     });
 
