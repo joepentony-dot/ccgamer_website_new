@@ -748,6 +748,10 @@
         const container = qs("[data-quiz-pack-list]");
         if (!container) return;
 
+        const externalPacks = Array.from(
+            container.querySelectorAll("[data-pack-external]")
+        ).map((node) => node.cloneNode(true));
+
         container.innerHTML = "";
 
         if (!sets.length) {
@@ -757,7 +761,6 @@
             emptyBtn.textContent = "No packs available";
             emptyBtn.disabled = true;
             container.appendChild(emptyBtn);
-            return;
         }
 
         let defaultId = null;
@@ -783,6 +786,10 @@
                 defaultId = set.id;
             }
         });
+
+        if (externalPacks.length) {
+            externalPacks.forEach((node) => container.appendChild(node));
+        }
 
         if (defaultId !== null) {
             quizState.currentSetId = defaultId;

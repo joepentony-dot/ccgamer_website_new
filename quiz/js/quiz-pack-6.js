@@ -3,7 +3,7 @@
    ------------------------------------------------------------
    • Randomly selects one game from Pack 6
    • Base filenames define answers (hyphens -> spaces)
-   • Numbers + Roman numerals auto-reveal
+   • Numbers auto-reveal (spaces & punctuation always visible)
 ============================================================ */
 
 (() => {
@@ -67,8 +67,6 @@
         wrongGuesses: 0,
         isOver: false
     };
-
-    const romanTokenRegex = /^[ivxlcdm]+$/i;
 
     function setFocusMode(active) {
         document.body.classList.toggle("quiz-focus", active);
@@ -137,12 +135,11 @@
         const meta = [];
 
         tokens.forEach((token, tokenIndex) => {
-            const isRomanToken = romanTokenRegex.test(token);
             for (const char of token) {
                 const isLetter = /[a-z]/i.test(char);
                 const isDigit = /\d/.test(char);
                 const isPunctuation = !isLetter && !isDigit;
-                const autoReveal = isDigit || isPunctuation || (isRomanToken && isLetter);
+                const autoReveal = isDigit || isPunctuation;
                 meta.push({
                     char,
                     isLetter,
@@ -215,10 +212,12 @@
         return true;
     }
 
-    function endGame(message, status) {
+    function endGame(message, status, revealAnswer) {
         state.isOver = true;
-        revealAllLetters();
-        revealAnswerImage();
+        if (revealAnswer) {
+            revealAllLetters();
+            revealAnswerImage();
+        }
         setFeedback(message, status);
         document.querySelectorAll(".hangman-key").forEach((btn) => {
             btn.disabled = true;
@@ -249,7 +248,7 @@
             setFeedback("Correct", "correct");
             renderWord();
             if (checkForWin()) {
-                endGame("You cracked it!", "correct");
+                endGame("You cracked it!", "correct", true);
             }
             return;
         }
@@ -260,7 +259,7 @@
         updateHangmanStages();
 
         if (state.wrongGuesses >= MAX_WRONG_GUESSES) {
-            endGame("Out of tries!", "wrong");
+            endGame("Out of tries!", "wrong", false);
         }
     }
 
