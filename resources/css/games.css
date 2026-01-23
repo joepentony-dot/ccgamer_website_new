@@ -772,6 +772,18 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
 
 .ccg-page--single-game .ccg-main {
     width: min(1100px, 96%);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.game-hero,
+.game-section,
+.game-media,
+.ccg-share,
+.related-carousel {
+    width: min(1100px, 96%);
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .game-hero {
