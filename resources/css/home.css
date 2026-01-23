@@ -2323,6 +2323,29 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
    RESPONSIVE
 ============================================================ */
 
+@media (min-width: 1024px) {
+    .home-section {
+        margin: 18px 0;
+    }
+
+    .home-visitor-callout {
+        margin: clamp(18px, 3vw, 32px) auto 4px;
+    }
+
+    .home-support-cta {
+        margin: 12px auto clamp(12px, 2vw, 20px);
+    }
+
+    .home-bottom-cta {
+        margin: 18px auto 6px;
+        padding: 18px;
+    }
+
+    .home-bottom-cta__return {
+        margin-top: 10px;
+    }
+}
+
 @media (max-width: 1024px) {
     .home-hero {
         margin-top: clamp(36px, 6vw, 78px);
