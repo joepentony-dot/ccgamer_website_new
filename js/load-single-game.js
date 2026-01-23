@@ -1265,7 +1265,7 @@ function renderRelatedGames(game) {
     }
 
     const publisherMatches = related.slice(0, 12);
-    const usePublisherMode = publisherMatches.length >= 2;
+    const usePublisherMode = publisherMatches.length >= 1;
 
     const items = usePublisherMode
         ? publisherMatches
