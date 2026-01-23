@@ -3,23 +3,54 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <script>
+        (function () {
+            try {
+                var saved = localStorage.getItem('ccg-mode');
+                if (!saved) return;
+                document.documentElement.setAttribute('data-ccg-mode', saved);
+                document.documentElement.setAttribute('data-mode', saved);
+                // Body may not exist yet during head execution, but set if available
+                if (document.body) {
+                    document.body.setAttribute('data-ccg-mode', saved);
+                    document.body.setAttribute('data-mode', saved);
+                } else {
+                    document.addEventListener('DOMContentLoaded', function () {
+                        document.body.setAttribute('data-ccg-mode', saved);
+                        document.body.setAttribute('data-mode', saved);
+                    }, { once: true });
+                }
+            } catch (e) {}
+        })();
+    </script>
+
     <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/quiz/index.html">
     <title>Quiz Hub | Cheeky Commodore Gamer</title>
     <meta name="description" content="Jump into the CCG Trivia League quiz sets and chase leaderboard glory." />
     <link rel="icon" href="../favicon.ico" />
+    
+    <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="../resources/css/ccg-master.css" />
     <link rel="stylesheet" href="../resources/css/ccg-mode.css" />
-    <link rel="stylesheet" href="../resources/css/ccg-effects.css" />
-    <link rel="stylesheet" href="../resources/css/ccg-anim.css" />
+    <link rel="preload" href="../resources/css/ccg-effects.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="../resources/css/ccg-effects.css" /></noscript>
+    <link rel="stylesheet" href="../resources/css/ccg-hero.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-cards.css" />
+    <link rel="preload" href="../resources/css/ccg-socials.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="../resources/css/ccg-socials.css" /></noscript>
+    <link rel="preload" href="../resources/css/ccg-anim.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="../resources/css/ccg-anim.css" /></noscript>
     <link rel="stylesheet" href="../resources/css/ccg-overlays.css" />
+
     <link rel="stylesheet" href="../resources/css/ccg-modal.css" />
     <link rel="stylesheet" href="../resources/css/quiz.css" />
+    <meta http-equiv="refresh" content="0; url=quiz.html" />
     <link rel="stylesheet" href="../resources/css/ccg-footer.css" />
     <link rel="stylesheet" href="../resources/css/ccg-mobile-lite.css">
     <script src="../js/ccg-mobile-lite.js" defer></script>
-    <meta http-equiv="refresh" content="0; url=quiz.html" />
 </head>
-<body class="ccg-body" data-ccg-mode="c64">
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64" id="top">
     <div class="ccg-bg" aria-hidden="true">
         <div class="ccg-bg-starfield" aria-hidden="true"></div>
         <div class="ccg-bg-grid" aria-hidden="true"></div>

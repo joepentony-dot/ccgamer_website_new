@@ -4,6 +4,28 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    
+    <script>
+        (function () {
+            try {
+                var saved = localStorage.getItem('ccg-mode');
+                if (!saved) return;
+                document.documentElement.setAttribute('data-ccg-mode', saved);
+                document.documentElement.setAttribute('data-mode', saved);
+                // Body may not exist yet during head execution, but set if available
+                if (document.body) {
+                    document.body.setAttribute('data-ccg-mode', saved);
+                    document.body.setAttribute('data-mode', saved);
+                } else {
+                    document.addEventListener('DOMContentLoaded', function () {
+                        document.body.setAttribute('data-ccg-mode', saved);
+                        document.body.setAttribute('data-mode', saved);
+                    }, { once: true });
+                }
+            } catch (e) {}
+        })();
+    </script>
+
     <title>Cheeky Commodore Gamer | Home</title>
 
     <meta name="description"

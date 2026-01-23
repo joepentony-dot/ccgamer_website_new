@@ -5,6 +5,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
     const root = document.body;
+    const rootElement = document.documentElement;
     const toggle = document.querySelector("[data-ccg-mode-toggle]");
     const hero = document.querySelector(".home-hero");
 
@@ -17,6 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const heroBadgeLabel = document.querySelector('[data-ccg-hero-mode-label]');
 
     function applyMode(mode) {
+        rootElement.setAttribute("data-ccg-mode", mode);
+        rootElement.setAttribute("data-mode", mode);
         root.setAttribute("data-ccg-mode", mode);
         root.setAttribute("data-mode", mode);
         if (hero) hero.setAttribute("data-hero-mode", mode);
