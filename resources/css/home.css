@@ -1616,7 +1616,14 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
         0 0 16px rgba(120,183,255,0.8),
         0 0 34px rgba(194,139,255,0.72),
         0 0 62px rgba(120,183,255,0.6);
-    animation: homeVisitorPulse 1.8s ease-in-out infinite;
+}
+
+.home-visitor-callout__headline--interactive {
+    cursor: pointer;
+}
+
+.home-visitor-callout__headline--pulse {
+    animation: homeVisitorPulse 1.8s ease-in-out 2;
 }
 
 @keyframes homeVisitorPulse {
@@ -1631,7 +1638,8 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
 
 @media (prefers-reduced-motion: reduce) {
     .home-visitor-callout__beam,
-    .home-visitor-callout__headline {
+    .home-visitor-callout__headline,
+    .home-visitor-callout__headline--pulse {
         animation: none;
     }
 }

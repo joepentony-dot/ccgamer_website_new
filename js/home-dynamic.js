@@ -19,6 +19,10 @@ const MOBILE_MEDIA = window.matchMedia?.("(max-width: 1024px)");
 const PREFERS_REDUCED_MOTION = window.matchMedia?.("(prefers-reduced-motion: reduce)");
 const COARSE_POINTER = window.matchMedia?.("(pointer: coarse)");
 const FALLBACK_MOBILE_MEDIA = window.matchMedia?.("(max-width: 768px)");
+const STAY_AWHILE_AUDIO_SRC = "resources/css/audio/c64_speech_stayawhile.mp3";
+const STAY_AWHILE_PULSE_CLASS = "home-visitor-callout__headline--pulse";
+
+let stayAwhileAudio = null;
 
 const isMobileViewport = () => {
     if (typeof window.isMobileViewport === "function") {
@@ -50,6 +54,7 @@ async function initHomeDynamic() {
     syncModeLabel();
     initModeObserver();
     setupHomeScrollPerfPause();
+    initStayAwhileCallout();
 
     if (skipAnimations) {
         calmHeroCards();
@@ -65,6 +70,48 @@ async function initHomeDynamic() {
     }
 
     lockHomeVisualState();
+}
+
+function initStayAwhileCallout() {
+    const headline = document.querySelector(".home-visitor-callout__headline--interactive");
+    if (!headline) return;
+
+    if (!stayAwhileAudio) {
+        stayAwhileAudio = new Audio(STAY_AWHILE_AUDIO_SRC);
+        stayAwhileAudio.preload = "auto";
+    }
+
+    const triggerStayAwhile = () => {
+        if (!stayAwhileAudio) return;
+        if (!stayAwhileAudio.paused) {
+            stayAwhileAudio.pause();
+        }
+        stayAwhileAudio.currentTime = 0;
+        const playPromise = stayAwhileAudio.play();
+        if (playPromise && typeof playPromise.catch === "function") {
+            playPromise.catch(() => {});
+        }
+
+        headline.classList.remove(STAY_AWHILE_PULSE_CLASS);
+        void headline.offsetWidth;
+        headline.classList.add(STAY_AWHILE_PULSE_CLASS);
+    };
+
+    const handleKeydown = (event) => {
+        if (event.repeat) return;
+        if (event.key === "Enter" || event.key === " " || event.key === "Spacebar") {
+            event.preventDefault();
+            triggerStayAwhile();
+        }
+    };
+
+    headline.addEventListener("click", triggerStayAwhile);
+    headline.addEventListener("keydown", handleKeydown);
+    headline.addEventListener("animationend", (event) => {
+        if (event.animationName === "homeVisitorPulse") {
+            headline.classList.remove(STAY_AWHILE_PULSE_CLASS);
+        }
+    });
 }
 
 function lockHomeVisualState() {
