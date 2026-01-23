@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Admin Control Panel | Cheeky Commodore Gamer</title>
-    <meta name="description" content="Internal administration tools for managing games, thumbnails, SEO stubs, and site data.">
+    <title>Omega Admin Control System | Cheeky Commodore Gamer</title>
+    <meta name="description" content="Internal CMS for managing CCG game metadata, validation, and SEO stubs.">
     <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/admin/admin.html">
 
     <link rel="icon" href="../favicon.ico">
@@ -149,313 +149,154 @@
         <main class="ccg-main ccg-main--admin">
 
             <section class="ccg-section admin-hero">
-                <h1 class="ccg-section-title">Omega Admin Control Panel</h1>
+                <h1 class="ccg-section-title">Omega Admin Control System</h1>
                 <p class="ccg-section-subtitle">
-                    Load <code>games.json</code>, manage metadata, generate SEO stubs, and export upload-ready files. This tool never writes to the repository.
+                    Professional-grade CMS for <code>games.json</code>. Load data, edit entries, validate metadata, and export JSON + SEO stubs safely.
                 </p>
                 <div class="admin-notice">
-                    Safety first: all outputs are manual downloads. You decide what gets committed.
+                    All changes remain in-memory. Exports are manual downloads only — nothing auto-writes to the repository.
+                </div>
+                <div class="admin-status-bar">
+                    <div>
+                        <p class="admin-status" id="adminStatus" data-state="idle">No data loaded yet.</p>
+                        <p class="admin-status-inline" id="adminStatusDetail" data-state="idle">Load <code>games.json</code> to begin.</p>
+                    </div>
+                    <div class="admin-inline-buttons">
+                        <button class="ccg-btn ccg-btn--ghost" type="button" id="adminUndo" disabled>Undo</button>
+                        <button class="ccg-btn ccg-btn--primary" type="button" id="adminNew">New Entry</button>
+                    </div>
                 </div>
                 <div class="admin-badges">
                     <div class="admin-badge">
-                        <span class="admin-badge-label">Loaded games</span>
-                        <span class="admin-badge-value" data-admin-game-count>0</span>
-                    </div>
-                    <div class="admin-badge">
-                        <span class="admin-badge-label">Working library total</span>
+                        <span class="admin-badge-label">Total games</span>
                         <span class="admin-badge-value" data-admin-total-count>0</span>
                     </div>
                     <div class="admin-badge">
-                        <span class="admin-badge-label">Added this session</span>
-                        <span class="admin-badge-value" data-admin-added-count>0</span>
+                        <span class="admin-badge-label">Missing ratings</span>
+                        <span class="admin-badge-value" data-admin-missing-ratings>0</span>
                     </div>
-                </div>
-                <div class="admin-hero-grid">
-                    <div class="admin-callout">
-                        <h3 class="admin-callout-title">Control centre flow</h3>
-                        <ol class="admin-steps">
-                            <li>Fetch or upload <code>games.json</code>.</li>
-                            <li>Add or refine entries in the editor.</li>
-                            <li>Validate and export JSON + SEO stubs.</li>
-                            <li>Commit manually from your local machine.</li>
-                        </ol>
+                    <div class="admin-badge">
+                        <span class="admin-badge-label">Missing PDFs</span>
+                        <span class="admin-badge-value" data-admin-missing-pdfs>0</span>
                     </div>
-                    <div class="admin-callout admin-callout--tips">
-                        <h3 class="admin-callout-title">Quick tips</h3>
-                        <ul class="admin-tips">
-                            <li>IDs and slugs are auto-generated from the title.</li>
-                            <li>Genres must be selected from the curated list.</li>
-                            <li>Use rating CSV import to bulk-apply scores.</li>
-                            <li>SEO stubs export as a ZIP for <code>/games/</code>.</li>
-                        </ul>
+                    <div class="admin-badge">
+                        <span class="admin-badge-label">Missing credits</span>
+                        <span class="admin-badge-value" data-admin-missing-credits>0</span>
+                    </div>
+                    <div class="admin-badge">
+                        <span class="admin-badge-label">Validation warnings</span>
+                        <span class="admin-badge-value" data-admin-warning-count>0</span>
                     </div>
                 </div>
             </section>
 
             <section class="ccg-section admin-grid">
                 <article class="admin-card">
-                    <h2>Data Console</h2>
-                    <p class="admin-help">Import data, sync ratings, and track export readiness.</p>
+                    <h2>Data Loader</h2>
+                    <p class="admin-help">Fetch live <code>games.json</code> or upload a local file. All work is staged in memory.</p>
                     <div class="admin-inline-buttons">
-                        <button id="adminRefresh" class="ccg-btn ccg-btn--primary" type="button">Fetch live games.json</button>
-                        <label class="admin-upload">Upload JSON
-                            <input type="file" id="adminFileInput" accept="application/json">
+                        <button class="ccg-btn ccg-btn--primary" type="button" id="adminFetch">Fetch live games.json</button>
+                        <label class="admin-upload" for="adminUpload">
+                            Upload local JSON
+                            <input type="file" id="adminUpload" accept="application/json">
                         </label>
-                        <a id="adminSourceOpen" class="ccg-btn ccg-btn--ghost" href="#" target="_blank" rel="noopener">Open live JSON</a>
+                        <button class="ccg-btn ccg-btn--ghost" type="button" id="adminClear">Clear session</button>
                     </div>
-                    <div class="admin-inline-buttons">
-                        <button id="adminRatingsDownload" class="ccg-btn ccg-btn--ghost" type="button">Download rating sheet (CSV)</button>
-                        <label class="admin-upload">Upload rating sheet
-                            <input type="file" id="adminRatingsUpload" accept=".csv,text/csv">
-                        </label>
-                    </div>
-                    <p id="adminStatus" class="admin-status">Waiting for data…</p>
-                    <div class="admin-notice" data-admin-rating-download hidden>
-                        <p><strong>Rating sheet ready.</strong> <a href="#" class="ccg-link" data-admin-rating-link download="ccg-game-ratings.csv">Download ccg-game-ratings.csv</a></p>
-                        <p>Next steps:</p>
-                        <ol>
-                            <li>Edit the CSV (ratings 1–10, optional single-line reason).</li>
-                            <li>Upload the edited CSV using “Upload rating sheet”.</li>
-                            <li>Download the updated <code>games.json</code> and commit it.</li>
-                        </ol>
-                    </div>
-                    <div class="admin-notice" data-admin-rating-summary hidden>
-                        <p><strong>Rating sheet import complete.</strong></p>
-                        <ul>
-                            <li>Total rows processed: <span data-admin-rating-total>0</span></li>
-                            <li>Ratings applied: <span data-admin-rating-applied>0</span></li>
-                            <li>Rows skipped: <span data-admin-rating-skipped>0</span></li>
-                        </ul>
-                    </div>
-                    <div class="admin-notice" data-admin-rating-skipped-panel hidden>
-                        <p><strong>Rows skipped</strong> <span data-admin-rating-skipped-note></span></p>
-                        <ul data-admin-rating-skipped-list></ul>
-                    </div>
-                    <div class="admin-notice" data-admin-next-steps hidden>
-                        <p><strong>Download complete.</strong></p>
-                        <p>Next steps:</p>
-                        <ol>
-                            <li>Replace <code>/games/games.json</code> in your repo with the downloaded file.</li>
-                            <li>Extract the SEO HTML files into <code>/games/</code>.</li>
-                            <li>Commit and push via GitHub Desktop.</li>
-                        </ol>
-                    </div>
+                    <p class="admin-status-inline" id="adminSource" data-state="idle">Source: none.</p>
                 </article>
 
                 <article class="admin-card">
-                    <h2>Export System</h2>
-                    <p class="admin-help">Generate upload-ready exports. All downloads are manual.</p>
-                    <div class="admin-inline-buttons admin-inline-buttons--export">
-                        <button id="adminDownload" class="ccg-btn ccg-btn--secondary" type="button">Download games.json</button>
-                        <button id="adminDownloadStubs" class="ccg-btn ccg-btn--ghost" type="button">Download SEO stub HTML files (zip)</button>
-                        <button id="adminClear" class="ccg-btn ccg-btn--ghost" type="button">Clear added games</button>
-                    </div>
+                    <h2>Validation Console</h2>
+                    <p class="admin-help">Library-wide issues and warnings are listed here after each edit.</p>
                     <div class="admin-errors" data-admin-errors hidden>
-                        <h3>Export blocked</h3>
+                        <h3>Errors</h3>
                         <ul data-admin-error-list></ul>
                     </div>
-                    <div class="admin-notice" data-admin-warnings hidden>
-                        <p class="admin-warning">Legacy IDs detected (safe and preserved). These are informational only and won’t block export. New entries will use the clean format.</p>
+                    <div class="admin-errors" data-admin-warnings hidden>
+                        <h3>Warnings</h3>
                         <ul data-admin-warning-list></ul>
                     </div>
+                    <p class="admin-status-inline" data-admin-validation-empty>No validation results yet.</p>
+                </article>
+
+                <article class="admin-card admin-card--priority">
+                    <h2>Exports &amp; Stubs</h2>
+                    <p class="admin-help">Generate clean JSON or SEO stubs from the selected draft or the full library.</p>
+                    <div class="admin-inline-buttons">
+                        <button class="ccg-btn ccg-btn--primary" type="button" id="adminCopyJson">Copy selected JSON</button>
+                        <button class="ccg-btn ccg-btn--ghost" type="button" id="adminDownloadJson">Download selected JSON</button>
+                        <button class="ccg-btn ccg-btn--ghost" type="button" id="adminDownloadLibrary">Download full games.json</button>
+                    </div>
+                    <div class="admin-inline-buttons admin-inline-buttons--export">
+                        <button class="ccg-btn ccg-btn--primary" type="button" id="adminDownloadStub">Download selected SEO stub</button>
+                        <button class="ccg-btn ccg-btn--ghost" type="button" id="adminDownloadStubs">Download all SEO stubs (ZIP)</button>
+                    </div>
                 </article>
             </section>
 
-            <section class="ccg-section admin-card admin-card--priority" aria-labelledby="game-editor-title">
-                <div class="admin-edit-banner">
-                    <div>
-                        <p class="admin-edit-state">Game Editor</p>
-                        <p class="admin-help">Use the form to add new games. IDs, slugs, and sort titles auto-sync to the title.</p>
-                    </div>
-                    <div class="admin-inline-buttons">
-                        <button class="ccg-btn ccg-btn--ghost" type="button" data-admin-reset-auto>Reset auto fields</button>
-                    </div>
-                </div>
-
-                <h2 id="game-editor-title">Add or Update Game Entry</h2>
-                <p class="admin-help">Required fields marked with *. Use the browser below to review existing entries and copy values into the editor when needed.</p>
-
-                <form id="adminGameForm" class="admin-form" novalidate>
-                    <div class="admin-form-section">
-                        <div class="admin-form-heading">
-                            <h3>Core details</h3>
-                            <span class="admin-form-note">Required fields marked with *</span>
-                        </div>
-                        <p class="admin-help">The Game Title drives the ID and Slug automatically. Those fields are read-only and update live as you type.</p>
-                        <div class="admin-field">
-                            <label for="gameSystem">System *</label>
-                            <select id="gameSystem" name="system" class="admin-select" required>
-                                <option value="C64">C64</option>
-                                <option value="AMIGA">AMIGA</option>
-                            </select>
-                            <p class="admin-error" data-admin-error="system" hidden></p>
-                        </div>
-                        <div class="admin-field">
-                            <label for="gameTitle">Title *</label>
-                            <input id="gameTitle" name="title" class="admin-input" placeholder="The Adventures of Robin Hood" required>
-                            <p class="admin-error" data-admin-error="title" hidden></p>
-                        </div>
-                        <div class="admin-field">
-                            <label for="gameSortTitle">Sort title *</label>
-                            <input id="gameSortTitle" name="sorttitle" class="admin-input" placeholder="Adventures of Robin Hood" required>
-                            <p class="admin-help">Defaults to the title. Edit if needed.</p>
-                            <p class="admin-error" data-admin-error="sorttitle" hidden></p>
-                        </div>
-                        <div class="admin-field">
-                            <label for="gameId">ID (snake_case) *</label>
-                            <input id="gameId" name="id" class="admin-input" placeholder="adventures_of_robin_hood" readonly aria-readonly="true" title="Auto-generated from the Game Title" style="cursor: default;" required>
-                            <p class="admin-help">Auto-generated from the title (read-only).</p>
-                            <p class="admin-error" data-admin-error="id" hidden></p>
-                        </div>
-                        <div class="admin-field">
-                            <label for="gameSlug">Slug (kebab-case) *</label>
-                            <input id="gameSlug" name="slug" class="admin-input" placeholder="adventures-of-robin-hood" readonly aria-readonly="true" title="Auto-generated from the Game Title" style="cursor: default;" required>
-                            <p class="admin-help">Auto-generated from the title for SEO URLs (read-only).</p>
-                            <p class="admin-error" data-admin-error="slug" hidden></p>
-                        </div>
-                        <div class="admin-field">
-                            <label for="gameYear">Year</label>
-                            <input id="gameYear" name="year" class="admin-input" type="number" min="1977" max="2026" placeholder="1987">
-                            <p class="admin-error" data-admin-error="year" hidden></p>
-                        </div>
-                        <div class="admin-field">
-                            <label for="gameDeveloper">Developer / Publisher</label>
-                            <input id="gameDeveloper" name="developer" class="admin-input" placeholder="Codemasters">
-                        </div>
-                        <div class="admin-field" data-admin-genre-field>
-                            <label for="gameGenreSelect">Genres *</label>
-                            <div class="admin-inline-buttons">
-                                <select id="gameGenreSelect" class="admin-select">
-                                    <option value="">Select genre...</option>
-                                </select>
-                                <button class="ccg-btn ccg-btn--ghost" type="button" data-admin-clear-genres>Clear all genres</button>
+            <section class="ccg-section admin-preview-grid">
+                <article class="admin-card admin-table-card">
+                    <div class="admin-table-head">
+                        <div class="admin-table-header">
+                            <div>
+                                <h2>Game Browser</h2>
+                                <p class="admin-help">Search, filter, and open entries for editing.</p>
                             </div>
-                            <p class="admin-help">Select one or more genres; the list is fixed and curated.</p>
-                            <div class="admin-genre-selected" data-admin-genre-selected>
-                                <p class="admin-help" data-admin-genre-empty>No genres selected</p>
+                            <div class="admin-table-count">
+                                <span class="admin-badge-label">Results</span>
+                                <span class="admin-badge-value" data-admin-result-count>0</span>
                             </div>
-                            <p class="admin-error" data-admin-error="genres" hidden></p>
-                        </div>
-                        <div class="admin-field">
-                            <label for="gameRating">Cheeky Commodore Gamer Rating *</label>
-                            <input id="gameRating" name="ccg_rating" class="admin-input" type="number" min="1" max="10" placeholder="1–10" required>
-                            <p class="admin-help" data-admin-rating-help>Required. 1–10 only.</p>
-                            <p class="admin-error" data-admin-error="ccg_rating" hidden></p>
-                        </div>
-                        <div class="admin-field">
-                            <label for="gameRatingReason">Rating reason (optional)</label>
-                            <input id="gameRatingReason" name="ccg_rating_reason" class="admin-input" placeholder="One-line editorial note">
-                            <p class="admin-error" data-admin-error="ccg_rating_reason" hidden></p>
                         </div>
                     </div>
-
-                    <div class="admin-form-section">
-                        <div class="admin-form-heading">
-                            <h3>Description</h3>
-                        </div>
-                        <div class="admin-field">
-                            <label for="gameDescription">Description</label>
-                            <textarea id="gameDescription" name="description" class="admin-textarea admin-textarea--lg" placeholder="Short, friendly summary of the game."></textarea>
-                        </div>
-                    </div>
-
-                    <div class="admin-form-section">
-                        <div class="admin-form-heading">
-                            <h3>Media</h3>
-                        </div>
-                        <p class="admin-help">YouTube expects the video ID only. Links below are optional.</p>
-                        <div class="admin-field">
-                            <label for="gameVideo">YouTube video ID</label>
-                            <input id="gameVideo" name="videoid" class="admin-input" placeholder="oQhQdlsAQR4">
-                            <p class="admin-help">Paste only the video ID (no full URL).</p>
-                            <p class="admin-error" data-admin-error="videoid" hidden></p>
-                        </div>
-                        <div class="admin-field">
-                            <label for="gameThumbnail">Thumbnail path</label>
-                            <input id="gameThumbnail" name="thumbnail" class="admin-input" placeholder="resources/images/thumbnails/all/super_robin_hood.jpg">
-                            <p class="admin-help">Full path recommended. If you enter only a filename, the default thumbnail folder is applied.</p>
-                            <p class="admin-error" data-admin-error="thumbnail" hidden></p>
-                        </div>
-                    </div>
-
-                    <div class="admin-form-section">
-                        <div class="admin-form-heading">
-                            <h3>Links &amp; downloads</h3>
-                        </div>
-                        <p class="admin-help">All links are optional; add only what you have.</p>
-                        <div class="admin-field">
-                            <label for="gamePdf">PDF/manual link</label>
-                            <input id="gamePdf" name="pdf" class="admin-input" placeholder="https://...">
-                        </div>
-                        <div class="admin-field">
-                            <label for="gameDisk">Disk URL(s) (comma separated)</label>
-                            <input id="gameDisk" name="disk" class="admin-input" placeholder="https://...d64, https://...adf">
-                        </div>
-                        <div class="admin-field">
-                            <label for="gameLemon">Lemon URL(s) (comma separated)</label>
-                            <input id="gameLemon" name="lemon" class="admin-input" placeholder="https://www.lemon64.com/game/super-robin-hood">
-                        </div>
-                    </div>
-
-                    <div class="admin-inline-buttons">
-                        <button class="ccg-btn ccg-btn--primary" type="submit">Add Game</button>
-                    </div>
-                </form>
-            </section>
-
-            <section class="ccg-section admin-grid">
-                <article class="admin-card">
-                    <h2>Session Preview</h2>
-                    <p class="admin-help">Read-only preview of games added in this session.</p>
                     <div class="admin-table-body admin-table-body--compact">
-                        <table class="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>System</th>
-                                    <th>Year</th>
-                                    <th>Sort title</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminAddedPreview">
-                                <tr><td colspan="4">Nothing added yet.</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </article>
-
-                <article class="admin-card">
-                    <h2>SEO Stub Generator</h2>
-                    <p class="admin-help">Use the export tools above to build SEO stub pages for newly added games.</p>
-                    <div class="admin-notice">
-                        <p><strong>Stub checklist</strong></p>
-                        <ul>
-                            <li>Confirm slug is valid and unique.</li>
-                            <li>Add thumbnail path for OpenGraph images.</li>
-                            <li>Provide a description for SEO metadata.</li>
-                            <li>Export ZIP and extract into <code>/games/</code>.</li>
-                        </ul>
-                    </div>
-                </article>
-            </section>
-
-            <section class="ccg-section">
-                <article class="admin-card">
-                    <div class="admin-table-header">
-                        <div>
-                            <h2>Game Browser</h2>
-                            <p class="admin-help">Search and sanity-check the library. Click rows to select values and copy into the editor.</p>
+                        <div class="admin-field">
+                            <label for="adminSearch">Search</label>
+                            <input id="adminSearch" class="admin-input" placeholder="Search by title, ID, slug, or system">
                         </div>
-                        <div class="admin-table-count">
-                            <span class="admin-badge-label">Total</span>
-                            <span class="admin-badge-value">See dashboard</span>
+                        <div class="admin-filter-grid">
+                            <div class="admin-field">
+                                <label for="adminFilterSystem">System</label>
+                                <select id="adminFilterSystem" class="admin-select">
+                                    <option value="">All systems</option>
+                                    <option value="C64">C64</option>
+                                    <option value="AMIGA">AMIGA</option>
+                                </select>
+                            </div>
+                            <div class="admin-field">
+                                <label for="adminFilterGenre">Genre</label>
+                                <select id="adminFilterGenre" class="admin-select">
+                                    <option value="">All genres</option>
+                                </select>
+                            </div>
+                            <div class="admin-field">
+                                <label for="adminFilterYear">Year</label>
+                                <input id="adminFilterYear" class="admin-input" placeholder="e.g. 1986">
+                            </div>
+                            <div class="admin-field">
+                                <label for="adminFilterRating">Rating ≥</label>
+                                <select id="adminFilterRating" class="admin-select">
+                                    <option value="">Any</option>
+                                    <option value="10">10</option>
+                                    <option value="9">9</option>
+                                    <option value="8">8</option>
+                                    <option value="7">7</option>
+                                    <option value="6">6</option>
+                                    <option value="5">5</option>
+                                    <option value="4">4</option>
+                                    <option value="3">3</option>
+                                    <option value="2">2</option>
+                                    <option value="1">1</option>
+                                </select>
+                            </div>
+                            <div class="admin-field">
+                                <label for="adminSort">Sort</label>
+                                <select id="adminSort" class="admin-select">
+                                    <option value="sorttitle">Sort title</option>
+                                    <option value="year">Year</option>
+                                    <option value="rating">Rating</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="admin-field">
-                        <label for="adminSearch">Search by title, ID, or system</label>
-                        <input id="adminSearch" class="admin-input" placeholder="Start typing to filter...">
-                    </div>
-                    <div class="admin-table-body">
                         <table class="admin-table">
                             <thead>
                                 <tr>
@@ -472,8 +313,259 @@
                         </table>
                     </div>
                 </article>
+
+                <article class="admin-card admin-detail-card">
+                    <div class="admin-edit-banner">
+                        <div>
+                            <p class="admin-edit-state" id="adminEditState">Draft: none</p>
+                            <p class="admin-help">Select a game or create a new entry to begin editing.</p>
+                        </div>
+                        <div class="admin-inline-buttons">
+                            <button class="ccg-btn ccg-btn--primary" type="button" id="adminApply">Apply changes</button>
+                            <button class="ccg-btn ccg-btn--ghost" type="button" id="adminDiscard">Discard draft</button>
+                        </div>
+                    </div>
+
+                    <div class="admin-tablist" role="tablist" aria-label="Game editor tabs">
+                        <button class="ccg-btn ccg-btn--ghost admin-tab" type="button" data-admin-tab="identity" aria-controls="admin-tab-identity" aria-selected="true">Identity</button>
+                        <button class="ccg-btn ccg-btn--ghost admin-tab" type="button" data-admin-tab="classification" aria-controls="admin-tab-classification">Classification</button>
+                        <button class="ccg-btn ccg-btn--ghost admin-tab" type="button" data-admin-tab="media" aria-controls="admin-tab-media">Media</button>
+                        <button class="ccg-btn ccg-btn--ghost admin-tab" type="button" data-admin-tab="editorial" aria-controls="admin-tab-editorial">Editorial</button>
+                        <button class="ccg-btn ccg-btn--ghost admin-tab" type="button" data-admin-tab="credits" aria-controls="admin-tab-credits">Credits</button>
+                        <button class="ccg-btn ccg-btn--ghost admin-tab" type="button" data-admin-tab="references" aria-controls="admin-tab-references">References</button>
+                    </div>
+
+                    <form id="adminEditor" class="admin-form" autocomplete="off">
+                        <div class="admin-tab-panel" id="admin-tab-identity" data-admin-panel="identity">
+                            <div class="admin-form-section">
+                                <div class="admin-form-heading">
+                                    <h3>Primary Identity</h3>
+                                    <span class="admin-form-note">IDs and slugs must be unique.</span>
+                                </div>
+                                <div class="admin-field">
+                                    <label for="gameSystem">System</label>
+                                    <select id="gameSystem" class="admin-select">
+                                        <option value="C64">C64</option>
+                                        <option value="AMIGA">AMIGA</option>
+                                    </select>
+                                </div>
+                                <div class="admin-field">
+                                    <label for="gameTitle">Title</label>
+                                    <input id="gameTitle" class="admin-input" placeholder="Game title">
+                                </div>
+                                <div class="admin-field">
+                                    <label for="gameSortTitle">Sort title</label>
+                                    <input id="gameSortTitle" class="admin-input" placeholder="Auto-generated unless overridden">
+                                </div>
+                                <div class="admin-field">
+                                    <label for="gameId">ID</label>
+                                    <input id="gameId" class="admin-input" placeholder="unique_id">
+                                </div>
+                                <div class="admin-field">
+                                    <label for="gameSlug">Slug</label>
+                                    <input id="gameSlug" class="admin-input" placeholder="game-slug">
+                                </div>
+                                <div class="admin-inline-buttons">
+                                    <button class="ccg-btn ccg-btn--ghost" type="button" id="adminAutoId">Auto-generate ID/slug</button>
+                                    <button class="ccg-btn ccg-btn--ghost" type="button" id="adminAutoSort">Auto sort title</button>
+                                </div>
+                                <div class="admin-field">
+                                    <label for="gameYear">Year</label>
+                                    <input id="gameYear" class="admin-input" placeholder="e.g. 1986">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="admin-tab-panel" id="admin-tab-classification" data-admin-panel="classification" hidden>
+                            <div class="admin-form-section">
+                                <div class="admin-form-heading">
+                                    <h3>Genres</h3>
+                                    <span class="admin-form-note">Select multiple genres.</span>
+                                </div>
+                                <div class="admin-genre-grid" data-admin-genre-grid></div>
+                            </div>
+                            <div class="admin-form-section">
+                                <div class="admin-form-heading">
+                                    <h3>Category Toggles</h3>
+                                    <span class="admin-form-note">Add flags for Top Picks, BPJS, Licensed, or Collections.</span>
+                                </div>
+                                <div class="admin-toggle-grid">
+                                    <label class="admin-toggle"><input type="checkbox" id="categoryTopPicks"> Top Picks</label>
+                                    <label class="admin-toggle"><input type="checkbox" id="categoryBpjs"> BPJS</label>
+                                    <label class="admin-toggle"><input type="checkbox" id="categoryLicensed"> Licensed</label>
+                                    <label class="admin-toggle"><input type="checkbox" id="categoryCollection"> Collection</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="admin-tab-panel" id="admin-tab-media" data-admin-panel="media" hidden>
+                            <div class="admin-form-section">
+                                <div class="admin-form-heading">
+                                    <h3>Media</h3>
+                                    <span class="admin-form-note">Keep URLs valid and thumbnails in the standard path.</span>
+                                </div>
+                                <div class="admin-field">
+                                    <label for="gameVideoId">YouTube video ID</label>
+                                    <input id="gameVideoId" class="admin-input" placeholder="YouTube ID">
+                                </div>
+                                <div class="admin-field">
+                                    <label for="gameThumbnail">Thumbnail path</label>
+                                    <input id="gameThumbnail" class="admin-input" placeholder="resources/images/thumbnails/all/filename.png">
+                                </div>
+                                <div class="admin-inline-buttons">
+                                    <button class="ccg-btn ccg-btn--ghost" type="button" id="adminThumbAuto">Use standard thumbnail path</button>
+                                </div>
+                                <div class="admin-field">
+                                    <label for="gamePdf">PDF URL</label>
+                                    <input id="gamePdf" class="admin-input" placeholder="https://...">
+                                </div>
+                                <div class="admin-field">
+                                    <label for="gameDiskInput">Disk URLs</label>
+                                    <div class="admin-inline-buttons">
+                                        <input id="gameDiskInput" class="admin-input" placeholder="https://...">
+                                        <button class="ccg-btn ccg-btn--ghost" type="button" id="gameDiskAdd">Add disk</button>
+                                    </div>
+                                    <ul class="admin-list" id="gameDiskList"></ul>
+                                    <p class="admin-status-inline" data-admin-empty="disk">No disk links added.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="admin-tab-panel" id="admin-tab-editorial" data-admin-panel="editorial" hidden>
+                            <div class="admin-form-section">
+                                <div class="admin-form-heading">
+                                    <h3>Editorial</h3>
+                                    <span class="admin-form-note">Short, descriptive copy is ideal.</span>
+                                </div>
+                                <div class="admin-field">
+                                    <label for="gameDescription">Description</label>
+                                    <textarea id="gameDescription" class="admin-textarea admin-textarea--lg" placeholder="Game description"></textarea>
+                                    <div class="admin-description-meta">
+                                        <span class="admin-description-target">SEO-friendly length: 140–220 chars.</span>
+                                        <span data-admin-description-count>0</span>
+                                    </div>
+                                </div>
+                                <div class="admin-field">
+                                    <label for="gameRating">CCG rating</label>
+                                    <select id="gameRating" class="admin-select">
+                                        <option value="">Not rated</option>
+                                        <option value="10">10</option>
+                                        <option value="9">9</option>
+                                        <option value="8">8</option>
+                                        <option value="7">7</option>
+                                        <option value="6">6</option>
+                                        <option value="5">5</option>
+                                        <option value="4">4</option>
+                                        <option value="3">3</option>
+                                        <option value="2">2</option>
+                                        <option value="1">1</option>
+                                    </select>
+                                </div>
+                                <div class="admin-field">
+                                    <label for="gameRatingReason">Rating reason</label>
+                                    <input id="gameRatingReason" class="admin-input" placeholder="Why did it score this rating?">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="admin-tab-panel" id="admin-tab-credits" data-admin-panel="credits" hidden>
+                            <div class="admin-form-section">
+                                <div class="admin-form-heading">
+                                    <h3>Credits Manager</h3>
+                                    <span class="admin-form-note">Add multiple names per credit field.</span>
+                                </div>
+                                <div class="admin-field">
+                                    <label for="gamePublisherInput">Publisher(s)</label>
+                                    <div class="admin-inline-buttons">
+                                        <input id="gamePublisherInput" class="admin-input" placeholder="Publisher name">
+                                        <button class="ccg-btn ccg-btn--ghost" type="button" id="gamePublisherAdd">Add publisher</button>
+                                    </div>
+                                    <ul class="admin-list" id="gamePublisherList"></ul>
+                                    <p class="admin-status-inline" data-admin-empty="publisher">No publishers added.</p>
+                                </div>
+                                <div class="admin-field">
+                                    <label for="gameProducer">Producer</label>
+                                    <input id="gameProducer" class="admin-input" placeholder="Producer name">
+                                </div>
+                                <div class="admin-field">
+                                    <label for="gameCoderInput">Coder(s)</label>
+                                    <div class="admin-inline-buttons">
+                                        <input id="gameCoderInput" class="admin-input" placeholder="Coder name">
+                                        <button class="ccg-btn ccg-btn--ghost" type="button" id="gameCoderAdd">Add coder</button>
+                                    </div>
+                                    <ul class="admin-list" id="gameCoderList"></ul>
+                                    <p class="admin-status-inline" data-admin-empty="coder">No coders added.</p>
+                                </div>
+                                <div class="admin-field">
+                                    <label for="gameGraphicsInput">Graphics</label>
+                                    <div class="admin-inline-buttons">
+                                        <input id="gameGraphicsInput" class="admin-input" placeholder="Graphics artist">
+                                        <button class="ccg-btn ccg-btn--ghost" type="button" id="gameGraphicsAdd">Add graphics</button>
+                                    </div>
+                                    <ul class="admin-list" id="gameGraphicsList"></ul>
+                                    <p class="admin-status-inline" data-admin-empty="graphics">No graphics credits added.</p>
+                                </div>
+                                <div class="admin-field">
+                                    <label for="gameMusicianInput">Musician(s)</label>
+                                    <div class="admin-inline-buttons">
+                                        <input id="gameMusicianInput" class="admin-input" placeholder="Musician name">
+                                        <button class="ccg-btn ccg-btn--ghost" type="button" id="gameMusicianAdd">Add musician</button>
+                                    </div>
+                                    <ul class="admin-list" id="gameMusicianList"></ul>
+                                    <p class="admin-status-inline" data-admin-empty="musician">No musicians added.</p>
+                                </div>
+                                <div class="admin-field">
+                                    <label for="gameRereleaserInput">Re-releaser(s)</label>
+                                    <div class="admin-inline-buttons">
+                                        <input id="gameRereleaserInput" class="admin-input" placeholder="Re-releaser">
+                                        <button class="ccg-btn ccg-btn--ghost" type="button" id="gameRereleaserAdd">Add re-releaser</button>
+                                    </div>
+                                    <ul class="admin-list" id="gameRereleaserList"></ul>
+                                    <p class="admin-status-inline" data-admin-empty="re_releaser">No re-releasers added.</p>
+                                </div>
+                                <div class="admin-field">
+                                    <label for="gameDeveloper">Developer</label>
+                                    <input id="gameDeveloper" class="admin-input" placeholder="Developer / studio">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="admin-tab-panel" id="admin-tab-references" data-admin-panel="references" hidden>
+                            <div class="admin-form-section">
+                                <div class="admin-form-heading">
+                                    <h3>Lemon64 References</h3>
+                                    <span class="admin-form-note">Add one or more reference links.</span>
+                                </div>
+                                <div class="admin-field">
+                                    <label for="gameLemonInput">Lemon link</label>
+                                    <div class="admin-inline-buttons">
+                                        <input id="gameLemonInput" class="admin-input" placeholder="https://www.lemon64.com/...">
+                                        <button class="ccg-btn ccg-btn--ghost" type="button" id="gameLemonAdd">Add Lemon link</button>
+                                    </div>
+                                    <ul class="admin-list" id="gameLemonList"></ul>
+                                    <p class="admin-status-inline" data-admin-empty="lemon">No Lemon links added.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </article>
             </section>
 
+            <section class="ccg-section admin-preview-grid">
+                <article class="admin-card">
+                    <h2>Change Preview</h2>
+                    <p class="admin-help">Review changes before applying them to the working library.</p>
+                    <div class="admin-change-list" data-admin-change-list>
+                        <p class="admin-status-inline">No changes detected yet.</p>
+                    </div>
+                </article>
+
+                <article class="admin-card">
+                    <h2>JSON Preview</h2>
+                    <p class="admin-help">Copy-ready JSON for the current draft.</p>
+                    <pre class="admin-json-preview" id="adminJsonPreview">{}</pre>
+                </article>
+            </section>
         </main>
 
         <!-- =====================================================

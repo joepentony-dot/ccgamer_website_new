@@ -424,3 +424,124 @@
         overflow: visible;
     }
 }
+
+/* ============================================================
+   OMEGA ADMIN CONTROL SYSTEM — EXTENSIONS
+============================================================ */
+
+.admin-status-bar {
+    margin-top: 16px;
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.admin-filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.admin-tablist {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.admin-tab.is-active {
+    border-color: rgba(var(--accent-rgb), 0.6);
+    box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.3);
+}
+
+.admin-tab-panel[hidden] {
+    display: none;
+}
+
+.admin-genre-grid,
+.admin-toggle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 8px;
+}
+
+.admin-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.4);
+    font-size: 0.85rem;
+}
+
+.admin-list {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 0;
+    display: grid;
+    gap: 8px;
+}
+
+.admin-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(0,0,0,0.5);
+    font-size: 0.82rem;
+}
+
+.admin-list-remove {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+}
+
+.admin-json-preview {
+    margin: 0;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(0,0,0,0.7);
+    max-height: 320px;
+    overflow: auto;
+    font-size: 0.78rem;
+    color: var(--ccg-text-light);
+}
+
+.admin-change-list {
+    font-size: 0.82rem;
+    color: var(--ccg-text-soft);
+}
+
+.admin-diff-list {
+    margin: 0;
+    padding-left: 16px;
+    display: grid;
+    gap: 6px;
+    color: var(--ccg-text-light);
+}
+
+.admin-input.is-error,
+.admin-textarea.is-error,
+.admin-select.is-error {
+    border-color: rgba(255,107,107,0.8);
+    box-shadow: 0 0 0 1px rgba(255,107,107,0.4);
+}
+
+@media (max-width: 640px) {
+    .admin-status-bar {
+        align-items: flex-start;
+    }
+}
