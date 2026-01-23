@@ -2324,6 +2324,15 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
 ============================================================ */
 
 @media (min-width: 1024px) {
+    .home-hero {
+        padding-bottom: 6px;
+    }
+
+    .home-hero__frame {
+        padding: clamp(20px, 3vw, 32px);
+        min-height: clamp(360px, 54vh, 560px);
+    }
+
     .home-section {
         margin: 18px 0;
     }
