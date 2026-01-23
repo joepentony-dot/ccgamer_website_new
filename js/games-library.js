@@ -81,7 +81,8 @@ function loadGamesOnce() {
         if (!res.ok) throw new Error("Failed to load games.json");
 
         const data = await res.json();
-        CCG_ALL_GAMES = Array.isArray(data) ? data : [];
+        const incoming = Array.isArray(data) ? data : [];
+        CCG_ALL_GAMES = dedupeGames(incoming);
         CCG_GAMES_TOTAL = CCG_ALL_GAMES.length;
     })();
 
@@ -93,6 +94,31 @@ function resetGamesState() {
     CCG_GAMES_TOTAL = 0;
     CCG_GAME_CACHE = new Map();
     CCG_ALL_LETTERS = [];
+}
+
+function dedupeGames(games) {
+    const seen = new Set();
+    return games.filter((game, index) => {
+        const key = buildGameDedupKey(game, index);
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+    });
+}
+
+function buildGameDedupKey(game, index) {
+    const system = String(game?.system || "").trim().toUpperCase();
+    const slug = String(game?.slug || "").trim().toLowerCase();
+    if (slug) return `slug:${slug}|system:${system || "UNKNOWN"}`;
+
+    const id = String(game?.id || "").trim().toLowerCase();
+    if (id) return `id:${id}|system:${system || "UNKNOWN"}`;
+
+    const title = String(game?.title || "").trim().toLowerCase();
+    const year = String(game?.year || "").trim();
+    if (title) return `title:${title}|system:${system || "UNKNOWN"}|year:${year}`;
+
+    return `index:${index}`;
 }
 
 /* ============================================================
