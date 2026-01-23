@@ -1862,7 +1862,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const counterEl = document.getElementById("ccg-visit-count");
     if (!counterEl) return;
 
-    const GOATCOUNTER_API_URL = "https://cheekycommodoregamer.goatcounter.com/api/v0/stats/total";
+    const GOATCOUNTER_API_URL = "https://cheekycommodoregamer.goatcounter.com/api/v0/stats/total?start=2020-01-01";
     const GOATCOUNTER_API_TOKEN = "1h55dk144yvt99xms45tiubge13ctobm2ezngxfwd0a64az1cm";
     const GOATCOUNTER_CACHE_KEY = "ccg_goatcounter_total";
     const GOATCOUNTER_CACHE_TTL = 60 * 60 * 1000;
