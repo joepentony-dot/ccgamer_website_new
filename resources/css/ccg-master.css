@@ -902,7 +902,7 @@ html:not([data-ccg-page="home"]) .ccg-nav__more {
     z-index: 5;
     pointer-events: auto;
     overflow-x: auto;
-    overflow-y: hidden;
+    overflow-y: visible;
     overscroll-behavior-x: contain;
     overscroll-behavior-y: none;
     touch-action: pan-x;
