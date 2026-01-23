@@ -856,6 +856,8 @@ function renderGameCardMarkup(game, opts = {}) {
                class="ccg-game-card__thumb">
                 <img src="${THUMB_PLACEHOLDER}"
                      data-src="${thumb}"
+                     data-srcset="${thumb} 320w"
+                     data-sizes="(max-width: 720px) 48vw, 320px"
                      alt="${game.title}"
                      data-game-thumb
                      loading="lazy"
@@ -955,6 +957,17 @@ function loadThumbNow(img) {
     if (!src) return;
 
     img.src = src;
+
+    const srcset = img.dataset.srcset;
+    if (srcset) {
+        img.srcset = srcset;
+    }
+
+    const sizes = img.dataset.sizes;
+    if (sizes) {
+        img.sizes = sizes;
+    }
+
     img.dataset.loaded = "true";
 }
 

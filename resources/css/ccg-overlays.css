@@ -30,6 +30,13 @@ html.ccg-mobile-defer-visuals .ccg-bg-crt-overlay {
     background: none;
 }
 
+.ccg-bg-starfield,
+.ccg-bg-starfield::after,
+.ccg-bg-grid,
+.ccg-bg-crt-overlay {
+    transition: opacity 420ms ease;
+}
+
 /* ============================================================
    VISUAL LOCK — PREVENT RUNTIME HAZE / OVERLAY BUGS (HOME ONLY)
 ============================================================ */
