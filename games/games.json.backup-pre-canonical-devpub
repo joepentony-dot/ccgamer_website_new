@@ -126,6 +126,7 @@
       "Adventure Games"
     ],
     "year": 1987,
+    "developer": "Accolade",
     "videoid": "54LR-3p9sV0",
     "lemon": [
       "https://www.lemon64.com/game/accolade-comics"
@@ -159,7 +160,8 @@
       "musician": [
         "Patrick Payne"
       ],
-      "re_releaser": []
+      "re_releaser": [],
+      "developer": "Distinctive Software"
     }
   },
   {
@@ -681,8 +683,7 @@
     "ccg_rating": 7,
     "credits": {
       "publisher": [
-        "Hewson",
-        "Info / 6 images"
+        "Hewson"
       ],
       "producer": "",
       "coder": [
@@ -763,8 +764,7 @@
     "ccg_rating_reason": "A landmark release",
     "credits": {
       "publisher": [
-        "Zeppelin Games",
-        "Info / 7 images"
+        "Zeppelin Games"
       ],
       "producer": "",
       "coder": [
@@ -875,8 +875,7 @@
     "ccg_rating": 5,
     "credits": {
       "publisher": [
-        "Mirrorsoft",
-        "Info / 7 images"
+        "Mirrorsoft"
       ],
       "producer": "",
       "coder": [
@@ -993,8 +992,7 @@
     "ccg_rating": 7,
     "credits": {
       "publisher": [
-        "Virgin Interactive",
-        "3 logos"
+        "Virgin Interactive"
       ],
       "producer": "",
       "coder": [
@@ -1387,8 +1385,7 @@
     "ccg_rating": 7,
     "credits": {
       "publisher": [
-        "Zeppelin Games",
-        "Info / 7 images"
+        "Zeppelin Games"
       ],
       "producer": "",
       "coder": [
@@ -2329,8 +2326,7 @@
     "ccg_rating": 10,
     "credits": {
       "publisher": [
-        "Virgin Interactive",
-        "3 logos"
+        "Virgin Interactive"
       ],
       "producer": "Daniel Marchant",
       "coder": [
@@ -3812,8 +3808,7 @@
     "ccg_rating_reason": "Defines the platform",
     "credits": {
       "publisher": [
-        "Virgin Interactive",
-        "3 logos"
+        "Virgin Interactive"
       ],
       "producer": "Pete Hickman",
       "coder": [
@@ -3854,8 +3849,7 @@
     "ccg_rating": 10,
     "credits": {
       "publisher": [
-        "Virgin Interactive",
-        "3 logos"
+        "Virgin Interactive"
       ],
       "producer": "Pete Hickman",
       "coder": [
@@ -5746,8 +5740,7 @@
     "credits": {
       "publisher": [
         "Cinemaware",
-        "Mirrorsoft",
-        "Info / 7 images"
+        "Mirrorsoft"
       ],
       "producer": "",
       "coder": [
@@ -6584,8 +6577,7 @@
     "ccg_rating": 6,
     "credits": {
       "publisher": [
-        "Titus Software",
-        "2 logos"
+        "Titus Software"
       ],
       "producer": "David Mullich",
       "coder": [
@@ -6725,8 +6717,7 @@
     "ccg_rating_reason": "Superb in multi-player mode",
     "credits": {
       "publisher": [
-        "Hudson Soft",
-        "2 logos"
+        "Hudson Soft"
       ],
       "producer": "",
       "coder": [
@@ -6769,8 +6760,7 @@
     "ccg_rating": 7,
     "credits": {
       "publisher": [
-        "Mirrorsoft",
-        "Info / 7 images"
+        "Mirrorsoft"
       ],
       "producer": "",
       "coder": [],
@@ -7236,8 +7226,7 @@
     "ccg_rating": 9,
     "credits": {
       "publisher": [
-        "Gamestar",
-        "2 logos"
+        "Gamestar"
       ],
       "producer": "Mike Suarez",
       "coder": [
@@ -7613,8 +7602,7 @@
     "ccg_rating": 8,
     "credits": {
       "publisher": [
-        "Hewson",
-        "Info / 6 images"
+        "Hewson"
       ],
       "producer": "",
       "coder": [
@@ -9391,8 +9379,7 @@
     "ccg_rating": 7,
     "credits": {
       "publisher": [
-        "Hewson",
-        "Info / 6 images"
+        "Hewson"
       ],
       "producer": "",
       "coder": [
@@ -11391,8 +11378,7 @@
     "ccg_rating_reason": "Mindboggling and masterful programming",
     "credits": {
       "publisher": [
-        "Hewson",
-        "Info / 6 images"
+        "Hewson"
       ],
       "producer": "",
       "coder": [
@@ -12607,8 +12593,7 @@
     "ccg_rating": 5,
     "credits": {
       "publisher": [
-        "Zeppelin Games",
-        "Info / 7 images"
+        "Zeppelin Games"
       ],
       "producer": "",
       "coder": [
@@ -14757,8 +14742,7 @@
     "ccg_rating": 7,
     "credits": {
       "publisher": [
-        "Hewson",
-        "Info / 6 images"
+        "Hewson"
       ],
       "producer": "",
       "coder": [
@@ -15749,8 +15733,7 @@
     "ccg_rating_reason": "Always a classic - Capturing the 999 droid",
     "credits": {
       "publisher": [
-        "Hewson",
-        "Info / 6 images"
+        "Hewson"
       ],
       "producer": "",
       "coder": [
@@ -18119,8 +18102,7 @@
     "credits": {
       "publisher": [
         "Cinemaware",
-        "Mirrorsoft",
-        "Info / 7 images"
+        "Mirrorsoft"
       ],
       "producer": "John Cutter",
       "coder": [
@@ -18889,8 +18871,7 @@
     "ccg_rating": 6,
     "credits": {
       "publisher": [
-        "Virgin Interactive",
-        "3 logos"
+        "Virgin Interactive"
       ],
       "producer": "Pete Hickman",
       "coder": [
@@ -19135,8 +19116,7 @@
     "ccg_rating": 8,
     "credits": {
       "publisher": [
-        "Gremlin Interactive",
-        "2 logos"
+        "Gremlin Interactive"
       ],
       "producer": "",
       "coder": [],
@@ -21960,8 +21940,7 @@
     "ccg_rating": 5,
     "credits": {
       "publisher": [
-        "Mirrorsoft",
-        "Info / 7 images"
+        "Mirrorsoft"
       ],
       "producer": "Mr. Micro",
       "coder": [],
@@ -23548,8 +23527,7 @@
     "ccg_rating_reason": "Tough but superb. Steve Turners music is brilliant too",
     "credits": {
       "publisher": [
-        "Hewson",
-        "Info / 6 images"
+        "Hewson"
       ],
       "producer": "",
       "coder": [
