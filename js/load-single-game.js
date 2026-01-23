@@ -1080,6 +1080,44 @@ function updateMeta(game) {
     if (twitterDesc) twitterDesc.setAttribute("content", desc);
 }
 
+function normalisePublisherToken(value) {
+    return String(value || "").replace(/\s+/g, " ").trim().toLowerCase();
+}
+
+function normalisePublisherValues(value) {
+    if (!value) return [];
+    if (Array.isArray(value)) {
+        return value.map(item => normalisePublisherToken(item)).filter(Boolean);
+    }
+    return String(value || "")
+        .split(",")
+        .map(item => normalisePublisherToken(item))
+        .filter(Boolean);
+}
+
+function resolvePublisherCandidates(game) {
+    const credits = (game?.credits && typeof game.credits === "object") ? game.credits : null;
+    const candidates = [
+        credits?.publisher,
+        credits?.developer,
+        game?.publisher,
+        game?.developer
+    ];
+
+    const combined = candidates.reduce((acc, value) => {
+        normalisePublisherValues(value).forEach(item => acc.add(item));
+        return acc;
+    }, new Set());
+
+    return Array.from(combined);
+}
+
+function hasPublisherMatch(source, target) {
+    if (!source.length || !target.length) return false;
+    const targetSet = new Set(target);
+    return source.some(value => targetSet.has(value));
+}
+
 /* ============================================================
    RELATED GAMES (SG-E5)
 ============================================================ */
@@ -1090,18 +1128,38 @@ function renderRelatedGames(game) {
 
     if (!container || !section) return;
 
-    const developer = game.developer;
-    if (!developer) return;
+    const currentPublishers = resolvePublisherCandidates(game);
+    if (!currentPublishers.length) {
+        section.hidden = true;
+        container.innerHTML = "";
+        return;
+    }
 
-    const related = CCG_SINGLE_ALL_GAMES.filter(g =>
-        g.id !== game.id && g.developer === developer
-    );
+    if (container.dataset.relatedFor === String(game?.id || "")) return;
 
-    if (!related.length) return;
+    const related = [];
+    const seen = new Set();
+
+    CCG_SINGLE_ALL_GAMES.forEach((candidate) => {
+        if (!candidate || candidate.id === game.id) return;
+        if (seen.has(candidate.id)) return;
+        const candidatePublishers = resolvePublisherCandidates(candidate);
+        if (!hasPublisherMatch(currentPublishers, candidatePublishers)) return;
+        seen.add(candidate.id);
+        related.push(candidate);
+    });
+
+    const limitedRelated = related.slice(0, 12);
+
+    if (!limitedRelated.length) {
+        section.hidden = true;
+        container.innerHTML = "";
+        return;
+    }
 
     container.innerHTML = "";
 
-    related.forEach(rel => {
+    limitedRelated.forEach(rel => {
         const card = document.createElement("a");
         card.className = "related-card";
         card.href = resolvePrettyGameUrl(rel);
@@ -1118,6 +1176,7 @@ function renderRelatedGames(game) {
         container.appendChild(card);
     });
 
+    container.dataset.relatedFor = String(game?.id || "");
     section.hidden = false;
     initRelatedCarousel();
 }
