@@ -827,6 +827,7 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     grid-template-columns: auto 1fr;
     gap: 1.5rem;
     align-items: start;
+    justify-content: center;
 }
 
 .game-hero__media {
@@ -849,7 +850,8 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    align-items: flex-start;
+    align-items: center;
+    text-align: center;
 }
 
 .game-hero__title {
@@ -864,7 +866,7 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
 .game-hero__meta {
     display: inline-flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     align-content: center;
     gap: 6px;
     padding: 4px 8px;
