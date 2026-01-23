@@ -768,6 +768,26 @@ body[data-ccg-mode="amiga"] {
         text-align: left;
     }
 
+    .ccg-page--single-game .game-hero__content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 1rem;
+        align-items: start;
+    }
+
+    .ccg-page--single-game .game-hero__content > .game-hero__title,
+    .ccg-page--single-game .game-hero__content > .game-hero__meta,
+    .ccg-page--single-game .game-hero__content > .game-hero__rating,
+    .ccg-page--single-game .game-hero__content > .game-hero__badges {
+        grid-column: 1 / -1;
+    }
+
+    .ccg-page--single-game .game-hero__content > .game-section,
+    .ccg-page--single-game .game-hero__content > .ccg-behind-pixels-inline {
+        align-self: stretch;
+        height: 100%;
+    }
+
     .ccg-page--single-game .game-hero__meta,
     .ccg-page--single-game .game-hero__badges {
         justify-content: flex-start;
