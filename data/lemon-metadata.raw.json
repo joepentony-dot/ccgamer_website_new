@@ -8,11 +8,13 @@
       "Stephen Green"
     ],
     "musician": [
-      "Mark Cooksey"
+      "Mark Cooksey",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Elite"
+      "Elite",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -30,7 +32,8 @@
     ],
     "producer": "",
     "publisher": [
-      "64 Tape Computing"
+      "64 Tape Computing",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1985
@@ -47,26 +50,32 @@
     "musician": [],
     "producer": "Jon Woods",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [],
     "released": 1986
   },
   "720-degrees": {
     "coder": [
-      "Chris Butler"
+      "Chris Butler",
+      "photo"
     ],
     "developer": "US Gold",
     "graphics": [],
     "musician": [
-      "Ben Daglish"
+      "Ben Daglish",
+      "3 photos",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
-      "US Gold"
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -85,7 +94,8 @@
     ],
     "producer": "Brett Sperry Info",
     "publisher": [
-      "Monarch Software"
+      "Monarch Software",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1989
@@ -99,14 +109,17 @@
       "Steve Beverley"
     ],
     "musician": [
-      "Mark Cooksey"
+      "Mark Cooksey",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Elite"
+      "Elite",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Encore"
+      "Encore",
+      "Info / logo"
     ],
     "released": 1988
   },
@@ -131,7 +144,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Accolade"
+      "Accolade",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -151,10 +165,13 @@
     "producer": "",
     "publisher": [
       "Accolade",
-      "US Gold"
+      "Info / 2 logos",
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -163,11 +180,13 @@
     "developer": "Mastertronic",
     "graphics": [],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
-      "Mastertronic"
+      "Mastertronic",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -179,11 +198,14 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Infogrames"
+      "Infogrames",
+      "Info / 5 logos"
     ],
     "re_releaser": [
       "Players Premier",
-      "Players Software"
+      "Info / logo",
+      "Players Software",
+      "Info / 4 logos"
     ],
     "released": 1989
   },
@@ -195,11 +217,13 @@
     "developer": "Mindscape",
     "graphics": [],
     "musician": [
-      "Jeroen Tel"
+      "Jeroen Tel",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "Mindscape"
+      "Mindscape",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1989
@@ -215,8 +239,10 @@
     ],
     "musician": [
       "Allister Brimble",
+      "photo",
       "Franck Sauer",
       "Jeroen Tel",
+      "2 photos",
       "Martin Iveson",
       "Martin Wall",
       "Matthew Simmonds",
@@ -225,7 +251,8 @@
     ],
     "producer": "Steven Riding",
     "publisher": [
-      "Psygnosis"
+      "Psygnosis",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1992
@@ -243,10 +270,12 @@
     ],
     "producer": "",
     "publisher": [
-      "MicroProse Software"
+      "MicroProse Software",
+      "Info / 2 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -254,19 +283,24 @@
     "coder": [],
     "developer": "Elite",
     "graphics": [
-      "Chris Harvey"
+      "Chris Harvey",
+      "photo"
     ],
     "musician": [
-      "Mark Cooksey"
+      "Mark Cooksey",
+      "photo"
     ],
     "producer": "",
     "publisher": [
       "Aackosoft",
+      "Info / logo",
       "Elite",
+      "Info / 4 logos",
       "Zafiro Software Division"
     ],
     "re_releaser": [
       "EDOS",
+      "Info / logo",
       "Encore"
     ],
     "released": 1985
@@ -284,7 +318,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Infogrames"
+      "Infogrames",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1992
@@ -300,10 +335,12 @@
     ],
     "producer": "",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "Mastertronic"
+      "Mastertronic",
+      "Info / 5 logos"
     ],
     "released": 1985
   },
@@ -312,14 +349,17 @@
     "developer": "Mind Games",
     "graphics": [],
     "musician": [
-      "Paul Clansey"
+      "Paul Clansey",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Mind Games"
+      "Mind Games",
+      "Info / logo"
     ],
     "re_releaser": [
-      "Bug-Byte"
+      "Bug-Byte",
+      "Info / 4 logos"
     ],
     "released": 1984
   },
@@ -334,11 +374,13 @@
       "Rico Holmes"
     ],
     "musician": [
-      "Allister Brimble"
+      "Allister Brimble",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Team 17"
+      "Team 17",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1991
@@ -346,13 +388,15 @@
   "aliens-the-computer-game": {
     "coder": [
       "Alan Steel",
+      "photo",
       "Edwin Rayner",
       "Mevlüt Dinç",
       "Steven Green"
     ],
     "developer": "Electric Dreams",
     "graphics": [
-      "Nick Cook"
+      "Nick Cook",
+      "2 photos"
     ],
     "musician": [
       "Russell Lieblich"
@@ -360,24 +404,32 @@
     "producer": "Software Studios",
     "publisher": [
       "Activision",
-      "Electric Dreams"
+      "Info / 7 logos",
+      "Electric Dreams",
+      "Info / 5 logos"
     ],
     "re_releaser": [
       "Alternative Software",
-      "Ricochet"
+      "Info / 2 logos",
+      "Ricochet",
+      "Info / logo"
     ],
     "released": 1986
   },
   "alleykat": {
     "coder": [
-      "Andrew Braybrook"
+      "Andrew Braybrook",
+      "photo"
     ],
     "developer": "Hewson",
     "graphics": [
-      "Andrew Braybrook"
+      "Andrew Braybrook",
+      "photo"
     ],
     "musician": [
-      "Steve Turner"
+      "Steve Turner",
+      "photo",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
@@ -399,7 +451,8 @@
     "musician": [],
     "producer": "James Charne",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -413,7 +466,8 @@
       "Stephen Walters"
     ],
     "musician": [
-      "Thomas Mogensen"
+      "Thomas Mogensen",
+      "photo"
     ],
     "producer": "",
     "publisher": [
@@ -434,7 +488,8 @@
     ],
     "producer": "David Ward Info / 2 photos",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -449,6 +504,7 @@
     "producer": "",
     "publisher": [
       "64 Tape Computing",
+      "Info / logo",
       "Datacompaniet"
     ],
     "re_releaser": [],
@@ -471,7 +527,8 @@
       "Info / 7 images"
     ],
     "re_releaser": [
-      "Alternative Software"
+      "Alternative Software",
+      "Info / 2 logos"
     ],
     "released": 1987
   },
@@ -488,7 +545,8 @@
     ],
     "producer": "",
     "publisher": [
-      "US Gold"
+      "US Gold",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1991
@@ -502,7 +560,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Quicksilva"
+      "Quicksilva",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -524,7 +583,8 @@
     ],
     "producer": "Patrick Cook Phyllis Jacob Robert Jacob",
     "publisher": [
-      "Cinemaware"
+      "Cinemaware",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1990
@@ -565,7 +625,9 @@
     "producer": "Artech Info",
     "publisher": [
       "Accolade",
-      "Electronic Arts"
+      "Info / 2 logos",
+      "Electronic Arts",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -579,7 +641,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Titus"
+      "Titus",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1991
@@ -593,11 +656,13 @@
       "Dave Korn"
     ],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -612,11 +677,13 @@
       "Nigel Fletcher"
     ],
     "musician": [
-      "David Whittaker"
+      "David Whittaker",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "Codemasters"
+      "Codemasters",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1989
@@ -630,11 +697,13 @@
       "Mario Savoia"
     ],
     "musician": [
-      "Allister Brimble"
+      "Allister Brimble",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Team 17"
+      "Team 17",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1994
@@ -649,7 +718,9 @@
     "producer": "",
     "publisher": [
       "Ariolasoft",
-      "Electronic Arts"
+      "Info / 6 logos",
+      "Electronic Arts",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -663,29 +734,36 @@
     ],
     "producer": "",
     "publisher": [
-      "Commodore"
+      "Commodore",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1983
   },
   "arkanoid": {
     "coder": [
-      "David A. Collier"
+      "David A. Collier",
+      "2 photos"
     ],
     "developer": "Imagine",
     "graphics": [
       "Mark Jones"
     ],
     "musician": [
-      "Martin Galway"
+      "Martin Galway",
+      "2 photos",
+      "Interview"
     ],
     "producer": "David Ward Info / 2 photos",
     "publisher": [
       "Imagine",
-      "Taito"
+      "Info / 3 logos",
+      "Taito",
+      "Info / 5 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -699,24 +777,29 @@
       "Jane Lowe"
     ],
     "musician": [
-      "Fred Gray"
+      "Fred Gray",
+      "photo"
     ],
     "producer": "David Ward Info / 2 photos",
     "publisher": [
-      "Imagine"
+      "Imagine",
+      "Info / 3 logos"
     ],
     "re_releaser": [
-      "Summit"
+      "Summit",
+      "Info / logo"
     ],
     "released": 1987
   },
   "arnie": {
     "coder": [
-      "Chris Butler"
+      "Chris Butler",
+      "photo"
     ],
     "developer": "Zeppelin Games",
     "graphics": [
       "Chris Butler",
+      "photo",
       "David Taylor"
     ],
     "musician": [],
@@ -742,23 +825,27 @@
     ],
     "producer": "",
     "publisher": [
-      "Melbourne House"
+      "Melbourne House",
+      "Info / 6 logos"
     ],
     "re_releaser": [],
     "released": 1986
   },
   "attack-of-the-mutant-camels": {
     "coder": [
-      "Jeff Minter"
+      "Jeff Minter",
+      "3 photos"
     ],
     "developer": "Llamasoft",
     "graphics": [
-      "Jeff Minter"
+      "Jeff Minter",
+      "3 photos"
     ],
     "musician": [],
     "producer": "",
     "publisher": [
-      "Llamasoft"
+      "Llamasoft",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -774,31 +861,38 @@
     "developer": "Gremlin Graphics",
     "graphics": [
       "Steve Kerry",
-      "Terry Lloyd"
+      "Terry Lloyd",
+      "photo"
     ],
     "musician": [
       "Ben Daglish",
+      "3 photos",
+      "Interview",
       "Rob Hubbard"
     ],
     "producer": "",
     "publisher": [
-      "Gremlin Graphics"
+      "Gremlin Graphics",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1987
   },
   "aussie-games": {
     "coder": [
-      "Gregg Barnett"
+      "Gregg Barnett",
+      "photo"
     ],
     "developer": "Mindscape",
     "graphics": [],
     "musician": [],
     "producer": "",
     "publisher": [
-      "Mindscape"
+      "Mindscape",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1989
@@ -810,28 +904,34 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Mikro-Gen"
+      "Mikro-Gen",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1984
   },
   "aztec-challenge": {
     "coder": [
-      "Paul Norman"
+      "Paul Norman",
+      "photo"
     ],
     "developer": "Cosmi",
     "graphics": [
-      "Paul Norman"
+      "Paul Norman",
+      "photo"
     ],
     "musician": [
-      "Paul Norman"
+      "Paul Norman",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Cosmi"
+      "Cosmi",
+      "Info / 2 logos"
     ],
     "re_releaser": [
-      "Top Ten"
+      "Top Ten",
+      "Info / logo"
     ],
     "released": 1983
   },
@@ -844,26 +944,32 @@
     "musician": [],
     "producer": "Sydney Development",
     "publisher": [
-      "Software Projects"
+      "Software Projects",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1984
   },
   "b-c-bill": {
     "coder": [
-      "Marc Dawson"
+      "Marc Dawson",
+      "photo"
     ],
     "developer": "Imagine",
     "graphics": [
       "Ally Noble",
-      "Steve Cain"
+      "photo",
+      "Steve Cain",
+      "4 photos"
     ],
     "musician": [
-      "Fred Gray"
+      "Fred Gray",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Imagine"
+      "Imagine",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -877,7 +983,8 @@
     "musician": [],
     "producer": "Sydney Development",
     "publisher": [
-      "Software Projects"
+      "Software Projects",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -891,14 +998,16 @@
     ],
     "producer": "",
     "publisher": [
-      "Mastertronic"
+      "Mastertronic",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1986
   },
   "back-to-the-future": {
     "coder": [
-      "Martin Walker"
+      "Martin Walker",
+      "2 photos"
     ],
     "developer": "Electric Dreams",
     "graphics": [],
@@ -908,31 +1017,38 @@
     ],
     "producer": "",
     "publisher": [
-      "Electric Dreams"
+      "Electric Dreams",
+      "Info / 5 logos"
     ],
     "re_releaser": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "released": 1986
   },
   "bad-dudes-vs-dragonninja": {
     "coder": [
-      "David A. Collier"
+      "David A. Collier",
+      "2 photos"
     ],
     "developer": "Imagine",
     "graphics": [
       "John Palmer",
-      "Stephen Wahid"
+      "Stephen Wahid",
+      "photo"
     ],
     "musician": [
-      "Jonathan Dunn"
+      "Jonathan Dunn",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Imagine"
+      "Imagine",
+      "Info / 3 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1989
   },
@@ -943,14 +1059,17 @@
     "developer": "Domark",
     "graphics": [],
     "musician": [
-      "Matt Furniss"
+      "Matt Furniss",
+      "photo"
     ],
     "producer": "Teque Software",
     "publisher": [
-      "Domark"
+      "Domark",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1990
   },
@@ -963,14 +1082,17 @@
       "Hugh Riley"
     ],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "Mark Cale Info Tim Best",
     "publisher": [
-      "System 3"
+      "System 3",
+      "Info / 6 logos"
     ],
     "re_releaser": [
-      "Summit"
+      "Summit",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -984,14 +1106,17 @@
       "Steve Brown"
     ],
     "musician": [
-      "Richard Joseph"
+      "Richard Joseph",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Palace Software"
+      "Palace Software",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1988
   },
@@ -1004,14 +1129,17 @@
       "Gary Carr"
     ],
     "musician": [
-      "Richard Joseph"
+      "Richard Joseph",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Palace Software"
+      "Palace Software",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -1029,10 +1157,12 @@
     ],
     "producer": "John Cutter Scott Orr Info",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "Mastertronic Plus"
+      "Mastertronic Plus",
+      "Info / logo"
     ],
     "released": 1985
   },
@@ -1042,19 +1172,25 @@
     ],
     "developer": "Data East",
     "graphics": [
-      "Karen Davies"
+      "Karen Davies",
+      "3 photos"
     ],
     "musician": [
-      "Fred Gray"
+      "Fred Gray",
+      "photo"
     ],
     "producer": "David Ward Info / 2 photos Paul J. Finnegan Info",
     "publisher": [
       "Data East",
+      "Info / 3 logos",
       "ERBE Software",
-      "Ocean"
+      "Info / logo",
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1988
   },
@@ -1071,10 +1207,12 @@
     ],
     "producer": "",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -1086,12 +1224,14 @@
     "developer": "Electronic Arts",
     "graphics": [
       "Bruce Schlickbernd",
-      "Todd J. Camasta"
+      "Todd J. Camasta",
+      "2 photos"
     ],
     "musician": [],
     "producer": "Brian Fargo",
     "publisher": [
-      "Electronic Arts"
+      "Electronic Arts",
+      "Info / 6 logos"
     ],
     "re_releaser": [],
     "released": 1988
@@ -1103,10 +1243,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Access Software"
+      "Access Software",
+      "Info / logo"
     ],
     "re_releaser": [
-      "Americana"
+      "Americana",
+      "Info / 3 logos"
     ],
     "released": 1983
   },
@@ -1117,10 +1259,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Access Software"
+      "Access Software",
+      "Info / logo"
     ],
     "re_releaser": [
-      "Americana"
+      "Americana",
+      "Info / 3 logos"
     ],
     "released": 1985
   },
@@ -1137,7 +1281,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Windham Classics"
+      "Windham Classics",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1984
@@ -1180,32 +1325,38 @@
     ],
     "producer": "Greg Duddle",
     "publisher": [
-      "Psygnosis"
+      "Psygnosis",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1994
   },
   "beyond-the-forbidden-forest": {
     "coder": [
-      "Paul Norman"
+      "Paul Norman",
+      "photo"
     ],
     "developer": "Cosmi",
     "graphics": [
-      "Paul Norman"
+      "Paul Norman",
+      "photo"
     ],
     "musician": [
-      "Paul Norman"
+      "Paul Norman",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Cosmi"
+      "Cosmi",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1985
   },
   "big-trouble-in-little-china": {
     "coder": [
-      "Nick Cook"
+      "Nick Cook",
+      "2 photos"
     ],
     "developer": "Electric Dreams",
     "graphics": [
@@ -1214,10 +1365,12 @@
     "musician": [],
     "producer": "Jonathan Dean",
     "publisher": [
-      "Electric Dreams"
+      "Electric Dreams",
+      "Info / 5 logos"
     ],
     "re_releaser": [
-      "Alternative Software"
+      "Alternative Software",
+      "Info / 2 logos"
     ],
     "released": 1987
   },
@@ -1230,28 +1383,33 @@
       "Andrew R. Threlfall"
     ],
     "musician": [
-      "Tim Follin"
+      "Tim Follin",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "GO!"
+      "GO!",
+      "Info / 3 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1988
   },
   "bionic-granny": {
     "coder": [
       "David Darling",
-      "Richard Darling"
+      "Richard Darling",
+      "photo"
     ],
     "developer": "Mastertronic",
     "graphics": [],
     "musician": [],
     "producer": "",
     "publisher": [
-      "Mastertronic"
+      "Mastertronic",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -1265,10 +1423,12 @@
     ],
     "producer": "",
     "publisher": [
-      "Creative Sparks"
+      "Creative Sparks",
+      "Info / 2 logos"
     ],
     "re_releaser": [
-      "Sparklers"
+      "Sparklers",
+      "Info / logo"
     ],
     "released": 1984
   },
@@ -1289,7 +1449,8 @@
       "Roflow Computer Software"
     ],
     "re_releaser": [
-      "ECP"
+      "ECP",
+      "Info / logo"
     ],
     "released": 1984
   },
@@ -1304,7 +1465,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "US Gold"
+      "US Gold",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1990
@@ -1322,10 +1484,12 @@
     ],
     "producer": "",
     "publisher": [
-      "Ultimate"
+      "Ultimate",
+      "Info / 2 logos"
     ],
     "re_releaser": [
-      "Ricochet"
+      "Ricochet",
+      "Info / logo"
     ],
     "released": 1985
   },
@@ -1343,7 +1507,8 @@
     ],
     "producer": "",
     "publisher": [
-      "CRL"
+      "CRL",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -1357,23 +1522,27 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Konami"
+      "Konami",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1990
   },
   "blagger": {
     "coder": [
-      "Antony Crowther"
+      "Antony Crowther",
+      "5 photos"
     ],
     "developer": "Alligata Software",
     "graphics": [
-      "Antony Crowther"
+      "Antony Crowther",
+      "5 photos"
     ],
     "musician": [],
     "producer": "",
     "publisher": [
-      "Alligata Software"
+      "Alligata Software",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -1387,11 +1556,13 @@
       "Marcus Altman"
     ],
     "musician": [
-      "Antony Crowther"
+      "Antony Crowther",
+      "5 photos"
     ],
     "producer": "",
     "publisher": [
-      "Alligata Software"
+      "Alligata Software",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -1403,7 +1574,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "TV Games"
+      "TV Games",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1988
@@ -1419,7 +1591,8 @@
     ],
     "producer": "",
     "publisher": [
-      "American Action"
+      "American Action",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -1431,7 +1604,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Image Works"
+      "Image Works",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1990
@@ -1446,7 +1620,9 @@
     "producer": "",
     "publisher": [
       "Synapse Software",
-      "US Gold"
+      "Info / 3 logos",
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -1454,7 +1630,8 @@
   "bmx-kidz": {
     "coder": [
       "Dave Korn",
-      "Joe Bonar"
+      "Joe Bonar",
+      "photo"
     ],
     "developer": "Firebird",
     "graphics": [
@@ -1462,27 +1639,32 @@
     ],
     "musician": [
       "Jori Olkkonen",
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1987
   },
   "bmx-simulator": {
     "coder": [
-      "Richard Darling"
+      "Richard Darling",
+      "photo"
     ],
     "developer": "Codemasters",
     "graphics": [],
     "musician": [
-      "David Whittaker"
+      "David Whittaker",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "Codemasters"
+      "Codemasters",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -1494,28 +1676,33 @@
     "musician": [],
     "producer": "Francesco Carlà Info",
     "publisher": [
-      "Simulmondo"
+      "Simulmondo",
+      "Info / 6 logos"
     ],
     "re_releaser": [],
     "released": 1987
   },
   "bomb-jack": {
     "coder": [
-      "Chris Harvey"
+      "Chris Harvey",
+      "photo"
     ],
     "developer": "Elite",
     "graphics": [
       "Rory Green"
     ],
     "musician": [
-      "Mark Cooksey"
+      "Mark Cooksey",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Elite"
+      "Elite",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Encore"
+      "Encore",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -1528,7 +1715,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -1544,25 +1732,30 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "First Star Software"
+      "First Star Software",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Prism Leisure"
+      "Prism Leisure",
+      "Info / logo"
     ],
     "released": 1984
   },
   "bounces": {
     "coder": [
-      "Graham Everett"
+      "Graham Everett",
+      "3 photos"
     ],
     "developer": "Beyond",
     "graphics": [],
     "musician": [
-      "Fred Gray"
+      "Fred Gray",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Beyond"
+      "Beyond",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -1574,32 +1767,37 @@
     ],
     "developer": "Gremlin Graphics",
     "graphics": [
-      "Terry Lloyd"
+      "Terry Lloyd",
+      "photo"
     ],
     "musician": [
       "Andrew Green"
     ],
     "producer": "",
     "publisher": [
-      "Gremlin Graphics"
+      "Gremlin Graphics",
+      "Info / 7 logos"
     ],
     "re_releaser": [],
     "released": 1986
   },
   "bozo-s-night-out": {
     "coder": [
-      "Tony Gibson"
+      "Tony Gibson",
+      "photo"
     ],
     "developer": "Taskset",
     "graphics": [
-      "Mark Harrison"
+      "Mark Harrison",
+      "photo"
     ],
     "musician": [
       "Paul Hodgson"
     ],
     "producer": "",
     "publisher": [
-      "Taskset"
+      "Taskset",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -1616,7 +1814,8 @@
     "producer": "",
     "publisher": [
       "CBS Electronics Software",
-      "Epyx"
+      "Epyx",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -1626,11 +1825,13 @@
     "developer": "US Gold",
     "graphics": [],
     "musician": [
-      "Fred Gray"
+      "Fred Gray",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "US Gold"
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -1642,10 +1843,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Martech"
+      "Martech",
+      "Info / 2 logos"
     ],
     "re_releaser": [
-      "Ricochet"
+      "Ricochet",
+      "Info / logo"
     ],
     "released": 1985
   },
@@ -1663,10 +1866,13 @@
     "producer": "",
     "publisher": [
       "Datasoft",
-      "US Gold"
+      "Info / 3 logos",
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Americana"
+      "Americana",
+      "Info / 3 logos"
     ],
     "released": 1984
   },
@@ -1683,10 +1889,12 @@
     ],
     "producer": "",
     "publisher": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -1703,10 +1911,12 @@
     ],
     "producer": "",
     "publisher": [
-      "Elite"
+      "Elite",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Encore"
+      "Encore",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -1721,7 +1931,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Alternative Software"
+      "Alternative Software",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1992
@@ -1739,7 +1950,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Superior Software"
+      "Superior Software",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1988
@@ -1751,17 +1963,20 @@
     "developer": "Ocean",
     "graphics": [
       "Ivan Davies",
-      "Karen Davies"
+      "Karen Davies",
+      "3 photos"
     ],
     "musician": [
       "Keith Tinman"
     ],
     "producer": "David Ward Info / 2 photos Paul J. Finnegan Info",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1989
   },
@@ -1777,11 +1992,13 @@
       "Robin Chapman"
     ],
     "musician": [
-      "Richard Joseph"
+      "Richard Joseph",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Image Works"
+      "Image Works",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1990
@@ -1796,15 +2013,19 @@
       "Suzie Greene"
     ],
     "musician": [
-      "Chris Grigg"
+      "Chris Grigg",
+      "photo"
     ],
     "producer": "",
     "publisher": [
       "Epyx",
-      "US Gold"
+      "Info / 3 logos",
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -1818,7 +2039,8 @@
     ],
     "musician": [
       "Jon Hare",
-      "Richard Joseph"
+      "Richard Joseph",
+      "photo"
     ],
     "producer": "Pete Hickman",
     "publisher": [
@@ -1840,7 +2062,8 @@
     ],
     "musician": [
       "Jon Hare",
-      "Richard Joseph"
+      "Richard Joseph",
+      "photo"
     ],
     "producer": "Pete Hickman",
     "publisher": [
@@ -1865,7 +2088,9 @@
     "producer": "",
     "publisher": [
       "Accolade",
-      "Electronic Arts"
+      "Info / 2 logos",
+      "Electronic Arts",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1988
@@ -1874,6 +2099,7 @@
     "coder": [
       "Chris Andrew",
       "Paul Gregory",
+      "2 photos",
       "Sean Ellis"
     ],
     "developer": "Domark",
@@ -1881,14 +2107,17 @@
       "Mike Salmon"
     ],
     "musician": [
-      "Matt Furniss"
+      "Matt Furniss",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Domark"
+      "Domark",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1990
   },
@@ -1904,10 +2133,13 @@
     "producer": "",
     "publisher": [
       "Brøderbund",
-      "Palace Software"
+      "Info / 2 logos",
+      "Palace Software",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Silverbird"
+      "Silverbird",
+      "Info / logo"
     ],
     "released": 1985
   },
@@ -1920,14 +2152,17 @@
       "Steve Brown"
     ],
     "musician": [
-      "Richard Joseph"
+      "Richard Joseph",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Palace Software"
+      "Palace Software",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Silverbird"
+      "Silverbird",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -1957,7 +2192,8 @@
     "producer": "David Ward Info / 2 photos",
     "publisher": [
       "Corgi",
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -1980,7 +2216,8 @@
     ],
     "producer": "Don Traeger",
     "publisher": [
-      "Electronic Arts"
+      "Electronic Arts",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1988
@@ -1998,7 +2235,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Ubi Soft"
+      "Ubi Soft",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1991
@@ -2014,16 +2252,20 @@
     "publisher": [
       "d3m Software",
       "ECP",
+      "Info / logo",
       "Epyx",
+      "Info / 3 logos",
       "ERBE Software",
       "Pylator",
       "Quick Soft",
       "Rushware",
       "Scandomatic",
-      "US Gold"
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -2035,21 +2277,25 @@
     "developer": "Ocean",
     "graphics": [],
     "musician": [
-      "Matt Furniss"
+      "Matt Furniss",
+      "photo"
     ],
     "producer": "David Ward Info / 2 photos",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1989
   },
   "chiller": {
     "coder": [
       "David Darling",
-      "Richard Darling"
+      "Richard Darling",
+      "photo"
     ],
     "developer": "Mastertronic",
     "graphics": [],
@@ -2058,7 +2304,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Mastertronic"
+      "Mastertronic",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -2072,11 +2319,13 @@
       "Shahid Ahmad"
     ],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -2090,7 +2339,8 @@
     ],
     "producer": "Richard Paul Jones",
     "publisher": [
-      "Interceptor Software"
+      "Interceptor Software",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -2100,11 +2350,13 @@
     "developer": "Cosmi",
     "graphics": [],
     "musician": [
-      "Paul Norman"
+      "Paul Norman",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Cosmi"
+      "Cosmi",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1989
@@ -2117,7 +2369,9 @@
     "producer": "",
     "publisher": [
       "Ariolasoft",
-      "Brøderbund"
+      "Info / 6 logos",
+      "Brøderbund",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1982
@@ -2129,7 +2383,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Sparklers"
+      "Sparklers",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1985
@@ -2143,7 +2398,8 @@
     ],
     "producer": "",
     "publisher": [
-      "A'n'F Software"
+      "A'n'F Software",
+      "Info / logo"
     ],
     "re_releaser": [
       "Pick & Choose"
@@ -2166,7 +2422,8 @@
     ],
     "producer": "",
     "publisher": [
-      "MicroProse Software"
+      "MicroProse Software",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1992
@@ -2182,7 +2439,8 @@
     ],
     "producer": "",
     "publisher": [
-      "New Generation Software"
+      "New Generation Software",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1984
@@ -2193,17 +2451,22 @@
     ],
     "developer": "Ocean",
     "graphics": [
-      "Karen Davies"
+      "Karen Davies",
+      "3 photos"
     ],
     "musician": [
-      "Ben Daglish"
+      "Ben Daglish",
+      "3 photos",
+      "Interview"
     ],
     "producer": "Jon Woods",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -2211,6 +2474,7 @@
     "coder": [
       "Allan Shortt",
       "David A. Collier",
+      "2 photos",
       "Paul Hughes"
     ],
     "developer": "Ocean",
@@ -2219,35 +2483,44 @@
       "Simon Butler"
     ],
     "musician": [
-      "Martin Galway"
+      "Martin Galway",
+      "2 photos",
+      "Interview"
     ],
     "producer": "David Ward Info / 2 photos",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1987
   },
   "commando": {
     "coder": [
-      "Chris Butler"
+      "Chris Butler",
+      "photo"
     ],
     "developer": "Elite",
     "graphics": [
       "Chris Harvey",
+      "photo",
       "Rory Green"
     ],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
-      "Elite"
+      "Elite",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Encore"
+      "Encore",
+      "Info / logo"
     ],
     "released": 1985
   },
@@ -2259,6 +2532,7 @@
     "producer": "",
     "publisher": [
       "Sega",
+      "Info / 4 logos",
       "US Gold"
     ],
     "re_releaser": [],
@@ -2271,7 +2545,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Atlantis Software"
+      "Atlantis Software",
+      "Info / 6 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -2287,7 +2562,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Taskset"
+      "Taskset",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -2299,7 +2575,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Datamost"
+      "Datamost",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1984
@@ -2312,11 +2589,15 @@
     "producer": "",
     "publisher": [
       "Activision",
-      "Creative Sparks"
+      "Info / 7 logos",
+      "Creative Sparks",
+      "Info / 2 logos"
     ],
     "re_releaser": [
       "Compulogical",
-      "MAD (Mastertronic)"
+      "Info / logo",
+      "MAD (Mastertronic)",
+      "Info / 5 logos"
     ],
     "released": 1984
   },
@@ -2329,51 +2610,67 @@
       "Simon Nicol"
     ],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
-      "Martech"
+      "Martech",
+      "Info / 2 logos"
     ],
     "re_releaser": [
-      "Ricochet"
+      "Ricochet",
+      "Info / logo"
     ],
     "released": 1985
   },
   "creatures": {
     "coder": [
-      "John Rowlands"
+      "John Rowlands",
+      "photo"
     ],
     "developer": "Thalamus",
     "graphics": [
-      "Steve Rowlands"
+      "Steve Rowlands",
+      "2 photos",
+      "Interview"
     ],
     "musician": [
-      "Steve Rowlands"
+      "Steve Rowlands",
+      "2 photos",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
-      "Thalamus"
+      "Thalamus",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1990
   },
   "creatures-2-torture-trouble": {
     "coder": [
-      "John Rowlands"
+      "John Rowlands",
+      "photo"
     ],
     "developer": "Thalamus",
     "graphics": [
-      "Steve Rowlands"
+      "Steve Rowlands",
+      "2 photos",
+      "Interview"
     ],
     "musician": [
-      "Steve Rowlands"
+      "Steve Rowlands",
+      "2 photos",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
-      "Thalamus"
+      "Thalamus",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1992
@@ -2387,7 +2684,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Sierra On-Line"
+      "Sierra On-Line",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -2399,10 +2697,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "US Gold"
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -2419,7 +2719,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Black Legend"
+      "Black Legend",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1994
@@ -2433,11 +2734,13 @@
       "Arnold Franz Sakowski"
     ],
     "musician": [
-      "Rudolf Stember"
+      "Rudolf Stember",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Rainbow Arts"
+      "Rainbow Arts",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1990
@@ -2457,11 +2760,13 @@
       "Tom Wahl"
     ],
     "musician": [
-      "Dave Warhol"
+      "Dave Warhol",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Strategic Simulations Inc."
+      "Strategic Simulations Inc.",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1989
@@ -2479,7 +2784,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Mindscape"
+      "Mindscape",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1992
@@ -2488,23 +2794,29 @@
     "coder": [
       "Bill Barna",
       "David A. Collier",
+      "2 photos",
       "Tony Pomfret"
     ],
     "developer": "Ocean",
     "graphics": [
       "David A. Collier",
+      "2 photos",
       "Tony Pomfret"
     ],
     "musician": [
       "David Dunn",
-      "Martin Galway"
+      "Martin Galway",
+      "2 photos",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1984
   },
@@ -2519,10 +2831,12 @@
     "musician": [],
     "producer": "Gang of Five",
     "publisher": [
-      "Virgin Games"
+      "Virgin Games",
+      "Info / 2 logos"
     ],
     "re_releaser": [
-      "Ricochet"
+      "Ricochet",
+      "Info / logo"
     ],
     "released": 1988
   },
@@ -2536,15 +2850,19 @@
     ],
     "musician": [
       "Andy Wilson",
-      "Graham Marsh"
+      "Graham Marsh",
+      "photo"
     ],
     "producer": "Gang of Five",
     "publisher": [
       "Electronic Arts",
-      "Virgin Games"
+      "Info / 4 logos",
+      "Virgin Games",
+      "Info / 2 logos"
     ],
     "re_releaser": [
-      "Ricochet"
+      "Ricochet",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -2558,7 +2876,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Commodore"
+      "Commodore",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -2572,11 +2891,13 @@
       "Ned Langman"
     ],
     "musician": [
-      "Allister Brimble"
+      "Allister Brimble",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Storm"
+      "Storm",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1992
@@ -2608,7 +2929,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Cascade Games"
+      "Cascade Games",
+      "Info / 6 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -2622,7 +2944,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Reaktör Software"
+      "Reaktör Software",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -2636,7 +2959,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Atarisoft"
+      "Atarisoft",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1983
@@ -2649,11 +2973,13 @@
     "developer": "Cinemaware",
     "graphics": [],
     "musician": [
-      "Richard Joseph"
+      "Richard Joseph",
+      "photo"
     ],
     "producer": "",
     "publisher": [
       "Cinemaware",
+      "Info / 5 logos",
       "Mirrorsoft",
       "Info / 7 images"
     ],
@@ -2669,14 +2995,18 @@
       "Pete Tattersall"
     ],
     "musician": [
-      "Ben Daglish"
+      "Ben Daglish",
+      "3 photos",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
-      "Enigma Variations"
+      "Enigma Variations",
+      "Info / 3 logos"
     ],
     "re_releaser": [
-      "Hi-Tec Software"
+      "Hi-Tec Software",
+      "Info / 3 logos"
     ],
     "released": 1990
   },
@@ -2687,11 +3017,14 @@
       "Steve Kerry"
     ],
     "musician": [
-      "Ben Daglish"
+      "Ben Daglish",
+      "3 photos",
+      "Interview"
     ],
     "producer": "Vortex Software logo",
     "publisher": [
-      "Gremlin Graphics"
+      "Gremlin Graphics",
+      "Info / 7 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -2705,14 +3038,17 @@
       "Stavros Fasoulas"
     ],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "Gary Liddon Info",
     "publisher": [
-      "Thalamus"
+      "Thalamus",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -2723,7 +3059,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "CRL"
+      "CRL",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -2743,7 +3080,8 @@
     ],
     "producer": "Matt Webster Steve Wetherill",
     "publisher": [
-      "Electronic Arts"
+      "Electronic Arts",
+      "Info / 6 logos"
     ],
     "re_releaser": [],
     "released": 1993
@@ -2760,7 +3098,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [],
     "released": 1990
@@ -2772,11 +3111,13 @@
       "James Wilson"
     ],
     "musician": [
-      "David Whittaker"
+      "David Whittaker",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "Codemasters"
+      "Codemasters",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1988
@@ -2790,7 +3131,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Micro Power"
+      "Micro Power",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -2807,7 +3149,8 @@
     "producer": "",
     "publisher": [
       "Kids!",
-      "Sierra On-Line"
+      "Sierra On-Line",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -2823,7 +3166,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Atarisoft"
+      "Atarisoft",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1983
@@ -2843,7 +3187,9 @@
     "producer": "",
     "publisher": [
       "Rabbit Software",
-      "Virgin Games"
+      "Info / logo",
+      "Virgin Games",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -2865,6 +3211,7 @@
     "producer": "",
     "publisher": [
       "Alternative Software",
+      "Info / 2 logos",
       "GameTek"
     ],
     "re_releaser": [],
@@ -2885,11 +3232,13 @@
     ],
     "musician": [
       "Barry Leitch",
+      "photo",
       "Ian Howe"
     ],
     "producer": "",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [],
     "released": 1991
@@ -2907,7 +3256,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Virgin Mastertronic"
+      "Virgin Mastertronic",
+      "Info / logo"
     ],
     "re_releaser": [
       "Tronix (Virgin Games)"
@@ -2929,10 +3279,12 @@
     "producer": "",
     "publisher": [
       "Electronic Arts",
+      "Info / 4 logos",
       "Software Projects"
     ],
     "re_releaser": [
       "EDOS",
+      "Info / logo",
       "Encore"
     ],
     "released": 1986
@@ -2949,15 +3301,18 @@
       "Nicole Baikaloff"
     ],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
       "Electronic Arts",
+      "Info / 4 logos",
       "Software Projects"
     ],
     "re_releaser": [
-      "Encore"
+      "Encore",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -2974,10 +3329,12 @@
     ],
     "producer": "",
     "publisher": [
-      "Ultimate"
+      "Ultimate",
+      "Info / 2 logos"
     ],
     "re_releaser": [
-      "Ricochet"
+      "Ricochet",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -3001,11 +3358,13 @@
   },
   "dropzone": {
     "coder": [
-      "Archer Maclean"
+      "Archer Maclean",
+      "photo"
     ],
     "developer": "US Gold",
     "graphics": [
-      "Archer Maclean"
+      "Archer Maclean",
+      "photo"
     ],
     "musician": [],
     "producer": "Arena Graphics",
@@ -3014,6 +3373,7 @@
     ],
     "re_releaser": [
       "Americana",
+      "Info / 3 logos",
       "Microdaft"
     ],
     "released": 1985
@@ -3058,7 +3418,8 @@
     ],
     "producer": "David A. Luehmann David Bishop Info / photo Dr. Stephen H. Clarke-Willson",
     "publisher": [
-      "Virgin Games"
+      "Virgin Games",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1992
@@ -3085,7 +3446,8 @@
     ],
     "producer": "Brett W. Sperry",
     "publisher": [
-      "Virgin Games"
+      "Virgin Games",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1993
@@ -3125,7 +3487,8 @@
       "Info / 7 images"
     ],
     "re_releaser": [
-      "Silverbird"
+      "Silverbird",
+      "Info / logo"
     ],
     "released": 1985
   },
@@ -3138,10 +3501,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Martech"
+      "Martech",
+      "Info / 2 logos"
     ],
     "re_releaser": [
-      "Ricochet"
+      "Ricochet",
+      "Info / logo"
     ],
     "released": 1984
   },
@@ -3155,7 +3520,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -3169,11 +3535,13 @@
       "Andrew Calver"
     ],
     "musician": [
-      "Barry Leitch"
+      "Barry Leitch",
+      "photo"
     ],
     "producer": "Peter Calver 2 photos",
     "publisher": [
-      "Audiogenic"
+      "Audiogenic",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1988
@@ -3191,7 +3559,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Ultimate"
+      "Ultimate",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -3224,14 +3593,17 @@
       "Neil Adamson"
     ],
     "musician": [
-      "Matt Furniss"
+      "Matt Furniss",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Domark"
+      "Domark",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1990
   },
@@ -3254,7 +3626,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Strategic Simulations Inc."
+      "Strategic Simulations Inc.",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1992
@@ -3266,28 +3639,34 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Mikro-Gen"
+      "Mikro-Gen",
+      "Info / 5 logos"
     ],
     "re_releaser": [
       "Alternative Software",
-      "Sparklers"
+      "Info / 2 logos",
+      "Sparklers",
+      "Info / logo"
     ],
     "released": 1985
   },
   "exile": {
     "coder": [
       "Jeremy C. Smith",
+      "photo",
       "Peter Irvin"
     ],
     "developer": "Audiogenic",
     "graphics": [
       "Jeremy C. Smith",
+      "photo",
       "Peter Irvin"
     ],
     "musician": [],
     "producer": "",
     "publisher": [
-      "Audiogenic"
+      "Audiogenic",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1991
@@ -3322,7 +3701,8 @@
     "producer": "",
     "publisher": [
       "Advantage*Artworx",
-      "Virgin Games"
+      "Virgin Games",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -3332,11 +3712,13 @@
     "developer": "Image Works",
     "graphics": [],
     "musician": [
-      "Antony Crowther"
+      "Antony Crowther",
+      "5 photos"
     ],
     "producer": "",
     "publisher": [
-      "Image Works"
+      "Image Works",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1988
@@ -3348,11 +3730,13 @@
     "developer": "Mastertronic",
     "graphics": [],
     "musician": [
-      "David Whittaker"
+      "David Whittaker",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "Bulldog Software"
+      "Bulldog Software",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1987
@@ -3368,11 +3752,13 @@
       "Kristi Louise Herd"
     ],
     "musician": [
-      "Barry Leitch"
+      "Barry Leitch",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Mindscape"
+      "Mindscape",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1990
@@ -3387,14 +3773,17 @@
       "Russel Comte"
     ],
     "musician": [
-      "Andrián Pertout"
+      "Andrián Pertout",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Melbourne House"
+      "Melbourne House",
+      "Info / 6 logos"
     ],
     "re_releaser": [
-      "Mastertronic Plus"
+      "Mastertronic Plus",
+      "Info / logo"
     ],
     "released": 1985
   },
@@ -3409,7 +3798,8 @@
     ],
     "producer": "",
     "publisher": [
-      "US Gold"
+      "US Gold",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1991
@@ -3425,7 +3815,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Mastertronic"
+      "Mastertronic",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -3437,21 +3828,26 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Mogul"
+      "Mogul",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1983
   },
   "firelord": {
     "coder": [
-      "John Cumming"
+      "John Cumming",
+      "photo"
     ],
     "developer": "Hewson",
     "graphics": [
-      "John Cumming"
+      "John Cumming",
+      "photo"
     ],
     "musician": [
-      "Ben Daglish"
+      "Ben Daglish",
+      "3 photos",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
@@ -3460,14 +3856,18 @@
     ],
     "re_releaser": [
       "LK Avalon",
+      "Info / 2 logos",
       "Players Premier",
-      "Players Software"
+      "Info / logo",
+      "Players Software",
+      "Info / 4 logos"
     ],
     "released": 1986
   },
   "first-samurai": {
     "coder": [
-      "Jon Williams"
+      "Jon Williams",
+      "photo"
     ],
     "developer": "Image Works",
     "graphics": [
@@ -3478,14 +3878,16 @@
     ],
     "producer": "",
     "publisher": [
-      "Image Works"
+      "Image Works",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1992
   },
   "fist-2-the-legend-continues": {
     "coder": [
-      "Gregg Barnett"
+      "Gregg Barnett",
+      "photo"
     ],
     "developer": "Melbourne House",
     "graphics": [
@@ -3497,10 +3899,12 @@
     ],
     "producer": "",
     "publisher": [
-      "Melbourne House"
+      "Melbourne House",
+      "Info / 6 logos"
     ],
     "re_releaser": [
-      "Mastertronic Plus"
+      "Mastertronic Plus",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -3513,11 +3917,13 @@
       "Steven Murray"
     ],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
-      "MAD (Mastertronic)"
+      "MAD (Mastertronic)",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -3545,7 +3951,8 @@
     ],
     "producer": "",
     "publisher": [
-      "US Gold"
+      "US Gold",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1992
@@ -3563,14 +3970,17 @@
     ],
     "musician": [
       "Johannes Bjerregaard",
+      "photo",
       "Reyn Ouwehand"
     ],
     "producer": "",
     "publisher": [
-      "System 3"
+      "System 3",
+      "Info / 6 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1990
   },
@@ -3583,7 +3993,8 @@
     ],
     "producer": "",
     "publisher": [
-      "State Soft"
+      "State Soft",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -3599,7 +4010,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Virgin Games"
+      "Virgin Games",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1992
@@ -3613,7 +4025,8 @@
     ],
     "producer": "",
     "publisher": [
-      "MicroProse Software"
+      "MicroProse Software",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -3627,10 +4040,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Piranha"
+      "Piranha",
+      "Info / 5 logos"
     ],
     "re_releaser": [
-      "Alternative Software"
+      "Alternative Software",
+      "Info / 2 logos"
     ],
     "released": 1987
   },
@@ -3643,28 +4058,34 @@
     ],
     "producer": "",
     "publisher": [
-      "Bubble Bus"
+      "Bubble Bus",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1984
   },
   "forbidden-forest": {
     "coder": [
-      "Paul Norman"
+      "Paul Norman",
+      "photo"
     ],
     "developer": "Cosmi",
     "graphics": [
-      "Paul Norman"
+      "Paul Norman",
+      "photo"
     ],
     "musician": [
-      "Paul Norman"
+      "Paul Norman",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Cosmi"
+      "Cosmi",
+      "Info / 2 logos"
     ],
     "re_releaser": [
-      "Top Ten"
+      "Top Ten",
+      "Info / logo"
     ],
     "released": 1983
   },
@@ -3679,7 +4100,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Datasoft"
+      "Datasoft",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -3692,7 +4114,9 @@
     "producer": "",
     "publisher": [
       "Synapse Software",
-      "US Gold"
+      "Info / 3 logos",
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1982
@@ -3706,7 +4130,8 @@
     ],
     "producer": "",
     "publisher": [
-      "State Soft"
+      "State Soft",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -3714,18 +4139,22 @@
   "frankie-goes-to-hollywood": {
     "coder": [
       "Dave Colclough",
-      "Graham Everett"
+      "Graham Everett",
+      "3 photos"
     ],
     "developer": "Ocean",
     "graphics": [
-      "Karen Davies"
+      "Karen Davies",
+      "3 photos"
     ],
     "musician": [
-      "Fred Gray"
+      "Fred Gray",
+      "photo"
     ],
     "producer": "David Ward Info / 2 photos",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -3744,7 +4173,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -3758,7 +4188,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Domark"
+      "Domark",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -3772,7 +4203,8 @@
       "Pete Lyon"
     ],
     "musician": [
-      "David Whittaker"
+      "David Whittaker",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
@@ -3790,14 +4222,17 @@
       "Ron Ashley"
     ],
     "musician": [
-      "Jeroen Kimmel"
+      "Jeroen Kimmel",
+      "photo"
     ],
     "producer": "Floppy",
     "publisher": [
-      "Cascade Games"
+      "Cascade Games",
+      "Info / 6 logos"
     ],
     "re_releaser": [
-      "Summit"
+      "Summit",
+      "Info / logo"
     ],
     "released": 1988
   },
@@ -3814,7 +4249,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Codemasters"
+      "Codemasters",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -3832,7 +4268,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Palace Software"
+      "Palace Software",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1989
@@ -3846,7 +4283,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Software Projects"
+      "Software Projects",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -3861,10 +4299,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Gremlin Graphics"
+      "Gremlin Graphics",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -3878,7 +4318,8 @@
     "producer": "",
     "publisher": [
       "CBS Electronics Software",
-      "Epyx"
+      "Epyx",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -3892,14 +4333,18 @@
       "Kevin Bulmer"
     ],
     "musician": [
-      "Ben Daglish"
+      "Ben Daglish",
+      "3 photos",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
-      "US Gold"
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -3916,25 +4361,30 @@
     ],
     "producer": "",
     "publisher": [
-      "Strategic Simulations Inc."
+      "Strategic Simulations Inc.",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1984
   },
   "ghetto-blaster": {
     "coder": [
-      "Tony Gibson"
+      "Tony Gibson",
+      "photo"
     ],
     "developer": "Virgin Games",
     "graphics": [
-      "Mark Harrison"
+      "Mark Harrison",
+      "photo"
     ],
     "musician": [
-      "Mark Harrison"
+      "Mark Harrison",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Virgin Games"
+      "Virgin Games",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -3954,7 +4404,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Codemasters"
+      "Codemasters",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -3962,11 +4413,13 @@
   "ghostbusters": {
     "coder": [
       "Adam Bellin",
-      "David Crane"
+      "David Crane",
+      "photo"
     ],
     "developer": "Activision",
     "graphics": [
       "David Crane",
+      "photo",
       "Hilary Mills"
     ],
     "musician": [
@@ -3974,10 +4427,12 @@
     ],
     "producer": "",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "Ricochet"
+      "Ricochet",
+      "Info / logo"
     ],
     "released": 1984
   },
@@ -3990,55 +4445,68 @@
       "Stephen Green"
     ],
     "musician": [
-      "David Whittaker"
+      "David Whittaker",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1989
   },
   "ghosts-n-goblins": {
     "coder": [
-      "Chris Butler"
+      "Chris Butler",
+      "photo"
     ],
     "developer": "Elite",
     "graphics": [
-      "Chris Butler"
+      "Chris Butler",
+      "photo"
     ],
     "musician": [
-      "Mark Cooksey"
+      "Mark Cooksey",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Elite"
+      "Elite",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Encore"
+      "Encore",
+      "Info / logo"
     ],
     "released": 1986
   },
   "give-my-regards-to-broad-street": {
     "coder": [
       "Roy Gibson",
+      "photo",
       "Steve Ward"
     ],
     "developer": "Mastertronic",
     "graphics": [
       "Dawn Jones",
       "Paul Clansey",
+      "photo",
       "Paul Linsdale"
     ],
     "musician": [
-      "Paul Clansey"
+      "Paul Clansey",
+      "photo"
     ],
     "producer": "",
     "publisher": [
       "Mastertronic",
+      "Info / 5 logos",
       "Mind Games",
+      "Info / logo",
       "OziSoft"
     ],
     "re_releaser": [],
@@ -4078,26 +4546,32 @@
     ],
     "producer": "",
     "publisher": [
-      "Renegade"
+      "Renegade",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1991
   },
   "golden-axe": {
     "coder": [
-      "Mark W.J. Kelly"
+      "Mark W.J. Kelly",
+      "2 photos"
     ],
     "developer": "Sega",
     "graphics": [
-      "Steve Crow"
+      "Steve Crow",
+      "2 photos"
     ],
     "musician": [
-      "Jeroen Tel"
+      "Jeroen Tel",
+      "2 photos"
     ],
     "producer": "Visual FX",
     "publisher": [
       "Sega",
-      "Virgin Games"
+      "Info / 4 logos",
+      "Virgin Games",
+      "Info / 2 logos"
     ],
     "re_releaser": [
       "Tronix (Virgin Games)"
@@ -4111,7 +4585,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Commodore"
+      "Commodore",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -4131,7 +4606,9 @@
     "producer": "Shelley Day",
     "publisher": [
       "Accolade",
-      "Electronic Arts"
+      "Info / 2 logos",
+      "Electronic Arts",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1989
@@ -4141,11 +4618,13 @@
     "developer": "Codemasters",
     "graphics": [],
     "musician": [
-      "David Whittaker"
+      "David Whittaker",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "Codemasters"
+      "Codemasters",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -4157,14 +4636,17 @@
     "developer": "Argus Press Software",
     "graphics": [],
     "musician": [
-      "David Whittaker"
+      "David Whittaker",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "Argus Press Software"
+      "Argus Press Software",
+      "Info / logo"
     ],
     "re_releaser": [
-      "Bug-Byte"
+      "Bug-Byte",
+      "Info / 4 logos"
     ],
     "released": 1987
   },
@@ -4175,41 +4657,52 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Satchel Software"
+      "Satchel Software",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1987
   },
   "green-beret": {
     "coder": [
-      "David A. Collier"
+      "David A. Collier",
+      "2 photos"
     ],
     "developer": "Imagine",
     "graphics": [
-      "Stephen Wahid"
+      "Stephen Wahid",
+      "photo"
     ],
     "musician": [
-      "Martin Galway"
+      "Martin Galway",
+      "2 photos",
+      "Interview"
     ],
     "producer": "David Ward Info / 2 photos",
     "publisher": [
-      "Imagine"
+      "Imagine",
+      "Info / 3 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1986
   },
   "gribbly-s-day-out": {
     "coder": [
-      "Andrew Braybrook"
+      "Andrew Braybrook",
+      "photo"
     ],
     "developer": "Hewson",
     "graphics": [
-      "Andrew Braybrook"
+      "Andrew Braybrook",
+      "photo"
     ],
     "musician": [
-      "Steve Turner"
+      "Steve Turner",
+      "photo",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
@@ -4227,17 +4720,20 @@
     "developer": "Ocean",
     "graphics": [
       "Andrew Sleigh",
-      "Stephen Wahid"
+      "Stephen Wahid",
+      "photo"
     ],
     "musician": [
       "Jason C. Brooke"
     ],
     "producer": "",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1988
   },
@@ -4251,7 +4747,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Interceptor Software"
+      "Interceptor Software",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -4267,7 +4764,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Taskset"
+      "Taskset",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -4279,10 +4777,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "released": 1984
   },
@@ -4297,10 +4797,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "Ricochet"
+      "Ricochet",
+      "Info / logo"
     ],
     "released": 1985
   },
@@ -4314,7 +4816,8 @@
       "Design Design"
     ],
     "re_releaser": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "released": 1984
   },
@@ -4328,14 +4831,17 @@
       "Jacco Van 't Riet"
     ],
     "musician": [
-      "Jeroen Tel"
+      "Jeroen Tel",
+      "2 photos"
     ],
     "producer": "Boys without Brains Info",
     "publisher": [
-      "Thalamus"
+      "Thalamus",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1988
   },
@@ -4345,17 +4851,22 @@
     ],
     "developer": "US Gold",
     "graphics": [
-      "Stefan Ufnowski"
+      "Stefan Ufnowski",
+      "2 photos"
     ],
     "musician": [
-      "Ben Daglish"
+      "Ben Daglish",
+      "3 photos",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
-      "US Gold"
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Americana"
+      "Americana",
+      "Info / 3 logos"
     ],
     "released": 1987
   },
@@ -4365,17 +4876,22 @@
     ],
     "developer": "Gremlin Graphics",
     "graphics": [
-      "Terry Lloyd"
+      "Terry Lloyd",
+      "photo"
     ],
     "musician": [
-      "Ben Daglish"
+      "Ben Daglish",
+      "3 photos",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
-      "Gremlin Graphics"
+      "Gremlin Graphics",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -4390,10 +4906,12 @@
     ],
     "producer": "David Ward Info / 2 photos",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -4404,12 +4922,15 @@
     "developer": "Electronic Arts",
     "graphics": [],
     "musician": [
-      "Dave Warhol"
+      "Dave Warhol",
+      "photo"
     ],
     "producer": "",
     "publisher": [
       "Ariolasoft",
-      "Electronic Arts"
+      "Info / 6 logos",
+      "Electronic Arts",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -4427,10 +4948,12 @@
     ],
     "producer": "",
     "publisher": [
-      "Odin Computer Graphics"
+      "Odin Computer Graphics",
+      "Info / 2 logos"
     ],
     "re_releaser": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "released": 1986
   },
@@ -4448,7 +4971,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Core Design"
+      "Core Design",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1991
@@ -4462,7 +4986,8 @@
     ],
     "producer": "",
     "publisher": [
-      "English Software"
+      "English Software",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -4477,10 +5002,13 @@
     "producer": "",
     "publisher": [
       "ERBE Software",
-      "Mikro-Gen"
+      "Info / logo",
+      "Mikro-Gen",
+      "Info / 5 logos"
     ],
     "re_releaser": [
-      "Sparklers"
+      "Sparklers",
+      "Info / logo"
     ],
     "released": 1985
   },
@@ -4489,11 +5017,13 @@
     "developer": "Mastertronic",
     "graphics": [],
     "musician": [
-      "Shaun Southern"
+      "Shaun Southern",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "MAD (Mastertronic)"
+      "MAD (Mastertronic)",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -4505,11 +5035,13 @@
     "developer": "Gremlin Graphics",
     "graphics": [],
     "musician": [
-      "Barry Leitch"
+      "Barry Leitch",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Gremlin Graphics"
+      "Gremlin Graphics",
+      "Info / 7 logos"
     ],
     "re_releaser": [],
     "released": 1991
@@ -4526,27 +5058,33 @@
     ],
     "producer": "David Ward Info / 2 photos",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [],
     "released": 1984
   },
   "highlander": {
     "coder": [
-      "Roy Gibson"
+      "Roy Gibson",
+      "photo"
     ],
     "developer": "Ocean",
     "graphics": [
       "Martin Calvert",
       "Simon Butler",
-      "Steve Cain"
+      "Steve Cain",
+      "4 photos"
     ],
     "musician": [
-      "Martin Galway"
+      "Martin Galway",
+      "2 photos",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -4558,11 +5096,13 @@
     "developer": "Mastertronic",
     "graphics": [],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
-      "Mastertronic"
+      "Mastertronic",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -4583,7 +5123,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Accolade"
+      "Accolade",
+      "Info / 6 logos"
     ],
     "re_releaser": [],
     "released": 1991
@@ -4605,25 +5146,29 @@
     ],
     "producer": "",
     "publisher": [
-      "Infogrames"
+      "Infogrames",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1988
   },
   "hover-bovver": {
     "coder": [
-      "Jeff Minter"
+      "Jeff Minter",
+      "3 photos"
     ],
     "developer": "Llamasoft",
     "graphics": [
-      "Jeff Minter"
+      "Jeff Minter",
+      "3 photos"
     ],
     "musician": [
       "James Lisney"
     ],
     "producer": "",
     "publisher": [
-      "Llamasoft"
+      "Llamasoft",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -4635,10 +5180,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Virgin Games"
+      "Virgin Games",
+      "Info / 2 logos"
     ],
     "re_releaser": [
-      "Ricochet"
+      "Ricochet",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -4655,10 +5202,12 @@
     ],
     "producer": "Paul J. Finnegan Info",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1991
   },
@@ -4671,7 +5220,8 @@
     ],
     "producer": "David Ward Info / 2 photos",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -4685,7 +5235,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Software Projects"
+      "Software Projects",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -4699,76 +5250,93 @@
       "Paul Holmes"
     ],
     "musician": [
-      "Martin Walker"
+      "Martin Walker",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 6 logos"
     ],
     "re_releaser": [],
     "released": 1991
   },
   "hyper-sports": {
     "coder": [
-      "David A. Collier"
+      "David A. Collier",
+      "2 photos"
     ],
     "developer": "Imagine",
     "graphics": [],
     "musician": [
-      "Martin Galway"
+      "Martin Galway",
+      "2 photos",
+      "Interview"
     ],
     "producer": "David Ward Info / 2 photos",
     "publisher": [
-      "Imagine"
+      "Imagine",
+      "Info / 3 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1985
   },
   "ik-amiga": {
     "coder": [
-      "Archer MacLean"
+      "Archer MacLean",
+      "photo"
     ],
     "developer": "System 3",
     "graphics": [
-      "Archer MacLean"
+      "Archer MacLean",
+      "photo"
     ],
     "musician": [
       "Dave Lowe"
     ],
     "producer": "",
     "publisher": [
-      "System 3"
+      "System 3",
+      "Info / 3 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1988
   },
   "ik-c64": {
     "coder": [
-      "Archer Maclean"
+      "Archer Maclean",
+      "photo"
     ],
     "developer": "System 3",
     "graphics": [
-      "Archer Maclean"
+      "Archer Maclean",
+      "photo"
     ],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "Jonathan Dean",
     "publisher": [
-      "System 3"
+      "System 3",
+      "Info / 6 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1987
   },
   "ikari-warriors": {
     "coder": [
-      "John Twiddy"
+      "John Twiddy",
+      "photo"
     ],
     "developer": "Elite",
     "graphics": [
@@ -4779,15 +5347,18 @@
     ],
     "musician": [
       "Jason C. Brooke",
-      "Mark Cooksey"
+      "Mark Cooksey",
+      "photo"
     ],
     "producer": "",
     "publisher": [
       "Elite",
+      "Info / 4 logos",
       "MCM Software"
     ],
     "re_releaser": [
       "ECP",
+      "Info / logo",
       "Encore"
     ],
     "released": 1988
@@ -4805,10 +5376,13 @@
     "publisher": [
       "CBS Electronics Software",
       "Epyx",
-      "US Gold"
+      "Info / 3 logos",
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Ricochet"
+      "Ricochet",
+      "Info / logo"
     ],
     "released": 1984
   },
@@ -4818,17 +5392,21 @@
     ],
     "developer": "Lucasfilm Games",
     "graphics": [
-      "Nick Cook"
+      "Nick Cook",
+      "2 photos"
     ],
     "musician": [
-      "Martin Walker"
+      "Martin Walker",
+      "2 photos"
     ],
     "producer": "Jonathan Dean",
     "publisher": [
-      "US Gold"
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1992
   },
@@ -4843,7 +5421,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "US Gold"
+      "US Gold",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1989
@@ -4864,10 +5443,12 @@
     ],
     "producer": "",
     "publisher": [
-      "US Gold"
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1989
   },
@@ -4882,10 +5463,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "US Gold"
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -4898,7 +5481,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Mindscape"
+      "Mindscape",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -4910,7 +5494,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Loriciels"
+      "Loriciels",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1985
@@ -4927,10 +5512,13 @@
     "producer": "",
     "publisher": [
       "Mindscape",
-      "US Gold"
+      "Info / 3 logos",
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -4941,7 +5529,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Commodore"
+      "Commodore",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -4953,7 +5542,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Commodore"
+      "Commodore",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -4967,7 +5557,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Commodore"
+      "Commodore",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -4986,10 +5577,13 @@
     "producer": "Richard Paul Jones",
     "publisher": [
       "Mindscape",
-      "Pandora"
+      "Info / 3 logos",
+      "Pandora",
+      "Info / 2 logos"
     ],
     "re_releaser": [
-      "Players Software"
+      "Players Software",
+      "Info / 4 logos"
     ],
     "released": 1987
   },
@@ -5002,25 +5596,30 @@
       "Richard Aplin"
     ],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
-      "Mastertronic"
+      "Mastertronic",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1987
   },
   "iridis-alpha": {
     "coder": [
-      "Jeff Minter"
+      "Jeff Minter",
+      "3 photos"
     ],
     "developer": "Hewson",
     "graphics": [
-      "Jeff Minter"
+      "Jeff Minter",
+      "3 photos"
     ],
     "musician": [
-      "Jeff Minter"
+      "Jeff Minter",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
@@ -5046,7 +5645,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Cinemaware"
+      "Cinemaware",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1989
@@ -5056,19 +5656,24 @@
       "David O'Conner",
       "Gary J. Foreman",
       "Jason Page",
-      "Steve Turner"
+      "photo",
+      "Steve Turner",
+      "Interview"
     ],
     "developer": "Virgin Mastertronic",
     "graphics": [
       "John Cumming",
+      "photo",
       "John Lilley"
     ],
     "musician": [
-      "Jason Page"
+      "Jason Page",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Virgin Mastertronic"
+      "Virgin Mastertronic",
+      "Info / logo"
     ],
     "re_releaser": [
       "Tronix (Virgin Games)"
@@ -5084,14 +5689,18 @@
       "Steve Curry"
     ],
     "musician": [
-      "Ben Daglish"
+      "Ben Daglish",
+      "3 photos",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
-      "Gremlin Graphics"
+      "Gremlin Graphics",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -5101,19 +5710,24 @@
     ],
     "developer": "Gremlin Graphics",
     "graphics": [
-      "Terry Lloyd"
+      "Terry Lloyd",
+      "photo"
     ],
     "musician": [
       "Ben Daglish",
+      "3 photos",
+      "Interview",
       "Dave Pridmore",
       "Greg A. Holmes"
     ],
     "producer": "",
     "publisher": [
-      "Gremlin Graphics"
+      "Gremlin Graphics",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -5126,11 +5740,13 @@
       "Chris Sorrell"
     ],
     "musician": [
-      "Richard Joseph"
+      "Richard Joseph",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Millennium"
+      "Millennium",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1990
@@ -5140,11 +5756,13 @@
     "developer": "Taskset",
     "graphics": [],
     "musician": [
-      "Tony Gibson"
+      "Tony Gibson",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Taskset"
+      "Taskset",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -5160,7 +5778,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Software Projects"
+      "Software Projects",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -5170,11 +5789,13 @@
     "developer": "Virgin Games",
     "graphics": [],
     "musician": [
-      "Archer MacLean"
+      "Archer MacLean",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Virgin Games"
+      "Virgin Games",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1991
@@ -5188,14 +5809,16 @@
     ],
     "producer": "",
     "publisher": [
-      "Players Software"
+      "Players Software",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1987
   },
   "joe-blade-2": {
     "coder": [
-      "Kevin Parker"
+      "Kevin Parker",
+      "2 photos"
     ],
     "developer": "Players Software",
     "graphics": [
@@ -5206,7 +5829,8 @@
     ],
     "producer": "Richard Paul Jones",
     "publisher": [
-      "Players Software"
+      "Players Software",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1988
@@ -5225,10 +5849,12 @@
     ],
     "producer": "",
     "publisher": [
-      "Melbourne House"
+      "Melbourne House",
+      "Info / 6 logos"
     ],
     "re_releaser": [
-      "Ricochet"
+      "Ricochet",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -5242,10 +5868,12 @@
     "producer": "",
     "publisher": [
       "CBS Electronics Software",
-      "Epyx"
+      "Epyx",
+      "Info / 3 logos"
     ],
     "re_releaser": [
-      "Euro Gold"
+      "Euro Gold",
+      "Info / 2 logos"
     ],
     "released": 1983
   },
@@ -5260,7 +5888,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Atarisoft"
+      "Atarisoft",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1983
@@ -5272,7 +5901,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Commodore"
+      "Commodore",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1982
@@ -5287,11 +5917,13 @@
       "Ashley Routledge"
     ],
     "musician": [
-      "Johannes Bjerregaard"
+      "Johannes Bjerregaard",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Codemasters"
+      "Codemasters",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1990
@@ -5311,7 +5943,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Mastertronic"
+      "Mastertronic",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -5330,7 +5963,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Brøderbund"
+      "Brøderbund",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -5351,7 +5985,8 @@
     ],
     "producer": "Dan Marchant Jean Martial Lefranc Philippe Ulrich Robb Alvey",
     "publisher": [
-      "Virgin Games"
+      "Virgin Games",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1992
@@ -5363,25 +5998,29 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Commodore"
+      "Commodore",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1982
   },
   "kikstart-2": {
     "coder": [
-      "Shaun Southern"
+      "Shaun Southern",
+      "photo"
     ],
     "developer": "Mastertronic",
     "graphics": [
       "Andrew Morris"
     ],
     "musician": [
-      "Shaun Southern"
+      "Shaun Southern",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Mastertronic"
+      "Mastertronic",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -5397,7 +6036,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "New World Computing"
+      "New World Computing",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1990
@@ -5411,11 +6051,13 @@
       "Barry S. Armstrong"
     ],
     "musician": [
-      "Allister Brimble"
+      "Allister Brimble",
+      "photo"
     ],
     "producer": "Martyn Brown Info / photo Interview",
     "publisher": [
-      "Team 17"
+      "Team 17",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1995
@@ -5430,33 +6072,40 @@
       "Dave Colledge"
     ],
     "musician": [
-      "Matt Furniss"
+      "Matt Furniss",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Domark"
+      "Domark",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1990
   },
   "knight-games": {
     "coder": [
-      "Jon Williams"
+      "Jon Williams",
+      "photo"
     ],
     "developer": "English Software",
     "graphics": [
       "Colin Brown",
-      "Jon Williams"
+      "Jon Williams",
+      "photo"
     ],
     "musician": [
-      "David Whittaker"
+      "David Whittaker",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "English Software"
+      "English Software",
+      "Info / 2 logos"
     ],
     "re_releaser": [
-      "Mastertronic Plus"
+      "Mastertronic Plus",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -5465,11 +6114,13 @@
     "developer": "Mastertronic",
     "graphics": [],
     "musician": [
-      "David Whittaker"
+      "David Whittaker",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "Mastertronic"
+      "Mastertronic",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1988
@@ -5483,10 +6134,12 @@
     ],
     "producer": "MD Software",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "Ricochet"
+      "Ricochet",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -5497,7 +6150,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Mastertronic"
+      "Mastertronic",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -5505,17 +6159,21 @@
   "koronis-rift": {
     "coder": [
       "Aric Wilmunder",
-      "Ron Gilbert"
+      "Ron Gilbert",
+      "photo"
     ],
     "developer": "Activision",
     "graphics": [],
     "musician": [
-      "Douglas Crockford"
+      "Douglas Crockford",
+      "photo"
     ],
     "producer": "",
     "publisher": [
       "Activision",
-      "Epyx"
+      "Info / 7 logos",
+      "Epyx",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -5529,14 +6187,16 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Data East"
+      "Data East",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1985
   },
   "labyrinth": {
     "coder": [
-      "David Fox"
+      "David Fox",
+      "photo"
     ],
     "developer": "Activision",
     "graphics": [],
@@ -5545,7 +6205,8 @@
     ],
     "producer": "Jonathan Dean",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -5559,7 +6220,8 @@
       "Michael Owens"
     ],
     "musician": [
-      "Adam Gilmore"
+      "Adam Gilmore",
+      "photo"
     ],
     "producer": "",
     "publisher": [
@@ -5571,21 +6233,24 @@
   },
   "laser-squad": {
     "coder": [
-      "Nick Gollop"
+      "Nick Gollop",
+      "photo"
     ],
     "developer": "Blade Software",
     "graphics": [],
     "musician": [],
     "producer": "",
     "publisher": [
-      "Blade Software"
+      "Blade Software",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1989
   },
   "last-ninja-2-back-with-a-vengeance": {
     "coder": [
-      "John Twiddy"
+      "John Twiddy",
+      "photo"
     ],
     "developer": "Activision",
     "graphics": [
@@ -5597,10 +6262,13 @@
     "producer": "",
     "publisher": [
       "Activision",
-      "System 3"
+      "Info / 7 logos",
+      "System 3",
+      "Info / 6 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1988
   },
@@ -5618,7 +6286,9 @@
     "producer": "",
     "publisher": [
       "Accolade",
-      "US Gold"
+      "Info / 2 logos",
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -5634,25 +6304,30 @@
     ],
     "producer": "",
     "publisher": [
-      "Commodore"
+      "Commodore",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1983
   },
   "lazy-jones": {
     "coder": [
-      "David Whittaker"
+      "David Whittaker",
+      "2 photos"
     ],
     "developer": "Terminal Software",
     "graphics": [
-      "David Whittaker"
+      "David Whittaker",
+      "2 photos"
     ],
     "musician": [
-      "David Whittaker"
+      "David Whittaker",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "Terminal Software"
+      "Terminal Software",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -5664,7 +6339,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Commodore"
+      "Commodore",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1982
@@ -5676,10 +6352,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Access Software"
+      "Access Software",
+      "Info / logo"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -5698,14 +6376,16 @@
     ],
     "producer": "",
     "publisher": [
-      "Psygnosis"
+      "Psygnosis",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1991
   },
   "little-computer-people": {
     "coder": [
-      "David Crane"
+      "David Crane",
+      "photo"
     ],
     "developer": "Activision",
     "graphics": [],
@@ -5714,10 +6394,12 @@
     ],
     "producer": "",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "Ricochet"
+      "Ricochet",
+      "Info / logo"
     ],
     "released": 1985
   },
@@ -5730,14 +6412,17 @@
       "Robert Thomas"
     ],
     "musician": [
-      "Mark Cooksey"
+      "Mark Cooksey",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Domark"
+      "Domark",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Encore"
+      "Encore",
+      "Info / logo"
     ],
     "released": 1988
   },
@@ -5751,7 +6436,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Brøderbund"
+      "Brøderbund",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -5763,25 +6449,31 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Lucasfilm Games"
+      "Lucasfilm Games",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1990
   },
   "lotus-turbo-challenge-2": {
     "coder": [
-      "Shaun Southern"
+      "Shaun Southern",
+      "photo"
     ],
     "developer": "Gremlin Graphics",
     "graphics": [
-      "Andrew Morris"
+      "Andrew Morris",
+      "photo",
+      "Interview"
     ],
     "musician": [
-      "Barry Leitch"
+      "Barry Leitch",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Gremlin Graphics"
+      "Gremlin Graphics",
+      "Info / 2 logos"
     ],
     "re_releaser": [
       "GBH Gold"
@@ -5799,11 +6491,13 @@
       "Stephen Oades"
     ],
     "musician": [
-      "Richard Joseph"
+      "Richard Joseph",
+      "photo"
     ],
     "producer": "Charles Cecil Dave Cummins",
     "publisher": [
-      "Virgin Games"
+      "Virgin Games",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1992
@@ -5818,7 +6512,9 @@
     "producer": "",
     "publisher": [
       "Ariolasoft",
-      "Electronic Arts"
+      "Info / 6 logos",
+      "Electronic Arts",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -5834,10 +6530,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Creative Sparks"
+      "Creative Sparks",
+      "Info / 2 logos"
     ],
     "re_releaser": [
-      "Sparklers"
+      "Sparklers",
+      "Info / logo"
     ],
     "released": 1985
   },
@@ -5846,11 +6544,13 @@
     "developer": "Firebird",
     "graphics": [],
     "musician": [
-      "Simon Pick"
+      "Simon Pick",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -5861,11 +6561,13 @@
     "graphics": [],
     "musician": [
       "David Darling",
-      "Richard Darling"
+      "Richard Darling",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Mastertronic"
+      "Mastertronic",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -5880,7 +6582,9 @@
     "producer": "",
     "publisher": [
       "Ariolasoft",
-      "Electronic Arts"
+      "Info / 6 logos",
+      "Electronic Arts",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -5889,6 +6593,7 @@
     "coder": [
       "Carl Mey",
       "David Fox",
+      "photo",
       "Ron Gilbert"
     ],
     "developer": "Lucasfilm Games",
@@ -5897,11 +6602,13 @@
     ],
     "musician": [
       "Chris Grigg",
+      "photo",
       "David Lawrence"
     ],
     "producer": "",
     "publisher": [
-      "Lucasfilm Games"
+      "Lucasfilm Games",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -5923,25 +6630,29 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Anco"
+      "Anco",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1988
   },
   "master-of-magic": {
     "coder": [
-      "Richard Darling"
+      "Richard Darling",
+      "photo"
     ],
     "developer": "Mastertronic",
     "graphics": [
       "James Wilson"
     ],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
-      "MAD (Mastertronic)"
+      "MAD (Mastertronic)",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -5955,7 +6666,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -5967,14 +6679,17 @@
     "developer": "Ocean",
     "graphics": [],
     "musician": [
-      "Jonathan Dunn"
+      "Jonathan Dunn",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -5988,11 +6703,13 @@
       "Ste Pickford"
     ],
     "musician": [
-      "David Whittaker"
+      "David Whittaker",
+      "2 photos"
     ],
     "producer": "Binary Design",
     "publisher": [
-      "Quicksilva"
+      "Quicksilva",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -6010,7 +6727,8 @@
     ],
     "producer": "Bruce Carver Info / photo Imagination Unlimited",
     "publisher": [
-      "Access Software"
+      "Access Software",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1989
@@ -6028,18 +6746,21 @@
     ],
     "musician": [
       "Michael Burdett",
-      "Richard Joseph"
+      "Richard Joseph",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Image Works"
+      "Image Works",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1991
   },
   "miami-vice": {
     "coder": [
-      "Paul Clansey"
+      "Paul Clansey",
+      "photo"
     ],
     "developer": "Ocean",
     "graphics": [
@@ -6047,14 +6768,18 @@
       "Pete Graylish"
     ],
     "musician": [
-      "Martin Galway"
+      "Martin Galway",
+      "2 photos",
+      "Interview"
     ],
     "producer": "David Ward Info / 2 photos",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -6065,7 +6790,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "MC Lothlorien"
+      "MC Lothlorien",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -6079,14 +6805,18 @@
       "Jon Hare"
     ],
     "musician": [
-      "Martin Galway"
+      "Martin Galway",
+      "2 photos",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
-      "MicroProse Software"
+      "MicroProse Software",
+      "Info / 2 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1988
   },
@@ -6103,10 +6833,12 @@
     ],
     "producer": "David Ward Info / 2 photos Paul J. Finnegan Info",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1990
   },
@@ -6119,34 +6851,43 @@
       "Dave Percival"
     ],
     "musician": [
-      "Mark Cooksey"
+      "Mark Cooksey",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Elite"
+      "Elite",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Encore"
+      "Encore",
+      "Info / logo"
     ],
     "released": 1988
   },
   "mikie": {
     "coder": [
-      "Tony Pomfret"
+      "Tony Pomfret",
+      "2 photos"
     ],
     "developer": "Imagine",
     "graphics": [
-      "Stephen Wahid"
+      "Stephen Wahid",
+      "photo"
     ],
     "musician": [
-      "Martin Galway"
+      "Martin Galway",
+      "2 photos",
+      "Interview"
     ],
     "producer": "David Ward Info / 2 photos",
     "publisher": [
-      "Imagine"
+      "Imagine",
+      "Info / 3 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -6155,11 +6896,13 @@
     "developer": "Mastertronic",
     "graphics": [],
     "musician": [
-      "David Whittaker"
+      "David Whittaker",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "Mastertronic"
+      "Mastertronic",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -6171,7 +6914,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Reston Publishing Company"
+      "Reston Publishing Company",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1983
@@ -6181,6 +6925,7 @@
       "Bret Barrett",
       "Dave Grossman",
       "Ron Gilbert",
+      "photo",
       "Tami Borowick",
       "Tim Schafer"
     ],
@@ -6189,6 +6934,7 @@
       "Collette Michaud",
       "James Alexander Dollar",
       "Ken Macklin",
+      "photo",
       "Larry Ahern",
       "Mike McLaughin",
       "Peter Chan",
@@ -6202,7 +6948,8 @@
     ],
     "producer": "Shelley Day",
     "publisher": [
-      "US Gold"
+      "US Gold",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1992
@@ -6214,10 +6961,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Parker Brothers"
+      "Parker Brothers",
+      "Info / logo"
     ],
     "re_releaser": [
-      "Databyte"
+      "Databyte",
+      "Info / 2 logos"
     ],
     "released": 1984
   },
@@ -6231,14 +6980,17 @@
       "Mark Rodgers"
     ],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
-      "Gremlin Graphics"
+      "Gremlin Graphics",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1985
   },
@@ -6251,10 +7003,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Datasoft"
+      "Datasoft",
+      "Info / 3 logos"
     ],
     "re_releaser": [
-      "Americana"
+      "Americana",
+      "Info / 3 logos"
     ],
     "released": 1983
   },
@@ -6270,11 +7024,13 @@
       "Steve Leney"
     ],
     "musician": [
-      "Richard Joseph"
+      "Richard Joseph",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Mindscape"
+      "Mindscape",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1991
@@ -6286,11 +7042,14 @@
     "developer": "Reaktor Software",
     "graphics": [],
     "musician": [
-      "Ben Daglish"
+      "Ben Daglish",
+      "3 photos",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
-      "Reaktör Software"
+      "Reaktör Software",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -6303,8 +7062,11 @@
     "producer": "",
     "publisher": [
       "Beyond",
+      "Info / 5 logos",
       "Datamost",
-      "Happy Software"
+      "Info / logo",
+      "Happy Software",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -6322,7 +7084,8 @@
     ],
     "producer": "Brad Fregger",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -6336,7 +7099,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Artic Computing"
+      "Artic Computing",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1984
@@ -6350,20 +7114,24 @@
       "Bob Stevenson"
     ],
     "musician": [
-      "Jeroen Tel"
+      "Jeroen Tel",
+      "2 photos"
     ],
     "producer": "Jonathan Dean Mark Cale Info",
     "publisher": [
-      "System 3"
+      "System 3",
+      "Info / 6 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1989
   },
   "narc": {
     "coder": [
       "Simon Pick",
+      "Interview",
       "Steve Snake"
     ],
     "developer": "Ocean",
@@ -6377,20 +7145,24 @@
     ],
     "producer": "The Sales Curve Info",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1990
   },
   "nebulus": {
     "coder": [
-      "John M. Phillips"
+      "John M. Phillips",
+      "photo"
     ],
     "developer": "Hewson",
     "graphics": [
-      "John M. Phillips"
+      "John M. Phillips",
+      "photo"
     ],
     "musician": [],
     "producer": "",
@@ -6420,11 +7192,13 @@
       "Dave Dew"
     ],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
-      "Martech"
+      "Martech",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -6438,11 +7212,13 @@
       "Charles H.H. Weidman III"
     ],
     "musician": [
-      "Dave Warhol"
+      "Dave Warhol",
+      "photo"
     ],
     "producer": "Brian Fargo Info",
     "publisher": [
-      "Electronic Arts"
+      "Electronic Arts",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1988
@@ -6457,11 +7233,14 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Nexus"
+      "Nexus",
+      "Info / 3 logos"
     ],
     "re_releaser": [
       "Bug-Byte",
-      "Prism Leisure"
+      "Info / 4 logos",
+      "Prism Leisure",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -6472,7 +7251,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Commodore"
+      "Commodore",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1982
@@ -6491,10 +7271,12 @@
     ],
     "producer": "",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1990
   },
@@ -6503,11 +7285,13 @@
     "developer": "Ocean",
     "graphics": [],
     "musician": [
-      "Barry Leitch"
+      "Barry Leitch",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 14 logos"
     ],
     "re_releaser": [],
     "released": 1990
@@ -6521,7 +7305,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -6533,12 +7318,15 @@
     "developer": "Mastertronic",
     "graphics": [],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
       "Entertainment USA",
-      "Mastertronic"
+      "Info / logo",
+      "Mastertronic",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -6554,7 +7342,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Codemasters"
+      "Codemasters",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1989
@@ -6566,15 +7355,18 @@
     "developer": "Microvalue",
     "graphics": [],
     "musician": [
-      "Sean Connolly"
+      "Sean Connolly",
+      "photo"
     ],
     "producer": "",
     "publisher": [
       "MicroValue",
+      "Info / logo",
       "System 4 Software"
     ],
     "re_releaser": [
-      "EDOS"
+      "EDOS",
+      "Info / logo"
     ],
     "released": 1991
   },
@@ -6585,7 +7377,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Dynabyte"
+      "Dynabyte",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1992
@@ -6600,11 +7393,13 @@
       "Stuart Fotheringham"
     ],
     "musician": [
-      "Fred Gray"
+      "Fred Gray",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Odin Computer Graphics"
+      "Odin Computer Graphics",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -6630,7 +7425,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Infogrames"
+      "Infogrames",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1989
@@ -6643,10 +7439,12 @@
     "producer": "",
     "publisher": [
       "Piranha",
+      "Info / 5 logos",
       "Zafiro Software Division"
     ],
     "re_releaser": [
       "Alternative Software",
+      "Info / 2 logos",
       "System 4 Software"
     ],
     "released": 1986
@@ -6658,7 +7456,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Commodore"
+      "Commodore",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1982
@@ -6668,11 +7467,13 @@
     "developer": "Mastertronic",
     "graphics": [],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
-      "Mastertronic"
+      "Mastertronic",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -6683,17 +7484,21 @@
     ],
     "developer": "Ocean",
     "graphics": [
-      "Stephen Wahid"
+      "Stephen Wahid",
+      "photo"
     ],
     "musician": [
-      "Jonathan Dunn"
+      "Jonathan Dunn",
+      "photo"
     ],
     "producer": "David Ward Info / 2 photos",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1988
   },
@@ -6708,10 +7513,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Creative Sparks"
+      "Creative Sparks",
+      "Info / 2 logos"
     ],
     "re_releaser": [
       "Sparklers",
+      "Info / logo",
       "Top Ten"
     ],
     "released": 1984
@@ -6735,28 +7542,35 @@
     "developer": "Elite",
     "graphics": [],
     "musician": [
-      "Mark Cooksey"
+      "Mark Cooksey",
+      "photo"
     ],
     "producer": "",
     "publisher": [
       "ECP",
+      "Info / logo",
       "Elite",
+      "Info / 4 logos",
       "Mindscape",
+      "Info / 3 logos",
       "Zafiro Software Division"
     ],
     "re_releaser": [
       "EDOS",
+      "Info / logo",
       "Encore"
     ],
     "released": 1986
   },
   "paradroid": {
     "coder": [
-      "Andrew Braybrook"
+      "Andrew Braybrook",
+      "photo"
     ],
     "developer": "Hewson",
     "graphics": [
-      "Andrew Braybrook"
+      "Andrew Braybrook",
+      "photo"
     ],
     "musician": [],
     "producer": "",
@@ -6776,16 +7590,20 @@
     ],
     "producer": "",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "released": 1984
   },
   "pinball-dreams": {
     "coder": [
       "Andreas Axelsson",
+      "photo",
+      "Interview",
       "Ulf Mandorff"
     ],
     "developer": "21st Century Entertainment",
@@ -6797,7 +7615,8 @@
     ],
     "producer": "Barry Simpson",
     "publisher": [
-      "21st Century Entertainment"
+      "21st Century Entertainment",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1992
@@ -6811,14 +7630,17 @@
       "Richard Browne"
     ],
     "musician": [
-      "Jens-Christian Huus"
+      "Jens-Christian Huus",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Domark"
+      "Domark",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1991
   },
@@ -6829,10 +7651,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "released": 1984
   },
@@ -6845,16 +7669,19 @@
     ],
     "producer": "",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "released": 1984
   },
   "pitstop-2": {
     "coder": [
-      "Stephen H. Landrum"
+      "Stephen H. Landrum",
+      "2 photos"
     ],
     "developer": "Epyx",
     "graphics": [],
@@ -6863,10 +7690,13 @@
     "publisher": [
       "CBS Electronics Software",
       "Epyx",
-      "US Gold"
+      "Info / 3 logos",
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1984
   },
@@ -6880,14 +7710,17 @@
       "Martin McDonald"
     ],
     "musician": [
-      "Jonathan Dunn"
+      "Jonathan Dunn",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -6898,7 +7731,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -6911,8 +7745,11 @@
     "producer": "",
     "publisher": [
       "Atarisoft",
+      "Info / logo",
       "Datasoft",
-      "US Gold"
+      "Info / 3 logos",
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -6924,7 +7761,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Parker Brothers"
+      "Parker Brothers",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1984
@@ -6936,10 +7774,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Macmillan"
+      "Macmillan",
+      "Info / logo"
     ],
     "re_releaser": [
-      "Alternative Software"
+      "Alternative Software",
+      "Info / 2 logos"
     ],
     "released": 1986
   },
@@ -6958,14 +7798,17 @@
     ],
     "musician": [
       "David Hanlon",
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
-      "Electronic Arts"
+      "Electronic Arts",
+      "Info / 6 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1989
   },
@@ -6980,28 +7823,33 @@
     ],
     "producer": "",
     "publisher": [
-      "Taskset"
+      "Taskset",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1984
   },
   "power-drift": {
     "coder": [
-      "Chris Butler"
+      "Chris Butler",
+      "photo"
     ],
     "developer": "Activision",
     "graphics": [
-      "Chris Butler"
+      "Chris Butler",
+      "photo"
     ],
     "musician": [
       "Dave Lowe"
     ],
     "producer": "Software Studios",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1990
   },
@@ -7019,10 +7867,12 @@
     ],
     "producer": "Dave Koch (US version) Jonathan Dean Software Studios Stuart Hibbert (US version)",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1988
   },
@@ -7030,14 +7880,17 @@
     "coder": [],
     "developer": "Codemasters",
     "graphics": [
-      "Terry Lloyd"
+      "Terry Lloyd",
+      "photo"
     ],
     "musician": [
-      "Allister Brimble"
+      "Allister Brimble",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Codemasters"
+      "Codemasters",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1990
@@ -7057,10 +7910,12 @@
     ],
     "producer": "Brian Eheler",
     "publisher": [
-      "Domark"
+      "Domark",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1990
   },
@@ -7075,11 +7930,13 @@
     ],
     "musician": [
       "Allister Brimble",
+      "photo",
       "Bjørn Lynne"
     ],
     "producer": "",
     "publisher": [
-      "Team 17"
+      "Team 17",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1992
@@ -7100,7 +7957,8 @@
     ],
     "producer": "Roland Kippenhan Shelly Safir",
     "publisher": [
-      "Electronic Arts"
+      "Electronic Arts",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1989
@@ -7122,7 +7980,8 @@
     ],
     "producer": "",
     "publisher": [
-      "MicroProse Software"
+      "MicroProse Software",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -7141,7 +8000,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Mastertronic Plus"
+      "Mastertronic Plus",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1989
@@ -7159,7 +8019,8 @@
     ],
     "producer": "",
     "publisher": [
-      "The One Amiga"
+      "The One Amiga",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1993
@@ -7178,11 +8039,13 @@
     "musician": [
       "Dean Evans",
       "Jonathan Dunn",
+      "photo",
       "Keith Tinman"
     ],
     "producer": "",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 14 logos"
     ],
     "re_releaser": [],
     "released": 1992
@@ -7194,7 +8057,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Mikro-Gen"
+      "Mikro-Gen",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -7206,7 +8070,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Parker Brothers"
+      "Parker Brothers",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1983
@@ -7220,11 +8085,13 @@
       "Pete Tattersall"
     ],
     "musician": [
-      "Richard Rinn"
+      "Richard Rinn",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Hi-Tec Software"
+      "Hi-Tec Software",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1990
@@ -7240,7 +8107,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Supersoft"
+      "Supersoft",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1984
@@ -7252,7 +8120,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Commodore"
+      "Commodore",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1982
@@ -7269,6 +8138,7 @@
     "producer": "",
     "publisher": [
       "Firebird",
+      "Info / 5 logos",
       "Green Valley Publishing",
       "VIFI International"
     ],
@@ -7280,7 +8150,9 @@
     "developer": "Melody Hall Publishing",
     "graphics": [],
     "musician": [
-      "Bob Keener"
+      "Bob Keener",
+      "photo",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
@@ -7296,10 +8168,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Brøderbund"
+      "Brøderbund",
+      "Info / 2 logos"
     ],
     "re_releaser": [
-      "Aackosoft"
+      "Aackosoft",
+      "Info / logo"
     ],
     "released": 1984
   },
@@ -7308,53 +8182,67 @@
     "developer": "Access Software",
     "graphics": [],
     "musician": [
-      "Bruce Carver"
+      "Bruce Carver",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Access Software"
+      "Access Software",
+      "Info / logo"
     ],
     "re_releaser": [
-      "Americana"
+      "Americana",
+      "Info / 3 logos"
     ],
     "released": 1984
   },
   "rainbow-islands": {
     "coder": [
-      "Andrew Braybrook"
+      "Andrew Braybrook",
+      "photo"
     ],
     "developer": "Ocean",
     "graphics": [
-      "John Cumming"
+      "John Cumming",
+      "photo"
     ],
     "musician": [
-      "Steve Turner"
+      "Steve Turner",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 14 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1989
   },
   "rambo-first-blood-part-2": {
     "coder": [
-      "David A. Collier"
+      "David A. Collier",
+      "2 photos"
     ],
     "developer": "Ocean",
     "graphics": [],
     "musician": [
-      "Martin Galway"
+      "Martin Galway",
+      "2 photos",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
       "Mindscape",
-      "Ocean"
+      "Info / 3 logos",
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -7367,34 +8255,42 @@
     ],
     "producer": "Jonathan Dean",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1987
   },
   "rampart": {
     "coder": [
-      "Christopher West"
+      "Christopher West",
+      "photo",
+      "Interview"
     ],
     "developer": "Domark",
     "graphics": [
-      "Anthony West"
+      "Anthony West",
+      "photo"
     ],
     "musician": [
-      "Allister Brimble"
+      "Allister Brimble",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Domark"
+      "Domark",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1992
   },
   "rastan": {
     "coder": [
-      "John Meegan"
+      "John Meegan",
+      "photo"
     ],
     "developer": "Imagine",
     "graphics": [
@@ -7403,14 +8299,18 @@
       "Martin McDonald"
     ],
     "musician": [
-      "Martin Galway"
+      "Martin Galway",
+      "2 photos",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
-      "Imagine"
+      "Imagine",
+      "Info / 3 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -7425,12 +8325,15 @@
       "Mike Edwards"
     ],
     "musician": [
-      "Dave Warhol"
+      "Dave Warhol",
+      "photo"
     ],
     "producer": "Don Daglow Info",
     "publisher": [
       "Ariolasoft",
-      "Electronic Arts"
+      "Info / 6 logos",
+      "Electronic Arts",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -7449,10 +8352,13 @@
     "producer": "",
     "publisher": [
       "Dro Soft",
-      "Virgin Games"
+      "Info / logo",
+      "Virgin Games",
+      "Info / 2 logos"
     ],
     "re_releaser": [
-      "Ricochet"
+      "Ricochet",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -7466,14 +8372,17 @@
       "Ivan Davies"
     ],
     "musician": [
-      "Jonathan Dunn"
+      "Jonathan Dunn",
+      "photo"
     ],
     "producer": "Paul J. Finnegan Info",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1989
   },
@@ -7484,15 +8393,18 @@
     "developer": "Imagine",
     "graphics": [
       "Jane Lowe",
-      "Stephen Wahid"
+      "Stephen Wahid",
+      "photo"
     ],
     "musician": [],
     "producer": "",
     "publisher": [
-      "Imagine"
+      "Imagine",
+      "Info / 3 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -7503,25 +8415,31 @@
       "Gary Winnick"
     ],
     "musician": [
-      "Charlie Kellner"
+      "Charlie Kellner",
+      "photo"
     ],
     "producer": "",
     "publisher": [
       "Activision",
-      "Epyx"
+      "Info / 7 logos",
+      "Epyx",
+      "Info / 3 logos"
     ],
     "re_releaser": [
-      "Mastertronic Plus"
+      "Mastertronic Plus",
+      "Info / logo"
     ],
     "released": 1985
   },
   "revenge-of-the-mutant-camels": {
     "coder": [
-      "Jeff Minter"
+      "Jeff Minter",
+      "3 photos"
     ],
     "developer": "Llamasoft",
     "graphics": [
-      "Jeff Minter"
+      "Jeff Minter",
+      "3 photos"
     ],
     "musician": [
       "James Lisney"
@@ -7529,7 +8447,9 @@
     "producer": "",
     "publisher": [
       "Aackosoft",
-      "Llamasoft"
+      "Info / logo",
+      "Llamasoft",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -7541,14 +8461,16 @@
     "developer": "Firebird",
     "graphics": [
       "Simon Phipps",
-      "Terry Lloyd"
+      "Terry Lloyd",
+      "photo"
     ],
     "musician": [
       "Dave Pridmore"
     ],
     "producer": "",
     "publisher": [
-      "Firebird"
+      "Firebird",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1989
@@ -7562,10 +8484,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "released": 1984
   },
@@ -7578,31 +8502,37 @@
       "Martin Calvert"
     ],
     "musician": [
-      "Fred Gray"
+      "Fred Gray",
+      "photo"
     ],
     "producer": "Canvas Info",
     "publisher": [
-      "US Gold"
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1987
   },
   "robin-of-the-wood": {
     "coder": [
-      "Marc Dawson"
+      "Marc Dawson",
+      "photo"
     ],
     "developer": "Odin Computer Graphics",
     "graphics": [
       "Stuart Fotheringham"
     ],
     "musician": [
-      "Fred Gray"
+      "Fred Gray",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Odin Computer Graphics"
+      "Odin Computer Graphics",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -7627,14 +8557,16 @@
     ],
     "producer": "",
     "publisher": [
-      "Silmarils"
+      "Silmarils",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1994
   },
   "robocop": {
     "coder": [
-      "John Meegan"
+      "John Meegan",
+      "photo"
     ],
     "developer": "Ocean",
     "graphics": [
@@ -7642,14 +8574,17 @@
       "Stephen Ian Thomson"
     ],
     "musician": [
-      "Jonathan Dunn"
+      "Jonathan Dunn",
+      "photo"
     ],
     "producer": "David Ward Info / 2 photos",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1989
   },
@@ -7670,10 +8605,12 @@
     ],
     "producer": "",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 14 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1992
   },
@@ -7682,7 +8619,8 @@
       "Bruce Bayley",
       "Cameron Duffy",
       "Damien Watharow",
-      "Gregg Barnett"
+      "Gregg Barnett",
+      "photo"
     ],
     "developer": "Melbourne House",
     "graphics": [
@@ -7693,10 +8631,12 @@
     ],
     "producer": "",
     "publisher": [
-      "Melbourne House"
+      "Melbourne House",
+      "Info / 6 logos"
     ],
     "re_releaser": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "released": 1985
   },
@@ -7709,11 +8649,13 @@
       "Chris Graham"
     ],
     "musician": [
-      "Gavin Raeburn"
+      "Gavin Raeburn",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Codemasters"
+      "Codemasters",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1989
@@ -7727,7 +8669,8 @@
     ],
     "producer": "",
     "publisher": [
-      "IJK Software"
+      "IJK Software",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1985
@@ -7749,6 +8692,7 @@
     "producer": "John Cutter",
     "publisher": [
       "Cinemaware",
+      "Info / 5 logos",
       "Mirrorsoft",
       "Info / 7 images"
     ],
@@ -7769,7 +8713,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Storm"
+      "Storm",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1991
@@ -7783,7 +8728,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Tynesoft"
+      "Tynesoft",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1989
@@ -7796,10 +8742,13 @@
     "producer": "",
     "publisher": [
       "Tengen",
-      "US Gold"
+      "Info / logo",
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -7813,14 +8762,17 @@
     ],
     "musician": [
       "Chris Hülsbeck",
+      "photo",
       "Ramiro Vaca"
     ],
     "producer": "Jonathan Dean",
     "publisher": [
-      "Electric Dreams"
+      "Electric Dreams",
+      "Info / 5 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1988
   },
@@ -7835,10 +8787,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Durell Software"
+      "Durell Software",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Encore"
+      "Encore",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -7847,14 +8801,17 @@
     "developer": "Durell Software",
     "graphics": [],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
-      "Durell Software"
+      "Durell Software",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Encore"
+      "Encore",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -7871,10 +8828,12 @@
     ],
     "producer": "The Sales Curve Info",
     "publisher": [
-      "Storm"
+      "Storm",
+      "Info / 3 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1990
   },
@@ -7887,11 +8846,13 @@
       "Malcolm Smith"
     ],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
-      "Martech"
+      "Martech",
+      "Info / 2 logos"
     ],
     "re_releaser": [
       "React Software"
@@ -7911,7 +8872,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1988
@@ -7925,11 +8887,13 @@
       "David Taylor"
     ],
     "musician": [
-      "Adam Gilmore"
+      "Adam Gilmore",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Zeppelin Games"
+      "Zeppelin Games",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1992
@@ -7943,15 +8907,18 @@
       "Stavros Fasoulas"
     ],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "Gary Liddon Info",
     "publisher": [
       "Electronic Arts",
+      "Info / 4 logos",
       "Thalamus"
     ],
     "re_releaser": [
-      "Rack-It (Hewson)"
+      "Rack-It (Hewson)",
+      "Info / 3 logos"
     ],
     "released": 1986
   },
@@ -7966,7 +8933,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Argus Press Software"
+      "Argus Press Software",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1984
@@ -7982,7 +8950,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Ariolasoft"
+      "Ariolasoft",
+      "Info / 6 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -7994,25 +8963,30 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Quicksilva"
+      "Quicksilva",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1985
   },
   "seaside-special": {
     "coder": [
-      "Tony Gibson"
+      "Tony Gibson",
+      "photo"
     ],
     "developer": "Taskset",
     "graphics": [
-      "Mark Harrison"
+      "Mark Harrison",
+      "photo"
     ],
     "musician": [
-      "Tony Gibson"
+      "Tony Gibson",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Taskset"
+      "Taskset",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -8030,7 +9004,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Mindscape"
+      "Mindscape",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1993
@@ -8045,7 +9020,8 @@
     ],
     "musician": [
       "Jon Hare",
-      "Richard Joseph"
+      "Richard Joseph",
+      "photo"
     ],
     "producer": "Pete Hickman",
     "publisher": [
@@ -8068,12 +9044,15 @@
       "Alex Joseph",
       "Graham King",
       "Jason Page",
+      "photo",
+      "Interview",
       "Jon Hare",
       "Richard Joseph"
     ],
     "producer": "Graeme Boxall",
     "publisher": [
-      "Renegade"
+      "Renegade",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1995
@@ -8094,7 +9073,8 @@
   },
   "shadow-dancer": {
     "coder": [
-      "Jon Williams"
+      "Jon Williams",
+      "photo"
     ],
     "developer": "US Gold",
     "graphics": [
@@ -8106,10 +9086,12 @@
     ],
     "producer": "",
     "publisher": [
-      "US Gold"
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1991
   },
@@ -8135,11 +9117,13 @@
       "Steve Hammond"
     ],
     "musician": [
-      "Fredrik Segerfalk"
+      "Fredrik Segerfalk",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [],
     "released": 1990
@@ -8150,7 +9134,8 @@
     ],
     "developer": "Konami",
     "graphics": [
-      "Anthony West"
+      "Anthony West",
+      "photo"
     ],
     "musician": [
       "Graham Jarvis",
@@ -8158,34 +9143,40 @@
     ],
     "producer": "",
     "publisher": [
-      "The Edge"
+      "The Edge",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1986
   },
   "sheep-in-space": {
     "coder": [
-      "Jeff Minter"
+      "Jeff Minter",
+      "3 photos"
     ],
     "developer": "Llamasoft",
     "graphics": [
-      "Jeff Minter"
+      "Jeff Minter",
+      "3 photos"
     ],
     "musician": [
       "James Lisney"
     ],
     "producer": "",
     "publisher": [
-      "Llamasoft"
+      "Llamasoft",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1984
   },
   "shinobi": {
     "coder": [
-      "Simon Pick"
+      "Simon Pick",
+      "Interview"
     ],
     "developer": "Sega",
     "graphics": [
@@ -8197,10 +9188,13 @@
     "producer": "",
     "publisher": [
       "Sega",
-      "Virgin Games"
+      "Info / 4 logos",
+      "Virgin Games",
+      "Info / 2 logos"
     ],
     "re_releaser": [
-      "Mastertronic Plus"
+      "Mastertronic Plus",
+      "Info / logo"
     ],
     "released": 1989
   },
@@ -8211,69 +9205,84 @@
     "developer": "Martech",
     "graphics": [],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
-      "Martech"
+      "Martech",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1988
   },
   "short-circuit": {
     "coder": [
-      "John Meegan"
+      "John Meegan",
+      "photo"
     ],
     "developer": "Ocean",
     "graphics": [
-      "Karen Davies"
+      "Karen Davies",
+      "3 photos"
     ],
     "musician": [
-      "Martin Galway"
+      "Martin Galway",
+      "2 photos",
+      "Interview"
     ],
     "producer": "David Ward Info / 2 photos",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1987
   },
   "sid-meier-s-pirates": {
     "coder": [
-      "Sid Meier"
+      "Sid Meier",
+      "photo"
     ],
     "developer": "MicroProse Software",
     "graphics": [
       "Michael Haire"
     ],
     "musician": [
-      "Sid Meier"
+      "Sid Meier",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "MicroProse Software"
+      "MicroProse Software",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1987
   },
   "silent-service": {
     "coder": [
-      "Sid Meier"
+      "Sid Meier",
+      "photo"
     ],
     "developer": "MicroProse Software",
     "graphics": [
       "Michael Haire",
-      "Sid Meier"
+      "Sid Meier",
+      "photo"
     ],
     "musician": [],
     "producer": "",
     "publisher": [
-      "MicroProse Software"
+      "MicroProse Software",
+      "Info / 2 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1985
   },
@@ -8286,7 +9295,8 @@
       "Edward Langman"
     ],
     "musician": [
-      "Barry Leitch"
+      "Barry Leitch",
+      "photo"
     ],
     "producer": "",
     "publisher": [
@@ -8294,6 +9304,7 @@
     ],
     "re_releaser": [
       "Mastertronic Plus",
+      "Info / logo",
       "Tronix (Virgin Games)"
     ],
     "released": 1989
@@ -8305,7 +9316,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Infogrames"
+      "Infogrames",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1989
@@ -8330,19 +9342,23 @@
   "skate-or-die": {
     "coder": [
       "David Bunch",
+      "2 photos",
       "Stephen H. Landrum"
     ],
     "developer": "Electronic Arts",
     "graphics": [
-      "Michael Kosaka"
+      "Michael Kosaka",
+      "4 photos"
     ],
     "musician": [
       "Kyle Granger",
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
-      "Electronic Arts"
+      "Electronic Arts",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -8354,14 +9370,18 @@
     "developer": "Bubble Bus",
     "graphics": [],
     "musician": [
-      "Ben Daglish"
+      "Ben Daglish",
+      "3 photos",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
-      "Bubble Bus"
+      "Bubble Bus",
+      "Info / logo"
     ],
     "re_releaser": [
       "Dro Soft",
+      "Info / logo",
       "ECP",
       "Ricochet",
       "ShareData",
@@ -8395,11 +9415,13 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Microsphere"
+      "Microsphere",
+      "Info / logo"
     ],
     "re_releaser": [
       "2.99 Classics",
-      "Alternative Software"
+      "Alternative Software",
+      "Info / 2 logos"
     ],
     "released": 1985
   },
@@ -8410,14 +9432,17 @@
     "developer": "Domark",
     "graphics": [],
     "musician": [
-      "Matt Furniss"
+      "Matt Furniss",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Domark"
+      "Domark",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1991
   },
@@ -8426,11 +9451,13 @@
     "developer": "Martech",
     "graphics": [],
     "musician": [
-      "David Whittaker"
+      "David Whittaker",
+      "2 photos"
     ],
     "producer": "Creative Reality",
     "publisher": [
-      "Martech"
+      "Martech",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -8446,7 +9473,8 @@
     ],
     "producer": "Sidley McKay",
     "publisher": [
-      "Tronix Publishing"
+      "Tronix Publishing",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1983
@@ -8456,11 +9484,13 @@
     "developer": "Codemasters",
     "graphics": [],
     "musician": [
-      "Allister Brimble"
+      "Allister Brimble",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Codemasters"
+      "Codemasters",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1992
@@ -8470,11 +9500,13 @@
     "developer": "Ocean",
     "graphics": [],
     "musician": [
-      "Allister Brimble"
+      "Allister Brimble",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Codemasters"
+      "Codemasters",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1992
@@ -8491,7 +9523,8 @@
       "Peaksoft"
     ],
     "re_releaser": [
-      "Alternative Software"
+      "Alternative Software",
+      "Info / 2 logos"
     ],
     "released": 1984
   },
@@ -8500,11 +9533,13 @@
     "developer": "Alligata Software",
     "graphics": [],
     "musician": [
-      "Antony Crowther"
+      "Antony Crowther",
+      "5 photos"
     ],
     "producer": "",
     "publisher": [
-      "Alligata Software"
+      "Alligata Software",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -8535,7 +9570,8 @@
     ],
     "producer": "Kevin Shrapnell",
     "publisher": [
-      "Electronic Arts"
+      "Electronic Arts",
+      "Info / 6 logos"
     ],
     "re_releaser": [],
     "released": 1993
@@ -8549,7 +9585,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Muse Software"
+      "Muse Software",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1984
@@ -8563,7 +9600,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Players Software"
+      "Players Software",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1988
@@ -8582,7 +9620,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Image Works"
+      "Image Works",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1990
@@ -8592,11 +9631,13 @@
     "developer": "Mastertronic",
     "graphics": [],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
-      "MAD (Mastertronic)"
+      "MAD (Mastertronic)",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -8613,7 +9654,9 @@
     "producer": "Micro GraphicImage",
     "publisher": [
       "Ariolasoft",
-      "Brøderbund"
+      "Info / 6 logos",
+      "Brøderbund",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -8624,11 +9667,13 @@
     "graphics": [],
     "musician": [
       "Graham Marsh",
+      "photo",
       "Simon Clarke"
     ],
     "producer": "",
     "publisher": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -8642,14 +9687,17 @@
       "David Fish"
     ],
     "musician": [
-      "David Whittaker"
+      "David Whittaker",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "Domark"
+      "Domark",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1988
   },
@@ -8662,14 +9710,17 @@
       "Richard Naylor"
     ],
     "musician": [
-      "David Whittaker"
+      "David Whittaker",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "Domark"
+      "Domark",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Bug-Byte"
+      "Bug-Byte",
+      "Info / 4 logos"
     ],
     "released": 1986
   },
@@ -8685,10 +9736,12 @@
     "producer": "",
     "publisher": [
       "Sega",
+      "Info / 4 logos",
       "US Gold"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1984
   },
@@ -8701,13 +9754,18 @@
     ],
     "producer": "",
     "publisher": [
-      "First Star Software"
+      "First Star Software",
+      "Info / 4 logos"
     ],
     "re_releaser": [
       "Aackosoft",
+      "Info / logo",
       "Avantage",
+      "Info / 2 logos",
       "Beyond",
+      "Info / 5 logos",
       "Hi-Tec Software",
+      "Info / 3 logos",
       "OziSoft",
       "Tynesoft"
     ],
@@ -8722,14 +9780,19 @@
     ],
     "producer": "",
     "publisher": [
-      "First Star Software"
+      "First Star Software",
+      "Info / 4 logos"
     ],
     "re_releaser": [
       "Avantage",
+      "Info / 2 logos",
       "Beyond",
+      "Info / 5 logos",
       "Databyte",
       "EDOS",
+      "Info / logo",
       "Hi-Tec Software",
+      "Info / 3 logos",
       "SoftExpress",
       "Wicked Software",
       "World Wide Software"
@@ -8745,11 +9808,14 @@
     ],
     "producer": "",
     "publisher": [
-      "First Star Software"
+      "First Star Software",
+      "Info / 4 logos"
     ],
     "re_releaser": [
       "Databyte",
+      "Info / 2 logos",
       "Epyx",
+      "Info / 3 logos",
       "Hi-Tec Software",
       "Softgold",
       "World Wide Software"
@@ -8758,18 +9824,21 @@
   },
   "stairways": {
     "coder": [
-      "Marc Dawson"
+      "Marc Dawson",
+      "photo"
     ],
     "developer": "Thor Computer Software",
     "graphics": [
       "Stuart Fotheringham"
     ],
     "musician": [
-      "Fred Gray"
+      "Fred Gray",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Thor Computer Software"
+      "Thor Computer Software",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -8785,14 +9854,17 @@
       "John Cassells"
     ],
     "musician": [
-      "David Whittaker"
+      "David Whittaker",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "Domark"
+      "Domark",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1988
   },
@@ -8810,7 +9882,8 @@
     ],
     "producer": "",
     "publisher": [
-      "MAD (Mastertronic)"
+      "MAD (Mastertronic)",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1988
@@ -8847,14 +9920,17 @@
       "Nick Strange"
     ],
     "musician": [
-      "Steve Crow"
+      "Steve Crow",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "Bubble Bus"
+      "Bubble Bus",
+      "Info / logo"
     ],
     "re_releaser": [
-      "Ricochet"
+      "Ricochet",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -8863,11 +9939,13 @@
     "developer": "Mastertronic",
     "graphics": [],
     "musician": [
-      "David Whittaker"
+      "David Whittaker",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "MAD (Mastertronic)"
+      "MAD (Mastertronic)",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -8879,10 +9957,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "GO!"
+      "GO!",
+      "Info / 3 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1988
   },
@@ -8900,11 +9980,14 @@
     ],
     "producer": "",
     "publisher": [
-      "Melbourne House"
+      "Melbourne House",
+      "Info / 6 logos"
     ],
     "re_releaser": [
       "Mastertronic",
-      "Mastertronic Plus"
+      "Info / 5 logos",
+      "Mastertronic Plus",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -8919,10 +10002,12 @@
     ],
     "producer": "",
     "publisher": [
-      "US Gold"
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1989
   },
@@ -8938,10 +10023,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Artworx Software"
+      "Artworx Software",
+      "Info / logo"
     ],
     "re_releaser": [
-      "Blue Ribbon"
+      "Blue Ribbon",
+      "Info / logo"
     ],
     "released": 1984
   },
@@ -8956,7 +10043,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Quicksilva"
+      "Quicksilva",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -8965,21 +10053,25 @@
     "coder": [],
     "developer": "MicroStyle",
     "graphics": [
-      "John Cumming"
+      "John Cumming",
+      "photo"
     ],
     "musician": [],
     "producer": "",
     "publisher": [
-      "MicroStyle"
+      "MicroStyle",
+      "Info / 2 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1989
   },
   "summer-games": {
     "coder": [
-      "Stephen H. Landrum"
+      "Stephen H. Landrum",
+      "2 photos"
     ],
     "developer": "Epyx",
     "graphics": [],
@@ -8989,10 +10081,13 @@
     "producer": "",
     "publisher": [
       "Epyx",
-      "US Gold"
+      "Info / 3 logos",
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1984
   },
@@ -9000,7 +10095,8 @@
     "coder": [],
     "developer": "Epyx",
     "graphics": [
-      "Michael Kosaka"
+      "Michael Kosaka",
+      "4 photos"
     ],
     "musician": [
       "Bob Vieira"
@@ -9008,26 +10104,33 @@
     "producer": "",
     "publisher": [
       "Epyx",
-      "US Gold"
+      "Info / 3 logos",
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1985
   },
   "super-cars-2": {
     "coder": [
-      "Shaun Southern"
+      "Shaun Southern",
+      "photo"
     ],
     "developer": "Gremlin Graphics",
     "graphics": [
       "Andrew Morris",
+      "photo",
+      "Interview",
       "Jeremy C. Smith"
     ],
     "musician": [
-      "Barry Leitch"
+      "Barry Leitch",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Gremlin Graphics"
+      "Gremlin Graphics",
+      "Info / 2 logos"
     ],
     "re_releaser": [
       "GBH Gold"
@@ -9038,7 +10141,8 @@
     "coder": [],
     "developer": "Epyx",
     "graphics": [
-      "Michael Kosaka"
+      "Michael Kosaka",
+      "4 photos"
     ],
     "musician": [
       "Bob Vieira"
@@ -9046,10 +10150,13 @@
     "producer": "",
     "publisher": [
       "Epyx",
-      "US Gold"
+      "Info / 3 logos",
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -9062,7 +10169,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Tynesoft"
+      "Tynesoft",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -9076,7 +10184,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Terminal Software"
+      "Terminal Software",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -9092,7 +10201,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Taskset"
+      "Taskset",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -9106,11 +10216,13 @@
       "James Wilson"
     ],
     "musician": [
-      "David Whittaker"
+      "David Whittaker",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "Codemasters"
+      "Codemasters",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -9126,7 +10238,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Mastertronic"
+      "Mastertronic",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1988
@@ -9141,11 +10254,13 @@
       "Rico Holmes"
     ],
     "musician": [
-      "Allister Brimble"
+      "Allister Brimble",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Team 17"
+      "Team 17",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1993
@@ -9155,14 +10270,18 @@
     "developer": "Gremlin Graphics",
     "graphics": [],
     "musician": [
-      "Ben Daglish"
+      "Ben Daglish",
+      "3 photos",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
-      "Gremlin Graphics"
+      "Gremlin Graphics",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "GBH"
+      "GBH",
+      "Info / logo"
     ],
     "released": 1991
   },
@@ -9176,14 +10295,17 @@
       "Robert Whitaker"
     ],
     "musician": [
-      "Martin Walker"
+      "Martin Walker",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "Storm"
+      "Storm",
+      "Info / 3 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1991
   },
@@ -9201,10 +10323,12 @@
     "musician": [],
     "producer": "Peter Molyneux",
     "publisher": [
-      "Electronic Arts"
+      "Electronic Arts",
+      "Info / 6 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1993
   },
@@ -9231,7 +10355,8 @@
     ],
     "producer": "Richard Paul Jones",
     "publisher": [
-      "Interceptor Software"
+      "Interceptor Software",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -9251,8 +10376,10 @@
     "producer": "",
     "publisher": [
       "ERBE Software",
+      "Info / logo",
       "Handic Software",
       "Sega",
+      "Info / 4 logos",
       "US Gold"
     ],
     "re_releaser": [],
@@ -9260,7 +10387,8 @@
   },
   "target-renegade": {
     "coder": [
-      "David A. Collier"
+      "David A. Collier",
+      "2 photos"
     ],
     "developer": "Imagine",
     "graphics": [
@@ -9272,10 +10400,12 @@
     ],
     "producer": "",
     "publisher": [
-      "Imagine"
+      "Imagine",
+      "Info / 3 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1988
   },
@@ -9286,10 +10416,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "CRL"
+      "CRL",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Ricochet"
+      "Ricochet",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -9312,7 +10444,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Image Works"
+      "Image Works",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1990
@@ -9322,11 +10455,13 @@
     "developer": "Konami",
     "graphics": [],
     "musician": [
-      "Jeroen Tel"
+      "Jeroen Tel",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "Konami"
+      "Konami",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1991
@@ -9341,14 +10476,17 @@
       "Martin McDonald"
     ],
     "musician": [
-      "Jonathan Dunn"
+      "Jonathan Dunn",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1991
   },
@@ -9374,14 +10512,17 @@
       "Rod Barrington"
     ],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
-      "Durell Software"
+      "Durell Software",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Encore"
+      "Encore",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -9394,10 +10535,12 @@
     ],
     "producer": "",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "released": 1984
   },
@@ -9412,11 +10555,13 @@
       "Steve Grand"
     ],
     "musician": [
-      "Richard Joseph"
+      "Richard Joseph",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Millennium"
+      "Millennium",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1991
@@ -9430,7 +10575,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Mastertronic"
+      "Mastertronic",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -9445,7 +10591,9 @@
     "producer": "",
     "publisher": [
       "Ariolasoft",
-      "Brøderbund"
+      "Info / 6 logos",
+      "Brøderbund",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -9462,11 +10610,13 @@
     "musician": [
       "Farook Joi",
       "Haroon Joi",
-      "Richard Joseph"
+      "Richard Joseph",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Renegade"
+      "Renegade",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1993
@@ -9484,7 +10634,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Mindscape"
+      "Mindscape",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -9497,15 +10648,19 @@
     ],
     "musician": [
       "Charlie Kellner",
+      "photo",
       "David Levine"
     ],
     "producer": "",
     "publisher": [
       "Activision",
-      "Epyx"
+      "Info / 7 logos",
+      "Epyx",
+      "Info / 3 logos"
     ],
     "re_releaser": [
-      "Ricochet"
+      "Ricochet",
+      "Info / logo"
     ],
     "released": 1985
   },
@@ -9518,7 +10673,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Palace Software"
+      "Palace Software",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -9536,7 +10692,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Software Projects"
+      "Software Projects",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -9553,9 +10710,13 @@
     "producer": "",
     "publisher": [
       "American Action",
+      "Info / 2 logos",
       "Datasoft",
+      "Info / 3 logos",
       "ERBE Software",
-      "US Gold"
+      "Info / logo",
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -9571,10 +10732,12 @@
     "musician": [],
     "producer": "David Ward Info / 2 photos",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -9587,11 +10750,13 @@
       "Manfred Trenz"
     ],
     "musician": [
-      "Chris Hülsbeck"
+      "Chris Hülsbeck",
+      "photo"
     ],
     "producer": "",
     "publisher": [
       "GO!",
+      "Info / 3 logos",
       "Rainbow Arts"
     ],
     "re_releaser": [],
@@ -9610,7 +10775,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Rainbird"
+      "Rainbird",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1987
@@ -9624,7 +10790,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -9636,11 +10803,13 @@
     "developer": "Mastertronic",
     "graphics": [],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
-      "Mastertronic"
+      "Mastertronic",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -9659,14 +10828,16 @@
     ],
     "producer": "",
     "publisher": [
-      "Electronic Arts"
+      "Electronic Arts",
+      "Info / 6 logos"
     ],
     "re_releaser": [],
     "released": 1990
   },
   "the-last-ninja": {
     "coder": [
-      "John Twiddy"
+      "John Twiddy",
+      "photo"
     ],
     "developer": "System 3",
     "graphics": [
@@ -9674,15 +10845,20 @@
     ],
     "musician": [
       "Anthony Lees",
-      "Ben Daglish"
+      "Ben Daglish",
+      "3 photos",
+      "Interview"
     ],
     "producer": "Mark Cale Info",
     "publisher": [
       "Activision",
-      "System 3"
+      "Info / 7 logos",
+      "System 3",
+      "Info / 6 logos"
     ],
     "re_releaser": [
-      "Summit"
+      "Summit",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -9695,11 +10871,13 @@
       "James Wilson"
     ],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
-      "MAD (Mastertronic)"
+      "MAD (Mastertronic)",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -9714,10 +10892,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Beyond"
+      "Beyond",
+      "Info / 5 logos"
     ],
     "re_releaser": [
-      "Mindscape"
+      "Mindscape",
+      "Info / 3 logos"
     ],
     "released": 1985
   },
@@ -9737,7 +10917,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 14 logos"
     ],
     "re_releaser": [],
     "released": 1990
@@ -9749,6 +10930,7 @@
       "Courtney Granner",
       "Jenny Martin",
       "Michael Kosaka",
+      "4 photos",
       "Suzie Greene"
     ],
     "musician": [
@@ -9757,7 +10939,9 @@
     "producer": "",
     "publisher": [
       "Epyx",
-      "US Gold"
+      "Info / 3 logos",
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -9769,10 +10953,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Gremlin Graphics"
+      "Gremlin Graphics",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "Prism Leisure"
+      "Prism Leisure",
+      "Info / logo"
     ],
     "released": 1988
   },
@@ -9782,14 +10968,18 @@
     ],
     "developer": "Ocean",
     "graphics": [
-      "Steve Cain"
+      "Steve Cain",
+      "4 photos"
     ],
     "musician": [
-      "Martin Galway"
+      "Martin Galway",
+      "2 photos",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -9800,17 +10990,21 @@
     ],
     "developer": "Ocean",
     "graphics": [
-      "Stephen Wahid"
+      "Stephen Wahid",
+      "photo"
     ],
     "musician": [
-      "Jonathan Dunn"
+      "Jonathan Dunn",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1989
   },
@@ -9821,7 +11015,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Alternative Software"
+      "Alternative Software",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1989
@@ -9835,7 +11030,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -9862,14 +11058,17 @@
       "James McDermott"
     ],
     "musician": [
-      "David Whittaker"
+      "David Whittaker",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1989
   },
@@ -9885,10 +11084,12 @@
     ],
     "producer": "",
     "publisher": [
-      "CRL"
+      "CRL",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Alternative Software"
+      "Alternative Software",
+      "Info / 2 logos"
     ],
     "released": 1985
   },
@@ -9899,7 +11100,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Grandslam"
+      "Grandslam",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1989
@@ -9913,14 +11115,17 @@
       "Daniel Malone"
     ],
     "musician": [
-      "Richard Joseph"
+      "Richard Joseph",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Palace Software"
+      "Palace Software",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Hi-Tec Software"
+      "Hi-Tec Software",
+      "Info / 3 logos"
     ],
     "released": 1986
   },
@@ -9943,11 +11148,14 @@
     ],
     "musician": [
       "Chris Hülsbeck",
-      "Rudolf Stember"
+      "2 photos",
+      "Rudolf Stember",
+      "photo"
     ],
     "producer": "Greg Hammond",
     "publisher": [
-      "US Gold"
+      "US Gold",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1991
@@ -9961,7 +11169,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -9981,7 +11190,8 @@
     ],
     "producer": "Thomas Hertzler Info",
     "publisher": [
-      "Blue Byte"
+      "Blue Byte",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1993
@@ -10000,7 +11210,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Commodore Plus"
+      "Commodore Plus",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 2023
@@ -10014,7 +11225,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Quicksilva"
+      "Quicksilva",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -10032,7 +11244,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Ultimate"
+      "Ultimate",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -10046,7 +11259,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Epyx"
+      "Epyx",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -10064,7 +11278,8 @@
     ],
     "producer": "John Cutter Phyllis Jacob Robert Jacob",
     "publisher": [
-      "Cinemaware"
+      "Cinemaware",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -10084,7 +11299,9 @@
     "producer": "Jon Correll",
     "publisher": [
       "Accolade",
-      "Electronic Arts"
+      "Info / 2 logos",
+      "Electronic Arts",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -10096,11 +11313,13 @@
       "Simon Butler"
     ],
     "musician": [
-      "Fred Gray"
+      "Fred Gray",
+      "photo"
     ],
     "producer": "David Ward Info / 2 photos",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -10114,16 +11333,19 @@
     ],
     "producer": "",
     "publisher": [
-      "Piranha"
+      "Piranha",
+      "Info / 5 logos"
     ],
     "re_releaser": [
-      "Alternative Software"
+      "Alternative Software",
+      "Info / 2 logos"
     ],
     "released": 1986
   },
   "the-untouchables": {
     "coder": [
-      "John Meegan"
+      "John Meegan",
+      "photo"
     ],
     "developer": "Ocean",
     "graphics": [
@@ -10131,21 +11353,25 @@
     ],
     "musician": [
       "Jonathan Dunn",
+      "photo",
       "Matthew Cannon"
     ],
     "producer": "Jon Woods",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1989
   },
   "the-way-of-the-exploding-fist": {
     "coder": [
       "David Johnston",
-      "Gregg Barnett"
+      "Gregg Barnett",
+      "photo"
     ],
     "developer": "Melbourne House",
     "graphics": [
@@ -10156,11 +11382,13 @@
     ],
     "producer": "",
     "publisher": [
-      "Melbourne House"
+      "Melbourne House",
+      "Info / 6 logos"
     ],
     "re_releaser": [
       "Micropool",
-      "Ricochet"
+      "Ricochet",
+      "Info / logo"
     ],
     "released": 1985
   },
@@ -10169,11 +11397,13 @@
     "developer": "Firebird",
     "graphics": [],
     "musician": [
-      "David Whittaker"
+      "David Whittaker",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -10189,7 +11419,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Orpheus"
+      "Orpheus",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -10210,7 +11441,8 @@
     ],
     "producer": "Mark Webley",
     "publisher": [
-      "Electronic Arts"
+      "Electronic Arts",
+      "Info / 6 logos"
     ],
     "re_releaser": [],
     "released": 1994
@@ -10220,11 +11452,14 @@
     "developer": "Ariolasoft",
     "graphics": [],
     "musician": [
-      "Ben Daglish"
+      "Ben Daglish",
+      "3 photos",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
-      "Ariolasoft"
+      "Ariolasoft",
+      "Info / 6 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -10240,14 +11475,19 @@
       "Jason H. Perkins"
     ],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
       "Epyx",
+      "Info / 3 logos",
       "Gremlin Graphics",
+      "Info / 7 logos",
       "Melbourne House",
-      "OziSoft"
+      "Info / 6 logos",
+      "OziSoft",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1985
@@ -10259,10 +11499,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Piranha"
+      "Piranha",
+      "Info / 5 logos"
     ],
     "re_releaser": [
-      "Alternative Software"
+      "Alternative Software",
+      "Info / 2 logos"
     ],
     "released": 1988
   },
@@ -10277,14 +11519,16 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Software Projects"
+      "Software Projects",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1984
   },
   "thunder-blade": {
     "coder": [
-      "Chris Butler"
+      "Chris Butler",
+      "photo"
     ],
     "developer": "US Gold",
     "graphics": [],
@@ -10293,10 +11537,12 @@
     ],
     "producer": "",
     "publisher": [
-      "US Gold"
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1988
   },
@@ -10305,14 +11551,17 @@
     "developer": "Elite",
     "graphics": [],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
-      "Elite"
+      "Elite",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Encore"
+      "Encore",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -10321,14 +11570,17 @@
     "developer": "Elite",
     "graphics": [],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
-      "Elite"
+      "Elite",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Encore"
+      "Encore",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -10343,7 +11595,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Codemasters"
+      "Codemasters",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1990
@@ -10357,7 +11610,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "US Gold"
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -10368,6 +11622,8 @@
       "Chris Yates",
       "Kenneth W. Arnold",
       "Martin Galway",
+      "2 photos",
+      "Interview",
       "Paul C. Isaac"
     ],
     "developer": "Origin Systems",
@@ -10375,11 +11631,14 @@
       "Denis R. Loubet"
     ],
     "musician": [
-      "Martin Galway"
+      "Martin Galway",
+      "2 photos",
+      "Interview"
     ],
     "producer": "Dallas Snell",
     "publisher": [
-      "Origin Systems"
+      "Origin Systems",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1988
@@ -10399,19 +11658,23 @@
   "to-be-on-top": {
     "coder": [
       "Chris Hülsbeck",
+      "photo",
       "Matthias Sykosch"
     ],
     "developer": "Rainbow Arts",
     "graphics": [
       "Chris Hülsbeck",
+      "photo",
       "Uwe Meier"
     ],
     "musician": [
-      "Chris Hülsbeck"
+      "Chris Hülsbeck",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Rainbow Arts"
+      "Rainbow Arts",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -10431,7 +11694,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [],
     "released": 1991
@@ -10443,7 +11707,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Commodore"
+      "Commodore",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1982
@@ -10454,15 +11719,18 @@
     ],
     "developer": "Ocean",
     "graphics": [
-      "Stephen Wahid"
+      "Stephen Wahid",
+      "photo"
     ],
     "musician": [],
     "producer": "",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -10473,14 +11741,16 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "ICE"
+      "ICE",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1994
   },
   "total-recall": {
     "coder": [
-      "John Meegan"
+      "John Meegan",
+      "photo"
     ],
     "developer": "Ocean",
     "graphics": [
@@ -10488,14 +11758,17 @@
       "Stephen Ian Thomson"
     ],
     "musician": [
-      "Jonathan Dunn"
+      "Jonathan Dunn",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1991
   },
@@ -10513,7 +11786,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -10527,10 +11801,12 @@
     ],
     "producer": "",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "Ricochet"
+      "Ricochet",
+      "Info / logo"
     ],
     "released": 1984
   },
@@ -10545,7 +11821,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Konami"
+      "Konami",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -10566,7 +11843,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Spinnaker Software"
+      "Spinnaker Software",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -10584,10 +11862,12 @@
     ],
     "producer": "",
     "publisher": [
-      "New Generation Software"
+      "New Generation Software",
+      "Info / logo"
     ],
     "re_releaser": [
-      "Quicksilva"
+      "Quicksilva",
+      "Info / 3 logos"
     ],
     "released": 1984
   },
@@ -10602,7 +11882,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Creative Software"
+      "Creative Software",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1984
@@ -10610,22 +11891,27 @@
   "turbo-out-run": {
     "coder": [
       "Mark Hill",
-      "Mark W.J. Kelly"
+      "Mark W.J. Kelly",
+      "2 photos"
     ],
     "developer": "Sega",
     "graphics": [
-      "Steve Crow"
+      "Steve Crow",
+      "2 photos"
     ],
     "musician": [
-      "Jeroen Tel"
+      "Jeroen Tel",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
       "Sega",
+      "Info / 4 logos",
       "US Gold"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1989
   },
@@ -10639,15 +11925,18 @@
     ],
     "musician": [
       "Chris Hülsbeck",
+      "photo",
       "Ramiro Vaca",
       "Stefan Hartwig"
     ],
     "producer": "Marc A. Ullrich Info",
     "publisher": [
-      "Rainbow Arts"
+      "Rainbow Arts",
+      "Info / 3 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1990
   },
@@ -10662,14 +11951,17 @@
     ],
     "musician": [
       "Markus Siebold",
+      "photo",
       "Stefan Hartwig"
     ],
     "producer": "Julian Eggebrecht Info",
     "publisher": [
-      "Rainbow Arts"
+      "Rainbow Arts",
+      "Info / 3 logos"
     ],
     "re_releaser": [
       "Kixx",
+      "Info / logo",
       "Topshots"
     ],
     "released": 1991
@@ -10684,10 +11976,13 @@
     "producer": "",
     "publisher": [
       "Martech",
-      "Mindscape"
+      "Info / 2 logos",
+      "Mindscape",
+      "Info / 3 logos"
     ],
     "re_releaser": [
       "Alternative Software",
+      "Info / 2 logos",
       "Micropool"
     ],
     "released": 1986
@@ -10699,7 +11994,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Origin Systems"
+      "Origin Systems",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -10717,7 +12013,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1985
@@ -10736,10 +12033,12 @@
     "producer": "",
     "publisher": [
       "Sega",
+      "Info / 4 logos",
       "US Gold"
     ],
     "re_releaser": [
-      "Handic Software"
+      "Handic Software",
+      "Info / logo"
     ],
     "released": 1984
   },
@@ -10753,7 +12052,8 @@
       "Gwyll Jones"
     ],
     "musician": [
-      "Rob Hubbard"
+      "Rob Hubbard",
+      "3 photos"
     ],
     "producer": "",
     "publisher": [
@@ -10764,14 +12064,18 @@
   },
   "uridium": {
     "coder": [
-      "Andrew Braybrook"
+      "Andrew Braybrook",
+      "photo"
     ],
     "developer": "Hewson",
     "graphics": [
-      "Andrew Braybrook"
+      "Andrew Braybrook",
+      "photo"
     ],
     "musician": [
-      "Steve Turner"
+      "Steve Turner",
+      "photo",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
@@ -10792,7 +12096,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Amersoft"
+      "Amersoft",
+      "Info / 2 logos"
     ],
     "re_releaser": [],
     "released": 1986
@@ -10804,10 +12109,12 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "US Gold"
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1989
   },
@@ -10818,7 +12125,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Commodore"
+      "Commodore",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1982
@@ -10844,7 +12152,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Psygnosis"
+      "Psygnosis",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1993
@@ -10864,7 +12173,9 @@
     "producer": "",
     "publisher": [
       "Gremlin Graphics",
-      "Mastertronic"
+      "Info / 7 logos",
+      "Mastertronic",
+      "Info / 5 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -10901,11 +12212,13 @@
       "James Hutchby"
     ],
     "musician": [
-      "David Whittaker"
+      "David Whittaker",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "Rainbird"
+      "Rainbird",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1989
@@ -10917,11 +12230,13 @@
     "developer": "Gremlin Graphics",
     "graphics": [],
     "musician": [
-      "Fred Gray"
+      "Fred Gray",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Gremlin Graphics"
+      "Gremlin Graphics",
+      "Info / 7 logos"
     ],
     "re_releaser": [],
     "released": 1987
@@ -10939,10 +12254,12 @@
     ],
     "producer": "",
     "publisher": [
-      "Alligata Software"
+      "Alligata Software",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Alternative Software"
+      "Alternative Software",
+      "Info / 2 logos"
     ],
     "released": 1985
   },
@@ -10962,7 +12279,8 @@
     ],
     "producer": "David Riordan Jerry Albright",
     "publisher": [
-      "Cinemaware"
+      "Cinemaware",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1990
@@ -10980,7 +12298,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Brøderbund"
+      "Brøderbund",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1990
@@ -10997,10 +12316,13 @@
     "producer": "",
     "publisher": [
       "Epyx",
-      "US Gold"
+      "Info / 3 logos",
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1985
   },
@@ -11025,7 +12347,8 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Commodore"
+      "Commodore",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1983
@@ -11039,14 +12362,18 @@
       "Jon Hare"
     ],
     "musician": [
-      "Martin Galway"
+      "Martin Galway",
+      "2 photos",
+      "Interview"
     ],
     "producer": "David Ward Info / 2 photos",
     "publisher": [
-      "Ocean"
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1987
   },
@@ -11067,6 +12394,7 @@
       "Courtney Granner",
       "Jenny Martin",
       "Michael Kosaka",
+      "4 photos",
       "Suzie Greene"
     ],
     "musician": [
@@ -11075,10 +12403,13 @@
     "producer": "",
     "publisher": [
       "Epyx",
-      "US Gold"
+      "Info / 3 logos",
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [
-      "Kixx"
+      "Kixx",
+      "Info / logo"
     ],
     "released": 1986
   },
@@ -11089,15 +12420,19 @@
     "developer": "Ocean",
     "graphics": [],
     "musician": [
-      "Gerard Gourley"
+      "Gerard Gourley",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
       "ERBE Software",
-      "Ocean"
+      "Info / logo",
+      "Ocean",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1991
   },
@@ -11110,11 +12445,13 @@
       "Celal Kandemiroglu"
     ],
     "musician": [
-      "Chris Hülsbeck"
+      "Chris Hülsbeck",
+      "2 photos"
     ],
     "producer": "",
     "publisher": [
-      "Rainbow Arts"
+      "Rainbow Arts",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1990
@@ -11126,28 +12463,35 @@
     "musician": [],
     "producer": "",
     "publisher": [
-      "Domark"
+      "Domark",
+      "Info / 7 logos"
     ],
     "re_releaser": [],
     "released": 1989
   },
   "yie-ar-kung-fu": {
     "coder": [
-      "David A. Collier"
+      "David A. Collier",
+      "2 photos"
     ],
     "developer": "Imagine",
     "graphics": [
-      "Stephen Wahid"
+      "Stephen Wahid",
+      "photo"
     ],
     "musician": [
-      "Martin Galway"
+      "Martin Galway",
+      "2 photos",
+      "Interview"
     ],
     "producer": "",
     "publisher": [
-      "Imagine"
+      "Imagine",
+      "Info / 3 logos"
     ],
     "re_releaser": [
-      "The Hit Squad"
+      "The Hit Squad",
+      "Info / logo"
     ],
     "released": 1985
   },
@@ -11160,16 +12504,19 @@
     ],
     "producer": "",
     "publisher": [
-      "Piranha"
+      "Piranha",
+      "Info / 5 logos"
     ],
     "re_releaser": [
-      "Alternative Software"
+      "Alternative Software",
+      "Info / 2 logos"
     ],
     "released": 1987
   },
   "zak-mckracken-and-the-alien-mindbenders": {
     "coder": [
       "David Fox",
+      "photo",
       "Matthew Kane"
     ],
     "developer": "Lucasfilm Games",
@@ -11182,7 +12529,8 @@
     ],
     "producer": "",
     "publisher": [
-      "Lucasfilm Games"
+      "Lucasfilm Games",
+      "Info / 3 logos"
     ],
     "re_releaser": [],
     "released": 1988
@@ -11196,14 +12544,17 @@
       "Jukka Tapanimäki"
     ],
     "musician": [
-      "Charles Deenen"
+      "Charles Deenen",
+      "photo"
     ],
     "producer": "Paul Chamberlain",
     "publisher": [
-      "Rack-It (Hewson)"
+      "Rack-It (Hewson)",
+      "Info / 3 logos"
     ],
     "re_releaser": [
-      "Prism Leisure"
+      "Prism Leisure",
+      "Info / logo"
     ],
     "released": 1988
   },
@@ -11215,7 +12566,9 @@
     "producer": "",
     "publisher": [
       "Synapse Software",
-      "US Gold"
+      "Info / 3 logos",
+      "US Gold",
+      "Info / 4 logos"
     ],
     "re_releaser": [],
     "released": 1984
@@ -11229,10 +12582,12 @@
     ],
     "producer": "",
     "publisher": [
-      "Activision"
+      "Activision",
+      "Info / 7 logos"
     ],
     "re_releaser": [
-      "Firebird"
+      "Firebird",
+      "Info / 5 logos"
     ],
     "released": 1984
   },
@@ -11246,11 +12601,13 @@
       "Keith Wilson"
     ],
     "musician": [
-      "Fred Gray"
+      "Fred Gray",
+      "photo"
     ],
     "producer": "",
     "publisher": [
-      "Gamebusters"
+      "Gamebusters",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1988
@@ -11263,7 +12620,9 @@
     "producer": "",
     "publisher": [
       "Commodore",
-      "Infocom"
+      "Info / 3 logos",
+      "Infocom",
+      "Info / logo"
     ],
     "re_releaser": [],
     "released": 1983
@@ -11281,10 +12640,12 @@
     ],
     "producer": "",
     "publisher": [
-      "Datasoft"
+      "Datasoft",
+      "Info / 3 logos"
     ],
     "re_releaser": [
-      "Americana"
+      "Americana",
+      "Info / 3 logos"
     ],
     "released": 1985
   }

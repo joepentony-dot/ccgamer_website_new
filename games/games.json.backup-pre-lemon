@@ -389,7 +389,7 @@
       "https://drive.google.com/file/d/1PynskVl35QY0z0H1mHbKEC5efUwcxnjY/view?usp=drive_link"
     ],
     "description": "Aliens: The Computer Game is a Commodore 64 adaptation of the science-fiction film Aliens. The Electric Dreams version focuses on straightforward action gameplay, while the US release features a series of mini-games representing different scenes from the movie. Together, they offer a varied and ambitious licensed experience on the C64.",
-  "ccg_rating": 10,
+    "ccg_rating": 10,
     "ccg_rating_reason": "Iconic for good reason"
   },
   {
@@ -1000,52 +1000,6 @@
   },
   {
     "system": "C64",
-    "id": "b.c._bill",
-    "slug": "b-c-bill",
-    "title": "B.C. Bill",
-    "sorttitle": "BC Bill",
-    "genres": [
-      "Arcade Games",
-      "Miscellaneous"
-    ],
-    "year": 1984,
-    "developer": "Imagine",
-    "videoid": "PlbS2Q4IgTg",
-    "lemon": [
-      "https://www.lemon64.com/game/bc-bill"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/bc_bill.jpg",
-    "pdf": "https://drive.google.com/file/d/1GaezpNjUvFY9z10tRYtlrRK0SWTnjY2x/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1eot6RylOZx68YUNtNkcqYusUSUZHUiqP/view?usp=drive_link"
-    ],
-    "description": "B.C. Bill is a Commodore 64 arcade game released by Imagine in 1984. Set in a prehistoric world, players guide a caveman through obstacle-filled levels while collecting items and avoiding hazards. The game is remembered for its simple mechanics and cartoon-style presentation."
-  },
-  {
-    "system": "C64",
-    "id": "b.c._ii:_grog's_revenge",
-    "slug": "b-c-2-grog-s-revenge",
-    "title": "B.C. II: Grog's Revenge",
-    "sorttitle": "BC Quest 2",
-    "genres": [
-      "Arcade Games",
-      "Licensed Games"
-    ],
-    "year": 1984,
-    "developer": "Software Projects",
-    "videoid": "iXJM3Tz_-JQ",
-    "lemon": [
-      "https://www.lemon64.com/game/bcs-quest-for-tires"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/bc_ii_grog_s_revenge.jpg",
-    "pdf": "https://drive.google.com/file/d/1n4JisEpwTy_ciAe7Rh33vPPOxzBxR06t/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1aUlTkh0T2JfIM9oLLEuXqrazW0pjAU4O/view?usp=drive_link"
-    ],
-    "description": "B.C. II: Grog's Revenge is a Commodore 64 arcade game released in 1984 by Software Projects. Acting as a sequel to B.C.'s Quest for Tires, it expands on the prehistoric theme with new challenges and enemies. The game retains the fast-paced action that made the original popular."
-  },
-  {
-    "system": "C64",
     "id": "b.c.'s_quest_for_tires",
     "slug": "b-c-s-quest-for-tires",
     "title": "B.C.'S Quest For Tires",
@@ -1360,32 +1314,6 @@
     ],
     "description": "B.C. Bill is a Commodore 64 arcade game released by Imagine in 1984. Set in a prehistoric world, players guide a caveman through obstacle-filled levels while collecting items and avoiding hazards. The game is remembered for its simple mechanics and cartoon-style presentation.",
     "ccg_rating": 7
-  },
-  {
-    "system": "C64",
-    "id": "b.c.'s_quest_for_tires",
-    "slug": "b-c-s-quest-for-tires",
-    "title": "B.C.'S Quest For Tires",
-    "sorttitle": "BC Quest",
-    "genres": [
-      "Cartridge Games",
-      "Arcade Games",
-      "Licensed Games",
-      "Top Picks"
-    ],
-    "year": 1984,
-    "developer": "Software Projects",
-    "videoid": "5xSrBvtaWDc",
-    "lemon": [
-      "https://www.lemon64.com/game/bcs-quest-for-tires"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/bc_quest_for_tires.jpg",
-    "pdf": "https://drive.google.com/file/d/1n4JisEpwTy_ciAe7Rh33vPPOxzBxR06t/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1-fyuVeV5h6mZwPBfMqnW0h6T6G0crTRI/view?usp=drive_link"
-    ],
-    "description": "B.C.'s Quest for Tires is a Commodore 64 arcade platform game released in 1984 by Software Projects. Players control Thor, a caveman searching for missing stone wheels across dangerous landscapes. The game became a classic thanks to its tight controls, clever level design, and strong personality.",
-    "ccg_rating": 9
   },
   {
     "system": "C64",
@@ -3397,31 +3325,6 @@
   },
   {
     "system": "C64",
-    "id": "dan_dare:_pilot_of_the_future",
-    "slug": "dan-dare-pilot-of-the-future",
-    "title": "Dan Dare: Pilot Of The Future",
-    "sorttitle": "Dan Dare",
-    "genres": [
-      "Action Adventure Games",
-      "Licensed Games",
-      "Top Picks"
-    ],
-    "year": 1986,
-    "developer": "Virgin games",
-    "videoid": "3Sc3WB40iK4",
-    "lemon": [
-      "https://www.lemon64.com/game/dan-dare"
-    ],
-    "thumbnail": "resources/images/thumbnails/all/dan_dare_pilot_of_the_future.jpg",
-    "pdf": "https://drive.google.com/file/d/1PDEOOuqWmU0qQd6sDAFygX1VQ6irzyd0/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1MDAxvtehfMvvGi0gOiO3lXTniH8n0GQc/view?usp=drive_link"
-    ],
-    "description": "Dan Dare: Pilot of the Future is a Commodore 64 action-adventure game combining shooting, exploration, and puzzle-solving. The game is known for its ambitious design and varied gameplay styles.",
-    "ccg_rating": 10
-  },
-  {
-    "system": "C64",
     "id": "dan_dare_ii:_mekon's_revenge",
     "slug": "dan-dare-2-mekon-s-revenge",
     "title": "Dan Dare II: Mekon's Revenge",
@@ -3456,7 +3359,7 @@
       "Top Picks"
     ],
     "year": 1986,
-    "developer": "Virgin games",
+    "developer": "Virgin Games",
     "videoid": "3Sc3WB40iK4",
     "lemon": [
       "https://www.lemon64.com/game/dan-dare"
@@ -9352,8 +9255,8 @@
     "title": "The New Zealand Story",
     "sorttitle": "New Zealand Story",
     "genres": [
-    "Arcade Games",      
-    "Platform Games"
+      "Arcade Games",
+      "Platform Games"
     ],
     "year": 1989,
     "developer": "Ocean",
