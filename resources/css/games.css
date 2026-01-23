@@ -943,13 +943,41 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
 
 .game-media__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+        "video video"
+        "downloads links";
     gap: 16px;
+    align-items: start;
 }
 
 .game-media__grid .game-section {
     margin: 0;
     background: rgba(5, 10, 18, 0.7);
+}
+
+.game-media__item--video {
+    grid-area: video;
+}
+
+.game-media__item--downloads {
+    grid-area: downloads;
+}
+
+.game-media__item--links {
+    grid-area: links;
+}
+
+.game-media__item--video .game-section__kicker,
+.game-media__item--video .game-section__title {
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+}
+
+.game-media__item--video .game-video {
+    max-width: 980px;
+    margin: 0 auto;
 }
 
 .game-media__kicker {
@@ -1146,7 +1174,8 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    padding: 12px 16px;
+    padding: 12px 18px;
+    min-height: 44px;
     border-radius: 12px;
     background: linear-gradient(135deg,
         rgba(var(--accent-rgb),0.28),
@@ -1156,6 +1185,8 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    font-size: 0.82rem;
+    line-height: 1;
     transition: transform 140ms ease, box-shadow 140ms ease;
 }
 
@@ -1328,6 +1359,14 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
 
     .game-hero__media { order: 2; }
     .game-hero__content { order: 1; }
+
+    .game-media__grid {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "video"
+            "downloads"
+            "links";
+    }
 }
 
 @media (max-width: 768px) {
