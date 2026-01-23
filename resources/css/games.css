@@ -1377,6 +1377,16 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
         flex-wrap: wrap;
     }
 
+    .game-hero__badges {
+        justify-content: center;
+        align-items: center;
+    }
+
+    .game-media__links-list {
+        justify-content: center;
+        align-items: center;
+    }
+
     .game-hero__content,
     .game-hero__meta,
     .game-meta__item,
