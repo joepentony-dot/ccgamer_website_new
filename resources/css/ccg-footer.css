@@ -17,7 +17,7 @@
 
 .ccg-footer {
     position: relative;
-    margin-top: clamp(40px, 5vh, 56px);
+    margin-top: var(--ccg-footer-gap);
     padding: 22px 16px 26px;
 
     text-align: center;
@@ -44,7 +44,7 @@
 
 @media (min-width: 1024px) {
     .ccg-footer {
-        margin-top: clamp(24px, 3vh, 40px);
+        margin-top: clamp(24px, 4vh, 42px);
         padding: 18px 16px 22px;
     }
 

@@ -33,6 +33,10 @@ body[data-ccg-mode="c64"] {
     --ccg-nav-panel-border: rgba(105, 196, 255, 0.24);
 
     --ccg-ease-ui: cubic-bezier(.25,.8,.35,1);
+
+    --ccg-divider-rgb: 0, 214, 255;
+    --ccg-divider-secondary-rgb: 196, 255, 255;
+    --ccg-divider-halo-opacity: 0.55;
 }
 
 /* ============================================================
@@ -77,6 +81,10 @@ body[data-ccg-mode="amiga"] {
     --ccg-nav-panel-border: rgba(148, 170, 200, 0.22);
 
     --ccg-ease-ui: cubic-bezier(.22,.9,.32,1);
+
+    --ccg-divider-rgb: 255, 86, 199;
+    --ccg-divider-secondary-rgb: 184, 108, 255;
+    --ccg-divider-halo-opacity: 0.5;
 }
 
 /* ============================================================
