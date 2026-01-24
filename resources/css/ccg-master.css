@@ -32,7 +32,12 @@
     --ccg-depth-card-hover: 0 18px 40px rgba(0,0,0,0.88);
     --ccg-glow-soft: 0 0 14px rgba(var(--accent-rgb),0.18);
     --ccg-glow-strong: 0 0 28px rgba(var(--accent-rgb),0.38);
-    --ccg-section-divider: linear-gradient(90deg, rgba(255,255,255,0), rgba(var(--accent-rgb),0.35), rgba(255,255,255,0.16), rgba(255,255,255,0));
+    --ccg-section-divider: linear-gradient(90deg, rgba(255,255,255,0), rgba(var(--accent-rgb),0.55), rgba(255,255,255,0.35), rgba(var(--accent-rgb),0.2), rgba(255,255,255,0));
+    --ccg-section-divider-thickness: 2px;
+    --ccg-section-divider-glow: 0 0 16px rgba(var(--accent-rgb),0.45), 0 0 28px rgba(var(--accent-rgb),0.24);
+    --ccg-section-divider-offset: clamp(10px, 2vw, 18px);
+    --ccg-section-gap: clamp(18px, 3vw, 36px);
+    --ccg-section-gap-mobile: clamp(14px, 4vw, 26px);
     --accent: rgb(var(--accent-rgb));
     --text-light: var(--ccg-text-light);
     --text-dim: var(--ccg-text-soft);
@@ -47,7 +52,7 @@
     --ccg-nav-pill-pad-x: 12px;
 
     /* PAGE ENTRY */
-    --ccg-page-entry-pad: 24px;
+    --ccg-page-entry-pad: clamp(18px, 2.6vw, 24px);
 
     /* TOUCH & MOBILE SAFETY */
     --ccg-touch-size: 48px;
@@ -283,7 +288,7 @@ li {
 .ccg-main {
     width: min(1240px, 95vw);
     margin: 0 auto;
-    padding: calc(var(--ccg-page-entry-pad) + 6px) clamp(1rem, 2vw, 1.5rem) 32px;
+    padding: calc(var(--ccg-page-entry-pad) + 4px) clamp(1rem, 2vw, 1.5rem) 28px;
     position: relative;
     overflow-x: hidden;
     overflow-y: visible;
@@ -291,6 +296,7 @@ li {
 
 .ccg-page main > section {
     position: relative;
+    margin-block: var(--ccg-section-gap);
 }
 
 .ccg-page main > section + section::before {
@@ -298,10 +304,49 @@ li {
     position: absolute;
     left: clamp(0px, 2vw, 18px);
     right: clamp(0px, 2vw, 18px);
-    top: -12px;
-    height: 1px;
+    top: calc(-1 * var(--ccg-section-divider-offset));
+    height: var(--ccg-section-divider-thickness);
     background: var(--ccg-section-divider);
-    opacity: 0.7;
+    opacity: 0.85;
+    box-shadow: var(--ccg-section-divider-glow);
+    border-radius: 999px;
+    pointer-events: none;
+}
+
+.ccg-page main > section:first-child {
+    margin-top: 0;
+}
+
+.ccg-page main > section:last-child {
+    margin-bottom: 0;
+}
+
+.ccg-section-divider {
+    height: var(--ccg-section-divider-thickness);
+    background: var(--ccg-section-divider);
+    box-shadow: var(--ccg-section-divider-glow);
+    opacity: 0.9;
+    border-radius: 999px;
+    margin: var(--ccg-section-divider-offset) auto;
+    width: min(100%, 1200px);
+    pointer-events: none;
+}
+
+:where(.ccg-info-shell, .about-shell) > * + * {
+    position: relative;
+}
+
+:where(.ccg-info-shell, .about-shell) > * + *::before {
+    content: "";
+    position: absolute;
+    left: clamp(0px, 2vw, 18px);
+    right: clamp(0px, 2vw, 18px);
+    top: calc(-1 * var(--ccg-section-divider-offset));
+    height: var(--ccg-section-divider-thickness);
+    background: var(--ccg-section-divider);
+    opacity: 0.85;
+    box-shadow: var(--ccg-section-divider-glow);
+    border-radius: 999px;
     pointer-events: none;
 }
 
@@ -337,15 +382,26 @@ li {
 @media (max-width: 640px) {
     .ccg-main {
         width: 100%;
-        padding: calc(var(--ccg-page-entry-pad) + 8px) 16px 32px;
+        padding: calc(var(--ccg-page-entry-pad) + 6px) 16px 28px;
         text-align: center;
     }
 
     .ccg-page main > section + section::before {
         left: 0;
         right: 0;
-        top: -10px;
-        opacity: 0.55;
+        top: calc(-1 * var(--ccg-section-divider-offset));
+        opacity: 0.7;
+    }
+
+    .ccg-page main > section {
+        margin-block: var(--ccg-section-gap-mobile);
+    }
+
+    :where(.ccg-info-shell, .about-shell) > * + *::before {
+        left: 0;
+        right: 0;
+        top: calc(-1 * var(--ccg-section-divider-offset));
+        opacity: 0.7;
     }
 
     .ccg-section,

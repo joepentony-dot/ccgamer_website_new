@@ -828,8 +828,8 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
 
 .game-hero {
     position: relative;
-    margin: 12px auto 8px;
-    padding: 1.8rem 2rem 2.2rem;
+    margin: 10px auto 6px;
+    padding: 1.6rem 1.8rem 2rem;
     border-radius: 18px;
     height: auto;
     max-height: none;
@@ -1019,8 +1019,8 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
    ------------------------------------------------------------ */
 
 .game-section {
-    margin: 12px auto;
-    padding: 14px 16px;
+    margin: 10px auto;
+    padding: 12px 14px;
     border-radius: 16px;
     background: var(--ccg-surface-glass);
     border: 1px solid var(--ccg-border);
