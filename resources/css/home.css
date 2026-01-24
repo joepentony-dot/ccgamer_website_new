@@ -1557,7 +1557,7 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
 ============================================================ */
 
 .home-visitor-callout {
-    margin: clamp(26px, 5vw, 44px) auto 6px;
+    margin: var(--ccg-section-gap) auto 6px;
     padding: 1px;
     max-width: 1020px;
     position: relative;
@@ -1649,7 +1649,7 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
 ============================================================ */
 
 .home-support-cta {
-    margin: 16px auto clamp(18px, 3vw, 28px);
+    margin: calc(var(--ccg-section-gap) - 8px) auto var(--ccg-section-gap);
     max-width: 1020px;
     padding: 0 clamp(16px, 4vw, 26px);
 }
@@ -1935,7 +1935,7 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
 ============================================================ */
 
 .home-section {
-    margin: 24px 0;
+    margin: var(--ccg-section-gap) 0;
     position: relative;
 }
 
@@ -2190,7 +2190,7 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
 
 .home-bottom-cta {
     position: relative;
-    margin: 28px auto 10px;
+    margin: var(--ccg-section-gap) auto 8px;
     padding: 22px;
     border-radius: 18px;
     background: radial-gradient(circle at 20% 18%, rgba(var(--accent-rgb),0.22), transparent 42%),

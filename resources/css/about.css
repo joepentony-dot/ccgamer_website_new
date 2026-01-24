@@ -8,14 +8,14 @@
     max-width: 1120px;
     margin: var(--ccg-hero-offset) auto 0;
     display: grid;
-    gap: 2.1rem;
-    padding: 0 1.5rem 2.1rem;
+    gap: var(--ccg-section-gap);
+    padding: 0 clamp(1rem, 3vw, 1.4rem) 1.7rem;
 }
 
 .about-hero {
     position: relative;
     overflow: hidden;
-    padding: clamp(2.3rem, 3.6vw, 2.8rem) clamp(1.6rem, 2.6vw, 2.3rem);
+    padding: clamp(2rem, 3.2vw, 2.5rem) clamp(1.3rem, 2.6vw, 2.1rem);
 }
 
 .about-hero::before,
@@ -68,7 +68,7 @@
 
 .about-grid {
     display: grid;
-    gap: 1.8rem;
+    gap: clamp(1.1rem, 2.6vw, 1.5rem);
 }
 
 .about-panel {
@@ -297,11 +297,11 @@
     }
 
     .about-hero {
-        padding: 2.4rem 1.6rem;
+        padding: 2.1rem 1.3rem;
     }
 
     .about-shell {
-        padding: 0 1rem 2rem;
-        gap: 2rem;
+        padding: 0 0.9rem 1.4rem;
+        gap: var(--ccg-section-gap-mobile);
     }
 }
