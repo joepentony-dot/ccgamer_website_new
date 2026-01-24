@@ -1,0 +1,71 @@
+/* ============================================================
+   BROWSE GAMES HERO — OMEGA SPACING NORMALISATION
+   Scope: games/index.html only via .ccg-page--games-index
+   Purpose: remove floaty spacing and re-anchor the hero/tools stack
+   ============================================================ */
+
+/* --- Hero docking parity with other Omega pages ---------------- */
+.ccg-page--games-index {
+    --ccg-hero-offset: clamp(54px, 3.2vw + 34px, 86px);
+}
+
+.ccg-page--games-index .ccg-main {
+    padding-top: clamp(14px, 1.8vw, 22px);
+}
+
+@media (max-width: 1024px) {
+    .ccg-page--games-index {
+        --ccg-hero-offset: clamp(50px, 4.2vw + 26px, 80px);
+    }
+}
+
+@media (max-width: 720px) {
+    .ccg-page--games-index {
+        --ccg-hero-offset: clamp(44px, 6vw + 18px, 70px);
+    }
+
+    .ccg-page--games-index .ccg-main {
+        padding-top: clamp(10px, 3.2vw, 16px);
+    }
+}
+
+@media (max-width: 540px) {
+    .ccg-page--games-index {
+        --ccg-hero-offset: clamp(40px, 7vw + 14px, 62px);
+    }
+}
+
+/* --- Hero density + alignment ---------------------------------- */
+.ccg-page--games-index .games-hero {
+    margin: var(--ccg-hero-offset) auto 6px;
+    padding: clamp(18px, 2.2vw, 26px) clamp(20px, 2.8vw, 32px);
+    min-height: clamp(195px, 24vw, 270px);
+    display: flex;
+    align-items: center;
+}
+
+.ccg-page--games-index .games-hero__inner {
+    gap: calc(7px * var(--ui-density));
+    align-content: center;
+}
+
+/* --- Tools anchoring under hero -------------------------------- */
+.ccg-page--games-index .games-tools {
+    margin: 4px auto 18px;
+    gap: calc(12px * var(--ui-density));
+}
+
+/* --- Mobile/touch compaction ----------------------------------- */
+@media (max-width: 720px) {
+    /* Omega spacing normalisation — keep the hero compact on smaller screens. */
+    .ccg-page--games-index .games-hero {
+        margin: var(--ccg-hero-offset) auto 4px;
+        padding: clamp(16px, 5vw, 22px) clamp(16px, 4.8vw, 24px);
+        min-height: clamp(180px, 48vw, 240px);
+    }
+
+    .ccg-page--games-index .games-tools {
+        margin: 2px auto 16px;
+        gap: calc(11px * var(--ui-density));
+    }
+}
