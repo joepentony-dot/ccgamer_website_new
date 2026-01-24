@@ -1,0 +1,386 @@
+#!/usr/bin/env node
+
+const fs = require('fs');
+const path = require('path');
+const { execFileSync } = require('child_process');
+
+const repoRoot = path.resolve(__dirname, '..', '..');
+const gamesJsonPath = path.join(repoRoot, 'games', 'games.json');
+const staticPagesConfigPath = path.join(repoRoot, 'tools', 'seo', 'static-pages.json');
+const sitemapGamesPath = path.join(repoRoot, 'sitemap-games.xml');
+const sitemapPagesPath = path.join(repoRoot, 'sitemap-pages.xml');
+const sitemapIndexPath = path.join(repoRoot, 'sitemap.xml');
+
+const DEFAULT_SITE_URL = 'https://www.cheekycommodoregamer.co.uk';
+const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const SITEMAP_XMLNS = 'http://www.sitemaps.org/schemas/sitemap/0.9';
+const DEFAULT_STATIC_PATHS = [
+  '',
+  'about.html',
+  'complete-index.html',
+  'contact.html',
+  'emulation.html',
+  'home.html',
+  'games/collections/bpjs-indexed-games.html',
+  'games/collections/cartridge-games.html',
+  'games/collections/index.html',
+  'games/collections/licensed-games.html',
+  'games/collections/retro-events.html',
+  'games/collections/top-picks.html',
+  'games/genres/action-adventure-games.html',
+  'games/genres/adventure-games.html',
+  'games/genres/arcade-games.html',
+  'games/genres/casino-games.html',
+  'games/genres/fighting-games.html',
+  'games/genres/horror-games.html',
+  'games/genres/index.html',
+  'games/genres/miscellaneous.html',
+  'games/genres/platform-games.html',
+  'games/genres/puzzle-games.html',
+  'games/genres/quiz-games.html',
+  'games/genres/racing-games.html',
+  'games/genres/role-playing-games.html',
+  'games/genres/shooting-games.html',
+  'games/genres/sports-games.html',
+  'games/genres/strategy-games.html',
+  'games/index.html',
+  'quiz/index.html',
+  'quiz/quiz-leaderboard.html',
+  'quiz/quiz.html',
+  'viewer/manual.html',
+];
+
+function readJson(filePath) {
+  const raw = fs.readFileSync(filePath, 'utf8');
+  const data = JSON.parse(raw);
+  return Array.isArray(data) ? data : data.games || data.items || [];
+}
+
+function readSiteUrl() {
+  const cnamePath = path.join(repoRoot, 'CNAME');
+  if (fs.existsSync(cnamePath)) {
+    const cname = fs.readFileSync(cnamePath, 'utf8').trim();
+    if (cname) {
+      return `https://${cname}`;
+    }
+  }
+  return DEFAULT_SITE_URL;
+}
+
+function toRepoRelative(filePath) {
+  return path.relative(repoRoot, filePath).split(path.sep).join('/');
+}
+
+function getGitLastMod(filePath) {
+  const relativePath = toRepoRelative(filePath);
+  try {
+    const output = execFileSync('git', ['log', '-1', '--format=%cI', '--', relativePath], {
+      cwd: repoRoot,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+
+    if (output) {
+      return output.slice(0, 10);
+    }
+  } catch (err) {
+    // Fall through to date fallback.
+  }
+
+  return new Date().toISOString().slice(0, 10);
+}
+
+function escapeXml(value) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
+function hasInvalidXmlChars(value) {
+  // Disallow control characters that are invalid in XML 1.0.
+  return /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/.test(value);
+}
+
+function ensureUtf8(value, context) {
+  const roundTrip = Buffer.from(value, 'utf8').toString('utf8');
+  if (roundTrip !== value) {
+    throw new Error(`${context} is not valid UTF-8.`);
+  }
+}
+
+function validateXmlDocument(xml, expectedRootTag) {
+  const header = '<?xml version="1.0" encoding="UTF-8"?>\n';
+  if (!xml.startsWith(header)) {
+    throw new Error('XML header is missing or incorrect.');
+  }
+
+  ensureUtf8(xml, expectedRootTag);
+
+  if (hasInvalidXmlChars(xml)) {
+    throw new Error(`${expectedRootTag} contains invalid XML control characters.`);
+  }
+
+  const afterHeader = xml.slice(header.length);
+  if (!afterHeader.startsWith(`<${expectedRootTag}`)) {
+    throw new Error(`${expectedRootTag} root element is missing.`);
+  }
+
+  const rootTagEnd = afterHeader.indexOf('>');
+  const rootTag = rootTagEnd >= 0 ? afterHeader.slice(0, rootTagEnd + 1) : '';
+  if (!rootTag.includes(`xmlns="${SITEMAP_XMLNS}"`)) {
+    throw new Error(`${expectedRootTag} root element or xmlns attribute is invalid.`);
+  }
+
+  if (!xml.trim().endsWith(`</${expectedRootTag}>`)) {
+    throw new Error(`${expectedRootTag} closing tag is missing.`);
+  }
+}
+
+function buildUrlEntry(loc, lastmod) {
+  return [
+    '  <url>',
+    `    <loc>${escapeXml(loc)}</loc>`,
+    `    <lastmod>${escapeXml(lastmod)}</lastmod>`,
+    '  </url>',
+  ].join('\n');
+}
+
+function buildSitemapEntry(loc, lastmod) {
+  return [
+    '  <sitemap>',
+    `    <loc>${escapeXml(loc)}</loc>`,
+    `    <lastmod>${escapeXml(lastmod)}</lastmod>`,
+    '  </sitemap>',
+  ].join('\n');
+}
+
+function writeFile(filePath, contents) {
+  fs.writeFileSync(filePath, contents, { encoding: 'utf8' });
+}
+
+function getLatestLastmod(entries) {
+  if (entries.length === 0) {
+    return new Date().toISOString().slice(0, 10);
+  }
+  return entries
+    .map((entry) => entry.lastmod)
+    .slice()
+    .sort()
+    .pop();
+}
+
+function loadStaticPaths(warnings) {
+  if (!fs.existsSync(staticPagesConfigPath)) {
+    warnings.push('Static pages config not found at tools/seo/static-pages.json. Using defaults.');
+    return DEFAULT_STATIC_PATHS;
+  }
+
+  try {
+    const raw = fs.readFileSync(staticPagesConfigPath, 'utf8');
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return parsed;
+    }
+    warnings.push('Static pages config is empty or invalid. Using defaults.');
+    return DEFAULT_STATIC_PATHS;
+  } catch (err) {
+    warnings.push(`Failed to parse static pages config: ${err.message}. Using defaults.`);
+    return DEFAULT_STATIC_PATHS;
+  }
+}
+
+function resolveStaticPath(relPath) {
+  const normalized = typeof relPath === 'string' ? relPath.trim().replace(/^\/+/, '') : '';
+  if (!normalized) {
+    return {
+      locPath: '',
+      filePath: path.join(repoRoot, 'index.html'),
+    };
+  }
+
+  return {
+    locPath: normalized,
+    filePath: path.join(repoRoot, normalized),
+  };
+}
+
+function generateGameSitemap(siteUrl, games) {
+  const slugToGames = new Map();
+  const errors = [];
+  const warnings = [];
+
+  for (const game of games) {
+    const slug = typeof game.slug === 'string' ? game.slug.trim() : '';
+    if (!slug) {
+      errors.push(`Missing slug for game id=${game.id || 'unknown'} title="${game.title || 'unknown'}".`);
+      continue;
+    }
+
+    if (!SLUG_PATTERN.test(slug)) {
+      errors.push(`Invalid slug format "${slug}" for game id=${game.id || 'unknown'} title="${game.title || 'unknown'}".`);
+      continue;
+    }
+
+    if (!slugToGames.has(slug)) {
+      slugToGames.set(slug, []);
+    }
+    slugToGames.get(slug).push(game);
+  }
+
+  const duplicateSlugs = [...slugToGames.entries()]
+    .filter(([, entries]) => entries.length > 1)
+    .map(([slug, entries]) => ({ slug, entries }));
+
+  if (duplicateSlugs.length > 0) {
+    for (const dup of duplicateSlugs) {
+      const ids = dup.entries.map((entry) => entry.id || 'unknown').join(', ');
+      errors.push(`Duplicate slug "${dup.slug}" found for ids: ${ids}.`);
+    }
+  }
+
+  const validSlugs = [...slugToGames.keys()].sort((a, b) => a.localeCompare(b));
+  const entries = [];
+
+  for (const slug of validSlugs) {
+    const filePath = path.join(repoRoot, 'games', `${slug}.html`);
+    if (!fs.existsSync(filePath)) {
+      warnings.push(`No HTML file found for slug "${slug}" at games/${slug}.html. Excluding from sitemap.`);
+      continue;
+    }
+
+    const lastmod = getGitLastMod(filePath);
+    entries.push({
+      loc: `${siteUrl}/games/${slug}.html`,
+      lastmod,
+      filePath,
+    });
+  }
+
+  const urlEntries = entries.map((entry) => buildUrlEntry(entry.loc, entry.lastmod));
+  const xml = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    `<urlset xmlns="${SITEMAP_XMLNS}">`,
+    ...urlEntries,
+    '</urlset>',
+    '',
+  ].join('\n');
+
+  validateXmlDocument(xml, 'urlset');
+  writeFile(sitemapGamesPath, xml);
+
+  return {
+    errors,
+    warnings,
+    validSlugs,
+    entries,
+    latestLastmod: getLatestLastmod(entries),
+  };
+}
+
+function generateStaticSitemap(siteUrl) {
+  const warnings = [];
+  const staticPaths = loadStaticPaths(warnings);
+  const entries = [];
+
+  for (const relPath of staticPaths) {
+    const resolved = resolveStaticPath(relPath);
+    if (!fs.existsSync(resolved.filePath)) {
+      warnings.push(`Static page not found at ${toRepoRelative(resolved.filePath)}. Excluding from sitemap-pages.xml.`);
+      continue;
+    }
+
+    const loc = resolved.locPath ? `${siteUrl}/${resolved.locPath}` : `${siteUrl}/`;
+    entries.push({
+      loc,
+      lastmod: getGitLastMod(resolved.filePath),
+      filePath: resolved.filePath,
+    });
+  }
+
+  entries.sort((a, b) => a.loc.localeCompare(b.loc));
+
+  const urlEntries = entries.map((entry) => buildUrlEntry(entry.loc, entry.lastmod));
+  const xml = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    `<urlset xmlns="${SITEMAP_XMLNS}">`,
+    ...urlEntries,
+    '</urlset>',
+    '',
+  ].join('\n');
+
+  validateXmlDocument(xml, 'urlset');
+  writeFile(sitemapPagesPath, xml);
+
+  return {
+    entries,
+    warnings,
+    latestLastmod: getLatestLastmod(entries),
+  };
+}
+
+function generateSitemapIndex(siteUrl, sitemapEntries) {
+  const xmlEntries = sitemapEntries.map((entry) => buildSitemapEntry(entry.loc, entry.lastmod));
+  const xml = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    `<sitemapindex xmlns="${SITEMAP_XMLNS}">`,
+    ...xmlEntries,
+    '</sitemapindex>',
+    '',
+  ].join('\n');
+
+  validateXmlDocument(xml, 'sitemapindex');
+  writeFile(sitemapIndexPath, xml);
+}
+
+function main() {
+  const siteUrlArgIndex = process.argv.indexOf('--base-url');
+  const siteUrlFromArg = siteUrlArgIndex >= 0 ? process.argv[siteUrlArgIndex + 1] : null;
+  const siteUrl = (siteUrlFromArg || readSiteUrl()).replace(/\/+$/, '');
+
+  const games = readJson(gamesJsonPath);
+  const gameResult = generateGameSitemap(siteUrl, games);
+  const staticResult = generateStaticSitemap(siteUrl);
+
+  const sitemapEntries = [
+    {
+      loc: `${siteUrl}/sitemap-pages.xml`,
+      lastmod: staticResult.latestLastmod,
+    },
+    {
+      loc: `${siteUrl}/sitemap-games.xml`,
+      lastmod: gameResult.latestLastmod,
+    },
+  ];
+
+  generateSitemapIndex(siteUrl, sitemapEntries);
+
+  console.log('[generate-sitemap] Site URL:', siteUrl);
+  console.log('[generate-sitemap] Games in JSON:', games.length);
+  console.log('[generate-sitemap] Unique valid slugs:', gameResult.validSlugs.length);
+  console.log('[generate-sitemap] Game URLs written:', gameResult.entries.length);
+  console.log('[generate-sitemap] Static URLs written:', staticResult.entries.length);
+
+  const warnings = [...gameResult.warnings, ...staticResult.warnings];
+  if (warnings.length > 0) {
+    console.log('\nWarnings:');
+    for (const warning of warnings) {
+      console.log(`- ${warning}`);
+    }
+  }
+
+  if (gameResult.errors.length > 0) {
+    console.error('\nErrors:');
+    for (const error of gameResult.errors) {
+      console.error(`- ${error}`);
+    }
+    process.exitCode = 1;
+    return;
+  }
+
+  console.log('\nSitemaps generated successfully.');
+}
+
+main();
