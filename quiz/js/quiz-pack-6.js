@@ -327,14 +327,15 @@
 
         const questionUrls = [
             `images/pack-6/${base}.png`,
-            `images/pack-6/${base}.jpg`
+            `images/pack-6/${base}.jpg`,
+            `images/pack-6/${base}.webp`,
         ];
 
         const answerOverride = IMAGE_OVERRIDES[base]?.answer;
         const answerUrls = [
-            `images/pack-6/${base}-answer.png`,
+            `images/pack-6/${base}-answer.webp`,
             ...(answerOverride ? [`images/pack-6/${answerOverride}`] : []),
-            `images/pack-6/${base}-answer.jpg`
+            `images/pack-6/${base}-answer.webp`
         ];
 
         elements.questionImage.alt = `Guess the game: ${state.displayTitle}`;
