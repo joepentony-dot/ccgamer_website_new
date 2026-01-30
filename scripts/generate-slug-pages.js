@@ -3,6 +3,10 @@
 const fs = require("fs");
 const path = require("path");
 
+/* ---------------------------------------
+   Constants
+--------------------------------------- */
+
 const SITE_ROOT = "https://www.cheekycommodoregamer.co.uk";
 const REDIRECT_TARGET = "/games/game.html?id=";
 
@@ -69,9 +73,11 @@ function resolveImageUrl(game) {
 function validateGame(game, slug) {
     const issues = [];
 
+    // Only fatal blockers
     if (!slug) issues.push("missing slug");
     if (!game.title) issues.push("missing title");
 
+    // Everything else allowed (fallbacks handle it)
     return issues;
 }
 
@@ -193,6 +199,8 @@ function main() {
             ? slugify(game.slug)
             : slugify(game.title);
 
+        /* Fallback-safe metadata */
+
         const description = stripHtml(
             game.description ||
             game.desc ||
@@ -201,7 +209,7 @@ function main() {
 
         const imageUrl =
             resolveImageUrl(game) ||
-            "/resources/images/thumbnails/placeholder.jpg";
+            `${SITE_ROOT}/resources/images/thumbnails/placeholder.jpg`;
 
         const publisher = stripHtml(
             game.publisher ||
