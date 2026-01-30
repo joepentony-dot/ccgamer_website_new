@@ -71,8 +71,7 @@
         draftGame: null,
         selectedIndex: null,
         history: [],
-        validation: { errors: [], warnings: [] },
-        stagedThumb: null
+        validation: { errors: [], warnings: [] }
     };
 
     const elements = {
@@ -161,21 +160,7 @@
         lemonList: document.getElementById("gameLemonList"),
         autoId: document.getElementById("adminAutoId"),
         autoSort: document.getElementById("adminAutoSort"),
-        autoThumb: document.getElementById("adminThumbAuto"),
-        thumbUpload: document.getElementById("gameThumbUpload"),
-        thumbDownload: document.getElementById("gameThumbDownload"),
-        missingFilter: document.getElementById("adminMissingFilter"),
-        missingRefresh: document.getElementById("adminMissingRefresh"),
-        missingList: document.getElementById("adminMissingList"),
-        missingHint: document.getElementById("adminMissingHint"),
-        cmdSlug: document.getElementById("adminCmdSlug"),
-        cmdSitemap: document.getElementById("adminCmdSitemap"),
-        cmdGit: document.getElementById("adminCmdGit"),
-        cmdGsc: document.getElementById("adminCmdGsc"),
-        copySlugCmd: document.getElementById("adminCopySlugCmd"),
-        copySitemapCmd: document.getElementById("adminCopySitemapCmd"),
-        copyGitCmd: document.getElementById("adminCopyGitCmd"),
-        copyGscCmd: document.getElementById("adminCopyGscCmd")
+        autoThumb: document.getElementById("adminThumbAuto")
     };
 
     const emptyNotices = Array.from(document.querySelectorAll("[data-admin-empty]"));
@@ -1246,139 +1231,3 @@
 
     init();
 })();
-    async function copyToClipboard(text) {
-        const value = String(text || "").trim();
-        if (!value) return false;
-
-        try {
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                await navigator.clipboard.writeText(value);
-                return true;
-            }
-        } catch (e) {}
-
-        // Fallback
-        try {
-            const ta = document.createElement("textarea");
-            ta.value = value;
-            ta.setAttribute("readonly", "");
-            ta.style.position = "absolute";
-            ta.style.left = "-9999px";
-            document.body.appendChild(ta);
-            ta.select();
-            document.execCommand("copy");
-            document.body.removeChild(ta);
-            return true;
-        } catch (e) {
-            return false;
-        }
-    }
-
-    function getMissingCandidates(filterKey) {
-        const games = Array.isArray(state.workingGames) ? state.workingGames : [];
-        const results = [];
-
-        for (let i = 0; i < games.length; i++) {
-            const g = games[i] || {};
-            const title = (g.title || "").toString().trim();
-            const slug = slugify(g.slug || g.title || "");
-            const thumb = (g.thumbnail || g.thumb || g.cover || g.image || "").toString().trim();
-            const pdf = (g.pdf || g.manual || g.instructions || "").toString().trim();
-            const disks = g.disks || g.disk || g.diskLinks || g.downloads || [];
-            const rating = g.rating ?? g.ccgRating ?? g.score;
-            const year = (g.year || g.releaseYear || "").toString().trim();
-            const pub = (g.publisher || g.developer || g.company || "").toString().trim();
-            const desc = (g.description || g.desc || "").toString().trim();
-            const video = (g.youtube || g.youtubeId || g.video || g.videoId || "").toString().trim();
-            const system = (g.system || g.platform || "").toString().trim();
-
-            let ok = false;
-
-            switch (filterKey) {
-                case "missing_thumbnail":
-                    ok = !thumb;
-                    break;
-                case "missing_pdf":
-                    ok = !pdf;
-                    break;
-                case "missing_disks":
-                    ok = !Array.isArray(disks) || disks.length === 0;
-                    break;
-                case "missing_rating":
-                    ok = rating === null || rating === undefined || String(rating).trim() === "";
-                    break;
-                case "missing_year":
-                    ok = !year || year.toLowerCase().includes("unknown");
-                    break;
-                case "missing_publisher":
-                    ok = !pub || pub.toLowerCase().includes("unknown");
-                    break;
-                case "missing_description":
-                    ok = !desc;
-                    break;
-                case "missing_video":
-                    ok = !video;
-                    break;
-                case "missing_system":
-                    ok = !system;
-                    break;
-                case "missing_slug":
-                    ok = !(g.slug && String(g.slug).trim());
-                    break;
-                default:
-                    ok = false;
-            }
-
-            if (ok) {
-                results.push({
-                    index: i,
-                    title: title || "(untitled)",
-                    slug: slug || "(no-slug)"
-                });
-            }
-        }
-
-        return results;
-    }
-
-    function renderMissingList() {
-        if (!elements.missingList || !elements.missingFilter) return;
-
-        const key = elements.missingFilter.value;
-        const items = getMissingCandidates(key);
-
-        elements.missingList.innerHTML = "";
-
-        if (elements.missingHint) {
-            elements.missingHint.hidden = true;
-        }
-
-        if (!items.length) {
-            const li = document.createElement("li");
-            li.textContent = "Nothing found for this category 🎉";
-            elements.missingList.appendChild(li);
-            return;
-        }
-
-        items.slice(0, 200).forEach((it) => {
-            const li = document.createElement("li");
-            li.className = "admin-missing-item";
-            li.innerHTML = `<button type="button" class="admin-linklike" data-miss-index="${it.index}">
-                ${escapeHtml(it.title)} <span class="admin-muted">(${escapeHtml(it.slug)})</span>
-            </button>`;
-            elements.missingList.appendChild(li);
-        });
-
-        if (items.length > 200 && elements.missingHint) {
-            elements.missingHint.hidden = false;
-            elements.missingHint.textContent = `Showing first 200 of ${items.length}. Narrow your filter, then Find again.`;
-        }
-    }
-
-    function guessThumbFilename(slug, file) {
-        const safeSlug = slugify(slug || "");
-        const rawName = file && file.name ? String(file.name) : "";
-        const ext = (rawName.split(".").pop() || "webp").toLowerCase();
-        const safeExt = ["webp","png","jpg","jpeg"].includes(ext) ? ext : "webp";
-        return `${safeSlug || "thumbnail"}.${safeExt}`;
-    }
