@@ -258,18 +258,26 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         if (!resolvedGame && resolvedGameId) {
-            resolvedGame = idIndex.get(resolvedGameId) || null;
+            resolvedGame = idIndex.get(resolvedGameId) || slugIndex.get(resolvedGameId) || null;
+            if (resolvedGame) {
+                resolvedGameId = String(resolvedGame.id);
+            }
         }
 
         runSlugAudit(CCG_SINGLE_ALL_GAMES, slugIndex);
 
         if (!resolvedGame) {
+            console.warn("[CCG SINGLE] Game not resolved.", {
+                id: resolvedGameId,
+                slug: candidateSlug
+            });
             setRenderAction(() => renderGameNotFound(resolvedGameId, candidateSlug));
         } else {
             setRenderAction(() => renderGame(resolvedGame));
         }
 
     } catch (err) {
+        console.warn("[CCG SINGLE] Failed to load games.json or resolve game.", err);
         setRenderAction(() => renderGameNotFound(resolvedGameId, candidateSlug));
     }
 
@@ -622,26 +630,33 @@ function ensureDirectNavLinks() {
 ============================================================ */
 
 function renderGame(game) {
-
     updatePrettyUrlAfterResolve(game);
     updateMeta(game);
 
     /* HERO */
     const thumb = resolveGameThumb(game.thumbnail || game.thumb || game.cover);
-    document.getElementById("gameHeroBG").style.backgroundImage = `url('${thumb}')`;
-    document.getElementById("gameHeroThumb").src = thumb;
-    document.getElementById("gameHeroThumb").alt = `${game.title || "Game"} cover art`;
-    document.getElementById("gameHeroTitle").textContent = game.title || "Unknown";
+    const heroBg = document.getElementById("gameHeroBG");
+    const heroThumb = document.getElementById("gameHeroThumb");
+    const heroTitle = document.getElementById("gameHeroTitle");
+    if (heroBg) heroBg.style.backgroundImage = `url('${thumb}')`;
+    if (heroThumb) {
+        heroThumb.src = thumb;
+        heroThumb.alt = `${game.title || "Game"} cover art`;
+    }
+    if (heroTitle) heroTitle.textContent = game.title || "Unknown";
     renderHeroMeta(game);
     renderGameRating(game);
     renderHeroBadges(game);
 
     /* DESCRIPTION */
-    if (game.description) {
-        document.getElementById("gameDescription").innerHTML = game.description;
-        document.getElementById("game-description-section").hidden = false;
-    } else {
-        document.getElementById("game-description-section").hidden = true;
+    const descriptionSection = document.getElementById("game-description-section");
+    const descriptionEl = document.getElementById("gameDescription");
+    if (game.description && descriptionEl) {
+        descriptionEl.innerHTML = game.description;
+        if (descriptionSection) descriptionSection.hidden = false;
+    } else if (descriptionSection) {
+        if (descriptionEl) descriptionEl.innerHTML = "";
+        descriptionSection.hidden = true;
     }
 
     renderCreditsPanel(game);
