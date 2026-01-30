@@ -192,14 +192,9 @@
                         <div class="hangman-image-panel">
                             <div class="hangman-image-frame" data-hangman-image-frame>
                                 <img class="hangman-image hangman-image--question" data-hangman-question alt="" loading="lazy" />
-                                <img class="hangman-image hangman-image--answer" data-hangman-answer alt="" loading="lazy" />
                             </div>
                             <div class="hangman-feedback" data-hangman-feedback aria-live="polite"></div>
-                            <div class="hangman-replay is-hidden" data-hangman-replay>
-                                <button class="ccg-btn ccg-btn--primary" type="button">
-                                    Play Again
-                                </button>
-                            </div>
+                            <div class="hangman-replay is-hidden" data-hangman-replay></div>
                         </div>
 
                         <div class="hangman-status-panel">
@@ -231,6 +226,7 @@
 
                             <div class="hangman-word" data-hangman-word aria-live="polite"></div>
                             <div class="hangman-attempts" data-hangman-attempts>Wrong attempts: 0 / 5</div>
+                            <div class="hangman-counter" data-hangman-counter></div>
                         </div>
                     </div>
 
@@ -238,7 +234,10 @@
 
                     <div class="hangman-actions">
                         <button class="ccg-btn ccg-btn--primary" type="button" data-hangman-new>
-                            Game Box Hangman
+                            Start Game
+                        </button>
+                        <button class="ccg-btn ccg-btn--ghost" type="button" data-hangman-quit>
+                            Quit Game
                         </button>
                         <a class="ccg-btn ccg-btn--secondary" href="quiz.html">Back to Quiz Hub</a>
                     </div>

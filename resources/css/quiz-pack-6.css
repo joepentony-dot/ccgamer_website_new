@@ -274,6 +274,14 @@ html[data-ccg-page="quiz-pack-6"] body.quiz-focus .quiz-focus-overlay {
     font-size: 0.95rem;
 }
 
+.hangman-counter {
+    color: var(--hangman-neon-cyan);
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
 .hangman-keyboard {
     margin-top: 18px;
     display: grid;

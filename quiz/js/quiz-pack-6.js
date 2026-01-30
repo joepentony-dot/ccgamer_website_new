@@ -10,63 +10,40 @@
     "use strict";
 
     const MAX_WRONG_GUESSES = 5;
-
-    const PACK_6_MANIFEST = [
-        "bcs-quest-for-tires",
-        "black-hawk",
-        "chaos-engine",
-        "eye-of-the-beholder-ii",
-        "finders-keepers",
-        "forbidden-forest",
-        "hero",
-        "hover-bovver",
-        "it-came-from-the-desert",
-        "jumpman",
-        "koronis-rift",
-        "little-computer-people",
-        "lotus-turbo-challenge-2",
-        "manic-miner",
-        "monty-on-the-run",
-        "pitfall",
-        "realm-of-impossibility",
-        "spy-hunter",
-        "sword-of-fargoal",
-        "tapper",
-        "the-sentinel",
-        "thing-on-a-spring",
-        "uridium",
-        "way-of-the-exploding-fist"
-    ];
-
-    // Extend Pack 6 by adding new base filenames to PACK_6_MANIFEST.
-
-    const IMAGE_OVERRIDES = {
-        "hover-bovver": {
-            answer: "hover-bover-answer.png"
-        }
-    };
+    const PACK_6_PATH = "images/pack-6/";
+    const IMAGE_EXTENSION = ".webp";
+    const ANSWER_SUFFIX = "-answer";
+    const AUTO_ADVANCE_DELAY = 3000;
 
     const elements = {
         imageFrame: document.querySelector("[data-hangman-image-frame]"),
         questionImage: document.querySelector("[data-hangman-question]"),
-        answerImage: document.querySelector("[data-hangman-answer]"),
+        answerImage: null,
         wordDisplay: document.querySelector("[data-hangman-word]"),
         feedback: document.querySelector("[data-hangman-feedback]"),
         replay: document.querySelector("[data-hangman-replay]"),
         attempts: document.querySelector("[data-hangman-attempts]"),
         keyboard: document.querySelector("[data-hangman-keyboard]"),
         newGameButton: document.querySelector("[data-hangman-new]"),
-        overlay: document.querySelector("[data-quiz-focus-overlay]")
+        overlay: document.querySelector("[data-quiz-focus-overlay]"),
+        counter: document.querySelector("[data-hangman-counter]"),
+        quitButton: document.querySelector("[data-hangman-quit]")
     };
 
     const state = {
         base: "",
+        answerUrl: "",
         displayTitle: "",
         charMeta: [],
         guessedLetters: new Set(),
         lettersToGuess: new Set(),
         wrongGuesses: 0,
-        isOver: false
+        isOver: false,
+        packBases: [],
+        remainingBases: [],
+        totalCount: 0,
+        advanceTimer: null,
+        isLoading: false
     };
 
     const SFX_STORAGE_KEY = "ccg_quiz_sfx_enabled";
@@ -104,6 +81,15 @@
         }
     }
 
+    function shuffleArray(items) {
+        const array = [...items];
+        for (let i = array.length - 1; i > 0; i -= 1) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
     function buildKeyboard() {
         if (!elements.keyboard) return;
         elements.keyboard.innerHTML = "";
@@ -136,6 +122,13 @@
     function updateAttempts() {
         if (!elements.attempts) return;
         elements.attempts.textContent = `Wrong attempts: ${state.wrongGuesses} / ${MAX_WRONG_GUESSES}`;
+    }
+
+    function updateCounter() {
+        if (!elements.counter) return;
+        const total = state.totalCount;
+        const remaining = state.remainingBases.length;
+        elements.counter.textContent = `Pack 6: ${total} total | ${remaining} remaining`;
     }
 
     function setImageWithFallback(imgEl, urls) {
@@ -231,9 +224,19 @@
     }
 
     function revealAnswerImage() {
-        if (elements.imageFrame) {
-            elements.imageFrame.classList.add("is-revealed");
+        if (!elements.imageFrame || !state.answerUrl) return;
+        if (!elements.answerImage) {
+            const answerImage = document.createElement("img");
+            answerImage.className = "hangman-image hangman-image--answer";
+            answerImage.alt = `Answer reveal: ${state.displayTitle}`;
+            answerImage.loading = "lazy";
+            answerImage.decoding = "async";
+            answerImage.dataset.hangmanAnswer = "";
+            elements.answerImage = answerImage;
+            elements.imageFrame.appendChild(answerImage);
         }
+        elements.answerImage.src = state.answerUrl;
+        elements.imageFrame.classList.add("is-revealed");
     }
 
     function revealAllLetters() {
@@ -259,12 +262,10 @@
             revealAnswerImage();
         }
         setFeedback(message, status);
-        if (elements.replay) {
-            elements.replay.classList.remove("is-hidden");
-        }
         document.querySelectorAll(".hangman-key").forEach((btn) => {
             btn.disabled = true;
         });
+        scheduleNextRound();
     }
 
     function handleGuess(rawLetter) {
@@ -304,12 +305,16 @@
         updateHangmanStages();
 
         if (state.wrongGuesses >= MAX_WRONG_GUESSES) {
-            endGame("Out of tries!", "wrong", false);
+            endGame("Out of tries!", "wrong", true);
         }
     }
 
     function setupKeyboardInput() {
         document.addEventListener("keydown", (event) => {
+            if (event.code === "Space" || event.key === " ") {
+                event.preventDefault();
+                return;
+            }
             if (event.ctrlKey || event.metaKey || event.altKey) return;
             if (state.isOver) return;
             const key = event.key;
@@ -319,34 +324,40 @@
         });
     }
 
-    function loadImages(base) {
-        if (!elements.questionImage || !elements.answerImage) return;
+    function resetAnswerImage() {
+        if (elements.answerImage) {
+            elements.answerImage.remove();
+            elements.answerImage = null;
+        }
         if (elements.imageFrame) {
             elements.imageFrame.classList.remove("is-revealed");
         }
-
-        const questionUrls = [
-            `images/pack-6/${base}.png`,
-            `images/pack-6/${base}.jpg`,
-            `images/pack-6/${base}.webp`,
-        ];
-
-        const answerOverride = IMAGE_OVERRIDES[base]?.answer;
-        const answerUrls = [
-            `images/pack-6/${base}-answer.webp`,
-            ...(answerOverride ? [`images/pack-6/${answerOverride}`] : []),
-            `images/pack-6/${base}-answer.webp`
-        ];
-
-        elements.questionImage.alt = `Guess the game: ${state.displayTitle}`;
-        elements.answerImage.alt = `Answer reveal: ${state.displayTitle}`;
-
-        setImageWithFallback(elements.questionImage, questionUrls);
-        setImageWithFallback(elements.answerImage, answerUrls);
     }
 
-    function selectRandomGame() {
-        const choice = PACK_6_MANIFEST[Math.floor(Math.random() * PACK_6_MANIFEST.length)];
+    function loadImages(base) {
+        if (!elements.questionImage) return;
+        resetAnswerImage();
+        const questionUrl = `${PACK_6_PATH}${base}${IMAGE_EXTENSION}`;
+        state.answerUrl = `${PACK_6_PATH}${base}${ANSWER_SUFFIX}${IMAGE_EXTENSION}`;
+        elements.questionImage.alt = `Guess the game: ${state.displayTitle}`;
+        elements.questionImage.decoding = "async";
+        setImageWithFallback(elements.questionImage, [questionUrl]);
+    }
+
+    function getNextBase() {
+        if (state.remainingBases.length === 0) {
+            state.remainingBases = shuffleArray(state.packBases);
+        }
+        return state.remainingBases.shift();
+    }
+
+    function selectNextGame() {
+        const choice = getNextBase();
+        if (!choice) {
+            setFeedback("No Pack 6 images found.", "wrong");
+            return;
+        }
+
         state.base = choice;
         state.displayTitle = choice.replace(/-/g, " ");
         state.charMeta = buildCharMeta(state.displayTitle);
@@ -372,6 +383,80 @@
         updateHangmanStages();
         renderWord();
         loadImages(choice);
+        updateCounter();
+    }
+
+    function scheduleNextRound() {
+        if (state.advanceTimer) {
+            clearTimeout(state.advanceTimer);
+        }
+        state.advanceTimer = window.setTimeout(() => {
+            state.advanceTimer = null;
+            selectNextGame();
+        }, AUTO_ADVANCE_DELAY);
+    }
+
+    function clearAdvanceTimer() {
+        if (state.advanceTimer) {
+            clearTimeout(state.advanceTimer);
+            state.advanceTimer = null;
+        }
+    }
+
+    function stopQuizSession() {
+        state.isOver = true;
+        clearAdvanceTimer();
+        setFocusMode(false);
+        setFeedback("", "");
+        if (elements.questionImage) {
+            elements.questionImage.removeAttribute("src");
+            elements.questionImage.alt = "";
+        }
+        resetAnswerImage();
+        if (elements.wordDisplay) {
+            elements.wordDisplay.innerHTML = "";
+        }
+        updateAttempts();
+        document.querySelectorAll(".hangman-key").forEach((btn) => {
+            btn.disabled = true;
+            btn.classList.remove("is-guessed", "is-right", "is-wrong");
+        });
+    }
+
+    async function loadPackManifest() {
+        state.isLoading = true;
+        try {
+            const response = await fetch(PACK_6_PATH, { cache: "no-store" });
+            if (!response.ok) {
+                throw new Error("Unable to load Pack 6 directory.");
+            }
+            const html = await response.text();
+            const doc = new DOMParser().parseFromString(html, "text/html");
+            const links = Array.from(doc.querySelectorAll("a[href]"));
+            const fileNames = links
+                .map((link) => link.getAttribute("href") || "")
+                .map((href) => href.split("?")[0])
+                .map((href) => href.split("#")[0])
+                .map((href) => href.split("/").pop() || "")
+                .filter((file) => file.toLowerCase().endsWith(IMAGE_EXTENSION))
+                .filter((file) => !file.toLowerCase().endsWith(`${ANSWER_SUFFIX}${IMAGE_EXTENSION}`))
+                .map((file) => file.replace(IMAGE_EXTENSION, ""))
+                .filter(Boolean);
+
+            const uniqueBases = Array.from(new Set(fileNames));
+            if (uniqueBases.length === 0) {
+                throw new Error("Pack 6 has no .webp images.");
+            }
+
+            state.packBases = uniqueBases;
+            state.totalCount = uniqueBases.length;
+            state.remainingBases = shuffleArray(uniqueBases);
+            updateCounter();
+        } catch (error) {
+            setFeedback("Unable to load Pack 6 images.", "wrong");
+        } finally {
+            state.isLoading = false;
+        }
     }
 
     function init() {
@@ -379,9 +464,23 @@
         setFocusMode(true);
         buildKeyboard();
         setupKeyboardInput();
-        elements.newGameButton?.addEventListener("click", selectRandomGame);
-        elements.replay?.addEventListener("click", selectRandomGame);
-        selectRandomGame();
+        elements.newGameButton?.addEventListener("click", () => {
+            if (state.isLoading) return;
+            clearAdvanceTimer();
+            selectNextGame();
+        });
+        elements.quitButton?.addEventListener("click", () => {
+            stopQuizSession();
+            window.location.assign("quiz.html");
+        });
+        if (elements.replay) {
+            elements.replay.classList.add("is-hidden");
+        }
+        loadPackManifest().then(() => {
+            if (state.packBases.length) {
+                selectNextGame();
+            }
+        });
     }
 
     document.addEventListener("DOMContentLoaded", init);
