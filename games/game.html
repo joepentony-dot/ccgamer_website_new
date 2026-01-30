@@ -41,7 +41,7 @@
                 var id = params.get('id');
                 if (!id) return;
                 var slug = String(id).trim();
-                if (!slug || !/^[a-z0-9-]+$/i.test(slug)) return;
+                if (!slug || /_/.test(slug) || !/^[a-z0-9-]+$/i.test(slug)) return;
                 canonical.setAttribute('href', 'https://www.cheekycommodoregamer.co.uk/games/' + slug + '/');
             } catch (e) {}
         })();

@@ -258,7 +258,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         if (!resolvedGame && resolvedGameId) {
-            resolvedGame = idIndex.get(resolvedGameId) || null;
+            resolvedGame = idIndex.get(resolvedGameId) || slugIndex.get(resolvedGameId) || null;
+            if (resolvedGame) {
+                resolvedGameId = String(resolvedGame.id);
+            }
         }
 
         runSlugAudit(CCG_SINGLE_ALL_GAMES, slugIndex);
