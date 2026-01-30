@@ -10,7 +10,7 @@
     "use strict";
 
     // CLIENT-SIDE ONLY: not real security, just discourages casual browsing.
-    const ADMIN_GATE_PASSPHRASE = "cheeky";
+    const ADMIN_GATE_PASSPHRASE = "c64";
 
     const SITE_BASE_URL = "https://www.cheekycommodoregamer.co.uk";
     const GAMES_JSON_URL = "../games/games.json";
@@ -367,10 +367,10 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${title} | Cheeky Commodore Gamer</title>
+    <title>${title} |  Commodore Gamer</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${canonicalUrl}" />
-    <meta property="og:title" content="${title} | Cheeky Commodore Gamer" />
+    <meta property="og:title" content="${title} |  Commodore Gamer" />
     <meta property="og:description" content="${escapeHtml(description)}" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="${canonicalUrl}" />
@@ -464,7 +464,7 @@
             </section>
         </main>
         <footer class="ccg-footer">
-            <p class="ccg-footer__text">© <span data-ccg-year></span> Cheeky Commodore Gamer.</p>
+            <p class="ccg-footer__text">© <span data-ccg-year></span>  Commodore Gamer.</p>
         </footer>
     </div>
     <script src="../js/ccg-base.js" defer></script>
