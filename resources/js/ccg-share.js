@@ -5,12 +5,7 @@
     if (!root) return;
 
     const shareBtn = root.querySelector("[data-ccg-share-btn]");
-    const fallback = root.querySelector("[data-ccg-share-fallback]");
-    const emailLink = root.querySelector("[data-ccg-share-email]");
-    const whatsappLink = root.querySelector("[data-ccg-share-whatsapp]");
-    const xLink = root.querySelector("[data-ccg-share-x]");
-    const facebookLink = root.querySelector("[data-ccg-share-facebook]");
-    const copyBtn = root.querySelector("[data-ccg-share-copy]");
+    const status = root.querySelector("[data-ccg-share-status]");
 
     const CANONICAL_DOMAIN = "https://www.cheekycommodoregamer.co.uk";
     const GAME_PATH_PREFIX = "/games/";
@@ -149,35 +144,23 @@
     const shareUrl = resolveShareUrl();
     const title = document.title || "Cheeky Commodore Gamer";
     const gameTitle = getGameTitle();
-    const shareText = gameTitle
-        ? `Check out this classic game on Cheeky Commodore Gamer: ${gameTitle}`
-        : "Check out this classic game on Cheeky Commodore Gamer";
 
-    function setFallbackLinks() {
-        if (!shareUrl) return;
-        if (emailLink) {
-            const subject = shareText;
-            const body = `${shareText} ${shareUrl}`;
-            emailLink.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-        }
-        if (whatsappLink) {
-            const text = `${shareText} ${shareUrl}`;
-            whatsappLink.href = `https://wa.me/?text=${encodeURIComponent(text)}`;
-        }
-        if (xLink) {
-            const text = `${shareText}`;
-            xLink.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
-        }
-        if (facebookLink) {
-            facebookLink.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
-        }
+    function getMetaContent(selector) {
+        const el = document.querySelector(selector);
+        return el ? el.getAttribute("content") || "" : "";
     }
 
-    function showFallback() {
-        if (!fallback) return;
-        fallback.setAttribute("aria-hidden", "false");
-        root.classList.add("ccg-share--fallback");
+    function getShareDescription() {
+        return (
+            getMetaContent("#game-meta-description") ||
+            getMetaContent("meta[name='description']") ||
+            getMetaContent("meta[property='og:description']") ||
+            ""
+        );
     }
+
+    const description = getShareDescription();
+    const shareText = description || (gameTitle ? `Discover ${gameTitle} on Cheeky Commodore Gamer.` : "Discover this game on Cheeky Commodore Gamer.");
 
     function copyWithFallback(text) {
         const textarea = document.createElement("textarea");
@@ -194,46 +177,57 @@
         document.body.removeChild(textarea);
     }
 
-    function setCopyFeedback() {
-        if (!copyBtn) return;
-        const originalText = copyBtn.textContent;
-        copyBtn.textContent = "Copied!";
-        copyBtn.classList.add("is-copied");
-        window.setTimeout(() => {
-            copyBtn.textContent = originalText;
-            copyBtn.classList.remove("is-copied");
-        }, 1400);
-    }
+    let statusTimeout = null;
+    const originalLabel = shareBtn ? shareBtn.textContent : "";
 
-    if (copyBtn) {
-        copyBtn.addEventListener("click", () => {
-            if (!shareUrl) return;
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(shareUrl).then(setCopyFeedback).catch(() => {
-                    copyWithFallback(shareUrl);
-                    setCopyFeedback();
-                });
-            } else {
-                copyWithFallback(shareUrl);
-                setCopyFeedback();
-            }
-        });
-    }
-
-    if (navigator.share && shareBtn) {
-        shareBtn.addEventListener("click", () => {
-            if (!shareUrl) return;
-            navigator.share({ title, text: shareText, url: shareUrl }).catch(() => {
-                // Ignore share cancellation/errors.
-            });
-        });
-    } else {
-        setFallbackLinks();
-        showFallback();
+    function setStatus(message) {
+        if (statusTimeout) {
+            window.clearTimeout(statusTimeout);
+        }
+        if (status) {
+            status.textContent = message;
+            status.classList.add("is-visible");
+            statusTimeout = window.setTimeout(() => {
+                status.classList.remove("is-visible");
+                status.textContent = "";
+            }, 1600);
+            return;
+        }
         if (shareBtn) {
-            shareBtn.addEventListener("click", () => {
-                showFallback();
+            shareBtn.textContent = message;
+            shareBtn.classList.add("is-copied");
+            statusTimeout = window.setTimeout(() => {
+                shareBtn.textContent = originalLabel;
+                shareBtn.classList.remove("is-copied");
+            }, 1600);
+        }
+    }
+
+    function copyShareUrl() {
+        if (!shareUrl) return;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                setStatus("Link copied!");
+            }).catch(() => {
+                copyWithFallback(shareUrl);
+                setStatus("Link copied!");
             });
+        } else {
+            copyWithFallback(shareUrl);
+            setStatus("Link copied!");
+        }
+    }
+
+    if (shareBtn) {
+        if (navigator.share) {
+            shareBtn.addEventListener("click", () => {
+                if (!shareUrl) return;
+                navigator.share({ title: gameTitle || title, text: shareText, url: shareUrl }).catch(() => {
+                    // Ignore share cancellation/errors.
+                });
+            });
+        } else {
+            shareBtn.addEventListener("click", copyShareUrl);
         }
     }
 })();
