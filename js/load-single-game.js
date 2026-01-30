@@ -574,8 +574,14 @@ function resolveCreditsEntries(game) {
 }
 
 function insertAfter(target, node) {
-    if (!target || !target.parentNode) return;
-    target.parentNode.insertBefore(node, target.nextSibling);
+    if (!target) return;
+    const parent = target.parentNode;
+    if (!parent) return;
+    if (parent.contains(target)) {
+        parent.insertBefore(node, target.nextSibling);
+    } else {
+        parent.appendChild(node);
+    }
 }
 
 function resolveGenres(game) {
@@ -963,8 +969,9 @@ function renderHeroBadges(game) {
         badgeWrap = document.createElement("div");
         badgeWrap.className = "game-hero__badges";
         const title = heroContent.querySelector(".game-hero__title");
-        if (title && title.nextSibling) {
-            heroContent.insertBefore(badgeWrap, title.nextSibling);
+        const insertParent = title && title.parentNode ? title.parentNode : heroContent;
+        if (title && insertParent && insertParent.contains(title)) {
+            insertParent.insertBefore(badgeWrap, title.nextSibling);
         } else {
             heroContent.appendChild(badgeWrap);
         }
@@ -1019,9 +1026,10 @@ function ensureMediaPanel() {
 
         const mediaAnchor = document.querySelector("[data-game-media-anchor]");
         const insertTarget = mediaAnchor || main;
-        if (insertTarget && insertTarget.parentNode) {
-            insertTarget.parentNode.insertBefore(mediaSection, insertTarget.nextSibling);
-        } else {
+        const insertParent = insertTarget ? insertTarget.parentNode : null;
+        if (insertTarget && insertParent && insertParent.contains(insertTarget)) {
+            insertParent.insertBefore(mediaSection, insertTarget.nextSibling);
+        } else if (main) {
             main.appendChild(mediaSection);
         }
     }

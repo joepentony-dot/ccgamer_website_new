@@ -6,6 +6,12 @@
 
     const shareBtn = root.querySelector("[data-ccg-share-btn]");
     const status = root.querySelector("[data-ccg-share-status]");
+    const fallback = root.querySelector("[data-ccg-share-fallback]");
+    const emailLink = root.querySelector("[data-ccg-share-email]");
+    const whatsappLink = root.querySelector("[data-ccg-share-whatsapp]");
+    const xLink = root.querySelector("[data-ccg-share-x]");
+    const facebookLink = root.querySelector("[data-ccg-share-facebook]");
+    const copyBtn = root.querySelector("[data-ccg-share-copy]");
 
     const CANONICAL_DOMAIN = "https://www.cheekycommodoregamer.co.uk";
     const GAME_PATH_PREFIX = "/games/";
@@ -123,6 +129,13 @@
     function resolveShareUrl() {
         const canonicalLink = document.querySelector("link[rel='canonical']");
         const canonicalHref = canonicalLink ? canonicalLink.getAttribute("href") : "";
+        if (canonicalHref) {
+            try {
+                return new URL(canonicalHref, window.location.origin).toString();
+            } catch (error) {
+                // Fall through to slug resolution.
+            }
+        }
         let slug = canonicalHref ? getSlugFromUrl(canonicalHref) : "";
 
         if (!slug) {
@@ -151,7 +164,7 @@
 
         const canonicalUrl = getCanonicalGameUrl(slug);
         if (isValidCanonicalUrl(canonicalUrl)) return canonicalUrl;
-        return "";
+        return window.location.href;
     }
 
     const shareUrl = resolveShareUrl();
@@ -231,6 +244,26 @@
         }
     }
 
+    function updateFallbackLinks() {
+        if (!shareUrl) return;
+        const encodedUrl = encodeURIComponent(shareUrl);
+        const subject = encodeURIComponent(gameTitle || title || "Cheeky Commodore Gamer");
+        const body = encodeURIComponent(`${shareText}\n\n${shareUrl}`);
+
+        if (emailLink) {
+            emailLink.href = `mailto:?subject=${subject}&body=${body}`;
+        }
+        if (whatsappLink) {
+            whatsappLink.href = `https://wa.me/?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`;
+        }
+        if (xLink) {
+            xLink.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodedUrl}`;
+        }
+        if (facebookLink) {
+            facebookLink.href = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+        }
+    }
+
     if (shareBtn) {
         if (navigator.share) {
             shareBtn.addEventListener("click", () => {
@@ -244,5 +277,10 @@
         }
     }
 
+    if (copyBtn) {
+        copyBtn.addEventListener("click", copyShareUrl);
+    }
+
+    updateFallbackLinks();
     applyShareButtonClasses();
 })();
