@@ -9,8 +9,8 @@
 (() => {
     "use strict";
 
-    // NOT REAL SECURITY – just prevents casual browsing.
-    const ADMIN_GATE_PASSPHRASE = "";
+    // CLIENT-SIDE ONLY: not real security, just discourages casual browsing.
+    const ADMIN_GATE_PASSPHRASE = "cheeky";
 
     const SITE_BASE_URL = "https://www.cheekycommodoregamer.co.uk";
     const GAMES_JSON_URL = "../games/games.json";
@@ -159,7 +159,6 @@
         gate: document.getElementById("adminGate"),
         gateInput: document.getElementById("adminGateInput"),
         gateUnlock: document.getElementById("adminGateUnlock"),
-        gateBypass: document.getElementById("adminGateBypass"),
         gateStatus: document.getElementById("adminGateStatus")
     };
 
@@ -1649,8 +1648,12 @@
     };
 
     const setupGate = () => {
-        const enabled = ADMIN_GATE_PASSPHRASE.length > 0;
-        if (!enabled || !elements.gate) return;
+        if (!elements.gate || !elements.gateInput || !elements.gateUnlock || !elements.gateStatus) return;
+        const gateDisabled = ADMIN_GATE_PASSPHRASE === "" || ADMIN_GATE_PASSPHRASE === null;
+        if (gateDisabled) {
+            elements.gate.hidden = true;
+            return;
+        }
         const unlocked = sessionStorage.getItem("ccg-admin-unlocked") === "true";
         if (unlocked) {
             elements.gate.hidden = true;
@@ -1659,15 +1662,38 @@
         elements.gate.hidden = false;
         elements.gateInput.focus();
 
+        const setGateStatus = (message, state = "") => {
+            elements.gateStatus.textContent = message;
+            if (state) {
+                elements.gateStatus.dataset.state = state;
+            } else {
+                delete elements.gateStatus.dataset.state;
+            }
+        };
+
+        const hideGate = () => {
+            elements.gate.style.transition = "opacity 200ms ease";
+            elements.gate.style.opacity = "0";
+            elements.gate.style.pointerEvents = "none";
+            window.setTimeout(() => {
+                elements.gate.hidden = true;
+                elements.gate.style.opacity = "";
+                elements.gate.style.pointerEvents = "";
+                elements.gate.style.transition = "";
+            }, 200);
+        };
+
         const unlock = () => {
             const value = elements.gateInput.value.trim();
             if (value === ADMIN_GATE_PASSPHRASE) {
                 sessionStorage.setItem("ccg-admin-unlocked", "true");
-                elements.gate.hidden = true;
-                elements.gateStatus.textContent = "Unlocked.";
-            } else {
-                elements.gateStatus.textContent = "Incorrect passphrase.";
+                setGateStatus("Access granted.", "success");
+                hideGate();
+                return;
             }
+            setGateStatus("Incorrect passphrase. Please try again.", "error");
+            elements.gateInput.focus();
+            elements.gateInput.select();
         };
 
         elements.gateUnlock.addEventListener("click", unlock);
@@ -1676,10 +1702,6 @@
                 event.preventDefault();
                 unlock();
             }
-        });
-        elements.gateBypass.addEventListener("click", () => {
-            sessionStorage.setItem("ccg-admin-unlocked", "true");
-            elements.gate.hidden = true;
         });
     };
 
