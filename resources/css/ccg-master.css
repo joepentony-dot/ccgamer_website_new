@@ -22,6 +22,13 @@
     --ccg-font-main: var(--ccg-font-robotron);
     --ccg-font-body: var(--ccg-font-robotron);
 
+    --ccg-neon-blue: #5ad0ff;
+    --ccg-neon-purple: #8b6bff;
+    --ccg-neon-cyan: #4dffd6;
+    --ccg-neon-blue-rgb: 90, 208, 255;
+    --ccg-neon-purple-rgb: 139, 107, 255;
+    --ccg-neon-cyan-rgb: 77, 255, 214;
+
     --ccg-bg-dark: #000;
     --ccg-text-light: #e8ecff;
     --ccg-text-soft: #b5bbdf;
@@ -52,6 +59,21 @@
     --text-light: var(--ccg-text-light);
     --text-dim: var(--ccg-text-soft);
     --border-light: rgba(var(--accent-rgb), 0.28);
+
+    --ccg-panel-radius: 16px;
+    --ccg-panel-bg: linear-gradient(150deg, rgba(10, 16, 32, 0.86), rgba(6, 8, 18, 0.96));
+    --ccg-panel-bg-strong: linear-gradient(160deg, rgba(14, 20, 38, 0.9), rgba(6, 8, 18, 0.98));
+    --ccg-panel-border: rgba(var(--ccg-neon-blue-rgb), 0.28);
+    --ccg-panel-border-strong: rgba(var(--ccg-neon-purple-rgb), 0.32);
+    --ccg-panel-glow: 0 0 18px rgba(var(--ccg-neon-blue-rgb), 0.16), 0 0 34px rgba(var(--ccg-neon-purple-rgb), 0.12);
+    --ccg-panel-shadow: 0 18px 42px rgba(0,0,0,0.78);
+    --ccg-panel-inner: inset 0 0 0 1px rgba(255,255,255,0.05);
+    --ccg-panel-hover-shift: translateY(-2px);
+    --ccg-panel-hover-opacity: 0.96;
+
+    --panel-bg: var(--ccg-panel-bg);
+    --panel-bg-strong: var(--ccg-panel-bg-strong);
+    --panel-shadow: var(--ccg-panel-shadow);
 
     /* HEADER CONTRACT */
     --ccg-header-padding-y: 12px;
@@ -101,6 +123,130 @@ body {
 
 html {
     scroll-behavior: auto;
+}
+
+/* ============================================================
+   CONTROL PANEL SYSTEM — OMEGA COMMAND DECK
+   ------------------------------------------------------------
+   • Shared glass panels for core content blocks
+   • Transform/opacity-only hover micro-motion
+============================================================ */
+
+:where(.ccg-panel,
+       .about-panel,
+       .contact-panel,
+       .quiz-panel,
+       .quiz-side-panels,
+       .leaderboard-filter-panel,
+       .games-focus-panel,
+       .admin-card,
+       .admin-hero,
+       .admin-callout,
+       .admin-badge,
+       .admin-form-section,
+       .admin-edit-banner,
+       .admin-tab-panel,
+       .quiz-admin-panel,
+       .hangman-image-panel,
+       .hangman-status-panel,
+       .ccg-nav-drawer__panel) {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+
+    background: var(--ccg-panel-bg);
+    border: 1px solid var(--ccg-panel-border);
+    border-radius: var(--ccg-panel-radius);
+
+    box-shadow:
+        var(--ccg-panel-shadow),
+        var(--ccg-panel-glow),
+        var(--ccg-panel-inner);
+
+    transition: transform 220ms var(--ccg-ease-out-lux), opacity 220ms var(--ccg-ease-out-lux);
+}
+
+:where(.ccg-panel,
+       .about-panel,
+       .contact-panel,
+       .quiz-panel,
+       .quiz-side-panels,
+       .leaderboard-filter-panel,
+       .games-focus-panel,
+       .admin-card,
+       .admin-hero,
+       .admin-callout,
+       .admin-badge,
+       .admin-form-section,
+       .admin-edit-banner,
+       .admin-tab-panel,
+       .quiz-admin-panel,
+       .hangman-image-panel,
+       .hangman-status-panel,
+       .ccg-nav-drawer__panel)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+
+    background:
+        radial-gradient(circle at 12% 12%, rgba(var(--ccg-neon-blue-rgb), 0.22), transparent 45%),
+        radial-gradient(circle at 80% 16%, rgba(var(--ccg-neon-purple-rgb), 0.2), transparent 52%),
+        repeating-linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.02),
+            rgba(255,255,255,0.02) 1px,
+            transparent 1px,
+            transparent 4px
+        );
+
+    opacity: 0.6;
+}
+
+:where(.ccg-panel,
+       .about-panel,
+       .contact-panel,
+       .quiz-panel,
+       .quiz-side-panels,
+       .leaderboard-filter-panel,
+       .games-focus-panel,
+       .admin-card,
+       .admin-hero,
+       .admin-callout,
+       .admin-badge,
+       .admin-form-section,
+       .admin-edit-banner,
+       .admin-tab-panel,
+       .quiz-admin-panel,
+       .hangman-image-panel,
+       .hangman-status-panel,
+       .ccg-nav-drawer__panel) > * {
+    position: relative;
+    z-index: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    :where(.ccg-panel,
+           .about-panel,
+           .contact-panel,
+           .quiz-panel,
+           .quiz-side-panels,
+           .leaderboard-filter-panel,
+           .games-focus-panel,
+           .admin-card,
+           .admin-hero,
+           .admin-callout,
+           .admin-badge,
+           .admin-form-section,
+           .admin-edit-banner,
+           .admin-tab-panel,
+           .quiz-admin-panel,
+           .hangman-image-panel,
+           .hangman-status-panel):hover {
+        transform: var(--ccg-panel-hover-shift);
+        opacity: var(--ccg-panel-hover-opacity);
+    }
 }
 
 /* ============================================================
