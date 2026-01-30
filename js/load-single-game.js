@@ -282,12 +282,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         runSlugAudit(CCG_SINGLE_ALL_GAMES, slugIndex);
 
         if (!resolvedGame) {
+            console.warn("[CCG SINGLE] Game not resolved.", {
+                id: resolvedGameId,
+                slug: candidateSlug
+            });
             setRenderAction(() => renderGameNotFound(resolvedGameId, candidateSlug));
         } else {
             setRenderAction(() => renderGame(resolvedGame));
         }
 
     } catch (err) {
+        console.warn("[CCG SINGLE] Failed to load games.json or resolve game.", err);
         setRenderAction(() => renderGameNotFound(resolvedGameId, candidateSlug));
     }
 
