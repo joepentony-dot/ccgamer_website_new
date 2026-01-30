@@ -6,6 +6,10 @@
     --contact-grid-gap: clamp(1rem, 2vw, 1.35rem);
 }
 
+.ccg-page--contact .ccg-main {
+    text-align: left;
+}
+
 .contact-shell {
     gap: var(--ccg-section-gap);
 }
@@ -185,6 +189,11 @@
     .contact-actions {
         flex-direction: column;
         align-items: flex-start;
+    }
+
+    .ccg-page--contact .ccg-btn {
+        width: 100%;
+        min-height: 48px;
     }
 
     .contact-status {
