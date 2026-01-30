@@ -31,15 +31,14 @@ function hasPrefilledSingleGameContent() {
     return !!(heroTitle && heroTitle.textContent.trim());
 }
 
-function isPreloadedSingleGame() {
-    try {
-        return !!(typeof window !== "undefined" && window.__CCG_PRELOADED_SINGLE_GAME);
-    } catch (e) {
-        return false;
-    }
-}
-
 function lockSingleGameRender() {
+    if (hasPrefilledSingleGameContent()) {
+        if (document.body) {
+            document.body.classList.remove("ccg-loading-single");
+            document.body.classList.add("ccg-single-ready");
+        }
+        return;
+    }
     if (CCG_RENDER_GATE.locked) return;
     CCG_RENDER_GATE.container = document.querySelector(".ccg-page--single-game");
     if (CCG_RENDER_GATE.container) {
