@@ -221,14 +221,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     ensureDirectNavLinks();
 
     const params = new URLSearchParams(window.location.search);
-    let gameId = decodeURIComponent(
-        (params.get("id") || "").toString().trim()
-    );
+    // Regression note: slug routing was skipped for /games/<slug>/index.html because the
+    // ".html" guard blocked slug parsing, leaving the render gate locked and the page blank.
+    // We now normalize slug tokens from the pathname first, then query params, then legacy IDs.
+    const safeDecode = (value) => {
+        if (!value) return "";
+        try {
+            return decodeURIComponent(value);
+        } catch (error) {
+            console.warn("[CCG SINGLE] Failed to decode URL parameter.", error);
+            return String(value);
+        }
+    };
+
+    const rawGameId = (params.get("id") || "").toString().trim();
+    const rawSlugParam = (params.get("slug") || "").toString().trim();
+    let gameId = safeDecode(rawGameId).trim();
     const slugRoutingAllowed = isSlugRoutingAllowed();
-    const rawSlugParam = slugRoutingAllowed ? params.get("slug") : "";
-    const slugParam = rawSlugParam ? decodeURIComponent(rawSlugParam.toString()).trim() : "";
+    const slugParam = rawSlugParam ? safeDecode(rawSlugParam).trim() : "";
     const pathSlug = slugRoutingAllowed ? getSlugFromPath() : "";
-    const candidateSlug = slugParam || pathSlug;
+    const candidateSlug = pathSlug || slugParam;
     let resolvedGame = null;
     let resolvedGameId = gameId;
     let renderAction = null;
@@ -269,24 +281,36 @@ document.addEventListener("DOMContentLoaded", async () => {
         const idIndex = buildIdIndex(CCG_SINGLE_ALL_GAMES);
         const slugIndex = buildSlugIndex(CCG_SINGLE_ALL_GAMES);
 
-        if (candidateSlug && slugRoutingAllowed) {
-            resolvedGame = slugIndex.get(candidateSlug) || null;
-            if (!resolvedGame) {
-                // Legacy slug fallback (SEO preservation)
-                const legacyId = LEGACY_COMPARE_MAP[normaliseCompareKey(candidateSlug)];
-                if (legacyId) {
-                    resolvedGame = idIndex.get(legacyId) || null;
-                }
-            }
+        const resolveByToken = (token) => {
+            if (!token) return null;
+            const slugKey = normalizeSlugKey(token);
+            const idKey = normalizeIdKey(token);
+            return slugIndex.get(slugKey) || idIndex.get(idKey) || null;
+        };
+
+        const resolveLegacyId = (token) => {
+            if (!token) return "";
+            return LEGACY_COMPARE_MAP[normaliseCompareKey(token)] || "";
+        };
+
+        const queryToken = slugParam || gameId;
+        const resolutionQueue = [candidateSlug, queryToken];
+
+        for (const token of resolutionQueue) {
+            if (resolvedGame) break;
+            resolvedGame = resolveByToken(token);
             if (resolvedGame) {
                 resolvedGameId = String(resolvedGame.id);
             }
         }
 
-        if (!resolvedGame && resolvedGameId) {
-            resolvedGame = idIndex.get(resolvedGameId) || slugIndex.get(resolvedGameId) || null;
-            if (resolvedGame) {
-                resolvedGameId = String(resolvedGame.id);
+        if (!resolvedGame) {
+            const legacyCandidate = resolveLegacyId(candidateSlug || queryToken);
+            if (legacyCandidate) {
+                resolvedGame = resolveByToken(legacyCandidate);
+                if (resolvedGame) {
+                    resolvedGameId = String(resolvedGame.id);
+                }
             }
         }
 
@@ -325,7 +349,7 @@ function normaliseCompareKey(input) {
 function buildIdIndex(games) {
     const index = new Map();
     games.forEach(game => {
-        const key = String(game?.id ?? "").trim();
+        const key = normalizeIdKey(game?.id);
         if (key && !index.has(key)) {
             index.set(key, game);
         }
@@ -336,12 +360,29 @@ function buildIdIndex(games) {
 function buildSlugIndex(games) {
     const index = new Map();
     games.forEach(game => {
-        const key = String(game?.slug ?? "").trim();
+        const key = normalizeSlugKey(game?.slug);
         if (key && !index.has(key)) {
             index.set(key, game);
         }
     });
     return index;
+}
+
+function normalizeSlugKey(value) {
+    if (!value) return "";
+    return String(value)
+        .trim()
+        .toLowerCase()
+        .replace(/_+/g, "-")
+        .replace(/\/+$/g, "");
+}
+
+function normalizeIdKey(value) {
+    if (!value) return "";
+    return String(value)
+        .trim()
+        .toLowerCase()
+        .replace(/-+/g, "_");
 }
 
 function buildLegacyCompareMap(legacyMap) {
@@ -597,6 +638,7 @@ function getSlugFromPath() {
     slug = slug.replace(/index\.html$/i, "").replace(/\.html$/i, "");
     slug = slug.replace(/\/+$/g, "");
     if (slug === "game") return "";
+    if (slug.startsWith("genres/") || slug.startsWith("collections/")) return "";
     return slug;
 }
 
@@ -635,7 +677,7 @@ function isSlugRoutingAllowed() {
     if (!tail) return false;
 
     if (tail.startsWith("genres") || tail.startsWith("collections")) return false;
-    if (tail.endsWith(".html") && tail !== "game.html") return false;
+    if (tail.endsWith(".html") && tail !== "game.html" && !tail.endsWith("/index.html")) return false;
 
     return true;
 }
@@ -2045,12 +2087,15 @@ function renderGameNotFound(gameId, slug) {
 
     const section = document.getElementById("gameNotFound");
     if (section) {
+        section.hidden = false;
         section.style.display = "block";
         const idEl = document.getElementById("notFoundId");
         if (idEl) {
             const fallback = slug || gameId || "Unknown";
             idEl.textContent = fallback;
         }
+    } else {
+        console.warn("[CCG SINGLE] Game not found panel is missing.");
     }
 }
 
