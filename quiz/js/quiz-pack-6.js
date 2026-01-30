@@ -12,6 +12,7 @@
     const MAX_WRONG_GUESSES = 5;
     const PACK_6_PATH = "images/pack-6/";
     const IMAGE_EXTENSION = ".webp";
+    const IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp"];
     const ANSWER_SUFFIX = "-answer";
     const AUTO_ADVANCE_DELAY = 3000;
 
@@ -438,9 +439,14 @@
                 .map((href) => href.split("?")[0])
                 .map((href) => href.split("#")[0])
                 .map((href) => href.split("/").pop() || "")
-                .filter((file) => file.toLowerCase().endsWith(IMAGE_EXTENSION))
+                .filter((file) => IMAGE_EXTENSIONS.some((ext) => file.toLowerCase().endsWith(ext)))
                 .filter((file) => !file.toLowerCase().endsWith(`${ANSWER_SUFFIX}${IMAGE_EXTENSION}`))
-                .map((file) => file.replace(IMAGE_EXTENSION, ""))
+                .map((file) => {
+                    const lower = file.toLowerCase();
+                    const ext = IMAGE_EXTENSIONS.find((entry) => lower.endsWith(entry));
+                    if (!ext) return "";
+                    return file.slice(0, -ext.length);
+                })
                 .filter(Boolean);
 
             const uniqueBases = Array.from(new Set(fileNames));
