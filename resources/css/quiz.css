@@ -138,9 +138,9 @@ body.quiz-focus.quiz-focus-pulse .quiz-panel--active {
     gap: 10px;
     padding: 14px;
     border-radius: 16px;
-    background: linear-gradient(135deg, rgba(8, 12, 18, 0.85), rgba(6, 8, 14, 0.92));
-    border: 1px solid rgba(255,255,255,0.14);
-    box-shadow: inset 0 0 18px rgba(0,0,0,0.55), 0 16px 30px rgba(0,0,0,0.5);
+    background: var(--ccg-panel-bg);
+    border: 1px solid var(--ccg-panel-border);
+    box-shadow: var(--ccg-panel-shadow), var(--ccg-panel-inner);
 }
 
 .quiz-pack-label {
@@ -159,9 +159,12 @@ body.quiz-focus.quiz-focus-pulse .quiz-panel--active {
 
 .quiz-pack-btn {
     border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.26);
-    background: linear-gradient(135deg, rgba(var(--accent-rgb),0.22), rgba(0,0,0,0.84));
-    box-shadow: 0 10px 24px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.12);
+    border: 1px solid rgba(var(--ccg-neon-blue-rgb),0.35);
+    background:
+        linear-gradient(135deg, rgba(var(--ccg-neon-blue-rgb),0.22), rgba(0,0,0,0.84));
+    box-shadow:
+        0 10px 24px rgba(0,0,0,0.7),
+        inset 0 0 0 1px rgba(255,255,255,0.12);
     padding: 12px 14px;
     color: var(--text-light);
     text-align: left;
@@ -176,15 +179,15 @@ body.quiz-focus.quiz-focus-pulse .quiz-panel--active {
 .quiz-pack-btn:hover,
 .quiz-pack-btn:focus-visible {
     transform: translateY(-1px);
-    border-color: rgba(120,255,188,0.45);
-    box-shadow: 0 14px 28px rgba(0,0,0,0.75), 0 0 18px rgba(120,255,188,0.18);
+    border-color: rgba(var(--ccg-neon-cyan-rgb), 0.45);
+    box-shadow: 0 14px 28px rgba(0,0,0,0.75), 0 0 18px rgba(var(--ccg-neon-cyan-rgb),0.18);
     outline: none;
 }
 
 .quiz-pack-btn.is-active {
-    border-color: rgba(120,255,188,0.75);
-    background: linear-gradient(135deg, rgba(120,255,188,0.3), rgba(0,0,0,0.85));
-    box-shadow: 0 12px 28px rgba(0,0,0,0.75), 0 0 16px rgba(120,255,188,0.3);
+    border-color: rgba(var(--ccg-neon-cyan-rgb), 0.75);
+    background: linear-gradient(135deg, rgba(var(--ccg-neon-cyan-rgb),0.3), rgba(0,0,0,0.85));
+    box-shadow: 0 12px 28px rgba(0,0,0,0.75), 0 0 16px rgba(var(--ccg-neon-cyan-rgb),0.3);
 }
 
 .quiz-pack-btn:disabled {
@@ -229,12 +232,15 @@ body.quiz-focus.quiz-focus-pulse .quiz-panel--active {
 .quiz-panel {
     position: relative;
     background:
-        linear-gradient(135deg, rgba(0,0,0,0.88), rgba(13,12,20,0.92)),
-        radial-gradient(circle at 18% 18%, rgba(var(--accent-rgb),0.2), transparent 42%);
-    border: 1px solid rgba(255,255,255,0.16);
+        radial-gradient(circle at 18% 18%, rgba(var(--ccg-neon-blue-rgb),0.22), transparent 42%),
+        var(--ccg-panel-bg-strong);
+    border: 1px solid var(--ccg-panel-border);
     border-radius: 18px;
     padding: 20px 22px;
-    box-shadow: 0 16px 34px rgba(0,0,0,0.76), inset 0 0 0 1px rgba(255,255,255,0.12);
+    box-shadow:
+        var(--ccg-panel-shadow),
+        var(--ccg-panel-glow),
+        inset 0 0 0 1px rgba(255,255,255,0.08);
     overflow: hidden;
     color: var(--text-light);
 }
@@ -248,7 +254,7 @@ body.quiz-focus.quiz-focus-pulse .quiz-panel--active {
     position: absolute;
     inset: -2px;
     border-radius: 20px;
-    background: linear-gradient(120deg, rgba(var(--accent-rgb),0.6), rgba(120,255,188,0.35), rgba(255,255,255,0.12));
+    background: linear-gradient(120deg, rgba(var(--ccg-neon-blue-rgb),0.6), rgba(var(--ccg-neon-cyan-rgb),0.35), rgba(255,255,255,0.12));
     opacity: 0.35;
     filter: blur(12px);
     z-index: -1;
@@ -259,7 +265,7 @@ body.quiz-focus.quiz-focus-pulse .quiz-panel--active {
     position: absolute;
     inset: auto 10% -30% 10%;
     height: 60%;
-    background: radial-gradient(circle at 50% 0%, rgba(var(--accent-rgb),0.18), transparent 65%);
+    background: radial-gradient(circle at 50% 0%, rgba(var(--ccg-neon-blue-rgb),0.2), transparent 65%);
     filter: blur(16px);
     opacity: 0.7;
     pointer-events: none;
@@ -273,9 +279,9 @@ body.quiz-focus.quiz-focus-pulse .quiz-panel--active {
 .quiz-question-card {
     position: relative;
     border-radius: 16px;
-    background: linear-gradient(160deg, rgba(0,0,0,0.92), rgba(5,9,15,0.9));
-    border: 1px solid rgba(255,255,255,0.2);
-    box-shadow: 0 14px 30px rgba(0,0,0,0.72), inset 0 0 0 1px rgba(255,255,255,0.12);
+    background: linear-gradient(160deg, rgba(4,6,14,0.92), rgba(6,10,18,0.9));
+    border: 1px solid rgba(var(--ccg-neon-blue-rgb),0.26);
+    box-shadow: 0 14px 30px rgba(0,0,0,0.72), inset 0 0 0 1px rgba(255,255,255,0.1);
 }
 
 .quiz-question-card::after {
@@ -283,7 +289,7 @@ body.quiz-focus.quiz-focus-pulse .quiz-panel--active {
     position: absolute;
     inset: 0;
     border-radius: 16px;
-    background: linear-gradient(120deg, rgba(var(--accent-rgb),0.08), transparent 45%, rgba(120,255,188,0.12));
+    background: linear-gradient(120deg, rgba(var(--ccg-neon-blue-rgb),0.08), transparent 45%, rgba(var(--ccg-neon-cyan-rgb),0.12));
     mix-blend-mode: screen;
     opacity: 0.7;
     pointer-events: none;
@@ -295,8 +301,8 @@ body.quiz-focus.quiz-focus-pulse .quiz-panel--active {
     gap: 10px;
     padding: 10px;
     border-radius: 16px;
-    background: linear-gradient(120deg, rgba(var(--accent-rgb),0.2), rgba(0,0,0,0.72));
-    border: 1px solid rgba(255,255,255,0.18);
+    background: linear-gradient(120deg, rgba(var(--ccg-neon-blue-rgb),0.2), rgba(0,0,0,0.72));
+    border: 1px solid rgba(var(--ccg-neon-blue-rgb),0.24);
     color: var(--text-light);
     min-width: min(420px, 100%);
 }
@@ -306,8 +312,8 @@ body.quiz-focus.quiz-focus-pulse .quiz-panel--active {
     gap: 4px;
     padding: 6px 10px;
     border-radius: 12px;
-    background: rgba(0,0,0,0.55);
-    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(4, 6, 12, 0.65);
+    border: 1px solid rgba(var(--ccg-neon-blue-rgb),0.2);
     min-width: 110px;
 }
 
