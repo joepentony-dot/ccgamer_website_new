@@ -2009,12 +2009,36 @@ function initRelatedCarousel() {
         handleScroll(direction);
     };
 
-    prevBtn.addEventListener("click", handleArrowPress(-1));
-    nextBtn.addEventListener("click", handleArrowPress(1));
-    prevBtn.addEventListener("touchstart", isolateArrowEvent, { passive: false });
-    nextBtn.addEventListener("touchstart", isolateArrowEvent, { passive: false });
-    prevBtn.addEventListener("pointerdown", isolateArrowEvent);
-    nextBtn.addEventListener("pointerdown", isolateArrowEvent);
+    const bindArrow = (button, direction) => {
+        let touchActivated = false;
+        const handlePress = handleArrowPress(direction);
+
+        button.addEventListener("click", (event) => {
+            if (touchActivated) {
+                touchActivated = false;
+                return;
+            }
+            handlePress(event);
+        });
+
+        button.addEventListener(
+            "touchstart",
+            (event) => {
+                touchActivated = true;
+                handlePress(event);
+            },
+            { passive: false }
+        );
+
+        button.addEventListener("pointerdown", (event) => {
+            if (event.pointerType === "mouse") {
+                isolateArrowEvent(event);
+            }
+        });
+    };
+
+    bindArrow(prevBtn, -1);
+    bindArrow(nextBtn, 1);
     track.addEventListener("scroll", updateButtons, { passive: true });
     window.addEventListener("resize", updateButtons);
 

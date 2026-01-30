@@ -1832,6 +1832,7 @@ body[data-ccg-mode="amiga"] {
     padding: 4px 4px 10px;
     scrollbar-width: thin;
     scroll-behavior: smooth;
+    touch-action: pan-y;
 }
 
 .related-carousel .related-card {
