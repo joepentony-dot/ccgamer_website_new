@@ -1648,19 +1648,14 @@
     };
 
     const setupGate = () => {
-        if (!elements.gate || !elements.gateInput || !elements.gateUnlock || !elements.gateStatus) return;
+        if (!elements.gate || !elements.gateInput || !elements.gateUnlock || !elements.gateStatus) {
+            return;
+        }
+
+        const unlockKey = "ccg-admin-unlocked";
         const gateDisabled = ADMIN_GATE_PASSPHRASE === "" || ADMIN_GATE_PASSPHRASE === null;
-        if (gateDisabled) {
-            elements.gate.hidden = true;
-            return;
-        }
-        const unlocked = sessionStorage.getItem("ccg-admin-unlocked") === "true";
-        if (unlocked) {
-            elements.gate.hidden = true;
-            return;
-        }
-        elements.gate.hidden = false;
-        elements.gateInput.focus();
+        const unlocked = sessionStorage.getItem(unlockKey) === "true";
+        const fadeDuration = 200;
 
         const setGateStatus = (message, state = "") => {
             elements.gateStatus.textContent = message;
@@ -1671,24 +1666,43 @@
             }
         };
 
-        const hideGate = () => {
-            elements.gate.style.transition = "opacity 200ms ease";
-            elements.gate.style.opacity = "0";
+        const hideGateImmediate = () => {
+            elements.gate.removeAttribute("hidden");
+            elements.gate.style.display = "none";
+            elements.gate.style.opacity = "";
             elements.gate.style.pointerEvents = "none";
+            elements.gate.style.transition = "";
+        };
+
+        const showGate = () => {
+            elements.gate.removeAttribute("hidden");
+            elements.gate.style.display = "grid";
+            elements.gate.style.opacity = "1";
+            elements.gate.style.pointerEvents = "auto";
+            elements.gate.style.transition = "opacity 200ms ease";
+            setGateStatus("");
+            elements.gateInput.focus();
+        };
+
+        const fadeOutGate = () => {
+            elements.gate.style.transition = `opacity ${fadeDuration}ms ease`;
+            elements.gate.style.pointerEvents = "none";
+            requestAnimationFrame(() => {
+                elements.gate.style.opacity = "0";
+            });
             window.setTimeout(() => {
-                elements.gate.hidden = true;
+                elements.gate.style.display = "none";
                 elements.gate.style.opacity = "";
-                elements.gate.style.pointerEvents = "";
                 elements.gate.style.transition = "";
-            }, 200);
+            }, fadeDuration);
         };
 
         const unlock = () => {
             const value = elements.gateInput.value.trim();
             if (value === ADMIN_GATE_PASSPHRASE) {
-                sessionStorage.setItem("ccg-admin-unlocked", "true");
+                sessionStorage.setItem(unlockKey, "true");
                 setGateStatus("Access granted.", "success");
-                hideGate();
+                fadeOutGate();
                 return;
             }
             setGateStatus("Incorrect passphrase. Please try again.", "error");
@@ -1696,13 +1710,24 @@
             elements.gateInput.select();
         };
 
-        elements.gateUnlock.addEventListener("click", unlock);
-        elements.gateInput.addEventListener("keydown", (event) => {
+        const handleKeydown = (event) => {
             if (event.key === "Enter") {
                 event.preventDefault();
                 unlock();
             }
-        });
+        };
+
+        elements.gateUnlock.removeEventListener("click", unlock);
+        elements.gateInput.removeEventListener("keydown", handleKeydown);
+        elements.gateUnlock.addEventListener("click", unlock);
+        elements.gateInput.addEventListener("keydown", handleKeydown);
+
+        if (gateDisabled || unlocked) {
+            hideGateImmediate();
+            return;
+        }
+
+        showGate();
     };
 
     const init = () => {
