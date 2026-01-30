@@ -26,36 +26,33 @@
         })();
     </script>
 
-    <title id="game-meta-title">Game | Cheeky Commodore Gamer</title>
+    <title id="game-meta-title">Gemstone Warrior | Cheeky Commodore Gamer</title>
     <meta name="description"
           id="game-meta-description"
-          content="Full details for this Commodore 64 or Amiga game — including video, manual, screenshots and metadata.">
-    <link rel="canonical" id="game-canonical" href="https://www.cheekycommodoregamer.co.uk/games/game.html">
-    <script>
-        (function () {
-            try {
-                if (typeof URLSearchParams === 'undefined') return;
-                var canonical = document.getElementById('game-canonical');
-                if (!canonical) return;
-                var params = new URLSearchParams(window.location.search || '');
-                var id = params.get('id');
-                if (!id) return;
-                var slug = String(id).trim();
-                if (!slug || /_/.test(slug) || !/^[a-z0-9-]+$/i.test(slug)) return;
-                canonical.setAttribute('href', 'https://www.cheekycommodoregamer.co.uk/games/' + slug + '/');
-            } catch (e) {}
-        })();
-    </script>
+          content="Gemstone Warrior on Commodore — screenshots, manual, downloads and video.">
+    <link rel="canonical" id="game-canonical" href="https://www.cheekycommodoregamer.co.uk/games/gemstone-warrior/">
     <meta property="og:type" content="website">
-    <meta property="og:title" id="game-og-title" content="Game | Cheeky Commodore Gamer">
-    <meta property="og:description" id="game-og-description" content="Full details for this Commodore 64 or Amiga game — including video, manual, screenshots and metadata.">
-    <meta property="og:image" id="game-og-image" content="">
-    <meta property="og:url" id="game-og-url" content="">
+    <meta property="og:title" id="game-og-title" content="Gemstone Warrior | Cheeky Commodore Gamer">
+    <meta property="og:description" id="game-og-description" content="Gemstone Warrior on Commodore — screenshots, manual, downloads and video.">
+    <meta property="og:image" id="game-og-image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/gemstone_warrior.jpg">
+    <meta property="og:url" id="game-og-url" content="https://www.cheekycommodoregamer.co.uk/games/gemstone-warrior/">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" id="game-twitter-title" content="Game | Cheeky Commodore Gamer">
-    <meta name="twitter:description" id="game-twitter-description" content="Full details for this Commodore 64 or Amiga game — including video, manual, screenshots and metadata.">
-    <meta name="twitter:image" id="game-twitter-image" content="">
-    <script type="application/ld+json" id="game-jsonld"></script>
+    <meta name="twitter:title" id="game-twitter-title" content="Gemstone Warrior | Cheeky Commodore Gamer">
+    <meta name="twitter:description" id="game-twitter-description" content="Gemstone Warrior on Commodore — screenshots, manual, downloads and video.">
+    <meta name="twitter:image" id="game-twitter-image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/gemstone_warrior.jpg">
+    <script type="application/ld+json" id="game-jsonld">
+    {
+        "@context": "https://schema.org",
+        "@type": "VideoGame",
+        "name": "Gemstone Warrior",
+        "description": "Gemstone Warrior on Commodore — screenshots, manual, downloads and video.",
+        "datePublished": "1984",
+        "gamePlatform": "C64",
+        "publisher": "Strategic Simulations Inc.",
+        "image": "https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/gemstone_warrior.jpg",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/gemstone-warrior/"
+    }
+    </script>
 
     <link rel="icon" href="../favicon.ico">
 
@@ -91,7 +88,7 @@
     <div class="ccg-bg-crt-overlay" aria-hidden="true"></div>
 </div>
 
-<div class="ccg-page ccg-page--single-game">
+<div class="ccg-page ccg-page--single-game" data-ccg-prefilled="true">
 
     <!-- HEADER (LOCKED PARITY) -->
             <!-- HEADER -->
@@ -209,25 +206,26 @@
 
         <!-- HERO -->
         <section class="game-hero">
-            <div id="gameHeroBG" class="game-hero__bg" aria-hidden="true"></div>
+            <div id="gameHeroBG" class="game-hero__bg" aria-hidden="true" style="background-image: url('../resources/images/thumbnails/all/gemstone_warrior.jpg');"></div>
 
             <div class="game-hero__inner">
                 <div class="game-hero__media">
                     <img id="gameHeroThumb"
                          class="game-hero__thumb"
-                         alt=""
-                         loading="lazy">
+                         alt="Gemstone Warrior cover art"
+                         loading="lazy"
+                         src="../resources/images/thumbnails/all/gemstone_warrior.jpg">
                 </div>
 
                 <div class="game-hero__content">
-                    <h1 id="gameHeroTitle" class="game-hero__title"></h1>
+                    <h1 id="gameHeroTitle" class="game-hero__title">Gemstone Warrior</h1>
 
                     <div class="game-hero__meta">
-                        <span id="gameMetaYear" class="game-meta__item"></span>
+                        <span id="gameMetaYear" class="game-meta__item">1984</span>
                         <span class="game-meta__sep">•</span>
-                        <span id="gameMetaSystem" class="game-meta__item"></span>
+                        <span id="gameMetaSystem" class="game-meta__item">C64</span>
                         <span class="game-meta__sep">•</span>
-                        <span id="gameMetaDeveloper" class="game-meta__item"></span>
+                        <span id="gameMetaDeveloper" class="game-meta__item">Strategic Simulations Inc.</span>
                     </div>
 
                     <div class="game-hero__rating" id="gameHeroRating">
@@ -255,10 +253,12 @@
         </section>
 
         <!-- DESCRIPTION -->
-        <section id="game-description-section" class="game-section" hidden>
+        <section id="game-description-section" class="game-section">
             <p class="game-section__kicker">Lore &amp; Overview</p>
             <h2 class="game-section__title">In the Spotlight</h2>
-            <div id="gameDescription" class="game-description"></div>
+            <div id="gameDescription" class="game-description">
+                Gemstone Warrior is a Commodore 64 role-playing game blending real-time combat with character progression. You explore a large world while gathering equipment and abilities.
+            </div>
         </section>
 
         <!-- VIDEO -->
