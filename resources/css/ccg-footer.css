@@ -513,3 +513,104 @@ body[data-ccg-mode="amiga"] .ccg-footer__counter {
         }
     }
 }
+
+/* ============================================================
+   OMEGA FOOTER CTA (SHARED)
+============================================================ */
+
+body[data-ccg-mode="c64"] {
+    --ccg-support-rgb: 255, 198, 120;
+}
+
+body[data-ccg-mode="amiga"] {
+    --ccg-support-rgb: 255, 155, 220;
+}
+
+.ccg-footer--game {
+    margin-top: clamp(24px, 4vw, 48px);
+}
+
+.ccg-footer-inner--game {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: center;
+    text-align: center;
+}
+
+.ccg-footer--game .ccg-footer__col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+}
+
+.ccg-footer__tagline,
+.ccg-footer__note {
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ccg-soft);
+}
+
+.ccg-footer__btn {
+    min-height: 44px;
+    padding: 10px 16px;
+    border-radius: 16px;
+    text-align: center;
+    gap: 4px;
+    flex-direction: column;
+}
+
+.ccg-footer__btn-icon {
+    font-size: 1.1rem;
+}
+
+.ccg-footer__btn-subtext {
+    font-size: 0.64rem;
+    letter-spacing: 0.14em;
+    opacity: 0.75;
+}
+
+.ccg-footer__btn--support {
+    border-color: rgba(var(--ccg-support-rgb), 0.55);
+    box-shadow:
+        0 12px 26px rgba(0,0,0,0.78),
+        0 0 20px rgba(var(--ccg-support-rgb), 0.35);
+}
+
+.ccg-footer__btn--support:hover,
+.ccg-footer__btn--support:focus-visible {
+    border-color: rgba(var(--ccg-support-rgb), 0.85);
+    box-shadow:
+        0 16px 32px rgba(0,0,0,0.82),
+        0 0 26px rgba(var(--ccg-support-rgb), 0.55);
+}
+
+.ccg-footer__btn--top {
+    border-color: rgba(var(--accent-rgb), 0.55);
+    background: rgba(var(--accent-rgb), 0.1);
+}
+
+.ccg-footer__btn--top:hover,
+.ccg-footer__btn--top:focus-visible {
+    border-color: rgba(var(--accent-rgb), 0.8);
+}
+
+@media (min-width: 860px) {
+    .ccg-footer-inner--game {
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: space-between;
+        text-align: left;
+    }
+
+    .ccg-footer--game .ccg-footer__col {
+        align-items: flex-start;
+    }
+
+    .ccg-footer__col--center {
+        align-items: center;
+        text-align: center;
+    }
+}
