@@ -23,7 +23,27 @@ const CCG_RENDER_GATE = {
     locked: false,
 };
 
+function hasPrefilledSingleGameContent() {
+    const container = document.querySelector(".ccg-page--single-game");
+    if (!container) return false;
+    if (container.getAttribute("data-ccg-prefilled") === "true") return true;
+    const heroTitle = document.getElementById("gameHeroTitle");
+    return !!(heroTitle && heroTitle.textContent.trim());
+}
+
+function isPreloadedSingleGame() {
+    return (typeof window !== "undefined" && window.__CCG_PRELOADED === true)
+        || hasPrefilledSingleGameContent();
+}
+
 function lockSingleGameRender() {
+    if (isPreloadedSingleGame()) {
+        if (document.body) {
+            document.body.classList.remove("ccg-loading-single");
+            document.body.classList.add("ccg-single-ready");
+        }
+        return;
+    }
     if (CCG_RENDER_GATE.locked) return;
     CCG_RENDER_GATE.container = document.querySelector(".ccg-page--single-game");
     if (CCG_RENDER_GATE.container) {
@@ -258,18 +278,26 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         if (!resolvedGame && resolvedGameId) {
-            resolvedGame = idIndex.get(resolvedGameId) || null;
+            resolvedGame = idIndex.get(resolvedGameId) || slugIndex.get(resolvedGameId) || null;
+            if (resolvedGame) {
+                resolvedGameId = String(resolvedGame.id);
+            }
         }
 
         runSlugAudit(CCG_SINGLE_ALL_GAMES, slugIndex);
 
         if (!resolvedGame) {
+            console.warn("[CCG SINGLE] Game not resolved.", {
+                id: resolvedGameId,
+                slug: candidateSlug
+            });
             setRenderAction(() => renderGameNotFound(resolvedGameId, candidateSlug));
         } else {
             setRenderAction(() => renderGame(resolvedGame));
         }
 
     } catch (err) {
+        console.warn("[CCG SINGLE] Failed to load games.json or resolve game.", err);
         setRenderAction(() => renderGameNotFound(resolvedGameId, candidateSlug));
     }
 
@@ -623,25 +651,38 @@ function ensureDirectNavLinks() {
 
 function renderGame(game) {
 
+    const preloaded = isPreloadedSingleGame();
     updatePrettyUrlAfterResolve(game);
     updateMeta(game);
 
     /* HERO */
     const thumb = resolveGameThumb(game.thumbnail || game.thumb || game.cover);
-    document.getElementById("gameHeroBG").style.backgroundImage = `url('${thumb}')`;
-    document.getElementById("gameHeroThumb").src = thumb;
-    document.getElementById("gameHeroThumb").alt = `${game.title || "Game"} cover art`;
-    document.getElementById("gameHeroTitle").textContent = game.title || "Unknown";
-    renderHeroMeta(game);
+    const heroBg = document.getElementById("gameHeroBG");
+    const heroThumb = document.getElementById("gameHeroThumb");
+    const heroTitle = document.getElementById("gameHeroTitle");
+    if (!preloaded || !(heroTitle && heroTitle.textContent.trim())) {
+        if (heroBg) heroBg.style.backgroundImage = `url('${thumb}')`;
+        if (heroThumb) {
+            heroThumb.src = thumb;
+            heroThumb.alt = `${game.title || "Game"} cover art`;
+        }
+        if (heroTitle) heroTitle.textContent = game.title || "Unknown";
+        renderHeroMeta(game);
+    }
     renderGameRating(game);
     renderHeroBadges(game);
 
     /* DESCRIPTION */
-    if (game.description) {
-        document.getElementById("gameDescription").innerHTML = game.description;
-        document.getElementById("game-description-section").hidden = false;
-    } else {
-        document.getElementById("game-description-section").hidden = true;
+    const descriptionSection = document.getElementById("game-description-section");
+    const descriptionEl = document.getElementById("gameDescription");
+    const descriptionFilled = descriptionEl && descriptionEl.textContent.trim();
+    if (!preloaded || !descriptionFilled) {
+        if (game.description && descriptionEl) {
+            descriptionEl.innerHTML = game.description;
+            if (descriptionSection) descriptionSection.hidden = false;
+        } else if (descriptionSection) {
+            descriptionSection.hidden = true;
+        }
     }
 
     renderCreditsPanel(game);
@@ -745,18 +786,22 @@ function renderGame(game) {
     const shots = Array.isArray(game.screenshots) ? game.screenshots : [];
     if (shots.length) {
         const gallery = document.getElementById("gameScreenshotsStrip");
-        gallery.innerHTML = "";
+        if (!preloaded || (gallery && !gallery.children.length)) {
+            gallery.innerHTML = "";
+        }
         CCG_SCREENSHOTS = shots;
-        shots.forEach((src, i) => {
-            const img = document.createElement("img");
-            img.src = src;
-            img.alt = `${game.title || "Game"} screenshot ${i + 1}`;
-            img.addEventListener("click", () => {
-                CCG_SCREENSHOT_INDEX = i;
-                openScreenshotModal(i);
+        if (!preloaded || (gallery && !gallery.children.length)) {
+            shots.forEach((src, i) => {
+                const img = document.createElement("img");
+                img.src = src;
+                img.alt = `${game.title || "Game"} screenshot ${i + 1}`;
+                img.addEventListener("click", () => {
+                    CCG_SCREENSHOT_INDEX = i;
+                    openScreenshotModal(i);
+                });
+                gallery.appendChild(img);
             });
-            gallery.appendChild(img);
-        });
+        }
         const screenshotsSection = document.querySelector(".game-screenshots");
         if (screenshotsSection) screenshotsSection.hidden = false;
     } else {
