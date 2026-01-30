@@ -1,3 +1,8 @@
+// SAFETY: prevent preload crash
+function isPreloadedSingleGame() {
+    return false;
+}
+
 /* ============================================================
    CCG LOAD SINGLE GAME — OMEGA STABLE + SG-E4.2
    ------------------------------------------------------------
