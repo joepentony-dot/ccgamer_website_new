@@ -48,7 +48,7 @@
 
     const SFX_STORAGE_KEY = "ccg_quiz_sfx_enabled";
     const SFX_SOURCES = {
-        correct: "../resources/css/audio/amiga_boot_chime.mp3",
+        correct: "../resources/css/audio/c64_tape_rewind.mp3",
         wrong: "../resources/css/audio/static_burst.mp3"
     };
     const sfx = {

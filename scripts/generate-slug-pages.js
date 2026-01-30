@@ -5,14 +5,14 @@ const path = require("path");
 
 const SITE_ROOT = "https://www.cheekycommodoregamer.co.uk";
 const REDIRECT_TARGET = "/games/game.html?id=";
-const DEFAULT_DESCRIPTION = "Classic retro game featured on Cheeky Commodore Gamer.";
-const DEFAULT_PUBLISHER = "Unknown Publisher";
-const DEFAULT_YEAR = "Unknown Year";
-const DEFAULT_IMAGE = `${SITE_ROOT}/resources/images/thumbnails/all/1942.jpg`;
 
 const repoRoot = path.resolve(__dirname, "..");
 const gamesJsonPath = path.join(repoRoot, "games", "games.json");
 const gamesDir = path.join(repoRoot, "games");
+
+/* ---------------------------------------
+   Utilities
+--------------------------------------- */
 
 function slugify(text) {
     return String(text || "")
@@ -23,7 +23,9 @@ function slugify(text) {
 }
 
 function stripHtml(text) {
-    return String(text || "").replace(/<[^>]*>/g, "").trim();
+    return String(text || "")
+        .replace(/<[^>]*>/g, "")
+        .trim();
 }
 
 function escapeHtml(text) {
@@ -36,23 +38,49 @@ function escapeHtml(text) {
 }
 
 function resolveImageUrl(game) {
-    const raw = game.thumbnail || game.thumb || game.cover || game.image || "";
+    const raw =
+        game.thumbnail ||
+        game.thumb ||
+        game.cover ||
+        game.image ||
+        "";
+
     if (!raw) return "";
+
     const cleaned = String(raw).trim();
+
     if (!cleaned) return "";
-    if (/^https?:\/\//i.test(cleaned)) return cleaned;
-    const relative = cleaned.startsWith("/") ? cleaned : `/${cleaned}`;
+
+    if (/^https?:\/\//i.test(cleaned)) {
+        return cleaned;
+    }
+
+    const relative = cleaned.startsWith("/")
+        ? cleaned
+        : `/${cleaned}`;
+
     return `${SITE_ROOT}${relative}`;
 }
 
-function validateGame(game, slug, title) {
+/* ---------------------------------------
+   Validation (Only Fatal Fields)
+--------------------------------------- */
+
+function validateGame(game, slug) {
     const issues = [];
+
     if (!slug) issues.push("missing slug");
-    if (!title) issues.push("missing title");
+    if (!game.title) issues.push("missing title");
+
     return issues;
 }
 
+/* ---------------------------------------
+   HTML Builder
+--------------------------------------- */
+
 function buildHtml(game, slug, description, imageUrl, publisher, year) {
+
     const title = `${stripHtml(game.title)} | Cheeky Commodore Gamer`;
     const canonicalUrl = `${SITE_ROOT}/games/${slug}/`;
     const redirectUrl = `${REDIRECT_TARGET}${encodeURIComponent(slug)}`;
@@ -63,6 +91,18 @@ function buildHtml(game, slug, description, imageUrl, publisher, year) {
     const safeYear = escapeHtml(year);
     const safeImageUrl = escapeHtml(imageUrl);
     const safeCanonical = escapeHtml(canonicalUrl);
+
+    const schemaData = {
+        "@context": "https://schema.org",
+        "@type": "VideoGame",
+        name: stripHtml(game.title),
+        description,
+        datePublished: String(year),
+        gamePlatform: String(game.system || game.platform || ""),
+        publisher,
+        image: imageUrl,
+        url: canonicalUrl
+    };
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -88,7 +128,13 @@ function buildHtml(game, slug, description, imageUrl, publisher, year) {
     <meta name="twitter:image" content="${safeImageUrl}" />
 
     <style>
-        html, body { background: #000; color: #000; opacity: 0; }
+        html, body {
+            background: #000;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            opacity: 0;
+        }
     </style>
 
     <script>
@@ -102,18 +148,9 @@ function buildHtml(game, slug, description, imageUrl, publisher, year) {
     </script>
 
     <script type="application/ld+json">
-    ${JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "VideoGame",
-        name: stripHtml(game.title),
-        description,
-        datePublished: String(year),
-        gamePlatform: String(game.system || game.platform || ""),
-        publisher,
-        image: imageUrl,
-        url: canonicalUrl
-    }, null, 4)}
+${JSON.stringify(schemaData, null, 4)}
     </script>
+
 </head>
 <body>
 </body>
@@ -121,8 +158,14 @@ function buildHtml(game, slug, description, imageUrl, publisher, year) {
 `;
 }
 
+/* ---------------------------------------
+   Main Runner
+--------------------------------------- */
+
 function main() {
+
     let games;
+
     try {
         const raw = fs.readFileSync(gamesJsonPath, "utf8");
         games = JSON.parse(raw);
@@ -139,47 +182,70 @@ function main() {
     let processed = 0;
     let created = 0;
     let skipped = 0;
+    let errors = 0;
     let warnings = 0;
 
     games.forEach((game) => {
+
         processed += 1;
 
-        const rawTitle = stripHtml(game.title || "");
-        const slug = game.slug ? slugify(game.slug) : slugify(rawTitle);
+        const slug = game.slug
+            ? slugify(game.slug)
+            : slugify(game.title);
 
-        const validationIssues = validateGame(game, slug, rawTitle);
-        if (validationIssues.length) {
+        const description = stripHtml(
+            game.description ||
+            game.desc ||
+            "Classic retro game featured on Cheeky Commodore Gamer."
+        );
+
+        const imageUrl =
+            resolveImageUrl(game) ||
+            "/resources/images/thumbnails/placeholder.jpg";
+
+        const publisher = stripHtml(
+            game.publisher ||
+            game.developer ||
+            "Unknown Publisher"
+        );
+
+        const year = stripHtml(
+            game.year ||
+            "Unknown Year"
+        );
+
+        /* Non-fatal warnings */
+
+        if (!game.publisher && !game.developer) {
+            console.warn(`[WARN] ${slug}: missing publisher`);
             warnings += 1;
-            console.warn(`[WARN] ${game.id || game.title || "unknown"}: ${validationIssues.join(", ")}`);
+        }
+
+        if (!game.year) {
+            console.warn(`[WARN] ${slug}: missing year`);
+            warnings += 1;
+        }
+
+        if (!game.description && !game.desc) {
+            console.warn(`[WARN] ${slug}: missing description`);
+            warnings += 1;
+        }
+
+        if (!resolveImageUrl(game)) {
+            console.warn(`[WARN] ${slug}: missing image`);
+            warnings += 1;
+        }
+
+        /* Fatal validation */
+
+        const issues = validateGame(game, slug);
+
+        if (issues.length) {
+            errors += 1;
+            console.error(
+                `[ERROR] ${game.id || game.title || "unknown"}: ${issues.join(", ")}`
+            );
             return;
-        }
-
-        let description = stripHtml(game.description || game.desc || "");
-        if (!description) {
-            description = DEFAULT_DESCRIPTION;
-            warnings += 1;
-            console.warn(`[WARN] ${slug}: missing description, using default.`);
-        }
-
-        let imageUrl = resolveImageUrl(game);
-        if (!imageUrl) {
-            imageUrl = DEFAULT_IMAGE;
-            warnings += 1;
-            console.warn(`[WARN] ${slug}: missing image, using default.`);
-        }
-
-        let publisher = stripHtml(game.publisher || game.developer || "");
-        if (!publisher) {
-            publisher = DEFAULT_PUBLISHER;
-            warnings += 1;
-            console.warn(`[WARN] ${slug}: missing publisher, using default.`);
-        }
-
-        let year = stripHtml(game.year || "");
-        if (!year) {
-            year = DEFAULT_YEAR;
-            warnings += 1;
-            console.warn(`[WARN] ${slug}: missing year, using default.`);
         }
 
         const outputDir = path.join(gamesDir, slug);
@@ -187,14 +253,25 @@ function main() {
 
         if (fs.existsSync(outputPath)) {
             skipped += 1;
-            console.warn(`[SKIP] ${slug}: ${outputPath} already exists.`);
+            console.warn(`[SKIP] ${slug}: already exists`);
             return;
         }
 
         fs.mkdirSync(outputDir, { recursive: true });
-        const html = buildHtml(game, slug, description, imageUrl, publisher, year);
+
+        const html = buildHtml(
+            game,
+            slug,
+            description,
+            imageUrl,
+            publisher,
+            year
+        );
+
         fs.writeFileSync(outputPath, html, "utf8");
+
         created += 1;
+
         console.log(`[CREATE] ${slug}: ${outputPath}`);
     });
 
@@ -203,6 +280,11 @@ function main() {
     console.log(`Created: ${created}`);
     console.log(`Skipped: ${skipped}`);
     console.log(`Warnings: ${warnings}`);
+    console.log(`Errors: ${errors}`);
 }
+
+/* ---------------------------------------
+   Run
+--------------------------------------- */
 
 main();
