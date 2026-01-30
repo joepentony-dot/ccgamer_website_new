@@ -1073,6 +1073,49 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     font-size: 1.02rem;
 }
 
+.game-not-found {
+    margin: 18px auto;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.game-not-found__panel {
+    padding: 28px 24px;
+    text-align: center;
+}
+
+.game-not-found__kicker {
+    margin: 0 0 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ccg-soft);
+    font-size: 0.85rem;
+}
+
+.game-not-found__title {
+    margin: 0 0 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.game-not-found__copy {
+    margin: 0;
+    color: var(--ccg-bright-2);
+}
+
+.game-not-found__slug {
+    color: var(--ccg-bright);
+    font-weight: 600;
+}
+
+.game-not-found__actions {
+    margin-top: 16px;
+    display: flex;
+    justify-content: center;
+}
+
 /* ------------------------------------------------------------
    Media panel
    ------------------------------------------------------------ */
