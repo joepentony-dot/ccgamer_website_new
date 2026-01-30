@@ -12,6 +12,8 @@
     const facebookLink = root.querySelector("[data-ccg-share-facebook]");
     const copyBtn = root.querySelector("[data-ccg-share-copy]");
 
+    const CANONICAL_DOMAIN = "https://www.cheekycommodoregamer.co.uk";
+
     function getGameTitle() {
         const heroTitle = document.getElementById("gameHeroTitle");
         const heroText = heroTitle ? heroTitle.textContent.trim() : "";
@@ -27,57 +29,90 @@
         return docTitle.trim();
     }
 
-    function getSlugFromPath() {
-        let pathname = window.location.pathname || "";
-        pathname = pathname.replace(/\/index\.html$/i, "/");
-        pathname = pathname.replace(/\.html$/i, "");
-        if (!pathname.startsWith("/games/")) return "";
+    function getSlugFromPathname(pathname) {
+        let cleanedPath = String(pathname || "");
+        cleanedPath = cleanedPath.replace(/\/index\.html$/i, "/");
+        cleanedPath = cleanedPath.replace(/\.html$/i, "");
+        if (!cleanedPath.startsWith("/games/")) return "";
 
-        let slug = pathname.slice("/games/".length);
+        let slug = cleanedPath.slice("/games/".length);
         slug = slug.replace(/\/+$/g, "");
         if (!slug || slug === "game") return "";
         return slug;
     }
 
-    function buildShareUrlFromSlug(slug) {
+    function normalizeSlug(rawValue) {
+        let slug = String(rawValue || "").trim();
         if (!slug) return "";
-        if (typeof window.ccgBuildGameUrl === "function") {
-            const prettyPath = window.ccgBuildGameUrl("", slug);
-            if (prettyPath) {
-                return new URL(prettyPath, window.location.origin).toString();
-            }
+
+        slug = slug.replace(/^[\s;,]+/g, "");
+        slug = slug.replace(/^[^a-z0-9]+/i, "");
+
+        let parsedUrl = null;
+        try {
+            parsedUrl = new URL(slug, window.location.origin);
+        } catch (error) {
+            parsedUrl = null;
         }
-        return new URL(`/games/${slug}/`, window.location.origin).toString();
+
+        if (parsedUrl) {
+            const slugFromPath = getSlugFromPathname(parsedUrl.pathname);
+            if (slugFromPath) return slugFromPath;
+
+            if (parsedUrl.pathname && parsedUrl.pathname.endsWith("game.html")) {
+                const slugParam = (parsedUrl.searchParams.get("slug") || "").trim();
+                if (slugParam) return slugParam;
+
+                const idParam = (parsedUrl.searchParams.get("id") || "").trim();
+                if (idParam && typeof window.ccgGameSlugFromId === "function") {
+                    return window.ccgGameSlugFromId(idParam) || "";
+                }
+            }
+
+            slug = parsedUrl.pathname || slug;
+        }
+
+        slug = slug.replace(/^games\//i, "");
+        slug = slug.replace(/^\/games\//i, "");
+        slug = slug.replace(/\.html$/i, "");
+        slug = slug.replace(/\/+$/g, "");
+        slug = slug.replace(/^[^a-z0-9]+/i, "");
+        return slug;
+    }
+
+    function getCanonicalGameUrl(slug) {
+        const safeSlug = normalizeSlug(slug);
+        if (!safeSlug) return "";
+        return `${CANONICAL_DOMAIN}/games/${safeSlug}/`;
     }
 
     function resolveShareUrl() {
         const canonicalLink = document.querySelector("link[rel='canonical']");
         const canonicalHref = canonicalLink ? canonicalLink.getAttribute("href") : "";
-        const canonicalUrl = canonicalHref
-            ? new URL(canonicalHref, window.location.origin).toString()
-            : "";
+        let slug = canonicalHref ? normalizeSlug(canonicalHref) : "";
 
-        if (canonicalUrl && !canonicalUrl.includes("game.html") && !canonicalUrl.includes("?")) {
-            return canonicalUrl;
+        if (!slug) {
+            const params = new URLSearchParams(window.location.search);
+            slug = normalizeSlug(params.get("slug"));
         }
 
-        const params = new URLSearchParams(window.location.search);
-        let slug = (params.get("slug") || "").trim();
         if (!slug) {
-            slug = getSlugFromPath();
+            slug = getSlugFromPathname(window.location.pathname || "");
         }
+
         if (!slug) {
-            const id = (params.get("id") || "").trim();
+            const params = new URLSearchParams(window.location.search);
+            const id = normalizeSlug(params.get("id"));
             if (id && typeof window.ccgGameSlugFromId === "function") {
-                slug = window.ccgGameSlugFromId(id) || "";
+                slug = normalizeSlug(window.ccgGameSlugFromId(id));
             }
         }
 
-        const prettyUrl = buildShareUrlFromSlug(slug);
-        if (prettyUrl) return prettyUrl;
-        if (canonicalUrl) return canonicalUrl;
+        if (!slug) {
+            slug = normalizeSlug(window.location.href);
+        }
 
-        return window.location.href;
+        return getCanonicalGameUrl(slug) || window.location.href;
     }
 
     const shareUrl = resolveShareUrl();
