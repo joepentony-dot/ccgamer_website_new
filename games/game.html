@@ -222,7 +222,14 @@
                 </div>
 
                 <div class="game-hero__content">
-                    <h1 id="gameHeroTitle" class="game-hero__title"></h1>
+                    <div class="game-hero__title-row ccg-share" data-ccg-share>
+                        <h1 id="gameHeroTitle" class="game-hero__title"></h1>
+                        <button class="ccg-btn ccg-btn--share" type="button" data-ccg-share-btn aria-label="Share this game">
+                            <span class="ccg-btn__icon" aria-hidden="true">🔗</span>
+                            <span class="ccg-btn__label">Share</span>
+                        </button>
+                        <span class="game-share__status" data-ccg-share-status role="status" aria-live="polite"></span>
+                    </div>
 
                     <div class="game-hero__meta">
                         <span id="gameMetaYear" class="game-meta__item"></span>
@@ -252,16 +259,7 @@
             <div class="game-facts__grid" data-game-facts-grid></div>
         </details>
 
-        <section class="ccg-share" data-ccg-share>
-            <button class="ccg-share-btn" type="button" data-ccg-share-btn>Share this game</button>
-            <div class="ccg-share-fallback" data-ccg-share-fallback aria-hidden="true">
-                <a data-ccg-share-email target="_blank" rel="noopener">Email</a>
-                <a data-ccg-share-whatsapp target="_blank" rel="noopener">WhatsApp</a>
-                <a data-ccg-share-x target="_blank" rel="noopener">X</a>
-                <a data-ccg-share-facebook target="_blank" rel="noopener">Facebook</a>
-                <button type="button" data-ccg-share-copy>Copy link</button>
-            </div>
-        </section>
+        <div class="game-media-anchor" data-game-media-anchor aria-hidden="true"></div>
 
         <!-- DESCRIPTION -->
         <section id="game-description-section" class="game-section" hidden>
@@ -331,6 +329,34 @@
         </div>
 
     </main>
+
+    <div class="ccg-omega-divider" aria-hidden="true">
+        <span class="ccg-omega-core"></span>
+    </div>
+
+    <footer class="ccg-footer ccg-footer--game">
+        <div class="ccg-footer-inner ccg-footer-inner--game">
+            <div class="ccg-footer__col ccg-footer__col--left">
+                <p class="ccg-footer__text">© <span data-ccg-year></span> Cheeky Commodore Gamer.</p>
+                <p class="ccg-footer__text ccg-footer__tagline">Stay a while, stay forever!</p>
+            </div>
+            <div class="ccg-footer__col ccg-footer__col--center">
+                <a class="ccg-btn ccg-btn--primary ccg-footer__btn ccg-footer__btn--subscribe" href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener" aria-label="Subscribe to Cheeky Commodore Gamer on YouTube">
+                    <span class="ccg-footer__btn-icon" aria-hidden="true">▶</span>
+                    <span class="ccg-footer__btn-label">Subscribe</span>
+                    <span class="ccg-footer__btn-subtext">On YouTube</span>
+                </a>
+                <span class="ccg-footer__note">Cheeky Commodore Gamer Channel</span>
+            </div>
+            <div class="ccg-footer__col ccg-footer__col--right">
+                <a class="ccg-btn ccg-btn--secondary ccg-footer__btn ccg-footer__btn--support" href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" rel="noopener" aria-label="Support Cheeky Commodore Gamer with a donation">
+                    <span class="ccg-footer__btn-icon" aria-hidden="true">☕</span>
+                    <span class="ccg-footer__btn-label">Buy Me A Beer</span>
+                </a>
+                <span class="ccg-footer__note">Support the archive</span>
+            </div>
+        </div>
+    </footer>
 </div>
 
 <!-- MANUAL MODAL -->

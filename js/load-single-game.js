@@ -975,8 +975,8 @@ function ensureMediaPanel() {
             <div class="game-media__grid"></div>
         `;
 
-        const shareSection = document.querySelector(".ccg-share");
-        const insertTarget = shareSection || main;
+        const mediaAnchor = document.querySelector("[data-game-media-anchor]");
+        const insertTarget = mediaAnchor || main;
         if (insertTarget && insertTarget.parentNode) {
             insertTarget.parentNode.insertBefore(mediaSection, insertTarget.nextSibling);
         } else {
