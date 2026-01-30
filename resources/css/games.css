@@ -1869,8 +1869,10 @@ body[data-ccg-mode="amiga"] {
 }
 
 .related-carousel__nav {
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     border-radius: 50%;
     border: 1px solid var(--ccg-border);
     background: rgba(0,0,0,0.35);
@@ -1881,8 +1883,10 @@ body[data-ccg-mode="amiga"] {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    z-index: 2;
+    z-index: 4;
     cursor: pointer;
+    pointer-events: auto;
+    touch-action: manipulation;
     transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
 }
 
