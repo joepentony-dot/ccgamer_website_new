@@ -11,30 +11,53 @@
    DEFAULT (C64 MODE)
 ============================================================ */
 
+:root,
+html[data-ccg-mode="c64"] {
+    --ccg-primary: #00f0ff;
+    --ccg-secondary: #0094ff;
+    --ccg-accent: #33ffff;
+    --ccg-glow: rgba(0,240,255,0.8);
+    --ccg-bg-tint: rgba(0,40,80,0.6);
+
+    --ccg-panel-bg: rgba(5,15,30,0.85);
+    --ccg-btn-bg: linear-gradient(145deg,#003a66,#0066aa);
+}
+
+html[data-ccg-mode="amiga"] {
+    --ccg-primary: #ff3eb5;
+    --ccg-secondary: #c94bff;
+    --ccg-accent: #ff9bdc;
+    --ccg-glow: rgba(255,62,181,0.75);
+    --ccg-bg-tint: rgba(35,35,40,0.75);
+
+    --ccg-panel-bg: rgba(30,30,35,0.9);
+    --ccg-btn-bg: linear-gradient(145deg,#444,#666);
+}
+
 body[data-ccg-mode="c64"] {
-    --accent-rgb: 0, 170, 255;
-    --accent-main: var(--ccg-color-blue);
-    --accent-soft: var(--ccg-color-cyan);
-    --ccg-header-glow: rgba(0,170,255,0.5);
-    --ccg-header-glow-strong: rgba(0,170,255,0.7);
-    --ccg-header-halo: rgba(0,170,255,0.22);
-    --ccg-header-sheen: rgba(69,216,255,0.22);
-    --ccg-header-edge: rgba(0,170,255,0.32);
+    --accent-rgb: 0, 240, 255;
+    --accent-main: #00f0ff;
+    --accent-soft: #33ffff;
+    --ccg-header-glow: rgba(0,240,255,0.5);
+    --ccg-header-glow-strong: rgba(0,240,255,0.7);
+    --ccg-header-halo: rgba(0,240,255,0.22);
+    --ccg-header-sheen: rgba(69,216,255,0.28);
+    --ccg-header-edge: rgba(0,240,255,0.32);
 
     --ccg-neon-main:
-        0 0 6px rgba(0,170,255,0.45),
-        0 0 14px rgba(0,170,255,0.25);
+        0 0 6px rgba(0,240,255,0.45),
+        0 0 14px rgba(0,240,255,0.25);
 
     --ccg-neon-strong:
-        0 0 10px rgba(0,170,255,0.65),
-        0 0 22px rgba(0,170,255,0.4);
+        0 0 10px rgba(0,240,255,0.65),
+        0 0 22px rgba(0,240,255,0.4);
 
-    --ccg-nav-panel: linear-gradient(135deg, rgba(8, 14, 28, 0.92), rgba(4, 8, 18, 0.96));
-    --ccg-nav-panel-border: rgba(105, 196, 255, 0.24);
+    --ccg-nav-panel: linear-gradient(135deg, rgba(6, 14, 30, 0.92), rgba(2, 8, 18, 0.96));
+    --ccg-nav-panel-border: rgba(0, 240, 255, 0.24);
 
     --ccg-ease-ui: cubic-bezier(.25,.8,.35,1);
 
-    --ccg-divider-rgb: 0, 214, 255;
+    --ccg-divider-rgb: 0, 240, 255;
     --ccg-divider-secondary-rgb: 196, 255, 255;
     --ccg-divider-halo-opacity: 0.55;
 }
@@ -44,14 +67,14 @@ body[data-ccg-mode="c64"] {
 ============================================================ */
 
 body[data-ccg-mode="amiga"] {
-    --accent-rgb: 92, 127, 163;
-    --accent-main: #5c7fa3;
-    --accent-soft: #8f9dad;
-    --ccg-header-glow: rgba(92,127,163,0.38);
-    --ccg-header-glow-strong: rgba(92,127,163,0.55);
-    --ccg-header-halo: rgba(92,127,163,0.18);
-    --ccg-header-sheen: rgba(148,170,200,0.18);
-    --ccg-header-edge: rgba(148,170,200,0.28);
+    --accent-rgb: 255, 62, 181;
+    --accent-main: #ff3eb5;
+    --accent-soft: #ff9bdc;
+    --ccg-header-glow: rgba(255,62,181,0.38);
+    --ccg-header-glow-strong: rgba(255,62,181,0.55);
+    --ccg-header-halo: rgba(255,62,181,0.18);
+    --ccg-header-sheen: rgba(255,155,220,0.18);
+    --ccg-header-edge: rgba(255,155,220,0.28);
 
     --amiga-surface: linear-gradient(160deg, rgba(28, 34, 48, 0.96), rgba(10, 12, 20, 0.98));
     --amiga-surface-strong: linear-gradient(165deg, rgba(36, 42, 58, 0.98), rgba(12, 14, 22, 0.99));
@@ -70,20 +93,20 @@ body[data-ccg-mode="amiga"] {
     --panel-shadow: var(--amiga-shadow);
 
     --ccg-neon-main:
-        0 0 4px rgba(92,127,163,0.2),
-        0 0 8px rgba(92,127,163,0.12);
+        0 0 4px rgba(255,62,181,0.2),
+        0 0 8px rgba(255,62,181,0.12);
 
     --ccg-neon-strong:
-        0 0 6px rgba(92,127,163,0.28),
-        0 0 12px rgba(92,127,163,0.18);
+        0 0 6px rgba(255,62,181,0.28),
+        0 0 12px rgba(255,62,181,0.18);
 
-    --ccg-nav-panel: linear-gradient(150deg, rgba(20, 26, 38, 0.95), rgba(10, 14, 22, 0.97));
-    --ccg-nav-panel-border: rgba(148, 170, 200, 0.22);
+    --ccg-nav-panel: linear-gradient(150deg, rgba(28, 30, 40, 0.95), rgba(12, 14, 20, 0.97));
+    --ccg-nav-panel-border: rgba(255, 155, 220, 0.22);
 
     --ccg-ease-ui: cubic-bezier(.22,.9,.32,1);
 
-    --ccg-divider-rgb: 255, 86, 199;
-    --ccg-divider-secondary-rgb: 184, 108, 255;
+    --ccg-divider-rgb: 255, 62, 181;
+    --ccg-divider-secondary-rgb: 201, 75, 255;
     --ccg-divider-halo-opacity: 0.5;
 }
 
@@ -439,4 +462,171 @@ body[data-ccg-mode="amiga"] .ccg-mode-toggle__thumb::after {
     transform: translateY(-50%);
     background: radial-gradient(circle at 35% 35%, #dbe7ff, #6c86b8 70%);
     box-shadow: none;
+}
+
+/* ============================================================
+   MODE BACKGROUND TINT LAYER
+============================================================ */
+
+html[data-ccg-mode] .ccg-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--ccg-bg-tint);
+    pointer-events: none;
+    transition: background .4s ease;
+}
+
+/* ============================================================
+   MODE BUTTON SYSTEM
+============================================================ */
+
+html[data-ccg-mode] button,
+html[data-ccg-mode] .game-pill,
+html[data-ccg-mode] .ccg-nav__link,
+html[data-ccg-mode] .admin-btn,
+html[data-ccg-mode] input[type="button"],
+html[data-ccg-mode] input[type="submit"] {
+    background: var(--ccg-btn-bg);
+    border: 1px solid var(--ccg-primary);
+    color: #fff;
+    box-shadow:
+        0 0 6px var(--ccg-glow),
+        inset 0 0 4px var(--ccg-glow);
+    transition: all .2s ease;
+}
+
+html[data-ccg-mode] button:hover,
+html[data-ccg-mode] .game-pill:hover,
+html[data-ccg-mode] .ccg-nav__link:hover,
+html[data-ccg-mode] .admin-btn:hover,
+html[data-ccg-mode] input[type="button"]:hover,
+html[data-ccg-mode] input[type="submit"]:hover {
+    box-shadow:
+        0 0 12px var(--ccg-glow),
+        inset 0 0 6px var(--ccg-glow);
+}
+
+html[data-ccg-mode] button:active,
+html[data-ccg-mode] .game-pill:active,
+html[data-ccg-mode] .ccg-nav__link:active,
+html[data-ccg-mode] .admin-btn:active,
+html[data-ccg-mode] input[type="button"]:active,
+html[data-ccg-mode] input[type="submit"]:active {
+    transform: scale(.96);
+}
+
+/* ============================================================
+   MODE PANELS, CARDS, SECTIONS
+============================================================ */
+
+html[data-ccg-mode] .ccg-card,
+html[data-ccg-mode] .game-section,
+html[data-ccg-mode] .admin-panel,
+html[data-ccg-mode] .related-carousel,
+html[data-ccg-mode] .ccg-modal-content {
+    background: var(--ccg-panel-bg);
+    border: 1px solid var(--ccg-primary);
+    box-shadow:
+        0 0 10px var(--ccg-glow),
+        inset 0 0 6px var(--ccg-glow);
+}
+
+/* ============================================================
+   MODE NAV IDENTITY
+============================================================ */
+
+html[data-ccg-mode] .ccg-nav__link {
+    position: relative;
+}
+
+html[data-ccg-mode] .ccg-nav__link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 0;
+    height: 2px;
+    background: var(--ccg-primary);
+    box-shadow: 0 0 6px var(--ccg-glow);
+    transition: width .25s ease;
+}
+
+html[data-ccg-mode] .ccg-nav__link:hover::after {
+    width: 100%;
+}
+
+/* ============================================================
+   MODE TRANSITION FLASH
+============================================================ */
+
+.ccg-mode-flash {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 99999;
+}
+
+.c64-flash {
+    background:
+        linear-gradient(120deg,
+            transparent 40%,
+            rgba(0,240,255,.9),
+            transparent 60%);
+    animation: ccg-flash .35s ease;
+}
+
+.amiga-flash {
+    background:
+        linear-gradient(120deg,
+            transparent 40%,
+            rgba(255,62,181,.9),
+            transparent 60%);
+    animation: ccg-flash .35s ease;
+}
+
+@keyframes ccg-flash {
+    0% { opacity: 0; }
+    30% { opacity: .9; }
+    100% { opacity: 0; }
+}
+
+/* ============================================================
+   MODE MICRO ANIMATIONS
+============================================================ */
+
+html[data-ccg-mode="c64"] .game-hero__title,
+html[data-ccg-mode="c64"] .ccg-card {
+    animation: ccg-scan 6s linear infinite;
+}
+
+@keyframes ccg-scan {
+    0% { filter: brightness(1); }
+    50% { filter: brightness(1.1); }
+    100% { filter: brightness(1); }
+}
+
+html[data-ccg-mode="amiga"] .game-hero__title,
+html[data-ccg-mode="amiga"] .ccg-card {
+    animation: ccg-pulse 4s ease-in-out infinite;
+}
+
+@keyframes ccg-pulse {
+    0% { box-shadow: 0 0 6px var(--ccg-glow); }
+    50% { box-shadow: 0 0 14px var(--ccg-glow); }
+    100% { box-shadow: 0 0 6px var(--ccg-glow); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html[data-ccg-mode] .game-hero__title,
+    html[data-ccg-mode] .ccg-card {
+        animation: none;
+    }
+
+    .ccg-mode-flash,
+    .c64-flash,
+    .amiga-flash {
+        animation: none;
+    }
 }
