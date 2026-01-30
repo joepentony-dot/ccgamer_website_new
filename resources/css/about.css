@@ -7,6 +7,25 @@
     gap: var(--ccg-section-gap);
 }
 
+.ccg-page--about .ccg-main,
+.ccg-page--about .ccg-info-hero,
+.ccg-page--about .about-panel,
+.ccg-page--about .about-panel__body,
+.ccg-page--about .about-copy,
+.ccg-page--about .about-list,
+.ccg-page--about .about-meta,
+.ccg-page--about .about-note {
+    text-align: left;
+}
+
+.about-hero h1 {
+    text-align: center;
+}
+
+.about-hero__actions {
+    justify-content: flex-start;
+}
+
 .about-panel {
     display: grid;
     gap: 1.2rem;
@@ -15,7 +34,7 @@
 .about-panel__header {
     display: grid;
     gap: 0.5rem;
-    text-align: center;
+    text-align: left;
 }
 
 .about-kicker {
@@ -40,9 +59,35 @@
     min-width: 180px;
 }
 
+.about-cta-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: flex-start;
+}
+
+.about-cta {
+    gap: 0.55rem;
+}
+
+.about-quick-links .ccg-info-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
 @media (max-width: 720px) {
     .about-shell {
         gap: var(--ccg-section-gap-mobile);
+    }
+
+    .ccg-page--about .ccg-btn {
+        width: 100%;
+        min-height: 48px;
+    }
+
+    .about-hero__actions {
+        width: 100%;
     }
 
     .about-actions .ccg-btn {
