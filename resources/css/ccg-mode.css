@@ -18,6 +18,12 @@ html[data-ccg-mode="c64"] {
     --ccg-accent: #33ffff;
     --ccg-glow: rgba(0,240,255,0.8);
     --ccg-bg-tint: rgba(0,40,80,0.6);
+    --ccg-success: #67ff8f;
+    --ccg-success-rgb: 103, 255, 143;
+    --ccg-danger: #ff77d6;
+    --ccg-danger-rgb: 255, 119, 214;
+    --ccg-warning: #ffc65f;
+    --ccg-warning-rgb: 255, 198, 95;
 
     --ccg-panel-bg: rgba(5,15,30,0.85);
     --ccg-btn-bg: linear-gradient(145deg,#003a66,#0066aa);
@@ -29,6 +35,12 @@ html[data-ccg-mode="amiga"] {
     --ccg-accent: #ff9bdc;
     --ccg-glow: rgba(255,62,181,0.75);
     --ccg-bg-tint: rgba(35,35,40,0.75);
+    --ccg-success: #a8ffd6;
+    --ccg-success-rgb: 168, 255, 214;
+    --ccg-danger: #ff9bdc;
+    --ccg-danger-rgb: 255, 155, 220;
+    --ccg-warning: #ffcf8f;
+    --ccg-warning-rgb: 255, 207, 143;
 
     --ccg-panel-bg: rgba(30,30,35,0.9);
     --ccg-btn-bg: linear-gradient(145deg,#444,#666);
@@ -568,22 +580,20 @@ html[data-ccg-mode] .ccg-nav__link:hover::after {
     z-index: 99999;
 }
 
-.c64-flash {
-    background:
-        linear-gradient(120deg,
-            transparent 40%,
-            rgba(0,240,255,.9),
-            transparent 60%);
-    animation: ccg-flash .35s ease;
-}
-
+.c64-flash,
 .amiga-flash {
     background:
         linear-gradient(120deg,
             transparent 40%,
-            rgba(255,62,181,.9),
+            rgba(var(--accent-rgb), 0.9),
             transparent 60%);
     animation: ccg-flash .35s ease;
+}
+
+.ccg-mode-flash--lite {
+    background: radial-gradient(circle at 50% 20%, rgba(var(--accent-rgb), 0.35), transparent 70%);
+    opacity: 0.45;
+    transition: opacity 0.2s ease;
 }
 
 @keyframes ccg-flash {
@@ -626,7 +636,9 @@ html[data-ccg-mode="amiga"] .ccg-card {
 
     .ccg-mode-flash,
     .c64-flash,
-    .amiga-flash {
+    .amiga-flash,
+    .ccg-mode-flash--lite {
         animation: none;
+        transition: none;
     }
 }

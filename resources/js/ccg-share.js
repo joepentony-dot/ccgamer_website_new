@@ -15,6 +15,19 @@
     const CANONICAL_DOMAIN = "https://www.cheekycommodoregamer.co.uk";
     const GAME_PATH_PREFIX = "/games/";
 
+    function applyShareButtonClasses() {
+        if (shareBtn) {
+            shareBtn.classList.add("ccg-btn", "ccg-btn--secondary");
+        }
+        [emailLink, whatsappLink, xLink, facebookLink].forEach((link) => {
+            if (!link) return;
+            link.classList.add("ccg-btn", "ccg-btn--ghost");
+        });
+        if (copyBtn) {
+            copyBtn.classList.add("ccg-btn", "ccg-btn--ghost");
+        }
+    }
+
     function getGameTitle() {
         const heroTitle = document.getElementById("gameHeroTitle");
         const heroText = heroTitle ? heroTitle.textContent.trim() : "";
@@ -236,4 +249,6 @@
             });
         }
     }
+
+    applyShareButtonClasses();
 })();
