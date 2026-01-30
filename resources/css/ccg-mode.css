@@ -280,6 +280,8 @@ body[data-ccg-mode="amiga"] .ccg-feature-card {
     gap: 8px;
     overflow: hidden;
     cursor: pointer;
+    pointer-events: auto;
+    touch-action: manipulation;
 }
 
 .ccg-mode-toggle__pill {
@@ -640,5 +642,16 @@ html[data-ccg-mode="amiga"] .ccg-card {
     .ccg-mode-flash--lite {
         animation: none;
         transition: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .ccg-mode-toggle {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    .ccg-mode-toggle__pill {
+        padding: 8px 10px;
     }
 }

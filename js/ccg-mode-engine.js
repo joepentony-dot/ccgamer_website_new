@@ -9,7 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const toggle = document.querySelector("[data-ccg-mode-toggle]");
     const hero = document.querySelector(".home-hero");
     let lastMode = root.getAttribute("data-ccg-mode");
-    let ignoreClick = false;
+    let lastTouchToggle = 0;
+    const supportsPointer = "PointerEvent" in window;
 
     if (!toggle) {
         console.warn("ccg-mode-engine.js: Mode toggle button not found.");
@@ -72,20 +73,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function handleToggle(event) {
-        if (event.type === "click" && ignoreClick) return;
-        if (event.type === "pointerdown" || event.type === "touchstart") {
-            ignoreClick = true;
-            window.setTimeout(() => {
-                ignoreClick = false;
-            }, 400);
+        const now = Date.now();
+        if (event.type === "pointerdown") {
+            if (event.pointerType && !["touch", "pen"].includes(event.pointerType)) return;
+            lastTouchToggle = now;
         }
+
+        if (event.type === "touchstart") {
+            lastTouchToggle = now;
+        }
+
+        if (event.type === "click" && now - lastTouchToggle < 500) return;
         const current = root.getAttribute("data-ccg-mode") === "c64" ? "amiga" : "c64";
         applyMode(current);
     }
 
     toggle.addEventListener("click", handleToggle);
-    toggle.addEventListener("pointerdown", handleToggle, { passive: true });
-    toggle.addEventListener("touchstart", handleToggle, { passive: true });
+    if (supportsPointer) {
+        toggle.addEventListener("pointerdown", handleToggle, { passive: true });
+    } else {
+        toggle.addEventListener("touchstart", handleToggle, { passive: true });
+    }
 
     const saved = localStorage.getItem("ccg-mode");
     applyMode(saved || root.getAttribute("data-ccg-mode") || "c64");
