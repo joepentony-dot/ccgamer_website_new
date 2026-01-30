@@ -5,10 +5,6 @@ const path = require("path");
 
 const SITE_ROOT = "https://www.cheekycommodoregamer.co.uk";
 const REDIRECT_TARGET = "/games/game.html?id=";
-const DEFAULT_DESCRIPTION = "Classic retro game featured on Cheeky Commodore Gamer.";
-const DEFAULT_PUBLISHER = "Unknown Publisher";
-const DEFAULT_YEAR = "Unknown Year";
-const DEFAULT_IMAGE = `${SITE_ROOT}/resources/images/thumbnails/all/1942.jpg`;
 
 const repoRoot = path.resolve(__dirname, "..");
 const gamesJsonPath = path.join(repoRoot, "games", "games.json");
@@ -45,10 +41,14 @@ function resolveImageUrl(game) {
     return `${SITE_ROOT}${relative}`;
 }
 
-function validateGame(game, slug, title) {
+function validateGame(game, slug, imageUrl, description, publisher, year) {
     const issues = [];
     if (!slug) issues.push("missing slug");
-    if (!title) issues.push("missing title");
+    if (!game.title) issues.push("missing title");
+    if (!description) issues.push("missing description");
+    if (!imageUrl) issues.push("missing image");
+    if (!publisher) issues.push("missing publisher");
+    if (!year) issues.push("missing year");
     return issues;
 }
 
@@ -139,47 +139,22 @@ function main() {
     let processed = 0;
     let created = 0;
     let skipped = 0;
-    let warnings = 0;
+    let errors = 0;
 
     games.forEach((game) => {
         processed += 1;
 
-        const rawTitle = stripHtml(game.title || "");
-        const slug = game.slug ? slugify(game.slug) : slugify(rawTitle);
+        const slug = game.slug ? slugify(game.slug) : slugify(game.title);
+        const description = stripHtml(game.description || game.desc || "");
+        const imageUrl = resolveImageUrl(game);
+        const publisher = stripHtml(game.publisher || game.developer || "");
+        const year = stripHtml(game.year || "");
 
-        const validationIssues = validateGame(game, slug, rawTitle);
-        if (validationIssues.length) {
-            warnings += 1;
-            console.warn(`[WARN] ${game.id || game.title || "unknown"}: ${validationIssues.join(", ")}`);
+        const issues = validateGame(game, slug, imageUrl, description, publisher, year);
+        if (issues.length) {
+            errors += 1;
+            console.error(`[ERROR] ${game.id || game.title || "unknown"}: ${issues.join(", ")}`);
             return;
-        }
-
-        let description = stripHtml(game.description || game.desc || "");
-        if (!description) {
-            description = DEFAULT_DESCRIPTION;
-            warnings += 1;
-            console.warn(`[WARN] ${slug}: missing description, using default.`);
-        }
-
-        let imageUrl = resolveImageUrl(game);
-        if (!imageUrl) {
-            imageUrl = DEFAULT_IMAGE;
-            warnings += 1;
-            console.warn(`[WARN] ${slug}: missing image, using default.`);
-        }
-
-        let publisher = stripHtml(game.publisher || game.developer || "");
-        if (!publisher) {
-            publisher = DEFAULT_PUBLISHER;
-            warnings += 1;
-            console.warn(`[WARN] ${slug}: missing publisher, using default.`);
-        }
-
-        let year = stripHtml(game.year || "");
-        if (!year) {
-            year = DEFAULT_YEAR;
-            warnings += 1;
-            console.warn(`[WARN] ${slug}: missing year, using default.`);
         }
 
         const outputDir = path.join(gamesDir, slug);
@@ -202,7 +177,7 @@ function main() {
     console.log(`Processed: ${processed}`);
     console.log(`Created: ${created}`);
     console.log(`Skipped: ${skipped}`);
-    console.log(`Warnings: ${warnings}`);
+    console.log(`Errors: ${errors}`);
 }
 
 main();

@@ -1,3 +1,8 @@
+// SAFETY: prevent preload crash
+function isPreloadedSingleGame() {
+    return false;
+}
+
 /* ============================================================
    CCG LOAD SINGLE GAME — OMEGA STABLE + SG-E4.2
    ------------------------------------------------------------
@@ -23,7 +28,22 @@ const CCG_RENDER_GATE = {
     locked: false,
 };
 
+function hasPrefilledSingleGameContent() {
+    const container = document.querySelector(".ccg-page--single-game");
+    if (!container) return false;
+    if (container.getAttribute("data-ccg-prefilled") === "true") return true;
+    const heroTitle = document.getElementById("gameHeroTitle");
+    return !!(heroTitle && heroTitle.textContent.trim());
+}
+
 function lockSingleGameRender() {
+    if (hasPrefilledSingleGameContent()) {
+        if (document.body) {
+            document.body.classList.remove("ccg-loading-single");
+            document.body.classList.add("ccg-single-ready");
+        }
+        return;
+    }
     if (CCG_RENDER_GATE.locked) return;
     CCG_RENDER_GATE.container = document.querySelector(".ccg-page--single-game");
     if (CCG_RENDER_GATE.container) {
@@ -630,6 +650,8 @@ function ensureDirectNavLinks() {
 ============================================================ */
 
 function renderGame(game) {
+
+    const preloaded = isPreloadedSingleGame();
     updatePrettyUrlAfterResolve(game);
     updateMeta(game);
 
@@ -638,25 +660,29 @@ function renderGame(game) {
     const heroBg = document.getElementById("gameHeroBG");
     const heroThumb = document.getElementById("gameHeroThumb");
     const heroTitle = document.getElementById("gameHeroTitle");
-    if (heroBg) heroBg.style.backgroundImage = `url('${thumb}')`;
-    if (heroThumb) {
-        heroThumb.src = thumb;
-        heroThumb.alt = `${game.title || "Game"} cover art`;
+    if (!preloaded || !(heroTitle && heroTitle.textContent.trim())) {
+        if (heroBg) heroBg.style.backgroundImage = `url('${thumb}')`;
+        if (heroThumb) {
+            heroThumb.src = thumb;
+            heroThumb.alt = `${game.title || "Game"} cover art`;
+        }
+        if (heroTitle) heroTitle.textContent = game.title || "Unknown";
+        renderHeroMeta(game);
     }
-    if (heroTitle) heroTitle.textContent = game.title || "Unknown";
-    renderHeroMeta(game);
     renderGameRating(game);
     renderHeroBadges(game);
 
     /* DESCRIPTION */
     const descriptionSection = document.getElementById("game-description-section");
     const descriptionEl = document.getElementById("gameDescription");
-    if (game.description && descriptionEl) {
-        descriptionEl.innerHTML = game.description;
-        if (descriptionSection) descriptionSection.hidden = false;
-    } else if (descriptionSection) {
-        if (descriptionEl) descriptionEl.innerHTML = "";
-        descriptionSection.hidden = true;
+    const descriptionFilled = descriptionEl && descriptionEl.textContent.trim();
+    if (!preloaded || !descriptionFilled) {
+        if (game.description && descriptionEl) {
+            descriptionEl.innerHTML = game.description;
+            if (descriptionSection) descriptionSection.hidden = false;
+        } else if (descriptionSection) {
+            descriptionSection.hidden = true;
+        }
     }
 
     renderCreditsPanel(game);
@@ -760,18 +786,22 @@ function renderGame(game) {
     const shots = Array.isArray(game.screenshots) ? game.screenshots : [];
     if (shots.length) {
         const gallery = document.getElementById("gameScreenshotsStrip");
-        gallery.innerHTML = "";
+        if (!preloaded || (gallery && !gallery.children.length)) {
+            gallery.innerHTML = "";
+        }
         CCG_SCREENSHOTS = shots;
-        shots.forEach((src, i) => {
-            const img = document.createElement("img");
-            img.src = src;
-            img.alt = `${game.title || "Game"} screenshot ${i + 1}`;
-            img.addEventListener("click", () => {
-                CCG_SCREENSHOT_INDEX = i;
-                openScreenshotModal(i);
+        if (!preloaded || (gallery && !gallery.children.length)) {
+            shots.forEach((src, i) => {
+                const img = document.createElement("img");
+                img.src = src;
+                img.alt = `${game.title || "Game"} screenshot ${i + 1}`;
+                img.addEventListener("click", () => {
+                    CCG_SCREENSHOT_INDEX = i;
+                    openScreenshotModal(i);
+                });
+                gallery.appendChild(img);
             });
-            gallery.appendChild(img);
-        });
+        }
         const screenshotsSection = document.querySelector(".game-screenshots");
         if (screenshotsSection) screenshotsSection.hidden = false;
     } else {
