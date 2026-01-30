@@ -31,13 +31,8 @@ function hasPrefilledSingleGameContent() {
     return !!(heroTitle && heroTitle.textContent.trim());
 }
 
-function isPreloadedSingleGame() {
-    return (typeof window !== "undefined" && window.__CCG_PRELOADED === true)
-        || hasPrefilledSingleGameContent();
-}
-
 function lockSingleGameRender() {
-    if (isPreloadedSingleGame()) {
+    if (hasPrefilledSingleGameContent()) {
         if (document.body) {
             document.body.classList.remove("ccg-loading-single");
             document.body.classList.add("ccg-single-ready");
