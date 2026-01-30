@@ -1968,6 +1968,7 @@ function initRelatedCarousel() {
     const track = document.getElementById("relatedGamesTrack");
     const prevBtn = document.querySelector(".related-carousel__nav--prev");
     const nextBtn = document.querySelector(".related-carousel__nav--next");
+    const carousel = document.querySelector(".related-carousel");
 
     if (!track || !prevBtn || !nextBtn) return;
     if (track.dataset.carouselReady === "true") return;
@@ -1998,10 +1999,66 @@ function initRelatedCarousel() {
         track.scrollBy({ left: direction * step, behavior: "smooth" });
     };
 
-    prevBtn.addEventListener("click", () => handleScroll(-1));
-    nextBtn.addEventListener("click", () => handleScroll(1));
+    const isolateArrowEvent = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+    };
+
+    const handleArrowPress = (direction) => (event) => {
+        isolateArrowEvent(event);
+        handleScroll(direction);
+    };
+
+    prevBtn.addEventListener("click", handleArrowPress(-1));
+    nextBtn.addEventListener("click", handleArrowPress(1));
+    prevBtn.addEventListener("touchstart", isolateArrowEvent, { passive: false });
+    nextBtn.addEventListener("touchstart", isolateArrowEvent, { passive: false });
+    prevBtn.addEventListener("pointerdown", isolateArrowEvent);
+    nextBtn.addEventListener("pointerdown", isolateArrowEvent);
     track.addEventListener("scroll", updateButtons, { passive: true });
     window.addEventListener("resize", updateButtons);
+
+    if (carousel) {
+        carousel.addEventListener(
+            "click",
+            (event) => {
+                if (event.target.closest(".related-carousel__nav")) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            },
+            true
+        );
+    }
+
+    let hasTouchMoved = false;
+    let touchResetTimer = null;
+
+    track.addEventListener("touchstart", () => {
+        hasTouchMoved = false;
+    }, { passive: true });
+
+    track.addEventListener("touchmove", () => {
+        hasTouchMoved = true;
+    }, { passive: true });
+
+    track.addEventListener("touchend", () => {
+        if (touchResetTimer) window.clearTimeout(touchResetTimer);
+        touchResetTimer = window.setTimeout(() => {
+            hasTouchMoved = false;
+        }, 60);
+    }, { passive: true });
+
+    track.addEventListener(
+        "click",
+        (event) => {
+            if (hasTouchMoved) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        },
+        true
+    );
 
     updateButtons();
 }
