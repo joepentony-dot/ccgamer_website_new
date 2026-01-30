@@ -83,6 +83,10 @@
         }
     }
 
+    function setScrollLock(locked) {
+        document.body.style.overflow = locked ? "hidden" : "auto";
+    }
+
     function shuffleArray(items) {
         const array = [...items];
         for (let i = array.length - 1; i > 0; i -= 1) {
@@ -262,6 +266,7 @@
 
     function endGame(message, status, revealAnswer) {
         state.isOver = true;
+        setScrollLock(false);
         if (revealAnswer) {
             revealAllLetters();
             revealAnswerImage();
@@ -374,6 +379,7 @@
         );
         state.wrongGuesses = 0;
         state.isOver = false;
+        setScrollLock(true);
 
         document.querySelectorAll(".hangman-key").forEach((btn) => {
             btn.classList.remove("is-guessed", "is-right", "is-wrong");
@@ -413,6 +419,7 @@
         state.isOver = true;
         clearAdvanceTimer();
         setFocusMode(false);
+        setScrollLock(false);
         setFeedback("", "");
         if (elements.questionImage) {
             elements.questionImage.removeAttribute("src");

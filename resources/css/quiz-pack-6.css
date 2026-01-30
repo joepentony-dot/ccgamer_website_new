@@ -343,55 +343,131 @@ html[data-ccg-page="quiz-pack-6"] body.quiz-focus .quiz-focus-overlay {
     }
 }
 
-@media (max-width: 767px) {
-    .hangman-card {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        min-height: 70vh;
+@media (max-width: 768px) {
+    .ccg-page--quiz-pack .ccg-main {
+        padding-top: 20px;
+        padding-bottom: 0;
     }
 
-    .hangman-game-grid {
-        display: contents;
+    .hangman-card {
+        --hangman-keyboard-height: clamp(170px, 24vh, 210px);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-height: calc(100svh - 140px);
+        padding: 16px 14px calc(var(--hangman-keyboard-height) + 16px);
+        overflow: hidden;
     }
 
     .hangman-header {
-        order: 0;
+        margin-bottom: 4px;
+    }
+
+    .hangman-instructions {
+        margin-bottom: 10px;
+    }
+
+    .hangman-game-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .hangman-status-panel {
+        display: contents;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
     }
 
     .hangman-image-panel {
         order: 1;
-    }
-
-    .hangman-keyboard {
-        order: 2;
-        margin-top: 0;
-        grid-template-columns: repeat(auto-fit, minmax(30px, 1fr));
-    }
-
-    .hangman-status-panel {
-        order: 3;
-    }
-
-    .hangman-actions {
-        order: 4;
+        flex: 1 1 55%;
+        gap: 8px;
     }
 
     .hangman-image-frame {
-        min-height: clamp(180px, 38vh, 280px);
-    }
-}
-
-@media (max-width: 640px) {
-    .hangman-card {
-        padding: 20px 16px;
-    }
-
-    .hangman-keyboard {
-        grid-template-columns: repeat(auto-fit, minmax(28px, 1fr));
+        min-height: clamp(140px, 24vh, 200px);
     }
 
     .hangman-word {
+        order: 2;
+        flex: 1 1 40%;
+        min-height: 0;
+        padding: 8px;
         letter-spacing: 0.08em;
+        font-size: clamp(0.95rem, 2.2vw, 1.25rem);
+        align-self: center;
+    }
+
+    .hangman-drawing {
+        order: 3;
+        flex: 1 1 100%;
+        max-height: 120px;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .hangman-svg {
+        max-height: 110px;
+        width: auto;
+    }
+
+    .hangman-attempts {
+        order: 4;
+        flex: 1 1 50%;
+        font-size: 0.9rem;
+    }
+
+    .hangman-counter {
+        order: 5;
+        flex: 1 1 50%;
+        font-size: 0.9rem;
+    }
+
+    .hangman-keyboard {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        z-index: 999;
+        margin-top: 0;
+        padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+        background: rgba(6, 10, 9, 0.98);
+        box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.6);
+        grid-template-columns: repeat(auto-fit, minmax(28px, 1fr));
+        height: var(--hangman-keyboard-height);
+        align-content: start;
+    }
+
+    .hangman-key {
+        min-height: 38px;
+        padding: 6px 4px;
+        font-size: 0.78rem;
+    }
+
+    .hangman-actions {
+        margin-top: 8px;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 420px) {
+    .hangman-card {
+        padding: 14px 12px calc(var(--hangman-keyboard-height) + 14px);
+    }
+
+    .hangman-image-panel,
+    .hangman-word {
+        flex: 1 1 100%;
+    }
+
+    .hangman-word {
+        letter-spacing: 0.06em;
     }
 }
