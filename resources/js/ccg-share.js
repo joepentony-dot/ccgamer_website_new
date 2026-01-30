@@ -13,6 +13,7 @@
     const copyBtn = root.querySelector("[data-ccg-share-copy]");
 
     const CANONICAL_DOMAIN = "https://www.cheekycommodoregamer.co.uk";
+    const GAME_PATH_PREFIX = "/games/";
 
     function getGameTitle() {
         const heroTitle = document.getElementById("gameHeroTitle");
@@ -33,67 +34,98 @@
         let cleanedPath = String(pathname || "");
         cleanedPath = cleanedPath.replace(/\/index\.html$/i, "/");
         cleanedPath = cleanedPath.replace(/\.html$/i, "");
-        if (!cleanedPath.startsWith("/games/")) return "";
+        if (!cleanedPath.startsWith(GAME_PATH_PREFIX)) return "";
 
-        let slug = cleanedPath.slice("/games/".length);
+        let slug = cleanedPath.slice(GAME_PATH_PREFIX.length);
         slug = slug.replace(/\/+$/g, "");
         if (!slug || slug === "game") return "";
         return slug;
     }
 
-    function normalizeSlug(rawValue) {
-        let slug = String(rawValue || "").trim();
-        if (!slug) return "";
-
-        slug = slug.replace(/^[\s;,]+/g, "");
-        slug = slug.replace(/^[^a-z0-9]+/i, "");
-
-        let parsedUrl = null;
+    function decodeSlug(value) {
         try {
-            parsedUrl = new URL(slug, window.location.origin);
+            return decodeURIComponent(value);
         } catch (error) {
-            parsedUrl = null;
+            return value;
         }
+    }
 
-        if (parsedUrl) {
-            const slugFromPath = getSlugFromPathname(parsedUrl.pathname);
-            if (slugFromPath) return slugFromPath;
+    function stripLeadingNoise(value) {
+        return String(value || "")
+            .replace(/^[\s;,:|]+/g, "")
+            .replace(/^[^a-z0-9]+/i, "");
+    }
 
-            if (parsedUrl.pathname && parsedUrl.pathname.endsWith("game.html")) {
-                const slugParam = (parsedUrl.searchParams.get("slug") || "").trim();
-                if (slugParam) return slugParam;
-
-                const idParam = (parsedUrl.searchParams.get("id") || "").trim();
-                if (idParam && typeof window.ccgGameSlugFromId === "function") {
-                    return window.ccgGameSlugFromId(idParam) || "";
-                }
-            }
-
-            slug = parsedUrl.pathname || slug;
-        }
-
+    function cleanSlug(value) {
+        let slug = stripLeadingNoise(value);
+        slug = decodeSlug(slug).trim();
         slug = slug.replace(/^games\//i, "");
         slug = slug.replace(/^\/games\//i, "");
         slug = slug.replace(/\.html$/i, "");
         slug = slug.replace(/\/+$/g, "");
         slug = slug.replace(/^[^a-z0-9]+/i, "");
+        if (!slug) return "";
+        if (!/^[a-z0-9-]+$/i.test(slug)) return "";
         return slug;
     }
 
+    function getSlugFromUrl(rawValue) {
+        const candidate = stripLeadingNoise(rawValue);
+        if (!candidate) return "";
+
+        let parsedUrl = null;
+        try {
+            parsedUrl = new URL(candidate, window.location.origin);
+        } catch (error) {
+            parsedUrl = null;
+        }
+
+        if (parsedUrl) {
+            const pathSlug = getSlugFromPathname(parsedUrl.pathname || "");
+            if (pathSlug) return cleanSlug(pathSlug);
+
+            if (parsedUrl.pathname && parsedUrl.pathname.endsWith("game.html")) {
+                const slugParam = cleanSlug(parsedUrl.searchParams.get("slug"));
+                if (slugParam) return slugParam;
+
+                const idParam = cleanSlug(parsedUrl.searchParams.get("id"));
+                if (idParam) return idParam;
+            }
+
+            return cleanSlug(parsedUrl.pathname || "");
+        }
+
+        return cleanSlug(candidate);
+    }
+
     function getCanonicalGameUrl(slug) {
-        const safeSlug = normalizeSlug(slug);
+        const safeSlug = cleanSlug(slug);
         if (!safeSlug) return "";
-        return `${CANONICAL_DOMAIN}/games/${safeSlug}/`;
+        return `${CANONICAL_DOMAIN}${GAME_PATH_PREFIX}${safeSlug}/`;
+    }
+
+    function isValidCanonicalUrl(url) {
+        if (!url) return false;
+        if (!url.startsWith(`${CANONICAL_DOMAIN}${GAME_PATH_PREFIX}`)) return false;
+        if (!url.endsWith("/")) return false;
+        if (url.includes(".html") || url.includes("game.html") || url.includes("?")) return false;
+        return true;
     }
 
     function resolveShareUrl() {
         const canonicalLink = document.querySelector("link[rel='canonical']");
         const canonicalHref = canonicalLink ? canonicalLink.getAttribute("href") : "";
-        let slug = canonicalHref ? normalizeSlug(canonicalHref) : "";
+        let slug = canonicalHref ? getSlugFromUrl(canonicalHref) : "";
 
         if (!slug) {
-            const params = new URLSearchParams(window.location.search);
-            slug = normalizeSlug(params.get("slug"));
+            const ogUrl = document.querySelector("meta[property='og:url']");
+            const ogHref = ogUrl ? ogUrl.getAttribute("content") : "";
+            slug = ogHref ? getSlugFromUrl(ogHref) : "";
+        }
+
+        if (!slug) {
+            const params = new URLSearchParams(window.location.search || "");
+            slug = cleanSlug(params.get("slug"));
         }
 
         if (!slug) {
@@ -101,18 +133,17 @@
         }
 
         if (!slug) {
-            const params = new URLSearchParams(window.location.search);
-            const id = normalizeSlug(params.get("id"));
-            if (id && typeof window.ccgGameSlugFromId === "function") {
-                slug = normalizeSlug(window.ccgGameSlugFromId(id));
-            }
+            const params = new URLSearchParams(window.location.search || "");
+            slug = cleanSlug(params.get("id"));
         }
 
         if (!slug) {
-            slug = normalizeSlug(window.location.href);
+            slug = getSlugFromUrl(window.location.href);
         }
 
-        return getCanonicalGameUrl(slug) || window.location.href;
+        const canonicalUrl = getCanonicalGameUrl(slug);
+        if (isValidCanonicalUrl(canonicalUrl)) return canonicalUrl;
+        return "";
     }
 
     const shareUrl = resolveShareUrl();
@@ -123,6 +154,7 @@
         : "Check out this classic game on Cheeky Commodore Gamer";
 
     function setFallbackLinks() {
+        if (!shareUrl) return;
         if (emailLink) {
             const subject = shareText;
             const body = `${shareText} ${shareUrl}`;
@@ -175,6 +207,7 @@
 
     if (copyBtn) {
         copyBtn.addEventListener("click", () => {
+            if (!shareUrl) return;
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(shareUrl).then(setCopyFeedback).catch(() => {
                     copyWithFallback(shareUrl);
@@ -189,6 +222,7 @@
 
     if (navigator.share && shareBtn) {
         shareBtn.addEventListener("click", () => {
+            if (!shareUrl) return;
             navigator.share({ title, text: shareText, url: shareUrl }).catch(() => {
                 // Ignore share cancellation/errors.
             });
