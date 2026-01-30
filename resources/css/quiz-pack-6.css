@@ -7,16 +7,16 @@
 :root {
     --hangman-bg: #0b1410;
     --hangman-panel: rgba(8, 15, 14, 0.92);
-    --hangman-neon-cyan: #47f6ff;
-    --hangman-neon-green: #67ff8f;
-    --hangman-neon-pink: #ff77d6;
-    --hangman-chalk: rgba(234, 255, 245, 0.85);
-    --hangman-muted: rgba(214, 240, 255, 0.62);
+    --hangman-neon-cyan: var(--ccg-primary);
+    --hangman-neon-green: var(--ccg-success);
+    --hangman-neon-pink: var(--ccg-danger);
+    --hangman-chalk: var(--text-light);
+    --hangman-muted: var(--text-dim);
 }
 
 html[data-ccg-page="quiz-pack-6"] body.quiz-focus .quiz-focus-overlay {
     opacity: 0.45;
-    background: radial-gradient(circle at 50% 20%, rgba(71, 246, 255, 0.12), rgba(0, 0, 0, 0.65) 62%);
+    background: radial-gradient(circle at 50% 20%, rgba(var(--accent-rgb), 0.12), rgba(0, 0, 0, 0.65) 62%);
 }
 
 .ccg-page--quiz-pack .ccg-main {
@@ -47,8 +47,8 @@ html[data-ccg-page="quiz-pack-6"] body.quiz-focus .quiz-focus-overlay {
     position: absolute;
     inset: 0;
     background:
-        radial-gradient(circle at 20% 10%, rgba(71, 246, 255, 0.12), transparent 45%),
-        radial-gradient(circle at 80% 20%, rgba(255, 119, 214, 0.12), transparent 40%),
+        radial-gradient(circle at 20% 10%, rgba(var(--accent-rgb), 0.12), transparent 45%),
+        radial-gradient(circle at 80% 20%, rgba(var(--ccg-danger-rgb), 0.12), transparent 40%),
         linear-gradient(135deg, rgba(12, 18, 16, 0.95), rgba(6, 10, 9, 0.85));
     opacity: 0.9;
     pointer-events: none;
@@ -90,7 +90,7 @@ html[data-ccg-page="quiz-pack-6"] body.quiz-focus .quiz-focus-overlay {
     font-size: clamp(2rem, 3vw + 1rem, 2.8rem);
     margin-bottom: 8px;
     color: var(--text-light);
-    text-shadow: 0 0 16px rgba(71, 246, 255, 0.3);
+    text-shadow: 0 0 16px rgba(var(--accent-rgb), 0.3);
 }
 
 .hangman-instructions {
@@ -113,11 +113,11 @@ html[data-ccg-page="quiz-pack-6"] body.quiz-focus .quiz-focus-overlay {
 .hangman-image-frame {
     position: relative;
     border-radius: 18px;
-    background: #08110f;
-    border: 1px solid rgba(71, 246, 255, 0.3);
+    background: var(--hangman-bg);
+    border: 1px solid rgba(var(--accent-rgb), 0.3);
     box-shadow:
         inset 0 0 30px rgba(0, 0, 0, 0.65),
-        0 0 22px rgba(71, 246, 255, 0.2);
+        0 0 22px rgba(var(--accent-rgb), 0.2);
     overflow: hidden;
     aspect-ratio: 4 / 3;
     display: grid;
@@ -164,7 +164,7 @@ html[data-ccg-page="quiz-pack-6"] body.quiz-focus .quiz-focus-overlay {
     min-height: 26px;
     font-weight: 600;
     color: var(--hangman-muted);
-    text-shadow: 0 0 12px rgba(71, 246, 255, 0.2);
+    text-shadow: 0 0 12px rgba(var(--accent-rgb), 0.2);
 }
 
 .hangman-feedback.is-correct {
@@ -191,7 +191,7 @@ html[data-ccg-page="quiz-pack-6"] body.quiz-focus .quiz-focus-overlay {
     padding: 16px;
     border-radius: 18px;
     background: rgba(7, 12, 12, 0.85);
-    border: 1px solid rgba(103, 255, 143, 0.3);
+    border: 1px solid rgba(var(--ccg-success-rgb), 0.3);
     box-shadow: inset 0 0 28px rgba(0, 0, 0, 0.6);
     align-content: start;
 }
@@ -200,7 +200,7 @@ html[data-ccg-page="quiz-pack-6"] body.quiz-focus .quiz-focus-overlay {
     background: var(--hangman-bg);
     border-radius: 16px;
     padding: 12px;
-    border: 1px solid rgba(71, 246, 255, 0.2);
+    border: 1px solid rgba(var(--accent-rgb), 0.2);
     box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.7);
 }
 
@@ -217,7 +217,7 @@ html[data-ccg-page="quiz-pack-6"] body.quiz-focus .quiz-focus-overlay {
     fill: none;
     stroke-linecap: round;
     stroke-linejoin: round;
-    filter: drop-shadow(0 0 8px rgba(71, 246, 255, 0.7));
+    filter: drop-shadow(0 0 8px rgba(var(--accent-rgb), 0.7));
 }
 
 .hangman-stage {
@@ -260,7 +260,7 @@ html[data-ccg-page="quiz-pack-6"] body.quiz-focus .quiz-focus-overlay {
 
 .hangman-letter.is-revealed {
     border-bottom-color: transparent;
-    text-shadow: 0 0 12px rgba(103, 255, 143, 0.5);
+    text-shadow: 0 0 12px rgba(var(--ccg-success-rgb), 0.5);
 }
 
 .hangman-letter--space {
@@ -291,20 +291,22 @@ html[data-ccg-page="quiz-pack-6"] body.quiz-focus .quiz-focus-overlay {
 
 .hangman-key {
     background: rgba(7, 12, 14, 0.95);
-    border: 1px solid rgba(71, 246, 255, 0.4);
+    border: 1px solid rgba(var(--accent-rgb), 0.4);
     color: var(--hangman-neon-cyan);
     padding: 10px 6px;
     border-radius: 10px;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 700;
     text-transform: uppercase;
+    font-family: var(--ccg-font-main);
+    min-height: 44px;
     transition: transform 0.12s ease, box-shadow 0.2s ease, color 0.2s ease;
 }
 
 .hangman-key:focus-visible,
 .hangman-key:hover {
     transform: translateY(-1px);
-    box-shadow: 0 0 14px rgba(71, 246, 255, 0.4);
+    box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.4);
 }
 
 .hangman-key.is-guessed {
@@ -316,12 +318,12 @@ html[data-ccg-page="quiz-pack-6"] body.quiz-focus .quiz-focus-overlay {
 
 .hangman-key.is-wrong {
     color: var(--hangman-neon-pink);
-    border-color: rgba(255, 119, 214, 0.4);
+    border-color: rgba(var(--ccg-danger-rgb), 0.4);
 }
 
 .hangman-key.is-right {
     color: var(--hangman-neon-green);
-    border-color: rgba(103, 255, 143, 0.5);
+    border-color: rgba(var(--ccg-success-rgb), 0.5);
 }
 
 .hangman-key:disabled {
@@ -338,6 +340,45 @@ html[data-ccg-page="quiz-pack-6"] body.quiz-focus .quiz-focus-overlay {
 @media (max-width: 920px) {
     .hangman-game-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 767px) {
+    .hangman-card {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        min-height: 70vh;
+    }
+
+    .hangman-game-grid {
+        display: contents;
+    }
+
+    .hangman-header {
+        order: 0;
+    }
+
+    .hangman-image-panel {
+        order: 1;
+    }
+
+    .hangman-keyboard {
+        order: 2;
+        margin-top: 0;
+        grid-template-columns: repeat(auto-fit, minmax(30px, 1fr));
+    }
+
+    .hangman-status-panel {
+        order: 3;
+    }
+
+    .hangman-actions {
+        order: 4;
+    }
+
+    .hangman-image-frame {
+        min-height: clamp(180px, 38vh, 280px);
     }
 }
 

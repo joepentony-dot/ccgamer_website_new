@@ -24,6 +24,7 @@
         replay: document.querySelector("[data-hangman-replay]"),
         attempts: document.querySelector("[data-hangman-attempts]"),
         keyboard: document.querySelector("[data-hangman-keyboard]"),
+        gameGrid: document.querySelector(".hangman-game-grid"),
         newGameButton: document.querySelector("[data-hangman-new]"),
         overlay: document.querySelector("[data-quiz-focus-overlay]"),
         counter: document.querySelector("[data-hangman-counter]"),
@@ -43,7 +44,8 @@
         remainingBases: [],
         totalCount: 0,
         advanceTimer: null,
-        isLoading: false
+        isLoading: false,
+        scrollPending: false
     };
 
     const SFX_STORAGE_KEY = "ccg_quiz_sfx_enabled";
@@ -98,7 +100,7 @@
             const letter = String.fromCharCode(i);
             const button = document.createElement("button");
             button.type = "button";
-            button.className = "hangman-key";
+            button.className = "ccg-btn ccg-btn--ghost hangman-key";
             button.textContent = letter;
             button.dataset.letter = letter;
             button.addEventListener("click", () => handleGuess(letter));
@@ -131,7 +133,7 @@
         elements.counter.textContent = `Pack 6: ${total} total | ${remaining} remaining`;
     }
 
-    function setImageWithFallback(imgEl, urls) {
+    function setImageWithFallback(imgEl, urls, onLoad) {
         if (!imgEl) return;
         let index = 0;
 
@@ -143,6 +145,9 @@
 
         imgEl.onload = () => {
             imgEl.onerror = null;
+            if (typeof onLoad === "function") {
+                onLoad();
+            }
         };
 
         imgEl.onerror = () => {
@@ -341,7 +346,7 @@
         state.answerUrl = `${PACK_6_PATH}${base}${ANSWER_SUFFIX}${IMAGE_EXTENSION}`;
         elements.questionImage.alt = `Guess the game: ${state.displayTitle}`;
         elements.questionImage.decoding = "async";
-        setImageWithFallback(elements.questionImage, [questionUrl]);
+        setImageWithFallback(elements.questionImage, [questionUrl], scheduleGameplayScroll);
     }
 
     function getNextBase() {
@@ -384,6 +389,7 @@
         renderWord();
         loadImages(choice);
         updateCounter();
+        scheduleGameplayScroll();
     }
 
     function scheduleNextRound() {
@@ -423,6 +429,20 @@
         });
     }
 
+    function scheduleGameplayScroll() {
+        if (!elements.gameGrid || state.scrollPending) return;
+        state.scrollPending = true;
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                state.scrollPending = false;
+                elements.gameGrid.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+            });
+        });
+    }
+
     async function loadPackManifest() {
         state.isLoading = true;
         try {
@@ -456,6 +476,7 @@
         setFocusMode(true);
         buildKeyboard();
         setupKeyboardInput();
+        scheduleGameplayScroll();
         elements.newGameButton?.addEventListener("click", () => {
             if (state.isLoading) return;
             clearAdvanceTimer();

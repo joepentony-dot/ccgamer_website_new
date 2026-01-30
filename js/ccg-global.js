@@ -55,6 +55,39 @@
     safeNowMobileClass();
 
     /* ======================================================
+       BUTTON CLASS NORMALISATION
+    ====================================================== */
+    function applyGlobalButtonClasses() {
+        const selectors = [
+            ".ccg-nav-toggle",
+            ".ccg-nav__more-toggle",
+            ".ccg-mode-toggle",
+            ".ccg-nav-drawer__close",
+            ".admin-step-btn",
+            ".admin-help-toggle",
+            ".admin-btn",
+            ".games-accordion__header",
+            ".home-video-card__play",
+            ".ccg-egg-overlay__exit",
+            ".ccg-secret-btn",
+            "#intro-overlay-btn",
+            ".skip-top",
+            ".intro-skip"
+        ];
+        const variantClasses = ["ccg-btn--primary", "ccg-btn--secondary", "ccg-btn--ghost"];
+
+        document.querySelectorAll(selectors.join(",")).forEach((btn) => {
+            if (!btn.classList.contains("ccg-btn")) {
+                btn.classList.add("ccg-btn");
+            }
+            const hasVariant = variantClasses.some((variant) => btn.classList.contains(variant));
+            if (!hasVariant) {
+                btn.classList.add("ccg-btn--ghost");
+            }
+        });
+    }
+
+    /* ======================================================
        DEPTH-AWARE LOGO PATH
     ====================================================== */
     function getLogoPath() {
@@ -564,7 +597,7 @@
 
         overlay.innerHTML = `
             <div class="ccg-egg-overlay__frame">
-                <button class="ccg-egg-overlay__exit" type="button">Exit to CCGAMER Website</button>
+                <button class="ccg-btn ccg-btn--ghost ccg-egg-overlay__exit" type="button">Exit to CCGAMER Website</button>
                 <div class="ccg-egg-overlay__media"></div>
             </div>
         `;
@@ -978,7 +1011,7 @@
         modal.innerHTML = `
             <div class="ccg-secret-modal__content" role="dialog" aria-label="Secret system commands">
                 <div class="ccg-secret-modal__actions">
-                    <button class="ccg-secret-btn" type="button" data-ccg-secret-close>CLOSE EASTER EGGS</button>
+                    <button class="ccg-btn ccg-btn--ghost ccg-secret-btn" type="button" data-ccg-secret-close>CLOSE EASTER EGGS</button>
                 </div>
                 <h2>SYSTEM COMMANDS</h2>
                 <p class="ccg-secret-modal__hint">Tap to activate, or type a code.</p>
@@ -1742,6 +1775,7 @@ function setupFooterSignatureRotator() {
     document.addEventListener("DOMContentLoaded", () => {
 
         // Skip link injection removed to keep the top-left edge clean.
+        applyGlobalButtonClasses();
 
         /* -------------------------------
            MOBILE HARDENING (EARLY)

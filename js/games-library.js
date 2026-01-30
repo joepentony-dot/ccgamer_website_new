@@ -277,7 +277,7 @@ function buildAccordion(groups) {
         const contentId = `games-accordion-panel-${letterSlug}`;
 
         section.innerHTML = `
-            <button class="games-accordion__header" data-letter="${letter}" type="button" id="${headerId}" aria-controls="${contentId}">
+            <button class="ccg-btn ccg-btn--ghost games-accordion__header" data-letter="${letter}" type="button" id="${headerId}" aria-controls="${contentId}">
                 <span class="games-accordion__letter">${letter}${hintMarkup}</span>
                 <span class="games-accordion__meta">${gamesForLetter.length.toLocaleString("en-US")} titles</span>
                 <span class="games-accordion__chevron">⌄</span>

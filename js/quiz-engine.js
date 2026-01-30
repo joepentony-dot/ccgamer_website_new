@@ -459,7 +459,7 @@
 
         q.options.forEach((opt, idx) => {
             const btn = document.createElement("button");
-            btn.className = "quiz-answer-btn";
+            btn.className = "ccg-btn ccg-btn--secondary quiz-answer-btn";
             btn.textContent = opt;
             btn.dataset.index = idx;
             btn.onclick = onAnswerClick;
@@ -757,7 +757,7 @@
         if (!sets.length) {
             const emptyBtn = document.createElement("button");
             emptyBtn.type = "button";
-            emptyBtn.className = "quiz-pack-btn";
+            emptyBtn.className = "ccg-btn ccg-btn--secondary quiz-pack-btn";
             emptyBtn.textContent = "No packs available";
             emptyBtn.disabled = true;
             container.appendChild(emptyBtn);
@@ -767,7 +767,7 @@
         sets.forEach((set) => {
             const btn = document.createElement("button");
             btn.type = "button";
-            btn.className = "quiz-pack-btn";
+            btn.className = "ccg-btn ccg-btn--secondary quiz-pack-btn";
             btn.dataset.packId = set.id;
             const count = typeof set.questionCount === "number"
                 ? set.questionCount
