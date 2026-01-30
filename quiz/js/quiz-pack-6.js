@@ -12,7 +12,6 @@
     const MAX_WRONG_GUESSES = 5;
     const PACK_6_PATH = "images/pack-6/";
     const IMAGE_EXTENSION = ".webp";
-    const IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp"];
     const ANSWER_SUFFIX = "-answer";
     const AUTO_ADVANCE_DELAY = 3000;
 
@@ -427,27 +426,14 @@
     async function loadPackManifest() {
         state.isLoading = true;
         try {
-            const response = await fetch(PACK_6_PATH, { cache: "no-store" });
+            const response = await fetch(`${PACK_6_PATH}manifest.json`, { cache: "no-store" });
             if (!response.ok) {
-                throw new Error("Unable to load Pack 6 directory.");
+                throw new Error("Unable to load Pack 6 manifest.");
             }
-            const html = await response.text();
-            const doc = new DOMParser().parseFromString(html, "text/html");
-            const links = Array.from(doc.querySelectorAll("a[href]"));
-            const fileNames = links
-                .map((link) => link.getAttribute("href") || "")
-                .map((href) => href.split("?")[0])
-                .map((href) => href.split("#")[0])
-                .map((href) => href.split("/").pop() || "")
-                .filter((file) => IMAGE_EXTENSIONS.some((ext) => file.toLowerCase().endsWith(ext)))
-                .filter((file) => !file.toLowerCase().endsWith(`${ANSWER_SUFFIX}${IMAGE_EXTENSION}`))
-                .map((file) => {
-                    const lower = file.toLowerCase();
-                    const ext = IMAGE_EXTENSIONS.find((entry) => lower.endsWith(entry));
-                    if (!ext) return "";
-                    return file.slice(0, -ext.length);
-                })
-                .filter(Boolean);
+            const manifest = await response.json();
+            const fileNames = Array.isArray(manifest)
+                ? manifest.map((entry) => String(entry)).filter(Boolean)
+                : [];
 
             const uniqueBases = Array.from(new Set(fileNames));
             if (uniqueBases.length === 0) {
