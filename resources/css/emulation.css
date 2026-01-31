@@ -12,16 +12,29 @@
     --emu-link-glow: rgba(var(--accent-rgb), 0.5);
 }
 
+.ccg-page--emulation .ccg-main {
+    padding-top: 8px;
+}
+
+.emu-shell {
+    gap: clamp(18px, 2.6vw, 26px);
+}
+
+.ccg-page--emulation .ccg-info-panel {
+    padding: clamp(0.95rem, 1.8vw, 1.2rem);
+}
+
+
 .emu-hero-deck {
-    margin: 12px 0 24px;
-    padding: clamp(16px, 3vw, 28px);
+    margin: 8px 0 18px;
+    padding: clamp(14px, 2.4vw, 22px);
     border-radius: 18px;
     background:
         radial-gradient(circle at 18% 20%, rgba(var(--accent-rgb),0.25), transparent 46%),
         radial-gradient(circle at 82% 12%, rgba(255,255,255,0.08), transparent 40%),
         linear-gradient(140deg, rgba(0,0,0,0.92), rgba(0,0,0,0.76));
-    border: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 0 24px 48px rgba(0,0,0,0.75), 0 0 28px rgba(var(--accent-rgb), 0.25);
+    border: 1px solid rgba(var(--accent-rgb),0.3);
+    box-shadow: 0 20px 42px rgba(0,0,0,0.7), 0 0 32px rgba(var(--accent-rgb), 0.35);
 }
 
 .emu-hero-grid {
@@ -32,7 +45,7 @@
 }
 
 .emu-marquee {
-    padding: clamp(18px, 2.5vw, 26px);
+    padding: clamp(16px, 2.2vw, 22px);
     border-radius: 16px;
     background:
         linear-gradient(135deg, rgba(0,0,0,0.72), rgba(0,0,0,0.82)),
@@ -72,8 +85,18 @@
 
 .emu-cta-row .ccg-btn {
     min-width: 180px;
-    min-height: 44px;
+    min-height: 46px;
     box-shadow: 0 12px 28px rgba(0,0,0,0.6), 0 0 20px rgba(var(--accent-rgb),0.22);
+}
+
+.ccg-page--emulation .ccg-btn {
+    border-color: rgba(var(--accent-rgb),0.45);
+    box-shadow: 0 12px 26px rgba(0,0,0,0.65), 0 0 18px rgba(var(--accent-rgb),0.28);
+}
+
+.ccg-page--emulation .ccg-btn:hover,
+.ccg-page--emulation .ccg-btn:focus-visible {
+    box-shadow: 0 16px 34px rgba(0,0,0,0.7), 0 0 28px rgba(var(--accent-rgb),0.4);
 }
 
 .ccg-emulation-intro a:not(.ccg-btn),
@@ -94,14 +117,14 @@
 }
 
 .emu-intel-grid {
-    margin: 24px 0;
+    margin: 18px 0;
     display: grid;
-    gap: 18px;
+    gap: 14px;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
 .emu-intel-card {
-    padding: 18px 20px;
+    padding: 16px 18px;
     border-radius: 16px;
     background: linear-gradient(140deg, rgba(0,0,0,0.75), rgba(0,0,0,0.9));
     border: 1px solid rgba(255,255,255,0.12);
@@ -201,7 +224,7 @@
 
 .emu-card {
     position: relative;
-    padding: 1.25rem;
+    padding: 1.1rem;
     border-radius: var(--radius-md);
     background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.15), rgba(0,0,0,0) 55%), var(--panel-bg);
     border: 1px solid var(--border-light);
@@ -248,7 +271,7 @@
     background: var(--panel-bg);
     border: 1px solid var(--border-light);
     border-radius: var(--radius-md);
-    padding: 1rem 1.1rem;
+    padding: 0.85rem 1rem;
     display: grid;
     gap: 0.35rem;
 }
@@ -258,9 +281,9 @@
 }
 
 .emu-link-grid {
-    margin: 18px 0 22px;
+    margin: 14px 0 18px;
     display: grid;
-    gap: 14px;
+    gap: 12px;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
@@ -290,12 +313,12 @@
 
 .ccg-emulation-panel {
     display: grid;
-    gap: 1.1rem;
+    gap: 0.9rem;
 }
 
 .ccg-emulation-box {
     display: grid;
-    gap: 1.2rem;
+    gap: 1rem;
 }
 
 .ccg-emulation-jump {
@@ -319,7 +342,7 @@
 }
 
 .emu-callout {
-    padding: 18px 20px;
+    padding: 16px 18px;
     border-radius: 16px;
     border: 1px solid rgba(255,255,255,0.18);
     background: linear-gradient(135deg, rgba(0,0,0,0.78), rgba(var(--accent-rgb),0.15));
