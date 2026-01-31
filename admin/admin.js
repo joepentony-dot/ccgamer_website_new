@@ -67,6 +67,10 @@
         "developer"
     ];
 
+    const BOX3D_FOLDER = "resources/images/games/boxes-3d/";
+    const BOX3D_MAX_WIDTH = 420;
+    const BOX3D_QUALITY = 0.82;
+
     const STEP_IDS = [1, 2, 3, 4, 5, 6];
     const SUBSTEPS = ["identity", "classification", "media", "editorial", "credits", "references"];
 
@@ -78,6 +82,7 @@
         history: [],
         validation: { errors: [], warnings: [] },
         stagedThumb: null,
+        stagedBox3d: null,
         currentStep: 1,
         currentSubstep: "identity"
     };
@@ -156,6 +161,11 @@
         copySitemapCmd: document.getElementById("adminCopySitemapCmd"),
         copyGitCmd: document.getElementById("adminCopyGitCmd"),
         copyGscCmd: document.getElementById("adminCopyGscCmd"),
+        box3dUpload: document.getElementById("adminBox3dUpload"),
+        box3dDownload: document.getElementById("adminBox3dDownload"),
+        box3dPreview: document.getElementById("adminBox3dPreview"),
+        box3dStatus: document.getElementById("adminBox3dStatus"),
+        box3dFilename: document.getElementById("adminBox3dFilename"),
         gate: document.getElementById("adminGate"),
         gateInput: document.getElementById("adminGateInput"),
         gateUnlock: document.getElementById("adminGateUnlock"),
@@ -643,6 +653,7 @@
         renderChangeList();
         updateDescriptionCount();
         updatePreviewLinks();
+        updateBox3dFilenameDisplay();
 
         const draftValidation = validateDraft(state.draftGame);
         updateFieldHighlights(state.draftGame, draftValidation);
@@ -775,6 +786,7 @@
         renderChangeList();
         updateDescriptionCount();
         updatePreviewLinks();
+        updateBox3dFilenameDisplay();
 
         const draftValidation = validateDraft(state.draftGame);
         updateFieldHighlights(state.draftGame, draftValidation);
@@ -992,6 +1004,7 @@
         state.draftGame = clone(state.workingGames[index]);
         elements.editState.textContent = `Draft: ${state.draftGame.title || state.draftGame.id || "Untitled"}`;
         setStatus("Draft loaded.", "You are editing an existing entry.", "success");
+        resetBox3dStage();
         renderEditor();
         setStep(3);
     };
@@ -1001,6 +1014,7 @@
         state.draftGame = defaultGame();
         elements.editState.textContent = "Draft: new entry";
         setStatus("New draft created.", "Fill in the fields and apply changes to add it to the library.", "success");
+        resetBox3dStage();
         renderEditor();
         setStep(3);
         setSubstep("identity");
@@ -1054,6 +1068,7 @@
         renderChangeList();
         updatePreviewLinks();
         updateStatusBar();
+        resetBox3dStage();
         setStatus("Draft discarded.", "Select a game or create a new entry.", "warning");
     };
 
@@ -1222,6 +1237,7 @@
         updatePreviewLinks();
         updateStatusBar();
         setStatus("Session cleared.", "Load a new file to continue.", "warning");
+        resetBox3dStage();
         setStep(1);
     };
 
@@ -1497,6 +1513,124 @@
         return `${safeSlug || "thumbnail"}.${safeExt}`;
     };
 
+    const getBox3dSlug = () => generateSlug(inputs.slug.value || inputs.title.value || inputs.id.value || "");
+
+    const updateBox3dFilenameDisplay = () => {
+        if (!elements.box3dFilename) return "";
+        const slug = getBox3dSlug();
+        const filename = slug ? `${slug}.webp` : "slug.webp";
+        elements.box3dFilename.textContent = filename;
+        if (state.stagedBox3d && slug && state.stagedBox3d.slug !== slug) {
+            if (elements.box3dStatus) {
+                elements.box3dStatus.textContent = "Slug changed. Re-export to update the filename.";
+            }
+        }
+        return filename;
+    };
+
+    const resetBox3dStage = (message = "No 3D box staged yet.") => {
+        if (state.stagedBox3d && state.stagedBox3d.url) {
+            URL.revokeObjectURL(state.stagedBox3d.url);
+        }
+        state.stagedBox3d = null;
+        if (elements.box3dPreview) {
+            elements.box3dPreview.removeAttribute("src");
+            elements.box3dPreview.hidden = true;
+        }
+        if (elements.box3dStatus) {
+            elements.box3dStatus.textContent = message;
+        }
+        if (elements.box3dDownload) {
+            elements.box3dDownload.disabled = true;
+        }
+    };
+
+    const loadImageFile = (file) => new Promise((resolve, reject) => {
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+            URL.revokeObjectURL(url);
+            resolve(img);
+        };
+        img.onerror = () => {
+            URL.revokeObjectURL(url);
+            reject(new Error("Image could not be loaded."));
+        };
+        img.src = url;
+    });
+
+    const processBox3dFile = async (file, slug) => {
+        const img = await loadImageFile(file);
+        const scale = Math.min(1, BOX3D_MAX_WIDTH / img.width);
+        const width = Math.max(1, Math.round(img.width * scale));
+        const height = Math.max(1, Math.round(img.height * scale));
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) throw new Error("Canvas unavailable.");
+        ctx.drawImage(img, 0, 0, width, height);
+        const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/webp", BOX3D_QUALITY));
+        if (!blob) throw new Error("WebP conversion failed.");
+        return {
+            blob,
+            url: URL.createObjectURL(blob),
+            filename: `${slug}.webp`,
+            size: blob.size,
+            width,
+            height,
+            slug
+        };
+    };
+
+    const handleBox3dUpload = async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        const slug = getBox3dSlug();
+        updateBox3dFilenameDisplay();
+        if (!slug) {
+            resetBox3dStage("Add a slug before uploading 3D box art.");
+            setStatus("Slug required.", "Enter a slug to auto-name the 3D box file.", "warning");
+            return;
+        }
+        setStatus("Processing 3D box art…", "Optimising to WebP.", "warning");
+        try {
+            const result = await processBox3dFile(file, slug);
+            if (state.stagedBox3d && state.stagedBox3d.url) {
+                URL.revokeObjectURL(state.stagedBox3d.url);
+            }
+            state.stagedBox3d = result;
+            if (elements.box3dPreview) {
+                elements.box3dPreview.src = result.url;
+                elements.box3dPreview.hidden = false;
+            }
+            if (elements.box3dDownload) {
+                elements.box3dDownload.disabled = false;
+            }
+            if (elements.box3dStatus) {
+                const sizeKb = Math.round(result.size / 1024);
+                elements.box3dStatus.textContent = `Ready: ${result.width}×${result.height}px · ${sizeKb} KB`;
+            }
+            setStatus("3D box ready.", `Save to ${BOX3D_FOLDER}${result.filename}`, "success");
+        } catch (error) {
+            resetBox3dStage("3D box conversion failed.");
+            setStatus("3D box conversion failed.", error.message || "Try a different image.", "error");
+        }
+    };
+
+    const handleBox3dDownload = () => {
+        if (!state.stagedBox3d) {
+            setStatus("No 3D box staged.", "Upload an image first.", "warning");
+            return;
+        }
+        const link = document.createElement("a");
+        link.href = state.stagedBox3d.url;
+        link.download = state.stagedBox3d.filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+    };
+
     const handleThumbUpload = (event) => {
         const file = event.target.files[0];
         if (!file) return;
@@ -1579,6 +1713,14 @@
         inputs.autoThumb.addEventListener("click", handleAutoThumbnail);
         inputs.thumbUpload.addEventListener("change", handleThumbUpload);
         inputs.thumbDownload.addEventListener("click", handleThumbDownload);
+        if (elements.box3dUpload) {
+            elements.box3dUpload.addEventListener("change", (event) => {
+                void handleBox3dUpload(event);
+            });
+        }
+        if (elements.box3dDownload) {
+            elements.box3dDownload.addEventListener("click", handleBox3dDownload);
+        }
 
         listManagers.length = 0;
         setupListManager(inputs.diskInput, inputs.diskAdd, inputs.diskList);
@@ -1741,6 +1883,7 @@
         updateDescriptionCount();
         updatePreviewLinks();
         updateStatusBar();
+        resetBox3dStage();
         setSubstep("identity");
         setupGate();
     };

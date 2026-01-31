@@ -500,6 +500,29 @@
                                                 Tip: Select a thumbnail, then click <strong>Download as correct filename</strong> to save it as <code>[slug].[ext]</code> for <code>resources/images/thumbnails/</code>.
                                                 The admin page can’t push files to GitHub by itself, but this makes the manual step painless.
                                             </p>
+                                            <div class="admin-divider"></div>
+                                            <div class="admin-form-heading">
+                                                <h4>3D Box Art Manager</h4>
+                                                <span class="admin-form-note">Upload, auto-resize, and export optimized WebP box art named by slug.</span>
+                                            </div>
+                                            <div class="admin-row admin-box3d-controls">
+                                                <label class="admin-upload" for="adminBox3dUpload">
+                                                    Upload 3D box art
+                                                    <input accept=".webp,.png,.jpg,.jpeg,image/*" id="adminBox3dUpload" type="file"/>
+                                                </label>
+                                                <button class="admin-btn" id="adminBox3dDownload" type="button" disabled>Download optimized WebP</button>
+                                            </div>
+                                            <div class="admin-box3d-preview">
+                                                <div class="admin-box3d-frame">
+                                                    <img alt="3D box art preview" id="adminBox3dPreview" loading="lazy" hidden/>
+                                                </div>
+                                                <div class="admin-box3d-meta">
+                                                    <p class="admin-muted" id="adminBox3dStatus">No 3D box staged yet.</p>
+                                                    <p class="admin-muted">
+                                                        Save to <code>resources/images/games/boxes-3d/<span id="adminBox3dFilename">slug.webp</span></code>
+                                                    </p>
+                                                </div>
+                                            </div>
                                             <div class="admin-field">
                                                 <label for="gamePdf">PDF URL</label>
                                                 <input class="admin-input" id="gamePdf" placeholder="https://..."/>

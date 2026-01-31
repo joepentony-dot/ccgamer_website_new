@@ -890,6 +890,37 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     background: rgba(0,0,0,0.35);
 }
 
+.game-hero--has-box3d .game-hero__inner {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: "media content box";
+}
+
+.game-hero--has-box3d .game-hero__media {
+    grid-area: media;
+}
+
+.game-hero--has-box3d .game-hero__content {
+    grid-area: content;
+}
+
+.game-hero__box3d {
+    grid-area: box;
+    width: min(220px, 22vw);
+    justify-self: end;
+    align-self: start;
+}
+
+.game-hero__box3d-img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2 / 3;
+    object-fit: contain;
+    border-radius: 14px;
+    filter:
+        drop-shadow(0 16px 30px rgba(0,0,0,0.65))
+        drop-shadow(0 0 18px rgba(var(--accent-rgb), 0.25));
+}
+
 .game-hero__content {
     display: flex;
     flex-direction: column;
@@ -1973,6 +2004,19 @@ body[data-ccg-mode="amiga"] {
     .game-hero__content {
         align-items: center;
         text-align: center;
+    }
+
+    .game-hero--has-box3d .game-hero__inner {
+        grid-template-areas:
+            "box"
+            "content"
+            "media";
+    }
+
+    .game-hero--has-box3d .game-hero__box3d {
+        width: min(55vw, 240px);
+        justify-self: center;
+        margin-bottom: 0.5rem;
     }
 
     .game-hero__meta {

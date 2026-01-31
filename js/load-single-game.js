@@ -734,6 +734,7 @@ function renderGame(game) {
     }
     renderGameRating(game);
     renderHeroBadges(game);
+    void renderHeroBox3d(game);
 
     /* DESCRIPTION */
     const descriptionSection = document.getElementById("game-description-section");
@@ -1003,6 +1004,76 @@ function renderHeroBadges(game) {
     }
 
     badgeWrap.hidden = badgeWrap.children.length === 0;
+}
+
+function resolveBox3dSlug(game) {
+    return normalizeSlugKey(game?.slug) || normalizeSlugKey(getSlugFromPath());
+}
+
+function resolveBox3dPath(slug) {
+    const root = (typeof window !== "undefined" && typeof window.ccgGetSiteRoot === "function")
+        ? window.ccgGetSiteRoot()
+        : "/";
+    const safeRoot = root.endsWith("/") ? root : `${root}/`;
+    return `${safeRoot}resources/images/games/boxes-3d/${slug}.webp`;
+}
+
+async function checkBox3dExists(path) {
+    try {
+        const response = await fetch(path, { method: "HEAD", cache: "force-cache" });
+        return response.ok;
+    } catch (error) {
+        return false;
+    }
+}
+
+function clearHeroBox3d(hero) {
+    if (!hero) return;
+    const existing = hero.querySelector(".game-hero__box3d");
+    if (existing) existing.remove();
+    hero.classList.remove("game-hero--has-box3d");
+    delete hero.dataset.box3dSlug;
+}
+
+async function renderHeroBox3d(game) {
+    const hero = document.querySelector(".game-hero");
+    if (!hero) return;
+    const heroInner = hero.querySelector(".game-hero__inner");
+    if (!heroInner) return;
+
+    const slug = resolveBox3dSlug(game);
+    if (!slug) {
+        clearHeroBox3d(hero);
+        return;
+    }
+
+    hero.dataset.box3dSlug = slug;
+    const path = resolveBox3dPath(slug);
+    const exists = await checkBox3dExists(path);
+    if (hero.dataset.box3dSlug !== slug) return;
+
+    if (!exists) {
+        clearHeroBox3d(hero);
+        return;
+    }
+
+    let box = hero.querySelector(".game-hero__box3d");
+    let img = box ? box.querySelector("img") : null;
+    if (!box) {
+        box = document.createElement("div");
+        box.className = "game-hero__box3d";
+        img = document.createElement("img");
+        img.className = "game-hero__box3d-img";
+        img.loading = "lazy";
+        img.decoding = "async";
+        box.appendChild(img);
+        heroInner.appendChild(box);
+    }
+    if (img) {
+        img.src = path;
+        img.alt = `${game?.title || "Game"} 3D box art`;
+    }
+    hero.classList.add("game-hero--has-box3d");
 }
 
 function ensureMediaPanel() {
