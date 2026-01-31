@@ -724,6 +724,37 @@
     flex-wrap: wrap;
 }
 
+.admin-box3d-controls {
+    margin-bottom: 8px;
+}
+
+.admin-box3d-preview {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.admin-box3d-frame {
+    width: min(180px, 40vw);
+    aspect-ratio: 2 / 3;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.18);
+    background: rgba(0,0,0,0.6);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.6);
+}
+
+.admin-box3d-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
 .admin-btn {
     padding: 8px 10px;
     border-radius: 10px;
@@ -731,6 +762,11 @@
     background: rgba(0,0,0,0.6);
     color: var(--ccg-text-light);
     cursor: pointer;
+}
+
+.admin-btn[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .admin-advanced {
@@ -840,6 +876,14 @@
     .admin-edit-banner {
         flex-direction: column;
         align-items: flex-start;
+    }
+}
+
+@media (max-width: 720px) {
+    .admin-box3d-preview {
+        grid-template-columns: 1fr;
+        text-align: center;
+        justify-items: center;
     }
 }
 
