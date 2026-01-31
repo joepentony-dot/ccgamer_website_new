@@ -3,8 +3,6 @@
    Dedicated styling for emulator cards, setup steps and helper tips.
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
 :root {
     --emu-electric: var(--accent);
     --emu-amber: #ffcc00;
@@ -14,6 +12,25 @@
 
 .ccg-page--emulation .ccg-main {
     padding-top: 8px;
+}
+
+.ccg-page--emulation .ccg-main,
+.ccg-page--emulation .ccg-section-title,
+.ccg-page--emulation .ccg-info-panel,
+.ccg-page--emulation .emu-hero-deck,
+.ccg-page--emulation .emu-marquee,
+.ccg-page--emulation .emu-burst-card,
+.ccg-page--emulation .emu-intel-card,
+.ccg-page--emulation .emu-callout {
+    text-align: left;
+}
+
+.ccg-page--emulation .ccg-body-text,
+.ccg-page--emulation .ccg-emulation-list,
+.ccg-page--emulation .ccg-emulation-steps,
+.ccg-page--emulation .emu-burst-list,
+.ccg-page--emulation .emu-intel-list {
+    max-width: 70ch;
 }
 
 .emu-shell {
@@ -27,7 +44,7 @@
 
 .emu-hero-deck {
     margin: 8px 0 18px;
-    padding: clamp(14px, 2.4vw, 22px);
+    padding: clamp(12px, 2.2vw, 18px);
     border-radius: 18px;
     background:
         radial-gradient(circle at 18% 20%, rgba(var(--accent-rgb),0.25), transparent 46%),
@@ -55,7 +72,7 @@
 }
 
 .emu-marquee__kicker {
-    font-family: 'Press Start 2P', var(--ccg-font-main);
+    font-family: var(--ccg-font-main);
     font-size: clamp(0.52rem, 1.4vw, 0.8rem);
     letter-spacing: 0.14em;
     color: var(--emu-amber);
@@ -64,14 +81,15 @@
 
 .emu-marquee__title {
     margin: 12px 0 8px;
-    font-family: 'Press Start 2P', var(--ccg-font-main);
+    font-family: var(--ccg-font-main);
     font-size: clamp(1.1rem, 3vw, 1.7rem);
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     color: #fff;
     text-shadow: 0 0 18px rgba(var(--accent-rgb),0.5), 0 0 32px rgba(0,0,0,0.8);
 }
 
 .emu-marquee__text {
+    max-width: 62ch;
     color: var(--ccg-text-soft);
     line-height: 1.6;
 }
@@ -363,9 +381,9 @@
 }
 
 @media (max-width: 640px) {
-    .emu-link-row { justify-content: center; }
+    .emu-link-row { justify-content: flex-start; }
     .emu-hero-grid { grid-template-columns: 1fr; }
-    .emu-cta-row { justify-content: center; }
+    .emu-cta-row { justify-content: flex-start; }
     .emu-intel-grid { grid-template-columns: 1fr; }
 }
 
