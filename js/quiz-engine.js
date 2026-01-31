@@ -34,6 +34,8 @@
     const quizState = {
         sets: [],
         currentSetId: null,
+        currentSetUrl: null,
+        currentSetLabel: null,
         questions: [],
         currentIndex: 0,
         score: 0,
@@ -334,6 +336,7 @@
         quizState.sets = Array.isArray(sets) ? sets : [];
         renderPackSelect(quizState.sets);
         updateSelectedPackLabel();
+        updateStartButtonState();
     }
 
     function requestQuizSets() {
@@ -688,6 +691,12 @@
 
         track("quiz_start", { setId: quizState.currentSetId });
         playClickSfx();
+
+        if (quizState.currentSetUrl) {
+            window.location.href = quizState.currentSetUrl;
+            return;
+        }
+
         requestQuestionsForCurrentSet();
     }
 
@@ -763,7 +772,6 @@
             container.appendChild(emptyBtn);
         }
 
-        let defaultId = null;
         sets.forEach((set) => {
             const btn = document.createElement("button");
             btn.type = "button";
@@ -775,32 +783,64 @@
             btn.textContent = count ? `${set.name} (${count} Qs)` : set.name;
             btn.addEventListener("click", () => {
                 quizState.currentSetId = set.id;
+                quizState.currentSetUrl = null;
+                quizState.currentSetLabel = null;
                 setActivePackButton(set.id);
                 updateSelectedPackLabel();
+                updateStartButtonState();
                 playClickSfx();
                 maybeRevealStartButton();
             });
             container.appendChild(btn);
-
-            if (defaultId === null) {
-                defaultId = set.id;
-            }
         });
 
         if (externalPacks.length) {
-            externalPacks.forEach((node) => container.appendChild(node));
+            externalPacks.forEach((node) => {
+                container.appendChild(node);
+            });
+            bindExternalPackButtons(container);
         }
 
-        if (defaultId !== null) {
-            quizState.currentSetId = defaultId;
-            setActivePackButton(defaultId);
+        if (quizState.currentSetId) {
+            setActivePackButton(quizState.currentSetId);
         }
+
+        updateStartButtonState();
     }
+
+    function bindExternalPackButtons(container) {
+        const externalButtons = Array.from(
+            container.querySelectorAll("[data-pack-external]")
+        );
+        externalButtons.forEach((btn) => {
+            if (btn.tagName === "A") {
+                btn.addEventListener("click", (event) => event.preventDefault());
+            }
+            if (btn instanceof HTMLButtonElement) {
+                btn.type = "button";
+            }
+            btn.addEventListener("click", () => {
+                const packId = btn.dataset.packId || btn.dataset.packExternal;
+                const packHref = btn.dataset.packHref || btn.getAttribute("href");
+                quizState.currentSetId = packId;
+                quizState.currentSetUrl = packHref;
+                quizState.currentSetLabel = btn.dataset.packLabel || btn.textContent.trim();
+                setActivePackButton(packId);
+                updateSelectedPackLabel();
+                updateStartButtonState();
+                playClickSfx();
+                maybeRevealStartButton();
+            });
+        });
+    }
+
 
     function updateSelectedPackLabel() {
         const activeId = quizState.currentSetId;
         const pack = quizState.sets.find((p) => String(p.id) === String(activeId));
         const label = (() => {
+            if (!activeId) return "Pick a pack to begin";
+            if (quizState.currentSetUrl && quizState.currentSetLabel) return quizState.currentSetLabel;
             if (!pack) return "Pick a pack to begin";
             const count = typeof pack.questionCount === "number"
                 ? pack.questionCount
@@ -811,6 +851,15 @@
         qsa("[data-quiz-active-pack]").forEach((el) => {
             el.textContent = label;
         });
+    }
+
+    function updateStartButtonState() {
+        const startBtn = qs("#quiz-start-btn");
+        if (!startBtn) return;
+        const hasSelection = Boolean(quizState.currentSetId);
+        startBtn.disabled = !hasSelection;
+        startBtn.classList.toggle("is-armed", hasSelection);
+        startBtn.setAttribute("aria-disabled", hasSelection ? "false" : "true");
     }
 
     function setActivePackButton(setId) {

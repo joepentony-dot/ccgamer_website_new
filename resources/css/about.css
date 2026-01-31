@@ -76,6 +76,62 @@
     gap: 0.75rem;
 }
 
+
+.ccg-page--about .ccg-info-hero {
+    padding: clamp(1.4rem, 2.4vw, 1.9rem);
+}
+
+.about-shell {
+    gap: clamp(18px, 2.6vw, 28px);
+}
+
+.about-panel {
+    padding: clamp(1rem, 2vw, 1.25rem);
+}
+
+.about-panel__body {
+    gap: 1rem;
+}
+
+.about-panel__body--split {
+    gap: clamp(1rem, 2.4vw, 1.4rem);
+}
+
+.about-figure img {
+    width: 100%;
+    height: auto;
+    max-height: clamp(200px, 32vw, 320px);
+    object-fit: contain;
+}
+
+.about-gallery .about-figure img {
+    max-height: clamp(150px, 22vw, 220px);
+    object-fit: cover;
+}
+
+.about-gallery--wide .about-figure img {
+    max-height: clamp(170px, 24vw, 240px);
+    object-fit: cover;
+}
+
+.ccg-page--about .ccg-btn--ghost,
+.ccg-page--about .ccg-btn--secondary {
+    border-color: rgba(var(--accent-rgb), 0.45);
+    background: linear-gradient(135deg, rgba(var(--accent-rgb),0.2), rgba(0,0,0,0.85));
+    box-shadow: 0 12px 26px rgba(0,0,0,0.65), 0 0 18px rgba(var(--accent-rgb),0.3);
+}
+
+.ccg-page--about .ccg-btn--ghost:hover,
+.ccg-page--about .ccg-btn--secondary:hover,
+.ccg-page--about .ccg-btn--ghost:focus-visible,
+.ccg-page--about .ccg-btn--secondary:focus-visible {
+    box-shadow: 0 16px 34px rgba(0,0,0,0.7), 0 0 28px rgba(var(--accent-rgb),0.4);
+}
+
+.ccg-page--about .ccg-btn {
+    min-height: 46px;
+}
+
 @media (max-width: 720px) {
     .about-shell {
         gap: var(--ccg-section-gap-mobile);
