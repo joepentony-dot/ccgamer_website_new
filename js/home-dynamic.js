@@ -569,7 +569,7 @@ function buildVideoCard(game, systemLabel, index) {
             <div class="home-video-card__overlay">
                 <span class="home-video-card__badge">${systemLabel}</span>
                 <div class="home-video-card__thumb" style="background-image: url('${thumb}')">
-                    <button class="home-video-card__play" type="button" data-ccg-video-play ${hasVideo ? "" : "disabled"}>Play video</button>
+                    <button class="ccg-btn ccg-btn--ghost home-video-card__play" type="button" data-ccg-video-play ${hasVideo ? "" : "disabled"}>Play video</button>
                 </div>
             </div>
         </div>

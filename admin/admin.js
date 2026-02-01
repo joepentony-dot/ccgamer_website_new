@@ -1,14 +1,16 @@
 /* ============================================================
    OMEGA ADMIN CONTROL SYSTEM
    ------------------------------------------------------------
-   • Client-side CMS for games.json
-   • Live validation + safe exports
-   • SEO stub generation
-   • Undo buffer + change previews
+   • Wizard + workspace layout
+   • Guided editor with validation
+   • Safe exports + SEO stub generation
    ============================================================ */
 
 (() => {
     "use strict";
+
+    // CLIENT-SIDE ONLY: not real security, just discourages casual browsing.
+    const ADMIN_GATE_PASSPHRASE = "c64";
 
     const SITE_BASE_URL = "https://www.cheekycommodoregamer.co.uk";
     const GAMES_JSON_URL = "../games/games.json";
@@ -65,19 +67,34 @@
         "developer"
     ];
 
+    const BOX3D_FOLDER = "resources/images/games/boxes-3d/";
+    const BOX3D_MAX_WIDTH = 420;
+    const BOX3D_QUALITY = 0.82;
+
+    const STEP_IDS = [1, 2, 3, 4, 5, 6];
+    const SUBSTEPS = ["identity", "classification", "media", "editorial", "credits", "references"];
+
     const state = {
         baseGames: [],
         workingGames: [],
         draftGame: null,
         selectedIndex: null,
         history: [],
-        validation: { errors: [], warnings: [] }
+        validation: { errors: [], warnings: [] },
+        stagedThumb: null,
+        stagedBox3d: null,
+        currentStep: 1,
+        currentSubstep: "identity"
     };
 
     const elements = {
         status: document.getElementById("adminStatus"),
         statusDetail: document.getElementById("adminStatusDetail"),
         source: document.getElementById("adminSource"),
+        libraryStatus: document.getElementById("adminLibraryStatus"),
+        currentGame: document.getElementById("adminCurrentGame"),
+        draftState: document.getElementById("adminDraftState"),
+        validationSummary: document.getElementById("adminValidationSummary"),
         fetchBtn: document.getElementById("adminFetch"),
         uploadInput: document.getElementById("adminUpload"),
         clearBtn: document.getElementById("adminClear"),
@@ -85,6 +102,7 @@
         undoBtn: document.getElementById("adminUndo"),
         discardBtn: document.getElementById("adminDiscard"),
         applyBtn: document.getElementById("adminApply"),
+        jumpExportBtn: document.getElementById("adminJumpExport"),
         copyJsonBtn: document.getElementById("adminCopyJson"),
         downloadJsonBtn: document.getElementById("adminDownloadJson"),
         downloadLibraryBtn: document.getElementById("adminDownloadLibrary"),
@@ -119,7 +137,39 @@
         form: document.getElementById("adminEditor"),
         jsonPreview: document.getElementById("adminJsonPreview"),
         changeList: document.querySelector("[data-admin-change-list]"),
-        descriptionCount: document.querySelector("[data-admin-description-count]")
+        descriptionCount: document.querySelector("[data-admin-description-count]"),
+        substepStatus: document.getElementById("adminSubstepStatus"),
+        stepButtons: Array.from(document.querySelectorAll(".admin-step-btn")),
+        stepPanels: Array.from(document.querySelectorAll("[data-step-panel]")),
+        contextPanels: Array.from(document.querySelectorAll("[data-context]")),
+        taskNewBtn: document.getElementById("adminTaskNew"),
+        taskEditBtn: document.getElementById("adminTaskEdit"),
+        taskFixBtn: document.getElementById("adminTaskFix"),
+        previewGameLink: document.getElementById("adminPreviewGameLink"),
+        previewThumbLink: document.getElementById("adminPreviewThumbLink"),
+        previewManualLink: document.getElementById("adminPreviewManualLink"),
+        previewDiskLink: document.getElementById("adminPreviewDiskLink"),
+        missingFilter: document.getElementById("adminMissingFilter"),
+        missingRefresh: document.getElementById("adminMissingRefresh"),
+        missingList: document.getElementById("adminMissingList"),
+        missingHint: document.getElementById("adminMissingHint"),
+        cmdSlug: document.getElementById("adminCmdSlug"),
+        cmdSitemap: document.getElementById("adminCmdSitemap"),
+        cmdGit: document.getElementById("adminCmdGit"),
+        cmdGsc: document.getElementById("adminCmdGsc"),
+        copySlugCmd: document.getElementById("adminCopySlugCmd"),
+        copySitemapCmd: document.getElementById("adminCopySitemapCmd"),
+        copyGitCmd: document.getElementById("adminCopyGitCmd"),
+        copyGscCmd: document.getElementById("adminCopyGscCmd"),
+        box3dUpload: document.getElementById("adminBox3dUpload"),
+        box3dDownload: document.getElementById("adminBox3dDownload"),
+        box3dPreview: document.getElementById("adminBox3dPreview"),
+        box3dStatus: document.getElementById("adminBox3dStatus"),
+        box3dFilename: document.getElementById("adminBox3dFilename"),
+        gate: document.getElementById("adminGate"),
+        gateInput: document.getElementById("adminGateInput"),
+        gateUnlock: document.getElementById("adminGateUnlock"),
+        gateStatus: document.getElementById("adminGateStatus")
     };
 
     const inputs = {
@@ -160,23 +210,24 @@
         lemonList: document.getElementById("gameLemonList"),
         autoId: document.getElementById("adminAutoId"),
         autoSort: document.getElementById("adminAutoSort"),
-        autoThumb: document.getElementById("adminThumbAuto")
+        autoThumb: document.getElementById("adminThumbAuto"),
+        thumbUpload: document.getElementById("gameThumbUpload"),
+        thumbDownload: document.getElementById("gameThumbDownload")
     };
 
     const emptyNotices = Array.from(document.querySelectorAll("[data-admin-empty]"));
-
     const listManagers = [];
 
     const clone = (value) => JSON.parse(JSON.stringify(value));
 
-    const setStatus = (message, detail = "", state = "idle") => {
+    const setStatus = (message, detail = "", stateLabel = "idle") => {
         if (elements.status) {
             elements.status.textContent = message;
-            elements.status.dataset.state = state;
+            elements.status.dataset.state = stateLabel;
         }
         if (elements.statusDetail) {
             elements.statusDetail.textContent = detail;
-            elements.statusDetail.dataset.state = state;
+            elements.statusDetail.dataset.state = stateLabel;
         }
     };
 
@@ -217,7 +268,7 @@
     const normalizeGame = (raw) => {
         const base = defaultGame();
         const credits = raw && raw.credits ? raw.credits : {};
-        const normalized = {
+        return {
             ...base,
             ...raw,
             system: String(raw.system || base.system).trim() || "C64",
@@ -246,8 +297,6 @@
             },
             developer: String(raw.developer || credits.developer || "").trim()
         };
-
-        return normalized;
     };
 
     const isValidUrl = (value) => {
@@ -328,10 +377,10 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${title} | Cheeky Commodore Gamer</title>
+    <title>${title} |  Commodore Gamer</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${canonicalUrl}" />
-    <meta property="og:title" content="${title} | Cheeky Commodore Gamer" />
+    <meta property="og:title" content="${title} |  Commodore Gamer" />
     <meta property="og:description" content="${escapeHtml(description)}" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="${canonicalUrl}" />
@@ -425,7 +474,7 @@
             </section>
         </main>
         <footer class="ccg-footer">
-            <p class="ccg-footer__text">© <span data-ccg-year></span> Cheeky Commodore Gamer.</p>
+            <p class="ccg-footer__text">© <span data-ccg-year></span>  Commodore Gamer.</p>
         </footer>
     </div>
     <script src="../js/ccg-base.js" defer></script>
@@ -445,11 +494,11 @@
         const missingRatings = state.workingGames.filter(game => !game.ccg_rating).length;
         const missingPdfs = state.workingGames.filter(game => !game.pdf).length;
         const missingCredits = state.workingGames.filter(game => !hasCredits(game)).length;
-        elements.totalCount.textContent = total;
-        elements.missingRatings.textContent = missingRatings;
-        elements.missingPdfs.textContent = missingPdfs;
-        elements.missingCredits.textContent = missingCredits;
-        elements.warningCount.textContent = state.validation.warnings.length;
+        if (elements.totalCount) elements.totalCount.textContent = total;
+        if (elements.missingRatings) elements.missingRatings.textContent = missingRatings;
+        if (elements.missingPdfs) elements.missingPdfs.textContent = missingPdfs;
+        if (elements.missingCredits) elements.missingCredits.textContent = missingCredits;
+        if (elements.warningCount) elements.warningCount.textContent = state.validation.warnings.length;
     };
 
     const hasCredits = (game) => {
@@ -468,6 +517,7 @@
 
     const renderValidation = () => {
         const { errors, warnings } = state.validation;
+        if (!elements.errorList || !elements.warningList) return;
         elements.errorList.innerHTML = "";
         elements.warningList.innerHTML = "";
         if (!errors.length && !warnings.length) {
@@ -503,6 +553,7 @@
         state.validation = validateLibrary(state.workingGames);
         refreshDashboard();
         renderValidation();
+        updateStatusBar();
     };
 
     const validateLibrary = (games) => {
@@ -601,9 +652,12 @@
         renderPreview();
         renderChangeList();
         updateDescriptionCount();
+        updatePreviewLinks();
+        updateBox3dFilenameDisplay();
 
         const draftValidation = validateDraft(state.draftGame);
         updateFieldHighlights(state.draftGame, draftValidation);
+        updateStatusBar();
         if (draftValidation.errors.length || draftValidation.warnings.length) {
             setStatus(
                 "Draft validation running.",
@@ -611,6 +665,28 @@
                 draftValidation.errors.length ? "error" : "warning"
             );
         }
+    };
+
+    const updateStatusBar = () => {
+        const loaded = state.workingGames.length > 0;
+        if (elements.libraryStatus) {
+            elements.libraryStatus.textContent = loaded ? "Loaded" : "Not loaded";
+        }
+        if (elements.currentGame) {
+            if (state.draftGame) {
+                elements.currentGame.textContent = `${state.draftGame.title || "Untitled"} (${state.draftGame.slug || state.draftGame.id || "draft"})`;
+            } else {
+                elements.currentGame.textContent = "None";
+            }
+        }
+        if (elements.draftState) {
+            const dirty = state.draftGame && diffGame(state.selectedIndex !== null ? state.workingGames[state.selectedIndex] : null, state.draftGame).length > 0;
+            elements.draftState.textContent = dirty ? "Unsaved changes" : "Clean";
+        }
+        if (elements.validationSummary) {
+            elements.validationSummary.textContent = `${state.validation.errors.length} errors / ${state.validation.warnings.length} warnings`;
+        }
+        updateStepAvailability();
     };
 
     const getSelectedGenres = () => {
@@ -650,11 +726,12 @@
     };
 
     const setGenreCheckbox = (tag, checked) => {
-        const checkbox = elements.genreGrid.querySelector(`input[value=\"${tag}\"]`);
+        const checkbox = elements.genreGrid.querySelector(`input[value="${tag}"]`);
         if (checkbox) checkbox.checked = checked;
     };
 
     const renderGenres = () => {
+        if (!elements.genreGrid) return;
         elements.genreGrid.innerHTML = "";
         CANONICAL_GENRES.forEach((genre) => {
             const label = document.createElement("label");
@@ -708,9 +785,12 @@
         renderPreview();
         renderChangeList();
         updateDescriptionCount();
+        updatePreviewLinks();
+        updateBox3dFilenameDisplay();
 
         const draftValidation = validateDraft(state.draftGame);
         updateFieldHighlights(state.draftGame, draftValidation);
+        updateStatusBar();
     };
 
     const updateFieldHighlights = (draft, validation) => {
@@ -733,12 +813,15 @@
         const hasLemonIssues = draft.lemon.some(link => !isValidUrl(link));
         inputs.lemonInput.classList.toggle("is-error", hasLemonIssues);
 
+        inputs.year.classList.toggle("is-warning", !draft.year);
+
         if (validation.errors.length === 0 && validation.warnings.length === 0) {
             setStatus("Draft is clean.", "No validation issues detected.", "success");
         }
     };
 
     const renderPreview = () => {
+        if (!elements.jsonPreview) return;
         if (!state.draftGame) {
             elements.jsonPreview.textContent = "{}";
             return;
@@ -748,6 +831,7 @@
     };
 
     const renderChangeList = () => {
+        if (!elements.changeList) return;
         elements.changeList.innerHTML = "";
         if (!state.draftGame) {
             const msg = document.createElement("p");
@@ -797,7 +881,8 @@
         return value === "" || value === null || value === undefined ? "(empty)" : String(value);
     };
 
-    const renderList = (listEl, values, emptyKey) => {
+    const renderList = (listEl, values) => {
+        if (!listEl) return;
         listEl.innerHTML = "";
         (values || []).forEach((value) => {
             const li = document.createElement("li");
@@ -851,7 +936,7 @@
                 return;
             }
             values.push(value);
-            renderList(listEl, values, "");
+            renderList(listEl, values);
             inputEl.value = "";
             updateDraft();
         };
@@ -911,11 +996,17 @@
     const selectGame = (game) => {
         const index = state.workingGames.findIndex(item => item.id === game.id && item.slug === game.slug);
         if (index === -1) return;
+        selectGameByIndex(index);
+    };
+
+    const selectGameByIndex = (index) => {
         state.selectedIndex = index;
         state.draftGame = clone(state.workingGames[index]);
         elements.editState.textContent = `Draft: ${state.draftGame.title || state.draftGame.id || "Untitled"}`;
         setStatus("Draft loaded.", "You are editing an existing entry.", "success");
+        resetBox3dStage();
         renderEditor();
+        setStep(3);
     };
 
     const createNewEntry = () => {
@@ -923,7 +1014,10 @@
         state.draftGame = defaultGame();
         elements.editState.textContent = "Draft: new entry";
         setStatus("New draft created.", "Fill in the fields and apply changes to add it to the library.", "success");
+        resetBox3dStage();
         renderEditor();
+        setStep(3);
+        setSubstep("identity");
     };
 
     const applyChanges = () => {
@@ -972,6 +1066,9 @@
         elements.editState.textContent = "Draft: none";
         renderPreview();
         renderChangeList();
+        updatePreviewLinks();
+        updateStatusBar();
+        resetBox3dStage();
         setStatus("Draft discarded.", "Select a game or create a new entry.", "warning");
     };
 
@@ -1085,6 +1182,8 @@
         renderGameList();
         renderPreview();
         renderChangeList();
+        updatePreviewLinks();
+        setStep(2);
     };
 
     const fetchGames = async () => {
@@ -1127,33 +1226,460 @@
         elements.source.textContent = "Source: none.";
         elements.gameList.innerHTML = "<tr><td colspan=\"5\">Load games.json to view entries.</td></tr>";
         elements.resultCount.textContent = "0";
-        elements.totalCount.textContent = "0";
-        elements.warningCount.textContent = "0";
-        elements.missingRatings.textContent = "0";
-        elements.missingPdfs.textContent = "0";
-        elements.missingCredits.textContent = "0";
+        if (elements.totalCount) elements.totalCount.textContent = "0";
+        if (elements.warningCount) elements.warningCount.textContent = "0";
+        if (elements.missingRatings) elements.missingRatings.textContent = "0";
+        if (elements.missingPdfs) elements.missingPdfs.textContent = "0";
+        if (elements.missingCredits) elements.missingCredits.textContent = "0";
         renderPreview();
         renderChangeList();
         renderValidation();
+        updatePreviewLinks();
+        updateStatusBar();
         setStatus("Session cleared.", "Load a new file to continue.", "warning");
+        resetBox3dStage();
+        setStep(1);
     };
 
     const handleFilters = () => renderGameList();
+
+    const setStep = (step) => {
+        if (!STEP_IDS.includes(step)) return;
+        const targetBtn = elements.stepButtons.find(btn => Number(btn.dataset.step) === step);
+        if (targetBtn && targetBtn.disabled) return;
+        state.currentStep = step;
+        elements.stepButtons.forEach((btn) => {
+            const isActive = Number(btn.dataset.step) === step;
+            btn.classList.toggle("is-active", isActive);
+            btn.setAttribute("aria-selected", String(isActive));
+        });
+        elements.stepPanels.forEach((panel) => {
+            panel.hidden = Number(panel.dataset.stepPanel) !== step;
+        });
+        elements.contextPanels.forEach((panel) => {
+            panel.hidden = Number(panel.dataset.context) !== step;
+        });
+    };
+
+    const updateStepAvailability = () => {
+        const loaded = state.workingGames.length > 0;
+        const hasDraft = Boolean(state.draftGame);
+        elements.stepButtons.forEach((btn) => {
+            const step = Number(btn.dataset.step);
+            let enabled = true;
+            if (step === 1) enabled = true;
+            if (step === 2) enabled = loaded;
+            if (step === 3) enabled = loaded && hasDraft;
+            if (step === 4 || step === 5 || step === 6) enabled = loaded;
+            btn.disabled = !enabled;
+        });
+    };
+
+    const setSubstep = (tab) => {
+        if (!SUBSTEPS.includes(tab)) return;
+        state.currentSubstep = tab;
+        elements.tabButtons.forEach((btn) => {
+            const isActive = btn.dataset.adminTab === tab;
+            btn.classList.toggle("is-active", isActive);
+            btn.setAttribute("aria-selected", String(isActive));
+        });
+        elements.tabPanels.forEach((panel) => {
+            panel.hidden = panel.dataset.adminPanel !== tab;
+        });
+        if (elements.substepStatus) {
+            elements.substepStatus.textContent = tab.charAt(0).toUpperCase() + tab.slice(1);
+        }
+    };
+
+    const validateIdentitySubstep = () => {
+        if (!state.draftGame) return [];
+        const errors = [];
+        const title = inputs.title.value.trim();
+        const id = inputs.id.value.trim();
+        const slug = inputs.slug.value.trim();
+        if (!title) errors.push("Title is required.");
+        if (!id) errors.push("ID is required.");
+        if (!slug) errors.push("Slug is required.");
+        if (id && !CLEAN_ID_REGEX.test(id)) errors.push("ID format is invalid.");
+        if (slug && !CLEAN_SLUG_REGEX.test(slug)) errors.push("Slug format is invalid.");
+        return errors;
+    };
+
+    const handleSubstepNext = (event) => {
+        const next = event.currentTarget.dataset.substepNext;
+        if (state.currentSubstep === "identity") {
+            const errors = validateIdentitySubstep();
+            const alert = event.currentTarget.closest(".admin-form-section").querySelector("[data-substep-alert]");
+            if (alert) {
+                alert.textContent = errors.length ? errors.join(" ") : "";
+            }
+            if (errors.length) return;
+        }
+        setSubstep(next);
+    };
 
     const setupTabs = () => {
         elements.tabButtons.forEach((button) => {
             button.addEventListener("click", () => {
                 const tab = button.dataset.adminTab;
-                elements.tabButtons.forEach((btn) => {
-                    const isActive = btn === button;
-                    btn.classList.toggle("is-active", isActive);
-                    btn.setAttribute("aria-selected", String(isActive));
-                });
-                elements.tabPanels.forEach((panel) => {
-                    panel.hidden = panel.dataset.adminPanel !== tab;
-                });
+                setSubstep(tab);
             });
         });
+    };
+
+    const updatePreviewLinks = () => {
+        const draft = state.draftGame;
+        const slug = draft ? (draft.slug || generateSlug(draft.title)) : "";
+        const thumb = draft ? draft.thumbnail : "";
+        const manual = draft ? draft.pdf : "";
+        const disk = draft && draft.disk && draft.disk.length ? draft.disk[0] : "";
+
+        if (elements.previewGameLink) {
+            elements.previewGameLink.href = slug ? `/games/${slug}/` : "#";
+            elements.previewGameLink.setAttribute("aria-disabled", String(!slug));
+        }
+        if (elements.previewThumbLink) {
+            elements.previewThumbLink.href = thumb ? `/${thumb}` : "#";
+            elements.previewThumbLink.setAttribute("aria-disabled", String(!thumb));
+        }
+        if (elements.previewManualLink) {
+            elements.previewManualLink.href = manual || "#";
+            elements.previewManualLink.setAttribute("aria-disabled", String(!manual));
+        }
+        if (elements.previewDiskLink) {
+            elements.previewDiskLink.href = disk || "#";
+            elements.previewDiskLink.setAttribute("aria-disabled", String(!disk));
+        }
+    };
+
+    const copyToClipboard = async (text) => {
+        const value = String(text || "").trim();
+        if (!value) return false;
+        try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(value);
+                return true;
+            }
+        } catch (e) {}
+        try {
+            const ta = document.createElement("textarea");
+            ta.value = value;
+            ta.setAttribute("readonly", "");
+            ta.style.position = "absolute";
+            ta.style.left = "-9999px";
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand("copy");
+            document.body.removeChild(ta);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    };
+
+    const getMissingCandidates = (filterKey) => {
+        const games = Array.isArray(state.workingGames) ? state.workingGames : [];
+        const results = [];
+
+        const missingMap = {
+            missing_thumbnail: { label: "thumbnail", substep: "media" },
+            missing_pdf: { label: "PDF/manual", substep: "media" },
+            missing_disks: { label: "disk links", substep: "media" },
+            missing_rating: { label: "rating", substep: "editorial" },
+            missing_year: { label: "year", substep: "identity" },
+            missing_publisher: { label: "publisher/developer", substep: "credits" },
+            missing_description: { label: "description", substep: "editorial" },
+            missing_video: { label: "YouTube/video", substep: "media" },
+            missing_system: { label: "system/platform", substep: "identity" },
+            missing_slug: { label: "slug", substep: "identity" }
+        };
+
+        for (let i = 0; i < games.length; i++) {
+            const g = games[i] || {};
+            const title = (g.title || "").toString().trim();
+            const slug = generateSlug(g.slug || g.title || "");
+            const thumb = (g.thumbnail || g.thumb || g.cover || g.image || "").toString().trim();
+            const pdf = (g.pdf || g.manual || g.instructions || "").toString().trim();
+            const disks = g.disks || g.disk || g.diskLinks || g.downloads || [];
+            const rating = g.rating ?? g.ccgRating ?? g.score ?? g.ccg_rating;
+            const year = (g.year || g.releaseYear || "").toString().trim();
+            const pub = (g.publisher || g.developer || g.company || "").toString().trim();
+            const desc = (g.description || g.desc || "").toString().trim();
+            const video = (g.youtube || g.youtubeId || g.video || g.videoId || g.videoid || "").toString().trim();
+            const system = (g.system || g.platform || "").toString().trim();
+
+            let ok = false;
+
+            switch (filterKey) {
+                case "missing_thumbnail":
+                    ok = !thumb;
+                    break;
+                case "missing_pdf":
+                    ok = !pdf;
+                    break;
+                case "missing_disks":
+                    ok = !Array.isArray(disks) || disks.length === 0;
+                    break;
+                case "missing_rating":
+                    ok = rating === null || rating === undefined || String(rating).trim() === "";
+                    break;
+                case "missing_year":
+                    ok = !year || year.toLowerCase().includes("unknown");
+                    break;
+                case "missing_publisher":
+                    ok = !pub || pub.toLowerCase().includes("unknown");
+                    break;
+                case "missing_description":
+                    ok = !desc;
+                    break;
+                case "missing_video":
+                    ok = !video;
+                    break;
+                case "missing_system":
+                    ok = !system;
+                    break;
+                case "missing_slug":
+                    ok = !(g.slug && String(g.slug).trim());
+                    break;
+                default:
+                    ok = false;
+            }
+
+            if (ok) {
+                results.push({
+                    index: i,
+                    title: title || "(untitled)",
+                    slug: slug || "(no-slug)",
+                    missing: missingMap[filterKey]?.label || "missing data",
+                    substep: missingMap[filterKey]?.substep || "identity"
+                });
+            }
+        }
+
+        return results;
+    };
+
+    const renderMissingList = () => {
+        if (!elements.missingList || !elements.missingFilter) return;
+        const key = elements.missingFilter.value;
+        const items = getMissingCandidates(key);
+
+        elements.missingList.innerHTML = "";
+        if (elements.missingHint) elements.missingHint.hidden = true;
+
+        if (!items.length) {
+            const li = document.createElement("li");
+            li.textContent = "Nothing found for this category 🎉";
+            elements.missingList.appendChild(li);
+            return;
+        }
+
+        items.slice(0, 200).forEach((it) => {
+            const li = document.createElement("li");
+            li.className = "admin-missing-item";
+            li.innerHTML = `
+                <div>
+                    <strong>${escapeHtml(it.title)}</strong>
+                    <span class="admin-muted">(${escapeHtml(it.slug)})</span>
+                    <div class="admin-muted">Missing: ${escapeHtml(it.missing)}</div>
+                </div>
+                <button type="button" class="ccg-btn ccg-btn--ghost" data-miss-index="${it.index}" data-miss-substep="${it.substep}">Load into editor</button>
+            `;
+            elements.missingList.appendChild(li);
+        });
+
+        if (items.length > 200 && elements.missingHint) {
+            elements.missingHint.hidden = false;
+            elements.missingHint.textContent = `Showing first 200 of ${items.length}. Narrow your filter, then Find again.`;
+        }
+    };
+
+    const handleMissingListClick = (event) => {
+        const button = event.target.closest("[data-miss-index]");
+        if (!button) return;
+        const index = Number(button.dataset.missIndex);
+        const substep = button.dataset.missSubstep;
+        if (Number.isNaN(index)) return;
+        selectGameByIndex(index);
+        setSubstep(substep || "identity");
+        setStep(3);
+    };
+
+    const guessThumbFilename = (slug, file) => {
+        const safeSlug = generateSlug(slug || "");
+        const rawName = file && file.name ? String(file.name) : "";
+        const ext = (rawName.split(".").pop() || "webp").toLowerCase();
+        const safeExt = ["webp", "png", "jpg", "jpeg"].includes(ext) ? ext : "webp";
+        return `${safeSlug || "thumbnail"}.${safeExt}`;
+    };
+
+    const getBox3dSlug = () => generateSlug(inputs.slug.value || inputs.title.value || inputs.id.value || "");
+
+    const updateBox3dFilenameDisplay = () => {
+        if (!elements.box3dFilename) return "";
+        const slug = getBox3dSlug();
+        const filename = slug ? `${slug}.webp` : "slug.webp";
+        elements.box3dFilename.textContent = filename;
+        if (state.stagedBox3d && slug && state.stagedBox3d.slug !== slug) {
+            if (elements.box3dStatus) {
+                elements.box3dStatus.textContent = "Slug changed. Re-export to update the filename.";
+            }
+        }
+        return filename;
+    };
+
+    const resetBox3dStage = (message = "No 3D box staged yet.") => {
+        if (state.stagedBox3d && state.stagedBox3d.url) {
+            URL.revokeObjectURL(state.stagedBox3d.url);
+        }
+        state.stagedBox3d = null;
+        if (elements.box3dPreview) {
+            elements.box3dPreview.removeAttribute("src");
+            elements.box3dPreview.hidden = true;
+        }
+        if (elements.box3dStatus) {
+            elements.box3dStatus.textContent = message;
+        }
+        if (elements.box3dDownload) {
+            elements.box3dDownload.disabled = true;
+        }
+    };
+
+    const loadImageFile = (file) => new Promise((resolve, reject) => {
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+            URL.revokeObjectURL(url);
+            resolve(img);
+        };
+        img.onerror = () => {
+            URL.revokeObjectURL(url);
+            reject(new Error("Image could not be loaded."));
+        };
+        img.src = url;
+    });
+
+    const processBox3dFile = async (file, slug) => {
+        const img = await loadImageFile(file);
+        const scale = Math.min(1, BOX3D_MAX_WIDTH / img.width);
+        const width = Math.max(1, Math.round(img.width * scale));
+        const height = Math.max(1, Math.round(img.height * scale));
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) throw new Error("Canvas unavailable.");
+        ctx.drawImage(img, 0, 0, width, height);
+        const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/webp", BOX3D_QUALITY));
+        if (!blob) throw new Error("WebP conversion failed.");
+        return {
+            blob,
+            url: URL.createObjectURL(blob),
+            filename: `${slug}.webp`,
+            size: blob.size,
+            width,
+            height,
+            slug
+        };
+    };
+
+    const handleBox3dUpload = async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        const slug = getBox3dSlug();
+        updateBox3dFilenameDisplay();
+        if (!slug) {
+            resetBox3dStage("Add a slug before uploading 3D box art.");
+            setStatus("Slug required.", "Enter a slug to auto-name the 3D box file.", "warning");
+            return;
+        }
+        setStatus("Processing 3D box art…", "Optimising to WebP.", "warning");
+        try {
+            const result = await processBox3dFile(file, slug);
+            if (state.stagedBox3d && state.stagedBox3d.url) {
+                URL.revokeObjectURL(state.stagedBox3d.url);
+            }
+            state.stagedBox3d = result;
+            if (elements.box3dPreview) {
+                elements.box3dPreview.src = result.url;
+                elements.box3dPreview.hidden = false;
+            }
+            if (elements.box3dDownload) {
+                elements.box3dDownload.disabled = false;
+            }
+            if (elements.box3dStatus) {
+                const sizeKb = Math.round(result.size / 1024);
+                elements.box3dStatus.textContent = `Ready: ${result.width}×${result.height}px · ${sizeKb} KB`;
+            }
+            setStatus("3D box ready.", `Save to ${BOX3D_FOLDER}${result.filename}`, "success");
+        } catch (error) {
+            resetBox3dStage("3D box conversion failed.");
+            setStatus("3D box conversion failed.", error.message || "Try a different image.", "error");
+        }
+    };
+
+    const handleBox3dDownload = () => {
+        if (!state.stagedBox3d) {
+            setStatus("No 3D box staged.", "Upload an image first.", "warning");
+            return;
+        }
+        const link = document.createElement("a");
+        link.href = state.stagedBox3d.url;
+        link.download = state.stagedBox3d.filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+    };
+
+    const handleThumbUpload = (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        state.stagedThumb = file;
+        setStatus("Thumbnail staged.", `Ready to download ${guessThumbFilename(inputs.slug.value, file)}.`, "success");
+    };
+
+    const handleThumbDownload = () => {
+        if (!state.stagedThumb) {
+            setStatus("No thumbnail staged.", "Choose a thumbnail file first.", "warning");
+            return;
+        }
+        const filename = guessThumbFilename(inputs.slug.value || inputs.id.value, state.stagedThumb);
+        const url = URL.createObjectURL(state.stagedThumb);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+    };
+
+    const setupHelpToggles = () => {
+        document.querySelectorAll("[data-help-toggle]").forEach((btn) => {
+            btn.addEventListener("click", () => {
+                const targetId = btn.dataset.helpToggle;
+                const panel = document.getElementById(targetId);
+                if (!panel) return;
+                const isHidden = panel.hasAttribute("hidden");
+                panel.toggleAttribute("hidden", !isHidden);
+                btn.setAttribute("aria-expanded", String(isHidden));
+            });
+        });
+    };
+
+    const handleStepKeydown = (event) => {
+        const currentIndex = elements.stepButtons.findIndex(btn => btn === document.activeElement);
+        if (currentIndex === -1) return;
+        if (event.key === "ArrowDown" || event.key === "ArrowRight") {
+            event.preventDefault();
+            const next = elements.stepButtons[currentIndex + 1];
+            if (next) next.focus();
+        }
+        if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
+            event.preventDefault();
+            const prev = elements.stepButtons[currentIndex - 1];
+            if (prev) prev.focus();
+        }
     };
 
     const attachListeners = () => {
@@ -1164,6 +1690,7 @@
         elements.applyBtn.addEventListener("click", applyChanges);
         elements.discardBtn.addEventListener("click", discardDraft);
         elements.undoBtn.addEventListener("click", undoChanges);
+        elements.jumpExportBtn.addEventListener("click", () => setStep(5));
         elements.copyJsonBtn.addEventListener("click", copyJson);
         elements.downloadJsonBtn.addEventListener("click", downloadSelectedJson);
         elements.downloadLibraryBtn.addEventListener("click", downloadLibraryJson);
@@ -1184,6 +1711,16 @@
         inputs.autoId.addEventListener("click", handleAutoIds);
         inputs.autoSort.addEventListener("click", handleAutoSort);
         inputs.autoThumb.addEventListener("click", handleAutoThumbnail);
+        inputs.thumbUpload.addEventListener("change", handleThumbUpload);
+        inputs.thumbDownload.addEventListener("click", handleThumbDownload);
+        if (elements.box3dUpload) {
+            elements.box3dUpload.addEventListener("change", (event) => {
+                void handleBox3dUpload(event);
+            });
+        }
+        if (elements.box3dDownload) {
+            elements.box3dDownload.addEventListener("click", handleBox3dDownload);
+        }
 
         listManagers.length = 0;
         setupListManager(inputs.diskInput, inputs.diskAdd, inputs.diskList);
@@ -1207,6 +1744,39 @@
         elements.categoryBpjs.addEventListener("change", handleCategoryToggle);
         elements.categoryLicensed.addEventListener("change", handleCategoryToggle);
         elements.categoryCollection.addEventListener("change", handleCategoryToggle);
+
+        elements.missingRefresh.addEventListener("click", renderMissingList);
+        elements.missingList.addEventListener("click", handleMissingListClick);
+
+        elements.copySlugCmd.addEventListener("click", async () => {
+            const ok = await copyToClipboard(elements.cmdSlug.textContent);
+            setStatus(ok ? "Command copied." : "Copy failed.", "Slug command ready to paste.", ok ? "success" : "error");
+        });
+        elements.copySitemapCmd.addEventListener("click", async () => {
+            const ok = await copyToClipboard(elements.cmdSitemap.textContent);
+            setStatus(ok ? "Command copied." : "Copy failed.", "Sitemap command ready to paste.", ok ? "success" : "error");
+        });
+        elements.copyGitCmd.addEventListener("click", async () => {
+            const ok = await copyToClipboard(elements.cmdGit.textContent);
+            setStatus(ok ? "Command copied." : "Copy failed.", "Git commands ready to paste.", ok ? "success" : "error");
+        });
+        elements.copyGscCmd.addEventListener("click", async () => {
+            const ok = await copyToClipboard(elements.cmdGsc.textContent);
+            setStatus(ok ? "Link copied." : "Copy failed.", "Sitemap link ready to paste.", ok ? "success" : "error");
+        });
+
+        elements.stepButtons.forEach((btn) => {
+            btn.addEventListener("click", () => setStep(Number(btn.dataset.step)));
+            btn.addEventListener("keydown", handleStepKeydown);
+        });
+
+        document.querySelectorAll(".admin-substep-next").forEach((btn) => {
+            btn.addEventListener("click", handleSubstepNext);
+        });
+
+        elements.taskNewBtn.addEventListener("click", createNewEntry);
+        elements.taskEditBtn.addEventListener("click", () => setStep(2));
+        elements.taskFixBtn.addEventListener("click", () => setStep(4));
     };
 
     const hydrateFilters = () => {
@@ -1219,14 +1789,103 @@
         });
     };
 
+    const setupGate = () => {
+        if (!elements.gate || !elements.gateInput || !elements.gateUnlock || !elements.gateStatus) {
+            return;
+        }
+
+        const unlockKey = "ccg-admin-unlocked";
+        const gateDisabled = ADMIN_GATE_PASSPHRASE === "" || ADMIN_GATE_PASSPHRASE === null;
+        const unlocked = sessionStorage.getItem(unlockKey) === "true";
+        const fadeDuration = 200;
+
+        const setGateStatus = (message, state = "") => {
+            elements.gateStatus.textContent = message;
+            if (state) {
+                elements.gateStatus.dataset.state = state;
+            } else {
+                delete elements.gateStatus.dataset.state;
+            }
+        };
+
+        const hideGateImmediate = () => {
+            elements.gate.removeAttribute("hidden");
+            elements.gate.style.display = "none";
+            elements.gate.style.opacity = "";
+            elements.gate.style.pointerEvents = "none";
+            elements.gate.style.transition = "";
+        };
+
+        const showGate = () => {
+            elements.gate.removeAttribute("hidden");
+            elements.gate.style.display = "grid";
+            elements.gate.style.opacity = "1";
+            elements.gate.style.pointerEvents = "auto";
+            elements.gate.style.transition = "opacity 200ms ease";
+            setGateStatus("");
+            elements.gateInput.focus();
+        };
+
+        const fadeOutGate = () => {
+            elements.gate.style.transition = `opacity ${fadeDuration}ms ease`;
+            elements.gate.style.pointerEvents = "none";
+            requestAnimationFrame(() => {
+                elements.gate.style.opacity = "0";
+            });
+            window.setTimeout(() => {
+                elements.gate.style.display = "none";
+                elements.gate.style.opacity = "";
+                elements.gate.style.transition = "";
+            }, fadeDuration);
+        };
+
+        const unlock = () => {
+            const value = elements.gateInput.value.trim();
+            if (value === ADMIN_GATE_PASSPHRASE) {
+                sessionStorage.setItem(unlockKey, "true");
+                setGateStatus("Access granted.", "success");
+                fadeOutGate();
+                return;
+            }
+            setGateStatus("Incorrect passphrase. Please try again.", "error");
+            elements.gateInput.focus();
+            elements.gateInput.select();
+        };
+
+        const handleKeydown = (event) => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                unlock();
+            }
+        };
+
+        elements.gateUnlock.removeEventListener("click", unlock);
+        elements.gateInput.removeEventListener("keydown", handleKeydown);
+        elements.gateUnlock.addEventListener("click", unlock);
+        elements.gateInput.addEventListener("keydown", handleKeydown);
+
+        if (gateDisabled || unlocked) {
+            hideGateImmediate();
+            return;
+        }
+
+        showGate();
+    };
+
     const init = () => {
         renderGenres();
         hydrateFilters();
         setupTabs();
+        setupHelpToggles();
         attachListeners();
         renderPreview();
         renderChangeList();
         updateDescriptionCount();
+        updatePreviewLinks();
+        updateStatusBar();
+        resetBox3dStage();
+        setSubstep("identity");
+        setupGate();
     };
 
     init();

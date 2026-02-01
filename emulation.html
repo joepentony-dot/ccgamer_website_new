@@ -186,7 +186,7 @@
              MAIN CONTENT — STAGE 1 (STRUCTURE) + STAGE 2 (C64) + STAGE 3 (AMIGA)
         ============================================================ -->
         <main class="ccg-main" id="top">
-
+            <div class="ccg-info-shell emu-shell">
             <section class="emu-hero-deck">
                 <div class="emu-hero-grid">
                     <div class="emu-marquee">
@@ -222,53 +222,55 @@
 
             <!-- INTRO -->
             <section class="ccg-section ccg-emulation-intro ccg-chapter">
-                <h1 class="ccg-section-title">Emulation Guide</h1>
+                <div class="ccg-info-panel ccg-emulation-panel">
+                    <h1 class="ccg-section-title">Emulation Guide</h1>
 
-                <p class="ccg-body-text">
-                    A practical, no-nonsense setup hub for enjoying Commodore 64 and Amiga games on modern hardware —
-                    recommended emulators, quick-start steps, controller tips, and common fixes.
-                </p>
+                    <p class="ccg-body-text">
+                        A practical, no-nonsense setup hub for enjoying Commodore 64 and Amiga games on modern hardware —
+                        recommended emulators, quick-start steps, controller tips, and common fixes.
+                    </p>
 
-                <p class="ccg-body-text">
-                    This page is designed to be a living reference as the CCG library grows.
-                    When a video covers a new setup trick or emulator feature, we can fold it in here.
-                </p>
+                    <p class="ccg-body-text">
+                        This page is designed to be a living reference as the CCG library grows.
+                        When a video covers a new setup trick or emulator feature, we can fold it in here.
+                    </p>
 
-                <div class="emu-intel-grid">
-                    <article class="emu-intel-card">
-                        <h3>Start with the right emulator</h3>
-                        <p>Grab the headline emulator for your system and keep a backup option in case a title is picky.</p>
-                        <div class="emu-intel-links">
-                            <a href="https://vice-emu.sourceforge.io/" class="emu-pill-link">VICE</a>
-                            <a href="https://www.ccs64.com/" class="emu-pill-link">CCS64</a>
-                            <a href="https://fs-uae.net/" class="emu-pill-link">FS-UAE</a>
-                            <a href="https://www.winuae.net/" class="emu-pill-link">WinUAE</a>
-                        </div>
-                    </article>
-                    <article class="emu-intel-card">
-                        <h3>Stay game-ready</h3>
-                        <p>Keep your library tidy, verify dumps, and make sure files are matched with the correct machine model.</p>
-                        <ul class="emu-intel-list">
-                            <li>Label collections by platform &amp; region.</li>
-                            <li>Use emulators with autosave slots for quick retries.</li>
-                            <li>Set a default “safe” config profile per system.</li>
-                        </ul>
-                    </article>
-                    <article class="emu-intel-card">
-                        <h3>Control + display checklist</h3>
-                        <p>Most input and scaling issues are solved with just two or three settings flips.</p>
-                        <ul class="emu-intel-list">
-                            <li>Joystick in Port 2 for C64 classics.</li>
-                            <li>Stick to native aspect ratios to avoid blur.</li>
-                            <li>Save profiles after you tweak them.</li>
-                        </ul>
-                    </article>
-                </div>
+                    <div class="emu-intel-grid">
+                        <article class="emu-intel-card">
+                            <h3>Start with the right emulator</h3>
+                            <p>Grab the headline emulator for your system and keep a backup option in case a title is picky.</p>
+                            <div class="emu-intel-links">
+                                <a href="https://vice-emu.sourceforge.io/" class="ccg-btn ccg-btn--ghost emu-pill-link">VICE</a>
+                                <a href="https://www.ccs64.com/" class="ccg-btn ccg-btn--ghost emu-pill-link">CCS64</a>
+                                <a href="https://fs-uae.net/" class="ccg-btn ccg-btn--ghost emu-pill-link">FS-UAE</a>
+                                <a href="https://www.winuae.net/" class="ccg-btn ccg-btn--ghost emu-pill-link">WinUAE</a>
+                            </div>
+                        </article>
+                        <article class="emu-intel-card">
+                            <h3>Stay game-ready</h3>
+                            <p>Keep your library tidy, verify dumps, and make sure files are matched with the correct machine model.</p>
+                            <ul class="emu-intel-list">
+                                <li>Label collections by platform &amp; region.</li>
+                                <li>Use emulators with autosave slots for quick retries.</li>
+                                <li>Set a default “safe” config profile per system.</li>
+                            </ul>
+                        </article>
+                        <article class="emu-intel-card">
+                            <h3>Control + display checklist</h3>
+                            <p>Most input and scaling issues are solved with just two or three settings flips.</p>
+                            <ul class="emu-intel-list">
+                                <li>Joystick in Port 2 for C64 classics.</li>
+                                <li>Stick to native aspect ratios to avoid blur.</li>
+                                <li>Save profiles after you tweak them.</li>
+                            </ul>
+                        </article>
+                    </div>
 
-                <div class="ccg-emulation-jump">
-                    <a class="ccg-emulation-jump__link" href="#c64">Jump to C64</a>
-                    <a class="ccg-emulation-jump__link" href="#amiga">Jump to Amiga</a>
-                    <a class="ccg-emulation-jump__link" href="#legal">Legal &amp; BIOS notes</a>
+                    <div class="ccg-emulation-jump">
+                        <a class="ccg-btn ccg-btn--secondary ccg-emulation-jump__link" href="#c64">Jump to C64</a>
+                        <a class="ccg-btn ccg-btn--secondary ccg-emulation-jump__link" href="#amiga">Jump to Amiga</a>
+                        <a class="ccg-btn ccg-btn--secondary ccg-emulation-jump__link" href="#legal">Legal &amp; BIOS notes</a>
+                    </div>
                 </div>
             </section>
 
@@ -282,7 +284,7 @@
             <section class="ccg-section ccg-emulation-section ccg-chapter" id="c64">
                 <h2 class="ccg-section-title">🕹️ Commodore 64</h2>
 
-                <div class="ccg-emulation-box">
+                <div class="ccg-emulation-box ccg-info-panel">
 
                     <p class="ccg-body-text">
                         If you want a straightforward “it just works” setup, start with <a href="https://vice-emu.sourceforge.io/">VICE</a>.
@@ -290,11 +292,11 @@
                     </p>
 
                     <div class="emu-link-grid">
-                        <a class="emu-link-card" href="https://vice-emu.sourceforge.io/">
+                        <a class="ccg-btn ccg-btn--primary emu-link-card" href="https://vice-emu.sourceforge.io/">
                             <span class="emu-link-card__title">VICE</span>
                             <span class="emu-link-card__meta">Accuracy-first, feature packed</span>
                         </a>
-                        <a class="emu-link-card" href="https://www.ccs64.com/">
+                        <a class="ccg-btn ccg-btn--primary emu-link-card" href="https://www.ccs64.com/">
                             <span class="emu-link-card__title">CCS64</span>
                             <span class="emu-link-card__meta">Lightweight, quick booting</span>
                         </a>
@@ -342,7 +344,7 @@
                     </details>
 
                     <div class="ccg-emulation-backtotop">
-                        <a href="#top" class="ccg-emulation-backtotop__link">Back to top</a>
+                        <a href="#top" class="ccg-btn ccg-btn--ghost ccg-emulation-backtotop__link">Back to top</a>
                     </div>
 
                 </div>
@@ -358,7 +360,7 @@
             <section class="ccg-section ccg-emulation-section ccg-chapter" id="amiga">
                 <h2 class="ccg-section-title">🖥️ Commodore Amiga</h2>
 
-                <div class="ccg-emulation-box">
+                <div class="ccg-emulation-box ccg-info-panel">
 
                     <p class="ccg-body-text">
                         Amiga emulation is brilliant once you’re set up — the only “gotcha” is that many emulators require
@@ -366,19 +368,19 @@
                     </p>
 
                     <div class="emu-link-grid">
-                        <a class="emu-link-card" href="https://fs-uae.net/">
+                        <a class="ccg-btn ccg-btn--primary emu-link-card" href="https://fs-uae.net/">
                             <span class="emu-link-card__title">FS-UAE</span>
                             <span class="emu-link-card__meta">Friendly launcher experience</span>
                         </a>
-                        <a class="emu-link-card" href="https://www.winuae.net/">
+                        <a class="ccg-btn ccg-btn--primary emu-link-card" href="https://www.winuae.net/">
                             <span class="emu-link-card__title">WinUAE</span>
                             <span class="emu-link-card__meta">Deep control on Windows</span>
                         </a>
-                        <a class="emu-link-card" href="https://amiberry.com/">
+                        <a class="ccg-btn ccg-btn--primary emu-link-card" href="https://amiberry.com/">
                             <span class="emu-link-card__title">Amiberry</span>
                             <span class="emu-link-card__meta">ARM + Raspberry Pi favorite</span>
                         </a>
-                        <a class="emu-link-card" href="https://vamigaweb.github.io/">
+                        <a class="ccg-btn ccg-btn--primary emu-link-card" href="https://vamigaweb.github.io/">
                             <span class="emu-link-card__title">vAmiga</span>
                             <span class="emu-link-card__meta">macOS focused experience</span>
                         </a>
@@ -425,7 +427,7 @@
                     </details>
 
                     <div class="ccg-emulation-backtotop">
-                        <a href="#top" class="ccg-emulation-backtotop__link">Back to top</a>
+                        <a href="#top" class="ccg-btn ccg-btn--ghost ccg-emulation-backtotop__link">Back to top</a>
                     </div>
 
                 </div>
@@ -441,7 +443,7 @@
             <section class="ccg-section ccg-emulation-section ccg-chapter" id="legal">
                 <h2 class="ccg-section-title">Sources, legality &amp; sensible notes</h2>
 
-                <div class="ccg-emulation-box">
+                <div class="ccg-emulation-box ccg-info-panel">
                     <p class="ccg-body-text">
                         Emulators are generally legal — the tricky bit is usually the copyrighted content:
                         game files (ROMs / disk images) and Amiga Kickstart ROMs.
@@ -454,12 +456,12 @@
                             <li>For Amiga: obtain Kickstarts through legitimate means (bundled solutions or your own dumps).</li>
                             <li>If you’re unsure about the status of a download, treat it as <strong>not OK</strong> until you’ve verified it.</li>
                         </ul>
-                        <a class="emu-inline-cta" href="contact.html">Have a question? Reach out →</a>
+                        <a class="ccg-btn ccg-btn--secondary emu-inline-cta" href="contact.html">Have a question? Reach out →</a>
                     </div>
 
                 </div>
             </section>
-
+            </div>
         </main>
 
         <div class="ccg-omega-divider" aria-hidden="true">

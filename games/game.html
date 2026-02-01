@@ -31,6 +31,21 @@
           id="game-meta-description"
           content="Full details for this Commodore 64 or Amiga game — including video, manual, screenshots and metadata.">
     <link rel="canonical" id="game-canonical" href="https://www.cheekycommodoregamer.co.uk/games/game.html">
+    <script>
+        (function () {
+            try {
+                if (typeof URLSearchParams === 'undefined') return;
+                var canonical = document.getElementById('game-canonical');
+                if (!canonical) return;
+                var params = new URLSearchParams(window.location.search || '');
+                var id = params.get('id');
+                if (!id) return;
+                var slug = String(id).trim();
+                if (!slug || !/^[a-z0-9-]+$/i.test(slug)) return;
+                canonical.setAttribute('href', 'https://www.cheekycommodoregamer.co.uk/games/' + slug + '/');
+            } catch (e) {}
+        })();
+    </script>
     <meta property="og:type" content="website">
     <meta property="og:title" id="game-og-title" content="Game | Cheeky Commodore Gamer">
     <meta property="og:description" id="game-og-description" content="Full details for this Commodore 64 or Amiga game — including video, manual, screenshots and metadata.">
@@ -69,6 +84,8 @@
 </head>
 
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64" id="top">
+
+<div class="ccg-scroll-progress" data-ccg-scroll-progress aria-hidden="true"><span></span></div>
 
 <div class="ccg-bg" aria-hidden="true">
     <div class="ccg-bg-starfield" aria-hidden="true"></div>
@@ -205,7 +222,14 @@
                 </div>
 
                 <div class="game-hero__content">
-                    <h1 id="gameHeroTitle" class="game-hero__title"></h1>
+                    <div class="game-hero__title-row ccg-share" data-ccg-share>
+                        <h1 id="gameHeroTitle" class="game-hero__title"></h1>
+                        <button class="ccg-btn ccg-btn--share" type="button" data-ccg-share-btn aria-label="Share this game">
+                            <span class="ccg-btn__icon" aria-hidden="true">🔗</span>
+                            <span class="ccg-btn__label">Share</span>
+                        </button>
+                        <span class="game-share__status" data-ccg-share-status role="status" aria-live="polite"></span>
+                    </div>
 
                     <div class="game-hero__meta">
                         <span id="gameMetaYear" class="game-meta__item"></span>
@@ -228,16 +252,27 @@
             </div>
         </section>
 
-        <section class="ccg-share" data-ccg-share>
-            <button class="ccg-share-btn" type="button" data-ccg-share-btn>Share this game</button>
-            <div class="ccg-share-fallback" data-ccg-share-fallback aria-hidden="true">
-                <a data-ccg-share-email target="_blank" rel="noopener">Email</a>
-                <a data-ccg-share-whatsapp target="_blank" rel="noopener">WhatsApp</a>
-                <a data-ccg-share-x target="_blank" rel="noopener">X</a>
-                <a data-ccg-share-facebook target="_blank" rel="noopener">Facebook</a>
-                <button type="button" data-ccg-share-copy>Copy link</button>
+        <section id="gameNotFound" class="game-section game-not-found" hidden>
+            <div class="ccg-panel game-not-found__panel">
+                <p class="game-not-found__kicker">Omega Notice</p>
+                <h2 class="game-not-found__title">Game not found.</h2>
+                <p class="game-not-found__copy">
+                    We couldn&apos;t match <span id="notFoundId" class="game-not-found__slug">this game</span> to the library.
+                </p>
+                <div class="game-not-found__actions">
+                    <a class="ccg-btn ccg-btn--primary" href="/games/index.html">Return to Games Index</a>
+                </div>
             </div>
         </section>
+
+        <nav class="game-toc" data-game-toc hidden></nav>
+
+        <details class="game-facts" data-game-facts hidden>
+            <summary>Game Facts</summary>
+            <div class="game-facts__grid" data-game-facts-grid></div>
+        </details>
+
+        <div class="game-media-anchor" data-game-media-anchor aria-hidden="true"></div>
 
         <!-- DESCRIPTION -->
         <section id="game-description-section" class="game-section" hidden>
@@ -298,7 +333,43 @@
             </div>
         </section>
 
+        <div class="game-quick-actions" data-game-quick-actions hidden>
+            <button type="button" data-action="video" aria-label="Jump to video section">Watch</button>
+            <button type="button" data-action="manual" aria-label="Open the game manual">Manual</button>
+            <button type="button" data-action="download" aria-label="Download disk or tape">Download</button>
+            <button type="button" data-action="share" aria-label="Share this game">Share</button>
+            <button type="button" data-action="rating" aria-label="Jump to rating">Rating</button>
+        </div>
+
     </main>
+
+    <div class="ccg-omega-divider" aria-hidden="true">
+        <span class="ccg-omega-core"></span>
+    </div>
+
+    <footer class="ccg-footer ccg-footer--game">
+        <div class="ccg-footer-inner ccg-footer-inner--game">
+            <div class="ccg-footer__col ccg-footer__col--left">
+                <p class="ccg-footer__text">© <span data-ccg-year></span> Cheeky Commodore Gamer.</p>
+                <p class="ccg-footer__text ccg-footer__tagline">Stay a while, stay forever!</p>
+            </div>
+            <div class="ccg-footer__col ccg-footer__col--center">
+                <a class="ccg-btn ccg-btn--primary ccg-footer__btn ccg-footer__btn--subscribe" href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener" aria-label="Subscribe to Cheeky Commodore Gamer on YouTube">
+                    <span class="ccg-footer__btn-icon" aria-hidden="true">▶</span>
+                    <span class="ccg-footer__btn-label">Subscribe</span>
+                    <span class="ccg-footer__btn-subtext">On YouTube</span>
+                </a>
+                <span class="ccg-footer__note">Cheeky Commodore Gamer Channel</span>
+            </div>
+            <div class="ccg-footer__col ccg-footer__col--right">
+                <a class="ccg-btn ccg-btn--secondary ccg-footer__btn ccg-footer__btn--support" href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" rel="noopener" aria-label="Support Cheeky Commodore Gamer with a donation">
+                    <span class="ccg-footer__btn-icon" aria-hidden="true">☕</span>
+                    <span class="ccg-footer__btn-label">Buy Me A Beer</span>
+                </a>
+                <span class="ccg-footer__note">Support the archive</span>
+            </div>
+        </div>
+    </footer>
 </div>
 
 <!-- MANUAL MODAL -->
@@ -314,12 +385,15 @@
     <button class="ccg-modal-nav ccg-modal-nav--prev" aria-label="Previous screenshot">‹</button>
 
     <div class="ccg-modal-content">
+        <div class="ccg-modal-counter" data-ccg-modal-counter hidden>1 / 10</div>
         <span class="ccg-modal-close" aria-label="Close modal">&times;</span>
         <iframe id="ccgModalFrame" class="ccg-pdf-frame" loading="lazy"></iframe>
     </div>
 
     <button class="ccg-modal-nav ccg-modal-nav--next" aria-label="Next screenshot">›</button>
 </div>
+
+<button class="ccg-back-to-top" data-ccg-back-to-top aria-label="Back to top" hidden>↑</button>
 
 <script src="../js/ccg-global.js" defer></script>
 <script src="../js/ccg-mode-engine.js" defer></script>

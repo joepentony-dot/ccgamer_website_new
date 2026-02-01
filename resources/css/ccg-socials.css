@@ -14,8 +14,9 @@
 .ccg-header-socials {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.65rem;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     flex-shrink: 0;
 }
 

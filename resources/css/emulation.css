@@ -3,8 +3,6 @@
    Dedicated styling for emulator cards, setup steps and helper tips.
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
 :root {
     --emu-electric: var(--accent);
     --emu-amber: #ffcc00;
@@ -12,16 +10,48 @@
     --emu-link-glow: rgba(var(--accent-rgb), 0.5);
 }
 
+.ccg-page--emulation .ccg-main {
+    padding-top: 8px;
+}
+
+.ccg-page--emulation .ccg-main,
+.ccg-page--emulation .ccg-section-title,
+.ccg-page--emulation .ccg-info-panel,
+.ccg-page--emulation .emu-hero-deck,
+.ccg-page--emulation .emu-marquee,
+.ccg-page--emulation .emu-burst-card,
+.ccg-page--emulation .emu-intel-card,
+.ccg-page--emulation .emu-callout {
+    text-align: left;
+}
+
+.ccg-page--emulation .ccg-body-text,
+.ccg-page--emulation .ccg-emulation-list,
+.ccg-page--emulation .ccg-emulation-steps,
+.ccg-page--emulation .emu-burst-list,
+.ccg-page--emulation .emu-intel-list {
+    max-width: 70ch;
+}
+
+.emu-shell {
+    gap: clamp(18px, 2.6vw, 26px);
+}
+
+.ccg-page--emulation .ccg-info-panel {
+    padding: clamp(0.95rem, 1.8vw, 1.2rem);
+}
+
+
 .emu-hero-deck {
-    margin: 12px 0 24px;
-    padding: clamp(16px, 3vw, 28px);
+    margin: 8px 0 18px;
+    padding: clamp(12px, 2.2vw, 18px);
     border-radius: 18px;
     background:
         radial-gradient(circle at 18% 20%, rgba(var(--accent-rgb),0.25), transparent 46%),
         radial-gradient(circle at 82% 12%, rgba(255,255,255,0.08), transparent 40%),
         linear-gradient(140deg, rgba(0,0,0,0.92), rgba(0,0,0,0.76));
-    border: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 0 24px 48px rgba(0,0,0,0.75), 0 0 28px rgba(var(--accent-rgb), 0.25);
+    border: 1px solid rgba(var(--accent-rgb),0.3);
+    box-shadow: 0 20px 42px rgba(0,0,0,0.7), 0 0 32px rgba(var(--accent-rgb), 0.35);
 }
 
 .emu-hero-grid {
@@ -32,7 +62,7 @@
 }
 
 .emu-marquee {
-    padding: clamp(18px, 2.5vw, 26px);
+    padding: clamp(16px, 2.2vw, 22px);
     border-radius: 16px;
     background:
         linear-gradient(135deg, rgba(0,0,0,0.72), rgba(0,0,0,0.82)),
@@ -42,7 +72,7 @@
 }
 
 .emu-marquee__kicker {
-    font-family: 'Press Start 2P', var(--ccg-font-main);
+    font-family: var(--ccg-font-main);
     font-size: clamp(0.52rem, 1.4vw, 0.8rem);
     letter-spacing: 0.14em;
     color: var(--emu-amber);
@@ -51,14 +81,15 @@
 
 .emu-marquee__title {
     margin: 12px 0 8px;
-    font-family: 'Press Start 2P', var(--ccg-font-main);
+    font-family: var(--ccg-font-main);
     font-size: clamp(1.1rem, 3vw, 1.7rem);
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     color: #fff;
     text-shadow: 0 0 18px rgba(var(--accent-rgb),0.5), 0 0 32px rgba(0,0,0,0.8);
 }
 
 .emu-marquee__text {
+    max-width: 62ch;
     color: var(--ccg-text-soft);
     line-height: 1.6;
 }
@@ -72,11 +103,60 @@
 
 .emu-cta-row .ccg-btn {
     min-width: 180px;
+    min-height: 46px;
     box-shadow: 0 12px 28px rgba(0,0,0,0.6), 0 0 20px rgba(var(--accent-rgb),0.22);
 }
 
-.ccg-emulation-intro a,
-.ccg-emulation-section a {
+.ccg-page--emulation .ccg-btn {
+    border: 1.5px solid rgba(var(--accent-rgb),0.55);
+    background:
+        linear-gradient(180deg, rgba(255,255,255,0.08), rgba(0,0,0,0.7)),
+        linear-gradient(135deg, rgba(var(--accent-rgb),0.28), rgba(0,0,0,0.55));
+    box-shadow:
+        0 14px 30px rgba(0,0,0,0.7),
+        0 0 18px rgba(var(--accent-rgb),0.25),
+        0 0 32px rgba(var(--accent-rgb),0.2),
+        inset 0 0 12px rgba(var(--accent-rgb),0.22),
+        inset 0 0 0 1px rgba(255,255,255,0.12);
+}
+
+.ccg-page--emulation .ccg-btn:hover,
+.ccg-page--emulation .ccg-btn:focus-visible {
+    transform: translateY(-2px) scale(1.02);
+    border-color: rgba(var(--accent-rgb),0.85);
+    box-shadow:
+        0 18px 38px rgba(0,0,0,0.75),
+        0 0 26px rgba(var(--accent-rgb),0.5),
+        0 0 44px rgba(var(--accent-rgb),0.35),
+        inset 0 0 16px rgba(var(--accent-rgb),0.35),
+        inset 0 0 0 1px rgba(255,255,255,0.2);
+}
+
+.ccg-page--emulation .ccg-btn:active {
+    transform: translateY(0) scale(0.99);
+    border-color: rgba(var(--accent-rgb),0.9);
+    box-shadow:
+        0 12px 26px rgba(0,0,0,0.7),
+        0 0 24px rgba(var(--accent-rgb),0.45),
+        0 0 36px rgba(var(--accent-rgb),0.3),
+        inset 0 0 18px rgba(var(--accent-rgb),0.4),
+        inset 0 0 0 1px rgba(255,255,255,0.18);
+}
+
+@media (hover: none) and (pointer: coarse) {
+    .ccg-page--emulation .ccg-btn:active {
+        transform: scale(1.01);
+        box-shadow:
+            0 16px 34px rgba(0,0,0,0.75),
+            0 0 28px rgba(var(--accent-rgb),0.5),
+            0 0 46px rgba(var(--accent-rgb),0.35),
+            inset 0 0 18px rgba(var(--accent-rgb),0.4),
+            inset 0 0 0 1px rgba(255,255,255,0.22);
+    }
+}
+
+.ccg-emulation-intro a:not(.ccg-btn),
+.ccg-emulation-section a:not(.ccg-btn) {
     color: var(--emu-electric);
     text-decoration: underline;
     text-decoration-thickness: 2px;
@@ -84,23 +164,23 @@
     transition: color 0.2s ease, text-shadow 0.2s ease, transform 0.2s ease;
 }
 
-.ccg-emulation-intro a:hover,
-.ccg-emulation-section a:hover,
-.ccg-emulation-intro a:focus,
-.ccg-emulation-section a:focus {
+.ccg-emulation-intro a:not(.ccg-btn):hover,
+.ccg-emulation-section a:not(.ccg-btn):hover,
+.ccg-emulation-intro a:not(.ccg-btn):focus,
+.ccg-emulation-section a:not(.ccg-btn):focus {
     color: #fff;
     text-shadow: 0 0 12px var(--emu-link-glow);
 }
 
 .emu-intel-grid {
-    margin: 24px 0;
+    margin: 18px 0;
     display: grid;
-    gap: 18px;
+    gap: 14px;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
 .emu-intel-card {
-    padding: 18px 20px;
+    padding: 16px 18px;
     border-radius: 16px;
     background: linear-gradient(140deg, rgba(0,0,0,0.75), rgba(0,0,0,0.9));
     border: 1px solid rgba(255,255,255,0.12);
@@ -134,22 +214,9 @@
     gap: 10px;
 }
 
-.emu-pill-link {
-    display: inline-flex;
-    align-items: center;
-    padding: 6px 12px;
-    border-radius: 999px;
-    border: 1px solid rgba(var(--accent-rgb), 0.45);
-    background: rgba(var(--accent-rgb), 0.12);
-    text-decoration: none;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.45);
-}
-
-.emu-pill-link:hover,
-.emu-pill-link:focus {
-    transform: translateY(-1px);
+.emu-pill-link.ccg-btn {
+    min-height: 44px;
+    padding: 0.65rem 1.1rem;
 }
 
 .emu-burst-card {
@@ -213,7 +280,7 @@
 
 .emu-card {
     position: relative;
-    padding: 1.25rem;
+    padding: 1.1rem;
     border-radius: var(--radius-md);
     background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.15), rgba(0,0,0,0) 55%), var(--panel-bg);
     border: 1px solid var(--border-light);
@@ -260,7 +327,7 @@
     background: var(--panel-bg);
     border: 1px solid var(--border-light);
     border-radius: var(--radius-md);
-    padding: 1rem 1.1rem;
+    padding: 0.85rem 1rem;
     display: grid;
     gap: 0.35rem;
 }
@@ -270,44 +337,68 @@
 }
 
 .emu-link-grid {
-    margin: 18px 0 22px;
+    margin: 14px 0 18px;
     display: grid;
-    gap: 14px;
+    gap: 12px;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
-.emu-link-card {
+.emu-link-card.ccg-btn {
     display: grid;
     gap: 6px;
-    padding: 14px 16px;
-    border-radius: 14px;
-    background: linear-gradient(140deg, rgba(var(--accent-rgb),0.2), rgba(0,0,0,0.85));
-    border: 1px solid rgba(255,255,255,0.16);
-    text-decoration: none;
-    box-shadow: 0 14px 26px rgba(0,0,0,0.55);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    justify-items: start;
+    text-align: left;
+    text-transform: none;
+    padding: 0.9rem 1rem;
+    min-height: 64px;
+    width: 100%;
 }
 
 .emu-link-card__title {
     font-weight: 700;
     letter-spacing: 0.05em;
     color: #fff;
+    text-transform: uppercase;
 }
 
 .emu-link-card__meta {
     color: var(--ccg-text-soft);
     font-size: 0.9rem;
+    text-transform: none;
 }
 
-.emu-link-card:hover,
-.emu-link-card:focus {
-    transform: translateY(-2px);
-    border-color: rgba(var(--accent-rgb),0.45);
-    box-shadow: 0 18px 34px rgba(0,0,0,0.65), 0 0 18px rgba(var(--accent-rgb),0.25);
+.ccg-emulation-panel {
+    display: grid;
+    gap: 0.9rem;
+}
+
+.ccg-emulation-box {
+    display: grid;
+    gap: 1rem;
+}
+
+.ccg-emulation-jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: flex-start;
+}
+
+.ccg-emulation-jump .ccg-btn {
+    min-height: 44px;
+}
+
+.ccg-emulation-backtotop {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.ccg-emulation-backtotop .ccg-btn {
+    min-height: 44px;
 }
 
 .emu-callout {
-    padding: 18px 20px;
+    padding: 16px 18px;
     border-radius: 16px;
     border: 1px solid rgba(255,255,255,0.18);
     background: linear-gradient(135deg, rgba(0,0,0,0.78), rgba(var(--accent-rgb),0.15));
@@ -321,24 +412,16 @@
     letter-spacing: 0.05em;
 }
 
-.emu-inline-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 14px;
-    border-radius: 10px;
-    border: 1px solid rgba(var(--accent-rgb),0.45);
-    background: rgba(var(--accent-rgb),0.18);
-    text-decoration: none;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    width: fit-content;
+.emu-inline-cta.ccg-btn {
+    min-height: 44px;
+    padding: 0.7rem 1.1rem;
+    text-transform: none;
 }
 
 @media (max-width: 640px) {
-    .emu-link-row { justify-content: center; }
+    .emu-link-row { justify-content: flex-start; }
     .emu-hero-grid { grid-template-columns: 1fr; }
-    .emu-cta-row { justify-content: center; }
+    .emu-cta-row { justify-content: flex-start; }
     .emu-intel-grid { grid-template-columns: 1fr; }
 }
 

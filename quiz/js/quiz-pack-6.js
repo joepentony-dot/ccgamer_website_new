@@ -12,7 +12,6 @@
     const MAX_WRONG_GUESSES = 5;
     const PACK_6_PATH = "images/pack-6/";
     const IMAGE_EXTENSION = ".webp";
-    const IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp"];
     const ANSWER_SUFFIX = "-answer";
     const AUTO_ADVANCE_DELAY = 3000;
 
@@ -25,6 +24,7 @@
         replay: document.querySelector("[data-hangman-replay]"),
         attempts: document.querySelector("[data-hangman-attempts]"),
         keyboard: document.querySelector("[data-hangman-keyboard]"),
+        gameGrid: document.querySelector(".hangman-game-grid"),
         newGameButton: document.querySelector("[data-hangman-new]"),
         overlay: document.querySelector("[data-quiz-focus-overlay]"),
         counter: document.querySelector("[data-hangman-counter]"),
@@ -44,12 +44,13 @@
         remainingBases: [],
         totalCount: 0,
         advanceTimer: null,
-        isLoading: false
+        isLoading: false,
+        scrollPending: false
     };
 
     const SFX_STORAGE_KEY = "ccg_quiz_sfx_enabled";
     const SFX_SOURCES = {
-        correct: "../resources/css/audio/amiga_boot_chime.mp3",
+        correct: "../resources/css/audio/c64_tape_rewind.mp3",
         wrong: "../resources/css/audio/static_burst.mp3"
     };
     const sfx = {
@@ -82,6 +83,10 @@
         }
     }
 
+    function setScrollLock(locked) {
+        document.body.style.overflow = locked ? "hidden" : "auto";
+    }
+
     function shuffleArray(items) {
         const array = [...items];
         for (let i = array.length - 1; i > 0; i -= 1) {
@@ -99,7 +104,7 @@
             const letter = String.fromCharCode(i);
             const button = document.createElement("button");
             button.type = "button";
-            button.className = "hangman-key";
+            button.className = "ccg-btn ccg-btn--ghost hangman-key";
             button.textContent = letter;
             button.dataset.letter = letter;
             button.addEventListener("click", () => handleGuess(letter));
@@ -132,7 +137,7 @@
         elements.counter.textContent = `Pack 6: ${total} total | ${remaining} remaining`;
     }
 
-    function setImageWithFallback(imgEl, urls) {
+    function setImageWithFallback(imgEl, urls, onLoad) {
         if (!imgEl) return;
         let index = 0;
 
@@ -144,6 +149,9 @@
 
         imgEl.onload = () => {
             imgEl.onerror = null;
+            if (typeof onLoad === "function") {
+                onLoad();
+            }
         };
 
         imgEl.onerror = () => {
@@ -258,6 +266,7 @@
 
     function endGame(message, status, revealAnswer) {
         state.isOver = true;
+        setScrollLock(false);
         if (revealAnswer) {
             revealAllLetters();
             revealAnswerImage();
@@ -342,7 +351,7 @@
         state.answerUrl = `${PACK_6_PATH}${base}${ANSWER_SUFFIX}${IMAGE_EXTENSION}`;
         elements.questionImage.alt = `Guess the game: ${state.displayTitle}`;
         elements.questionImage.decoding = "async";
-        setImageWithFallback(elements.questionImage, [questionUrl]);
+        setImageWithFallback(elements.questionImage, [questionUrl], scheduleGameplayScroll);
     }
 
     function getNextBase() {
@@ -370,6 +379,7 @@
         );
         state.wrongGuesses = 0;
         state.isOver = false;
+        setScrollLock(true);
 
         document.querySelectorAll(".hangman-key").forEach((btn) => {
             btn.classList.remove("is-guessed", "is-right", "is-wrong");
@@ -385,6 +395,7 @@
         renderWord();
         loadImages(choice);
         updateCounter();
+        scheduleGameplayScroll();
     }
 
     function scheduleNextRound() {
@@ -408,6 +419,7 @@
         state.isOver = true;
         clearAdvanceTimer();
         setFocusMode(false);
+        setScrollLock(false);
         setFeedback("", "");
         if (elements.questionImage) {
             elements.questionImage.removeAttribute("src");
@@ -424,30 +436,31 @@
         });
     }
 
+    function scheduleGameplayScroll() {
+        if (!elements.gameGrid || state.scrollPending) return;
+        state.scrollPending = true;
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                state.scrollPending = false;
+                elements.gameGrid.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+            });
+        });
+    }
+
     async function loadPackManifest() {
         state.isLoading = true;
         try {
-            const response = await fetch(PACK_6_PATH, { cache: "no-store" });
+            const response = await fetch(`${PACK_6_PATH}manifest.json`, { cache: "no-store" });
             if (!response.ok) {
-                throw new Error("Unable to load Pack 6 directory.");
+                throw new Error("Unable to load Pack 6 manifest.");
             }
-            const html = await response.text();
-            const doc = new DOMParser().parseFromString(html, "text/html");
-            const links = Array.from(doc.querySelectorAll("a[href]"));
-            const fileNames = links
-                .map((link) => link.getAttribute("href") || "")
-                .map((href) => href.split("?")[0])
-                .map((href) => href.split("#")[0])
-                .map((href) => href.split("/").pop() || "")
-                .filter((file) => IMAGE_EXTENSIONS.some((ext) => file.toLowerCase().endsWith(ext)))
-                .filter((file) => !file.toLowerCase().endsWith(`${ANSWER_SUFFIX}${IMAGE_EXTENSION}`))
-                .map((file) => {
-                    const lower = file.toLowerCase();
-                    const ext = IMAGE_EXTENSIONS.find((entry) => lower.endsWith(entry));
-                    if (!ext) return "";
-                    return file.slice(0, -ext.length);
-                })
-                .filter(Boolean);
+            const manifest = await response.json();
+            const fileNames = Array.isArray(manifest)
+                ? manifest.map((entry) => String(entry)).filter(Boolean)
+                : [];
 
             const uniqueBases = Array.from(new Set(fileNames));
             if (uniqueBases.length === 0) {
@@ -470,6 +483,7 @@
         setFocusMode(true);
         buildKeyboard();
         setupKeyboardInput();
+        scheduleGameplayScroll();
         elements.newGameButton?.addEventListener("click", () => {
             if (state.isLoading) return;
             clearAdvanceTimer();

@@ -12,6 +12,9 @@
 
     <link rel="icon" href="favicon.ico" />
 
+    <link rel="preconnect" href="https://unpkg.com" crossorigin />
+    <link rel="dns-prefetch" href="//unpkg.com" />
+
     <!-- GLOBAL SITE STYLES -->
     <link rel="stylesheet" href="resources/css/ccg-master.css" />
     <link rel="stylesheet" href="resources/css/ccg-mode.css" />
@@ -21,7 +24,8 @@
     <link rel="stylesheet" href="resources/css/ccg-socials.css" />
 
     <!-- C64 BLOCKY FONT -->
-    <link rel="stylesheet" href="https://unpkg.com/@fontsource/c64-pro-mono/index.css" />
+    <link rel="preload" href="https://unpkg.com/@fontsource/c64-pro-mono/index.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="https://unpkg.com/@fontsource/c64-pro-mono/index.css" /></noscript>
 
     <!-- INTRO STYLES -->
     <link rel="stylesheet" href="resources/css/intro.css?v=5" />
@@ -41,7 +45,7 @@
 
         <!-- TOP LEFT LOGO -->
         <div class="intro-logo">
-            <img src="resources/images/ccgamer-logo.png" alt="Cheeky Commodore Gamer" />
+            <img src="resources/images/ccgamer-logo.png" alt="Cheeky Commodore Gamer" decoding="async" />
         </div>
 
         <!-- TOP RIGHT SKIP BUTTON -->

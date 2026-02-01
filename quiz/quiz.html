@@ -200,14 +200,25 @@
                             Choose a quiz pack, answer before the clock expires and submit your score to compete for leaderboard glory.
                         </p>
 
+                        <article id="quiz-intro-panel" class="quiz-panel quiz-panel--intro">
+                            <h2 class="ccg-section-title">How it works</h2>
+                            <ol class="quiz-howto-list">
+                                <li>Select a quiz pack from the dropdown.</li>
+                                <li>Hit <strong>Start Quiz</strong> when you’re ready.</li>
+                                <li>Answer each question before the timer runs out.</li>
+                                <li>Save your score to the leaderboard.</li>
+                            </ol>
+                            <p class="quiz-note">Pro tip: turn on SFX for extra SID flavour.</p>
+                        </article>
+
                             <div class="quiz-hero-controls">
                             <div class="quiz-pack-select-wrap">
                                 <div class="quiz-pack-label">
                                     Quiz Packs
                                 </div>
                                 <div class="quiz-pack-list" data-quiz-pack-list>
-                                    <button class="quiz-pack-btn" type="button" disabled>Loading packs…</button>
-                                    <a class="quiz-pack-btn" data-pack-external="hangman" href="pack-6.html">Game Box Hangman</a>
+                                    <button class="ccg-btn ccg-btn--secondary quiz-pack-btn" type="button" disabled>Loading packs…</button>
+                                    <button class="ccg-btn ccg-btn--secondary quiz-pack-btn" type="button" data-pack-external="hangman" data-pack-id="hangman" data-pack-label="Game Box Hangman" data-pack-href="pack-6.html">Game Box Hangman</button>
                                 </div>
                                 <p class="quiz-pack-status" data-quiz-pack-status>
                                     Preparing quiz packs…
@@ -217,7 +228,9 @@
                             <div class="quiz-hero-buttons">
 
                                 <button id="quiz-start-btn"
-                                        class="ccg-btn ccg-btn--primary">
+                                        class="ccg-btn ccg-btn--primary quiz-start-btn"
+                                        type="button"
+                                        disabled>
                                     Start Quiz
                                 </button>
 
@@ -267,18 +280,6 @@
             <!-- QUIZ PANELS -->
             <section class="ccg-section quiz-section">
                 <div class="quiz-layout">
-
-                    <!-- INTRO PANEL -->
-                    <article id="quiz-intro-panel" class="quiz-panel quiz-panel--intro">
-                        <h2 class="ccg-section-title">How it works</h2>
-                        <ol class="quiz-howto-list">
-                            <li>Select a quiz pack from the dropdown.</li>
-                            <li>Hit <strong>Start Quiz</strong> when you’re ready.</li>
-                            <li>Answer each question before the timer runs out.</li>
-                            <li>Save your score to the leaderboard.</li>
-                        </ol>
-                        <p class="quiz-note">Pro tip: turn on SFX for extra SID flavour.</p>
-                    </article>
 
                     <!-- ACTIVE QUIZ PANEL -->
                     <article id="quiz-panel" class="quiz-panel quiz-panel--active" hidden>
