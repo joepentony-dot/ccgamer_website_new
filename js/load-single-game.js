@@ -1030,7 +1030,14 @@ async function checkBox3dExists(path) {
 function clearHeroBox3d(hero) {
     if (!hero) return;
     const existing = hero.querySelector(".game-hero__box3d");
-    if (existing) existing.remove();
+    if (existing) {
+        const img = existing.querySelector("img");
+        if (img) {
+            img.removeAttribute("src");
+            img.removeAttribute("alt");
+        }
+        existing.hidden = true;
+    }
     hero.classList.remove("game-hero--has-box3d");
     delete hero.dataset.box3dSlug;
 }
@@ -1066,6 +1073,9 @@ async function renderHeroBox3d(game) {
         img.className = "game-hero__box3d-img";
         img.loading = "lazy";
         img.decoding = "async";
+        img.width = 600;
+        img.height = 900;
+        img.sizes = "(max-width: 900px) 55vw, (max-width: 1200px) 22vw, 220px";
         box.appendChild(img);
         heroInner.appendChild(box);
     }
@@ -1073,6 +1083,7 @@ async function renderHeroBox3d(game) {
         img.src = path;
         img.alt = `${game?.title || "Game"} 3D box art`;
     }
+    box.hidden = false;
     hero.classList.add("game-hero--has-box3d");
 }
 
