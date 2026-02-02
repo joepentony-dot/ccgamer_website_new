@@ -766,7 +766,7 @@ function renderGame(game) {
 
     if (hasVideo) {
         if (videoEmbed) {
-            videoEmbed.src = `https://www.youtube.com/embed/${vid}`;
+            videoEmbed.src = `https://www.youtube-nocookie.com/embed/${vid}`;
             videoEmbed.hidden = false;
         }
         if (videoBtn) {
