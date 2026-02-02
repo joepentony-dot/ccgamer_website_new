@@ -995,6 +995,10 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     align-items: stretch;
 }
 
+.game-hero__box3d[hidden] {
+    display: none;
+}
+
 .game-hero__box3d::before {
     content: "";
     position: absolute;
