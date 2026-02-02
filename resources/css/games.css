@@ -2071,10 +2071,10 @@ body[data-ccg-mode="amiga"] {
 
     .ccg-page--single-game .ccg-main {
         width: 100%;
-        max-width: 720px;
+        max-width: 100%;
         margin-left: auto;
         margin-right: auto;
-        padding-inline: clamp(16px, 5vw, 24px);
+        padding-inline: 0;
         overflow-x: hidden;
         box-sizing: border-box;
     }
@@ -2082,6 +2082,9 @@ body[data-ccg-mode="amiga"] {
     .ccg-page--single-game .game-shell {
         width: 100%;
         max-width: 720px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-inline: clamp(16px, 5vw, 24px);
         box-sizing: border-box;
     }
 
@@ -2207,6 +2210,10 @@ body[data-ccg-mode="amiga"] {
     }
 
     .ccg-page--single-game .ccg-main {
+        padding-inline: 0;
+    }
+
+    .ccg-page--single-game .game-shell {
         padding-inline: 14px;
     }
 
