@@ -7556,10 +7556,10 @@
   },
   {
     "system": "AMIGA",
-    "id": "eve_of_the_beholder_ii:_the_legend_of_darkmoon",
-    "slug": "eve-of-the-beholder-2-the-legend-of-darkmoon",
-    "title": "Eve Of The Beholder II: The Legend Of Darkmoon",
-    "sorttitle": "Eve Of The Beholder 2",
+    "id": "eye_of_the_beholder_ii:_the_legend_of_darkmoon",
+    "slug": "eye-of-the-beholder-2-the-legend-of-darkmoon",
+    "title": "Eye Of The Beholder II: The Legend Of Darkmoon",
+    "sorttitle": "Eye Of The Beholder 2",
     "year": 1992,
     "genres": [
       "Role Playing Games"
@@ -7575,7 +7575,7 @@
     ],
     "description": "Eye of the Beholder II is an Amiga role-playing game offering first-person dungeon exploration, character progression, and tactical combat based on Dungeons & Dragons rules.",
     "ccg_rating": 10,
-    "ccg_rating_reason": "",
+    "ccg_rating_reason": "One of the finest RPGs I ever played on my Commodore Amiga",
     "credits": {
       "publisher": [
         "Strategic Simulations Inc."
