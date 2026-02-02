@@ -830,6 +830,21 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     margin-right: auto;
 }
 
+.ccg-page--single-game .game-shell {
+    width: min(1100px, 96%);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ccg-page--single-game .game-shell > .game-hero,
+.ccg-page--single-game .game-shell > .game-section,
+.ccg-page--single-game .game-shell > .game-media,
+.ccg-page--single-game .game-shell > .related-carousel {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+}
+
 .game-hero {
     position: relative;
     margin: 10px auto 6px;
@@ -2061,6 +2076,12 @@ body[data-ccg-mode="amiga"] {
         margin-right: auto;
         padding-inline: clamp(16px, 5vw, 24px);
         overflow-x: hidden;
+        box-sizing: border-box;
+    }
+
+    .ccg-page--single-game .game-shell {
+        width: 100%;
+        max-width: 720px;
         box-sizing: border-box;
     }
 
