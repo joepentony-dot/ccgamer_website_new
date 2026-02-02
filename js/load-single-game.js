@@ -1220,11 +1220,12 @@ function updateMediaPanelVisibility(mediaPanel) {
     const downloadsSection = document.querySelector(".game-downloads");
     const linksPanel = mediaPanel.linksPanel;
 
-    const hasVideo = videoSection && !videoSection.hidden;
-    const hasDownloads = downloadsSection && !downloadsSection.hidden;
-    const hasLinks = linksPanel && !linksPanel.hidden;
+    const hasAnySection = !!(videoSection || downloadsSection || linksPanel);
+    if (!hasAnySection) return;
 
-    mediaPanel.section.hidden = !(hasVideo || hasDownloads || hasLinks);
+    if (videoSection) videoSection.hidden = false;
+    if (downloadsSection) downloadsSection.hidden = false;
+    mediaPanel.section.hidden = false;
 }
 
 function renderCreditsPanel(game) {
