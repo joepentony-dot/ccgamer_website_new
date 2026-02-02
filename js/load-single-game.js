@@ -729,7 +729,12 @@ function renderGame(game) {
         if (heroBg) heroBg.style.backgroundImage = `url('${thumb}')`;
         if (heroThumb) {
             heroThumb.src = thumb;
+            heroThumb.srcset = `${thumb} 460w, ${thumb} 920w`;
+            heroThumb.sizes = "(max-width: 720px) 80vw, 460px";
             heroThumb.alt = `${game.title || "Game"} cover art`;
+            heroThumb.loading = "eager";
+            heroThumb.decoding = "async";
+            heroThumb.fetchPriority = "high";
         }
         if (heroTitle) heroTitle.textContent = game.title || "Unknown";
         renderHeroMeta(game);
@@ -854,6 +859,8 @@ function renderGame(game) {
                 img.src = src;
                 img.alt = `${game.title || "Game"} screenshot ${i + 1}`;
                 img.className = "game-screenshot-thumb";
+                img.loading = "lazy";
+                img.decoding = "async";
                 img.addEventListener("click", () => {
                     CCG_SCREENSHOT_INDEX = i;
                     openScreenshotModal(i);
@@ -2064,8 +2071,13 @@ function renderRelatedGames(game) {
         card.href = resolvePrettyGameUrl(rel);
 
         const img = document.createElement("img");
-        img.src = resolveGameThumb(rel.thumbnail || rel.thumb || rel.cover);
+        const relThumb = resolveGameThumb(rel.thumbnail || rel.thumb || rel.cover);
+        img.src = relThumb;
+        img.srcset = `${relThumb} 200w, ${relThumb} 400w`;
+        img.sizes = "(max-width: 720px) 45vw, 200px";
         img.alt = rel.title || "Game";
+        img.loading = "lazy";
+        img.decoding = "async";
 
         const title = document.createElement("span");
         title.textContent = rel.title || "Unknown";
