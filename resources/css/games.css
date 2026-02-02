@@ -2022,16 +2022,22 @@ body[data-ccg-mode="amiga"] {
     }
 
     .game-hero--has-box3d .game-hero__inner {
+        grid-template-columns: 1fr;
         grid-template-areas:
             "box"
             "content"
             "media";
+        justify-items: center;
+        width: 100%;
+        max-width: 100%;
     }
 
     .game-hero--has-box3d .game-hero__box3d {
         width: min(55vw, 240px);
         justify-self: center;
         margin-bottom: 0.5rem;
+        max-width: 100%;
+        box-sizing: border-box;
     }
 
     .game-hero__meta {
