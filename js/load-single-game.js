@@ -29,6 +29,8 @@ let CCG_SCROLL_PROGRESS_READY = false;
 let CCG_BACK_TO_TOP_READY = false;
 let CCG_QUICK_ACTIONS_READY = false;
 let CCG_RELATED_OBSERVER = null;
+const CCG_BOX3D_PATH_CACHE = new Map();
+const CCG_BOX3D_SLUG_CACHE = new Map();
 const CCG_RENDER_GATE = {
     container: null,
     locked: false,
@@ -1019,12 +1021,45 @@ function resolveBox3dPath(slug) {
 }
 
 async function checkBox3dExists(path) {
+    if (CCG_BOX3D_PATH_CACHE.has(path)) {
+        return CCG_BOX3D_PATH_CACHE.get(path);
+    }
     try {
         const response = await fetch(path, { method: "HEAD", cache: "force-cache" });
-        return response.ok;
+        const exists = response.ok;
+        CCG_BOX3D_PATH_CACHE.set(path, exists);
+        return exists;
     } catch (error) {
+        CCG_BOX3D_PATH_CACHE.set(path, false);
         return false;
     }
+}
+
+function resolveBox3dCandidateSlugs(slug) {
+    const normalized = normalizeSlugKey(slug);
+    if (!normalized) return [];
+    const capitalized = normalized.charAt(0).toUpperCase() + normalized.slice(1);
+    const upper = normalized.toUpperCase();
+    const candidates = [normalized, capitalized, upper];
+    return [...new Set(candidates.filter(Boolean))];
+}
+
+async function resolveBox3dAssetPath(slug) {
+    if (!slug) return null;
+    if (CCG_BOX3D_SLUG_CACHE.has(slug)) {
+        return CCG_BOX3D_SLUG_CACHE.get(slug);
+    }
+    const candidates = resolveBox3dCandidateSlugs(slug);
+    for (const candidate of candidates) {
+        const path = resolveBox3dPath(candidate);
+        const exists = await checkBox3dExists(path);
+        if (exists) {
+            CCG_BOX3D_SLUG_CACHE.set(slug, path);
+            return path;
+        }
+    }
+    CCG_BOX3D_SLUG_CACHE.set(slug, null);
+    return null;
 }
 
 function clearHeroBox3d(hero) {
@@ -1055,11 +1090,10 @@ async function renderHeroBox3d(game) {
     }
 
     hero.dataset.box3dSlug = slug;
-    const path = resolveBox3dPath(slug);
-    const exists = await checkBox3dExists(path);
+    const path = await resolveBox3dAssetPath(slug);
     if (hero.dataset.box3dSlug !== slug) return;
 
-    if (!exists) {
+    if (!path) {
         clearHeroBox3d(hero);
         return;
     }
