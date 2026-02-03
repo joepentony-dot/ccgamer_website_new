@@ -2172,6 +2172,9 @@ function initRelatedCarousel() {
             { passive: false }
         );
 
+        button.addEventListener("mousedown", isolateArrowEvent);
+        button.addEventListener("dragstart", isolateArrowEvent);
+
         button.addEventListener("pointerdown", (event) => {
             if (event.pointerType === "mouse") {
                 isolateArrowEvent(event);

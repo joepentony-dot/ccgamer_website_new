@@ -418,6 +418,7 @@ li {
     gap: clamp(10px, 2vw, 18px);
     overflow-x: hidden;
     overflow-y: visible; /* avoid nested page scrollbars */
+    box-sizing: border-box;
 }
 
 .ccg-page,
@@ -430,7 +431,8 @@ li {
 .ccg-header,
 .ccg-hero,
 .home-hero {
-    max-width: 100vw;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .ccg-page,
@@ -438,7 +440,7 @@ li {
 .ccg-header,
 .ccg-hero,
 .home-hero {
-    max-width: 100vw;
+    max-width: 100%;
 }
 
 .ccg-main {
@@ -703,7 +705,7 @@ li {
     z-index: 9999;
 
     width: 100%;
-    max-width: 100vw;
+    max-width: 100%;
     padding: var(--ccg-header-padding-y) clamp(10px, 2vw, 18px);
 
     display: flex;
