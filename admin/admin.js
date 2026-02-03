@@ -19,34 +19,88 @@
     const YOUTUBE_ID_REGEX = /^[a-zA-Z0-9_-]{6,}$/;
     const CLEAN_ID_REGEX = /^[a-z0-9]+(?:_[a-z0-9]+)*$/;
     const CLEAN_SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-    const CANONICAL_GENRES = [
-        "Action Adventure Games",
-        "Adventure Games",
-        "Arcade Games",
-        "BPJS Games",
-        "Cartridge Games",
-        "Casino Games",
-        "Collection",
-        "Fighting Games",
-        "Horror Games",
-        "Licensed Games",
-        "Miscellaneous",
-        "Platform Games",
-        "Puzzle Games",
-        "Quiz Games",
-        "Racing Games",
-        "Role Playing Games",
-        "Shooting Games",
-        "Sports Games",
-        "Strategy Games",
-        "Top Picks"
+    const GAME_GENRES = [
+        "action-adventure",
+        "adventure",
+        "arcade",
+        "casino",
+        "fighting",
+        "horror",
+        "miscellaneous",
+        "platform",
+        "puzzle",
+        "quiz",
+        "racing",
+        "role-playing",
+        "shooting",
+        "sports",
+        "strategy"
     ];
-    const CATEGORY_TAGS = {
-        topPicks: "Top Picks",
-        bpjs: "BPJS Games",
-        licensed: "Licensed Games",
-        collection: "Collection"
-    };
+    const COLLECTION_FLAGS = [
+        { id: "bpjs", label: "BPJS Games", page: "bpjs-indexed-games.html" },
+        { id: "cartridge", label: "Cartridge Games", page: "cartridge-games.html" },
+        { id: "licensed", label: "Licensed Games", page: "licensed-games.html" },
+        { id: "top-picks", label: "Top Picks", page: "top-picks.html" }
+    ];
+    const LEGACY_GENRE_MAP = new Map([
+        ["action adventure games", "action-adventure"],
+        ["action-adventure", "action-adventure"],
+        ["adventure games", "adventure"],
+        ["adventure", "adventure"],
+        ["arcade games", "arcade"],
+        ["arcade", "arcade"],
+        ["casino games", "casino"],
+        ["casino", "casino"],
+        ["fighting games", "fighting"],
+        ["fighting", "fighting"],
+        ["horror games", "horror"],
+        ["horror", "horror"],
+        ["miscellaneous", "miscellaneous"],
+        ["miscellaneous games", "miscellaneous"],
+        ["platform games", "platform"],
+        ["platform", "platform"],
+        ["puzzle games", "puzzle"],
+        ["puzzle", "puzzle"],
+        ["quiz games", "quiz"],
+        ["quiz", "quiz"],
+        ["racing games", "racing"],
+        ["racing", "racing"],
+        ["role playing games", "role-playing"],
+        ["role-playing", "role-playing"],
+        ["shooting games", "shooting"],
+        ["shooting", "shooting"],
+        ["sports games", "sports"],
+        ["sports", "sports"],
+        ["strategy games", "strategy"],
+        ["strategy", "strategy"]
+    ]);
+    const LEGACY_COLLECTION_MAP = new Map([
+        ["bpjs games", "bpjs"],
+        ["bpjs", "bpjs"],
+        ["cartridge games", "cartridge"],
+        ["cartridge", "cartridge"],
+        ["licensed games", "licensed"],
+        ["licensed", "licensed"],
+        ["top picks", "top-picks"],
+        ["top-picks", "top-picks"]
+    ]);
+    const GENRE_PAGE_MAP = new Map([
+        ["action-adventure", "action-adventure-games.html"],
+        ["adventure", "adventure-games.html"],
+        ["arcade", "arcade-games.html"],
+        ["casino", "casino-games.html"],
+        ["fighting", "fighting-games.html"],
+        ["horror", "horror-games.html"],
+        ["miscellaneous", "miscellaneous.html"],
+        ["platform", "platform-games.html"],
+        ["puzzle", "puzzle-games.html"],
+        ["quiz", "quiz-games.html"],
+        ["racing", "racing-games.html"],
+        ["role-playing", "role-playing-games.html"],
+        ["shooting", "shooting-games.html"],
+        ["sports", "sports-games.html"],
+        ["strategy", "strategy-games.html"]
+    ]);
     const SORT_KEY_ORDER = [
         "system",
         "id",
@@ -55,6 +109,7 @@
         "sorttitle",
         "year",
         "genres",
+        "collections",
         "videoid",
         "thumbnail",
         "pdf",
@@ -108,6 +163,11 @@
         downloadLibraryBtn: document.getElementById("adminDownloadLibrary"),
         downloadStubBtn: document.getElementById("adminDownloadStub"),
         downloadStubsBtn: document.getElementById("adminDownloadStubs"),
+        downloadSitemapBtn: document.getElementById("adminDownloadSitemap"),
+        downloadPackageBtn: document.getElementById("adminDownloadPackage"),
+        exportPagesStatus: document.getElementById("adminExportPagesStatus"),
+        exportSitemapStatus: document.getElementById("adminExportSitemapStatus"),
+        exportPackageStatus: document.getElementById("adminExportPackageStatus"),
         editState: document.getElementById("adminEditState"),
         totalCount: document.querySelector("[data-admin-total-count]"),
         missingRatings: document.querySelector("[data-admin-missing-ratings]"),
@@ -128,10 +188,10 @@
         sortSelect: document.getElementById("adminSort"),
         gameList: document.getElementById("adminGameList"),
         genreGrid: document.querySelector("[data-admin-genre-grid]"),
-        categoryTopPicks: document.getElementById("categoryTopPicks"),
-        categoryBpjs: document.getElementById("categoryBpjs"),
-        categoryLicensed: document.getElementById("categoryLicensed"),
-        categoryCollection: document.getElementById("categoryCollection"),
+        collectionTopPicks: document.getElementById("collectionTopPicks"),
+        collectionBpjs: document.getElementById("collectionBpjs"),
+        collectionCartridge: document.getElementById("collectionCartridge"),
+        collectionLicensed: document.getElementById("collectionLicensed"),
         tabButtons: Array.from(document.querySelectorAll(".admin-tab")),
         tabPanels: Array.from(document.querySelectorAll("[data-admin-panel]")),
         form: document.getElementById("adminEditor"),
@@ -239,6 +299,7 @@
         sorttitle: "",
         year: "",
         genres: [],
+        collections: [],
         videoid: "",
         thumbnail: "",
         pdf: "",
@@ -265,9 +326,57 @@
         return String(value).split(",").map(item => item.trim()).filter(Boolean);
     };
 
+    const normalizeGenresAndCollections = (rawGenres) => {
+        const genres = new Set();
+        const collections = new Set();
+        normalizeArray(rawGenres).forEach((item) => {
+            const key = String(item || "").trim().toLowerCase();
+            if (!key) return;
+            if (LEGACY_COLLECTION_MAP.has(key)) {
+                collections.add(LEGACY_COLLECTION_MAP.get(key));
+                return;
+            }
+            if (LEGACY_GENRE_MAP.has(key)) {
+                genres.add(LEGACY_GENRE_MAP.get(key));
+                return;
+            }
+            if (GAME_GENRES.includes(key)) {
+                genres.add(key);
+            }
+        });
+        return {
+            genres: Array.from(genres),
+            collections: Array.from(collections)
+        };
+    };
+
+    const normalizeCollections = (rawCollections) => {
+        const collections = new Set();
+        normalizeArray(rawCollections).forEach((item) => {
+            const key = String(item || "").trim().toLowerCase();
+            if (!key) return;
+            if (LEGACY_COLLECTION_MAP.has(key)) {
+                collections.add(LEGACY_COLLECTION_MAP.get(key));
+                return;
+            }
+            if (COLLECTION_FLAGS.some(flag => flag.id === key)) {
+                collections.add(key);
+            }
+        });
+        return Array.from(collections);
+    };
+
+    const sortCollections = (collections) => {
+        const order = COLLECTION_FLAGS.map(flag => flag.id);
+        return Array.from(new Set(collections)).sort((a, b) => order.indexOf(a) - order.indexOf(b));
+    };
+
     const normalizeGame = (raw) => {
         const base = defaultGame();
         const credits = raw && raw.credits ? raw.credits : {};
+        const legacyClassification = normalizeGenresAndCollections(raw ? raw.genres : []);
+        const normalizedCollections = normalizeCollections(raw ? raw.collections : []);
+        const collections = sortCollections([...legacyClassification.collections, ...normalizedCollections]);
         return {
             ...base,
             ...raw,
@@ -277,7 +386,8 @@
             title: String(raw.title || "").trim(),
             sorttitle: String(raw.sorttitle || "").trim(),
             year: raw.year === 0 ? 0 : (raw.year ? Number(raw.year) : ""),
-            genres: normalizeArray(raw.genres),
+            genres: legacyClassification.genres,
+            collections,
             videoid: String(raw.videoid || "").trim(),
             thumbnail: String(raw.thumbnail || "").trim(),
             pdf: String(raw.pdf || "").trim(),
@@ -325,6 +435,10 @@
             .trim();
     };
 
+    const deriveIdFromSlug = (slug) => {
+        return String(slug || "").replace(/-/g, "_");
+    };
+
     const generateSortTitle = (value) => {
         const trimmed = String(value || "").trim();
         return trimmed.replace(/^(the |a |an )/i, "").trim() || trimmed;
@@ -363,8 +477,82 @@
         return game.developer || "";
     };
 
+    const buildCanonicalIndexHtml = (game) => {
+        const slug = game.slug || generateSlug(game.title || "game");
+        const title = game.title || "Untitled Game";
+        const description = game.description || `${title} on ${game.system || "C64"}.`;
+        const canonicalUrl = `${SITE_BASE_URL}/games/${slug}/`;
+        const imageUrl = game.thumbnail ? `${SITE_BASE_URL}/${game.thumbnail}` : `${SITE_BASE_URL}/resources/images/ccgamer-logo.png`;
+        const publisher = getPublisher(game) || "Unknown Publisher";
+        const year = game.year ? String(game.year) : "Unknown";
+        const redirectTarget = `/games/game.html?id=${slug}`;
+
+        return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content="0; url=${redirectTarget}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>${escapeHtml(title)} | Cheeky Commodore Gamer</title>
+    <meta name="description" content="${escapeHtml(description)}" />
+
+    <link rel="canonical" href="${canonicalUrl}" />
+
+    <meta property="og:title" content="${escapeHtml(title)} | Cheeky Commodore Gamer" />
+    <meta property="og:description" content="${escapeHtml(description)}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="${canonicalUrl}" />
+    <meta property="og:image" content="${imageUrl}" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${escapeHtml(title)} | Cheeky Commodore Gamer" />
+    <meta name="twitter:description" content="${escapeHtml(description)}" />
+    <meta name="twitter:image" content="${imageUrl}" />
+
+    <style>
+        html, body {
+            background: #000;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            opacity: 0;
+        }
+    </style>
+
+    <script>
+        (function () {
+            try {
+                window.location.replace("${redirectTarget}");
+            } catch (e) {
+                window.location.href = "${redirectTarget}";
+            }
+        })();
+    </script>
+
+    <script type="application/ld+json">
+${JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "VideoGame",
+            "name": title,
+            "description": description,
+            "datePublished": year,
+            "gamePlatform": game.system || "C64",
+            "publisher": publisher,
+            "image": imageUrl,
+            "url": canonicalUrl
+        }, null, 4)}
+    </script>
+
+</head>
+<body>
+</body>
+</html>`;
+    };
+
     const buildSeoStubHtml = (game) => {
         const slug = game.slug || generateSlug(game.title || "game");
+        const derivedId = deriveIdFromSlug(slug);
         const title = game.title || "Untitled Game";
         const description = game.description || `${title} on ${game.system || "C64"}.`;
         const canonicalUrl = `${SITE_BASE_URL}/games/${slug}.html`;
@@ -468,7 +656,7 @@
                 <p class="game-section__kicker">Explore</p>
                 <h2 class="game-section__title">More Details</h2>
                 <div class="game-downloads">
-                    <a class="ccg-btn ccg-btn--primary" href="/games/game.html?id=${game.id || generateId(title)}">View the full interactive game page</a>
+                    <a class="ccg-btn ccg-btn--primary" href="/games/game.html?id=${derivedId || generateId(title)}">View the full interactive game page</a>
                     <a class="ccg-btn ccg-btn--ghost" href="/games/index.html">Browse all games</a>
                 </div>
             </section>
@@ -488,6 +676,97 @@
         .replace(/>/g, "&gt;")
         .replace(/\"/g, "&quot;")
         .replace(/'/g, "&#39;");
+
+    const escapeXml = (value) => String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&apos;");
+
+    const getIsoDate = () => new Date().toISOString().split("T")[0];
+
+    const generateSitemapXml = (gamesLibrary) => {
+        const urls = new Set();
+        const now = getIsoDate();
+        const addUrl = (path) => {
+            const trimmed = String(path || "").trim();
+            if (!trimmed) return;
+            const loc = trimmed.startsWith("http") ? trimmed : `${SITE_BASE_URL}${trimmed.startsWith("/") ? "" : "/"}${trimmed}`;
+            urls.add(loc);
+        };
+
+        addUrl("/");
+        addUrl("/games/");
+        addUrl("/games/index.html");
+
+        addUrl("/games/genres/");
+        addUrl("/games/genres/index.html");
+        GAME_GENRES.forEach((genre) => {
+            const page = GENRE_PAGE_MAP.get(genre);
+            if (page) addUrl(`/games/genres/${page}`);
+        });
+
+        addUrl("/games/collections/");
+        addUrl("/games/collections/index.html");
+        COLLECTION_FLAGS.forEach((collection) => {
+            addUrl(`/games/collections/${collection.page}`);
+        });
+
+        (gamesLibrary || []).forEach((game) => {
+            const slug = String(game.slug || "").trim();
+            if (!slug || !CLEAN_SLUG_REGEX.test(slug)) return;
+            addUrl(`/games/${slug}/`);
+            addUrl(`/games/${slug}.html`);
+        });
+
+        const entries = Array.from(urls)
+            .sort()
+            .map((loc) => {
+                return [
+                    "  <url>",
+                    `    <loc>${escapeXml(loc)}</loc>`,
+                    `    <lastmod>${escapeXml(now)}</lastmod>`,
+                    "  </url>"
+                ].join("\n");
+            })
+            .join("\n");
+
+        return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries}\n</urlset>`;
+    };
+
+    const buildSitemapUrlSet = (gamesLibrary) => {
+        const urls = new Set();
+        const addUrl = (path) => {
+            const trimmed = String(path || "").trim();
+            if (!trimmed) return;
+            const loc = trimmed.startsWith("http") ? trimmed : `${SITE_BASE_URL}${trimmed.startsWith("/") ? "" : "/"}${trimmed}`;
+            urls.add(loc);
+        };
+
+        addUrl("/");
+        addUrl("/games/");
+        addUrl("/games/index.html");
+        addUrl("/games/genres/");
+        addUrl("/games/genres/index.html");
+        GAME_GENRES.forEach((genre) => {
+            const page = GENRE_PAGE_MAP.get(genre);
+            if (page) addUrl(`/games/genres/${page}`);
+        });
+        addUrl("/games/collections/");
+        addUrl("/games/collections/index.html");
+        COLLECTION_FLAGS.forEach((collection) => {
+            addUrl(`/games/collections/${collection.page}`);
+        });
+
+        (gamesLibrary || []).forEach((game) => {
+            const slug = String(game.slug || "").trim();
+            if (!slug || !CLEAN_SLUG_REGEX.test(slug)) return;
+            addUrl(`/games/${slug}/`);
+            addUrl(`/games/${slug}.html`);
+        });
+        return urls;
+    };
 
     const refreshDashboard = () => {
         const total = state.workingGames.length;
@@ -561,6 +840,7 @@
         const warnings = [];
         const idMap = new Map();
         const slugMap = new Map();
+        const sitemapUrls = buildSitemapUrlSet(games);
         games.forEach((game) => {
             if (game.id) idMap.set(game.id, (idMap.get(game.id) || 0) + 1);
             if (game.slug) slugMap.set(game.slug, (slugMap.get(game.slug) || 0) + 1);
@@ -569,10 +849,28 @@
         games.forEach((game) => {
             const prefix = `${game.title || game.id || "Untitled"}`;
             if (!game.id) errors.push(`${prefix}: missing ID.`);
-            if (!game.slug) errors.push(`${prefix}: missing slug.`);
+            if (!game.slug) {
+                errors.push(`${prefix}: missing slug.`);
+                warnings.push(`${prefix}: orphan page risk (no slug for canonical/stub).`);
+            }
             if (!game.title) errors.push(`${prefix}: missing title.`);
             if (!game.sorttitle) warnings.push(`${prefix}: missing sort title.`);
             if (!game.genres || !game.genres.length) warnings.push(`${prefix}: missing genres.`);
+            if (game.genres && game.genres.some((genre) => !GAME_GENRES.includes(genre))) {
+                errors.push(`${prefix}: invalid genre detected.`);
+            }
+            if (game.collections && game.collections.some((flag) => !COLLECTION_FLAGS.some((item) => item.id === flag))) {
+                errors.push(`${prefix}: invalid collection flag detected.`);
+            }
+            if (game.slug && !CLEAN_SLUG_REGEX.test(game.slug)) {
+                errors.push(`${prefix}: slug contains invalid characters (broken URL).`);
+            }
+            if (game.id && !CLEAN_ID_REGEX.test(game.id)) {
+                errors.push(`${prefix}: ID contains invalid characters.`);
+            }
+            if (game.slug && game.id && deriveIdFromSlug(game.slug) !== game.id) {
+                errors.push(`${prefix}: ID must match slug (slug → underscore).`);
+            }
             if (game.id && idMap.get(game.id) > 1) errors.push(`${prefix}: duplicate ID ${game.id}.`);
             if (game.slug && slugMap.get(game.slug) > 1) errors.push(`${prefix}: duplicate slug ${game.slug}.`);
             if (game.thumbnail && !game.thumbnail.startsWith("resources/images/")) warnings.push(`${prefix}: thumbnail path should be under resources/images/.`);
@@ -581,6 +879,18 @@
             if (game.lemon && game.lemon.some(link => !isValidUrl(link))) warnings.push(`${prefix}: invalid Lemon link.`);
             if (game.videoid && !YOUTUBE_ID_REGEX.test(game.videoid)) warnings.push(`${prefix}: invalid YouTube ID.`);
             if (!hasCredits(game)) warnings.push(`${prefix}: missing credits.`);
+
+            if (!game.slug || !CLEAN_SLUG_REGEX.test(game.slug)) {
+                warnings.push(`${prefix}: missing canonical folder (requires valid slug).`);
+                warnings.push(`${prefix}: missing SEO stub (requires valid slug).`);
+                return;
+            }
+
+            const canonicalUrl = `${SITE_BASE_URL}/games/${game.slug}/`;
+            const stubUrl = `${SITE_BASE_URL}/games/${game.slug}.html`;
+            if (!sitemapUrls.has(canonicalUrl) || !sitemapUrls.has(stubUrl)) {
+                warnings.push(`${prefix}: sitemap missing canonical or stub entry.`);
+            }
         });
 
         return { errors, warnings };
@@ -601,9 +911,17 @@
         if (draft.slug && !CLEAN_SLUG_REGEX.test(draft.slug)) errors.push("Slug must be lowercase alphanumeric with hyphens.");
         if (idDupe) errors.push("ID must be unique.");
         if (slugDupe) errors.push("Slug must be unique.");
+        if (slug && id && deriveIdFromSlug(slug) !== id) {
+            errors.push("ID must match slug (slug → underscore).");
+            warnings.push("ID/slug mismatch detected. Use auto-generate to sync.");
+        }
         if (!draft.year) warnings.push("Year is missing.");
         if (draft.year && (draft.year < YEAR_MIN || draft.year > YEAR_MAX)) warnings.push(`Year should be between ${YEAR_MIN} and ${YEAR_MAX}.`);
         if (!draft.genres.length) warnings.push("Select at least one genre.");
+        if (draft.genres.some((genre) => !GAME_GENRES.includes(genre))) errors.push("One or more genres are invalid.");
+        if (draft.collections && draft.collections.some((flag) => !COLLECTION_FLAGS.some((item) => item.id === flag))) {
+            errors.push("One or more collection flags are invalid.");
+        }
         if (draft.videoid && !YOUTUBE_ID_REGEX.test(draft.videoid)) warnings.push("YouTube ID looks invalid.");
         if (draft.thumbnail && !draft.thumbnail.startsWith("resources/images/")) warnings.push("Thumbnail path should live under resources/images/.");
         if (draft.pdf && !isValidUrl(draft.pdf)) errors.push("PDF URL is invalid.");
@@ -645,9 +963,9 @@
         };
 
         const genres = getSelectedGenres();
-        applyCategoryTags(genres);
-        syncCategoryToggles(genres);
+        const collections = getSelectedCollections();
         state.draftGame.genres = genres;
+        state.draftGame.collections = sortCollections(collections);
 
         renderPreview();
         renderChangeList();
@@ -696,44 +1014,33 @@
             .map((checkbox) => checkbox.value);
     };
 
-    const categoryMap = [
-        { checkbox: elements.categoryTopPicks, tag: CATEGORY_TAGS.topPicks },
-        { checkbox: elements.categoryBpjs, tag: CATEGORY_TAGS.bpjs },
-        { checkbox: elements.categoryLicensed, tag: CATEGORY_TAGS.licensed },
-        { checkbox: elements.categoryCollection, tag: CATEGORY_TAGS.collection }
+    const collectionMap = [
+        { checkbox: elements.collectionTopPicks, id: "top-picks" },
+        { checkbox: elements.collectionBpjs, id: "bpjs" },
+        { checkbox: elements.collectionCartridge, id: "cartridge" },
+        { checkbox: elements.collectionLicensed, id: "licensed" }
     ];
 
-    const categoryToggleMap = new Map(categoryMap.map(({ checkbox, tag }) => [checkbox, tag]));
+    const collectionToggleMap = new Map(collectionMap.map(({ checkbox, id }) => [checkbox, id]));
 
-    const applyCategoryTags = (genres) => {
-        categoryMap.forEach(({ checkbox, tag }) => {
-            if (!checkbox) return;
-            if (checkbox.checked && !genres.includes(tag)) {
-                genres.push(tag);
-            }
-            if (!checkbox.checked) {
-                const index = genres.indexOf(tag);
-                if (index >= 0) genres.splice(index, 1);
-            }
-        });
+    const getSelectedCollections = () => {
+        return collectionMap
+            .filter(({ checkbox }) => checkbox && checkbox.checked)
+            .map(({ id }) => id);
     };
 
-    const syncCategoryToggles = (genres) => {
-        categoryMap.forEach(({ checkbox, tag }) => {
+    const syncCollectionToggles = (collections) => {
+        const collectionSet = new Set(collections || []);
+        collectionMap.forEach(({ checkbox, id }) => {
             if (!checkbox) return;
-            checkbox.checked = genres.includes(tag);
+            checkbox.checked = collectionSet.has(id);
         });
-    };
-
-    const setGenreCheckbox = (tag, checked) => {
-        const checkbox = elements.genreGrid.querySelector(`input[value="${tag}"]`);
-        if (checkbox) checkbox.checked = checked;
     };
 
     const renderGenres = () => {
         if (!elements.genreGrid) return;
         elements.genreGrid.innerHTML = "";
-        CANONICAL_GENRES.forEach((genre) => {
+        GAME_GENRES.forEach((genre) => {
             const label = document.createElement("label");
             label.className = "admin-toggle";
             const input = document.createElement("input");
@@ -751,7 +1058,7 @@
         checkboxes.forEach((checkbox) => {
             checkbox.checked = genreSet.has(checkbox.value);
         });
-        syncCategoryToggles(genres);
+        syncCollectionToggles(state.draftGame ? state.draftGame.collections : []);
     };
 
     const renderEditor = () => {
@@ -794,9 +1101,10 @@
     };
 
     const updateFieldHighlights = (draft, validation) => {
+        const idMismatch = draft.slug && draft.id && deriveIdFromSlug(draft.slug) !== draft.id;
         const fieldMap = [
             { input: inputs.title, invalid: !draft.title },
-            { input: inputs.id, invalid: !draft.id || !CLEAN_ID_REGEX.test(draft.id) },
+            { input: inputs.id, invalid: !draft.id || !CLEAN_ID_REGEX.test(draft.id) || idMismatch },
             { input: inputs.slug, invalid: !draft.slug || !CLEAN_SLUG_REGEX.test(draft.slug) },
             { input: inputs.year, invalid: draft.year && (draft.year < YEAR_MIN || draft.year > YEAR_MAX) },
             { input: inputs.pdf, invalid: draft.pdf && !isValidUrl(draft.pdf) },
@@ -1074,8 +1382,9 @@
 
     const handleAutoIds = () => {
         const title = inputs.title.value || inputs.id.value || "";
-        inputs.id.value = generateId(title);
-        inputs.slug.value = generateSlug(title);
+        const slug = generateSlug(title);
+        inputs.slug.value = slug;
+        inputs.id.value = deriveIdFromSlug(slug);
         updateDraft();
     };
 
@@ -1096,6 +1405,19 @@
         if (!elements.descriptionCount) return;
         const length = inputs.description.value.trim().length;
         elements.descriptionCount.textContent = `${length} chars`;
+    };
+
+    const findSlugMismatch = (games) => {
+        return (games || []).find((game) => {
+            if (!game || !game.slug || !game.id) return false;
+            return deriveIdFromSlug(game.slug) !== game.id;
+        });
+    };
+
+    const setExportIndicator = (element, ready, label) => {
+        if (!element) return;
+        element.textContent = `${ready ? "✔" : "○"} ${label}`;
+        element.dataset.state = ready ? "success" : "idle";
     };
 
     const exportJson = (payload, filename) => {
@@ -1123,16 +1445,29 @@
 
     const downloadSelectedJson = () => {
         if (!state.draftGame) return;
+        if (deriveIdFromSlug(state.draftGame.slug) !== state.draftGame.id) {
+            setStatus("Export blocked.", "ID must match slug before exporting.", "error");
+            return;
+        }
         exportJson(buildSortedGame(state.draftGame), `${state.draftGame.slug || "game"}.json`);
     };
 
     const downloadLibraryJson = () => {
+        const mismatch = findSlugMismatch(state.workingGames);
+        if (mismatch) {
+            setStatus("Export blocked.", `${mismatch.title || mismatch.id}: ID must match slug before exporting.`, "error");
+            return;
+        }
         const payload = state.workingGames.map(game => buildSortedGame(game));
         exportJson(payload, "games.json");
     };
 
     const downloadSelectedStub = () => {
         if (!state.draftGame) return;
+        if (deriveIdFromSlug(state.draftGame.slug) !== state.draftGame.id) {
+            setStatus("Export blocked.", "ID must match slug before exporting.", "error");
+            return;
+        }
         const stub = buildSeoStubHtml(state.draftGame);
         const slug = state.draftGame.slug || generateSlug(state.draftGame.title);
         const blob = new Blob([stub], { type: "text/html" });
@@ -1144,10 +1479,16 @@
         link.click();
         link.remove();
         URL.revokeObjectURL(url);
+        setExportIndicator(elements.exportPagesStatus, true, "Pages generated");
     };
 
     const downloadAllStubs = async () => {
         if (!state.workingGames.length) return;
+        const mismatch = findSlugMismatch(state.workingGames);
+        if (mismatch) {
+            setStatus("Export blocked.", `${mismatch.title || mismatch.id}: ID must match slug before exporting.`, "error");
+            return;
+        }
         if (typeof JSZip === "undefined") {
             setStatus("JSZip missing.", "SEO stubs cannot be zipped without JSZip.", "error");
             return;
@@ -1167,6 +1508,63 @@
         link.click();
         link.remove();
         URL.revokeObjectURL(url);
+        setExportIndicator(elements.exportPagesStatus, true, "Pages generated");
+    };
+
+    const downloadSitemapOnly = () => {
+        if (!state.workingGames.length) return;
+        const mismatch = findSlugMismatch(state.workingGames);
+        if (mismatch) {
+            setStatus("Export blocked.", `${mismatch.title || mismatch.id}: ID must match slug before exporting.`, "error");
+            return;
+        }
+        const xml = generateSitemapXml(state.workingGames);
+        const blob = new Blob([xml], { type: "application/xml" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "sitemap.xml";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+        setExportIndicator(elements.exportSitemapStatus, true, "Sitemap generated");
+    };
+
+    const downloadFullGamePackage = async () => {
+        if (!state.draftGame) return;
+        const mismatch = findSlugMismatch(state.workingGames);
+        if (mismatch) {
+            setStatus("Export blocked.", `${mismatch.title || mismatch.id}: ID must match slug before exporting.`, "error");
+            return;
+        }
+        if (typeof JSZip === "undefined") {
+            setStatus("JSZip missing.", "Full package cannot be zipped without JSZip.", "error");
+            return;
+        }
+        const slug = state.draftGame.slug || generateSlug(state.draftGame.title);
+        if (!slug || !CLEAN_SLUG_REGEX.test(slug)) {
+            setStatus("Export blocked.", "A valid slug is required to build a package.", "error");
+            return;
+        }
+        const zip = new JSZip();
+        const gamesPayload = state.workingGames.map(game => buildSortedGame(game));
+        zip.file("games/games.json", JSON.stringify(gamesPayload, null, 2));
+        zip.file(`games/${slug}.html`, buildSeoStubHtml(state.draftGame));
+        zip.file(`games/${slug}/index.html`, buildCanonicalIndexHtml(state.draftGame));
+        zip.file("sitemap.xml", generateSitemapXml(state.workingGames));
+        const blob = await zip.generateAsync({ type: "blob" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `ccg-game-${slug}.zip`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+        setExportIndicator(elements.exportPagesStatus, true, "Pages generated");
+        setExportIndicator(elements.exportSitemapStatus, true, "Sitemap generated");
+        setExportIndicator(elements.exportPackageStatus, true, "Package ready");
     };
 
     const loadGames = (games, sourceLabel) => {
@@ -1183,6 +1581,9 @@
         renderPreview();
         renderChangeList();
         updatePreviewLinks();
+        setExportIndicator(elements.exportPagesStatus, false, "Pages generated");
+        setExportIndicator(elements.exportSitemapStatus, false, "Sitemap generated");
+        setExportIndicator(elements.exportPackageStatus, false, "Package ready");
         setStep(2);
     };
 
@@ -1236,6 +1637,9 @@
         renderValidation();
         updatePreviewLinks();
         updateStatusBar();
+        setExportIndicator(elements.exportPagesStatus, false, "Pages generated");
+        setExportIndicator(elements.exportSitemapStatus, false, "Sitemap generated");
+        setExportIndicator(elements.exportPackageStatus, false, "Package ready");
         setStatus("Session cleared.", "Load a new file to continue.", "warning");
         resetBox3dStage();
         setStep(1);
@@ -1302,6 +1706,7 @@
         if (!slug) errors.push("Slug is required.");
         if (id && !CLEAN_ID_REGEX.test(id)) errors.push("ID format is invalid.");
         if (slug && !CLEAN_SLUG_REGEX.test(slug)) errors.push("Slug format is invalid.");
+        if (slug && id && deriveIdFromSlug(slug) !== id) errors.push("ID must match slug (slug → underscore).");
         return errors;
     };
 
@@ -1696,6 +2101,10 @@
         elements.downloadLibraryBtn.addEventListener("click", downloadLibraryJson);
         elements.downloadStubBtn.addEventListener("click", downloadSelectedStub);
         elements.downloadStubsBtn.addEventListener("click", downloadAllStubs);
+        elements.downloadSitemapBtn.addEventListener("click", downloadSitemapOnly);
+        elements.downloadPackageBtn.addEventListener("click", () => {
+            void downloadFullGamePackage();
+        });
         elements.searchInput.addEventListener("input", handleFilters);
         elements.filterSystem.addEventListener("change", handleFilters);
         elements.filterGenre.addEventListener("change", handleFilters);
@@ -1731,19 +2140,18 @@
         setupListManager(inputs.rereleaserInput, inputs.rereleaserAdd, inputs.rereleaserList);
         setupListManager(inputs.lemonInput, inputs.lemonAdd, inputs.lemonList);
 
-        const handleCategoryToggle = (event) => {
-            const tag = categoryToggleMap.get(event.target);
-            if (tag) {
-                setGenreCheckbox(tag, event.target.checked);
+        const handleCollectionToggle = (event) => {
+            const flag = collectionToggleMap.get(event.target);
+            if (flag) {
+                updateDraft();
             }
-            updateDraft();
         };
 
         elements.genreGrid.addEventListener("change", updateDraft);
-        elements.categoryTopPicks.addEventListener("change", handleCategoryToggle);
-        elements.categoryBpjs.addEventListener("change", handleCategoryToggle);
-        elements.categoryLicensed.addEventListener("change", handleCategoryToggle);
-        elements.categoryCollection.addEventListener("change", handleCategoryToggle);
+        elements.collectionTopPicks.addEventListener("change", handleCollectionToggle);
+        elements.collectionBpjs.addEventListener("change", handleCollectionToggle);
+        elements.collectionCartridge.addEventListener("change", handleCollectionToggle);
+        elements.collectionLicensed.addEventListener("change", handleCollectionToggle);
 
         elements.missingRefresh.addEventListener("click", renderMissingList);
         elements.missingList.addEventListener("click", handleMissingListClick);
@@ -1781,7 +2189,7 @@
 
     const hydrateFilters = () => {
         elements.filterGenre.innerHTML = "<option value=\"\">All genres</option>";
-        CANONICAL_GENRES.forEach((genre) => {
+        GAME_GENRES.forEach((genre) => {
             const option = document.createElement("option");
             option.value = genre;
             option.textContent = genre;
@@ -1883,6 +2291,9 @@
         updateDescriptionCount();
         updatePreviewLinks();
         updateStatusBar();
+        setExportIndicator(elements.exportPagesStatus, false, "Pages generated");
+        setExportIndicator(elements.exportSitemapStatus, false, "Sitemap generated");
+        setExportIndicator(elements.exportPackageStatus, false, "Package ready");
         resetBox3dStage();
         setSubstep("identity");
         setupGate();

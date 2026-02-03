@@ -444,8 +444,8 @@
                                                 <button class="admin-help-toggle" data-help-toggle="help-classification" type="button" aria-expanded="false">?</button>
                                             </div>
                                             <div class="admin-help-panel" id="help-classification" hidden>
-                                                <p><strong>Rules:</strong> Pick all relevant genres. Category toggles sync to specific genre tags.</p>
-                                                <p><strong>Examples:</strong> "Platform Games" + "Top Picks" if featured.</p>
+                                                <p><strong>Rules:</strong> Pick gameplay genres only. Collections are separate flags.</p>
+                                                <p><strong>Examples:</strong> <code>platform</code> + <code>top-picks</code> if featured.</p>
                                                 <p><strong>Common mistake:</strong> Forgetting to add a primary genre.</p>
                                             </div>
                                             <div class="admin-form-heading">
@@ -456,14 +456,14 @@
                                         </div>
                                         <div class="admin-form-section">
                                             <div class="admin-form-heading">
-                                                <h4>Category Toggles</h4>
-                                                <span class="admin-form-note">Add flags for Top Picks, BPJS, Licensed, or Collections.</span>
+                                                <h4>Collection Flags</h4>
+                                                <span class="admin-form-note">Add flags for BPJS, Cartridge, Licensed, or Top Picks.</span>
                                             </div>
                                             <div class="admin-toggle-grid">
-                                                <label class="admin-toggle"><input id="categoryTopPicks" type="checkbox"/> Top Picks</label>
-                                                <label class="admin-toggle"><input id="categoryBpjs" type="checkbox"/> BPJS</label>
-                                                <label class="admin-toggle"><input id="categoryLicensed" type="checkbox"/> Licensed</label>
-                                                <label class="admin-toggle"><input id="categoryCollection" type="checkbox"/> Collection</label>
+                                                <label class="admin-toggle"><input id="collectionTopPicks" type="checkbox"/> Top Picks</label>
+                                                <label class="admin-toggle"><input id="collectionBpjs" type="checkbox"/> BPJS</label>
+                                                <label class="admin-toggle"><input id="collectionCartridge" type="checkbox"/> Cartridge</label>
+                                                <label class="admin-toggle"><input id="collectionLicensed" type="checkbox"/> Licensed</label>
                                             </div>
                                             <button class="ccg-btn ccg-btn--primary admin-substep-next" data-substep-next="media" type="button">Next: Media</button>
                                         </div>
@@ -766,6 +766,16 @@
                                 <div class="admin-inline-buttons admin-inline-buttons--export">
                                     <button class="ccg-btn ccg-btn--primary" id="adminDownloadStub" type="button">Download selected SEO stub</button>
                                     <button class="ccg-btn ccg-btn--ghost" id="adminDownloadStubs" type="button">Download all SEO stubs (ZIP)</button>
+                                </div>
+                                <div class="admin-inline-buttons admin-inline-buttons--export">
+                                    <button class="ccg-btn ccg-btn--primary" id="adminDownloadPackage" type="button">Download full game package (ZIP)</button>
+                                    <button class="ccg-btn ccg-btn--ghost" id="adminDownloadSitemap" type="button">Download sitemap only</button>
+                                </div>
+                                <div class="admin-divider"></div>
+                                <div class="admin-export-status">
+                                    <p class="admin-status-inline" id="adminExportPagesStatus">○ Pages generated</p>
+                                    <p class="admin-status-inline" id="adminExportSitemapStatus">○ Sitemap generated</p>
+                                    <p class="admin-status-inline" id="adminExportPackageStatus">○ Package ready</p>
                                 </div>
                             </article>
                         </section>
