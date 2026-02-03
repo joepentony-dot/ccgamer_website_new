@@ -915,6 +915,7 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     margin-left: auto;
     margin-right: auto;
     box-sizing: border-box;
+    overflow: visible;
 }
 
 .game-hero,
@@ -934,6 +935,7 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     margin-left: auto;
     margin-right: auto;
     box-sizing: border-box;
+    overflow: visible;
 }
 
 .ccg-page--single-game .game-shell > .game-hero,
