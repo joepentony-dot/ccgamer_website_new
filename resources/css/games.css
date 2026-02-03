@@ -1843,16 +1843,17 @@ body[data-ccg-mode="amiga"] {
     position: fixed;
     left: 50%;
     bottom: calc(14px + env(safe-area-inset-bottom));
-    transform: translateX(-50%);
+    transform: translate(-50%, calc(-1 * var(--ccg-quick-actions-lift, 0px)));
     display: flex;
     gap: 8px;
-    padding: 10px 12px;
-    border-radius: 999px;
-    background: rgba(6, 10, 18, 0.82);
-    border: 1px solid rgba(var(--accent-rgb), 0.4);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.7), 0 0 18px rgba(var(--accent-rgb), 0.25);
+    padding: 6px 10px;
+    border-radius: 14px;
+    background: rgba(6, 10, 18, 0.78);
+    border: 1px solid rgba(var(--accent-rgb), 0.32);
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.55), 0 0 10px rgba(var(--accent-rgb), 0.18);
     z-index: 1150;
     backdrop-filter: blur(12px);
+    transition: transform 160ms ease;
 }
 
 .game-quick-actions[hidden] {
@@ -1860,23 +1861,23 @@ body[data-ccg-mode="amiga"] {
 }
 
 .game-quick-actions button {
-    border: 1px solid rgba(var(--accent-rgb), 0.4);
-    background: rgba(var(--accent-rgb), 0.12);
+    border: 1px solid rgba(var(--accent-rgb), 0.35);
+    background: rgba(var(--accent-rgb), 0.1);
     color: #fff;
     font-family: var(--ccg-font-body);
-    font-size: 0.72rem;
-    letter-spacing: 0.14em;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    padding: 8px 12px;
-    border-radius: 999px;
+    padding: 6px 10px;
+    border-radius: 8px;
     cursor: pointer;
     transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
 
 .game-quick-actions button:hover,
 .game-quick-actions button:focus-visible {
-    border-color: rgba(var(--accent-rgb), 0.85);
-    box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.25);
+    border-color: rgba(var(--accent-rgb), 0.7);
+    box-shadow: 0 0 0 1px rgba(var(--accent-rgb), 0.18);
     transform: translateY(-1px);
     outline: none;
 }
@@ -2111,8 +2112,8 @@ body[data-ccg-mode="amiga"] {
     .game-quick-actions {
         flex-wrap: wrap;
         justify-content: center;
-        border-radius: 18px;
-        padding: 10px;
+        border-radius: 16px;
+        padding: 8px;
     }
 
     .ccg-back-to-top {
@@ -2189,7 +2190,7 @@ body[data-ccg-mode="amiga"] {
 
     .game-quick-actions button {
         flex: 1 1 auto;
-        padding: 8px 10px;
+        padding: 6px 8px;
     }
 
     .ccg-page--single-game .ccg-main {
@@ -2319,12 +2320,12 @@ body[data-ccg-mode="amiga"] {
 @media (max-width: 480px) {
     .game-quick-actions {
         gap: 6px;
-        padding: 8px 10px;
+        padding: 6px 8px;
     }
 
     .game-quick-actions button {
-        font-size: 0.68rem;
-        letter-spacing: 0.1em;
+        font-size: 0.64rem;
+        letter-spacing: 0.09em;
     }
 
     .ccg-back-to-top {

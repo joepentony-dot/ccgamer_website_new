@@ -1611,6 +1611,8 @@ function initQuickActions(state) {
     if (hero) {
         setupQuickActionsObserver(hero, quickActions);
     }
+
+    setupQuickActionsFooterGuard(quickActions);
 }
 
 function setupQuickActionsObserver(hero, quickActions) {
@@ -1642,6 +1644,35 @@ function setupQuickActionsObserver(hero, quickActions) {
         window.addEventListener("scroll", onScroll, { passive: true });
         onScroll();
     }
+}
+
+function setupQuickActionsFooterGuard(quickActions) {
+    if (!quickActions || quickActions.dataset.footerGuard === "true") return;
+    const footer = document.querySelector(".ccg-footer");
+    if (!footer) return;
+
+    let ticking = false;
+    const updateLift = () => {
+        const footerRect = footer.getBoundingClientRect();
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+        const overlap = viewportHeight - footerRect.top;
+        const lift = overlap > 0 ? overlap + 12 : 0;
+        quickActions.style.setProperty("--ccg-quick-actions-lift", `${lift}px`);
+    };
+
+    const onScroll = () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+            updateLift();
+            ticking = false;
+        });
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    updateLift();
+    quickActions.dataset.footerGuard = "true";
 }
 
 function handleQuickAction(action) {
