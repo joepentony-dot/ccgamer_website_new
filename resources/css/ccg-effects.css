@@ -165,6 +165,15 @@
 :root {
     --ccg-focus-outline: rgba(var(--accent-rgb), 0.72);
     --ccg-focus-halo: rgba(var(--accent-rgb), 0.32);
+    --ccg-neon-primary: rgba(var(--accent-rgb), 1);
+}
+
+body[data-ccg-mode="c64"] {
+    --ccg-neon-primary: #00ccff;
+}
+
+body[data-ccg-mode="amiga"] {
+    --ccg-neon-primary: #ff4bd8;
 }
 
 :where(a, button, input, select, textarea, [role="button"], [tabindex]):focus-visible {
@@ -194,6 +203,199 @@
 .ccg-nav__more-toggle:hover,
 .ccg-nav__more-toggle:focus-visible {
     filter: drop-shadow(0 0 16px rgba(var(--accent-rgb), 0.38));
+}
+
+/* ============================================================
+   OMEGA HUD DOCK — FLOATING NAV
+   • Neon glass container
+   • Mode-aware glow
+   • Subtle motion cues
+============================================================ */
+
+.ccg-hud-dock {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: rgba(8, 20, 35, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 12px 14px;
+    border: 1px solid var(--ccg-neon-primary);
+    box-shadow:
+        0 0 18px var(--ccg-neon-primary),
+        inset 0 0 12px rgba(255,255,255,0.05);
+    z-index: 9999;
+    transition: box-shadow 240ms ease, border-color 240ms ease;
+}
+
+html.ccg-hud-dock-ready .ccg-hud-dock {
+    animation: ccgHudPulse 8s ease-in-out infinite;
+}
+
+.ccg-hud-dock .omega-mobile-dock {
+    position: static;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    padding: 0;
+    pointer-events: auto;
+    opacity: 1;
+}
+
+.ccg-hud-dock .omega-mobile-dock__bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    pointer-events: auto;
+    animation: none;
+}
+
+.ccg-hud-dock .omega-mobile-dock__bar::after {
+    display: none;
+}
+
+.ccg-hud-dock a,
+.ccg-hud-dock button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,0,0,0.35);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    border: 1px solid transparent;
+    color: var(--ccg-text-light, #fff);
+    text-decoration: none;
+    box-shadow: inset 0 0 8px rgba(255,255,255,0.06);
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease,
+        background 0.25s ease,
+        color 0.25s ease;
+}
+
+.ccg-hud-dock a::after,
+.ccg-hud-dock button::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.35), transparent);
+    opacity: 0;
+    transform: translateX(-140%);
+    pointer-events: none;
+}
+
+.ccg-hud-dock a:hover,
+.ccg-hud-dock a:focus-visible,
+.ccg-hud-dock button:hover,
+.ccg-hud-dock button:focus-visible {
+    border-color: var(--ccg-neon-primary);
+    box-shadow:
+        0 0 12px rgba(0,0,0,0.4),
+        0 0 18px var(--ccg-neon-primary),
+        inset 0 0 12px rgba(255,255,255,0.12);
+    transform: translateY(-1px) scale(1.03);
+}
+
+.ccg-hud-dock a:hover::after,
+.ccg-hud-dock a:focus-visible::after,
+.ccg-hud-dock button:hover::after,
+.ccg-hud-dock button:focus-visible::after {
+    opacity: 0.7;
+    animation: ccgHudShimmer 0.85s ease;
+}
+
+.ccg-hud-dock a:active,
+.ccg-hud-dock button:active {
+    transform: scale(0.98);
+    box-shadow:
+        0 0 22px var(--ccg-neon-primary),
+        inset 0 0 14px rgba(255,255,255,0.2);
+}
+
+.ccg-hud-dock .omega-mobile-dock__btn {
+    min-height: auto;
+    font-size: 0.7rem;
+    text-transform: none;
+}
+
+.ccg-hud-dock .omega-mobile-dock__icon {
+    font-size: 0.85rem;
+}
+
+.ccg-hud-dock .omega-mobile-dock__label {
+    letter-spacing: 0.08em;
+}
+
+@media (max-width: 720px) {
+    .ccg-hud-dock {
+        bottom: 24px;
+        left: 16px;
+        gap: 12px;
+        padding: 10px 12px;
+        max-width: min(320px, calc(100vw - 32px));
+    }
+
+    .ccg-hud-dock .omega-mobile-dock__bar {
+        gap: 12px;
+    }
+
+    .ccg-hud-dock a,
+    .ccg-hud-dock button {
+        padding: 6px 10px;
+        font-size: 0.68rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ccg-hud-dock,
+    .ccg-hud-dock a,
+    .ccg-hud-dock button {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+@keyframes ccgHudPulse {
+    0% {
+        box-shadow:
+            0 0 14px color-mix(in srgb, var(--ccg-neon-primary) 65%, transparent),
+            inset 0 0 10px rgba(255,255,255,0.05);
+    }
+    50% {
+        box-shadow:
+            0 0 22px color-mix(in srgb, var(--ccg-neon-primary) 85%, transparent),
+            inset 0 0 12px rgba(255,255,255,0.09);
+    }
+    100% {
+        box-shadow:
+            0 0 14px color-mix(in srgb, var(--ccg-neon-primary) 65%, transparent),
+            inset 0 0 10px rgba(255,255,255,0.05);
+    }
+}
+
+@keyframes ccgHudShimmer {
+    0% {
+        transform: translateX(-140%);
+    }
+    100% {
+        transform: translateX(140%);
+    }
 }
 
 /* ============================================================
