@@ -2144,12 +2144,6 @@ function initRelatedCarousel() {
         nextBtn.setAttribute("aria-disabled", String(atEnd));
     };
 
-    const handleScroll = (direction) => {
-        const cardWidth = getCardWidth();
-        if (!cardWidth) return;
-        scrollEl.scrollBy({ left: direction * cardWidth * 2, behavior: "smooth" });
-    };
-
         const handleScroll = (direction) => {
             const step = scrollEl.clientWidth * 0.8;
             if (!step) return;
