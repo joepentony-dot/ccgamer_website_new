@@ -1801,6 +1801,7 @@ function setupFooterSignatureRotator() {
         const browseBackdrop = dock.querySelector("[data-omega-browse-backdrop]");
         const browseClose = dock.querySelector("[data-omega-browse-close]");
         const scrollTopBtn = dock.querySelector("[data-omega-scroll-top]");
+        const browseSearch = dock.querySelector("[data-omega-browse-search]");
 
         if (!browseToggle || !browseHub) return;
 
@@ -1888,6 +1889,22 @@ function setupFooterSignatureRotator() {
 
         window.addEventListener("scroll", scheduleCloseOnScroll, { passive: true });
         window.addEventListener("orientationchange", scheduleCloseOnScroll, { passive: true });
+
+        const getSearchTarget = () => {
+            const target = browseSearch?.getAttribute("href")?.trim();
+            return target && target !== "#" ? target : "games/index.html?search=";
+        };
+
+        if (browseSearch) {
+            browseSearch.addEventListener("click", (event) => {
+                event.preventDefault();
+                const target = getSearchTarget();
+                if (target) {
+                    closeHub();
+                    window.location.assign(target);
+                }
+            });
+        }
 
         if (scrollTopBtn) {
             scrollTopBtn.addEventListener("click", (event) => {
