@@ -1551,17 +1551,25 @@ function initBackToTop() {
     if (!button && !wrap) return;
     CCG_BACK_TO_TOP_READY = true;
 
+    if (wrap) {
+        wrap.hidden = false;
+    } else if (button) {
+        button.hidden = false;
+    }
+
     button?.addEventListener("click", () => {
         const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         window.scrollTo({ top: 0, behavior: prefersReduced ? "auto" : "smooth" });
     });
 
     const updateVisibility = () => {
-        const show = window.scrollY > 480;
+        const scrollBottom = window.scrollY + window.innerHeight;
+        const docHeight = document.documentElement.scrollHeight;
+        const show = scrollBottom >= docHeight - 80;
         if (wrap) {
-            wrap.hidden = !show;
+            wrap.classList.toggle("is-visible", show);
         } else if (button) {
-            button.hidden = !show;
+            button.classList.toggle("is-visible", show);
         }
     };
 
@@ -2105,100 +2113,97 @@ function renderRelatedGames(game) {
 }
 
 function initRelatedCarousel() {
-    const track = document.getElementById("relatedGamesTrack");
-    const carousel = track ? track.closest(".related-carousel") : null;
-    const prevBtn = carousel ? carousel.querySelector(".related-carousel__nav--prev") : null;
-    const nextBtn = carousel ? carousel.querySelector(".related-carousel__nav--next") : null;
-    const viewport = carousel ? carousel.querySelector(".related-carousel__viewport") : null;
-    const scrollEl = viewport || track;
+    const carousels = Array.from(document.querySelectorAll(".related-carousel"));
+    if (!carousels.length) return;
 
-    if (!track || !scrollEl || !prevBtn || !nextBtn) return;
-    if (track.dataset.carouselReady === "true") return;
-    track.dataset.carouselReady = "true";
+    const initCarouselInstance = (carousel) => {
+        if (!carousel || carousel.dataset.carouselReady === "true") return;
+        const track = carousel.querySelector(".related-carousel__track");
+        const viewport = carousel.querySelector(".related-carousel__viewport");
+        const prevBtn = carousel.querySelector(".related-carousel__nav--prev");
+        const nextBtn = carousel.querySelector(".related-carousel__nav--next");
+        const scrollEl = viewport || track;
 
-    const getScrollStep = () => {
-        const card = scrollEl.querySelector(".related-card") || track.querySelector(".related-card");
-        if (!card) return scrollEl.clientWidth || 0;
-        const gapValue = parseFloat(window.getComputedStyle(track).gap || "0");
-        const cardWidth = card.getBoundingClientRect().width || 0;
-        return cardWidth + (Number.isNaN(gapValue) ? 0 : gapValue);
-    };
+        if (!track || !scrollEl || !prevBtn || !nextBtn) return;
+        carousel.dataset.carouselReady = "true";
 
-    const updateButtons = () => {
-        const maxScroll = scrollEl.scrollWidth - scrollEl.clientWidth;
-        const atStart = scrollEl.scrollLeft <= 1;
-        const atEnd = scrollEl.scrollLeft >= maxScroll - 1;
+        scrollEl.style.overflowX = "auto";
+        scrollEl.style.overflowY = "hidden";
 
-        prevBtn.disabled = atStart;
-        nextBtn.disabled = atEnd;
-        prevBtn.setAttribute("aria-disabled", String(atStart));
-        nextBtn.setAttribute("aria-disabled", String(atEnd));
-    };
+        const updateButtons = () => {
+            const maxScroll = scrollEl.scrollWidth - scrollEl.clientWidth;
+            const atStart = scrollEl.scrollLeft <= 1;
+            const atEnd = scrollEl.scrollLeft >= maxScroll - 1;
 
-    const handleScroll = (direction) => {
-        const step = getScrollStep();
-        if (!step) return;
-        scrollEl.scrollBy({ left: direction * step, behavior: "smooth" });
-    };
+            prevBtn.disabled = atStart;
+            nextBtn.disabled = atEnd;
+            prevBtn.setAttribute("aria-disabled", String(atStart));
+            nextBtn.setAttribute("aria-disabled", String(atEnd));
+        };
 
-    const isolateArrowEvent = (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-    };
+        const handleCarouselScroll = (direction) => {
+            const step = scrollEl.clientWidth * 0.8;
+            if (!step) return;
+            scrollEl.scrollBy({ left: direction * step, behavior: "smooth" });
+        };
 
-    const handleArrowPress = (direction) => (event) => {
-        isolateArrowEvent(event);
-        handleScroll(direction);
-    };
+        const isolateArrowEvent = (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+        };
 
-    const bindArrow = (button, direction) => {
-        let touchActivated = false;
-        const handlePress = handleArrowPress(direction);
+        const handleArrowPress = (direction) => (event) => {
+            isolateArrowEvent(event);
+            handleCarouselScroll(direction);
+        };
 
-        button.addEventListener("click", (event) => {
-            if (touchActivated) {
-                touchActivated = false;
-                return;
-            }
-            handlePress(event);
-        });
+        const bindArrow = (button, direction) => {
+            let touchActivated = false;
+            const handlePress = handleArrowPress(direction);
 
-        button.addEventListener(
-            "touchstart",
-            (event) => {
-                touchActivated = true;
+            button.addEventListener("click", (event) => {
+                if (touchActivated) {
+                    touchActivated = false;
+                    return;
+                }
                 handlePress(event);
-            },
-            { passive: false }
-        );
+            });
 
-        button.addEventListener("mousedown", isolateArrowEvent);
-        button.addEventListener("dragstart", isolateArrowEvent);
+            button.addEventListener(
+                "touchstart",
+                (event) => {
+                    touchActivated = true;
+                    handlePress(event);
+                },
+                { passive: false }
+            );
 
-        button.addEventListener("pointerdown", (event) => {
-            if (event.pointerType === "mouse") {
-                isolateArrowEvent(event);
-            }
+            button.addEventListener("mousedown", isolateArrowEvent);
+            button.addEventListener("dragstart", isolateArrowEvent);
+
+            button.addEventListener("pointerdown", (event) => {
+                if (event.pointerType === "mouse") {
+                    isolateArrowEvent(event);
+                }
+            });
+        };
+
+        bindArrow(prevBtn, -1);
+        bindArrow(nextBtn, 1);
+        scrollEl.addEventListener("scroll", updateButtons, { passive: true });
+        window.addEventListener("resize", updateButtons);
+        window.addEventListener("load", updateButtons);
+
+        const refreshButtons = () => {
+            requestAnimationFrame(updateButtons);
+        };
+
+        track.querySelectorAll("img").forEach(img => {
+            if (img.complete) return;
+            img.addEventListener("load", refreshButtons, { once: true });
+            img.addEventListener("error", refreshButtons, { once: true });
         });
-    };
 
-    bindArrow(prevBtn, -1);
-    bindArrow(nextBtn, 1);
-    scrollEl.addEventListener("scroll", updateButtons, { passive: true });
-    window.addEventListener("resize", updateButtons);
-    window.addEventListener("load", updateButtons);
-
-    const refreshButtons = () => {
-        requestAnimationFrame(updateButtons);
-    };
-
-    track.querySelectorAll("img").forEach(img => {
-        if (img.complete) return;
-        img.addEventListener("load", refreshButtons, { once: true });
-        img.addEventListener("error", refreshButtons, { once: true });
-    });
-
-    if (carousel) {
         carousel.addEventListener(
             "click",
             (event) => {
@@ -2209,39 +2214,40 @@ function initRelatedCarousel() {
             },
             true
         );
-    }
 
-    let hasTouchMoved = false;
-    let touchResetTimer = null;
-    const touchTarget = scrollEl || track;
+        let hasTouchMoved = false;
+        let touchResetTimer = null;
 
-    touchTarget.addEventListener("touchstart", () => {
-        hasTouchMoved = false;
-    }, { passive: true });
-
-    touchTarget.addEventListener("touchmove", () => {
-        hasTouchMoved = true;
-    }, { passive: true });
-
-    touchTarget.addEventListener("touchend", () => {
-        if (touchResetTimer) window.clearTimeout(touchResetTimer);
-        touchResetTimer = window.setTimeout(() => {
+        scrollEl.addEventListener("touchstart", () => {
             hasTouchMoved = false;
-        }, 60);
-    }, { passive: true });
+        }, { passive: true });
 
-    touchTarget.addEventListener(
-        "click",
-        (event) => {
-            if (hasTouchMoved) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-        },
-        true
-    );
+        scrollEl.addEventListener("touchmove", () => {
+            hasTouchMoved = true;
+        }, { passive: true });
 
-    updateButtons();
+        scrollEl.addEventListener("touchend", () => {
+            if (touchResetTimer) window.clearTimeout(touchResetTimer);
+            touchResetTimer = window.setTimeout(() => {
+                hasTouchMoved = false;
+            }, 60);
+        }, { passive: true });
+
+        scrollEl.addEventListener(
+            "click",
+            (event) => {
+                if (hasTouchMoved) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            },
+            true
+        );
+
+        updateButtons();
+    };
+
+    carousels.forEach(initCarouselInstance);
 }
 
 /* ============================================================

@@ -566,6 +566,7 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
         inset 0 0 0 1px rgba(255,255,255,0.06);
     min-width: 260px;
     scroll-snap-align: start;
+    contain: paint;
 }
 
 .ccg-page--single-game .related-carousel .ccg-game-card__thumb--related {
@@ -610,6 +611,7 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
 
 .ccg-page--single-game .related-carousel .related-card {
     overflow: hidden;
+    contain: paint;
 }
 
 .ccg-page--single-game .related-carousel .related-card img {
@@ -632,15 +634,18 @@ body[data-ccg-mode="amiga"] .ccg-feature-card:hover {
     --related-card-height: 236px;
     --related-thumb-height: 140px;
     --related-title-line-height: 1.25;
+    contain: none;
 }
 
 .ccg-page--single-game .related-carousel .related-carousel__viewport {
     min-height: calc(var(--related-card-height) + 18px);
+    contain: none;
 }
 
 .ccg-page--single-game .related-carousel .related-carousel__track {
     align-items: stretch;
     min-height: calc(var(--related-card-height) + 14px);
+    contain: none;
 }
 
 .ccg-page--single-game .related-carousel .related-card {
