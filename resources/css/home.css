@@ -3078,9 +3078,9 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
     .home-discovery-strip {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 8px;
-        width: min(360px, 100%);
-        padding: 8px;
+        gap: 10px;
+        width: min(420px, 100%);
+        padding: 10px;
         border-radius: 16px;
         border: 1px solid rgba(var(--accent-rgb), 0.38);
         background:
@@ -3097,15 +3097,17 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 6px;
-        padding: 8px 6px;
+        gap: 8px;
+        min-height: 48px;
+        padding: 10px 12px;
         border-radius: 12px;
         border: 1px solid rgba(255, 255, 255, 0.12);
         color: #f4f7ff;
         text-decoration: none;
-        font-size: 0.7rem;
-        letter-spacing: 0.14em;
+        font-size: 0.82rem;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
+        text-align: center;
         background: linear-gradient(150deg, rgba(10, 16, 30, 0.85), rgba(6, 10, 20, 0.68));
         box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
         transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
@@ -3127,7 +3129,7 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
     }
 
     .home-discovery-strip__label {
-        line-height: 1;
+        line-height: 1.2;
     }
 
     .home-hero__tagline {
@@ -3213,6 +3215,28 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
 
     .ccg-footer__mini-stats {
         display: flex;
+    }
+}
+
+@media (max-width: 480px) {
+    .home-discovery-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        width: min(360px, 100%);
+        padding: 10px;
+    }
+
+    .home-discovery-strip__link:last-child {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+    .home-discovery-strip {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        width: min(440px, 100%);
+        padding: 12px;
     }
 }
 /* ============================================================
