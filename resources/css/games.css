@@ -761,7 +761,13 @@ html[data-ccg-page="single-game"] {
     scrollbar-gutter: stable both-edges;
 }
 
-html[data-ccg-page="single-game"],
+html[data-ccg-page="single-game"] {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: visible;
+    overflow-x: hidden;
+}
+
 html[data-ccg-page="single-game"] body {
     height: auto;
     min-height: 100vh;
@@ -2082,11 +2088,8 @@ body[data-ccg-mode="amiga"] {
     background: rgba(255,255,255,0.02);
     padding: 10px 46px;
     scroll-behavior: smooth;
-    scroll-snap-type: x mandatory;
     scrollbar-width: thin;
-    -webkit-overflow-scrolling: touch;
-    touch-action: pan-x;
-    overscroll-behavior-x: contain;
+    overscroll-behavior: none;
 }
 
 .related-carousel__track {
@@ -2150,6 +2153,8 @@ body[data-ccg-mode="amiga"] {
     cursor: pointer;
     pointer-events: auto;
     touch-action: manipulation;
+    user-select: none;
+    -webkit-user-drag: none;
     transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
 }
 
@@ -2161,8 +2166,12 @@ body[data-ccg-mode="amiga"] {
 .related-carousel__nav:focus-visible {
     border-color: rgba(var(--accent-rgb), 0.75);
     box-shadow: 0 16px 32px rgba(0,0,0,0.6), 0 0 14px rgba(var(--accent-rgb),0.4);
-    transform: translateY(-1px);
+    transform: translateY(-50%);
     outline: none;
+}
+
+.related-carousel__nav:active {
+    transform: translateY(-50%);
 }
 
 .related-grid {
@@ -2334,9 +2343,7 @@ body[data-ccg-mode="amiga"] {
     .ccg-page--single-game .related-carousel__viewport {
         overflow-x: auto;
         overflow-y: hidden;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior-x: contain;
+        overscroll-behavior: none;
     }
 
     .ccg-page--single-game .related-carousel__track {
