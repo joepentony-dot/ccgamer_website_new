@@ -23934,38 +23934,38 @@
     "slug": "thunderbirds",
     "title": "Thunderbirds",
     "sorttitle": "Thunderbirds",
-    "year": 1987,
+    "year": 1985,
     "genres": [
       "Licensed Games",
       "Puzzle Games"
     ],
     "videoid": "DpUN4oUiDII",
     "thumbnail": "resources/images/thumbnails/all/thunderbirds.jpg",
-    "pdf": "https://drive.google.com/file/d/1NcbLrbPOBe1czXIY1FabdbVNTA3XOPds/view?usp=drive_link",
+    "pdf": "https://drive.google.com/file/d/1u0ol1UMXtTKew8U-37HNtyxRQm35Iyn6/view?usp=drive_link",
     "disk": [
       "https://drive.google.com/file/d/1mIAXPtlLNOSyqxmvG0IsYbt96z6rRyQ4/view?usp=drive_link"
     ],
     "lemon": [
-      "https://www.lemon64.com/game/thundercats"
+      "https://www.lemon64.com/game/thunderbirds-firebird"
     ],
-    "description": "Thunderbirds is a 1987 Commodore 64 licensed puzzle game from Elite that tasks you with coordinating rescue missions inspired by the television series through logic-based challenges.",
+    "description": "Thunderbirds is a 1987 Commodore 64 licensed puzzle game from Firebird that tasks you with coordinating rescue missions inspired by the television series through logic-based challenges.",
     "ccg_rating": 7,
     "ccg_rating_reason": "",
     "credits": {
       "publisher": [
-        "Elite"
+        "Firebird"
       ],
       "producer": "",
       "coder": [],
       "graphics": [],
       "musician": [
-        "Rob Hubbard"
+        "	Kevin A. Moughtin"
       ],
       "re_releaser": [
-        "Encore"
+        ""
       ],
       "developer": ""
-    },
+    },	
     "developer": ""
   },
   {
