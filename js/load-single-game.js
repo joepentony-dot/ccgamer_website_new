@@ -2113,35 +2113,44 @@ function renderRelatedGames(game) {
 }
 
 function initRelatedCarousel() {
-    const carousels = Array.from(document.querySelectorAll(".related-carousel"));
-    if (!carousels.length) return;
+    const track = document.getElementById("relatedGamesTrack");
+    const carousel = track ? track.closest(".related-carousel") : null;
+    const prevBtn = carousel ? carousel.querySelector(".related-carousel__nav--prev") : null;
+    const nextBtn = carousel ? carousel.querySelector(".related-carousel__nav--next") : null;
+    const viewport = carousel ? carousel.querySelector(".related-carousel__viewport") : null;
+    const scrollEl = viewport || track;
 
-    const initCarouselInstance = (carousel) => {
-        if (!carousel || carousel.dataset.carouselReady === "true") return;
-        const track = carousel.querySelector(".related-carousel__track");
-        const viewport = carousel.querySelector(".related-carousel__viewport");
-        const prevBtn = carousel.querySelector(".related-carousel__nav--prev");
-        const nextBtn = carousel.querySelector(".related-carousel__nav--next");
-        const scrollEl = viewport || track;
+    if (!track || !scrollEl || !prevBtn || !nextBtn) return;
+    if (track.dataset.carouselReady === "true") return;
+    track.dataset.carouselReady = "true";
 
-        if (!track || !scrollEl || !prevBtn || !nextBtn) return;
-        carousel.dataset.carouselReady = "true";
+    scrollEl.style.overflowX = "auto";
+    scrollEl.style.overflowY = "hidden";
 
-        scrollEl.style.overflowX = "auto";
-        scrollEl.style.overflowY = "hidden";
+    const getCardWidth = () => {
+        const card = scrollEl.querySelector(".related-card") || track.querySelector(".related-card");
+        if (!card) return 0;
+        return card.getBoundingClientRect().width || 0;
+    };
 
-        const updateButtons = () => {
-            const maxScroll = scrollEl.scrollWidth - scrollEl.clientWidth;
-            const atStart = scrollEl.scrollLeft <= 1;
-            const atEnd = scrollEl.scrollLeft >= maxScroll - 1;
+    const updateButtons = () => {
+        const maxScroll = scrollEl.scrollWidth - scrollEl.clientWidth;
+        const atStart = scrollEl.scrollLeft <= 1;
+        const atEnd = scrollEl.scrollLeft >= maxScroll - 1;
 
-            prevBtn.disabled = atStart;
-            nextBtn.disabled = atEnd;
-            prevBtn.setAttribute("aria-disabled", String(atStart));
-            nextBtn.setAttribute("aria-disabled", String(atEnd));
-        };
+        prevBtn.disabled = atStart;
+        nextBtn.disabled = atEnd;
+        prevBtn.setAttribute("aria-disabled", String(atStart));
+        nextBtn.setAttribute("aria-disabled", String(atEnd));
+    };
 
-        const handleCarouselScroll = (direction) => {
+    const handleScroll = (direction) => {
+        const cardWidth = getCardWidth();
+        if (!cardWidth) return;
+        scrollEl.scrollBy({ left: direction * cardWidth * 2, behavior: "smooth" });
+    };
+
+        const handleScroll = (direction) => {
             const step = scrollEl.clientWidth * 0.8;
             if (!step) return;
             scrollEl.scrollBy({ left: direction * step, behavior: "smooth" });
@@ -2154,7 +2163,7 @@ function initRelatedCarousel() {
 
         const handleArrowPress = (direction) => (event) => {
             isolateArrowEvent(event);
-            handleCarouselScroll(direction);
+            handleScroll(direction);
         };
 
         const bindArrow = (button, direction) => {
