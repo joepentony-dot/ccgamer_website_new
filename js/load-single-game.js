@@ -1551,17 +1551,25 @@ function initBackToTop() {
     if (!button && !wrap) return;
     CCG_BACK_TO_TOP_READY = true;
 
+    if (wrap) {
+        wrap.hidden = false;
+    } else if (button) {
+        button.hidden = false;
+    }
+
     button?.addEventListener("click", () => {
         const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         window.scrollTo({ top: 0, behavior: prefersReduced ? "auto" : "smooth" });
     });
 
     const updateVisibility = () => {
-        const show = window.scrollY > 480;
+        const scrollBottom = window.scrollY + window.innerHeight;
+        const docHeight = document.documentElement.scrollHeight;
+        const show = scrollBottom >= docHeight - 80;
         if (wrap) {
-            wrap.hidden = !show;
+            wrap.classList.toggle("is-visible", show);
         } else if (button) {
-            button.hidden = !show;
+            button.classList.toggle("is-visible", show);
         }
     };
 
@@ -2116,12 +2124,13 @@ function initRelatedCarousel() {
     if (track.dataset.carouselReady === "true") return;
     track.dataset.carouselReady = "true";
 
-    const getScrollStep = () => {
+    scrollEl.style.overflowX = "auto";
+    scrollEl.style.overflowY = "hidden";
+
+    const getCardWidth = () => {
         const card = scrollEl.querySelector(".related-card") || track.querySelector(".related-card");
-        if (!card) return scrollEl.clientWidth || 0;
-        const gapValue = parseFloat(window.getComputedStyle(track).gap || "0");
-        const cardWidth = card.getBoundingClientRect().width || 0;
-        return cardWidth + (Number.isNaN(gapValue) ? 0 : gapValue);
+        if (!card) return 0;
+        return card.getBoundingClientRect().width || 0;
     };
 
     const updateButtons = () => {
@@ -2136,9 +2145,9 @@ function initRelatedCarousel() {
     };
 
     const handleScroll = (direction) => {
-        const step = getScrollStep();
-        if (!step) return;
-        scrollEl.scrollBy({ left: direction * step, behavior: "smooth" });
+        const cardWidth = getCardWidth();
+        if (!cardWidth) return;
+        scrollEl.scrollBy({ left: direction * cardWidth * 2, behavior: "smooth" });
     };
 
     const isolateArrowEvent = (event) => {
