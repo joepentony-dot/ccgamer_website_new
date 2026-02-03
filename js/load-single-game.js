@@ -1547,17 +1547,22 @@ function initScrollProgress() {
 function initBackToTop() {
     if (CCG_BACK_TO_TOP_READY) return;
     const button = document.querySelector("[data-ccg-back-to-top]");
-    if (!button) return;
+    const wrap = document.querySelector("[data-ccg-back-to-top-wrap]");
+    if (!button && !wrap) return;
     CCG_BACK_TO_TOP_READY = true;
 
-    button.addEventListener("click", () => {
+    button?.addEventListener("click", () => {
         const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         window.scrollTo({ top: 0, behavior: prefersReduced ? "auto" : "smooth" });
     });
 
     const updateVisibility = () => {
         const show = window.scrollY > 480;
-        button.hidden = !show;
+        if (wrap) {
+            wrap.hidden = !show;
+        } else if (button) {
+            button.hidden = !show;
+        }
     };
 
     let ticking = false;
@@ -2101,9 +2106,9 @@ function renderRelatedGames(game) {
 
 function initRelatedCarousel() {
     const track = document.getElementById("relatedGamesTrack");
-    const prevBtn = document.querySelector(".related-carousel__nav--prev");
-    const nextBtn = document.querySelector(".related-carousel__nav--next");
-    const carousel = document.querySelector(".related-carousel");
+    const carousel = track ? track.closest(".related-carousel") : null;
+    const prevBtn = carousel ? carousel.querySelector(".related-carousel__nav--prev") : null;
+    const nextBtn = carousel ? carousel.querySelector(".related-carousel__nav--next") : null;
     const viewport = carousel ? carousel.querySelector(".related-carousel__viewport") : null;
     const scrollEl = viewport || track;
 
@@ -2112,7 +2117,7 @@ function initRelatedCarousel() {
     track.dataset.carouselReady = "true";
 
     const getScrollStep = () => {
-        const card = track.querySelector(".related-card");
+        const card = scrollEl.querySelector(".related-card") || track.querySelector(".related-card");
         if (!card) return scrollEl.clientWidth || 0;
         const gapValue = parseFloat(window.getComputedStyle(track).gap || "0");
         const cardWidth = card.getBoundingClientRect().width || 0;
