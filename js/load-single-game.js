@@ -2248,7 +2248,7 @@ function initRelatedCarousel() {
         );
 
         updateButtons();
-    };
+
 }
 
 
