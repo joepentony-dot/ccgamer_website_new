@@ -3128,7 +3128,7 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
     }
 
     .ccg-omega-divider {
-        margin: 10px auto;
+        margin: 8px auto;
     }
 
     .home-bottom-cta + .ccg-omega-divider,
@@ -3137,8 +3137,8 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
     }
 
     html[data-ccg-page="home"] .ccg-footer {
-        margin-top: 14px;
-        padding-bottom: calc(110px + env(safe-area-inset-bottom));
+        margin-top: 8px;
+        padding-bottom: calc(72px + env(safe-area-inset-bottom));
     }
 
     .ccg-footer__mini-stats {
@@ -3152,7 +3152,7 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
 
 @media (max-width: 768px) {
     .ccg-main--home {
-        padding-bottom: calc(160px + env(safe-area-inset-bottom));
+        padding-bottom: calc(92px + env(safe-area-inset-bottom));
     }
 
     .home-bottom-cta,
@@ -3179,6 +3179,10 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
         pointer-events: none;
         opacity: 0.98;
         transition: opacity 200ms ease;
+    }
+
+    .omega-mobile-dock + .ccg-omega-divider {
+        margin: 6px auto 8px;
     }
 
     .omega-mobile-dock.is-scrolling {
