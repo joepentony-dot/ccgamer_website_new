@@ -225,11 +225,27 @@
     function setupScrollFailsafe() {
         const root = document.documentElement;
         if (root?.matches?.('[data-ccg-page="intro"]')) return;
+        const shouldEnableFailsafe = () => !isMobileLike();
+        if (!shouldEnableFailsafe()) return;
         const getScrollTop = () => window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
         const getMaxScroll = () => Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
         const canScroll = () => document.documentElement.scrollHeight - window.innerHeight > 1;
 
         let ticking = false;
+
+        const isRelatedCarouselEvent = (event) => {
+            const target = event.target;
+            if (!(target instanceof Element)) return false;
+            return !!target.closest([
+                ".game-section--related",
+                ".related-carousel",
+                ".related-carousel__viewport",
+                ".related-carousel__track",
+                ".ccg-related",
+                ".ccg-related-track",
+                ".ccg-related-carousel"
+            ].join(","));
+        };
 
         const normalizeDelta = (event) => {
             let deltaY = event.deltaY || 0;
@@ -243,6 +259,8 @@
 
         const handleWheel = (event) => {
             if (event.defaultPrevented || event.ctrlKey) return;
+            if (!shouldEnableFailsafe()) return;
+            if (isRelatedCarouselEvent(event)) return;
             if (!canScroll()) return;
 
             const deltaY = normalizeDelta(event);
