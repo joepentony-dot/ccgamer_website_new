@@ -18,6 +18,9 @@
         if (!root.classList.contains("ccg-visuals-ready")) {
             root.classList.add("ccg-visuals-ready");
         }
+        if (document.querySelector(".ccg-hud-dock")) {
+            root.classList.add("ccg-hud-dock-ready");
+        }
         root.classList.remove("ccg-mobile-defer-visuals");
         document.dispatchEvent(new Event("ccg-visuals-ready"));
     };
