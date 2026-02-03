@@ -325,44 +325,6 @@
     object-fit: contain;
 }
 
-.ccg-page--about .ccg-btn--ghost,
-.ccg-page--about .ccg-btn--secondary {
-    border-color: rgba(var(--accent-rgb), 0.45);
-    background: linear-gradient(135deg, rgba(var(--accent-rgb),0.2), rgba(0,0,0,0.85));
-    box-shadow: 0 12px 26px rgba(0,0,0,0.65), 0 0 18px rgba(var(--accent-rgb),0.3);
-}
-
-.ccg-page--about .ccg-btn--ghost:hover,
-.ccg-page--about .ccg-btn--secondary:hover,
-.ccg-page--about .ccg-btn--ghost:focus-visible,
-.ccg-page--about .ccg-btn--secondary:focus-visible {
-    box-shadow: 0 18px 38px rgba(0,0,0,0.75), 0 0 32px rgba(var(--accent-rgb),0.45);
-}
-
-.ccg-page--about .ccg-btn {
-    min-height: 46px;
-    border: 1px solid rgba(var(--accent-rgb), 0.6);
-    box-shadow:
-        0 12px 26px rgba(0,0,0,0.55),
-        0 0 24px rgba(var(--accent-rgb), 0.25);
-    transition: transform 180ms var(--ccg-ease-out-lux), box-shadow 180ms var(--ccg-ease-out-lux);
-}
-
-.ccg-page--about .ccg-btn:hover,
-.ccg-page--about .ccg-btn:focus-visible {
-    transform: translateY(-1px);
-    box-shadow:
-        0 18px 36px rgba(0,0,0,0.7),
-        0 0 34px rgba(var(--accent-rgb), 0.4);
-}
-
-.ccg-page--about .ccg-btn:active {
-    transform: translateY(1px);
-    box-shadow:
-        0 10px 20px rgba(0,0,0,0.6),
-        0 0 18px rgba(var(--accent-rgb), 0.25);
-}
-
 .ccg-page--about .ccg-info-actions,
 .about-cta-grid,
 .about-quick-links .ccg-info-actions {
