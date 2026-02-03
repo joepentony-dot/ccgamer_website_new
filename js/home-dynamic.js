@@ -47,6 +47,7 @@ async function initHomeDynamic() {
     const skipAnimations = shouldSkipHomeAnimations();
 
     await loadGamesForHome();
+    updateFooterStats();
     renderFeaturedHighlights();
     renderFeaturedSpotlight();
     renderFeaturedVideos();
@@ -55,6 +56,8 @@ async function initHomeDynamic() {
     initModeObserver();
     setupHomeScrollPerfPause();
     initStayAwhileCallout();
+    initMobileDockEffects();
+    initHeroParallaxLite();
 
     if (skipAnimations) {
         calmHeroCards();
@@ -296,17 +299,64 @@ function setupHomeScrollPerfPause() {
     window.addEventListener("touchmove", onScroll, { passive: true });
 }
 
+function initMobileDockEffects() {
+    const dock = document.querySelector("[data-omega-mobile-dock]");
+    if (!dock || !isMobileViewport()) return;
+
+    let idleTimer = null;
+    const idleDelay = 180;
+
+    const handleScroll = () => {
+        dock.classList.add("is-scrolling");
+        if (idleTimer) {
+            window.clearTimeout(idleTimer);
+        }
+        idleTimer = window.setTimeout(() => {
+            dock.classList.remove("is-scrolling");
+        }, idleDelay);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("touchmove", handleScroll, { passive: true });
+}
+
+function initHeroParallaxLite() {
+    const hero = document.querySelector(".home-hero");
+    if (!hero || !isMobileViewport() || PREFERS_REDUCED_MOTION?.matches) return;
+
+    let ticking = false;
+
+    const update = () => {
+        const rect = hero.getBoundingClientRect();
+        const offset = Math.max(-12, Math.min(12, rect.top * -0.06));
+        hero.style.setProperty("--home-hero-parallax", `${offset.toFixed(2)}px`);
+        ticking = false;
+    };
+
+    const onScroll = () => {
+        if (ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+}
+
 function applyMobileLiteMode() {
     document.body.classList.add("ccg-mobile-lite");
     document.documentElement.classList.add("ccg-mobile-lite");
 
     const randomButtons = document.querySelectorAll("[data-ccg-random-game]");
     randomButtons.forEach(btn => {
-        const mobileLabel = btn.dataset.mobileLabel || "Random Game";
-        btn.textContent = mobileLabel;
-        btn.onclick = () => {
-            window.location.href = "games/index.html";
-        };
+        const mobileLabel = btn.dataset.mobileLabel;
+        if (!mobileLabel) return;
+        const label = btn.querySelector(".home-random-cta__label");
+        if (label) {
+            label.textContent = mobileLabel;
+        } else {
+            btn.textContent = mobileLabel;
+        }
     });
 }
 
@@ -329,6 +379,25 @@ async function loadGamesForHome() {
     } catch {
         CCG_HOME_ALL_GAMES = [];
     }
+}
+
+function updateFooterStats() {
+    const stats = document.querySelector("[data-ccg-footer-stats]");
+    if (!stats) return;
+
+    const totalGames = CCG_HOME_ALL_GAMES.length;
+    if (!totalGames) {
+        stats.hidden = true;
+        return;
+    }
+
+    const totalVideos = CCG_HOME_ALL_GAMES.filter(game => game.videoid).length;
+    const gamesEl = stats.querySelector("[data-ccg-stat-games]");
+    const videosEl = stats.querySelector("[data-ccg-stat-videos]");
+
+    if (gamesEl) gamesEl.textContent = `${totalGames.toLocaleString()} Games`;
+    if (videosEl) videosEl.textContent = `${totalVideos.toLocaleString()} Videos`;
+    stats.hidden = false;
 }
 
 /* ============================================================
@@ -616,19 +685,75 @@ function buildVideoCard(game, systemLabel, index) {
    RANDOM GAME + MODE
 ============================================================ */
 
+function getRandomGame() {
+    if (!CCG_HOME_ALL_GAMES.length) return null;
+    const candidates = CCG_HOME_ALL_GAMES.filter(game => resolveGameUrl(game) !== "#");
+    if (!candidates.length) return null;
+    return candidates[Math.floor(Math.random() * candidates.length)] || null;
+}
+
+function animateRandomCTA(button) {
+    if (!button) return;
+    const status = button.querySelector(".home-random-cta__status");
+    button.classList.remove("is-launching");
+    void button.offsetWidth;
+    button.classList.add("is-launching");
+    button.setAttribute("aria-busy", "true");
+    if (status) {
+        status.textContent = "LOADING…";
+    }
+}
+
+function navigateToGame(game) {
+    const url = resolveGameUrl(game);
+    if (!url || url === "#") return false;
+    window.location.href = url;
+    return true;
+}
+
 function wireRandomGameButton() {
     const buttons = Array.from(document.querySelectorAll("[data-ccg-random-game]"))
         .filter(btn => !btn.classList.contains("is-disabled"));
     if (!buttons.length) return;
 
-    const launchRandom = () => {
-        if (!CCG_HOME_ALL_GAMES.length) return;
-        const g = CCG_HOME_ALL_GAMES[Math.floor(Math.random() * CCG_HOME_ALL_GAMES.length)];
-        if (g) window.location.href = resolveGameUrl(g);
+    const disableButton = (btn, message = "Unavailable") => {
+        btn.classList.add("is-disabled");
+        btn.setAttribute("aria-disabled", "true");
+        btn.setAttribute("disabled", "true");
+        const status = btn.querySelector(".home-random-cta__status");
+        if (status) status.textContent = message;
+    };
+
+    const launchRandom = (event) => {
+        event?.preventDefault?.();
+        const button = event?.currentTarget || event?.target;
+        if (!button || button.classList.contains("is-disabled")) return;
+
+        if (!CCG_HOME_ALL_GAMES.length) {
+            disableButton(button, "Unavailable");
+            return;
+        }
+
+        if (button.dataset.ccgRandomBusy === "true") return;
+        button.dataset.ccgRandomBusy = "true";
+
+        const game = getRandomGame();
+        if (!game) {
+            disableButton(button, "Unavailable");
+            return;
+        }
+
+        animateRandomCTA(button);
+        const delay = PREFERS_REDUCED_MOTION?.matches ? 0 : 280;
+        window.setTimeout(() => {
+            button.dataset.ccgRandomBusy = "false";
+            button.removeAttribute("aria-busy");
+            navigateToGame(game);
+        }, delay);
     };
 
     buttons.forEach(btn => {
-        btn.onclick = launchRandom;
+        btn.addEventListener("click", launchRandom);
     });
 }
 
