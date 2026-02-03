@@ -2155,40 +2155,37 @@ function initRelatedCarousel() {
             event.stopPropagation();
         };
 
-        const handleArrowPress = (direction) => (event) => {
-            isolateArrowEvent(event);
-            handleScroll(direction);
-        };
+        let arrowTouchActive = false;
+        let arrowTouchResetTimer = null;
 
         const bindArrow = (button, direction) => {
             let touchActivated = false;
-            const handlePress = handleArrowPress(direction);
 
-            button.addEventListener("click", (event) => {
+            button.addEventListener("click", () => {
                 if (touchActivated) {
                     touchActivated = false;
+                    arrowTouchActive = false;
                     return;
                 }
-                handlePress(event);
+                handleScroll(direction);
             });
 
             button.addEventListener(
                 "touchstart",
                 (event) => {
                     touchActivated = true;
-                    handlePress(event);
+                    arrowTouchActive = true;
+                    if (arrowTouchResetTimer) window.clearTimeout(arrowTouchResetTimer);
+                    arrowTouchResetTimer = window.setTimeout(() => {
+                        arrowTouchActive = false;
+                    }, 250);
+                    isolateArrowEvent(event);
+                    handleScroll(direction);
                 },
                 { passive: false }
             );
 
-            button.addEventListener("mousedown", isolateArrowEvent);
             button.addEventListener("dragstart", isolateArrowEvent);
-
-            button.addEventListener("pointerdown", (event) => {
-                if (event.pointerType === "mouse") {
-                    isolateArrowEvent(event);
-                }
-            });
         };
 
         bindArrow(prevBtn, -1);
@@ -2210,7 +2207,7 @@ function initRelatedCarousel() {
         carousel.addEventListener(
             "click",
             (event) => {
-                if (event.target.closest(".related-carousel__nav")) {
+                if (event.target.closest(".related-carousel__nav") && arrowTouchActive) {
                     event.preventDefault();
                     event.stopPropagation();
                 }
