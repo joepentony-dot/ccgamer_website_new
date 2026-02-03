@@ -2248,10 +2248,9 @@ function initRelatedCarousel() {
         );
 
         updateButtons();
-    };
-
-    carousels.forEach(initCarouselInstance);
 }
+
+
 
 /* ============================================================
    SCREENSHOT MODAL (SG-E3+)
