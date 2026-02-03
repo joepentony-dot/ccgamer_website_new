@@ -408,6 +408,57 @@
 
         </main>
 
+        <div class="omega-mobile-dock" data-omega-mobile-dock>
+            <div class="omega-mobile-dock__backdrop" data-omega-browse-backdrop hidden></div>
+            <nav class="omega-mobile-dock__bar" aria-label="Omega Mobile Action Dock">
+                <a class="omega-mobile-dock__btn" href="quiz/quiz.html">
+                    <span class="omega-mobile-dock__icon" aria-hidden="true">🎮</span>
+                    <span class="omega-mobile-dock__label">Quiz</span>
+                </a>
+                <button class="omega-mobile-dock__btn omega-mobile-dock__btn--browse" type="button" data-omega-browse-toggle aria-expanded="false" aria-controls="omega-browse-hub">
+                    <span class="omega-mobile-dock__icon" aria-hidden="true">🗂️</span>
+                    <span class="omega-mobile-dock__label">Browse</span>
+                </button>
+                <a class="omega-mobile-dock__btn" href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL">
+                    <span class="omega-mobile-dock__icon" aria-hidden="true">🍺</span>
+                    <span class="omega-mobile-dock__label">Support</span>
+                </a>
+                <a class="omega-mobile-dock__btn" href="https://www.youtube.com/@CheekyCommodoreGamer">
+                    <span class="omega-mobile-dock__icon" aria-hidden="true">📺</span>
+                    <span class="omega-mobile-dock__label">Subscribe</span>
+                </a>
+                <button class="omega-mobile-dock__btn" type="button" data-omega-scroll-top aria-label="Scroll to top">
+                    <span class="omega-mobile-dock__icon" aria-hidden="true">⬆️</span>
+                    <span class="omega-mobile-dock__label">Top</span>
+                </button>
+            </nav>
+            <div class="omega-browse-hub" id="omega-browse-hub" role="dialog" aria-modal="false" aria-label="Browse Hub" aria-hidden="true" hidden data-omega-browse-hub>
+                <div class="omega-browse-hub__header">
+                    <span class="omega-browse-hub__title">Browse Hub</span>
+                    <button class="omega-browse-hub__close" type="button" aria-label="Close browse hub" data-omega-browse-close>✕</button>
+                </div>
+                <div class="omega-browse-hub__grid">
+                    <a class="omega-browse-hub__item" href="games/index.html">
+                        <span class="omega-browse-hub__icon" aria-hidden="true">📂</span>
+                        <span class="omega-browse-hub__text">All Games</span>
+                    </a>
+                    <a class="omega-browse-hub__item" href="games/genres/index.html">
+                        <span class="omega-browse-hub__icon" aria-hidden="true">🏷️</span>
+                        <span class="omega-browse-hub__text">Genres</span>
+                    </a>
+                    <a class="omega-browse-hub__item" href="games/collections/index.html">
+                        <span class="omega-browse-hub__icon" aria-hidden="true">⭐</span>
+                        <span class="omega-browse-hub__text">Collections</span>
+                    </a>
+                    <button class="omega-browse-hub__item omega-browse-hub__item--placeholder" type="button" disabled aria-disabled="true">
+                        <span class="omega-browse-hub__icon" aria-hidden="true">🔍</span>
+                        <span class="omega-browse-hub__text">Search</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
         <div class="ccg-omega-divider" aria-hidden="true">
             <span class="ccg-omega-core"></span>
         </div>

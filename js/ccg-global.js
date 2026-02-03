@@ -1788,6 +1788,151 @@ function setupFooterSignatureRotator() {
 }
 
     /* ======================================================
+       OMEGA MOBILE ACTION DOCK (HOME)
+    ====================================================== */
+    function setupOmegaMobileDock() {
+        const root = document.documentElement;
+        if (root?.getAttribute("data-ccg-page") !== "home") return;
+        const dock = document.querySelector("[data-omega-mobile-dock]");
+        if (!dock) return;
+
+        const browseToggle = dock.querySelector("[data-omega-browse-toggle]");
+        const browseHub = dock.querySelector("[data-omega-browse-hub]");
+        const browseBackdrop = dock.querySelector("[data-omega-browse-backdrop]");
+        const browseClose = dock.querySelector("[data-omega-browse-close]");
+        const scrollTopBtn = dock.querySelector("[data-omega-scroll-top]");
+
+        if (!browseToggle || !browseHub) return;
+
+        const focusableSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+        let isOpen = false;
+        let lastFocused = null;
+        let scrollTimer = null;
+
+        const openHub = () => {
+            if (isOpen) return;
+            isOpen = true;
+            lastFocused = document.activeElement;
+            root.classList.add("ccg-browse-hub-open");
+            browseHub.hidden = false;
+            browseHub.setAttribute("aria-hidden", "false");
+            browseToggle.setAttribute("aria-expanded", "true");
+            if (browseBackdrop) browseBackdrop.hidden = false;
+            requestAnimationFrame(() => {
+                const firstFocus = browseHub.querySelector(focusableSelector);
+                if (firstFocus) {
+                    firstFocus.focus({ preventScroll: true });
+                }
+            });
+        };
+
+        const closeHub = () => {
+            if (!isOpen) return;
+            isOpen = false;
+            root.classList.remove("ccg-browse-hub-open");
+            browseToggle.setAttribute("aria-expanded", "false");
+            browseHub.setAttribute("aria-hidden", "true");
+            if (browseBackdrop) browseBackdrop.hidden = true;
+            browseHub.hidden = true;
+            if (lastFocused && typeof lastFocused.focus === "function") {
+                lastFocused.focus({ preventScroll: true });
+            }
+        };
+
+        const toggleHub = () => {
+            if (isOpen) {
+                closeHub();
+            } else {
+                openHub();
+            }
+        };
+
+        const handleFocusTrap = (event) => {
+            if (!isOpen || event.key !== "Tab") return;
+            const focusables = Array.from(browseHub.querySelectorAll(focusableSelector))
+                .filter(el => !el.hasAttribute("disabled"));
+            if (!focusables.length) return;
+            const first = focusables[0];
+            const last = focusables[focusables.length - 1];
+
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus({ preventScroll: true });
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus({ preventScroll: true });
+            }
+        };
+
+        const scheduleCloseOnScroll = () => {
+            if (!isOpen) return;
+            if (scrollTimer) window.clearTimeout(scrollTimer);
+            scrollTimer = window.setTimeout(() => {
+                closeHub();
+            }, 120);
+        };
+
+        browseToggle.addEventListener("click", toggleHub);
+        browseClose?.addEventListener("click", closeHub);
+        browseBackdrop?.addEventListener("click", closeHub);
+
+        document.addEventListener("keydown", (event) => {
+            if (!isOpen) return;
+            if (event.key === "Escape") {
+                event.preventDefault();
+                closeHub();
+                return;
+            }
+            handleFocusTrap(event);
+        });
+
+        window.addEventListener("scroll", scheduleCloseOnScroll, { passive: true });
+        window.addEventListener("orientationchange", scheduleCloseOnScroll, { passive: true });
+
+        if (scrollTopBtn) {
+            scrollTopBtn.addEventListener("click", (event) => {
+                event.preventDefault();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                closeHub();
+            });
+        }
+    }
+
+    function setupOmegaMobileKeyboardGuard() {
+        if (!isMobileLike()) return;
+        const root = document.documentElement;
+        const inputSelector = "input, textarea, select, [contenteditable='true']";
+
+        const setKeyboardState = (active) => {
+            root.classList.toggle("ccg-keyboard-active", Boolean(active));
+        };
+
+        document.addEventListener("focusin", (event) => {
+            if (event.target instanceof Element && event.target.matches(inputSelector)) {
+                setKeyboardState(true);
+            }
+        });
+
+        document.addEventListener("focusout", (event) => {
+            if (event.target instanceof Element && event.target.matches(inputSelector)) {
+                setKeyboardState(false);
+            }
+        });
+
+        if (window.visualViewport) {
+            let lastHeight = window.visualViewport.height;
+            window.visualViewport.addEventListener("resize", () => {
+                const delta = lastHeight - window.visualViewport.height;
+                const keyboardActive = delta > 140;
+                setKeyboardState(keyboardActive);
+                if (!keyboardActive) {
+                    lastHeight = window.visualViewport.height;
+                }
+            });
+        }
+    }
+
+    /* ======================================================
        DOM READY
     ====================================================== */
     document.addEventListener("DOMContentLoaded", () => {
@@ -1837,6 +1982,8 @@ function setupFooterSignatureRotator() {
         setupLogoEasterEgg();
         setupSecretTyping();
         setupFooterSignatureRotator();
+        setupOmegaMobileDock();
+        setupOmegaMobileKeyboardGuard();
 
         /* ==================================================
            VIEWPORT WOW — LIGHT UP EVERYTHING
