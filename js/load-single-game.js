@@ -1581,10 +1581,9 @@ function initQuickActions(state) {
 
     const actionState = {
         video: !!state?.hasVideo,
-        manual: !!state?.hasManual,
-        download: !!state?.hasDisk,
         share: true,
-        rating: !!state?.hasRating
+        subscribe: true,
+        support: true
     };
 
     quickActions.querySelectorAll("button[data-action]").forEach(btn => {
@@ -1677,31 +1676,16 @@ function setupQuickActionsFooterGuard(quickActions) {
 
 function handleQuickAction(action) {
     const videoSection = document.getElementById("game-video-section");
-    const downloadsSection = document.querySelector(".game-downloads");
     const screenshotsSection = document.querySelector(".game-screenshots");
     const relatedSection = document.querySelector(".game-section--related");
     const ratingSection = document.getElementById("gameHeroRating");
-    const manualBtn = document.getElementById("gameManualBtn");
-    const diskBtn = document.getElementById("gameDiskBtn");
     const shareBtn = document.querySelector("[data-ccg-share-btn]");
+    const subscribeUrl = "https://www.youtube.com/@CheekyCommodoreGamer";
+    const supportUrl = "https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL";
 
     switch (action) {
         case "video":
             smoothScrollTo(videoSection);
-            break;
-        case "manual":
-            if (manualBtn && !manualBtn.hidden) {
-                manualBtn.click();
-            } else {
-                smoothScrollTo(downloadsSection);
-            }
-            break;
-        case "download":
-            if (diskBtn && !diskBtn.hidden) {
-                diskBtn.click();
-            } else {
-                smoothScrollTo(downloadsSection);
-            }
             break;
         case "share":
             if (shareBtn) {
@@ -1710,11 +1694,14 @@ function handleQuickAction(action) {
                 smoothScrollTo(document.querySelector(".ccg-share"));
             }
             break;
-        case "rating":
-            smoothScrollTo(ratingSection || document.querySelector(".game-hero"));
+        case "subscribe":
+            window.open(subscribeUrl, "_blank", "noopener");
+            break;
+        case "support":
+            window.open(supportUrl, "_blank", "noopener");
             break;
         default:
-            smoothScrollTo(screenshotsSection || relatedSection);
+            smoothScrollTo(screenshotsSection || relatedSection || ratingSection);
             break;
     }
 }
@@ -2117,23 +2104,25 @@ function initRelatedCarousel() {
     const prevBtn = document.querySelector(".related-carousel__nav--prev");
     const nextBtn = document.querySelector(".related-carousel__nav--next");
     const carousel = document.querySelector(".related-carousel");
+    const viewport = carousel ? carousel.querySelector(".related-carousel__viewport") : null;
+    const scrollEl = viewport || track;
 
-    if (!track || !prevBtn || !nextBtn) return;
+    if (!track || !scrollEl || !prevBtn || !nextBtn) return;
     if (track.dataset.carouselReady === "true") return;
     track.dataset.carouselReady = "true";
 
     const getScrollStep = () => {
         const card = track.querySelector(".related-card");
-        if (!card) return track.clientWidth || 0;
+        if (!card) return scrollEl.clientWidth || 0;
         const gapValue = parseFloat(window.getComputedStyle(track).gap || "0");
         const cardWidth = card.getBoundingClientRect().width || 0;
         return cardWidth + (Number.isNaN(gapValue) ? 0 : gapValue);
     };
 
     const updateButtons = () => {
-        const maxScroll = track.scrollWidth - track.clientWidth;
-        const atStart = track.scrollLeft <= 1;
-        const atEnd = track.scrollLeft >= maxScroll - 1;
+        const maxScroll = scrollEl.scrollWidth - scrollEl.clientWidth;
+        const atStart = scrollEl.scrollLeft <= 1;
+        const atEnd = scrollEl.scrollLeft >= maxScroll - 1;
 
         prevBtn.disabled = atStart;
         nextBtn.disabled = atEnd;
@@ -2144,7 +2133,7 @@ function initRelatedCarousel() {
     const handleScroll = (direction) => {
         const step = getScrollStep();
         if (!step) return;
-        track.scrollBy({ left: direction * step, behavior: "smooth" });
+        scrollEl.scrollBy({ left: direction * step, behavior: "smooth" });
     };
 
     const isolateArrowEvent = (event) => {
@@ -2187,8 +2176,19 @@ function initRelatedCarousel() {
 
     bindArrow(prevBtn, -1);
     bindArrow(nextBtn, 1);
-    track.addEventListener("scroll", updateButtons, { passive: true });
+    scrollEl.addEventListener("scroll", updateButtons, { passive: true });
     window.addEventListener("resize", updateButtons);
+    window.addEventListener("load", updateButtons);
+
+    const refreshButtons = () => {
+        requestAnimationFrame(updateButtons);
+    };
+
+    track.querySelectorAll("img").forEach(img => {
+        if (img.complete) return;
+        img.addEventListener("load", refreshButtons, { once: true });
+        img.addEventListener("error", refreshButtons, { once: true });
+    });
 
     if (carousel) {
         carousel.addEventListener(
@@ -2205,23 +2205,24 @@ function initRelatedCarousel() {
 
     let hasTouchMoved = false;
     let touchResetTimer = null;
+    const touchTarget = scrollEl || track;
 
-    track.addEventListener("touchstart", () => {
+    touchTarget.addEventListener("touchstart", () => {
         hasTouchMoved = false;
     }, { passive: true });
 
-    track.addEventListener("touchmove", () => {
+    touchTarget.addEventListener("touchmove", () => {
         hasTouchMoved = true;
     }, { passive: true });
 
-    track.addEventListener("touchend", () => {
+    touchTarget.addEventListener("touchend", () => {
         if (touchResetTimer) window.clearTimeout(touchResetTimer);
         touchResetTimer = window.setTimeout(() => {
             hasTouchMoved = false;
         }, 60);
     }, { passive: true });
 
-    track.addEventListener(
+    touchTarget.addEventListener(
         "click",
         (event) => {
             if (hasTouchMoved) {
