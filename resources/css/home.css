@@ -3060,6 +3060,76 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
         gap: 12px;
     }
 
+    .ccg-page--home {
+        min-height: auto;
+    }
+
+    .home-hero__frame {
+        min-height: auto;
+    }
+
+    .home-hero__mobile-cta {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        margin-top: 6px;
+    }
+
+    .home-discovery-strip {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        width: min(360px, 100%);
+        padding: 8px;
+        border-radius: 16px;
+        border: 1px solid rgba(var(--accent-rgb), 0.38);
+        background:
+            linear-gradient(150deg, rgba(12, 18, 32, 0.78), rgba(6, 10, 20, 0.66)),
+            radial-gradient(circle at 15% 20%, rgba(var(--accent-rgb), 0.22), transparent 55%);
+        box-shadow:
+            0 12px 26px rgba(0, 0, 0, 0.65),
+            0 0 18px rgba(var(--accent-rgb), 0.3);
+        backdrop-filter: blur(14px) saturate(1.2);
+        -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    }
+
+    .home-discovery-strip__link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 8px 6px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #f4f7ff;
+        text-decoration: none;
+        font-size: 0.7rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        background: linear-gradient(150deg, rgba(10, 16, 30, 0.85), rgba(6, 10, 20, 0.68));
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+        transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+    }
+
+    .home-discovery-strip__link:active {
+        transform: translateY(1px) scale(0.98);
+    }
+
+    .home-discovery-strip__link:focus-visible {
+        outline: 2px solid rgba(var(--accent-rgb), 0.6);
+        outline-offset: 2px;
+    }
+
+    .home-discovery-strip__icon {
+        font-size: 0.95rem;
+        line-height: 1;
+        filter: drop-shadow(0 0 8px rgba(var(--accent-rgb), 0.35));
+    }
+
+    .home-discovery-strip__label {
+        line-height: 1;
+    }
+
     .home-hero__tagline {
         font-size: 1rem;
         padding: 10px 12px;
