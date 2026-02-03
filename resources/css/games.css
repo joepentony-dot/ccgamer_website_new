@@ -771,7 +771,7 @@ html[data-ccg-page="single-game"] {
 html[data-ccg-page="single-game"] body {
     height: auto;
     min-height: 100vh;
-    overflow-y: auto;
+    overflow-y: visible;
     overflow-x: hidden;
 }
 
@@ -1978,6 +1978,16 @@ body[data-ccg-mode="amiga"] {
     align-items: center;
     gap: 10px;
     z-index: 1150;
+    opacity: 0;
+    transform: translateY(6px);
+    pointer-events: none;
+    transition: opacity 200ms ease, transform 200ms ease;
+}
+
+.ccg-back-to-top-wrap.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
 }
 
 .ccg-back-to-top {
