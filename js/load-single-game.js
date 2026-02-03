@@ -2150,64 +2150,69 @@ function initRelatedCarousel() {
         scrollEl.scrollBy({ left: direction * cardWidth * 2, behavior: "smooth" });
     };
 
-    const isolateArrowEvent = (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-    };
+        const handleScroll = (direction) => {
+            const step = scrollEl.clientWidth * 0.8;
+            if (!step) return;
+            scrollEl.scrollBy({ left: direction * step, behavior: "smooth" });
+        };
 
-    const handleArrowPress = (direction) => (event) => {
-        isolateArrowEvent(event);
-        handleScroll(direction);
-    };
+        const isolateArrowEvent = (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+        };
 
-    const bindArrow = (button, direction) => {
-        let touchActivated = false;
-        const handlePress = handleArrowPress(direction);
+        const handleArrowPress = (direction) => (event) => {
+            isolateArrowEvent(event);
+            handleScroll(direction);
+        };
 
-        button.addEventListener("click", (event) => {
-            if (touchActivated) {
-                touchActivated = false;
-                return;
-            }
-            handlePress(event);
-        });
+        const bindArrow = (button, direction) => {
+            let touchActivated = false;
+            const handlePress = handleArrowPress(direction);
 
-        button.addEventListener(
-            "touchstart",
-            (event) => {
-                touchActivated = true;
+            button.addEventListener("click", (event) => {
+                if (touchActivated) {
+                    touchActivated = false;
+                    return;
+                }
                 handlePress(event);
-            },
-            { passive: false }
-        );
+            });
 
-        button.addEventListener("mousedown", isolateArrowEvent);
-        button.addEventListener("dragstart", isolateArrowEvent);
+            button.addEventListener(
+                "touchstart",
+                (event) => {
+                    touchActivated = true;
+                    handlePress(event);
+                },
+                { passive: false }
+            );
 
-        button.addEventListener("pointerdown", (event) => {
-            if (event.pointerType === "mouse") {
-                isolateArrowEvent(event);
-            }
+            button.addEventListener("mousedown", isolateArrowEvent);
+            button.addEventListener("dragstart", isolateArrowEvent);
+
+            button.addEventListener("pointerdown", (event) => {
+                if (event.pointerType === "mouse") {
+                    isolateArrowEvent(event);
+                }
+            });
+        };
+
+        bindArrow(prevBtn, -1);
+        bindArrow(nextBtn, 1);
+        scrollEl.addEventListener("scroll", updateButtons, { passive: true });
+        window.addEventListener("resize", updateButtons);
+        window.addEventListener("load", updateButtons);
+
+        const refreshButtons = () => {
+            requestAnimationFrame(updateButtons);
+        };
+
+        track.querySelectorAll("img").forEach(img => {
+            if (img.complete) return;
+            img.addEventListener("load", refreshButtons, { once: true });
+            img.addEventListener("error", refreshButtons, { once: true });
         });
-    };
 
-    bindArrow(prevBtn, -1);
-    bindArrow(nextBtn, 1);
-    scrollEl.addEventListener("scroll", updateButtons, { passive: true });
-    window.addEventListener("resize", updateButtons);
-    window.addEventListener("load", updateButtons);
-
-    const refreshButtons = () => {
-        requestAnimationFrame(updateButtons);
-    };
-
-    track.querySelectorAll("img").forEach(img => {
-        if (img.complete) return;
-        img.addEventListener("load", refreshButtons, { once: true });
-        img.addEventListener("error", refreshButtons, { once: true });
-    });
-
-    if (carousel) {
         carousel.addEventListener(
             "click",
             (event) => {
@@ -2218,39 +2223,40 @@ function initRelatedCarousel() {
             },
             true
         );
-    }
 
-    let hasTouchMoved = false;
-    let touchResetTimer = null;
-    const touchTarget = scrollEl || track;
+        let hasTouchMoved = false;
+        let touchResetTimer = null;
 
-    touchTarget.addEventListener("touchstart", () => {
-        hasTouchMoved = false;
-    }, { passive: true });
-
-    touchTarget.addEventListener("touchmove", () => {
-        hasTouchMoved = true;
-    }, { passive: true });
-
-    touchTarget.addEventListener("touchend", () => {
-        if (touchResetTimer) window.clearTimeout(touchResetTimer);
-        touchResetTimer = window.setTimeout(() => {
+        scrollEl.addEventListener("touchstart", () => {
             hasTouchMoved = false;
-        }, 60);
-    }, { passive: true });
+        }, { passive: true });
 
-    touchTarget.addEventListener(
-        "click",
-        (event) => {
-            if (hasTouchMoved) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-        },
-        true
-    );
+        scrollEl.addEventListener("touchmove", () => {
+            hasTouchMoved = true;
+        }, { passive: true });
 
-    updateButtons();
+        scrollEl.addEventListener("touchend", () => {
+            if (touchResetTimer) window.clearTimeout(touchResetTimer);
+            touchResetTimer = window.setTimeout(() => {
+                hasTouchMoved = false;
+            }, 60);
+        }, { passive: true });
+
+        scrollEl.addEventListener(
+            "click",
+            (event) => {
+                if (hasTouchMoved) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            },
+            true
+        );
+
+        updateButtons();
+    };
+
+    carousels.forEach(initCarouselInstance);
 }
 
 /* ============================================================
