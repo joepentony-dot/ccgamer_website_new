@@ -17,7 +17,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!grid || !cards.length) return;
 
     try {
-        const response = await fetch("../games.json");
+        const root = window.ccgGetSiteRoot ? window.ccgGetSiteRoot() : "/";
+        const url = `${root}games/games.json`;
+        const response = await fetch(url);
         const games = await response.json();
 
         if (!Array.isArray(games)) {

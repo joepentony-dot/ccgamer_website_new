@@ -25,7 +25,9 @@ function ccgRunCollectionLoader() {
     const loadCards = async () => {
         try {
             // collections live in /games/collections/
-            const response = await fetch("../games.json", { cache: "no-store" });
+            const root = window.ccgGetSiteRoot ? window.ccgGetSiteRoot() : "/";
+            const url = `${root}games/games.json`;
+            const response = await fetch(url, { cache: "no-store" });
             const games = await response.json();
 
             if (!Array.isArray(games)) {

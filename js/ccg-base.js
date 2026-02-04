@@ -119,7 +119,10 @@
     return String(game?.year ?? "") === stubYear;
   };
 
-  fetch("/games/games.json")
+  const root = window.ccgGetSiteRoot ? window.ccgGetSiteRoot() : "/";
+  const url = `${root}games/games.json`;
+
+  fetch(url)
     .then((response) => (response.ok ? response.json() : []))
     .then((games) => {
       if (!Array.isArray(games) || games.length === 0) {

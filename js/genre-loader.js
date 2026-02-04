@@ -14,7 +14,9 @@ function ccgRunGenreLoader() {
 
     const loadCards = async () => {
         try {
-            const res = await fetch("../games.json", { cache: "no-store" });
+            const root = window.ccgGetSiteRoot ? window.ccgGetSiteRoot() : "/";
+            const url = `${root}games/games.json`;
+            const res = await fetch(url, { cache: "no-store" });
             if (!res.ok) throw new Error("Failed to load games.json");
 
             const games = await res.json();
