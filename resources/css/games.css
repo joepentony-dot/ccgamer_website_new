@@ -2300,6 +2300,28 @@ body[data-ccg-mode="amiga"] {
         overflow-y: visible;
     }
 
+    .ccg-page--single-game :where(.ccg-page,
+           .ccg-main,
+           main,
+           .game-shell,
+           .game-hero,
+           .game-hero__inner,
+           .game-hero__content,
+           .game-section,
+           .game-media,
+           .game-media__grid,
+           .game-verdict,
+           .game-description,
+           .game-facts,
+           .game-credits__list,
+           .game-media__item--video,
+           .game-media__item--downloads,
+           .game-media__item--links) {
+        height: auto;
+        max-height: none;
+        overflow-y: visible;
+    }
+
     .game-toc {
         padding: 10px;
     }
@@ -2363,6 +2385,7 @@ body[data-ccg-mode="amiga"] {
     .ccg-page--single-game .game-media,
     .ccg-page--single-game .related-carousel {
         overflow-x: hidden;
+        overflow-y: visible;
     }
 
     .ccg-page--single-game .related-carousel__viewport {
