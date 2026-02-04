@@ -6340,22 +6340,33 @@
     "videoid": "PwOWmbSXTMA",
     "thumbnail": "resources/images/thumbnails/all/dan_dare_iii_the_escape.jpg",
     "pdf": "https://drive.google.com/file/d/1Ic68VLs-dzYKfFjkOJk13a622D-kMKQ6/view?usp=drive_link",
-    "disk": [],
-    "lemon": [],
+    "disk": [
+      "https://drive.google.com/file/d/1fGIpMOY-t5prBoEuVd5LbyQ93_XhPmAe/view?usp=drive_link"
+    ],
+    "lemon": [
+      "https://www.lemon64.com/game/dan-dare-3"
+    ],
     "description": "In the third game in the Dan Dare series, Dan has been kidnapped by an evil alien race known as the Treens and taken to their scientific satellite orbiting Venus, but it doesn't take long for Dan to break free and goes down into their ship.",
     "ccg_rating": 6,
     "ccg_rating_reason": "A decent ending to an epic trilogy",
     "credits": {
-      "publisher": [],
+      "publisher": [
+        "Virgin Mastertronic"
+      ],
       "producer": "",
-      "coder": [],
+      "coder": [
+        "Nick Jones"
+      ],
       "graphics": [],
-      "musician": [],
+      "musician": [
+        "Jeroen Tel"
+      ],
       "re_releaser": [],
       "developer": "Probe Software"
     },
     "developer": "Probe Software",
-    "_ccg_enforced": true
+    "_ccg_enforced": true,
+    "_ccg_migrated": false
   },
   {
     "system": "C64",
