@@ -2690,6 +2690,42 @@ body.ccg-is-mobile .home-hero__bg {
 }
 
 /* ============================================================
+   ROOT WRAPPER NORMALISATION (MOBILE ONLY)
+   • Single-surface scroll: html/body only
+   • Removes nested scroll/viewport clamps
+============================================================ */
+
+@media (max-width: 768px) {
+    html,
+    body,
+    .ccg-page,
+    .ccg-main,
+    main,
+    .game-shell,
+    .page-wrapper,
+    .content-wrapper,
+    .ccg-hero,
+    .games-hero,
+    .game-hero,
+    .ccg-genre-hero,
+    .ccg-section,
+    .ccg-panel,
+    .ccg-info-panel,
+    .about-panel,
+    .contact-hero,
+    .emu-hero-deck,
+    .emu-hero-grid,
+    .quiz-hero-grid,
+    .quiz-hero-copy {
+        position: static;
+        height: auto;
+        min-height: auto;
+        max-height: none;
+        overflow: visible;
+    }
+}
+
+/* ============================================================
    MOBILE PERFORMANCE MODE
    • Mobile only
    • Reduce heavy blur/glow effects for speed
