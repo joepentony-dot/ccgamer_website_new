@@ -19,6 +19,8 @@
     const YOUTUBE_ID_REGEX = /^[a-zA-Z0-9_-]{6,}$/;
     const CLEAN_ID_REGEX = /^[a-z0-9]+(?:_[a-z0-9]+)*$/;
     const CLEAN_SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+    const ENFORCEMENT_FLAG = "_ccg_enforced";
+    const MIGRATION_FLAG = "_ccg_migrated";
     const GAME_GENRES = [
         "action-adventure",
         "adventure",
@@ -317,7 +319,8 @@
             re_releaser: [],
             developer: ""
         },
-        developer: ""
+        developer: "",
+        [ENFORCEMENT_FLAG]: true
     });
 
     const normalizeArray = (value) => {
@@ -377,7 +380,7 @@
         const legacyClassification = normalizeGenresAndCollections(raw ? raw.genres : []);
         const normalizedCollections = normalizeCollections(raw ? raw.collections : []);
         const collections = sortCollections([...legacyClassification.collections, ...normalizedCollections]);
-        return {
+        const normalized = {
             ...base,
             ...raw,
             system: String(raw.system || base.system).trim() || "C64",
@@ -405,8 +408,21 @@
                 re_releaser: normalizeArray(credits.re_releaser),
                 developer: String(credits.developer || raw.developer || "").trim()
             },
-            developer: String(raw.developer || credits.developer || "").trim()
+            developer: String(raw.developer || credits.developer || "").trim(),
+            [ENFORCEMENT_FLAG]: Boolean(raw && raw[ENFORCEMENT_FLAG]),
+            [MIGRATION_FLAG]: Boolean(raw && raw[MIGRATION_FLAG])
         };
+        if (normalized[MIGRATION_FLAG]) {
+            return normalized;
+        }
+        if (normalized.slug && isLegacyRecord(normalized)) {
+            const fixedId = normalizeLegacyIdFromSlug(normalized.slug);
+            if (fixedId && fixedId !== normalized.id) {
+                normalized.id = fixedId;
+                normalized[MIGRATION_FLAG] = true;
+            }
+        }
+        return normalized;
     };
 
     const isValidUrl = (value) => {
@@ -437,6 +453,24 @@
 
     const deriveIdFromSlug = (slug) => {
         return String(slug || "").replace(/-/g, "_");
+    };
+
+    const normalizeLegacyIdFromSlug = (slug) => {
+        return String(slug || "")
+            .replace(/-/g, "_")
+            .toLowerCase()
+            .replace(/[^a-z0-9_]/g, "")
+            .replace(/_+/g, "_")
+            .replace(/(^_|_$)+/g, "")
+            .trim();
+    };
+
+    const isLegacyRecord = (game) => {
+        if (!game) return false;
+        const missingMetadata = !game[ENFORCEMENT_FLAG];
+        const invalidLegacyId = Boolean(game.id && !CLEAN_ID_REGEX.test(game.id));
+        const slugMismatch = Boolean(game.slug && game.id && deriveIdFromSlug(game.slug) !== game.id);
+        return missingMetadata || invalidLegacyId || slugMismatch;
     };
 
     const generateSortTitle = (value) => {
@@ -841,41 +875,55 @@ ${JSON.stringify({
         const idMap = new Map();
         const slugMap = new Map();
         const sitemapUrls = buildSitemapUrlSet(games);
+        let migratedCount = 0;
         games.forEach((game) => {
             if (game.id) idMap.set(game.id, (idMap.get(game.id) || 0) + 1);
             if (game.slug) slugMap.set(game.slug, (slugMap.get(game.slug) || 0) + 1);
+            if (game && game[MIGRATION_FLAG]) migratedCount += 1;
         });
 
         games.forEach((game) => {
             const prefix = `${game.title || game.id || "Untitled"}`;
-            if (!game.id) errors.push(`${prefix}: missing ID.`);
+            const isMigrated = Boolean(game && game[MIGRATION_FLAG]);
+            const pushIssue = (message, severity = "error") => {
+                if (severity === "error" && isMigrated) {
+                    warnings.push(message);
+                    return;
+                }
+                if (severity === "error") {
+                    errors.push(message);
+                    return;
+                }
+                warnings.push(message);
+            };
+            if (!game.id) pushIssue(`${prefix}: missing ID.`);
             if (!game.slug) {
-                errors.push(`${prefix}: missing slug.`);
+                pushIssue(`${prefix}: missing slug.`);
                 warnings.push(`${prefix}: orphan page risk (no slug for canonical/stub).`);
             }
-            if (!game.title) errors.push(`${prefix}: missing title.`);
+            if (!game.title) pushIssue(`${prefix}: missing title.`);
             if (!game.sorttitle) warnings.push(`${prefix}: missing sort title.`);
             if (!game.genres || !game.genres.length) warnings.push(`${prefix}: missing genres.`);
             if (game.genres && game.genres.some((genre) => !GAME_GENRES.includes(genre))) {
-                errors.push(`${prefix}: invalid genre detected.`);
+                pushIssue(`${prefix}: invalid genre detected.`);
             }
             if (game.collections && game.collections.some((flag) => !COLLECTION_FLAGS.some((item) => item.id === flag))) {
-                errors.push(`${prefix}: invalid collection flag detected.`);
+                pushIssue(`${prefix}: invalid collection flag detected.`);
             }
             if (game.slug && !CLEAN_SLUG_REGEX.test(game.slug)) {
-                errors.push(`${prefix}: slug contains invalid characters (broken URL).`);
+                pushIssue(`${prefix}: slug contains invalid characters (broken URL).`);
             }
             if (game.id && !CLEAN_ID_REGEX.test(game.id)) {
-                errors.push(`${prefix}: ID contains invalid characters.`);
+                pushIssue(`${prefix}: ID contains invalid characters.`);
             }
             if (game.slug && game.id && deriveIdFromSlug(game.slug) !== game.id) {
-                errors.push(`${prefix}: ID must match slug (slug → underscore).`);
+                pushIssue(`${prefix}: ID must match slug (slug → underscore).`);
             }
-            if (game.id && idMap.get(game.id) > 1) errors.push(`${prefix}: duplicate ID ${game.id}.`);
-            if (game.slug && slugMap.get(game.slug) > 1) errors.push(`${prefix}: duplicate slug ${game.slug}.`);
+            if (game.id && idMap.get(game.id) > 1) pushIssue(`${prefix}: duplicate ID ${game.id}.`);
+            if (game.slug && slugMap.get(game.slug) > 1) pushIssue(`${prefix}: duplicate slug ${game.slug}.`);
             if (game.thumbnail && !game.thumbnail.startsWith("resources/images/")) warnings.push(`${prefix}: thumbnail path should be under resources/images/.`);
-            if (game.pdf && !isValidUrl(game.pdf)) errors.push(`${prefix}: invalid PDF URL.`);
-            if (game.disk && game.disk.some(disk => !isValidUrl(disk))) errors.push(`${prefix}: invalid disk URL.`);
+            if (game.pdf && !isValidUrl(game.pdf)) pushIssue(`${prefix}: invalid PDF URL.`);
+            if (game.disk && game.disk.some(disk => !isValidUrl(disk))) pushIssue(`${prefix}: invalid disk URL.`);
             if (game.lemon && game.lemon.some(link => !isValidUrl(link))) warnings.push(`${prefix}: invalid Lemon link.`);
             if (game.videoid && !YOUTUBE_ID_REGEX.test(game.videoid)) warnings.push(`${prefix}: invalid YouTube ID.`);
             if (!hasCredits(game)) warnings.push(`${prefix}: missing credits.`);
@@ -892,6 +940,10 @@ ${JSON.stringify({
                 warnings.push(`${prefix}: sitemap missing canonical or stub entry.`);
             }
         });
+
+        if (migratedCount) {
+            warnings.unshift(`Legacy entries auto-migrated: ${migratedCount}`);
+        }
 
         return { errors, warnings };
     };
@@ -1410,6 +1462,7 @@ ${JSON.stringify({
     const findSlugMismatch = (games) => {
         return (games || []).find((game) => {
             if (!game || !game.slug || !game.id) return false;
+            if (game[MIGRATION_FLAG]) return false;
             return deriveIdFromSlug(game.slug) !== game.id;
         });
     };
@@ -1432,6 +1485,14 @@ ${JSON.stringify({
         URL.revokeObjectURL(url);
     };
 
+    const hasBlockingDraftErrors = () => {
+        if (!state.draftGame) return false;
+        const validation = validateDraft(state.draftGame);
+        if (!validation.errors.length) return false;
+        setStatus("Export blocked.", validation.errors.join(" "), "error");
+        return true;
+    };
+
     const copyJson = async () => {
         if (!state.draftGame) return;
         const payload = buildSortedGame(state.draftGame);
@@ -1445,29 +1506,19 @@ ${JSON.stringify({
 
     const downloadSelectedJson = () => {
         if (!state.draftGame) return;
-        if (deriveIdFromSlug(state.draftGame.slug) !== state.draftGame.id) {
-            setStatus("Export blocked.", "ID must match slug before exporting.", "error");
-            return;
-        }
+        if (hasBlockingDraftErrors()) return;
         exportJson(buildSortedGame(state.draftGame), `${state.draftGame.slug || "game"}.json`);
     };
 
     const downloadLibraryJson = () => {
-        const mismatch = findSlugMismatch(state.workingGames);
-        if (mismatch) {
-            setStatus("Export blocked.", `${mismatch.title || mismatch.id}: ID must match slug before exporting.`, "error");
-            return;
-        }
+        if (hasBlockingDraftErrors()) return;
         const payload = state.workingGames.map(game => buildSortedGame(game));
         exportJson(payload, "games.json");
     };
 
     const downloadSelectedStub = () => {
         if (!state.draftGame) return;
-        if (deriveIdFromSlug(state.draftGame.slug) !== state.draftGame.id) {
-            setStatus("Export blocked.", "ID must match slug before exporting.", "error");
-            return;
-        }
+        if (hasBlockingDraftErrors()) return;
         const stub = buildSeoStubHtml(state.draftGame);
         const slug = state.draftGame.slug || generateSlug(state.draftGame.title);
         const blob = new Blob([stub], { type: "text/html" });
@@ -1484,11 +1535,7 @@ ${JSON.stringify({
 
     const downloadAllStubs = async () => {
         if (!state.workingGames.length) return;
-        const mismatch = findSlugMismatch(state.workingGames);
-        if (mismatch) {
-            setStatus("Export blocked.", `${mismatch.title || mismatch.id}: ID must match slug before exporting.`, "error");
-            return;
-        }
+        if (hasBlockingDraftErrors()) return;
         if (typeof JSZip === "undefined") {
             setStatus("JSZip missing.", "SEO stubs cannot be zipped without JSZip.", "error");
             return;
@@ -1513,11 +1560,7 @@ ${JSON.stringify({
 
     const downloadSitemapOnly = () => {
         if (!state.workingGames.length) return;
-        const mismatch = findSlugMismatch(state.workingGames);
-        if (mismatch) {
-            setStatus("Export blocked.", `${mismatch.title || mismatch.id}: ID must match slug before exporting.`, "error");
-            return;
-        }
+        if (hasBlockingDraftErrors()) return;
         const xml = generateSitemapXml(state.workingGames);
         const blob = new Blob([xml], { type: "application/xml" });
         const url = URL.createObjectURL(blob);
@@ -1533,11 +1576,7 @@ ${JSON.stringify({
 
     const downloadFullGamePackage = async () => {
         if (!state.draftGame) return;
-        const mismatch = findSlugMismatch(state.workingGames);
-        if (mismatch) {
-            setStatus("Export blocked.", `${mismatch.title || mismatch.id}: ID must match slug before exporting.`, "error");
-            return;
-        }
+        if (hasBlockingDraftErrors()) return;
         if (typeof JSZip === "undefined") {
             setStatus("JSZip missing.", "Full package cannot be zipped without JSZip.", "error");
             return;
