@@ -45,36 +45,36 @@ function hasPrefilledSingleGameContent() {
 }
 
 function lockSingleGameRender() {
-    if (hasPrefilledSingleGameContent()) {
-        if (document.body) {
-            document.body.classList.remove("ccg-loading-single");
-            document.body.classList.add("ccg-single-ready");
-        }
-        return;
-    }
+    if (hasPrefilledSingleGameContent()) return;
+
     if (CCG_RENDER_GATE.locked) return;
-    CCG_RENDER_GATE.container = document.querySelector(".ccg-page--single-game");
+
+    CCG_RENDER_GATE.container =
+        document.querySelector(".ccg-page--single-game");
+
     if (CCG_RENDER_GATE.container) {
-        CCG_RENDER_GATE.container.hidden = true;
-        CCG_RENDER_GATE.container.setAttribute("data-ccg-render-gate", "pending");
+        CCG_RENDER_GATE.container.style.opacity = "0";
+        CCG_RENDER_GATE.container.style.pointerEvents = "none";
     }
-    if (document.body) {
-        document.body.classList.add("ccg-loading-single");
-        document.body.classList.remove("ccg-single-ready");
-    }
+
+    document.body?.classList.remove("ccg-loading-single");
+    document.body?.classList.add("ccg-single-ready");
+
     CCG_RENDER_GATE.locked = true;
 }
 
 function unlockSingleGameRender() {
     if (!CCG_RENDER_GATE.locked) return;
+
     if (CCG_RENDER_GATE.container) {
-        CCG_RENDER_GATE.container.hidden = false;
-        CCG_RENDER_GATE.container.removeAttribute("data-ccg-render-gate");
+        CCG_RENDER_GATE.container.style.opacity = "";
+        CCG_RENDER_GATE.container.style.pointerEvents = "";
+        CCG_RENDER_GATE.container.removeAttribute("hidden");
     }
-    if (document.body) {
-        document.body.classList.remove("ccg-loading-single");
-        document.body.classList.add("ccg-single-ready");
-    }
+
+    document.body?.classList.remove("ccg-loading-single");
+    document.body?.classList.add("ccg-single-ready");
+
     CCG_RENDER_GATE.locked = false;
 }
 
