@@ -915,6 +915,15 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     overflow: visible;
 }
 
+@media (min-width: 821px) {
+    .ccg-page--single-game .ccg-main,
+    .ccg-page--single-game .game-shell {
+        margin-left: auto;
+        margin-right: auto;
+        transform: none;
+    }
+}
+
 html[data-ccg-page="single-game"] .ccg-page--single-game,
 html[data-ccg-page="single-game"] .ccg-page--single-game .ccg-main,
 html[data-ccg-page="single-game"] .ccg-page--single-game .game-shell {
@@ -2316,6 +2325,11 @@ body[data-ccg-mode="amiga"] {
         -webkit-overflow-scrolling: touch;
     }
 
+    html[data-ccg-page="single-game"] body.ccg-body--locked {
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+    }
+
     .ccg-page--single-game {
         width: 100%;
         max-width: 100%;
@@ -2324,7 +2338,7 @@ body[data-ccg-mode="amiga"] {
         max-height: none;
         overflow: visible;
         position: static;
-        -webkit-overflow-scrolling: touch;
+        -webkit-overflow-scrolling: auto;
     }
 
     .ccg-page--single-game .ccg-main,
@@ -2335,13 +2349,16 @@ body[data-ccg-mode="amiga"] {
         max-height: none;
         overflow: visible;
         position: static;
+        -webkit-overflow-scrolling: auto;
     }
 
     .ccg-page--single-game .related-carousel__viewport {
         overflow-x: auto !important;
         overflow-y: hidden !important;
         max-height: none !important;
-        touch-action: pan-x;
+        overscroll-behavior: auto;
+        touch-action: pan-y;
+        -webkit-overflow-scrolling: auto;
     }
 
     .ccg-page--single-game .related-carousel__track {
