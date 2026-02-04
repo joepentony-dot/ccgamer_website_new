@@ -2,37 +2,25 @@
    GENRE LOADER — STABLE + URL SAFE IDS (THUMB PATH FIX)
 ============================================================ */
 
-function ccgSlugify(value) {
-    return String(value || "")
-        .toLowerCase()
-        .trim()
-        .replace(/&/g, "and")
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "");
-}
-
 function ccgGetPageSlug() {
     try {
-        const file = (window.location.pathname.split("/").pop() || "").toLowerCase();
-        return ccgSlugify(file.replace(/\.html?$/, ""));
-    } catch (e) {
+        return (window.location.pathname.split("/").pop() || "")
+            .replace(/\.html?$/, "")
+            .toLowerCase();
+    } catch {
         return "";
     }
 }
 
-function ccgBuildMatchKeys(primaryLabel) {
-    const keys = new Set();
-    const labelKey = ccgSlugify(primaryLabel);
-    const pageKey = ccgGetPageSlug();
-    if (labelKey) keys.add(labelKey);
-    if (pageKey) keys.add(pageKey);
-    return keys;
-}
+function ccgExtractKey(slug) {
+    if (!slug) return "";
 
-function ccgArrayify(value) {
-    if (Array.isArray(value)) return value;
-    if (typeof value === "string" && value.trim()) return [value.trim()];
-    return [];
+    return slug
+        .replace(/-games$/, "")
+        .replace(/-indexed$/, "")
+        .replace(/-collection$/, "")
+        .replace(/^genre-/, "")
+        .trim();
 }
 
 function ccgRunGenreLoader() {
@@ -54,16 +42,16 @@ function ccgRunGenreLoader() {
 
             const games = await res.json();
 
-            const keys = ccgBuildMatchKeys(genreName);
+            const pageSlug = ccgGetPageSlug();
+            const key = ccgExtractKey(pageSlug);
 
-            const filtered = games.filter(game => {
-                const genreList = ccgArrayify(game?.genres).concat(ccgArrayify(game?.genre));
-                if (!genreList.length) return false;
-                return genreList.some(g => keys.has(ccgSlugify(g)));
-            });
+            const filtered = games.filter(game =>
+                Array.isArray(game.genres) &&
+                game.genres.includes(key)
+            );
 
             if (!filtered.length) {
-                console.warn("[CCG GENRE] 0 matches", { genreName, keys: Array.from(keys) });
+                console.warn("[CCG GENRE] 0 matches", { genreName, key });
             }
 
             const cards = filtered.map(ccgBuildGameCard).join("");
