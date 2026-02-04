@@ -2310,11 +2310,7 @@ body[data-ccg-mode="amiga"] {
         max-height: none;
         overflow-y: auto;
         overflow-x: hidden;
-    }
-
-    html[data-ccg-page="single-game"] body {
-        overflow-y: auto !important;
-        overflow-x: hidden !important;
+        overscroll-behavior: none;
     }
 
     .ccg-page--single-game {
@@ -2328,7 +2324,6 @@ body[data-ccg-mode="amiga"] {
         overflow-y: hidden !important;
         max-height: none !important;
         touch-action: pan-x;
-        overscroll-behavior: auto;
     }
 
     .ccg-page--single-game .related-carousel__track {
@@ -2741,4 +2736,42 @@ body[data-ccg-mode="amiga"] {
     .ccg-page--games-index .games-hero::before {
         display: none;
     }
+}
+
+/* ============================================================
+   SINGLE GAME — SCROLL HOTFIX (PAGE-SCOPED)
+   ============================================================ */
+
+html[data-ccg-page="single-game"],
+html[data-ccg-page="single-game"] body {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: auto !important;
+    min-height: 100% !important;
+    max-height: none !important;
+    position: static !important;
+    scrollbar-gutter: auto;
+}
+
+html[data-ccg-page="single-game"] :where(.ccg-page, .ccg-main, main, .game-shell) {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+html[data-ccg-page="single-game"] .ccg-page--single-game {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+html[data-ccg-page="single-game"] .ccg-page--single-game .related-carousel__viewport {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
+    max-width: 100%;
 }
