@@ -316,7 +316,8 @@
     }
 
     function getDefaultSourceUrl() {
-        return "../games/games.json";
+        const root = window.ccgGetSiteRoot ? window.ccgGetSiteRoot() : "/";
+        return `${root}games/games.json`;
     }
 
     function syncSourceLink() {

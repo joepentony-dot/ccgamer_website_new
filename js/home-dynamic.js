@@ -374,7 +374,9 @@ function runWhenIdle(task) {
 
 async function loadGamesForHome() {
     try {
-        const res = await fetch("games/games.json", { cache: "force-cache" });
+        const root = window.ccgGetSiteRoot ? window.ccgGetSiteRoot() : "/";
+        const url = `${root}games/games.json`;
+        const res = await fetch(url, { cache: "force-cache" });
         CCG_HOME_ALL_GAMES = await res.json();
     } catch {
         CCG_HOME_ALL_GAMES = [];
