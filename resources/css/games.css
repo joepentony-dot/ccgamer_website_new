@@ -988,6 +988,11 @@ html[data-ccg-page="single-game"] .ccg-page--single-game {
     pointer-events: none;
 }
 
+/* OMEGA VISUAL CLARITY UPGRADE */
+.ccg-page--single-game .game-hero::after {
+    background: linear-gradient(180deg, rgba(5, 8, 16, 0.15) 0%, rgba(5, 8, 16, 0.52) 100%);
+}
+
 .game-hero__bg {
     position: absolute;
     inset: 0;
@@ -998,6 +1003,12 @@ html[data-ccg-page="single-game"] .ccg-page--single-game {
     filter: blur(8px) saturate(1.08);
     transform: scale(1.06);
     z-index: 0;
+}
+
+/* OMEGA VISUAL CLARITY UPGRADE */
+.ccg-page--single-game .game-hero__bg {
+    opacity: 0.48;
+    filter: blur(8px) saturate(1.1) contrast(1.04);
 }
 
 .game-hero__inner {
