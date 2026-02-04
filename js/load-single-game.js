@@ -99,7 +99,7 @@ function normalizeMobileScrollContainer(element, options = {}) {
 
     if (enforceRoot) {
         element.style.height = "auto";
-        element.style.minHeight = "0";
+        element.style.minHeight = "100%";
         element.style.maxHeight = "none";
         element.style.overflowY = "auto";
         element.style.overflowX = "hidden";
