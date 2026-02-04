@@ -41,6 +41,9 @@
     border-radius: 22px;
     overflow: hidden;
     isolation: isolate;
+    display: flex;
+    align-items: center;
+    min-height: clamp(200px, 26vw, 300px);
 
     background:
         radial-gradient(
@@ -65,6 +68,20 @@
         inset 0 0 0 1px rgba(255,255,255,0.07);
 }
 
+.ccg-genre-hero::before {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    border-radius: 18px;
+    pointer-events: none;
+    z-index: 1;
+    border: 1px solid rgba(var(--accent-rgb),0.32);
+    box-shadow:
+        0 0 24px rgba(var(--accent-rgb),0.22),
+        inset 0 0 22px rgba(255,255,255,0.08);
+    mix-blend-mode: screen;
+}
+
 .ccg-genre-hero__bg,
 .ccg-genre-hero__overlay {
     position: absolute;
@@ -75,6 +92,10 @@
 .ccg-genre-hero__overlay {
     z-index: 1;
     background:
+        radial-gradient(circle at 18% 22%, rgba(var(--accent-rgb),0.28), transparent 42%),
+        radial-gradient(circle at 78% 18%, rgba(255,255,255,0.14), transparent 48%),
+        repeating-radial-gradient(circle at 12% 20%, rgba(255,255,255,0.12) 0 1px, transparent 1px 6px),
+        repeating-radial-gradient(circle at 82% 68%, rgba(255,255,255,0.08) 0 1px, transparent 1px 7px),
         radial-gradient(circle at 20% 30%, rgba(var(--accent-rgb),0.20), transparent 40%),
         radial-gradient(circle at 80% 18%, rgba(255,255,255,0.14), transparent 46%),
         linear-gradient(135deg, rgba(255,255,255,0.05), transparent 40%),
@@ -90,14 +111,14 @@ body:not([data-collection="Retro Events"]) .ccg-page--collection-single .ccg-gen
 .ccg-page--genre-single .ccg-genre-hero__img,
 body:not([data-collection="Retro Events"]) .ccg-page--collection-single .ccg-genre-hero__img {
     position: absolute;
-    inset: 0;
+    inset: -6%;
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center 42%;
-    transform: scale(1.04);
-    filter: saturate(1.1) contrast(1.05);
-    opacity: 0.72;
+    transform: scale(1.08);
+    filter: blur(6px) saturate(1.1) contrast(1.05) brightness(0.72);
+    opacity: 0.82;
 }
 
 .ccg-page--genre-single .ccg-genre-hero__bg::before,
@@ -127,6 +148,20 @@ body[data-collection="Retro Events"] .ccg-page--collection-single .ccg-genre-her
     pointer-events: none;
 }
 
+.ccg-page--collection-single .ccg-collection-hero .ccg-genre-hero__bg::after {
+    content: "";
+    position: absolute;
+    inset: -8%;
+    background: inherit;
+    background-size: cover;
+    background-position: center;
+    filter: blur(10px) brightness(0.7) saturate(1.05);
+    opacity: 0.9;
+    transform: scale(1.08);
+    z-index: 0;
+    pointer-events: none;
+}
+
 .ccg-page--genre-single .ccg-genre-hero__overlay,
 body:not([data-collection="Retro Events"]) .ccg-page--collection-single .ccg-genre-hero__overlay {
     z-index: 2;
@@ -135,11 +170,12 @@ body:not([data-collection="Retro Events"]) .ccg-page--collection-single .ccg-gen
 
 .ccg-page--genre-single .ccg-genre-hero__inner,
 body:not([data-collection="Retro Events"]) .ccg-page--collection-single .ccg-genre-hero__inner {
-    max-width: min(720px, 92vw);
+    width: 100%;
+    max-width: min(980px, 94vw);
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 14px;
+    gap: 12px;
     pointer-events: none;
 }
 
@@ -147,12 +183,12 @@ body:not([data-collection="Retro Events"]) .ccg-page--collection-single .ccg-gen
 body:not([data-collection="Retro Events"]) .ccg-page--collection-single .ccg-genre-hero__inner::before {
     content: "";
     position: absolute;
-    inset: -12px -18px -16px -18px;
+    inset: -18px -26px -20px -26px;
     border-radius: 18px;
     background:
-        linear-gradient(120deg, rgba(5,7,16,0.78), rgba(5,7,16,0.45) 62%, rgba(5,7,16,0.18)),
-        radial-gradient(circle at 20% 20%, rgba(var(--accent-rgb),0.24), transparent 55%);
-    box-shadow: 0 20px 48px rgba(0,0,0,0.55);
+        linear-gradient(120deg, rgba(5,7,16,0.74), rgba(5,7,16,0.4) 62%, rgba(5,7,16,0.12)),
+        radial-gradient(circle at 18% 18%, rgba(var(--accent-rgb),0.22), transparent 58%);
+    box-shadow: 0 18px 42px rgba(0,0,0,0.5);
     z-index: 0;
     pointer-events: none;
 }
@@ -160,12 +196,12 @@ body:not([data-collection="Retro Events"]) .ccg-page--collection-single .ccg-gen
 body[data-collection="Retro Events"] .ccg-page--collection-single .ccg-genre-hero__inner::before {
     content: "";
     position: absolute;
-    inset: -12px -18px -16px -18px;
+    inset: -18px -26px -20px -26px;
     border-radius: 18px;
     background:
-        linear-gradient(120deg, rgba(5,7,16,0.88), rgba(5,7,16,0.6) 62%, rgba(5,7,16,0.26)),
-        radial-gradient(circle at 20% 20%, rgba(var(--accent-rgb),0.24), transparent 55%);
-    box-shadow: 0 22px 52px rgba(0,0,0,0.6);
+        linear-gradient(120deg, rgba(5,7,16,0.86), rgba(5,7,16,0.58) 62%, rgba(5,7,16,0.22)),
+        radial-gradient(circle at 18% 18%, rgba(var(--accent-rgb),0.24), transparent 58%);
+    box-shadow: 0 20px 48px rgba(0,0,0,0.58);
     z-index: 0;
     pointer-events: none;
 }
@@ -340,13 +376,13 @@ body:not([data-collection="Retro Events"]) .ccg-page--collection-single .ccg-gen
 .ccg-genre-hero__inner {
     position: relative;
     z-index: 2;
-    padding: 36px 34px 34px;
+    padding: 20px 24px 22px;
 }
 
 /* Mobile discipline */
 @media (max-width: 768px) {
     .ccg-genre-hero__inner {
-        padding: 26px 16px 24px;
+        padding: 16px 14px 18px;
     }
 }
 
@@ -469,7 +505,7 @@ body[data-collection="Retro Events"] .ccg-page--collection-single .ccg-collectio
 
 /* Adjust padding around hero text for better fitting */
 .ccg-genre-hero__inner {
-    padding: 24px 32px 26px; /* Refined padding for cinematic spacing */
+    padding: 20px 24px 22px; /* Refined padding for cinematic spacing */
 }
 
 /* Mobile adjustments for the hero section */
@@ -483,16 +519,16 @@ body[data-collection="Retro Events"] .ccg-page--collection-single .ccg-collectio
     }
 
     .ccg-genre-hero__inner {
-        padding: 18px 18px 20px; /* Reduced padding for better mobile layout */
+        padding: 16px 14px 18px; /* Reduced padding for better mobile layout */
     }
 
     .ccg-page--genre-single .ccg-genre-hero__inner::before,
     body:not([data-collection="Retro Events"]) .ccg-page--collection-single .ccg-genre-hero__inner::before {
-        inset: -10px -12px -12px;
+        inset: -12px -14px -14px;
     }
 
     body[data-collection="Retro Events"] .ccg-page--collection-single .ccg-genre-hero__inner::before {
-        inset: -10px -12px -12px;
+        inset: -12px -14px -14px;
     }
 
     body[data-collection="Retro Events"] .ccg-page--collection-single .ccg-genre-hero__bg::before {
@@ -965,7 +1001,7 @@ body[data-collection="Retro Events"] .ccg-page--collection-single .ccg-collectio
 
 /* Adjust padding around hero text for better fitting */
 .ccg-genre-hero__inner {
-    padding: 24px 32px 26px; /* Refined padding for cinematic spacing */
+    padding: 20px 24px 22px; /* Refined padding for cinematic spacing */
 }
 
 /* Mobile adjustments for the hero section */
@@ -979,6 +1015,6 @@ body[data-collection="Retro Events"] .ccg-page--collection-single .ccg-collectio
     }
 
     .ccg-genre-hero__inner {
-        padding: 18px 18px 20px; /* Reduced padding for better mobile layout */
+        padding: 16px 14px 18px; /* Reduced padding for better mobile layout */
     }
 }
