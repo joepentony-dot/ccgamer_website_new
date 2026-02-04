@@ -758,35 +758,29 @@ body[data-ccg-mode="amiga"] {
    ============================================================ */
 
 html[data-ccg-page="single-game"] {
-    scrollbar-gutter: stable both-edges;
-}
-
-html[data-ccg-page="single-game"] {
     height: auto;
-    min-height: 100vh;
-    overflow-y: visible;
+    overflow-y: auto;
     overflow-x: hidden;
+    min-height: 100%;
+    max-height: none;
 }
 
 html[data-ccg-page="single-game"] body {
     height: auto;
-    min-height: 100vh;
-    overflow-y: visible;
+    overflow-y: auto;
     overflow-x: hidden;
+    min-height: 100%;
+    max-height: none;
 }
 
 html[data-ccg-page="single-game"] :where(.ccg-page,
        .ccg-main,
        main,
-       .game-shell,
-       .game-hero,
-       .game-section,
-       .game-media,
-       .related-carousel,
-       .ccg-footer) {
+       .game-shell) {
     height: auto;
+    min-height: 0;
     max-height: none;
-    overflow-y: visible;
+    overflow: visible;
 }
 
 .ccg-page--single-game {
@@ -916,6 +910,15 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     margin-right: auto;
     box-sizing: border-box;
     overflow: visible;
+}
+
+html[data-ccg-page="single-game"] .ccg-page--single-game,
+html[data-ccg-page="single-game"] .ccg-page--single-game .ccg-main,
+html[data-ccg-page="single-game"] .ccg-page--single-game .game-shell {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
 }
 
 .game-hero,
@@ -2102,6 +2105,10 @@ body[data-ccg-mode="amiga"] {
     scroll-behavior: smooth;
     scrollbar-width: thin;
     overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .related-carousel__track {
@@ -2292,12 +2299,45 @@ body[data-ccg-mode="amiga"] {
     }
 }
 
+@media (max-width: 820px) {
+    html[data-ccg-page="single-game"],
+    html[data-ccg-page="single-game"] body {
+        height: auto !important;
+        min-height: 100% !important;
+        max-height: none !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        overscroll-behavior: none;
+    }
+
+    .ccg-page--single-game {
+        width: 100%;
+        overflow-x: hidden !important;
+    }
+
+    html[data-ccg-page="single-game"] :where(.ccg-page,
+           .ccg-main,
+           main,
+           .game-shell,
+           .game-hero,
+           .game-section,
+           .game-media,
+           .related-carousel,
+           .ccg-footer) {
+        height: auto;
+        min-height: 0;
+        max-height: none;
+    }
+}
+
 @media (max-width: 768px) {
     html[data-ccg-page="single-game"],
     html[data-ccg-page="single-game"] body {
         height: auto;
         min-height: 100%;
-        overflow-y: visible;
+        max-height: none;
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 
     .ccg-page--single-game :where(.ccg-page,
@@ -2318,8 +2358,8 @@ body[data-ccg-mode="amiga"] {
            .game-media__item--downloads,
            .game-media__item--links) {
         height: auto;
+        min-height: unset;
         max-height: none;
-        overflow-y: visible;
     }
 
     .game-toc {
@@ -2351,6 +2391,7 @@ body[data-ccg-mode="amiga"] {
         overflow-x: hidden;
         overflow-y: visible;
         height: auto;
+        min-height: unset;
         max-height: none;
         box-sizing: border-box;
     }
@@ -2362,6 +2403,7 @@ body[data-ccg-mode="amiga"] {
         margin-right: auto;
         padding-inline: clamp(16px, 5vw, 24px);
         height: auto;
+        min-height: unset;
         max-height: none;
         overflow-y: visible;
         box-sizing: border-box;
