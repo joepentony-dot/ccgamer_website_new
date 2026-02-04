@@ -758,20 +758,17 @@ body[data-ccg-mode="amiga"] {
    ============================================================ */
 
 html[data-ccg-page="single-game"] {
-    scrollbar-gutter: stable both-edges;
 }
 
 html[data-ccg-page="single-game"] {
     height: auto;
-    min-height: 100vh;
-    overflow-y: visible;
+    overflow-y: auto;
     overflow-x: hidden;
 }
 
 html[data-ccg-page="single-game"] body {
     height: auto;
-    min-height: 100vh;
-    overflow-y: visible;
+    overflow-y: auto;
     overflow-x: hidden;
 }
 
@@ -2292,11 +2289,50 @@ body[data-ccg-mode="amiga"] {
     }
 }
 
+@media (max-width: 820px) {
+    html[data-ccg-page="single-game"],
+    html[data-ccg-page="single-game"] body {
+        height: auto !important;
+        min-height: 100% !important;
+        max-height: none !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        overscroll-behavior: none;
+    }
+
+    .ccg-page--single-game {
+        width: 100%;
+        overflow-x: hidden !important;
+    }
+
+    .ccg-page--single-game .related-carousel__viewport {
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        max-height: none !important;
+    }
+
+    .ccg-page--single-game .related-carousel__track {
+        max-width: none !important;
+    }
+
+    .ccg-page--single-game .ccg-page,
+    .ccg-page--single-game .ccg-main,
+    .ccg-page--single-game .game-shell,
+    .ccg-page--single-game .game-media,
+    .ccg-page--single-game .related-carousel {
+        height: auto !important;
+        min-height: unset !important;
+        max-height: none !important;
+        overflow-y: visible !important;
+    }
+}
+
 @media (max-width: 768px) {
     html[data-ccg-page="single-game"],
     html[data-ccg-page="single-game"] body {
         height: auto;
-        min-height: 100%;
+        min-height: unset;
+        max-height: none;
         overflow-y: visible;
     }
 
@@ -2318,6 +2354,7 @@ body[data-ccg-mode="amiga"] {
            .game-media__item--downloads,
            .game-media__item--links) {
         height: auto;
+        min-height: unset;
         max-height: none;
         overflow-y: visible;
     }
@@ -2351,6 +2388,7 @@ body[data-ccg-mode="amiga"] {
         overflow-x: hidden;
         overflow-y: visible;
         height: auto;
+        min-height: unset;
         max-height: none;
         box-sizing: border-box;
     }
@@ -2362,6 +2400,7 @@ body[data-ccg-mode="amiga"] {
         margin-right: auto;
         padding-inline: clamp(16px, 5vw, 24px);
         height: auto;
+        min-height: unset;
         max-height: none;
         overflow-y: visible;
         box-sizing: border-box;
