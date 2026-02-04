@@ -2357,6 +2357,125 @@ html.ccg-perf-paused [data-ccg-wow] {
     border-radius: 999px;
 }
 
+/* ============================================================
+   OMEGA FLOATING NAV (HOME + GENRES + COLLECTIONS)
+============================================================ */
+
+.ccg-floating-nav {
+    position: fixed;
+    left: 50%;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    transform: translate(-50%, 16px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 220ms ease, transform 220ms ease;
+    z-index: 999;
+    width: min(720px, calc(100% - 32px));
+}
+
+.ccg-floating-nav--visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+    pointer-events: auto;
+}
+
+.ccg-floating-nav__bar {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    padding: 12px;
+    border-radius: 999px;
+    background:
+        linear-gradient(160deg,
+            color-mix(in srgb, var(--ccg-bg-dark) 78%, transparent),
+            color-mix(in srgb, var(--ccg-bg-dark) 88%, transparent)
+        ),
+        radial-gradient(circle at 12% 18%, rgba(var(--accent-rgb), 0.2), transparent 55%);
+    border: 1px solid rgba(var(--accent-rgb), 0.45);
+    box-shadow:
+        0 18px 36px color-mix(in srgb, var(--ccg-bg-dark) 68%, transparent),
+        0 0 28px rgba(var(--accent-rgb), 0.35);
+    backdrop-filter: blur(16px) saturate(1.1);
+    -webkit-backdrop-filter: blur(16px) saturate(1.1);
+}
+
+.ccg-floating-nav__btn {
+    display: grid;
+    place-items: center;
+    gap: 4px;
+    min-height: 50px;
+    padding: 8px 6px;
+    border-radius: 16px;
+    border: 1px solid color-mix(in srgb, var(--ccg-text-light) 16%, transparent);
+    background: linear-gradient(150deg,
+        color-mix(in srgb, var(--ccg-bg-dark) 78%, transparent),
+        color-mix(in srgb, var(--ccg-bg-dark) 88%, transparent)
+    );
+    color: var(--ccg-text-light);
+    text-decoration: none;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    box-shadow:
+        inset 0 0 0 1px color-mix(in srgb, var(--ccg-text-light) 10%, transparent),
+        0 10px 20px color-mix(in srgb, var(--ccg-bg-dark) 60%, transparent);
+    transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+    touch-action: manipulation;
+    cursor: pointer;
+}
+
+.ccg-floating-nav__btn:active {
+    transform: translateY(1px) scale(0.98);
+    box-shadow:
+        inset 0 0 0 1px color-mix(in srgb, var(--ccg-text-light) 14%, transparent),
+        0 6px 12px color-mix(in srgb, var(--ccg-bg-dark) 55%, transparent);
+}
+
+.ccg-floating-nav__btn:focus-visible {
+    outline: 2px solid rgba(var(--accent-rgb), 0.65);
+    outline-offset: 2px;
+}
+
+.ccg-floating-nav__icon {
+    font-size: 1.05rem;
+    line-height: 1;
+    filter: drop-shadow(0 0 8px rgba(var(--accent-rgb), 0.4));
+}
+
+.ccg-floating-nav__label {
+    line-height: 1;
+}
+
+html.ccg-has-floating-nav .ccg-footer {
+    padding-bottom: calc(120px + env(safe-area-inset-bottom));
+}
+
+html.ccg-has-floating-nav .ccg-main {
+    padding-bottom: calc(120px + env(safe-area-inset-bottom));
+}
+
+@media (max-width: 640px) {
+    .ccg-floating-nav {
+        width: min(520px, calc(100% - 24px));
+    }
+
+    .ccg-floating-nav__bar {
+        gap: 8px;
+        padding: 10px;
+        border-radius: 22px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ccg-floating-nav {
+        transition: none;
+    }
+
+    .ccg-floating-nav__btn {
+        transition: none;
+    }
+}
+
 
 /* ============================================================
    PAGE TYPE HANDOFF (NO VISUALS)
