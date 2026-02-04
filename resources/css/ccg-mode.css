@@ -259,6 +259,62 @@ body[data-ccg-mode="amiga"] .ccg-feature-card {
     box-shadow: var(--amiga-shadow);
 }
 
+.ccg-header-inner {
+    position: relative;
+}
+
+/* ============================================================
+   MODE TOGGLE HINT
+============================================================ */
+
+.ccg-mode-hint {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    color: rgba(120, 220, 255, 0.35);
+    text-shadow:
+        0 0 6px rgba(120,220,255,0.25),
+        0 0 12px rgba(120,220,255,0.15);
+    pointer-events: none;
+    user-select: none;
+    opacity: 0.35;
+    animation: ccgHintPulse 6s ease-in-out infinite;
+    white-space: nowrap;
+    z-index: 2;
+}
+
+body[data-ccg-mode="c64"] .ccg-mode-hint {
+    color: rgba(120,220,255,0.35);
+}
+
+body[data-ccg-mode="amiga"] .ccg-mode-hint {
+    color: rgba(255,140,220,0.35);
+    text-shadow:
+        0 0 6px rgba(255,140,220,0.25),
+        0 0 12px rgba(255,140,220,0.15);
+}
+
+@keyframes ccgHintPulse {
+    0%,100% { opacity: 0.25; }
+    50% { opacity: 0.5; }
+}
+
+@media (min-width: 1024px) {
+    .ccg-mode-hint {
+        bottom: auto;
+        left: auto;
+        right: 0;
+        top: 0;
+        transform: translateY(-100%);
+    }
+}
+
 /* ============================================================
    MODE TOGGLE — NEON WOW PILL
 ============================================================ */
@@ -636,12 +692,24 @@ html[data-ccg-mode="amiga"] .ccg-card {
         animation: none;
     }
 
+    .ccg-mode-hint {
+        animation: none;
+    }
+
     .ccg-mode-flash,
     .c64-flash,
     .amiga-flash,
     .ccg-mode-flash--lite {
         animation: none;
         transition: none;
+    }
+}
+
+@media (max-width: 640px) {
+    .ccg-mode-hint {
+        font-size: 0.68rem;
+        letter-spacing: 0.12em;
+        bottom: calc(100% + 4px);
     }
 }
 
