@@ -7,6 +7,15 @@
    • ZERO impact on genres, index or single-game pages
 ============================================================ */
 
+function ccgSlugify(value) {
+    return String(value || "")
+        .toLowerCase()
+        .trim()
+        .replace(/&/g, "and")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+}
+
 function ccgRunCollectionLoader() {
     const collectionName = document.body.dataset.collection;
     const grid = document.getElementById("genreGamesGrid");
@@ -20,7 +29,7 @@ function ccgRunCollectionLoader() {
         return;
     }
 
-    const key = collectionName.toLowerCase().trim();
+    const key = ccgSlugify(collectionName);
 
     const loadCards = async () => {
         try {
@@ -37,9 +46,7 @@ function ccgRunCollectionLoader() {
 
             const filtered = games.filter(game =>
                 Array.isArray(game.genres) &&
-                game.genres
-                    .map(g => String(g).toLowerCase().trim())
-                    .includes(key)
+                game.genres.some(g => ccgSlugify(g) === key)
             );
 
             if (countEl) {

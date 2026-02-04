@@ -2,6 +2,15 @@
    GENRE LOADER — STABLE + URL SAFE IDS (THUMB PATH FIX)
 ============================================================ */
 
+function ccgSlugify(value) {
+    return String(value || "")
+        .toLowerCase()
+        .trim()
+        .replace(/&/g, "and")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+}
+
 function ccgRunGenreLoader() {
     const genreName = document.body.dataset.genre;
     const grid = document.getElementById("genreGamesGrid");
@@ -21,9 +30,11 @@ function ccgRunGenreLoader() {
 
             const games = await res.json();
 
-            const filtered = games.filter(g =>
-                Array.isArray(g.genres) &&
-                g.genres.map(x => x.toLowerCase()).includes(genreName.toLowerCase())
+            const genreKey = ccgSlugify(genreName);
+
+            const filtered = games.filter(game =>
+                Array.isArray(game.genres) &&
+                game.genres.some(g => ccgSlugify(g) === genreKey)
             );
 
             const cards = filtered.map(ccgBuildGameCard).join("");
