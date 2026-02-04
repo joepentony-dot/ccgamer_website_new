@@ -11,6 +11,30 @@ function ccgSlugify(value) {
         .replace(/^-+|-+$/g, "");
 }
 
+function ccgGetPageSlug() {
+    try {
+        const file = (window.location.pathname.split("/").pop() || "").toLowerCase();
+        return ccgSlugify(file.replace(/\.html?$/, ""));
+    } catch (e) {
+        return "";
+    }
+}
+
+function ccgBuildMatchKeys(primaryLabel) {
+    const keys = new Set();
+    const labelKey = ccgSlugify(primaryLabel);
+    const pageKey = ccgGetPageSlug();
+    if (labelKey) keys.add(labelKey);
+    if (pageKey) keys.add(pageKey);
+    return keys;
+}
+
+function ccgArrayify(value) {
+    if (Array.isArray(value)) return value;
+    if (typeof value === "string" && value.trim()) return [value.trim()];
+    return [];
+}
+
 function ccgRunGenreLoader() {
     const genreName = document.body.dataset.genre;
     const grid = document.getElementById("genreGamesGrid");
@@ -30,12 +54,17 @@ function ccgRunGenreLoader() {
 
             const games = await res.json();
 
-            const genreKey = ccgSlugify(genreName);
+            const keys = ccgBuildMatchKeys(genreName);
 
-            const filtered = games.filter(game =>
-                Array.isArray(game.genres) &&
-                game.genres.some(g => ccgSlugify(g) === genreKey)
-            );
+            const filtered = games.filter(game => {
+                const genreList = ccgArrayify(game?.genres).concat(ccgArrayify(game?.genre));
+                if (!genreList.length) return false;
+                return genreList.some(g => keys.has(ccgSlugify(g)));
+            });
+
+            if (!filtered.length) {
+                console.warn("[CCG GENRE] 0 matches", { genreName, keys: Array.from(keys) });
+            }
 
             const cards = filtered.map(ccgBuildGameCard).join("");
 

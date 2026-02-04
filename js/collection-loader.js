@@ -16,6 +16,30 @@ function ccgSlugify(value) {
         .replace(/^-+|-+$/g, "");
 }
 
+function ccgGetPageSlug() {
+    try {
+        const file = (window.location.pathname.split("/").pop() || "").toLowerCase();
+        return ccgSlugify(file.replace(/\.html?$/, ""));
+    } catch (e) {
+        return "";
+    }
+}
+
+function ccgBuildMatchKeys(primaryLabel) {
+    const keys = new Set();
+    const labelKey = ccgSlugify(primaryLabel);
+    const pageKey = ccgGetPageSlug();
+    if (labelKey) keys.add(labelKey);
+    if (pageKey) keys.add(pageKey);
+    return keys;
+}
+
+function ccgArrayify(value) {
+    if (Array.isArray(value)) return value;
+    if (typeof value === "string" && value.trim()) return [value.trim()];
+    return [];
+}
+
 function ccgRunCollectionLoader() {
     const collectionName = document.body.dataset.collection;
     const grid = document.getElementById("genreGamesGrid");
@@ -29,7 +53,7 @@ function ccgRunCollectionLoader() {
         return;
     }
 
-    const key = ccgSlugify(collectionName);
+    const keys = ccgBuildMatchKeys(collectionName);
 
     const loadCards = async () => {
         try {
@@ -44,10 +68,24 @@ function ccgRunCollectionLoader() {
                 return;
             }
 
-            const filtered = games.filter(game =>
-                Array.isArray(game.genres) &&
-                game.genres.some(g => ccgSlugify(g) === key)
-            );
+            const filtered = games.filter(game => {
+                const pool = []
+                    .concat(ccgArrayify(game?.collections))
+                    .concat(ccgArrayify(game?.collection))
+                    .concat(ccgArrayify(game?.tags))
+                    .concat(ccgArrayify(game?.genres));
+
+                if (!pool.length) return false;
+
+                return pool.some(item => keys.has(ccgSlugify(item)));
+            });
+
+            if (!filtered.length) {
+                console.warn("[CCG COLLECTION] 0 matches", {
+                    collectionName,
+                    keys: Array.from(keys)
+                });
+            }
 
             if (countEl) {
                 countEl.textContent = filtered.length;
@@ -58,10 +96,6 @@ function ccgRunCollectionLoader() {
             if (cards) {
                 grid.innerHTML = cards;
             } else {
-                console.warn(
-                    `[CCG COLLECTION] No games found for collection "${collectionName}"`
-                );
-
                 grid.innerHTML = `
                     <div class="ccg-genre-empty">
                         <h3>No collection entries yet</h3>
