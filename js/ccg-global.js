@@ -1788,131 +1788,112 @@ function setupFooterSignatureRotator() {
 }
 
     /* ======================================================
-       OMEGA MOBILE ACTION DOCK (HOME)
+       OMEGA FLOATING NAV (HOME + GENRES + COLLECTIONS)
     ====================================================== */
-    function setupOmegaMobileDock() {
+    function setupOmegaFloatingNav() {
         const root = document.documentElement;
-        if (root?.getAttribute("data-ccg-page") !== "home") return;
-        const dock = document.querySelector("[data-omega-mobile-dock]");
-        if (!dock) return;
+        const pageType = root?.getAttribute("data-ccg-page") || "";
+        const path = window.location.pathname || "";
+        const isTargetPage = pageType === "home"
+            || pageType.includes("genre")
+            || pageType.includes("collection")
+            || path.includes("/games/genres/")
+            || path.includes("/games/collections/");
 
-        const browseToggle = dock.querySelector("[data-omega-browse-toggle]");
-        const browseHub = dock.querySelector("[data-omega-browse-hub]");
-        const browseBackdrop = dock.querySelector("[data-omega-browse-backdrop]");
-        const browseClose = dock.querySelector("[data-omega-browse-close]");
-        const scrollTopBtn = dock.querySelector("[data-omega-scroll-top]");
-        const browseSearch = dock.querySelector("[data-omega-browse-search]");
+        if (!isTargetPage) return;
 
-        if (!browseToggle || !browseHub) return;
-
-        const focusableSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
-        let isOpen = false;
-        let lastFocused = null;
-        let scrollTimer = null;
-
-        const openHub = () => {
-            if (isOpen) return;
-            isOpen = true;
-            lastFocused = document.activeElement;
-            root.classList.add("ccg-browse-hub-open");
-            browseHub.hidden = false;
-            browseHub.setAttribute("aria-hidden", "false");
-            browseToggle.setAttribute("aria-expanded", "true");
-            if (browseBackdrop) browseBackdrop.hidden = false;
-            requestAnimationFrame(() => {
-                const firstFocus = browseHub.querySelector(focusableSelector);
-                if (firstFocus) {
-                    firstFocus.focus({ preventScroll: true });
-                }
-            });
-        };
-
-        const closeHub = () => {
-            if (!isOpen) return;
-            isOpen = false;
-            root.classList.remove("ccg-browse-hub-open");
-            browseToggle.setAttribute("aria-expanded", "false");
-            browseHub.setAttribute("aria-hidden", "true");
-            if (browseBackdrop) browseBackdrop.hidden = true;
-            browseHub.hidden = true;
-            if (lastFocused && typeof lastFocused.focus === "function") {
-                lastFocused.focus({ preventScroll: true });
-            }
-        };
-
-        const toggleHub = () => {
-            if (isOpen) {
-                closeHub();
-            } else {
-                openHub();
-            }
-        };
-
-        const handleFocusTrap = (event) => {
-            if (!isOpen || event.key !== "Tab") return;
-            const focusables = Array.from(browseHub.querySelectorAll(focusableSelector))
-                .filter(el => !el.hasAttribute("disabled"));
-            if (!focusables.length) return;
-            const first = focusables[0];
-            const last = focusables[focusables.length - 1];
-
-            if (event.shiftKey && document.activeElement === first) {
-                event.preventDefault();
-                last.focus({ preventScroll: true });
-            } else if (!event.shiftKey && document.activeElement === last) {
-                event.preventDefault();
-                first.focus({ preventScroll: true });
-            }
-        };
-
-        const scheduleCloseOnScroll = () => {
-            if (!isOpen) return;
-            if (scrollTimer) window.clearTimeout(scrollTimer);
-            scrollTimer = window.setTimeout(() => {
-                closeHub();
-            }, 120);
-        };
-
-        browseToggle.addEventListener("click", toggleHub);
-        browseClose?.addEventListener("click", closeHub);
-        browseBackdrop?.addEventListener("click", closeHub);
-
-        document.addEventListener("keydown", (event) => {
-            if (!isOpen) return;
-            if (event.key === "Escape") {
-                event.preventDefault();
-                closeHub();
-                return;
-            }
-            handleFocusTrap(event);
-        });
-
-        window.addEventListener("scroll", scheduleCloseOnScroll, { passive: true });
-        window.addEventListener("orientationchange", scheduleCloseOnScroll, { passive: true });
-
-        const getSearchTarget = () => {
-            const target = browseSearch?.getAttribute("href")?.trim();
-            return target && target !== "#" ? target : "games/index.html?search=";
-        };
-
-        if (browseSearch) {
-            browseSearch.addEventListener("click", (event) => {
-                event.preventDefault();
-                const target = getSearchTarget();
-                if (target) {
-                    closeHub();
-                    window.location.assign(target);
-                }
-            });
+        if (document.querySelector("[data-ccg-floating-nav]")) {
+            root.classList.add("ccg-has-floating-nav");
+            return;
         }
 
-        if (scrollTopBtn) {
-            scrollTopBtn.addEventListener("click", (event) => {
+        const rootPrefix = (() => {
+            const siteRoot = getSiteRoot();
+            return siteRoot.endsWith("/") ? siteRoot : `${siteRoot}/`;
+        })();
+
+        const buildUrl = (suffix) => `${rootPrefix}${suffix}`;
+
+        const nav = document.createElement("div");
+        nav.className = "ccg-floating-nav";
+        nav.setAttribute("data-ccg-floating-nav", "");
+        nav.innerHTML = `
+            <nav class="ccg-floating-nav__bar" aria-label="Floating navigation">
+                <a class="ccg-floating-nav__btn" href="${buildUrl("games/index.html")}">
+                    <span class="ccg-floating-nav__icon" aria-hidden="true">📂</span>
+                    <span class="ccg-floating-nav__label">Browse Games</span>
+                </a>
+                <a class="ccg-floating-nav__btn" href="${buildUrl("games/collections/index.html")}">
+                    <span class="ccg-floating-nav__icon" aria-hidden="true">⭐</span>
+                    <span class="ccg-floating-nav__label">Collections</span>
+                </a>
+                <a class="ccg-floating-nav__btn" href="${buildUrl("quiz/quiz.html")}">
+                    <span class="ccg-floating-nav__icon" aria-hidden="true">🎮</span>
+                    <span class="ccg-floating-nav__label">Quiz</span>
+                </a>
+                <button class="ccg-floating-nav__btn" type="button" data-ccg-floating-top aria-label="Back to top">
+                    <span class="ccg-floating-nav__icon" aria-hidden="true">⬆️</span>
+                    <span class="ccg-floating-nav__label">Top</span>
+                </button>
+            </nav>
+        `;
+
+        document.body.appendChild(nav);
+        root.classList.add("ccg-has-floating-nav");
+
+        const topButton = nav.querySelector("[data-ccg-floating-top]");
+        if (topButton) {
+            topButton.addEventListener("click", (event) => {
                 event.preventDefault();
                 window.scrollTo({ top: 0, behavior: "smooth" });
-                closeHub();
             });
         }
+
+        let lastScrollY = window.scrollY;
+        let ticking = false;
+        let hasScrolled = false;
+        let isVisible = false;
+
+        const setVisible = (visible) => {
+            if (isVisible === visible) return;
+            isVisible = visible;
+            nav.classList.toggle("ccg-floating-nav--visible", visible);
+        };
+
+        const updateVisibility = () => {
+            ticking = false;
+            const docHeight = Math.max(
+                document.documentElement.scrollHeight,
+                document.body.scrollHeight
+            );
+            const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+            const scrollY = window.scrollY || window.pageYOffset;
+            const progress = docHeight ? (scrollY + viewportHeight) / docHeight : 0;
+            const isNearBottom = progress >= 0.8;
+            const scrollingDown = scrollY > lastScrollY + 2;
+            const scrollingUp = scrollY < lastScrollY - 2;
+
+            if (!hasScrolled) {
+                setVisible(false);
+            } else if (isNearBottom && scrollingDown) {
+                setVisible(true);
+            } else if (!isNearBottom || scrollingUp) {
+                setVisible(false);
+            }
+
+            lastScrollY = scrollY;
+        };
+
+        const onScroll = () => {
+            hasScrolled = true;
+            if (!ticking) {
+                ticking = true;
+                window.requestAnimationFrame(updateVisibility);
+            }
+        };
+
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll, { passive: true });
     }
 
     function setupOmegaMobileKeyboardGuard() {
@@ -1999,7 +1980,7 @@ function setupFooterSignatureRotator() {
         setupLogoEasterEgg();
         setupSecretTyping();
         setupFooterSignatureRotator();
-        setupOmegaMobileDock();
+        setupOmegaFloatingNav();
         setupOmegaMobileKeyboardGuard();
 
         /* ==================================================
