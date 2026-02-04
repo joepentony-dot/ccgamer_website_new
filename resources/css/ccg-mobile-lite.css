@@ -7,6 +7,11 @@ html.ccg-mobile-lite {
     scroll-behavior: auto !important;
 }
 
+html.ccg-mobile-lite[data-ccg-page="single-game"],
+html.ccg-mobile-lite[data-ccg-page="single-game"] body {
+    scroll-behavior: auto !important;
+}
+
 /* Kill continuous animations/transitions on mobile */
 html.ccg-mobile-lite *,
 html.ccg-mobile-lite *::before,
@@ -45,6 +50,17 @@ html.ccg-mobile-lite .ccg-hud-dock {
 }
 
 html.ccg-mobile-lite .ccg-brand__logo {
+    filter: none !important;
+}
+
+/* Single-game performance trim */
+html.ccg-mobile-lite[data-ccg-page="single-game"] .game-hero,
+html.ccg-mobile-lite[data-ccg-page="single-game"] .game-section,
+html.ccg-mobile-lite[data-ccg-page="single-game"] .game-media {
+    box-shadow: none !important;
+}
+
+html.ccg-mobile-lite[data-ccg-page="single-game"] .game-hero__bg {
     filter: none !important;
 }
 

@@ -40,6 +40,10 @@ const CCG_MOBILE_SCROLL_FIX = {
     lastAppliedMobile: null,
 };
 
+const CCG_DEBUG_SCROLL = {
+    initialized: false,
+};
+
 function hasPrefilledSingleGameContent() {
     const container = document.querySelector(".ccg-page--single-game");
     if (!container) return false;
@@ -174,6 +178,56 @@ function scheduleMobileSingleScrollFix() {
     requestAnimationFrame(() => {
         applyMobileSingleScrollFix();
     });
+}
+
+function isSingleGamePage() {
+    const pageFlag = document.documentElement?.getAttribute("data-ccg-page");
+    return pageFlag === "single-game" || !!document.querySelector(".ccg-page--single-game");
+}
+
+function shouldDebugSingleGameScroll() {
+    if (typeof window === "undefined") return false;
+    const params = new URLSearchParams(window.location.search);
+    return params.get("ccgDebugScroll") === "1";
+}
+
+function getElementScrollLabel(element) {
+    if (!(element instanceof Element)) return String(element);
+    const id = element.id ? `#${element.id}` : "";
+    const classList = element.classList && element.classList.length
+        ? `.${Array.from(element.classList).join(".")}`
+        : "";
+    return `${element.tagName.toLowerCase()}${id}${classList}`;
+}
+
+function logSingleGameScrollDiagnostics() {
+    if (!isSingleGamePage() || !shouldDebugSingleGameScroll()) return;
+    if (CCG_DEBUG_SCROLL.initialized) return;
+    CCG_DEBUG_SCROLL.initialized = true;
+
+    const scrollingElement = document.scrollingElement;
+    const candidates = Array.from(document.querySelectorAll("*")).filter((element) => {
+        const style = window.getComputedStyle(element);
+        const overflowY = style.overflowY;
+        if (overflowY !== "auto" && overflowY !== "scroll") return false;
+        return element.scrollHeight > element.clientHeight;
+    });
+
+    console.groupCollapsed("[CCG DEBUG] Single-game scroll containers");
+    console.log("document.scrollingElement:", getElementScrollLabel(scrollingElement));
+    console.table(candidates.map((element) => {
+        const style = window.getComputedStyle(element);
+        return {
+            element: getElementScrollLabel(element),
+            position: style.position,
+            height: style.height,
+            maxHeight: style.maxHeight,
+            overflowY: style.overflowY,
+            overscrollBehavior: style.overscrollBehavior || style.overscrollBehaviorY,
+            webkitOverflowScrolling: style.webkitOverflowScrolling || style.WebkitOverflowScrolling,
+        };
+    }));
+    console.groupEnd();
 }
 
 // Legacy slug fallback (SEO preservation)
@@ -371,6 +425,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             renderAction();
         }
         applyMobileSingleScrollFix();
+        requestAnimationFrame(() => {
+            logSingleGameScrollDiagnostics();
+        });
         finalizeRenderGate();
     };
 

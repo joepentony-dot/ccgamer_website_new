@@ -2478,6 +2478,28 @@ body.ccg-is-mobile .home-hero__bg {
         overscroll-behavior-x: none;
     }
 
+    html[data-ccg-page="single-game"],
+    html[data-ccg-page="single-game"] body {
+        height: auto;
+        min-height: 100%;
+        max-height: none;
+        overflow-y: auto;
+        overflow-x: hidden;
+        position: static;
+    }
+
+    html[data-ccg-page="single-game"] :where(.ccg-page--single-game,
+           .ccg-page--single-game .ccg-main,
+           .ccg-page--single-game main,
+           .ccg-page--single-game .game-shell) {
+        height: auto;
+        min-height: 0;
+        max-height: none;
+        overflow: visible;
+        position: static;
+        contain: none;
+    }
+
     /* ----------------------------------------
        HEADER CONTAINMENT (CRITICAL)
     ---------------------------------------- */
