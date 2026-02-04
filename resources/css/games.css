@@ -2307,18 +2307,7 @@ body[data-ccg-mode="amiga"] {
         max-height: none;
         overflow-y: auto;
         overflow-x: hidden;
-        touch-action: pan-y !important;
-        overscroll-behavior: auto !important;
-        -webkit-overflow-scrolling: touch !important;
-    }
-
-    html[data-ccg-page="single-game"] :where(.ccg-page, .ccg-main, main, .game-shell) {
-        position: static !important;
-    }
-
-    html[data-ccg-page="single-game"] body {
-        overflow-y: auto !important;
-        overflow-x: hidden !important;
+        overscroll-behavior: none;
     }
 
     .ccg-page--single-game {
