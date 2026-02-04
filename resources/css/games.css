@@ -911,8 +911,11 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     max-width: min(1600px, 94vw);
     margin-left: auto;
     margin-right: auto;
+    left: auto;
+    right: auto;
     box-sizing: border-box;
     overflow: visible;
+    transform: none;
 }
 
 @media (min-width: 821px) {
@@ -924,9 +927,7 @@ body:not(.ccg-single-ready) .ccg-page--single-game {
     }
 }
 
-html[data-ccg-page="single-game"] .ccg-page--single-game,
-html[data-ccg-page="single-game"] .ccg-page--single-game .ccg-main,
-html[data-ccg-page="single-game"] .ccg-page--single-game .game-shell {
+html[data-ccg-page="single-game"] .ccg-page--single-game {
     width: 100%;
     max-width: 100%;
     overflow-x: hidden;
@@ -949,8 +950,11 @@ html[data-ccg-page="single-game"] .ccg-page--single-game .game-shell {
     max-width: min(1600px, 94vw);
     margin-left: auto;
     margin-right: auto;
+    left: auto;
+    right: auto;
     box-sizing: border-box;
     overflow: visible;
+    transform: none;
 }
 
 .ccg-page--single-game .game-shell > .game-hero,
@@ -2117,7 +2121,6 @@ body[data-ccg-mode="amiga"] {
     scroll-behavior: smooth;
     scrollbar-width: thin;
     overscroll-behavior: none;
-    -webkit-overflow-scrolling: touch;
     touch-action: pan-x;
     max-width: 100%;
     box-sizing: border-box;
@@ -2322,7 +2325,6 @@ body[data-ccg-mode="amiga"] {
         overflow-x: hidden;
         position: static;
         touch-action: pan-y;
-        -webkit-overflow-scrolling: touch;
     }
 
     html[data-ccg-page="single-game"] body.ccg-body--locked {
@@ -2338,7 +2340,6 @@ body[data-ccg-mode="amiga"] {
         max-height: none;
         overflow: visible;
         position: static;
-        -webkit-overflow-scrolling: auto;
     }
 
     .ccg-page--single-game .ccg-main,
@@ -2349,7 +2350,6 @@ body[data-ccg-mode="amiga"] {
         max-height: none;
         overflow: visible;
         position: static;
-        -webkit-overflow-scrolling: auto;
     }
 
     .ccg-page--single-game .related-carousel__viewport {
@@ -2357,8 +2357,7 @@ body[data-ccg-mode="amiga"] {
         overflow-y: hidden !important;
         max-height: none !important;
         overscroll-behavior: auto;
-        touch-action: pan-y;
-        -webkit-overflow-scrolling: auto;
+        touch-action: pan-x;
     }
 
     .ccg-page--single-game .related-carousel__track {
@@ -2470,6 +2469,7 @@ body[data-ccg-mode="amiga"] {
         overflow-x: auto;
         overflow-y: hidden;
         overscroll-behavior: auto;
+        touch-action: pan-x;
     }
 
     .ccg-page--single-game .related-carousel__track {
