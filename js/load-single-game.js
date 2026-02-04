@@ -35,6 +35,10 @@ const CCG_RENDER_GATE = {
     container: null,
     locked: false,
 };
+const CCG_MOBILE_SCROLL_FIX = {
+    initialized: false,
+    lastAppliedMobile: null,
+};
 
 function hasPrefilledSingleGameContent() {
     const container = document.querySelector(".ccg-page--single-game");
@@ -45,37 +49,131 @@ function hasPrefilledSingleGameContent() {
 }
 
 function lockSingleGameRender() {
-    if (hasPrefilledSingleGameContent()) {
-        if (document.body) {
-            document.body.classList.remove("ccg-loading-single");
-            document.body.classList.add("ccg-single-ready");
-        }
-        return;
-    }
+    if (hasPrefilledSingleGameContent()) return;
+
     if (CCG_RENDER_GATE.locked) return;
-    CCG_RENDER_GATE.container = document.querySelector(".ccg-page--single-game");
+
+    CCG_RENDER_GATE.container =
+        document.querySelector(".ccg-page--single-game");
+
     if (CCG_RENDER_GATE.container) {
-        CCG_RENDER_GATE.container.hidden = true;
-        CCG_RENDER_GATE.container.setAttribute("data-ccg-render-gate", "pending");
+        CCG_RENDER_GATE.container.style.opacity = "0";
+        CCG_RENDER_GATE.container.style.pointerEvents = "none";
     }
-    if (document.body) {
-        document.body.classList.add("ccg-loading-single");
-        document.body.classList.remove("ccg-single-ready");
-    }
+
+    document.body?.classList.remove("ccg-loading-single");
+    document.body?.classList.add("ccg-single-ready");
+
     CCG_RENDER_GATE.locked = true;
 }
 
 function unlockSingleGameRender() {
     if (!CCG_RENDER_GATE.locked) return;
+
     if (CCG_RENDER_GATE.container) {
-        CCG_RENDER_GATE.container.hidden = false;
-        CCG_RENDER_GATE.container.removeAttribute("data-ccg-render-gate");
+        CCG_RENDER_GATE.container.style.opacity = "";
+        CCG_RENDER_GATE.container.style.pointerEvents = "";
+        CCG_RENDER_GATE.container.removeAttribute("hidden");
     }
-    if (document.body) {
-        document.body.classList.remove("ccg-loading-single");
-        document.body.classList.add("ccg-single-ready");
-    }
+
+    document.body?.classList.remove("ccg-loading-single");
+    document.body?.classList.add("ccg-single-ready");
+
     CCG_RENDER_GATE.locked = false;
+}
+
+function isSingleGameMobileViewport() {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(max-width: 768px)").matches;
+}
+
+function normalizeMobileScrollContainer(element, options = {}) {
+    if (!element || typeof window === "undefined") return;
+    const allowHorizontal = options.allowHorizontal === true;
+    const enforceRoot = options.enforceRoot === true;
+    const style = window.getComputedStyle(element);
+
+    if (enforceRoot) {
+        element.style.height = "auto";
+        element.style.minHeight = "0";
+        element.style.maxHeight = "none";
+        element.style.overflowY = "auto";
+        element.style.overflowX = "hidden";
+        if (style.position === "fixed" || style.position === "sticky") {
+            element.style.position = "static";
+        }
+        return;
+    }
+
+    element.style.height = "auto";
+    element.style.minHeight = "0";
+    element.style.maxHeight = "none";
+
+    if (style.overflowY === "auto" || style.overflowY === "scroll") {
+        element.style.overflowY = "visible";
+    }
+
+    if (!allowHorizontal && (style.overflowX === "auto" || style.overflowX === "scroll")) {
+        element.style.overflowX = "visible";
+    }
+
+    if (!allowHorizontal && (style.overflow === "auto" || style.overflow === "scroll")) {
+        element.style.overflow = "visible";
+    }
+
+    if (style.position === "fixed" || style.position === "sticky") {
+        element.style.position = "static";
+    }
+}
+
+function applyMobileSingleScrollFix() {
+    if (!isSingleGameMobileViewport()) {
+        CCG_MOBILE_SCROLL_FIX.lastAppliedMobile = false;
+        return;
+    }
+
+    const targets = [
+        { selector: "html[data-ccg-page=\"single-game\"]", enforceRoot: true },
+        { selector: "html[data-ccg-page=\"single-game\"] body", enforceRoot: true },
+        { selector: ".ccg-page--single-game" },
+        { selector: ".ccg-page--single-game .ccg-main" },
+        { selector: ".ccg-page--single-game main" },
+        { selector: ".ccg-page--single-game .game-shell" },
+        { selector: ".ccg-page--single-game .game-hero" },
+        { selector: ".ccg-page--single-game .game-hero__inner" },
+        { selector: ".ccg-page--single-game .game-hero__content" },
+        { selector: ".ccg-page--single-game .game-section" },
+        { selector: ".ccg-page--single-game .game-media" },
+        { selector: ".ccg-page--single-game .game-media__grid" },
+        { selector: ".ccg-page--single-game .game-description" },
+        { selector: ".ccg-page--single-game .game-facts" },
+        { selector: ".ccg-page--single-game .game-credits__list" },
+        { selector: ".ccg-page--single-game .game-media__item--video" },
+        { selector: ".ccg-page--single-game .game-media__item--downloads" },
+        { selector: ".ccg-page--single-game .game-media__item--links" },
+        { selector: ".ccg-page--single-game .game-screenshots" },
+        { selector: ".ccg-page--single-game .game-screenshots__strip" },
+        { selector: ".ccg-page--single-game .game-section--related" },
+        { selector: ".ccg-page--single-game .related-carousel" },
+        { selector: ".ccg-page--single-game .related-carousel__track" },
+        { selector: ".ccg-page--single-game .related-carousel__viewport", allowHorizontal: true },
+    ];
+
+    targets.forEach((target) => {
+        const elements = document.querySelectorAll(target.selector);
+        elements.forEach((element) => {
+            normalizeMobileScrollContainer(element, target);
+        });
+    });
+
+    CCG_MOBILE_SCROLL_FIX.lastAppliedMobile = true;
+}
+
+function scheduleMobileSingleScrollFix() {
+    if (!isSingleGameMobileViewport()) return;
+    requestAnimationFrame(() => {
+        applyMobileSingleScrollFix();
+    });
 }
 
 // Legacy slug fallback (SEO preservation)
@@ -221,6 +319,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     lockSingleGameRender();
 
     ensureDirectNavLinks();
+    if (!CCG_MOBILE_SCROLL_FIX.initialized) {
+        CCG_MOBILE_SCROLL_FIX.initialized = true;
+        applyMobileSingleScrollFix();
+        window.addEventListener("resize", scheduleMobileSingleScrollFix, { passive: true });
+        window.addEventListener("orientationchange", scheduleMobileSingleScrollFix, { passive: true });
+    }
 
     const params = new URLSearchParams(window.location.search);
     // Regression note: slug routing was skipped for /games/<slug>/index.html because the
@@ -266,6 +370,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (renderAction) {
             renderAction();
         }
+        applyMobileSingleScrollFix();
         finalizeRenderGate();
     };
 
