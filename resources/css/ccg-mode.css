@@ -284,15 +284,19 @@ body[data-ccg-mode="amiga"] .ccg-feature-card {
     pointer-events: none;
     user-select: none;
     opacity: 0.35;
-    animation: ccgHintPulse 6s ease-in-out infinite;
     white-space: nowrap;
     z-index: 2;
+    max-width: 100%;
+    overflow: visible;
+    will-change: opacity;
 }
 
+html[data-ccg-mode="c64"] .ccg-mode-hint,
 body[data-ccg-mode="c64"] .ccg-mode-hint {
     color: rgba(120,220,255,0.35);
 }
 
+html[data-ccg-mode="amiga"] .ccg-mode-hint,
 body[data-ccg-mode="amiga"] .ccg-mode-hint {
     color: rgba(255,140,220,0.35);
     text-shadow:
@@ -313,6 +317,14 @@ body[data-ccg-mode="amiga"] .ccg-mode-hint {
         top: 0;
         transform: translateY(-100%);
     }
+}
+
+body[data-ccg-mode] .ccg-header,
+body[data-ccg-mode] .ccg-header-inner,
+body[data-ccg-mode] .ccg-header-actions,
+body[data-ccg-mode] .ccg-mode-toggle,
+body[data-ccg-mode] .ccg-mode-toggle__pill {
+    overflow: visible;
 }
 
 /* ============================================================
@@ -721,5 +733,29 @@ html[data-ccg-mode="amiga"] .ccg-card {
 
     .ccg-mode-toggle__pill {
         padding: 8px 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .ccg-mode-hint {
+        font-size: 0.82rem;
+        margin-bottom: 10px;
+        opacity: 0.55;
+        letter-spacing: 0.18em;
+        text-shadow:
+            0 0 8px rgba(120,220,255,0.35),
+            0 0 16px rgba(120,220,255,0.25);
+        display: block;
+        min-height: 1em;
+        line-height: 1.4;
+        white-space: nowrap;
+        overflow: visible;
+    }
+
+    .ccg-mode-amiga .ccg-mode-hint,
+    body[data-ccg-mode="amiga"] .ccg-mode-hint {
+        text-shadow:
+            0 0 8px rgba(255,140,220,0.35),
+            0 0 16px rgba(255,140,220,0.25);
     }
 }
