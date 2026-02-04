@@ -825,8 +825,11 @@ function updatePrettyUrlAfterResolve(game) {
     if (!pretty) return;
 
     const url = new URL(pretty, window.location.origin);
+    const currentUrl = new URL(window.location.href);
+    url.search = currentUrl.search;
+    url.hash = currentUrl.hash;
     if (window.location.pathname !== url.pathname) {
-        window.history.replaceState({}, "", url.pathname);
+        window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
     }
 }
 
