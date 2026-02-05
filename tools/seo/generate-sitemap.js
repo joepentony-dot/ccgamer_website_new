@@ -245,15 +245,17 @@ function generateGameSitemap(siteUrl, games) {
   const entries = [];
 
   for (const slug of validSlugs) {
-    const filePath = path.join(repoRoot, 'games', `${slug}.html`);
+    const dirIndexPath = path.join(repoRoot, 'games', slug, 'index.html');
+    const filePath = fs.existsSync(dirIndexPath) ? dirIndexPath : path.join(repoRoot, 'games', `${slug}.html`);
+
     if (!fs.existsSync(filePath)) {
-      warnings.push(`No HTML file found for slug "${slug}" at games/${slug}.html. Excluding from sitemap.`);
+      warnings.push(`No HTML file found for slug "${slug}" at games/${slug}/index.html or games/${slug}.html. Excluding from sitemap.`);
       continue;
     }
 
     const lastmod = getGitLastMod(filePath);
     entries.push({
-      loc: `${siteUrl}/games/${slug}.html`,
+      loc: `${siteUrl}/games/${slug}/`,
       lastmod,
       filePath,
     });

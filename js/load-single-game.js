@@ -832,11 +832,8 @@ function updatePrettyUrlAfterResolve(game) {
     if (!pretty) return;
 
     const url = new URL(pretty, window.location.origin);
-    const currentUrl = new URL(window.location.href);
-    url.search = currentUrl.search;
-    url.hash = currentUrl.hash;
     if (window.location.pathname !== url.pathname) {
-        window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+        window.history.replaceState({}, "", url.pathname);
     }
 }
 
@@ -1937,8 +1934,8 @@ function updateMeta(game) {
 
     const canonicalPath = resolvePrettyGameUrl(game);
     const canonicalUrl = canonicalPath
-        ? new URL(canonicalPath, window.location.origin).toString()
-        : window.location.href;
+        ? new URL(canonicalPath, "https://www.cheekycommodoregamer.co.uk").toString()
+        : "https://www.cheekycommodoregamer.co.uk/games/";
 
     const canonicalLink = document.getElementById("game-canonical");
     if (canonicalLink) canonicalLink.setAttribute("href", canonicalUrl);
@@ -1957,6 +1954,23 @@ function updateMeta(game) {
 
     const twitterDesc = document.getElementById("game-twitter-description");
     if (twitterDesc) twitterDesc.setAttribute("content", desc);
+
+    const jsonLd = document.getElementById("game-jsonld");
+    if (jsonLd) {
+        const schema = {
+            "@context": "https://schema.org",
+            "@type": "VideoGame",
+            "name": game.title || "Game",
+            "url": canonicalUrl,
+            "description": desc
+        };
+
+        if (game.year) schema.datePublished = String(game.year);
+        if (game.system) schema.gamePlatform = String(game.system);
+        if (game.developer) schema.publisher = { "@type": "Organization", "name": String(game.developer) };
+
+        jsonLd.textContent = JSON.stringify(schema);
+    }
 }
 
 function normaliseTokenValue(value) {

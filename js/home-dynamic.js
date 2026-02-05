@@ -565,7 +565,10 @@ function resolveGameUrl(game) {
     if (slug) return `games/${slug}/`;
 
     const id = String(game?.id || "").trim();
-    if (id) return `games/game.html?id=${encodeURIComponent(id)}`;
+    if (id) {
+        const fallbackSlug = id.toLowerCase().replace(/_+/g, "-").replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-").replace(/^-|-$/g, "");
+        if (fallbackSlug) return `games/${fallbackSlug}/`;
+    }
 
     return "#";
 }
