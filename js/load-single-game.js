@@ -122,7 +122,7 @@ function normalizeMobileScrollContainer(element, options = {}) {
         element.style.overflowX = "auto";
         element.style.overflowY = "hidden";
         element.style.overscrollBehavior = "auto";
-        element.style.touchAction = "pan-x";
+        element.style.touchAction = "pan-x pan-y";
     } else {
         element.style.overflow = "visible";
         element.style.overflowX = "visible";
