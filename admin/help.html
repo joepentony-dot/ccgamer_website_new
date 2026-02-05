@@ -28,26 +28,32 @@
     </header>
 
     <section class="omega-help-panel">
-      <h2>What changed</h2>
+      <h2>Omega Control Centre workflow</h2>
+      <ol>
+        <li>Start local server: <code>python -m http.server 8000</code>.</li>
+        <li>Open <code>/admin/dashboard.html</code> and confirm status panel.</li>
+        <li>Open Games Editor, edit/add drafts, then run Validate Library.</li>
+        <li>Use Integrated Export Panel: download <code>games.json</code>, SEO stubs, and package if required.</li>
+        <li>Replace repository files manually (<code>/games/games.json</code>, generated pages/sitemap as needed).</li>
+        <li>Open <code>/admin/publish.html</code> and complete all 7 publish checklist steps.</li>
+        <li>Commit, push, and verify production pages.</li>
+      </ol>
+
+      <h2>Safety rules</h2>
       <ul>
-        <li>Unified Omega navigation is available on all core admin pages.</li>
-        <li>Games Editor now supports <strong>Add New Game</strong> draft creation and export download flow.</li>
-        <li>Publishing remains static-host safe: no server writes, manual commit required.</li>
+        <li>No auto-write to repository files from browser tools.</li>
+        <li>All exports are client-side downloads.</li>
+        <li>Use diff viewer before export for regression safety.</li>
+        <li>Mark publish steps complete to keep workflow traceable.</li>
       </ul>
 
-      <h2>How to use</h2>
-      <ol>
-        <li>Run <code>python -m http.server 8000</code>.</li>
-        <li>Open <code>/admin/dashboard.html</code>.</li>
-        <li>Go to Games Editor, fetch library, edit or add drafts.</li>
-        <li>Download <code>games.json</code>, replace repository file manually.</li>
-        <li>Use publish pipeline checklist and run local scripts if needed.</li>
-      </ol>
+      <h2>Legacy pages</h2>
+      <p>Legacy admin pages are still available for reference but are deprecated. Use Dashboard, Editor, Publish, and Help as the primary CMS flow.</p>
     </section>
   </main>
   <script type="module">
     import { initAdminNav } from '/admin/js/admin-nav.js';
-    initAdminNav({ pageLabel: 'Help / Instructions', active: 'help' });
+    initAdminNav({ pageLabel: 'Help', active: 'help' });
   </script>
 </body>
 </html>

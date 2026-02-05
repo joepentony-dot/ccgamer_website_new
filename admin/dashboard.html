@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CCG Omega Admin Dashboard</title>
+  <title>Omega Control Centre Dashboard</title>
   <meta name="robots" content="noindex,nofollow" />
   <link rel="icon" href="../favicon.ico" />
   <link href="../resources/css/ccg-master.css" rel="stylesheet" />
@@ -22,13 +22,19 @@
   <main class="admin-dashboard-wrap" data-admin-shell>
     <header class="admin-dashboard-header">
       <div>
-        <p class="admin-auth-kicker">Omega Control Deck</p>
-        <h1>Admin Dashboard</h1>
+        <p class="admin-auth-kicker">Omega Control Centre</p>
+        <h1>Dashboard</h1>
       </div>
-      <button class="ccg-btn ccg-btn--ghost" data-logout-button type="button">Log out</button>
     </header>
 
-    <section class="admin-card-grid" aria-label="Session overview">
+    <section class="admin-tool-nav" aria-label="Admin command hub">
+      <a class="ccg-btn ccg-btn--primary" href="/admin/games-editor.html">Start Editing</a>
+      <a class="ccg-btn ccg-btn--ghost" href="/admin/games-editor.html#export-panel">Generate &amp; Export</a>
+      <a class="ccg-btn ccg-btn--ghost" href="/admin/publish.html">Publish Site</a>
+      <a class="ccg-btn ccg-btn--ghost" href="/admin/help.html">Help &amp; Workflow</a>
+    </section>
+
+    <section class="admin-card-grid" aria-label="System status and session details">
       <article class="admin-info-card">
         <h2>User Email</h2>
         <p data-admin-email>Loading…</p>
@@ -43,29 +49,23 @@
       </article>
       <article class="admin-info-card omega-status-panel">
         <h2>System Status</h2>
-        <p><strong>Data source path:</strong> <code>/games/games.json</code></p>
+        <p><strong>games.json path:</strong> <code>/games/games.json</code></p>
         <p data-admin-load-status>Last load success: pending…</p>
-        <p><strong>Local mode:</strong> use <code>localhost</code> for edits, then commit exported files manually.</p>
+        <p data-admin-export-status>Last export: not yet recorded.</p>
+        <p data-admin-env-status><strong>Environment:</strong> checking…</p>
       </article>
     </section>
 
-    <section class="admin-tool-nav" aria-label="Admin entry points">
-      <a class="ccg-btn ccg-btn--primary" href="/admin/games-editor.html">Games Editor</a>
-      <a class="ccg-btn ccg-btn--ghost" href="/admin/games-editor.html#exports-stubs">Exports &amp; Stubs</a>
-      <a class="ccg-btn ccg-btn--ghost" href="/admin/games-editor.html#publish-pipeline">Publish Pipeline</a>
-      <a class="ccg-btn ccg-btn--ghost" href="/admin/help.html">Help / Instructions</a>
-    </section>
-
     <section class="omega-quickstart">
-      <h2>Quick Start</h2>
+      <h2>Quick Start Checklist</h2>
       <ol>
-        <li><code>python -m http.server 8000</code></li>
-        <li>Open <code>http://localhost:8000/admin/dashboard.html</code></li>
-        <li>Edit games in Games Editor</li>
-        <li>Download <code>games.json</code></li>
-        <li>Replace <code>/games/games.json</code></li>
-        <li>Run node scripts (if required for stubs/publish)</li>
-        <li><code>git add</code> / commit / push</li>
+        <li>Run local server</li>
+        <li>Open admin dashboard</li>
+        <li>Edit games</li>
+        <li>Export downloads</li>
+        <li>Commit</li>
+        <li>Push</li>
+        <li>Verify live</li>
       </ol>
     </section>
   </main>
