@@ -2131,8 +2131,10 @@ body[data-ccg-mode="amiga"] {
     padding: 10px 46px;
     scroll-behavior: smooth;
     scrollbar-width: thin;
-    overscroll-behavior: none;
-    touch-action: pan-x;
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: none;
+    touch-action: pan-x pan-y;
+    -webkit-overflow-scrolling: touch;
     max-width: 100%;
     box-sizing: border-box;
 }
@@ -2192,15 +2194,15 @@ body[data-ccg-mode="amiga"] {
     display: grid;
     place-items: center;
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+    top: calc(50% - 22px);
+    transform: none !important;
     z-index: 4;
     cursor: pointer;
     pointer-events: auto;
     touch-action: manipulation;
     user-select: none;
     -webkit-user-drag: none;
-    transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+    transition: box-shadow 140ms ease, opacity 140ms ease, filter 140ms ease;
 }
 
 .related-carousel__nav--prev { left: 10px; }
@@ -2209,14 +2211,20 @@ body[data-ccg-mode="amiga"] {
 
 .related-carousel__nav:hover,
 .related-carousel__nav:focus-visible {
-    border-color: rgba(var(--accent-rgb), 0.75);
+    border-color: rgba(var(--accent-rgb), 0.8);
     box-shadow: 0 16px 32px rgba(0,0,0,0.6), 0 0 14px rgba(var(--accent-rgb),0.4);
-    transform: translateY(-50%);
+    filter: brightness(1.06);
+    opacity: 1;
+    transform: none !important;
     outline: none;
 }
 
 .related-carousel__nav:active {
-    transform: translateY(-50%);
+    transform: none !important;
+    border-color: rgba(var(--accent-rgb), 0.9);
+    box-shadow: 0 14px 30px rgba(0,0,0,0.58), 0 0 16px rgba(var(--accent-rgb), 0.44);
+    filter: brightness(1.08);
+    opacity: 0.96;
 }
 
 .related-grid {
@@ -2483,9 +2491,11 @@ body[data-ccg-mode="amiga"] {
         overflow-x: auto;
         overflow-y: hidden;
         max-height: none;
-        overscroll-behavior: auto;
-        touch-action: pan-x;
-        scroll-behavior: auto;
+        overscroll-behavior-x: contain;
+        overscroll-behavior-y: none;
+        touch-action: pan-x pan-y;
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
     }
 
     .ccg-page--single-game .related-carousel__track {

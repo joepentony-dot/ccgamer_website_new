@@ -122,7 +122,7 @@ function normalizeMobileScrollContainer(element, options = {}) {
         element.style.overflowX = "auto";
         element.style.overflowY = "hidden";
         element.style.overscrollBehavior = "auto";
-        element.style.touchAction = "pan-x";
+        element.style.touchAction = "pan-x pan-y";
     } else {
         element.style.overflow = "visible";
         element.style.overflowX = "visible";
@@ -2298,15 +2298,12 @@ function initRelatedCarousel() {
 
     scrollEl.style.overflowX = "auto";
     scrollEl.style.overflowY = "hidden";
-
-    const getCardWidth = () => {
-        const card = scrollEl.querySelector(".related-card") || track.querySelector(".related-card");
-        if (!card) return 0;
-        return card.getBoundingClientRect().width || 0;
-    };
+    scrollEl.style.scrollBehavior = "smooth";
+    scrollEl.style.touchAction = "pan-x pan-y";
+    scrollEl.style.webkitOverflowScrolling = "touch";
 
     const updateButtons = () => {
-        const maxScroll = scrollEl.scrollWidth - scrollEl.clientWidth;
+        const maxScroll = Math.max(0, scrollEl.scrollWidth - scrollEl.clientWidth);
         const atStart = scrollEl.scrollLeft <= 1;
         const atEnd = scrollEl.scrollLeft >= maxScroll - 1;
 
@@ -2316,108 +2313,67 @@ function initRelatedCarousel() {
         nextBtn.setAttribute("aria-disabled", String(atEnd));
     };
 
-        const handleScroll = (direction) => {
-            const step = scrollEl.clientWidth * 0.8;
-            if (!step) return;
-            scrollEl.scrollBy({ left: direction * step, behavior: "smooth" });
-        };
+    const handleScroll = (direction) => {
+        const step = Math.max(scrollEl.clientWidth * 0.8, 220);
+        scrollEl.scrollBy({ left: direction * step, behavior: "smooth" });
+    };
 
-        const isolateArrowEvent = (event) => {
+    const bindArrow = (button, direction) => {
+        button.addEventListener("click", (event) => {
+            event.preventDefault();
             event.stopPropagation();
-        };
-
-        let arrowTouchActive = false;
-        let arrowTouchResetTimer = null;
-
-        const bindArrow = (button, direction) => {
-            let touchActivated = false;
-
-            button.addEventListener("click", () => {
-                if (touchActivated) {
-                    touchActivated = false;
-                    arrowTouchActive = false;
-                    return;
-                }
-                handleScroll(direction);
-            });
-
-            button.addEventListener(
-                "touchstart",
-                (event) => {
-                    touchActivated = true;
-                    arrowTouchActive = true;
-                    if (arrowTouchResetTimer) window.clearTimeout(arrowTouchResetTimer);
-                    arrowTouchResetTimer = window.setTimeout(() => {
-                        arrowTouchActive = false;
-                    }, 250);
-                    isolateArrowEvent(event);
-                    handleScroll(direction);
-                },
-                { passive: true }
-            );
-
-            button.addEventListener("dragstart", isolateArrowEvent);
-        };
-
-        bindArrow(prevBtn, -1);
-        bindArrow(nextBtn, 1);
-        scrollEl.addEventListener("scroll", updateButtons, { passive: true });
-        window.addEventListener("resize", updateButtons);
-        window.addEventListener("load", updateButtons);
-
-        const refreshButtons = () => {
-            requestAnimationFrame(updateButtons);
-        };
-
-        track.querySelectorAll("img").forEach(img => {
-            if (img.complete) return;
-            img.addEventListener("load", refreshButtons, { once: true });
-            img.addEventListener("error", refreshButtons, { once: true });
+            handleScroll(direction);
         });
 
-        carousel.addEventListener(
-            "click",
-            (event) => {
-                if (event.target.closest(".related-carousel__nav") && arrowTouchActive) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-            },
-            true
-        );
-
-        let hasTouchMoved = false;
-        let touchResetTimer = null;
-
-        scrollEl.addEventListener("touchstart", () => {
-            hasTouchMoved = false;
+        button.addEventListener("touchstart", (event) => {
+            event.stopPropagation();
         }, { passive: true });
 
-        scrollEl.addEventListener("touchmove", () => {
-            hasTouchMoved = true;
-        }, { passive: true });
+        button.addEventListener("dragstart", (event) => {
+            event.preventDefault();
+        });
+    };
 
-        scrollEl.addEventListener("touchend", () => {
-            if (touchResetTimer) window.clearTimeout(touchResetTimer);
-            touchResetTimer = window.setTimeout(() => {
-                hasTouchMoved = false;
-            }, 60);
-        }, { passive: true });
+    bindArrow(prevBtn, -1);
+    bindArrow(nextBtn, 1);
 
-        scrollEl.addEventListener(
-            "click",
-            (event) => {
-                if (hasTouchMoved) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-            },
-            true
-        );
+    const handleWheel = (event) => {
+        if (event.defaultPrevented || event.ctrlKey || event.metaKey) return;
 
-        updateButtons();
+        const maxScroll = Math.max(0, scrollEl.scrollWidth - scrollEl.clientWidth);
+        if (maxScroll <= 1) return;
 
+        const absDeltaX = Math.abs(event.deltaX);
+        const absDeltaY = Math.abs(event.deltaY);
+        if (absDeltaY <= absDeltaX || absDeltaY < 4) return;
+
+        const direction = event.deltaY > 0 ? 1 : -1;
+        const canScrollForward = direction > 0 && scrollEl.scrollLeft < maxScroll - 1;
+        const canScrollBackward = direction < 0 && scrollEl.scrollLeft > 1;
+        if (!canScrollForward && !canScrollBackward) return;
+
+        event.preventDefault();
+        scrollEl.scrollBy({ left: event.deltaY, behavior: "auto" });
+    };
+
+    scrollEl.addEventListener("wheel", handleWheel, { passive: false });
+    scrollEl.addEventListener("scroll", updateButtons, { passive: true });
+    window.addEventListener("resize", updateButtons);
+    window.addEventListener("load", updateButtons);
+
+    const refreshButtons = () => {
+        requestAnimationFrame(updateButtons);
+    };
+
+    track.querySelectorAll("img").forEach(img => {
+        if (img.complete) return;
+        img.addEventListener("load", refreshButtons, { once: true });
+        img.addEventListener("error", refreshButtons, { once: true });
+    });
+
+    updateButtons();
 }
+
 
 
 /* ============================================================
