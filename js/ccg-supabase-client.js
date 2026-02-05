@@ -3,6 +3,7 @@
   const GLOBAL_KEY = '__ccgSupabaseState';
   const COMMUNITY_READINESS_KEY = '__ccgCommunityReadinessState';
   const DEV_WARN_KEY = '__ccgCommunityDevWarned';
+  const AUTH_READY_KEY = '__ccgAuthReadyState';
 
   const globalState = window[GLOBAL_KEY] || (window[GLOBAL_KEY] = {
     loadPromise: null,
@@ -16,6 +17,14 @@
     available: true,
     checkPromise: null,
     reason: ''
+  });
+
+
+  const authReadyState = window[AUTH_READY_KEY] || (window[AUTH_READY_KEY] = {
+    ready: false,
+    promise: null,
+    session: null,
+    listenerAttached: false
   });
 
   function getExistingLibraryScript() {
@@ -83,7 +92,8 @@
         auth: {
           persistSession: true,
           autoRefreshToken: true,
-          detectSessionInUrl: true
+          detectSessionInUrl: true,
+          storage: window.localStorage
         }
       });
 
@@ -101,6 +111,49 @@
 
     return globalState.clientPromise;
   }
+
+  function ensureAuthListener(client) {
+    if (authReadyState.listenerAttached || !client || !client.auth || typeof client.auth.onAuthStateChange !== 'function') return;
+    authReadyState.listenerAttached = true;
+    client.auth.onAuthStateChange(function (_event, session) {
+      authReadyState.session = session || null;
+    });
+  }
+
+  async function waitForAuth() {
+    const client = await getClient();
+    ensureAuthListener(client);
+
+    if (authReadyState.ready) {
+      return authReadyState.session;
+    }
+
+    if (authReadyState.promise) return authReadyState.promise;
+
+    authReadyState.promise = (async function () {
+      try {
+        const result = await client.auth.getSession();
+        authReadyState.session = result && result.data ? result.data.session || null : null;
+      } catch (_error) {
+        authReadyState.session = null;
+      }
+
+      authReadyState.ready = true;
+      window.dispatchEvent(new CustomEvent('ccg:auth-ready', {
+        detail: {
+          session: authReadyState.session,
+          user: authReadyState.session && authReadyState.session.user ? authReadyState.session.user : null
+        }
+      }));
+
+      return authReadyState.session;
+    })().finally(function () {
+      authReadyState.promise = null;
+    });
+
+    return authReadyState.promise;
+  }
+
 
   function isCommunityUnavailableError(error) {
     const code = String(error && error.code || '');
@@ -213,6 +266,7 @@
   window.ccgSupabase = window.ccgSupabase || {};
   window.ccgSupabase.getClient = getClient;
   window.ccgSupabase.checkCommunityReadiness = checkCommunityReadiness;
+  window.ccgSupabase.waitForAuth = waitForAuth;
   window.ccgSupabase.callRpcSafe = callRpcSafe;
   window.ccgSupabase.isCommunityUnavailableError = isCommunityUnavailableError;
 })();

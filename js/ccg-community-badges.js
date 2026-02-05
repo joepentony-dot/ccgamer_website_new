@@ -28,6 +28,7 @@
     const readiness = await window.ccgSupabase.checkCommunityReadiness();
     if (!readiness.ready || !userId) return [];
 
+    await window.ccgSupabase.waitForAuth();
     const supabase = await window.ccgSupabase.getClient();
     const { data, error } = await supabase
       .from('user_badges')
@@ -61,6 +62,7 @@
 
   async function awardEligibleBadge(userId) {
     if (!userId) return;
+    await window.ccgSupabase.waitForAuth();
     const supabase = await window.ccgSupabase.getClient();
     await supabase.rpc('award_badge_if_eligible', { target_user_id: userId });
   }

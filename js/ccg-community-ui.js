@@ -26,7 +26,8 @@
     });
   }
 
-  function renderAuthButton() {
+  async function renderAuthButton() {
+    await window.ccgSupabase.waitForAuth();
     const actions = document.querySelector('.ccg-header-actions');
     if (!actions) return;
 
@@ -55,6 +56,7 @@
   function init() {
     injectNavLinks();
     renderAuthButton();
+    window.addEventListener('ccg:auth-ready', renderAuthButton);
     window.addEventListener('ccg:auth-changed', renderAuthButton);
   }
 

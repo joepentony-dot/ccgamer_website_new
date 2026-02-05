@@ -242,6 +242,7 @@
     const supabase = await safeGetClient();
     if (!supabase) return;
 
+    await window.ccgSupabase.waitForAuth();
     await refreshCurrentUser();
 
     supabase.auth.onAuthStateChange(async function () {

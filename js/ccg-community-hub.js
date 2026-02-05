@@ -374,6 +374,7 @@
     }
 
     try {
+      await window.ccgSupabase.waitForAuth();
       const supabase = await window.ccgSupabase.getClient();
       const data = await fetchHubData(supabase);
 
@@ -402,6 +403,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     wireActions();
     renderHub();
+    window.addEventListener('ccg:auth-ready', renderHub);
     window.addEventListener('ccg:auth-changed', renderHub);
     window.addEventListener('ccg:rating-updated', renderHub);
   });

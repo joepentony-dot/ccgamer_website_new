@@ -5,6 +5,7 @@
   }
 
   async function loadViewerContext() {
+    await window.ccgSupabase.waitForAuth();
     const authUser = window.ccgCommunityAuth.getUser();
     const profile = window.ccgCommunityAuth.getProfile();
     return { authUser: authUser, authProfile: profile };
@@ -38,6 +39,7 @@
       return;
     }
 
+    await window.ccgSupabase.waitForAuth();
     const supabase = await window.ccgSupabase.getClient();
     const queryUser = getQueryParam('u');
     const context = await loadViewerContext();
@@ -153,4 +155,5 @@
   }
 
   document.addEventListener('DOMContentLoaded', loadProfilePage);
+  window.addEventListener('ccg:auth-ready', loadProfilePage);
 })();

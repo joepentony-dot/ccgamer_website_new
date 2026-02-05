@@ -60,6 +60,7 @@
       return;
     }
 
+    await window.ccgSupabase.waitForAuth();
     const supabase = await window.ccgSupabase.getClient();
     const user = window.ccgCommunityAuth.getUser();
     const canModerate = window.ccgCommunityAuth.isAdminOrMod();
