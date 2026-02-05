@@ -1,67 +1,126 @@
-import { supabase } from './auth.js';
+import { APP_PATHS } from './config.js';
 
-const DEFAULT_ENDPOINT = '/functions/v1/games-json-proxy';
-const CSRF_KEY = 'ccg-admin-csrf';
+const LOCAL_BACKUPS_KEY = 'ccg-admin-games-backups';
+const MAX_BACKUPS = 20;
 
-function getCsrfToken() {
-  let token = sessionStorage.getItem(CSRF_KEY);
-  if (!token) {
-    token = `${Date.now()}-${crypto.randomUUID()}`;
-    sessionStorage.setItem(CSRF_KEY, token);
-  }
-  return token;
+function downloadJson(filename, payload) {
+  const json = `${JSON.stringify(payload, null, 2)}\n`;
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.append(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
 }
 
-async function request(path, options = {}) {
-  const {
-    data: { session }
-  } = await supabase.auth.getSession();
-
-  if (!session?.access_token) {
-    throw new Error('No authenticated session token available.');
-  }
-
-  const endpoint = window.CCG_GAMES_EDITOR_ENDPOINT || DEFAULT_ENDPOINT;
-  const response = await fetch(`${endpoint}${path}`, {
-    method: options.method || 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${session.access_token}`,
-      'X-CSRF-Token': getCsrfToken(),
-      ...options.headers
-    },
-    body: options.body ? JSON.stringify(options.body) : undefined
-  });
-
-  const payload = await response.json().catch(() => ({}));
+async function fetchJson(path, label) {
+  // Path correction: canonical static path works on localhost and GitHub Pages.
+  const response = await fetch(path, { cache: 'no-store' });
   if (!response.ok) {
-    throw new Error(payload.error || `Request failed with status ${response.status}`);
+    throw new Error(`${label} failed to load (${response.status}).`);
   }
-  return payload;
+
+  try {
+    return await response.json();
+  } catch {
+    throw new Error(`${label} returned invalid JSON.`);
+  }
+}
+
+function readBackups() {
+  try {
+    const raw = localStorage.getItem(LOCAL_BACKUPS_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeBackups(backups) {
+  try {
+    localStorage.setItem(LOCAL_BACKUPS_KEY, JSON.stringify(backups.slice(0, MAX_BACKUPS)));
+  } catch {
+    // Keep the editor usable even when localStorage is unavailable.
+  }
+}
+
+function buildFileIndex(games) {
+  const fileRefs = new Set();
+
+  for (const game of games) {
+    const candidates = [
+      game.thumbnail,
+      game.pdf,
+      game.box_3d,
+      ...(Array.isArray(game.disk) ? game.disk : []),
+      ...(Array.isArray(game.lemon) ? game.lemon : [])
+    ];
+
+    for (const value of candidates) {
+      if (!value || typeof value !== 'string') continue;
+      const trimmed = value.trim();
+      if (!trimmed || /^https?:\/\//i.test(trimmed)) continue;
+      fileRefs.add(trimmed.replace(/^\/+/, ''));
+    }
+  }
+
+  return [...fileRefs].sort();
 }
 
 export async function fetchGamesJson() {
-  return request('/read');
+  const games = await fetchJson(APP_PATHS.gamesJson, 'games.json');
+  if (!Array.isArray(games)) {
+    throw new Error('games.json is expected to be a top-level array.');
+  }
+  return { games };
 }
 
 export async function fetchFileIndex() {
-  return request('/file-index');
+  const { games } = await fetchGamesJson();
+  return { files: buildFileIndex(games) };
 }
 
 export async function fetchBackups() {
-  return request('/backups');
+  return { backups: readBackups() };
 }
 
 export async function restoreBackup(backupId) {
-  return request('/restore', {
-    method: 'POST',
-    body: { backupId }
-  });
+  const backups = readBackups();
+  const backup = backups.find((entry) => entry.id === backupId);
+  if (!backup) {
+    throw new Error('Backup not found in local browser storage.');
+  }
+
+  downloadJson('games.json', backup.games);
+  return { restored: true, backupId };
 }
 
 export async function saveGamesJson({ games, message, role }) {
-  return request('/save', {
-    method: 'POST',
-    body: { games, message, role }
-  });
+  if (!Array.isArray(games)) {
+    throw new Error('Cannot save: games payload must be an array.');
+  }
+
+  const backupEntry = {
+    id: crypto.randomUUID(),
+    created_at: new Date().toISOString(),
+    commit_message: message || `Local export by ${role || 'admin'}`,
+    role: role || 'unknown',
+    games
+  };
+
+  const existing = readBackups();
+  writeBackups([backupEntry, ...existing]);
+
+  // Path correction: export to client download instead of server write for static hosting.
+  downloadJson('games.json', games);
+
+  return {
+    saved: true,
+    mode: 'client-download',
+    backup: backupEntry
+  };
 }

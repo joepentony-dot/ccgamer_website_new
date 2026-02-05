@@ -19,3 +19,10 @@ export const AUTH_CONFIG = Object.freeze({
   refreshMarginMs: 60_000,
   sessionCheckIntervalMs: 30_000
 });
+
+// Canonical static paths for GitHub Pages + local static hosting.
+export const APP_PATHS = Object.freeze({
+  gamesJson: '/games/games.json',
+  resourcesRoot: '/resources/',
+  adminRoot: '/admin/'
+});

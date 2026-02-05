@@ -1,61 +1,142 @@
-import { supabase } from './auth.js';
+import { APP_PATHS } from './config.js';
 
-const DEFAULT_ENDPOINT = '/functions/v1/asset-manager-proxy';
-const CSRF_KEY = 'ccg-asset-manager-csrf';
+const ASSET_SNAPSHOT_KEY = 'ccg-admin-asset-snapshots';
+const MAX_SNAPSHOTS = 20;
 
-function getCsrfToken() {
-  let token = sessionStorage.getItem(CSRF_KEY);
-  if (!token) {
-    token = `${Date.now()}-${crypto.randomUUID()}`;
-    sessionStorage.setItem(CSRF_KEY, token);
+function decodeBase64(contentBase64) {
+  const binary = atob(contentBase64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) {
+    bytes[i] = binary.charCodeAt(i);
   }
-  return token;
+  return bytes;
 }
 
-async function request(path, options = {}) {
-  const {
-    data: { session }
-  } = await supabase.auth.getSession();
+function triggerDownload(filename, blob) {
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.append(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+}
 
-  if (!session?.access_token) {
-    throw new Error('No authenticated session token available.');
-  }
-
-  const endpoint = window.CCG_ASSET_MANAGER_ENDPOINT || DEFAULT_ENDPOINT;
-  const response = await fetch(`${endpoint}${path}`, {
-    method: options.method || 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${session.access_token}`,
-      'X-CSRF-Token': getCsrfToken(),
-      ...options.headers
-    },
-    body: options.body ? JSON.stringify(options.body) : undefined
-  });
-
-  const payload = await response.json().catch(() => ({}));
+async function loadGames() {
+  // Path correction: canonical static path works on localhost and GitHub Pages.
+  const response = await fetch(APP_PATHS.gamesJson, { cache: 'no-store' });
   if (!response.ok) {
-    throw new Error(payload.error || `Request failed with status ${response.status}`);
+    throw new Error(`Unable to read games index (${response.status}).`);
   }
 
+  const payload = await response.json().catch(() => null);
+  if (!Array.isArray(payload)) {
+    throw new Error('Invalid games index payload.');
+  }
   return payload;
 }
 
-export function scanAssets() {
-  return request('/scan');
+function collectReferencedAssets(games) {
+  const refs = new Set();
+
+  for (const game of games) {
+    const paths = [game.thumbnail, game.box_3d, ...(game.disk || [])];
+    for (const value of paths) {
+      if (!value || typeof value !== 'string') continue;
+      if (/^https?:\/\//i.test(value)) continue;
+      refs.add(value.replace(/^\/+/, ''));
+    }
+  }
+
+  return [...refs].sort().map((path) => ({ path, size: 0 }));
 }
 
-export function getHealthReport() {
-  return request('/health');
+function writeSnapshots(snapshots) {
+  try {
+    localStorage.setItem(ASSET_SNAPSHOT_KEY, JSON.stringify(snapshots.slice(0, MAX_SNAPSHOTS)));
+  } catch {
+    // Best-effort only.
+  }
 }
 
-export function createSnapshot() {
-  return request('/snapshot', { method: 'POST' });
+function readSnapshots() {
+  try {
+    const raw = localStorage.getItem(ASSET_SNAPSHOT_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
 }
 
-export function uploadAssets(payload) {
-  return request('/upload', {
-    method: 'POST',
-    body: payload
-  });
+export async function scanAssets() {
+  const games = await loadGames();
+  const assets = collectReferencedAssets(games);
+  return {
+    assets,
+    mode: 'static-index',
+    source: APP_PATHS.gamesJson
+  };
+}
+
+export async function getHealthReport() {
+  const { assets } = await scanAssets();
+  const byPath = new Map();
+
+  for (const asset of assets) {
+    const count = byPath.get(asset.path) || 0;
+    byPath.set(asset.path, count + 1);
+  }
+
+  const duplicateRefs = [...byPath.entries()]
+    .filter(([, count]) => count > 1)
+    .map(([path, count]) => ({ path, count }));
+
+  return {
+    scannedAssets: assets.length,
+    duplicateRefs,
+    warnings: ['Static hosting mode: filesystem-level checks are unavailable in-browser.']
+  };
+}
+
+export async function createSnapshot() {
+  const snapshot = {
+    id: crypto.randomUUID(),
+    created_at: new Date().toISOString(),
+    data: await scanAssets()
+  };
+
+  writeSnapshots([snapshot, ...readSnapshots()]);
+  return {
+    ok: true,
+    snapshot,
+    storedSnapshots: readSnapshots().length
+  };
+}
+
+export async function uploadAssets(payload) {
+  const destination = String(payload?.destination || '').replace(/^\/+|\/+$/g, '');
+  const files = Array.isArray(payload?.files) ? payload.files : [];
+
+  if (!destination) {
+    throw new Error('Upload destination is required.');
+  }
+
+  for (const file of files) {
+    if (!file?.name || !file?.contentBase64) {
+      throw new Error('Each file requires name and contentBase64.');
+    }
+
+    // Path correction: static-host-safe export to client download rather than server write.
+    const bytes = decodeBase64(file.contentBase64);
+    const blob = new Blob([bytes], { type: file.mime || 'application/octet-stream' });
+    triggerDownload(`${destination}/${file.name}`, blob);
+  }
+
+  return {
+    ok: true,
+    mode: 'client-download',
+    exportedFiles: files.length
+  };
 }
