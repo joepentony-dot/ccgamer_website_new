@@ -27,9 +27,11 @@
   }
 
   async function renderAuthButton() {
-    await window.ccgSupabase.waitForAuth();
     const actions = document.querySelector('.ccg-header-actions');
     if (!actions) return;
+
+    const context = await window.ccgSupabase.getCurrentUserContext();
+    const profile = window.ccgCommunityAuth.getProfile();
 
     let btn = actions.querySelector('[data-ccg-community-auth-btn]');
     if (!btn) {
@@ -38,8 +40,7 @@
       btn.className = 'ccg-community-auth-btn';
       btn.setAttribute('data-ccg-community-auth-btn', '1');
       btn.addEventListener('click', function () {
-        const user = window.ccgCommunityAuth.getUser();
-        if (user) {
+        if (window.ccgCommunityAuth.getUser()) {
           window.location.href = '/community/profile.html';
         } else {
           window.ccgCommunityAuth.openAuthModal('signin');
@@ -48,9 +49,9 @@
       actions.appendChild(btn);
     }
 
-    const user = window.ccgCommunityAuth.getUser();
-    const profile = window.ccgCommunityAuth.getProfile();
-    btn.textContent = user ? ('@' + (profile && profile.username ? profile.username : 'My Profile')) : 'Join / Log in';
+    btn.textContent = context.isAuthenticated
+      ? ('@' + (profile && profile.username ? profile.username : 'My Profile'))
+      : 'Join / Log in';
   }
 
   function init() {

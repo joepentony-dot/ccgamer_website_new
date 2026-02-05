@@ -60,10 +60,10 @@
       return;
     }
 
-    await window.ccgSupabase.waitForAuth();
+    const context = await window.ccgSupabase.getCurrentUserContext();
     const supabase = await window.ccgSupabase.getClient();
-    const user = window.ccgCommunityAuth.getUser();
-    const canModerate = window.ccgCommunityAuth.isAdminOrMod();
+    const user = context.user;
+    const canModerate = context.permissions.canModerate;
 
     const { data, error } = await supabase
       .from('game_comments')

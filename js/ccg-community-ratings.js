@@ -83,8 +83,8 @@
       return;
     }
 
-    await window.ccgSupabase.waitForAuth();
-    const user = window.ccgCommunityAuth.getUser();
+    const context = await window.ccgSupabase.getCurrentUserContext();
+    const user = context.user;
     const supabase = await window.ccgSupabase.getClient();
     const summary = await fetchRatingSummary(supabase, slug);
 

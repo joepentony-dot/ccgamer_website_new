@@ -366,6 +366,21 @@
     return output;
   }
 
+  async function syncHubAuthCtas() {
+    const loginBtn = document.getElementById('ccg-hub-login-btn');
+    const profileBtn = document.querySelector('a[href="/community/profile.html"]');
+    if (!loginBtn) return;
+
+    const context = await window.ccgSupabase.getCurrentUserContext();
+    if (context.isAuthenticated) {
+      loginBtn.hidden = true;
+      if (profileBtn) profileBtn.hidden = false;
+    } else {
+      loginBtn.hidden = false;
+      if (profileBtn) profileBtn.hidden = true;
+    }
+  }
+
   async function renderHub() {
     const readiness = await window.ccgSupabase.checkCommunityReadiness();
     if (!readiness.ready) {
@@ -374,7 +389,7 @@
     }
 
     try {
-      await window.ccgSupabase.waitForAuth();
+      await syncHubAuthCtas();
       const supabase = await window.ccgSupabase.getClient();
       const data = await fetchHubData(supabase);
 
@@ -383,6 +398,7 @@
       setSectionState('ccg-hub-discussed', renderGameTiles(data.discussed, 'No active discussions in the last 30 days.'));
       setSectionState('ccg-hub-latest-activity', renderActivityRows(data.activity));
       setSectionState('ccg-hub-top-members', renderMembers(data.members));
+      await syncHubAuthCtas();
     } catch (_error) {
       if (!state.unavailableMessageShown) {
         state.unavailableMessageShown = true;
@@ -403,6 +419,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     wireActions();
     renderHub();
+    syncHubAuthCtas();
     window.addEventListener('ccg:auth-ready', renderHub);
     window.addEventListener('ccg:auth-changed', renderHub);
     window.addEventListener('ccg:rating-updated', renderHub);
