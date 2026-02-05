@@ -86,7 +86,7 @@
     }
   })();
 
-  const primaryCta = document.querySelector('.game-downloads a[href*="/games/game.html?id="]');
+  const primaryCta = document.querySelector('.game-downloads a[href*="/games/game.html?id="], .game-downloads a[href^="/games/"]');
   if (!primaryCta) {
     return;
   }
@@ -201,7 +201,10 @@
         return;
       }
 
-      primaryCta.setAttribute("href", `/games/game.html?id=${selectedGame.id}`);
+      const selectedSlug = String(selectedGame.slug || "").trim();
+      if (selectedSlug) {
+        primaryCta.setAttribute("href", `/games/${selectedSlug}/`);
+      }
     })
     .catch(() => {
       /* No-op: keep existing link if games.json cannot be loaded. */
