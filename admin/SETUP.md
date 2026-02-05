@@ -93,3 +93,31 @@ Edit [`/admin/js/config.js`](./js/config.js):
 - This system adds separate admin-only pages, so public Lighthouse scores are unaffected.
 - Admin pages include minimal JS modules and no heavy runtime dependencies beyond Supabase client.
 - CSS is loaded as static assets and should remain performant on modern devices.
+
+## 11) Asset manager setup
+
+### Deploy edge function
+Deploy `/admin/edge-functions/asset-manager-proxy/index.ts` with environment variables:
+
+- `GH_REPO_OWNER`
+- `GH_REPO_NAME`
+- `GH_REPO_BRANCH`
+- `GH_TOKEN`
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `VIRUS_SCAN_WEBHOOK` (optional)
+
+### Optional DB table for snapshots
+```sql
+CREATE TABLE IF NOT EXISTS public.asset_snapshots (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  created_by UUID NOT NULL,
+  payload JSONB NOT NULL
+);
+```
+
+### Validate asset manager
+1. Open `/admin/asset-manager.html` as editor and verify upload-only posture.
+2. Open as admin and run scan + health + snapshot.
+3. Verify uploads create commits and preserve original + optimized files.

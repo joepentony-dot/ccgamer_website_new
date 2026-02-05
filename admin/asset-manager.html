@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCG Admin Asset Manager</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="icon" href="../favicon.ico" />
+  <link href="../resources/css/ccg-master.css" rel="stylesheet" />
+  <link href="../resources/css/ccg-mode.css" rel="stylesheet" />
+  <link href="../resources/css/ccg-effects.css" rel="stylesheet" />
+  <link href="./css/admin-auth.css" rel="stylesheet" />
+  <link href="./css/asset-manager.css" rel="stylesheet" />
+</head>
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
+  <div aria-hidden="true" class="ccg-bg">
+    <div aria-hidden="true" class="ccg-bg-starfield"></div>
+    <div aria-hidden="true" class="ccg-bg-grid"></div>
+    <div aria-hidden="true" class="ccg-bg-crt-overlay"></div>
+  </div>
+
+  <main class="asset-manager-wrap">
+    <header class="asset-header admin-dashboard-header">
+      <div>
+        <p class="admin-auth-kicker">Omega Asset Deck</p>
+        <h1>Secure Asset &amp; 3D Box Art Manager</h1>
+        <p class="asset-subtitle">Indexed asset controls for boxes, thumbnails, screenshots, banners, and collections.</p>
+      </div>
+      <div class="asset-header-actions">
+        <a class="ccg-btn ccg-btn--ghost" href="/admin/dashboard.html">Dashboard</a>
+        <button class="ccg-btn ccg-btn--ghost" data-logout-button type="button">Log out</button>
+      </div>
+    </header>
+
+    <section class="admin-card-grid" aria-label="Session and security state">
+      <article class="admin-info-card">
+        <h2>User</h2>
+        <p data-admin-email>Loading…</p>
+      </article>
+      <article class="admin-info-card">
+        <h2>Role</h2>
+        <p data-admin-role>Loading…</p>
+      </article>
+      <article class="admin-info-card">
+        <h2>Policy</h2>
+        <p data-role-policy>Resolving…</p>
+      </article>
+      <article class="admin-info-card">
+        <h2>Asset Count</h2>
+        <p data-asset-count>0 indexed</p>
+      </article>
+    </section>
+
+    <section class="asset-tools" aria-label="Asset indexing and search">
+      <div class="asset-panel">
+        <h2>Asset Index</h2>
+        <p class="asset-muted">Scopes: <code>resources/images/games/boxes-3d</code>, <code>thumbnails</code>, <code>collections</code>, <code>genres</code>, <code>banners</code>.</p>
+        <div class="asset-controls">
+          <button class="ccg-btn ccg-btn--primary" type="button" data-refresh-index>Scan + Index</button>
+          <button class="ccg-btn ccg-btn--ghost" type="button" data-run-health>Health Check</button>
+          <input type="search" placeholder="Search by filename/path" data-asset-search />
+        </div>
+        <ul class="asset-index-list" data-asset-list></ul>
+      </div>
+
+      <div class="asset-panel">
+        <h2>Upload Pipeline</h2>
+        <p class="asset-muted">Drag files for resize + WebP conversion with 500KB target. Originals are preserved.</p>
+        <label class="upload-dropzone" data-dropzone>
+          <input type="file" data-file-input accept="image/*" multiple />
+          <span>Drop files here or click to browse</span>
+        </label>
+        <div class="upload-controls">
+          <label>Destination
+            <select data-upload-folder>
+              <option value="resources/images/games/boxes-3d">3D Boxes</option>
+              <option value="resources/images/thumbnails">Thumbnails</option>
+              <option value="resources/images/collections">Collections</option>
+              <option value="resources/images/genres">Genres</option>
+              <option value="resources/images/banners">Banners</option>
+            </select>
+          </label>
+          <button class="ccg-btn ccg-btn--primary" type="button" data-upload-batch>Upload Batch</button>
+        </div>
+        <ul class="upload-queue" data-upload-queue></ul>
+      </div>
+    </section>
+
+    <section class="asset-tools" aria-label="Naming normalization and game linking">
+      <div class="asset-panel">
+        <h2>Filename + Path Normaliser</h2>
+        <p class="asset-muted">No forced renames. Suggestions only.</p>
+        <div class="normaliser-controls">
+          <input type="text" data-filename-input placeholder="Paste filename or path" />
+          <button class="ccg-btn ccg-btn--ghost" type="button" data-suggest-name>Suggest</button>
+        </div>
+        <p class="normaliser-output" data-normaliser-output>Awaiting input…</p>
+      </div>
+
+      <div class="asset-panel">
+        <h2>3D Box Preview Engine</h2>
+        <p class="asset-muted">CSS-accelerated 3D tilt + Omega neon glow (C64 blue / Amiga pink).</p>
+        <div class="box-preview-stage" data-box-preview-stage>
+          <div class="box-preview" data-box-preview>
+            <img data-box-preview-image alt="3D box preview" />
+            <div class="box-preview-glow"></div>
+            <div class="box-preview-sheen"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="asset-tools" aria-label="Games JSON integration and reporting">
+      <div class="asset-panel">
+        <h2>Game Linking</h2>
+        <p class="asset-muted">Attach asset paths to games.json records with validation before commit.</p>
+        <div class="linking-controls">
+          <input type="text" data-game-id placeholder="Game slug (e.g. monkey-island)" />
+          <input type="text" data-asset-path placeholder="Asset path (e.g. resources/images/games/boxes-3d/monkey-island.webp)" />
+          <button class="ccg-btn ccg-btn--primary" type="button" data-validate-link>Validate + Prepare Insert</button>
+        </div>
+        <pre class="linking-result" data-linking-result>Waiting for game + path input.</pre>
+      </div>
+
+      <div class="asset-panel">
+        <h2>Asset Health + Backup</h2>
+        <div class="health-actions">
+          <button class="ccg-btn ccg-btn--ghost" type="button" data-backup-snapshot>Create Snapshot</button>
+          <button class="ccg-btn ccg-btn--ghost" type="button" data-restore-hint>Show Restore Steps</button>
+        </div>
+        <pre class="health-report" data-health-report>Run a health check to view missing/orphaned/duplicate/oversized assets.</pre>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="/admin/js/asset-manager.js"></script>
+</body>
+</html>
