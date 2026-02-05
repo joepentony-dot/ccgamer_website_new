@@ -29,11 +29,21 @@
       </div>
       <div class="toolbar-actions">
         <button class="ccg-btn ccg-btn--ghost" id="addGame" type="button">Add New Game</button>
+        <button class="ccg-btn ccg-btn--ghost" id="validateLibrary" type="button">Validate Library</button>
         <button class="ccg-btn ccg-btn--ghost" id="showDiff" type="button">Diff</button>
         <button class="ccg-btn ccg-btn--primary" id="saveAll" type="button">Download games.json</button>
-        <button class="ccg-btn ccg-btn--ghost" id="logoutButton" type="button">Log out</button>
       </div>
     </header>
+
+    <section class="omega-pipeline-strip" aria-label="Pipeline">
+      <span class="is-active">Edit</span>
+      <span>→</span>
+      <span>Validate</span>
+      <span>→</span>
+      <span>Export</span>
+      <span>→</span>
+      <span>Publish</span>
+    </section>
 
     <section class="omega-workflow-note" data-export-note hidden>
       Downloaded <code>games.json</code>. Replace <code>/games/games.json</code> in the repo and commit.
@@ -75,35 +85,45 @@
     </section>
 
     <section class="admin-card-grid">
-      <article class="admin-info-card" id="exports-stubs">
-        <h2>Exports &amp; Stubs</h2>
-        <p>Use <strong>Download games.json</strong> to export your in-memory edits. Legacy exports/stubs tools remain available in the legacy admin page.</p>
-        <p><a href="/admin/admin.html" class="ccg-btn ccg-btn--ghost">Open Legacy Exports Tools</a></p>
+      <article class="admin-info-card omega-exports-panel" id="export-panel">
+        <h2>Integrated Export Panel</h2>
+        <p>Legacy export and stub generation tools are embedded here. All writes are downloads only.</p>
+        <div class="control-row">
+          <button class="ccg-btn ccg-btn--primary" type="button" id="downloadGamesJson">Download games.json</button>
+          <button class="ccg-btn ccg-btn--ghost" type="button" id="downloadStubBundle">Download SEO stub bundle</button>
+          <button class="ccg-btn ccg-btn--ghost" type="button" id="downloadFullPackage">Download full package</button>
+          <button class="ccg-btn ccg-btn--ghost" type="button" id="copyNodeSteps">Copy Node script instructions</button>
+        </div>
+        <p data-export-status-text>Awaiting export action.</p>
       </article>
-      <article class="admin-info-card" id="publish-pipeline">
-        <h2>Publish Pipeline</h2>
-        <ol>
-          <li>Download and replace <code>/games/games.json</code>.</li>
-          <li>Run any SEO stub scripts from your local Node workflow.</li>
-          <li>Commit and push site + generated artifacts.</li>
-        </ol>
-      </article>
+
       <article class="admin-info-card">
         <h2>Backup Versions (last 20)</h2>
         <ol id="backupList"></ol>
       </article>
+
       <article class="admin-info-card">
         <h2>Diff Viewer</h2>
         <textarea id="diffBefore" rows="6" readonly></textarea>
         <textarea id="diffAfter" rows="6" readonly></textarea>
         <div id="diffOutput" class="diff-grid"></div>
       </article>
+
+      <article class="admin-info-card">
+        <h2>Publish handoff</h2>
+        <ol>
+          <li>Validate and export all downloads.</li>
+          <li>Replace <code>/games/games.json</code> in repository.</li>
+          <li>Open publish wizard and follow the 7-step checklist.</li>
+        </ol>
+        <a class="ccg-btn ccg-btn--ghost" href="/admin/publish.html">Open Publish Wizard</a>
+      </article>
     </section>
   </main>
 
   <dialog id="editorModal" class="editor-modal">
     <form id="recordForm" method="dialog">
-      <h2>Edit Game Record</h2>
+      <h2>Edit Game Record <span class="draft-badge">Draft Mode</span></h2>
       <div class="form-grid">
         <label>title <input name="title" required /></label>
         <label>slug <input name="slug" required /></label>
@@ -126,11 +146,12 @@
       <pre id="recordPreview"></pre>
       <menu>
         <button class="ccg-btn ccg-btn--ghost" id="cancelEdit" type="button">Cancel</button>
-        <button class="ccg-btn ccg-btn--primary" id="saveRecord" type="button">Apply</button>
+        <button class="ccg-btn ccg-btn--primary" id="saveRecord" type="button">Apply Draft</button>
       </menu>
     </form>
   </dialog>
 
+  <script src="/admin/jszip.min.js"></script>
   <script type="module" src="/admin/js/games-editor.js"></script>
 </body>
 </html>

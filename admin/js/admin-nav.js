@@ -20,15 +20,15 @@ export async function initAdminNav({ pageLabel = 'Dashboard', active = 'dashboar
   shell.innerHTML = `
     <div class="omega-admin-bar">
       <div class="omega-admin-brand">
-        <strong>OMEGA ADMIN</strong>
+        <strong>OMEGA CONTROL CENTRE</strong>
         <span>${escapeHtml(pageLabel)}</span>
       </div>
       <nav class="omega-admin-links" aria-label="Omega admin navigation">
         <a href="/admin/dashboard.html" data-nav="dashboard">Dashboard</a>
-        <a href="/admin/games-editor.html" data-nav="editor">Games Editor</a>
-        <a href="/admin/games-editor.html#exports-stubs" data-nav="exports">Exports &amp; Stubs</a>
-        <a href="/admin/games-editor.html#publish-pipeline" data-nav="publish">Publish Pipeline</a>
-        <a href="/admin/help.html" data-nav="help">Help / Instructions</a>
+        <a href="/admin/games-editor.html" data-nav="editor">Editor</a>
+        <a href="/admin/publish.html" data-nav="publish">Publish</a>
+        <a href="/admin/help.html" data-nav="help">Help</a>
+        <a href="#" data-nav="logout" data-admin-logout-link>Logout</a>
       </nav>
       <div class="omega-admin-session" data-admin-session>Session: checking…</div>
     </div>
@@ -40,6 +40,19 @@ export async function initAdminNav({ pageLabel = 'Dashboard', active = 'dashboar
 
   const sessionNode = shell.querySelector('[data-admin-session]');
 
+  async function handleLogout(event) {
+    event.preventDefault();
+    try {
+      await logout();
+      window.location.replace(AUTH_CONFIG.postLogoutRedirect);
+    } catch {
+      sessionNode.textContent = 'Could not sign out. Try again.';
+    }
+  }
+
+  const logoutLink = shell.querySelector('[data-admin-logout-link]');
+  logoutLink?.addEventListener('click', handleLogout);
+
   try {
     const session = await restoreSession();
     if (!session?.user) {
@@ -48,23 +61,7 @@ export async function initAdminNav({ pageLabel = 'Dashboard', active = 'dashboar
     }
 
     const role = await fetchUserRole({ userId: session.user.id }).catch(() => 'unknown');
-    sessionNode.innerHTML = `
-      ${escapeHtml(session.user.email || 'unknown')} · role ${escapeHtml(role)}
-      <div><button class="ccg-btn ccg-btn--ghost" type="button" data-admin-logout>Log out</button></div>
-    `;
-
-    const logoutButton = sessionNode.querySelector('[data-admin-logout]');
-    if (logoutButton) {
-      logoutButton.addEventListener('click', async () => {
-        logoutButton.disabled = true;
-        try {
-          await logout();
-          window.location.replace(AUTH_CONFIG.postLogoutRedirect);
-        } catch {
-          logoutButton.disabled = false;
-        }
-      });
-    }
+    sessionNode.textContent = `${session.user.email || 'unknown'} · role ${role}`;
   } catch {
     sessionNode.textContent = 'Session status unavailable.';
   }

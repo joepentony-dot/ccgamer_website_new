@@ -1930,6 +1930,76 @@ function setupFooterSignatureRotator() {
         }
     }
 
+
+
+    // === CCG Secret Admin Access ===
+    function setupSecretAdminAccess() {
+        const accessPattern = [16, 67, 67, 71];
+        const patternLength = accessPattern.length;
+        const stepTimeoutMs = 3000;
+        let progressIndex = 0;
+        let lastStepAt = 0;
+
+        const isEditableTarget = target => {
+            if (!(target instanceof Element)) return false;
+            if (target.isContentEditable) return true;
+            return Boolean(target.closest("input, textarea, select, [contenteditable], [role='textbox']"));
+        };
+
+        const normalizeKey = event => {
+            if (event.key === "Shift") return 16;
+            if (typeof event.key !== "string" || event.key.length !== 1) return null;
+            return event.key.toUpperCase().charCodeAt(0);
+        };
+
+        const resetSequence = () => {
+            progressIndex = 0;
+            lastStepAt = 0;
+        };
+
+        const targetPath = "/admin/login.html";
+
+        document.addEventListener("keydown", event => {
+            if (event.defaultPrevented) return;
+            if (isEditableTarget(event.target)) return;
+
+            const now = Date.now();
+            if (progressIndex > 0 && now - lastStepAt > stepTimeoutMs) {
+                resetSequence();
+            }
+
+            const normalizedKey = normalizeKey(event);
+            if (normalizedKey === null) return;
+
+            const expected = accessPattern[progressIndex];
+            if (normalizedKey !== expected) {
+                progressIndex = normalizedKey === accessPattern[0] ? 1 : 0;
+                lastStepAt = progressIndex ? now : 0;
+                return;
+            }
+
+            progressIndex += 1;
+            lastStepAt = now;
+
+            if (progressIndex < patternLength) return;
+
+            resetSequence();
+
+            fetch(targetPath, {
+                method: "GET",
+                credentials: "same-origin",
+                cache: "no-store",
+            }).then(response => {
+                if (response && response.ok) {
+                    window.location.assign(targetPath);
+                }
+            }).catch(() => {
+                // Fail silently.
+            });
+        }, { passive: true });
+    }
+    // === End Secret Admin Access ===
+
     /* ======================================================
        DOM READY
     ====================================================== */
@@ -1979,6 +2049,7 @@ function setupFooterSignatureRotator() {
         setupVisitCounter();
         setupLogoEasterEgg();
         setupSecretTyping();
+        setupSecretAdminAccess();
         setupFooterSignatureRotator();
         setupOmegaFloatingNav();
         setupOmegaMobileKeyboardGuard();

@@ -1,7 +1,5 @@
 import { ensureRole, startAccessMonitor } from './guard.js';
-import { logout } from './auth.js';
 import { fetchBackups, fetchFileIndex, fetchGamesJson, restoreBackup, saveGamesJson } from './games-api.js';
-import { AUTH_CONFIG } from './config.js';
 import { validateGameRecord, validateGamesSchema } from './validator.js';
 import { initAdminNav } from './admin-nav.js';
 
@@ -20,7 +18,6 @@ const state = {
   selectedIndex: null,
   selectedGlobalIndex: null,
   fileIndex: new Set(),
-  backups: [],
   rawBeforeEdit: '[]',
   isCreatingNew: false
 };
@@ -44,7 +41,8 @@ const el = {
   modal: document.getElementById('editorModal'),
   form: document.getElementById('recordForm'),
   preview: document.getElementById('recordPreview'),
-  exportNote: document.querySelector('[data-export-note]')
+  exportNote: document.querySelector('[data-export-note]'),
+  exportStatus: document.querySelector('[data-export-status-text]')
 };
 
 function setStatus(message, kind = 'info') {
@@ -52,8 +50,39 @@ function setStatus(message, kind = 'info') {
   el.status.dataset.state = kind;
 }
 
+function setExportStatus(message) {
+  if (el.exportStatus) el.exportStatus.textContent = message;
+}
+
 function slugify(text) {
   return String(text || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+function downloadFile(name, content, type = 'text/plain') {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = name;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function buildSeoStubHtml(game) {
+  const title = game.title || 'CCG Game';
+  const description = game.description || `${title} game entry on Cheeky Commodore Gamer.`;
+  const canonical = `https://www.cheekycommodoregamer.co.uk/games/${game.slug}.html`;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${title}</title><meta name="description" content="${description.replace(/"/g, '&quot;')}"><link rel="canonical" href="${canonical}"><meta http-equiv="refresh" content="0;url=${canonical}"></head><body><p>Redirecting to <a href="${canonical}">${title}</a>…</p></body></html>`;
+}
+
+function buildSitemap(games) {
+  const urls = games
+    .filter((g) => g.slug)
+    .map((g) => `<url><loc>https://www.cheekycommodoregamer.co.uk/games/${g.slug}.html</loc></url>`)
+    .join('\n');
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`;
 }
 
 function nextGameId() {
@@ -86,7 +115,7 @@ function toSavedRecord(edited, original = {}) {
   copy.slug = edited.slug;
   copy.sorttitle = edited.title.toLowerCase();
   copy.year = Number(edited.year);
-  copy.genres = edited.genres.split(',').map((v) => v.trim()).filter(Boolean);
+  copy.genres = (edited.genres || '').split(',').map((v) => v.trim()).filter(Boolean);
   copy.collections = Array.isArray(copy.collections) ? copy.collections : [];
   copy.developer = edited.developer;
   copy.videoid = edited.videoid;
@@ -118,7 +147,7 @@ function renderFilters() {
   const developers = [...new Set(state.games.map((g) => g.developer).filter(Boolean))].sort();
 
   const fill = (select, values, allLabel) => {
-    select.innerHTML = `<option value="">${allLabel}</option>` + values.map((v) => `<option>${v}</option>`).join('');
+    select.innerHTML = `<option value="">${allLabel}</option>${values.map((v) => `<option>${v}</option>`).join('')}`;
   };
 
   fill(el.filterYear, years, 'All years');
@@ -154,68 +183,60 @@ function renderPage() {
   const start = (state.page - 1) * state.pageSize;
   const pageItems = state.filtered.slice(start, start + state.pageSize);
 
-  el.tableBody.innerHTML = pageItems.map((game, i) => `
-    <tr>
-      <td>${start + i + 1}</td><td>${rowTitle(game)}</td><td>${game.slug}</td><td>${game.year}</td>
-      <td>${(game.genres || []).join(', ')}</td><td>${game.developer || ''}</td><td>${game.ccg_rating}</td>
-      <td><button class="ccg-btn ccg-btn--ghost" data-edit-index="${start + i}">Edit</button></td>
-    </tr>`).join('');
+  el.tableBody.innerHTML = pageItems.map((game, idx) => {
+    const absoluteIndex = start + idx;
+    return `<tr>
+      <td>${absoluteIndex + 1}</td>
+      <td>${rowTitle(game)}</td>
+      <td>${game.slug || ''}</td>
+      <td>${game.year || ''}</td>
+      <td>${(game.genres || []).join(', ')}</td>
+      <td>${game.developer || ''}</td>
+      <td>${game.ccg_rating || ''}</td>
+      <td><button class="ccg-btn ccg-btn--ghost" data-edit-index="${absoluteIndex}" type="button">Edit</button></td>
+    </tr>`;
+  }).join('');
 
-  el.cardBody.innerHTML = pageItems.map((game, i) => `
-    <article class="game-card">
-      <h3>${game.title}${game._ccg_draft ? ' <span class="draft-badge">Draft</span>' : ''}</h3>
-      <p><strong>Slug:</strong> ${game.slug}</p>
-      <p><strong>Year:</strong> ${game.year} · <strong>Rating:</strong> ${game.ccg_rating}</p>
-      <button class="ccg-btn ccg-btn--ghost" data-edit-index="${start + i}">Edit</button>
-    </article>`).join('');
+  el.cardBody.innerHTML = pageItems.map((game, idx) => {
+    const absoluteIndex = start + idx;
+    return `<article class="game-card">
+      <h3>${rowTitle(game)}</h3>
+      <p><strong>Slug:</strong> ${game.slug || ''}</p>
+      <p><strong>Year:</strong> ${game.year || ''}</p>
+      <p><strong>Genre:</strong> ${(game.genres || []).join(', ')}</p>
+      <p><strong>Developer:</strong> ${game.developer || ''}</p>
+      <button class="ccg-btn ccg-btn--ghost" data-edit-index="${absoluteIndex}" type="button">Edit</button>
+    </article>`;
+  }).join('');
 
   const totalPages = Math.max(1, Math.ceil(state.filtered.length / state.pageSize));
-  el.pagination.innerHTML = `Page ${state.page} / ${totalPages}
-    <button class="ccg-btn ccg-btn--ghost" ${state.page <= 1 ? 'disabled' : ''} data-page="prev">Prev</button>
-    <button class="ccg-btn ccg-btn--ghost" ${state.page >= totalPages ? 'disabled' : ''} data-page="next">Next</button>`;
+  el.pagination.innerHTML = `
+    <button class="ccg-btn ccg-btn--ghost" data-page="prev" type="button" ${state.page <= 1 ? 'disabled' : ''}>Prev</button>
+    <span>Page ${state.page} / ${totalPages}</span>
+    <button class="ccg-btn ccg-btn--ghost" data-page="next" type="button" ${state.page >= totalPages ? 'disabled' : ''}>Next</button>
+  `;
 }
 
 function openEditor(filteredIndex, creating = false) {
-  const game = creating ? {
-    id: nextGameId(),
-    system: 'Commodore 64',
-    title: '',
-    slug: '',
-    year: new Date().getFullYear(),
-    genres: [],
-    developer: '',
-    videoid: '',
-    thumbnail: '',
-    pdf: '',
-    disk: [],
-    lemon: [],
-    ccg_rating: 1,
-    ccg_rating_reason: '',
-    credits: { publisher: [], developer: [] }
-  } : state.filtered[filteredIndex];
-
-  if (!game) return;
   state.isCreatingNew = creating;
   state.selectedIndex = filteredIndex;
-  state.selectedGlobalIndex = creating ? -1 : state.games.findIndex((g) => g.id === game.id);
 
-  const record = normRecord(game);
-  el.form.title.value = record.title || '';
-  el.form.slug.value = record.slug || '';
-  el.form.system.value = record.system || '';
-  el.form.year.value = record.year || '';
-  el.form.genres.value = record.genres || '';
-  el.form.developer.value = record.developer || '';
-  el.form.publisher.value = record.publisher || '';
-  el.form.ccg_rating.value = record.ccg_rating || 1;
-  el.form.ccg_rating_reason.value = record.ccg_rating_reason || '';
-  el.form.videoid.value = record.videoid || '';
-  el.form.thumbnails.value = record.thumbnails || '';
-  el.form.box_3d.value = record.box_3d || '';
-  el.form.pdf.value = record.pdf || '';
-  el.form.disk.value = Array.isArray(record.disk) ? record.disk.join(', ') : '';
-  el.form.lemon64.value = record.lemon64 || '';
-  el.form.lemonamiga.value = record.lemonamiga || '';
+  let record = {};
+  if (creating) {
+    record = {
+      title: '', slug: '', system: 'Commodore 64', year: '', genres: '', developer: '', publisher: '',
+      ccg_rating: '', ccg_rating_reason: '', videoid: '', thumbnails: '', box_3d: '',
+      pdf: '', disk: '', lemon64: '', lemonamiga: ''
+    };
+    state.selectedGlobalIndex = null;
+  } else {
+    record = normRecord(state.filtered[filteredIndex]);
+    state.selectedGlobalIndex = state.games.indexOf(state.filtered[filteredIndex]);
+  }
+
+  Object.entries(record).forEach(([key, value]) => {
+    if (el.form[key]) el.form[key].value = value ?? '';
+  });
 
   updatePreview();
   el.modal.showModal();
@@ -223,7 +244,6 @@ function openEditor(filteredIndex, creating = false) {
 
 function updatePreview() {
   const formData = Object.fromEntries(new FormData(el.form).entries());
-  if (!formData.slug) formData.slug = slugify(formData.title);
   const base = state.isCreatingNew ? {} : state.filtered[state.selectedIndex];
   const candidate = toSavedRecord(formData, base);
   el.preview.textContent = JSON.stringify(candidate, null, 2);
@@ -245,8 +265,122 @@ function makeDiff(before, after) {
 
 async function refreshBackups() {
   const { backups } = await fetchBackups();
-  state.backups = backups;
-  el.backupList.innerHTML = backups.map((b) => `<li>${b.created_at} — ${b.commit_message} <button class="ccg-btn ccg-btn--ghost" data-restore="${b.id}">Restore</button></li>`).join('');
+  el.backupList.innerHTML = backups.map((b) => `<li>${b.created_at} — ${b.commit_message} <button class="ccg-btn ccg-btn--ghost" data-restore="${b.id}" type="button">Restore</button></li>`).join('');
+}
+
+function validateAllGames() {
+  const errors = [];
+  const slugSeen = new Set();
+
+  state.games.forEach((game, index) => {
+    const duplicateSlug = slugSeen.has(game.slug);
+    slugSeen.add(game.slug);
+
+    const result = validateGameRecord(game, {
+      slugSet: slugSeen,
+      originalSlug: game.slug,
+      fileIndex: state.fileIndex
+    });
+
+    if (duplicateSlug) result.errors.push(`Record ${index + 1}: duplicate slug ${game.slug}`);
+    if (!result.valid) errors.push(...result.errors.map((error) => `#${index + 1} ${error}`));
+  });
+
+  const schema = validateGamesSchema(state.games.map((game) => {
+    const { _ccg_draft, ...rest } = game;
+    return rest;
+  }));
+
+  if (!schema.valid) errors.push(...schema.errors);
+
+  if (errors.length > 0) {
+    setStatus(`Validation failed (${errors.length}): ${errors.slice(0, 4).join(' | ')}`, 'error');
+    return false;
+  }
+
+  setStatus('Validation complete: schema and duplicate checks passed.', 'success');
+  return true;
+}
+
+async function downloadSeoStubBundle() {
+  if (!window.JSZip) {
+    setStatus('JSZip missing. Cannot generate SEO stub bundle.', 'error');
+    return;
+  }
+
+  const zip = new window.JSZip();
+  state.games.filter((g) => g.slug).forEach((game) => {
+    zip.file(`${game.slug}.html`, buildSeoStubHtml(game));
+  });
+
+  const blob = await zip.generateAsync({ type: 'blob' });
+  downloadFile('ccg-seo-stubs.zip', blob, 'application/zip');
+  setExportStatus('SEO stubs bundle downloaded.');
+}
+
+async function downloadFullPackage() {
+  if (!window.JSZip) {
+    setStatus('JSZip missing. Cannot generate full package.', 'error');
+    return;
+  }
+
+  const payload = state.games.map((game) => {
+    const { _ccg_draft, ...rest } = game;
+    return rest;
+  });
+
+  const zip = new window.JSZip();
+  zip.file('games.json', `${JSON.stringify(payload, null, 2)}\n`);
+  zip.file('sitemap.xml', buildSitemap(payload));
+
+  const stubFolder = zip.folder('seo-stubs');
+  payload.filter((g) => g.slug).forEach((game) => {
+    stubFolder.file(`${game.slug}.html`, buildSeoStubHtml(game));
+  });
+
+  const blob = await zip.generateAsync({ type: 'blob' });
+  downloadFile('ccg-export-package.zip', blob, 'application/zip');
+  setExportStatus('Full export package downloaded.');
+}
+
+function copyNodeInstructions() {
+  const text = `node scripts/generate-slug-pages.js\nnode scripts/generate-sitemaps.js\ngit status`;
+  navigator.clipboard.writeText(text).then(() => {
+    setExportStatus('Node script instructions copied to clipboard.');
+  }).catch(() => {
+    setExportStatus('Clipboard blocked. Copy manually from Publish page.');
+  });
+}
+
+async function exportGamesJson() {
+  const payload = state.games.map((game) => {
+    const { _ccg_draft, ...rest } = game;
+    return rest;
+  });
+
+  const schema = validateGamesSchema(payload);
+  if (!schema.valid) {
+    setStatus(schema.errors.join(' | '), 'error');
+    return;
+  }
+
+  const now = new Date().toISOString().replace(/[:.]/g, '-');
+  const message = `admin(games-editor): update games.json ${now}`;
+
+  try {
+    await saveGamesJson({ games: payload, message, role: state.role });
+    const exportStamp = new Date().toLocaleString();
+    localStorage.setItem('omegaAdminLastExportTime', exportStamp);
+    setStatus('Downloaded games.json. Manual git commit/push required.', 'success');
+    setExportStatus(`games.json exported at ${exportStamp}.`);
+    if (el.exportNote) el.exportNote.hidden = false;
+    state.games = state.games.map((game) => ({ ...game, _ccg_draft: false }));
+    state.rawBeforeEdit = JSON.stringify(payload, null, 2);
+    renderPage();
+    await refreshBackups();
+  } catch (error) {
+    setStatus(`Export failed: ${error.message}`, 'error');
+  }
 }
 
 async function bootstrap() {
@@ -261,6 +395,7 @@ async function bootstrap() {
   state.games = games;
   state.rawBeforeEdit = JSON.stringify(games, null, 2);
   state.fileIndex = new Set(files || []);
+  localStorage.setItem('omegaAdminLastLoadSuccess', new Date().toLocaleString());
 
   renderFilters();
   applyFilters();
@@ -281,11 +416,6 @@ document.querySelectorAll('[data-view]').forEach((button) => {
   input.addEventListener('change', applyFilters);
 });
 
-document.getElementById('logoutButton').addEventListener('click', async () => {
-  await logout();
-  window.location.replace(AUTH_CONFIG.postLogoutRedirect);
-});
-
 document.addEventListener('click', async (event) => {
   const edit = event.target.closest('[data-edit-index]');
   if (edit) openEditor(Number(edit.dataset.editIndex));
@@ -304,13 +434,11 @@ document.addEventListener('click', async (event) => {
 });
 
 document.getElementById('addGame').addEventListener('click', () => openEditor(-1, true));
+document.getElementById('validateLibrary').addEventListener('click', validateAllGames);
 el.form.title.addEventListener('input', () => {
-  if (!el.form.slug.value.trim()) {
-    el.form.slug.value = slugify(el.form.title.value);
-  }
+  if (!el.form.slug.value.trim()) el.form.slug.value = slugify(el.form.title.value);
 });
 el.form.addEventListener('input', updatePreview);
-
 document.getElementById('cancelEdit').addEventListener('click', () => el.modal.close());
 
 document.getElementById('saveRecord').addEventListener('click', () => {
@@ -349,7 +477,7 @@ document.getElementById('saveRecord').addEventListener('click', () => {
     setStatus('New draft game added in memory. Export when ready.', 'success');
   } else {
     state.games[state.selectedGlobalIndex] = { ...candidate, _ccg_draft: state.games[state.selectedGlobalIndex]._ccg_draft };
-    setStatus(result.warnings.length ? `Saved with warnings: ${result.warnings.join(' | ')}` : 'Record updated.', 'success');
+    setStatus('Draft updated.', 'success');
   }
 
   renderFilters();
@@ -364,34 +492,11 @@ document.getElementById('showDiff').addEventListener('click', () => {
   makeDiff(state.rawBeforeEdit, after);
 });
 
-document.getElementById('saveAll').addEventListener('click', async () => {
-  const payload = state.games.map((game) => {
-    const { _ccg_draft, ...rest } = game;
-    return rest;
-  });
-
-  const schema = validateGamesSchema(payload);
-  if (!schema.valid) {
-    setStatus(schema.errors.join(' | '), 'error');
-    return;
-  }
-
-  const now = new Date().toISOString().replace(/[:.]/g, '-');
-  const message = `admin(games-editor): update games.json ${now}`;
-  setStatus('Exporting games.json download…');
-
-  try {
-    await saveGamesJson({ games: payload, message, role: state.role });
-    setStatus('Saved locally. Downloaded games.json for manual commit.', 'success');
-    if (el.exportNote) el.exportNote.hidden = false;
-    state.games = state.games.map((game) => ({ ...game, _ccg_draft: false }));
-    state.rawBeforeEdit = JSON.stringify(payload, null, 2);
-    renderPage();
-    await refreshBackups();
-  } catch (error) {
-    setStatus(`Save failed: ${error.message}`, 'error');
-  }
-});
+document.getElementById('saveAll').addEventListener('click', exportGamesJson);
+document.getElementById('downloadGamesJson').addEventListener('click', exportGamesJson);
+document.getElementById('downloadStubBundle').addEventListener('click', () => { void downloadSeoStubBundle(); });
+document.getElementById('downloadFullPackage').addEventListener('click', () => { void downloadFullPackage(); });
+document.getElementById('copyNodeSteps').addEventListener('click', copyNodeInstructions);
 
 startAccessMonitor();
 initAdminNav({ pageLabel: 'Games Editor', active: 'editor' });
