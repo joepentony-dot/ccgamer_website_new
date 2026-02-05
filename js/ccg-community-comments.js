@@ -191,6 +191,7 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     render();
+    window.addEventListener('ccg:auth-ready', render);
     window.addEventListener('ccg:auth-changed', render);
     window.addEventListener('ccg:comments-updated', render);
   });

@@ -24,7 +24,9 @@
     ready: false,
     promise: null,
     session: null,
-    listenerAttached: false
+    listenerAttached: false,
+    bootstrapStarted: false,
+    bootstrapPromise: null
   });
 
   function getExistingLibraryScript() {
@@ -117,6 +119,12 @@
     authReadyState.listenerAttached = true;
     client.auth.onAuthStateChange(function (_event, session) {
       authReadyState.session = session || null;
+      window.dispatchEvent(new CustomEvent('ccg:auth-changed', {
+        detail: {
+          session: authReadyState.session,
+          user: authReadyState.session && authReadyState.session.user ? authReadyState.session.user : null
+        }
+      }));
     });
   }
 
@@ -154,6 +162,37 @@
     return authReadyState.promise;
   }
 
+
+  function bootstrapGlobalAuth() {
+    if (authReadyState.bootstrapStarted) {
+      return authReadyState.bootstrapPromise || Promise.resolve(authReadyState.session);
+    }
+
+    authReadyState.bootstrapStarted = true;
+    authReadyState.bootstrapPromise = waitForAuth().catch(function () {
+      authReadyState.ready = true;
+      authReadyState.session = null;
+      window.dispatchEvent(new CustomEvent('ccg:auth-ready', {
+        detail: {
+          session: null,
+          user: null
+        }
+      }));
+      return null;
+    }).finally(function () {
+      authReadyState.bootstrapPromise = null;
+    });
+
+    return authReadyState.bootstrapPromise;
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+      bootstrapGlobalAuth();
+    }, { once: true });
+  } else {
+    bootstrapGlobalAuth();
+  }
 
   function isCommunityUnavailableError(error) {
     const code = String(error && error.code || '');
