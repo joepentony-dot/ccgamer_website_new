@@ -1004,9 +1004,10 @@
 
             secretState.konamiIndex = 0;
 
-            if (event.key.length !== 1) return;
+            const keyValue = typeof event.key === "string" ? event.key : "";
+            if (keyValue.length !== 1) return;
 
-            secretState.inputBuffer += event.key;
+            secretState.inputBuffer += keyValue;
             if (secretState.inputBuffer.length > maxBuffer) {
                 secretState.inputBuffer = secretState.inputBuffer.slice(-maxBuffer);
             }

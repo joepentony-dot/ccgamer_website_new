@@ -3,8 +3,7 @@
     initialized: false,
     currentUser: null,
     currentProfile: null,
-    modal: null,
-    redirectTo: '/community/index.html'
+    modal: null
   };
 
   function emitAuthChanged() {
@@ -33,6 +32,25 @@
     document.querySelectorAll('[data-ccg-auth-view]').forEach((panel) => {
       panel.hidden = panel.getAttribute('data-ccg-auth-view') !== view;
     });
+  }
+
+  function isCommunityUnavailableError(error) {
+    const code = String(error && error.code || '');
+    const message = String(error && error.message || '').toLowerCase();
+    return code === '42P01' || code === 'PGRST205' || message.includes('relation') || message.includes('does not exist');
+  }
+
+  function communityUnavailableMessage() {
+    return 'Community features not configured.';
+  }
+
+  async function safeGetClient() {
+    try {
+      return await window.ccgSupabase.getClient();
+    } catch (error) {
+      setMessage(communityUnavailableMessage(), 'error');
+      return null;
+    }
   }
 
   function openModal(view) {
@@ -76,7 +94,6 @@
       '      <label>Password<input type="password" name="password" required autocomplete="current-password"></label>' +
       '      <button type="submit" class="ccg-community-btn">Sign in</button>' +
       '    </form>' +
-      '    <button type="button" class="ccg-community-link-btn" data-switch-view="magic">Use magic link instead</button>' +
       '    <button type="button" class="ccg-community-link-btn" data-switch-view="signup">Need an account? Create one</button>' +
       '  </section>' +
       '  <section data-ccg-auth-view="signup" hidden>' +
@@ -85,16 +102,7 @@
       '      <label>Password<input type="password" name="password" required minlength="6" autocomplete="new-password"></label>' +
       '      <button type="submit" class="ccg-community-btn">Create account</button>' +
       '    </form>' +
-      '    <button type="button" class="ccg-community-link-btn" data-switch-view="magic">Prefer magic link?</button>' +
       '    <button type="button" class="ccg-community-link-btn" data-switch-view="signin">Already have an account? Log in</button>' +
-      '  </section>' +
-      '  <section data-ccg-auth-view="magic" hidden>' +
-      '    <form id="ccg-magic-form" class="ccg-community-form">' +
-      '      <label>Email<input type="email" name="email" required autocomplete="email"></label>' +
-      '      <p class="ccg-community-auth__hint">Magic link sends a one-time sign-in email.</p>' +
-      '      <button type="submit" class="ccg-community-btn">Send magic link</button>' +
-      '    </form>' +
-      '    <button type="button" class="ccg-community-link-btn" data-switch-view="signin">Back to password login</button>' +
       '  </section>' +
       '  <section data-ccg-auth-view="username" hidden>' +
       '    <form id="ccg-username-form" class="ccg-community-form">' +
@@ -119,7 +127,8 @@
       const formData = new FormData(signinForm);
       const email = String(formData.get('email') || '').trim();
       const password = String(formData.get('password') || '');
-      const supabase = await window.ccgSupabase.getClient();
+      const supabase = await safeGetClient();
+      if (!supabase) return;
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) return setMessage(error.message, 'error');
       setMessage('Welcome back!', 'success');
@@ -133,28 +142,12 @@
       const formData = new FormData(signupForm);
       const email = String(formData.get('email') || '').trim();
       const password = String(formData.get('password') || '');
-      const supabase = await window.ccgSupabase.getClient();
+      const supabase = await safeGetClient();
+      if (!supabase) return;
       const { error } = await supabase.auth.signUp({ email, password });
       if (error) return setMessage(error.message, 'error');
       setMessage('Account created. Check your email if confirmation is enabled.', 'success');
       toggleView('signin');
-    });
-
-    const magicForm = wrap.querySelector('#ccg-magic-form');
-    magicForm.addEventListener('submit', async function (event) {
-      event.preventDefault();
-      setMessage('Sending magic link…');
-      const formData = new FormData(magicForm);
-      const email = String(formData.get('email') || '').trim();
-      const supabase = await window.ccgSupabase.getClient();
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          emailRedirectTo: window.location.origin + state.redirectTo
-        }
-      });
-      if (error) return setMessage(error.message, 'error');
-      setMessage('Magic link sent. Check your inbox.', 'success');
     });
 
     const usernameForm = wrap.querySelector('#ccg-username-form');
@@ -164,7 +157,9 @@
       const formData = new FormData(usernameForm);
       const username = String(formData.get('username') || '').trim();
       if (!username) return setMessage('Please choose a username.', 'error');
-      const supabase = await window.ccgSupabase.getClient();
+      const supabase = await safeGetClient();
+      if (!supabase) return;
+
       const { error } = await supabase
         .from('profiles')
         .upsert({
@@ -173,7 +168,10 @@
           avatar_url: null
         }, { onConflict: 'id' });
 
-      if (error) return setMessage(error.message, 'error');
+      if (error) {
+        if (isCommunityUnavailableError(error)) return setMessage(communityUnavailableMessage(), 'error');
+        return setMessage(error.message, 'error');
+      }
       setMessage('Profile ready!', 'success');
       await refreshCurrentUser();
       closeModal();
@@ -181,15 +179,17 @@
   }
 
   async function fetchProfile(userId) {
-    const supabase = await window.ccgSupabase.getClient();
+    const supabase = await safeGetClient();
+    if (!supabase) return null;
+
     const { data, error } = await supabase
       .from('profiles')
       .select('id, username, avatar_url, role, created_at')
       .eq('id', userId)
       .maybeSingle();
 
-    if (error && error.code !== 'PGRST116') {
-      console.warn('Profile fetch failed:', error.message);
+    if (error) {
+      if (error.code === 'PGRST116' || isCommunityUnavailableError(error)) return null;
       return null;
     }
 
@@ -209,7 +209,14 @@
   }
 
   async function refreshCurrentUser() {
-    const supabase = await window.ccgSupabase.getClient();
+    const supabase = await safeGetClient();
+    if (!supabase) {
+      state.currentUser = null;
+      state.currentProfile = null;
+      emitAuthChanged();
+      return;
+    }
+
     const { data } = await supabase.auth.getUser();
     state.currentUser = data && data.user ? data.user : null;
 
@@ -226,7 +233,9 @@
     state.initialized = true;
     createModal();
 
-    const supabase = await window.ccgSupabase.getClient();
+    const supabase = await safeGetClient();
+    if (!supabase) return;
+
     await refreshCurrentUser();
 
     supabase.auth.onAuthStateChange(async function () {
@@ -248,7 +257,8 @@
   }
 
   async function logout() {
-    const supabase = await window.ccgSupabase.getClient();
+    const supabase = await safeGetClient();
+    if (!supabase) return;
     await supabase.auth.signOut();
   }
 
@@ -268,8 +278,8 @@
   };
 
   document.addEventListener('DOMContentLoaded', function () {
-    initAuth().catch(function (error) {
-      console.warn('Community auth init failed:', error.message);
+    initAuth().catch(function () {
+      setMessage(communityUnavailableMessage(), 'error');
     });
   });
 })();

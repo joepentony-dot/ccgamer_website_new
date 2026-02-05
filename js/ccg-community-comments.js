@@ -8,6 +8,16 @@
     return null;
   }
 
+  function isNotConfiguredError(error) {
+    const code = String(error && error.code || '');
+    const message = String(error && error.message || '').toLowerCase();
+    return code === '42P01' || code === 'PGRST205' || message.includes('relation') || message.includes('does not exist');
+  }
+
+  function renderUnavailable(mount) {
+    mount.innerHTML = '<div class="ccg-community-card"><h3>Community Comments</h3><p>Community features not configured.</p></div>';
+  }
+
   async function awardBadge(userId) {
     const supabase = await window.ccgSupabase.getClient();
     await supabase.rpc('award_badge_if_eligible', { target_user_id: userId });
@@ -45,7 +55,14 @@
       return;
     }
 
-    const supabase = await window.ccgSupabase.getClient();
+    let supabase;
+    try {
+      supabase = await window.ccgSupabase.getClient();
+    } catch (_error) {
+      renderUnavailable(mount);
+      return;
+    }
+
     const user = window.ccgCommunityAuth.getUser();
     const canModerate = window.ccgCommunityAuth.isAdminOrMod();
 
@@ -55,6 +72,11 @@
       .eq('game_slug', slug)
       .order('created_at', { ascending: false })
       .limit(100);
+
+    if (error && isNotConfiguredError(error)) {
+      renderUnavailable(mount);
+      return;
+    }
 
     if (error) {
       mount.innerHTML = '<div class="ccg-community-card"><p>' + window.ccgCommunityAuth.esc(error.message) + '</p></div>';
@@ -93,7 +115,7 @@
         content
       });
       if (insertError) {
-        status.textContent = insertError.message;
+        status.textContent = isNotConfiguredError(insertError) ? 'Community features not configured.' : insertError.message;
         return;
       }
       await awardBadge(user.id);
@@ -120,22 +142,15 @@
 
         if (action === 'edit') {
           const currentText = card.querySelector('.ccg-comment-card__body').textContent || '';
-          const next = window.prompt('Edit your comment:', currentText.trim());
-          if (!next) return;
-          await supabase
-            .from('game_comments')
-            .update({ content: next })
-            .eq('id', commentId)
-            .eq('user_id', user.id);
+          const updated = window.prompt('Edit your comment:', currentText);
+          if (!updated || !updated.trim()) return;
+          await supabase.from('game_comments').update({ content: updated.trim() }).eq('id', commentId).eq('user_id', user.id);
           render();
           return;
         }
 
         if (action === 'delete' && canModerate) {
-          await supabase
-            .from('game_comments')
-            .update({ is_deleted: true, content: '[deleted]' })
-            .eq('id', commentId);
+          await supabase.from('game_comments').update({ is_deleted: true, content: '[deleted]' }).eq('id', commentId);
           render();
         }
       });
