@@ -103,6 +103,10 @@ function normalizeMobileScrollContainer(element, options = {}) {
         element.style.maxHeight = "none";
         element.style.overflowY = "auto";
         element.style.overflowX = "hidden";
+        element.style.overscrollBehavior = "auto";
+        element.style.touchAction = "pan-y";
+        element.style.webkitOverflowScrolling = "touch";
+        element.style.scrollBehavior = "auto";
         if (style.position === "fixed" || style.position === "sticky") {
             element.style.position = "static";
         }
@@ -112,21 +116,24 @@ function normalizeMobileScrollContainer(element, options = {}) {
     element.style.height = "auto";
     element.style.minHeight = "0";
     element.style.maxHeight = "none";
+    element.style.contain = "none";
 
-    if (style.overflowY === "auto" || style.overflowY === "scroll") {
-        element.style.overflowY = "visible";
-    }
-
-    if (!allowHorizontal && (style.overflowX === "auto" || style.overflowX === "scroll")) {
-        element.style.overflowX = "visible";
-    }
-
-    if (!allowHorizontal && (style.overflow === "auto" || style.overflow === "scroll")) {
+    if (allowHorizontal) {
+        element.style.overflowX = "auto";
+        element.style.overflowY = "hidden";
+        element.style.overscrollBehavior = "auto";
+        element.style.touchAction = "pan-x";
+    } else {
         element.style.overflow = "visible";
+        element.style.overflowX = "visible";
+        element.style.overflowY = "visible";
     }
 
     if (style.position === "fixed" || style.position === "sticky") {
         element.style.position = "static";
+    }
+    if (style.transform && style.transform !== "none") {
+        element.style.transform = "none";
     }
 }
 
@@ -2316,7 +2323,6 @@ function initRelatedCarousel() {
         };
 
         const isolateArrowEvent = (event) => {
-            event.preventDefault();
             event.stopPropagation();
         };
 
@@ -2347,7 +2353,7 @@ function initRelatedCarousel() {
                     isolateArrowEvent(event);
                     handleScroll(direction);
                 },
-                { passive: false }
+                { passive: true }
             );
 
             button.addEventListener("dragstart", isolateArrowEvent);
