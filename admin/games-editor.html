@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCG Games JSON Editor</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="icon" href="../favicon.ico" />
+  <link href="../resources/css/ccg-master.css" rel="stylesheet" />
+  <link href="../resources/css/ccg-mode.css" rel="stylesheet" />
+  <link href="../resources/css/ccg-effects.css" rel="stylesheet" />
+  <link href="./css/admin-auth.css" rel="stylesheet" />
+  <link href="./css/games-editor.css" rel="stylesheet" />
+</head>
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
+  <div aria-hidden="true" class="ccg-bg">
+    <div aria-hidden="true" class="ccg-bg-starfield"></div>
+    <div aria-hidden="true" class="ccg-bg-grid"></div>
+    <div aria-hidden="true" class="ccg-bg-crt-overlay"></div>
+  </div>
+
+  <main class="games-editor-wrap">
+    <header class="admin-dashboard-header sticky-toolbar">
+      <div>
+        <p class="admin-auth-kicker">Omega Games Control</p>
+        <h1>/games/games.json Visual Editor</h1>
+        <p class="editor-meta">Signed in as <span data-editor-email></span> · Role <strong data-editor-role></strong></p>
+      </div>
+      <div class="toolbar-actions">
+        <button class="ccg-btn ccg-btn--ghost" id="showDiff" type="button">Diff</button>
+        <button class="ccg-btn ccg-btn--primary" id="saveAll" type="button">Save</button>
+        <button class="ccg-btn ccg-btn--ghost" id="logoutButton" type="button">Log out</button>
+      </div>
+    </header>
+
+    <section class="admin-info-card controls">
+      <div class="control-row">
+        <input id="gamesSearch" placeholder="Search title / slug / developer" type="search" />
+        <select id="filterYear"><option value="">All years</option></select>
+        <select id="filterGenre"><option value="">All genres</option></select>
+        <select id="filterDeveloper"><option value="">All developers</option></select>
+        <select id="filterRating">
+          <option value="">All ratings</option>
+          <option>10</option><option>9</option><option>8</option><option>7</option>
+          <option>6</option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option>
+        </select>
+      </div>
+      <div class="control-row">
+        <button class="ccg-btn ccg-btn--ghost" data-view="table" type="button">Table view</button>
+        <button class="ccg-btn ccg-btn--ghost" data-view="card" type="button">Card view</button>
+        <p class="status" data-editor-status data-state="info">Booting editor…</p>
+      </div>
+    </section>
+
+    <section class="admin-info-card" id="tableView">
+      <div class="table-scroll">
+        <table class="games-table">
+          <thead>
+            <tr><th>#</th><th>Title</th><th>Slug</th><th>Year</th><th>Genre</th><th>Developer</th><th>Rating</th><th></th></tr>
+          </thead>
+          <tbody id="gamesTableBody"></tbody>
+        </table>
+      </div>
+      <div id="pagination" class="pagination"></div>
+    </section>
+
+    <section class="admin-info-card card-grid" hidden id="cardView">
+      <div id="gamesCardBody"></div>
+      <div id="paginationCard"></div>
+    </section>
+
+    <section class="admin-card-grid">
+      <article class="admin-info-card">
+        <h2>Backup Versions (last 20)</h2>
+        <ol id="backupList"></ol>
+      </article>
+      <article class="admin-info-card">
+        <h2>Diff Viewer</h2>
+        <textarea id="diffBefore" rows="6" readonly></textarea>
+        <textarea id="diffAfter" rows="6" readonly></textarea>
+        <div id="diffOutput" class="diff-grid"></div>
+      </article>
+    </section>
+  </main>
+
+  <dialog id="editorModal" class="editor-modal">
+    <form id="recordForm" method="dialog">
+      <h2>Edit Game Record</h2>
+      <div class="form-grid">
+        <label>title <input name="title" required /></label>
+        <label>slug <input name="slug" required /></label>
+        <label>year <input name="year" min="1977" type="number" required /></label>
+        <label>genres (csv) <input name="genres" /></label>
+        <label>developer <input name="developer" /></label>
+        <label>publisher <input name="publisher" /></label>
+        <label>ccg_rating <input name="ccg_rating" max="10" min="1" step="0.1" type="number" required /></label>
+        <label>ccg_rating_reason <input name="ccg_rating_reason" /></label>
+        <label>videoid <input name="videoid" /></label>
+        <label>thumbnails <input name="thumbnails" /></label>
+        <label>box_3d <input name="box_3d" /></label>
+        <label>pdf <input name="pdf" /></label>
+        <label>disk (csv) <input name="disk" /></label>
+        <label>lemon64 <input name="lemon64" /></label>
+        <label>lemonamiga <input name="lemonamiga" /></label>
+        <label>credits <input name="credits" placeholder="Managed in schema credits object" disabled /></label>
+      </div>
+      <h3>Live preview</h3>
+      <pre id="recordPreview"></pre>
+      <menu>
+        <button class="ccg-btn ccg-btn--ghost" id="cancelEdit" type="button">Cancel</button>
+        <button class="ccg-btn ccg-btn--primary" id="saveRecord" type="button">Apply</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <script type="module" src="/admin/js/games-editor.js"></script>
+</body>
+</html>
