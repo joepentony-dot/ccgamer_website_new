@@ -232,8 +232,19 @@
 }
 
 .ccg-community-auth-btn {
-  border-color: rgba(120, 241, 255, 0.85);
-  box-shadow: 0 0 10px rgba(85, 226, 255, 0.35);
+  border-color: rgba(126, 245, 255, 0.96);
+  background: linear-gradient(135deg, rgba(8, 64, 132, 0.98), rgba(44, 14, 88, 0.96));
+  color: #ecfeff;
+  opacity: 1;
+  text-shadow: 0 0 6px rgba(160, 245, 255, 0.5);
+  box-shadow: 0 0 0 1px rgba(42, 200, 242, 0.45), 0 0 14px rgba(85, 226, 255, 0.38);
+  isolation: isolate;
+}
+
+.ccg-community-auth-btn:hover,
+.ccg-community-auth-btn:focus-visible {
+  border-color: rgba(162, 250, 255, 1);
+  box-shadow: 0 0 0 1px rgba(86, 228, 255, 0.62), 0 0 18px rgba(117, 236, 255, 0.5);
 }
 @media (max-width: 800px) {
   .ccg-community-auth-btn {

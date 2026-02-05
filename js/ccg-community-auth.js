@@ -41,7 +41,7 @@
   }
 
   function communityUnavailableMessage() {
-    return 'Community features not configured.';
+    return 'Community features not configured yet.';
   }
 
   async function safeGetClient() {
@@ -232,6 +232,12 @@
     if (state.initialized) return;
     state.initialized = true;
     createModal();
+
+    const readiness = await window.ccgSupabase.checkCommunityReadiness();
+    if (!readiness.ready) {
+      setMessage(communityUnavailableMessage(), 'error');
+      return;
+    }
 
     const supabase = await safeGetClient();
     if (!supabase) return;
