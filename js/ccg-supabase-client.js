@@ -143,16 +143,24 @@
       }
 
       try {
-        const response = await fetch(url.replace(/\/$/, '') + '/rest/v1/game_comments?select=id&limit=1', {
-          method: 'GET',
-          headers: {
-            apikey: key,
-            Authorization: 'Bearer ' + key,
-            Accept: 'application/json'
-          }
-        });
+        const base = url.replace(/\/$/, '') + '/rest/v1/';
+        const headers = {
+          apikey: key,
+          Authorization: 'Bearer ' + key,
+          Accept: 'application/json'
+        };
+        const endpoints = [
+          'profiles?select=id&limit=1',
+          'game_ratings?select=id&limit=1',
+          'game_comments?select=id&limit=1'
+        ];
 
-        if (!response.ok) {
+        const checks = await Promise.all(endpoints.map((endpoint) => fetch(base + endpoint, {
+          method: 'GET',
+          headers
+        })));
+
+        if (checks.some((response) => !response.ok)) {
           readinessState.checked = true;
           readinessState.available = false;
           readinessState.reason = 'not_configured';
