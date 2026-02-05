@@ -20,6 +20,26 @@
     return code === '42P01' || code === 'PGRST205' || message.includes('relation') || message.includes('does not exist');
   }
 
+  function isAuthError(error) {
+    const code = String(error && error.code || '');
+    const message = String(error && error.message || '').toLowerCase();
+    return code === '401' || code === '403' || code === 'PGRST301' || message.includes('jwt') || message.includes('auth');
+  }
+
+  function isRlsError(error) {
+    const code = String(error && error.code || '');
+    const message = String(error && error.message || '').toLowerCase();
+    return code === '42501' || message.includes('row-level security') || message.includes('permission denied');
+  }
+
+  function toUserMessage(error) {
+    if (!error) return 'Something went wrong while saving your rating. Please try again.';
+    if (isAuthError(error)) return 'Your session expired. Please log in again to save your rating.';
+    if (isRlsError(error)) return 'You do not have permission to save this rating. Please try logging in again.';
+    if (isNotConfiguredError(error)) return 'Community features not configured yet.';
+    return error.message || 'Unable to save your rating right now. Please try again.';
+  }
+
   function renderUnavailable(mount) {
     mount.innerHTML = '<div class="ccg-community-card"><h3>Community Rating</h3><p>Community features not configured yet.</p></div>';
   }
@@ -121,17 +141,31 @@
       }
 
       status.textContent = 'Saving…';
-      const { error } = await supabase
-        .from('game_ratings')
-        .upsert({ user_id: user.id, game_slug: slug, rating }, { onConflict: 'user_id,game_slug' });
 
-      if (error) {
-        status.textContent = isNotConfiguredError(error) ? 'Community features not configured yet.' : error.message;
+      const authRes = await supabase.auth.getUser();
+      const activeUser = authRes && authRes.data ? authRes.data.user : null;
+      if (!activeUser || activeUser.id !== user.id) {
+        status.textContent = 'Your session expired. Please log in again to save your rating.';
+        window.ccgCommunityAuth.openAuthModal('signin');
         return;
       }
 
-      await awardBadge(user.id);
-      status.textContent = 'Saved.';
+      const { error } = await supabase
+        .from('game_ratings')
+        .upsert({ user_id: activeUser.id, game_slug: slug, rating }, { onConflict: 'user_id,game_slug' });
+
+      if (error) {
+        status.textContent = toUserMessage(error);
+        if (isAuthError(error)) window.ccgCommunityAuth.openAuthModal('signin');
+        return;
+      }
+
+      try {
+        await awardBadge(activeUser.id);
+      } catch (_badgeError) {
+        // Do not block a successful rating save if badge awarding fails.
+      }
+      status.textContent = 'Saved to your account.';
       render();
     });
   }
