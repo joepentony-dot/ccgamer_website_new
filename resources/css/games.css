@@ -2799,3 +2799,29 @@ body[data-ccg-mode="amiga"] {
         display: none;
     }
 }
+
+.game-section--user-rating {
+  margin-top: 1rem;
+}
+
+.ccg-user-rating__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0.6rem 0;
+  align-items: center;
+}
+
+.ccg-user-rating__controls input[type='text'],
+.ccg-user-rating__controls input[type='number'] {
+  border: 1px solid rgba(104, 225, 255, 0.35);
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+  background: rgba(7, 15, 35, 0.85);
+  color: #e8fbff;
+}
+
+.ccg-user-rating__status {
+  color: #9cd8ea;
+  min-height: 1.4rem;
+}

@@ -9,6 +9,7 @@
   <link href="../resources/css/ccg-master.css" rel="stylesheet" />
   <link href="../resources/css/ccg-mode.css" rel="stylesheet" />
   <link href="../resources/css/ccg-effects.css" rel="stylesheet" />
+  <link href="../resources/css/ccg-admin.css" rel="stylesheet" />
   <link href="./css/admin-auth.css" rel="stylesheet" />
   <link href="./css/asset-manager.css" rel="stylesheet" />
 </head>
@@ -134,5 +135,10 @@
   </main>
 
   <script type="module" src="/admin/js/asset-manager.js"></script>
+
+<script type="module">
+import { injectDeprecatedBanner } from "/admin/js/admin-nav.js";
+injectDeprecatedBanner("This page is part of the legacy admin flow");
+</script>
 </body>
 </html>

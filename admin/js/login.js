@@ -1,6 +1,7 @@
 import { AUTH_CONFIG } from './config.js';
 import { login, restoreSession, sendPasswordReset } from './auth.js';
 import { fetchUserRole } from './roles.js';
+import { initAdminNav } from './admin-nav.js';
 
 const form = document.querySelector('[data-login-form]');
 const emailInput = document.querySelector('[data-email-input]');
@@ -33,12 +34,8 @@ async function handleLogin(event) {
   setMessage('Authenticating…', 'info');
 
   try {
-    const email = emailInput.value;
-    const password = passwordInput.value;
-
-    const { user } = await login(email, password);
+    const { user } = await login(emailInput.value, passwordInput.value);
     await fetchUserRole({ userId: user.id, force: true });
-
     setMessage('Login successful. Redirecting to dashboard…', 'success');
     window.location.replace(AUTH_CONFIG.defaultRedirectAfterLogin);
   } catch (error) {
@@ -49,17 +46,15 @@ async function handleLogin(event) {
 }
 
 async function handleReset() {
-  const email = emailInput.value;
-  if (!email) {
+  if (!emailInput.value) {
     setMessage('Enter your email address before requesting a reset link.', 'error');
     return;
   }
-
   setLoading(true);
   setMessage('Sending password reset email…', 'info');
 
   try {
-    await sendPasswordReset(email);
+    await sendPasswordReset(emailInput.value);
     setMessage('Password reset email sent. Check your inbox.', 'success');
   } catch (error) {
     setMessage(error.message || 'Unable to send reset email.', 'error');
@@ -70,5 +65,5 @@ async function handleReset() {
 
 form.addEventListener('submit', handleLogin);
 resetButton.addEventListener('click', handleReset);
-
+initAdminNav({ pageLabel: 'Login', active: 'dashboard' });
 redirectIfSessionExists();

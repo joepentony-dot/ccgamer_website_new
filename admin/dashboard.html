@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CCG Admin Dashboard</title>
+  <title>CCG Omega Admin Dashboard</title>
   <meta name="robots" content="noindex,nofollow" />
   <link rel="icon" href="../favicon.ico" />
   <link href="../resources/css/ccg-master.css" rel="stylesheet" />
   <link href="../resources/css/ccg-mode.css" rel="stylesheet" />
   <link href="../resources/css/ccg-effects.css" rel="stylesheet" />
+  <link href="../resources/css/ccg-admin.css" rel="stylesheet" />
   <link href="./css/admin-auth.css" rel="stylesheet" />
 </head>
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
@@ -18,7 +19,7 @@
     <div aria-hidden="true" class="ccg-bg-crt-overlay"></div>
   </div>
 
-  <main class="admin-dashboard-wrap">
+  <main class="admin-dashboard-wrap" data-admin-shell>
     <header class="admin-dashboard-header">
       <div>
         <p class="admin-auth-kicker">Omega Control Deck</p>
@@ -40,32 +41,32 @@
         <h2>Status</h2>
         <p data-admin-status data-state="info">Checking access…</p>
       </article>
-      <article class="admin-info-card">
-        <h2>System Info</h2>
-        <p data-admin-system>Initializing…</p>
+      <article class="admin-info-card omega-status-panel">
+        <h2>System Status</h2>
+        <p><strong>Data source path:</strong> <code>/games/games.json</code></p>
+        <p data-admin-load-status>Last load success: pending…</p>
+        <p><strong>Local mode:</strong> use <code>localhost</code> for edits, then commit exported files manually.</p>
       </article>
     </section>
 
-    <nav class="admin-tool-nav" aria-label="Admin navigation">
-      <a class="ccg-btn ccg-btn--primary" href="/admin/games-editor.html">Games JSON Editor</a>
-      <a class="ccg-btn ccg-btn--ghost" href="/admin/admin.html">Legacy Game Manager</a>
-      <a class="ccg-btn ccg-btn--ghost" href="/admin/quiz-manager.html">Quiz Manager</a>
-      <a class="ccg-btn ccg-btn--ghost" href="/admin/asset-manager.html">Asset Manager</a>
-    </nav>
+    <section class="admin-tool-nav" aria-label="Admin entry points">
+      <a class="ccg-btn ccg-btn--primary" href="/admin/games-editor.html">Games Editor</a>
+      <a class="ccg-btn ccg-btn--ghost" href="/admin/games-editor.html#exports-stubs">Exports &amp; Stubs</a>
+      <a class="ccg-btn ccg-btn--ghost" href="/admin/games-editor.html#publish-pipeline">Publish Pipeline</a>
+      <a class="ccg-btn ccg-btn--ghost" href="/admin/help.html">Help / Instructions</a>
+    </section>
 
-    <section class="admin-card-grid" aria-label="Future admin modules">
-      <article class="admin-info-card admin-placeholder">
-        <h2>Content Workflow</h2>
-        <p>Placeholder for post review and publishing controls.</p>
-      </article>
-      <article class="admin-info-card admin-placeholder">
-        <h2>Moderation</h2>
-        <p>Placeholder for user reports and moderation tooling.</p>
-      </article>
-      <article class="admin-info-card admin-placeholder">
-        <h2>Analytics</h2>
-        <p>Placeholder for site health and performance dashboards.</p>
-      </article>
+    <section class="omega-quickstart">
+      <h2>Quick Start</h2>
+      <ol>
+        <li><code>python -m http.server 8000</code></li>
+        <li>Open <code>http://localhost:8000/admin/dashboard.html</code></li>
+        <li>Edit games in Games Editor</li>
+        <li>Download <code>games.json</code></li>
+        <li>Replace <code>/games/games.json</code></li>
+        <li>Run node scripts (if required for stubs/publish)</li>
+        <li><code>git add</code> / commit / push</li>
+      </ol>
     </section>
   </main>
 

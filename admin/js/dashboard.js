@@ -1,11 +1,13 @@
 import { AUTH_CONFIG } from './config.js';
 import { logout } from './auth.js';
 import { ensureRole, startAccessMonitor } from './guard.js';
+import { fetchGamesJson } from './games-api.js';
+import { initAdminNav } from './admin-nav.js';
 
 const emailField = document.querySelector('[data-admin-email]');
 const roleField = document.querySelector('[data-admin-role]');
 const statusField = document.querySelector('[data-admin-status]');
-const systemField = document.querySelector('[data-admin-system]');
+const loadField = document.querySelector('[data-admin-load-status]');
 const logoutButton = document.querySelector('[data-logout-button]');
 
 function setStatus(text, state = 'info') {
@@ -19,23 +21,18 @@ async function bootstrap() {
   try {
     const allowedRoles = ['superadmin', 'admin', 'editor'];
     const result = await ensureRole(allowedRoles);
-
-    if (!result) {
-      return;
-    }
+    if (!result) return;
 
     const { session, role } = result;
     emailField.textContent = session.user?.email || 'Unknown';
     roleField.textContent = role;
 
-    const expiresAtUnix = session.expires_at || 0;
-    const expiresAt = expiresAtUnix
-      ? new Date(expiresAtUnix * 1000).toLocaleString()
-      : 'Unknown';
+    await fetchGamesJson();
+    if (loadField) loadField.textContent = `Last load success: ${new Date().toLocaleString()}`;
 
-    systemField.textContent = `Session expires: ${expiresAt}`;
     setStatus('Access granted. Admin systems operational.', 'success');
   } catch (error) {
+    if (loadField) loadField.textContent = `Last load error: ${error.message || 'unknown'}`;
     setStatus(error.message || 'Unable to validate admin access.', 'error');
   }
 }
@@ -43,7 +40,6 @@ async function bootstrap() {
 logoutButton.addEventListener('click', async () => {
   logoutButton.disabled = true;
   setStatus('Signing out…', 'info');
-
   try {
     await logout();
     window.location.replace(AUTH_CONFIG.postLogoutRedirect);
@@ -54,4 +50,5 @@ logoutButton.addEventListener('click', async () => {
 });
 
 startAccessMonitor();
+initAdminNav({ pageLabel: 'Dashboard', active: 'dashboard' });
 bootstrap();
