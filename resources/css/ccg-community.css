@@ -211,6 +211,30 @@
   margin-bottom: 0.7rem;
 }
 
+
+
+.ccg-community-auth-btn,
+#ccg-hub-login-btn {
+  position: relative;
+  z-index: 6;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  line-height: 1.1;
+}
+
+.ccg-header-actions::before,
+.ccg-header-actions::after,
+.ccg-community-auth__actions::before,
+.ccg-community-auth__actions::after {
+  pointer-events: none;
+}
+
+.ccg-community-auth-btn {
+  border-color: rgba(120, 241, 255, 0.85);
+  box-shadow: 0 0 10px rgba(85, 226, 255, 0.35);
+}
 @media (max-width: 800px) {
   .ccg-community-auth-btn {
     width: 100%;

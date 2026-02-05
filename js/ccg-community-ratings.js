@@ -14,6 +14,16 @@
     return null;
   }
 
+  function isNotConfiguredError(error) {
+    const code = String(error && error.code || '');
+    const message = String(error && error.message || '').toLowerCase();
+    return code === '42P01' || code === 'PGRST205' || message.includes('relation') || message.includes('does not exist');
+  }
+
+  function renderUnavailable(mount) {
+    mount.innerHTML = '<div class="ccg-community-card"><h3>Community Rating</h3><p>Community features not configured.</p></div>';
+  }
+
   async function awardBadge(userId) {
     const supabase = await window.ccgSupabase.getClient();
     await supabase.rpc('award_badge_if_eligible', { target_user_id: userId });
@@ -31,25 +41,42 @@
 
     mount.innerHTML = '<div class="ccg-community-card"><h3>Community Rating</h3><p>Loading…</p></div>';
     const user = window.ccgCommunityAuth.getUser();
-    const supabase = await window.ccgSupabase.getClient();
 
-    const avgPromise = supabase
+    let supabase;
+    try {
+      supabase = await window.ccgSupabase.getClient();
+    } catch (_error) {
+      renderUnavailable(mount);
+      return;
+    }
+
+    const avgRes = await supabase
       .from('game_ratings')
       .select('rating', { count: 'exact' })
       .eq('game_slug', slug);
 
+    if (avgRes.error && isNotConfiguredError(avgRes.error)) {
+      renderUnavailable(mount);
+      return;
+    }
+
     let yourRating = null;
     if (user) {
-      const { data } = await supabase
+      const yourRes = await supabase
         .from('game_ratings')
         .select('rating')
         .eq('game_slug', slug)
         .eq('user_id', user.id)
         .maybeSingle();
-      yourRating = data ? data.rating : null;
+
+      if (yourRes.error && isNotConfiguredError(yourRes.error)) {
+        renderUnavailable(mount);
+        return;
+      }
+
+      yourRating = yourRes.data ? yourRes.data.rating : null;
     }
 
-    const avgRes = await avgPromise;
     const rows = avgRes.data || [];
     const count = rows.length;
     const average = count ? (rows.reduce((sum, r) => sum + Number(r.rating || 0), 0) / count).toFixed(1) : '—';
@@ -93,7 +120,7 @@
         .upsert({ user_id: user.id, game_slug: slug, rating }, { onConflict: 'user_id,game_slug' });
 
       if (error) {
-        status.textContent = error.message;
+        status.textContent = isNotConfiguredError(error) ? 'Community features not configured.' : error.message;
         return;
       }
 
