@@ -1,0 +1,53 @@
+import { ensureRole, startAccessMonitor } from './guard.js';
+import { initAdminNav } from './admin-nav.js';
+
+const STORAGE_KEY = 'omegaPublishStepState';
+
+function readState() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    return typeof parsed === 'object' && parsed ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeState(next) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+}
+
+function refreshWarnings(state) {
+  for (let i = 1; i <= 7; i += 1) {
+    const warning = document.querySelector(`[data-step-warning="${i}"]`);
+    const stepNode = document.querySelector(`[data-step="${i}"]`);
+    if (!warning || !stepNode) continue;
+
+    const previousIncomplete = Array.from({ length: i - 1 }, (_, idx) => !state[idx + 1]).some(Boolean);
+    const checked = !!state[i];
+    warning.hidden = checked || !previousIncomplete;
+    stepNode.classList.toggle('is-complete', checked);
+    stepNode.classList.toggle('is-warning', !checked && previousIncomplete);
+  }
+}
+
+async function bootstrap() {
+  const roleCheck = await ensureRole(['superadmin', 'admin', 'editor']);
+  if (!roleCheck) return;
+
+  const state = readState();
+  document.querySelectorAll('[data-step-toggle]').forEach((toggle) => {
+    const step = Number(toggle.dataset.stepToggle);
+    toggle.checked = !!state[step];
+    toggle.addEventListener('change', () => {
+      state[step] = toggle.checked;
+      writeState(state);
+      refreshWarnings(state);
+    });
+  });
+
+  refreshWarnings(state);
+}
+
+startAccessMonitor();
+initAdminNav({ pageLabel: 'Publish Pipeline', active: 'publish' });
+bootstrap();

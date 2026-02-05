@@ -128,3 +128,46 @@
     text-align: left;
   }
 }
+
+.omega-pipeline-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--omega-admin-border);
+  border-radius: 12px;
+  background: rgba(7, 18, 36, 0.88);
+}
+
+.omega-pipeline-strip .is-active {
+  color: #91ffb5;
+  font-weight: 700;
+}
+
+.omega-publish-steps {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.omega-step {
+  border: 1px solid var(--omega-admin-border);
+  border-radius: 12px;
+  padding: 0.9rem;
+  background: rgba(5, 16, 34, 0.7);
+}
+
+.omega-step.is-complete {
+  border-color: rgba(145, 255, 181, 0.8);
+}
+
+.omega-step.is-warning {
+  border-color: var(--omega-admin-warn-border);
+  background: var(--omega-admin-warn-bg);
+}
+
+.omega-step-warning {
+  color: #ffe08f;
+  font-weight: 700;
+}

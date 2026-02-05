@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Omega Publish Pipeline</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="icon" href="../favicon.ico" />
+  <link href="../resources/css/ccg-master.css" rel="stylesheet" />
+  <link href="../resources/css/ccg-mode.css" rel="stylesheet" />
+  <link href="../resources/css/ccg-effects.css" rel="stylesheet" />
+  <link href="../resources/css/ccg-admin.css" rel="stylesheet" />
+  <link href="./css/admin-auth.css" rel="stylesheet" />
+</head>
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
+  <div aria-hidden="true" class="ccg-bg">
+    <div aria-hidden="true" class="ccg-bg-starfield"></div>
+    <div aria-hidden="true" class="ccg-bg-grid"></div>
+    <div aria-hidden="true" class="ccg-bg-crt-overlay"></div>
+  </div>
+
+  <main class="admin-dashboard-wrap" data-admin-shell>
+    <header class="admin-dashboard-header">
+      <div>
+        <p class="admin-auth-kicker">Omega Publish Workflow</p>
+        <h1>Publish Pipeline Wizard</h1>
+      </div>
+    </header>
+
+    <section class="omega-publish-panel">
+      <p>Complete steps in order. You can continue if needed, but skipped prerequisites will be flagged.</p>
+      <div class="omega-publish-steps" data-publish-steps>
+        <article class="omega-step" data-step="1">
+          <h2>Step 1 — Download latest exports</h2>
+          <p>From Editor, export the latest <code>games.json</code> and SEO bundles.</p>
+          <p><a class="ccg-btn ccg-btn--ghost" href="/admin/games-editor.html#export-panel">Go to Export Panel</a></p>
+          <label><input type="checkbox" data-step-toggle="1" /> Mark complete</label>
+          <p class="omega-step-warning" data-step-warning="1" hidden>Warning: run this before all other steps.</p>
+        </article>
+
+        <article class="omega-step" data-step="2">
+          <h2>Step 2 — Replace <code>/games/games.json</code></h2>
+          <p>Copy downloaded file into repository path <code>/games/games.json</code>.</p>
+          <label><input type="checkbox" data-step-toggle="2" /> Mark complete</label>
+          <p class="omega-step-warning" data-step-warning="2" hidden>Warning: using stale games.json can publish old content.</p>
+        </article>
+
+        <article class="omega-step" data-step="3">
+          <h2>Step 3 — Run SEO/Node scripts</h2>
+          <p>Generate slug pages and sitemap assets from your local Node workflow.</p>
+          <pre>node scripts/generate-slug-pages.js
+node scripts/generate-sitemaps.js</pre>
+          <label><input type="checkbox" data-step-toggle="3" /> Mark complete</label>
+          <p class="omega-step-warning" data-step-warning="3" hidden>Warning: skipping scripts can break discoverability and links.</p>
+        </article>
+
+        <article class="omega-step" data-step="4">
+          <h2>Step 4 — Git status check (manual)</h2>
+          <p>Review working tree and verify intended changes only.</p>
+          <pre>git status</pre>
+          <label><input type="checkbox" data-step-toggle="4" /> Mark complete</label>
+          <p class="omega-step-warning" data-step-warning="4" hidden>Warning: review changes before commit.</p>
+        </article>
+
+        <article class="omega-step" data-step="5">
+          <h2>Step 5 — Commit</h2>
+          <p>Create a clear commit message for export + generated files.</p>
+          <pre>git add games/games.json games/* sitemap*.xml
+ git commit -m "Update games and generated SEO assets"</pre>
+          <label><input type="checkbox" data-step-toggle="5" /> Mark complete</label>
+          <p class="omega-step-warning" data-step-warning="5" hidden>Warning: no commit means no deployment change.</p>
+        </article>
+
+        <article class="omega-step" data-step="6">
+          <h2>Step 6 — Push</h2>
+          <p>Push to your main publish branch.</p>
+          <pre>git push</pre>
+          <label><input type="checkbox" data-step-toggle="6" /> Mark complete</label>
+          <p class="omega-step-warning" data-step-warning="6" hidden>Warning: not pushed yet, GitHub Pages cannot update.</p>
+        </article>
+
+        <article class="omega-step" data-step="7">
+          <h2>Step 7 — Verify live</h2>
+          <p>Open live site, validate updated game page and sitemap availability.</p>
+          <p><a class="ccg-btn ccg-btn--ghost" href="https://www.cheekycommodoregamer.co.uk" target="_blank" rel="noopener">Open live site</a></p>
+          <label><input type="checkbox" data-step-toggle="7" /> Mark complete</label>
+          <p class="omega-step-warning" data-step-warning="7" hidden>Warning: always perform post-publish verification.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="/admin/js/publish.js"></script>
+</body>
+</html>
