@@ -123,7 +123,8 @@
 
   <dialog id="editorModal" class="editor-modal">
     <form id="recordForm" method="dialog">
-      <h2>Edit Game Record <span class="draft-badge">Draft Mode</span></h2>
+      <h2>Edit Game Record <span class="draft-badge" id="recordDraftState" hidden>Draft has unsaved changes</span></h2>
+      <div id="recordFormErrors" class="form-errors" hidden></div>
       <div class="form-grid">
         <label>title <input name="title" required /></label>
         <label>slug <input name="slug" required /></label>
@@ -151,6 +152,8 @@
     </form>
   </dialog>
 
+  <script src="/js/ccg-supabase-config.js" defer></script>
+  <script src="/js/ccg-supabase-client.js" defer></script>
   <script src="/admin/jszip.min.js"></script>
   <script type="module" src="/admin/js/games-editor.js"></script>
 </body>

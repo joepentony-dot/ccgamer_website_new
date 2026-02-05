@@ -2,97 +2,118 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 import { AUTH_CONFIG, SUPABASE_ANON_KEY, SUPABASE_URL } from './config.js';
 
 let authListenerBound = false;
+let supabaseClient = null;
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true,
-    flowType: 'pkce',
-    storageKey: AUTH_CONFIG.storageKey
+function getFallbackClient() {
+  if (!supabaseClient) {
+    supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+        flowType: 'pkce',
+        storageKey: AUTH_CONFIG.storageKey
+      }
+    });
   }
-});
+  return supabaseClient;
+}
+
+async function getAuthContext() {
+  if (window.ccgSupabase?.getCurrentUserContext) {
+    return window.ccgSupabase.getCurrentUserContext();
+  }
+
+  const client = getFallbackClient();
+  const {
+    data: { session },
+    error
+  } = await client.auth.getSession();
+
+  if (error) throw error;
+
+  return {
+    user: session?.user || null,
+    session: session || null,
+    isAuthenticated: Boolean(session?.user),
+    role: session?.user?.app_metadata?.role || 'member',
+    permissions: { canRate: false, canComment: false, canModerate: false }
+  };
+}
+
+export async function getSupabaseClient() {
+  if (window.ccgSupabase?.getClient) {
+    return window.ccgSupabase.getClient();
+  }
+  return getFallbackClient();
+}
+
+export async function waitForAuthReady() {
+  if (window.ccgSupabase?.waitForAuth) {
+    await window.ccgSupabase.waitForAuth();
+    return;
+  }
+
+  await new Promise((resolve) => {
+    window.addEventListener('ccg:auth-ready', () => resolve(), { once: true });
+    window.setTimeout(resolve, 1000);
+  });
+}
 
 export async function login(email, password) {
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const client = await getSupabaseClient();
+  const { data, error } = await client.auth.signInWithPassword({
     email: String(email || '').trim(),
     password: String(password || '')
   });
 
-  if (error) {
-    throw error;
-  }
-
+  if (error) throw error;
   return data;
 }
 
 export async function logout() {
-  const { error } = await supabase.auth.signOut({ scope: 'global' });
-  if (error) {
-    throw error;
-  }
+  const client = await getSupabaseClient();
+  const { error } = await client.auth.signOut({ scope: 'global' });
+  if (error) throw error;
 }
 
 export async function sendPasswordReset(email) {
+  const client = await getSupabaseClient();
   const redirectTo = `${window.location.origin}/admin/login.html?reset=1`;
-  const { data, error } = await supabase.auth.resetPasswordForEmail(String(email || '').trim(), {
+  const { data, error } = await client.auth.resetPasswordForEmail(String(email || '').trim(), {
     redirectTo
   });
 
-  if (error) {
-    throw error;
-  }
-
+  if (error) throw error;
   return data;
 }
 
 export async function restoreSession() {
-  const {
-    data: { session },
-    error
-  } = await supabase.auth.getSession();
-
-  if (error) {
-    throw error;
-  }
-
-  return session;
+  const context = await getAuthContext();
+  return context.session || null;
 }
 
 export async function refreshSessionIfNeeded() {
-  const session = await restoreSession();
-  if (!session) {
-    return null;
-  }
-
-  const expiresAtMs = (session.expires_at || 0) * 1000;
-  const now = Date.now();
-
-  if (!expiresAtMs || expiresAtMs - now <= AUTH_CONFIG.refreshMarginMs) {
-    const { data, error } = await supabase.auth.refreshSession();
-    if (error) {
-      throw error;
-    }
-    return data.session || null;
-  }
-
-  return session;
+  const context = await getAuthContext();
+  return context.session || null;
 }
 
 export function onAuthStateChange(handler) {
-  return supabase.auth.onAuthStateChange(handler);
+  if (window.ccgSupabase?.getClient) {
+    return window.ccgSupabase.getClient().then((client) => client.auth.onAuthStateChange(handler));
+  }
+  return getFallbackClient().auth.onAuthStateChange(handler);
 }
 
 export function bindSessionInvalidation({ onSignedOut } = {}) {
-  if (authListenerBound) {
-    return;
-  }
-
+  if (authListenerBound) return;
   authListenerBound = true;
 
-  onAuthStateChange((event) => {
-    if (event === 'SIGNED_OUT' && typeof onSignedOut === 'function') {
-      onSignedOut();
-    }
-  });
+  window.addEventListener('ccg:auth-ready', () => {
+    void onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT' && typeof onSignedOut === 'function') {
+        onSignedOut();
+      }
+    });
+  }, { once: true });
 }

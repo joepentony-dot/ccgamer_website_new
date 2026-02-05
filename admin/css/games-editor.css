@@ -126,3 +126,22 @@ textarea {
   .games-editor-wrap { width: 98vw; }
   .admin-dashboard-header { align-items: flex-start; }
 }
+
+.form-errors {
+  margin: 0.4rem 0 0.8rem;
+  border: 1px solid rgba(255, 156, 169, 0.4);
+  background: rgba(255, 156, 169, 0.1);
+  color: #ffd4da;
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+}
+
+.form-errors ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+#saveRecord:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
