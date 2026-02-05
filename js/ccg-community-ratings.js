@@ -21,7 +21,7 @@
   }
 
   function renderUnavailable(mount) {
-    mount.innerHTML = '<div class="ccg-community-card"><h3>Community Rating</h3><p>Community features not configured.</p></div>';
+    mount.innerHTML = '<div class="ccg-community-card"><h3>Community Rating</h3><p>Community features not configured yet.</p></div>';
   }
 
   async function awardBadge(userId) {
@@ -34,6 +34,12 @@
     if (!mount) return;
 
     const slug = getGameSlug();
+    const readiness = await window.ccgSupabase.checkCommunityReadiness();
+    if (!readiness.ready) {
+      renderUnavailable(mount);
+      return;
+    }
+
     if (!slug) {
       mount.innerHTML = '<div class="ccg-community-card"><p>Community rating is unavailable for this page.</p></div>';
       return;
@@ -120,7 +126,7 @@
         .upsert({ user_id: user.id, game_slug: slug, rating }, { onConflict: 'user_id,game_slug' });
 
       if (error) {
-        status.textContent = isNotConfiguredError(error) ? 'Community features not configured.' : error.message;
+        status.textContent = isNotConfiguredError(error) ? 'Community features not configured yet.' : error.message;
         return;
       }
 
