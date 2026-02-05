@@ -1047,6 +1047,7 @@ function renderGame(game) {
     const hasRating = !!(document.getElementById("gameHeroRating") && !document.getElementById("gameHeroRating").hidden);
 
     renderFactsPanel(game);
+    renderUserRatingPanel(game);
     buildGameToc({
         overview: descriptionSection,
         video: videoSection,
@@ -1630,6 +1631,90 @@ function renderFactsPanel(game) {
 
     factsPanel.hidden = facts.length === 0;
 }
+
+
+function renderUserRatingPanel(game) {
+    const api = window.CCGUserRatings;
+    const factsPanel = document.querySelector("[data-game-facts]");
+    if (!api || !factsPanel) return;
+
+    const slug = String(game?.slug || "").trim();
+    if (!slug) return;
+
+    let panel = document.querySelector('[data-user-rating-panel]');
+    if (!panel) {
+        panel = document.createElement('section');
+        panel.className = 'game-section game-section--user-rating';
+        panel.setAttribute('data-user-rating-panel', '');
+        panel.innerHTML = `
+          <p class="game-section__kicker">Player Profile</p>
+          <h2 class="game-section__title">Your Rating</h2>
+          <div class="ccg-user-rating__controls">
+            <label>Nickname <input type="text" data-rating-nickname maxlength="24" placeholder="RetroFan" /></label>
+            <button class="ccg-btn ccg-btn--ghost" type="button" data-rating-signin>Sign in</button>
+            <button class="ccg-btn ccg-btn--ghost" type="button" data-rating-signout>Sign out</button>
+          </div>
+          <div class="ccg-user-rating__controls">
+            <label>Score (1–10)
+              <input type="number" min="1" max="10" step="1" data-rating-score />
+            </label>
+            <button class="ccg-btn ccg-btn--primary" type="button" data-rating-save>Save Rating</button>
+            <button class="ccg-btn ccg-btn--ghost" type="button" data-rating-export>Export ratings</button>
+            <label class="ccg-btn ccg-btn--ghost">Import ratings
+              <input type="file" accept="application/json" data-rating-import hidden>
+            </label>
+          </div>
+          <p class="ccg-user-rating__status" data-rating-status aria-live="polite"></p>
+        `;
+        factsPanel.insertAdjacentElement('afterend', panel);
+    }
+
+    const nicknameField = panel.querySelector('[data-rating-nickname]');
+    const scoreField = panel.querySelector('[data-rating-score]');
+    const statusField = panel.querySelector('[data-rating-status]');
+
+    const refresh = () => {
+        const profile = api.getProfile();
+        nicknameField.value = profile.nickname || '';
+        scoreField.value = api.getRating(slug) || '';
+        statusField.textContent = profile.nickname ? `Signed in as ${profile.nickname}` : 'Not signed in. Add a nickname to personalize ratings.';
+    };
+
+    panel.querySelector('[data-rating-signin]').onclick = () => {
+        api.setNickname(nicknameField.value);
+        refresh();
+    };
+
+    panel.querySelector('[data-rating-signout]').onclick = () => {
+        api.signOut();
+        refresh();
+    };
+
+    panel.querySelector('[data-rating-save]').onclick = () => {
+        const ok = api.setRating(slug, scoreField.value);
+        statusField.textContent = ok ? 'Your rating was saved on this browser.' : 'Please enter a valid 1-10 rating.';
+    };
+
+    panel.querySelector('[data-rating-export]').onclick = () => {
+        api.exportRatings();
+        statusField.textContent = 'Ratings exported.';
+    };
+
+    panel.querySelector('[data-rating-import]').onchange = async (event) => {
+        const [file] = event.target.files || [];
+        if (!file) return;
+        try {
+            await api.importRatings(file);
+            refresh();
+            statusField.textContent = 'Ratings imported.';
+        } catch (error) {
+            statusField.textContent = error.message || 'Import failed.';
+        }
+    };
+
+    refresh();
+}
+
 
 function ensureSectionId(section, id) {
     if (!section) return "";

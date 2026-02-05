@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCG Omega Admin Help</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="icon" href="../favicon.ico" />
+  <link href="../resources/css/ccg-master.css" rel="stylesheet" />
+  <link href="../resources/css/ccg-mode.css" rel="stylesheet" />
+  <link href="../resources/css/ccg-effects.css" rel="stylesheet" />
+  <link href="../resources/css/ccg-admin.css" rel="stylesheet" />
+  <link href="./css/admin-auth.css" rel="stylesheet" />
+</head>
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
+  <div aria-hidden="true" class="ccg-bg">
+    <div aria-hidden="true" class="ccg-bg-starfield"></div>
+    <div aria-hidden="true" class="ccg-bg-grid"></div>
+    <div aria-hidden="true" class="ccg-bg-crt-overlay"></div>
+  </div>
+
+  <main class="admin-dashboard-wrap" data-admin-shell>
+    <header class="admin-dashboard-header">
+      <div>
+        <p class="admin-auth-kicker">Omega Guidance</p>
+        <h1>Admin Help &amp; Instructions</h1>
+      </div>
+    </header>
+
+    <section class="omega-help-panel">
+      <h2>What changed</h2>
+      <ul>
+        <li>Unified Omega navigation is available on all core admin pages.</li>
+        <li>Games Editor now supports <strong>Add New Game</strong> draft creation and export download flow.</li>
+        <li>Publishing remains static-host safe: no server writes, manual commit required.</li>
+      </ul>
+
+      <h2>How to use</h2>
+      <ol>
+        <li>Run <code>python -m http.server 8000</code>.</li>
+        <li>Open <code>/admin/dashboard.html</code>.</li>
+        <li>Go to Games Editor, fetch library, edit or add drafts.</li>
+        <li>Download <code>games.json</code>, replace repository file manually.</li>
+        <li>Use publish pipeline checklist and run local scripts if needed.</li>
+      </ol>
+    </section>
+  </main>
+  <script type="module">
+    import { initAdminNav } from '/admin/js/admin-nav.js';
+    initAdminNav({ pageLabel: 'Help / Instructions', active: 'help' });
+  </script>
+</body>
+</html>

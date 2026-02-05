@@ -52,6 +52,7 @@
     <link rel="stylesheet" href="../resources/css/admin.css">
     <link rel="stylesheet" href="../resources/css/ccg-footer.css" />
     <link rel="stylesheet" href="../resources/css/ccg-mobile-lite.css">
+    <link rel="stylesheet" href="../resources/css/ccg-admin.css">
     <script src="../js/ccg-mobile-lite.js" defer></script>
 </head>
 
@@ -624,5 +625,10 @@
     <script src="./jszip.min.js" defer></script>
     <script src="./admin.js" defer></script>
 
+
+<script type="module">
+import { injectDeprecatedBanner } from "/admin/js/admin-nav.js";
+injectDeprecatedBanner("This page is part of the legacy admin flow");
+</script>
 </body>
 </html>

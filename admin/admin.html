@@ -43,6 +43,7 @@
     <link href="../resources/css/admin.css" rel="stylesheet"/>
     <link href="../resources/css/ccg-footer.css" rel="stylesheet">
     <link href="../resources/css/ccg-mobile-lite.css" rel="stylesheet"/>
+    <link href="../resources/css/ccg-admin.css" rel="stylesheet"/>
     <script defer="" src="../js/ccg-mobile-lite.js"></script>
 </head>
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64" id="top">
@@ -918,5 +919,10 @@ git push</pre>
 <script defer="" src="../js/ccg-global.js"></script>
 <script defer="" src="./jszip.min.js"></script>
 <script defer="" src="./admin.js"></script>
+
+<script type="module">
+import { injectDeprecatedBanner } from "/admin/js/admin-nav.js";
+injectDeprecatedBanner("This page is part of the legacy admin flow");
+</script>
 </body>
 </html>

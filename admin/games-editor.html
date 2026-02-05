@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CCG Games JSON Editor</title>
+  <title>CCG Omega Games Editor</title>
   <meta name="robots" content="noindex,nofollow" />
   <link rel="icon" href="../favicon.ico" />
   <link href="../resources/css/ccg-master.css" rel="stylesheet" />
   <link href="../resources/css/ccg-mode.css" rel="stylesheet" />
   <link href="../resources/css/ccg-effects.css" rel="stylesheet" />
+  <link href="../resources/css/ccg-admin.css" rel="stylesheet" />
   <link href="./css/admin-auth.css" rel="stylesheet" />
   <link href="./css/games-editor.css" rel="stylesheet" />
 </head>
@@ -19,7 +20,7 @@
     <div aria-hidden="true" class="ccg-bg-crt-overlay"></div>
   </div>
 
-  <main class="games-editor-wrap">
+  <main class="games-editor-wrap" data-admin-shell>
     <header class="admin-dashboard-header sticky-toolbar">
       <div>
         <p class="admin-auth-kicker">Omega Games Control</p>
@@ -27,11 +28,16 @@
         <p class="editor-meta">Signed in as <span data-editor-email></span> · Role <strong data-editor-role></strong></p>
       </div>
       <div class="toolbar-actions">
+        <button class="ccg-btn ccg-btn--ghost" id="addGame" type="button">Add New Game</button>
         <button class="ccg-btn ccg-btn--ghost" id="showDiff" type="button">Diff</button>
-        <button class="ccg-btn ccg-btn--primary" id="saveAll" type="button">Save</button>
+        <button class="ccg-btn ccg-btn--primary" id="saveAll" type="button">Download games.json</button>
         <button class="ccg-btn ccg-btn--ghost" id="logoutButton" type="button">Log out</button>
       </div>
     </header>
+
+    <section class="omega-workflow-note" data-export-note hidden>
+      Downloaded <code>games.json</code>. Replace <code>/games/games.json</code> in the repo and commit.
+    </section>
 
     <section class="admin-info-card controls">
       <div class="control-row">
@@ -66,10 +72,22 @@
 
     <section class="admin-info-card card-grid" hidden id="cardView">
       <div id="gamesCardBody"></div>
-      <div id="paginationCard"></div>
     </section>
 
     <section class="admin-card-grid">
+      <article class="admin-info-card" id="exports-stubs">
+        <h2>Exports &amp; Stubs</h2>
+        <p>Use <strong>Download games.json</strong> to export your in-memory edits. Legacy exports/stubs tools remain available in the legacy admin page.</p>
+        <p><a href="/admin/admin.html" class="ccg-btn ccg-btn--ghost">Open Legacy Exports Tools</a></p>
+      </article>
+      <article class="admin-info-card" id="publish-pipeline">
+        <h2>Publish Pipeline</h2>
+        <ol>
+          <li>Download and replace <code>/games/games.json</code>.</li>
+          <li>Run any SEO stub scripts from your local Node workflow.</li>
+          <li>Commit and push site + generated artifacts.</li>
+        </ol>
+      </article>
       <article class="admin-info-card">
         <h2>Backup Versions (last 20)</h2>
         <ol id="backupList"></ol>
@@ -89,6 +107,7 @@
       <div class="form-grid">
         <label>title <input name="title" required /></label>
         <label>slug <input name="slug" required /></label>
+        <label>system/platform <input name="system" /></label>
         <label>year <input name="year" min="1977" type="number" required /></label>
         <label>genres (csv) <input name="genres" /></label>
         <label>developer <input name="developer" /></label>
@@ -96,13 +115,12 @@
         <label>ccg_rating <input name="ccg_rating" max="10" min="1" step="0.1" type="number" required /></label>
         <label>ccg_rating_reason <input name="ccg_rating_reason" /></label>
         <label>videoid <input name="videoid" /></label>
-        <label>thumbnails <input name="thumbnails" /></label>
+        <label>thumbnail <input name="thumbnails" /></label>
         <label>box_3d <input name="box_3d" /></label>
         <label>pdf <input name="pdf" /></label>
         <label>disk (csv) <input name="disk" /></label>
         <label>lemon64 <input name="lemon64" /></label>
         <label>lemonamiga <input name="lemonamiga" /></label>
-        <label>credits <input name="credits" placeholder="Managed in schema credits object" disabled /></label>
       </div>
       <h3>Live preview</h3>
       <pre id="recordPreview"></pre>
