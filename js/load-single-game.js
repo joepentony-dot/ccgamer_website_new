@@ -2299,7 +2299,7 @@ function initRelatedCarousel() {
     scrollEl.style.overflowX = "auto";
     scrollEl.style.overflowY = "hidden";
     scrollEl.style.scrollBehavior = "smooth";
-    scrollEl.style.touchAction = "pan-x pan-y";
+    scrollEl.style.touchAction = "pan-x";
     scrollEl.style.webkitOverflowScrolling = "touch";
 
     const updateButtons = () => {
@@ -2337,26 +2337,6 @@ function initRelatedCarousel() {
     bindArrow(prevBtn, -1);
     bindArrow(nextBtn, 1);
 
-    const handleWheel = (event) => {
-        if (event.defaultPrevented || event.ctrlKey || event.metaKey) return;
-
-        const maxScroll = Math.max(0, scrollEl.scrollWidth - scrollEl.clientWidth);
-        if (maxScroll <= 1) return;
-
-        const absDeltaX = Math.abs(event.deltaX);
-        const absDeltaY = Math.abs(event.deltaY);
-        if (absDeltaY <= absDeltaX || absDeltaY < 4) return;
-
-        const direction = event.deltaY > 0 ? 1 : -1;
-        const canScrollForward = direction > 0 && scrollEl.scrollLeft < maxScroll - 1;
-        const canScrollBackward = direction < 0 && scrollEl.scrollLeft > 1;
-        if (!canScrollForward && !canScrollBackward) return;
-
-        event.preventDefault();
-        scrollEl.scrollBy({ left: event.deltaY, behavior: "auto" });
-    };
-
-    scrollEl.addEventListener("wheel", handleWheel, { passive: false });
     scrollEl.addEventListener("scroll", updateButtons, { passive: true });
     window.addEventListener("resize", updateButtons);
     window.addEventListener("load", updateButtons);
