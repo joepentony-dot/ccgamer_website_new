@@ -2757,6 +2757,56 @@ body.ccg-is-mobile .home-hero__bg {
 }
 
 /* ============================================================
+   MOBILE GLASS CLARITY LOCK
+   • Prevents stacked glass/opacity haze on mobile
+   • Keeps Omega glass styling intact on desktop
+============================================================ */
+
+@media (max-width: 768px) {
+    .ccg-glass,
+    .ccg-panel,
+    .ccg-card,
+    .ccg-section,
+    .ccg-about-panel,
+    .about-panel,
+    .about-card {
+        backdrop-filter: blur(6px) !important;
+        -webkit-backdrop-filter: blur(6px) !important;
+        background: rgba(10, 25, 45, 0.88) !important;
+        opacity: 1 !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .ccg-glass *,
+    .ccg-panel *,
+    .ccg-about-panel *,
+    .about-panel * {
+        opacity: 1 !important;
+        filter: none !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .ccg-glass::before,
+    .ccg-glass::after,
+    .ccg-panel::before,
+    .ccg-panel::after,
+    .ccg-about-panel::before,
+    .ccg-about-panel::after {
+        display: none !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .ccg-main,
+    .ccg-content,
+    .about-content {
+        color: rgba(240, 250, 255, 0.95) !important;
+    }
+}
+
+/* ============================================================
    Mobile Visual Reliability Safeguard
    • Mobile only
    • Ensures header navigation remains visible & tappable
