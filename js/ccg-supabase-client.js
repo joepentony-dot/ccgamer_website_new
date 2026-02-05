@@ -187,7 +187,32 @@
   }
 
 
+
+
+  async function callRpcSafe(client, functionName, params) {
+    if (!client || typeof client.rpc !== 'function') {
+      return { data: null, error: new Error('Supabase client unavailable.'), missing: true };
+    }
+
+    try {
+      const response = await client.rpc(functionName, params || {});
+      if (response.error) {
+        return {
+          data: null,
+          error: response.error,
+          missing: isCommunityUnavailableError(response.error)
+        };
+      }
+
+      return { data: response.data || [], error: null, missing: false };
+    } catch (error) {
+      return { data: null, error: error, missing: isCommunityUnavailableError(error) };
+    }
+  }
+
   window.ccgSupabase = window.ccgSupabase || {};
   window.ccgSupabase.getClient = getClient;
   window.ccgSupabase.checkCommunityReadiness = checkCommunityReadiness;
+  window.ccgSupabase.callRpcSafe = callRpcSafe;
+  window.ccgSupabase.isCommunityUnavailableError = isCommunityUnavailableError;
 })();

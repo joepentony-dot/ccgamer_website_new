@@ -238,3 +238,189 @@
   .ccg-community-modal__panel { margin-top: 5vh; max-height: 90vh; }
   .ccg-profile-header { align-items: flex-start; }
 }
+
+.ccg-seo-links {
+  margin-top: 0.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.ccg-seo-links a {
+  border: 1px solid rgba(117, 218, 255, 0.45);
+  border-radius: 999px;
+  padding: 0.32rem 0.7rem;
+  color: #d7fbff;
+  text-decoration: none;
+  font-size: 0.82rem;
+}
+
+.hub-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.hub-card {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.hub-card--full {
+  grid-column: 1 / -1;
+}
+
+.hub-section-body {
+  min-height: 96px;
+}
+
+.mini-game-tile-grid {
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.mini-game-tile {
+  border: 1px solid rgba(120, 235, 255, 0.35);
+  border-radius: 12px;
+  padding: 0.65rem;
+  text-decoration: none;
+  color: #e9fbff;
+  background: rgba(6, 20, 45, 0.6);
+}
+
+.mini-game-tile__title {
+  margin: 0 0 0.5rem;
+  font-size: 0.92rem;
+}
+
+.mini-game-tile__stats {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.mini-game-tile__stats div {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+}
+
+.mini-game-tile__stats dt,
+.mini-game-tile__stats dd {
+  margin: 0;
+}
+
+.activity-list,
+.member-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.activity-row,
+.member-row {
+  border: 1px solid rgba(117, 218, 255, 0.28);
+  border-radius: 10px;
+  padding: 0.6rem;
+  background: rgba(6, 17, 37, 0.72);
+}
+
+.activity-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.activity-row a,
+.member-row a {
+  color: #caf7ff;
+}
+
+.activity-row__type {
+  min-width: 72px;
+  font-size: 0.75rem;
+  border: 1px solid rgba(170, 110, 255, 0.55);
+  border-radius: 999px;
+  padding: 0.2rem 0.45rem;
+  text-align: center;
+}
+
+.activity-row__body {
+  font-size: 0.88rem;
+}
+
+.activity-row time {
+  font-size: 0.78rem;
+  color: #9eddec;
+}
+
+.member-row__main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+}
+
+.member-row__name {
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.member-row__points {
+  font-size: 0.84rem;
+  color: #bbf4ff;
+}
+
+.member-row__meta {
+  margin: 0.45rem 0;
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  color: #b0edff;
+}
+
+@media (max-width: 920px) {
+  .hub-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .activity-row {
+    grid-template-columns: 1fr;
+  }
+
+  .activity-row__type {
+    width: fit-content;
+  }
+}
+
+.community-seo-table-wrap {
+  overflow-x: auto;
+}
+
+.community-seo-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 620px;
+}
+
+.community-seo-table th,
+.community-seo-table td {
+  border: 1px solid rgba(117, 218, 255, 0.28);
+  padding: 0.55rem;
+  text-align: left;
+  font-size: 0.88rem;
+}
+
+.community-seo-table th {
+  background: rgba(21, 41, 78, 0.8);
+}
+
+.community-seo-table td a {
+  color: #caf7ff;
+}
