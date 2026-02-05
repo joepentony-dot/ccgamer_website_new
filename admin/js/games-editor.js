@@ -7,6 +7,7 @@ import {
   restoreBackup,
   saveGamesJson
 } from './games-api.js';
+import { AUTH_CONFIG } from './config.js';
 import { validateGameRecord, validateGamesSchema } from './validator.js';
 
 const KEY_ORDER = [
@@ -219,7 +220,7 @@ async function bootstrap() {
 
 document.getElementById('logoutButton').addEventListener('click', async () => {
   await logout();
-  window.location.replace('/admin/login.html');
+  window.location.replace(AUTH_CONFIG.postLogoutRedirect);
 });
 
 document.querySelectorAll('[data-view]').forEach((button) => {
@@ -308,15 +309,15 @@ document.getElementById('saveAll').addEventListener('click', async () => {
 
   const now = new Date().toISOString().replace(/[:.]/g, '-');
   const message = `admin(games-editor): update games.json ${now}`;
-  setStatus('Saving: validate → backup → commit → deploy check…');
+  setStatus('Saving: validate → local backup → client export…');
 
   try {
     await saveGamesJson({ games: state.games, message, role: state.role });
-    setStatus('Save pipeline completed successfully.', 'success');
+    setStatus('Saved locally. Downloaded games.json for manual commit.', 'success');
     state.rawBeforeEdit = JSON.stringify(state.games, null, 2);
     await refreshBackups();
   } catch (error) {
-    setStatus(`Save failed, rollback triggered: ${error.message}`, 'error');
+    setStatus(`Save failed: ${error.message}`, 'error');
   }
 });
 

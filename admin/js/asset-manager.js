@@ -1,4 +1,5 @@
 import { logout } from './auth.js';
+import { APP_PATHS, AUTH_CONFIG } from './config.js';
 import { ensureRole, startAccessMonitor } from './guard.js';
 import { createSnapshot, getHealthReport, scanAssets, uploadAssets } from './asset-manager-api.js';
 
@@ -297,28 +298,37 @@ async function wireGameLinking() {
       return;
     }
 
-    const exists = state.assets.some((asset) => asset.path === assetPath);
-    const gamesResponse = await fetch('/games/games.json');
-    const gamesData = await gamesResponse.json();
+    try {
+      const exists = state.assets.some((asset) => asset.path === assetPath);
+      // Path correction: use canonical games.json path for local + production static hosting.
+      const gamesResponse = await fetch(APP_PATHS.gamesJson, { cache: 'no-store' });
+      if (!gamesResponse.ok) {
+        throw new Error(`Unable to load ${APP_PATHS.gamesJson} (${gamesResponse.status}).`);
+      }
 
-    const game = (gamesData.games || []).find((entry) => slugify(entry.slug || entry.title) === gameSlug);
-    const patch = {
-      gameSlug,
-      exists,
-      patch: game
-        ? {
-            title: game.title,
-            set: {
-              box3d: assetPath
+      const gamesData = await gamesResponse.json();
+      const gameList = Array.isArray(gamesData) ? gamesData : gamesData?.games || [];
+      const game = gameList.find((entry) => slugify(entry.slug || entry.title) === gameSlug);
+      const patch = {
+        gameSlug,
+        exists,
+        patch: game
+          ? {
+              title: game.title,
+              set: {
+                box3d: assetPath
+              }
             }
-          }
-        : null,
-      note: exists
-        ? 'Validated path. Apply patch in Games Editor to persist.'
-        : 'Path missing from indexed assets. Upload or correct before linking.'
-    };
+          : null,
+        note: exists
+          ? 'Validated path. Apply patch in Games Editor to persist.'
+          : 'Path missing from indexed assets. Upload or correct before linking.'
+      };
 
-    els.linkingResult.textContent = JSON.stringify(patch, null, 2);
+      els.linkingResult.textContent = JSON.stringify(patch, null, 2);
+    } catch (error) {
+      els.linkingResult.textContent = `Unable to validate link: ${error.message}`;
+    }
   });
 }
 
@@ -359,7 +369,7 @@ function wireButtons() {
 
   els.logoutButton?.addEventListener('click', async () => {
     await logout();
-    window.location.replace('/admin/login.html?reason=signed_out');
+    window.location.replace(`${AUTH_CONFIG.loginPage}?reason=signed_out`);
   });
 }
 
