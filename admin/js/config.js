@@ -7,8 +7,8 @@
  *
  * Never commit service-role keys in the client.
  */
-export const SUPABASE_URL = 'https://YOUR_PROJECT_REF.supabase.co';
-export const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+export const SUPABASE_URL = 'https://lcslgxpgmttaexsorxik.supabase.co';
+export const SUPABASE_ANON_KEY = 'sb_publishable_MDjIagrZ-IjI_xbE3VXNaQ_ZaScTuTJ';
 
 export const AUTH_CONFIG = Object.freeze({
   storageKey: 'ccg-admin-auth',
