@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCG Admin Login</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="icon" href="../favicon.ico" />
+  <link href="../resources/css/ccg-master.css" rel="stylesheet" />
+  <link href="../resources/css/ccg-mode.css" rel="stylesheet" />
+  <link href="../resources/css/ccg-effects.css" rel="stylesheet" />
+  <link href="./css/admin-auth.css" rel="stylesheet" />
+</head>
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
+  <div aria-hidden="true" class="ccg-bg">
+    <div aria-hidden="true" class="ccg-bg-starfield"></div>
+    <div aria-hidden="true" class="ccg-bg-grid"></div>
+    <div aria-hidden="true" class="ccg-bg-crt-overlay"></div>
+  </div>
+
+  <main class="admin-auth-wrap">
+    <section class="admin-auth-panel" aria-labelledby="admin-login-title">
+      <p class="admin-auth-kicker">Omega Security Layer</p>
+      <h1 id="admin-login-title">Cheeky Commodore Gamer Admin</h1>
+      <p class="admin-auth-help">Sign in with your authorised admin account.</p>
+
+      <form data-login-form novalidate>
+        <label for="admin-email">Email</label>
+        <input id="admin-email" data-email-input type="email" autocomplete="email" required />
+
+        <label for="admin-password">Password</label>
+        <input id="admin-password" data-password-input type="password" autocomplete="current-password" required />
+
+        <button class="ccg-btn ccg-btn--primary" data-login-button type="submit">Sign in</button>
+        <button class="ccg-btn ccg-btn--ghost" data-reset-button type="button">Reset password</button>
+      </form>
+
+      <p class="admin-auth-message" data-message data-state="info">Enter your credentials to continue.</p>
+    </section>
+  </main>
+
+  <script type="module" src="/admin/js/login.js"></script>
+</body>
+</html>
