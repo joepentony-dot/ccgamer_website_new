@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" data-ccg-page="community-hub">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCG Community Hub | Cheeky Commodore Gamer</title>
+  <meta name="description" content="Join the CCG Community to rate games, post comments, and earn badges." />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="stylesheet" href="/resources/css/ccg-master.css" />
+  <link rel="stylesheet" href="/resources/css/ccg-mode.css" />
+  <link rel="stylesheet" href="/resources/css/ccg-overlays.css" />
+  <link rel="stylesheet" href="/resources/css/ccg-footer.css" />
+  <link rel="stylesheet" href="/resources/css/ccg-community.css" />
+</head>
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
+  <div class="ccg-bg" aria-hidden="true">
+    <div class="ccg-bg-starfield" aria-hidden="true"></div>
+    <div class="ccg-bg-grid" aria-hidden="true"></div>
+  </div>
+
+  <header class="ccg-header" data-ccg-header>
+    <div class="ccg-header-inner">
+      <a href="/home.html" class="ccg-brand">
+        <img src="/resources/images/ccgamer-logo.png" alt="Cheeky Commodore Gamer logo" class="ccg-brand__logo" width="1500" height="1032" />
+        <div class="ccg-brand__text">
+          <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
+          <div class="ccg-brand__title">
+            <span class="ccg-brand__neon-cheeky">CHEEKY COMMODORE</span>
+            <span class="ccg-brand__neon-sub">GAMER</span>
+          </div>
+        </div>
+      </a>
+      <nav class="ccg-nav" aria-label="Primary navigation">
+        <ul class="ccg-nav__list ccg-nav__list--primary">
+          <li><a href="/home.html" class="ccg-nav__link">Home</a></li>
+          <li><a href="/games/index.html" class="ccg-nav__link">Browse Games</a></li>
+          <li><a href="/games/collections/index.html" class="ccg-nav__link">Collections</a></li>
+        </ul>
+        <ul class="ccg-nav__list ccg-nav__list--secondary" data-ccg-nav-secondary>
+          <li><a href="/quiz/quiz.html" class="ccg-nav__link">Quiz</a></li>
+          <li><a href="/about.html" class="ccg-nav__link">About</a></li>
+          <li><a href="/contact.html" class="ccg-nav__link">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="ccg-header-actions"></div>
+    </div>
+    <div class="ccg-header-neon-strip"></div>
+  </header>
+
+  <main class="ccg-community-layout">
+    <section class="ccg-community-card">
+      <h1>CCG Community Hub</h1>
+      <p>Log in to rate and comment on your favourite Commodore classics.</p>
+      <div class="ccg-community-auth__actions">
+        <button type="button" class="ccg-community-btn" id="ccg-hub-login-btn">Join / Log in</button>
+        <a class="ccg-community-btn ccg-community-btn--ghost" href="/community/profile.html">Go to profile</a>
+      </div>
+    </section>
+
+    <section class="ccg-community-grid">
+      <article class="ccg-community-card">
+        <h2>How it works</h2>
+        <p>Create an account with email + password or use a magic link.</p>
+        <p>Once logged in, rate games from 1 to 10 and join discussions.</p>
+      </article>
+      <article class="ccg-community-card">
+        <h2>Top Badges</h2>
+        <div class="ccg-badges">
+          <span class="ccg-badge">FIRST_RATING</span>
+          <span class="ccg-badge">RATED_10</span>
+          <span class="ccg-badge">FIRST_COMMENT</span>
+          <span class="ccg-badge">COMMENTER_10</span>
+        </div>
+      </article>
+      <article class="ccg-community-card">
+        <h2>Moderation & safety</h2>
+        <p>Comments can be reported, and moderators can soft-delete harmful content.</p>
+      </article>
+    </section>
+  </main>
+
+  <footer class="ccg-footer">
+    <p class="ccg-footer__text">© <span data-ccg-year></span> Cheeky Commodore Gamer.</p>
+  </footer>
+
+  <script src="/js/ccg-global.js" defer></script>
+  <script src="/js/ccg-mode-engine.js" defer></script>
+  <script src="/js/ccg-supabase-config.js" defer></script>
+  <script src="/js/ccg-supabase-client.js" defer></script>
+  <script src="/js/ccg-community-auth.js" defer></script>
+  <script src="/js/ccg-community-ui.js" defer></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const btn = document.getElementById('ccg-hub-login-btn');
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        window.ccgCommunityAuth.openAuthModal('signin');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,2 @@
+window.CCG_SUPABASE_URL = "https://YOURPROJECT.supabase.co";
+window.CCG_SUPABASE_ANON_KEY = "YOUR_ANON_PUBLIC_KEY";
