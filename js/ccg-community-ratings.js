@@ -20,33 +20,51 @@
     return code === '42P01' || code === 'PGRST205' || message.includes('relation') || message.includes('does not exist');
   }
 
-  function isAuthError(error) {
-    const code = String(error && error.code || '');
-    const message = String(error && error.message || '').toLowerCase();
-    return code === '401' || code === '403' || code === 'PGRST301' || message.includes('jwt') || message.includes('auth');
-  }
-
-  function isRlsError(error) {
-    const code = String(error && error.code || '');
-    const message = String(error && error.message || '').toLowerCase();
-    return code === '42501' || message.includes('row-level security') || message.includes('permission denied');
-  }
-
   function toUserMessage(error) {
-    if (!error) return 'Something went wrong while saving your rating. Please try again.';
-    if (isAuthError(error)) return 'Your session expired. Please log in again to save your rating.';
-    if (isRlsError(error)) return 'You do not have permission to save this rating. Please try logging in again.';
+    const code = String(error && error.code || '');
+    const message = String(error && error.message || '').toLowerCase();
+    if (code === '401' || code === '403' || code === 'PGRST301' || message.includes('jwt') || message.includes('auth')) return 'Your session expired. Please log in again to save your rating.';
+    if (code === '42501' || message.includes('row-level security') || message.includes('permission denied')) return 'You do not have permission to save this rating. Please try logging in again.';
     if (isNotConfiguredError(error)) return 'Community features not configured yet.';
-    return error.message || 'Unable to save your rating right now. Please try again.';
+    return error && error.message ? error.message : 'Unable to save your rating right now. Please try again.';
   }
 
   function renderUnavailable(mount) {
     mount.innerHTML = '<div class="ccg-community-card"><h3>Community Rating</h3><p>Community features not configured yet.</p></div>';
   }
 
-  async function awardBadge(userId) {
-    const supabase = await window.ccgSupabase.getClient();
-    await supabase.rpc('award_badge_if_eligible', { target_user_id: userId });
+  function meterMarkup(averageValue, count) {
+    const clamped = Math.max(0, Math.min(10, Number(averageValue) || 0));
+    const pct = (clamped / 10) * 100;
+    return '' +
+      '<div class="ccg-community-meter" aria-label="Community rating meter" role="img">' +
+      '  <div class="ccg-community-meter__track">' +
+      '    <div class="ccg-community-meter__fill" style="--ccg-meter-target:' + pct.toFixed(2) + '%"></div>' +
+      '  </div>' +
+      '  <div class="ccg-community-meter__segments" aria-hidden="true">' +
+      Array.from({ length: 10 }).map(function (_, i) {
+        return '<span class="ccg-community-meter__segment' + (i < Math.round(clamped) ? ' is-active' : '') + '"></span>';
+      }).join('') +
+      '  </div>' +
+      '  <p class="ccg-community-meter__label"><strong>' + (count ? clamped.toFixed(1) : '—') + '</strong>/10 · ' + count + ' ratings</p>' +
+      '</div>';
+  }
+
+  async function fetchRatingSummary(supabase, slug) {
+    const avgRes = await supabase.from('game_ratings').select('rating').eq('game_slug', slug);
+    if (avgRes.error) return { error: avgRes.error };
+
+    const rows = avgRes.data || [];
+    const count = rows.length;
+    const averageValue = count
+      ? rows.reduce(function (sum, row) { return sum + Number(row.rating || 0); }, 0) / count
+      : 0;
+
+    return {
+      rows: rows,
+      count: count,
+      averageValue: averageValue
+    };
   }
 
   async function render() {
@@ -65,56 +83,34 @@
       return;
     }
 
-    mount.innerHTML = '<div class="ccg-community-card"><h3>Community Rating</h3><p>Loading…</p></div>';
     const user = window.ccgCommunityAuth.getUser();
+    const supabase = await window.ccgSupabase.getClient();
+    const summary = await fetchRatingSummary(supabase, slug);
 
-    let supabase;
-    try {
-      supabase = await window.ccgSupabase.getClient();
-    } catch (_error) {
+    if (summary.error && isNotConfiguredError(summary.error)) {
       renderUnavailable(mount);
       return;
     }
 
-    const avgRes = await supabase
-      .from('game_ratings')
-      .select('rating', { count: 'exact' })
-      .eq('game_slug', slug);
-
-    if (avgRes.error && isNotConfiguredError(avgRes.error)) {
-      renderUnavailable(mount);
+    if (summary.error) {
+      mount.innerHTML = '<div class="ccg-community-card"><h3>Community Rating</h3><p class="ccg-community-muted">Unable to load ratings right now.</p></div>';
       return;
     }
 
-    let yourRating = null;
+    let yourRating = '';
     if (user) {
-      const yourRes = await supabase
-        .from('game_ratings')
-        .select('rating')
-        .eq('game_slug', slug)
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (yourRes.error && isNotConfiguredError(yourRes.error)) {
-        renderUnavailable(mount);
-        return;
-      }
-
-      yourRating = yourRes.data ? yourRes.data.rating : null;
+      const yourRes = await supabase.from('game_ratings').select('rating').eq('game_slug', slug).eq('user_id', user.id).maybeSingle();
+      if (yourRes.data && yourRes.data.rating) yourRating = String(yourRes.data.rating);
     }
-
-    const rows = avgRes.data || [];
-    const count = rows.length;
-    const average = count ? (rows.reduce((sum, r) => sum + Number(r.rating || 0), 0) / count).toFixed(1) : '—';
 
     mount.innerHTML = '' +
-      '<div class="ccg-community-card">' +
+      '<div class="ccg-community-card ccg-community-rating-card">' +
       '  <h3>Community Rating</h3>' +
-      '  <p class="ccg-community-muted">Average: <strong>' + average + '</strong> from ' + count + ' ratings</p>' +
+      meterMarkup(summary.averageValue, summary.count) +
       (user
         ? ('<form id="ccg-rating-form" class="ccg-community-inline-form">' +
            '  <label>Your Rating (1–10)' +
-           '    <input type="number" min="1" max="10" step="1" value="' + (yourRating || '') + '" required name="rating">' +
+           '    <input type="number" min="1" max="10" step="1" value="' + yourRating + '" required name="rating">' +
            '  </label>' +
            '  <button class="ccg-community-btn" type="submit">Save rating</button>' +
            '  <span id="ccg-rating-status" class="ccg-community-muted" aria-live="polite"></span>' +
@@ -124,13 +120,13 @@
 
     if (!user) {
       const btn = document.getElementById('ccg-login-to-rate');
-      if (btn) btn.addEventListener('click', function () {
-        window.ccgCommunityAuth.openAuthModal('signin');
-      });
+      if (btn) btn.addEventListener('click', function () { window.ccgCommunityAuth.openAuthModal('signin'); });
       return;
     }
 
     const form = document.getElementById('ccg-rating-form');
+    if (!form) return;
+
     form.addEventListener('submit', async function (event) {
       event.preventDefault();
       const status = document.getElementById('ccg-rating-status');
@@ -141,7 +137,6 @@
       }
 
       status.textContent = 'Saving…';
-
       const authRes = await supabase.auth.getUser();
       const activeUser = authRes && authRes.data ? authRes.data.user : null;
       if (!activeUser || activeUser.id !== user.id) {
@@ -152,20 +147,18 @@
 
       const { error } = await supabase
         .from('game_ratings')
-        .upsert({ user_id: activeUser.id, game_slug: slug, rating }, { onConflict: 'user_id,game_slug' });
+        .upsert({ user_id: activeUser.id, game_slug: slug, rating: rating }, { onConflict: 'user_id,game_slug' });
 
       if (error) {
         status.textContent = toUserMessage(error);
-        if (isAuthError(error)) window.ccgCommunityAuth.openAuthModal('signin');
         return;
       }
 
-      try {
-        await awardBadge(activeUser.id);
-      } catch (_badgeError) {
-        // Do not block a successful rating save if badge awarding fails.
+      if (window.ccgCommunityBadges && typeof window.ccgCommunityBadges.awardEligibleBadge === 'function') {
+        await window.ccgCommunityBadges.awardEligibleBadge(activeUser.id);
       }
       status.textContent = 'Saved to your account.';
+      window.dispatchEvent(new CustomEvent('ccg:rating-updated', { detail: { gameSlug: slug } }));
       render();
     });
   }
@@ -173,5 +166,6 @@
   document.addEventListener('DOMContentLoaded', function () {
     render();
     window.addEventListener('ccg:auth-changed', render);
+    window.addEventListener('ccg:rating-updated', render);
   });
 })();
