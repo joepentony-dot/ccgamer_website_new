@@ -1,0 +1,224 @@
+.ccg-community-auth-btn,
+.ccg-community-btn {
+  border: 1px solid rgba(102, 231, 255, 0.7);
+  background: linear-gradient(135deg, rgba(0, 36, 88, 0.9), rgba(26, 6, 54, 0.9));
+  color: #dffcff;
+  padding: 0.56rem 0.9rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.ccg-community-btn--ghost {
+  background: transparent;
+}
+
+.ccg-community-auth-btn {
+  margin-left: 0.6rem;
+  font-size: 0.85rem;
+}
+
+.ccg-community-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2200;
+}
+
+.ccg-community-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(3, 8, 21, 0.78);
+  backdrop-filter: blur(3px);
+}
+
+.ccg-community-modal__panel {
+  position: relative;
+  width: min(92vw, 520px);
+  margin: 8vh auto;
+  padding: 1.1rem;
+  border-radius: 16px;
+  border: 1px solid rgba(96, 219, 255, 0.45);
+  background: linear-gradient(180deg, rgba(4, 20, 52, 0.96), rgba(18, 11, 39, 0.96));
+  color: #f2fdff;
+  max-height: 84vh;
+  overflow-y: auto;
+}
+
+.ccg-community-modal__close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.65rem;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.ccg-community-form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.ccg-community-form label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.ccg-community-form input,
+.ccg-community-form textarea {
+  width: 100%;
+  border: 1px solid rgba(106, 224, 255, 0.5);
+  border-radius: 10px;
+  padding: 0.6rem 0.7rem;
+  background: rgba(8, 20, 42, 0.85);
+  color: #e8fbff;
+}
+
+.ccg-community-form textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.ccg-community-link-btn {
+  border: 0;
+  background: transparent;
+  color: #7de6ff;
+  cursor: pointer;
+  padding: 0.25rem 0;
+}
+
+.ccg-community-auth__message {
+  min-height: 1.2rem;
+  margin-bottom: 0.55rem;
+  font-size: 0.88rem;
+}
+
+.ccg-community-auth__message[data-type="error"] { color: #ff8da0; }
+.ccg-community-auth__message[data-type="success"] { color: #74ffce; }
+
+.ccg-community-card {
+  border: 1px solid rgba(104, 226, 255, 0.35);
+  border-radius: 16px;
+  padding: 1rem;
+  background: linear-gradient(175deg, rgba(8, 28, 62, 0.9), rgba(19, 9, 37, 0.9));
+  box-shadow: 0 0 20px rgba(57, 205, 255, 0.09);
+}
+
+.ccg-community-inline-form {
+  display: flex;
+  align-items: end;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.ccg-community-inline-form input {
+  width: 120px;
+}
+
+.ccg-community-muted {
+  color: #9eddec;
+  font-size: 0.88rem;
+}
+
+.ccg-comment-list {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.ccg-comment-card {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  padding: 0.7rem;
+  background: rgba(8, 14, 30, 0.78);
+}
+
+.ccg-comment-card__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  font-size: 0.88rem;
+}
+
+.ccg-comment-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.ccg-comment-card__actions button {
+  border: 1px solid rgba(117, 218, 255, 0.45);
+  background: transparent;
+  color: #d9f8ff;
+  border-radius: 999px;
+  padding: 0.3rem 0.55rem;
+  cursor: pointer;
+}
+
+.ccg-badges {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.ccg-badge {
+  border: 1px solid rgba(255, 115, 224, 0.55);
+  color: #ffe8ff;
+  background: rgba(72, 8, 74, 0.72);
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.82rem;
+}
+
+.ccg-community-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.65rem;
+  margin: 0.8rem 0;
+}
+
+.ccg-community-stats div {
+  border: 1px solid rgba(110, 229, 255, 0.27);
+  border-radius: 11px;
+  padding: 0.55rem;
+  display: grid;
+}
+
+.ccg-community-stats strong {
+  font-size: 1.25rem;
+}
+
+.ccg-community-layout {
+  width: min(1080px, 92%);
+  margin: 1.2rem auto;
+  display: grid;
+  gap: 1rem;
+}
+
+.ccg-community-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.ccg-report-card {
+  border: 1px solid rgba(255, 113, 143, 0.45);
+  background: rgba(65, 10, 29, 0.45);
+  border-radius: 12px;
+  padding: 0.8rem;
+  margin-bottom: 0.7rem;
+}
+
+@media (max-width: 800px) {
+  .ccg-community-auth-btn {
+    width: 100%;
+    margin: 0.45rem 0 0;
+  }
+
+  .ccg-community-modal__panel {
+    margin-top: 5vh;
+    max-height: 90vh;
+  }
+}
