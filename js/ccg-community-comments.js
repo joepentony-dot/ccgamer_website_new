@@ -18,12 +18,7 @@
     mount.innerHTML = '<div class="ccg-community-card"><h3>Community Comments</h3><p>Community features not configured yet.</p></div>';
   }
 
-  async function awardBadge(userId) {
-    const supabase = await window.ccgSupabase.getClient();
-    await supabase.rpc('award_badge_if_eligible', { target_user_id: userId });
-  }
-
-  function commentCard(comment, currentUser, canModerate) {
+  function commentCard(comment, currentUser, canModerate, badgeHtml) {
     const profile = comment.profiles || {};
     const username = window.ccgCommunityAuth.esc(profile.username || 'Community member');
     const content = comment.is_deleted
@@ -34,8 +29,11 @@
     return '' +
       '<article class="ccg-comment-card" data-comment-id="' + comment.id + '">' +
       '  <header class="ccg-comment-card__head">' +
-      '    <strong>@' + username + '</strong>' +
-      '    <time>' + new Date(comment.created_at).toLocaleString() + '</time>' +
+      '    <div class="ccg-comment-card__identity">' +
+      '      <a href="/community/profile.html?u=' + encodeURIComponent(profile.username || '') + '" class="ccg-comment-card__profile-link">@' + username + '</a>' +
+      '      ' + (badgeHtml || '') +
+      '    </div>' +
+      '    <time datetime="' + window.ccgCommunityAuth.esc(comment.created_at || '') + '">' + new Date(comment.created_at).toLocaleString() + '</time>' +
       '  </header>' +
       '  <p class="ccg-comment-card__body">' + content + '</p>' +
       '  <div class="ccg-comment-card__actions">' +
@@ -49,6 +47,7 @@
   async function render() {
     const mount = document.getElementById('ccg-community-comments');
     if (!mount) return;
+
     const slug = getGameSlug();
     const readiness = await window.ccgSupabase.checkCommunityReadiness();
     if (!readiness.ready) {
@@ -61,14 +60,7 @@
       return;
     }
 
-    let supabase;
-    try {
-      supabase = await window.ccgSupabase.getClient();
-    } catch (_error) {
-      renderUnavailable(mount);
-      return;
-    }
-
+    const supabase = await window.ccgSupabase.getClient();
     const user = window.ccgCommunityAuth.getUser();
     const canModerate = window.ccgCommunityAuth.isAdminOrMod();
 
@@ -85,8 +77,24 @@
     }
 
     if (error) {
-      mount.innerHTML = '<div class="ccg-community-card"><p>' + window.ccgCommunityAuth.esc(error.message) + '</p></div>';
+      mount.innerHTML = '<div class="ccg-community-card"><h3>Community Comments</h3><p class="ccg-community-muted">Unable to load comments right now.</p></div>';
       return;
+    }
+
+    const comments = data || [];
+    const userIds = Array.from(new Set(comments.map(function (comment) { return comment.user_id; }).filter(Boolean)));
+    const badgeMap = {};
+
+    if (userIds.length && window.ccgCommunityBadges) {
+      const { data: badgeRows } = await supabase
+        .from('user_badges')
+        .select('user_id,badge_code,awarded_at')
+        .in('user_id', userIds);
+
+      (badgeRows || []).forEach(function (row) {
+        if (!badgeMap[row.user_id]) badgeMap[row.user_id] = [];
+        badgeMap[row.user_id].push(row);
+      });
     }
 
     mount.innerHTML = '' +
@@ -96,7 +104,16 @@
         ? '<form id="ccg-comment-form" class="ccg-community-form"><label>Add your comment<textarea name="content" required maxlength="600"></textarea></label><button type="submit" class="ccg-community-btn">Post comment</button><span id="ccg-comment-status" class="ccg-community-muted" aria-live="polite"></span></form>'
         : '<p><button class="ccg-community-btn" id="ccg-login-to-comment" type="button">Log in to comment</button></p>') +
       '  <div class="ccg-comment-list">' +
-      (data || []).map((comment) => commentCard(comment, user, canModerate)).join('') +
+      (comments.length
+        ? comments.map(function (comment) {
+          const badges = badgeMap[comment.user_id] || [];
+          const compact = badges.slice(0, 2);
+          const badgeHtml = compact.length && window.ccgCommunityBadges
+            ? window.ccgCommunityBadges.renderBadges(compact, { className: 'ccg-badges ccg-badges--mini', emptyText: '' })
+            : '';
+          return commentCard(comment, user, canModerate, badgeHtml);
+        }).join('')
+        : '<p class="ccg-community-muted">No comments yet. Start the discussion.</p>') +
       '  </div>' +
       '</div>';
 
@@ -115,22 +132,29 @@
       const content = String(new FormData(form).get('content') || '').trim();
       if (!content) return;
       status.textContent = 'Posting…';
+
       const { error: insertError } = await supabase.from('game_comments').insert({
         user_id: user.id,
         game_slug: slug,
-        content
+        content: content
       });
+
       if (insertError) {
-        status.textContent = isNotConfiguredError(insertError) ? 'Community features not configured yet.' : insertError.message;
+        status.textContent = isNotConfiguredError(insertError) ? 'Community features not configured yet.' : 'Unable to post comment right now.';
         return;
       }
-      await awardBadge(user.id);
+
+      if (window.ccgCommunityBadges && typeof window.ccgCommunityBadges.awardEligibleBadge === 'function') {
+        await window.ccgCommunityBadges.awardEligibleBadge(user.id);
+      }
+
       form.reset();
       status.textContent = 'Posted.';
+      window.dispatchEvent(new CustomEvent('ccg:comments-updated', { detail: { gameSlug: slug } }));
       render();
     });
 
-    mount.querySelectorAll('.ccg-comment-card button').forEach((btn) => {
+    mount.querySelectorAll('.ccg-comment-card button').forEach(function (btn) {
       btn.addEventListener('click', async function () {
         const card = btn.closest('.ccg-comment-card');
         const commentId = Number(card.getAttribute('data-comment-id'));
@@ -138,11 +162,12 @@
 
         if (action === 'report') {
           const reason = window.prompt('Report reason (optional):', '');
-          await supabase.from('comment_reports').insert({
+          const { error: reportError } = await supabase.from('comment_reports').insert({
             reporter_user_id: user.id,
             comment_id: commentId,
             reason: reason || null
           });
+          if (!reportError) btn.textContent = 'Reported';
           return;
         }
 
@@ -166,5 +191,6 @@
   document.addEventListener('DOMContentLoaded', function () {
     render();
     window.addEventListener('ccg:auth-changed', render);
+    window.addEventListener('ccg:comments-updated', render);
   });
 })();
