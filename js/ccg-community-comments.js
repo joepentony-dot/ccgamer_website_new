@@ -1,21 +1,40 @@
 (function () {
-  function getGameSlug() {
+  const state = {
+    initStarted: false,
+    authReady: false,
+    activeSlug: null,
+    activeGameId: null,
+    lastGameEventAt: 0,
+    renderInFlight: null,
+    retryTimer: null
+  };
+
+  function getMount() {
+    return document.getElementById('ccg-community-comments');
+  }
+
+  function getGameContext() {
     const params = new URLSearchParams(window.location.search);
-    const fromQuery = params.get('id');
-    if (fromQuery) return fromQuery;
-    const bodySlug = document.body.getAttribute('data-game-slug');
-    if (bodySlug) return bodySlug;
-    return null;
+    const fromQuery = (params.get('id') || '').trim();
+    const bodySlug = (document.body && document.body.getAttribute('data-game-slug') || '').trim();
+    const bodyGameId = (document.body && document.body.getAttribute('data-game-id') || '').trim();
+
+    return {
+      slug: bodySlug || fromQuery || state.activeSlug || null,
+      gameId: bodyGameId || state.activeGameId || null
+    };
+  }
+
+  function setDeferredMessage(message) {
+    const mount = getMount();
+    if (!mount) return;
+    mount.innerHTML = '<div class="ccg-community-card"><h3>Community Comments</h3><p class="ccg-community-muted">' + (message || 'Preparing comments…') + '</p></div>';
   }
 
   function isNotConfiguredError(error) {
     const code = String(error && error.code || '');
     const message = String(error && error.message || '').toLowerCase();
     return code === '42P01' || code === 'PGRST205' || message.includes('relation') || message.includes('does not exist');
-  }
-
-  function renderUnavailable(mount) {
-    mount.innerHTML = '<div class="ccg-community-card"><h3>Community Comments</h3><p>Community features not configured yet.</p></div>';
   }
 
   function commentCard(comment, currentUser, canModerate, badgeHtml) {
@@ -44,19 +63,26 @@
       '</article>';
   }
 
-  async function render() {
-    const mount = document.getElementById('ccg-community-comments');
+  async function ensureAuthReady() {
+    if (state.authReady) return true;
+    if (!window.ccgSupabase || typeof window.ccgSupabase.waitForAuth !== 'function') return false;
+
+    try {
+      await window.ccgSupabase.waitForAuth();
+      state.authReady = true;
+      return true;
+    } catch (_error) {
+      return false;
+    }
+  }
+
+  async function renderComments(slug) {
+    const mount = getMount();
     if (!mount) return;
 
-    const slug = getGameSlug();
     const readiness = await window.ccgSupabase.checkCommunityReadiness();
     if (!readiness.ready) {
-      renderUnavailable(mount);
-      return;
-    }
-
-    if (!slug) {
-      mount.innerHTML = '<div class="ccg-community-card"><p>Comments unavailable for this page.</p></div>';
+      setDeferredMessage('Community features are still being configured. Comments will appear automatically once ready.');
       return;
     }
 
@@ -73,12 +99,14 @@
       .limit(100);
 
     if (error && isNotConfiguredError(error)) {
-      renderUnavailable(mount);
+      setDeferredMessage('Comments are not available yet for this game. Retrying automatically…');
+      scheduleRetry(3000);
       return;
     }
 
     if (error) {
       mount.innerHTML = '<div class="ccg-community-card"><h3>Community Comments</h3><p class="ccg-community-muted">Unable to load comments right now.</p></div>';
+      scheduleRetry(5000);
       return;
     }
 
@@ -141,7 +169,10 @@
       });
 
       if (insertError) {
-        status.textContent = isNotConfiguredError(insertError) ? 'Community features not configured yet.' : 'Unable to post comment right now.';
+        status.textContent = isNotConfiguredError(insertError)
+          ? 'Comments are still being prepared. Please retry in a moment.'
+          : 'Unable to post comment right now.';
+        scheduleRetry(3000);
         return;
       }
 
@@ -152,7 +183,7 @@
       form.reset();
       status.textContent = 'Posted.';
       window.dispatchEvent(new CustomEvent('ccg:comments-updated', { detail: { gameSlug: slug } }));
-      render();
+      runSafeInit('comment-posted');
     });
 
     mount.querySelectorAll('.ccg-comment-card button').forEach(function (btn) {
@@ -177,22 +208,93 @@
           const updated = window.prompt('Edit your comment:', currentText);
           if (!updated || !updated.trim()) return;
           await supabase.from('game_comments').update({ content: updated.trim() }).eq('id', commentId).eq('user_id', user.id);
-          render();
+          runSafeInit('comment-edit');
           return;
         }
 
         if (action === 'delete' && canModerate) {
           await supabase.from('game_comments').update({ is_deleted: true, content: '[deleted]' }).eq('id', commentId);
-          render();
+          runSafeInit('comment-delete');
         }
       });
     });
   }
 
-  document.addEventListener('DOMContentLoaded', function () {
-    render();
-    window.addEventListener('ccg:auth-ready', render);
-    window.addEventListener('ccg:auth-changed', render);
-    window.addEventListener('ccg:comments-updated', render);
-  });
+  function scheduleRetry(delayMs) {
+    if (state.retryTimer) {
+      window.clearTimeout(state.retryTimer);
+    }
+    state.retryTimer = window.setTimeout(function () {
+      state.retryTimer = null;
+      runSafeInit('retry-timer');
+    }, delayMs || 2500);
+  }
+
+  async function runSafeInit(reason) {
+    const mount = getMount();
+    if (!mount) return;
+
+    if (state.renderInFlight) {
+      await state.renderInFlight;
+      return;
+    }
+
+    const readyForAuth = await ensureAuthReady();
+    if (!readyForAuth) {
+      setDeferredMessage('Preparing comments… waiting for sign-in state.');
+      scheduleRetry(1200);
+      return;
+    }
+
+    const game = getGameContext();
+    if (!game.slug) {
+      setDeferredMessage('Preparing comments… waiting for game details.');
+      scheduleRetry(reason === 'game-loaded' ? 500 : 1200);
+      return;
+    }
+
+    state.activeSlug = game.slug;
+    state.activeGameId = game.gameId;
+
+    state.renderInFlight = renderComments(game.slug)
+      .catch(function () {
+        setDeferredMessage('Unable to load comments just yet. Retrying…');
+        scheduleRetry(3000);
+      })
+      .finally(function () {
+        state.renderInFlight = null;
+      });
+
+    await state.renderInFlight;
+  }
+
+  function onGameLoaded(event) {
+    const detail = event && event.detail ? event.detail : {};
+    if (detail.gameSlug) state.activeSlug = String(detail.gameSlug);
+    if (detail.gameId !== undefined && detail.gameId !== null) state.activeGameId = String(detail.gameId);
+    state.lastGameEventAt = Date.now();
+    runSafeInit('game-loaded');
+  }
+
+  function init() {
+    if (state.initStarted) return;
+    state.initStarted = true;
+
+    runSafeInit('dom-ready');
+
+    window.addEventListener('ccg:auth-ready', function () {
+      state.authReady = true;
+      runSafeInit('auth-ready');
+    });
+    window.addEventListener('ccg:auth-changed', function () {
+      state.authReady = true;
+      runSafeInit('auth-changed');
+    });
+    window.addEventListener('ccg:game-loaded', onGameLoaded);
+    window.addEventListener('ccg:comments-updated', function () {
+      runSafeInit('comments-updated');
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
 })();
