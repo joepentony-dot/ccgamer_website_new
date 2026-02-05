@@ -2,12 +2,19 @@ import { ensureRole, startAccessMonitor } from './guard.js';
 import { fetchBackups, fetchFileIndex, fetchGamesJson, restoreBackup, saveGamesJson } from './games-api.js';
 import { validateGameRecord, validateGamesSchema } from './validator.js';
 import { initAdminNav } from './admin-nav.js';
+import { waitForAuthReady } from './auth.js';
 
 const KEY_ORDER = [
   'system', 'id', 'slug', 'title', 'sorttitle', 'year', 'genres', 'collections', 'videoid',
   'thumbnail', 'pdf', 'disk', 'lemon', 'description', 'ccg_rating', 'ccg_rating_reason',
   'credits', 'developer', '_ccg_enforced', '_ccg_migrated'
 ];
+
+const ALLOWED_GENRES = new Set([
+  'action-adventure', 'adventure', 'arcade', 'casino', 'fighting', 'horror',
+  'miscellaneous', 'platform', 'puzzle', 'quiz', 'racing', 'role-playing',
+  'shooting', 'sports', 'strategy'
+]);
 
 const state = {
   role: null,
@@ -19,7 +26,13 @@ const state = {
   selectedGlobalIndex: null,
   fileIndex: new Set(),
   rawBeforeEdit: '[]',
-  isCreatingNew: false
+  isCreatingNew: false,
+  editorState: {
+    mode: 'viewing',
+    dirty: false,
+    validated: false,
+    slugManual: false
+  }
 };
 
 const el = {
@@ -41,6 +54,9 @@ const el = {
   modal: document.getElementById('editorModal'),
   form: document.getElementById('recordForm'),
   preview: document.getElementById('recordPreview'),
+  formErrors: document.getElementById('recordFormErrors'),
+  draftState: document.getElementById('recordDraftState'),
+  saveRecord: document.getElementById('saveRecord'),
   exportNote: document.querySelector('[data-export-note]'),
   exportStatus: document.querySelector('[data-export-status-text]')
 };
@@ -55,7 +71,57 @@ function setExportStatus(message) {
 }
 
 function slugify(text) {
-  return String(text || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  return String(text || '')
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
+
+function getUniqueSlug(baseSlug, originalSlug = '') {
+  const normalizedBase = slugify(baseSlug || 'game');
+  const existingSlugs = new Set(state.games.map((g) => g.slug).filter(Boolean));
+  if (originalSlug) existingSlugs.delete(originalSlug);
+
+  if (!existingSlugs.has(normalizedBase)) return normalizedBase;
+
+  let suffix = 2;
+  let candidate = `${normalizedBase}-${suffix}`;
+  while (existingSlugs.has(candidate)) {
+    suffix += 1;
+    candidate = `${normalizedBase}-${suffix}`;
+  }
+  return candidate;
+}
+
+function showInlineErrors(errors = []) {
+  if (!el.formErrors) return;
+  if (errors.length === 0) {
+    el.formErrors.hidden = true;
+    el.formErrors.innerHTML = '';
+    return;
+  }
+
+  el.formErrors.hidden = false;
+  el.formErrors.innerHTML = `<ul>${errors.map((msg) => `<li>${msg}</li>`).join('')}</ul>`;
+}
+
+function setEditorState(patch = {}) {
+  state.editorState = { ...state.editorState, ...patch };
+
+  const draftVisible = state.editorState.mode === 'draft' || state.editorState.dirty;
+  if (el.draftState) {
+    el.draftState.hidden = !draftVisible;
+    el.draftState.textContent = state.editorState.validated
+      ? 'Draft validated'
+      : 'Draft has unsaved changes';
+  }
+
+  if (el.saveRecord) {
+    el.saveRecord.disabled = !state.editorState.dirty;
+  }
 }
 
 function downloadFile(name, content, type = 'text/plain') {
@@ -217,6 +283,12 @@ function renderPage() {
   `;
 }
 
+function updateSlugFromTitle() {
+  if (state.editorState.slugManual) return;
+  const original = state.isCreatingNew ? {} : state.filtered[state.selectedIndex];
+  el.form.slug.value = getUniqueSlug(el.form.title.value, original.slug || '');
+}
+
 function openEditor(filteredIndex, creating = false) {
   state.isCreatingNew = creating;
   state.selectedIndex = filteredIndex;
@@ -235,9 +307,20 @@ function openEditor(filteredIndex, creating = false) {
   }
 
   Object.entries(record).forEach(([key, value]) => {
-    if (el.form[key]) el.form[key].value = value ?? '';
+    if (el.form[key]) {
+      el.form[key].value = value ?? '';
+      el.form[key].readOnly = false;
+    }
   });
 
+  state.editorState = {
+    mode: creating ? 'draft' : 'editing',
+    dirty: false,
+    validated: false,
+    slugManual: false
+  };
+  showInlineErrors([]);
+  setEditorState();
   updatePreview();
   el.modal.showModal();
 }
@@ -268,6 +351,52 @@ async function refreshBackups() {
   el.backupList.innerHTML = backups.map((b) => `<li>${b.created_at} — ${b.commit_message} <button class="ccg-btn ccg-btn--ghost" data-restore="${b.id}" type="button">Restore</button></li>`).join('');
 }
 
+function validateGenres(genres) {
+  const invalid = genres.filter((genre) => !ALLOWED_GENRES.has(String(genre).trim().toLowerCase()));
+  return invalid;
+}
+
+function validateCandidate(candidate, original) {
+  const slugSet = new Set(state.games.map((g) => g.slug));
+  const duplicateTitleYear = state.games.some((g) =>
+    g.title?.trim().toLowerCase() === candidate.title.trim().toLowerCase()
+      && Number(g.year) === Number(candidate.year)
+      && (!original.id || g.id !== original.id)
+  );
+
+  const result = validateGameRecord(candidate, {
+    slugSet,
+    originalSlug: original.slug,
+    fileIndex: state.fileIndex
+  });
+
+  const invalidGenres = validateGenres(candidate.genres || []);
+  if (invalidGenres.length > 0) {
+    result.valid = false;
+    result.errors.push(`Invalid genres: ${invalidGenres.join(', ')}`);
+  }
+
+  if (duplicateTitleYear) {
+    result.valid = false;
+    result.errors.push('Duplicate title + year detected.');
+  }
+
+  return result;
+}
+
+function sanitizeAndSortGames(games) {
+  return [...games]
+    .map((game) => {
+      const { _ccg_draft, ...rest } = game;
+      return rest;
+    })
+    .sort((a, b) => {
+      const sortA = String(a.sorttitle || a.title || '').toLowerCase();
+      const sortB = String(b.sorttitle || b.title || '').toLowerCase();
+      return sortA.localeCompare(sortB) || Number(a.year || 0) - Number(b.year || 0);
+    });
+}
+
 function validateAllGames() {
   const errors = [];
   const slugSeen = new Set();
@@ -282,15 +411,17 @@ function validateAllGames() {
       fileIndex: state.fileIndex
     });
 
+    const invalidGenres = validateGenres(game.genres || []);
+    if (invalidGenres.length > 0) {
+      result.valid = false;
+      result.errors.push(`Invalid genres: ${invalidGenres.join(', ')}`);
+    }
+
     if (duplicateSlug) result.errors.push(`Record ${index + 1}: duplicate slug ${game.slug}`);
     if (!result.valid) errors.push(...result.errors.map((error) => `#${index + 1} ${error}`));
   });
 
-  const schema = validateGamesSchema(state.games.map((game) => {
-    const { _ccg_draft, ...rest } = game;
-    return rest;
-  }));
-
+  const schema = validateGamesSchema(sanitizeAndSortGames(state.games));
   if (!schema.valid) errors.push(...schema.errors);
 
   if (errors.length > 0) {
@@ -324,10 +455,12 @@ async function downloadFullPackage() {
     return;
   }
 
-  const payload = state.games.map((game) => {
-    const { _ccg_draft, ...rest } = game;
-    return rest;
-  });
+  if (!validateAllGames()) {
+    setExportStatus('Export blocked until validation passes.');
+    return;
+  }
+
+  const payload = sanitizeAndSortGames(state.games);
 
   const zip = new window.JSZip();
   zip.file('games.json', `${JSON.stringify(payload, null, 2)}\n`);
@@ -353,17 +486,12 @@ function copyNodeInstructions() {
 }
 
 async function exportGamesJson() {
-  const payload = state.games.map((game) => {
-    const { _ccg_draft, ...rest } = game;
-    return rest;
-  });
-
-  const schema = validateGamesSchema(payload);
-  if (!schema.valid) {
-    setStatus(schema.errors.join(' | '), 'error');
+  if (!validateAllGames()) {
+    setExportStatus('games.json export blocked until validation passes.');
     return;
   }
 
+  const payload = sanitizeAndSortGames(state.games);
   const now = new Date().toISOString().replace(/[:.]/g, '-');
   const message = `admin(games-editor): update games.json ${now}`;
 
@@ -371,7 +499,7 @@ async function exportGamesJson() {
     await saveGamesJson({ games: payload, message, role: state.role });
     const exportStamp = new Date().toLocaleString();
     localStorage.setItem('omegaAdminLastExportTime', exportStamp);
-    setStatus('Downloaded games.json. Manual git commit/push required.', 'success');
+    setStatus('Downloaded games.json. Replace /games/games.json in repo and commit/push.', 'success');
     setExportStatus(`games.json exported at ${exportStamp}.`);
     if (el.exportNote) el.exportNote.hidden = false;
     state.games = state.games.map((game) => ({ ...game, _ccg_draft: false }));
@@ -384,6 +512,8 @@ async function exportGamesJson() {
 }
 
 async function bootstrap() {
+  await waitForAuthReady();
+
   const result = await ensureRole(['superadmin', 'admin', 'editor']);
   if (!result) return;
 
@@ -435,51 +565,80 @@ document.addEventListener('click', async (event) => {
 
 document.getElementById('addGame').addEventListener('click', () => openEditor(-1, true));
 document.getElementById('validateLibrary').addEventListener('click', validateAllGames);
+
 el.form.title.addEventListener('input', () => {
-  if (!el.form.slug.value.trim()) el.form.slug.value = slugify(el.form.title.value);
+  updateSlugFromTitle();
+  setEditorState({ dirty: true, validated: false, mode: 'draft' });
+  updatePreview();
 });
-el.form.addEventListener('input', updatePreview);
-document.getElementById('cancelEdit').addEventListener('click', () => el.modal.close());
+el.form.title.addEventListener('paste', () => {
+  window.setTimeout(() => {
+    updateSlugFromTitle();
+    setEditorState({ dirty: true, validated: false, mode: 'draft' });
+    updatePreview();
+  }, 0);
+});
+
+el.form.slug.addEventListener('input', () => {
+  const normalized = slugify(el.form.slug.value);
+  state.editorState.slugManual = normalized.length > 0;
+  el.form.slug.value = normalized;
+  setEditorState({ dirty: true, validated: false, mode: 'draft' });
+  updatePreview();
+});
+el.form.slug.addEventListener('paste', () => {
+  window.setTimeout(() => {
+    const normalized = slugify(el.form.slug.value);
+    state.editorState.slugManual = normalized.length > 0;
+    el.form.slug.value = normalized;
+    setEditorState({ dirty: true, validated: false, mode: 'draft' });
+    updatePreview();
+  }, 0);
+});
+
+el.form.addEventListener('input', () => {
+  setEditorState({ dirty: true, validated: false, mode: 'draft' });
+  updatePreview();
+});
+
+document.getElementById('cancelEdit').addEventListener('click', () => {
+  setEditorState({ mode: 'viewing', dirty: false, validated: false, slugManual: false });
+  showInlineErrors([]);
+  el.modal.close();
+});
 
 document.getElementById('saveRecord').addEventListener('click', () => {
   const original = state.isCreatingNew ? {} : state.filtered[state.selectedIndex];
   const formData = Object.fromEntries(new FormData(el.form).entries());
+
+  if (!state.editorState.slugManual || !formData.slug?.trim()) {
+    formData.slug = getUniqueSlug(formData.title, original.slug || '');
+  }
+
   formData.slug = slugify(formData.slug || formData.title);
   formData.genres = (formData.genres || '').split(',').map((v) => v.trim()).filter(Boolean).join(', ');
 
   const candidate = toSavedRecord(formData, original);
-  const slugSet = new Set(state.games.map((g) => g.slug));
-  const duplicateTitleYear = state.games.some((g) =>
-    g.title?.trim().toLowerCase() === candidate.title.trim().toLowerCase()
-      && Number(g.year) === Number(candidate.year)
-      && (!original.id || g.id !== original.id)
-  );
-
-  const result = validateGameRecord(candidate, {
-    slugSet,
-    originalSlug: original.slug,
-    fileIndex: state.fileIndex
-  });
-
-  if (duplicateTitleYear) {
-    result.valid = false;
-    result.errors.push('Duplicate title + year detected.');
-  }
+  const result = validateCandidate(candidate, original);
 
   if (!result.valid) {
+    showInlineErrors(result.errors);
     setStatus(result.errors.join(' | '), 'error');
+    setEditorState({ validated: false });
     return;
   }
 
+  showInlineErrors([]);
   candidate._ccg_draft = true;
   if (state.isCreatingNew) {
     state.games.unshift(candidate);
     setStatus('New draft game added in memory. Export when ready.', 'success');
   } else {
-    state.games[state.selectedGlobalIndex] = { ...candidate, _ccg_draft: state.games[state.selectedGlobalIndex]._ccg_draft };
+    state.games[state.selectedGlobalIndex] = { ...candidate, _ccg_draft: true };
     setStatus('Draft updated.', 'success');
   }
 
+  setEditorState({ mode: 'editing', dirty: false, validated: true });
   renderFilters();
   applyFilters();
   el.modal.close();
@@ -500,4 +659,13 @@ document.getElementById('copyNodeSteps').addEventListener('click', copyNodeInstr
 
 startAccessMonitor();
 initAdminNav({ pageLabel: 'Games Editor', active: 'editor' });
-bootstrap().catch((error) => setStatus(error.message, 'error'));
+
+let bootstrapped = false;
+function safeBootstrap() {
+  if (bootstrapped) return;
+  bootstrapped = true;
+  void bootstrap().catch((error) => setStatus(error.message, 'error'));
+}
+
+window.addEventListener('ccg:auth-ready', safeBootstrap, { once: true });
+void waitForAuthReady().then(safeBootstrap).catch((error) => setStatus(error.message, 'error'));
