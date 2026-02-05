@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCG Admin Dashboard</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="icon" href="../favicon.ico" />
+  <link href="../resources/css/ccg-master.css" rel="stylesheet" />
+  <link href="../resources/css/ccg-mode.css" rel="stylesheet" />
+  <link href="../resources/css/ccg-effects.css" rel="stylesheet" />
+  <link href="./css/admin-auth.css" rel="stylesheet" />
+</head>
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
+  <div aria-hidden="true" class="ccg-bg">
+    <div aria-hidden="true" class="ccg-bg-starfield"></div>
+    <div aria-hidden="true" class="ccg-bg-grid"></div>
+    <div aria-hidden="true" class="ccg-bg-crt-overlay"></div>
+  </div>
+
+  <main class="admin-dashboard-wrap">
+    <header class="admin-dashboard-header">
+      <div>
+        <p class="admin-auth-kicker">Omega Control Deck</p>
+        <h1>Admin Dashboard</h1>
+      </div>
+      <button class="ccg-btn ccg-btn--ghost" data-logout-button type="button">Log out</button>
+    </header>
+
+    <section class="admin-card-grid" aria-label="Session overview">
+      <article class="admin-info-card">
+        <h2>User Email</h2>
+        <p data-admin-email>Loading…</p>
+      </article>
+      <article class="admin-info-card">
+        <h2>Role</h2>
+        <p data-admin-role>Loading…</p>
+      </article>
+      <article class="admin-info-card">
+        <h2>Status</h2>
+        <p data-admin-status data-state="info">Checking access…</p>
+      </article>
+      <article class="admin-info-card">
+        <h2>System Info</h2>
+        <p data-admin-system>Initializing…</p>
+      </article>
+    </section>
+
+    <nav class="admin-tool-nav" aria-label="Admin navigation">
+      <a class="ccg-btn ccg-btn--primary" href="/admin/admin.html">Legacy Game Manager</a>
+      <a class="ccg-btn ccg-btn--ghost" href="/admin/quiz-manager.html">Quiz Manager</a>
+    </nav>
+
+    <section class="admin-card-grid" aria-label="Future admin modules">
+      <article class="admin-info-card admin-placeholder">
+        <h2>Content Workflow</h2>
+        <p>Placeholder for post review and publishing controls.</p>
+      </article>
+      <article class="admin-info-card admin-placeholder">
+        <h2>Moderation</h2>
+        <p>Placeholder for user reports and moderation tooling.</p>
+      </article>
+      <article class="admin-info-card admin-placeholder">
+        <h2>Analytics</h2>
+        <p>Placeholder for site health and performance dashboards.</p>
+      </article>
+    </section>
+  </main>
+
+  <script type="module" src="/admin/js/dashboard.js"></script>
+</body>
+</html>
