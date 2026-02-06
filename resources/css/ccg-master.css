@@ -3875,3 +3875,70 @@ body.ccg-party::before {
         overflow-wrap: anywhere;
     }
 }
+
+/* ============================================================
+   OMEGA STABILITY LOCK: SINGLE SCROLL ROOT ENFORCEMENT
+   ------------------------------------------------------------
+   Why: Document scrolling must stay on html/body only.
+   Do not remove: nested wrappers will trap wheel/touch scrolling,
+   create sticky zones, and reintroduce dual scrollbar jitter.
+============================================================ */
+
+html,
+body {
+    height: auto !important;
+    min-height: 100%;
+    overflow-y: auto !important;
+    overflow-x: clip;
+    -webkit-overflow-scrolling: touch;
+}
+
+@supports not (overflow: clip) {
+    html,
+    body {
+        overflow-x: hidden;
+    }
+}
+
+:where(.ccg-page, .ccg-main, main, .game-shell, .ccg-info-shell, .ccg-footer, .ccg-footer-wrap, .ccg-nav-drawer__panel) {
+    height: auto;
+    max-height: none;
+    overflow-y: visible;
+}
+
+@media (max-width: 1024px) {
+    :where(.ccg-page, .ccg-main, main, .game-shell, .ccg-info-shell, .ccg-footer, .ccg-footer-wrap, .ccg-nav-drawer__panel) {
+        min-height: 0;
+        max-height: none !important;
+        overflow-y: visible !important;
+    }
+}
+
+/* ============================================================
+   OMEGA STABILITY LOCK: PANEL PAINT CONTAINMENT
+   ------------------------------------------------------------
+   Why: heavy glass cards should repaint in isolation during scroll.
+   Do not remove: broad paint invalidation returns and stutter grows.
+============================================================ */
+
+:where(.ccg-panel,
+       .about-panel,
+       .contact-panel,
+       .quiz-panel,
+       .quiz-side-panels,
+       .leaderboard-filter-panel,
+       .games-focus-panel,
+       .admin-card,
+       .admin-hero,
+       .admin-callout,
+       .admin-badge,
+       .admin-form-section,
+       .admin-edit-banner,
+       .admin-tab-panel,
+       .quiz-admin-panel,
+       .hangman-image-panel,
+       .hangman-status-panel,
+       .ccg-nav,
+       .ccg-nav-drawer__panel) {
+    contain: paint;
+}
