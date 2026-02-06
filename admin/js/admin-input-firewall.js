@@ -8,27 +8,69 @@
   let active = false;
   let disarmed = false;
 
-  const isEditableTarget = (target) => {
-    if (!(target instanceof Element)) return false;
-    return Boolean(target.closest('input, textarea, [contenteditable]'));
+  const isDebugEnabled = () => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('debugkeys') === '1' || window.localStorage.getItem('ccgDebugKeys') === '1';
+    } catch (error) {
+      return false;
+    }
   };
 
+  const logOnce = (() => {
+    const logged = new Set();
+    return (key, message, level = 'info') => {
+      if (!isDebugEnabled()) return;
+      if (logged.has(key)) return;
+      logged.add(key);
+      if (level === 'warn') {
+        console.warn(message);
+        return;
+      }
+      console.info(message);
+    };
+  })();
+
+  const editableSelector = 'input, textarea, select, [contenteditable]:not([contenteditable="false"])';
+
+  const isEditableElement = (target) => {
+    if (!(target instanceof Element)) return false;
+    if (target.matches(editableSelector)) return true;
+    if (target.isContentEditable && !target.matches('[contenteditable="false"]')) return true;
+    return Boolean(target.closest('[contenteditable]:not([contenteditable="false"])'));
+  };
+
+  const isEditableEvent = (event) => {
+    if (!event) return false;
+    if (isEditableElement(event.target)) return true;
+    if (typeof event.composedPath === 'function') {
+      return event.composedPath().some(isEditableElement);
+    }
+    return false;
+  };
+
+  const isSpaceKey = (event) => event && (event.key === ' ' || event.code === 'Space' || event.key === 'Spacebar' || event.keyCode === 32);
+
   const stopAdminInputHandlers = (event) => {
+    // Never interfere with typing
+    if (isEditableEvent(event)) {
+      logOnce('ccg-admin-firewall-editable', '[CCG-ADMIN] Input firewall ignored editable key event.', 'warn');
+      return;
+    }
 
-  // Never interfere with typing
-  if (isEditableTarget(event.target)) {
-    return;
-  }
+    if (isSpaceKey(event)) {
+      logOnce('ccg-admin-firewall-space', '[CCG-ADMIN] Input firewall intercepted Space on non-editable target.');
+    }
 
-  // Only block non-input shortcuts
-  event.stopImmediatePropagation();
-  event.stopPropagation();
- };
+    // Only block non-input shortcuts
+    event.stopImmediatePropagation();
+    event.stopPropagation();
+  };
 
   const enable = () => {
     if (disarmed || active) return;
     eventTypes.forEach((eventType) => {
-      document.addEventListener(eventType, stopAdminInputHandlers, true);
+      document.addEventListener(eventType, stopAdminInputHandlers);
     });
     active = true;
   };
@@ -36,7 +78,7 @@
   const disable = () => {
     if (!active) return;
     eventTypes.forEach((eventType) => {
-      document.removeEventListener(eventType, stopAdminInputHandlers, true);
+      document.removeEventListener(eventType, stopAdminInputHandlers);
     });
     active = false;
     disarmed = true;
