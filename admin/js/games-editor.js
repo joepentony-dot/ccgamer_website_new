@@ -2,7 +2,7 @@ import { startAccessMonitor } from './guard.js';
 import { fetchBackups, fetchFileIndex, fetchGamesJson, restoreBackup, saveGamesJson } from './games-api.js';
 import { validateGameRecord, validateGamesSchema } from './validator.js';
 import { initAdminNav } from './admin-nav.js';
-import { waitForAuthReady } from './auth.js';
+import { getAuthContext, waitForAuthReady } from './auth.js';
 
 /**
  * OMEGA Games Editor
@@ -826,13 +826,22 @@ async function bootstrapDeterministic() {
   await waitForAuthReady();
 
   setBootStep('Role Verified');
-  if (!window.ccgSupabase?.getCurrentUserContext) {
-    throw new Error('Auth context provider unavailable.');
-  }
-  const context = await window.ccgSupabase.getCurrentUserContext();
-  const role = String(context?.role || '').toLowerCase();
+
+  /* ===================================================
+     OMEGA AUTH LOCK — DO NOT REMOVE
+     Prevents admin lockout via role desync
+     =================================================== */
+  let context = await getAuthContext();
+  let role = String(context?.role || '').toLowerCase();
 
   if (!context?.isAuthenticated || roleRank(role) < roleRank('admin')) {
+    console.warn('[CCG-AUTH] forbidden bootstrap; retrying auth context rebuild');
+    context = await getAuthContext({ forceRoleRefresh: true });
+    role = String(context?.role || '').toLowerCase();
+  }
+
+  if (!context?.isAuthenticated || roleRank(role) < roleRank('admin')) {
+    console.warn(`[CCG-AUTH] redirect=forbidden authenticated=${Boolean(context?.isAuthenticated)} role=${role || 'none'}`);
     window.location.replace('/admin/login.html?reason=forbidden');
     return;
   }

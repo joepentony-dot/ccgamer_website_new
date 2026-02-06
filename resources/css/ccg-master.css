@@ -82,6 +82,7 @@
 
     --ccg-nav-pill-pad-y: 8px;
     --ccg-nav-pill-pad-x: 12px;
+    --ccg-focus-ring: rgba(var(--accent-rgb), 0.92);
 
     /* PAGE ENTRY */
     --ccg-page-entry-pad: clamp(20px, 3vw, 28px);
