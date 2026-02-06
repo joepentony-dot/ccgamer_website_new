@@ -1238,8 +1238,13 @@
         refreshBtn.addEventListener("click", fetchLiveGames);
     }
 
-    syncSourceLink();
-    fetchLiveGames();
-    renderSelectedGenres();
-    updateAutoFields();
+    async function initAdminTools() {
+        await waitForAuthReady();
+        syncSourceLink();
+        fetchLiveGames();
+        renderSelectedGenres();
+        updateAutoFields();
+    }
+
+    initAdminTools();
 })();
