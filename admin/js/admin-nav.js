@@ -1,6 +1,5 @@
 import { AUTH_CONFIG } from './config.js';
-import { logout, restoreSession } from './auth.js';
-import { fetchUserRole } from './roles.js';
+import { getAuthContext, logout } from './auth.js';
 
 function escapeHtml(value) {
   return String(value || '').replace(/[&<>"']/g, (char) => ({
@@ -42,11 +41,13 @@ export async function initAdminNav({ pageLabel = 'Dashboard', active = 'dashboar
 
   async function handleLogout(event) {
     event.preventDefault();
+    sessionNode.textContent = 'Signing out…';
     try {
       await logout();
+    } catch (error) {
+      console.warn('[CCG-AUTH] logout failed, forcing redirect', error);
+    } finally {
       window.location.replace(AUTH_CONFIG.postLogoutRedirect);
-    } catch {
-      sessionNode.textContent = 'Could not sign out. Try again.';
     }
   }
 
@@ -54,14 +55,14 @@ export async function initAdminNav({ pageLabel = 'Dashboard', active = 'dashboar
   logoutLink?.addEventListener('click', handleLogout);
 
   try {
-    const session = await restoreSession();
-    if (!session?.user) {
+    const context = await getAuthContext();
+    if (!context?.isAuthenticated || !context?.user) {
       sessionNode.innerHTML = 'Session: guest';
       return;
     }
 
-    const role = await fetchUserRole({ userId: session.user.id }).catch(() => 'unknown');
-    sessionNode.textContent = `${session.user.email || 'unknown'} · role ${role}`;
+    const role = context.role || 'unknown';
+    sessionNode.textContent = `${context.user.email || 'unknown'} · role ${role}`;
   } catch {
     sessionNode.textContent = 'Session status unavailable.';
   }

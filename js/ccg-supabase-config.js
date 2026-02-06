@@ -1,0 +1,2 @@
+window.CCG_SUPABASE_URL = "https://lcslgxpgmttaexsorxik.supabase.co";
+window.CCG_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxjc2xneHBnbXR0YWV4c29yeGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyODU5MzksImV4cCI6MjA4NTg2MTkzOX0.X5GMuaJLzCjq7AQhcTpEUNs8LskOB0dAXdpo05HlF3g";

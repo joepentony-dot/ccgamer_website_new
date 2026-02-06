@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" data-ccg-page="community-hub">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCG Community Hub | Cheeky Commodore Gamer</title>
+  <meta name="description" content="Explore live CCG community activity with trending games, leaderboards, and top members." />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="stylesheet" href="/resources/css/ccg-master.css" />
+  <link rel="stylesheet" href="/resources/css/ccg-mode.css" />
+  <link rel="stylesheet" href="/resources/css/ccg-overlays.css" />
+  <link rel="stylesheet" href="/resources/css/ccg-footer.css" />
+  <link rel="stylesheet" href="/resources/css/ccg-community.css" />
+</head>
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
+  <div class="ccg-bg" aria-hidden="true">
+    <div class="ccg-bg-starfield" aria-hidden="true"></div>
+    <div class="ccg-bg-grid" aria-hidden="true"></div>
+  </div>
+
+  <header class="ccg-header" data-ccg-header>
+    <div class="ccg-header-inner">
+      <a href="/home.html" class="ccg-brand">
+        <img src="/resources/images/ccgamer-logo.png" alt="Cheeky Commodore Gamer logo" class="ccg-brand__logo" width="1500" height="1032" />
+        <div class="ccg-brand__text">
+          <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
+          <div class="ccg-brand__title">
+            <span class="ccg-brand__neon-cheeky">CHEEKY COMMODORE</span>
+            <span class="ccg-brand__neon-sub">GAMER</span>
+          </div>
+        </div>
+      </a>
+      <nav class="ccg-nav" aria-label="Primary navigation">
+        <ul class="ccg-nav__list ccg-nav__list--primary">
+          <li><a href="/home.html" class="ccg-nav__link">Home</a></li>
+          <li><a href="/games/index.html" class="ccg-nav__link">Browse Games</a></li>
+          <li><a href="/games/collections/index.html" class="ccg-nav__link">Collections</a></li>
+        </ul>
+        <ul class="ccg-nav__list ccg-nav__list--secondary" data-ccg-nav-secondary>
+          <li><a href="/quiz/quiz.html" class="ccg-nav__link">Quiz</a></li>
+          <li><a href="/about.html" class="ccg-nav__link">About</a></li>
+          <li><a href="/contact.html" class="ccg-nav__link">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="ccg-header-actions"></div>
+    </div>
+    <div class="ccg-header-neon-strip"></div>
+  </header>
+
+  <main class="ccg-community-layout">
+    <section class="ccg-community-card">
+      <h1>CCG Community Hub</h1>
+      <p>Your live feed for ratings, discussions, and leaderboard momentum across the C64 and Amiga archive.</p>
+      <div class="ccg-community-auth__actions">
+        <button type="button" class="ccg-community-btn" id="ccg-hub-login-btn">Join / Log in</button>
+        <a class="ccg-community-btn ccg-community-btn--ghost" href="/community/profile.html">Go to profile</a>
+      </div>
+      <div class="ccg-seo-links" aria-label="Community SEO pages">
+        <a href="/community/seo/top-rated.html">Top Rated</a>
+        <a href="/community/seo/most-discussed.html">Most Discussed</a>
+        <a href="/community/seo/trending.html">Trending</a>
+        <a href="/community/seo/top-members.html">Top Members</a>
+      </div>
+    </section>
+
+    <section class="hub-grid" aria-label="Community live modules">
+      <article class="ccg-community-card hub-card">
+        <h2>Trending Now</h2>
+        <p class="ccg-community-muted">Weighted activity from ratings + comments in the last 7 days.</p>
+        <div id="ccg-hub-trending" class="hub-section-body" aria-live="polite">
+          <p class="ccg-community-muted">Loading trending games…</p>
+        </div>
+      </article>
+
+      <article class="ccg-community-card hub-card">
+        <h2>Top Rated (All Time)</h2>
+        <p class="ccg-community-muted">Highest average ratings with a minimum of 5 ratings.</p>
+        <div id="ccg-hub-top-rated" class="hub-section-body" aria-live="polite">
+          <p class="ccg-community-muted">Loading top rated list…</p>
+        </div>
+      </article>
+
+      <article class="ccg-community-card hub-card">
+        <h2>Most Discussed (30 Days)</h2>
+        <p class="ccg-community-muted">Most active game conversations from the last month.</p>
+        <div id="ccg-hub-discussed" class="hub-section-body" aria-live="polite">
+          <p class="ccg-community-muted">Loading discussion leaders…</p>
+        </div>
+      </article>
+
+      <article class="ccg-community-card hub-card">
+        <h2>Top Members</h2>
+        <p class="ccg-community-muted">Points: +2 comment, +1 rating, +5 badge milestone.</p>
+        <div id="ccg-hub-top-members" class="hub-section-body" aria-live="polite">
+          <p class="ccg-community-muted">Loading member leaderboard…</p>
+        </div>
+      </article>
+
+      <article class="ccg-community-card hub-card hub-card--full">
+        <h2>Latest Activity</h2>
+        <p class="ccg-community-muted">Newest ratings, comments, and badge unlocks from across the community.</p>
+        <div id="ccg-hub-latest-activity" class="hub-section-body" aria-live="polite">
+          <p class="ccg-community-muted">Loading latest activity…</p>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="ccg-footer">
+    <p class="ccg-footer__text">© <span data-ccg-year></span> Cheeky Commodore Gamer.</p>
+  </footer>
+
+  <script src="/js/ccg-global.js" defer></script>
+  <script src="/js/ccg-mode-engine.js" defer></script>
+  <script src="/js/ccg-supabase-config.js" defer></script>
+  <script src="/js/ccg-supabase-client.js" defer></script>
+  <script src="/js/ccg-community-auth.js" defer></script>
+  <script src="/js/ccg-community-ui.js" defer></script>
+  <script src="/js/ccg-community-badges.js" defer></script>
+  <script src="/js/ccg-community-hub.js" defer></script>
+</body>
+</html>

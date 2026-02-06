@@ -1,5 +1,5 @@
 import { AUTH_CONFIG } from './config.js';
-import { supabase } from './auth.js';
+import { getSupabaseClient } from './auth.js';
 
 function getCachedRole(userId) {
   try {
@@ -55,6 +55,7 @@ export async function fetchUserRole({ userId, force = false }) {
     }
   }
 
+  const supabase = await getSupabaseClient();
   const { data, error } = await supabase
     .from('user_roles')
     .select('role')

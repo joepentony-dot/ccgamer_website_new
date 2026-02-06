@@ -81,6 +81,7 @@
     <link rel="stylesheet" href="../resources/css/games.css">
     <link rel="stylesheet" href="../resources/css/ccg-footer.css" />
     <link rel="stylesheet" href="../resources/css/ccg-mobile-lite.css">
+    <link rel="stylesheet" href="../resources/css/ccg-community.css" />
     <script src="../js/ccg-mobile-lite.js" defer></script>
 </head>
 
@@ -346,6 +347,14 @@
             </div>
         </section>
 
+        <section class="game-section">
+            <div id="ccg-community-rating"></div>
+        </section>
+
+        <section class="game-section">
+            <div id="ccg-community-comments"></div>
+        </section>
+
         <div class="game-quick-actions" data-game-quick-actions hidden>
             <button type="button" data-action="video" aria-label="Jump to video section">Watch</button>
             <button type="button" data-action="share" aria-label="Share this game">Share</button>
@@ -397,7 +406,6 @@
 
 <script src="../js/ccg-global.js" defer></script>
 <script src="../js/ccg-mode-engine.js" defer></script>
-<script src="../js/ccg-user-ratings.js" defer></script>
 <script src="../js/load-single-game.js" defer></script>
 <script src="../resources/js/ccg-share.js" defer></script>
 
@@ -407,6 +415,19 @@
   async
   src="https://gc.zgo.at/count.js">
 </script>
+
+<script src="../js/ccg-supabase-config.js" defer></script>
+
+<script src="../js/ccg-supabase-client.js" defer></script>
+
+<script src="../js/ccg-community-auth.js" defer></script>
+
+<script src="../js/ccg-community-ui.js" defer></script>
+  <script src="../js/ccg-community-badges.js" defer></script>
+
+<script src="../js/ccg-community-ratings.js" defer></script>
+
+<script src="../js/ccg-community-comments.js" defer></script>
 
 </body>
 </html>
