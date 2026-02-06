@@ -1,10 +1,11 @@
 import { AUTH_CONFIG } from './config.js';
 import {
   bindSessionInvalidation,
+  getAuthContext,
   refreshSessionIfNeeded,
   restoreSession
 } from './auth.js';
-import { clearRoleCache, fetchUserRole } from './roles.js';
+import { clearRoleCache } from './roles.js';
 
 function redirect(path, reason) {
   const url = new URL(path, window.location.origin);
@@ -37,15 +38,20 @@ export async function ensureRole(allowedRoles = []) {
     return null;
   }
 
-  const userId = session.user?.id;
-  const role = await fetchUserRole({ userId });
+  const context = await getAuthContext();
+  const role = String(context?.role || '').toLowerCase();
+
+  if (!context?.isAuthenticated || !role) {
+    redirect(AUTH_CONFIG.loginPage, 'forbidden');
+    return null;
+  }
 
   if (allowedRoles.length > 0 && !allowedRoles.includes(role)) {
     redirect(AUTH_CONFIG.loginPage, 'forbidden');
     return null;
   }
 
-  return { session, role };
+  return { session: context.session || session, role };
 }
 
 export function startAccessMonitor({ onSessionInvalidated } = {}) {

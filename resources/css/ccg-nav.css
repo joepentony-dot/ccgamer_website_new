@@ -11,6 +11,20 @@
     --ccg-nav-focus-halo: rgba(var(--accent-rgb), 0.30);
 }
 
+/* ===================================================
+   OMEGA UI LOCK — FOCUS / TAP ARTEFACT PREVENTION
+   Prevents browser blue flash regressions
+   Focus-visible keeps keyboard navigation accessible while
+   tap highlight suppression removes mobile UA blue flash.
+   =================================================== */
+
+:where(button,
+       a,
+       [role="button"]) {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
 /* ============================================================
    OMEGA STABILITY LOCK: NAV / PILL ARTEFACT SUPPRESSION
    ------------------------------------------------------------
@@ -31,6 +45,7 @@
     isolation: isolate;
     outline: none;
     -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
     background-clip: padding-box;
 }
 

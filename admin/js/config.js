@@ -10,6 +10,8 @@
 export const SUPABASE_URL = 'https://lcslgxpgmttaexsorxik.supabase.co';
 export const SUPABASE_ANON_KEY = 'sb_publishable_MDjIagrZ-IjI_xbE3VXNaQ_ZaScTuTJ';
 
+export const OWNER_EMAIL = 'admin@cheekycommodoregamer.co.uk';
+
 export const AUTH_CONFIG = Object.freeze({
   storageKey: 'ccg-admin-auth',
   roleCacheKey: 'ccg-admin-role-cache',

@@ -772,6 +772,15 @@ html.ccg-hud-dock-ready .ccg-hud-dock {
    MOBILE — REMOVE BUTTON
 ------------------------------------------------------------ */
 
+/* ===================================================
+   OMEGA UI LOCK — FOCUS / TAP ARTEFACT PREVENTION
+   Prevents browser blue flash regressions
+   Why disabled tap highlight: browser UA tap flash creates
+   blue artefacts that conflict with Omega neon glass visuals.
+   Why focus-visible: preserves keyboard focus accessibility
+   without restoring default browser blue outlines.
+   =================================================== */
+
 /* ============================================================
    OMEGA STABILITY LOCK: FOCUS / TAP ARTEFACT SUPPRESSION
    ------------------------------------------------------------
@@ -781,7 +790,7 @@ html.ccg-hud-dock-ready .ccg-hud-dock {
 ============================================================ */
 
 :root {
-    --ccg-focus-ring-core: rgba(var(--accent-rgb), 0.92);
+    --ccg-focus-ring: rgba(var(--accent-rgb), 0.92);
     --ccg-focus-ring-halo: rgba(var(--accent-rgb), 0.34);
 }
 
@@ -801,9 +810,33 @@ html.ccg-hud-dock-ready .ccg-hud-dock {
        .ccg-nav-toggle,
        .omega-mobile-dock__btn) {
     -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
     outline: none;
     background-clip: padding-box;
     isolation: isolate;
+}
+
+
+:where(button,
+       a,
+       [role="button"]) {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+:focus {
+    outline: none;
+}
+
+:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--ccg-focus-ring);
+}
+
+button:focus,
+a:focus,
+.ccg-btn:focus {
+    box-shadow: none;
 }
 
 :where(a,
@@ -840,7 +873,7 @@ html.ccg-hud-dock-ready .ccg-hud-dock {
        .ccg-nav__more-toggle,
        .ccg-nav-toggle,
        .omega-mobile-dock__btn):focus-visible {
-    outline: 2px solid var(--ccg-focus-ring-core);
+    outline: 2px solid var(--ccg-focus-ring);
     outline-offset: 2px;
     box-shadow:
         0 0 0 2px rgba(4, 8, 20, 0.82),
