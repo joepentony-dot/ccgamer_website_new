@@ -12,10 +12,11 @@
 .ccg-community-btn--ghost { background: transparent; }
 .ccg-community-auth-btn { margin-left: 0.6rem; font-size: 0.85rem; }
 
-.ccg-community-modal { position: fixed; inset: 0; z-index: 2200; }
-.ccg-community-modal__backdrop { position: absolute; inset: 0; background: rgba(3, 8, 21, 0.78); backdrop-filter: blur(3px); }
+.ccg-community-modal { position: fixed; inset: 0; z-index: 9998; }
+.ccg-community-modal__backdrop { position: fixed; inset: 0; z-index: 9998; background: rgba(3, 8, 21, 0.78); backdrop-filter: blur(3px); }
 .ccg-community-modal__panel {
   position: relative;
+  z-index: 9999;
   width: min(92vw, 520px);
   margin: 8vh auto;
   padding: 1.1rem;
@@ -45,6 +46,7 @@
 .ccg-community-auth__message { min-height: 1.2rem; margin-bottom: 0.55rem; font-size: 0.88rem; }
 .ccg-community-auth__message[data-type="error"] { color: #ff8da0; }
 .ccg-community-auth__message[data-type="success"] { color: #74ffce; }
+.ccg-header { z-index: 1000; }
 
 .ccg-community-card {
   border: 1px solid rgba(104, 226, 255, 0.35);

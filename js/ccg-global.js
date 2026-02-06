@@ -14,6 +14,21 @@
 (function () {
     "use strict";
 
+    function isAdminContext() {
+        const meta = document.querySelector('meta[name="ccg-context"]');
+        return meta && meta.getAttribute("content") === "admin";
+    }
+
+    function isQuizContext() {
+        const meta = document.querySelector('meta[name="ccg-context"]');
+        return meta && meta.getAttribute("content") === "quiz";
+    }
+
+    if (isAdminContext()) {
+        console.log("[CCG] Admin context detected — keyboard suppression disabled in this module.");
+        return;
+    }
+
     /* ======================================================
        ENV / MOBILE DETECTION
     ====================================================== */
@@ -630,6 +645,9 @@
         exitButton.addEventListener("click", closeHandler);
 
         const escHandler = event => {
+            if (event && event.target && event.target.closest && event.target.closest('input, textarea, [contenteditable="true"], [contenteditable=""], [contenteditable]')) {
+                return;
+            }
             if (event.key === "Escape") {
                 stopActiveEasterEgg();
             }
@@ -708,7 +726,12 @@
             <p>A fatal exception 0E has occurred at 0028:C0011E36 in VXD VMM(01) + 00010E36.</p>
             <p>Press any key to continue...</p>
         `);
-        const remove = () => bsod.remove();
+        const remove = (event) => {
+            if (event && event.target && event.target.closest && event.target.closest('input, textarea, [contenteditable="true"], [contenteditable=""], [contenteditable]')) {
+                return;
+            }
+            bsod.remove();
+        };
         bsod.addEventListener("click", remove);
         document.addEventListener("keydown", remove, { once: true });
     }
@@ -982,6 +1005,9 @@
         const maxBuffer = Math.max(...cheatKeys.map(key => key.length)) + 6;
 
         document.addEventListener("keydown", event => {
+            if (event && event.target && event.target.closest && event.target.closest('input, textarea, [contenteditable="true"], [contenteditable=""], [contenteditable]')) {
+                return;
+            }
             if (event.defaultPrevented) return;
 
             if (event.key === "Escape") {
@@ -1426,6 +1452,9 @@
         });
 
         document.addEventListener("keydown", event => {
+            if (event && event.target && event.target.closest && event.target.closest('input, textarea, [contenteditable="true"], [contenteditable=""], [contenteditable]')) {
+                return;
+            }
             if (event.key === "Escape") {
                 closeNav();
                 closeMore();
@@ -1961,6 +1990,9 @@ function setupFooterSignatureRotator() {
         const targetPath = "/admin/login.html";
 
         document.addEventListener("keydown", event => {
+            if (event && event.target && event.target.closest && event.target.closest('input, textarea, [contenteditable="true"], [contenteditable=""], [contenteditable]')) {
+                return;
+            }
             if (event.defaultPrevented) return;
             if (isEditableTarget(event.target)) return;
 

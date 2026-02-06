@@ -1,8 +1,14 @@
 // CCG ADMIN LOCK — DO NOT REMOVE — INPUT HARDENING
 (() => {
-  const logPrefix = '[CCG-INPUT-HARDEN]';
-  const editableSelector = 'input, textarea, [contenteditable]';
-  const isSpaceKey = (event) => event.key === ' ' || event.code === 'Space' || event.keyCode === 32;
+  const editableSelector = 'input, textarea, [contenteditable="true"], [contenteditable=""], [contenteditable]';
+  const logOnce = (() => {
+    const logged = new Set();
+    return (message) => {
+      if (logged.has(message)) return;
+      logged.add(message);
+      console.log(message);
+    };
+  })();
 
   const isEditableTarget = (target) => {
     if (!(target instanceof Element)) return false;
@@ -11,20 +17,18 @@
     return Boolean(target.closest('[contenteditable]:not([contenteditable="false"])'));
   };
 
-  const hardenSpaceInput = (event) => {
-    if (!isSpaceKey(event)) return;
+  const hardenAdminInputs = (event) => {
     if (!isEditableTarget(event.target)) return;
     event.stopImmediatePropagation();
+    event.stopPropagation();
   };
 
-  document.addEventListener('keydown', hardenSpaceInput, true);
-  document.addEventListener('keypress', hardenSpaceInput, true);
-  document.addEventListener('keyup', hardenSpaceInput, true);
+  document.addEventListener('keydown', hardenAdminInputs, true);
+  document.addEventListener('keypress', hardenAdminInputs, true);
+  document.addEventListener('keyup', hardenAdminInputs, true);
 
-  window.CCG_INPUT_HARDENED = true;
-  console.assert(
-    document.activeElement.tagName !== 'INPUT' || true,
-    '[CCG] Input hardening active'
-  );
-  console.info(`${logPrefix} active: capture-phase spacebar guard enabled for ${editableSelector}.`);
+  window.CCG_ADMIN_INPUT_HARDENED = true;
+  logOnce('[CCG-ADMIN] Input hardening active');
+  logOnce('[CCG-ADMIN] Context=admin (safe mode)');
+  console.info(`[CCG-ADMIN] capture-phase input guard enabled for ${editableSelector}.`);
 })();
