@@ -1,5 +1,6 @@
 import { logout, redirectWithGuard } from './auth.js';
 import { APP_PATHS, AUTH_CONFIG } from './config.js';
+import { buildStubStructure } from './games-api.js';
 import { ensureRole, startAccessMonitor } from './guard.js';
 import { createSnapshot, getHealthReport, scanAssets, uploadAssets } from './asset-manager-api.js';
 
@@ -284,6 +285,10 @@ async function wireGameLinking() {
   });
 }
 
+function exposeStubBuilder() {
+  window.CCGStubBuilder = (slug, meta = {}) => buildStubStructure({ slug, meta });
+}
+
 async function init() {
   const access = await ensureRole(allowedRoles);
   if (!access) return;
@@ -298,6 +303,7 @@ async function init() {
   wireNormalizer();
   wire3DPreview();
   wireButtons();
+  exposeStubBuilder();
   await wireGameLinking();
   await indexAssets();
 }

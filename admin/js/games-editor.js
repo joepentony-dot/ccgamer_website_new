@@ -1,8 +1,9 @@
 import { initAdminNav } from './admin-nav.js';
 import { getAuthContext, waitForAuthReady } from './auth.js';
+import { buildStubStructure, loadGamesLibrary, updateGamesLibrary } from './games-api.js';
+import { validateWizardDraft } from './validator.js';
 
 const SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
-const GAMES_PATH = '/games/games.json';
 const STORAGE_KEY = 'omegaGameBuilderDraftV1';
 const MAX_STEP = 6;
 const MAX_LIBRARY_ATTEMPTS = 2;
@@ -27,9 +28,12 @@ const state = {
     systems: [],
     genres: []
   },
-  validation: { errors: [], warnings: [], missing: [], fieldErrors: {} },
+  validation: { errors: [], warnings: [], missing: [], fieldErrors: {}, ran: false, valid: false },
   outputs: null,
   lastSavedAt: null,
+  mode: 'new',
+  editing: null,
+  dirty: false,
   auth: {
     ready: false,
     context: null,
@@ -43,6 +47,11 @@ const el = {
   runtime: document.querySelector('[data-runtime-state]'),
   draftIndicator: document.querySelector('[data-draft-indicator]'),
   libraryIndicator: document.querySelector('[data-library-indicator]'),
+  modeIndicator: document.querySelector('[data-mode-indicator]'),
+  validationIndicator: document.querySelector('[data-validation-indicator]'),
+  exportIndicator: document.querySelector('[data-export-indicator]'),
+  errorIndicator: document.querySelector('[data-error-indicator]'),
+  readonlyBadge: document.querySelector('[data-readonly-badge]'),
   exportNote: document.querySelector('[data-export-note]'),
   steps: Array.from(document.querySelectorAll('[data-step]')),
   progress: Array.from(document.querySelectorAll('[data-progress-step]')),
@@ -74,6 +83,12 @@ const el = {
     status: document.querySelector('[data-validation-status]'),
     warnings: document.querySelector('[data-validation-warnings]')
   },
+  load: {
+    input: document.querySelector('[data-load-input]'),
+    button: document.querySelector('[data-action="load-game"]'),
+    status: document.querySelector('[data-load-status]'),
+    list: document.querySelector('#game-lookup-list')
+  },
   actions: {
     saveDraft: document.querySelector('[data-action="save-draft"]'),
     resetWizard: document.querySelector('[data-action="reset-wizard"]'),
@@ -94,15 +109,22 @@ function setRuntimeState(message, kind = 'ready') {
   el.runtime.dataset.state = kind;
 }
 
+function setErrorIndicator(message) {
+  if (!el.errorIndicator) return;
+  if (!message) {
+    el.errorIndicator.hidden = true;
+    el.errorIndicator.textContent = '';
+    return;
+  }
+  el.errorIndicator.hidden = false;
+  el.errorIndicator.textContent = message;
+}
+
 function setReadOnly(isReadOnly) {
   const disableActions = [
     'saveDraft',
-    'resetWizard',
     'buildPackage',
-    'generateOutput',
-    'downloadBundle',
-    'toggleThumbnailOverride',
-    'toggleBox3dOverride'
+    'downloadBundle'
   ];
 
   disableActions.forEach((key) => {
@@ -111,14 +133,8 @@ function setReadOnly(isReadOnly) {
     }
   });
 
-  el.fields.forEach((field) => {
-    field.disabled = Boolean(isReadOnly);
-  });
-
-  if (el.genreList) {
-    el.genreList.querySelectorAll('input[type="checkbox"]').forEach((input) => {
-      input.disabled = Boolean(isReadOnly);
-    });
+  if (el.readonlyBadge) {
+    el.readonlyBadge.hidden = !isReadOnly;
   }
 }
 
@@ -138,23 +154,27 @@ function applyAuthContext(context, error) {
     console.error('[OMEGA-GAME-BUILDER] auth error', error);
     setRuntimeState('Auth error · read-only', 'error');
     setReadOnly(true);
+    updateStatusIndicators();
     return;
   }
 
   if (!isAuthenticated) {
     setRuntimeState('Guest · read-only', 'info');
     setReadOnly(true);
+    updateStatusIndicators();
     return;
   }
 
   if (!canWrite) {
     setRuntimeState('Read-only · role limited', 'warning');
     setReadOnly(true);
+    updateStatusIndicators();
     return;
   }
 
   setRuntimeState('Ready');
   setReadOnly(false);
+  updateStatusIndicators();
 }
 
 function defaultDraft() {
@@ -420,17 +440,51 @@ function setDraftIndicator(message) {
   el.draftIndicator.textContent = message;
 }
 
+function updateStatusIndicators() {
+  if (el.modeIndicator) {
+    el.modeIndicator.textContent = `Mode: ${state.mode === 'edit' ? 'Edit' : 'New'}`;
+  }
+
+  if (el.validationIndicator) {
+    if (!state.validation.ran) {
+      el.validationIndicator.textContent = 'Validation: Pending';
+    } else if (state.validation.errors.length) {
+      el.validationIndicator.textContent = 'Validation: FAIL';
+    } else {
+      el.validationIndicator.textContent = 'Validation: OK';
+    }
+  }
+
+  if (el.exportIndicator) {
+    const exportReady = state.validation.ran && !state.validation.errors.length && state.auth.canWrite;
+    el.exportIndicator.textContent = `Export: ${exportReady ? 'Ready' : 'Blocked'}`;
+  }
+}
+
+function markDirty(isDirty) {
+  state.dirty = isDirty;
+  if (isDirty) {
+    setDraftIndicator('Draft: unsaved changes');
+  } else if (state.lastSavedAt) {
+    setDraftIndicator(`Draft: saved ${new Date(state.lastSavedAt).toLocaleTimeString()}`);
+  } else {
+    setDraftIndicator('Draft: ready');
+  }
+}
+
 function saveDraft() {
   const payload = {
     step: state.step,
     slugLocked: state.slugLocked,
     idLocked: state.idLocked,
     draft: state.draft,
+    mode: state.mode,
+    editing: state.editing,
     savedAt: Date.now()
   };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   state.lastSavedAt = payload.savedAt;
-  setDraftIndicator(`Draft: saved ${new Date(payload.savedAt).toLocaleTimeString()}`);
+  markDirty(false);
 }
 
 function loadDraft() {
@@ -446,8 +500,10 @@ function loadDraft() {
     state.idLocked = Boolean(parsed.idLocked);
     state.draft = { ...defaultDraft(), ...(parsed.draft || {}) };
     state.lastSavedAt = parsed.savedAt || null;
+    state.mode = parsed.mode || 'new';
+    state.editing = parsed.editing || null;
     if (state.lastSavedAt) {
-      setDraftIndicator(`Draft: restored ${new Date(state.lastSavedAt).toLocaleTimeString()}`);
+      markDirty(false);
     }
   } catch {
     state.draft = defaultDraft();
@@ -459,17 +515,21 @@ function resetWizard() {
   state.step = 1;
   state.slugLocked = false;
   state.idLocked = false;
+  state.mode = 'new';
+  state.editing = null;
   state.draft = defaultDraft();
   state.outputs = null;
-  state.validation = { errors: [], warnings: [], missing: [], fieldErrors: {} };
+  state.validation = { errors: [], warnings: [], missing: [], fieldErrors: {}, ran: false, valid: false };
   updateFormFromDraft();
   updatePreviewFields();
   renderValidation();
   renderOutputs();
   updateProgress();
-  setDraftIndicator('Draft: cleared');
+  markDirty(false);
   if (el.actions.downloadBundle) el.actions.downloadBundle.disabled = true;
   if (el.exportNote) el.exportNote.hidden = true;
+  updateStatusIndicators();
+  setErrorIndicator('');
 }
 
 function setLibraryIndicator(message) {
@@ -510,155 +570,173 @@ function renderGenres() {
   });
 }
 
-function isValidUrl(value) {
-  try {
-    const url = new URL(value);
-    return ['http:', 'https:'].includes(url.protocol);
-  } catch {
-    return false;
+function updateUniquenessSets() {
+  const slugs = new Set(state.library.map((game) => game.slug));
+  const ids = new Set(state.library.map((game) => game.id));
+
+  if (state.editing?.slug) {
+    slugs.delete(state.editing.slug);
   }
+  if (state.editing?.id) {
+    ids.delete(state.editing.id);
+  }
+
+  state.slugSet = slugs;
+  state.idSet = ids;
 }
 
-function isValidPath(value) {
-  if (!value) return false;
-  if (value.startsWith('resources/')) return true;
-  return isValidUrl(value);
+function renderLibraryLookupOptions() {
+  if (!el.load.list) return;
+  el.load.list.innerHTML = '';
+  state.library.forEach((game) => {
+    if (game.slug) {
+      const option = document.createElement('option');
+      option.value = game.slug;
+      el.load.list.appendChild(option);
+    }
+    if (game.id) {
+      const option = document.createElement('option');
+      option.value = game.id;
+      el.load.list.appendChild(option);
+    }
+  });
 }
 
-function isValidFilename(value) {
-  if (!value) return false;
-  if (/^https?:/i.test(value)) return false;
-  if (/[\\/]/.test(value)) return false;
-  return /\.[a-z0-9]{2,}$/i.test(value);
+function extractFilename(path, base) {
+  if (!path) return { filename: '', override: '' };
+  if (path.startsWith(base)) {
+    return { filename: path.slice(base.length), override: '' };
+  }
+  return { filename: '', override: path };
+}
+
+function draftFromGame(game) {
+  const thumbnail = extractFilename(game.thumbnail, THUMBNAIL_BASE_PATH);
+  const box3dPath = game.box_3d || game.box3d || '';
+  const box3d = extractFilename(box3dPath, BOX3D_BASE_PATH);
+
+  return {
+    ...defaultDraft(),
+    title: game.title || '',
+    slug: game.slug || '',
+    id: game.id || '',
+    system: game.system || '',
+    year: game.year ? String(game.year) : '',
+    developer: game.developer || '',
+    thumbnailFile: thumbnail.filename,
+    thumbnailOverride: thumbnail.override,
+    box3dFile: box3d.filename,
+    box3dOverride: box3d.override,
+    thumbnail: game.thumbnail || '',
+    box3d: box3dPath,
+    videoId: game.videoid || '',
+    pdf: game.pdf || '',
+    diskRefs: Array.isArray(game.disk) ? game.disk.join('\n') : '',
+    externalRefs: Array.isArray(game.lemon) ? game.lemon.join('\n') : '',
+    collections: Array.isArray(game.collections) ? game.collections.join(', ') : '',
+    genres: Array.isArray(game.genres) ? game.genres : [],
+    ccgRating: game.ccg_rating ? String(game.ccg_rating) : '',
+    ccgRatingReason: game.ccg_rating_reason || '',
+    description: game.description || '',
+    creditPublisher: Array.isArray(game.credits?.publisher) ? game.credits.publisher.join(', ') : '',
+    creditProducer: game.credits?.producer || '',
+    creditCoder: Array.isArray(game.credits?.coder) ? game.credits.coder.join(', ') : '',
+    creditGraphics: Array.isArray(game.credits?.graphics) ? game.credits.graphics.join(', ') : '',
+    creditMusician: Array.isArray(game.credits?.musician) ? game.credits.musician.join(', ') : '',
+    creditRereleaser: Array.isArray(game.credits?.re_releaser) ? game.credits.re_releaser.join(', ') : '',
+    creditDeveloper: game.credits?.developer || '',
+    seoTitle: ''
+  };
+}
+
+function setEditMode(game, index) {
+  state.mode = 'edit';
+  state.editing = {
+    index,
+    slug: game.slug,
+    id: game.id,
+    title: game.title
+  };
+  state.slugLocked = true;
+  state.idLocked = true;
+  updateUniquenessSets();
+  updateStatusIndicators();
+}
+
+function setNewMode() {
+  state.mode = 'new';
+  state.editing = null;
+  updateUniquenessSets();
+  updateStatusIndicators();
+}
+
+function setLoadStatus(message, tone = '') {
+  if (!el.load.status) return;
+  el.load.status.textContent = message;
+  el.load.status.dataset.tone = tone;
+}
+
+function loadGameById(id) {
+  const cleanId = String(id || '').trim();
+  if (!cleanId) {
+    setLoadStatus('Enter a game ID to load.', 'warning');
+    return;
+  }
+
+  const index = state.library.findIndex((game) => game.id === cleanId);
+  if (index === -1) {
+    setLoadStatus(`No game found for ID: ${cleanId}`, 'error');
+    return;
+  }
+
+  const game = state.library[index];
+  state.draft = draftFromGame(game);
+  setEditMode(game, index);
+  normalizeDraft();
+  updateFormFromDraft();
+  updatePreviewFields();
+  markDirty(false);
+  setLoadStatus(`Loaded ${game.title}`, 'success');
+  setErrorIndicator('');
+}
+
+function loadGameBySlug(slug) {
+  const cleanSlug = String(slug || '').trim();
+  if (!cleanSlug) {
+    setLoadStatus('Enter a slug to load.', 'warning');
+    return;
+  }
+
+  const index = state.library.findIndex((game) => game.slug === cleanSlug);
+  if (index === -1) {
+    setLoadStatus(`No game found for slug: ${cleanSlug}`, 'error');
+    return;
+  }
+
+  const game = state.library[index];
+  state.draft = draftFromGame(game);
+  setEditMode(game, index);
+  normalizeDraft();
+  updateFormFromDraft();
+  updatePreviewFields();
+  markDirty(false);
+  setLoadStatus(`Loaded ${game.title}`, 'success');
+  setErrorIndicator('');
 }
 
 function validateDraft() {
-  const errors = [];
-  const warnings = [];
-  const missing = [];
-  const fieldErrors = {};
+  const context = {
+    slugSet: state.slugSet,
+    idSet: state.idSet,
+    allowedSystems: new Set(state.schema.systems),
+    originalSlug: state.editing?.slug || '',
+    originalId: state.editing?.id || ''
+  };
 
-  const slug = state.draft.slug;
-  const id = state.draft.id;
-  const allowedSystems = new Set(state.schema.systems);
-
-  if (!state.draft.title) {
-    missing.push('Title');
-    fieldErrors.title = 'Title is required.';
-  }
-
-  if (!slug) {
-    missing.push('Slug');
-    fieldErrors.slug = 'Slug is required.';
-  } else if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
-    errors.push('Slug must use lowercase letters, numbers, and hyphens only.');
-    fieldErrors.slug = 'Use lowercase letters, numbers, and hyphens only.';
-  }
-
-  if (!id) {
-    missing.push('Game ID');
-    fieldErrors.id = 'Game ID is required.';
-  }
-
-  if (!state.draft.system) {
-    missing.push('System');
-    fieldErrors.system = 'System is required.';
-  } else if (allowedSystems.size && !allowedSystems.has(state.draft.system)) {
-    errors.push('System must match an existing system in games.json.');
-    fieldErrors.system = 'Choose a system from the existing list.';
-  }
-
-  if (!state.draft.year) {
-    missing.push('Year');
-    fieldErrors.year = 'Year is required.';
-  } else if (!/^\d{4}$/.test(state.draft.year)) {
-    errors.push('Year must be 4 digits.');
-    fieldErrors.year = 'Enter a 4-digit year.';
-  } else {
-    const yearValue = toNumber(state.draft.year);
-    if (yearValue && (yearValue < 1977 || yearValue > 2099)) {
-      warnings.push('Year looks unusual. Confirm the release year.');
-    }
-  }
-
-  if ((state.draft.genres || []).length === 0) {
-    missing.push('Genres');
-    fieldErrors.genres = 'Select at least one genre.';
-  }
-
-  const ratingValue = toNumber(state.draft.ccgRating);
-  if (!ratingValue) {
-    missing.push('CCG Rating');
-    fieldErrors.ccgRating = 'CCG rating is required.';
-  } else if (ratingValue < 1 || ratingValue > 10) {
-    errors.push('CCG rating must be between 1 and 10.');
-    fieldErrors.ccgRating = 'Rating must be between 1 and 10.';
-  }
-
-  if (!state.draft.thumbnailFile && !state.draft.thumbnailOverride) {
-    missing.push('Thumbnail');
-    fieldErrors.thumbnailFile = 'Thumbnail filename is required.';
-  }
-
-  if (state.draft.thumbnailFile && !isValidFilename(state.draft.thumbnailFile)) {
-    errors.push('Thumbnail filename must include a file extension and no slashes.');
-    fieldErrors.thumbnailFile = 'Use a filename with extension (no slashes).';
-  }
-
-  if (state.draft.thumbnailOverride && !isValidPath(state.draft.thumbnailOverride)) {
-    errors.push('Thumbnail override must be a resources/ path or full URL.');
-    fieldErrors.thumbnailOverride = 'Use a resources/ path or full URL.';
-  }
-
-  if (state.draft.box3dFile && !isValidFilename(state.draft.box3dFile)) {
-    errors.push('3D box filename must include a file extension and no slashes.');
-    fieldErrors.box3dFile = 'Use a filename with extension (no slashes).';
-  }
-
-  if (state.draft.box3dOverride && !isValidPath(state.draft.box3dOverride)) {
-    errors.push('3D box override must be a resources/ path or full URL.');
-    fieldErrors.box3dOverride = 'Use a resources/ path or full URL.';
-  }
-
-  if (slug && state.slugSet.has(slug)) {
-    errors.push(`Duplicate slug detected: ${slug}`);
-    fieldErrors.slug = 'Slug already exists. Edit to make it unique.';
-  }
-
-  if (id && state.idSet.has(id)) {
-    errors.push(`Duplicate ID detected: ${id}`);
-    fieldErrors.id = 'ID already exists. Edit to make it unique.';
-  }
-
-  if (state.draft.pdf && !isValidUrl(state.draft.pdf)) {
-    warnings.push('Manual/PDF URL looks invalid.');
-    fieldErrors.pdf = 'Check the URL format.';
-  }
-
-  const diskRefs = listFromText(state.draft.diskRefs);
-  const invalidDisks = diskRefs.filter((ref) => !isValidUrl(ref));
-  if (invalidDisks.length) {
-    warnings.push(`Disk URLs contain invalid entries: ${invalidDisks.join(', ')}`);
-    fieldErrors.diskRefs = 'One or more disk URLs look invalid.';
-  }
-
-  const externalRefs = listFromText(state.draft.externalRefs);
-  const invalidRefs = externalRefs.filter((ref) => !isValidUrl(ref));
-  if (invalidRefs.length) {
-    warnings.push(`Reference links contain invalid URLs: ${invalidRefs.join(', ')}`);
-    fieldErrors.externalRefs = 'One or more reference URLs look invalid.';
-  }
-
-  if (state.draft.videoId && !/^[a-zA-Z0-9_-]{6,}$/.test(state.draft.videoId)) {
-    warnings.push('Video ID looks unusual.');
-    fieldErrors.videoId = 'Check the YouTube ID.';
-  }
-
-  if (missing.length) {
-    errors.push(`Missing required fields: ${missing.join(', ')}`);
-  }
-
-  return { errors, warnings, missing, fieldErrors };
+  const result = validateWizardDraft(state.draft, context);
+  state.validation = { ...result, ran: true, valid: result.valid };
+  updateStatusIndicators();
+  return result;
 }
 
 function renderFieldErrors(fieldErrors) {
@@ -671,9 +749,13 @@ function renderFieldErrors(fieldErrors) {
 function renderValidation() {
   const { errors, warnings, fieldErrors } = state.validation;
   if (el.validation.status) {
-    el.validation.status.textContent = errors.length
-      ? `Validation failed with ${errors.length} error(s).`
-      : 'Validation passed. Ready to build.';
+    if (!state.validation.ran) {
+      el.validation.status.textContent = 'Validation pending.';
+    } else {
+      el.validation.status.textContent = errors.length
+        ? `Validation failed with ${errors.length} error(s).`
+        : 'Validation passed. Ready to build.';
+    }
   }
 
   if (el.validation.errors) {
@@ -698,6 +780,8 @@ function renderValidation() {
   if (el.actions.buildPackage) {
     el.actions.buildPackage.disabled = errors.length > 0 || !state.auth.canWrite;
   }
+
+  updateStatusIndicators();
 }
 
 function renderOutputs() {
@@ -885,9 +969,23 @@ function buildSitemapFragment(draft, { fragmentOnly = false } = {}) {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${fragment}\n</urlset>`;
 }
 
+function applyEntryToLibrary(entry) {
+  const updatedLibrary = [...state.library];
+  if (state.mode === 'edit' && state.editing) {
+    updatedLibrary[state.editing.index] = entry;
+  } else {
+    updatedLibrary.push(entry);
+  }
+  updateGamesLibrary(updatedLibrary, 'wizard');
+  state.library = updatedLibrary;
+  updateUniquenessSets();
+  renderLibraryLookupOptions();
+  return updatedLibrary;
+}
+
 function buildOutputs() {
   const entry = buildGameRecord();
-  const updatedLibrary = [...state.library, entry];
+  const updatedLibrary = applyEntryToLibrary(entry);
   const gamesJson = JSON.stringify(updatedLibrary, null, 2);
   const stubHtml = buildSeoStub(entry);
   const sitemapFragment = buildSitemapFragment(state.draft);
@@ -906,31 +1004,95 @@ function buildOutputs() {
   };
 }
 
-async function downloadBundle() {
-  if (!state.outputs) return;
+function buildStubMeta(entry, assetStatus) {
+  return {
+    entry,
+    draft: state.draft,
+    mode: state.mode,
+    assetStatus,
+    generatedAt: new Date().toISOString()
+  };
+}
+
+async function addAssetToZip(stubRoot, assetPath, targetFolder, missingAssets) {
+  if (!assetPath) return;
+  if (/^https?:/i.test(assetPath)) {
+    missingAssets.push({ path: assetPath, reason: 'remote-url' });
+    return;
+  }
+
+  const normalized = assetPath.replace(/^\/+/, '');
+  const filename = normalized.split('/').pop();
+  if (!filename) return;
+
+  try {
+    const response = await fetch(`/${normalized}`, { cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    const blob = await response.blob();
+    stubRoot.folder(targetFolder).file(filename, blob);
+  } catch (error) {
+    console.error('[OMEGA-GAME-BUILDER] asset fetch failed', assetPath, error);
+    missingAssets.push({ path: assetPath, reason: error instanceof Error ? error.message : 'fetch-failed' });
+  }
+}
+
+async function buildPackage({ autoDownload = true } = {}) {
+  if (!state.outputs) {
+    state.outputs = buildOutputs();
+    renderOutputs();
+  }
+
   const zip = new window.JSZip();
+  const entry = state.outputs.entry;
+  const missingAssets = [];
+
   zip.file('games.json', state.outputs.gamesJson);
-  zip.folder(`games/${state.outputs.entry.slug}`).file('index.html', state.outputs.stubHtml);
+  zip.folder(`games/${entry.slug}`).file('index.html', state.outputs.stubHtml);
   zip.file('sitemap-fragment.xml', state.outputs.sitemapFragment);
   zip.file('manifest.json', state.outputs.manifestJson);
   zip.file('metadata.json', state.outputs.metadataJson);
   zip.file('readme.txt', state.outputs.readme);
 
+  const stubMeta = buildStubMeta(entry, { missingAssets });
+  const stub = buildStubStructure({ slug: entry.slug, meta: stubMeta });
+  const stubRoot = zip.folder(stub.root);
+  stub.folders.forEach((folder) => stubRoot.folder(folder));
+  stubRoot.file('meta.json', stub.metaJson);
+  stubRoot.file('readme.txt', state.outputs.readme);
+  stubRoot.file('manifest.json', state.outputs.manifestJson);
+
+  await addAssetToZip(stubRoot, entry.thumbnail, 'screenshots', missingAssets);
+  await addAssetToZip(stubRoot, state.draft.box3d, 'box', missingAssets);
+  await addAssetToZip(stubRoot, entry.pdf, 'docs', missingAssets);
+
+  if (missingAssets.length) {
+    const report = missingAssets
+      .map((asset) => `${asset.path} (${asset.reason})`)
+      .join('\n');
+    stubRoot.folder('docs').file('missing-assets.txt', `${report}\n`);
+    setErrorIndicator('Some assets could not be packaged. Check missing-assets.txt.');
+  } else {
+    setErrorIndicator('');
+  }
+
   const blob = await zip.generateAsync({ type: 'blob' });
-  const url = window.URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `omega-game-${state.outputs.entry.slug}.zip`;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  window.URL.revokeObjectURL(url);
+  if (autoDownload) {
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `omega-game-${entry.slug}.zip`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  }
 
   if (el.exportNote) el.exportNote.hidden = false;
 }
 
 function handleFieldInput(event) {
-  if (!state.auth.canWrite) return;
   const target = event.target;
   const name = target.dataset.field;
   if (!name) return;
@@ -952,11 +1114,12 @@ function handleFieldInput(event) {
   normalizeDraft();
   updateFormFromDraft();
   updatePreviewFields();
-  setDraftIndicator('Draft: unsaved changes');
+  state.validation.ran = false;
+  updateStatusIndicators();
+  markDirty(true);
 }
 
 function handleGenreChange(event) {
-  if (!state.auth.canWrite) return;
   const input = event.target;
   if (!(input instanceof HTMLInputElement)) return;
   const selected = new Set(state.draft.genres || []);
@@ -966,11 +1129,12 @@ function handleGenreChange(event) {
     selected.delete(input.value);
   }
   state.draft.genres = Array.from(selected);
-  setDraftIndicator('Draft: unsaved changes');
+  state.validation.ran = false;
+  updateStatusIndicators();
+  markDirty(true);
 }
 
 function toggleOverrideField(targetKey) {
-  if (!state.auth.canWrite) return;
   const field = el.overrideFields[targetKey];
   if (!field) return;
   field.hidden = !field.hidden;
@@ -991,13 +1155,31 @@ function bindEvents() {
     el.genreList.addEventListener('change', handleGenreChange);
   }
 
+  el.load.button?.addEventListener('click', () => {
+    const value = el.load.input?.value || '';
+    if (value.includes('-')) {
+      loadGameBySlug(value);
+    } else if (value.includes('_')) {
+      loadGameById(value);
+    } else {
+      loadGameBySlug(value);
+      if (state.mode !== 'edit') loadGameById(value);
+    }
+  });
+
+  el.load.input?.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      el.load.button?.click();
+    }
+  });
+
   el.actions.saveDraft?.addEventListener('click', () => {
     if (!state.auth.canWrite) return;
     saveDraft();
   });
 
   el.actions.resetWizard?.addEventListener('click', () => {
-    if (!state.auth.canWrite) return;
     resetWizard();
   });
 
@@ -1018,28 +1200,36 @@ function bindEvents() {
   });
 
   el.actions.runValidation?.addEventListener('click', () => {
-    state.validation = validateDraft();
+    validateDraft();
     renderValidation();
   });
 
   el.actions.generateOutput?.addEventListener('click', () => {
     if (!state.auth.canWrite) return;
-    state.validation = validateDraft();
+    validateDraft();
     renderValidation();
     if (state.validation.errors.length) return;
     state.outputs = buildOutputs();
     renderOutputs();
     if (el.actions.downloadBundle) el.actions.downloadBundle.disabled = false;
+    updateStatusIndicators();
   });
 
   el.actions.downloadBundle?.addEventListener('click', () => {
     if (!state.auth.canWrite) return;
-    void downloadBundle();
+    validateDraft();
+    renderValidation();
+    if (state.validation.errors.length) return;
+    buildPackage().catch((error) => {
+      console.error('[OMEGA-GAME-BUILDER] package build failed', error);
+      setRuntimeState('Package build failed', 'error');
+      setErrorIndicator(error instanceof Error ? error.message : 'Package build failed.');
+    });
   });
 
   el.actions.buildPackage?.addEventListener('click', () => {
     if (!state.auth.canWrite) return;
-    state.validation = validateDraft();
+    validateDraft();
     renderValidation();
     if (state.validation.errors.length) {
       goToStep(5);
@@ -1049,31 +1239,12 @@ function bindEvents() {
     renderOutputs();
     if (el.actions.downloadBundle) el.actions.downloadBundle.disabled = false;
     goToStep(6);
-    void downloadBundle();
+    buildPackage().catch((error) => {
+      console.error('[OMEGA-GAME-BUILDER] package build failed', error);
+      setRuntimeState('Package build failed', 'error');
+      setErrorIndicator(error instanceof Error ? error.message : 'Package build failed.');
+    });
   });
-}
-
-async function fetchLibraryPayload() {
-  const response = await fetch(GAMES_PATH, {
-    cache: 'no-store',
-    credentials: 'same-origin'
-  });
-  if (!response.ok) {
-    throw new Error(`Unable to load games.json (HTTP ${response.status})`);
-  }
-
-  let data;
-  try {
-    data = await response.json();
-  } catch (error) {
-    throw new Error(`games.json parse failed (${error?.message || 'invalid JSON'})`);
-  }
-
-  if (!Array.isArray(data)) {
-    throw new Error('games.json is not an array.');
-  }
-
-  return data;
 }
 
 async function loadLibrary() {
@@ -1081,12 +1252,16 @@ async function loadLibrary() {
   let lastError;
   for (let attempt = 1; attempt <= MAX_LIBRARY_ATTEMPTS; attempt += 1) {
     try {
-      const data = await fetchLibraryPayload();
+      const cache = await loadGamesLibrary({ force: attempt > 1 });
+      const data = cache.games || [];
       state.library = data;
-      state.slugSet = new Set(data.map((game) => game.slug));
-      state.idSet = new Set(data.map((game) => game.id));
       state.schema = buildSchemaMap(data);
-      setLibraryIndicator(`Library: ${data.length} games loaded`);
+      updateUniquenessSets();
+      setLibraryIndicator(`Library: Loaded (${data.length})`);
+      renderSystemOptions();
+      renderGenres();
+      renderLibraryLookupOptions();
+      updateStatusIndicators();
       return;
     } catch (error) {
       lastError = error;
@@ -1101,7 +1276,10 @@ async function loadLibrary() {
     }
   }
 
-  throw lastError;
+  setLibraryIndicator('Library: failed to load');
+  setRuntimeState('Library load failed', 'error');
+  setErrorIndicator(lastError instanceof Error ? lastError.message : 'Failed to load games.json');
+  updateStatusIndicators();
 }
 
 async function initAuth() {
@@ -1116,25 +1294,6 @@ async function initAuth() {
   }
 }
 
-function disableWizard(message) {
-  setRuntimeState('Boot failed', 'error');
-  setLibraryIndicator(message);
-
-  Object.values(el.actions).forEach((action) => {
-    if (action) action.disabled = true;
-  });
-
-  el.fields.forEach((field) => {
-    field.disabled = true;
-  });
-
-  if (el.genreList) {
-    el.genreList.querySelectorAll('input[type="checkbox"]').forEach((input) => {
-      input.disabled = true;
-    });
-  }
-}
-
 async function boot() {
   setRuntimeState('Booting', 'info');
   await initAdminNav({ pageLabel: 'Omega Game Builder', active: 'editor' });
@@ -1142,14 +1301,22 @@ async function boot() {
   setReadOnly(true);
   await loadLibrary();
 
-  renderSystemOptions();
-  renderGenres();
   loadDraft();
   normalizeDraft();
   updateFormFromDraft();
   updatePreviewFields();
   updateProgress();
   bindEvents();
+  window.CCGGameBuilder = { loadGameById, loadGameBySlug };
+
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('slug')) {
+    loadGameBySlug(params.get('slug'));
+  } else if (params.has('id')) {
+    loadGameById(params.get('id'));
+  } else if (state.mode === 'edit' && state.editing?.slug) {
+    loadGameBySlug(state.editing.slug);
+  }
 
   setRuntimeState('Library ready · auth pending', 'info');
   await initAuth();
@@ -1158,5 +1325,6 @@ async function boot() {
 boot().catch((error) => {
   console.error('[OMEGA-GAME-BUILDER] boot failure', error);
   const message = error instanceof Error ? error.message : 'Unknown error';
-  disableWizard(`Library: failed to load (${message})`);
+  setRuntimeState('Boot failed', 'error');
+  setErrorIndicator(`Library: failed to load (${message})`);
 });

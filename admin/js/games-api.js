@@ -2,6 +2,18 @@ import { APP_PATHS } from './config.js';
 
 const LOCAL_BACKUPS_KEY = 'ccg-admin-games-backups';
 const MAX_BACKUPS = 20;
+const GLOBAL_LIBRARY_KEY = 'CCG_GAMES_LIBRARY';
+
+function ensureLibraryCache() {
+  if (!window[GLOBAL_LIBRARY_KEY]) {
+    window[GLOBAL_LIBRARY_KEY] = {
+      games: null,
+      loadedAt: null,
+      source: 'unset'
+    };
+  }
+  return window[GLOBAL_LIBRARY_KEY];
+}
 
 function downloadJson(filename, payload) {
   const json = `${JSON.stringify(payload, null, 2)}\n`;
@@ -79,6 +91,44 @@ export async function fetchGamesJson() {
   return { games };
 }
 
+export async function loadGamesLibrary({ force = false } = {}) {
+  const cache = ensureLibraryCache();
+  if (!force && Array.isArray(cache.games) && cache.games.length) {
+    return cache;
+  }
+
+  const { games } = await fetchGamesJson();
+  cache.games = games;
+  cache.loadedAt = new Date().toISOString();
+  cache.source = 'remote';
+  return cache;
+}
+
+export function updateGamesLibrary(games, source = 'local') {
+  const cache = ensureLibraryCache();
+  cache.games = games;
+  cache.loadedAt = new Date().toISOString();
+  cache.source = source;
+  return cache;
+}
+
+export function getGamesLibrarySync() {
+  return ensureLibraryCache();
+}
+
+export function buildStubStructure({ slug, meta = {} } = {}) {
+  const cleanSlug = String(slug || '').trim();
+  if (!cleanSlug) {
+    throw new Error('Slug is required to build a stub structure.');
+  }
+
+  return {
+    root: `stubs/${cleanSlug}/`,
+    folders: ['screenshots', 'box', 'docs'],
+    metaJson: `${JSON.stringify(meta, null, 2)}\n`
+  };
+}
+
 export async function fetchFileIndex() {
   const { games } = await fetchGamesJson();
   return { files: buildFileIndex(games) };
@@ -114,6 +164,8 @@ export async function saveGamesJson({ games, message, role }) {
 
   const existing = readBackups();
   writeBackups([backupEntry, ...existing]);
+
+  updateGamesLibrary(games, 'client-download');
 
   // Path correction: export to client download instead of server write for static hosting.
   downloadJson('games.json', games);
