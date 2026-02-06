@@ -341,7 +341,10 @@
     }
 
     function setupKeyboardInput() {
-        document.addEventListener("keydown", (event) => {
+        const quizRoot = document.querySelector("[data-quiz-root]");
+        if (!quizRoot) return;
+
+        quizRoot.addEventListener("keydown", (event) => {
             if (event && event.target && event.target.closest && event.target.closest('input, textarea, [contenteditable="true"], [contenteditable=""], [contenteditable]')) {
                 return;
             }
