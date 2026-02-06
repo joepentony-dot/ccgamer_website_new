@@ -1,5 +1,5 @@
 import { AUTH_CONFIG } from './config.js';
-import { getAuthContext, logout } from './auth.js';
+import { getAuthContext, logout, waitForAuthReady } from './auth.js';
 
 function escapeHtml(value) {
   return String(value || '').replace(/[&<>"']/g, (char) => ({
@@ -55,6 +55,7 @@ export async function initAdminNav({ pageLabel = 'Dashboard', active = 'dashboar
   logoutLink?.addEventListener('click', handleLogout);
 
   try {
+    await waitForAuthReady();
     const context = await getAuthContext();
     if (!context?.isAuthenticated || !context?.user) {
       sessionNode.innerHTML = 'Session: guest';
