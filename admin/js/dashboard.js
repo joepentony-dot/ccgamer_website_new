@@ -1,5 +1,7 @@
-import { ensureRole, startAccessMonitor } from './guard.js';
+import { AUTH_CONFIG } from './config.js';
+import { getAuthContext, redirectWithGuard, waitForAuthReady } from './auth.js';
 import { fetchGamesJson } from './games-api.js';
+import { startAccessMonitor } from './guard.js';
 import { initAdminNav } from './admin-nav.js';
 
 const emailField = document.querySelector('[data-admin-email]');
@@ -8,6 +10,8 @@ const statusField = document.querySelector('[data-admin-status]');
 const loadField = document.querySelector('[data-admin-load-status]');
 const exportField = document.querySelector('[data-admin-export-status]');
 const envField = document.querySelector('[data-admin-env-status]');
+
+const ALLOWED_ROLES = ['superadmin', 'admin', 'editor'];
 
 function setStatus(text, state = 'info') {
   statusField.textContent = text;
@@ -27,16 +31,36 @@ function hydrateLocalStatus() {
 }
 
 async function bootstrap() {
-  setStatus('Validating session and role…');
+  setStatus('Checking session…');
   setEnvironmentHint();
   hydrateLocalStatus();
 
   try {
-    const result = await ensureRole(['superadmin', 'admin', 'editor']);
-    if (!result) return;
+    await waitForAuthReady();
+    const context = await getAuthContext();
 
-    emailField.textContent = result.session.user?.email || 'Unknown';
-    roleField.textContent = result.role;
+    if (!context?.isAuthenticated || !context?.user) {
+      emailField.textContent = 'Guest';
+      roleField.textContent = 'guest';
+      setStatus('Session: guest', 'info');
+      redirectWithGuard(AUTH_CONFIG.loginPage, 'unauthenticated');
+      return;
+    }
+
+    const role = context.role || 'unknown';
+    const email = context.user.email || 'unknown';
+
+    emailField.textContent = email;
+    roleField.textContent = role;
+    setStatus(`Session: signed in as ${email}`, 'success');
+
+    if (!ALLOWED_ROLES.includes(String(role).toLowerCase())) {
+      setStatus('Session: signed in (role not permitted)', 'error');
+      redirectWithGuard(AUTH_CONFIG.loginPage, 'forbidden');
+      return;
+    }
+
+    startAccessMonitor();
 
     await fetchGamesJson();
     const now = new Date().toLocaleString();
@@ -50,6 +74,5 @@ async function bootstrap() {
   }
 }
 
-startAccessMonitor();
 initAdminNav({ pageLabel: 'Dashboard', active: 'dashboard' });
 bootstrap();

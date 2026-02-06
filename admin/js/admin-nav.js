@@ -1,5 +1,5 @@
 import { AUTH_CONFIG } from './config.js';
-import { getAuthContext, logout, waitForAuthReady } from './auth.js';
+import { getAuthContext, logout, redirectWithGuard, waitForAuthReady } from './auth.js';
 
 function escapeHtml(value) {
   return String(value || '').replace(/[&<>"']/g, (char) => ({
@@ -47,7 +47,7 @@ export async function initAdminNav({ pageLabel = 'Dashboard', active = 'dashboar
     } catch (error) {
       console.warn('[CCG-AUTH] logout failed, forcing redirect', error);
     } finally {
-      window.location.replace(AUTH_CONFIG.postLogoutRedirect);
+      redirectWithGuard(AUTH_CONFIG.postLogoutRedirect, 'signed_out');
     }
   }
 

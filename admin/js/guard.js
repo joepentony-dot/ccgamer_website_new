@@ -3,16 +3,13 @@ import {
   bindSessionInvalidation,
   getAuthContext,
   refreshSessionIfNeeded,
+  redirectWithGuard,
   waitForAuthReady
 } from './auth.js';
 import { clearRoleCache } from './roles.js';
 
 function redirect(path, reason) {
-  const url = new URL(path, window.location.origin);
-  if (reason) {
-    url.searchParams.set('reason', reason);
-  }
-  window.location.replace(url.toString());
+  redirectWithGuard(path, reason);
 }
 
 export async function ensureAuthenticated({ redirectTo = AUTH_CONFIG.loginPage } = {}) {

@@ -23,6 +23,11 @@ const log = (...a) => console.log(LOG, ...a);
 const warn = (...a) => console.warn(LOG, ...a);
 const err = (...a) => console.error(LOG, ...a);
 
+const REDIRECT_GUARD_KEY = 'ccg_auth_redirect_guard';
+const REDIRECT_GUARD_WINDOW_MS = 1500;
+const REDIRECT_LOOP_MESSAGE =
+  'Auth loop detected. Session not stabilising. Open console and refresh after sign-in.';
+
 if (window.__CCG_AUTH_BOOTSTRAPPED) {
   console.warn('[AUTH] bootstrap already initialised');
 } else {
@@ -119,6 +124,55 @@ function applySupabaseConfigToWindow() {
   }
 }
 
+function renderAuthLoopBanner(message = REDIRECT_LOOP_MESSAGE) {
+  const host = document.querySelector('[data-admin-shell]') || document.body;
+  if (!host) return;
+
+  if (document.querySelector('[data-auth-loop-banner]')) return;
+
+  const banner = document.createElement('div');
+  banner.className = 'admin-auth-loop-banner';
+  banner.dataset.authLoopBanner = 'true';
+  banner.setAttribute('role', 'alert');
+  banner.textContent = message;
+
+  host.prepend(banner);
+}
+
+function shouldBlockRedirect() {
+  try {
+    const now = Date.now();
+    const last = Number(sessionStorage.getItem(REDIRECT_GUARD_KEY) || 0);
+    if (last && now - last < REDIRECT_GUARD_WINDOW_MS) {
+      renderAuthLoopBanner();
+      warn('Redirect suppressed to avoid auth loop.');
+      return true;
+    }
+    sessionStorage.setItem(REDIRECT_GUARD_KEY, String(now));
+    return false;
+  } catch (error) {
+    warn('Redirect guard unavailable.', error);
+    return false;
+  }
+}
+
+function buildRedirectUrl(path, reason) {
+  const url = new URL(path, window.location.origin);
+  if (reason) {
+    url.searchParams.set('reason', reason);
+  }
+  return url.toString();
+}
+
+export function redirectWithGuard(path, reason) {
+  const url = buildRedirectUrl(path, reason);
+  if (shouldBlockRedirect()) {
+    return false;
+  }
+  window.location.replace(url);
+  return true;
+}
+
 async function ensureSupabaseClient() {
   if (_supabase) return _supabase;
 
@@ -210,7 +264,7 @@ async function computeAuthContext({ force = false } = {}) {
 export async function waitForAuthReady() {
   if (_authBarrierPromise) return _authBarrierPromise;
 
-  console.log('[AUTH] barrier start');
+  log('barrier start');
   _authBarrierPromise = (async () => {
     try {
       const supabase = await ensureSupabaseClient();
@@ -223,13 +277,13 @@ export async function waitForAuthReady() {
 
       _authBarrierSession = data?.session || null;
       _authBarrierContext = buildContextFromSession(_authBarrierSession, null);
-      console.log('[AUTH] session restored');
+      log('session restored');
 
       _lastContext = _authBarrierContext;
       applyWindowAuthState(_authBarrierContext);
       dispatchAuthReady(_authBarrierContext);
       _authBarrierReady = true;
-      console.log('[AUTH] barrier ready');
+      log('barrier ready');
       return true;
     } catch (error) {
       const message = error?.message || String(error);
@@ -238,7 +292,7 @@ export async function waitForAuthReady() {
         window.CCG_AUTH_READY = false;
         window.CCG_AUTH_ERROR = error;
         dispatchAuthReady({ isAuthenticated: false, role: 'none', user: null, error });
-        console.log('[AUTH] barrier ready');
+        log('barrier ready');
         throw error;
       }
 
@@ -249,7 +303,7 @@ export async function waitForAuthReady() {
       applyWindowAuthState(_authBarrierContext);
       dispatchAuthReady(_authBarrierContext);
       _authBarrierReady = true;
-      console.log('[AUTH] barrier ready');
+      log('barrier ready');
       return true;
     }
   })();
@@ -398,5 +452,3 @@ export function getAuthDiagnostics() {
     lastEvent: _lastAuthEvent
   };
 }
-
-log('Auth module loaded.');
