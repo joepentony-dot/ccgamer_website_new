@@ -31,7 +31,11 @@
     readyEventDispatched: false,
     lastAuthEventKey: '',
     bootstrapError: null,
-    lastAuthEvent: 'BOOT'
+    lastAuthEvent: 'BOOT',
+    contextReady: false,
+    contextResolver: null,
+    context: null,
+    redirectPending: false
   });
 
   const authDebugState = window[AUTH_DEBUG_KEY] || (window[AUTH_DEBUG_KEY] = {
@@ -152,6 +156,32 @@
     updateAuthDebugOverlay('READY');
   }
 
+  function hasAuthRedirectParams() {
+    const hash = window.location.hash || '';
+    if (!hash) return false;
+    return /access_token|refresh_token|type=|error=|error_description=/.test(hash);
+  }
+
+  function ensureAuthReadyPromise() {
+    if (!window.CCG_AUTH_READY) {
+      window.CCG_AUTH_READY = new Promise(function (resolve) {
+        authReadyState.contextResolver = resolve;
+      });
+    }
+  }
+
+  function resolveAuthReadyContext(context) {
+    ensureAuthReadyPromise();
+    authReadyState.redirectPending = hasAuthRedirectParams();
+    if (authReadyState.contextReady || authReadyState.redirectPending) return;
+    if (!context || typeof context !== 'object') return;
+    authReadyState.contextReady = true;
+    authReadyState.context = context;
+    if (authReadyState.contextResolver) {
+      authReadyState.contextResolver(context);
+    }
+  }
+
   function emitAuthChanged(eventName, session) {
     const allowedEvents = ['SIGNED_IN', 'SIGNED_OUT', 'TOKEN_REFRESHED', 'USER_UPDATED'];
     if (!allowedEvents.includes(eventName)) return;
@@ -192,6 +222,7 @@
   async function waitForAuth() {
     const client = await getClient();
     ensureAuthListener(client);
+    ensureAuthReadyPromise();
 
     if (authReadyState.ready) {
       emitAuthReady(false);
@@ -203,7 +234,18 @@
     authReadyState.promise = (async function () {
       try {
         const result = await client.auth.getSession();
-        authReadyState.session = result && result.data ? result.data.session || null : null;
+        const session = result && result.data ? result.data.session || null : null;
+        let user = session && session.user ? session.user : null;
+        try {
+          const userResult = await client.auth.getUser();
+          user = userResult && userResult.data ? userResult.data.user || user : user;
+        } catch (_error) {
+          // If getUser fails, keep session user if available.
+        }
+        if (session && user && !session.user) {
+          session.user = user;
+        }
+        authReadyState.session = session;
       } catch (error) {
         authReadyState.session = null;
         authReadyState.bootstrapError = error;
@@ -211,6 +253,17 @@
 
       authReadyState.ready = true;
       emitAuthReady(true);
+      if (!window.ccgCommunityAuth || typeof window.ccgCommunityAuth.getProfile !== 'function') {
+        const session = authReadyState.session;
+        const user = session && session.user ? session.user : null;
+        const role = user && user.app_metadata && user.app_metadata.role ? user.app_metadata.role : null;
+        resolveAuthReadyContext({
+          user,
+          session,
+          role,
+          isAuthenticated: Boolean(user)
+        });
+      }
       return authReadyState.session;
     })().finally(function () {
       authReadyState.promise = null;
@@ -283,6 +336,7 @@
         if (!context || typeof context !== 'object') {
           throw new Error('Invalid auth context.');
         }
+        resolveAuthReadyContext(context);
         return context;
       } catch (error) {
         lastError = error;
@@ -331,10 +385,12 @@
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
       initAuthDebugOverlay();
+      ensureAuthReadyPromise();
       bootstrapGlobalAuth();
     }, { once: true });
   } else {
     initAuthDebugOverlay();
+    ensureAuthReadyPromise();
     bootstrapGlobalAuth();
   }
 
@@ -449,4 +505,5 @@
   window.ccgSupabase.callRpcSafe = callRpcSafe;
   window.ccgSupabase.isCommunityUnavailableError = isCommunityUnavailableError;
   window.ccgSupabase.getCurrentUserContext = getCurrentUserContext;
+  window.ccgSupabase.resolveAuthReadyContext = resolveAuthReadyContext;
 })();

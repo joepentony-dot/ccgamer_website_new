@@ -12,6 +12,24 @@
 (function () {
     "use strict";
 
+    function CCG_isTypingTarget(e) {
+        const el = e.target;
+        if (!el) return false;
+        if (el.isContentEditable) return true;
+        const tag = el.tagName?.toLowerCase();
+        return tag === "input" || tag === "textarea" || tag === "select";
+    }
+
+    async function waitForAuthReady() {
+        if (window.CCG_AUTH_READY && typeof window.CCG_AUTH_READY.then === "function") {
+            try {
+                await window.CCG_AUTH_READY;
+            } catch (_error) {
+                // Ignore auth readiness errors to avoid blocking admin UI.
+            }
+        }
+    }
+
     const CLEAN_ID_REGEX = /^[a-z0-9]+(?:_[a-z0-9]+)*$/;
     const CLEAN_SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
     const YOUTUBE_ID_REGEX = /^[a-zA-Z0-9_-]{6,}$/;
@@ -1230,8 +1248,13 @@
         refreshBtn.addEventListener("click", fetchLiveGames);
     }
 
-    syncSourceLink();
-    fetchLiveGames();
-    renderSelectedGenres();
-    updateAutoFields();
+    async function initAdminTools() {
+        await waitForAuthReady();
+        syncSourceLink();
+        fetchLiveGames();
+        renderSelectedGenres();
+        updateAutoFields();
+    }
+
+    initAdminTools();
 })();
