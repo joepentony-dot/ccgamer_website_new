@@ -16,6 +16,16 @@
   z-index: 2;
 }
 
+.admin-auth-loop-banner {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--admin-error);
+  background: rgba(40, 10, 20, 0.85);
+  color: var(--admin-error);
+  font-weight: 600;
+}
+
 .admin-auth-panel,
 .admin-info-card,
 .admin-dashboard-header {

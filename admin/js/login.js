@@ -1,5 +1,11 @@
 import { AUTH_CONFIG } from './config.js';
-import { login, restoreSession, sendPasswordReset, waitForAuthReady } from './auth.js';
+import {
+  login,
+  redirectWithGuard,
+  restoreSession,
+  sendPasswordReset,
+  waitForAuthReady
+} from './auth.js';
 import { fetchUserRole } from './roles.js';
 import { initAdminNav } from './admin-nav.js';
 
@@ -27,7 +33,7 @@ async function redirectIfSessionExists() {
     await waitForAuthReady();
     const session = await restoreSession();
     if (session?.user?.id) {
-      window.location.replace(AUTH_CONFIG.defaultRedirectAfterLogin);
+      redirectWithGuard(AUTH_CONFIG.defaultRedirectAfterLogin, 'already_authenticated');
     }
   } catch (error) {
     console.error('[CCG-AUTH] session restore failed', error);
@@ -47,7 +53,7 @@ async function handleLogin(event) {
     }
     await waitForAuthReady();
     setMessage('Login successful. Redirecting to dashboard…', 'success');
-    window.location.replace(AUTH_CONFIG.defaultRedirectAfterLogin);
+    redirectWithGuard(AUTH_CONFIG.defaultRedirectAfterLogin, 'signed_in');
   } catch (error) {
     setMessage(error.message || 'Login failed. Check credentials and try again.', 'error');
   } finally {

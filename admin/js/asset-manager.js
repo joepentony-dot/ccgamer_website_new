@@ -1,4 +1,4 @@
-import { logout } from './auth.js';
+import { logout, redirectWithGuard } from './auth.js';
 import { APP_PATHS, AUTH_CONFIG } from './config.js';
 import { ensureRole, startAccessMonitor } from './guard.js';
 import { createSnapshot, getHealthReport, scanAssets, uploadAssets } from './asset-manager-api.js';
@@ -78,257 +78,138 @@ function setRolePolicy(role) {
   els.rolePolicy.textContent = 'Superadmin: full controls including delete + purge endpoints.';
 }
 
-function renderAssetList(filter = '') {
-  const term = filter.trim().toLowerCase();
-  const list = term
-    ? state.assets.filter((asset) => asset.path.toLowerCase().includes(term))
-    : state.assets;
-
-  els.assetList.innerHTML = '';
-
-  for (const asset of list.slice(0, 500)) {
-    const li = document.createElement('li');
-    const pathButton = document.createElement('button');
-    pathButton.type = 'button';
-    pathButton.className = 'ccg-btn ccg-btn--ghost';
-    pathButton.textContent = asset.path;
-    pathButton.addEventListener('click', () => {
-      state.selectedAssetPath = asset.path;
-      els.assetPathInput.value = asset.path;
-      if (/games\/boxes-3d\//.test(asset.path)) {
-        els.previewImage.src = `/${asset.path}`;
-      }
-    });
-
-    const size = document.createElement('span');
-    size.textContent = prettyBytes(asset.size || 0);
-    li.append(pathButton, size);
-    els.assetList.append(li);
-  }
-
-  els.assetCount.textContent = `${state.assets.length} indexed`;
+function setHealthReport(status, extra = '') {
+  if (!els.healthReport) return;
+  els.healthReport.textContent = `${status}${extra ? `\n${extra}` : ''}`;
 }
 
-function renderQueue() {
-  els.uploadQueue.innerHTML = '';
-  for (const item of state.queuedFiles) {
-    const li = document.createElement('li');
-    li.innerHTML = `<span>${item.file.name}</span><span>${item.status}</span>`;
-    els.uploadQueue.append(li);
-  }
+function setAssetCount(value) {
+  if (!els.assetCount) return;
+  els.assetCount.textContent = value;
 }
 
-async function optimizeToWebp(file, maxBytes = MAX_TARGET_BYTES) {
-  const bitmap = await createImageBitmap(file);
-  const canvas = document.createElement('canvas');
-
-  const maxDimension = 1600;
-  const scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height));
-  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
-  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-
-  let quality = 0.9;
-  let blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/webp', quality));
-
-  while (blob && blob.size > maxBytes && quality > 0.45) {
-    quality -= 0.1;
-    blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/webp', quality));
-  }
-
-  if (!blob) {
-    throw new Error(`Failed to optimize ${file.name}`);
-  }
-
-  const buffer = await blob.arrayBuffer();
-  const webpName = ensureExtension(slugify(file.name.replace(/\.[^.]+$/, '')), 'webp');
-
-  return {
-    name: webpName,
-    bytes: Array.from(new Uint8Array(buffer)),
-    size: blob.size,
-    mime: 'image/webp'
-  };
-}
-
-function base64FromBytes(bytes) {
-  let binary = '';
-  const chunk = 0x8000;
-  for (let i = 0; i < bytes.length; i += chunk) {
-    binary += String.fromCharCode(...bytes.slice(i, i + chunk));
-  }
-  return btoa(binary);
-}
-
-async function indexAssets() {
-  const payload = await scanAssets();
-  state.assets = payload.assets || [];
-  renderAssetList(els.search.value || '');
-}
-
-async function runHealthReport() {
-  const payload = await getHealthReport();
-  els.healthReport.textContent = JSON.stringify(payload, null, 2);
-}
-
-function collectDroppedFiles(files) {
-  for (const file of files) {
-    state.queuedFiles.push({ file, status: 'Queued' });
-  }
-  renderQueue();
-}
-
-async function uploadBatch() {
-  if (state.queuedFiles.length === 0) {
+function setQueuedSummary(list = []) {
+  if (!els.uploadQueue) return;
+  if (!list.length) {
+    els.uploadQueue.textContent = 'No pending uploads.';
     return;
   }
 
-  const destination = els.uploadFolder.value;
-
-  for (const queueItem of state.queuedFiles) {
-    queueItem.status = 'Optimising…';
-    renderQueue();
-
-    const optimized = await optimizeToWebp(queueItem.file);
-    const originalBuffer = await queueItem.file.arrayBuffer();
-    const originalBytes = Array.from(new Uint8Array(originalBuffer));
-
-    const slugBase = slugify(queueItem.file.name.replace(/\.[^.]+$/, ''));
-    const originalName = ensureExtension(slugBase, queueItem.file.name.split('.').pop() || 'png');
-
-    queueItem.status = 'Uploading…';
-    renderQueue();
-
-    await uploadAssets({
-      destination,
-      files: [
-        {
-          name: originalName,
-          mime: queueItem.file.type || 'application/octet-stream',
-          size: queueItem.file.size,
-          contentBase64: base64FromBytes(originalBytes),
-          kind: 'original'
-        },
-        {
-          name: optimized.name,
-          mime: optimized.mime,
-          size: optimized.size,
-          contentBase64: base64FromBytes(optimized.bytes),
-          kind: 'optimized'
-        }
-      ]
-    });
-
-    queueItem.status = `Done (${prettyBytes(optimized.size)})`;
-    renderQueue();
-  }
-
-  await indexAssets();
+  els.uploadQueue.textContent = list
+    .map((file) => `${file.name} · ${prettyBytes(file.size)}`)
+    .join('\n');
 }
 
-function wireDropzone() {
-  const stop = (event) => {
+function renderAssetList(filter = '') {
+  if (!els.assetList) return;
+  const term = String(filter || '').toLowerCase();
+  const filtered = state.assets.filter((asset) => asset.path.toLowerCase().includes(term));
+
+  if (!filtered.length) {
+    els.assetList.innerHTML = '<li class="empty">No assets found.</li>';
+    return;
+  }
+
+  els.assetList.innerHTML = filtered
+    .map(
+      (asset) => `
+        <li data-asset-path="${asset.path}">
+          <span>${asset.path}</span>
+          <span>${prettyBytes(asset.bytes)}</span>
+        </li>
+      `
+    )
+    .join('');
+
+  els.assetList.querySelectorAll('li[data-asset-path]').forEach((item) => {
+    item.addEventListener('click', () => {
+      state.selectedAssetPath = item.dataset.assetPath || '';
+      els.assetPathInput.value = state.selectedAssetPath;
+    });
+  });
+}
+
+async function indexAssets() {
+  setHealthReport('Scanning assets…');
+  const assets = await scanAssets(APP_PATHS.resourcesRoot);
+  state.assets = assets;
+  renderAssetList(els.search?.value || '');
+  setAssetCount(`${assets.length} assets indexed`);
+  setHealthReport('Asset index complete.');
+}
+
+async function runHealthReport() {
+  setHealthReport('Running health report…');
+  const report = await getHealthReport();
+  setHealthReport('Health report complete.', JSON.stringify(report, null, 2));
+}
+
+async function uploadBatch() {
+  if (!state.queuedFiles.length) {
+    setHealthReport('No files queued for upload.');
+    return;
+  }
+
+  const totalBytes = state.queuedFiles.reduce((acc, file) => acc + file.size, 0);
+  if (totalBytes > MAX_TARGET_BYTES) {
+    setHealthReport(`Upload batch too large (${prettyBytes(totalBytes)}).`);
+    return;
+  }
+
+  setHealthReport('Uploading files…');
+  await uploadAssets(state.queuedFiles);
+  state.queuedFiles = [];
+  setQueuedSummary(state.queuedFiles);
+  await indexAssets();
+  setHealthReport('Upload complete.');
+}
+
+function bindDropzone() {
+  if (!els.dropzone || !els.fileInput) return;
+
+  function handleFiles(list) {
+    state.queuedFiles = Array.from(list);
+    setQueuedSummary(state.queuedFiles);
+  }
+
+  els.fileInput.addEventListener('change', (event) => {
+    handleFiles(event.target.files || []);
+  });
+
+  els.dropzone.addEventListener('dragover', (event) => {
     event.preventDefault();
-    event.stopPropagation();
-  };
-
-  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach((eventName) => {
-    els.dropzone.addEventListener(eventName, stop);
+    els.dropzone.classList.add('is-dragover');
   });
 
-  ['dragenter', 'dragover'].forEach((eventName) => {
-    els.dropzone.addEventListener(eventName, () => {
-      els.dropzone.classList.add('is-dragover');
-    });
-  });
-
-  ['dragleave', 'drop'].forEach((eventName) => {
-    els.dropzone.addEventListener(eventName, () => {
-      els.dropzone.classList.remove('is-dragover');
-    });
+  els.dropzone.addEventListener('dragleave', () => {
+    els.dropzone.classList.remove('is-dragover');
   });
 
   els.dropzone.addEventListener('drop', (event) => {
-    collectDroppedFiles(event.dataTransfer?.files || []);
+    event.preventDefault();
+    els.dropzone.classList.remove('is-dragover');
+    handleFiles(event.dataTransfer.files || []);
   });
-
-  els.fileInput.addEventListener('change', () => collectDroppedFiles(els.fileInput.files || []));
 }
 
-function wireNormalizer() {
+function bindNormalizer() {
+  if (!els.filenameInput || !els.suggestName) return;
+
   els.suggestName.addEventListener('click', () => {
-    const raw = els.filenameInput.value;
-    const withoutPath = raw.split('/').pop() || raw;
-    const extension = (withoutPath.match(/\.([a-z0-9]+)$/i)?.[1] || 'webp').toLowerCase();
-    const base = withoutPath.replace(/\.[^.]+$/, '');
-    const suggested = `${slugify(base)}.${extension === 'jpeg' ? 'jpg' : extension}`;
-
-    els.normaliserOutput.textContent = [
-      `Input: ${raw || '(empty)'}`,
-      `Suggestion: ${suggested}`,
-      'Rules: lowercase, hyphen-separated, no spaces, slug-safe characters.'
-    ].join('\n');
+    const clean = slugify(els.filenameInput.value);
+    els.filenameInput.value = ensureExtension(clean);
   });
 }
 
-function wire3DPreview() {
-  els.previewStage.addEventListener('pointermove', (event) => {
-    const rect = els.previewStage.getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width;
-    const y = (event.clientY - rect.top) / rect.height;
-    const rotateY = (x - 0.5) * 24;
-    const rotateX = (0.5 - y) * 18;
-    els.previewBox.style.transform = `rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg)`;
+function bind3DPreview() {
+  if (!els.previewStage || !els.previewBox || !els.previewImage) return;
+
+  els.previewStage.addEventListener('input', () => {
+    els.previewBox.style.setProperty('--box-depth', `${Number(els.previewStage.value || 0)}deg`);
   });
 
-  els.previewStage.addEventListener('pointerleave', () => {
-    els.previewBox.style.transform = 'rotateX(0deg) rotateY(0deg)';
-  });
-}
-
-async function wireGameLinking() {
-  els.validateLink.addEventListener('click', async () => {
-    const gameSlug = slugify(els.gameIdInput.value);
-    const assetPath = els.assetPathInput.value.trim();
-
-    if (!gameSlug || !assetPath) {
-      els.linkingResult.textContent = 'Provide both game slug and asset path.';
-      return;
-    }
-
-    try {
-      const exists = state.assets.some((asset) => asset.path === assetPath);
-      // Path correction: use canonical games.json path for local + production static hosting.
-      const gamesResponse = await fetch(APP_PATHS.gamesJson, { cache: 'no-store' });
-      if (!gamesResponse.ok) {
-        throw new Error(`Unable to load ${APP_PATHS.gamesJson} (${gamesResponse.status}).`);
-      }
-
-      const gamesData = await gamesResponse.json();
-      const gameList = Array.isArray(gamesData) ? gamesData : gamesData?.games || [];
-      const game = gameList.find((entry) => slugify(entry.slug || entry.title) === gameSlug);
-      const patch = {
-        gameSlug,
-        exists,
-        patch: game
-          ? {
-              title: game.title,
-              set: {
-                box3d: assetPath
-              }
-            }
-          : null,
-        note: exists
-          ? 'Validated path. Apply patch in Games Editor to persist.'
-          : 'Path missing from indexed assets. Upload or correct before linking.'
-      };
-
-      els.linkingResult.textContent = JSON.stringify(patch, null, 2);
-    } catch (error) {
-      els.linkingResult.textContent = `Unable to validate link: ${error.message}`;
-    }
+  els.previewImage.addEventListener('input', () => {
+    els.previewBox.style.setProperty('--box-image', `url(${els.previewImage.value})`);
   });
 }
 
@@ -369,7 +250,37 @@ function wireButtons() {
 
   els.logoutButton?.addEventListener('click', async () => {
     await logout();
-    window.location.replace(`${AUTH_CONFIG.loginPage}?reason=signed_out`);
+    redirectWithGuard(AUTH_CONFIG.loginPage, 'signed_out');
+  });
+}
+
+async function wireGameLinking() {
+  if (!els.gameIdInput || !els.assetPathInput || !els.validateLink || !els.linkingResult) {
+    return;
+  }
+
+  els.validateLink.addEventListener('click', () => {
+    const gameId = els.gameIdInput.value.trim();
+    const assetPath = els.assetPathInput.value.trim();
+    if (!gameId || !assetPath) {
+      els.linkingResult.textContent = 'Enter both game id and asset path.';
+      return;
+    }
+
+    const url = `${APP_PATHS.gamesJson}?game_id=${encodeURIComponent(gameId)}&asset=${encodeURIComponent(assetPath)}`;
+    els.linkingResult.textContent = `Checking ${url}`;
+
+    fetch(url)
+      .then((response) => {
+        if (!response.ok) throw new Error(`Status ${response.status}`);
+        return response.json();
+      })
+      .then((data) => {
+        els.linkingResult.textContent = JSON.stringify(data, null, 2);
+      })
+      .catch((error) => {
+        els.linkingResult.textContent = `Unable to validate link: ${error.message}`;
+      });
   });
 }
 
