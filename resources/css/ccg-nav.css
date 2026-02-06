@@ -73,11 +73,11 @@
        .floating-menu a,
        .floating-menu button):focus-visible {
     outline: 2px solid var(--ccg-nav-focus-core);
-    outline-offset: 2px;
+    outline-offset: 3px;
     box-shadow:
-        0 0 0 2px rgba(2, 6, 14, 0.82),
-        0 0 0 5px var(--ccg-nav-focus-halo),
-        0 0 20px rgba(var(--accent-rgb), 0.45);
+        0 0 0 2px rgba(2, 6, 14, 0.88),
+        0 0 0 6px var(--ccg-nav-focus-halo),
+        0 0 18px rgba(var(--accent-rgb), 0.4);
 }
 
 :where(.ccg-nav__link,

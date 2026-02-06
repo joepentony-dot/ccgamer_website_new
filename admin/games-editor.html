@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CCG Omega Games Editor</title>
+  <title>CCG Omega Game Builder</title>
   <meta name="robots" content="noindex,nofollow" />
   <link rel="icon" href="../favicon.ico" />
   <link href="../resources/css/ccg-master.css" rel="stylesheet" />
@@ -20,157 +20,194 @@
     <div aria-hidden="true" class="ccg-bg-crt-overlay"></div>
   </div>
 
-  <div class="boot-overlay" data-boot-overlay>
-    <div class="boot-overlay-panel">
-      <h2>Initializing Omega Editor</h2>
-      <p>Deterministic boot step: <strong data-boot-step>BOOT</strong></p>
-      <p>Please wait. UI unlocks when all checks complete.</p>
-    </div>
-  </div>
-
   <main class="games-editor-wrap" data-admin-shell>
     <header class="admin-dashboard-header sticky-toolbar">
       <div>
-        <p class="admin-auth-kicker">Omega Games Control</p>
-        <h1>/games/games.json Visual Editor</h1>
+        <p class="admin-auth-kicker">Omega Game Builder</p>
+        <h1>Guided Build Wizard · /games/games.json</h1>
         <p class="editor-meta">Signed in as <span data-editor-email></span> · Role <strong data-editor-role></strong></p>
       </div>
       <div class="toolbar-actions">
-        <button class="ccg-btn ccg-btn--ghost" id="addGame" type="button">Add New Game</button>
-        <button class="ccg-btn ccg-btn--ghost" id="validateLibrary" type="button">Validate Library</button>
-        <button class="ccg-btn ccg-btn--ghost" id="showDiff" type="button">Diff</button>
-        <button class="ccg-btn ccg-btn--primary" id="saveAll" type="button">Download games.json</button>
+        <button class="ccg-btn ccg-btn--ghost" type="button" data-action="save-draft">Save draft</button>
+        <button class="ccg-btn ccg-btn--ghost" type="button" data-action="reset-wizard">Reset wizard</button>
+        <button class="ccg-btn ccg-btn--primary" type="button" data-action="build-package">Build package</button>
       </div>
     </header>
 
     <section class="status-strip" aria-live="polite">
-      <p data-editor-runtime data-state="ready">State: Ready</p>
-      <p data-save-indicator>All changes saved in session</p>
-      <p>Shortcuts: <kbd>Ctrl/Cmd+S</kbd> save, <kbd>Ctrl/Cmd+Z</kbd> undo, <kbd>Ctrl/Cmd+Shift+Z</kbd> redo</p>
+      <p data-runtime-state data-state="ready">State: Ready</p>
+      <p data-draft-indicator>Draft: not saved</p>
+      <p data-library-indicator>Library: loading…</p>
     </section>
 
-    <section class="omega-pipeline-strip" aria-label="Pipeline">
-      <span class="is-active">Edit</span>
+    <section class="omega-pipeline-strip" aria-label="Game Builder Progress" data-progress-indicator>
+      <span data-progress-step="1" class="is-active">1 · Core Info</span>
       <span>→</span>
-      <span>Validate</span>
+      <span data-progress-step="2">2 · Media</span>
       <span>→</span>
-      <span>Export</span>
+      <span data-progress-step="3">3 · Metadata</span>
       <span>→</span>
-      <span>Publish</span>
+      <span data-progress-step="4">4 · SEO</span>
+      <span>→</span>
+      <span data-progress-step="5">5 · Validation</span>
+      <span>→</span>
+      <span data-progress-step="6">6 · Package</span>
     </section>
 
     <section class="omega-workflow-note" data-export-note hidden>
-      Downloaded <code>games.json</code>. Replace <code>/games/games.json</code> in the repo and commit.
+      Package created. Download the ZIP and merge the contents into the repo before committing.
     </section>
 
-    <section class="admin-info-card controls">
+    <section class="admin-info-card" data-step="1">
+      <h2>Step 1 · Core Game Info</h2>
+      <p>Enter the essential identifiers for the new game. Slug and ID auto-generate but remain editable.</p>
+      <div class="form-grid">
+        <label>Title<input type="text" name="title" required data-field="title" /></label>
+        <label>Slug<input type="text" name="slug" required data-field="slug" /></label>
+        <label>Game ID<input type="text" name="id" readonly data-field="id" /></label>
+        <label>System
+          <select name="system" required data-field="system">
+            <option value="">Select system</option>
+            <option value="C64">C64</option>
+            <option value="Amiga">Amiga</option>
+            <option value="ZX Spectrum">ZX Spectrum</option>
+            <option value="Atari ST">Atari ST</option>
+            <option value="NES">NES</option>
+            <option value="SNES">SNES</option>
+            <option value="Mega Drive">Mega Drive</option>
+            <option value="Arcade">Arcade</option>
+          </select>
+        </label>
+        <label>Year<input type="number" name="year" min="1977" max="2099" required data-field="year" /></label>
+        <label>Developer<input type="text" name="developer" required data-field="developer" /></label>
+        <label>Publisher<input type="text" name="publisher" required data-field="publisher" /></label>
+      </div>
+    </section>
+
+    <section class="admin-info-card" data-step="2" hidden>
+      <h2>Step 2 · Media & Links</h2>
+      <p>Add the artwork and reference links required to build a complete package.</p>
+      <div class="form-grid">
+        <label>Thumbnail path<input type="text" name="thumbnail" required data-field="thumbnail" placeholder="resources/images/thumbnails/all/slug.jpg" /></label>
+        <label>Box art path<input type="text" name="boxArt" data-field="boxArt" placeholder="resources/images/boxes/slug.png" /></label>
+        <label>Video ID<input type="text" name="videoId" data-field="videoId" placeholder="YouTube ID" /></label>
+        <label>PDF / Manual URL<input type="url" name="pdf" data-field="pdf" placeholder="https://" /></label>
+      </div>
+      <label>External refs (one per line)
+        <textarea rows="4" name="externalRefs" data-field="externalRefs" placeholder="https://www.lemon64.com/game/slug"></textarea>
+      </label>
+    </section>
+
+    <section class="admin-info-card" data-step="3" hidden>
+      <h2>Step 3 · Metadata & Ratings</h2>
+      <p>Lock in genres, ratings, and credits so the package exports without missing data.</p>
+      <div class="form-grid">
+        <fieldset>
+          <legend>Genres</legend>
+          <div class="control-row" data-genre-list>
+            <label><input type="checkbox" value="action-adventure" /> Action-adventure</label>
+            <label><input type="checkbox" value="adventure" /> Adventure</label>
+            <label><input type="checkbox" value="arcade" /> Arcade</label>
+            <label><input type="checkbox" value="casino" /> Casino</label>
+            <label><input type="checkbox" value="fighting" /> Fighting</label>
+            <label><input type="checkbox" value="horror" /> Horror</label>
+            <label><input type="checkbox" value="miscellaneous" /> Miscellaneous</label>
+            <label><input type="checkbox" value="platform" /> Platform</label>
+            <label><input type="checkbox" value="puzzle" /> Puzzle</label>
+            <label><input type="checkbox" value="quiz" /> Quiz</label>
+            <label><input type="checkbox" value="racing" /> Racing</label>
+            <label><input type="checkbox" value="role-playing" /> Role-playing</label>
+            <label><input type="checkbox" value="shooting" /> Shooting</label>
+            <label><input type="checkbox" value="sports" /> Sports</label>
+            <label><input type="checkbox" value="strategy" /> Strategy</label>
+          </div>
+        </fieldset>
+        <label>Difficulty
+          <select name="difficulty" data-field="difficulty">
+            <option value="">Select difficulty</option>
+            <option value="Beginner">Beginner</option>
+            <option value="Easy">Easy</option>
+            <option value="Moderate">Moderate</option>
+            <option value="Hard">Hard</option>
+            <option value="Expert">Expert</option>
+          </select>
+        </label>
+        <label>CCG Rating<input type="number" name="ccgRating" min="1" max="10" step="0.1" required data-field="ccgRating" /></label>
+        <label>Rating Rationale<input type="text" name="ccgRatingReason" data-field="ccgRatingReason" /></label>
+      </div>
+      <label>Description
+        <textarea rows="5" name="description" data-field="description" placeholder="Short gameplay overview."></textarea>
+      </label>
+      <h3>Credits</h3>
+      <div class="form-grid">
+        <label>Publisher(s) (comma-separated)<input type="text" name="creditPublisher" data-field="creditPublisher" /></label>
+        <label>Producer(s) (comma-separated)<input type="text" name="creditProducer" data-field="creditProducer" /></label>
+        <label>Coder(s) (comma-separated)<input type="text" name="creditCoder" data-field="creditCoder" /></label>
+        <label>Graphics (comma-separated)<input type="text" name="creditGraphics" data-field="creditGraphics" /></label>
+        <label>Musician(s) (comma-separated)<input type="text" name="creditMusician" data-field="creditMusician" /></label>
+        <label>Re-releaser(s) (comma-separated)<input type="text" name="creditRereleaser" data-field="creditRereleaser" /></label>
+      </div>
+    </section>
+
+    <section class="admin-info-card" data-step="4" hidden>
+      <h2>Step 4 · SEO & Routing</h2>
+      <p>SEO fields drive the stub page and sitemap fragment. Preview updates live.</p>
+      <div class="form-grid">
+        <label>SEO title<input type="text" name="seoTitle" data-field="seoTitle" /></label>
+        <label>Meta description<textarea rows="4" name="metaDescription" data-field="metaDescription"></textarea></label>
+      </div>
+      <div class="form-grid">
+        <label>Canonical URL preview
+          <input type="text" readonly data-preview="canonical" />
+        </label>
+        <label>Sitemap entry preview
+          <textarea rows="4" readonly data-preview="sitemap"></textarea>
+        </label>
+      </div>
+    </section>
+
+    <section class="admin-info-card" data-step="5" hidden>
+      <h2>Step 5 · Validation</h2>
+      <p>Run schema and data checks before export. Broken fields block package generation.</p>
       <div class="control-row">
-        <input id="gamesSearch" placeholder="Search title / slug / developer" type="search" />
-        <select id="filterYear"><option value="">All years</option></select>
-        <select id="filterGenre"><option value="">All genres</option></select>
-        <select id="filterDeveloper"><option value="">All developers</option></select>
-        <select id="filterRating">
-          <option value="">All ratings</option>
-          <option>10</option><option>9</option><option>8</option><option>7</option>
-          <option>6</option><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option>
-        </select>
+        <button class="ccg-btn ccg-btn--ghost" type="button" data-action="run-validation">Run validation</button>
       </div>
+      <div class="form-errors" data-validation-errors hidden></div>
+      <div class="admin-info-card" data-validation-summary>
+        <p data-validation-status>Validation pending.</p>
+        <ul data-validation-warnings></ul>
+      </div>
+    </section>
+
+    <section class="admin-info-card" data-step="6" hidden>
+      <h2>Step 6 · Package Builder</h2>
+      <p>Preview the output files and generate the ZIP bundle. Export is blocked until validation passes.</p>
       <div class="control-row">
-        <button class="ccg-btn ccg-btn--ghost" data-view="table" type="button">Table view</button>
-        <button class="ccg-btn ccg-btn--ghost" data-view="card" type="button">Card view</button>
-        <p class="status" data-editor-status data-state="info">Booting editor…</p>
+        <button class="ccg-btn ccg-btn--primary" type="button" data-action="generate-output">Generate files</button>
+        <button class="ccg-btn ccg-btn--ghost" type="button" data-action="download-bundle" disabled>Download bundle</button>
       </div>
+      <h3>games.json preview (new entry)</h3>
+      <pre data-preview="game-json"></pre>
+      <h3>SEO stub HTML preview</h3>
+      <pre data-preview="stub-html"></pre>
+      <h3>Sitemap fragment preview</h3>
+      <pre data-preview="sitemap-fragment"></pre>
+      <h3>Metadata JSON preview</h3>
+      <pre data-preview="metadata-json"></pre>
+      <h3>Assets manifest preview</h3>
+      <pre data-preview="manifest-json"></pre>
+      <h3>README preview</h3>
+      <pre data-preview="readme"></pre>
     </section>
 
-    <section class="admin-info-card" id="tableView">
-      <div class="table-scroll">
-        <table class="games-table">
-          <thead>
-            <tr><th>#</th><th>Title</th><th>Slug</th><th>Year</th><th>Genre</th><th>Developer</th><th>Rating</th><th></th></tr>
-          </thead>
-          <tbody id="gamesTableBody"></tbody>
-        </table>
+    <section class="admin-info-card">
+      <h2>Wizard Navigation</h2>
+      <div class="control-row">
+        <button class="ccg-btn ccg-btn--ghost" type="button" data-action="prev-step">Back</button>
+        <button class="ccg-btn ccg-btn--primary" type="button" data-action="next-step">Next</button>
       </div>
-      <div id="pagination" class="pagination"></div>
-    </section>
-
-    <section class="admin-info-card card-grid" hidden id="cardView">
-      <div id="gamesCardBody"></div>
-    </section>
-
-    <section class="admin-card-grid">
-      <article class="admin-info-card omega-exports-panel" id="export-panel">
-        <h2>Integrated Export Panel</h2>
-        <p>Legacy export and stub generation tools are embedded here. All writes are downloads only.</p>
-        <div class="control-row">
-          <button class="ccg-btn ccg-btn--primary" type="button" id="downloadGamesJson">Download games.json</button>
-          <button class="ccg-btn ccg-btn--ghost" type="button" id="downloadStubBundle">Download SEO stub bundle</button>
-          <button class="ccg-btn ccg-btn--ghost" type="button" id="downloadFullPackage">Download full package</button>
-          <button class="ccg-btn ccg-btn--ghost" type="button" id="copyNodeSteps">Copy Node script instructions</button>
-        </div>
-        <p data-export-status-text>Awaiting export action.</p>
-      </article>
-
-      <article class="admin-info-card">
-        <h2>Recovery panel</h2>
-        <p>Draft snapshots are stored locally and never overwrite live data without explicit export.</p>
-        <ol id="recoveryList"></ol>
-      </article>
-
-      <article class="admin-info-card">
-        <h2>Backup Versions (last 20)</h2>
-        <ol id="backupList"></ol>
-      </article>
-
-      <article class="admin-info-card">
-        <h2>Diff Viewer</h2>
-        <textarea id="diffBefore" rows="6" readonly></textarea>
-        <textarea id="diffAfter" rows="6" readonly></textarea>
-        <div id="diffOutput" class="diff-grid"></div>
-      </article>
-
-      <article class="admin-info-card">
-        <h2>Publish handoff</h2>
-        <ol>
-          <li>Validate and export all downloads.</li>
-          <li>Replace <code>/games/games.json</code> in repository.</li>
-          <li>Open publish wizard and follow the 7-step checklist.</li>
-        </ol>
-        <a class="ccg-btn ccg-btn--ghost" href="/admin/publish.html">Open Publish Wizard</a>
-      </article>
     </section>
   </main>
-
-  <dialog id="editorModal" class="editor-modal">
-    <form id="recordForm" method="dialog">
-      <h2>Edit Game Record <span class="draft-badge" id="recordDraftState" hidden>Draft has unsaved changes</span></h2>
-      <div id="recordFormErrors" class="form-errors" hidden></div>
-      <div class="form-grid">
-        <label>title <input name="title" required /></label>
-        <label>slug <input name="slug" required /></label>
-        <label>system/platform <input name="system" /></label>
-        <label>year <input name="year" min="1977" type="number" required /></label>
-        <label>genres (csv) <input name="genres" /></label>
-        <label>developer <input name="developer" /></label>
-        <label>publisher <input name="publisher" /></label>
-        <label>ccg_rating <input name="ccg_rating" max="10" min="1" step="0.1" type="number" required /></label>
-        <label>ccg_rating_reason <input name="ccg_rating_reason" /></label>
-        <label>videoid <input name="videoid" /></label>
-        <label>thumbnail <input name="thumbnails" /></label>
-        <label>box_3d <input name="box_3d" /></label>
-        <label>pdf <input name="pdf" /></label>
-        <label>disk (csv) <input name="disk" /></label>
-        <label>lemon64 <input name="lemon64" /></label>
-        <label>lemonamiga <input name="lemonamiga" /></label>
-      </div>
-      <h3>Live preview</h3>
-      <pre id="recordPreview"></pre>
-      <menu>
-        <button class="ccg-btn ccg-btn--ghost" id="cancelEdit" type="button">Cancel</button>
-        <button class="ccg-btn ccg-btn--primary" id="saveRecord" type="button">Apply Draft</button>
-      </menu>
-    </form>
-  </dialog>
 
   <script src="/js/ccg-supabase-config.js" defer></script>
   <script src="/js/ccg-supabase-client.js" defer></script>
