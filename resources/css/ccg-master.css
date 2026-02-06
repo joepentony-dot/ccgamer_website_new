@@ -151,6 +151,9 @@ html {
        .ccg-btn) {
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
+    touch-action: manipulation;
+    background-clip: padding-box;
+    isolation: isolate;
 }
 
 :where(a,
@@ -161,6 +164,7 @@ html {
        [role="button"],
        .ccg-btn):focus {
     outline: none;
+    box-shadow: none;
 }
 
 /* ============================================================
