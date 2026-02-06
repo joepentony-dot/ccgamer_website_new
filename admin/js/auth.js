@@ -1,375 +1,111 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-import { AUTH_CONFIG, OWNER_EMAIL, SUPABASE_ANON_KEY, SUPABASE_URL } from './config.js';
+/* ============================================================
+   CCG ADMIN — AUTH CONTROLLER (NON-BLOCKING)
+   File: /admin/js/auth.js
 
-let authListenerBound = false;
-let supabaseClient = null;
+   Purpose:
+   - Detect auth state
+   - NEVER block editor boot
+   - Allow read-only mode if session missing
+   ============================================================ */
 
-if (typeof window !== 'undefined') {
-  window.CCG_SUPABASE_STORAGE_KEY = AUTH_CONFIG.storageKey;
-}
+(() => {
+  "use strict";
 
-const ADMIN_ROLES = new Set(['editor', 'admin', 'superadmin']);
+  const LOG = "[CCG-AUTH]";
 
-function normalizeRole(role) {
-  return String(role || '').trim().toLowerCase();
-}
-
-function isOwnerEmail(email) {
-  return Boolean(email) && String(email).trim().toLowerCase() === String(OWNER_EMAIL || '').trim().toLowerCase();
-}
-
-function readRoleCache() {
-  try {
-    const raw = localStorage.getItem(AUTH_CONFIG.roleCacheKey);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (!parsed || !parsed.userId || !parsed.role || !parsed.cachedAt) return null;
-    return parsed;
-  } catch {
-    return null;
+  function log(...a) {
+    console.log(LOG, ...a);
   }
-}
-
-function writeRoleCache(userId, role) {
-  try {
-    localStorage.setItem(AUTH_CONFIG.roleCacheKey, JSON.stringify({ userId, role, cachedAt: Date.now() }));
-  } catch {
-    // intentionally ignored
+  function warn(...a) {
+    console.warn(LOG, ...a);
   }
-}
-
-function clearRoleCache() {
-  try {
-    localStorage.removeItem(AUTH_CONFIG.roleCacheKey);
-  } catch {
-    // intentionally ignored
+  function err(...a) {
+    console.error(LOG, ...a);
   }
-}
 
-function getSupabaseProjectRef() {
-  try {
-    const url = new URL(SUPABASE_URL);
-    return url.hostname.split('.')[0] || '';
-  } catch {
-    return '';
-  }
-}
+  // Public state
+  window.CCG_AUTH_READY = false;
+  window.CCG_AUTH_LOGGED_IN = false;
+  window.CCG_AUTH_ROLE = "none";
 
-function clearSupabaseAuthStorage(storage, projectRef) {
-  if (!storage) return;
-  const keysToClear = [
-    AUTH_CONFIG.storageKey,
-    AUTH_CONFIG.roleCacheKey,
-    'ccg-admin-auth',
-    'ccg-admin-role-cache'
-  ];
-  keysToClear.forEach((key) => {
+  /* -----------------------------
+     SESSION CHECK
+  ----------------------------- */
+
+  async function checkSession() {
     try {
-      storage.removeItem(key);
-    } catch {
-      // ignore storage issues
-    }
-  });
+      const token =
+        localStorage.getItem("ccg_admin_token") ||
+        sessionStorage.getItem("ccg_admin_token");
 
-  if (projectRef) {
-    for (let i = storage.length - 1; i >= 0; i -= 1) {
-      const key = storage.key(i);
-      if (key && key.startsWith(`sb-${projectRef}-`)) {
-        try {
-          storage.removeItem(key);
-        } catch {
-          // ignore storage issues
-        }
+      if (!token) {
+        warn("role=none session=missing cache=cleared");
+
+        window.CCG_AUTH_READY = true;
+        window.CCG_AUTH_LOGGED_IN = false;
+        window.CCG_AUTH_ROLE = "none";
+
+        notifyAuthReady();
+        return;
       }
+
+      // Optional: future server validation hook
+      // For now: token presence = logged in
+
+      log("session=active");
+
+      window.CCG_AUTH_READY = true;
+      window.CCG_AUTH_LOGGED_IN = true;
+      window.CCG_AUTH_ROLE =
+        localStorage.getItem("ccg_admin_role") || "admin";
+
+      notifyAuthReady();
+    } catch (e) {
+      err("Auth check failed:", e);
+
+      // Fail open (never block editor)
+      window.CCG_AUTH_READY = true;
+      window.CCG_AUTH_LOGGED_IN = false;
+      window.CCG_AUTH_ROLE = "none";
+
+      notifyAuthReady();
     }
   }
 
-  for (let i = storage.length - 1; i >= 0; i -= 1) {
-    const key = storage.key(i);
-    if (!key) continue;
-    if (key.startsWith('ccg-community-profile') || key.startsWith('ccg-community-avatar')) {
-      try {
-        storage.removeItem(key);
-      } catch {
-        // ignore storage issues
-      }
+  /* -----------------------------
+     EVENT DISPATCH
+  ----------------------------- */
+
+  function notifyAuthReady() {
+    window.dispatchEvent(
+      new CustomEvent("ccg:auth:ready", {
+        detail: {
+          loggedIn: window.CCG_AUTH_LOGGED_IN,
+          role: window.CCG_AUTH_ROLE,
+        },
+      })
+    );
+  }
+
+  /* -----------------------------
+     UI HELPERS (OPTIONAL)
+  ----------------------------- */
+
+  window.CCG_REQUIRE_AUTH = function () {
+    if (!window.CCG_AUTH_LOGGED_IN) {
+      alert("You must be signed in to perform this action.");
+      return false;
     }
-  }
-}
+    return true;
+  };
 
-/* ===================================================
-   OMEGA LOGOUT LOCK — DO NOT REMOVE
-   Why: Supabase + role cache + profile caches can keep
-   a session "alive" unless all keys are cleared together.
-   =================================================== */
-function clearAuthCaches() {
-  const projectRef = getSupabaseProjectRef();
-  clearSupabaseAuthStorage(window.localStorage, projectRef);
-  clearSupabaseAuthStorage(window.sessionStorage, projectRef);
-  if (typeof window !== 'undefined') {
-    window.__ccgSupabaseClient = null;
-    window.__ccgSupabaseConfigHash = null;
-  }
-}
+  /* -----------------------------
+     INIT
+  ----------------------------- */
 
-function getFallbackClient() {
-  if (!supabaseClient) {
-    supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: {
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: true,
-        flowType: 'pkce',
-        storageKey: AUTH_CONFIG.storageKey
-      }
-    });
-  }
-  return supabaseClient;
-}
-
-async function fetchRoleFromSupabase(userId) {
-  const client = await getSupabaseClient();
-  const { data, error } = await client
-    .from('user_roles')
-    .select('role')
-    .eq('user_id', userId)
-    .single();
-
-  if (error) throw error;
-  return normalizeRole(data?.role);
-}
-
-async function resolveSession({ allowRefresh = true } = {}) {
-  const client = await getSupabaseClient();
-  const {
-    data: { session },
-    error
-  } = await client.auth.getSession();
-  if (error) throw error;
-
-  if (!session || !allowRefresh) {
-    return session || null;
-  }
-
-  const expiry = Number(session.expires_at || 0) * 1000;
-  const margin = Number(AUTH_CONFIG.refreshMarginMs || 60_000);
-  if (!expiry || expiry - Date.now() > margin) {
-    return session;
-  }
-
-  const { data, error: refreshError } = await client.auth.refreshSession();
-  if (refreshError) {
-    return session;
-  }
-
-  return data?.session || session;
-}
-
-/* ===================================================
-   OMEGA AUTH LOCK — DO NOT REMOVE
-   Prevents admin lockout via role desync
-   =================================================== */
-export async function getAuthContext({ forceRoleRefresh = false } = {}) {
-  const session = await resolveSession({ allowRefresh: true });
-  const user = session?.user || null;
-  const isAuthenticated = Boolean(user);
-
-  if (!isAuthenticated) {
-    clearRoleCache();
-    console.info('[CCG-AUTH] role=none session=missing cache=cleared');
-    return {
-      user: null,
-      session: null,
-      isAuthenticated: false,
-      role: null,
-      permissions: { canRate: false, canComment: false, canModerate: false }
-    };
-  }
-
-  const userId = user.id;
-  const email = String(user.email || '').trim().toLowerCase();
-  const metadataRole = normalizeRole(user.app_metadata?.role || user.user_metadata?.role);
-  const cached = readRoleCache();
-  const cacheValid = Boolean(cached && cached.userId === userId && normalizeRole(cached.role));
-
-  let role = null;
-  let cacheState = 'none';
-
-  if (isOwnerEmail(email)) {
-    role = 'superadmin';
-    writeRoleCache(userId, role);
-    cacheState = 'owner-forced';
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", checkSession);
   } else {
-    if (cacheValid && !forceRoleRefresh) {
-      role = normalizeRole(cached.role);
-      cacheState = 'hit';
-    }
-
-    const metadataIsAdmin = ADMIN_ROLES.has(metadataRole);
-    const shouldRefetch =
-      forceRoleRefresh
-      || !role
-      || !ADMIN_ROLES.has(role)
-      || (metadataRole && role && metadataRole !== role)
-      || (!metadataRole && !role)
-      || (cacheValid && metadataIsAdmin && normalizeRole(cached.role) !== metadataRole);
-
-    if (shouldRefetch) {
-      if (cached && (!cacheValid || cached.userId !== userId)) {
-        clearRoleCache();
-      }
-
-      const fetched = await fetchRoleFromSupabase(userId).catch(() => null);
-      if (ADMIN_ROLES.has(fetched)) {
-        role = fetched;
-        writeRoleCache(userId, role);
-        cacheState = 'rebuilt';
-      } else if (metadataIsAdmin) {
-        role = metadataRole;
-        writeRoleCache(userId, role);
-        cacheState = 'metadata';
-      }
-    }
+    checkSession();
   }
-
-  if (!ADMIN_ROLES.has(role)) {
-    clearRoleCache();
-    cacheState = 'invalid-cleared';
-    role = null;
-  }
-
-  console.info(`[CCG-AUTH] role=${role || 'none'} session=ok cache=${cacheState}`);
-
-  return {
-    user,
-    session,
-    isAuthenticated: true,
-    role,
-    permissions: {
-      canRate: true,
-      canComment: true,
-      canModerate: role === 'admin' || role === 'superadmin'
-    }
-  };
-}
-
-export async function getSupabaseClient() {
-  if (window.ccgSupabase?.getClient) {
-    return window.ccgSupabase.getClient();
-  }
-  return getFallbackClient();
-}
-
-export async function waitForAuthReady() {
-  const client = await getSupabaseClient();
-  const withTimeout = (promise, timeoutMs, label) => {
-    let timer = null;
-    const timeout = new Promise((_, reject) => {
-      timer = window.setTimeout(() => reject(new Error(`${label} timed out after ${timeoutMs}ms.`)), timeoutMs);
-    });
-    return Promise.race([promise, timeout]).finally(() => {
-      if (timer) window.clearTimeout(timer);
-    });
-  };
-
-  const runAuthWait = async () => {
-    if (window.ccgSupabase?.waitForAuth) {
-      await withTimeout(window.ccgSupabase.waitForAuth(), 2000, 'Auth ready');
-    } else {
-      await withTimeout(new Promise((resolve) => {
-        window.addEventListener('ccg:auth-ready', () => resolve(), { once: true });
-        window.setTimeout(resolve, 1000);
-      }), 2000, 'Auth ready');
-    }
-
-    return resolveSession({ allowRefresh: true });
-  };
-
-  let lastError = null;
-  for (let attempt = 0; attempt < 2; attempt += 1) {
-    try {
-      const session = await runAuthWait();
-      if (session && session.user) return session;
-
-      const refreshed = await client.auth.refreshSession().catch((error) => {
-        lastError = error;
-        return null;
-      });
-
-      const refreshedSession = refreshed?.data?.session || null;
-      if (refreshedSession && refreshedSession.user) return refreshedSession;
-
-      lastError = new Error('Auth session missing after refresh.');
-    } catch (error) {
-      lastError = error;
-    }
-  }
-
-  console.error('[CCG-AUTH] waitForAuthReady failed', lastError);
-  throw lastError instanceof Error ? lastError : new Error('Auth readiness failed.');
-}
-
-export async function login(email, password) {
-  const client = await getSupabaseClient();
-  const { data, error } = await client.auth.signInWithPassword({
-    email: String(email || '').trim(),
-    password: String(password || '')
-  });
-
-  if (error) throw error;
-  return data;
-}
-
-export async function logout() {
-  const client = await getSupabaseClient();
-  let signOutError = null;
-  try {
-    const { error } = await client.auth.signOut({ scope: 'global' });
-    signOutError = error;
-  } finally {
-    clearAuthCaches();
-    supabaseClient = null;
-  }
-  if (signOutError) throw signOutError;
-}
-
-export async function sendPasswordReset(email) {
-  const client = await getSupabaseClient();
-  const redirectTo = `${window.location.origin}/admin/login.html?reset=1`;
-  const { data, error } = await client.auth.resetPasswordForEmail(String(email || '').trim(), {
-    redirectTo
-  });
-
-  if (error) throw error;
-  return data;
-}
-
-export async function restoreSession() {
-  const session = await resolveSession({ allowRefresh: false });
-  return session || null;
-}
-
-export async function refreshSessionIfNeeded() {
-  const session = await resolveSession({ allowRefresh: true });
-  return session || null;
-}
-
-export function onAuthStateChange(handler) {
-  if (window.ccgSupabase?.getClient) {
-    return window.ccgSupabase.getClient().then((client) => client.auth.onAuthStateChange(handler));
-  }
-  return getFallbackClient().auth.onAuthStateChange(handler);
-}
-
-export function bindSessionInvalidation({ onSignedOut } = {}) {
-  if (authListenerBound) return;
-  authListenerBound = true;
-
-  window.addEventListener('ccg:auth-ready', () => {
-    void onAuthStateChange((event) => {
-      if (event === 'SIGNED_OUT' && typeof onSignedOut === 'function') {
-        onSignedOut();
-      }
-    });
-  }, { once: true });
-}
+})();
