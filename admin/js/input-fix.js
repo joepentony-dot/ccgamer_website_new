@@ -1,6 +1,6 @@
 (() => {
-  // OMEGA LOCK: Do not remove. Prevents global key handler regressions.
-  const logPrefix = '[OMEGA-INPUT-FIX]';
+  // CCG ADMIN LOCK: Do not remove. Prevents global key handler regressions.
+  const logPrefix = '[CCG-INPUT-FIX]';
   const editableSelector = 'input, textarea, [contenteditable]';
 
   const isEditableTarget = (target) => {

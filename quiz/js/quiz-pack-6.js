@@ -322,6 +322,7 @@
     function setupKeyboardInput() {
         document.addEventListener("keydown", (event) => {
             if (location.pathname.startsWith("/admin/")) return;
+            if (event.target?.closest?.("input, textarea, [contenteditable]")) return;
             if (!elements.gameGrid && !document.querySelector(".hangman-game-grid")) return;
             const target = event.target;
             if (target instanceof HTMLElement) {

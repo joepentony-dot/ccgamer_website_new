@@ -67,7 +67,7 @@ async function bootstrap() {
     loadField.textContent = `Last load success: ${now}`;
     localStorage.setItem('omegaAdminLastLoadSuccess', now);
 
-    setStatus('Access granted. Omega systems online.', 'success');
+    setStatus('Access granted. CCG Admin systems online.', 'success');
   } catch (error) {
     loadField.textContent = `Last load error: ${error.message || 'unknown'}`;
     setStatus(error.message || 'Unable to validate admin access.', 'error');

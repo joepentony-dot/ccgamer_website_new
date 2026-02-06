@@ -19,10 +19,10 @@ export async function initAdminNav({ pageLabel = 'Dashboard', active = 'dashboar
   shell.innerHTML = `
     <div class="omega-admin-bar">
       <div class="omega-admin-brand">
-        <strong>OMEGA CONTROL CENTRE</strong>
+        <strong>CCG ADMIN PANEL</strong>
         <span>${escapeHtml(pageLabel)}</span>
       </div>
-      <nav class="omega-admin-links" aria-label="Omega admin navigation">
+      <nav class="omega-admin-links" aria-label="CCG admin navigation">
         <a href="/admin/dashboard.html" data-nav="dashboard">Dashboard</a>
         <a href="/admin/games-editor.html" data-nav="editor">Editor</a>
         <a href="/admin/publish.html" data-nav="publish">Publish</a>
@@ -75,7 +75,7 @@ export function injectDeprecatedBanner(message = 'Legacy admin page') {
 
   const banner = document.createElement('aside');
   banner.className = 'omega-deprecated-banner';
-  banner.innerHTML = `<strong>Deprecated:</strong> ${escapeHtml(message)}. Use <a href="/admin/dashboard.html">/admin/dashboard.html</a> for the unified Omega workflow.`;
+  banner.innerHTML = `<strong>Deprecated:</strong> ${escapeHtml(message)}. Use <a href="/admin/dashboard.html">/admin/dashboard.html</a> for the unified CCG admin workflow.`;
 
   const parent = document.querySelector('.ccg-page') || document.body;
   parent.prepend(banner);
