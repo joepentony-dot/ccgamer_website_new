@@ -16,13 +16,27 @@ function redirect(path, reason) {
 }
 
 export async function ensureAuthenticated({ redirectTo = AUTH_CONFIG.loginPage } = {}) {
-  let session = await restoreSession();
+  let session;
+  try {
+    session = await restoreSession();
+  } catch (error) {
+    console.error('[CCG-AUTH] Unable to restore session.', error);
+    redirect(redirectTo, 'auth_error');
+    return null;
+  }
+
   if (!session) {
     redirect(redirectTo, 'unauthenticated');
     return null;
   }
 
-  session = await refreshSessionIfNeeded();
+  try {
+    session = await refreshSessionIfNeeded();
+  } catch (error) {
+    console.error('[CCG-AUTH] Unable to refresh session.', error);
+    redirect(redirectTo, 'expired');
+    return null;
+  }
 
   if (!session) {
     redirect(redirectTo, 'expired');
@@ -72,7 +86,8 @@ export function startAccessMonitor({ onSessionInvalidated } = {}) {
         clearRoleCache();
         redirect(AUTH_CONFIG.loginPage, 'expired');
       }
-    } catch {
+    } catch (error) {
+      console.error('[CCG-AUTH] Session refresh failed.', error);
       clearRoleCache();
       redirect(AUTH_CONFIG.loginPage, 'refresh_failed');
     }
