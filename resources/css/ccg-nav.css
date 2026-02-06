@@ -1,0 +1,137 @@
+/* ============================================================
+   CCG-NAV.CSS — GLOBAL NAV STABILITY LAYER
+   ------------------------------------------------------------
+   • Shared nav/pill artefact suppression
+   • Focus-visible Omega ring consistency
+   • Scroll-safe nav container defaults
+============================================================ */
+
+:root {
+    --ccg-nav-focus-core: rgba(var(--accent-rgb), 0.94);
+    --ccg-nav-focus-halo: rgba(var(--accent-rgb), 0.30);
+}
+
+/* ============================================================
+   OMEGA STABILITY LOCK: NAV / PILL ARTEFACT SUPPRESSION
+   ------------------------------------------------------------
+   Why: remove default browser blue edge flash and uncontrolled
+   focus shadows while preserving keyboard accessibility.
+============================================================ */
+
+:where(.ccg-nav__link,
+       .ccg-nav__more-toggle,
+       .ccg-nav-toggle,
+       .ccg-nav-drawer__close,
+       .menu-pill,
+       .pill,
+       .nav-pill,
+       .floating-menu a,
+       .floating-menu button) {
+    position: relative;
+    isolation: isolate;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    background-clip: padding-box;
+}
+
+:where(.ccg-nav__link,
+       .ccg-nav__more-toggle,
+       .ccg-nav-toggle,
+       .ccg-nav-drawer__close,
+       .menu-pill,
+       .pill,
+       .nav-pill,
+       .floating-menu a,
+       .floating-menu button):focus {
+    outline: none;
+    box-shadow: none;
+}
+
+:where(.ccg-nav__link,
+       .ccg-nav__more-toggle,
+       .ccg-nav-toggle,
+       .ccg-nav-drawer__close,
+       .menu-pill,
+       .pill,
+       .nav-pill,
+       .floating-menu a,
+       .floating-menu button):focus-visible {
+    outline: 2px solid var(--ccg-nav-focus-core);
+    outline-offset: 2px;
+    box-shadow:
+        0 0 0 2px rgba(2, 6, 14, 0.82),
+        0 0 0 5px var(--ccg-nav-focus-halo),
+        0 0 20px rgba(var(--accent-rgb), 0.45);
+}
+
+:where(.ccg-nav__link,
+       .ccg-nav__more-toggle,
+       .ccg-nav-toggle,
+       .ccg-nav-drawer__close,
+       .menu-pill,
+       .pill,
+       .nav-pill,
+       .floating-menu a,
+       .floating-menu button)::before,
+:where(.ccg-nav__link,
+       .ccg-nav__more-toggle,
+       .ccg-nav-toggle,
+       .ccg-nav-drawer__close,
+       .menu-pill,
+       .pill,
+       .nav-pill,
+       .floating-menu a,
+       .floating-menu button)::after {
+    background-clip: padding-box;
+    pointer-events: none;
+}
+
+:where(.ccg-nav__link,
+       .ccg-nav__more-toggle,
+       .ccg-nav-toggle,
+       .ccg-nav-drawer__close,
+       .menu-pill,
+       .pill,
+       .nav-pill,
+       .floating-menu a,
+       .floating-menu button):active {
+    outline: none;
+}
+
+/* ============================================================
+   OMEGA STABILITY LOCK: NAV SCROLL BEHAVIOUR SAFETY
+   ------------------------------------------------------------
+   Why: keep nav wrappers from creating independent scroll zones.
+   Do not remove: nav panels can trap wheel/touch and jitter page.
+============================================================ */
+
+:where(.ccg-nav,
+       .ccg-nav__bar,
+       .ccg-nav__list,
+       .ccg-nav__more,
+       .ccg-nav__more-menu,
+       .floating-menu) {
+    max-height: none;
+    overflow-y: visible;
+}
+
+:where(.ccg-nav,
+       .ccg-nav__bar,
+       .floating-menu) {
+    contain: paint;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :where(.ccg-nav,
+           .ccg-nav__bar,
+           .ccg-nav__list,
+           .ccg-nav__link,
+           .ccg-nav__more-toggle,
+           .ccg-nav-toggle,
+           .ccg-nav-drawer__close,
+           .floating-menu a,
+           .floating-menu button) {
+        transition: none !important;
+        animation: none !important;
+    }
+}

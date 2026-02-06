@@ -770,3 +770,168 @@ html.ccg-hud-dock-ready .ccg-hud-dock {
 
 /* ------------------------------------------------------------
    MOBILE — REMOVE BUTTON
+------------------------------------------------------------ */
+
+/* ============================================================
+   OMEGA STABILITY LOCK: FOCUS / TAP ARTEFACT SUPPRESSION
+   ------------------------------------------------------------
+   Why: Prevent UA blue focus rectangles / tap highlights while
+   preserving accessible keyboard focus via mode-aware neon ring.
+   Do not remove: browser default blue flash and focus glow returns.
+============================================================ */
+
+:root {
+    --ccg-focus-ring-core: rgba(var(--accent-rgb), 0.92);
+    --ccg-focus-ring-halo: rgba(var(--accent-rgb), 0.34);
+}
+
+:where(a,
+       button,
+       [role="button"],
+       input[type="button"],
+       input[type="submit"],
+       .ccg-btn,
+       .nav-pill,
+       .pill,
+       .menu-pill,
+       .floating-menu a,
+       .floating-menu button,
+       .ccg-nav__link,
+       .ccg-nav__more-toggle,
+       .ccg-nav-toggle,
+       .omega-mobile-dock__btn) {
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+    background-clip: padding-box;
+    isolation: isolate;
+}
+
+:where(a,
+       button,
+       [role="button"],
+       input[type="button"],
+       input[type="submit"],
+       .ccg-btn,
+       .nav-pill,
+       .pill,
+       .menu-pill,
+       .floating-menu a,
+       .floating-menu button,
+       .ccg-nav__link,
+       .ccg-nav__more-toggle,
+       .ccg-nav-toggle,
+       .omega-mobile-dock__btn):focus {
+    outline: none;
+    box-shadow: none;
+}
+
+:where(a,
+       button,
+       [role="button"],
+       input[type="button"],
+       input[type="submit"],
+       .ccg-btn,
+       .nav-pill,
+       .pill,
+       .menu-pill,
+       .floating-menu a,
+       .floating-menu button,
+       .ccg-nav__link,
+       .ccg-nav__more-toggle,
+       .ccg-nav-toggle,
+       .omega-mobile-dock__btn):focus-visible {
+    outline: 2px solid var(--ccg-focus-ring-core);
+    outline-offset: 2px;
+    box-shadow:
+        0 0 0 2px rgba(4, 8, 20, 0.82),
+        0 0 0 5px var(--ccg-focus-ring-halo),
+        0 0 22px rgba(var(--accent-rgb), 0.44);
+}
+
+:where(a,
+       button,
+       [role="button"],
+       input[type="button"],
+       input[type="submit"],
+       .ccg-btn,
+       .nav-pill,
+       .pill,
+       .menu-pill,
+       .floating-menu a,
+       .floating-menu button,
+       .ccg-nav__link,
+       .ccg-nav__more-toggle,
+       .ccg-nav-toggle,
+       .omega-mobile-dock__btn):active {
+    outline: none;
+}
+
+:where(.ccg-btn,
+       .ccg-nav__link,
+       .ccg-nav__more-toggle,
+       .ccg-nav-toggle,
+       .menu-pill,
+       .pill,
+       .nav-pill,
+       .floating-menu a,
+       .floating-menu button,
+       .omega-mobile-dock__btn)::before,
+:where(.ccg-btn,
+       .ccg-nav__link,
+       .ccg-nav__more-toggle,
+       .ccg-nav-toggle,
+       .menu-pill,
+       .pill,
+       .nav-pill,
+       .floating-menu a,
+       .floating-menu button,
+       .omega-mobile-dock__btn)::after {
+    background-clip: padding-box;
+    pointer-events: none;
+}
+
+/* ============================================================
+   OMEGA STABILITY LOCK: SCROLL PERFORMANCE GUARDRAILS
+   ------------------------------------------------------------
+   Why: keep Omega effects while reducing paint churn on scroll.
+============================================================ */
+
+.ccg-hud-dock,
+.ccg-nav,
+.ccg-nav__bar,
+.ccg-nav-drawer__panel {
+    transform: translateZ(0);
+}
+
+.ccg-btn,
+.ccg-nav__link,
+.ccg-nav__more-toggle,
+.omega-mobile-dock__btn,
+.floating-menu a,
+.floating-menu button {
+    will-change: transform, box-shadow;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :where(.ccg-nav,
+           .ccg-nav__bar,
+           .ccg-nav__link,
+           .ccg-nav__more-toggle,
+           .ccg-btn,
+           .ccg-hud-dock,
+           .omega-mobile-dock__btn,
+           .floating-menu a,
+           .floating-menu button) {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
+    }
+
+    .ccg-hud-dock,
+    .ccg-nav,
+    .ccg-nav__bar,
+    .ccg-nav-drawer__panel {
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+    }
+}
