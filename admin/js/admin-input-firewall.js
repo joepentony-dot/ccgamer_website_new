@@ -14,10 +14,16 @@
   };
 
   const stopAdminInputHandlers = (event) => {
-    if (!isEditableTarget(event.target)) return;
-    event.stopImmediatePropagation();
-    event.stopPropagation();
-  };
+
+  // Never interfere with typing
+  if (isEditableTarget(event.target)) {
+    return;
+  }
+
+  // Only block non-input shortcuts
+  event.stopImmediatePropagation();
+  event.stopPropagation();
+ };
 
   const enable = () => {
     if (disarmed || active) return;
