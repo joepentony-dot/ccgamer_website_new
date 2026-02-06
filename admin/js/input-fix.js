@@ -32,11 +32,13 @@
   const isEditableEvent = (event) => {
     if (!event) return false;
     if (isEditableElement(event.target)) return true;
-    if (typeof event.composedPath === 'function') {
-      return event.composedPath().some(isEditableElement);
+    if (typeof event.composedPath === 'function' && event.composedPath().some(isEditableElement)) {
+      return true;
     }
     return false;
   };
+
+  const hasEditableFocus = () => isEditableElement(document.activeElement);
 
   const isSpaceKey = (event) => event && (event.key === ' ' || event.code === 'Space' || event.key === 'Spacebar' || event.keyCode === 32);
 
@@ -46,7 +48,7 @@
     if (!isAdminPage()) return;
     if (!isSpaceKey(event)) return;
     if (event.defaultPrevented) return;
-    if (isEditableEvent(event)) return;
+    if (isEditableEvent(event) || hasEditableFocus()) return;
 
     event.preventDefault();
     logOnce('ccg-input-fix-space', `${logPrefix} prevented Space scroll on non-editable admin target.`);
