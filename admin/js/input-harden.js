@@ -31,17 +31,19 @@
   const isEditableEvent = (event) => {
     if (!event) return false;
     if (isEditableElement(event.target)) return true;
-    if (typeof event.composedPath === 'function') {
-      return event.composedPath().some(isEditableElement);
+    if (typeof event.composedPath === 'function' && event.composedPath().some(isEditableElement)) {
+      return true;
     }
     return false;
   };
+
+  const hasEditableFocus = () => isEditableElement(document.activeElement);
 
   const isSpaceKey = (event) => event && (event.key === ' ' || event.code === 'Space' || event.key === 'Spacebar' || event.keyCode === 32);
 
   const hardenAdminInputs = (event) => {
     // Allow normal typing in form fields
-    if (isEditableEvent(event)) {
+    if (isEditableEvent(event) || hasEditableFocus()) {
       if (isSpaceKey(event)) {
         logOnce('ccg-admin-harden-space-editable', '[CCG-ADMIN] Input hardening skipped Space key inside editable element.');
       }

@@ -43,17 +43,19 @@
   const isEditableEvent = (event) => {
     if (!event) return false;
     if (isEditableElement(event.target)) return true;
-    if (typeof event.composedPath === 'function') {
-      return event.composedPath().some(isEditableElement);
+    if (typeof event.composedPath === 'function' && event.composedPath().some(isEditableElement)) {
+      return true;
     }
     return false;
   };
+
+  const hasEditableFocus = () => isEditableElement(document.activeElement);
 
   const isSpaceKey = (event) => event && (event.key === ' ' || event.code === 'Space' || event.key === 'Spacebar' || event.keyCode === 32);
 
   const stopAdminInputHandlers = (event) => {
     // Never interfere with typing
-    if (isEditableEvent(event)) {
+    if (isEditableEvent(event) || hasEditableFocus()) {
       logOnce('ccg-admin-firewall-editable', '[CCG-ADMIN] Input firewall ignored editable key event.', 'warn');
       return;
     }
