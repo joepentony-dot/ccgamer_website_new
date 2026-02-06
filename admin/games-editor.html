@@ -60,108 +60,218 @@
 
     <section class="admin-info-card" data-step="1">
       <h2>Step 1 · Core Game Info</h2>
-      <p>Enter the essential identifiers for the new game. Slug and ID auto-generate but remain editable.</p>
+      <p>Let’s lock in the identity fields used by games.json. Slug and ID auto-generate from the title, but you can override them.</p>
+      <div class="omega-required-box">
+        <h3>What do I need to fill?</h3>
+        <ul>
+          <li>Title</li>
+          <li>System</li>
+          <li>Year (4 digits)</li>
+          <li>Slug (URL-safe)</li>
+          <li>Game ID (unique)</li>
+        </ul>
+      </div>
       <div class="form-grid">
-        <label>Title<input type="text" name="title" required data-field="title" /></label>
-        <label>Slug<input type="text" name="slug" required data-field="slug" /></label>
-        <label>Game ID<input type="text" name="id" readonly data-field="id" /></label>
-        <label>System
-          <select name="system" required data-field="system">
-            <option value="">Select system</option>
-            <option value="C64">C64</option>
-            <option value="Amiga">Amiga</option>
-            <option value="ZX Spectrum">ZX Spectrum</option>
-            <option value="Atari ST">Atari ST</option>
-            <option value="NES">NES</option>
-            <option value="SNES">SNES</option>
-            <option value="Mega Drive">Mega Drive</option>
-            <option value="Arcade">Arcade</option>
-          </select>
+        <label>Title
+          <input type="text" name="title" required data-field="title" placeholder="e.g. Brian Bloodaxe" />
+          <small class="field-hint">Use the on-box title. This drives the slug and sort title.</small>
+          <span class="field-error" data-error-for="title"></span>
         </label>
-        <label>Year<input type="number" name="year" min="1977" max="2099" required data-field="year" /></label>
-        <label>Developer<input type="text" name="developer" required data-field="developer" /></label>
-        <label>Publisher<input type="text" name="publisher" required data-field="publisher" /></label>
+        <label>Slug
+          <input type="text" name="slug" required data-field="slug" placeholder="brian-bloodaxe" />
+          <small class="field-hint">Lowercase letters, numbers, and hyphens only.</small>
+          <span class="field-error" data-error-for="slug"></span>
+        </label>
+        <label>Game ID
+          <input type="text" name="id" required data-field="id" placeholder="brian_bloodaxe" />
+          <small class="field-hint">Unique ID used by /games/game.html?id=. Underscores allowed.</small>
+          <span class="field-error" data-error-for="id"></span>
+        </label>
+        <label>System
+          <select name="system" required data-field="system" data-system-select>
+            <option value="">Select system</option>
+          </select>
+          <small class="field-hint">Pick from systems already in games.json.</small>
+          <span class="field-error" data-error-for="system"></span>
+        </label>
+        <label>Year
+          <input type="text" name="year" required inputmode="numeric" pattern="\\d{4}" data-field="year" placeholder="1986" />
+          <small class="field-hint">Four digits (e.g. 1986).</small>
+          <span class="field-error" data-error-for="year"></span>
+        </label>
+        <label>Developer (main)
+          <input type="text" name="developer" data-field="developer" placeholder="e.g. Hewson" />
+          <small class="field-hint">Single main developer. Use Credits for full staff lists.</small>
+          <span class="field-error" data-error-for="developer"></span>
+        </label>
       </div>
     </section>
 
     <section class="admin-info-card" data-step="2" hidden>
       <h2>Step 2 · Media & Links</h2>
-      <p>Add the artwork and reference links required to build a complete package.</p>
-      <div class="form-grid">
-        <label>Thumbnail path<input type="text" name="thumbnail" required data-field="thumbnail" placeholder="resources/images/thumbnails/all/slug.jpg" /></label>
-        <label>Box art path<input type="text" name="boxArt" data-field="boxArt" placeholder="resources/images/boxes/slug.png" /></label>
-        <label>Video ID<input type="text" name="videoId" data-field="videoId" placeholder="YouTube ID" /></label>
-        <label>PDF / Manual URL<input type="url" name="pdf" data-field="pdf" placeholder="https://" /></label>
+      <p>Add the artwork and reference links that appear on the game page. Filenames auto-expand into the correct folders.</p>
+      <div class="omega-required-box">
+        <h3>What do I need to fill?</h3>
+        <ul>
+          <li>Thumbnail filename (with extension)</li>
+        </ul>
       </div>
-      <label>External refs (one per line)
-        <textarea rows="4" name="externalRefs" data-field="externalRefs" placeholder="https://www.lemon64.com/game/slug"></textarea>
-      </label>
+      <div class="form-grid">
+        <label>Thumbnail filename
+          <input type="text" name="thumbnailFile" required data-field="thumbnailFile" placeholder="brian-bloodaxe.webp" />
+          <small class="field-hint">No folders. We add <strong>resources/images/thumbnails/all/</strong> automatically.</small>
+          <span class="field-error" data-error-for="thumbnailFile"></span>
+          <span class="field-preview" data-preview-path="thumbnail"></span>
+        </label>
+        <label>3D box filename (optional)
+          <input type="text" name="box3dFile" data-field="box3dFile" placeholder="brian-bloodaxe.webp" />
+          <small class="field-hint">No folders. We add <strong>resources/images/games/boxes-3d/</strong> automatically.</small>
+          <span class="field-error" data-error-for="box3dFile"></span>
+          <span class="field-preview" data-preview-path="box3d"></span>
+        </label>
+        <label>Video ID
+          <input type="text" name="videoId" data-field="videoId" placeholder="YouTube ID" />
+          <small class="field-hint">YouTube ID only (no full URL).</small>
+          <span class="field-error" data-error-for="videoId"></span>
+        </label>
+        <label>PDF / Manual URL
+          <input type="url" name="pdf" data-field="pdf" placeholder="https://" />
+          <small class="field-hint">Paste the full URL to the manual.</small>
+          <span class="field-error" data-error-for="pdf"></span>
+        </label>
+      </div>
+      <div class="form-grid">
+        <label>Disk URLs (one per line)
+          <textarea rows="4" name="diskRefs" data-field="diskRefs" placeholder="https://drive.google.com/..." ></textarea>
+          <small class="field-hint">Each line becomes an entry in the disk array.</small>
+          <span class="field-error" data-error-for="diskRefs"></span>
+        </label>
+        <label>Reference links (Lemon64, LemonAmiga, etc.)
+          <textarea rows="4" name="externalRefs" data-field="externalRefs" placeholder="https://www.lemon64.com/game/slug"></textarea>
+          <small class="field-hint">One URL per line. Stored in the lemon field.</small>
+          <span class="field-error" data-error-for="externalRefs"></span>
+        </label>
+      </div>
+      <div class="form-grid">
+        <label data-override-field="thumbnail" hidden>Thumbnail full path override
+          <input type="text" name="thumbnailOverride" data-field="thumbnailOverride" placeholder="resources/images/thumbnails/all/custom-file.png" />
+          <small class="field-hint">Only use if the file is not in the default thumbnails folder.</small>
+          <span class="field-error" data-error-for="thumbnailOverride"></span>
+        </label>
+        <label data-override-field="box3d" hidden>3D box full path override
+          <input type="text" name="box3dOverride" data-field="box3dOverride" placeholder="resources/images/games/boxes-3d/custom-file.png" />
+          <small class="field-hint">Only use if the box art is stored somewhere else.</small>
+          <span class="field-error" data-error-for="box3dOverride"></span>
+        </label>
+      </div>
+      <div class="control-row">
+        <button class="ccg-btn ccg-btn--ghost" type="button" data-action="toggle-thumbnail-override">Advanced thumbnail override</button>
+        <button class="ccg-btn ccg-btn--ghost" type="button" data-action="toggle-box3d-override">Advanced 3D box override</button>
+      </div>
     </section>
 
     <section class="admin-info-card" data-step="3" hidden>
       <h2>Step 3 · Metadata & Ratings</h2>
-      <p>Lock in genres, ratings, and credits so the package exports without missing data.</p>
+      <p>Capture genres, ratings, and credits so the entry matches games.json.</p>
+      <div class="omega-required-box">
+        <h3>What do I need to fill?</h3>
+        <ul>
+          <li>At least one genre</li>
+          <li>CCG rating (1–10)</li>
+        </ul>
+      </div>
       <div class="form-grid">
         <fieldset>
           <legend>Genres</legend>
-          <div class="control-row" data-genre-list>
-            <label><input type="checkbox" value="action-adventure" /> Action-adventure</label>
-            <label><input type="checkbox" value="adventure" /> Adventure</label>
-            <label><input type="checkbox" value="arcade" /> Arcade</label>
-            <label><input type="checkbox" value="casino" /> Casino</label>
-            <label><input type="checkbox" value="fighting" /> Fighting</label>
-            <label><input type="checkbox" value="horror" /> Horror</label>
-            <label><input type="checkbox" value="miscellaneous" /> Miscellaneous</label>
-            <label><input type="checkbox" value="platform" /> Platform</label>
-            <label><input type="checkbox" value="puzzle" /> Puzzle</label>
-            <label><input type="checkbox" value="quiz" /> Quiz</label>
-            <label><input type="checkbox" value="racing" /> Racing</label>
-            <label><input type="checkbox" value="role-playing" /> Role-playing</label>
-            <label><input type="checkbox" value="shooting" /> Shooting</label>
-            <label><input type="checkbox" value="sports" /> Sports</label>
-            <label><input type="checkbox" value="strategy" /> Strategy</label>
-          </div>
+          <div class="control-row" data-genre-list></div>
+          <span class="field-error" data-error-for="genres"></span>
         </fieldset>
-        <label>Difficulty
-          <select name="difficulty" data-field="difficulty">
-            <option value="">Select difficulty</option>
-            <option value="Beginner">Beginner</option>
-            <option value="Easy">Easy</option>
-            <option value="Moderate">Moderate</option>
-            <option value="Hard">Hard</option>
-            <option value="Expert">Expert</option>
-          </select>
+        <label>Collections / Flags
+          <input type="text" name="collections" data-field="collections" placeholder="top-picks, licensed" />
+          <small class="field-hint">Comma-separated. Leave blank if none.</small>
+          <span class="field-error" data-error-for="collections"></span>
         </label>
-        <label>CCG Rating<input type="number" name="ccgRating" min="1" max="10" step="0.1" required data-field="ccgRating" /></label>
-        <label>Rating Rationale<input type="text" name="ccgRatingReason" data-field="ccgRatingReason" /></label>
+        <label>CCG Rating
+          <input type="number" name="ccgRating" min="1" max="10" step="0.1" required data-field="ccgRating" />
+          <small class="field-hint">Score from 1 to 10.</small>
+          <span class="field-error" data-error-for="ccgRating"></span>
+        </label>
+        <label>Rating Rationale
+          <input type="text" name="ccgRatingReason" data-field="ccgRatingReason" placeholder="Short reason" />
+          <small class="field-hint">Optional summary of why the rating was chosen.</small>
+          <span class="field-error" data-error-for="ccgRatingReason"></span>
+        </label>
       </div>
       <label>Description
         <textarea rows="5" name="description" data-field="description" placeholder="Short gameplay overview."></textarea>
+        <small class="field-hint">Used for the game description and SEO snippet if no custom SEO title is provided.</small>
+        <span class="field-error" data-error-for="description"></span>
       </label>
       <h3>Credits</h3>
+      <p class="field-hint">Credits map directly to games.json (arrays for lists, single value for producer/developer).</p>
       <div class="form-grid">
-        <label>Publisher(s) (comma-separated)<input type="text" name="creditPublisher" data-field="creditPublisher" /></label>
-        <label>Producer(s) (comma-separated)<input type="text" name="creditProducer" data-field="creditProducer" /></label>
-        <label>Coder(s) (comma-separated)<input type="text" name="creditCoder" data-field="creditCoder" /></label>
-        <label>Graphics (comma-separated)<input type="text" name="creditGraphics" data-field="creditGraphics" /></label>
-        <label>Musician(s) (comma-separated)<input type="text" name="creditMusician" data-field="creditMusician" /></label>
-        <label>Re-releaser(s) (comma-separated)<input type="text" name="creditRereleaser" data-field="creditRereleaser" /></label>
+        <label>Publisher(s) (comma-separated)
+          <input type="text" name="creditPublisher" data-field="creditPublisher" placeholder="Ocean, US Gold" />
+          <small class="field-hint">Used in credits.publisher (list).</small>
+          <span class="field-error" data-error-for="creditPublisher"></span>
+        </label>
+        <label>Producer
+          <input type="text" name="creditProducer" data-field="creditProducer" placeholder="Single name" />
+          <small class="field-hint">Single producer name (not a list).</small>
+          <span class="field-error" data-error-for="creditProducer"></span>
+        </label>
+        <label>Coder(s) (comma-separated)
+          <input type="text" name="creditCoder" data-field="creditCoder" />
+          <span class="field-error" data-error-for="creditCoder"></span>
+        </label>
+        <label>Graphics (comma-separated)
+          <input type="text" name="creditGraphics" data-field="creditGraphics" />
+          <span class="field-error" data-error-for="creditGraphics"></span>
+        </label>
+        <label>Musician(s) (comma-separated)
+          <input type="text" name="creditMusician" data-field="creditMusician" />
+          <span class="field-error" data-error-for="creditMusician"></span>
+        </label>
+        <label>Re-releaser(s) (comma-separated)
+          <input type="text" name="creditRereleaser" data-field="creditRereleaser" />
+          <span class="field-error" data-error-for="creditRereleaser"></span>
+        </label>
+        <label>Developer (credits)
+          <input type="text" name="creditDeveloper" data-field="creditDeveloper" />
+          <small class="field-hint">Optional credits.developer value if different from the main developer.</small>
+          <span class="field-error" data-error-for="creditDeveloper"></span>
+        </label>
       </div>
     </section>
 
     <section class="admin-info-card" data-step="4" hidden>
       <h2>Step 4 · SEO & Routing</h2>
-      <p>SEO fields drive the stub page and sitemap fragment. Preview updates live.</p>
+      <p>These previews are generated from the core data and help validate routing.</p>
+      <div class="omega-required-box">
+        <h3>What do I need to fill?</h3>
+        <ul>
+          <li>No additional required fields here.</li>
+        </ul>
+      </div>
       <div class="form-grid">
-        <label>SEO title<input type="text" name="seoTitle" data-field="seoTitle" /></label>
-        <label>Meta description<textarea rows="4" name="metaDescription" data-field="metaDescription"></textarea></label>
+        <label>SEO title (optional)
+          <input type="text" name="seoTitle" data-field="seoTitle" placeholder="Title | Cheeky Commodore Gamer" />
+          <small class="field-hint">Leave blank to auto-use “Title | Cheeky Commodore Gamer”.</small>
+          <span class="field-error" data-error-for="seoTitle"></span>
+        </label>
+        <label>Meta description preview
+          <textarea rows="4" readonly data-preview="meta-description"></textarea>
+          <small class="field-hint">Auto-generated from the description field.</small>
+        </label>
       </div>
       <div class="form-grid">
         <label>Canonical URL preview
           <input type="text" readonly data-preview="canonical" />
+          <small class="field-hint">This is the URL Google should index for the game page.</small>
         </label>
         <label>Sitemap entry preview
           <textarea rows="4" readonly data-preview="sitemap"></textarea>
+          <small class="field-hint">Matches /games/&lt;slug&gt;/ routing.</small>
         </label>
       </div>
     </section>
