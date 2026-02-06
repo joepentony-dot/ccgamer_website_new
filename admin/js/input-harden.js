@@ -18,7 +18,13 @@
   };
 
   const hardenAdminInputs = (event) => {
-    if (!isEditableTarget(event.target)) return;
+
+     // Allow normal typing in form fields
+    if (isEditableTarget(event.target)) {
+    return;
+    }
+
+    // Block only non-input shortcuts
     event.stopImmediatePropagation();
     event.stopPropagation();
   };
