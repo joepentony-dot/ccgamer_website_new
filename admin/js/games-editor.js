@@ -7,6 +7,7 @@ const STORAGE_KEY = 'omegaGameBuilderDraftV1';
 const MAX_STEP = 6;
 const MAX_LIBRARY_ATTEMPTS = 2;
 const LIBRARY_RETRY_DELAY_MS = 800;
+const ALLOWED_WRITE_ROLES = ['editor', 'admin', 'superadmin'];
 
 const THUMBNAIL_BASE_PATH = 'resources/images/thumbnails/all/';
 const BOX3D_BASE_PATH = 'resources/images/games/boxes-3d/';
@@ -28,7 +29,12 @@ const state = {
   },
   validation: { errors: [], warnings: [], missing: [], fieldErrors: {} },
   outputs: null,
-  lastSavedAt: null
+  lastSavedAt: null,
+  auth: {
+    ready: false,
+    context: null,
+    canWrite: false
+  }
 };
 
 const el = {
@@ -86,6 +92,69 @@ function setRuntimeState(message, kind = 'ready') {
   if (!el.runtime) return;
   el.runtime.textContent = `State: ${message}`;
   el.runtime.dataset.state = kind;
+}
+
+function setReadOnly(isReadOnly) {
+  const disableActions = [
+    'saveDraft',
+    'resetWizard',
+    'buildPackage',
+    'generateOutput',
+    'downloadBundle',
+    'toggleThumbnailOverride',
+    'toggleBox3dOverride'
+  ];
+
+  disableActions.forEach((key) => {
+    if (el.actions[key]) {
+      el.actions[key].disabled = Boolean(isReadOnly);
+    }
+  });
+
+  el.fields.forEach((field) => {
+    field.disabled = Boolean(isReadOnly);
+  });
+
+  if (el.genreList) {
+    el.genreList.querySelectorAll('input[type="checkbox"]').forEach((input) => {
+      input.disabled = Boolean(isReadOnly);
+    });
+  }
+}
+
+function applyAuthContext(context, error) {
+  const isAuthenticated = Boolean(context?.isAuthenticated);
+  const role = context?.role || 'none';
+  const canWrite = isAuthenticated && ALLOWED_WRITE_ROLES.includes(role);
+
+  state.auth.ready = true;
+  state.auth.context = context || null;
+  state.auth.canWrite = canWrite;
+
+  if (el.email) el.email.textContent = context?.user?.email || 'guest';
+  if (el.role) el.role.textContent = role;
+
+  if (error) {
+    console.error('[OMEGA-GAME-BUILDER] auth error', error);
+    setRuntimeState('Auth error · read-only', 'error');
+    setReadOnly(true);
+    return;
+  }
+
+  if (!isAuthenticated) {
+    setRuntimeState('Guest · read-only', 'info');
+    setReadOnly(true);
+    return;
+  }
+
+  if (!canWrite) {
+    setRuntimeState('Read-only · role limited', 'warning');
+    setReadOnly(true);
+    return;
+  }
+
+  setRuntimeState('Ready');
+  setReadOnly(false);
 }
 
 function defaultDraft() {
@@ -624,10 +693,10 @@ function renderValidation() {
   renderFieldErrors(fieldErrors || {});
 
   if (el.actions.generateOutput) {
-    el.actions.generateOutput.disabled = errors.length > 0;
+    el.actions.generateOutput.disabled = errors.length > 0 || !state.auth.canWrite;
   }
   if (el.actions.buildPackage) {
-    el.actions.buildPackage.disabled = errors.length > 0;
+    el.actions.buildPackage.disabled = errors.length > 0 || !state.auth.canWrite;
   }
 }
 
@@ -861,6 +930,7 @@ async function downloadBundle() {
 }
 
 function handleFieldInput(event) {
+  if (!state.auth.canWrite) return;
   const target = event.target;
   const name = target.dataset.field;
   if (!name) return;
@@ -886,6 +956,7 @@ function handleFieldInput(event) {
 }
 
 function handleGenreChange(event) {
+  if (!state.auth.canWrite) return;
   const input = event.target;
   if (!(input instanceof HTMLInputElement)) return;
   const selected = new Set(state.draft.genres || []);
@@ -899,6 +970,7 @@ function handleGenreChange(event) {
 }
 
 function toggleOverrideField(targetKey) {
+  if (!state.auth.canWrite) return;
   const field = el.overrideFields[targetKey];
   if (!field) return;
   field.hidden = !field.hidden;
@@ -920,10 +992,14 @@ function bindEvents() {
   }
 
   el.actions.saveDraft?.addEventListener('click', () => {
+    if (!state.auth.canWrite) return;
     saveDraft();
   });
 
-  el.actions.resetWizard?.addEventListener('click', resetWizard);
+  el.actions.resetWizard?.addEventListener('click', () => {
+    if (!state.auth.canWrite) return;
+    resetWizard();
+  });
 
   el.actions.prevStep?.addEventListener('click', () => {
     goToStep(state.step - 1);
@@ -947,6 +1023,7 @@ function bindEvents() {
   });
 
   el.actions.generateOutput?.addEventListener('click', () => {
+    if (!state.auth.canWrite) return;
     state.validation = validateDraft();
     renderValidation();
     if (state.validation.errors.length) return;
@@ -956,10 +1033,12 @@ function bindEvents() {
   });
 
   el.actions.downloadBundle?.addEventListener('click', () => {
+    if (!state.auth.canWrite) return;
     void downloadBundle();
   });
 
   el.actions.buildPackage?.addEventListener('click', () => {
+    if (!state.auth.canWrite) return;
     state.validation = validateDraft();
     renderValidation();
     if (state.validation.errors.length) {
@@ -1026,10 +1105,15 @@ async function loadLibrary() {
 }
 
 async function initAuth() {
-  await waitForAuthReady();
-  const context = await getAuthContext();
-  if (el.email) el.email.textContent = context?.user?.email || 'unknown';
-  if (el.role) el.role.textContent = context?.role || 'none';
+  try {
+    await waitForAuthReady();
+    const context = await getAuthContext();
+    applyAuthContext(context, context?.error || null);
+    return context;
+  } catch (error) {
+    applyAuthContext(null, error);
+    return null;
+  }
 }
 
 function disableWizard(message) {
@@ -1054,8 +1138,11 @@ function disableWizard(message) {
 async function boot() {
   setRuntimeState('Booting', 'info');
   await initAdminNav({ pageLabel: 'Omega Game Builder', active: 'editor' });
-  await initAuth();
+
+  setReadOnly(true);
+  const authPromise = initAuth();
   await loadLibrary();
+
   renderSystemOptions();
   renderGenres();
   loadDraft();
@@ -1064,7 +1151,9 @@ async function boot() {
   updatePreviewFields();
   updateProgress();
   bindEvents();
-  setRuntimeState('Ready');
+
+  setRuntimeState(state.auth.canWrite ? 'Ready' : 'Library ready · auth pending', 'info');
+  await authPromise;
 }
 
 boot().catch((error) => {

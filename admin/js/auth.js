@@ -6,7 +6,8 @@
    - /admin/js/login.js  (imports login/restoreSession/sendPasswordReset)
    - /admin/js/games-editor.js (imports getAuthContext/waitForAuthReady)
    - /admin/js/admin-nav.js (imports getAuthContext/logout)
-   - /admin tools (guard/roles modules)
+   - /admin/js/guard.js (imports bindSessionInvalidation/refreshSessionIfNeeded)
+   - /admin/js/roles.js (imports getSupabaseClient)
 
    Goals:
    - Use Supabase auth as source of truth
@@ -15,30 +16,34 @@
    - Emit ccg:auth:ready for non-module listeners
    ============================================================ */
 
-import { AUTH_CONFIG } from "./config.js";
+import { AUTH_CONFIG, SUPABASE_ANON_KEY, SUPABASE_URL } from './config.js';
 
-const LOG = "[CCG-AUTH]";
+const LOG = '[CCG-AUTH]';
 const log = (...a) => console.log(LOG, ...a);
 const warn = (...a) => console.warn(LOG, ...a);
 const err = (...a) => console.error(LOG, ...a);
 
-// Public-ish state for legacy scripts (optional)
 window.CCG_AUTH_READY = false;
 window.CCG_AUTH_LOGGED_IN = false;
-window.CCG_AUTH_ROLE = "none";
+window.CCG_AUTH_ROLE = 'none';
+window.CCG_AUTH_ERROR = null;
 
 let _authInitPromise = null;
 let _supabase = null;
 let _lastContext = null;
+let _authListenerAttached = false;
+let _lastAuthEvent = 'BOOT';
 
 function dispatchAuthReady(context) {
   try {
     window.dispatchEvent(
-      new CustomEvent("ccg:auth:ready", {
+      new CustomEvent('ccg:auth:ready', {
         detail: {
           loggedIn: Boolean(context?.isAuthenticated),
-          role: context?.role || "none",
-          user: context?.user || null
+          role: context?.role || 'none',
+          user: context?.user || null,
+          error: context?.error || null,
+          event: _lastAuthEvent
         }
       })
     );
@@ -47,104 +52,156 @@ function dispatchAuthReady(context) {
   }
 }
 
+function applyWindowAuthState(context) {
+  window.CCG_AUTH_READY = true;
+  window.CCG_AUTH_LOGGED_IN = Boolean(context?.isAuthenticated);
+  window.CCG_AUTH_ROLE = context?.role || 'none';
+  window.CCG_AUTH_ERROR = context?.error || null;
+}
+
 function readCachedRole() {
-  // roles.js appears to cache role for UI usage (based on your imports)
-  // We keep this flexible and non-breaking.
+  try {
+    const raw = localStorage.getItem(AUTH_CONFIG.roleCacheKey);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || !parsed.role) return null;
+    return parsed.role;
+  } catch {
+    return null;
+  }
+}
+
+function deriveRoleFromUser(user) {
+  if (!user) return null;
   return (
-    localStorage.getItem("ccg_admin_role") ||
-    sessionStorage.getItem("ccg_admin_role") ||
-    localStorage.getItem("omega_admin_role") ||
-    sessionStorage.getItem("omega_admin_role") ||
-    "none"
+    user.app_metadata?.role ||
+    user.user_metadata?.role ||
+    user.role ||
+    null
   );
+}
+
+function applySupabaseConfigToWindow() {
+  if (SUPABASE_URL && !window.CCG_SUPABASE_URL) {
+    window.CCG_SUPABASE_URL = SUPABASE_URL;
+  }
+  if (SUPABASE_ANON_KEY && !window.CCG_SUPABASE_ANON_KEY) {
+    window.CCG_SUPABASE_ANON_KEY = SUPABASE_ANON_KEY;
+  }
+  if (AUTH_CONFIG?.storageKey && !window.CCG_SUPABASE_STORAGE_KEY) {
+    window.CCG_SUPABASE_STORAGE_KEY = AUTH_CONFIG.storageKey;
+  }
 }
 
 async function ensureSupabaseClient() {
   if (_supabase) return _supabase;
 
-  // Preferred: your site bootstrap creates a client globally.
-  // We support several likely shapes without assuming one exact name.
-  const g = window;
+  applySupabaseConfigToWindow();
 
+  const g = window;
   const candidates = [
     g.ccgSupabaseClient,
     g.CCG_SUPABASE_CLIENT,
-    g.supabaseClient,
-    g.supabase
+    g.__ccgSupabaseClient,
+    g.supabaseClient
   ].filter(Boolean);
 
-  for (const c of candidates) {
-    // If it already looks like a Supabase client (auth.* exists), accept it.
-    if (c?.auth?.getSession && c?.auth?.signInWithPassword) {
-      _supabase = c;
+  for (const candidate of candidates) {
+    if (candidate?.auth?.getSession && candidate?.auth?.signInWithPassword) {
+      _supabase = candidate;
       return _supabase;
     }
-    // If it's a wrapper like { client: ... }
-    if (c?.client?.auth?.getSession && c?.client?.auth?.signInWithPassword) {
-      _supabase = c.client;
+    if (candidate?.client?.auth?.getSession && candidate?.client?.auth?.signInWithPassword) {
+      _supabase = candidate.client;
       return _supabase;
     }
   }
 
-  // Attempt a dynamic import if your repo exposes a module builder.
-  // (If /js/ccg-supabase-client.js is not an ES module, this will fail, but we will fail loudly.)
+  if (g.ccgSupabase?.getClient) {
+    try {
+      _supabase = await g.ccgSupabase.getClient();
+      g.ccgSupabaseClient = _supabase;
+      g.CCG_SUPABASE_CLIENT = _supabase;
+      return _supabase;
+    } catch (error) {
+      throw new Error(error?.message || 'Unable to initialise Supabase client.');
+    }
+  }
+
   try {
-    await import("/js/ccg-supabase-client.js");
-  } catch (e) {
-    // ignore; we’ll still try to find a global after this
+    await import('/js/ccg-supabase-client.js');
+  } catch (error) {
+    err('Supabase bootstrap import failed.', error);
   }
 
-  const after = [
-    g.ccgSupabaseClient,
-    g.CCG_SUPABASE_CLIENT,
-    g.supabaseClient,
-    g.supabase
-  ].filter(Boolean);
-
-  for (const c of after) {
-    if (c?.auth?.getSession && c?.auth?.signInWithPassword) {
-      _supabase = c;
-      return _supabase;
-    }
-    if (c?.client?.auth?.getSession && c?.client?.auth?.signInWithPassword) {
-      _supabase = c.client;
-      return _supabase;
-    }
+  if (g.ccgSupabase?.getClient) {
+    _supabase = await g.ccgSupabase.getClient();
+    g.ccgSupabaseClient = _supabase;
+    g.CCG_SUPABASE_CLIENT = _supabase;
+    return _supabase;
   }
 
   throw new Error(
-    "Supabase client not available. Ensure the Supabase bootstrap is loaded (e.g. /js/ccg-supabase-config.js + /js/ccg-supabase-client.js) or provides a global client."
+    'Supabase client not available. Ensure /js/ccg-supabase-config.js and /js/ccg-supabase-client.js load before auth modules.'
   );
+}
+
+function attachAuthListener(supabase) {
+  if (_authListenerAttached) return;
+  if (!supabase?.auth?.onAuthStateChange) return;
+  _authListenerAttached = true;
+
+  supabase.auth.onAuthStateChange((eventName, session) => {
+    _lastAuthEvent = eventName || 'UNKNOWN';
+    _lastContext = null;
+    const isAuthenticated = Boolean(session?.user?.id);
+    const cachedRole = readCachedRole();
+    const role = isAuthenticated
+      ? cachedRole || deriveRoleFromUser(session?.user) || 'member'
+      : 'none';
+
+    const context = {
+      isAuthenticated,
+      role,
+      user: session?.user || null,
+      session: session || null,
+      error: null
+    };
+
+    applyWindowAuthState(context);
+    dispatchAuthReady(context);
+  });
 }
 
 async function computeAuthContext({ force = false } = {}) {
   if (_lastContext && !force) return _lastContext;
 
   const supabase = await ensureSupabaseClient();
+  attachAuthListener(supabase);
 
   const { data, error } = await supabase.auth.getSession();
-  if (error) throw new Error(error.message || "Unable to read Supabase session.");
+  if (error) {
+    throw new Error(error.message || 'Unable to read Supabase session.');
+  }
 
   const session = data?.session || null;
   const user = session?.user || null;
-
   const isAuthenticated = Boolean(user?.id);
-  const role = isAuthenticated ? readCachedRole() : "none";
+  const cachedRole = readCachedRole();
+  const role = isAuthenticated
+    ? cachedRole || deriveRoleFromUser(user) || 'member'
+    : 'none';
 
   const context = {
     isAuthenticated,
     role,
     user,
-    session
+    session,
+    error: null
   };
 
   _lastContext = context;
-
-  // Mirror for any non-module legacy code
-  window.CCG_AUTH_READY = true;
-  window.CCG_AUTH_LOGGED_IN = isAuthenticated;
-  window.CCG_AUTH_ROLE = role;
-
+  applyWindowAuthState(context);
   dispatchAuthReady(context);
 
   return context;
@@ -157,24 +214,27 @@ export async function waitForAuthReady() {
     try {
       await computeAuthContext({ force: true });
       return true;
-    } catch (e) {
-      // Auth can be “not logged in” without being a hard error.
-      // But missing Supabase is a hard error.
-      const msg = e?.message || String(e);
-      if (/Supabase client not available/i.test(msg)) {
-        err("AUTH INIT FAILED:", e);
-        // Mark ready=false because system cannot function
+    } catch (error) {
+      const message = error?.message || String(error);
+      if (/Supabase client not available/i.test(message)) {
+        err('AUTH INIT FAILED:', error);
         window.CCG_AUTH_READY = false;
-        dispatchAuthReady({ isAuthenticated: false, role: "none", user: null });
-        throw e;
+        window.CCG_AUTH_ERROR = error;
+        dispatchAuthReady({ isAuthenticated: false, role: 'none', user: null, error });
+        throw error;
       }
 
-      // Logged-out state: still “ready”
-      warn("Auth ready: no active session.", msg);
-      window.CCG_AUTH_READY = true;
-      window.CCG_AUTH_LOGGED_IN = false;
-      window.CCG_AUTH_ROLE = "none";
-      dispatchAuthReady({ isAuthenticated: false, role: "none", user: null });
+      warn('Auth ready with no active session.', message);
+      const context = {
+        isAuthenticated: false,
+        role: 'none',
+        user: null,
+        session: null,
+        error
+      };
+      _lastContext = context;
+      applyWindowAuthState(context);
+      dispatchAuthReady(context);
       return true;
     }
   })();
@@ -184,25 +244,81 @@ export async function waitForAuthReady() {
 
 export async function getAuthContext() {
   await waitForAuthReady();
-  return computeAuthContext({ force: true });
+  try {
+    return await computeAuthContext({ force: true });
+  } catch (error) {
+    const context = {
+      isAuthenticated: false,
+      role: 'none',
+      user: null,
+      session: null,
+      error
+    };
+    _lastContext = context;
+    applyWindowAuthState(context);
+    dispatchAuthReady(context);
+    return context;
+  }
 }
 
 export async function restoreSession() {
-  // Used by login.js to redirect if already signed in
   const supabase = await ensureSupabaseClient();
   const { data, error } = await supabase.auth.getSession();
-  if (error) throw new Error(error.message || "Unable to restore session.");
+  if (error) throw new Error(error.message || 'Unable to restore session.');
   return data?.session || null;
+}
+
+export async function refreshSessionIfNeeded() {
+  const supabase = await ensureSupabaseClient();
+  const { data, error } = await supabase.auth.getSession();
+  if (error) throw new Error(error.message || 'Unable to read session.');
+  const session = data?.session || null;
+  if (!session) return null;
+
+  const expiresAtMs = (session.expires_at || 0) * 1000;
+  const needsRefresh = expiresAtMs - Date.now() < AUTH_CONFIG.refreshMarginMs;
+  if (!needsRefresh) return session;
+
+  const refreshResult = await supabase.auth.refreshSession();
+  if (refreshResult.error) {
+    throw new Error(refreshResult.error.message || 'Unable to refresh session.');
+  }
+
+  _lastContext = null;
+  return refreshResult.data?.session || null;
+}
+
+export function bindSessionInvalidation({ onSignedOut, onSignedIn, onTokenRefreshed } = {}) {
+  ensureSupabaseClient()
+    .then((supabase) => {
+      attachAuthListener(supabase);
+      if (!supabase?.auth?.onAuthStateChange) return;
+      supabase.auth.onAuthStateChange((eventName, session) => {
+        _lastAuthEvent = eventName || 'UNKNOWN';
+        if (eventName === 'SIGNED_OUT' && typeof onSignedOut === 'function') {
+          onSignedOut(session || null);
+        }
+        if (eventName === 'SIGNED_IN' && typeof onSignedIn === 'function') {
+          onSignedIn(session || null);
+        }
+        if (eventName === 'TOKEN_REFRESHED' && typeof onTokenRefreshed === 'function') {
+          onTokenRefreshed(session || null);
+        }
+      });
+    })
+    .catch((error) => {
+      err('Unable to bind session invalidation listener.', error);
+    });
 }
 
 export async function login(email, password) {
   const supabase = await ensureSupabaseClient();
 
-  const cleanEmail = String(email || "").trim();
-  const cleanPassword = String(password || "");
+  const cleanEmail = String(email || '').trim();
+  const cleanPassword = String(password || '');
 
   if (!cleanEmail || !cleanPassword) {
-    throw new Error("Enter both email and password.");
+    throw new Error('Enter both email and password.');
   }
 
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -211,10 +327,9 @@ export async function login(email, password) {
   });
 
   if (error) {
-    throw new Error(error.message || "Login failed.");
+    throw new Error(error.message || 'Login failed.');
   }
 
-  // Refresh cached context immediately
   _lastContext = null;
   await computeAuthContext({ force: true });
 
@@ -224,38 +339,58 @@ export async function login(email, password) {
 export async function sendPasswordReset(email) {
   const supabase = await ensureSupabaseClient();
 
-  const cleanEmail = String(email || "").trim();
-  if (!cleanEmail) throw new Error("Enter your email address.");
+  const cleanEmail = String(email || '').trim();
+  if (!cleanEmail) throw new Error('Enter your email address.');
 
   const redirectTo =
     AUTH_CONFIG?.passwordResetRedirect ||
     AUTH_CONFIG?.defaultRedirectAfterLogin ||
-    window.location.origin + "/admin/login.html";
+    window.location.origin + '/admin/login.html';
 
   const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
     redirectTo
   });
 
-  if (error) throw new Error(error.message || "Unable to send reset email.");
+  if (error) throw new Error(error.message || 'Unable to send reset email.');
   return true;
 }
 
 export async function logout() {
   const supabase = await ensureSupabaseClient();
   const { error } = await supabase.auth.signOut();
-  if (error) throw new Error(error.message || "Logout failed.");
+  if (error) throw new Error(error.message || 'Logout failed.');
 
   _lastContext = null;
 
-  window.CCG_AUTH_READY = true;
-  window.CCG_AUTH_LOGGED_IN = false;
-  window.CCG_AUTH_ROLE = "none";
-  dispatchAuthReady({ isAuthenticated: false, role: "none", user: null });
+  const context = {
+    isAuthenticated: false,
+    role: 'none',
+    user: null,
+    session: null,
+    error: null
+  };
+  applyWindowAuthState(context);
+  dispatchAuthReady(context);
 
   return true;
 }
 
-// Optional helper used in some admin flows
-export function requireAuthOrThrow(message = "You must be signed in to do that.") {
+export function requireAuthOrThrow(message = 'You must be signed in to do that.') {
   if (!window.CCG_AUTH_LOGGED_IN) throw new Error(message);
 }
+
+export async function getSupabaseClient() {
+  return ensureSupabaseClient();
+}
+
+export function getAuthDiagnostics() {
+  return {
+    ready: window.CCG_AUTH_READY,
+    loggedIn: window.CCG_AUTH_LOGGED_IN,
+    role: window.CCG_AUTH_ROLE,
+    error: window.CCG_AUTH_ERROR,
+    lastEvent: _lastAuthEvent
+  };
+}
+
+log('Auth module loaded.');
