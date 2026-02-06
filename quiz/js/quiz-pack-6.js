@@ -348,6 +348,10 @@
             if (event && event.target && event.target.closest && event.target.closest('input, textarea, [contenteditable="true"], [contenteditable=""], [contenteditable]')) {
                 return;
             }
+            if (!document.body.classList.contains("ccg-quiz-pack-6") &&
+                !(event.target && event.target.closest && event.target.closest(".quiz-container"))) {
+                return;
+            }
             if (location.pathname.startsWith("/admin/")) return;
             if (!elements.gameGrid && !document.querySelector(".hangman-game-grid")) return;
             const target = event.target;
