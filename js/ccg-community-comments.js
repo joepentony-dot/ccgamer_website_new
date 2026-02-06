@@ -1,4 +1,10 @@
 (function () {
+  /* ===============================================
+     OMEGA COMMUNITY AUTH LOCK
+     Prevents endless retry loop by capping retries,
+     enforcing auth refresh, and surfacing failures
+     instead of trapping the UI in "Retrying…".
+     =============================================== */
   const state = {
     initStarted: false,
     authReady: false,
@@ -6,7 +12,9 @@
     activeGameId: null,
     lastGameEventAt: 0,
     renderInFlight: null,
-    retryTimer: null
+    retryTimer: null,
+    retryCount: 0,
+    maxRetries: 3
   };
 
   function getMount() {
@@ -31,10 +39,27 @@
     mount.innerHTML = '<div class="ccg-community-card"><h3>Community Comments</h3><p class="ccg-community-muted">' + (message || 'Preparing comments…') + '</p></div>';
   }
 
+  function setFailureMessage(message) {
+    const mount = getMount();
+    if (!mount) return;
+    mount.innerHTML = '<div class="ccg-community-card"><h3>Community Comments</h3><p class="ccg-community-muted">' + (message || 'Comments unavailable (auth error). Reload or re-login.') + '</p></div>';
+  }
+
   function isNotConfiguredError(error) {
     const code = String(error && error.code || '');
     const message = String(error && error.message || '').toLowerCase();
     return code === '42P01' || code === 'PGRST205' || message.includes('relation') || message.includes('does not exist');
+  }
+
+  function isAuthError(error) {
+    const code = String(error && (error.status || error.code) || '');
+    const message = String(error && error.message || '').toLowerCase();
+    return code === '401'
+      || code === '403'
+      || code === 'PGRST301'
+      || message.includes('jwt')
+      || message.includes('token')
+      || message.includes('auth');
   }
 
   function commentCard(comment, currentUser, canModerate, badgeHtml) {
@@ -76,6 +101,50 @@
     }
   }
 
+  async function refreshAuthSession() {
+    try {
+      const client = await window.ccgSupabase.getClient();
+      await client.auth.refreshSession();
+      return true;
+    } catch (_error) {
+      return false;
+    }
+  }
+
+  async function runQueryWithAuthRetry(runQuery) {
+    const first = await runQuery();
+    if (!first || !first.error || !isAuthError(first.error)) {
+      return first;
+    }
+
+    const refreshed = await refreshAuthSession();
+    if (!refreshed) return first;
+    return runQuery();
+  }
+
+  function resetRetries() {
+    state.retryCount = 0;
+  }
+
+  function scheduleRetry(delayMs, reason) {
+    if (state.retryTimer) {
+      window.clearTimeout(state.retryTimer);
+    }
+
+    if (state.retryCount >= state.maxRetries) {
+      setFailureMessage('Comments unavailable (auth error). Reload or re-login.');
+      return;
+    }
+
+    const attempt = state.retryCount + 1;
+    const backoff = delayMs || Math.min(8000, 900 * Math.pow(2, state.retryCount));
+    state.retryCount = attempt;
+    state.retryTimer = window.setTimeout(function () {
+      state.retryTimer = null;
+      runSafeInit(reason || 'retry-timer');
+    }, backoff);
+  }
+
   async function renderComments(slug) {
     const mount = getMount();
     if (!mount) return;
@@ -86,27 +155,47 @@
       return;
     }
 
-    const context = await window.ccgSupabase.getCurrentUserContext();
-    const supabase = await window.ccgSupabase.getClient();
+    try {
+      await window.ccgSupabase.waitForAuth();
+    } catch (_error) {
+      setFailureMessage('Comments unavailable (auth error). Reload or re-login.');
+      return;
+    }
+
+    let context = null;
+    let supabase = null;
+    try {
+      context = await window.ccgSupabase.getCurrentUserContext();
+      supabase = await window.ccgSupabase.getClient();
+    } catch (_error) {
+      setFailureMessage('Comments unavailable (auth error). Reload or re-login.');
+      return;
+    }
     const user = context.user;
     const canModerate = context.permissions.canModerate;
 
-    const { data, error } = await supabase
-      .from('game_comments')
-      .select('id,user_id,content,is_deleted,created_at,updated_at,profiles(username,avatar_url,role)')
-      .eq('game_slug', slug)
-      .order('created_at', { ascending: false })
-      .limit(100);
+    const { data, error } = await runQueryWithAuthRetry(function () {
+      return supabase
+        .from('game_comments')
+        .select('id,user_id,content,is_deleted,created_at,updated_at,profiles(username,avatar_url,role)')
+        .eq('game_slug', slug)
+        .order('created_at', { ascending: false })
+        .limit(100);
+    });
 
     if (error && isNotConfiguredError(error)) {
       setDeferredMessage('Comments are not available yet for this game. Retrying automatically…');
-      scheduleRetry(3000);
+      scheduleRetry(3000, 'not-configured');
       return;
     }
 
     if (error) {
+      if (isAuthError(error)) {
+        setFailureMessage('Comments unavailable (auth error). Reload or re-login.');
+        return;
+      }
       mount.innerHTML = '<div class="ccg-community-card"><h3>Community Comments</h3><p class="ccg-community-muted">Unable to load comments right now.</p></div>';
-      scheduleRetry(5000);
+      scheduleRetry(5000, 'load-error');
       return;
     }
 
@@ -115,12 +204,15 @@
     const badgeMap = {};
 
     if (userIds.length && window.ccgCommunityBadges) {
-      const { data: badgeRows } = await supabase
-        .from('user_badges')
-        .select('user_id,badge_code,awarded_at')
-        .in('user_id', userIds);
+      const badgeResult = await runQueryWithAuthRetry(function () {
+        return supabase
+          .from('user_badges')
+          .select('user_id,badge_code,awarded_at')
+          .in('user_id', userIds);
+      });
+      const badgeRows = badgeResult.data || [];
 
-      (badgeRows || []).forEach(function (row) {
+      badgeRows.forEach(function (row) {
         if (!badgeMap[row.user_id]) badgeMap[row.user_id] = [];
         badgeMap[row.user_id].push(row);
       });
@@ -151,6 +243,7 @@
       if (loginBtn) loginBtn.addEventListener('click', function () {
         window.ccgCommunityAuth.openAuthModal('signin');
       });
+      resetRetries();
       return;
     }
 
@@ -162,17 +255,38 @@
       if (!content) return;
       status.textContent = 'Posting…';
 
-      const { error: insertError } = await supabase.from('game_comments').insert({
-        user_id: user.id,
-        game_slug: slug,
-        content: content
+      let liveContext = null;
+      try {
+        await window.ccgSupabase.waitForAuth();
+        liveContext = await window.ccgSupabase.getCurrentUserContext();
+      } catch (_error) {
+        status.textContent = 'Comments unavailable (auth error). Reload or re-login.';
+        return;
+      }
+
+      if (!liveContext || !liveContext.user) {
+        status.textContent = 'Comments unavailable (auth error). Reload or re-login.';
+        window.ccgCommunityAuth.openAuthModal('signin');
+        return;
+      }
+
+      const { error: insertError } = await runQueryWithAuthRetry(function () {
+        return supabase.from('game_comments').insert({
+          user_id: liveContext.user.id,
+          game_slug: slug,
+          content: content
+        });
       });
 
       if (insertError) {
+        if (isAuthError(insertError)) {
+          status.textContent = 'Comments unavailable (auth error). Reload or re-login.';
+          return;
+        }
         status.textContent = isNotConfiguredError(insertError)
           ? 'Comments are still being prepared. Please retry in a moment.'
           : 'Unable to post comment right now.';
-        scheduleRetry(3000);
+        scheduleRetry(3000, 'post-error');
         return;
       }
 
@@ -194,10 +308,12 @@
 
         if (action === 'report') {
           const reason = window.prompt('Report reason (optional):', '');
-          const { error: reportError } = await supabase.from('comment_reports').insert({
-            reporter_user_id: user.id,
-            comment_id: commentId,
-            reason: reason || null
+          const { error: reportError } = await runQueryWithAuthRetry(function () {
+            return supabase.from('comment_reports').insert({
+              reporter_user_id: user.id,
+              comment_id: commentId,
+              reason: reason || null
+            });
           });
           if (!reportError) btn.textContent = 'Reported';
           return;
@@ -207,27 +323,22 @@
           const currentText = card.querySelector('.ccg-comment-card__body').textContent || '';
           const updated = window.prompt('Edit your comment:', currentText);
           if (!updated || !updated.trim()) return;
-          await supabase.from('game_comments').update({ content: updated.trim() }).eq('id', commentId).eq('user_id', user.id);
+          await runQueryWithAuthRetry(function () {
+            return supabase.from('game_comments').update({ content: updated.trim() }).eq('id', commentId).eq('user_id', user.id);
+          });
           runSafeInit('comment-edit');
           return;
         }
 
         if (action === 'delete' && canModerate) {
-          await supabase.from('game_comments').update({ is_deleted: true, content: '[deleted]' }).eq('id', commentId);
+          await runQueryWithAuthRetry(function () {
+            return supabase.from('game_comments').update({ is_deleted: true, content: '[deleted]' }).eq('id', commentId);
+          });
           runSafeInit('comment-delete');
         }
       });
     });
-  }
-
-  function scheduleRetry(delayMs) {
-    if (state.retryTimer) {
-      window.clearTimeout(state.retryTimer);
-    }
-    state.retryTimer = window.setTimeout(function () {
-      state.retryTimer = null;
-      runSafeInit('retry-timer');
-    }, delayMs || 2500);
+    resetRetries();
   }
 
   async function runSafeInit(reason) {
@@ -242,14 +353,14 @@
     const readyForAuth = await ensureAuthReady();
     if (!readyForAuth) {
       setDeferredMessage('Preparing comments… waiting for sign-in state.');
-      scheduleRetry(1200);
+      scheduleRetry(1200, 'auth-wait');
       return;
     }
 
     const game = getGameContext();
     if (!game.slug) {
       setDeferredMessage('Preparing comments… waiting for game details.');
-      scheduleRetry(reason === 'game-loaded' ? 500 : 1200);
+      scheduleRetry(reason === 'game-loaded' ? 500 : 1200, 'game-wait');
       return;
     }
 
@@ -259,7 +370,7 @@
     state.renderInFlight = renderComments(game.slug)
       .catch(function () {
         setDeferredMessage('Unable to load comments just yet. Retrying…');
-        scheduleRetry(3000);
+        scheduleRetry(3000, 'render-failed');
       })
       .finally(function () {
         state.renderInFlight = null;

@@ -82,9 +82,30 @@ const el = {
   recoveryList: document.getElementById('recoveryList')
 };
 
-function setStatus(message, kind = 'info') {
+const BOOT_WATCHDOG_MS = 8000;
+const BOOT_FETCH_TIMEOUT_MS = 5000;
+const BOOT_FETCH_RETRIES = 1;
+
+const bootState = {
+  activeId: 0,
+  watchdog: null,
+  failed: false,
+  booting: false
+};
+
+function setStatus(message, detailOrKind = 'info', kindOverride = null) {
   if (!el.status) return;
-  el.status.textContent = message;
+  let kind = 'info';
+  let detail = '';
+
+  if (typeof detailOrKind === 'string' && ['info', 'success', 'error', 'warning'].includes(detailOrKind)) {
+    kind = detailOrKind;
+  } else {
+    detail = detailOrKind ? String(detailOrKind) : '';
+    kind = kindOverride || 'error';
+  }
+
+  el.status.textContent = detail ? `${message} — ${detail}` : message;
   el.status.dataset.state = kind;
 }
 
@@ -102,6 +123,100 @@ function setOverlayVisible(isVisible) {
   if (!el.bootOverlay) return;
   el.bootOverlay.hidden = !isVisible;
   el.appShell?.setAttribute('aria-busy', isVisible ? 'true' : 'false');
+}
+
+/* ===============================================
+   OMEGA ADMIN BOOT LOCK
+   Prevents infinite init freeze by enforcing a
+   watchdog timeout, unlocking the overlay on
+   failures, and surfacing a retry path.
+   =============================================== */
+let bootRetryButton = null;
+
+function ensureRetryButton() {
+  if (bootRetryButton) return bootRetryButton;
+  const host = el.status?.closest('.control-row') || el.status?.parentElement;
+  if (!host) return null;
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'ccg-btn ccg-btn--ghost';
+  button.textContent = 'Reload editor';
+  button.hidden = true;
+  button.addEventListener('click', () => window.location.reload());
+  host.appendChild(button);
+  bootRetryButton = button;
+  return bootRetryButton;
+}
+
+function setRetryVisible(isVisible) {
+  const button = ensureRetryButton();
+  if (button) {
+    button.hidden = !isVisible;
+    button.disabled = false;
+  }
+}
+
+function clearBootWatchdog() {
+  if (bootState.watchdog) {
+    window.clearTimeout(bootState.watchdog);
+    bootState.watchdog = null;
+  }
+}
+
+function startBootWatchdog(bootId) {
+  clearBootWatchdog();
+  bootState.watchdog = window.setTimeout(() => {
+    if (bootState.activeId !== bootId || bootState.failed) return;
+    const error = new Error('Boot watchdog timeout.');
+    handleBootFailure(error, 'watchdog');
+  }, BOOT_WATCHDOG_MS);
+}
+
+function handleBootFailure(error, stepLabel) {
+  if (bootState.failed) return;
+  bootState.failed = true;
+  clearBootWatchdog();
+  setOverlayVisible(false);
+  setStatus('Admin boot failed', error?.message || 'Unknown error');
+  setRetryVisible(true);
+  const step = stepLabel || runtimeState.bootStep || 'unknown';
+  console.error(`[CCG-BOOT] FAILED at: ${step}`, error);
+}
+
+function delay(ms) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
+async function withTimeout(promise, timeoutMs, label) {
+  let timer = null;
+  const timeout = new Promise((_, reject) => {
+    timer = window.setTimeout(() => reject(new Error(`${label} timed out after ${timeoutMs}ms.`)), timeoutMs);
+  });
+  return Promise.race([promise, timeout]).finally(() => {
+    if (timer) window.clearTimeout(timer);
+  });
+}
+
+async function guardedFetch(fetcher, label) {
+  let lastError = null;
+  for (let attempt = 0; attempt <= BOOT_FETCH_RETRIES; attempt += 1) {
+    try {
+      return await withTimeout(fetcher(), BOOT_FETCH_TIMEOUT_MS, label);
+    } catch (error) {
+      lastError = error;
+      console.warn(`[CCG-BOOT] ${label} attempt ${attempt + 1} failed`, error);
+      if (attempt < BOOT_FETCH_RETRIES) {
+        await delay(600 * (attempt + 1));
+      }
+    }
+  }
+  throw lastError;
+}
+
+function ensureBootActive(bootId, stepLabel) {
+  if (bootState.activeId !== bootId || bootState.failed) {
+    throw new Error(`Boot cancelled during ${stepLabel}.`);
+  }
 }
 
 function roleRank(role) {
@@ -820,10 +935,14 @@ function bindHandlers() {
   });
 }
 
-async function bootstrapDeterministic() {
+async function bootstrapDeterministic(bootId) {
+  bootState.failed = false;
+  setRetryVisible(false);
   setOverlayVisible(true);
   setBootStep('Auth Ready');
+
   await waitForAuthReady();
+  ensureBootActive(bootId, 'Auth Ready');
 
   setBootStep('Role Verified');
 
@@ -833,6 +952,7 @@ async function bootstrapDeterministic() {
      =================================================== */
   let context = await getAuthContext();
   let role = String(context?.role || '').toLowerCase();
+  ensureBootActive(bootId, 'Role Verified');
 
   if (!context?.isAuthenticated || roleRank(role) < roleRank('admin')) {
     console.warn('[CCG-AUTH] forbidden bootstrap; retrying auth context rebuild');
@@ -849,10 +969,13 @@ async function bootstrapDeterministic() {
   setRuntimeState({ user: context.user || null, role });
   el.role.textContent = role;
   el.email.textContent = context.user?.email || 'unknown';
+  ensureBootActive(bootId, 'Role Verified');
 
   setBootStep('Data Loaded');
-  const gamesResult = await fetchGamesJson();
-  const fileResult = await fetchFileIndex();
+  const gamesResult = await guardedFetch(fetchGamesJson, 'fetchGamesJson');
+  ensureBootActive(bootId, 'fetchGamesJson');
+  const fileResult = await guardedFetch(fetchFileIndex, 'fetchFileIndex');
+  ensureBootActive(bootId, 'fetchFileIndex');
   runtimeState.games = gamesResult.games;
   runtimeState.rawBeforeEdit = JSON.stringify(gamesResult.games, null, 2);
   runtimeState.fileIndex = new Set(fileResult.files || []);
@@ -870,7 +993,12 @@ async function bootstrapDeterministic() {
   setBootStep('Ready');
   setRuntimeState({ mode: 'view', dirty: false, valid: true, errors: [] });
   setStatus(`Loaded ${runtimeState.games.length} games.`, 'success');
+  console.info(`[CCG-BOOT] auth=ok role=${role || 'unknown'} data=ok ui=ok`);
   setOverlayVisible(false);
+  clearBootWatchdog();
+  if (bootState.activeId === bootId) {
+    bootState.booting = false;
+  }
 }
 
 function start() {
@@ -879,11 +1007,18 @@ function start() {
 
   let started = false;
   const run = () => {
-    if (started) return;
+    if (bootState.booting) return;
+    bootState.booting = true;
     started = true;
-    void bootstrapDeterministic().catch((error) => {
-      setOverlayVisible(false);
-      setStatus(error.message, 'error');
+    const bootId = ++bootState.activeId;
+    startBootWatchdog(bootId);
+
+    void bootstrapDeterministic(bootId).catch((error) => {
+      handleBootFailure(error, runtimeState.bootStep);
+    }).finally(() => {
+      if (bootState.activeId === bootId) {
+        bootState.booting = false;
+      }
     });
   };
 
