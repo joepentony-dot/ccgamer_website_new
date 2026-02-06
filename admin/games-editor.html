@@ -27,6 +27,7 @@
         <p class="admin-auth-kicker">Omega Game Builder</p>
         <h1>Guided Build Wizard · /games/games.json</h1>
         <p class="editor-meta">Signed in as <span data-editor-email></span> · Role <strong data-editor-role></strong></p>
+        <span class="status-badge" data-readonly-badge hidden>Read-only mode</span>
       </div>
       <div class="toolbar-actions">
         <button class="ccg-btn ccg-btn--ghost" type="button" data-action="save-draft">Save draft</button>
@@ -39,6 +40,10 @@
       <p data-runtime-state data-state="ready">State: Ready</p>
       <p data-draft-indicator>Draft: not saved</p>
       <p data-library-indicator>Library: loading…</p>
+      <p data-mode-indicator>Mode: New</p>
+      <p data-validation-indicator>Validation: Pending</p>
+      <p data-export-indicator>Export: Blocked</p>
+      <p class="status-error" data-error-indicator hidden></p>
     </section>
 
     <section class="omega-pipeline-strip" aria-label="Game Builder Progress" data-progress-indicator>
@@ -72,6 +77,14 @@
           <li>Game ID (unique)</li>
         </ul>
       </div>
+      <div class="control-row">
+        <label>Load existing game (slug or ID)
+          <input type="text" name="lookup" list="game-lookup-list" data-load-input placeholder="brian-bloodaxe or brian_bloodaxe" />
+        </label>
+        <button class="ccg-btn ccg-btn--ghost" type="button" data-action="load-game">Load</button>
+        <span class="field-hint" data-load-status></span>
+        <datalist id="game-lookup-list"></datalist>
+      </div>
       <div class="form-grid">
         <label>Title
           <input type="text" name="title" required data-field="title" placeholder="e.g. Brian Bloodaxe" />
@@ -96,7 +109,7 @@
           <span class="field-error" data-error-for="system"></span>
         </label>
         <label>Year
-          <input type="text" name="year" required inputmode="numeric" pattern="\\d{4}" data-field="year" placeholder="1986" />
+          <input type="text" name="year" required inputmode="numeric" pattern="\d{4}" data-field="year" placeholder="1986" />
           <small class="field-hint">Four digits (e.g. 1986).</small>
           <span class="field-error" data-error-for="year"></span>
         </label>
