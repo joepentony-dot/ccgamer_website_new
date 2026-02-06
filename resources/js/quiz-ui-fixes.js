@@ -1,6 +1,21 @@
 (function () {
     "use strict";
 
+    function isAdminContext() {
+        const meta = document.querySelector('meta[name="ccg-context"]');
+        return meta && meta.getAttribute("content") === "admin";
+    }
+
+    function isQuizContext() {
+        const meta = document.querySelector('meta[name="ccg-context"]');
+        return meta && meta.getAttribute("content") === "quiz";
+    }
+
+    if (isAdminContext()) {
+        console.log("[CCG] Admin context detected — keyboard suppression disabled in this module.");
+        return;
+    }
+
     const statusEl = document.querySelector("[data-quiz-pack-status]");
     if (!statusEl) return;
 

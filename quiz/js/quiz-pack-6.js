@@ -9,6 +9,27 @@
 (() => {
     "use strict";
 
+    function isAdminContext() {
+        const meta = document.querySelector('meta[name="ccg-context"]');
+        return meta && meta.getAttribute("content") === "admin";
+    }
+
+    function isQuizContext() {
+        const meta = document.querySelector('meta[name="ccg-context"]');
+        return meta && meta.getAttribute("content") === "quiz";
+    }
+
+    if (isAdminContext()) {
+        console.log("[CCG] Admin context detected — keyboard suppression disabled in this module.");
+        return;
+    }
+
+    if (!isQuizContext()) {
+        return;
+    }
+
+    console.log("[CCG-QUIZ] Context=quiz");
+
     const MAX_WRONG_GUESSES = 5;
     const PACK_6_PATH = "images/pack-6/";
     const IMAGE_EXTENSION = ".webp";
@@ -321,8 +342,10 @@
 
     function setupKeyboardInput() {
         document.addEventListener("keydown", (event) => {
+            if (event && event.target && event.target.closest && event.target.closest('input, textarea, [contenteditable="true"], [contenteditable=""], [contenteditable]')) {
+                return;
+            }
             if (location.pathname.startsWith("/admin/")) return;
-            if (event.target?.closest?.("input, textarea, [contenteditable]")) return;
             if (!elements.gameGrid && !document.querySelector(".hangman-game-grid")) return;
             const target = event.target;
             if (target instanceof HTMLElement) {
