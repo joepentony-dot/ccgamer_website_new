@@ -2,9 +2,11 @@ import { initAdminNav } from './admin-nav.js';
 import { getAuthContext, waitForAuthReady } from './auth.js';
 
 const SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
-const LIBRARY_PATH = '/games/games.json';
+const GAMES_PATH = '/games/games.json';
 const STORAGE_KEY = 'omegaGameBuilderDraftV1';
 const MAX_STEP = 6;
+const MAX_LIBRARY_ATTEMPTS = 2;
+const LIBRARY_RETRY_DELAY_MS = 800;
 
 const THUMBNAIL_BASE_PATH = 'resources/images/thumbnails/all/';
 const BOX3D_BASE_PATH = 'resources/images/games/boxes-3d/';
@@ -404,6 +406,12 @@ function resetWizard() {
 function setLibraryIndicator(message) {
   if (!el.libraryIndicator) return;
   el.libraryIndicator.textContent = message;
+}
+
+function wait(delayMs) {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, delayMs);
+  });
 }
 
 function renderSystemOptions() {
@@ -966,21 +974,55 @@ function bindEvents() {
   });
 }
 
-async function loadLibrary() {
-  setLibraryIndicator('Library: loading games.json…');
-  const response = await fetch(LIBRARY_PATH, { cache: 'no-store' });
+async function fetchLibraryPayload() {
+  const response = await fetch(GAMES_PATH, {
+    cache: 'no-store',
+    credentials: 'same-origin'
+  });
   if (!response.ok) {
-    throw new Error(`Unable to load games.json (${response.status})`);
+    throw new Error(`Unable to load games.json (HTTP ${response.status})`);
   }
-  const data = await response.json();
+
+  let data;
+  try {
+    data = await response.json();
+  } catch (error) {
+    throw new Error(`games.json parse failed (${error?.message || 'invalid JSON'})`);
+  }
+
   if (!Array.isArray(data)) {
     throw new Error('games.json is not an array.');
   }
-  state.library = data;
-  state.slugSet = new Set(data.map((game) => game.slug));
-  state.idSet = new Set(data.map((game) => game.id));
-  state.schema = buildSchemaMap(data);
-  setLibraryIndicator(`Library: ${data.length} games loaded`);
+
+  return data;
+}
+
+async function loadLibrary() {
+  setLibraryIndicator('Library: loading games.json…');
+  let lastError;
+  for (let attempt = 1; attempt <= MAX_LIBRARY_ATTEMPTS; attempt += 1) {
+    try {
+      const data = await fetchLibraryPayload();
+      state.library = data;
+      state.slugSet = new Set(data.map((game) => game.slug));
+      state.idSet = new Set(data.map((game) => game.id));
+      state.schema = buildSchemaMap(data);
+      setLibraryIndicator(`Library: ${data.length} games loaded`);
+      return;
+    } catch (error) {
+      lastError = error;
+      console.error(
+        `[OMEGA-GAME-BUILDER] games.json load failed (attempt ${attempt}/${MAX_LIBRARY_ATTEMPTS})`,
+        error
+      );
+      if (attempt < MAX_LIBRARY_ATTEMPTS) {
+        setLibraryIndicator(`Library: retrying (${attempt + 1}/${MAX_LIBRARY_ATTEMPTS})…`);
+        await wait(LIBRARY_RETRY_DELAY_MS);
+      }
+    }
+  }
+
+  throw lastError;
 }
 
 async function initAuth() {
@@ -988,6 +1030,25 @@ async function initAuth() {
   const context = await getAuthContext();
   if (el.email) el.email.textContent = context?.user?.email || 'unknown';
   if (el.role) el.role.textContent = context?.role || 'none';
+}
+
+function disableWizard(message) {
+  setRuntimeState('Boot failed', 'error');
+  setLibraryIndicator(message);
+
+  Object.values(el.actions).forEach((action) => {
+    if (action) action.disabled = true;
+  });
+
+  el.fields.forEach((field) => {
+    field.disabled = true;
+  });
+
+  if (el.genreList) {
+    el.genreList.querySelectorAll('input[type="checkbox"]').forEach((input) => {
+      input.disabled = true;
+    });
+  }
 }
 
 async function boot() {
@@ -1008,6 +1069,6 @@ async function boot() {
 
 boot().catch((error) => {
   console.error('[OMEGA-GAME-BUILDER] boot failure', error);
-  setRuntimeState('Boot failed', 'error');
-  setLibraryIndicator('Library: failed to load');
+  const message = error instanceof Error ? error.message : 'Unknown error';
+  disableWizard(`Library: failed to load (${message})`);
 });
