@@ -247,14 +247,35 @@
     if (state.refreshPromise) return state.refreshPromise;
 
     state.refreshPromise = (async function () {
-      const context = await window.ccgSupabase.getCurrentUserContext();
-      state.currentUser = context.user || null;
+      const session = await window.ccgSupabase.waitForAuth();
+      const user = session && session.user ? session.user : null;
+      state.currentUser = user || null;
 
       if (state.currentUser) {
-        await ensureProfile();
+        const profile = await fetchProfile(state.currentUser.id);
+        state.currentProfile = profile;
+        if (!profile || !profile.username) {
+          openModal('username');
+          setMessage('Welcome! Please choose your public username.');
+        }
       } else {
         state.currentProfile = null;
       }
+
+      const role = (state.currentProfile && state.currentProfile.role)
+        || (state.currentUser && state.currentUser.app_metadata && state.currentUser.app_metadata.role)
+        || null;
+      window.ccgSupabase.resolveAuthReadyContext({
+        user: state.currentUser,
+        session,
+        isAuthenticated: Boolean(state.currentUser),
+        role,
+        permissions: {
+          canRate: Boolean(state.currentUser),
+          canComment: Boolean(state.currentUser),
+          canModerate: role === 'admin' || role === 'mod'
+        }
+      });
     })().finally(function () {
       state.refreshPromise = null;
     });
@@ -317,6 +338,7 @@
     logout,
     getUser: function () { return state.currentUser; },
     getProfile: function () { return state.currentProfile; },
+    getProfileReady: function () { return refreshCurrentUser().then(function () { return state.currentProfile; }); },
     isAdminOrMod: function () {
       const role = state.currentProfile && state.currentProfile.role;
       return role === 'admin' || role === 'mod';

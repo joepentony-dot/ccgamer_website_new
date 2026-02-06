@@ -1,6 +1,6 @@
 // CCG ADMIN LOCK — DO NOT REMOVE — INPUT HARDENING
 (() => {
-  const editableSelector = 'input, textarea, [contenteditable="true"], [contenteditable=""], [contenteditable]';
+  const editableSelector = 'input, textarea, select, [contenteditable="true"], [contenteditable=""], [contenteditable]';
   const logOnce = (() => {
     const logged = new Set();
     return (message) => {
@@ -12,13 +12,13 @@
 
   const isEditableTarget = (target) => {
     if (!(target instanceof Element)) return false;
-    if (target.matches('input, textarea')) return true;
+    if (target.matches('input, textarea, select')) return true;
     if (target.isContentEditable) return true;
     return Boolean(target.closest('[contenteditable]:not([contenteditable="false"])'));
   };
 
   const hardenAdminInputs = (event) => {
-    if (!isEditableTarget(event.target)) return;
+    if (isEditableTarget(event.target)) return;
     event.stopImmediatePropagation();
     event.stopPropagation();
   };
