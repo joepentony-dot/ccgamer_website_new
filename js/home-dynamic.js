@@ -101,9 +101,15 @@ function initStayAwhileCallout() {
     };
 
     const handleKeydown = (event) => {
+        if (location.pathname.startsWith("/admin/")) return;
+        if (event.target?.closest?.("input, textarea, [contenteditable]")) return;
         if (event.repeat) return;
-        if (event.key === "Enter" || event.key === " " || event.key === "Spacebar") {
+        if (event.key === "Enter") {
             event.preventDefault();
+            triggerStayAwhile();
+            return;
+        }
+        if (event.key === " " || event.key === "Spacebar") {
             triggerStayAwhile();
         }
     };

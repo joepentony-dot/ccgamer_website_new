@@ -1,4 +1,4 @@
-// OMEGA LOCK — DO NOT REMOVE — INPUT HARDENING
+// CCG ADMIN LOCK — DO NOT REMOVE — INPUT HARDENING
 (() => {
   const logPrefix = '[CCG-INPUT-HARDEN]';
   const editableSelector = 'input, textarea, [contenteditable]';

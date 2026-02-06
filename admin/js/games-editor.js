@@ -151,7 +151,7 @@ function applyAuthContext(context, error) {
   if (el.role) el.role.textContent = role;
 
   if (error) {
-    console.error('[OMEGA-GAME-BUILDER] auth error', error);
+    console.error('[CCG-GAME-BUILDER] auth error', error);
     setRuntimeState('Auth error · read-only', 'error');
     setReadOnly(true);
     updateStatusIndicators();
@@ -892,7 +892,7 @@ function buildManifestJson(entry) {
 
 function buildReadme(entry) {
   return [
-    'OMEGA GAME BUILDER PACKAGE',
+    'CCG GAME BUILDER PACKAGE',
     '---------------------------',
     `Slug: ${entry.slug}`,
     `ID: ${entry.id}`,
@@ -1033,7 +1033,7 @@ async function addAssetToZip(stubRoot, assetPath, targetFolder, missingAssets) {
     const blob = await response.blob();
     stubRoot.folder(targetFolder).file(filename, blob);
   } catch (error) {
-    console.error('[OMEGA-GAME-BUILDER] asset fetch failed', assetPath, error);
+    console.error('[CCG-GAME-BUILDER] asset fetch failed', assetPath, error);
     missingAssets.push({ path: assetPath, reason: error instanceof Error ? error.message : 'fetch-failed' });
   }
 }
@@ -1221,7 +1221,7 @@ function bindEvents() {
     renderValidation();
     if (state.validation.errors.length) return;
     buildPackage().catch((error) => {
-      console.error('[OMEGA-GAME-BUILDER] package build failed', error);
+      console.error('[CCG-GAME-BUILDER] package build failed', error);
       setRuntimeState('Package build failed', 'error');
       setErrorIndicator(error instanceof Error ? error.message : 'Package build failed.');
     });
@@ -1240,7 +1240,7 @@ function bindEvents() {
     if (el.actions.downloadBundle) el.actions.downloadBundle.disabled = false;
     goToStep(6);
     buildPackage().catch((error) => {
-      console.error('[OMEGA-GAME-BUILDER] package build failed', error);
+      console.error('[CCG-GAME-BUILDER] package build failed', error);
       setRuntimeState('Package build failed', 'error');
       setErrorIndicator(error instanceof Error ? error.message : 'Package build failed.');
     });
@@ -1266,7 +1266,7 @@ async function loadLibrary() {
     } catch (error) {
       lastError = error;
       console.error(
-        `[OMEGA-GAME-BUILDER] games.json load failed (attempt ${attempt}/${MAX_LIBRARY_ATTEMPTS})`,
+        `[CCG-GAME-BUILDER] games.json load failed (attempt ${attempt}/${MAX_LIBRARY_ATTEMPTS})`,
         error
       );
       if (attempt < MAX_LIBRARY_ATTEMPTS) {
@@ -1296,7 +1296,7 @@ async function initAuth() {
 
 async function boot() {
   setRuntimeState('Booting', 'info');
-  await initAdminNav({ pageLabel: 'Omega Game Builder', active: 'editor' });
+  await initAdminNav({ pageLabel: 'CCG Game Builder', active: 'editor' });
 
   setReadOnly(true);
   await loadLibrary();
@@ -1323,7 +1323,7 @@ async function boot() {
 }
 
 boot().catch((error) => {
-  console.error('[OMEGA-GAME-BUILDER] boot failure', error);
+  console.error('[CCG-GAME-BUILDER] boot failure', error);
   const message = error instanceof Error ? error.message : 'Unknown error';
   setRuntimeState('Boot failed', 'error');
   setErrorIndicator(`Library: failed to load (${message})`);
