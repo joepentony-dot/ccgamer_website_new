@@ -1,9 +1,13 @@
-import { ensureRole, startAccessMonitor } from './guard.js';
 import { fetchBackups, fetchFileIndex, fetchGamesJson, restoreBackup, saveGamesJson } from './games-api.js';
 import { validateGameRecord, validateGamesSchema } from './validator.js';
 import { initAdminNav } from './admin-nav.js';
 import { waitForAuthReady } from './auth.js';
 
+/**
+ * OMEGA Games Editor
+ * Deterministic boot: Auth -> Role -> Data -> UI -> Handlers -> Ready.
+ * All editor behaviour flows through runtimeState to avoid scattered flags.
+ */
 const KEY_ORDER = [
   'system', 'id', 'slug', 'title', 'sorttitle', 'year', 'genres', 'collections', 'videoid',
   'thumbnail', 'pdf', 'disk', 'lemon', 'description', 'ccg_rating', 'ccg_rating_reason',
@@ -16,8 +20,18 @@ const ALLOWED_GENRES = new Set([
   'shooting', 'sports', 'strategy'
 ]);
 
-const state = {
+const DRAFT_STORAGE_KEY = 'omegaGamesEditorDrafts';
+const HISTORY_LIMIT = 60;
+
+const runtimeState = {
+  user: null,
   role: null,
+  currentGame: null,
+  mode: 'view', // view | edit | draft | new
+  dirty: false,
+  valid: false,
+  errors: [],
+  slugLocked: false,
   games: [],
   filtered: [],
   page: 1,
@@ -26,13 +40,12 @@ const state = {
   selectedGlobalIndex: null,
   fileIndex: new Set(),
   rawBeforeEdit: '[]',
-  isCreatingNew: false,
-  editorState: {
-    mode: 'viewing',
-    dirty: false,
-    validated: false,
-    slugManual: false
-  }
+  history: [],
+  historyIndex: -1,
+  suppressHistory: false,
+  drafts: {},
+  bootStep: 'BOOT',
+  handlersBound: false
 };
 
 const el = {
@@ -57,11 +70,19 @@ const el = {
   formErrors: document.getElementById('recordFormErrors'),
   draftState: document.getElementById('recordDraftState'),
   saveRecord: document.getElementById('saveRecord'),
+  cancelEdit: document.getElementById('cancelEdit'),
   exportNote: document.querySelector('[data-export-note]'),
-  exportStatus: document.querySelector('[data-export-status-text]')
+  exportStatus: document.querySelector('[data-export-status-text]'),
+  bootOverlay: document.querySelector('[data-boot-overlay]'),
+  bootStep: document.querySelector('[data-boot-step]'),
+  appShell: document.querySelector('[data-admin-shell]'),
+  statusBar: document.querySelector('[data-editor-runtime]'),
+  saveIndicator: document.querySelector('[data-save-indicator]'),
+  recoveryList: document.getElementById('recoveryList')
 };
 
 function setStatus(message, kind = 'info') {
+  if (!el.status) return;
   el.status.textContent = message;
   el.status.dataset.state = kind;
 }
@@ -70,19 +91,74 @@ function setExportStatus(message) {
   if (el.exportStatus) el.exportStatus.textContent = message;
 }
 
+function setBootStep(stepLabel) {
+  runtimeState.bootStep = stepLabel;
+  if (el.bootStep) el.bootStep.textContent = stepLabel;
+  setStatus(`Boot: ${stepLabel}`);
+}
+
+function setOverlayVisible(isVisible) {
+  if (!el.bootOverlay) return;
+  el.bootOverlay.hidden = !isVisible;
+  el.appShell?.setAttribute('aria-busy', isVisible ? 'true' : 'false');
+}
+
+function roleRank(role) {
+  const map = { user: 0, member: 0, editor: 1, mod: 1, admin: 2, superadmin: 3 };
+  return map[String(role || '').toLowerCase()] ?? -1;
+}
+
+function setRuntimeState(patch = {}) {
+  Object.assign(runtimeState, patch);
+
+  const stateLabel = runtimeState.errors.length
+    ? 'Invalid'
+    : runtimeState.mode === 'draft'
+      ? 'Draft'
+      : runtimeState.dirty
+        ? 'Editing'
+        : 'Ready';
+
+  if (el.statusBar) {
+    el.statusBar.textContent = `State: ${stateLabel}`;
+    el.statusBar.dataset.state = stateLabel.toLowerCase();
+  }
+  if (el.saveIndicator) {
+    if (runtimeState.dirty) {
+      el.saveIndicator.textContent = 'Unsaved changes';
+    } else if (runtimeState.mode === 'draft') {
+      el.saveIndicator.textContent = 'Draft saved locally';
+    } else {
+      el.saveIndicator.textContent = 'All changes saved in session';
+    }
+  }
+
+  if (el.saveRecord) {
+    el.saveRecord.disabled = !runtimeState.dirty || runtimeState.errors.length > 0;
+  }
+
+  if (el.draftState) {
+    const show = runtimeState.mode === 'draft' || runtimeState.mode === 'new' || runtimeState.dirty;
+    el.draftState.hidden = !show;
+    el.draftState.textContent = runtimeState.valid ? 'Draft validated' : 'Draft has unsaved changes';
+  }
+}
+
 function slugify(text) {
   return String(text || '')
     .normalize('NFKD')
     .replace(/[\u0300-\u036f]/g, '')
-    .trim()
     .toLowerCase()
+    .trim()
+    .replace(/&/g, ' and ')
     .replace(/[^a-z0-9]+/g, '-')
+    .replace(/-{2,}/g, '-')
     .replace(/(^-|-$)/g, '');
 }
 
 function getUniqueSlug(baseSlug, originalSlug = '') {
   const normalizedBase = slugify(baseSlug || 'game');
-  const existingSlugs = new Set(state.games.map((g) => g.slug).filter(Boolean));
+  const existingSlugs = new Set(runtimeState.games.map((g) => g.slug).filter(Boolean));
   if (originalSlug) existingSlugs.delete(originalSlug);
 
   if (!existingSlugs.has(normalizedBase)) return normalizedBase;
@@ -103,29 +179,97 @@ function showInlineErrors(errors = []) {
     el.formErrors.innerHTML = '';
     return;
   }
-
   el.formErrors.hidden = false;
   el.formErrors.innerHTML = `<ul>${errors.map((msg) => `<li>${msg}</li>`).join('')}</ul>`;
 }
 
-function setEditorState(patch = {}) {
-  state.editorState = { ...state.editorState, ...patch };
+function recordKey(record = {}) {
+  return record.id || record.slug || crypto.randomUUID();
+}
 
-  const draftVisible = state.editorState.mode === 'draft' || state.editorState.dirty;
-  if (el.draftState) {
-    el.draftState.hidden = !draftVisible;
-    el.draftState.textContent = state.editorState.validated
-      ? 'Draft validated'
-      : 'Draft has unsaved changes';
-  }
-
-  if (el.saveRecord) {
-    el.saveRecord.disabled = !state.editorState.dirty;
+function readDraftStore() {
+  try {
+    const raw = localStorage.getItem(DRAFT_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
   }
 }
 
+function writeDraftStore() {
+  try {
+    localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(runtimeState.drafts));
+  } catch {
+    // Keep editor operable if storage quota is unavailable.
+  }
+}
+
+function refreshRecoveryPanel() {
+  if (!el.recoveryList) return;
+  const entries = Object.entries(runtimeState.drafts)
+    .sort((a, b) => Number(b[1]?.savedAtTs || 0) - Number(a[1]?.savedAtTs || 0));
+
+  if (!entries.length) {
+    el.recoveryList.innerHTML = '<li>No draft snapshots recorded.</li>';
+    return;
+  }
+
+  el.recoveryList.innerHTML = entries.slice(0, 12).map(([key, entry]) => {
+    const title = entry?.candidate?.title || '(Untitled draft)';
+    const when = entry?.savedAt || 'unknown time';
+    return `<li><strong>${title}</strong> · ${when}
+      <button class="ccg-btn ccg-btn--ghost" data-recover-draft="${key}" type="button">Recover</button>
+      <button class="ccg-btn ccg-btn--ghost" data-clear-draft="${key}" type="button">Clear</button>
+    </li>`;
+  }).join('');
+}
+
+function persistDraftSnapshot(candidate) {
+  const key = recordKey(candidate);
+  runtimeState.drafts[key] = {
+    candidate,
+    savedAt: new Date().toLocaleString(),
+    savedAtTs: Date.now()
+  };
+  writeDraftStore();
+  refreshRecoveryPanel();
+}
+
+function pushHistorySnapshot() {
+  if (runtimeState.suppressHistory) return;
+  const formData = Object.fromEntries(new FormData(el.form).entries());
+  const snapshot = JSON.stringify(formData);
+
+  if (runtimeState.history[runtimeState.historyIndex] === snapshot) return;
+
+  const next = runtimeState.history.slice(0, runtimeState.historyIndex + 1);
+  next.push(snapshot);
+  if (next.length > HISTORY_LIMIT) next.shift();
+  runtimeState.history = next;
+  runtimeState.historyIndex = runtimeState.history.length - 1;
+}
+
+function restoreHistory(direction) {
+  const targetIndex = runtimeState.historyIndex + direction;
+  if (targetIndex < 0 || targetIndex >= runtimeState.history.length) return;
+
+  runtimeState.historyIndex = targetIndex;
+  const snapshot = runtimeState.history[targetIndex];
+  const data = JSON.parse(snapshot);
+
+  runtimeState.suppressHistory = true;
+  Object.entries(data).forEach(([key, value]) => {
+    if (el.form[key]) el.form[key].value = value;
+  });
+  runtimeState.suppressHistory = false;
+
+  updatePreviewAndValidation();
+  setRuntimeState({ dirty: true, mode: 'edit' });
+}
+
 function downloadFile(name, content, type = 'text/plain') {
-  const blob = new Blob([content], { type });
+  const blob = content instanceof Blob ? content : new Blob([content], { type });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
@@ -153,7 +297,7 @@ function buildSitemap(games) {
 
 function nextGameId() {
   let max = 0;
-  state.games.forEach((game) => {
+  runtimeState.games.forEach((game) => {
     const n = Number(String(game.id || '').replace(/[^0-9]/g, ''));
     if (Number.isFinite(n) && n > max) max = n;
   });
@@ -208,9 +352,9 @@ function toSavedRecord(edited, original = {}) {
 }
 
 function renderFilters() {
-  const years = [...new Set(state.games.map((g) => g.year))].sort((a, b) => b - a);
-  const genres = [...new Set(state.games.flatMap((g) => g.genres || []))].sort();
-  const developers = [...new Set(state.games.map((g) => g.developer).filter(Boolean))].sort();
+  const years = [...new Set(runtimeState.games.map((g) => g.year))].sort((a, b) => b - a);
+  const genres = [...new Set(runtimeState.games.flatMap((g) => g.genres || []))].sort();
+  const developers = [...new Set(runtimeState.games.map((g) => g.developer).filter(Boolean))].sort();
 
   const fill = (select, values, allLabel) => {
     select.innerHTML = `<option value="">${allLabel}</option>${values.map((v) => `<option>${v}</option>`).join('')}`;
@@ -228,7 +372,7 @@ function applyFilters() {
   const developer = el.filterDeveloper.value;
   const rating = el.filterRating.value;
 
-  state.filtered = state.games.filter((game) => {
+  runtimeState.filtered = runtimeState.games.filter((game) => {
     const inSearch = !search || [game.title, game.slug, game.developer].join(' ').toLowerCase().includes(search);
     const inYear = !year || String(game.year) === year;
     const inGenre = !genre || (game.genres || []).includes(genre);
@@ -237,7 +381,7 @@ function applyFilters() {
     return inSearch && inYear && inGenre && inDeveloper && inRating;
   });
 
-  state.page = 1;
+  runtimeState.page = 1;
   renderPage();
 }
 
@@ -246,8 +390,8 @@ function rowTitle(game) {
 }
 
 function renderPage() {
-  const start = (state.page - 1) * state.pageSize;
-  const pageItems = state.filtered.slice(start, start + state.pageSize);
+  const start = (runtimeState.page - 1) * runtimeState.pageSize;
+  const pageItems = runtimeState.filtered.slice(start, start + runtimeState.pageSize);
 
   el.tableBody.innerHTML = pageItems.map((game, idx) => {
     const absoluteIndex = start + idx;
@@ -275,23 +419,127 @@ function renderPage() {
     </article>`;
   }).join('');
 
-  const totalPages = Math.max(1, Math.ceil(state.filtered.length / state.pageSize));
+  const totalPages = Math.max(1, Math.ceil(runtimeState.filtered.length / runtimeState.pageSize));
   el.pagination.innerHTML = `
-    <button class="ccg-btn ccg-btn--ghost" data-page="prev" type="button" ${state.page <= 1 ? 'disabled' : ''}>Prev</button>
-    <span>Page ${state.page} / ${totalPages}</span>
-    <button class="ccg-btn ccg-btn--ghost" data-page="next" type="button" ${state.page >= totalPages ? 'disabled' : ''}>Next</button>
+    <button class="ccg-btn ccg-btn--ghost" data-page="prev" type="button" ${runtimeState.page <= 1 ? 'disabled' : ''}>Prev</button>
+    <span>Page ${runtimeState.page} / ${totalPages}</span>
+    <button class="ccg-btn ccg-btn--ghost" data-page="next" type="button" ${runtimeState.page >= totalPages ? 'disabled' : ''}>Next</button>
   `;
 }
 
-function updateSlugFromTitle() {
-  if (state.editorState.slugManual) return;
-  const original = state.isCreatingNew ? {} : state.filtered[state.selectedIndex];
-  el.form.slug.value = getUniqueSlug(el.form.title.value, original.slug || '');
+function validateGenres(genres) {
+  return genres.filter((genre) => !ALLOWED_GENRES.has(String(genre).trim().toLowerCase()));
 }
 
-function openEditor(filteredIndex, creating = false) {
-  state.isCreatingNew = creating;
-  state.selectedIndex = filteredIndex;
+function validateCandidate(candidate, original) {
+  const slugSet = new Set(runtimeState.games.map((g) => g.slug));
+  const duplicateTitleYear = runtimeState.games.some((g) =>
+    g.title?.trim().toLowerCase() === candidate.title.trim().toLowerCase()
+      && Number(g.year) === Number(candidate.year)
+      && (!original.id || g.id !== original.id)
+  );
+
+  const result = validateGameRecord(candidate, {
+    slugSet,
+    originalSlug: original.slug,
+    fileIndex: runtimeState.fileIndex
+  });
+
+  const invalidGenres = validateGenres(candidate.genres || []);
+  if (invalidGenres.length > 0) {
+    result.valid = false;
+    result.errors.push(`Invalid genres: ${invalidGenres.join(', ')}`);
+  }
+
+  if (duplicateTitleYear) {
+    result.valid = false;
+    result.errors.push('Duplicate title + year detected.');
+  }
+
+  return result;
+}
+
+function updateSlugFromTitle() {
+  if (runtimeState.slugLocked) return;
+  const original = runtimeState.mode === 'new' ? {} : runtimeState.filtered[runtimeState.selectedIndex];
+  el.form.slug.value = getUniqueSlug(el.form.title.value, original?.slug || '');
+}
+
+function sanitizeAndSortGames(games) {
+  return [...games]
+    .map((game) => {
+      const { _ccg_draft, ...rest } = game;
+      return rest;
+    })
+    .sort((a, b) => {
+      const sortA = String(a.sorttitle || a.title || '').toLowerCase();
+      const sortB = String(b.sorttitle || b.title || '').toLowerCase();
+      return sortA.localeCompare(sortB) || Number(a.year || 0) - Number(b.year || 0);
+    });
+}
+
+function validateAllGames() {
+  const errors = [];
+  const slugSeen = new Set();
+
+  runtimeState.games.forEach((game, index) => {
+    const duplicateSlug = slugSeen.has(game.slug);
+    slugSeen.add(game.slug);
+
+    const result = validateGameRecord(game, {
+      slugSet: slugSeen,
+      originalSlug: game.slug,
+      fileIndex: runtimeState.fileIndex
+    });
+
+    const invalidGenres = validateGenres(game.genres || []);
+    if (invalidGenres.length > 0) {
+      result.valid = false;
+      result.errors.push(`Invalid genres: ${invalidGenres.join(', ')}`);
+    }
+
+    if (duplicateSlug) result.errors.push(`Record ${index + 1}: duplicate slug ${game.slug}`);
+    if (!result.valid) errors.push(...result.errors.map((error) => `#${index + 1} ${error}`));
+  });
+
+  const schema = validateGamesSchema(sanitizeAndSortGames(runtimeState.games));
+  if (!schema.valid) errors.push(...schema.errors);
+
+  if (errors.length > 0) {
+    setStatus(`Validation failed (${errors.length}): ${errors.slice(0, 3).join(' | ')}`, 'error');
+    setRuntimeState({ valid: false, errors });
+    return false;
+  }
+
+  setRuntimeState({ valid: true, errors: [] });
+  setStatus('Validation complete: schema and duplicate checks passed.', 'success');
+  return true;
+}
+
+function updatePreviewAndValidation() {
+  const original = runtimeState.mode === 'new' ? {} : runtimeState.filtered[runtimeState.selectedIndex] || {};
+  const formData = Object.fromEntries(new FormData(el.form).entries());
+
+  if (!runtimeState.slugLocked || !formData.slug) {
+    formData.slug = getUniqueSlug(formData.title, original.slug || '');
+    if (el.form.slug.value !== formData.slug) el.form.slug.value = formData.slug;
+  }
+
+  formData.slug = slugify(formData.slug || formData.title);
+  formData.genres = (formData.genres || '').split(',').map((v) => v.trim()).filter(Boolean).join(', ');
+
+  const candidate = toSavedRecord(formData, original);
+  const validation = validateCandidate(candidate, original);
+
+  runtimeState.currentGame = candidate;
+  showInlineErrors(validation.errors);
+  setRuntimeState({ valid: validation.valid, errors: validation.errors });
+  el.preview.textContent = JSON.stringify(candidate, null, 2);
+}
+
+function openEditor(filteredIndex, creating = false, recoveredDraft = null) {
+  runtimeState.selectedIndex = filteredIndex;
+  runtimeState.selectedGlobalIndex = null;
 
   let record = {};
   if (creating) {
@@ -300,10 +548,33 @@ function openEditor(filteredIndex, creating = false) {
       ccg_rating: '', ccg_rating_reason: '', videoid: '', thumbnails: '', box_3d: '',
       pdf: '', disk: '', lemon64: '', lemonamiga: ''
     };
-    state.selectedGlobalIndex = null;
+    setRuntimeState({ mode: 'new', slugLocked: false });
   } else {
-    record = normRecord(state.filtered[filteredIndex]);
-    state.selectedGlobalIndex = state.games.indexOf(state.filtered[filteredIndex]);
+    record = normRecord(runtimeState.filtered[filteredIndex]);
+    runtimeState.selectedGlobalIndex = runtimeState.games.indexOf(runtimeState.filtered[filteredIndex]);
+    setRuntimeState({ mode: 'edit', slugLocked: Boolean(record.slug) && !runtimeState.filtered[filteredIndex]._ccg_draft });
+  }
+
+  if (recoveredDraft) {
+    record = {
+      ...record,
+      title: recoveredDraft.title || record.title,
+      slug: recoveredDraft.slug || record.slug,
+      system: recoveredDraft.system || record.system,
+      year: recoveredDraft.year || record.year,
+      genres: Array.isArray(recoveredDraft.genres) ? recoveredDraft.genres.join(', ') : (record.genres || ''),
+      developer: recoveredDraft.developer || record.developer,
+      publisher: recoveredDraft.credits?.publisher?.[0] || record.publisher,
+      ccg_rating: recoveredDraft.ccg_rating || record.ccg_rating,
+      ccg_rating_reason: recoveredDraft.ccg_rating_reason || record.ccg_rating_reason,
+      videoid: recoveredDraft.videoid || record.videoid,
+      thumbnails: recoveredDraft.thumbnail || record.thumbnails,
+      pdf: recoveredDraft.pdf || record.pdf,
+      disk: Array.isArray(recoveredDraft.disk) ? recoveredDraft.disk.join(', ') : (record.disk || ''),
+      lemon64: Array.isArray(recoveredDraft.lemon) ? recoveredDraft.lemon[0] || '' : (record.lemon64 || ''),
+      lemonamiga: Array.isArray(recoveredDraft.lemon) ? recoveredDraft.lemon[1] || '' : (record.lemonamiga || '')
+    };
+    setRuntimeState({ mode: 'draft', slugLocked: Boolean(recoveredDraft.slug) });
   }
 
   Object.entries(record).forEach(([key, value]) => {
@@ -313,23 +584,12 @@ function openEditor(filteredIndex, creating = false) {
     }
   });
 
-  state.editorState = {
-    mode: creating ? 'draft' : 'editing',
-    dirty: false,
-    validated: false,
-    slugManual: false
-  };
-  showInlineErrors([]);
-  setEditorState();
-  updatePreview();
+  runtimeState.history = [];
+  runtimeState.historyIndex = -1;
+  setRuntimeState({ dirty: false, valid: false, errors: [] });
+  pushHistorySnapshot();
+  updatePreviewAndValidation();
   el.modal.showModal();
-}
-
-function updatePreview() {
-  const formData = Object.fromEntries(new FormData(el.form).entries());
-  const base = state.isCreatingNew ? {} : state.filtered[state.selectedIndex];
-  const candidate = toSavedRecord(formData, base);
-  el.preview.textContent = JSON.stringify(candidate, null, 2);
 }
 
 function makeDiff(before, after) {
@@ -351,99 +611,13 @@ async function refreshBackups() {
   el.backupList.innerHTML = backups.map((b) => `<li>${b.created_at} — ${b.commit_message} <button class="ccg-btn ccg-btn--ghost" data-restore="${b.id}" type="button">Restore</button></li>`).join('');
 }
 
-function validateGenres(genres) {
-  const invalid = genres.filter((genre) => !ALLOWED_GENRES.has(String(genre).trim().toLowerCase()));
-  return invalid;
-}
-
-function validateCandidate(candidate, original) {
-  const slugSet = new Set(state.games.map((g) => g.slug));
-  const duplicateTitleYear = state.games.some((g) =>
-    g.title?.trim().toLowerCase() === candidate.title.trim().toLowerCase()
-      && Number(g.year) === Number(candidate.year)
-      && (!original.id || g.id !== original.id)
-  );
-
-  const result = validateGameRecord(candidate, {
-    slugSet,
-    originalSlug: original.slug,
-    fileIndex: state.fileIndex
-  });
-
-  const invalidGenres = validateGenres(candidate.genres || []);
-  if (invalidGenres.length > 0) {
-    result.valid = false;
-    result.errors.push(`Invalid genres: ${invalidGenres.join(', ')}`);
-  }
-
-  if (duplicateTitleYear) {
-    result.valid = false;
-    result.errors.push('Duplicate title + year detected.');
-  }
-
-  return result;
-}
-
-function sanitizeAndSortGames(games) {
-  return [...games]
-    .map((game) => {
-      const { _ccg_draft, ...rest } = game;
-      return rest;
-    })
-    .sort((a, b) => {
-      const sortA = String(a.sorttitle || a.title || '').toLowerCase();
-      const sortB = String(b.sorttitle || b.title || '').toLowerCase();
-      return sortA.localeCompare(sortB) || Number(a.year || 0) - Number(b.year || 0);
-    });
-}
-
-function validateAllGames() {
-  const errors = [];
-  const slugSeen = new Set();
-
-  state.games.forEach((game, index) => {
-    const duplicateSlug = slugSeen.has(game.slug);
-    slugSeen.add(game.slug);
-
-    const result = validateGameRecord(game, {
-      slugSet: slugSeen,
-      originalSlug: game.slug,
-      fileIndex: state.fileIndex
-    });
-
-    const invalidGenres = validateGenres(game.genres || []);
-    if (invalidGenres.length > 0) {
-      result.valid = false;
-      result.errors.push(`Invalid genres: ${invalidGenres.join(', ')}`);
-    }
-
-    if (duplicateSlug) result.errors.push(`Record ${index + 1}: duplicate slug ${game.slug}`);
-    if (!result.valid) errors.push(...result.errors.map((error) => `#${index + 1} ${error}`));
-  });
-
-  const schema = validateGamesSchema(sanitizeAndSortGames(state.games));
-  if (!schema.valid) errors.push(...schema.errors);
-
-  if (errors.length > 0) {
-    setStatus(`Validation failed (${errors.length}): ${errors.slice(0, 4).join(' | ')}`, 'error');
-    return false;
-  }
-
-  setStatus('Validation complete: schema and duplicate checks passed.', 'success');
-  return true;
-}
-
 async function downloadSeoStubBundle() {
   if (!window.JSZip) {
     setStatus('JSZip missing. Cannot generate SEO stub bundle.', 'error');
     return;
   }
-
   const zip = new window.JSZip();
-  state.games.filter((g) => g.slug).forEach((game) => {
-    zip.file(`${game.slug}.html`, buildSeoStubHtml(game));
-  });
-
+  runtimeState.games.filter((g) => g.slug).forEach((game) => zip.file(`${game.slug}.html`, buildSeoStubHtml(game)));
   const blob = await zip.generateAsync({ type: 'blob' });
   downloadFile('ccg-seo-stubs.zip', blob, 'application/zip');
   setExportStatus('SEO stubs bundle downloaded.');
@@ -454,22 +628,18 @@ async function downloadFullPackage() {
     setStatus('JSZip missing. Cannot generate full package.', 'error');
     return;
   }
-
   if (!validateAllGames()) {
     setExportStatus('Export blocked until validation passes.');
     return;
   }
 
-  const payload = sanitizeAndSortGames(state.games);
-
+  const payload = sanitizeAndSortGames(runtimeState.games);
   const zip = new window.JSZip();
   zip.file('games.json', `${JSON.stringify(payload, null, 2)}\n`);
   zip.file('sitemap.xml', buildSitemap(payload));
 
   const stubFolder = zip.folder('seo-stubs');
-  payload.filter((g) => g.slug).forEach((game) => {
-    stubFolder.file(`${game.slug}.html`, buildSeoStubHtml(game));
-  });
+  payload.filter((g) => g.slug).forEach((game) => stubFolder.file(`${game.slug}.html`, buildSeoStubHtml(game)));
 
   const blob = await zip.generateAsync({ type: 'blob' });
   downloadFile('ccg-export-package.zip', blob, 'application/zip');
@@ -491,19 +661,27 @@ async function exportGamesJson() {
     return;
   }
 
-  const payload = sanitizeAndSortGames(state.games);
-  const now = new Date().toISOString().replace(/[:.]/g, '-');
-  const message = `admin(games-editor): update games.json ${now}`;
+  const payload = sanitizeAndSortGames(runtimeState.games);
+  const after = JSON.stringify(payload, null, 2);
+  makeDiff(runtimeState.rawBeforeEdit, after);
 
+  const versionStamp = new Date().toISOString();
+  const confirmExport = window.confirm(`Export ${payload.length} records with version ${versionStamp}? A local backup will be created first.`);
+  if (!confirmExport) {
+    setExportStatus('Export cancelled by user.');
+    return;
+  }
+
+  const message = `admin(games-editor): update games.json ${versionStamp}`;
   try {
-    await saveGamesJson({ games: payload, message, role: state.role });
-    const exportStamp = new Date().toLocaleString();
-    localStorage.setItem('omegaAdminLastExportTime', exportStamp);
-    setStatus('Downloaded games.json. Replace /games/games.json in repo and commit/push.', 'success');
-    setExportStatus(`games.json exported at ${exportStamp}.`);
+    await saveGamesJson({ games: payload, message, role: runtimeState.role });
+    localStorage.setItem('omegaAdminLastExportVersion', versionStamp);
+    localStorage.setItem('omegaAdminLastExportTime', new Date().toLocaleString());
+    setStatus('Downloaded games.json and versioned backup snapshot.', 'success');
+    setExportStatus(`games.json exported. version=${versionStamp}`);
     if (el.exportNote) el.exportNote.hidden = false;
-    state.games = state.games.map((game) => ({ ...game, _ccg_draft: false }));
-    state.rawBeforeEdit = JSON.stringify(payload, null, 2);
+    runtimeState.games = runtimeState.games.map((game) => ({ ...game, _ccg_draft: false }));
+    runtimeState.rawBeforeEdit = after;
     renderPage();
     await refreshBackups();
   } catch (error) {
@@ -511,161 +689,225 @@ async function exportGamesJson() {
   }
 }
 
-async function bootstrap() {
-  await waitForAuthReady();
-
-  const result = await ensureRole(['superadmin', 'admin', 'editor']);
-  if (!result) return;
-
-  state.role = result.role;
-  el.role.textContent = result.role;
-  el.email.textContent = result.session.user?.email || 'unknown';
-
-  const [{ games }, { files }] = await Promise.all([fetchGamesJson(), fetchFileIndex()]);
-  state.games = games;
-  state.rawBeforeEdit = JSON.stringify(games, null, 2);
-  state.fileIndex = new Set(files || []);
-  localStorage.setItem('omegaAdminLastLoadSuccess', new Date().toLocaleString());
-
-  renderFilters();
-  applyFilters();
-  await refreshBackups();
-  setStatus(`Loaded ${state.games.length} games.`, 'success');
-}
-
-document.querySelectorAll('[data-view]').forEach((button) => {
-  button.addEventListener('click', () => {
-    const isCard = button.dataset.view === 'card';
-    document.getElementById('tableView').hidden = isCard;
-    document.getElementById('cardView').hidden = !isCard;
-  });
-});
-
-[el.search, el.filterYear, el.filterGenre, el.filterDeveloper, el.filterRating].forEach((input) => {
-  input.addEventListener('input', applyFilters);
-  input.addEventListener('change', applyFilters);
-});
-
-document.addEventListener('click', async (event) => {
-  const edit = event.target.closest('[data-edit-index]');
-  if (edit) openEditor(Number(edit.dataset.editIndex));
-
-  const page = event.target.closest('[data-page]');
-  if (page) {
-    state.page += page.dataset.page === 'next' ? 1 : -1;
-    renderPage();
-  }
-
-  const restore = event.target.closest('[data-restore]');
-  if (restore && state.role === 'superadmin') {
-    await restoreBackup(restore.dataset.restore);
-    setStatus('Backup exported for restore.', 'success');
-  }
-});
-
-document.getElementById('addGame').addEventListener('click', () => openEditor(-1, true));
-document.getElementById('validateLibrary').addEventListener('click', validateAllGames);
-
-el.form.title.addEventListener('input', () => {
-  updateSlugFromTitle();
-  setEditorState({ dirty: true, validated: false, mode: 'draft' });
-  updatePreview();
-});
-el.form.title.addEventListener('paste', () => {
-  window.setTimeout(() => {
-    updateSlugFromTitle();
-    setEditorState({ dirty: true, validated: false, mode: 'draft' });
-    updatePreview();
-  }, 0);
-});
-
-el.form.slug.addEventListener('input', () => {
-  const normalized = slugify(el.form.slug.value);
-  state.editorState.slugManual = normalized.length > 0;
-  el.form.slug.value = normalized;
-  setEditorState({ dirty: true, validated: false, mode: 'draft' });
-  updatePreview();
-});
-el.form.slug.addEventListener('paste', () => {
-  window.setTimeout(() => {
-    const normalized = slugify(el.form.slug.value);
-    state.editorState.slugManual = normalized.length > 0;
-    el.form.slug.value = normalized;
-    setEditorState({ dirty: true, validated: false, mode: 'draft' });
-    updatePreview();
-  }, 0);
-});
-
-el.form.addEventListener('input', () => {
-  setEditorState({ dirty: true, validated: false, mode: 'draft' });
-  updatePreview();
-});
-
-document.getElementById('cancelEdit').addEventListener('click', () => {
-  setEditorState({ mode: 'viewing', dirty: false, validated: false, slugManual: false });
+function closeEditor() {
+  setRuntimeState({ mode: 'view', dirty: false, valid: false, errors: [] });
   showInlineErrors([]);
   el.modal.close();
-});
+}
 
-document.getElementById('saveRecord').addEventListener('click', () => {
-  const original = state.isCreatingNew ? {} : state.filtered[state.selectedIndex];
-  const formData = Object.fromEntries(new FormData(el.form).entries());
+function saveCurrentDraft() {
+  updatePreviewAndValidation();
+  const candidate = runtimeState.currentGame;
+  if (!candidate) return;
 
-  if (!state.editorState.slugManual || !formData.slug?.trim()) {
-    formData.slug = getUniqueSlug(formData.title, original.slug || '');
-  }
-
-  formData.slug = slugify(formData.slug || formData.title);
-  formData.genres = (formData.genres || '').split(',').map((v) => v.trim()).filter(Boolean).join(', ');
-
-  const candidate = toSavedRecord(formData, original);
-  const result = validateCandidate(candidate, original);
-
-  if (!result.valid) {
-    showInlineErrors(result.errors);
-    setStatus(result.errors.join(' | '), 'error');
-    setEditorState({ validated: false });
-    return;
-  }
-
-  showInlineErrors([]);
   candidate._ccg_draft = true;
-  if (state.isCreatingNew) {
-    state.games.unshift(candidate);
+  persistDraftSnapshot(candidate);
+
+  if (runtimeState.mode === 'new') {
+    runtimeState.games.unshift(candidate);
     setStatus('New draft game added in memory. Export when ready.', 'success');
-  } else {
-    state.games[state.selectedGlobalIndex] = { ...candidate, _ccg_draft: true };
+  } else if (runtimeState.selectedGlobalIndex != null) {
+    runtimeState.games[runtimeState.selectedGlobalIndex] = { ...candidate, _ccg_draft: true };
     setStatus('Draft updated.', 'success');
   }
 
-  setEditorState({ mode: 'editing', dirty: false, validated: true });
+  setRuntimeState({ mode: 'draft', dirty: false, valid: true, errors: [], slugLocked: true });
   renderFilters();
   applyFilters();
   el.modal.close();
-});
-
-document.getElementById('showDiff').addEventListener('click', () => {
-  const after = JSON.stringify(state.games, null, 2);
-  el.diffBefore.value = state.rawBeforeEdit;
-  el.diffAfter.value = after;
-  makeDiff(state.rawBeforeEdit, after);
-});
-
-document.getElementById('saveAll').addEventListener('click', exportGamesJson);
-document.getElementById('downloadGamesJson').addEventListener('click', exportGamesJson);
-document.getElementById('downloadStubBundle').addEventListener('click', () => { void downloadSeoStubBundle(); });
-document.getElementById('downloadFullPackage').addEventListener('click', () => { void downloadFullPackage(); });
-document.getElementById('copyNodeSteps').addEventListener('click', copyNodeInstructions);
-
-startAccessMonitor();
-initAdminNav({ pageLabel: 'Games Editor', active: 'editor' });
-
-let bootstrapped = false;
-function safeBootstrap() {
-  if (bootstrapped) return;
-  bootstrapped = true;
-  void bootstrap().catch((error) => setStatus(error.message, 'error'));
 }
 
-window.addEventListener('ccg:auth-ready', safeBootstrap, { once: true });
-void waitForAuthReady().then(safeBootstrap).catch((error) => setStatus(error.message, 'error'));
+function bindHandlers() {
+  if (runtimeState.handlersBound) return;
+  runtimeState.handlersBound = true;
+
+  document.querySelectorAll('[data-view]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const isCard = button.dataset.view === 'card';
+      document.getElementById('tableView').hidden = isCard;
+      document.getElementById('cardView').hidden = !isCard;
+    });
+  });
+
+  [el.search, el.filterYear, el.filterGenre, el.filterDeveloper, el.filterRating].forEach((input) => {
+    input.addEventListener('input', applyFilters);
+    input.addEventListener('change', applyFilters);
+  });
+
+  document.addEventListener('click', async (event) => {
+    const edit = event.target.closest('[data-edit-index]');
+    if (edit) openEditor(Number(edit.dataset.editIndex));
+
+    const page = event.target.closest('[data-page]');
+    if (page) {
+      runtimeState.page += page.dataset.page === 'next' ? 1 : -1;
+      renderPage();
+    }
+
+    const restore = event.target.closest('[data-restore]');
+    if (restore && roleRank(runtimeState.role) >= roleRank('admin')) {
+      await restoreBackup(restore.dataset.restore);
+      setStatus('Backup exported for restore.', 'success');
+    }
+
+    const recover = event.target.closest('[data-recover-draft]');
+    if (recover) {
+      const draft = runtimeState.drafts[recover.dataset.recoverDraft]?.candidate;
+      if (draft) {
+        openEditor(-1, true, draft);
+        setStatus('Recovered draft loaded in editor.', 'success');
+      }
+    }
+
+    const clearDraft = event.target.closest('[data-clear-draft]');
+    if (clearDraft) {
+      delete runtimeState.drafts[clearDraft.dataset.clearDraft];
+      writeDraftStore();
+      refreshRecoveryPanel();
+    }
+  });
+
+  document.getElementById('addGame').addEventListener('click', () => openEditor(-1, true));
+  document.getElementById('validateLibrary').addEventListener('click', validateAllGames);
+
+  el.form.addEventListener('input', (event) => {
+    if (event.target.name === 'title') updateSlugFromTitle();
+    if (event.target.name === 'slug') {
+      el.form.slug.value = slugify(el.form.slug.value);
+      runtimeState.slugLocked = el.form.slug.value.length > 0;
+    }
+    setRuntimeState({ dirty: true, mode: runtimeState.mode === 'new' ? 'new' : 'edit' });
+    pushHistorySnapshot();
+    updatePreviewAndValidation();
+  });
+
+  el.cancelEdit.addEventListener('click', closeEditor);
+  el.saveRecord.addEventListener('click', saveCurrentDraft);
+
+  document.getElementById('showDiff').addEventListener('click', () => {
+    const after = JSON.stringify(runtimeState.games, null, 2);
+    el.diffBefore.value = runtimeState.rawBeforeEdit;
+    el.diffAfter.value = after;
+    makeDiff(runtimeState.rawBeforeEdit, after);
+  });
+
+  document.getElementById('saveAll').addEventListener('click', exportGamesJson);
+  document.getElementById('downloadGamesJson').addEventListener('click', exportGamesJson);
+  document.getElementById('downloadStubBundle').addEventListener('click', () => { void downloadSeoStubBundle(); });
+  document.getElementById('downloadFullPackage').addEventListener('click', () => { void downloadFullPackage(); });
+  document.getElementById('copyNodeSteps').addEventListener('click', copyNodeInstructions);
+
+  document.addEventListener('keydown', (event) => {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
+      event.preventDefault();
+      if (el.modal.open) {
+        saveCurrentDraft();
+      } else {
+        void exportGamesJson();
+      }
+    }
+
+    if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.key.toLowerCase() === 'z' && el.modal.open) {
+      event.preventDefault();
+      restoreHistory(-1);
+    }
+
+    if (((event.ctrlKey || event.metaKey) && event.shiftKey && event.key.toLowerCase() === 'z') && el.modal.open) {
+      event.preventDefault();
+      restoreHistory(1);
+    }
+  });
+}
+
+async function enableEditor(context) {
+  setBootStep('Data Loaded');
+  const gamesResult = await fetchGamesJson();
+  const fileResult = await fetchFileIndex();
+  runtimeState.games = gamesResult.games;
+  runtimeState.rawBeforeEdit = JSON.stringify(gamesResult.games, null, 2);
+  runtimeState.fileIndex = new Set(fileResult.files || []);
+  runtimeState.drafts = readDraftStore();
+  setRuntimeState({ user: context.user || null, role: String(context.role || '').toLowerCase() });
+  el.role.textContent = String(context.role || 'superadmin').toLowerCase();
+  el.email.textContent = context.user?.email || 'unknown';
+
+  setBootStep('UI Enabled');
+  renderFilters();
+  applyFilters();
+  refreshRecoveryPanel();
+  await refreshBackups();
+
+  setBootStep('Handlers Bound');
+  bindHandlers();
+
+  setBootStep('Ready');
+  setRuntimeState({ mode: 'view', dirty: false, valid: true, errors: [] });
+  setStatus(`Loaded ${runtimeState.games.length} games.`, 'success');
+  setOverlayVisible(false);
+}
+
+function showLogin() {
+  setBootStep('Login Required');
+  if (el.bootStep) el.bootStep.textContent = 'Login required';
+  setStatus('Login required to use the admin editor.', 'error');
+  setOverlayVisible(true);
+}
+
+function showForbidden() {
+  setBootStep('Forbidden');
+  if (el.bootStep) el.bootStep.textContent = 'Forbidden';
+  setStatus('Forbidden: superadmin access required.', 'error');
+  setOverlayVisible(true);
+}
+
+async function initAdmin() {
+  try {
+    if (!window.ccgSupabase?.getCurrentUserContext) {
+      throw new Error('Auth context provider unavailable.');
+    }
+
+    setBootStep('Role Verified');
+    const ctx = await window.ccgSupabase.getCurrentUserContext();
+
+    if (!ctx?.isAuthenticated) {
+      showLogin();
+      return;
+    }
+
+    if (String(ctx.role || '').toLowerCase() !== 'superadmin') {
+      showForbidden();
+      return;
+    }
+
+    await enableEditor(ctx);
+  } catch (error) {
+    setOverlayVisible(true);
+    setStatus(error.message || 'Admin initialisation failed.', 'error');
+  }
+}
+
+function start() {
+  initAdminNav({ pageLabel: 'Games Editor', active: 'editor' });
+  setOverlayVisible(true);
+  setBootStep('Loading admin…');
+
+  const onAuthReady = () => {
+    setBootStep('Auth Ready');
+    void initAdmin();
+  };
+
+  // Required listener pattern for deferred checks.
+  document.addEventListener('ccg:auth-ready', onAuthReady, { once: true });
+  // Compatibility: global auth emits on window in this codebase.
+  window.addEventListener('ccg:auth-ready', onAuthReady, { once: true });
+  window.addEventListener('ccg:auth-changed', () => { void initAdmin(); });
+
+  void waitForAuthReady().then(() => {
+    // If auth was already ready before listeners attached, run now.
+    void initAdmin();
+  }).catch((error) => {
+    setStatus(error.message, 'error');
+  });
+}
+
+start();
