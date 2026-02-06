@@ -13,6 +13,7 @@
   const isSpaceKey = (event) => event.key === ' ' || event.code === 'Space' || event.keyCode === 32;
 
   const allowSpaceInEditable = (event) => {
+    if (event.target.closest('input, textarea, [contenteditable]')) return;
     if (!isSpaceKey(event)) return;
     if (!isEditableTarget(event.target)) return;
     event.stopPropagation();
