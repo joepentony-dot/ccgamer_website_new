@@ -1063,6 +1063,28 @@ function renderGame(game) {
         hasRelated,
         hasRating
     });
+
+    if (typeof document !== "undefined" && document.body) {
+        const slug = String(game?.slug || "").trim();
+        if (slug) {
+            document.body.setAttribute("data-game-slug", slug);
+        }
+        const gameId = String(game?.id || "").trim();
+        if (gameId) {
+            document.body.setAttribute("data-game-id", gameId);
+        }
+    }
+
+    if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("ccg:game-loaded", {
+            detail: {
+                game: game || null,
+                gameId: game?.id || null,
+                gameSlug: game?.slug || null,
+                title: game?.title || null
+            }
+        }));
+    }
 }
 
 function renderGameRating(game) {

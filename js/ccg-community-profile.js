@@ -5,10 +5,9 @@
   }
 
   async function loadViewerContext() {
-    await window.ccgSupabase.waitForAuth();
-    const authUser = window.ccgCommunityAuth.getUser();
+    const context = await window.ccgSupabase.getCurrentUserContext();
     const profile = window.ccgCommunityAuth.getProfile();
-    return { authUser: authUser, authProfile: profile };
+    return { authUser: context.user, authProfile: profile, permissions: context.permissions };
   }
 
   async function fetchPublicProfile(supabase, userRef) {
@@ -39,10 +38,9 @@
       return;
     }
 
-    await window.ccgSupabase.waitForAuth();
+    const context = await loadViewerContext();
     const supabase = await window.ccgSupabase.getClient();
     const queryUser = getQueryParam('u');
-    const context = await loadViewerContext();
 
     let targetProfile = null;
     if (queryUser) {
@@ -99,7 +97,7 @@
       '<section class="ccg-community-card"><h2>Badges</h2>' +
       window.ccgCommunityBadges.renderBadges(badges, { emptyText: 'No badges yet. Rate and comment to earn your first badges.' }) +
       '</section>' +
-      '<section class="ccg-community-card" id="ccg-moderation-panel"' + (window.ccgCommunityAuth.isAdminOrMod() ? '' : ' hidden') + '><h2>Moderation</h2><div id="ccg-report-list"></div></section>';
+      '<section class="ccg-community-card" id="ccg-moderation-panel"' + (context.permissions.canModerate ? '' : ' hidden') + '><h2>Moderation</h2><div id="ccg-report-list"></div></section>';
 
     if (isOwnProfile) {
       document.getElementById('ccg-community-logout').addEventListener('click', function () {
@@ -123,7 +121,7 @@
       });
     }
 
-    if (window.ccgCommunityAuth.isAdminOrMod()) {
+    if (context.permissions.canModerate) {
       const { data: reports } = await supabase
         .from('comment_reports')
         .select('id,reason,created_at,comment_id,game_comments(content,game_slug,is_deleted)')
@@ -156,4 +154,5 @@
 
   document.addEventListener('DOMContentLoaded', loadProfilePage);
   window.addEventListener('ccg:auth-ready', loadProfilePage);
+  window.addEventListener('ccg:auth-changed', loadProfilePage);
 })();

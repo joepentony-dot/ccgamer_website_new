@@ -3,17 +3,9 @@
     initialized: false,
     currentUser: null,
     currentProfile: null,
-    modal: null
+    modal: null,
+    refreshPromise: null
   };
-
-  function emitAuthChanged() {
-    window.dispatchEvent(new CustomEvent('ccg:auth-changed', {
-      detail: {
-        user: state.currentUser,
-        profile: state.currentProfile
-      }
-    }));
-  }
 
   function esc(str) {
     return String(str || '').replace(/[&<>"']/g, function (c) {
@@ -47,7 +39,7 @@
   async function safeGetClient() {
     try {
       return await window.ccgSupabase.getClient();
-    } catch (error) {
+    } catch (_error) {
       setMessage(communityUnavailableMessage(), 'error');
       return null;
     }
@@ -129,10 +121,11 @@
       const password = String(formData.get('password') || '');
       const supabase = await safeGetClient();
       if (!supabase) return;
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) return setMessage(error.message, 'error');
+      const result = await supabase.auth.signInWithPassword({ email, password });
+      if (result.error) return setMessage(result.error.message, 'error');
       setMessage('Welcome back!', 'success');
       closeModal();
+      await refreshCurrentUser();
     });
 
     const signupForm = wrap.querySelector('#ccg-signup-form');
@@ -144,8 +137,8 @@
       const password = String(formData.get('password') || '');
       const supabase = await safeGetClient();
       if (!supabase) return;
-      const { error } = await supabase.auth.signUp({ email, password });
-      if (error) return setMessage(error.message, 'error');
+      const result = await supabase.auth.signUp({ email, password });
+      if (result.error) return setMessage(result.error.message, 'error');
       setMessage('Account created. Check your email if confirmation is enabled.', 'success');
       toggleView('signin');
     });
@@ -162,11 +155,7 @@
 
       const { error } = await supabase
         .from('profiles')
-        .upsert({
-          id: state.currentUser.id,
-          username,
-          avatar_url: null
-        }, { onConflict: 'id' });
+        .upsert({ id: state.currentUser.id, username, avatar_url: null }, { onConflict: 'id' });
 
       if (error) {
         if (isCommunityUnavailableError(error)) return setMessage(communityUnavailableMessage(), 'error');
@@ -204,28 +193,26 @@
       openModal('username');
       setMessage('Welcome! Please choose your public username.');
     }
-    emitAuthChanged();
     return profile;
   }
 
   async function refreshCurrentUser() {
-    const supabase = await safeGetClient();
-    if (!supabase) {
-      state.currentUser = null;
-      state.currentProfile = null;
-      emitAuthChanged();
-      return;
-    }
+    if (state.refreshPromise) return state.refreshPromise;
 
-    const { data } = await supabase.auth.getUser();
-    state.currentUser = data && data.user ? data.user : null;
+    state.refreshPromise = (async function () {
+      const context = await window.ccgSupabase.getCurrentUserContext();
+      state.currentUser = context.user || null;
 
-    if (state.currentUser) {
-      await ensureProfile();
-    } else {
-      state.currentProfile = null;
-      emitAuthChanged();
-    }
+      if (state.currentUser) {
+        await ensureProfile();
+      } else {
+        state.currentProfile = null;
+      }
+    })().finally(function () {
+      state.refreshPromise = null;
+    });
+
+    return state.refreshPromise;
   }
 
   async function initAuth() {
@@ -239,15 +226,8 @@
       return;
     }
 
-    const supabase = await safeGetClient();
-    if (!supabase) return;
-
     await window.ccgSupabase.waitForAuth();
     await refreshCurrentUser();
-
-    supabase.auth.onAuthStateChange(async function () {
-      await refreshCurrentUser();
-    });
   }
 
   async function requireAuth() {
@@ -289,4 +269,7 @@
       setMessage(communityUnavailableMessage(), 'error');
     });
   });
+
+  window.addEventListener('ccg:auth-ready', refreshCurrentUser);
+  window.addEventListener('ccg:auth-changed', refreshCurrentUser);
 })();
