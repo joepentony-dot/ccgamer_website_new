@@ -63,6 +63,14 @@
         return Boolean(QUIZ_COARSE_QUERY?.matches || window.innerWidth <= 820);
     }
 
+    function CCG_isTypingTarget(e) {
+        const el = e.target;
+        if (!el) return false;
+        if (el.isContentEditable) return true;
+        const tag = el.tagName?.toLowerCase();
+        return tag === "input" || tag === "textarea" || tag === "select";
+    }
+
     // --------------------------------------------------
     // UTILITIES
     // --------------------------------------------------
@@ -149,7 +157,10 @@
         // Mobile-only cue: temporary vignette + glow to show quiz focus.
         document.body.classList.add(QUIZ_FOCUS_PULSE_CLASS);
 
-        const onInteract = () => clearQuizFocusPulse();
+        const onInteract = (event) => {
+            if (CCG_isTypingTarget(event)) return;
+            clearQuizFocusPulse();
+        };
         window.addEventListener("scroll", onInteract, { passive: true, once: true });
         window.addEventListener("touchstart", onInteract, { passive: true, once: true });
         window.addEventListener("pointerdown", onInteract, { passive: true, once: true });

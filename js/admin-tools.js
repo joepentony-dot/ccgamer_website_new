@@ -12,6 +12,14 @@
 (function () {
     "use strict";
 
+    function CCG_isTypingTarget(e) {
+        const el = e.target;
+        if (!el) return false;
+        if (el.isContentEditable) return true;
+        const tag = el.tagName?.toLowerCase();
+        return tag === "input" || tag === "textarea" || tag === "select";
+    }
+
     const CLEAN_ID_REGEX = /^[a-z0-9]+(?:_[a-z0-9]+)*$/;
     const CLEAN_SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
     const YOUTUBE_ID_REGEX = /^[a-zA-Z0-9_-]{6,}$/;

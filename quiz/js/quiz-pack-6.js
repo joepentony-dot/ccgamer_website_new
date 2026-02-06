@@ -19,6 +19,14 @@
         return meta && meta.getAttribute("content") === "quiz";
     }
 
+    function CCG_isTypingTarget(e) {
+        const el = e.target;
+        if (!el) return false;
+        if (el.isContentEditable) return true;
+        const tag = el.tagName?.toLowerCase();
+        return tag === "input" || tag === "textarea" || tag === "select";
+    }
+
     if (isAdminContext()) {
         console.log("[CCG] Admin context detected — keyboard suppression disabled in this module.");
         return;
@@ -345,7 +353,12 @@
         if (!quizRoot) return;
 
         quizRoot.addEventListener("keydown", (event) => {
+            if (CCG_isTypingTarget(event)) return;
             if (event && event.target && event.target.closest && event.target.closest('input, textarea, [contenteditable="true"], [contenteditable=""], [contenteditable]')) {
+                return;
+            }
+            if (!document.body.classList.contains("ccg-quiz-pack-6") &&
+                !(event.target && event.target.closest && event.target.closest(".quiz-container"))) {
                 return;
             }
             if (location.pathname.startsWith("/admin/")) return;
