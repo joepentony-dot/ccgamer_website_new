@@ -16,6 +16,22 @@
   backdrop-filter: blur(2px);
 }
 
+/* ============================================================
+   REGRESSION LOCK: BOOT OVERLAY HIDDEN STATE
+   Why: [hidden] must always force display:none so the Omega
+   boot overlay cannot remain visible after init completes.
+   Do not remove: CSS overrides can ignore hidden otherwise.
+============================================================ */
+
+[data-boot-overlay][hidden],
+.boot-overlay[hidden],
+.ccg-boot-overlay[hidden] {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
 .boot-overlay-panel {
   border: 1px solid rgba(104, 225, 255, 0.45);
   border-radius: 12px;

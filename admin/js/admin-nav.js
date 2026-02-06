@@ -41,11 +41,13 @@ export async function initAdminNav({ pageLabel = 'Dashboard', active = 'dashboar
 
   async function handleLogout(event) {
     event.preventDefault();
+    sessionNode.textContent = 'Signing out…';
     try {
       await logout();
+    } catch (error) {
+      console.warn('[CCG-AUTH] logout failed, forcing redirect', error);
+    } finally {
       window.location.replace(AUTH_CONFIG.postLogoutRedirect);
-    } catch {
-      sessionNode.textContent = 'Could not sign out. Try again.';
     }
   }
 

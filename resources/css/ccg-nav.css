@@ -45,6 +45,7 @@
     isolation: isolate;
     outline: none;
     -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
     touch-action: manipulation;
     background-clip: padding-box;
 }

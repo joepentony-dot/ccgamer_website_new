@@ -45,10 +45,31 @@
     mount.innerHTML = '<div class="ccg-community-card"><h3>Community Comments</h3><p class="ccg-community-muted">' + (message || 'Comments unavailable (auth error). Reload or re-login.') + '</p></div>';
   }
 
+  function setLoginMessage(message) {
+    const mount = getMount();
+    if (!mount) return;
+    mount.innerHTML = '' +
+      '<div class="ccg-community-card">' +
+      '  <h3>Community Comments</h3>' +
+      '  <p class="ccg-community-muted">' + (message || 'Log in to view comments.') + '</p>' +
+      '  <p><button class="ccg-community-btn" id="ccg-login-to-comment" type="button">Log in</button></p>' +
+      '</div>';
+    const loginBtn = document.getElementById('ccg-login-to-comment');
+    if (loginBtn) loginBtn.addEventListener('click', function () {
+      window.ccgCommunityAuth.openAuthModal('signin');
+    });
+  }
+
   function isNotConfiguredError(error) {
     const code = String(error && error.code || '');
     const message = String(error && error.message || '').toLowerCase();
-    return code === '42P01' || code === 'PGRST205' || message.includes('relation') || message.includes('does not exist');
+    return code === '42P01'
+      || code === 'PGRST205'
+      || code === 'PGRST301'
+      || code === '404'
+      || message.includes('relation')
+      || message.includes('does not exist')
+      || message.includes('not found');
   }
 
   function isAuthError(error) {
@@ -132,7 +153,7 @@
     }
 
     if (state.retryCount >= state.maxRetries) {
-      setFailureMessage('Comments unavailable (auth error). Reload or re-login.');
+      setFailureMessage('Comments temporarily unavailable. Please try again soon.');
       return;
     }
 
@@ -158,7 +179,7 @@
     try {
       await window.ccgSupabase.waitForAuth();
     } catch (_error) {
-      setFailureMessage('Comments unavailable (auth error). Reload or re-login.');
+      setFailureMessage('Comments temporarily unavailable. Please try again soon.');
       return;
     }
 
@@ -168,11 +189,16 @@
       context = await window.ccgSupabase.getCurrentUserContext();
       supabase = await window.ccgSupabase.getClient();
     } catch (_error) {
-      setFailureMessage('Comments unavailable (auth error). Reload or re-login.');
+      setFailureMessage('Comments temporarily unavailable. Please try again soon.');
       return;
     }
     const user = context.user;
     const canModerate = context.permissions.canModerate;
+    if (!user) {
+      setLoginMessage('Log in to view comments.');
+      resetRetries();
+      return;
+    }
 
     const { data, error } = await runQueryWithAuthRetry(function () {
       return supabase
@@ -184,14 +210,14 @@
     });
 
     if (error && isNotConfiguredError(error)) {
-      setDeferredMessage('Comments are not available yet for this game. Retrying automatically…');
+      setFailureMessage('Comments temporarily unavailable. Please try again soon.');
       scheduleRetry(3000, 'not-configured');
       return;
     }
 
     if (error) {
       if (isAuthError(error)) {
-        setFailureMessage('Comments unavailable (auth error). Reload or re-login.');
+        setLoginMessage('Log in to view comments.');
         return;
       }
       mount.innerHTML = '<div class="ccg-community-card"><h3>Community Comments</h3><p class="ccg-community-muted">Unable to load comments right now.</p></div>';
@@ -221,9 +247,7 @@
     mount.innerHTML = '' +
       '<div class="ccg-community-card">' +
       '  <h3>Community Comments</h3>' +
-      (user
-        ? '<form id="ccg-comment-form" class="ccg-community-form"><label>Add your comment<textarea name="content" required maxlength="600"></textarea></label><button type="submit" class="ccg-community-btn">Post comment</button><span id="ccg-comment-status" class="ccg-community-muted" aria-live="polite"></span></form>'
-        : '<p><button class="ccg-community-btn" id="ccg-login-to-comment" type="button">Log in to comment</button></p>') +
+      '<form id="ccg-comment-form" class="ccg-community-form"><label>Add your comment<textarea name="content" required maxlength="600"></textarea></label><button type="submit" class="ccg-community-btn">Post comment</button><span id="ccg-comment-status" class="ccg-community-muted" aria-live="polite"></span></form>' +
       '  <div class="ccg-comment-list">' +
       (comments.length
         ? comments.map(function (comment) {
@@ -265,7 +289,7 @@
       }
 
       if (!liveContext || !liveContext.user) {
-        status.textContent = 'Comments unavailable (auth error). Reload or re-login.';
+        status.textContent = 'Log in to comment.';
         window.ccgCommunityAuth.openAuthModal('signin');
         return;
       }
@@ -280,7 +304,7 @@
 
       if (insertError) {
         if (isAuthError(insertError)) {
-          status.textContent = 'Comments unavailable (auth error). Reload or re-login.';
+          status.textContent = 'Log in to comment.';
           return;
         }
         status.textContent = isNotConfiguredError(insertError)

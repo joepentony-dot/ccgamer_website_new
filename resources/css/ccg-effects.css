@@ -539,6 +539,7 @@ html.ccg-hud-dock-ready .ccg-hud-dock {
 .ccg-btn {
     position: relative;
     isolation: isolate;
+    background-clip: padding-box;
 
     transition:
         transform 0.26s var(--ccg-ease-out),
@@ -796,6 +797,9 @@ html.ccg-hud-dock-ready .ccg-hud-dock {
 
 :where(a,
        button,
+       input,
+       select,
+       textarea,
        [role="button"],
        input[type="button"],
        input[type="submit"],
@@ -810,6 +814,7 @@ html.ccg-hud-dock-ready .ccg-hud-dock {
        .ccg-nav-toggle,
        .omega-mobile-dock__btn) {
     -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
     touch-action: manipulation;
     outline: none;
     background-clip: padding-box;

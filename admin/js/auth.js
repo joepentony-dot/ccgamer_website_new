@@ -4,6 +4,10 @@ import { AUTH_CONFIG, OWNER_EMAIL, SUPABASE_ANON_KEY, SUPABASE_URL } from './con
 let authListenerBound = false;
 let supabaseClient = null;
 
+if (typeof window !== 'undefined') {
+  window.CCG_SUPABASE_STORAGE_KEY = AUTH_CONFIG.storageKey;
+}
+
 const ADMIN_ROLES = new Set(['editor', 'admin', 'superadmin']);
 
 function normalizeRole(role) {
@@ -39,6 +43,72 @@ function clearRoleCache() {
     localStorage.removeItem(AUTH_CONFIG.roleCacheKey);
   } catch {
     // intentionally ignored
+  }
+}
+
+function getSupabaseProjectRef() {
+  try {
+    const url = new URL(SUPABASE_URL);
+    return url.hostname.split('.')[0] || '';
+  } catch {
+    return '';
+  }
+}
+
+function clearSupabaseAuthStorage(storage, projectRef) {
+  if (!storage) return;
+  const keysToClear = [
+    AUTH_CONFIG.storageKey,
+    AUTH_CONFIG.roleCacheKey,
+    'ccg-admin-auth',
+    'ccg-admin-role-cache'
+  ];
+  keysToClear.forEach((key) => {
+    try {
+      storage.removeItem(key);
+    } catch {
+      // ignore storage issues
+    }
+  });
+
+  if (projectRef) {
+    for (let i = storage.length - 1; i >= 0; i -= 1) {
+      const key = storage.key(i);
+      if (key && key.startsWith(`sb-${projectRef}-`)) {
+        try {
+          storage.removeItem(key);
+        } catch {
+          // ignore storage issues
+        }
+      }
+    }
+  }
+
+  for (let i = storage.length - 1; i >= 0; i -= 1) {
+    const key = storage.key(i);
+    if (!key) continue;
+    if (key.startsWith('ccg-community-profile') || key.startsWith('ccg-community-avatar')) {
+      try {
+        storage.removeItem(key);
+      } catch {
+        // ignore storage issues
+      }
+    }
+  }
+}
+
+/* ===================================================
+   OMEGA LOGOUT LOCK — DO NOT REMOVE
+   Why: Supabase + role cache + profile caches can keep
+   a session "alive" unless all keys are cleared together.
+   =================================================== */
+function clearAuthCaches() {
+  const projectRef = getSupabaseProjectRef();
+  clearSupabaseAuthStorage(window.localStorage, projectRef);
+  clearSupabaseAuthStorage(window.sessionStorage, projectRef);
+  if (typeof window !== 'undefined') {
+    window.__ccgSupabaseClient = null;
+    window.__ccgSupabaseConfigHash = null;
   }
 }
 
@@ -252,8 +322,15 @@ export async function login(email, password) {
 
 export async function logout() {
   const client = await getSupabaseClient();
-  const { error } = await client.auth.signOut({ scope: 'global' });
-  if (error) throw error;
+  let signOutError = null;
+  try {
+    const { error } = await client.auth.signOut({ scope: 'global' });
+    signOutError = error;
+  } finally {
+    clearAuthCaches();
+    supabaseClient = null;
+  }
+  if (signOutError) throw signOutError;
 }
 
 export async function sendPasswordReset(email) {

@@ -7,6 +7,53 @@
     refreshPromise: null
   };
 
+  function normalizeSupabaseUrl(raw) {
+    const value = String(raw || '').trim();
+    if (!value) return '';
+    if (/^https?:\/\//i.test(value)) return value.replace(/\/+$/, '');
+    const cleaned = value.replace(/\/+$/, '');
+    if (cleaned.includes('.supabase.co')) {
+      return `https://${cleaned}`;
+    }
+    return `https://${cleaned}.supabase.co`;
+  }
+
+  function getSupabaseProjectRef() {
+    try {
+      const url = normalizeSupabaseUrl(window.CCG_SUPABASE_URL);
+      return new URL(url).hostname.split('.')[0] || '';
+    } catch {
+      return '';
+    }
+  }
+
+  function clearSupabaseStorage(storage, projectRef) {
+    if (!storage) return;
+    if (projectRef) {
+      for (let i = storage.length - 1; i >= 0; i -= 1) {
+        const key = storage.key(i);
+        if (key && key.startsWith(`sb-${projectRef}-`)) {
+          try {
+            storage.removeItem(key);
+          } catch {
+            // ignore storage issues
+          }
+        }
+      }
+    }
+    for (let i = storage.length - 1; i >= 0; i -= 1) {
+      const key = storage.key(i);
+      if (!key) continue;
+      if (key.startsWith('ccg-community-profile') || key.startsWith('ccg-community-avatar')) {
+        try {
+          storage.removeItem(key);
+        } catch {
+          // ignore storage issues
+        }
+      }
+    }
+  }
+
   function esc(str) {
     return String(str || '').replace(/[&<>"']/g, function (c) {
       return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[c];
@@ -246,7 +293,20 @@
   async function logout() {
     const supabase = await safeGetClient();
     if (!supabase) return;
-    await supabase.auth.signOut();
+    const projectRef = getSupabaseProjectRef();
+    /* ===================================================
+       OMEGA LOGOUT LOCK — DO NOT REMOVE
+       Why: Supabase auth caches can persist a session even
+       after signOut unless storage keys are cleared.
+       =================================================== */
+    try {
+      await supabase.auth.signOut({ scope: 'global' });
+    } finally {
+      clearSupabaseStorage(window.localStorage, projectRef);
+      clearSupabaseStorage(window.sessionStorage, projectRef);
+      state.currentUser = null;
+      state.currentProfile = null;
+    }
   }
 
   window.ccgCommunityAuth = {
