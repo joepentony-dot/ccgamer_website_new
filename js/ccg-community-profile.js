@@ -100,8 +100,8 @@
       '<section class="ccg-community-card" id="ccg-moderation-panel"' + (context.permissions.canModerate ? '' : ' hidden') + '><h2>Moderation</h2><div id="ccg-report-list"></div></section>';
 
     if (isOwnProfile) {
-      document.getElementById('ccg-community-logout').addEventListener('click', function () {
-        window.ccgCommunityAuth.logout();
+      document.getElementById('ccg-community-logout').addEventListener('click', async function () {
+        await window.ccgCommunityAuth.logout();
         window.location.href = '/community/index.html';
       });
 

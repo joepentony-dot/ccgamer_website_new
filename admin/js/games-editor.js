@@ -89,6 +89,7 @@ const BOOT_FETCH_RETRIES = 1;
 const bootState = {
   activeId: 0,
   watchdog: null,
+  overlayReadyTimer: null,
   failed: false,
   booting: false
 };
@@ -121,7 +122,9 @@ function setBootStep(stepLabel) {
 
 function setOverlayVisible(isVisible) {
   if (!el.bootOverlay) return;
+  ['is-active', 'is-visible', 'active', 'visible', 'show'].forEach((cls) => el.bootOverlay.classList.remove(cls));
   el.bootOverlay.hidden = !isVisible;
+  el.bootOverlay.setAttribute('aria-hidden', isVisible ? 'false' : 'true');
   el.appShell?.setAttribute('aria-busy', isVisible ? 'true' : 'false');
 }
 
@@ -163,6 +166,22 @@ function clearBootWatchdog() {
   }
 }
 
+function clearOverlayFailsafe() {
+  if (bootState.overlayReadyTimer) {
+    window.clearTimeout(bootState.overlayReadyTimer);
+    bootState.overlayReadyTimer = null;
+  }
+}
+
+function scheduleOverlayFailsafe() {
+  clearOverlayFailsafe();
+  bootState.overlayReadyTimer = window.setTimeout(() => {
+    if (!el.bootOverlay || el.bootOverlay.hidden) return;
+    setOverlayVisible(false);
+    console.warn('[CCG-BOOT] overlay-forced-hide (css-hidden-override suspected)');
+  }, 3000);
+}
+
 function startBootWatchdog(bootId) {
   clearBootWatchdog();
   bootState.watchdog = window.setTimeout(() => {
@@ -176,6 +195,7 @@ function handleBootFailure(error, stepLabel) {
   if (bootState.failed) return;
   bootState.failed = true;
   clearBootWatchdog();
+  clearOverlayFailsafe();
   setOverlayVisible(false);
   setStatus('Admin boot failed', error?.message || 'Unknown error');
   setRetryVisible(true);
@@ -995,6 +1015,8 @@ async function bootstrapDeterministic(bootId) {
   setStatus(`Loaded ${runtimeState.games.length} games.`, 'success');
   console.info(`[CCG-BOOT] auth=ok role=${role || 'unknown'} data=ok ui=ok`);
   setOverlayVisible(false);
+  requestAnimationFrame(() => setOverlayVisible(false));
+  scheduleOverlayFailsafe();
   clearBootWatchdog();
   if (bootState.activeId === bootId) {
     bootState.booting = false;

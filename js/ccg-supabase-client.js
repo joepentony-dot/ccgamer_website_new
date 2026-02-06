@@ -5,6 +5,7 @@
   const DEV_WARN_KEY = '__ccgCommunityDevWarned';
   const AUTH_READY_KEY = '__ccgAuthReadyState';
   const AUTH_DEBUG_KEY = '__ccgAuthDebugState';
+  const RPC_MISSING_KEY = '__ccgRpcMissingCache';
 
   const globalState = window[GLOBAL_KEY] || (window[GLOBAL_KEY] = {
     loadPromise: null,
@@ -37,6 +38,24 @@
     enabled: false,
     overlay: null
   });
+
+  const rpcMissingCache = window[RPC_MISSING_KEY] || (window[RPC_MISSING_KEY] = new Set());
+
+  /* ===================================================
+     OMEGA COMMUNITY SUPABASE URL LOCK
+     Why: community APIs must use full https://<ref>.supabase.co
+     to avoid malformed /rpc or /rest URLs and 404s.
+     =================================================== */
+  function normalizeSupabaseUrl(raw) {
+    const value = String(raw || '').trim();
+    if (!value) return '';
+    if (/^https?:\/\//i.test(value)) return value.replace(/\/+$/, '');
+    const cleaned = value.replace(/\/+$/, '');
+    if (cleaned.includes('.supabase.co')) {
+      return `https://${cleaned}`;
+    }
+    return `https://${cleaned}.supabase.co`;
+  }
 
   function getExistingLibraryScript() {
     return document.querySelector('script[src*="@supabase/supabase-js"], script[src*="supabase.min.js"]');
@@ -71,10 +90,12 @@
   }
 
   async function getClient() {
-    const url = window.CCG_SUPABASE_URL;
+    const url = normalizeSupabaseUrl(window.CCG_SUPABASE_URL);
     const key = window.CCG_SUPABASE_ANON_KEY;
+    const storageKey = window.CCG_SUPABASE_STORAGE_KEY;
 
     if (!url || !key) throw new Error('Missing Supabase config. Update /js/ccg-supabase-config.js first.');
+    if (window.CCG_SUPABASE_URL !== url) window.CCG_SUPABASE_URL = url;
 
     await loadSupabaseLibrary();
 
@@ -92,14 +113,15 @@
     globalState.clientPromise = Promise.resolve().then(() => {
       if (window.__ccgSupabaseClient && window.__ccgSupabaseConfigHash === configHash) return window.__ccgSupabaseClient;
 
-      const client = window.supabase.createClient(url, key, {
-        auth: {
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: true,
-          storage: window.localStorage
-        }
-      });
+      const authOptions = {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storage: window.localStorage
+      };
+      if (storageKey) authOptions.storageKey = storageKey;
+
+      const client = window.supabase.createClient(url, key, { auth: authOptions });
 
       window.__ccgSupabaseClient = client;
       window.__ccgSupabaseConfigHash = configHash;
@@ -341,7 +363,7 @@
     if (readinessState.checkPromise) return readinessState.checkPromise;
 
     readinessState.checkPromise = (async function () {
-      const url = window.CCG_SUPABASE_URL;
+      const url = normalizeSupabaseUrl(window.CCG_SUPABASE_URL);
       const key = window.CCG_SUPABASE_ANON_KEY;
       if (!url || !key) {
         readinessState.checked = true;
@@ -393,10 +415,30 @@
 
     try {
       const response = await client.rpc(functionName, params || {});
-      if (response.error) return { data: null, error: response.error, missing: isCommunityUnavailableError(response.error) };
+      if (response.error) {
+        const missing = isCommunityUnavailableError(response.error);
+        if (missing) {
+          const rpcUrl = normalizeSupabaseUrl(window.CCG_SUPABASE_URL) + '/rest/v1/rpc/' + functionName;
+          if (!rpcMissingCache.has(rpcUrl)) {
+            rpcMissingCache.add(rpcUrl);
+            console.warn(`[CCG-COMMUNITY] rpc=missing url=${rpcUrl}`);
+            console.warn('[CCG-COMMUNITY] Community service not deployed / RPC missing');
+          }
+        }
+        return { data: null, error: response.error, missing: missing };
+      }
       return { data: response.data || [], error: null, missing: false };
     } catch (error) {
-      return { data: null, error: error, missing: isCommunityUnavailableError(error) };
+      const missing = isCommunityUnavailableError(error);
+      if (missing) {
+        const rpcUrl = normalizeSupabaseUrl(window.CCG_SUPABASE_URL) + '/rest/v1/rpc/' + functionName;
+        if (!rpcMissingCache.has(rpcUrl)) {
+          rpcMissingCache.add(rpcUrl);
+          console.warn(`[CCG-COMMUNITY] rpc=missing url=${rpcUrl}`);
+          console.warn('[CCG-COMMUNITY] Community service not deployed / RPC missing');
+        }
+      }
+      return { data: null, error: error, missing: missing };
     }
   }
 

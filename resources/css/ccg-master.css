@@ -127,6 +127,43 @@ html {
 }
 
 /* ============================================================
+   REGRESSION LOCK: HIDDEN ATTRIBUTES
+   Why: [hidden] must always collapse boot overlays + panels so
+   they cannot remain visible after Omega init completes.
+============================================================ */
+
+[hidden] {
+    display: none !important;
+}
+
+/* ============================================================
+   OMEGA INPUT/FONT FOCUS SAFETY
+   Why: suppress UA tap flash + blue outline while letting
+   :focus-visible in effects.css provide the neon ring.
+============================================================ */
+
+:where(a,
+       button,
+       input,
+       select,
+       textarea,
+       [role="button"],
+       .ccg-btn) {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}
+
+:where(a,
+       button,
+       input,
+       select,
+       textarea,
+       [role="button"],
+       .ccg-btn):focus {
+    outline: none;
+}
+
+/* ============================================================
    CONTROL PANEL SYSTEM — OMEGA COMMAND DECK
    ------------------------------------------------------------
    • Shared glass panels for core content blocks
