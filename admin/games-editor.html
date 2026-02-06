@@ -20,6 +20,14 @@
     <div aria-hidden="true" class="ccg-bg-crt-overlay"></div>
   </div>
 
+  <div class="boot-overlay" data-boot-overlay>
+    <div class="boot-overlay-panel">
+      <h2>Initializing Omega Editor</h2>
+      <p>Deterministic boot step: <strong data-boot-step>BOOT</strong></p>
+      <p>Please wait. UI unlocks when all checks complete.</p>
+    </div>
+  </div>
+
   <main class="games-editor-wrap" data-admin-shell>
     <header class="admin-dashboard-header sticky-toolbar">
       <div>
@@ -34,6 +42,12 @@
         <button class="ccg-btn ccg-btn--primary" id="saveAll" type="button">Download games.json</button>
       </div>
     </header>
+
+    <section class="status-strip" aria-live="polite">
+      <p data-editor-runtime data-state="ready">State: Ready</p>
+      <p data-save-indicator>All changes saved in session</p>
+      <p>Shortcuts: <kbd>Ctrl/Cmd+S</kbd> save, <kbd>Ctrl/Cmd+Z</kbd> undo, <kbd>Ctrl/Cmd+Shift+Z</kbd> redo</p>
+    </section>
 
     <section class="omega-pipeline-strip" aria-label="Pipeline">
       <span class="is-active">Edit</span>
@@ -95,6 +109,12 @@
           <button class="ccg-btn ccg-btn--ghost" type="button" id="copyNodeSteps">Copy Node script instructions</button>
         </div>
         <p data-export-status-text>Awaiting export action.</p>
+      </article>
+
+      <article class="admin-info-card">
+        <h2>Recovery panel</h2>
+        <p>Draft snapshots are stored locally and never overwrite live data without explicit export.</p>
+        <ol id="recoveryList"></ol>
       </article>
 
       <article class="admin-info-card">
