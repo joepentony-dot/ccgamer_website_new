@@ -1,3 +1,4 @@
+import { startAccessMonitor } from './guard.js';
 import { fetchBackups, fetchFileIndex, fetchGamesJson, restoreBackup, saveGamesJson } from './games-api.js';
 import { validateGameRecord, validateGamesSchema } from './validator.js';
 import { initAdminNav } from './admin-nav.js';
@@ -819,7 +820,27 @@ function bindHandlers() {
   });
 }
 
-async function enableEditor(context) {
+async function bootstrapDeterministic() {
+  setOverlayVisible(true);
+  setBootStep('Auth Ready');
+  await waitForAuthReady();
+
+  setBootStep('Role Verified');
+  if (!window.ccgSupabase?.getCurrentUserContext) {
+    throw new Error('Auth context provider unavailable.');
+  }
+  const context = await window.ccgSupabase.getCurrentUserContext();
+  const role = String(context?.role || '').toLowerCase();
+
+  if (!context?.isAuthenticated || roleRank(role) < roleRank('admin')) {
+    window.location.replace('/admin/login.html?reason=forbidden');
+    return;
+  }
+
+  setRuntimeState({ user: context.user || null, role });
+  el.role.textContent = role;
+  el.email.textContent = context.user?.email || 'unknown';
+
   setBootStep('Data Loaded');
   const gamesResult = await fetchGamesJson();
   const fileResult = await fetchFileIndex();
@@ -827,9 +848,6 @@ async function enableEditor(context) {
   runtimeState.rawBeforeEdit = JSON.stringify(gamesResult.games, null, 2);
   runtimeState.fileIndex = new Set(fileResult.files || []);
   runtimeState.drafts = readDraftStore();
-  setRuntimeState({ user: context.user || null, role: String(context.role || '').toLowerCase() });
-  el.role.textContent = String(context.role || 'superadmin').toLowerCase();
-  el.email.textContent = context.user?.email || 'unknown';
 
   setBootStep('UI Enabled');
   renderFilters();
@@ -846,68 +864,22 @@ async function enableEditor(context) {
   setOverlayVisible(false);
 }
 
-function showLogin() {
-  setBootStep('Login Required');
-  if (el.bootStep) el.bootStep.textContent = 'Login required';
-  setStatus('Login required to use the admin editor.', 'error');
-  setOverlayVisible(true);
-}
-
-function showForbidden() {
-  setBootStep('Forbidden');
-  if (el.bootStep) el.bootStep.textContent = 'Forbidden';
-  setStatus('Forbidden: superadmin access required.', 'error');
-  setOverlayVisible(true);
-}
-
-async function initAdmin() {
-  try {
-    if (!window.ccgSupabase?.getCurrentUserContext) {
-      throw new Error('Auth context provider unavailable.');
-    }
-
-    setBootStep('Role Verified');
-    const ctx = await window.ccgSupabase.getCurrentUserContext();
-
-    if (!ctx?.isAuthenticated) {
-      showLogin();
-      return;
-    }
-
-    if (String(ctx.role || '').toLowerCase() !== 'superadmin') {
-      showForbidden();
-      return;
-    }
-
-    await enableEditor(ctx);
-  } catch (error) {
-    setOverlayVisible(true);
-    setStatus(error.message || 'Admin initialisation failed.', 'error');
-  }
-}
-
 function start() {
+  startAccessMonitor();
   initAdminNav({ pageLabel: 'Games Editor', active: 'editor' });
-  setOverlayVisible(true);
-  setBootStep('Loading admin…');
 
-  const onAuthReady = () => {
-    setBootStep('Auth Ready');
-    void initAdmin();
+  let started = false;
+  const run = () => {
+    if (started) return;
+    started = true;
+    void bootstrapDeterministic().catch((error) => {
+      setOverlayVisible(false);
+      setStatus(error.message, 'error');
+    });
   };
 
-  // Required listener pattern for deferred checks.
-  document.addEventListener('ccg:auth-ready', onAuthReady, { once: true });
-  // Compatibility: global auth emits on window in this codebase.
-  window.addEventListener('ccg:auth-ready', onAuthReady, { once: true });
-  window.addEventListener('ccg:auth-changed', () => { void initAdmin(); });
-
-  void waitForAuthReady().then(() => {
-    // If auth was already ready before listeners attached, run now.
-    void initAdmin();
-  }).catch((error) => {
-    setStatus(error.message, 'error');
-  });
+  window.addEventListener('ccg:auth-ready', run, { once: true });
+  void waitForAuthReady().then(run).catch((error) => setStatus(error.message, 'error'));
 }
 
 start();
