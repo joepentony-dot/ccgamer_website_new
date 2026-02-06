@@ -158,6 +158,12 @@
         document.body.classList.add(QUIZ_FOCUS_PULSE_CLASS);
 
         const onInteract = (event) => {
+            // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
+            // Prevents quiz/hotkey logic from blocking form typing
+            const tag = event.target?.tagName?.toLowerCase();
+            const isEditable = tag === "input" || tag === "textarea" || event.target?.isContentEditable === true;
+            if (isEditable) return;
+
             if (CCG_isTypingTarget(event)) return;
             clearQuizFocusPulse();
         };

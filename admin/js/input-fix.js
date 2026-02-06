@@ -45,6 +45,12 @@
   const isAdminPage = () => window.location && window.location.pathname && window.location.pathname.startsWith('/admin/');
 
   const guardAdminSpace = (event) => {
+    // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
+    // Prevents quiz/hotkey logic from blocking form typing
+    const tag = event.target?.tagName?.toLowerCase();
+    const isEditable = tag === 'input' || tag === 'textarea' || event.target?.isContentEditable === true;
+    if (isEditable) return;
+
     if (!isAdminPage()) return;
     if (!isSpaceKey(event)) return;
     if (event.defaultPrevented) return;
