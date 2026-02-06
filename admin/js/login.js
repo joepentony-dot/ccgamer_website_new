@@ -45,6 +45,7 @@ async function handleLogin(event) {
     if (user?.id) {
       await fetchUserRole({ userId: user.id, force: true });
     }
+    await waitForAuthReady();
     setMessage('Login successful. Redirecting to dashboard…', 'success');
     window.location.replace(AUTH_CONFIG.defaultRedirectAfterLogin);
   } catch (error) {

@@ -3,7 +3,7 @@ import {
   bindSessionInvalidation,
   getAuthContext,
   refreshSessionIfNeeded,
-  restoreSession
+  waitForAuthReady
 } from './auth.js';
 import { clearRoleCache } from './roles.js';
 
@@ -16,37 +16,30 @@ function redirect(path, reason) {
 }
 
 export async function ensureAuthenticated({ redirectTo = AUTH_CONFIG.loginPage } = {}) {
-  let session;
-  try {
-    session = await restoreSession();
-  } catch (error) {
-    console.error('[CCG-AUTH] Unable to restore session.', error);
-    redirect(redirectTo, 'auth_error');
-    return null;
-  }
+  await waitForAuthReady();
 
-  if (!session) {
+  const context = await getAuthContext();
+  if (!context?.isAuthenticated || !context?.session) {
     redirect(redirectTo, 'unauthenticated');
     return null;
   }
 
   try {
-    session = await refreshSessionIfNeeded();
+    const session = await refreshSessionIfNeeded();
+    if (!session) {
+      redirect(redirectTo, 'expired');
+      return null;
+    }
+    return session;
   } catch (error) {
     console.error('[CCG-AUTH] Unable to refresh session.', error);
     redirect(redirectTo, 'expired');
     return null;
   }
-
-  if (!session) {
-    redirect(redirectTo, 'expired');
-    return null;
-  }
-
-  return session;
 }
 
 export async function ensureRole(allowedRoles = []) {
+  await waitForAuthReady();
   const session = await ensureAuthenticated();
   if (!session) {
     return null;
@@ -68,7 +61,9 @@ export async function ensureRole(allowedRoles = []) {
   return { session: context.session || session, role };
 }
 
-export function startAccessMonitor({ onSessionInvalidated } = {}) {
+export async function startAccessMonitor({ onSessionInvalidated } = {}) {
+  await waitForAuthReady();
+
   bindSessionInvalidation({
     onSignedOut: () => {
       clearRoleCache();

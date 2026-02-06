@@ -23,16 +23,25 @@ const log = (...a) => console.log(LOG, ...a);
 const warn = (...a) => console.warn(LOG, ...a);
 const err = (...a) => console.error(LOG, ...a);
 
+if (window.__CCG_AUTH_BOOTSTRAPPED) {
+  console.warn('[AUTH] bootstrap already initialised');
+} else {
+  window.__CCG_AUTH_BOOTSTRAPPED = true;
+}
+
 window.CCG_AUTH_READY = false;
 window.CCG_AUTH_LOGGED_IN = false;
 window.CCG_AUTH_ROLE = 'none';
 window.CCG_AUTH_ERROR = null;
 
-let _authInitPromise = null;
 let _supabase = null;
 let _lastContext = null;
 let _authListenerAttached = false;
 let _lastAuthEvent = 'BOOT';
+let _authBarrierPromise = null;
+let _authBarrierReady = false;
+let _authBarrierSession = null;
+let _authBarrierContext = null;
 
 function dispatchAuthReady(context) {
   try {
@@ -79,6 +88,23 @@ function deriveRoleFromUser(user) {
     user.role ||
     null
   );
+}
+
+function buildContextFromSession(session, error = null) {
+  const user = session?.user || null;
+  const isAuthenticated = Boolean(user?.id);
+  const cachedRole = readCachedRole();
+  const role = isAuthenticated
+    ? cachedRole || deriveRoleFromUser(user) || 'member'
+    : 'none';
+
+  return {
+    isAuthenticated,
+    role,
+    user,
+    session: session || null,
+    error
+  };
 }
 
 function applySupabaseConfigToWindow() {
@@ -154,19 +180,7 @@ function attachAuthListener(supabase) {
   supabase.auth.onAuthStateChange((eventName, session) => {
     _lastAuthEvent = eventName || 'UNKNOWN';
     _lastContext = null;
-    const isAuthenticated = Boolean(session?.user?.id);
-    const cachedRole = readCachedRole();
-    const role = isAuthenticated
-      ? cachedRole || deriveRoleFromUser(session?.user) || 'member'
-      : 'none';
-
-    const context = {
-      isAuthenticated,
-      role,
-      user: session?.user || null,
-      session: session || null,
-      error: null
-    };
+    const context = buildContextFromSession(session, null);
 
     applyWindowAuthState(context);
     dispatchAuthReady(context);
@@ -184,21 +198,7 @@ async function computeAuthContext({ force = false } = {}) {
     throw new Error(error.message || 'Unable to read Supabase session.');
   }
 
-  const session = data?.session || null;
-  const user = session?.user || null;
-  const isAuthenticated = Boolean(user?.id);
-  const cachedRole = readCachedRole();
-  const role = isAuthenticated
-    ? cachedRole || deriveRoleFromUser(user) || 'member'
-    : 'none';
-
-  const context = {
-    isAuthenticated,
-    role,
-    user,
-    session,
-    error: null
-  };
+  const context = buildContextFromSession(data?.session || null, null);
 
   _lastContext = context;
   applyWindowAuthState(context);
@@ -208,11 +208,28 @@ async function computeAuthContext({ force = false } = {}) {
 }
 
 export async function waitForAuthReady() {
-  if (_authInitPromise) return _authInitPromise;
+  if (_authBarrierPromise) return _authBarrierPromise;
 
-  _authInitPromise = (async () => {
+  console.log('[AUTH] barrier start');
+  _authBarrierPromise = (async () => {
     try {
-      await computeAuthContext({ force: true });
+      const supabase = await ensureSupabaseClient();
+      attachAuthListener(supabase);
+
+      const { data, error } = await supabase.auth.getSession();
+      if (error) {
+        throw new Error(error.message || 'Unable to read Supabase session.');
+      }
+
+      _authBarrierSession = data?.session || null;
+      _authBarrierContext = buildContextFromSession(_authBarrierSession, null);
+      console.log('[AUTH] session restored');
+
+      _lastContext = _authBarrierContext;
+      applyWindowAuthState(_authBarrierContext);
+      dispatchAuthReady(_authBarrierContext);
+      _authBarrierReady = true;
+      console.log('[AUTH] barrier ready');
       return true;
     } catch (error) {
       const message = error?.message || String(error);
@@ -221,25 +238,23 @@ export async function waitForAuthReady() {
         window.CCG_AUTH_READY = false;
         window.CCG_AUTH_ERROR = error;
         dispatchAuthReady({ isAuthenticated: false, role: 'none', user: null, error });
+        console.log('[AUTH] barrier ready');
         throw error;
       }
 
       warn('Auth ready with no active session.', message);
-      const context = {
-        isAuthenticated: false,
-        role: 'none',
-        user: null,
-        session: null,
-        error
-      };
-      _lastContext = context;
-      applyWindowAuthState(context);
-      dispatchAuthReady(context);
+      _authBarrierSession = null;
+      _authBarrierContext = buildContextFromSession(null, error);
+      _lastContext = _authBarrierContext;
+      applyWindowAuthState(_authBarrierContext);
+      dispatchAuthReady(_authBarrierContext);
+      _authBarrierReady = true;
+      console.log('[AUTH] barrier ready');
       return true;
     }
   })();
 
-  return _authInitPromise;
+  return _authBarrierPromise;
 }
 
 export async function getAuthContext() {
@@ -247,13 +262,7 @@ export async function getAuthContext() {
   try {
     return await computeAuthContext({ force: true });
   } catch (error) {
-    const context = {
-      isAuthenticated: false,
-      role: 'none',
-      user: null,
-      session: null,
-      error
-    };
+    const context = buildContextFromSession(null, error);
     _lastContext = context;
     applyWindowAuthState(context);
     dispatchAuthReady(context);
@@ -262,6 +271,9 @@ export async function getAuthContext() {
 }
 
 export async function restoreSession() {
+  await waitForAuthReady();
+  if (_authBarrierReady) return _authBarrierSession;
+
   const supabase = await ensureSupabaseClient();
   const { data, error } = await supabase.auth.getSession();
   if (error) throw new Error(error.message || 'Unable to restore session.');
@@ -362,13 +374,7 @@ export async function logout() {
 
   _lastContext = null;
 
-  const context = {
-    isAuthenticated: false,
-    role: 'none',
-    user: null,
-    session: null,
-    error: null
-  };
+  const context = buildContextFromSession(null, null);
   applyWindowAuthState(context);
   dispatchAuthReady(context);
 

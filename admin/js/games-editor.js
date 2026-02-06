@@ -1140,7 +1140,6 @@ async function boot() {
   await initAdminNav({ pageLabel: 'Omega Game Builder', active: 'editor' });
 
   setReadOnly(true);
-  const authPromise = initAuth();
   await loadLibrary();
 
   renderSystemOptions();
@@ -1152,8 +1151,8 @@ async function boot() {
   updateProgress();
   bindEvents();
 
-  setRuntimeState(state.auth.canWrite ? 'Ready' : 'Library ready · auth pending', 'info');
-  await authPromise;
+  setRuntimeState('Library ready · auth pending', 'info');
+  await initAuth();
 }
 
 boot().catch((error) => {
