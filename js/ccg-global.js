@@ -1235,6 +1235,13 @@
 
             logo.addEventListener("click", event => {
                 if (event) {
+                    if (
+                        event.target &&
+                        event.target.closest &&
+                        event.target.closest("input, textarea, [contenteditable]")
+                    ) {
+                        return;
+                    }
                     event.preventDefault();
                     event.stopPropagation();
                     event.stopImmediatePropagation();
@@ -1417,6 +1424,13 @@
                 if (!toggleTarget) return;
                 event.stopPropagation();
                 if (toggleTarget.tagName === "A") {
+                    if (
+                        event.target &&
+                        event.target.closest &&
+                        event.target.closest("input, textarea, [contenteditable]")
+                    ) {
+                        return;
+                    }
                     event.preventDefault();
                 }
                 refreshMoreRefs(toggleTarget);
@@ -1874,6 +1888,13 @@ function setupFooterSignatureRotator() {
         const topButton = nav.querySelector("[data-ccg-floating-top]");
         if (topButton) {
             topButton.addEventListener("click", (event) => {
+                if (
+                    event.target &&
+                    event.target.closest &&
+                    event.target.closest("input, textarea, [contenteditable]")
+                ) {
+                    return;
+                }
                 event.preventDefault();
                 window.scrollTo({ top: 0, behavior: "smooth" });
             });
