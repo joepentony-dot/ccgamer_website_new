@@ -330,15 +330,15 @@ function normalizeDraft() {
   const draft = state.draft;
   if (!draft) return;
 
-  draft.title = String(draft.title || '').trim();
+  draft.title = String(draft.title || '');
   if (!state.slugLocked) {
     const baseSlug = slugify(draft.title);
     draft.slug = generateUniqueSlug(baseSlug, state.slugSet);
   }
 
   draft.slug = String(draft.slug || '').trim();
-  const baseId = draft.slug ? draft.slug.replace(/-/g, '_') : '';
   if (!state.idLocked) {
+    const baseId = slugify(draft.title).replace(/-/g, '_');
     draft.id = generateUniqueId(baseId, state.idSet);
   }
 
@@ -1109,6 +1109,11 @@ function handleFieldInput(event) {
   if (name === 'title' && !state.slugLocked) {
     const baseSlug = slugify(state.draft.title);
     state.draft.slug = generateUniqueSlug(baseSlug, state.slugSet);
+  }
+
+  if (name === 'title' && !state.idLocked) {
+    const baseId = slugify(state.draft.title).replace(/-/g, '_');
+    state.draft.id = generateUniqueId(baseId, state.idSet);
   }
 
   normalizeDraft();
