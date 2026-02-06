@@ -1,26 +1,58 @@
 (() => {
   // CCG ADMIN LOCK: Do not remove. Prevents global key handler regressions.
   const logPrefix = '[CCG-INPUT-FIX]';
-  const editableSelector = 'input, textarea, [contenteditable]';
+  const editableSelector = 'input, textarea, select, [contenteditable]:not([contenteditable="false"])';
 
-  const isEditableTarget = (target) => {
+  const isDebugEnabled = () => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('debugkeys') === '1' || window.localStorage.getItem('ccgDebugKeys') === '1';
+    } catch (error) {
+      return false;
+    }
+  };
+
+  const logOnce = (() => {
+    const logged = new Set();
+    return (key, message) => {
+      if (!isDebugEnabled()) return;
+      if (logged.has(key)) return;
+      logged.add(key);
+      console.info(message);
+    };
+  })();
+
+  const isEditableElement = (target) => {
     if (!(target instanceof Element)) return false;
-    if (target.matches('input, textarea')) return true;
-    if (target.isContentEditable) return true;
+    if (target.matches(editableSelector)) return true;
+    if (target.isContentEditable && !target.matches('[contenteditable="false"]')) return true;
     return Boolean(target.closest('[contenteditable]:not([contenteditable="false"])'));
   };
 
-  const isSpaceKey = (event) => event.key === ' ' || event.code === 'Space' || event.keyCode === 32;
-
-  const allowSpaceInEditable = (event) => {
-    if (event.target.closest('input, textarea, [contenteditable]')) return;
-    if (!isSpaceKey(event)) return;
-    if (!isEditableTarget(event.target)) return;
-    event.stopPropagation();
+  const isEditableEvent = (event) => {
+    if (!event) return false;
+    if (isEditableElement(event.target)) return true;
+    if (typeof event.composedPath === 'function') {
+      return event.composedPath().some(isEditableElement);
+    }
+    return false;
   };
 
-  document.addEventListener('keydown', allowSpaceInEditable, true);
-  document.addEventListener('keypress', allowSpaceInEditable, true);
+  const isSpaceKey = (event) => event && (event.key === ' ' || event.code === 'Space' || event.key === 'Spacebar' || event.keyCode === 32);
 
-  console.info(`${logPrefix} active: spacebar input guard enabled for ${editableSelector}.`);
+  const isAdminPage = () => window.location && window.location.pathname && window.location.pathname.startsWith('/admin/');
+
+  const guardAdminSpace = (event) => {
+    if (!isAdminPage()) return;
+    if (!isSpaceKey(event)) return;
+    if (event.defaultPrevented) return;
+    if (isEditableEvent(event)) return;
+
+    event.preventDefault();
+    logOnce('ccg-input-fix-space', `${logPrefix} prevented Space scroll on non-editable admin target.`);
+  };
+
+  document.addEventListener('keydown', guardAdminSpace);
+
+  logOnce('ccg-input-fix-active', `${logPrefix} active: spacebar guard enabled for ${editableSelector}.`);
 })();

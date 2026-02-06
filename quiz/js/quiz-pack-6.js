@@ -27,6 +27,54 @@
         return tag === "input" || tag === "textarea" || tag === "select";
     }
 
+    const editableSelector = 'input, textarea, select, [contenteditable]:not([contenteditable="false"])';
+
+    function isPack6Page() {
+        if (document.documentElement?.dataset?.ccgPage === "quiz-pack-6") return true;
+        const path = window.location?.pathname || "";
+        return path.endsWith("/quiz/pack-6.html") || path.endsWith("/pack-6.html");
+    }
+
+    function isDebugEnabled() {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            return params.get("debugkeys") === "1" || window.localStorage.getItem("ccgDebugKeys") === "1";
+        } catch {
+            return false;
+        }
+    }
+
+    const logOnce = (() => {
+        const logged = new Set();
+        return (key, message) => {
+            if (!isDebugEnabled()) return;
+            if (logged.has(key)) return;
+            logged.add(key);
+            console.info(message);
+        };
+    })();
+
+    function isSpaceKey(event) {
+        return event && (event.key === " " || event.code === "Space" || event.key === "Spacebar" || event.keyCode === 32);
+    }
+
+    function isEditableElement(target) {
+        if (!(target instanceof Element)) return false;
+        if (target.matches(editableSelector)) return true;
+        if (target.isContentEditable && !target.matches('[contenteditable="false"]')) return true;
+        return Boolean(target.closest('[contenteditable]:not([contenteditable="false"])'));
+    }
+
+    function isEditableEvent(event) {
+        if (!event) return false;
+        if (CCG_isTypingTarget(event)) return true;
+        if (isEditableElement(event.target)) return true;
+        if (typeof event.composedPath === "function") {
+            return event.composedPath().some(isEditableElement);
+        }
+        return false;
+    }
+
     if (isAdminContext()) {
         console.log("[CCG] Admin context detected — keyboard suppression disabled in this module.");
         return;
@@ -350,11 +398,13 @@
 
     function setupKeyboardInput() {
         const quizRoot = document.querySelector("[data-quiz-root]");
-        if (!quizRoot) return;
+        if (!quizRoot || !isPack6Page()) return;
 
-        quizRoot.addEventListener("keydown", (event) => {
-            if (CCG_isTypingTarget(event)) return;
-            if (event && event.target && event.target.closest && event.target.closest('input, textarea, [contenteditable="true"], [contenteditable=""], [contenteditable]')) {
+        const keyHandler = (event) => {
+            if (isEditableEvent(event)) {
+                if (isSpaceKey(event)) {
+                    logOnce("ccg-pack6-space-editable", "[CCG-QUIZ] Pack 6 ignored Space key inside editable element.");
+                }
                 return;
             }
             if (!document.body.classList.contains("ccg-quiz-pack-6") &&
@@ -363,13 +413,9 @@
             }
             if (location.pathname.startsWith("/admin/")) return;
             if (!elements.gameGrid && !document.querySelector(".hangman-game-grid")) return;
-            const target = event.target;
-            if (target instanceof HTMLElement) {
-                if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") return;
-                if (target.isContentEditable) return;
-            }
-            if (event.code === "Space" || event.key === " ") {
+            if (isSpaceKey(event)) {
                 event.preventDefault();
+                logOnce("ccg-pack6-space-blocked", "[CCG-QUIZ] Pack 6 blocked Space key on non-editable target.");
                 return;
             }
             if (event.ctrlKey || event.metaKey || event.altKey) return;
@@ -378,7 +424,12 @@
             if (!key || key.length !== 1) return;
             if (!/[a-z]/i.test(key)) return;
             handleGuess(key);
-        });
+        };
+
+        quizRoot.addEventListener("keydown", keyHandler);
+        window.addEventListener("beforeunload", () => {
+            quizRoot.removeEventListener("keydown", keyHandler);
+        }, { once: true });
     }
 
     function resetAnswerImage() {
