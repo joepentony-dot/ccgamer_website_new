@@ -24,6 +24,14 @@
         return meta && meta.getAttribute("content") === "quiz";
     }
 
+    function CCG_isTypingTarget(e) {
+        const el = e.target;
+        if (!el) return false;
+        if (el.isContentEditable) return true;
+        const tag = el.tagName?.toLowerCase();
+        return tag === "input" || tag === "textarea" || tag === "select";
+    }
+
     if (isAdminContext()) {
         console.log("[CCG] Admin context detected — keyboard suppression disabled in this module.");
         return;
@@ -645,6 +653,7 @@
         exitButton.addEventListener("click", closeHandler);
 
         const escHandler = event => {
+            if (CCG_isTypingTarget(event)) return;
             if (event && event.target && event.target.closest && event.target.closest('input, textarea, [contenteditable="true"], [contenteditable=""], [contenteditable]')) {
                 return;
             }
@@ -727,6 +736,7 @@
             <p>Press any key to continue...</p>
         `);
         const remove = (event) => {
+            if (CCG_isTypingTarget(event)) return;
             if (event && event.target && event.target.closest && event.target.closest('input, textarea, [contenteditable="true"], [contenteditable=""], [contenteditable]')) {
                 return;
             }
@@ -1005,6 +1015,7 @@
         const maxBuffer = Math.max(...cheatKeys.map(key => key.length)) + 6;
 
         document.addEventListener("keydown", event => {
+            if (CCG_isTypingTarget(event)) return;
             if (event && event.target && event.target.closest && event.target.closest('input, textarea, [contenteditable="true"], [contenteditable=""], [contenteditable]')) {
                 return;
             }
@@ -1466,6 +1477,7 @@
         });
 
         document.addEventListener("keydown", event => {
+            if (CCG_isTypingTarget(event)) return;
             if (event && event.target && event.target.closest && event.target.closest('input, textarea, [contenteditable="true"], [contenteditable=""], [contenteditable]')) {
                 return;
             }
@@ -2011,6 +2023,7 @@ function setupFooterSignatureRotator() {
         const targetPath = "/admin/login.html";
 
         document.addEventListener("keydown", event => {
+            if (CCG_isTypingTarget(event)) return;
             if (event && event.target && event.target.closest && event.target.closest('input, textarea, [contenteditable="true"], [contenteditable=""], [contenteditable]')) {
                 return;
             }
