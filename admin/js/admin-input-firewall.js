@@ -8,6 +8,8 @@
   let active = false;
   let disarmed = false;
 
+  const isAdminContext = () => window.location && window.location.pathname && window.location.pathname.startsWith('/admin/');
+
   const isDebugEnabled = () => {
     try {
       const params = new URLSearchParams(window.location.search);
@@ -54,6 +56,12 @@
   const isSpaceKey = (event) => event && (event.key === ' ' || event.code === 'Space' || event.key === 'Spacebar' || event.keyCode === 32);
 
   const stopAdminInputHandlers = (event) => {
+    // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
+    // Prevents quiz/hotkey logic from blocking form typing
+    const tag = event.target?.tagName?.toLowerCase();
+    const isEditable = tag === 'input' || tag === 'textarea' || event.target?.isContentEditable === true;
+    if (isEditable) return;
+
     // Never interfere with typing
     if (isEditableEvent(event) || hasEditableFocus()) {
       logOnce('ccg-admin-firewall-editable', '[CCG-ADMIN] Input firewall ignored editable key event.', 'warn');
@@ -71,6 +79,9 @@
 
   const enable = () => {
     if (disarmed || active) return;
+    if (isAdminContext()) {
+      console.warn('[CCG-ADMIN] Input firewall running in admin context.');
+    }
     eventTypes.forEach((eventType) => {
       document.addEventListener(eventType, stopAdminInputHandlers);
     });

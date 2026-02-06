@@ -653,6 +653,12 @@
         exitButton.addEventListener("click", closeHandler);
 
         const escHandler = event => {
+            // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
+            // Prevents quiz/hotkey logic from blocking form typing
+            const tag = event.target?.tagName?.toLowerCase();
+            const isEditable = tag === "input" || tag === "textarea" || event.target?.isContentEditable === true;
+            if (isEditable) return;
+
             if (CCG_isTypingTarget(event)) return;
             if (event && event.target && event.target.closest && event.target.closest('input, textarea, [contenteditable="true"], [contenteditable=""], [contenteditable]')) {
                 return;
@@ -736,6 +742,12 @@
             <p>Press any key to continue...</p>
         `);
         const remove = (event) => {
+            // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
+            // Prevents quiz/hotkey logic from blocking form typing
+            const tag = event.target?.tagName?.toLowerCase();
+            const isEditable = tag === "input" || tag === "textarea" || event.target?.isContentEditable === true;
+            if (isEditable) return;
+
             if (CCG_isTypingTarget(event)) return;
             if (event && event.target && event.target.closest && event.target.closest('input, textarea, [contenteditable="true"], [contenteditable=""], [contenteditable]')) {
                 return;
@@ -1015,6 +1027,12 @@
         const maxBuffer = Math.max(...cheatKeys.map(key => key.length)) + 6;
 
         document.addEventListener("keydown", event => {
+            // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
+            // Prevents quiz/hotkey logic from blocking form typing
+            const tag = event.target?.tagName?.toLowerCase();
+            const isEditable = tag === "input" || tag === "textarea" || event.target?.isContentEditable === true;
+            if (isEditable) return;
+
             if (CCG_isTypingTarget(event)) return;
             if (event && event.target && event.target.closest && event.target.closest('input, textarea, [contenteditable="true"], [contenteditable=""], [contenteditable]')) {
                 return;
@@ -1477,6 +1495,12 @@
         });
 
         document.addEventListener("keydown", event => {
+            // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
+            // Prevents quiz/hotkey logic from blocking form typing
+            const tag = event.target?.tagName?.toLowerCase();
+            const isEditable = tag === "input" || tag === "textarea" || event.target?.isContentEditable === true;
+            if (isEditable) return;
+
             if (CCG_isTypingTarget(event)) return;
             if (event && event.target && event.target.closest && event.target.closest('input, textarea, [contenteditable="true"], [contenteditable=""], [contenteditable]')) {
                 return;
@@ -2023,6 +2047,12 @@ function setupFooterSignatureRotator() {
         const targetPath = "/admin/login.html";
 
         document.addEventListener("keydown", event => {
+            // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
+            // Prevents quiz/hotkey logic from blocking form typing
+            const tag = event.target?.tagName?.toLowerCase();
+            const isEditable = tag === "input" || tag === "textarea" || event.target?.isContentEditable === true;
+            if (isEditable) return;
+
             if (CCG_isTypingTarget(event)) return;
             if (event && event.target && event.target.closest && event.target.closest('input, textarea, [contenteditable="true"], [contenteditable=""], [contenteditable]')) {
                 return;

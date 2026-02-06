@@ -330,15 +330,15 @@ function normalizeDraft() {
   const draft = state.draft;
   if (!draft) return;
 
-  draft.title = String(draft.title || '').trim();
+  draft.title = String(draft.title || '');
   if (!state.slugLocked) {
     const baseSlug = slugify(draft.title);
     draft.slug = generateUniqueSlug(baseSlug, state.slugSet);
   }
 
   draft.slug = String(draft.slug || '').trim();
-  const baseId = draft.slug ? draft.slug.replace(/-/g, '_') : '';
   if (!state.idLocked) {
+    const baseId = slugify(draft.title).replace(/-/g, '_');
     draft.id = generateUniqueId(baseId, state.idSet);
   }
 
@@ -1111,6 +1111,11 @@ function handleFieldInput(event) {
     state.draft.slug = generateUniqueSlug(baseSlug, state.slugSet);
   }
 
+  if (name === 'title' && !state.idLocked) {
+    const baseId = slugify(state.draft.title).replace(/-/g, '_');
+    state.draft.id = generateUniqueId(baseId, state.idSet);
+  }
+
   normalizeDraft();
   updateFormFromDraft();
   updatePreviewFields();
@@ -1168,6 +1173,12 @@ function bindEvents() {
   });
 
   el.load.input?.addEventListener('keydown', (event) => {
+    // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
+    // Prevents quiz/hotkey logic from blocking form typing
+    const tag = event.target?.tagName?.toLowerCase();
+    const isEditable = tag === 'input' || tag === 'textarea' || event.target?.isContentEditable === true;
+    if (isEditable) return;
+
     if (event.key === 'Enter') {
       event.preventDefault();
       el.load.button?.click();

@@ -17,6 +17,10 @@
     const YOUTUBE_ID_REGEX = /^[a-zA-Z0-9_-]{6,}$/;
     const CLEAN_ID_REGEX = /^[a-z0-9]+(?:_[a-z0-9]+)*$/;
     const CLEAN_SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+    const isEditableTarget = (target) => {
+        const tag = target?.tagName?.toLowerCase();
+        return tag === "input" || tag === "textarea" || target?.isContentEditable === true;
+    };
     const CANONICAL_GENRES = [
         "Action Adventure Games",
         "Adventure Games",
@@ -857,6 +861,10 @@
         };
         buttonEl.addEventListener("click", addItem);
         inputEl.addEventListener("keydown", (event) => {
+            // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
+            // Prevents quiz/hotkey logic from blocking form typing
+            if (isEditableTarget(event.target)) return;
+
             if (event.key === "Enter") {
                 event.preventDefault();
                 addItem();

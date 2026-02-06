@@ -21,6 +21,10 @@
     const CLEAN_SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
     const ENFORCEMENT_FLAG = "_ccg_enforced";
     const MIGRATION_FLAG = "_ccg_migrated";
+    const isEditableTarget = (target) => {
+        const tag = target?.tagName?.toLowerCase();
+        return tag === "input" || tag === "textarea" || target?.isContentEditable === true;
+    };
     const GAME_GENRES = [
         "action-adventure",
         "adventure",
@@ -1302,6 +1306,10 @@ ${JSON.stringify({
         };
         buttonEl.addEventListener("click", addItem);
         inputEl.addEventListener("keydown", (event) => {
+            // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
+            // Prevents quiz/hotkey logic from blocking form typing
+            if (isEditableTarget(event.target)) return;
+
             if (event.key === "Enter") {
                 event.preventDefault();
                 addItem();
@@ -2112,6 +2120,10 @@ ${JSON.stringify({
     };
 
     const handleStepKeydown = (event) => {
+        // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
+        // Prevents quiz/hotkey logic from blocking form typing
+        if (isEditableTarget(event.target)) return;
+
         const currentIndex = elements.stepButtons.findIndex(btn => btn === document.activeElement);
         if (currentIndex === -1) return;
         if (event.key === "ArrowDown" || event.key === "ArrowRight") {
@@ -2300,6 +2312,10 @@ ${JSON.stringify({
         };
 
         const handleKeydown = (event) => {
+            // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
+            // Prevents quiz/hotkey logic from blocking form typing
+            if (isEditableTarget(event.target)) return;
+
             if (event.key === "Enter") {
                 event.preventDefault();
                 unlock();

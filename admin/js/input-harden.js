@@ -42,6 +42,12 @@
   const isSpaceKey = (event) => event && (event.key === ' ' || event.code === 'Space' || event.key === 'Spacebar' || event.keyCode === 32);
 
   const hardenAdminInputs = (event) => {
+    // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
+    // Prevents quiz/hotkey logic from blocking form typing
+    const tag = event.target?.tagName?.toLowerCase();
+    const isEditable = tag === 'input' || tag === 'textarea' || event.target?.isContentEditable === true;
+    if (isEditable) return;
+
     // Allow normal typing in form fields
     if (isEditableEvent(event) || hasEditableFocus()) {
       if (isSpaceKey(event)) {
