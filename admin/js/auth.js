@@ -191,15 +191,52 @@ export async function getSupabaseClient() {
 }
 
 export async function waitForAuthReady() {
-  if (window.ccgSupabase?.waitForAuth) {
-    await window.ccgSupabase.waitForAuth();
-    return;
+  const client = await getSupabaseClient();
+  const withTimeout = (promise, timeoutMs, label) => {
+    let timer = null;
+    const timeout = new Promise((_, reject) => {
+      timer = window.setTimeout(() => reject(new Error(`${label} timed out after ${timeoutMs}ms.`)), timeoutMs);
+    });
+    return Promise.race([promise, timeout]).finally(() => {
+      if (timer) window.clearTimeout(timer);
+    });
+  };
+
+  const runAuthWait = async () => {
+    if (window.ccgSupabase?.waitForAuth) {
+      await withTimeout(window.ccgSupabase.waitForAuth(), 2000, 'Auth ready');
+    } else {
+      await withTimeout(new Promise((resolve) => {
+        window.addEventListener('ccg:auth-ready', () => resolve(), { once: true });
+        window.setTimeout(resolve, 1000);
+      }), 2000, 'Auth ready');
+    }
+
+    return resolveSession({ allowRefresh: true });
+  };
+
+  let lastError = null;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      const session = await runAuthWait();
+      if (session && session.user) return session;
+
+      const refreshed = await client.auth.refreshSession().catch((error) => {
+        lastError = error;
+        return null;
+      });
+
+      const refreshedSession = refreshed?.data?.session || null;
+      if (refreshedSession && refreshedSession.user) return refreshedSession;
+
+      lastError = new Error('Auth session missing after refresh.');
+    } catch (error) {
+      lastError = error;
+    }
   }
 
-  await new Promise((resolve) => {
-    window.addEventListener('ccg:auth-ready', () => resolve(), { once: true });
-    window.setTimeout(resolve, 1000);
-  });
+  console.error('[CCG-AUTH] waitForAuthReady failed', lastError);
+  throw lastError instanceof Error ? lastError : new Error('Auth readiness failed.');
 }
 
 export async function login(email, password) {

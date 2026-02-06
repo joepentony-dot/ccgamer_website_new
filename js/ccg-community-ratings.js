@@ -1,4 +1,9 @@
 (function () {
+  /* ===============================================
+     OMEGA COMMUNITY AUTH LOCK
+     Prevents endless retry loop by validating auth
+     and refreshing sessions before rating writes.
+     =============================================== */
   function getGameSlug() {
     const params = new URLSearchParams(window.location.search);
     const fromQuery = params.get('id');
@@ -18,6 +23,37 @@
     const code = String(error && error.code || '');
     const message = String(error && error.message || '').toLowerCase();
     return code === '42P01' || code === 'PGRST205' || message.includes('relation') || message.includes('does not exist');
+  }
+
+  function isAuthError(error) {
+    const code = String(error && (error.status || error.code) || '');
+    const message = String(error && error.message || '').toLowerCase();
+    return code === '401'
+      || code === '403'
+      || code === 'PGRST301'
+      || message.includes('jwt')
+      || message.includes('token')
+      || message.includes('auth');
+  }
+
+  async function refreshAuthSession(supabase) {
+    try {
+      await supabase.auth.refreshSession();
+      return true;
+    } catch (_error) {
+      return false;
+    }
+  }
+
+  async function runQueryWithAuthRetry(runQuery, supabase) {
+    const result = await runQuery();
+    if (!result || !result.error || !isAuthError(result.error)) {
+      return result;
+    }
+
+    const refreshed = await refreshAuthSession(supabase);
+    if (!refreshed) return result;
+    return runQuery();
   }
 
   function toUserMessage(error) {
@@ -78,15 +114,32 @@
       return;
     }
 
+    try {
+      await window.ccgSupabase.waitForAuth();
+    } catch (_error) {
+      mount.innerHTML = '<div class="ccg-community-card"><h3>Community Rating</h3><p class="ccg-community-muted">Ratings unavailable (auth error). Reload or re-login.</p></div>';
+      return;
+    }
+
     if (!slug) {
       mount.innerHTML = '<div class="ccg-community-card"><p>Community rating is unavailable for this page.</p></div>';
       return;
     }
 
-    const context = await window.ccgSupabase.getCurrentUserContext();
+    let context = null;
+    let supabase = null;
+    try {
+      context = await window.ccgSupabase.getCurrentUserContext();
+      supabase = await window.ccgSupabase.getClient();
+    } catch (_error) {
+      mount.innerHTML = '<div class="ccg-community-card"><h3>Community Rating</h3><p class="ccg-community-muted">Ratings unavailable (auth error). Reload or re-login.</p></div>';
+      return;
+    }
+
     const user = context.user;
-    const supabase = await window.ccgSupabase.getClient();
-    const summary = await fetchRatingSummary(supabase, slug);
+    const summary = await runQueryWithAuthRetry(function () {
+      return fetchRatingSummary(supabase, slug);
+    }, supabase);
 
     if (summary.error && isNotConfiguredError(summary.error)) {
       renderUnavailable(mount);
@@ -100,7 +153,9 @@
 
     let yourRating = '';
     if (user) {
-      const yourRes = await supabase.from('game_ratings').select('rating').eq('game_slug', slug).eq('user_id', user.id).maybeSingle();
+      const yourRes = await runQueryWithAuthRetry(function () {
+        return supabase.from('game_ratings').select('rating').eq('game_slug', slug).eq('user_id', user.id).maybeSingle();
+      }, supabase);
       if (yourRes.data && yourRes.data.rating) yourRating = String(yourRes.data.rating);
     }
 
@@ -138,17 +193,36 @@
       }
 
       status.textContent = 'Saving…';
+      try {
+        await window.ccgSupabase.waitForAuth();
+      } catch (_error) {
+        status.textContent = 'Your session expired. Please log in again to save your rating.';
+        window.ccgCommunityAuth.openAuthModal('signin');
+        return;
+      }
+
+      let activeUser = null;
       const authRes = await supabase.auth.getUser();
-      const activeUser = authRes && authRes.data ? authRes.data.user : null;
+      activeUser = authRes && authRes.data ? authRes.data.user : null;
+      if (!activeUser || activeUser.id !== user.id) {
+        const refreshed = await refreshAuthSession(supabase);
+        if (refreshed) {
+          const refreshedRes = await supabase.auth.getUser();
+          activeUser = refreshedRes && refreshedRes.data ? refreshedRes.data.user : null;
+        }
+      }
+
       if (!activeUser || activeUser.id !== user.id) {
         status.textContent = 'Your session expired. Please log in again to save your rating.';
         window.ccgCommunityAuth.openAuthModal('signin');
         return;
       }
 
-      const { error } = await supabase
-        .from('game_ratings')
-        .upsert({ user_id: activeUser.id, game_slug: slug, rating: rating }, { onConflict: 'user_id,game_slug' });
+      const { error } = await runQueryWithAuthRetry(function () {
+        return supabase
+          .from('game_ratings')
+          .upsert({ user_id: activeUser.id, game_slug: slug, rating: rating }, { onConflict: 'user_id,game_slug' });
+      }, supabase);
 
       if (error) {
         status.textContent = toUserMessage(error);

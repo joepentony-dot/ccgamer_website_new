@@ -230,21 +230,51 @@
     };
   }
 
+  /* ===============================================
+     OMEGA COMMUNITY AUTH LOCK
+     Prevents endless retry loop by ensuring auth
+     context is validated and rebuilt once before
+     surfacing a visible error to the UI.
+     =============================================== */
   async function getCurrentUserContext() {
-    const session = await waitForAuth();
-    const user = session && session.user ? session.user : null;
-    const profile = window.ccgCommunityAuth && typeof window.ccgCommunityAuth.getProfile === 'function'
-      ? window.ccgCommunityAuth.getProfile()
-      : null;
-    const role = getRoleFromSources(session, profile);
-    const isAuthenticated = Boolean(user);
-    return {
-      user,
-      session,
-      isAuthenticated,
-      role,
-      permissions: getPermissionsFromRole(role, isAuthenticated)
+    const buildContext = async () => {
+      const session = await waitForAuth();
+      const user = session && session.user ? session.user : null;
+      const profile = window.ccgCommunityAuth && typeof window.ccgCommunityAuth.getProfile === 'function'
+        ? window.ccgCommunityAuth.getProfile()
+        : null;
+      const role = getRoleFromSources(session, profile);
+      const isAuthenticated = Boolean(user);
+      return {
+        user,
+        session,
+        isAuthenticated,
+        role,
+        permissions: getPermissionsFromRole(role, isAuthenticated)
+      };
     };
+
+    let lastError = null;
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        const context = await buildContext();
+        if (!context || typeof context !== 'object') {
+          throw new Error('Invalid auth context.');
+        }
+        return context;
+      } catch (error) {
+        lastError = error;
+        try {
+          const client = await getClient();
+          await client.auth.refreshSession();
+        } catch (refreshError) {
+          lastError = refreshError || lastError;
+        }
+      }
+    }
+
+    console.error('[CCG-AUTH] getCurrentUserContext failed', lastError);
+    throw lastError instanceof Error ? lastError : new Error('Unable to resolve auth context.');
   }
 
   function initAuthDebugOverlay() {
