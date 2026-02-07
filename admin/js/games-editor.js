@@ -9,9 +9,21 @@ const MAX_STEP = 6;
 const MAX_LIBRARY_ATTEMPTS = 2;
 const LIBRARY_RETRY_DELAY_MS = 800;
 const ALLOWED_WRITE_ROLES = ['editor', 'admin', 'superadmin'];
+const AUTO_SAVE_DELAY_MS = 1400;
 
 const THUMBNAIL_BASE_PATH = 'resources/images/thumbnails/all/';
 const BOX3D_BASE_PATH = 'resources/images/games/boxes-3d/';
+
+const STEP_FIELDS = {
+  1: ['title', 'slug', 'id', 'system', 'year'],
+  2: ['thumbnailFile'],
+  3: ['genres', 'ccgRating'],
+  4: [],
+  5: [],
+  6: []
+};
+
+window.CCG_CONTEXT = 'admin';
 
 const state = {
   step: 1,
@@ -34,6 +46,9 @@ const state = {
   mode: 'new',
   editing: null,
   dirty: false,
+  draftRestored: false,
+  autoSaveTimer: null,
+  stepStatus: {},
   auth: {
     ready: false,
     context: null,
@@ -53,18 +68,24 @@ const el = {
   errorIndicator: document.querySelector('[data-error-indicator]'),
   readonlyBadge: document.querySelector('[data-readonly-badge]'),
   exportNote: document.querySelector('[data-export-note]'),
+  draftBanner: document.querySelector('[data-draft-banner]'),
+  stepCounter: document.querySelector('[data-step-counter]'),
   steps: Array.from(document.querySelectorAll('[data-step]')),
-  progress: Array.from(document.querySelectorAll('[data-progress-step]')),
+  stepperButtons: Array.from(document.querySelectorAll('[data-step-jump]')),
   fields: Array.from(document.querySelectorAll('[data-field]')),
   genreList: document.querySelector('[data-genre-list]'),
+  genreSearch: document.querySelector('[data-genre-search]'),
   systemSelect: document.querySelector('[data-system-select]'),
+  ratingRange: document.querySelector('[data-rating-range]'),
+  ratingOutput: document.querySelector('[data-rating-output]'),
+  seoSuggestion: document.querySelector('[data-seo-suggestion]'),
+  count: {
+    seoTitle: document.querySelector('[data-count="seoTitle"]'),
+    metaDescription: document.querySelector('[data-count="metaDescription"]')
+  },
   overrideFields: {
     thumbnail: document.querySelector('[data-override-field="thumbnail"]'),
     box3d: document.querySelector('[data-override-field="box3d"]')
-  },
-  pathPreviews: {
-    thumbnail: document.querySelector('[data-preview-path="thumbnail"]'),
-    box3d: document.querySelector('[data-preview-path="box3d"]')
   },
   previews: {
     canonical: document.querySelector('[data-preview="canonical"]'),
@@ -75,7 +96,27 @@ const el = {
     sitemapFragment: document.querySelector('[data-preview="sitemap-fragment"]'),
     metadataJson: document.querySelector('[data-preview="metadata-json"]'),
     manifestJson: document.querySelector('[data-preview="manifest-json"]'),
-    readme: document.querySelector('[data-preview="readme"]')
+    readme: document.querySelector('[data-preview="readme"]'),
+    ogTitle: document.querySelector('[data-preview="og-title"]'),
+    ogDescription: document.querySelector('[data-preview="og-description"]'),
+    ogUrl: document.querySelector('[data-preview="og-url"]')
+  },
+  previewImages: {
+    thumbnail: document.querySelector('[data-preview-image="thumbnail"]'),
+    box3d: document.querySelector('[data-preview-image="box3d"]'),
+    og: document.querySelector('[data-preview-image="og"]')
+  },
+  previewCards: {
+    thumbnail: document.querySelector('[data-preview-card="thumbnail"]'),
+    box3d: document.querySelector('[data-preview-card="box3d"]')
+  },
+  previewStatus: {
+    thumbnail: document.querySelector('[data-preview-status="thumbnail"]'),
+    box3d: document.querySelector('[data-preview-status="box3d"]')
+  },
+  previewPaths: {
+    thumbnail: document.querySelector('[data-preview-path="thumbnail"]'),
+    box3d: document.querySelector('[data-preview-path="box3d"]')
   },
   validation: {
     errors: document.querySelector('[data-validation-errors]'),
@@ -84,13 +125,19 @@ const el = {
     warnings: document.querySelector('[data-validation-warnings]')
   },
   load: {
+    form: document.querySelector('[data-load-form]'),
     input: document.querySelector('[data-load-input]'),
     button: document.querySelector('[data-action="load-game"]'),
     status: document.querySelector('[data-load-status]'),
     list: document.querySelector('#game-lookup-list')
   },
+  locks: {
+    slug: document.querySelector('[data-lock-toggle="slug"]'),
+    id: document.querySelector('[data-lock-toggle="id"]')
+  },
   actions: {
     saveDraft: document.querySelector('[data-action="save-draft"]'),
+    clearDraft: document.querySelectorAll('[data-action="clear-draft"]'),
     resetWizard: document.querySelector('[data-action="reset-wizard"]'),
     buildPackage: document.querySelector('[data-action="build-package"]'),
     runValidation: document.querySelector('[data-action="run-validation"]'),
@@ -102,6 +149,8 @@ const el = {
     toggleBox3dOverride: document.querySelector('[data-action="toggle-box3d-override"]')
   }
 };
+
+const isEditableTarget = (target) => (window.ccgIsEditableTarget ? window.ccgIsEditableTarget(target) : false);
 
 function setRuntimeState(message, kind = 'ready') {
   if (!el.runtime) return;
@@ -124,13 +173,13 @@ function setReadOnly(isReadOnly) {
   const disableActions = [
     'saveDraft',
     'buildPackage',
-    'downloadBundle'
+    'downloadBundle',
+    'generateOutput'
   ];
 
   disableActions.forEach((key) => {
-    if (el.actions[key]) {
-      el.actions[key].disabled = Boolean(isReadOnly);
-    }
+    const node = el.actions[key];
+    if (node) node.disabled = Boolean(isReadOnly);
   });
 
   if (el.readonlyBadge) {
@@ -243,7 +292,7 @@ function generateUniqueId(base, existing) {
 
 function listFromText(value) {
   return String(value || '')
-    .split(/\n|,/)
+    .split(/\n|,/) 
     .map((entry) => entry.trim())
     .filter(Boolean);
 }
@@ -270,12 +319,6 @@ function toNumber(value) {
   const numberValue = Number(value);
   return Number.isFinite(numberValue) ? numberValue : null;
 }
-
-/* ============================================================
-   SCHEMA MAP: Derived directly from games.json (no guessing).
-   We use this for required/optional fields, credit keys, and
-   system/genre options to keep the wizard aligned with data.
-============================================================ */
 
 function buildSchemaMap(library) {
   const fieldCounts = new Map();
@@ -315,11 +358,6 @@ function buildSchemaMap(library) {
   };
 }
 
-/* ============================================================
-   FILENAME-ONLY INPUTS: Expand filenames into full asset paths.
-   Users enter just the filename; we prefix the known folder.
-============================================================ */
-
 function buildAssetPath({ filename, override, base }) {
   if (override) return override;
   if (!filename) return '';
@@ -330,19 +368,18 @@ function normalizeDraft() {
   const draft = state.draft;
   if (!draft) return;
 
-  draft.title = String(draft.title || '');
+  draft.title = String(draft.title ?? '');
+
   if (!state.slugLocked) {
     const baseSlug = slugify(draft.title);
     draft.slug = generateUniqueSlug(baseSlug, state.slugSet);
   }
 
-  draft.slug = String(draft.slug || '').trim();
   if (!state.idLocked) {
     const baseId = slugify(draft.title).replace(/-/g, '_');
     draft.id = generateUniqueId(baseId, state.idSet);
   }
 
-  draft.id = String(draft.id || '').trim();
   draft.system = String(draft.system || '').trim();
   draft.year = String(draft.year || '').trim();
   draft.developer = String(draft.developer || '').trim();
@@ -362,20 +399,20 @@ function normalizeDraft() {
   });
   draft.videoId = String(draft.videoId || '').trim();
   draft.pdf = String(draft.pdf || '').trim();
-  draft.diskRefs = String(draft.diskRefs || '').trim();
-  draft.externalRefs = String(draft.externalRefs || '').trim();
+  draft.diskRefs = String(draft.diskRefs || '');
+  draft.externalRefs = String(draft.externalRefs || '');
   draft.collections = String(draft.collections || '').trim();
   draft.ccgRating = String(draft.ccgRating || '').trim();
-  draft.ccgRatingReason = String(draft.ccgRatingReason || '').trim();
-  draft.description = String(draft.description || '').trim();
-  draft.creditPublisher = String(draft.creditPublisher || '').trim();
-  draft.creditProducer = String(draft.creditProducer || '').trim();
-  draft.creditCoder = String(draft.creditCoder || '').trim();
-  draft.creditGraphics = String(draft.creditGraphics || '').trim();
-  draft.creditMusician = String(draft.creditMusician || '').trim();
-  draft.creditRereleaser = String(draft.creditRereleaser || '').trim();
-  draft.creditDeveloper = String(draft.creditDeveloper || '').trim();
-  draft.seoTitle = String(draft.seoTitle || '').trim();
+  draft.ccgRatingReason = String(draft.ccgRatingReason || '');
+  draft.description = String(draft.description || '');
+  draft.creditPublisher = String(draft.creditPublisher || '');
+  draft.creditProducer = String(draft.creditProducer || '');
+  draft.creditCoder = String(draft.creditCoder || '');
+  draft.creditGraphics = String(draft.creditGraphics || '');
+  draft.creditMusician = String(draft.creditMusician || '');
+  draft.creditRereleaser = String(draft.creditRereleaser || '');
+  draft.creditDeveloper = String(draft.creditDeveloper || '');
+  draft.seoTitle = String(draft.seoTitle || '');
 }
 
 function updateFormFromDraft() {
@@ -392,10 +429,49 @@ function updateFormFromDraft() {
       input.checked = selected.has(input.value);
     });
   }
+
+  if (el.locks.slug) el.locks.slug.checked = state.slugLocked;
+  if (el.locks.id) el.locks.id.checked = state.idLocked;
+  if (el.ratingRange) el.ratingRange.value = state.draft.ccgRating || 1;
 }
 
 function buildMetaDescription(draft, entry) {
   return draft.description || entry?.description || '';
+}
+
+function updateCounters() {
+  const seoTitleValue = state.draft.seoTitle || `${state.draft.title || 'Title'} | Cheeky Commodore Gamer`;
+  const metaDescriptionValue = buildMetaDescription(state.draft) || '';
+  if (el.count.seoTitle) el.count.seoTitle.textContent = String(seoTitleValue.length);
+  if (el.count.metaDescription) el.count.metaDescription.textContent = String(metaDescriptionValue.length);
+  if (el.seoSuggestion) el.seoSuggestion.textContent = `${state.draft.title || 'Title'} | Cheeky Commodore Gamer`;
+}
+
+function updateMediaPreview(key, src) {
+  const img = el.previewImages[key];
+  const card = el.previewCards[key];
+  const status = el.previewStatus[key];
+  const path = el.previewPaths[key];
+
+  if (path) path.textContent = src ? `Resolved path: ${src}` : '';
+  if (!img || !card) return;
+
+  if (!src) {
+    img.removeAttribute('src');
+    card.classList.remove('is-error');
+    if (status) status.textContent = 'Awaiting filename…';
+    return;
+  }
+
+  img.onload = () => {
+    card.classList.remove('is-error');
+    if (status) status.textContent = 'Preview loaded.';
+  };
+  img.onerror = () => {
+    card.classList.add('is-error');
+    if (status) status.textContent = 'Preview failed. Check filename or path.';
+  };
+  img.src = `/${src}`.replace(/(?<!:)\/\//g, '/');
 }
 
 function updatePreviewFields() {
@@ -403,20 +479,27 @@ function updatePreviewFields() {
   const canonical = slug ? `${SITE_ORIGIN}/games/${slug}/` : '';
   const sitemap = slug ? buildSitemapFragment(state.draft, { fragmentOnly: true }) : '';
   const metaDescription = buildMetaDescription(state.draft);
+  const seoTitle = state.draft.seoTitle || `${state.draft.title || 'Title'} | Cheeky Commodore Gamer`;
+
   if (el.previews.canonical) el.previews.canonical.value = canonical;
   if (el.previews.sitemap) el.previews.sitemap.value = sitemap;
   if (el.previews.metaDescription) el.previews.metaDescription.value = metaDescription;
 
-  if (el.pathPreviews.thumbnail) {
-    el.pathPreviews.thumbnail.textContent = state.draft.thumbnail
-      ? `Full path: ${state.draft.thumbnail}`
-      : '';
+  if (el.previews.ogTitle) el.previews.ogTitle.textContent = seoTitle;
+  if (el.previews.ogDescription) el.previews.ogDescription.textContent = metaDescription || 'Add a description to preview OG copy.';
+  if (el.previews.ogUrl) el.previews.ogUrl.textContent = canonical || 'Canonical URL will appear here.';
+  if (el.previewImages.og) {
+    const imageSrc = state.draft.thumbnail ? `/${state.draft.thumbnail}`.replace(/(?<!:)\/\//g, '/') : '';
+    if (imageSrc) {
+      el.previewImages.og.src = imageSrc;
+    } else {
+      el.previewImages.og.removeAttribute('src');
+    }
   }
-  if (el.pathPreviews.box3d) {
-    el.pathPreviews.box3d.textContent = state.draft.box3d
-      ? `Full path: ${state.draft.box3d}`
-      : '';
-  }
+
+  updateMediaPreview('thumbnail', state.draft.thumbnail);
+  updateMediaPreview('box3d', state.draft.box3d);
+  updateCounters();
 }
 
 function updateProgress() {
@@ -425,14 +508,15 @@ function updateProgress() {
     section.hidden = step !== state.step;
   });
 
-  el.progress.forEach((node) => {
-    const step = Number(node.dataset.progressStep || 0);
-    node.classList.toggle('is-active', step === state.step);
-    node.classList.toggle('is-complete', step < state.step);
+  el.stepperButtons.forEach((button) => {
+    const step = Number(button.dataset.stepJump || 0);
+    button.classList.toggle('is-active', step === state.step);
+    button.classList.toggle('is-complete', Boolean(state.stepStatus[step]));
   });
 
   if (el.actions.prevStep) el.actions.prevStep.disabled = state.step === 1;
   if (el.actions.nextStep) el.actions.nextStep.disabled = state.step === MAX_STEP;
+  if (el.stepCounter) el.stepCounter.textContent = String(state.step);
 }
 
 function setDraftIndicator(message) {
@@ -487,6 +571,15 @@ function saveDraft() {
   markDirty(false);
 }
 
+function scheduleAutoSave() {
+  if (state.autoSaveTimer) {
+    window.clearTimeout(state.autoSaveTimer);
+  }
+  state.autoSaveTimer = window.setTimeout(() => {
+    saveDraft();
+  }, AUTO_SAVE_DELAY_MS);
+}
+
 function loadDraft() {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) {
@@ -502,12 +595,25 @@ function loadDraft() {
     state.lastSavedAt = parsed.savedAt || null;
     state.mode = parsed.mode || 'new';
     state.editing = parsed.editing || null;
+    state.draftRestored = true;
     if (state.lastSavedAt) {
       markDirty(false);
     }
   } catch {
     state.draft = defaultDraft();
   }
+}
+
+function showDraftBanner() {
+  if (!el.draftBanner) return;
+  el.draftBanner.hidden = !state.draftRestored;
+}
+
+function clearDraft() {
+  localStorage.removeItem(STORAGE_KEY);
+  state.draftRestored = false;
+  showDraftBanner();
+  setDraftIndicator('Draft: cleared');
 }
 
 function resetWizard() {
@@ -520,16 +626,19 @@ function resetWizard() {
   state.draft = defaultDraft();
   state.outputs = null;
   state.validation = { errors: [], warnings: [], missing: [], fieldErrors: {}, ran: false, valid: false };
+  state.draftRestored = false;
   updateFormFromDraft();
   updatePreviewFields();
   renderValidation();
   renderOutputs();
+  evaluateStepStatus();
   updateProgress();
   markDirty(false);
   if (el.actions.downloadBundle) el.actions.downloadBundle.disabled = true;
   if (el.exportNote) el.exportNote.hidden = true;
   updateStatusIndicators();
   setErrorIndicator('');
+  showDraftBanner();
 }
 
 function setLibraryIndicator(message) {
@@ -567,6 +676,15 @@ function renderGenres() {
     label.appendChild(input);
     label.append(` ${genre.replace(/(^|-)\w/g, (match) => match.toUpperCase())}`);
     el.genreList.appendChild(label);
+  });
+}
+
+function filterGenres(term) {
+  if (!el.genreList) return;
+  const normalized = String(term || '').trim().toLowerCase();
+  el.genreList.querySelectorAll('label').forEach((label) => {
+    const text = label.textContent?.toLowerCase() || '';
+    label.hidden = normalized ? !text.includes(normalized) : false;
   });
 }
 
@@ -651,35 +769,21 @@ function draftFromGame(game) {
 
 function setEditMode(game, index) {
   state.mode = 'edit';
-  state.editing = {
-    index,
-    slug: game.slug,
-    id: game.id,
-    title: game.title
-  };
-  state.slugLocked = true;
-  state.idLocked = true;
+  state.editing = { slug: game.slug, id: game.id, index };
   updateUniquenessSets();
   updateStatusIndicators();
 }
 
-function setNewMode() {
-  state.mode = 'new';
-  state.editing = null;
-  updateUniquenessSets();
-  updateStatusIndicators();
-}
-
-function setLoadStatus(message, tone = '') {
+function setLoadStatus(message, stateClass = '') {
   if (!el.load.status) return;
   el.load.status.textContent = message;
-  el.load.status.dataset.tone = tone;
+  el.load.status.dataset.state = stateClass;
 }
 
 function loadGameById(id) {
   const cleanId = String(id || '').trim();
   if (!cleanId) {
-    setLoadStatus('Enter a game ID to load.', 'warning');
+    setLoadStatus('Enter an ID to load.', 'warning');
     return;
   }
 
@@ -695,6 +799,7 @@ function loadGameById(id) {
   normalizeDraft();
   updateFormFromDraft();
   updatePreviewFields();
+  evaluateStepStatus();
   markDirty(false);
   setLoadStatus(`Loaded ${game.title}`, 'success');
   setErrorIndicator('');
@@ -719,21 +824,24 @@ function loadGameBySlug(slug) {
   normalizeDraft();
   updateFormFromDraft();
   updatePreviewFields();
+  evaluateStepStatus();
   markDirty(false);
   setLoadStatus(`Loaded ${game.title}`, 'success');
   setErrorIndicator('');
 }
 
-function validateDraft() {
-  const context = {
+function getValidationContext() {
+  return {
     slugSet: state.slugSet,
     idSet: state.idSet,
     allowedSystems: new Set(state.schema.systems),
     originalSlug: state.editing?.slug || '',
     originalId: state.editing?.id || ''
   };
+}
 
-  const result = validateWizardDraft(state.draft, context);
+function validateDraft() {
+  const result = validateWizardDraft(state.draft, getValidationContext());
   state.validation = { ...result, ran: true, valid: result.valid };
   updateStatusIndicators();
   return result;
@@ -744,6 +852,15 @@ function renderFieldErrors(fieldErrors) {
     const key = node.dataset.errorFor;
     node.textContent = fieldErrors[key] || '';
   });
+}
+
+function focusField(fieldName) {
+  if (!fieldName) return;
+  const field = document.querySelector(`[data-field="${fieldName}"]`);
+  if (field) {
+    field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    field.focus();
+  }
 }
 
 function renderValidation() {
@@ -759,17 +876,33 @@ function renderValidation() {
   }
 
   if (el.validation.errors) {
-    if (errors.length) {
-      el.validation.errors.hidden = false;
-      el.validation.errors.innerHTML = `<ul>${errors.map((error) => `<li>${escapeHtml(error)}</li>`).join('')}</ul>`;
-    } else {
-      el.validation.errors.hidden = true;
-      el.validation.errors.innerHTML = '';
-    }
+    const fieldErrorItems = Object.entries(fieldErrors || {}).map(([field, message]) => ({
+      field,
+      message
+    }));
+    const fieldMessages = new Set(fieldErrorItems.map((item) => item.message));
+    const additionalErrors = errors.filter((error) => !fieldMessages.has(error));
+    const items = [
+      ...fieldErrorItems.map((item) => ({
+        field: item.field,
+        message: item.message
+      })),
+      ...additionalErrors.map((message) => ({ field: '', message }))
+    ];
+    el.validation.errors.innerHTML = items.length
+      ? items
+        .map((item) => {
+          const dataAttr = item.field ? ` data-field="${item.field}"` : '';
+          return `<li class="is-error"><button type="button"${dataAttr}>${escapeHtml(item.message)}</button></li>`;
+        })
+        .join('')
+      : '<li>No errors 🎉</li>';
   }
 
   if (el.validation.warnings) {
-    el.validation.warnings.innerHTML = warnings.map((warning) => `<li>${escapeHtml(warning)}</li>`).join('');
+    el.validation.warnings.innerHTML = warnings.length
+      ? warnings.map((warning) => `<li class="is-warning"><button type="button">${escapeHtml(warning)}</button></li>`).join('')
+      : '<li>No warnings.</li>';
   }
 
   renderFieldErrors(fieldErrors || {});
@@ -805,7 +938,7 @@ function renderOutputs() {
 }
 
 function escapeHtml(value) {
-  return String(value || '').replace(/[&<>"]/g, (char) => ({
+  return String(value || '').replace(/[&<>"]+/g, (char) => ({
     '&': '&amp;',
     '<': '&lt;',
     '>': '&gt;',
@@ -1097,15 +1230,18 @@ function handleFieldInput(event) {
   const name = target.dataset.field;
   if (!name) return;
 
-  if (name === 'slug') {
-    state.slugLocked = Boolean(target.value.trim());
+  if (name === 'slug' && !state.slugLocked) {
+    state.slugLocked = Boolean(target.value);
+    if (el.locks.slug) el.locks.slug.checked = state.slugLocked;
   }
 
-  if (name === 'id') {
-    state.idLocked = Boolean(target.value.trim());
+  if (name === 'id' && !state.idLocked) {
+    state.idLocked = Boolean(target.value);
+    if (el.locks.id) el.locks.id.checked = state.idLocked;
   }
 
   state.draft[name] = target.value;
+
   if (name === 'title' && !state.slugLocked) {
     const baseSlug = slugify(state.draft.title);
     state.draft.slug = generateUniqueSlug(baseSlug, state.slugSet);
@@ -1121,7 +1257,9 @@ function handleFieldInput(event) {
   updatePreviewFields();
   state.validation.ran = false;
   updateStatusIndicators();
+  evaluateStepStatus();
   markDirty(true);
+  scheduleAutoSave();
 }
 
 function handleGenreChange(event) {
@@ -1136,13 +1274,80 @@ function handleGenreChange(event) {
   state.draft.genres = Array.from(selected);
   state.validation.ran = false;
   updateStatusIndicators();
+  evaluateStepStatus();
   markDirty(true);
+  scheduleAutoSave();
+}
+
+function handleRatingRange(event) {
+  const value = event.target.value;
+  state.draft.ccgRating = value;
+  if (el.ratingOutput) el.ratingOutput.textContent = value;
+  updateFormFromDraft();
+  updatePreviewFields();
+  evaluateStepStatus();
+  markDirty(true);
+  scheduleAutoSave();
 }
 
 function toggleOverrideField(targetKey) {
   const field = el.overrideFields[targetKey];
   if (!field) return;
   field.hidden = !field.hidden;
+}
+
+function setSlugLock(locked) {
+  state.slugLocked = locked;
+  if (!locked) {
+    const baseSlug = slugify(state.draft.title);
+    state.draft.slug = generateUniqueSlug(baseSlug, state.slugSet);
+  }
+  normalizeDraft();
+  updateFormFromDraft();
+  updatePreviewFields();
+  evaluateStepStatus();
+  markDirty(true);
+  scheduleAutoSave();
+}
+
+function setIdLock(locked) {
+  state.idLocked = locked;
+  if (!locked) {
+    const baseId = slugify(state.draft.title).replace(/-/g, '_');
+    state.draft.id = generateUniqueId(baseId, state.idSet);
+  }
+  normalizeDraft();
+  updateFormFromDraft();
+  updatePreviewFields();
+  evaluateStepStatus();
+  markDirty(true);
+  scheduleAutoSave();
+}
+
+function evaluateStepStatus() {
+  const validation = validateWizardDraft(state.draft, getValidationContext());
+  const fieldErrors = validation.fieldErrors || {};
+  state.validation.fieldErrors = fieldErrors;
+  state.validation.missing = validation.missing || [];
+  renderFieldErrors(fieldErrors);
+  const status = {};
+  Object.keys(STEP_FIELDS).forEach((stepKey) => {
+    const step = Number(stepKey);
+    const fields = STEP_FIELDS[step] || [];
+    status[step] = fields.every((field) => !fieldErrors[field]);
+  });
+  state.stepStatus = status;
+  updateProgress();
+}
+
+function canNavigateToStep(targetStep) {
+  if (targetStep <= 1) return true;
+  for (let step = 1; step < targetStep; step += 1) {
+    if (!state.stepStatus[step]) {
+      return { ok: false, step };
+    }
+  }
+  return { ok: true };
 }
 
 function goToStep(nextStep) {
@@ -1160,34 +1365,61 @@ function bindEvents() {
     el.genreList.addEventListener('change', handleGenreChange);
   }
 
-  el.load.button?.addEventListener('click', () => {
-    const value = el.load.input?.value || '';
-    if (value.includes('-')) {
-      loadGameBySlug(value);
-    } else if (value.includes('_')) {
-      loadGameById(value);
-    } else {
-      loadGameBySlug(value);
-      if (state.mode !== 'edit') loadGameById(value);
-    }
+  if (el.genreSearch) {
+    el.genreSearch.addEventListener('input', (event) => {
+      filterGenres(event.target.value);
+    });
+  }
+
+  if (el.ratingRange) {
+    el.ratingRange.addEventListener('input', handleRatingRange);
+  }
+
+  if (el.load.form) {
+    el.load.form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const value = el.load.input?.value || '';
+      if (value.includes('-')) {
+        loadGameBySlug(value);
+      } else if (value.includes('_')) {
+        loadGameById(value);
+      } else {
+        loadGameBySlug(value);
+        if (state.mode !== 'edit') loadGameById(value);
+      }
+    });
+  }
+
+  el.stepperButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const target = Number(button.dataset.stepJump || 1);
+      const result = canNavigateToStep(target);
+      if (!result.ok) {
+        setErrorIndicator(`Complete required fields in Step ${result.step} before moving on.`);
+        focusFirstInvalidField(result.step);
+        return;
+      }
+      setErrorIndicator('');
+      goToStep(target);
+    });
   });
 
-  el.load.input?.addEventListener('keydown', (event) => {
-    // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
-    // Prevents quiz/hotkey logic from blocking form typing
-    const tag = event.target?.tagName?.toLowerCase();
-    const isEditable = tag === 'input' || tag === 'textarea' || event.target?.isContentEditable === true;
-    if (isEditable) return;
+  el.locks.slug?.addEventListener('change', (event) => {
+    setSlugLock(event.target.checked);
+  });
 
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      el.load.button?.click();
-    }
+  el.locks.id?.addEventListener('change', (event) => {
+    setIdLock(event.target.checked);
   });
 
   el.actions.saveDraft?.addEventListener('click', () => {
-    if (!state.auth.canWrite) return;
     saveDraft();
+  });
+
+  el.actions.clearDraft.forEach((button) => {
+    button.addEventListener('click', () => {
+      clearDraft();
+    });
   });
 
   el.actions.resetWizard?.addEventListener('click', () => {
@@ -1199,7 +1431,15 @@ function bindEvents() {
   });
 
   el.actions.nextStep?.addEventListener('click', () => {
-    goToStep(state.step + 1);
+    const next = state.step + 1;
+    const result = canNavigateToStep(next);
+    if (!result.ok) {
+      setErrorIndicator(`Complete required fields in Step ${result.step} before moving on.`);
+      focusFirstInvalidField(result.step);
+      return;
+    }
+    setErrorIndicator('');
+    goToStep(next);
   });
 
   el.actions.toggleThumbnailOverride?.addEventListener('click', () => {
@@ -1256,6 +1496,22 @@ function bindEvents() {
       setErrorIndicator(error instanceof Error ? error.message : 'Package build failed.');
     });
   });
+
+  el.validation.errors?.addEventListener('click', (event) => {
+    const target = event.target.closest('button');
+    if (!target) return;
+    const field = target.dataset.field;
+    if (field) {
+      focusField(field);
+    }
+  });
+}
+
+function focusFirstInvalidField(step) {
+  const fields = STEP_FIELDS[step] || [];
+  const fieldErrors = state.validation.fieldErrors || {};
+  const field = fields.find((name) => fieldErrors[name]);
+  focusField(field || fields[0]);
 }
 
 async function loadLibrary() {
@@ -1316,7 +1572,9 @@ async function boot() {
   normalizeDraft();
   updateFormFromDraft();
   updatePreviewFields();
+  evaluateStepStatus();
   updateProgress();
+  showDraftBanner();
   bindEvents();
   window.CCGGameBuilder = { loadGameById, loadGameBySlug };
 

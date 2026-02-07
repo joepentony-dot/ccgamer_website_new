@@ -13,10 +13,10 @@
   <link href="../resources/css/ccg-mode.css" rel="stylesheet" />
   <link href="../resources/css/ccg-effects.css" rel="stylesheet" />
   <link href="../resources/css/ccg-admin.css" rel="stylesheet" />
+  <link href="../resources/css/ccg-admin-games-editor.css" rel="stylesheet" />
   <link href="./css/admin-auth.css" rel="stylesheet" />
-  <link href="./css/games-editor.css" rel="stylesheet" />
 </head>
-<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
+<body class="ccg-body ccg-admin" data-ccg-mode="c64" data-mode="c64" data-ccg-context="admin">
   <div aria-hidden="true" class="ccg-bg">
     <div aria-hidden="true" class="ccg-bg-starfield"></div>
     <div aria-hidden="true" class="ccg-bg-grid"></div>
@@ -33,10 +33,20 @@
       </div>
       <div class="toolbar-actions">
         <button class="ccg-btn ccg-btn--ghost" type="button" data-action="save-draft">Save draft</button>
+        <button class="ccg-btn ccg-btn--ghost" type="button" data-action="clear-draft">Clear draft</button>
         <button class="ccg-btn ccg-btn--ghost" type="button" data-action="reset-wizard">Reset wizard</button>
         <button class="ccg-btn ccg-btn--primary" type="button" data-action="build-package">Build package</button>
       </div>
     </header>
+
+    <section class="draft-banner" data-draft-banner hidden>
+      <div>
+        <strong>Draft restored.</strong> Continue where you left off, or clear to start fresh.
+      </div>
+      <div class="draft-banner__actions">
+        <button class="ccg-btn ccg-btn--ghost" type="button" data-action="clear-draft">Clear Draft</button>
+      </div>
+    </section>
 
     <section class="status-strip" aria-live="polite">
       <p data-runtime-state data-state="ready">State: Ready</p>
@@ -48,69 +58,98 @@
       <p class="status-error" data-error-indicator hidden></p>
     </section>
 
-    <section class="omega-pipeline-strip" aria-label="Game Builder Progress" data-progress-indicator>
-      <span data-progress-step="1" class="is-active">1 · Core Info</span>
-      <span>→</span>
-      <span data-progress-step="2">2 · Media</span>
-      <span>→</span>
-      <span data-progress-step="3">3 · Metadata</span>
-      <span>→</span>
-      <span data-progress-step="4">4 · SEO</span>
-      <span>→</span>
-      <span data-progress-step="5">5 · Validation</span>
-      <span>→</span>
-      <span data-progress-step="6">6 · Package</span>
-    </section>
+    <nav class="wizard-stepper" aria-label="Wizard steps" data-stepper>
+      <button type="button" data-step-jump="1">
+        <span class="step-index">1</span>
+        <span class="step-label">Core Info</span>
+        <span class="step-state" aria-hidden="true"></span>
+      </button>
+      <button type="button" data-step-jump="2">
+        <span class="step-index">2</span>
+        <span class="step-label">Media</span>
+        <span class="step-state" aria-hidden="true"></span>
+      </button>
+      <button type="button" data-step-jump="3">
+        <span class="step-index">3</span>
+        <span class="step-label">Metadata</span>
+        <span class="step-state" aria-hidden="true"></span>
+      </button>
+      <button type="button" data-step-jump="4">
+        <span class="step-index">4</span>
+        <span class="step-label">SEO</span>
+        <span class="step-state" aria-hidden="true"></span>
+      </button>
+      <button type="button" data-step-jump="5">
+        <span class="step-index">5</span>
+        <span class="step-label">Validation</span>
+        <span class="step-state" aria-hidden="true"></span>
+      </button>
+      <button type="button" data-step-jump="6">
+        <span class="step-index">6</span>
+        <span class="step-label">Package</span>
+        <span class="step-state" aria-hidden="true"></span>
+      </button>
+    </nav>
 
     <section class="omega-workflow-note" data-export-note hidden>
       Package created. Download the ZIP and merge the contents into the repo before committing.
     </section>
 
     <section class="admin-info-card" data-step="1">
-      <h2>Step 1 · Core Game Info</h2>
-      <p>Let’s lock in the identity fields used by games.json. Slug and ID auto-generate from the title, but you can override them.</p>
-      <div class="omega-required-box">
-        <h3>What do I need to fill?</h3>
-        <ul>
-          <li>Title</li>
-          <li>System</li>
-          <li>Year (4 digits)</li>
-          <li>Slug (URL-safe)</li>
-          <li>Game ID (unique)</li>
-        </ul>
+      <div class="step-header">
+        <div>
+          <h2>Step 1 · Core Game Info</h2>
+          <p>Lock in the identity fields used by games.json. Slug and ID auto-generate from the title when unlocked.</p>
+        </div>
+        <div class="omega-required-box">
+          <h3>What do I need to fill?</h3>
+          <ul>
+            <li><strong>Title</strong></li>
+            <li><strong>System</strong></li>
+            <li><strong>Year (4 digits)</strong></li>
+            <li><strong>Slug</strong></li>
+            <li><strong>Game ID</strong></li>
+          </ul>
+        </div>
       </div>
-      <div class="control-row">
+      <form class="control-row" data-load-form>
         <label>Load existing game (slug or ID)
           <input type="text" name="lookup" list="game-lookup-list" data-load-input placeholder="brian-bloodaxe or brian_bloodaxe" />
         </label>
-        <button class="ccg-btn ccg-btn--ghost" type="button" data-action="load-game">Load</button>
+        <button class="ccg-btn ccg-btn--ghost" type="submit" data-action="load-game">Load</button>
         <span class="field-hint" data-load-status></span>
         <datalist id="game-lookup-list"></datalist>
-      </div>
+      </form>
       <div class="form-grid">
-        <label>Title
+        <label>Title <span class="req">*</span>
           <input type="text" name="title" required data-field="title" placeholder="e.g. Brian Bloodaxe" />
           <small class="field-hint">Use the on-box title. This drives the slug and sort title.</small>
           <span class="field-error" data-error-for="title"></span>
         </label>
-        <label>Slug
+        <label>Slug <span class="req">*</span>
           <input type="text" name="slug" required data-field="slug" placeholder="brian-bloodaxe" />
           <small class="field-hint">Lowercase letters, numbers, and hyphens only.</small>
           <span class="field-error" data-error-for="slug"></span>
+          <label class="field-lock">
+            <input type="checkbox" data-lock-toggle="slug" /> Lock slug (stop auto-sync)
+          </label>
         </label>
-        <label>Game ID
+        <label>Game ID <span class="req">*</span>
           <input type="text" name="id" required data-field="id" placeholder="brian_bloodaxe" />
           <small class="field-hint">Unique ID used by /games/game.html?id=. Underscores allowed.</small>
           <span class="field-error" data-error-for="id"></span>
+          <label class="field-lock">
+            <input type="checkbox" data-lock-toggle="id" /> Lock ID (stop auto-sync)
+          </label>
         </label>
-        <label>System
+        <label>System <span class="req">*</span>
           <select name="system" required data-field="system" data-system-select>
             <option value="">Select system</option>
           </select>
           <small class="field-hint">Pick from systems already in games.json.</small>
           <span class="field-error" data-error-for="system"></span>
         </label>
-        <label>Year
+        <label>Year <span class="req">*</span>
           <input type="text" name="year" required inputmode="numeric" pattern="\d{4}" data-field="year" placeholder="1986" />
           <small class="field-hint">Four digits (e.g. 1986).</small>
           <span class="field-error" data-error-for="year"></span>
@@ -124,26 +163,28 @@
     </section>
 
     <section class="admin-info-card" data-step="2" hidden>
-      <h2>Step 2 · Media & Links</h2>
-      <p>Add the artwork and reference links that appear on the game page. Filenames auto-expand into the correct folders.</p>
-      <div class="omega-required-box">
-        <h3>What do I need to fill?</h3>
-        <ul>
-          <li>Thumbnail filename (with extension)</li>
-        </ul>
+      <div class="step-header">
+        <div>
+          <h2>Step 2 · Media & Links</h2>
+          <p>Add the artwork and reference links that appear on the game page.</p>
+        </div>
+        <div class="omega-required-box">
+          <h3>What do I need to fill?</h3>
+          <ul>
+            <li><strong>Thumbnail filename</strong></li>
+          </ul>
+        </div>
       </div>
       <div class="form-grid">
-        <label>Thumbnail filename
+        <label>Thumbnail filename <span class="req">*</span>
           <input type="text" name="thumbnailFile" required data-field="thumbnailFile" placeholder="brian-bloodaxe.webp" />
           <small class="field-hint">No folders. We add <strong>resources/images/thumbnails/all/</strong> automatically.</small>
           <span class="field-error" data-error-for="thumbnailFile"></span>
-          <span class="field-preview" data-preview-path="thumbnail"></span>
         </label>
         <label>3D box filename (optional)
           <input type="text" name="box3dFile" data-field="box3dFile" placeholder="brian-bloodaxe.webp" />
           <small class="field-hint">No folders. We add <strong>resources/images/games/boxes-3d/</strong> automatically.</small>
           <span class="field-error" data-error-for="box3dFile"></span>
-          <span class="field-preview" data-preview-path="box3d"></span>
         </label>
         <label>Video ID
           <input type="text" name="videoId" data-field="videoId" placeholder="YouTube ID" />
@@ -156,9 +197,25 @@
           <span class="field-error" data-error-for="pdf"></span>
         </label>
       </div>
+      <div class="media-preview-grid">
+        <div class="media-preview" data-preview-card="thumbnail">
+          <div class="media-preview__image">
+            <img data-preview-image="thumbnail" alt="Thumbnail preview" />
+          </div>
+          <p class="media-preview__path" data-preview-path="thumbnail"></p>
+          <p class="media-preview__status" data-preview-status="thumbnail"></p>
+        </div>
+        <div class="media-preview" data-preview-card="box3d">
+          <div class="media-preview__image">
+            <img data-preview-image="box3d" alt="3D box preview" />
+          </div>
+          <p class="media-preview__path" data-preview-path="box3d"></p>
+          <p class="media-preview__status" data-preview-status="box3d"></p>
+        </div>
+      </div>
       <div class="form-grid">
         <label>Disk URLs (one per line)
-          <textarea rows="4" name="diskRefs" data-field="diskRefs" placeholder="https://drive.google.com/..." ></textarea>
+          <textarea rows="4" name="diskRefs" data-field="diskRefs" placeholder="https://drive.google.com/..."></textarea>
           <small class="field-hint">Each line becomes an entry in the disk array.</small>
           <span class="field-error" data-error-for="diskRefs"></span>
         </label>
@@ -187,19 +244,26 @@
     </section>
 
     <section class="admin-info-card" data-step="3" hidden>
-      <h2>Step 3 · Metadata & Ratings</h2>
-      <p>Capture genres, ratings, and credits so the entry matches games.json.</p>
-      <div class="omega-required-box">
-        <h3>What do I need to fill?</h3>
-        <ul>
-          <li>At least one genre</li>
-          <li>CCG rating (1–10)</li>
-        </ul>
+      <div class="step-header">
+        <div>
+          <h2>Step 3 · Metadata & Ratings</h2>
+          <p>Capture genres, ratings, and credits so the entry matches games.json.</p>
+        </div>
+        <div class="omega-required-box">
+          <h3>What do I need to fill?</h3>
+          <ul>
+            <li><strong>At least one genre</strong></li>
+            <li><strong>CCG rating (1–10)</strong></li>
+          </ul>
+        </div>
       </div>
       <div class="form-grid">
-        <fieldset>
-          <legend>Genres</legend>
-          <div class="control-row" data-genre-list></div>
+        <fieldset class="genre-fieldset">
+          <legend>Genres <span class="req">*</span></legend>
+          <label class="genre-search">Search genres
+            <input type="search" data-genre-search placeholder="Type to filter genres" />
+          </label>
+          <div class="genre-list" data-genre-list></div>
           <span class="field-error" data-error-for="genres"></span>
         </fieldset>
         <label>Collections / Flags
@@ -207,13 +271,19 @@
           <small class="field-hint">Comma-separated. Leave blank if none.</small>
           <span class="field-error" data-error-for="collections"></span>
         </label>
-        <label>CCG Rating
-          <input type="number" name="ccgRating" min="1" max="10" step="0.1" required data-field="ccgRating" />
+        <label>CCG Rating <span class="req">*</span>
+          <div class="rating-control">
+            <input type="range" min="1" max="10" step="0.1" data-rating-range />
+            <div class="rating-readout">
+              <input type="number" name="ccgRating" min="1" max="10" step="0.1" required data-field="ccgRating" />
+              <output data-rating-output>--</output>
+            </div>
+          </div>
           <small class="field-hint">Score from 1 to 10.</small>
           <span class="field-error" data-error-for="ccgRating"></span>
         </label>
         <label>Rating Rationale
-          <input type="text" name="ccgRatingReason" data-field="ccgRatingReason" placeholder="Short reason" />
+          <textarea rows="5" name="ccgRatingReason" data-field="ccgRatingReason" placeholder="Explain why this rating feels right."></textarea>
           <small class="field-hint">Optional summary of why the rating was chosen.</small>
           <span class="field-error" data-error-for="ccgRatingReason"></span>
         </label>
@@ -228,23 +298,28 @@
       <div class="form-grid">
         <label>Publisher(s) (comma-separated)
           <input type="text" name="creditPublisher" data-field="creditPublisher" placeholder="Ocean, US Gold" />
-          <small class="field-hint">Used in credits.publisher (list).</small>
+          <small class="field-hint">credits.publisher (list)</small>
           <span class="field-error" data-error-for="creditPublisher"></span>
+        </label>
+        <label>Developer (credits)
+          <input type="text" name="creditDeveloper" data-field="creditDeveloper" placeholder="Primary studio or label" />
+          <small class="field-hint">credits.developer value if different from main developer.</small>
+          <span class="field-error" data-error-for="creditDeveloper"></span>
         </label>
         <label>Producer
           <input type="text" name="creditProducer" data-field="creditProducer" placeholder="Single name" />
-          <small class="field-hint">Single producer name (not a list).</small>
+          <small class="field-hint">credits.producer (single value)</small>
           <span class="field-error" data-error-for="creditProducer"></span>
         </label>
         <label>Coder(s) (comma-separated)
           <input type="text" name="creditCoder" data-field="creditCoder" />
           <span class="field-error" data-error-for="creditCoder"></span>
         </label>
-        <label>Graphics (comma-separated)
+        <label>Artist / Graphics (comma-separated)
           <input type="text" name="creditGraphics" data-field="creditGraphics" />
           <span class="field-error" data-error-for="creditGraphics"></span>
         </label>
-        <label>Musician(s) (comma-separated)
+        <label>Music / Composer (comma-separated)
           <input type="text" name="creditMusician" data-field="creditMusician" />
           <span class="field-error" data-error-for="creditMusician"></span>
         </label>
@@ -252,33 +327,42 @@
           <input type="text" name="creditRereleaser" data-field="creditRereleaser" />
           <span class="field-error" data-error-for="creditRereleaser"></span>
         </label>
-        <label>Developer (credits)
-          <input type="text" name="creditDeveloper" data-field="creditDeveloper" />
-          <small class="field-hint">Optional credits.developer value if different from the main developer.</small>
-          <span class="field-error" data-error-for="creditDeveloper"></span>
-        </label>
       </div>
     </section>
 
     <section class="admin-info-card" data-step="4" hidden>
-      <h2>Step 4 · SEO & Routing</h2>
-      <p>These previews are generated from the core data and help validate routing.</p>
-      <div class="omega-required-box">
-        <h3>What do I need to fill?</h3>
-        <ul>
-          <li>No additional required fields here.</li>
-        </ul>
+      <div class="step-header">
+        <div>
+          <h2>Step 4 · SEO & Routing</h2>
+          <p>Previews update live so you can verify SEO length and routing before export.</p>
+        </div>
+        <div class="omega-required-box">
+          <h3>What do I need to fill?</h3>
+          <ul>
+            <li>No additional required fields here.</li>
+          </ul>
+        </div>
       </div>
       <div class="form-grid">
         <label>SEO title (optional)
           <input type="text" name="seoTitle" data-field="seoTitle" placeholder="Title | Cheeky Commodore Gamer" />
-          <small class="field-hint">Leave blank to auto-use “Title | Cheeky Commodore Gamer”.</small>
+          <small class="field-hint">Auto-suggestion: <span data-seo-suggestion>Title | Cheeky Commodore Gamer</span></small>
           <span class="field-error" data-error-for="seoTitle"></span>
         </label>
         <label>Meta description preview
           <textarea rows="4" readonly data-preview="meta-description"></textarea>
           <small class="field-hint">Auto-generated from the description field.</small>
         </label>
+      </div>
+      <div class="seo-meters">
+        <div class="seo-meter">
+          <span class="seo-meter__label">SEO title length</span>
+          <span class="seo-meter__count" data-count="seoTitle">0</span>
+        </div>
+        <div class="seo-meter">
+          <span class="seo-meter__label">Meta description length</span>
+          <span class="seo-meter__count" data-count="metaDescription">0</span>
+        </div>
       </div>
       <div class="form-grid">
         <label>Canonical URL preview
@@ -290,24 +374,68 @@
           <small class="field-hint">Matches /games/&lt;slug&gt;/ routing.</small>
         </label>
       </div>
+      <div class="seo-preview">
+        <h3>Open Graph Preview</h3>
+        <div class="seo-preview__card">
+          <div class="seo-preview__image">
+            <img data-preview-image="og" alt="Open Graph preview" />
+          </div>
+          <div class="seo-preview__body">
+            <p class="seo-preview__title" data-preview="og-title"></p>
+            <p class="seo-preview__description" data-preview="og-description"></p>
+            <p class="seo-preview__url" data-preview="og-url"></p>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section class="admin-info-card" data-step="5" hidden>
-      <h2>Step 5 · Validation</h2>
-      <p>Run schema and data checks before export. Broken fields block package generation.</p>
+      <div class="step-header">
+        <div>
+          <h2>Step 5 · Validation</h2>
+          <p>Run schema and data checks before export. Errors block package generation.</p>
+        </div>
+        <div class="omega-required-box">
+          <h3>What do I need to fill?</h3>
+          <ul>
+            <li>Resolve all errors to unlock export.</li>
+          </ul>
+        </div>
+      </div>
       <div class="control-row">
         <button class="ccg-btn ccg-btn--ghost" type="button" data-action="run-validation">Run validation</button>
       </div>
-      <div class="form-errors" data-validation-errors hidden></div>
+      <div class="validation-panel" data-validation-panel>
+        <div>
+          <h3>Errors (block export)</h3>
+          <ul data-validation-errors></ul>
+        </div>
+        <div>
+          <h3>Warnings (allow export)</h3>
+          <ul data-validation-warnings></ul>
+        </div>
+      </div>
       <div class="admin-info-card" data-validation-summary>
         <p data-validation-status>Validation pending.</p>
-        <ul data-validation-warnings></ul>
       </div>
     </section>
 
     <section class="admin-info-card" data-step="6" hidden>
-      <h2>Step 6 · Package Builder</h2>
-      <p>Preview the output files and generate the ZIP bundle. Export is blocked until validation passes.</p>
+      <div class="step-header">
+        <div>
+          <h2>Step 6 · Package Builder</h2>
+          <p>Preview the output files and generate the ZIP bundle. Export is blocked until validation passes.</p>
+        </div>
+        <div class="omega-required-box">
+          <h3>What will be included?</h3>
+          <ul class="package-checklist">
+            <li>Updated games.json entry</li>
+            <li>SEO stub HTML + sitemap fragment</li>
+            <li>Metadata + manifest + README</li>
+            <li>Bundled assets (if found locally)</li>
+          </ul>
+        </div>
+      </div>
       <div class="control-row">
         <button class="ccg-btn ccg-btn--primary" type="button" data-action="generate-output">Generate files</button>
         <button class="ccg-btn ccg-btn--ghost" type="button" data-action="download-bundle" disabled>Download bundle</button>
@@ -326,13 +454,13 @@
       <pre data-preview="readme"></pre>
     </section>
 
-    <section class="admin-info-card">
-      <h2>Wizard Navigation</h2>
-      <div class="control-row">
+    <footer class="wizard-footer">
+      <div class="wizard-footer__actions">
         <button class="ccg-btn ccg-btn--ghost" type="button" data-action="prev-step">Back</button>
         <button class="ccg-btn ccg-btn--primary" type="button" data-action="next-step">Next</button>
       </div>
-    </section>
+      <p class="wizard-footer__status">Step <span data-step-counter>1</span> of 6</p>
+    </footer>
   </main>
 
   <script src="/js/ccg-supabase-config.js" defer></script>

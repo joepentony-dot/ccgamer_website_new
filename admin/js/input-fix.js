@@ -1,70 +1,62 @@
 (() => {
-  // CCG ADMIN LOCK: Do not remove. Prevents global key handler regressions.
-  const logPrefix = '[CCG-INPUT-FIX]';
+  const logPrefix = '[CCG-INPUT-SAFETY]';
 
   const isDebugEnabled = () => {
     try {
       const params = new URLSearchParams(window.location.search);
-      return params.get('debugkeys') === '1' || window.localStorage.getItem('ccgDebugKeys') === '1';
+      return params.get('debug') === '1' || window.localStorage.getItem('ccgDebugInputSafety') === '1';
     } catch (error) {
       return false;
     }
   };
 
+  const isAdminContext = () => {
+    const body = document.body;
+    return Boolean(body && (body.dataset.ccgContext === 'admin' || body.classList.contains('ccg-admin')));
+  };
+
+  if (!isDebugEnabled() || !isAdminContext()) {
+    return;
+  }
+
   const logOnce = (() => {
     const logged = new Set();
-    return (key, message) => {
-      if (!isDebugEnabled()) return;
+    return (key, message, level = 'info') => {
       if (logged.has(key)) return;
       logged.add(key);
+      if (level === 'warn') {
+        console.warn(message);
+        return;
+      }
       console.info(message);
     };
   })();
 
-  const isEditableElement = (target) => {
-    if (!(target instanceof Element)) return false;
-    if (target.matches(editableSelector)) return true;
-    if (target.isContentEditable && !target.matches('[contenteditable="false"]')) return true;
-    return Boolean(target.closest('[contenteditable]:not([contenteditable="false"])'));
-  };
-
-  const isEditableEvent = (event) => {
+  const isTypingKey = (event) => {
     if (!event) return false;
-    if (isEditableElement(event.target)) return true;
-    if (typeof event.composedPath === 'function' && event.composedPath().some(isEditableElement)) {
-      return true;
+    if (event.key === ' ' || event.code === 'Space' || event.keyCode === 32) return true;
+    return typeof event.key === 'string' && event.key.length === 1;
+  };
+
+  const originalPreventDefault = Event.prototype.preventDefault;
+  Event.prototype.preventDefault = function patchedPreventDefault(...args) {
+    if (this instanceof KeyboardEvent && isTypingKey(this)) {
+      if (window.ccgIsEditableTarget && window.ccgIsEditableTarget(this.target)) {
+        logOnce('ccg-prevent-default-editable', `${logPrefix} preventDefault called on editable key event.`, 'warn');
+      }
     }
-    return false;
+    return originalPreventDefault.apply(this, args);
   };
 
-  const hasEditableFocus = () => isEditableElement(document.activeElement);
-
-  const isSpaceKey = (event) => event && (event.key === ' ' || event.code === 'Space' || event.key === 'Spacebar' || event.keyCode === 32);
-
-  const isAdminPage = () => window.location && window.location.pathname && window.location.pathname.startsWith('/admin/');
-
-  const guardAdminSpace = (event) => {
-    // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
-    // Prevents quiz/hotkey logic from blocking form typing
-    const tag = event.target?.tagName?.toLowerCase();
-    const isEditable = tag === 'input' || tag === 'textarea' || event.target?.isContentEditable === true;
-    if (isEditable) return;
-
-    if (!isAdminPage()) return;
-    // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
-    // Prevents quiz/hotkey logic from blocking form typing
-    const tag = event?.target?.tagName?.toLowerCase();
-    const isEditable = tag === 'input' || tag === 'textarea' || event?.target?.isContentEditable === true;
-    if (isEditable) return;
-    if (!isSpaceKey(event)) return;
-    if (event.defaultPrevented) return;
-    if (isEditableEvent(event) || hasEditableFocus()) return;
-
-    event.preventDefault();
-    logOnce('ccg-input-fix-space', `${logPrefix} prevented Space scroll on non-editable admin target.`);
+  const captureListener = (event) => {
+    if (!window.ccgIsEditableTarget || !window.ccgIsEditableTarget(event.target)) return;
+    if (!isTypingKey(event)) return;
+    if (event.defaultPrevented) {
+      logOnce('ccg-default-prevented', `${logPrefix} typing key default prevented on editable target.`, 'warn');
+    }
   };
 
-  document.addEventListener('keydown', guardAdminSpace);
-
-  logOnce('ccg-input-fix-active', `${logPrefix} active: spacebar guard enabled for ${editableSelector}.`);
+  ['keydown', 'keypress', 'keyup'].forEach((eventType) => {
+    document.addEventListener(eventType, captureListener, true);
+  });
 })();

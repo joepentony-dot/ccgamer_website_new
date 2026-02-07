@@ -4,11 +4,24 @@
     return;
   }
 
+  if (!window.ccgIsEditableTarget) {
+    window.ccgIsEditableTarget = function ccgIsEditableTarget(target) {
+      if (!target) return false;
+      const tag = (target.tagName || '').toLowerCase();
+      return tag === 'input' || tag === 'textarea' || target.isContentEditable === true;
+    };
+  }
+
+  if (!window.ccgIsAdminContext) {
+    window.ccgIsAdminContext = () => {
+      const body = document.body;
+      return Boolean(body && (body.dataset.ccgContext === 'admin' || body.classList.contains('ccg-admin')));
+    };
+  }
+
   const eventTypes = ['keydown', 'keypress', 'keyup'];
   let active = false;
   let disarmed = false;
-
-  const isAdminContext = () => window.location && window.location.pathname && window.location.pathname.startsWith('/admin/');
 
   const isDebugEnabled = () => {
     try {
@@ -33,64 +46,27 @@
     };
   })();
 
-  const editableSelector = 'input, textarea, select, [contenteditable]:not([contenteditable="false"])';
-
-  const isEditableElement = (target) => {
-    if (!(target instanceof Element)) return false;
-    if (target.matches(editableSelector)) return true;
-    if (target.isContentEditable && !target.matches('[contenteditable="false"]')) return true;
-    return Boolean(target.closest('[contenteditable]:not([contenteditable="false"])'));
+  const isAllowedContext = () => {
+    if (window.ccgIsAdminContext && window.ccgIsAdminContext()) return false;
+    const body = document.body;
+    const pathname = window.location?.pathname || '';
+    if (body && body.classList.contains('ccg-quiz')) return true;
+    return pathname.startsWith('/quiz/');
   };
-
-  const isEditableEvent = (event) => {
-    if (!event) return false;
-    if (isEditableElement(event.target)) return true;
-    if (typeof event.composedPath === 'function' && event.composedPath().some(isEditableElement)) {
-      return true;
-    }
-    return false;
-  };
-
-  const hasEditableFocus = () => isEditableElement(document.activeElement);
-
-  const isSpaceKey = (event) => event && (event.key === ' ' || event.code === 'Space' || event.key === 'Spacebar' || event.keyCode === 32);
-  const isAdminPage = () => window.location && window.location.pathname && window.location.pathname.startsWith('/admin/');
 
   const stopAdminInputHandlers = (event) => {
-    // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
-    // Prevents quiz/hotkey logic from blocking form typing
-    const tag = event.target?.tagName?.toLowerCase();
-    const isEditable = tag === 'input' || tag === 'textarea' || event.target?.isContentEditable === true;
-    if (isEditable) return;
-
-    // Never interfere with typing
-    if (isEditableEvent(event) || hasEditableFocus()) {
-      logOnce('ccg-admin-firewall-editable', '[CCG-ADMIN] Input firewall ignored editable key event.', 'warn');
-      return;
-    }
-
-    if (isAdminPage()) {
-      logOnce('ccg-admin-firewall-admin-context', '[CCG-ADMIN] Warning: input firewall executed on admin context.', 'warn');
-    }
-
-    if (isSpaceKey(event)) {
-      return;
-    }
-
-    // Only block non-input shortcuts
-    event.stopImmediatePropagation();
-    event.stopPropagation();
+    if (window.ccgIsEditableTarget && window.ccgIsEditableTarget(event.target)) return;
+    logOnce('ccg-firewall-block', '[CCG] Input firewall intercepted non-editable key event.', 'warn');
   };
 
   const enable = () => {
     if (disarmed || active) return;
-    if (isAdminContext()) {
-      console.warn('[CCG-ADMIN] Input firewall running in admin context.');
-    }
+    if (!isAllowedContext()) return;
     eventTypes.forEach((eventType) => {
       document.addEventListener(eventType, stopAdminInputHandlers);
     });
     active = true;
+    console.info('[CCG] Input firewall enabled');
   };
 
   const disable = () => {
@@ -100,43 +76,7 @@
     });
     active = false;
     disarmed = true;
-    console.info('[CCG-ADMIN] Firewall disarmed');
-  };
-
-  const handleAuthReady = (context) => {
-    if (disarmed) return;
-    const role = context && context.role ? context.role : null;
-    const session = context && context.session ? context.session : null;
-    const user = context && context.user ? context.user : (session && session.user ? session.user : null);
-    const isSuperadmin = role === 'superadmin';
-    const hasSession = Boolean(user);
-    if (hasSession && isSuperadmin) {
-      disable();
-      return;
-    }
-    enable();
-  };
-
-  const attachAuthReadyListener = () => {
-    if (window.CCG_AUTH_READY && typeof window.CCG_AUTH_READY.then === 'function') {
-      window.CCG_AUTH_READY.then(handleAuthReady).catch(() => {
-        enable();
-      });
-      return;
-    }
-
-    window.addEventListener('ccg:auth-ready', (event) => {
-      if (disarmed) return;
-      if (window.ccgSupabase && typeof window.ccgSupabase.getCurrentUserContext === 'function') {
-        window.ccgSupabase.getCurrentUserContext()
-          .then(handleAuthReady)
-          .catch(() => {
-            enable();
-          });
-        return;
-      }
-      handleAuthReady(event && event.detail ? event.detail : null);
-    }, { once: true });
+    console.info('[CCG] Input firewall disabled');
   };
 
   const firewall = {
@@ -149,12 +89,7 @@
 
   window.CCG_ADMIN_INPUT_FIREWALL = firewall;
 
-  enable();
-  attachAuthReadyListener();
-
-  console.info('[CCG-ADMIN] Input firewall active');
-  console.assert(
-    window.CCG_ADMIN_INPUT_FIREWALL && window.CCG_ADMIN_INPUT_FIREWALL.__initialized,
-    '[CCG-ADMIN] Firewall missing'
-  );
+  if (window.CCG_INPUT_FIREWALL_OPT_IN === true) {
+    enable();
+  }
 })();
