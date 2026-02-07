@@ -1,6 +1,6 @@
 import { initAdminNav } from './admin-nav.js?v=admin-stable-20260207';
 import { getAuthContext, waitForAuthReady } from './auth.js?v=admin-stable-20260207';
-import { buildStubStructure, loadGamesLibrary, updateGamesLibrary } from './games-api.js?v=admin-stable-20260207';
+import { buildGamePageHtml, buildStubStructure, loadGamesLibrary, updateGamesLibrary } from './games-api.js?v=admin-stable-20260207';
 import { fetchUserRole } from './roles.js?v=admin-stable-20260207';
 import { validateExportOutputs, validateWizardDraft } from './validator.js?v=admin-stable-20260207';
 
@@ -1267,10 +1267,11 @@ function buildReadme(entry) {
     `ID: ${entry.id}`,
     '',
     '1) Replace /games/games.json with the bundled games.json.',
-    `2) Add /games/${entry.slug}/index.html to the repo.`,
-    '3) Add sitemap-fragment.xml contents to sitemap-games.xml.',
-    '4) Upload any assets listed in manifest.json.',
-    '5) If you use metadata.json, store it alongside your game data.',
+    `2) Add /games/${entry.slug}.html to the repo (flat SEO page).`,
+    `3) Add /games/${entry.slug}/index.html to the repo (redirect stub).`,
+    '4) Add sitemap-fragment.xml contents to sitemap-games.xml.',
+    '5) Upload any assets listed in manifest.json.',
+    '6) If you use metadata.json, store it alongside your game data.',
     '',
     'Do not publish if validation fails in the wizard.'
   ].join('\n');
@@ -1607,6 +1608,14 @@ async function buildPackage({ autoDownload = true } = {}) {
   setExportStepStatus('metadata', 'active', 'Metadata · in progress');
 
   zip.file('games.json', state.outputs.gamesJson);
+  const flatPages = buildFlatGamePages(state.library);
+  const gamesFolder = getFolder(zip, 'games');
+  flatPages.pages.forEach((page) => {
+    gamesFolder.file(`${page.slug}.html`, page.html);
+  });
+  if (flatPages.warnings.length) {
+    exportWarnings.push(...flatPages.warnings);
+  }
   getFolder(zip, `games/${entry.slug}`).file('index.html', state.outputs.stubHtml);
   zip.file(`games/${entry.slug}.html`, state.outputs.flatHtml);
   zip.file('sitemap-fragment.xml', state.outputs.sitemapFragment);
@@ -2117,7 +2126,8 @@ async function boot() {
   updateProgress();
   showDraftBanner();
   bindEvents();
-  window.CCGGameBuilder = { loadGameById, loadGameBySlug };
+  window.CCGGameBuilder = { loadGameById, loadGameBySlug, downloadFlatPageZip };
+  window.ccgRegenerateGameStubs = downloadFlatPageZip;
 
   const params = new URLSearchParams(window.location.search);
   if (params.has('slug')) {
