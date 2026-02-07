@@ -360,7 +360,8 @@ async function computeAuthContext({ force = false } = {}) {
     throw new Error(error.message || 'Unable to read Supabase session.');
   }
 
-  const session = _authBarrierSession ?? data?.session || null;
+  // FIX: parenthesise to avoid mixing ?? with || (SyntaxError in JS)
+  const session = _authBarrierSession ?? (data?.session || null);
   const context = buildContextFromSession(session, null);
 
   _lastContext = context;
@@ -389,7 +390,8 @@ export async function waitForAuthReady() {
         warn('Auth hydration timed out. Continuing with session snapshot.');
       }
 
-      _authBarrierSession = _authBarrierSession ?? data?.session || null;
+      // FIX: parenthesise to avoid mixing ?? with || (SyntaxError in JS)
+      _authBarrierSession = _authBarrierSession ?? (data?.session || null);
       _authBarrierContext = buildContextFromSession(_authBarrierSession, null);
       log('session restored');
 
