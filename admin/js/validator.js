@@ -313,6 +313,27 @@ export function validateExportOutputs(outputs = {}) {
     }
   }
 
+  const flatHtml = outputs.flatHtml || '';
+  if (!flatHtml) {
+    errors.push('Flat SEO HTML output is missing.');
+  } else {
+    if (slug && !flatHtml.includes(`/games/${slug}.html`)) {
+      errors.push('Flat SEO HTML does not include canonical slug.');
+    }
+    if (id && !flatHtml.includes(`/games/game.html?id=${id}`)) {
+      errors.push('Flat SEO HTML does not include game id link.');
+    }
+    if (!flatHtml.includes('application/ld+json')) {
+      errors.push('Flat SEO HTML does not include JSON-LD markup.');
+    }
+    if (!flatHtml.includes('game-hero')) {
+      errors.push('Flat SEO HTML does not include hero section.');
+    }
+    if (entry.thumbnail && !flatHtml.includes(entry.thumbnail)) {
+      errors.push('Flat SEO HTML does not include thumbnail path.');
+    }
+  }
+
   const sitemapFragment = outputs.sitemapFragment || '';
   if (!sitemapFragment) {
     errors.push('Sitemap fragment output is missing.');
@@ -347,8 +368,12 @@ export function validateExportOutputs(outputs = {}) {
         ? JSON.parse(outputs.manifestJson)
         : outputs.manifestJson;
       const requiredRoute = slug ? `/games/${slug}/index.html` : '';
+      const flatRoute = slug ? `/games/${slug}.html` : '';
       if (requiredRoute && !manifest?.requiredRoutes?.includes(requiredRoute)) {
         errors.push('manifest.json is missing required route for slug.');
+      }
+      if (flatRoute && !manifest?.requiredRoutes?.includes(flatRoute)) {
+        errors.push('manifest.json is missing flat SEO route for slug.');
       }
     } catch {
       errors.push('manifest.json output is not valid JSON.');
