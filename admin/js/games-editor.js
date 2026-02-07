@@ -2,7 +2,7 @@ import { initAdminNav } from './admin-nav.js?v=admin-stable-20260207';
 import { getAuthContext, waitForAuthReady } from './auth.js?v=admin-stable-20260207';
 import { buildGamePageHtml, buildStubStructure, loadGamesLibrary, updateGamesLibrary } from './games-api.js?v=admin-stable-20260207';
 import { fetchUserRole } from './roles.js?v=admin-stable-20260207';
-import { validateExportOutputs, validateWizardDraft } from './validator.js?v=admin-stable-20260207';
+import { validateExportOutputs, validateLibraryIdentifiers, validateWizardDraft } from './validator.js?v=admin-stable-20260207';
 
 const SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
 const STORAGE_KEY = 'omegaGameBuilderDraftV1';
@@ -35,6 +35,7 @@ const state = {
   slugLocked: false,
   idLocked: false,
   draft: null,
+  libraryValidation: { errors: [], warnings: [], ran: false, valid: true },
   schema: {
     requiredFields: [],
     optionalFields: [],
@@ -149,6 +150,10 @@ const el = {
     summary: document.querySelector('[data-validation-summary]'),
     status: document.querySelector('[data-validation-status]'),
     warnings: document.querySelector('[data-validation-warnings]')
+  },
+  libraryValidation: {
+    errors: document.querySelector('[data-library-validation-errors]'),
+    status: document.querySelector('[data-library-validation-status]')
   },
   load: {
     form: document.querySelector('[data-load-form]'),
@@ -753,9 +758,10 @@ function updateStatusIndicators() {
   }
 
   if (el.validationIndicator) {
-    if (!state.validation.ran) {
+    const libraryErrors = state.libraryValidation?.errors?.length || 0;
+    if (!state.validation.ran && !state.libraryValidation.ran) {
       el.validationIndicator.textContent = 'Validation: Pending';
-    } else if (state.validation.errors.length) {
+    } else if (state.validation.errors.length || libraryErrors) {
       el.validationIndicator.textContent = 'Validation: FAIL';
     } else {
       el.validationIndicator.textContent = 'Validation: OK';
@@ -856,6 +862,7 @@ function resetWizard() {
   updateFormFromDraft();
   updatePreviewFields();
   renderValidation();
+  renderLibraryValidation();
   renderOutputs();
   evaluateStepStatus();
   updateProgress();
@@ -1079,6 +1086,37 @@ function validateDraft() {
   return result;
 }
 
+function hasBlockingLibraryErrors() {
+  return Boolean(state.libraryValidation?.errors?.length);
+}
+
+function renderLibraryValidation() {
+  const { errors } = state.libraryValidation || { errors: [] };
+  if (el.libraryValidation.status) {
+    if (!state.libraryValidation.ran) {
+      el.libraryValidation.status.textContent = 'Library validation pending.';
+    } else if (errors.length) {
+      el.libraryValidation.status.textContent = `Library validation failed with ${errors.length} issue(s).`;
+    } else {
+      el.libraryValidation.status.textContent = 'Library validation passed. No ID/slug issues detected.';
+    }
+  }
+
+  if (el.libraryValidation.errors) {
+    el.libraryValidation.errors.innerHTML = errors.length
+      ? errors.map((message) => `<li class="is-error">${escapeHtml(message)}</li>`).join('')
+      : '<li>No library issues detected.</li>';
+  }
+}
+
+function runLibraryValidation() {
+  const result = validateLibraryIdentifiers(state.library);
+  state.libraryValidation = { ...result, ran: true, valid: result.valid };
+  renderLibraryValidation();
+  renderValidation();
+  updateStatusIndicators();
+}
+
 function renderFieldErrors(fieldErrors) {
   document.querySelectorAll('[data-error-for]').forEach((node) => {
     const key = node.dataset.errorFor;
@@ -1097,6 +1135,7 @@ function focusField(fieldName) {
 
 function renderValidation() {
   const { errors, warnings, fieldErrors } = state.validation;
+  const libraryErrors = hasBlockingLibraryErrors();
   if (el.validation.status) {
     if (!state.validation.ran) {
       el.validation.status.textContent = 'Validation pending.';
@@ -1140,10 +1179,10 @@ function renderValidation() {
   renderFieldErrors(fieldErrors || {});
 
   if (el.actions.generateOutput) {
-    el.actions.generateOutput.disabled = errors.length > 0 || !state.auth.canWrite || state.export.disabled;
+    el.actions.generateOutput.disabled = errors.length > 0 || libraryErrors || !state.auth.canWrite || state.export.disabled;
   }
   if (el.actions.buildPackage) {
-    el.actions.buildPackage.disabled = errors.length > 0 || !state.auth.canWrite || state.export.disabled;
+    el.actions.buildPackage.disabled = errors.length > 0 || libraryErrors || !state.auth.canWrite || state.export.disabled;
   }
 
   updateStatusIndicators();
@@ -1976,7 +2015,7 @@ function bindEvents() {
     if (!state.auth.canWrite) return;
     validateDraft();
     renderValidation();
-    if (state.validation.errors.length) return;
+    if (state.validation.errors.length || hasBlockingLibraryErrors()) return;
     state.outputs = buildOutputs();
     renderOutputs();
     if (el.actions.downloadBundle) {
@@ -1989,7 +2028,7 @@ function bindEvents() {
     if (!state.auth.canWrite) return;
     validateDraft();
     renderValidation();
-    if (state.validation.errors.length) return;
+    if (state.validation.errors.length || hasBlockingLibraryErrors()) return;
     await runPackageBuild();
   });
 
@@ -1997,7 +2036,7 @@ function bindEvents() {
     if (!state.auth.canWrite) return;
     validateDraft();
     renderValidation();
-    if (state.validation.errors.length) {
+    if (state.validation.errors.length || hasBlockingLibraryErrors()) {
       goToStep(5);
       return;
     }
@@ -2043,7 +2082,10 @@ async function loadLibrary() {
       state.library = data;
       state.schema = buildSchemaMap(data);
       updateUniquenessSets();
-      setLibraryIndicator(`Library: Loaded (${data.length})`);
+      runLibraryValidation();
+      const issueCount = state.libraryValidation.errors.length;
+      const issueLabel = issueCount ? ` · Issues: ${issueCount}` : '';
+      setLibraryIndicator(`Library: Loaded (${data.length})${issueLabel}`);
       renderSystemOptions();
       renderGenres();
       renderLibraryLookupOptions();
