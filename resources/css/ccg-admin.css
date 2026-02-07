@@ -270,3 +270,32 @@ html body .admin-auth-panel textarea {
   text-shadow: none !important;
   background-image: none !important;
 }
+
+/* =====================================================
+   ADMIN INPUT CONTRAST FIX
+   Ensure readable background behind text
+   ===================================================== */
+
+html body .ccg-page--admin input,
+html body .ccg-page--admin textarea,
+html body .ccg-page--admin select,
+
+html body .omega-admin-shell input,
+html body .omega-admin-shell textarea,
+html body .omega-admin-shell select,
+
+html body .games-editor-wrap input,
+html body .games-editor-wrap textarea,
+html body .games-editor-wrap select,
+
+html body .asset-manager-wrap input,
+html body .asset-manager-wrap textarea,
+html body .asset-manager-wrap select,
+
+html body .admin-auth-panel input,
+html body .admin-auth-panel textarea {
+
+  background-color: rgba(6, 12, 24, 0.95) !important;
+  border: 1px solid rgba(120, 200, 255, 0.4) !important;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.4) !important;
+}
