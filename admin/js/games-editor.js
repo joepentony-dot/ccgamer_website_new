@@ -1173,6 +1173,12 @@ function bindEvents() {
   });
 
   el.load.input?.addEventListener('keydown', (event) => {
+    // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
+    // Prevents quiz/hotkey logic from blocking form typing
+    const tag = event.target?.tagName?.toLowerCase();
+    const isEditable = tag === 'input' || tag === 'textarea' || event.target?.isContentEditable === true;
+    if (isEditable) return;
+
     if (event.key === 'Enter') {
       event.preventDefault();
       el.load.button?.click();
