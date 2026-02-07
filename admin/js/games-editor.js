@@ -178,6 +178,19 @@ const el = {
 
 const isEditableTarget = (target) => (window.ccgIsEditableTarget ? window.ccgIsEditableTarget(target) : false);
 
+// === ADMIN INPUT OVERRIDE (SPACEBAR SAFE) ===
+(function enableAdminInputOverride() {
+  document.addEventListener(
+    'keydown',
+    (e) => {
+      if (window.ccgIsEditableTarget?.(e.target)) {
+        e.stopImmediatePropagation();
+      }
+    },
+    true
+  );
+})();
+
 function setRuntimeState(message, kind = 'ready') {
   if (!el.runtime) return;
   el.runtime.textContent = `State: ${message}`;
@@ -590,13 +603,13 @@ function normalizeDraft() {
     draft.id = generateUniqueId(baseId, state.idSet);
   }
 
-  draft.system = String(draft.system || '').trim();
-  draft.year = String(draft.year || '').trim();
-  draft.developer = String(draft.developer || '').trim();
-  draft.thumbnailFile = String(draft.thumbnailFile || '').trim();
-  draft.thumbnailOverride = String(draft.thumbnailOverride || '').trim();
-  draft.box3dFile = String(draft.box3dFile || '').trim();
-  draft.box3dOverride = String(draft.box3dOverride || '').trim();
+  draft.system = String(draft.system || '');
+  draft.year = String(draft.year || '');
+  draft.developer = String(draft.developer || '');
+  draft.thumbnailFile = String(draft.thumbnailFile || '');
+  draft.thumbnailOverride = String(draft.thumbnailOverride || '');
+  draft.box3dFile = String(draft.box3dFile || '');
+  draft.box3dOverride = String(draft.box3dOverride || '');
   draft.thumbnail = buildAssetPath({
     filename: draft.thumbnailFile,
     override: draft.thumbnailOverride,
@@ -607,12 +620,12 @@ function normalizeDraft() {
     override: draft.box3dOverride,
     base: BOX3D_BASE_PATH
   });
-  draft.videoId = String(draft.videoId || '').trim();
-  draft.pdf = String(draft.pdf || '').trim();
+  draft.videoId = String(draft.videoId || '');
+  draft.pdf = String(draft.pdf || '');
   draft.diskRefs = String(draft.diskRefs || '');
   draft.externalRefs = String(draft.externalRefs || '');
-  draft.collections = String(draft.collections || '').trim();
-  draft.ccgRating = String(draft.ccgRating || '').trim();
+  draft.collections = String(draft.collections || '');
+  draft.ccgRating = String(draft.ccgRating || '');
   draft.ccgRatingReason = String(draft.ccgRatingReason || '');
   draft.description = String(draft.description || '');
   draft.creditPublisher = String(draft.creditPublisher || '');

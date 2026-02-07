@@ -15,6 +15,30 @@
     };
   }
 
+  const isPrintableKey = (event) => {
+    if (!event) return false;
+    if (event.key === ' ' || event.code === 'Space' || event.keyCode === 32) return true;
+    return typeof event.key === 'string' && event.key.length === 1;
+  };
+
+  const isAdminEditableEvent = (event) => {
+    if (!(event instanceof KeyboardEvent)) return false;
+    if (!window.ccgIsAdminContext || !window.ccgIsAdminContext()) return false;
+    if (!window.ccgIsEditableTarget || !window.ccgIsEditableTarget(event.target)) return false;
+    return isPrintableKey(event);
+  };
+
+  if (!Event.prototype.__ccgAdminInputShield) {
+    const originalPreventDefault = Event.prototype.preventDefault;
+    Event.prototype.preventDefault = function patchedPreventDefault(...args) {
+      if (isAdminEditableEvent(this)) {
+        return;
+      }
+      return originalPreventDefault.apply(this, args);
+    };
+    Event.prototype.__ccgAdminInputShield = true;
+  }
+
   const applyAdminContext = () => {
     window.CCG_CONTEXT = 'admin';
     const body = document.body;
