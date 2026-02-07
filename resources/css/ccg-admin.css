@@ -171,3 +171,49 @@
   color: #ffe08f;
   font-weight: 700;
 }
+
+/* ============================================================
+   ADMIN INPUT VISIBILITY FIREWALL
+   Why: Prevent global neon/glass effects from leaking into
+   admin/editor form controls and hiding text/caret/placeholder.
+   Scope: Admin/editor containers only.
+============================================================ */
+
+:where(.ccg-page--admin,
+       .ccg-admin,
+       [data-admin-shell]) :where(input,
+       textarea,
+       select,
+       [contenteditable="true"],
+       [contenteditable="plaintext-only"]) {
+  color: #ffffff;
+  -webkit-text-fill-color: #ffffff;
+  caret-color: #ffffff;
+  mix-blend-mode: normal;
+  opacity: 1;
+  filter: none;
+  background-image: none;
+  text-shadow: none;
+}
+
+:where(.ccg-page--admin,
+       .ccg-admin,
+       [data-admin-shell]) :where(input,
+       textarea,
+       [contenteditable="true"],
+       [contenteditable="plaintext-only"])::placeholder {
+  color: rgba(255, 255, 255, 0.65);
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.65);
+  opacity: 1;
+}
+
+:where(.ccg-page--admin,
+       .ccg-admin,
+       [data-admin-shell]) :where(select option,
+       select optgroup) {
+  color: #0b1220;
+  background: #ffffff;
+  mix-blend-mode: normal;
+  opacity: 1;
+  filter: none;
+}
