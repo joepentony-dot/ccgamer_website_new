@@ -1,12 +1,15 @@
-import { AUTH_CONFIG } from './config.js?v=admin-stable-20260207';
+import { ADMIN_BUILD_ID } from './build.js';
+import { AUTH_CONFIG } from './config.js?v=20260207-01';
 import {
   bindSessionInvalidation,
   getAuthContext,
   refreshSessionIfNeeded,
   redirectWithGuard,
   waitForAuthReady
-} from './auth.js?v=admin-stable-20260207';
-import { clearRoleCache, fetchUserRole } from './roles.js?v=admin-stable-20260207';
+} from './auth.js?v=20260207-01';
+import { clearRoleCache, fetchUserRole } from './roles.js?v=20260207-01';
+
+console.info('[CCG-AUTH] guard.js loaded', ADMIN_BUILD_ID);
 
 function redirect(path, reason) {
   redirectWithGuard(path, reason);

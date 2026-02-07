@@ -16,17 +16,32 @@
    - Emit ccg:auth:ready for non-module listeners
    ============================================================ */
 
-import { AUTH_CONFIG, SUPABASE_ANON_KEY, SUPABASE_URL } from './config.js?v=admin-stable-20260207';
+import { ADMIN_BUILD_ID } from './build.js';
+import { AUTH_CONFIG, SUPABASE_ANON_KEY, SUPABASE_URL } from './config.js?v=20260207-01';
 
 const LOG = '[CCG-AUTH]';
 const log = (...a) => console.log(LOG, ...a);
 const warn = (...a) => console.warn(LOG, ...a);
 const err = (...a) => console.error(LOG, ...a);
 
+const BUILD_SUFFIX = ADMIN_BUILD_ID ? `?v=${ADMIN_BUILD_ID}` : '';
+const OFFLINE_MESSAGE = 'Auth system offline. Please refresh or contact support.';
+
 const REDIRECT_GUARD_KEY = 'ccg_auth_redirect_guard';
 const REDIRECT_GUARD_WINDOW_MS = 1500;
 const REDIRECT_LOOP_MESSAGE =
   'Auth loop detected. Session not stabilising. Open console and refresh after sign-in.';
+
+console.log('[CCG-AUTH] auth.js loaded');
+console.log(
+  '[CCG-AUTH] Supabase detected:',
+  Boolean(
+    window?.ccgSupabaseClient ||
+      window?.CCG_SUPABASE_CLIENT ||
+      window?.__ccgSupabaseClient ||
+      window?.supabaseClient
+  )
+);
 
 if (window.__CCG_AUTH_BOOTSTRAPPED) {
   console.warn('[AUTH] bootstrap already initialised');
@@ -167,6 +182,66 @@ function renderAuthLoopBanner(message = REDIRECT_LOOP_MESSAGE) {
   host.prepend(banner);
 }
 
+function renderAuthFatalBanner(message = OFFLINE_MESSAGE) {
+  const host = document.querySelector('[data-admin-shell]') || document.body;
+  if (!host) return;
+
+  if (document.querySelector('[data-auth-fatal-banner]')) return;
+
+  const banner = document.createElement('div');
+  banner.className = 'admin-auth-fatal-banner';
+  banner.dataset.authFatalBanner = 'true';
+  banner.setAttribute('role', 'alert');
+  banner.textContent = message;
+
+  host.prepend(banner);
+}
+
+function disableLoginActions() {
+  const loginButton = document.querySelector('[data-login-button]');
+  const resetButton = document.querySelector('[data-reset-button]');
+  if (loginButton) loginButton.disabled = true;
+  if (resetButton) resetButton.disabled = true;
+}
+
+function setOfflineMessage(message = OFFLINE_MESSAGE) {
+  const messageBox = document.querySelector('[data-message]');
+  if (!messageBox) return;
+  messageBox.textContent = message;
+  messageBox.dataset.state = 'error';
+}
+
+function handleAuthFatal(error, message = OFFLINE_MESSAGE) {
+  err(message, error);
+  window.CCG_AUTH_ERROR = error || new Error(message);
+  renderAuthFatalBanner(message);
+  disableLoginActions();
+  setOfflineMessage(message);
+}
+
+function bindGlobalAuthErrorTrap() {
+  if (window.__CCG_AUTH_ERROR_TRAP_BOUND) return;
+  window.__CCG_AUTH_ERROR_TRAP_BOUND = true;
+
+  const handler = (type, error, message) => {
+    const text = message || error?.message || String(error || 'unknown');
+    err(`Global ${type} error:`, text, error);
+    if (/auth|supabase|ccg/i.test(text)) {
+      handleAuthFatal(error, OFFLINE_MESSAGE);
+    }
+  };
+
+  window.addEventListener('error', (event) => {
+    handler('error', event?.error, event?.message);
+  });
+
+  window.addEventListener('unhandledrejection', (event) => {
+    handler('unhandledrejection', event?.reason, event?.reason?.message);
+  });
+}
+
+bindGlobalAuthErrorTrap();
+
 function shouldBlockRedirect() {
   try {
     const now = Date.now();
@@ -237,7 +312,7 @@ async function ensureSupabaseClient() {
   }
 
   try {
-    await import('/js/ccg-supabase-client.js?v=admin-stable-20260207');
+    await import(`/js/ccg-supabase-client.js${BUILD_SUFFIX}`);
   } catch (error) {
     err('Supabase bootstrap import failed.', error);
   }
@@ -328,6 +403,7 @@ export async function waitForAuthReady() {
       const message = error?.message || String(error);
       if (/Supabase client not available/i.test(message)) {
         err('AUTH INIT FAILED:', error);
+        handleAuthFatal(error, OFFLINE_MESSAGE);
         window.CCG_AUTH_READY = false;
         window.CCG_AUTH_ERROR = error;
         dispatchAuthReady({ isAuthenticated: false, role: 'none', user: null, error });
