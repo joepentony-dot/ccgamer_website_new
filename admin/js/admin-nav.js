@@ -1,5 +1,5 @@
-import { AUTH_CONFIG } from './config.js';
-import { getAuthContext, logout, redirectWithGuard, waitForAuthReady } from './auth.js';
+import { AUTH_CONFIG } from './config.js?v=admin-stable-20260207';
+import { getAuthContext, logout, redirectWithGuard, waitForAuthReady } from './auth.js?v=admin-stable-20260207';
 
 function escapeHtml(value) {
   return String(value || '').replace(/[&<>"']/g, (char) => ({

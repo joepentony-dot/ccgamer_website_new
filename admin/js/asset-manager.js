@@ -1,8 +1,8 @@
-import { logout, redirectWithGuard } from './auth.js';
-import { APP_PATHS, AUTH_CONFIG } from './config.js';
-import { buildStubStructure } from './games-api.js';
-import { ensureRole, startAccessMonitor } from './guard.js';
-import { createSnapshot, getHealthReport, scanAssets, uploadAssets } from './asset-manager-api.js';
+import { logout, redirectWithGuard } from './auth.js?v=admin-stable-20260207';
+import { APP_PATHS, AUTH_CONFIG } from './config.js?v=admin-stable-20260207';
+import { buildStubStructure } from './games-api.js?v=admin-stable-20260207';
+import { ensureRole, startAccessMonitor } from './guard.js?v=admin-stable-20260207';
+import { createSnapshot, getHealthReport, scanAssets, uploadAssets } from './asset-manager-api.js?v=admin-stable-20260207';
 
 const MAX_TARGET_BYTES = 500 * 1024;
 const allowedRoles = ['editor', 'admin', 'superadmin'];

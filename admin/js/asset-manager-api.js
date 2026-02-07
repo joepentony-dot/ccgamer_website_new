@@ -1,4 +1,4 @@
-import { APP_PATHS } from './config.js';
+import { APP_PATHS } from './config.js?v=admin-stable-20260207';
 
 const ASSET_SNAPSHOT_KEY = 'ccg-admin-asset-snapshots';
 const MAX_SNAPSHOTS = 20;
