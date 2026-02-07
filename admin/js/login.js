@@ -1,13 +1,14 @@
-import { AUTH_CONFIG } from './config.js?v=admin-stable-20260207';
+import { ADMIN_BUILD_ID } from './build.js';
+import { AUTH_CONFIG } from './config.js?v=20260207-01';
 import {
   login,
   redirectWithGuard,
   restoreSession,
   sendPasswordReset,
   waitForAuthReady
-} from './auth.js?v=admin-stable-20260207';
-import { fetchUserRole } from './roles.js?v=admin-stable-20260207';
-import { initAdminNav } from './admin-nav.js?v=admin-stable-20260207';
+} from './auth.js?v=20260207-01';
+import { fetchUserRole } from './roles.js?v=20260207-01';
+import { initAdminNav } from './admin-nav.js?v=20260207-01';
 
 const form = document.querySelector('[data-login-form]');
 const emailInput = document.querySelector('[data-email-input]');
@@ -15,6 +16,8 @@ const passwordInput = document.querySelector('[data-password-input]');
 const loginButton = document.querySelector('[data-login-button]');
 const resetButton = document.querySelector('[data-reset-button]');
 const messageBox = document.querySelector('[data-message]');
+
+console.log('[CCG-AUTH] login.js loaded', ADMIN_BUILD_ID);
 
 function setMessage(message, type = 'info') {
   if (!messageBox) return;
@@ -42,7 +45,7 @@ async function redirectIfSessionExists() {
 }
 
 async function handleLogin(event) {
-  event.preventDefault();
+  if (event?.preventDefault) event.preventDefault();
   setLoading(true);
   setMessage('Authenticating…', 'info');
 
@@ -83,7 +86,8 @@ if (!form || !emailInput || !passwordInput || !loginButton || !resetButton || !m
   console.error('[CCG-AUTH] Login form is missing required elements.');
   setMessage('Login form error: missing required fields.', 'error');
 } else {
-  form.addEventListener('submit', handleLogin);
+  console.log('[CCG-AUTH] binding form');
+  form.addEventListener('submit', handleLogin, { passive: false });
   resetButton.addEventListener('click', handleReset);
 }
 
