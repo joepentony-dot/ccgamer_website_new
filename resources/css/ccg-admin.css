@@ -181,39 +181,53 @@
 
 :where(.ccg-page--admin,
        .ccg-admin,
+       .omega-admin-shell,
        [data-admin-shell]) :where(input,
        textarea,
        select,
        [contenteditable="true"],
        [contenteditable="plaintext-only"]) {
-  color: #ffffff;
-  -webkit-text-fill-color: #ffffff;
-  caret-color: #ffffff;
-  mix-blend-mode: normal;
-  opacity: 1;
-  filter: none;
-  background-image: none;
-  text-shadow: none;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
+  background-clip: border-box !important;
+  -webkit-background-clip: border-box !important;
+  mix-blend-mode: normal !important;
+  opacity: 1 !important;
+  filter: none !important;
+  background-image: none !important;
+  text-shadow: none !important;
 }
 
 :where(.ccg-page--admin,
        .ccg-admin,
+       .omega-admin-shell,
        [data-admin-shell]) :where(input,
        textarea,
        [contenteditable="true"],
        [contenteditable="plaintext-only"])::placeholder {
-  color: rgba(255, 255, 255, 0.65);
-  -webkit-text-fill-color: rgba(255, 255, 255, 0.65);
-  opacity: 1;
+  color: rgba(255, 255, 255, 0.65) !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.65) !important;
+  background-clip: border-box !important;
+  -webkit-background-clip: border-box !important;
+  mix-blend-mode: normal !important;
+  opacity: 1 !important;
+  filter: none !important;
+  text-shadow: none !important;
 }
 
 :where(.ccg-page--admin,
        .ccg-admin,
+       .omega-admin-shell,
        [data-admin-shell]) :where(select option,
        select optgroup) {
-  color: #0b1220;
-  background: #ffffff;
-  mix-blend-mode: normal;
-  opacity: 1;
-  filter: none;
+  color: #0b1220 !important;
+  background: #ffffff !important;
+  -webkit-text-fill-color: #0b1220 !important;
+  background-clip: border-box !important;
+  -webkit-background-clip: border-box !important;
+  mix-blend-mode: normal !important;
+  opacity: 1 !important;
+  filter: none !important;
+  text-shadow: none !important;
 }
