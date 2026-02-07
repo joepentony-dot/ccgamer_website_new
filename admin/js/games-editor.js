@@ -2,7 +2,7 @@ import { initAdminNav } from './admin-nav.js?v=admin-stable-20260207';
 import { getAuthContext, waitForAuthReady } from './auth.js?v=admin-stable-20260207';
 import { buildStubStructure, loadGamesLibrary, updateGamesLibrary } from './games-api.js?v=admin-stable-20260207';
 import { fetchUserRole } from './roles.js?v=admin-stable-20260207';
-import { validateWizardDraft } from './validator.js?v=admin-stable-20260207';
+import { validateExportOutputs, validateWizardDraft } from './validator.js?v=admin-stable-20260207';
 
 const SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
 const STORAGE_KEY = 'omegaGameBuilderDraftV1';
@@ -1218,6 +1218,9 @@ function buildMetadataJson(entry) {
     id: entry.id,
     slug: entry.slug,
     title: entry.title,
+    genres: entry.genres,
+    system: entry.system,
+    year: entry.year,
     seo: {
       title: state.draft.seoTitle || `${entry.title} | Cheeky Commodore Gamer`,
       description: buildMetaDescription(state.draft, entry),
@@ -1416,6 +1419,18 @@ async function buildPackage({ autoDownload = true } = {}) {
   }
 
   resetExportSteps();
+
+  const exportValidation = validateExportOutputs(state.outputs);
+  if (!exportValidation.valid) {
+    const message = `Export validation failed: ${exportValidation.errors.join(' ')}`;
+    setExportPanelError(message);
+    setExportStateLabel('Export validation failed', 'error');
+    setExportStepStatus('metadata', 'error', '✖ Metadata');
+    setExportStepStatus('seo', 'error', '✖ SEO');
+    setExportStepStatus('build', 'error', '✖ ZIP failed');
+    throw new Error(message);
+  }
+
   setExportPanelError('');
   setExportStateLabel('Building ZIP…', 'active');
   renderExportWarnings([]);
