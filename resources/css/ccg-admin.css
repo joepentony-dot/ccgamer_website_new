@@ -231,3 +231,42 @@
   filter: none !important;
   text-shadow: none !important;
 }
+/* =====================================================
+   ADMIN HARD OVERRIDE — INPUT TEXT UNMASK
+   Last-resort protection against global neon/glass leaks
+   ===================================================== */
+
+html body .ccg-page--admin input,
+html body .ccg-page--admin textarea,
+html body .ccg-page--admin select,
+
+html body .omega-admin-shell input,
+html body .omega-admin-shell textarea,
+html body .omega-admin-shell select,
+
+html body .games-editor-wrap input,
+html body .games-editor-wrap textarea,
+html body .games-editor-wrap select,
+
+html body .asset-manager-wrap input,
+html body .asset-manager-wrap textarea,
+html body .asset-manager-wrap select,
+
+html body .admin-auth-panel input,
+html body .admin-auth-panel textarea {
+
+  color: #ffffff !important;
+
+  -webkit-text-fill-color: #ffffff !important;
+  text-fill-color: #ffffff !important;
+
+  background-clip: border-box !important;
+  -webkit-background-clip: border-box !important;
+
+  mix-blend-mode: normal !important;
+  filter: none !important;
+  opacity: 1 !important;
+
+  text-shadow: none !important;
+  background-image: none !important;
+}
