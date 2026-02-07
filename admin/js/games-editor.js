@@ -2,7 +2,7 @@ import { initAdminNav } from './admin-nav.js?v=admin-stable-20260207';
 import { getAuthContext, waitForAuthReady } from './auth.js?v=admin-stable-20260207';
 import { buildStubStructure, loadGamesLibrary, updateGamesLibrary } from './games-api.js?v=admin-stable-20260207';
 import { fetchUserRole } from './roles.js?v=admin-stable-20260207';
-import { validateWizardDraft } from './validator.js?v=admin-stable-20260207';
+import { validateExportOutputs, validateWizardDraft } from './validator.js?v=admin-stable-20260207';
 
 const SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
 const STORAGE_KEY = 'omegaGameBuilderDraftV1';
@@ -1218,6 +1218,9 @@ function buildMetadataJson(entry) {
     id: entry.id,
     slug: entry.slug,
     title: entry.title,
+    genres: entry.genres,
+    system: entry.system,
+    year: entry.year,
     seo: {
       title: state.draft.seoTitle || `${entry.title} | Cheeky Commodore Gamer`,
       description: buildMetaDescription(state.draft, entry),
@@ -1246,6 +1249,7 @@ function buildManifestJson(entry) {
       entry.pdf
     ].filter(Boolean),
     requiredRoutes: [
+      `/games/${entry.slug}.html`,
       `/games/${entry.slug}/index.html`,
       `/games/game.html?id=${entry.id}`
     ],
@@ -1324,6 +1328,165 @@ ${JSON.stringify(schema, null, 2)}
 </html>`;
 }
 
+function buildFlatSeoPage(entry) {
+  const slug = entry.slug;
+  const seoTitle = state.draft.seoTitle || `${entry.title} | Cheeky Commodore Gamer`;
+  const description = buildMetaDescription(state.draft, entry)
+    || `${entry.title} on Commodore — screenshots, manual, downloads and video.`;
+  const canonical = `${SITE_ORIGIN}/games/${slug}.html`;
+  const image = entry.thumbnail ? `${SITE_ORIGIN}/${entry.thumbnail}`.replace(/(?<!:)\/\//g, '/') : '';
+  const publisher = entry.credits?.publisher?.[0] || entry.developer || '';
+  const heroThumb = entry.thumbnail ? `../${entry.thumbnail}`.replace(/(?<!:)\/\//g, '/') : '';
+
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'VideoGame',
+    name: entry.title,
+    description,
+    datePublished: String(entry.year || ''),
+    gamePlatform: entry.system,
+    publisher,
+    image,
+    url: canonical
+  };
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+
+    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <script>
+      (function () {
+        history.replaceState(null, "", "/games/${escapeAttribute(slug)}/");
+      })();
+    </script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>${escapeHtml(seoTitle)}</title>
+    <meta name="description" content="${escapeAttribute(description)}" />
+
+    <link rel="canonical" href="${escapeAttribute(canonical)}" />
+
+    <meta property="og:title" content="${escapeAttribute(seoTitle)}" />
+    <meta property="og:description" content="${escapeAttribute(description)}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="${escapeAttribute(canonical)}" />
+    <meta property="og:image" content="${escapeAttribute(image)}" />
+
+    <link rel="icon" href="../favicon.ico" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="../resources/css/ccg-master.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-mode.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-effects.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-anim.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-overlays.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-cards.css" />
+    <link rel="stylesheet" href="../resources/css/games.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-footer.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-mobile-lite.css">
+    <script src="../js/ccg-mobile-lite.js" defer></script>
+
+    <script type="application/ld+json">
+${JSON.stringify(schema, null, 4)}
+    </script>
+</head>
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
+
+<div class="ccg-bg" aria-hidden="true">
+    <div class="ccg-bg-starfield" aria-hidden="true"></div>
+    <div class="ccg-bg-grid" aria-hidden="true"></div>
+    <div class="ccg-bg-crt-overlay" aria-hidden="true"></div>
+</div>
+
+<div class="ccg-page">
+    <main class="ccg-main">
+
+        <section class="game-hero">
+            <div class="game-hero__inner">
+
+                <div class="game-hero__media">
+                    <img
+                        class="game-hero__thumb"
+                        src="${escapeAttribute(heroThumb)}"
+                        alt="${escapeAttribute(entry.title)} cover"
+                        loading="lazy"
+                     width="460" height="215"  srcset="${escapeAttribute(heroThumb)} 460w" sizes="(max-width: 720px) 90vw, 460px" />
+                </div>
+
+                <div class="game-hero__content">
+                    <h1 class="game-hero__title">${escapeHtml(entry.title)}</h1>
+
+                    <div class="game-hero__meta">
+                        <span class="game-meta__item">${escapeHtml(String(entry.year || ''))}</span>
+                        <span class="game-meta__sep">•</span>
+                        <span class="game-meta__item">${escapeHtml(entry.system || '')}</span>
+                        <span class="game-meta__sep">•</span>
+                        <span class="game-meta__item">${escapeHtml(publisher || '')}</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="game-section">
+            <p class="game-section__kicker">Overview</p>
+            <h2 class="game-section__title">Game Summary</h2>
+
+            <div class="game-description">
+                ${escapeHtml(description)}
+            </div>
+        </section>
+
+        <section class="game-section">
+            <p class="game-section__kicker">Explore</p>
+            <h2 class="game-section__title">More Details</h2>
+
+            <div class="game-downloads">
+                <a class="ccg-btn ccg-btn--primary"
+                   href="/games/game.html?id=${escapeAttribute(entry.id)}">
+                    View the full interactive game page
+                </a>
+
+                <a class="ccg-btn ccg-btn--ghost"
+                   href="/games/index.html">
+                    Browse all games
+                </a>
+            </div>
+        </section>
+
+        <section class="ccg-share" data-ccg-share>
+            <button class="ccg-share-btn" type="button" data-ccg-share-btn>Share this game</button>
+            <div class="ccg-share-fallback" data-ccg-share-fallback aria-hidden="true">
+                <a data-ccg-share-email target="_blank" rel="noopener">Email</a>
+                <a data-ccg-share-whatsapp target="_blank" rel="noopener">WhatsApp</a>
+                <a data-ccg-share-x target="_blank" rel="noopener">X</a>
+                <a data-ccg-share-facebook target="_blank" rel="noopener">Facebook</a>
+                <button type="button" data-ccg-share-copy>Copy link</button>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="ccg-footer">
+        <p class="ccg-footer__text">
+            © <span data-ccg-year></span> Cheeky Commodore Gamer.
+            Not affiliated with Commodore, Amiga or publishers.
+        </p>
+    </footer>
+</div>
+
+<script src="../js/ccg-base.js" defer></script>
+
+<script src="../resources/js/ccg-share.js" defer></script>
+
+</body>
+</html>`;
+}
+
 function buildSitemapFragment(draft, { fragmentOnly = false } = {}) {
   const slug = draft.slug;
   if (!slug) return '';
@@ -1353,6 +1516,7 @@ function buildOutputs() {
   const updatedLibrary = applyEntryToLibrary(entry);
   const gamesJson = JSON.stringify(updatedLibrary, null, 2);
   const stubHtml = buildSeoStub(entry);
+  const flatHtml = buildFlatSeoPage(entry);
   const sitemapFragment = buildSitemapFragment(state.draft);
   const metadataJson = buildMetadataJson(entry);
   const manifestJson = buildManifestJson(entry);
@@ -1362,6 +1526,7 @@ function buildOutputs() {
     entry,
     gamesJson,
     stubHtml,
+    flatHtml,
     sitemapFragment,
     metadataJson,
     manifestJson,
@@ -1416,6 +1581,18 @@ async function buildPackage({ autoDownload = true } = {}) {
   }
 
   resetExportSteps();
+
+  const exportValidation = validateExportOutputs(state.outputs);
+  if (!exportValidation.valid) {
+    const message = `Export validation failed: ${exportValidation.errors.join(' ')}`;
+    setExportPanelError(message);
+    setExportStateLabel('Export validation failed', 'error');
+    setExportStepStatus('metadata', 'error', '✖ Metadata');
+    setExportStepStatus('seo', 'error', '✖ SEO');
+    setExportStepStatus('build', 'error', '✖ ZIP failed');
+    throw new Error(message);
+  }
+
   setExportPanelError('');
   setExportStateLabel('Building ZIP…', 'active');
   renderExportWarnings([]);
@@ -1431,6 +1608,7 @@ async function buildPackage({ autoDownload = true } = {}) {
 
   zip.file('games.json', state.outputs.gamesJson);
   getFolder(zip, `games/${entry.slug}`).file('index.html', state.outputs.stubHtml);
+  zip.file(`games/${entry.slug}.html`, state.outputs.flatHtml);
   zip.file('sitemap-fragment.xml', state.outputs.sitemapFragment);
   zip.file('manifest.json', state.outputs.manifestJson);
   zip.file('metadata.json', state.outputs.metadataJson);
