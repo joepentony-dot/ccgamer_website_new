@@ -46,6 +46,11 @@
 
   const guardAdminSpace = (event) => {
     if (!isAdminPage()) return;
+    // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
+    // Prevents quiz/hotkey logic from blocking form typing
+    const tag = event?.target?.tagName?.toLowerCase();
+    const isEditable = tag === 'input' || tag === 'textarea' || event?.target?.isContentEditable === true;
+    if (isEditable) return;
     if (!isSpaceKey(event)) return;
     if (event.defaultPrevented) return;
     if (isEditableEvent(event) || hasEditableFocus()) return;

@@ -401,6 +401,11 @@
         if (!quizRoot || !isPack6Page()) return;
 
         const keyHandler = (event) => {
+            // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
+            // Prevents quiz/hotkey logic from blocking form typing
+            const tag = event?.target?.tagName?.toLowerCase();
+            const isEditable = tag === "input" || tag === "textarea" || event?.target?.isContentEditable === true;
+            if (isEditable) return;
             if (isEditableEvent(event)) {
                 if (isSpaceKey(event)) {
                     logOnce("ccg-pack6-space-editable", "[CCG-QUIZ] Pack 6 ignored Space key inside editable element.");

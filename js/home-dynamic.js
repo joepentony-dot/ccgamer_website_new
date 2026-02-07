@@ -102,6 +102,11 @@ function initStayAwhileCallout() {
 
     const handleKeydown = (event) => {
         if (location.pathname.startsWith("/admin/")) return;
+        // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
+        // Prevents quiz/hotkey logic from blocking form typing
+        const tag = event?.target?.tagName?.toLowerCase();
+        const isEditable = tag === "input" || tag === "textarea" || event?.target?.isContentEditable === true;
+        if (isEditable) return;
         if (event.target?.closest?.("input, textarea, [contenteditable]")) return;
         if (event.repeat) return;
         if (event.key === "Enter") {
