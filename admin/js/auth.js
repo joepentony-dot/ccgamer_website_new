@@ -47,6 +47,34 @@ let _authBarrierPromise = null;
 let _authBarrierReady = false;
 let _authBarrierSession = null;
 let _authBarrierContext = null;
+let _authHydrationPromise = null;
+let _authHydrationResolve = null;
+let _authHydrationReady = false;
+
+function markAuthHydrated(session) {
+  if (_authHydrationReady) return;
+  _authHydrationReady = true;
+  if (_authHydrationResolve) _authHydrationResolve(true);
+  _authHydrationResolve = null;
+  _authHydrationPromise = Promise.resolve(true);
+  if (session !== undefined) {
+    _authBarrierSession = session || null;
+  }
+}
+
+function waitForAuthHydration(timeoutMs) {
+  if (_authHydrationReady) return Promise.resolve(true);
+  if (!_authHydrationPromise) {
+    _authHydrationPromise = new Promise((resolve) => {
+      _authHydrationResolve = resolve;
+    });
+  }
+  if (!timeoutMs || timeoutMs <= 0) return _authHydrationPromise;
+  return Promise.race([
+    _authHydrationPromise,
+    new Promise((resolve) => setTimeout(() => resolve(false), timeoutMs))
+  ]);
+}
 
 function dispatchAuthReady(context) {
   try {
@@ -234,6 +262,11 @@ function attachAuthListener(supabase) {
   supabase.auth.onAuthStateChange((eventName, session) => {
     _lastAuthEvent = eventName || 'UNKNOWN';
     _lastContext = null;
+    _authBarrierSession = session || null;
+    if (!_authBarrierReady) {
+      _authBarrierContext = buildContextFromSession(session, null);
+    }
+    markAuthHydrated(session || null);
     const context = buildContextFromSession(session, null);
 
     applyWindowAuthState(context);
@@ -252,7 +285,8 @@ async function computeAuthContext({ force = false } = {}) {
     throw new Error(error.message || 'Unable to read Supabase session.');
   }
 
-  const context = buildContextFromSession(data?.session || null, null);
+  const session = _authBarrierSession ?? data?.session || null;
+  const context = buildContextFromSession(session, null);
 
   _lastContext = context;
   applyWindowAuthState(context);
@@ -275,7 +309,12 @@ export async function waitForAuthReady() {
         throw new Error(error.message || 'Unable to read Supabase session.');
       }
 
-      _authBarrierSession = data?.session || null;
+      const hydrated = await waitForAuthHydration(AUTH_CONFIG?.hydrationTimeoutMs || 2000);
+      if (!hydrated) {
+        warn('Auth hydration timed out. Continuing with session snapshot.');
+      }
+
+      _authBarrierSession = _authBarrierSession ?? data?.session || null;
       _authBarrierContext = buildContextFromSession(_authBarrierSession, null);
       log('session restored');
 
