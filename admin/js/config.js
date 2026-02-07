@@ -19,7 +19,8 @@ export const AUTH_CONFIG = Object.freeze({
   loginPage: '/admin/login.html',
   postLogoutRedirect: '/admin/login.html',
   refreshMarginMs: 60_000,
-  sessionCheckIntervalMs: 30_000
+  sessionCheckIntervalMs: 30_000,
+  hydrationTimeoutMs: 2000
 });
 
 // Canonical static paths for GitHub Pages + local static hosting.
