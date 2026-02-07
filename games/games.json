@@ -28896,5 +28896,47 @@
     "developer": "",
     "_ccg_enforced": false,
     "_ccg_migrated": false
+  },
+  {
+    "system": "C64",
+    "id": "brian_bloodaxe",
+    "slug": "brian-bloodaxe",
+    "title": "Brian Bloodaxe",
+    "sorttitle": "Brian Bloodaxe",
+    "year": 1985,
+    "genres": [
+      "platform"
+    ],
+    "collections": [],
+    "videoid": "pxU5N277UHw",
+    "thumbnail": "resources/images/thumbnails/all/brian_bloodaxe.jpg",
+    "pdf": "https://drive.google.com/file/d/1C7tiP2pNgw429VuAAJdSBLwnZAL9bLEP/view?usp=drive_linkhttps://drive.google.com/file/d/1C7tiP2pNgw429VuAAJdSBLwnZAL9bLEP/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1IDIGiCU5GB7rJ4-iGggK_NVpcXN4oQ5x/view?usp=drive_link"
+    ],
+    "lemon": [
+      "https://www.lemon64.com/game/brian-bloodaxe"
+    ],
+    "description": "Brian Bloodaxe is a viking who has been stuck in an ice block for hundreds of years. After the ice has thawed out, Brian vows to conquer Britian, but little does he know he woke up in 1983. ",
+    "ccg_rating": 4,
+    "ccg_rating_reason": "Certainly not one of the better platformers on the Commodore 64",
+    "credits": {
+      "publisher": [
+        "The Edge"
+      ],
+      "producer": "",
+      "coder": [
+        "Trevor Inns"
+      ],
+      "graphics": [],
+      "musician": [
+        "Trevor Inns"
+      ],
+      "re_releaser": [],
+      "developer": "Trevor Inns"
+    },
+    "developer": "The Edge",
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
   }
 ]
