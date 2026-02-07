@@ -23,6 +23,7 @@ const STEP_FIELDS = {
   6: []
 };
 
+window.CCG_EXPORT_VERSION = '1.0.0-stable';
 window.CCG_CONTEXT = 'admin';
 
 const state = {
@@ -49,6 +50,12 @@ const state = {
   draftRestored: false,
   autoSaveTimer: null,
   stepStatus: {},
+  export: {
+    disabled: false,
+    reason: '',
+    missingAssets: [],
+    warnings: []
+  },
   auth: {
     ready: false,
     context: null,
@@ -62,10 +69,28 @@ const el = {
   runtime: document.querySelector('[data-runtime-state]'),
   draftIndicator: document.querySelector('[data-draft-indicator]'),
   libraryIndicator: document.querySelector('[data-library-indicator]'),
+  exportVersion: document.querySelector('[data-export-version]'),
+  exportVersionBadge: document.querySelector('[data-export-version-badge]'),
   modeIndicator: document.querySelector('[data-mode-indicator]'),
   validationIndicator: document.querySelector('[data-validation-indicator]'),
   exportIndicator: document.querySelector('[data-export-indicator]'),
   errorIndicator: document.querySelector('[data-error-indicator]'),
+  exportPanel: document.querySelector('[data-export-panel]'),
+  exportState: document.querySelector('[data-export-state]'),
+  exportSteps: Array.from(document.querySelectorAll('[data-export-step]')).reduce((acc, item) => {
+    acc[item.dataset.exportStep] = item;
+    return acc;
+  }, {}),
+  exportWarnings: document.querySelector('[data-export-warnings]'),
+  exportWarningList: document.querySelector('[data-export-warning-list]'),
+  exportMissing: document.querySelector('[data-export-missing]'),
+  exportMissingList: document.querySelector('[data-export-missing-list]'),
+  exportMissingHint: document.querySelector('[data-export-missing-hint]'),
+  exportError: document.querySelector('[data-export-error]'),
+  exportModal: document.querySelector('[data-export-modal]'),
+  exportModalMessage: document.querySelector('[data-export-modal-message]'),
+  exportModalStack: document.querySelector('[data-export-modal-stack]'),
+  exportModalClose: Array.from(document.querySelectorAll('[data-export-modal-close]')),
   readonlyBadge: document.querySelector('[data-readonly-badge]'),
   exportNote: document.querySelector('[data-export-note]'),
   draftBanner: document.querySelector('[data-draft-banner]'),
@@ -169,17 +194,143 @@ function setErrorIndicator(message) {
   el.errorIndicator.textContent = message;
 }
 
+function setExportVersionLabels() {
+  const version = window.CCG_EXPORT_VERSION || 'unknown';
+  if (el.exportVersion) el.exportVersion.textContent = `Export: v${version}`;
+  if (el.exportVersionBadge) el.exportVersionBadge.textContent = `v${version}`;
+}
+
+function setExportStateLabel(message, kind = 'ready') {
+  if (!el.exportState) return;
+  el.exportState.textContent = message;
+  el.exportState.dataset.state = kind;
+}
+
+function setExportPanelError(message) {
+  if (!el.exportError) return;
+  if (!message) {
+    el.exportError.hidden = true;
+    el.exportError.textContent = '';
+    return;
+  }
+  el.exportError.hidden = false;
+  el.exportError.textContent = message;
+}
+
+function resetExportSteps() {
+  const defaults = {
+    build: 'Building ZIP…',
+    metadata: 'Metadata',
+    images: 'Images',
+    seo: 'SEO',
+    complete: 'Complete'
+  };
+  Object.entries(defaults).forEach(([key, label]) => {
+    const item = el.exportSteps[key];
+    if (!item) return;
+    item.textContent = label;
+    item.classList.remove('is-active', 'is-success', 'is-warning', 'is-error');
+  });
+}
+
+function setExportStepStatus(step, status, label) {
+  const item = el.exportSteps[step];
+  if (!item) return;
+  if (label) item.textContent = label;
+  item.classList.remove('is-active', 'is-success', 'is-warning', 'is-error');
+  if (status) {
+    item.classList.add(`is-${status}`);
+  }
+}
+
+function renderExportWarnings(warnings = []) {
+  if (!el.exportWarnings || !el.exportWarningList) return;
+  if (!warnings.length) {
+    el.exportWarnings.hidden = true;
+    el.exportWarningList.innerHTML = '';
+    return;
+  }
+  el.exportWarnings.hidden = false;
+  el.exportWarningList.innerHTML = warnings.map((warning) => `<li>${escapeHtml(warning)}</li>`).join('');
+}
+
+function renderMissingAssets(missingAssets = []) {
+  if (!el.exportMissing || !el.exportMissingList) return;
+  if (!missingAssets.length) {
+    el.exportMissing.hidden = true;
+    el.exportMissingList.innerHTML = '';
+    if (el.exportMissingHint) el.exportMissingHint.textContent = '';
+    return;
+  }
+  el.exportMissing.hidden = false;
+  el.exportMissingList.innerHTML = missingAssets
+    .map((asset) => `<li>${escapeHtml(asset.display || asset.path)}</li>`)
+    .join('');
+  if (el.exportMissingHint) {
+    el.exportMissingHint.textContent =
+      'Check /resources/images/thumbnails/all/ or /resources/images/games/boxes-3d/ for the missing assets.';
+  }
+}
+
+function setExportDisabled(disabled, reason = '') {
+  state.export.disabled = disabled;
+  state.export.reason = reason;
+  if (disabled) {
+    setExportPanelError(reason);
+    setExportStateLabel('Export disabled', 'error');
+  } else {
+    setExportPanelError('');
+    setExportStateLabel('Ready', 'ready');
+  }
+
+  ['generateOutput', 'downloadBundle', 'buildPackage'].forEach((key) => {
+    const node = el.actions[key];
+    if (node) node.disabled = disabled || !state.auth.canWrite;
+  });
+  updateStatusIndicators();
+}
+
+function setDownloadButtonState(isBuilding) {
+  if (!el.actions.downloadBundle) return;
+  const button = el.actions.downloadBundle;
+  if (!button.dataset.label) button.dataset.label = button.textContent;
+  if (isBuilding) {
+    button.dataset.prevDisabled = String(button.disabled);
+    button.disabled = true;
+  } else if (button.dataset.prevDisabled) {
+    button.disabled = button.dataset.prevDisabled === 'true';
+    delete button.dataset.prevDisabled;
+  }
+  button.setAttribute('aria-busy', String(isBuilding));
+  button.textContent = isBuilding ? 'Building ZIP…' : button.dataset.label;
+}
+
+function openExportModal(message, stack) {
+  if (!el.exportModal) return;
+  if (el.exportModalMessage) el.exportModalMessage.textContent = message;
+  if (el.exportModalStack) el.exportModalStack.textContent = stack || '';
+  el.exportModal.hidden = false;
+  document.body.classList.add('ccg-secret-modal-open');
+}
+
+function closeExportModal() {
+  if (!el.exportModal) return;
+  el.exportModal.hidden = true;
+  document.body.classList.remove('ccg-secret-modal-open');
+}
+
 function setReadOnly(isReadOnly) {
-  const disableActions = [
-    'saveDraft',
-    'buildPackage',
-    'downloadBundle',
-    'generateOutput'
-  ];
+  const disableActions = ['saveDraft'];
+  const exportActions = ['buildPackage', 'downloadBundle', 'generateOutput'];
 
   disableActions.forEach((key) => {
     const node = el.actions[key];
     if (node) node.disabled = Boolean(isReadOnly);
+  });
+
+  exportActions.forEach((key) => {
+    const node = el.actions[key];
+    if (node) node.disabled = Boolean(isReadOnly) || state.export.disabled;
   });
 
   if (el.readonlyBadge) {
@@ -364,6 +515,64 @@ function buildAssetPath({ filename, override, base }) {
   return `${base}${filename}`;
 }
 
+function normalizeAssetName(slug, ext = 'jpg') {
+  return `${slug}.${ext}`;
+}
+
+function normalizeAssetPath(assetPath, slug) {
+  if (!assetPath) return { path: '', filename: '', warnings: [] };
+  if (/^https?:/i.test(assetPath)) {
+    return { path: assetPath, filename: '', warnings: [], isRemote: true };
+  }
+
+  const normalized = assetPath.replace(/^\/+/, '');
+  const segments = normalized.split('/');
+  const originalFilename = segments.pop() || '';
+  if (!originalFilename) return { path: normalized, filename: '', warnings: [] };
+
+  const extMatch = originalFilename.match(/\.([^.]+)$/);
+  const ext = extMatch ? extMatch[1] : '';
+  const base = extMatch ? originalFilename.slice(0, -(ext.length + 1)) : originalFilename;
+  const warnings = [];
+  let nextBase = base;
+
+  if (base.includes('_')) {
+    nextBase = base.replace(/_/g, '-');
+    warnings.push(`Rewrote ${originalFilename} → ${nextBase}${ext ? `.${ext}` : ''}`);
+  }
+
+  if (slug) {
+    const targetName = normalizeAssetName(slug, ext || 'jpg');
+    if (`${nextBase}${ext ? `.${ext}` : ''}` !== targetName) {
+      warnings.push(`Normalized filename to ${targetName}`);
+      nextBase = slug;
+    }
+  }
+
+  const resolvedExt = ext || (slug ? 'jpg' : '');
+  const normalizedFilename = resolvedExt ? `${nextBase}.${resolvedExt}` : nextBase;
+  return {
+    path: [...segments, normalizedFilename].join('/'),
+    filename: normalizedFilename,
+    warnings,
+    originalFilename
+  };
+}
+
+async function safeFetch(url, options) {
+  try {
+    const res = await fetch(url, options);
+    if (!res.ok) throw new Error(res.status);
+    return await res.blob();
+  } catch {
+    return null;
+  }
+}
+
+function getFolder(zip, name) {
+  return zip.folder(name) || zip;
+}
+
 function normalizeDraft() {
   const draft = state.draft;
   if (!draft) return;
@@ -540,7 +749,10 @@ function updateStatusIndicators() {
   }
 
   if (el.exportIndicator) {
-    const exportReady = state.validation.ran && !state.validation.errors.length && state.auth.canWrite;
+    const exportReady = state.validation.ran
+      && !state.validation.errors.length
+      && state.auth.canWrite
+      && !state.export.disabled;
     el.exportIndicator.textContent = `Export: ${exportReady ? 'Ready' : 'Blocked'}`;
   }
 }
@@ -636,6 +848,12 @@ function resetWizard() {
   markDirty(false);
   if (el.actions.downloadBundle) el.actions.downloadBundle.disabled = true;
   if (el.exportNote) el.exportNote.hidden = true;
+  resetExportSteps();
+  renderExportWarnings([]);
+  renderMissingAssets([]);
+  setExportPanelError('');
+  setExportStateLabel('Ready');
+  setDownloadButtonState(false);
   updateStatusIndicators();
   setErrorIndicator('');
   showDraftBanner();
@@ -908,10 +1126,10 @@ function renderValidation() {
   renderFieldErrors(fieldErrors || {});
 
   if (el.actions.generateOutput) {
-    el.actions.generateOutput.disabled = errors.length > 0 || !state.auth.canWrite;
+    el.actions.generateOutput.disabled = errors.length > 0 || !state.auth.canWrite || state.export.disabled;
   }
   if (el.actions.buildPackage) {
-    el.actions.buildPackage.disabled = errors.length > 0 || !state.auth.canWrite;
+    el.actions.buildPackage.disabled = errors.length > 0 || !state.auth.canWrite || state.export.disabled;
   }
 
   updateStatusIndicators();
@@ -1147,28 +1365,34 @@ function buildStubMeta(entry, assetStatus) {
   };
 }
 
-async function addAssetToZip(stubRoot, assetPath, targetFolder, missingAssets) {
+async function addAssetToZip({ stubRoot, assetPath, targetFolder, missingAssets, warnings, slug, label }) {
   if (!assetPath) return;
-  if (/^https?:/i.test(assetPath)) {
-    missingAssets.push({ path: assetPath, reason: 'remote-url' });
+
+  const normalized = normalizeAssetPath(assetPath, slug);
+  if (normalized.isRemote) {
+    missingAssets.push({ path: assetPath, reason: 'remote-url', display: `${label}: ${assetPath}` });
     return;
   }
 
-  const normalized = assetPath.replace(/^\/+/, '');
-  const filename = normalized.split('/').pop();
+  normalized.warnings.forEach((warning) => {
+    warnings.push(`${label}: ${warning}`);
+  });
+
+  const filename = normalized.filename;
   if (!filename) return;
 
-  try {
-    const response = await fetch(`/${normalized}`, { cache: 'no-store' });
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-    const blob = await response.blob();
-    stubRoot.folder(targetFolder).file(filename, blob);
-  } catch (error) {
-    console.error('[CCG-GAME-BUILDER] asset fetch failed', assetPath, error);
-    missingAssets.push({ path: assetPath, reason: error instanceof Error ? error.message : 'fetch-failed' });
+  const blob = await safeFetch(`/${normalized.path}`, { cache: 'no-store' });
+  if (!blob) {
+    missingAssets.push({
+      path: normalized.path,
+      reason: 'missing',
+      display: `${label}: ${normalized.path}`
+    });
+    return;
   }
+
+  const folder = getFolder(stubRoot, targetFolder);
+  folder.file(filename, blob);
 }
 
 async function buildPackage({ autoDownload = true } = {}) {
@@ -1177,40 +1401,87 @@ async function buildPackage({ autoDownload = true } = {}) {
     renderOutputs();
   }
 
-  const zip = new window.JSZip();
+  resetExportSteps();
+  setExportPanelError('');
+  setExportStateLabel('Building ZIP…', 'active');
+  renderExportWarnings([]);
+  renderMissingAssets([]);
+
+  const zip = new JSZip();
   const entry = state.outputs.entry;
   const missingAssets = [];
+  const exportWarnings = [];
+
+  setExportStepStatus('build', 'active', 'Building ZIP…');
+  setExportStepStatus('metadata', 'active', 'Metadata · in progress');
 
   zip.file('games.json', state.outputs.gamesJson);
-  zip.folder(`games/${entry.slug}`).file('index.html', state.outputs.stubHtml);
+  getFolder(zip, `games/${entry.slug}`).file('index.html', state.outputs.stubHtml);
   zip.file('sitemap-fragment.xml', state.outputs.sitemapFragment);
   zip.file('manifest.json', state.outputs.manifestJson);
   zip.file('metadata.json', state.outputs.metadataJson);
   zip.file('readme.txt', state.outputs.readme);
+  setExportStepStatus('metadata', 'success', '✓ Metadata');
 
   const stubMeta = buildStubMeta(entry, { missingAssets });
   const stub = buildStubStructure({ slug: entry.slug, meta: stubMeta });
-  const stubRoot = zip.folder(stub.root);
-  stub.folders.forEach((folder) => stubRoot.folder(folder));
+  const stubRoot = getFolder(zip, stub.root);
+  stub.folders.forEach((folder) => getFolder(stubRoot, folder));
   stubRoot.file('meta.json', stub.metaJson);
   stubRoot.file('readme.txt', state.outputs.readme);
   stubRoot.file('manifest.json', state.outputs.manifestJson);
 
-  await addAssetToZip(stubRoot, entry.thumbnail, 'screenshots', missingAssets);
-  await addAssetToZip(stubRoot, state.draft.box3d, 'box', missingAssets);
-  await addAssetToZip(stubRoot, entry.pdf, 'docs', missingAssets);
+  setExportStepStatus('images', 'active', 'Images · in progress');
+  await addAssetToZip({
+    stubRoot,
+    assetPath: entry.thumbnail,
+    targetFolder: 'screenshots',
+    missingAssets,
+    warnings: exportWarnings,
+    slug: entry.slug,
+    label: 'Thumbnail'
+  });
+  await addAssetToZip({
+    stubRoot,
+    assetPath: state.draft.box3d,
+    targetFolder: 'box',
+    missingAssets,
+    warnings: exportWarnings,
+    slug: entry.slug,
+    label: '3D box'
+  });
+  await addAssetToZip({
+    stubRoot,
+    assetPath: entry.pdf,
+    targetFolder: 'docs',
+    missingAssets,
+    warnings: exportWarnings,
+    slug: '',
+    label: 'PDF/manual'
+  });
 
   if (missingAssets.length) {
     const report = missingAssets
       .map((asset) => `${asset.path} (${asset.reason})`)
       .join('\n');
-    stubRoot.folder('docs').file('missing-assets.txt', `${report}\n`);
+    getFolder(stubRoot, 'docs').file('missing-assets.txt', `${report}\n`);
+    setExportStepStatus('images', 'warning', `⚠ Images · ${missingAssets.length} missing`);
     setErrorIndicator('Some assets could not be packaged. Check missing-assets.txt.');
   } else {
+    setExportStepStatus('images', 'success', '✓ Images');
     setErrorIndicator('');
   }
 
+  setExportStepStatus('seo', 'success', '✓ SEO');
+  state.export.missingAssets = missingAssets;
+  state.export.warnings = exportWarnings;
+  renderExportWarnings(exportWarnings);
+  renderMissingAssets(missingAssets);
+
   const blob = await zip.generateAsync({ type: 'blob' });
+  setExportStepStatus('complete', 'success', '✓ Complete');
+  setExportStepStatus('build', 'success', '✓ ZIP ready');
+
   if (autoDownload) {
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -1223,6 +1494,51 @@ async function buildPackage({ autoDownload = true } = {}) {
   }
 
   if (el.exportNote) el.exportNote.hidden = false;
+  setExportStateLabel('Complete', 'success');
+}
+
+function validateJsZipRuntime() {
+  if (!window.JSZip || !window.JSZip.prototype?.folder) {
+    throw new Error('Invalid JSZip detected — export disabled');
+  }
+}
+
+function testZip() {
+  try {
+    const z = new JSZip();
+    z.folder('test');
+    z.file('ok.txt', 'ok');
+  } catch (error) {
+    throw new Error('JSZip self-test failed — export disabled');
+  }
+}
+
+function handleExportFailure(error) {
+  const message = error instanceof Error ? error.message : 'Package build failed.';
+  const stack = error instanceof Error ? error.stack : '';
+  setRuntimeState('Package build failed', 'error');
+  setErrorIndicator(message);
+  setExportPanelError(message);
+  setExportStateLabel('Failed', 'error');
+  setExportStepStatus('build', 'error', '✖ ZIP failed');
+  setExportStepStatus('complete', 'error', '✖ Failed');
+  openExportModal(message, stack);
+}
+
+async function runPackageBuild({ autoDownload = true } = {}) {
+  if (state.export.disabled) {
+    setExportPanelError(state.export.reason || 'Export disabled');
+    setExportStateLabel('Export disabled', 'error');
+    return;
+  }
+  setDownloadButtonState(true);
+  try {
+    await buildPackage({ autoDownload });
+  } catch (error) {
+    handleExportFailure(error);
+  } finally {
+    setDownloadButtonState(false);
+  }
 }
 
 function handleFieldInput(event) {
@@ -1462,23 +1778,21 @@ function bindEvents() {
     if (state.validation.errors.length) return;
     state.outputs = buildOutputs();
     renderOutputs();
-    if (el.actions.downloadBundle) el.actions.downloadBundle.disabled = false;
+    if (el.actions.downloadBundle) {
+      el.actions.downloadBundle.disabled = state.export.disabled;
+    }
     updateStatusIndicators();
   });
 
-  el.actions.downloadBundle?.addEventListener('click', () => {
+  el.actions.downloadBundle?.addEventListener('click', async () => {
     if (!state.auth.canWrite) return;
     validateDraft();
     renderValidation();
     if (state.validation.errors.length) return;
-    buildPackage().catch((error) => {
-      console.error('[CCG-GAME-BUILDER] package build failed', error);
-      setRuntimeState('Package build failed', 'error');
-      setErrorIndicator(error instanceof Error ? error.message : 'Package build failed.');
-    });
+    await runPackageBuild();
   });
 
-  el.actions.buildPackage?.addEventListener('click', () => {
+  el.actions.buildPackage?.addEventListener('click', async () => {
     if (!state.auth.canWrite) return;
     validateDraft();
     renderValidation();
@@ -1488,12 +1802,16 @@ function bindEvents() {
     }
     state.outputs = buildOutputs();
     renderOutputs();
-    if (el.actions.downloadBundle) el.actions.downloadBundle.disabled = false;
+    if (el.actions.downloadBundle) {
+      el.actions.downloadBundle.disabled = state.export.disabled;
+    }
     goToStep(6);
-    buildPackage().catch((error) => {
-      console.error('[CCG-GAME-BUILDER] package build failed', error);
-      setRuntimeState('Package build failed', 'error');
-      setErrorIndicator(error instanceof Error ? error.message : 'Package build failed.');
+    await runPackageBuild();
+  });
+
+  el.exportModalClose.forEach((button) => {
+    button.addEventListener('click', () => {
+      closeExportModal();
     });
   });
 
@@ -1564,6 +1882,24 @@ async function initAuth() {
 async function boot() {
   setRuntimeState('Booting', 'info');
   await initAdminNav({ pageLabel: 'CCG Game Builder', active: 'editor' });
+
+  setExportVersionLabels();
+  resetExportSteps();
+  renderExportWarnings([]);
+  renderMissingAssets([]);
+  setExportPanelError('');
+  setExportStateLabel('Ready');
+
+  try {
+    validateJsZipRuntime();
+    testZip();
+    setExportDisabled(false);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Invalid JSZip detected — export disabled';
+    setExportDisabled(true, message);
+    setRuntimeState('Export disabled', 'error');
+    setErrorIndicator(message);
+  }
 
   setReadOnly(true);
   await loadLibrary();

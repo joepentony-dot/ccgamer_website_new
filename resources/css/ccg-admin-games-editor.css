@@ -239,6 +239,119 @@
   gap: 16px;
 }
 
+.export-status-panel {
+  background: rgba(12, 16, 34, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 16px;
+  margin: 16px 0 24px;
+  display: grid;
+  gap: 12px;
+}
+
+.export-status-panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.export-status-panel__version {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.9rem;
+}
+
+.export-status-panel__state {
+  font-weight: 700;
+  color: #4ade80;
+}
+
+.export-status-panel__error {
+  color: #f87171;
+  font-weight: 600;
+}
+
+.export-status-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.export-status-list li {
+  list-style: disc;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.export-status-list li.is-active {
+  color: #38bdf8;
+}
+
+.export-status-list li.is-success {
+  color: #4ade80;
+}
+
+.export-status-list li.is-warning {
+  color: #fbbf24;
+}
+
+.export-status-list li.is-error {
+  color: #f87171;
+}
+
+.export-status-panel__warnings,
+.export-status-panel__missing {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.ccg-export-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+}
+
+.ccg-export-modal[hidden] {
+  display: none;
+}
+
+.ccg-export-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 8, 20, 0.8);
+  backdrop-filter: blur(2px);
+}
+
+.ccg-export-modal__panel {
+  position: relative;
+  background: rgba(13, 19, 39, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 24px;
+  max-width: 720px;
+  width: min(92vw, 720px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  display: grid;
+  gap: 12px;
+}
+
+.ccg-export-modal__panel pre {
+  max-height: 260px;
+  overflow: auto;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 12px;
+  border-radius: 10px;
+  color: #f8fafc;
+  font-size: 0.85rem;
+}
+
+.ccg-export-modal__close {
+  justify-self: end;
+}
+
 .validation-panel ul {
   list-style: none;
   margin: 0;
