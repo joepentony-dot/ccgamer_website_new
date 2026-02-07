@@ -54,6 +54,7 @@
   const hasEditableFocus = () => isEditableElement(document.activeElement);
 
   const isSpaceKey = (event) => event && (event.key === ' ' || event.code === 'Space' || event.key === 'Spacebar' || event.keyCode === 32);
+  const isAdminPage = () => window.location && window.location.pathname && window.location.pathname.startsWith('/admin/');
 
   const stopAdminInputHandlers = (event) => {
     // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
@@ -66,6 +67,10 @@
     if (isEditableEvent(event) || hasEditableFocus()) {
       logOnce('ccg-admin-firewall-editable', '[CCG-ADMIN] Input firewall ignored editable key event.', 'warn');
       return;
+    }
+
+    if (isAdminPage()) {
+      logOnce('ccg-admin-firewall-admin-context', '[CCG-ADMIN] Warning: input firewall executed on admin context.', 'warn');
     }
 
     if (isSpaceKey(event)) {
