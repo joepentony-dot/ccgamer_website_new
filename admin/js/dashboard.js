@@ -1,8 +1,9 @@
-import { AUTH_CONFIG } from './config.js';
-import { getAuthContext, redirectWithGuard, waitForAuthReady } from './auth.js';
-import { fetchGamesJson } from './games-api.js';
-import { startAccessMonitor } from './guard.js';
-import { initAdminNav } from './admin-nav.js';
+import { AUTH_CONFIG } from './config.js?v=admin-stable-20260207';
+import { getAuthContext, redirectWithGuard, waitForAuthReady } from './auth.js?v=admin-stable-20260207';
+import { fetchGamesJson } from './games-api.js?v=admin-stable-20260207';
+import { startAccessMonitor } from './guard.js?v=admin-stable-20260207';
+import { initAdminNav } from './admin-nav.js?v=admin-stable-20260207';
+import { fetchUserRole } from './roles.js?v=admin-stable-20260207';
 
 const emailField = document.querySelector('[data-admin-email]');
 const roleField = document.querySelector('[data-admin-role]');
@@ -47,8 +48,16 @@ async function bootstrap() {
       return;
     }
 
-    const role = context.role || 'unknown';
+    let role = context.role || 'unknown';
     const email = context.user.email || 'unknown';
+
+    if (context.user?.id && ['unknown', 'member', 'none'].includes(String(role).toLowerCase())) {
+      try {
+        role = await fetchUserRole({ userId: context.user.id, force: true });
+      } catch (error) {
+        console.warn('[CCG-AUTH] Unable to resolve role.', error);
+      }
+    }
 
     emailField.textContent = email;
     roleField.textContent = role;

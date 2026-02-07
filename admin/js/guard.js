@@ -1,12 +1,12 @@
-import { AUTH_CONFIG } from './config.js';
+import { AUTH_CONFIG } from './config.js?v=admin-stable-20260207';
 import {
   bindSessionInvalidation,
   getAuthContext,
   refreshSessionIfNeeded,
   redirectWithGuard,
   waitForAuthReady
-} from './auth.js';
-import { clearRoleCache } from './roles.js';
+} from './auth.js?v=admin-stable-20260207';
+import { clearRoleCache, fetchUserRole } from './roles.js?v=admin-stable-20260207';
 
 function redirect(path, reason) {
   redirectWithGuard(path, reason);
@@ -43,7 +43,16 @@ export async function ensureRole(allowedRoles = []) {
   }
 
   const context = await getAuthContext();
-  const role = String(context?.role || '').toLowerCase();
+  let role = String(context?.role || '').toLowerCase();
+
+  if (context?.user?.id && (!role || role === 'none' || role === 'member' || role === 'unknown')) {
+    try {
+      const fetchedRole = await fetchUserRole({ userId: context.user.id, force: true });
+      role = String(fetchedRole || role).toLowerCase();
+    } catch (error) {
+      console.warn('[CCG-AUTH] Unable to resolve role.', error);
+    }
+  }
 
   if (!context?.isAuthenticated || !role) {
     redirect(AUTH_CONFIG.loginPage, 'forbidden');
