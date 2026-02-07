@@ -178,6 +178,19 @@ const el = {
 
 const isEditableTarget = (target) => (window.ccgIsEditableTarget ? window.ccgIsEditableTarget(target) : false);
 
+// === ADMIN INPUT OVERRIDE (SPACEBAR SAFE) ===
+(function enableAdminInputOverride() {
+  document.addEventListener(
+    'keydown',
+    (e) => {
+      if (window.ccgIsEditableTarget?.(e.target)) {
+        e.stopImmediatePropagation();
+      }
+    },
+    true
+  );
+})();
+
 function setRuntimeState(message, kind = 'ready') {
   if (!el.runtime) return;
   el.runtime.textContent = `State: ${message}`;
