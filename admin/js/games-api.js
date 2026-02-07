@@ -1,4 +1,4 @@
-import { APP_PATHS } from './config.js';
+import { APP_PATHS } from './config.js?v=admin-stable-20260207';
 
 const LOCAL_BACKUPS_KEY = 'ccg-admin-games-backups';
 const MAX_BACKUPS = 20;

@@ -1,13 +1,13 @@
-import { AUTH_CONFIG } from './config.js';
+import { AUTH_CONFIG } from './config.js?v=admin-stable-20260207';
 import {
   login,
   redirectWithGuard,
   restoreSession,
   sendPasswordReset,
   waitForAuthReady
-} from './auth.js';
-import { fetchUserRole } from './roles.js';
-import { initAdminNav } from './admin-nav.js';
+} from './auth.js?v=admin-stable-20260207';
+import { fetchUserRole } from './roles.js?v=admin-stable-20260207';
+import { initAdminNav } from './admin-nav.js?v=admin-stable-20260207';
 
 const form = document.querySelector('[data-login-form]');
 const emailInput = document.querySelector('[data-email-input]');

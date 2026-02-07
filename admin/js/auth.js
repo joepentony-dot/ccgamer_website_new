@@ -16,7 +16,7 @@
    - Emit ccg:auth:ready for non-module listeners
    ============================================================ */
 
-import { AUTH_CONFIG, SUPABASE_ANON_KEY, SUPABASE_URL } from './config.js';
+import { AUTH_CONFIG, SUPABASE_ANON_KEY, SUPABASE_URL } from './config.js?v=admin-stable-20260207';
 
 const LOG = '[CCG-AUTH]';
 const log = (...a) => console.log(LOG, ...a);
@@ -237,7 +237,7 @@ async function ensureSupabaseClient() {
   }
 
   try {
-    await import('/js/ccg-supabase-client.js');
+    await import('/js/ccg-supabase-client.js?v=admin-stable-20260207');
   } catch (error) {
     err('Supabase bootstrap import failed.', error);
   }

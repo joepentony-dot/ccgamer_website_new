@@ -4,17 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="ccg-context" content="admin" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="/admin/js/input-harden.js"></script>
-  <script src="/admin/js/admin-input-firewall.js"></script>
+  <script src="/admin/js/input-harden.js?v=admin-stable-20260207"></script>
+  <script src="/admin/js/admin-input-firewall.js?v=admin-stable-20260207"></script>
   <title>CCG Game Builder</title>
   <meta name="robots" content="noindex,nofollow" />
   <link rel="icon" href="../favicon.ico" />
-  <link href="../resources/css/ccg-master.css" rel="stylesheet" />
-  <link href="../resources/css/ccg-mode.css" rel="stylesheet" />
-  <link href="../resources/css/ccg-effects.css" rel="stylesheet" />
-  <link href="../resources/css/ccg-admin.css" rel="stylesheet" />
-  <link href="../resources/css/ccg-admin-games-editor.css" rel="stylesheet" />
-  <link href="./css/admin-auth.css" rel="stylesheet" />
+  <link href="../resources/css/ccg-master.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-mode.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-effects.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-admin-games-editor.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="./css/admin-auth.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-admin.css?v=admin-stable-20260207" rel="stylesheet" />
 </head>
 <body class="ccg-body ccg-admin" data-ccg-mode="c64" data-mode="c64" data-ccg-context="admin">
   <div aria-hidden="true" class="ccg-bg">
@@ -23,7 +23,7 @@
     <div aria-hidden="true" class="ccg-bg-crt-overlay"></div>
   </div>
 
-  <main class="games-editor-wrap" data-admin-shell>
+  <main class="games-editor-wrap ccg-page--admin omega-admin-shell" data-admin-shell>
     <header class="admin-dashboard-header sticky-toolbar">
       <div>
         <p class="admin-auth-kicker">CCG Game Builder</p>
@@ -500,10 +500,13 @@
     </div>
   </div>
 
-  <script src="/js/ccg-supabase-config.js" defer></script>
-  <script src="/js/ccg-supabase-client.js" defer></script>
+  <script type="module" src="/admin/js/config.js?v=admin-stable-20260207"></script>
+  <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
+  <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
+  <script type="module" src="/admin/js/auth.js?v=admin-stable-20260207"></script>
+  <script type="module" src="/admin/js/guard.js?v=admin-stable-20260207"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-  <script type="module" src="/admin/js/games-editor.js"></script>
-  <script src="/admin/js/input-fix.js"></script>
+  <script type="module" src="/admin/js/games-editor.js?v=admin-stable-20260207"></script>
+  <script src="/admin/js/input-fix.js?v=admin-stable-20260207"></script>
 </body>
 </html>

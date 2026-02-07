@@ -1,5 +1,5 @@
-import { ensureRole, startAccessMonitor } from './guard.js';
-import { initAdminNav } from './admin-nav.js';
+import { ensureRole, startAccessMonitor } from './guard.js?v=admin-stable-20260207';
+import { initAdminNav } from './admin-nav.js?v=admin-stable-20260207';
 
 const STORAGE_KEY = 'omegaPublishStepState';
 

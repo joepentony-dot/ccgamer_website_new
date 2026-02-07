@@ -1,7 +1,8 @@
-import { initAdminNav } from './admin-nav.js';
-import { getAuthContext, waitForAuthReady } from './auth.js';
-import { buildStubStructure, loadGamesLibrary, updateGamesLibrary } from './games-api.js';
-import { validateWizardDraft } from './validator.js';
+import { initAdminNav } from './admin-nav.js?v=admin-stable-20260207';
+import { getAuthContext, waitForAuthReady } from './auth.js?v=admin-stable-20260207';
+import { buildStubStructure, loadGamesLibrary, updateGamesLibrary } from './games-api.js?v=admin-stable-20260207';
+import { fetchUserRole } from './roles.js?v=admin-stable-20260207';
+import { validateWizardDraft } from './validator.js?v=admin-stable-20260207';
 
 const SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
 const STORAGE_KEY = 'omegaGameBuilderDraftV1';
@@ -1870,7 +1871,20 @@ async function loadLibrary() {
 async function initAuth() {
   try {
     await waitForAuthReady();
-    const context = await getAuthContext();
+    let context = await getAuthContext();
+
+    if (
+      context?.user?.id &&
+      ['unknown', 'member', 'none'].includes(String(context?.role || '').toLowerCase())
+    ) {
+      try {
+        const role = await fetchUserRole({ userId: context.user.id, force: true });
+        context = { ...context, role };
+      } catch (error) {
+        console.warn('[CCG-GAME-BUILDER] Unable to resolve role.', error);
+      }
+    }
+
     applyAuthContext(context, context?.error || null);
     return context;
   } catch (error) {

@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="ccg-context" content="admin">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="/admin/js/input-harden.js"></script>
-    <script src="/admin/js/admin-input-firewall.js"></script>
+    <script src="/admin/js/input-harden.js?v=admin-stable-20260207"></script>
+    <script src="/admin/js/admin-input-firewall.js?v=admin-stable-20260207"></script>
 
-    <script>
+    <script type="module">
         (function () {
             try {
                 var saved = localStorage.getItem('ccg-mode');
@@ -35,21 +35,21 @@
     <link rel="icon" href="../favicon.ico">
 
     <!-- GLOBAL CSS -->
-    <link rel="stylesheet" href="../resources/css/ccg-master.css" />
-    <link rel="stylesheet" href="../resources/css/ccg-mode.css" />
-    <link rel="preload" href="../resources/css/ccg-effects.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="../resources/css/ccg-effects.css" /></noscript>
-    <link rel="stylesheet" href="../resources/css/ccg-hero.css" />
-    <link rel="stylesheet" href="../resources/css/ccg-cards.css" />
-    <link rel="preload" href="../resources/css/ccg-socials.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="../resources/css/ccg-socials.css" /></noscript>
-    <link rel="preload" href="../resources/css/ccg-anim.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="../resources/css/ccg-anim.css" /></noscript>
-    <link rel="stylesheet" href="../resources/css/ccg-overlays.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-master.css?v=admin-stable-20260207" />
+    <link rel="stylesheet" href="../resources/css/ccg-mode.css?v=admin-stable-20260207" />
+    <link rel="preload" href="../resources/css/ccg-effects.css?v=admin-stable-20260207" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="../resources/css/ccg-effects.css?v=admin-stable-20260207" /></noscript>
+    <link rel="stylesheet" href="../resources/css/ccg-hero.css?v=admin-stable-20260207" />
+    <link rel="stylesheet" href="../resources/css/ccg-cards.css?v=admin-stable-20260207" />
+    <link rel="preload" href="../resources/css/ccg-socials.css?v=admin-stable-20260207" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="../resources/css/ccg-socials.css?v=admin-stable-20260207" /></noscript>
+    <link rel="preload" href="../resources/css/ccg-anim.css?v=admin-stable-20260207" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="../resources/css/ccg-anim.css?v=admin-stable-20260207" /></noscript>
+    <link rel="stylesheet" href="../resources/css/ccg-overlays.css?v=admin-stable-20260207" />
 
     
-    <link rel="stylesheet" href="../resources/css/ccg-modal.css">
-    <link rel="stylesheet" href="../resources/css/admin.css">
+    <link rel="stylesheet" href="../resources/css/ccg-modal.css?v=admin-stable-20260207">
+    <link rel="stylesheet" href="../resources/css/admin.css?v=admin-stable-20260207">
 
     <style>
         .quiz-admin-shell {
@@ -301,10 +301,10 @@
             color: #ffbdbd;
         }
     </style>
-    <link rel="stylesheet" href="../resources/css/ccg-footer.css" />
-    <link rel="stylesheet" href="../resources/css/ccg-mobile-lite.css">
-    <link rel="stylesheet" href="../resources/css/ccg-admin.css">
-    <script src="../js/ccg-mobile-lite.js" defer></script>
+    <link rel="stylesheet" href="../resources/css/ccg-footer.css?v=admin-stable-20260207" />
+    <link rel="stylesheet" href="../resources/css/ccg-mobile-lite.css?v=admin-stable-20260207">
+    <link rel="stylesheet" href="../resources/css/ccg-admin.css?v=admin-stable-20260207">
+    <script src="../js/ccg-mobile-lite.js?v=admin-stable-20260207" defer></script>
 </head>
 
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64" id="top">
@@ -391,7 +391,7 @@
             <div class="ccg-header-neon-strip"></div>
         </header>
 
-        <main class="ccg-main ccg-main--admin">
+        <main class="ccg-main ccg-main--admin ccg-page--admin omega-admin-shell" data-admin-shell>
             <section class="ccg-section admin-hero">
                 <div class="admin-hero-grid">
                     <div class="admin-callout">
@@ -468,6 +468,12 @@
             </section>
         </main>
     </div>
+
+    <script type="module" src="/admin/js/config.js?v=admin-stable-20260207"></script>
+    <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
+    <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
+    <script type="module" src="/admin/js/auth.js?v=admin-stable-20260207"></script>
+    <script type="module" src="/admin/js/guard.js?v=admin-stable-20260207"></script>
 
     <script>
         (() => {
@@ -1182,11 +1188,11 @@
         })();
     </script>
 
-    <script src="../js/nav.js" defer></script>
-    <script src="../js/mode-toggle.js" defer></script>
+    <script src="../js/nav.js?v=admin-stable-20260207" defer></script>
+    <script src="../js/mode-toggle.js?v=admin-stable-20260207" defer></script>
 
 <script type="module">
-import { injectDeprecatedBanner } from "/admin/js/admin-nav.js";
+import { injectDeprecatedBanner } from "/admin/js/admin-nav.js?v=admin-stable-20260207";
 injectDeprecatedBanner("This page is part of the legacy admin flow");
 </script>
 </body>
