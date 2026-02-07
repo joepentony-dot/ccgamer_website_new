@@ -8,6 +8,25 @@
 ============================================================ */
 
 let CCG_HOME_ALL_GAMES = [];
+const CCG_HOME_STATUS = {
+    games: {
+        ok: false,
+        error: null,
+        updatedAt: null
+    }
+};
+const HOME_DEBUG_ENABLED = (() => {
+    try {
+        return new URLSearchParams(window.location.search).get("debug") === "1";
+    } catch (error) {
+        return false;
+    }
+})();
+let HOME_DEBUG_PANEL = null;
+const HOME_DEBUG_ENTRIES = {
+    modules: new Map(),
+    fetch: new Map()
+};
 const YT_API_SRC = "https://www.youtube.com/iframe_api";
 const CCG_HOME_YT_PLAYERS = new Map();
 const CCG_HOME_YT_QUEUE = new Set();
@@ -35,44 +54,181 @@ const isMobileViewport = () => {
 document.addEventListener("DOMContentLoaded", () => {
     // Defensive guard: lock HOME visuals to the initial crisp state (no post-load haze reactivation).
     document.documentElement.matches?.('[data-ccg-page="home"]') && document.documentElement.classList.add("ccg-home-no-haze");
-    const kickOff = () => initHomeDynamic();
 
     if (shouldUseMobileLite()) {
         applyMobileLiteMode();
     }
-    kickOff();
+
+    initHomeDynamic().catch((error) => {
+        console.error("[CCG-HOME] bootstrap FAILED", error);
+        setModuleStatus("Bootstrap", "failed", error);
+    });
 });
+
+function getHomeDataModules() {
+    return [
+        { name: "Footer stats", fn: updateFooterStats },
+        { name: "Featured highlights", fn: renderFeaturedHighlights },
+        { name: "Featured spotlight", fn: renderFeaturedSpotlight },
+        { name: "Featured videos", fn: renderFeaturedVideos },
+        { name: "Random game buttons", fn: wireRandomGameButton }
+    ];
+}
+
+async function retryHomeDataLoad(button) {
+    if (button?.dataset?.ccgRetryBusy === "true") return;
+    if (button) {
+        button.dataset.ccgRetryBusy = "true";
+        button.textContent = "Retrying…";
+    }
+
+    await runAsyncModules([{ name: "Games data", fn: loadGamesForHome }]);
+    runSyncModules(getHomeDataModules());
+
+    if (button) {
+        button.dataset.ccgRetryBusy = "false";
+        button.textContent = "Tap to retry";
+    }
+}
 
 async function initHomeDynamic() {
     const skipAnimations = shouldSkipHomeAnimations();
+    initHomeDebugPanel();
 
-    await loadGamesForHome();
-    updateFooterStats();
-    renderFeaturedHighlights();
-    renderFeaturedSpotlight();
-    renderFeaturedVideos();
-    wireRandomGameButton();
-    syncModeLabel();
-    initModeObserver();
-    setupHomeScrollPerfPause();
-    initStayAwhileCallout();
-    initMobileDockEffects();
-    initHeroParallaxLite();
+    const asyncModules = [
+        { name: "Games data", fn: loadGamesForHome }
+    ];
 
-    if (skipAnimations) {
-        calmHeroCards();
-    } else {
-        initHeroCardFX();
+    await runAsyncModules(asyncModules);
 
-        if (!isMobileViewport()) {
-            runWhenIdle(() => {
-                initHeroGlowPulse();
-                initHomeEnergy();
-            });
+    const syncModules = [
+        ...getHomeDataModules(),
+        {
+            name: "Mode label sync",
+            fn: () => {
+                syncModeLabel();
+                initModeObserver();
+            }
+        },
+        { name: "Scroll perf pause", fn: setupHomeScrollPerfPause },
+        { name: "Stay a while callout", fn: initStayAwhileCallout },
+        { name: "Mobile dock effects", fn: initMobileDockEffects },
+        { name: "Hero parallax", fn: initHeroParallaxLite },
+        {
+            name: "Hero visuals",
+            fn: () => {
+                if (skipAnimations) {
+                    calmHeroCards();
+                } else {
+                    initHeroCardFX();
+
+                    if (!isMobileViewport()) {
+                        runWhenIdle(() => {
+                            initHeroGlowPulse();
+                            initHomeEnergy();
+                        });
+                    }
+                }
+            }
+        },
+        { name: "Home visual lock", fn: lockHomeVisualState }
+    ];
+
+    runSyncModules(syncModules);
+}
+
+function runSyncModules(modules) {
+    modules.forEach(module => {
+        try {
+            module.fn();
+            setModuleStatus(module.name, "ok");
+        } catch (error) {
+            setModuleStatus(module.name, "failed", error);
         }
+    });
+}
+
+async function runAsyncModules(modules) {
+    const results = await Promise.allSettled(
+        modules.map(module => Promise.resolve().then(() => module.fn()))
+    );
+
+    results.forEach((result, index) => {
+        const module = modules[index];
+        if (result.status === "fulfilled") {
+            setModuleStatus(module.name, "ok");
+        } else {
+            setModuleStatus(module.name, "failed", result.reason);
+        }
+    });
+}
+
+function setModuleStatus(name, status, error) {
+    const label = `[CCG-HOME] module ${name}`;
+    if (status === "ok") {
+        console.info(`${label} OK`);
+    } else {
+        console.error(`${label} FAILED`, error);
     }
 
-    lockHomeVisualState();
+    if (!HOME_DEBUG_ENABLED) return;
+    HOME_DEBUG_ENTRIES.modules.set(name, { status, error });
+    renderDebugEntries("modules");
+}
+
+function setFetchStatus(name, status, error) {
+    const label = `[CCG-HOME] fetch ${name}`;
+    if (status === "ok") {
+        console.info(`${label} OK`);
+    } else {
+        console.error(`${label} FAILED`, error);
+    }
+
+    if (!HOME_DEBUG_ENABLED) return;
+    HOME_DEBUG_ENTRIES.fetch.set(name, { status, error });
+    renderDebugEntries("fetch");
+}
+
+function initHomeDebugPanel() {
+    if (!HOME_DEBUG_ENABLED || HOME_DEBUG_PANEL) return;
+    const panel = document.createElement("aside");
+    panel.className = "home-debug-panel";
+    panel.setAttribute("data-ccg-home-debug", "true");
+    panel.innerHTML = `
+        <div class="home-debug-panel__title">CCG Home Debug</div>
+        <div class="home-debug-panel__section">
+            <div class="home-debug-panel__label">Fetch</div>
+            <ul class="home-debug-panel__list" data-ccg-debug-fetch></ul>
+        </div>
+        <div class="home-debug-panel__section">
+            <div class="home-debug-panel__label">Modules</div>
+            <ul class="home-debug-panel__list" data-ccg-debug-modules></ul>
+        </div>
+    `;
+    document.body.appendChild(panel);
+    HOME_DEBUG_PANEL = panel;
+    renderDebugEntries("fetch");
+    renderDebugEntries("modules");
+}
+
+function renderDebugEntries(type) {
+    if (!HOME_DEBUG_PANEL) return;
+    const list = HOME_DEBUG_PANEL.querySelector(
+        type === "fetch" ? "[data-ccg-debug-fetch]" : "[data-ccg-debug-modules]"
+    );
+    if (!list) return;
+
+    const entries = type === "fetch" ? HOME_DEBUG_ENTRIES.fetch : HOME_DEBUG_ENTRIES.modules;
+    list.innerHTML = "";
+    entries.forEach((value, key) => {
+        const item = document.createElement("li");
+        item.className = `home-debug-panel__item home-debug-panel__item--${value.status}`;
+        item.textContent = `${key}: ${value.status === "ok" ? "OK" : "FAILED"}`;
+        if (value.error) {
+            item.title = String(value.error?.message || value.error);
+        }
+        list.appendChild(item);
+    });
 }
 
 function initStayAwhileCallout() {
@@ -110,9 +266,9 @@ function initStayAwhileCallout() {
         if (location.pathname.startsWith("/admin/")) return;
         // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
         // Prevents quiz/hotkey logic from blocking form typing
-        const tag = event?.target?.tagName?.toLowerCase();
-        const isEditable = tag === "input" || tag === "textarea" || event?.target?.isContentEditable === true;
-        if (isEditable) return;
+        const secondaryTag = event?.target?.tagName?.toLowerCase();
+        const secondaryEditable = secondaryTag === "input" || secondaryTag === "textarea" || event?.target?.isContentEditable === true;
+        if (secondaryEditable) return;
         if (event.target?.closest?.("input, textarea, [contenteditable]")) return;
         if (event.repeat) return;
         if (event.key === "Enter") {
@@ -392,11 +548,25 @@ function runWhenIdle(task) {
 async function loadGamesForHome() {
     try {
         const root = window.ccgGetSiteRoot ? window.ccgGetSiteRoot() : "/";
-        const url = `${root}games/games.json`;
+        const rootPrefix = root.endsWith("/") ? root : `${root}/`;
+        const url = `${rootPrefix}games/games.json`;
         const res = await fetch(url, { cache: "force-cache" });
-        CCG_HOME_ALL_GAMES = await res.json();
-    } catch {
+        if (!res.ok) {
+            throw new Error(`games.json fetch failed (${res.status})`);
+        }
+        const data = await res.json();
+        if (!Array.isArray(data)) {
+            throw new Error("games.json response was not an array");
+        }
+        CCG_HOME_ALL_GAMES = data;
+        CCG_HOME_STATUS.games = { ok: true, error: null, updatedAt: Date.now() };
+        setFetchStatus("games.json", "ok");
+        return data;
+    } catch (error) {
         CCG_HOME_ALL_GAMES = [];
+        CCG_HOME_STATUS.games = { ok: false, error, updatedAt: Date.now() };
+        setFetchStatus("games.json", "failed", error);
+        throw error;
     }
 }
 
@@ -427,9 +597,32 @@ function renderFeaturedHighlights() {
     const grid = document.querySelector(".home-highlights-grid");
     if (!grid) return;
 
+    if (!CCG_HOME_STATUS.games.ok) {
+        grid.innerHTML = "";
+        grid.appendChild(buildFallbackCard({
+            title: "Featured highlights unavailable",
+            text: "We couldn’t load the games library yet. Please try again in a moment.",
+            onRetry: retryHomeDataLoad,
+            cardClass: "home-highlight-card"
+        }));
+        return;
+    }
+
+    const picks = sampleGames(6);
+    if (!picks.length) {
+        grid.innerHTML = "";
+        grid.appendChild(buildFallbackCard({
+            title: "Featured highlights pending",
+            text: "No highlighted titles are available right now.",
+            onRetry: retryHomeDataLoad,
+            cardClass: "home-highlight-card"
+        }));
+        return;
+    }
+
     grid.innerHTML = "";
 
-    sampleGames(3).forEach(game => {
+    picks.forEach(game => {
         const card = document.createElement("a");
         card.className = "ccg-card home-feature-card";
         card.href = resolveGameUrl(game);
@@ -570,21 +763,53 @@ function hydrateSpotlightVideo(videoId, iframeWrap) {
    UTIL
 ============================================================ */
 
+function getHomeSiteRoot() {
+    const root = window.ccgGetSiteRoot ? window.ccgGetSiteRoot() : "";
+    if (!root) return "";
+    return root.endsWith("/") ? root : `${root}/`;
+}
+
+function buildFallbackCard({ title, text, buttonLabel = "Tap to retry", onRetry, cardClass = "" }) {
+    const card = document.createElement("article");
+    card.className = `ccg-card home-fallback-card ${cardClass}`.trim();
+    card.innerHTML = `
+        <div class="ccg-card__body">
+            <h3 class="ccg-card__title">${title}</h3>
+            <p class="ccg-card__text">${text}</p>
+        </div>
+    `;
+
+    if (onRetry) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "ccg-btn ccg-btn--ghost home-fallback-retry";
+        button.textContent = buttonLabel;
+        button.addEventListener("click", () => onRetry(button));
+        card.querySelector(".ccg-card__body")?.appendChild(button);
+    }
+
+    return card;
+}
+
 function resolveThumb(t) {
-    if (!t) return "resources/images/thumbnails/all/1942.jpg";
-    return t.startsWith("resources/")
-        ? t
-        : `resources/images/thumbnails/all/${t}`;
+    const rootPrefix = getHomeSiteRoot();
+    if (!t) return `${rootPrefix}resources/images/thumbnails/all/1942.jpg`;
+    if (t.startsWith("http")) return t;
+    if (t.startsWith("resources/")) {
+        return `${rootPrefix}${t}`;
+    }
+    return `${rootPrefix}resources/images/thumbnails/all/${t}`;
 }
 
 function resolveGameUrl(game) {
+    const rootPrefix = getHomeSiteRoot();
     const slug = String(game?.slug || "").trim();
-    if (slug) return `games/${slug}/`;
+    if (slug) return `${rootPrefix}games/${slug}/`;
 
     const id = String(game?.id || "").trim();
     if (id) {
         const fallbackSlug = id.toLowerCase().replace(/_+/g, "-").replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-").replace(/^-|-$/g, "");
-        if (fallbackSlug) return `games/${fallbackSlug}/`;
+        if (fallbackSlug) return `${rootPrefix}games/${fallbackSlug}/`;
     }
 
     return "#";
@@ -613,6 +838,28 @@ function pickVideoGame(system) {
 function renderFeaturedVideos() {
     const grid = document.querySelector("[data-ccg-video-grid]");
     if (!grid) return;
+
+    if (!CCG_HOME_STATUS.games.ok) {
+        grid.innerHTML = "";
+        grid.appendChild(buildFallbackCard({
+            title: "Featured videos unavailable",
+            text: "We couldn’t load the games library, so videos can’t be selected yet.",
+            onRetry: retryHomeDataLoad,
+            cardClass: "home-video-card home-video-card--fallback"
+        }));
+        return;
+    }
+
+    if (!CCG_HOME_ALL_GAMES.length) {
+        grid.innerHTML = "";
+        grid.appendChild(buildFallbackCard({
+            title: "Featured videos pending",
+            text: "No video entries are available right now.",
+            onRetry: retryHomeDataLoad,
+            cardClass: "home-video-card home-video-card--fallback"
+        }));
+        return;
+    }
 
     const lanes = [
         { system: "C64", label: "Commodore 64" },
@@ -734,14 +981,23 @@ function navigateToGame(game) {
 }
 
 function wireRandomGameButton() {
-    const buttons = Array.from(document.querySelectorAll("[data-ccg-random-game]"))
-        .filter(btn => !btn.classList.contains("is-disabled"));
+    const buttons = Array.from(document.querySelectorAll("[data-ccg-random-game]"));
     if (!buttons.length) return;
+
+    const resetButton = (btn) => {
+        btn.classList.remove("is-disabled");
+        btn.removeAttribute("aria-disabled");
+        btn.removeAttribute("disabled");
+        btn.dataset.ccgRandomDisabled = "false";
+        const status = btn.querySelector(".home-random-cta__status");
+        if (status) status.textContent = "";
+    };
 
     const disableButton = (btn, message = "Unavailable") => {
         btn.classList.add("is-disabled");
         btn.setAttribute("aria-disabled", "true");
         btn.setAttribute("disabled", "true");
+        btn.dataset.ccgRandomDisabled = "true";
         const status = btn.querySelector(".home-random-cta__status");
         if (status) status.textContent = message;
     };
@@ -775,6 +1031,11 @@ function wireRandomGameButton() {
     };
 
     buttons.forEach(btn => {
+        if (CCG_HOME_ALL_GAMES.length && btn.dataset.ccgRandomDisabled === "true") {
+            resetButton(btn);
+        }
+        if (btn.dataset.ccgRandomWired === "true") return;
+        btn.dataset.ccgRandomWired = "true";
         btn.addEventListener("click", launchRandom);
     });
 }

@@ -1,0 +1,85 @@
+.home-debug-panel {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    width: min(280px, 90vw);
+    background: rgba(10, 12, 24, 0.92);
+    border: 1px solid rgba(0, 255, 255, 0.35);
+    border-radius: 12px;
+    padding: 12px 14px;
+    z-index: 9999;
+    font-family: "Inter", "Segoe UI", sans-serif;
+    color: #e7f7ff;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+}
+
+.home-debug-panel__title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+    color: #7ffcff;
+}
+
+.home-debug-panel__section + .home-debug-panel__section {
+    margin-top: 10px;
+}
+
+.home-debug-panel__label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(231, 247, 255, 0.7);
+    margin-bottom: 4px;
+}
+
+.home-debug-panel__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.home-debug-panel__item {
+    font-size: 11px;
+    line-height: 1.4;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.home-debug-panel__item:last-child {
+    border-bottom: none;
+}
+
+.home-debug-panel__item--ok {
+    color: #9dffcf;
+}
+
+.home-debug-panel__item--failed {
+    color: #ff9d9d;
+}
+
+.home-fallback-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left;
+    min-height: 180px;
+}
+
+.home-fallback-retry {
+    margin-top: 12px;
+    align-self: flex-start;
+}
+
+.home-video-card.home-video-card--fallback {
+    padding: 0;
+}
+
+@media (max-width: 640px) {
+    .home-debug-panel {
+        right: 10px;
+        left: 10px;
+        width: auto;
+    }
+}
