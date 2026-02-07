@@ -1,4 +1,6 @@
 const CURRENT_YEAR = new Date().getFullYear();
+const CLEAN_ID_REGEX = /^[a-z0-9]+(?:_[a-z0-9]+)*$/;
+const CLEAN_SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 function isValidUrl(value) {
   if (!value) return true;
@@ -35,6 +37,10 @@ function listFromText(value) {
     .split(/\n|,/)
     .map((entry) => entry.trim())
     .filter(Boolean);
+}
+
+function deriveIdFromSlug(slug) {
+  return String(slug || '').replace(/-/g, '_');
 }
 
 export function validateGameRecord(record, context = {}) {
@@ -129,7 +135,7 @@ export function validateWizardDraft(draft, context = {}) {
   if (!slug) {
     missing.push('Slug');
     fieldErrors.slug = 'Slug is required.';
-  } else if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
+  } else if (!CLEAN_SLUG_REGEX.test(slug)) {
     errors.push('Slug must use lowercase letters, numbers, and hyphens only.');
     fieldErrors.slug = 'Use lowercase letters, numbers, and hyphens only.';
   }
@@ -137,6 +143,9 @@ export function validateWizardDraft(draft, context = {}) {
   if (!id) {
     missing.push('Game ID');
     fieldErrors.id = 'Game ID is required.';
+  } else if (!CLEAN_ID_REGEX.test(id)) {
+    errors.push('Game ID must use lowercase letters, numbers, and underscores only.');
+    fieldErrors.id = 'Use lowercase letters, numbers, and underscores only.';
   }
 
   if (!draft.system) {
@@ -209,6 +218,11 @@ export function validateWizardDraft(draft, context = {}) {
     fieldErrors.id = 'ID already exists. Edit to make it unique.';
   }
 
+  if (slug && id && deriveIdFromSlug(slug) !== id) {
+    errors.push('Game ID must match slug (slug → underscore).');
+    fieldErrors.id = 'ID must match the slug (slug → underscore).';
+  }
+
   if (draft.pdf && !isValidUrl(draft.pdf)) {
     warnings.push('Manual/PDF URL looks invalid.');
     fieldErrors.pdf = 'Check the URL format.';
@@ -238,6 +252,29 @@ export function validateWizardDraft(draft, context = {}) {
   }
 
   return { valid: errors.length === 0, errors, warnings, missing, fieldErrors };
+}
+
+export function validateLibraryIdentifiers(games = []) {
+  const errors = [];
+  const warnings = [];
+
+  (Array.isArray(games) ? games : []).forEach((game, index) => {
+    const label = game?.title || game?.slug || game?.id || `Record ${index + 1}`;
+    const slug = String(game?.slug || '').trim();
+    const id = String(game?.id || '').trim();
+
+    if (slug && !CLEAN_SLUG_REGEX.test(slug)) {
+      errors.push(`${label}: slug must use lowercase letters, numbers, and hyphens only.`);
+    }
+    if (id && !CLEAN_ID_REGEX.test(id)) {
+      errors.push(`${label}: ID must use lowercase letters, numbers, and underscores only.`);
+    }
+    if (slug && id && deriveIdFromSlug(slug) !== id) {
+      errors.push(`${label}: ID must match slug (slug → underscore).`);
+    }
+  });
+
+  return { valid: errors.length === 0, errors, warnings };
 }
 
 export function validateGamesSchema(games) {
