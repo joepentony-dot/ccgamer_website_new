@@ -50,14 +50,11 @@
 
     // Allow normal typing in form fields
     if (isEditableEvent(event) || hasEditableFocus()) {
-      if (isSpaceKey(event)) {
-        logOnce('ccg-admin-harden-space-editable', '[CCG-ADMIN] Input hardening skipped Space key inside editable element.');
-      }
       return;
     }
 
     if (isSpaceKey(event)) {
-      logOnce('ccg-admin-harden-space-block', '[CCG-ADMIN] Input hardening intercepted Space on non-editable target.');
+      return;
     }
 
     // Block only non-input shortcuts

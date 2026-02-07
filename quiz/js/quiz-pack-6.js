@@ -35,29 +35,6 @@
         return path.endsWith("/quiz/pack-6.html") || path.endsWith("/pack-6.html");
     }
 
-    function isDebugEnabled() {
-        try {
-            const params = new URLSearchParams(window.location.search);
-            return params.get("debugkeys") === "1" || window.localStorage.getItem("ccgDebugKeys") === "1";
-        } catch {
-            return false;
-        }
-    }
-
-    const logOnce = (() => {
-        const logged = new Set();
-        return (key, message) => {
-            if (!isDebugEnabled()) return;
-            if (logged.has(key)) return;
-            logged.add(key);
-            console.info(message);
-        };
-    })();
-
-    function isSpaceKey(event) {
-        return event && (event.key === " " || event.code === "Space" || event.key === "Spacebar" || event.keyCode === 32);
-    }
-
     function isEditableElement(target) {
         if (!(target instanceof Element)) return false;
         if (target.matches(editableSelector)) return true;
@@ -160,8 +137,11 @@
         }
     }
 
+    const SCROLL_LOCK_CLASS = "ccg-scroll-locked";
+
     function setScrollLock(locked) {
-        document.body.style.overflow = locked ? "hidden" : "auto";
+        document.body.classList.toggle(SCROLL_LOCK_CLASS, locked);
+        document.body.style.overflow = locked ? "hidden" : "";
     }
 
     function shuffleArray(items) {
@@ -408,9 +388,6 @@
             if (isEditable) return;
 
             if (isEditableEvent(event)) {
-                if (isSpaceKey(event)) {
-                    logOnce("ccg-pack6-space-editable", "[CCG-QUIZ] Pack 6 ignored Space key inside editable element.");
-                }
                 return;
             }
             if (!document.body.classList.contains("ccg-quiz-pack-6") &&
@@ -419,11 +396,6 @@
             }
             if (location.pathname.startsWith("/admin/")) return;
             if (!elements.gameGrid && !document.querySelector(".hangman-game-grid")) return;
-            if (isSpaceKey(event)) {
-                event.preventDefault();
-                logOnce("ccg-pack6-space-blocked", "[CCG-QUIZ] Pack 6 blocked Space key on non-editable target.");
-                return;
-            }
             if (event.ctrlKey || event.metaKey || event.altKey) return;
             if (state.isOver) return;
             const key = event.key;

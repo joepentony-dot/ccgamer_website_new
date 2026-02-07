@@ -69,7 +69,7 @@
     }
 
     if (isSpaceKey(event)) {
-      logOnce('ccg-admin-firewall-space', '[CCG-ADMIN] Input firewall intercepted Space on non-editable target.');
+      return;
     }
 
     // Only block non-input shortcuts
