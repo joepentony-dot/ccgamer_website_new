@@ -52,6 +52,7 @@
       <p data-runtime-state data-state="ready">State: Ready</p>
       <p data-draft-indicator>Draft: not saved</p>
       <p data-library-indicator>Library: loading…</p>
+      <p data-export-version>Export: v--</p>
       <p data-mode-indicator>Mode: New</p>
       <p data-validation-indicator>Validation: Pending</p>
       <p data-export-indicator>Export: Blocked</p>
@@ -440,6 +441,32 @@
         <button class="ccg-btn ccg-btn--primary" type="button" data-action="generate-output">Generate files</button>
         <button class="ccg-btn ccg-btn--ghost" type="button" data-action="download-bundle" disabled>Download bundle</button>
       </div>
+      <div class="export-status-panel" data-export-panel aria-live="polite">
+        <div class="export-status-panel__header">
+          <div>
+            <h3>Export status</h3>
+            <p class="export-status-panel__version">Builder <span data-export-version-badge>v--</span></p>
+          </div>
+          <p class="export-status-panel__state" data-export-state>Ready</p>
+        </div>
+        <ul class="export-status-list">
+          <li data-export-step="build">Building ZIP…</li>
+          <li data-export-step="metadata">Metadata</li>
+          <li data-export-step="images">Images</li>
+          <li data-export-step="seo">SEO</li>
+          <li data-export-step="complete">Complete</li>
+        </ul>
+        <div class="export-status-panel__warnings" data-export-warnings hidden>
+          <h4>Warnings</h4>
+          <ul data-export-warning-list></ul>
+        </div>
+        <div class="export-status-panel__missing" data-export-missing hidden>
+          <h4>⚠ Missing Files</h4>
+          <ul data-export-missing-list></ul>
+          <p class="field-hint" data-export-missing-hint></p>
+        </div>
+        <p class="export-status-panel__error" data-export-error hidden></p>
+      </div>
       <h3>games.json preview (new entry)</h3>
       <pre data-preview="game-json"></pre>
       <h3>SEO stub HTML preview</h3>
@@ -463,9 +490,19 @@
     </footer>
   </main>
 
+  <div class="ccg-export-modal" data-export-modal hidden>
+    <div class="ccg-export-modal__backdrop" data-export-modal-close></div>
+    <div class="ccg-export-modal__panel" role="dialog" aria-modal="true" aria-labelledby="exportErrorTitle">
+      <button class="ccg-btn ccg-btn--ghost ccg-export-modal__close" type="button" data-export-modal-close>Close</button>
+      <h2 id="exportErrorTitle">Package Builder Error</h2>
+      <p data-export-modal-message></p>
+      <pre data-export-modal-stack></pre>
+    </div>
+  </div>
+
   <script src="/js/ccg-supabase-config.js" defer></script>
   <script src="/js/ccg-supabase-client.js" defer></script>
-  <script src="/admin/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script type="module" src="/admin/js/games-editor.js"></script>
   <script src="/admin/js/input-fix.js"></script>
 </body>

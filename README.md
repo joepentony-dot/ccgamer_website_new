@@ -81,3 +81,25 @@ The CI workflow enforces that the sitemap files are kept up to date.
   - Do not modify `games/games.json`
   - Only write sitemap files at the repo root
 - The audit report may surface pre-existing issues. These are reported for visibility and do not fail CI unless they are critical `games.json` data errors.
+
+## Admin Package Builder (Omega)
+
+The CCG Admin Package Builder lives at `/admin/games-editor.html` and generates a ZIP bundle with metadata, SEO stubs, and local assets. It is designed to be resilient to missing files while still producing a downloadable bundle.
+
+### Required libraries
+
+- JSZip 3.10.1 (loaded from the JSZip CDN in the admin pages).
+
+### Export flow
+
+1. Complete the wizard steps and run validation.
+2. Generate the output previews (games.json entry, SEO stub, metadata, manifest, README).
+3. Run **Build package** or **Download bundle**.
+4. The ZIP will include the updated games.json entry, SEO stub, manifest, metadata, README, and any local assets that could be fetched.
+5. Missing assets are recorded in `missing-assets.txt` and reported in the export status panel.
+
+### Troubleshooting
+
+- **“Invalid JSZip detected — export disabled”**: The JSZip CDN did not load. Refresh the page or verify network access.
+- **Missing assets warning**: Ensure thumbnail art is in `resources/images/thumbnails/all/` and 3D box art is in `resources/images/games/boxes-3d/`.
+- **ZIP download fails**: Check the Package Builder error modal for the stack trace and fix any referenced filenames.
