@@ -1,7 +1,6 @@
 (() => {
   // CCG ADMIN LOCK: Do not remove. Prevents global key handler regressions.
   const logPrefix = '[CCG-INPUT-FIX]';
-  const editableSelector = 'input, textarea, select, [contenteditable]:not([contenteditable="false"])';
 
   const isDebugEnabled = () => {
     try {
