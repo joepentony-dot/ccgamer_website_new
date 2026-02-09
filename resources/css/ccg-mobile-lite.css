@@ -74,3 +74,12 @@ html.ccg-mobile-lite .ccg-page main > section {
 html.ccg-mobile-lite * {
     background-attachment: scroll !important;
 }
+
+/* Home page vertical spacing trim */
+html.ccg-mobile-lite .home-support-cta {
+    margin: 24px auto 28px !important;
+}
+
+html.ccg-mobile-lite .ccg-main--home {
+    padding-top: 12px !important;
+}
