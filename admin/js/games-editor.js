@@ -2135,6 +2135,35 @@ async function initAuth() {
   }
 }
 
+// Compatibility export hook (legacy admin expects this symbol).
+// NOTE: games-editor.js is an ES module, so this must exist in-module (not on window) to avoid ReferenceError at boot.
+async function downloadFlatPageZip() {
+  // If auth has completed and we cannot write, keep behaviour consistent with the UI buttons.
+  if (state.auth.ready && !state.auth.canWrite) {
+    setErrorIndicator('Read-only mode: export is disabled for your role.');
+    return;
+  }
+
+  // Build outputs if needed (so a legacy caller can just "downloadFlatPageZip()" and get a full package).
+  if (!state.outputs) {
+    validateDraft();
+    renderValidation();
+    if (state.validation.errors.length || hasBlockingLibraryErrors()) {
+      goToStep(5);
+      return;
+    }
+    state.outputs = buildOutputs();
+    renderOutputs();
+    if (el.actions.downloadBundle) {
+      el.actions.downloadBundle.disabled = state.export.disabled;
+    }
+    updateStatusIndicators();
+  }
+
+  // Always download (legacy intent).
+  await runPackageBuild({ autoDownload: true });
+}
+
 async function boot() {
   setRuntimeState('Booting', 'info');
   await initAdminNav({ pageLabel: 'CCG Game Builder', active: 'editor' });
@@ -2170,6 +2199,7 @@ async function boot() {
   bindEvents();
   window.CCGGameBuilder = { loadGameById, loadGameBySlug, downloadFlatPageZip };
   window.ccgRegenerateGameStubs = downloadFlatPageZip;
+  window.downloadFlatPageZip = downloadFlatPageZip;
 
   const params = new URLSearchParams(window.location.search);
   if (params.has('slug')) {
