@@ -10,7 +10,7 @@
         url("../images/hero/ccg-hero-amiga.png") type("image/png")
     );
 
-    margin-top: clamp(24px, 5vw, 72px);
+    margin-top: clamp(18px, 4vw, 52px);
     padding: 12px 0 14px;
     touch-action: pan-y;
     isolation: isolate;
