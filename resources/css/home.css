@@ -1829,8 +1829,9 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
    HOME SUPPORT CTA
 ============================================================ */
 
+/* Tighten excessive vertical gap on home CTA */
 .home-support-cta {
-    margin: calc(var(--ccg-section-gap) - 8px) auto var(--ccg-section-gap);
+    margin: clamp(32px, 5vw, 56px) auto clamp(36px, 6vw, 64px);
     max-width: 1020px;
     padding: 0 clamp(16px, 4vw, 26px);
 }
