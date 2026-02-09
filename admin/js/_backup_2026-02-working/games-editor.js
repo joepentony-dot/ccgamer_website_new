@@ -1719,7 +1719,6 @@ async function buildPackage({ autoDownload = true } = {}) {
   renderMissingAssets(missingAssets);
 
   const blob = await zip.generateAsync({ type: 'blob' });
-  window.__ccgLastZipBlob = blob; // cache for manual + browser-safe download
   setExportStepStatus('complete', 'success', '✓ Complete');
   setExportStepStatus('build', 'success', '✓ ZIP ready');
 
