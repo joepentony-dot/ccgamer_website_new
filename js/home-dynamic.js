@@ -608,7 +608,7 @@ function renderFeaturedHighlights() {
         return;
     }
 
-    const picks = sampleGames(6);
+    const picks = sampleGames(3);
     if (!picks.length) {
         grid.innerHTML = "";
         grid.appendChild(buildFallbackCard({
