@@ -1907,6 +1907,10 @@ function setupFooterSignatureRotator() {
                     <span class="ccg-floating-nav__icon" aria-hidden="true">⭐</span>
                     <span class="ccg-floating-nav__label">Collections</span>
                 </a>
+                <a class="ccg-floating-nav__btn" href="${buildUrl("games/genres/index.html")}">
+                    <span class="ccg-floating-nav__icon" aria-hidden="true">🗂️</span>
+                    <span class="ccg-floating-nav__label">Genres</span>
+                </a>
                 <a class="ccg-floating-nav__btn" href="${buildUrl("quiz/quiz.html")}">
                     <span class="ccg-floating-nav__icon" aria-hidden="true">🎮</span>
                     <span class="ccg-floating-nav__label">Quiz</span>
