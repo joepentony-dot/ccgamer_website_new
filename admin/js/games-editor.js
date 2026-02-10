@@ -1527,6 +1527,205 @@ ${JSON.stringify(schema, null, 4)}
 </html>`;
 }
 
+
+// Build flat SEO pages for the whole library (used by the package exporter).
+// Returns: { pages: [{ slug, html }], warnings: [string] }
+function buildFlatGamePages(library = []) {
+  const pages = [];
+  const warnings = [];
+
+  const currentSlug = state?.outputs?.entry?.slug || state?.draft?.slug || '';
+
+  const safeTitle = (game) => `${String(game?.title || '').trim() || 'Game'} | Cheeky Commodore Gamer`;
+  const safeDescription = (game) =>
+    String(game?.description || '').trim()
+    || `${String(game?.title || 'This game')} on Commodore — screenshots, manual, downloads and video.`;
+
+  const safePublisher = (game) =>
+    (Array.isArray(game?.credits?.publisher) && game.credits.publisher[0])
+    || game?.developer
+    || '';
+
+  const safeThumb = (game) => {
+    const t = String(game?.thumbnail || '').trim();
+    if (!t) return '';
+    return `../${t}`.replace(/(?<!:)\/\/+/g, '/');
+  };
+
+  (Array.isArray(library) ? library : []).forEach((game) => {
+    const slug = String(game?.slug || '').trim();
+    if (!slug) return;
+
+    // Avoid duplicating the "current" slug which is added separately as state.outputs.flatHtml.
+    if (currentSlug && slug === currentSlug) return;
+
+    const id = String(game?.id || '').trim();
+    if (!id) {
+      warnings.push(`Skipped flat page for "${slug}" because id is missing.`);
+      return;
+    }
+
+    const seoTitle = safeTitle(game);
+    const description = safeDescription(game);
+    const canonical = `${SITE_ORIGIN}/games/${slug}.html`;
+    const image = game.thumbnail ? `${SITE_ORIGIN}/${String(game.thumbnail).replace(/^\/+/, '')}`.replace(/(?<!:)\/\/+/g, '/') : '';
+    const publisher = safePublisher(game);
+    const heroThumb = safeThumb(game);
+
+    const schema = {
+      '@context': 'https://schema.org',
+      '@type': 'VideoGame',
+      name: String(game?.title || '').trim() || slug,
+      description,
+      datePublished: String(game?.year || ''),
+      gamePlatform: String(game?.system || ''),
+      publisher,
+      image,
+      url: canonical
+    };
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+
+    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <script>
+      (function () {
+        history.replaceState(null, "", "/games/${escapeAttribute(slug)}/");
+      })();
+    </script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>${escapeHtml(seoTitle)}</title>
+    <meta name="description" content="${escapeAttribute(description)}" />
+
+    <link rel="canonical" href="${escapeAttribute(canonical)}" />
+
+    <meta property="og:title" content="${escapeAttribute(seoTitle)}" />
+    <meta property="og:description" content="${escapeAttribute(description)}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="${escapeAttribute(canonical)}" />
+    <meta property="og:image" content="${escapeAttribute(image)}" />
+
+    <link rel="icon" href="../favicon.ico" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="../resources/css/ccg-master.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-mode.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-effects.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-anim.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-overlays.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-cards.css" />
+    <link rel="stylesheet" href="../resources/css/games.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-footer.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-mobile-lite.css">
+    <script src="../js/ccg-mobile-lite.js" defer></script>
+
+    <script type="application/ld+json">
+${JSON.stringify(schema, null, 4)}
+    </script>
+</head>
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
+
+<div class="ccg-bg" aria-hidden="true">
+    <div class="ccg-bg-starfield" aria-hidden="true"></div>
+    <div class="ccg-bg-grid" aria-hidden="true"></div>
+    <div class="ccg-bg-crt-overlay" aria-hidden="true"></div>
+</div>
+
+<div class="ccg-page">
+    <main class="ccg-main">
+
+        <section class="game-hero">
+            <div class="game-hero__inner">
+
+                <div class="game-hero__media">
+                    <img
+                        class="game-hero__thumb"
+                        src="${escapeAttribute(heroThumb)}"
+                        alt="${escapeAttribute(String(game?.title || slug))} cover"
+                        loading="lazy"
+                     width="460" height="215"  srcset="${escapeAttribute(heroThumb)} 460w" sizes="(max-width: 720px) 90vw, 460px" />
+                </div>
+
+                <div class="game-hero__content">
+                    <h1 class="game-hero__title">${escapeHtml(String(game?.title || slug))}</h1>
+
+                    <div class="game-hero__meta">
+                        <span class="game-meta__item">${escapeHtml(String(game?.year || ''))}</span>
+                        <span class="game-meta__sep">•</span>
+                        <span class="game-meta__item">${escapeHtml(String(game?.system || ''))}</span>
+                        <span class="game-meta__sep">•</span>
+                        <span class="game-meta__item">${escapeHtml(String(publisher || ''))}</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="game-section">
+            <p class="game-section__kicker">Overview</p>
+            <h2 class="game-section__title">Game Summary</h2>
+
+            <div class="game-description">
+                ${escapeHtml(description)}
+            </div>
+        </section>
+
+        <section class="game-section">
+            <p class="game-section__kicker">Explore</p>
+            <h2 class="game-section__title">More Details</h2>
+
+            <div class="game-downloads">
+                <a class="ccg-btn ccg-btn--primary"
+                   href="/games/game.html?id=${escapeAttribute(id)}">
+                    View the full interactive game page
+                </a>
+
+                <a class="ccg-btn ccg-btn--ghost"
+                   href="/games/index.html">
+                    Browse all games
+                </a>
+            </div>
+        </section>
+
+        <section class="ccg-share" data-ccg-share>
+            <button class="ccg-share-btn" type="button" data-ccg-share-btn>Share this game</button>
+            <div class="ccg-share-fallback" data-ccg-share-fallback aria-hidden="true">
+                <a data-ccg-share-email target="_blank" rel="noopener">Email</a>
+                <a data-ccg-share-whatsapp target="_blank" rel="noopener">WhatsApp</a>
+                <a data-ccg-share-x target="_blank" rel="noopener">X</a>
+                <a data-ccg-share-facebook target="_blank" rel="noopener">Facebook</a>
+                <button type="button" data-ccg-share-copy>Copy link</button>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="ccg-footer">
+        <p class="ccg-footer__text">
+            © <span data-ccg-year></span> Cheeky Commodore Gamer.
+            Not affiliated with Commodore, Amiga or publishers.
+        </p>
+    </footer>
+</div>
+
+<script src="../js/ccg-base.js" defer></script>
+<script src="../resources/js/ccg-share.js" defer></script>
+
+</body>
+</html>`;
+
+    pages.push({ slug, html });
+  });
+
+  return { pages, warnings };
+}
+
+
 function buildSitemapFragment(draft, { fragmentOnly = false } = {}) {
   const slug = draft.slug;
   if (!slug) return '';
