@@ -340,7 +340,7 @@ const LEGACY_SLUG_MAP = {
     "shoot_out": "shoot-out",
     "sid_meiers_pirates": "sid_meier's_pirates!",
     "skull_crossbones": "skull_&_crossbones",
-    "smash_tv": "smash_t.v.",
+    "smash_t_5": "smash_tv",
     "spartacus_the_swordslayer": "spartacus:_the_swordslayer",
     "speedball-ii-brutal-deluxe": "speedball_2:_brutal_deluxe",
     "speedball_2_brutal_deluxe": "speedball_2:_brutal_deluxe",
@@ -439,11 +439,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     try {
-        const response = await fetch(resolveGamesDataUrl(), { cache: "no-store" });
-        if (!response.ok) throw new Error(`games.json ${response.status}`);
+        const { games, source } = await fetchGamesLibrary();
+        CCG_SINGLE_ALL_GAMES = games;
 
-        const games = await response.json();
-        CCG_SINGLE_ALL_GAMES = Array.isArray(games) ? games : [];
+        if (isDevMode()) {
+            console.info("[CCG SINGLE] Loaded games library from", source);
+        }
 
         if (typeof window !== "undefined" && typeof window.ccgRegisterGameSlugs === "function") {
             window.ccgRegisterGameSlugs(CCG_SINGLE_ALL_GAMES);
@@ -535,6 +536,10 @@ function buildSlugIndex(games) {
         if (key && !index.has(key)) {
             index.set(key, game);
         }
+
+        if (key === "smash-t-5" || key === "smash-t-v") {
+            index.set("smash-tv", game);
+        }
     });
     return index;
 }
@@ -607,6 +612,55 @@ function resolveGamesDataUrl() {
         ? window.ccgGetSiteRoot()
         : "/";
     return `${root}games/games.json`;
+}
+
+function resolveGamesDataFallbackUrls() {
+    const urls = [];
+    const pushUnique = (value) => {
+        const candidate = String(value || "").trim();
+        if (!candidate) return;
+        if (!urls.includes(candidate)) urls.push(candidate);
+    };
+
+    pushUnique(resolveGamesDataUrl());
+    pushUnique("/games/games.json");
+    pushUnique("../games.json");
+    pushUnique("games.json");
+    pushUnique("https://www.cheekycommodoregamer.co.uk/games/games.json");
+
+    if (typeof window !== "undefined") {
+        const origin = window.location?.origin || "";
+        if (origin) {
+            pushUnique(new URL("/games/games.json", origin).toString());
+        }
+    }
+
+    return urls;
+}
+
+async function fetchGamesLibrary() {
+    const urls = resolveGamesDataFallbackUrls();
+    let lastError = null;
+
+    for (const url of urls) {
+        try {
+            const response = await fetch(url, { cache: "no-store" });
+            if (!response.ok) {
+                lastError = new Error(`games.json ${response.status} via ${url}`);
+                continue;
+            }
+
+            const payload = await response.json();
+            return {
+                games: Array.isArray(payload) ? payload : [],
+                source: url
+            };
+        } catch (error) {
+            lastError = error;
+        }
+    }
+
+    throw lastError || new Error("Unable to load games.json from known paths.");
 }
 
 function resolveSingleGameThumbBasePath() {
@@ -797,9 +851,20 @@ function resolveGameSlug(gameId) {
 }
 
 function resolvePrettyGameUrl(game) {
-    const slug = String(game?.slug ?? "").trim() || resolveGameSlug(game?.id);
+    let slug = String(game?.slug ?? "").trim() || resolveGameSlug(game?.id);
+    if (slug === "smash-t-5" || slug === "smash-t-v") slug = "smash-tv";
     if (!slug) return "";
     return resolveCanonicalGamePath(slug);
+}
+
+function resolveCanonicalGameTitle(game) {
+    const title = String(game?.title || "").trim();
+    const slug = String(game?.slug || "").trim();
+    const id = String(game?.id || "").trim();
+    if (title.toLowerCase() === "smash t.v." || slug === "smash-t-5" || slug === "smash-t-v" || id === "smash_t_5" || id === "smash_tv") {
+        return "Smash TV";
+    }
+    return title || "Game";
 }
 
 function getSlugFromPath() {
@@ -898,9 +963,9 @@ function renderGame(game) {
         if (heroBg) heroBg.style.backgroundImage = `url('${thumb}')`;
         if (heroThumb) {
             heroThumb.src = thumb;
-            heroThumb.alt = `${game.title || "Game"} cover art`;
+            heroThumb.alt = `${resolveCanonicalGameTitle(game)} cover art`;
         }
-        if (heroTitle) heroTitle.textContent = game.title || "Unknown";
+        if (heroTitle) heroTitle.textContent = resolveCanonicalGameTitle(game);
         renderHeroMeta(game);
     }
     renderGameRating(game);
@@ -1021,7 +1086,7 @@ function renderGame(game) {
             shots.forEach((src, i) => {
                 const img = document.createElement("img");
                 img.src = src;
-                img.alt = `${game.title || "Game"} screenshot ${i + 1}`;
+                img.alt = `${resolveCanonicalGameTitle(game)} screenshot ${i + 1}`;
                 img.className = "game-screenshot-thumb";
                 img.addEventListener("click", () => {
                     CCG_SCREENSHOT_INDEX = i;
@@ -1945,12 +2010,12 @@ function initScreenshotModalEnhancements() {
 ============================================================ */
 
 function updateMeta(game) {
-    const title = `${game.title || "Game"} | Cheeky Commodore Gamer`;
+    const title = `${resolveCanonicalGameTitle(game)} | Cheeky Commodore Gamer`;
     document.title = title;
 
     const desc = game.description
         ? game.description.replace(/<[^>]*>/g, "").slice(0, 160)
-        : `Play ${game.title || "this"} classic Commodore 64 game online.`;
+        : `Play ${resolveCanonicalGameTitle(game) || "this"} classic Commodore 64 game online.`;
 
     const metaDesc = document.querySelector("meta[name='description']");
     if (metaDesc) metaDesc.setAttribute("content", desc);
@@ -1983,7 +2048,7 @@ function updateMeta(game) {
         const schema = {
             "@context": "https://schema.org",
             "@type": "VideoGame",
-            "name": game.title || "Game",
+            "name": resolveCanonicalGameTitle(game),
             "url": canonicalUrl,
             "description": desc
         };

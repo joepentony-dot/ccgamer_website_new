@@ -1094,7 +1094,8 @@ function resolveGameThumb(raw) {
 }
 
 function resolveGameUrl(game) {
-    const slug = String(game?.slug || "").trim();
+    let slug = String(game?.slug || "").trim();
+    if (slug === "smash-t-5" || slug === "smash-t-v") slug = "smash-tv";
     if (slug) return `${slug}/`;
 
     const id = String(game?.id || "").trim();
