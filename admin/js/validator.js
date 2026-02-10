@@ -335,6 +335,18 @@ export function validateExportOutputs(outputs = {}) {
     }
   }
 
+  if (Array.isArray(gamesArray) && gamesArray.length > 1) {
+    for (let index = 1; index < gamesArray.length; index += 1) {
+      const prev = String(gamesArray[index - 1]?.sorttitle || gamesArray[index - 1]?.title || gamesArray[index - 1]?.slug || '').trim();
+      const current = String(gamesArray[index]?.sorttitle || gamesArray[index]?.title || gamesArray[index]?.slug || '').trim();
+      if (prev.localeCompare(current, 'en', { sensitivity: 'base', numeric: true }) > 0) {
+        errors.push(`games.json must be sorted alphabetically by sorttitle/title/slug. Failed at index ${index}.`);
+        break;
+      }
+    }
+  }
+
+
   const stubHtml = outputs.stubHtml || '';
   if (!stubHtml) {
     errors.push('SEO stub HTML output is missing.');
