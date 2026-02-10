@@ -340,7 +340,7 @@ const LEGACY_SLUG_MAP = {
     "shoot_out": "shoot-out",
     "sid_meiers_pirates": "sid_meier's_pirates!",
     "skull_crossbones": "skull_&_crossbones",
-    "smash_tv": "smash_t_5",
+    "smash_t_5": "smash_tv",
     "spartacus_the_swordslayer": "spartacus:_the_swordslayer",
     "speedball-ii-brutal-deluxe": "speedball_2:_brutal_deluxe",
     "speedball_2_brutal_deluxe": "speedball_2:_brutal_deluxe",
@@ -861,7 +861,7 @@ function resolveCanonicalGameTitle(game) {
     const title = String(game?.title || "").trim();
     const slug = String(game?.slug || "").trim();
     const id = String(game?.id || "").trim();
-    if (title.toLowerCase() === "smash t.v." || slug === "smash-t-5" || slug === "smash-t-v" || id === "smash_t_5") {
+    if (title.toLowerCase() === "smash t.v." || slug === "smash-t-5" || slug === "smash-t-v" || id === "smash_t_5" || id === "smash_tv") {
         return "Smash TV";
     }
     return title || "Game";

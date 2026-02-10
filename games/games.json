@@ -23169,10 +23169,10 @@
   },
   {
     "system": "C64",
-    "id": "smash_t_5",
-    "slug": "smash-t-5",
-    "title": "Smash T.V.",
-    "sorttitle": "Smash T.V.",
+    "id": "smash_tv",
+    "slug": "smash-tv",
+    "title": "Smash TV",
+    "sorttitle": "Smash TV",
     "year": 1992,
     "genres": [
       "arcade"
