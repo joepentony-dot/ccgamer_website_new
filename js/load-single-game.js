@@ -439,11 +439,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     try {
-        const response = await fetch(resolveGamesDataUrl(), { cache: "no-store" });
-        if (!response.ok) throw new Error(`games.json ${response.status}`);
+        const { games, source } = await fetchGamesLibrary();
+        CCG_SINGLE_ALL_GAMES = games;
 
-        const games = await response.json();
-        CCG_SINGLE_ALL_GAMES = Array.isArray(games) ? games : [];
+        if (isDevMode()) {
+            console.info("[CCG SINGLE] Loaded games library from", source);
+        }
 
         if (typeof window !== "undefined" && typeof window.ccgRegisterGameSlugs === "function") {
             window.ccgRegisterGameSlugs(CCG_SINGLE_ALL_GAMES);
@@ -607,6 +608,55 @@ function resolveGamesDataUrl() {
         ? window.ccgGetSiteRoot()
         : "/";
     return `${root}games/games.json`;
+}
+
+function resolveGamesDataFallbackUrls() {
+    const urls = [];
+    const pushUnique = (value) => {
+        const candidate = String(value || "").trim();
+        if (!candidate) return;
+        if (!urls.includes(candidate)) urls.push(candidate);
+    };
+
+    pushUnique(resolveGamesDataUrl());
+    pushUnique("/games/games.json");
+    pushUnique("../games.json");
+    pushUnique("games.json");
+    pushUnique("https://www.cheekycommodoregamer.co.uk/games/games.json");
+
+    if (typeof window !== "undefined") {
+        const origin = window.location?.origin || "";
+        if (origin) {
+            pushUnique(new URL("/games/games.json", origin).toString());
+        }
+    }
+
+    return urls;
+}
+
+async function fetchGamesLibrary() {
+    const urls = resolveGamesDataFallbackUrls();
+    let lastError = null;
+
+    for (const url of urls) {
+        try {
+            const response = await fetch(url, { cache: "no-store" });
+            if (!response.ok) {
+                lastError = new Error(`games.json ${response.status} via ${url}`);
+                continue;
+            }
+
+            const payload = await response.json();
+            return {
+                games: Array.isArray(payload) ? payload : [],
+                source: url
+            };
+        } catch (error) {
+            lastError = error;
+        }
+    }
+
+    throw lastError || new Error("Unable to load games.json from known paths.");
 }
 
 function resolveSingleGameThumbBasePath() {

@@ -8,7 +8,7 @@ const path = require("path");
 --------------------------------------- */
 
 const SITE_ROOT = "https://www.cheekycommodoregamer.co.uk";
-const REDIRECT_TARGET = "/games/game.html?id=";
+const REDIRECT_TARGET = "/games/game.html?slug=";
 
 const repoRoot = path.resolve(__dirname, "..");
 const gamesJsonPath = path.join(repoRoot, "games", "games.json");
@@ -133,15 +133,6 @@ function buildHtml(game, slug, description, imageUrl, publisher, year) {
     <meta name="twitter:description" content="${safeDescription}" />
     <meta name="twitter:image" content="${safeImageUrl}" />
 
-    <style>
-        html, body {
-            background: #000;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            opacity: 0;
-        }
-    </style>
 
     <script>
         (function () {

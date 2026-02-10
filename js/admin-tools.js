@@ -45,12 +45,12 @@
     <title>20 Tons | Cheeky Commodore Gamer</title>
     <meta name="description" content="20 Tons on Commodore — screenshots, manual, downloads and video." />
 
-    <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/20-tons.html" />
+    <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/20-tons/" />
 
     <meta property="og:title" content="20 Tons | Cheeky Commodore Gamer" />
     <meta property="og:description" content="20 Tons on Commodore — screenshots, manual, downloads and video." />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/games/20-tons.html" />
+    <meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/games/20-tons/" />
     <meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/20_tons_new.png" />
 
     <link rel="icon" href="../favicon.ico" />
@@ -76,7 +76,7 @@
         "gamePlatform": "C64",
         "publisher": "64 Tape Computing",
         "image": "https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/20_tons_new.png",
-        "url": "https://www.cheekycommodoregamer.co.uk/games/20-tons.html"
+        "url": "https://www.cheekycommodoregamer.co.uk/games/20-tons/"
     }
     </script>
 </head>
@@ -133,7 +133,7 @@
 
             <div class="game-downloads">
                 <a class="ccg-btn ccg-btn--primary"
-                   href="/games/game.html?id=20_tons">
+                   href="/games/20-tons/">
                     View the full interactive game page
                 </a>
 
@@ -829,7 +829,7 @@
         if (descriptionEl) descriptionEl.textContent = descriptionText;
 
         const viewLink = doc.querySelector('.game-downloads a[href*="game.html"]');
-        if (viewLink) viewLink.setAttribute("href", `/games/game.html?id=${game.id}`);
+        if (viewLink) viewLink.setAttribute("href", `/games/${game.slug || game.id}/`);
 
         if (doc.body) {
             doc.body.setAttribute("data-ccg-mode", mode);
