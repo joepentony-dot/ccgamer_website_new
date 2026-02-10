@@ -75,7 +75,7 @@ export function injectDeprecatedBanner(message = 'Legacy admin page') {
 
   const banner = document.createElement('aside');
   banner.className = 'omega-deprecated-banner';
-  banner.innerHTML = `<strong>Deprecated:</strong> ${escapeHtml(message)}. Use <a href="/admin/dashboard.html">/admin/dashboard.html</a> for the unified CCG admin workflow.`;
+  banner.innerHTML = `<strong>Deprecated:</strong> ${escapeHtml(message)}. Use <a href="/admin/games-editor.html">/admin/games-editor.html</a> for the guided game package workflow.`;
 
   const parent = document.querySelector('.ccg-page') || document.body;
   parent.prepend(banner);

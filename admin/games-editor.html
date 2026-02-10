@@ -449,7 +449,18 @@
       <div class="control-row">
         <button class="ccg-btn ccg-btn--primary" type="button" data-action="generate-output">Generate files</button>
         <button class="ccg-btn ccg-btn--ghost" type="button" data-action="download-bundle" disabled>Download bundle</button>
+        <button class="ccg-btn ccg-btn--ghost" type="button" data-action="retry-download" hidden>Click to download again</button>
       </div>
+      <section class="export-checklist" aria-label="Package preview checklist">
+        <h3>Package Preview Checklist</h3>
+        <ul class="package-checklist">
+          <li data-checklist-item="gamesJson">games.json</li>
+          <li data-checklist-item="stub">stub</li>
+          <li data-checklist-item="flat">flat</li>
+          <li data-checklist-item="sitemap">sitemap fragment</li>
+          <li data-checklist-item="assets">assets</li>
+        </ul>
+      </section>
       <div class="export-status-panel" data-export-panel aria-live="polite">
         <div class="export-status-panel__header">
           <div>
@@ -480,6 +491,8 @@
       <pre data-preview="game-json"></pre>
       <h3>SEO stub HTML preview</h3>
       <pre data-preview="stub-html"></pre>
+      <h3>Flat SEO HTML preview</h3>
+      <pre data-preview="flat-html"></pre>
       <h3>Sitemap fragment preview</h3>
       <pre data-preview="sitemap-fragment"></pre>
       <h3>Metadata JSON preview</h3>

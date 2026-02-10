@@ -88,6 +88,14 @@ const el = {
   exportMissing: document.querySelector('[data-export-missing]'),
   exportMissingList: document.querySelector('[data-export-missing-list]'),
   exportMissingHint: document.querySelector('[data-export-missing-hint]'),
+
+  exportChecklist: {
+    gamesJson: document.querySelector('[data-checklist-item="gamesJson"]'),
+    stub: document.querySelector('[data-checklist-item="stub"]'),
+    flat: document.querySelector('[data-checklist-item="flat"]'),
+    sitemap: document.querySelector('[data-checklist-item="sitemap"]'),
+    assets: document.querySelector('[data-checklist-item="assets"]')
+  },
   exportError: document.querySelector('[data-export-error]'),
   exportModal: document.querySelector('[data-export-modal]'),
   exportModalMessage: document.querySelector('[data-export-modal-message]'),
@@ -124,6 +132,7 @@ const el = {
     metadataJson: document.querySelector('[data-preview="metadata-json"]'),
     manifestJson: document.querySelector('[data-preview="manifest-json"]'),
     readme: document.querySelector('[data-preview="readme"]'),
+    flatHtml: document.querySelector('[data-preview="flat-html"]'),
     ogTitle: document.querySelector('[data-preview="og-title"]'),
     ogDescription: document.querySelector('[data-preview="og-description"]'),
     ogUrl: document.querySelector('[data-preview="og-url"]')
@@ -177,7 +186,8 @@ const el = {
     prevStep: document.querySelector('[data-action="prev-step"]'),
     nextStep: document.querySelector('[data-action="next-step"]'),
     toggleThumbnailOverride: document.querySelector('[data-action="toggle-thumbnail-override"]'),
-    toggleBox3dOverride: document.querySelector('[data-action="toggle-box3d-override"]')
+    toggleBox3dOverride: document.querySelector('[data-action="toggle-box3d-override"]'),
+    retryDownload: document.querySelector('[data-action="retry-download"]')
   }
 };
 
@@ -289,6 +299,52 @@ function renderMissingAssets(missingAssets = []) {
     el.exportMissingHint.textContent =
       'Check /resources/images/thumbnails/all/ or /resources/images/games/boxes-3d/ for the missing assets.';
   }
+}
+
+function setChecklistItemState(item, status = 'blocked') {
+  if (!item) return;
+  item.dataset.state = status;
+  const label = item.textContent.replace(/\s*[✅⚠❌]$/, '');
+  const suffix = status === 'ready' ? ' ✅' : status === 'warning' ? ' ⚠' : ' ❌';
+  item.textContent = `${label}${suffix}`;
+}
+
+function renderExportChecklist(outputs = state.outputs, missingAssets = state.export.missingAssets || []) {
+  if (!el.exportChecklist) return;
+  const hasOutput = (value) => typeof value === 'string' ? Boolean(value.trim()) : Boolean(value);
+  setChecklistItemState(el.exportChecklist.gamesJson, hasOutput(outputs?.gamesJson) ? 'ready' : 'blocked');
+  setChecklistItemState(el.exportChecklist.stub, hasOutput(outputs?.stubHtml) ? 'ready' : 'blocked');
+  setChecklistItemState(el.exportChecklist.flat, hasOutput(outputs?.flatHtml) ? 'ready' : 'blocked');
+  setChecklistItemState(el.exportChecklist.sitemap, hasOutput(outputs?.sitemapFragment) ? 'ready' : 'blocked');
+  if (!outputs) {
+    setChecklistItemState(el.exportChecklist.assets, 'blocked');
+  } else {
+    setChecklistItemState(el.exportChecklist.assets, missingAssets.length ? 'warning' : 'ready');
+  }
+}
+
+function attemptBlobDownload(blob, filename) {
+  if (!(blob instanceof Blob)) {
+    throw new Error('Download failed: ZIP blob is missing. Build the package again.');
+  }
+  const url = window.URL.createObjectURL(blob);
+  try {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.rel = 'noopener';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    return true;
+  } finally {
+    window.setTimeout(() => window.URL.revokeObjectURL(url), 1200);
+  }
+}
+
+function setRetryDownloadVisible(visible) {
+  if (!el.actions.retryDownload) return;
+  el.actions.retryDownload.hidden = !visible;
 }
 
 function setExportDisabled(disabled, reason = '') {
@@ -872,6 +928,7 @@ function resetWizard() {
   resetExportSteps();
   renderExportWarnings([]);
   renderMissingAssets([]);
+  renderExportChecklist(state.outputs, []);
   setExportPanelError('');
   setExportStateLabel('Ready');
   setDownloadButtonState(false);
@@ -1192,20 +1249,24 @@ function renderOutputs() {
   if (!state.outputs) {
     if (el.previews.gameJson) el.previews.gameJson.textContent = '';
     if (el.previews.stubHtml) el.previews.stubHtml.textContent = '';
+    if (el.previews.flatHtml) el.previews.flatHtml.textContent = '';
     if (el.previews.sitemapFragment) el.previews.sitemapFragment.textContent = '';
     if (el.previews.metadataJson) el.previews.metadataJson.textContent = '';
     if (el.previews.manifestJson) el.previews.manifestJson.textContent = '';
     if (el.previews.readme) el.previews.readme.textContent = '';
+    renderExportChecklist(null, []);
     return;
   }
 
-  const { entry, stubHtml, sitemapFragment, metadataJson, manifestJson, readme } = state.outputs;
+  const { entry, stubHtml, flatHtml, sitemapFragment, metadataJson, manifestJson, readme } = state.outputs;
   if (el.previews.gameJson) el.previews.gameJson.textContent = JSON.stringify(entry, null, 2);
   if (el.previews.stubHtml) el.previews.stubHtml.textContent = stubHtml;
+  if (el.previews.flatHtml) el.previews.flatHtml.textContent = flatHtml;
   if (el.previews.sitemapFragment) el.previews.sitemapFragment.textContent = sitemapFragment;
   if (el.previews.metadataJson) el.previews.metadataJson.textContent = metadataJson;
   if (el.previews.manifestJson) el.previews.manifestJson.textContent = manifestJson;
   if (el.previews.readme) el.previews.readme.textContent = readme;
+  renderExportChecklist(state.outputs, state.export.missingAssets || []);
 }
 
 function escapeHtml(value) {
@@ -1736,6 +1797,35 @@ function buildSitemapFragment(draft, { fragmentOnly = false } = {}) {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${fragment}\n</urlset>`;
 }
 
+function getSortKey(record = {}) {
+  return String(record.sorttitle || record.title || record.slug || '').trim();
+}
+
+function sortLibraryRecords(records = []) {
+  return records
+    .map((record, index) => ({ record, index }))
+    .sort((a, b) => {
+      const compare = getSortKey(a.record).localeCompare(getSortKey(b.record), 'en', {
+        sensitivity: 'base',
+        numeric: true
+      });
+      if (compare !== 0) return compare;
+      return a.index - b.index;
+    })
+    .map((item) => item.record);
+}
+
+function assertLibrarySorted(records = []) {
+  for (let index = 1; index < records.length; index += 1) {
+    const prev = getSortKey(records[index - 1]);
+    const current = getSortKey(records[index]);
+    const compare = prev.localeCompare(current, 'en', { sensitivity: 'base', numeric: true });
+    if (compare > 0) {
+      throw new Error(`games.json sort check failed at index ${index}: "${prev}" should not come after "${current}".`);
+    }
+  }
+}
+
 function applyEntryToLibrary(entry) {
   const updatedLibrary = [...state.library];
 
@@ -1745,28 +1835,28 @@ function applyEntryToLibrary(entry) {
     updatedLibrary.push(entry);
   }
 
-  // 🔒 Always keep library alphabetised
-  updatedLibrary.sort((a, b) => {
-    const aKey = (a.sorttitle || a.title || '').toLowerCase();
-    const bKey = (b.sorttitle || b.title || '').toLowerCase();
-    return aKey.localeCompare(bKey, 'en', { sensitivity: 'base' });
-  });
+  const sortedLibrary = sortLibraryRecords(updatedLibrary);
+  assertLibrarySorted(sortedLibrary);
 
-  updateGamesLibrary(updatedLibrary, 'wizard');
-  state.library = updatedLibrary;
+  updateGamesLibrary(sortedLibrary, 'wizard');
+  state.library = sortedLibrary;
 
   updateUniquenessSets();
   renderLibraryLookupOptions();
 
-  return updatedLibrary;
+  return sortedLibrary;
 }
 
 function buildOutputs() {
   const entry = buildGameRecord();
   const updatedLibrary = applyEntryToLibrary(entry);
+  assertLibrarySorted(updatedLibrary);
   const gamesJson = JSON.stringify(updatedLibrary, null, 2);
   const stubHtml = buildSeoStub(entry);
   const flatHtml = buildFlatSeoPage(entry);
+  if (!stubHtml || !flatHtml) {
+    throw new Error('Output generation failed: both stub and flat HTML are required.');
+  }
   const sitemapFragment = buildSitemapFragment(state.draft);
   const metadataJson = buildMetadataJson(entry);
   const manifestJson = buildManifestJson(entry);
@@ -1827,6 +1917,8 @@ async function addAssetToZip({ stubRoot, assetPath, targetFolder, missingAssets,
 async function buildPackage({ autoDownload = true } = {}) {
   if (!state.outputs) {
     state.outputs = buildOutputs();
+    window.__ccgLastZipBlob = null;
+    setRetryDownloadVisible(false);
     renderOutputs();
   }
 
@@ -1847,8 +1939,9 @@ async function buildPackage({ autoDownload = true } = {}) {
   setExportStateLabel('Building ZIP…', 'active');
   renderExportWarnings([]);
   renderMissingAssets([]);
+  renderExportChecklist(state.outputs, []);
 
-  const zip = new JSZip();
+  const zip = new window.JSZip();
   const entry = state.outputs.entry;
   const missingAssets = [];
   const exportWarnings = [];
@@ -1915,6 +2008,7 @@ async function buildPackage({ autoDownload = true } = {}) {
       .map((asset) => `${asset.path} (${asset.reason})`)
       .join('\n');
     getFolder(stubRoot, 'docs').file('missing-assets.txt', `${report}\n`);
+    zip.file('missing-assets.txt', `${report}\n`);
     setExportStepStatus('images', 'warning', `⚠ Images · ${missingAssets.length} missing`);
     setErrorIndicator('Some assets could not be packaged. Check missing-assets.txt.');
   } else {
@@ -1927,26 +2021,32 @@ async function buildPackage({ autoDownload = true } = {}) {
   state.export.warnings = exportWarnings;
   renderExportWarnings(exportWarnings);
   renderMissingAssets(missingAssets);
+  renderExportChecklist(state.outputs, missingAssets);
 
   const blob = await zip.generateAsync({ type: 'blob' });
   window.__ccgLastZipBlob = blob; // cache for manual + browser-safe download
+  setRetryDownloadVisible(false);
   setExportStepStatus('complete', 'success', '✓ Complete');
   setExportStepStatus('build', 'success', '✓ ZIP ready');
 
   if (autoDownload) {
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `omega-game-${entry.slug}.zip`;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(url);
+    const downloadName = `omega-game-${entry.slug}.zip`;
+    try {
+      attemptBlobDownload(blob, downloadName);
+    } catch (downloadError) {
+      setRetryDownloadVisible(true);
+      const message = downloadError instanceof Error ? downloadError.message : 'Automatic download failed.';
+      setExportStateLabel('ZIP ready · manual download required', 'warning');
+      setExportPanelError(message);
+      openExportModal(message, downloadError instanceof Error ? downloadError.stack : '');
+    }
   }
 
   if (el.exportNote) el.exportNote.hidden = false;
-  setExportStateLabel('Complete', 'success');
+  if (!el.exportError?.textContent) setExportStateLabel('Complete', 'success');
+  return blob;
 }
+
 
 function validateJsZipRuntime() {
   if (!window.JSZip || !window.JSZip.prototype?.folder) {
@@ -1956,7 +2056,7 @@ function validateJsZipRuntime() {
 
 function testZip() {
   try {
-    const z = new JSZip();
+    const z = new window.JSZip();
     z.folder('test');
     z.file('ok.txt', 'ok');
   } catch (error) {
@@ -1976,17 +2076,33 @@ function handleExportFailure(error) {
   openExportModal(message, stack);
 }
 
-async function runPackageBuild({ autoDownload = true } = {}) {
+async function runPackageBuild({ autoDownload = true, forceRebuild = false } = {}) {
   if (state.export.disabled) {
     setExportPanelError(state.export.reason || 'Export disabled');
     setExportStateLabel('Export disabled', 'error');
-    return;
+    return null;
   }
+
+  if (autoDownload && !forceRebuild && window.__ccgLastZipBlob instanceof Blob && state.outputs?.entry?.slug) {
+    try {
+      setExportPanelError('');
+      setRetryDownloadVisible(false);
+      attemptBlobDownload(window.__ccgLastZipBlob, `omega-game-${state.outputs.entry.slug}.zip`);
+      setExportStateLabel('Complete', 'success');
+      return window.__ccgLastZipBlob;
+    } catch (error) {
+      setRetryDownloadVisible(true);
+      handleExportFailure(error);
+      return null;
+    }
+  }
+
   setDownloadButtonState(true);
   try {
-    await buildPackage({ autoDownload });
+    return await buildPackage({ autoDownload });
   } catch (error) {
     handleExportFailure(error);
+    return null;
   } finally {
     setDownloadButtonState(false);
   }
@@ -2228,6 +2344,8 @@ function bindEvents() {
     renderValidation();
     if (state.validation.errors.length || hasBlockingLibraryErrors()) return;
     state.outputs = buildOutputs();
+    window.__ccgLastZipBlob = null;
+    setRetryDownloadVisible(false);
     renderOutputs();
     if (el.actions.downloadBundle) {
       el.actions.downloadBundle.disabled = state.export.disabled;
@@ -2243,6 +2361,24 @@ function bindEvents() {
     await runPackageBuild();
   });
 
+  el.actions.retryDownload?.addEventListener('click', () => {
+    if (!state.outputs?.entry?.slug || !(window.__ccgLastZipBlob instanceof Blob)) {
+      setExportPanelError('No cached ZIP available. Build package first.');
+      return;
+    }
+    try {
+      setExportPanelError('');
+      attemptBlobDownload(window.__ccgLastZipBlob, `omega-game-${state.outputs.entry.slug}.zip`);
+      setRetryDownloadVisible(false);
+      setExportStateLabel('Complete', 'success');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Download retry failed.';
+      setExportPanelError(message);
+      openExportModal(message, error instanceof Error ? error.stack : '');
+      setRetryDownloadVisible(true);
+    }
+  });
+
   el.actions.buildPackage?.addEventListener('click', async () => {
     if (!state.auth.canWrite) return;
     validateDraft();
@@ -2252,6 +2388,8 @@ function bindEvents() {
       return;
     }
     state.outputs = buildOutputs();
+    window.__ccgLastZipBlob = null;
+    setRetryDownloadVisible(false);
     renderOutputs();
     if (el.actions.downloadBundle) {
       el.actions.downloadBundle.disabled = state.export.disabled;
@@ -2364,6 +2502,8 @@ async function downloadFlatPageZip() {
       return;
     }
     state.outputs = buildOutputs();
+    window.__ccgLastZipBlob = null;
+    setRetryDownloadVisible(false);
     renderOutputs();
     if (el.actions.downloadBundle) {
       el.actions.downloadBundle.disabled = state.export.disabled;
@@ -2383,6 +2523,7 @@ async function boot() {
   resetExportSteps();
   renderExportWarnings([]);
   renderMissingAssets([]);
+  renderExportChecklist(state.outputs, []);
   setExportPanelError('');
   setExportStateLabel('Ready');
 
