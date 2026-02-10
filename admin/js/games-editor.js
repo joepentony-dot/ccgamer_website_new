@@ -1738,15 +1738,26 @@ function buildSitemapFragment(draft, { fragmentOnly = false } = {}) {
 
 function applyEntryToLibrary(entry) {
   const updatedLibrary = [...state.library];
+
   if (state.mode === 'edit' && state.editing) {
     updatedLibrary[state.editing.index] = entry;
   } else {
     updatedLibrary.push(entry);
   }
+
+  // 🔒 Always keep library alphabetised
+  updatedLibrary.sort((a, b) => {
+    const aKey = (a.sorttitle || a.title || '').toLowerCase();
+    const bKey = (b.sorttitle || b.title || '').toLowerCase();
+    return aKey.localeCompare(bKey, 'en', { sensitivity: 'base' });
+  });
+
   updateGamesLibrary(updatedLibrary, 'wizard');
   state.library = updatedLibrary;
+
   updateUniquenessSets();
   renderLibraryLookupOptions();
+
   return updatedLibrary;
 }
 
