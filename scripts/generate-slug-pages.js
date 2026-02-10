@@ -86,8 +86,8 @@ function validateGame(game, slug) {
 --------------------------------------- */
 
 function buildHtml(game, slug, description, imageUrl, publisher, year) {
-
-    const title = `${stripHtml(game.title)} | Cheeky Commodore Gamer`;
+    const normalizedTitle = slug === "smash-tv" ? "Smash TV" : stripHtml(game.title);
+    const title = `${normalizedTitle} | Cheeky Commodore Gamer`;
     const canonicalUrl = `${SITE_ROOT}/games/${slug}/`;
     const redirectUrl = `${REDIRECT_TARGET}${encodeURIComponent(slug)}`;
 
@@ -101,7 +101,7 @@ function buildHtml(game, slug, description, imageUrl, publisher, year) {
     const schemaData = {
         "@context": "https://schema.org",
         "@type": "VideoGame",
-        name: stripHtml(game.title),
+        name: normalizedTitle,
         description,
         datePublished: String(year),
         gamePlatform: String(game.system || game.platform || ""),
@@ -186,9 +186,13 @@ function main() {
 
         processed += 1;
 
-        const slug = game.slug
+        let slug = game.slug
             ? slugify(game.slug)
             : slugify(game.title);
+
+        if (slug === "smash-t-5" || slug === "smash-t-v") {
+            slug = "smash-tv";
+        }
 
         /* Fallback-safe metadata */
 

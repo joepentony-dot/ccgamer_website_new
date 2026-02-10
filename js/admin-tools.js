@@ -829,7 +829,12 @@
         if (descriptionEl) descriptionEl.textContent = descriptionText;
 
         const viewLink = doc.querySelector('.game-downloads a[href*="game.html"]');
-        if (viewLink) viewLink.setAttribute("href", `/games/${game.slug || game.id}/`);
+        if (viewLink) {
+            const resolvedSlug = (game.slug === "smash-t-5" || game.slug === "smash-t-v")
+                ? "smash-tv"
+                : (game.slug || game.id);
+            viewLink.setAttribute("href", `/games/${resolvedSlug}/`);
+        }
 
         if (doc.body) {
             doc.body.setAttribute("data-ccg-mode", mode);
