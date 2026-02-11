@@ -24,6 +24,46 @@
     explorerInitialized: false
   };
 
+  function logHubError(scope, error, meta) {
+    const payload = meta || {};
+    console.error('[CCG-COMMUNITY-HUB] ' + scope, { error: error, meta: payload });
+  }
+
+  function isAuthError(error) {
+    const code = String(error && (error.status || error.code) || '');
+    const message = String(error && error.message || '').toLowerCase();
+    return code === '401' || code === '403' || code === 'PGRST301' || message.includes('jwt') || message.includes('token') || message.includes('auth');
+  }
+
+  function isServerError(error) {
+    const code = String(error && (error.status || error.code) || '');
+    return code === '500' || code === '502' || code === '503' || code === '504';
+  }
+
+  async function runWithRetry(task, options) {
+    const label = options && options.label ? options.label : 'request';
+    let firstError = null;
+
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        return await task();
+      } catch (error) {
+        if (!firstError) firstError = error;
+        const shouldRetry = attempt === 0 && (isAuthError(error) || isServerError(error));
+        logHubError(label + (shouldRetry ? ' failed, retrying once' : ' failed'), error, { attempt: attempt + 1 });
+        if (!shouldRetry) throw error;
+        try {
+          const client = await window.ccgSupabase.getClient();
+          await client.auth.refreshSession();
+        } catch (refreshError) {
+          logHubError(label + ' auth refresh failed', refreshError, { attempt: attempt + 1 });
+        }
+      }
+    }
+
+    throw firstError || new Error('Unknown community request failure.');
+  }
+
   function esc(value) {
     if (window.ccgCommunityAuth && typeof window.ccgCommunityAuth.esc === 'function') {
       return window.ccgCommunityAuth.esc(value);
@@ -420,10 +460,15 @@
     if (state.gamesLoaded) return;
 
     const root = window.ccgGetSiteRoot ? window.ccgGetSiteRoot() : '/';
-    const response = await fetch(root + 'games/games.json', { cache: 'no-store' });
-    if (!response.ok) throw new Error('Unable to load game list.');
-
-    const data = await response.json();
+    const data = await runWithRetry(async function () {
+      const response = await fetch(root + 'games/games.json', { cache: 'no-store' });
+      if (!response.ok) {
+        const httpError = new Error('Unable to load game list. HTTP ' + response.status);
+        httpError.status = response.status;
+        throw httpError;
+      }
+      return response.json();
+    }, { label: 'load-games-library' });
     const rows = Array.isArray(data) ? data : [];
 
     const normalized = rows.map(function (game, idx) {
@@ -510,7 +555,8 @@
     const elements = getCommentElements();
     if (!elements.count) return;
     const label = state.commentsTotal === 1 ? '1 comment' : state.commentsTotal + ' comments';
-    elements.count.textContent = label;
+    const selectedLabel = state.selectedGame ? (' · ' + state.selectedGame.title) : '';
+    elements.count.textContent = label + selectedLabel;
   }
 
   function renderPostComposer(viewer) {
@@ -570,7 +616,12 @@
           content: content
         };
 
-        const result = await supabase.from('game_comments').insert(payload);
+        const result = await runWithRetry(function () {
+          return supabase.from('game_comments').insert(payload).then(function (response) {
+            if (response.error) throw response.error;
+            return response;
+          });
+        }, { label: 'post-comment' });
         if (result.error) throw result.error;
 
         form.reset();
@@ -641,14 +692,18 @@
       const viewer = await ensureViewerContext();
       renderPostComposer(viewer);
 
-      const response = await supabase
-        .from('game_comments')
-        .select('id,user_id,content,created_at,updated_at,is_deleted,profiles(username,avatar_url)', { count: 'exact' })
-        .eq('game_slug', state.selectedGame.slug)
-        .order('created_at', { ascending: false })
-        .range(rangeStart, rangeEnd);
-
-      if (response.error) throw response.error;
+      const response = await runWithRetry(function () {
+        return supabase
+          .from('game_comments')
+          .select('id,user_id,content,created_at,updated_at,is_deleted,profiles(username,avatar_url)', { count: 'exact' })
+          .eq('game_slug', state.selectedGame.slug)
+          .order('created_at', { ascending: false })
+          .range(rangeStart, rangeEnd)
+          .then(function (queryResponse) {
+            if (queryResponse.error) throw queryResponse.error;
+            return queryResponse;
+          });
+      }, { label: 'load-comments' });
 
       state.commentsTotal = Number(response.count || 0);
       updateCommentCount();
@@ -668,11 +723,16 @@
       elements.loadMore.textContent = 'Load more';
 
       await attachCommentActions(viewer);
-    } catch (_error) {
+    } catch (error) {
+      logHubError('loadComments', error, { slug: state.selectedGame && state.selectedGame.slug, resetList: resetList });
       if (resetList) {
         elements.listWrap.innerHTML = '<p class="ccg-community-muted">Comments are temporarily unavailable. Try again shortly.</p>';
       }
-      setCommentsFeedback('Unable to load comments for this game.', 'error');
+      if (isAuthError(error)) {
+        setCommentsFeedback('Please log in again to load comments.', 'error');
+      } else {
+        setCommentsFeedback('Unable to load comments for this game.', 'error');
+      }
     } finally {
       state.commentsLoading = false;
     }
@@ -716,7 +776,8 @@
 
     try {
       await loadGamesForExplorer();
-    } catch (_error) {
+    } catch (error) {
+      logHubError('loadGamesForExplorer', error);
       setCommentsFeedback('Unable to load game list.', 'error');
       return;
     }
@@ -738,11 +799,28 @@
         selectGame(game, true);
       });
 
+      function trySelectFromInput(shouldFocus) {
+        const game = readGameSelection(elements.input.value);
+        if (!game) return false;
+        selectGame(game, shouldFocus);
+        return true;
+      }
+
       elements.input.addEventListener('change', function () {
+        trySelectFromInput(true);
+      });
+
+      elements.input.addEventListener('input', function () {
         const game = readGameSelection(elements.input.value);
         if (game) {
-          selectGame(game, true);
+          setCommentsFeedback('Ready: ' + game.title + ' selected.', 'success');
         }
+      });
+
+      elements.input.addEventListener('keydown', function (event) {
+        if (event.key !== 'Enter') return;
+        if (trySelectFromInput(true)) return;
+        setCommentsFeedback('Select a valid game from the list first.', 'error');
       });
 
       elements.loadMore.addEventListener('click', function () {

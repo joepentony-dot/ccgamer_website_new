@@ -17,6 +17,17 @@
     maxRetries: 3
   };
 
+
+
+  function logCommentError(scope, error, meta) {
+    console.error('[CCG-COMMENTS] ' + scope, { error: error, meta: meta || {} });
+  }
+
+  function isServerError(error) {
+    const code = String(error && (error.status || error.code) || '');
+    return code === '500' || code === '502' || code === '503' || code === '504';
+  }
+
   function getMount() {
     return document.getElementById('ccg-community-comments');
   }
@@ -153,6 +164,7 @@
     }
 
     if (state.retryCount >= state.maxRetries) {
+      logCommentError('retry-limit-reached', new Error('Retry limit reached'), { reason: reason, retries: state.retryCount });
       setFailureMessage('Comments temporarily unavailable. Please try again soon.');
       return;
     }
@@ -214,12 +226,13 @@
     }
 
     if (error) {
+      logCommentError('load-comments', error, { slug: slug });
       if (isAuthError(error)) {
         setLoginMessage('Log in to view comments.');
         return;
       }
       mount.innerHTML = '<div class="ccg-community-card"><h3>Community Comments</h3><p class="ccg-community-muted">Unable to load comments right now.</p></div>';
-      scheduleRetry(5000, 'load-error');
+      scheduleRetry(isServerError(error) ? 3500 : 5000, 'load-error');
       return;
     }
 
@@ -303,6 +316,7 @@
       });
 
       if (insertError) {
+        logCommentError('post-comment', insertError, { slug: slug });
         if (isAuthError(insertError)) {
           status.textContent = 'Log in to comment.';
           return;
@@ -310,7 +324,7 @@
         status.textContent = isNotConfiguredError(insertError)
           ? 'Comments are still being prepared. Please retry in a moment.'
           : 'Unable to post comment right now.';
-        scheduleRetry(3000, 'post-error');
+        scheduleRetry(isServerError(insertError) ? 2000 : 3000, 'post-error');
         return;
       }
 
@@ -397,7 +411,8 @@
     state.activeGameId = game.gameId;
 
     state.renderInFlight = renderComments(game.slug)
-      .catch(function () {
+      .catch(function (error) {
+        logCommentError('render-failed', error, { slug: game.slug });
         setDeferredMessage('Unable to load comments just yet. Retrying…');
         scheduleRetry(3000, 'render-failed');
       })
