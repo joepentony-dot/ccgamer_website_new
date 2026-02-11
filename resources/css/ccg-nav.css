@@ -151,3 +151,51 @@
         animation: none !important;
     }
 }
+
+
+/* ============================================================
+   GLOBAL HEADER + NAV ALIGNMENT LOCK
+   ------------------------------------------------------------
+   Shared centering contract for logo, navigation and socials.
+============================================================ */
+.ccg-header-inner {
+    width: min(100% - clamp(20px, 3.6vw, 48px), 1320px) !important;
+    max-width: 1320px !important;
+    margin-inline: auto !important;
+    padding-inline: 0 !important;
+    display: grid !important;
+    grid-template-columns: minmax(240px, auto) minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    column-gap: clamp(14px, 2vw, 28px) !important;
+}
+
+.ccg-header .ccg-nav,
+.ccg-header .ccg-nav__bar,
+.ccg-header .ccg-nav__list,
+.ccg-header .ccg-header-actions {
+    margin-inline: 0 !important;
+    transform: none !important;
+}
+
+.ccg-header .ccg-nav {
+    justify-self: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+.ccg-header .ccg-header-actions {
+    justify-self: end !important;
+}
+
+@media (max-width: 1099px) {
+    .ccg-header-inner {
+        grid-template-columns: minmax(0, 1fr) auto auto !important;
+    }
+}
+
+@media (max-width: 900px) {
+    .ccg-header-inner {
+        width: min(100% - 24px, 1320px) !important;
+        grid-template-columns: minmax(0, 1fr) auto !important;
+    }
+}

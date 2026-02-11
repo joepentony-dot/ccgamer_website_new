@@ -2825,3 +2825,23 @@ body[data-ccg-mode="amiga"] {
   color: #9cd8ea;
   min-height: 1.4rem;
 }
+
+
+/* ============================================================
+   GAME BUTTON CONTRACT LOCK
+   ------------------------------------------------------------
+   Prevents legacy rounded button styles from overriding unified
+   CCG button contract on game pages.
+============================================================ */
+.game-page button,
+.game-cta {
+    border-radius: 0 !important;
+    filter: none !important;
+}
+
+/* Prevent legacy rounding */
+button,
+.ccg-btn,
+.game-cta {
+    border-radius: 0 !important;
+}

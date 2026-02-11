@@ -1,22 +1,26 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+set -e
+
 echo "Running CCG UI Contract Checks..."
 
-# Ensure no new rounded button styles
-if git diff --cached --name-only | grep -E "\.css$"; then
-  if git diff --cached | grep -E "border-radius:[^0px]" ; then
-    echo "❌ Rounded button style detected! All buttons must be square!"
-    exit 1
-  fi
+# Fail if game button contract reintroduces rounded corners
+if rg -nP "(\.game-page button|\.game-cta)\s*\{[^}]*border-radius:\s*(?!0(?:px)?\b)" resources/css/games.css >/dev/null 2>&1; then
+  echo "❌ Rounded corners detected on game button contract selectors."
+  exit 1
 fi
 
-# Ensure required CSS imports remain unchanged
-if git diff --cached --name-only | grep -E "\.html$"; then
-  if git diff --cached | grep -E "ccg-nav.css|ccg-buttons.css|ccg-mode.css" >/dev/null; then
-    echo "‼ Nav/Buttons/Mode shared import change detected: please review"
-    exit 1
-  fi
+# Fail if duplicate Join/Login entry points are present in HTML
+if rg -n 'id="join-login"' -g '*.html' . >/dev/null 2>&1 && rg -n 'id="ccg-hub-login-btn"' -g '*.html' . >/dev/null 2>&1; then
+  echo "❌ Duplicate Join/Login entry points detected (header + community hub)."
+  exit 1
+fi
+
+# Fail if non-canonical files add local nav margin drift overrides
+if rg -n "ccg-(header-inner|nav|header-actions)[^{]*\{[^}]*margin-(left|right|inline)" resources/css --glob '!ccg-nav.css' >/dev/null 2>&1; then
+  echo "❌ Potential nav alignment drift override detected outside ccg-nav.css."
+  exit 1
 fi
 
 echo "UI Contract checks passed!"

@@ -82,10 +82,12 @@
     <link rel="stylesheet" href="../resources/css/ccg-footer.css" />
     <link rel="stylesheet" href="../resources/css/ccg-mobile-lite.css">
     <link rel="stylesheet" href="../resources/css/ccg-community.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-nav.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-buttons.css" />
     <script src="../js/ccg-mobile-lite.js" defer></script>
 </head>
 
-<body class="ccg-body" data-ccg-mode="c64" data-mode="c64" id="top">
+<body class="ccg-body game-page" data-ccg-mode="c64" data-mode="c64" id="top">
 
 <div class="ccg-scroll-progress" data-ccg-scroll-progress aria-hidden="true"><span></span></div>
 
@@ -356,10 +358,10 @@
         </section>
 
         <div class="game-quick-actions" data-game-quick-actions hidden>
-            <button type="button" data-action="video" aria-label="Jump to video section">Watch</button>
-            <button type="button" data-action="share" aria-label="Share this game">Share</button>
-            <button type="button" data-action="subscribe" aria-label="Subscribe to Cheeky Commodore Gamer">Subscribe</button>
-            <button type="button" data-action="support" aria-label="Support Cheeky Commodore Gamer">Buy Me A Beer</button>
+            <button type="button" class="ccg-btn ccg-btn--primary game-cta" data-action="video" aria-label="Jump to video section">Watch</button>
+            <button type="button" class="ccg-btn ccg-btn--primary game-cta" data-action="share" aria-label="Share this game">Share</button>
+            <button type="button" class="ccg-btn ccg-btn--primary game-cta" data-action="subscribe" aria-label="Subscribe to Cheeky Commodore Gamer">Subscribe</button>
+            <button type="button" class="ccg-btn ccg-btn--primary game-cta" data-action="support" aria-label="Support Cheeky Commodore Gamer">Buy Me A Beer</button>
         </div>
         </div>
     </main>
@@ -407,6 +409,9 @@
 <script src="../js/ccg-nav-core.js" defer></script>
 <script src="../js/ccg-global.js" defer></script>
 <script src="../js/ccg-mode-engine.js" defer></script>
+<script src="../js/ccg-mode.js" defer></script>
+<script src="../js/ccg-auth.js" defer></script>
+<script src="../js/ccg-nav.js" defer></script>
 <script src="../js/load-single-game.js" defer></script>
 <script src="../resources/js/ccg-share.js" defer></script>
 

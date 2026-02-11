@@ -848,14 +848,13 @@
   async function syncHubAuthCtas() {
     const loginBtn = document.getElementById('ccg-hub-login-btn');
     const profileBtn = document.querySelector('a[href="/community/profile.html"]');
-    if (!loginBtn) return;
 
     const context = await window.ccgSupabase.getCurrentUserContext();
     if (context.isAuthenticated) {
-      loginBtn.hidden = true;
+      if (loginBtn) loginBtn.hidden = true;
       if (profileBtn) profileBtn.hidden = false;
     } else {
-      loginBtn.hidden = false;
+      if (loginBtn) loginBtn.hidden = false;
       if (profileBtn) profileBtn.hidden = true;
     }
   }
