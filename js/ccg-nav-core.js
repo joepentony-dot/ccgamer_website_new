@@ -10,7 +10,7 @@ Do Not Override
 (function () {
     "use strict";
 
-    const HARDENED_CLASS = "ccg-nav-pill-hardened";
+    const HARDENED_CLASS = "ccg-nav-contract-hardened";
 
     function isNavPillCandidate(el) {
         if (!(el instanceof HTMLElement)) return false;
@@ -56,9 +56,11 @@ Do Not Override
         if (el.classList.contains(HARDENED_CLASS)) return;
 
         el.classList.add(HARDENED_CLASS);
-        el.style.setProperty("border-radius", "999px", "important");
-        el.style.setProperty("overflow", "hidden", "important");
+        el.style.setProperty("border-radius", "0px", "important");
+        el.style.setProperty("overflow", "visible", "important");
         el.style.setProperty("background-clip", "padding-box", "important");
+        el.style.setProperty("filter", "none", "important");
+        el.style.setProperty("backdrop-filter", "none", "important");
         migrateDropShadowToBoxShadow(el.style);
     }
 
