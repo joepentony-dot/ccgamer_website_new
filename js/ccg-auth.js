@@ -1,8 +1,8 @@
 (function () {
   'use strict';
 
-  const LOGIN_URL = 'https://www.cheekycommodoregamer.co.uk/auth/login.html';
-  const PROFILE_URL = 'https://www.cheekycommodoregamer.co.uk/community/profile.html';
+  const LOGIN_URL = '/community/index.html';
+  const PROFILE_URL = '/community/profile.html';
 
   function getUsername() {
     return localStorage.getItem('ccg_username') || localStorage.getItem('ccg-user') || '';

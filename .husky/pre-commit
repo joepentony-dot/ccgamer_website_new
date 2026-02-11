@@ -11,9 +11,17 @@ if rg -nP "(\.game-page button|\.game-cta)\s*\{[^}]*border-radius:\s*(?!0(?:px)?
   exit 1
 fi
 
-# Fail if duplicate Join/Login entry points are present in HTML
-if rg -n 'id="join-login"' -g '*.html' . >/dev/null 2>&1 && rg -n 'id="ccg-hub-login-btn"' -g '*.html' . >/dev/null 2>&1; then
-  echo "❌ Duplicate Join/Login entry points detected (header + community hub)."
+# Fail if deprecated auth login route is referenced
+if rg -n '/auth/login\.html|https://www\.cheekycommodoregamer\.co\.uk/auth/login\.html' --glob '*.html' js resources >/dev/null 2>&1; then
+  echo "❌ Deprecated auth route detected. Use canonical /community/index.html entry."
+  exit 1
+fi
+
+# Fail if more than one header Join/Login button exists in any page
+if rg -n 'id="join-login"' -g '*.html' . | awk -F: '{count[$1]++} END {for (f in count) if (count[f] > 1) {print f; bad=1} exit bad}'; then
+  :
+else
+  echo "❌ Multiple header Join/Login buttons detected in a single HTML file."
   exit 1
 fi
 
