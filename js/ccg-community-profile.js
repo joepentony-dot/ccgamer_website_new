@@ -77,6 +77,28 @@
     return byUsername.data || null;
   }
 
+  async function ensureOwnProfileRow(supabase, authUser, authProfile) {
+    if (!authUser || !authUser.id) return null;
+    const existing = authProfile || await fetchPublicProfile(supabase, authUser.id);
+    if (existing) return existing;
+
+    const fallbackUsername = String((authUser.email || 'member').split('@')[0] || 'member').toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 24) || ('member-' + String(authUser.id).slice(0, 8));
+    const payload = {
+      id: authUser.id,
+      username: fallbackUsername,
+      display_name: authUser.user_metadata && authUser.user_metadata.full_name ? String(authUser.user_metadata.full_name).slice(0, 42) : null,
+      avatar_url: authUser.user_metadata && authUser.user_metadata.avatar_url ? String(authUser.user_metadata.avatar_url) : null,
+      role: 'member'
+    };
+
+    const upsertRes = await supabase.from('profiles').upsert(payload, { onConflict: 'id' }).select('id,username,display_name,avatar_url,bio,role,created_at').maybeSingle();
+    if (upsertRes.error) {
+      console.error('[CCG-PROFILE] ensureOwnProfileRow failed', upsertRes.error);
+      return null;
+    }
+    return upsertRes.data || payload;
+  }
+
   async function fetchRecentComments(supabase, userId, from, to) {
     const result = await supabase
       .from('game_comments')
@@ -148,11 +170,15 @@
     if (queryUser) {
       targetProfile = await fetchPublicProfile(supabase, queryUser);
     } else if (context.authUser) {
-      targetProfile = context.authProfile || await fetchPublicProfile(supabase, context.authUser.id);
+      targetProfile = await ensureOwnProfileRow(supabase, context.authUser, context.authProfile);
     }
 
     if (!targetProfile) {
-      mount.innerHTML = '<div class="ccg-community-card"><p>Profile not found. Log in to view your profile or open a valid profile link.</p></div>';
+      if (!context.authUser) {
+        mount.innerHTML = '<div class="ccg-community-card"><p>Log in to view your profile.</p></div>';
+      } else {
+        mount.innerHTML = '<div class="ccg-community-card"><p>Unable to load your profile right now. Please refresh.</p></div>';
+      }
       return;
     }
 
@@ -167,10 +193,7 @@
       supabase.from('supporter_links').select('eight_bit_title,profile_banner_key,supporter_frame_key,supporter_level,supporter_title').eq('user_id', targetProfile.id).maybeSingle()
     ]);
 
-    if (activity.error) {
-      mount.innerHTML = '<div class="ccg-community-card"><p>' + esc(classifyStatusMessage(activity.error, 'Unable to load activity right now.')) + '</p></div>';
-      return;
-    }
+    const activityErrorMessage = activity.error ? classifyStatusMessage(activity.error, 'Unable to load activity right now.') : '';
 
     const ratingsCount = ratingsRes.count || 0;
     const commentsCount = commentsRes.count || 0;
@@ -247,7 +270,7 @@
       '    <h2>My Activity</h2>' +
       '    <span class="ccg-community-muted">Showing latest comments</span>' +
       '  </div>' +
-      renderCommentActivity(activity.rows) +
+      (activity.error ? '<p class="ccg-community-muted">' + esc(activityErrorMessage) + '</p>' : renderCommentActivity(activity.rows)) +
       '  <div class="ccg-profile-activity-pagination">' +
       '    <a class="ccg-community-btn ccg-community-btn--ghost" ' + (page <= 1 ? 'aria-disabled="true"' : '') + ' href="' + buildProfileHref(targetProfile.username, prevPage) + '">Previous</a>' +
       '    <span class="ccg-community-muted">Page ' + page + ' / ' + totalActivityPages + '</span>' +
