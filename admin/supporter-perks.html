@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Supporter Perks Admin | CCG</title>
+  <link rel="stylesheet" href="/resources/css/ccg-master.css" />
+  <link rel="stylesheet" href="/resources/css/ccg-community.css" />
+</head>
+<body class="ccg-body" data-mode="c64" data-ccg-mode="c64">
+  <main class="ccg-community-layout">
+    <section class="ccg-community-card">
+      <h1>Supporter Perks Admin</h1>
+      <p class="ccg-community-muted">Admin-only tooling for YouTube approvals, supporter overrides, spotlights, challenge publishing, and manual badge grants.</p>
+      <div id="ccg-supporter-admin-status" class="ccg-community-muted"></div>
+    </section>
+    <section class="ccg-community-grid" id="ccg-supporter-admin-root"></section>
+  </main>
+
+  <script src="/js/ccg-supabase-config.js"></script>
+  <script src="/js/ccg-supabase-client.js"></script>
+  <script>
+    (async function () {
+      const status = document.getElementById('ccg-supporter-admin-status');
+      const root = document.getElementById('ccg-supporter-admin-root');
+      const supabase = await window.ccgSupabase.getClient();
+      const context = await window.ccgSupabase.getCurrentUserContext();
+
+      if (!context || !context.permissions || !context.permissions.canModerate) {
+        status.textContent = 'You do not have permission to access this page.';
+        return;
+      }
+
+      const [linksRes, pendingYoutubeRes, challengesRes] = await Promise.all([
+        supabase.from('supporter_links').select('user_id,patreon_status,patreon_tier,youtube_member_status,youtube_manual_status,supporter_level').order('last_sync', { ascending: false }).limit(50),
+        supabase.from('supporter_links').select('user_id,youtube_channel_id,youtube_manual_code,youtube_manual_requested_at').eq('youtube_manual_status', 'pending').limit(50),
+        supabase.from('challenges').select('id,title,active,is_supporter_only,start_at,end_at').order('start_at', { ascending: false }).limit(20)
+      ]);
+
+      status.textContent = 'Loaded supporter admin dashboard.';
+
+      root.innerHTML = ''
+        + '<article class="ccg-community-card"><h2>Supporter Links</h2><pre>' + JSON.stringify(linksRes.data || [], null, 2) + '</pre></article>'
+        + '<article class="ccg-community-card"><h2>Pending YouTube Manual Approvals</h2><pre>' + JSON.stringify(pendingYoutubeRes.data || [], null, 2) + '</pre></article>'
+        + '<article class="ccg-community-card"><h2>Weekly Challenges</h2><pre>' + JSON.stringify(challengesRes.data || [], null, 2) + '</pre></article>';
+    })();
+  </script>
+</body>
+</html>

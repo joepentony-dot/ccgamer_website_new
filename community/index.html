@@ -159,21 +159,40 @@
   </header>
 
   <main class="ccg-community-layout ccg-community-layout--hub">
+    <nav class="ccg-community-subnav" id="ccg-community-subnav" aria-label="Community sections"></nav>
+
     <section class="ccg-community-card">
       <h1>CCG Community Hub</h1>
-      <p>Your live feed for ratings, discussions, and leaderboard momentum across the C64 and Amiga archive.</p>
+      <p>Your live feed for rankings, supporter perks, weekly challenges, and high-energy retro community momentum.</p>
       <div class="ccg-community-auth__actions">
-        <a class="ccg-community-btn ccg-community-btn--ghost" href="/community/profile.html">Go to profile</a>
+        <a class="ccg-community-btn" href="/community/profile.html">My player card</a>
+        <a class="ccg-community-btn ccg-community-btn--ghost" href="/community/challenges.html">Weekly challenges</a>
       </div>
-      <div class="ccg-seo-links" aria-label="Community SEO pages">
-        <a href="/community/seo/top-rated.html">Top Rated</a>
-        <a href="/community/seo/most-discussed.html">Most Discussed</a>
-        <a href="/community/seo/trending.html">Trending</a>
-        <a href="/community/seo/top-members.html">Top Members</a>
+      <div class="ccg-seo-links" aria-label="Community quick links">
+        <a href="/community/rankings.html">Rankings</a>
+        <a href="/community/badges.html">Badges</a>
+        <a href="/community/challenges.html">Challenges</a>
+        <a href="/community/profile.html">Profile</a>
       </div>
     </section>
 
     <section class="hub-grid" aria-label="Community live modules">
+      <article class="ccg-community-card hub-card">
+        <h2>Hall of Fame</h2>
+        <p class="ccg-community-muted">Top REP this month with fair supporter bonuses only.</p>
+        <div id="ccg-hub-hall-of-fame" class="hub-section-body" aria-live="polite">
+          <p class="ccg-community-muted">Loading Hall of Fame…</p>
+        </div>
+      </article>
+
+      <article class="ccg-community-card hub-card">
+        <h2>Supporter Spotlight</h2>
+        <p class="ccg-community-muted">Featured supporters rotating every month.</p>
+        <div id="ccg-hub-supporter-spotlight" class="hub-section-body" aria-live="polite">
+          <p class="ccg-community-muted">Loading spotlight…</p>
+        </div>
+      </article>
+
       <article class="ccg-community-card hub-card">
         <h2>Trending Now</h2>
         <p class="ccg-community-muted">Weighted activity from ratings + comments in the last 7 days.</p>
@@ -183,26 +202,26 @@
       </article>
 
       <article class="ccg-community-card hub-card">
-        <h2>Top Rated (All Time)</h2>
-        <p class="ccg-community-muted">Highest average ratings with a minimum of 5 ratings.</p>
-        <div id="ccg-hub-top-rated" class="hub-section-body" aria-live="polite">
-          <p class="ccg-community-muted">Loading top rated list…</p>
-        </div>
-      </article>
-
-      <article class="ccg-community-card hub-card">
-        <h2>Most Discussed (30 Days)</h2>
-        <p class="ccg-community-muted">Most active game conversations from the last month.</p>
-        <div id="ccg-hub-discussed" class="hub-section-body" aria-live="polite">
-          <p class="ccg-community-muted">Loading discussion leaders…</p>
-        </div>
-      </article>
-
-      <article class="ccg-community-card hub-card">
         <h2>Top Members</h2>
-        <p class="ccg-community-muted">Points: +2 comment, +1 rating, +5 badge milestone.</p>
+        <p class="ccg-community-muted">Live REP and level progression leaderboard.</p>
         <div id="ccg-hub-top-members" class="hub-section-body" aria-live="polite">
           <p class="ccg-community-muted">Loading member leaderboard…</p>
+        </div>
+      </article>
+
+      <article class="ccg-community-card hub-card hub-card--full">
+        <h2>Weekly Challenges</h2>
+        <p class="ccg-community-muted">Supporters unlock extra mission lanes and bonus cosmetics.</p>
+        <div id="ccg-hub-weekly-challenges" class="hub-section-body" aria-live="polite">
+          <p class="ccg-community-muted">Loading weekly challenge board…</p>
+        </div>
+      </article>
+
+      <article class="ccg-community-card hub-card hub-card--full">
+        <h2>Supporter Lounge</h2>
+        <p class="ccg-community-muted">Behind-the-scenes updates and supporter-only feed posts.</p>
+        <div id="ccg-hub-supporter-lounge" class="hub-section-body" aria-live="polite">
+          <p class="ccg-community-muted">Loading supporter lounge…</p>
         </div>
       </article>
 
