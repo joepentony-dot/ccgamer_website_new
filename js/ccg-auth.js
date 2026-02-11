@@ -1,11 +1,24 @@
 (function () {
   'use strict';
 
-  const LOGIN_URL = '/community/index.html';
   const PROFILE_URL = '/community/profile.html';
 
   function getUsername() {
     return localStorage.getItem('ccg_username') || localStorage.getItem('ccg-user') || '';
+  }
+
+  function bindAuthModalTrigger(button) {
+    if (!button || button.dataset.ccgAuthBound === 'true') return;
+
+    button.addEventListener('click', function (event) {
+      event.preventDefault();
+      const auth = window.ccgCommunityAuth;
+      if (auth && typeof auth.openAuthModal === 'function') {
+        auth.openAuthModal('signin');
+      }
+    });
+
+    button.dataset.ccgAuthBound = 'true';
   }
 
   function ensureAuthButton() {
@@ -23,9 +36,11 @@
     const username = getUsername();
     if (username) {
       slot.innerHTML = `<a href="${PROFILE_URL}" class="ccg-btn ccg-btn-auth" id="profile-btn">@${username}</a>`;
-    } else {
-      slot.innerHTML = `<a href="${LOGIN_URL}" class="ccg-btn ccg-btn-auth" id="join-login">Join / Login</a>`;
+      return;
     }
+
+    slot.innerHTML = '<button type="button" class="ccg-btn ccg-btn-auth" id="join-login">Join / Login</button>';
+    bindAuthModalTrigger(slot.querySelector('#join-login'));
   }
 
   document.addEventListener('DOMContentLoaded', ensureAuthButton);
