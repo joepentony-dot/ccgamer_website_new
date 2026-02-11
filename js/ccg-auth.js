@@ -89,7 +89,9 @@
       const auth = window.ccgCommunityAuth;
       if (auth && typeof auth.openAuthModal === 'function') {
         auth.openAuthModal('signin');
+        return;
       }
+      window.location.href = '/auth/login.html';
     });
 
     button.dataset.ccgAuthBound = 'true';
