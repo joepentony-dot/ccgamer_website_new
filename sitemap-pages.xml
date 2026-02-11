@@ -1,55 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Homepage -->
   <url>
     <loc>https://www.cheekycommodoregamer.co.uk/</loc>
-    <lastmod>2026-02-02</lastmod>
-  </url>
-  <url>
-    <loc>https://www.cheekycommodoregamer.co.uk/home.html</loc>
     <lastmod>2026-02-09</lastmod>
   </url>
+
+  <!-- Core Info Pages -->
   <url>
     <loc>https://www.cheekycommodoregamer.co.uk/about.html</loc>
     <lastmod>2026-02-09</lastmod>
   </url>
+
   <url>
     <loc>https://www.cheekycommodoregamer.co.uk/contact.html</loc>
     <lastmod>2026-02-09</lastmod>
   </url>
+
   <url>
     <loc>https://www.cheekycommodoregamer.co.uk/emulation.html</loc>
     <lastmod>2026-02-09</lastmod>
   </url>
+
+  <!-- Games Section -->
   <url>
     <loc>https://www.cheekycommodoregamer.co.uk/games/</loc>
     <lastmod>2026-02-06</lastmod>
   </url>
-  <url>
-    <loc>https://www.cheekycommodoregamer.co.uk/games/index.html</loc>
-    <lastmod>2026-02-06</lastmod>
-  </url>
+
   <url>
     <loc>https://www.cheekycommodoregamer.co.uk/games/collections/</loc>
     <lastmod>2026-02-06</lastmod>
   </url>
+
   <url>
     <loc>https://www.cheekycommodoregamer.co.uk/games/genres/</loc>
     <lastmod>2026-02-06</lastmod>
   </url>
+
+  <!-- Quiz -->
   <url>
     <loc>https://www.cheekycommodoregamer.co.uk/quiz/</loc>
     <lastmod>2026-02-09</lastmod>
   </url>
-  <url>
-    <loc>https://www.cheekycommodoregamer.co.uk/quiz/quiz.html</loc>
-    <lastmod>2026-02-09</lastmod>
-  </url>
+
+  <!-- Utilities -->
   <url>
     <loc>https://www.cheekycommodoregamer.co.uk/redirect.html</loc>
     <lastmod>2026-02-05</lastmod>
   </url>
+
   <url>
     <loc>https://www.cheekycommodoregamer.co.uk/complete-index.html</loc>
     <lastmod>2026-02-05</lastmod>
   </url>
+
 </urlset>
