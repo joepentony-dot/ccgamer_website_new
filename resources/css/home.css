@@ -3070,6 +3070,26 @@ html[data-ccg-mode="amiga"] .home-bottom-cta__actions .home-cta-main:focus-visib
         padding: 14px 14px;
     }
 
+    .home-support-cta {
+        margin: 14px auto 8px;
+    }
+
+    .ccg-main--home + .ccg-omega-divider {
+        margin: 4px auto;
+    }
+
+    .home-cta-btn--collections {
+        line-height: 1.1;
+    }
+
+    .home-cta-btn--collections .home-cta-btn__line {
+        display: block;
+    }
+
+    .home-cta-btn--collections .home-cta-btn__line--top::after {
+        content: "-";
+    }
+
     .home-visitor-callout__headline {
         margin-top: 6px;
         letter-spacing: 0.16em;
