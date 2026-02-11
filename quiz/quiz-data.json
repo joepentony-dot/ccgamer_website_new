@@ -2740,10 +2740,10 @@
         "question": "Which C64 game is this?",
         "audio": "c64-backtothefuture.mp3",
         "options": [
-          "Skool Daze",
-          "Cauldron",
+          "Skate or Die",
+          "Miami Vice",
           "Back to the Future",
-          "Summer Games"
+          "Comic Bakery"
         ],
         "correctIndex": 2
       },
@@ -2751,9 +2751,9 @@
         "question": "Which C64 game is this?",
         "audio": "c64-barbarian.mp3",
         "options": [
-          "Boulder Dash",
-          "Jet Set Willy",
-          "Creatures",
+          "Flash Gordon",
+          "Thing On A Spring",
+          "Myth: History In The Making",
           "Barbarian"
         ],
         "correctIndex": 3
@@ -2762,10 +2762,10 @@
         "question": "Which C64 game is this?",
         "audio": "c64-barymcguigan.mp3",
         "options": [
-          "Boulder Dash",
-          "Skool Daze",
+          "Emlyn Hughes International Soccer",
+          "Gary Linekers Superstar Soccer",
           "Barry McGuigan World Championship Boxing",
-          "Back to the Future"
+          "California Games"
         ],
         "correctIndex": 2
       },
@@ -2774,9 +2774,9 @@
         "audio": "c64-boulderdash.mp3",
         "options": [
           "Boulder Dash",
-          "Cauldron",
-          "Little Computer People",
-          "Barbarian"
+          "Jumpman",
+          "Lode Runner",
+          "Montezuma's Revenge"
         ],
         "correctIndex": 0
       },
@@ -2784,9 +2784,9 @@
         "question": "Which C64 game is this?",
         "audio": "c64-cauldron.mp3",
         "options": [
-          "Spy vs Spy",
-          "Back to the Future",
-          "Barry McGuigan World Championship Boxing",
+          "Underwurlde",
+          "Ranarama",
+          "Spellbound",
           "Cauldron"
         ],
         "correctIndex": 3
@@ -2795,10 +2795,10 @@
         "question": "Which C64 game is this?",
         "audio": "c64-creatures.mp3",
         "options": [
-          "Cauldron",
-          "Super Pipeline",
+          "The Great Giana Sisters",
+          "Star Paws",
           "Creatures",
-          "Son of Blagger"
+          "Yogi Bear"
         ],
         "correctIndex": 2
       },
@@ -2807,9 +2807,9 @@
         "audio": "c64-decathlon.mp3",
         "options": [
           "Decathlon",
-          "Super Off Road",
-          "Robocop",
-          "Summer Games"
+          "Track & Field",
+          "Hyper Sports",
+          "Aussie Games"
         ],
         "correctIndex": 0
       },
@@ -2818,9 +2818,9 @@
         "audio": "c64-jetsetwilly.mp3",
         "options": [
           "Jet Set Willy",
-          "Creatures",
-          "The Last Ninja",
-          "Spy vs Spy"
+          "Manic Miner",
+          "Monty On The Run",
+          "B.C Bill"
         ],
         "correctIndex": 0
       },
@@ -2829,9 +2829,9 @@
         "audio": "c64-lastninja.mp3",
         "options": [
           "The Last Ninja",
-          "Decathlon",
-          "Jet Set Willy",
-          "Little Computer People"
+          "Hawkeye",
+          "Armalyte",
+          "Project Firestart"
         ],
         "correctIndex": 0
       },
@@ -2840,9 +2840,9 @@
         "audio": "c64-littlecomputerpeople.mp3",
         "options": [
           "Little Computer People",
-          "Boulder Dash",
-          "Pirates",
-          "Creatures"
+          "Lazy Jones",
+          "Murder on the Mississippi",
+          "Toy Bizarre"
         ],
         "correctIndex": 0
       },
@@ -2850,9 +2850,9 @@
         "question": "Which C64 game is this?",
         "audio": "c64-pirates.mp3",
         "options": [
-          "Jet Set Willy",
-          "The Last Ninja",
-          "Cauldron",
+          "Defender Of The Crown",
+          "Seven Cities Of Gold",
+          "Heart Of Africa",
           "Pirates"
         ],
         "correctIndex": 3
@@ -2861,10 +2861,10 @@
         "question": "Which C64 game is this?",
         "audio": "c64-pitfall2.mp3",
         "options": [
-          "The Last Ninja",
+          "B.C's Quest For Tires",
           "Pitfall II",
-          "Robocop",
-          "Creatures"
+          "Temple Of Apshai",
+          "The Sword Of Fargoal"
         ],
         "correctIndex": 1
       },
@@ -2872,10 +2872,10 @@
         "question": "Which C64 game is this?",
         "audio": "c64-robocop.mp3",
         "options": [
-          "Cauldron",
-          "Uridium",
+          "Stallone: Cobra",
+          "Cybernoid: The Fighting Machine",
           "Robocop",
-          "Barbarian"
+          "Target Renegade"
         ],
         "correctIndex": 2
       },
@@ -2883,9 +2883,9 @@
         "question": "Which C64 game is this?",
         "audio": "c64-skooldaze.mp3",
         "options": [
-          "The Last Ninja",
-          "Creatures",
-          "Pirates",
+          "Everyones A Wally",
+          "Jack The Nipper",
+          "Hunchback",
           "Skool Daze"
         ],
         "correctIndex": 3
@@ -2894,10 +2894,10 @@
         "question": "Which C64 game is this?",
         "audio": "c64-sonofblagger.mp3",
         "options": [
-          "Super Off Road",
-          "Pirates",
+          "Burgertime",
+          "Popeye",
           "Son of Blagger",
-          "Summer Games"
+          "Gauntlet"
         ],
         "correctIndex": 2
       },
@@ -2906,9 +2906,9 @@
         "audio": "c64-spyvsspy.mp3",
         "options": [
           "Spy vs Spy",
-          "Cauldron",
-          "Boulder Dash",
-          "Super Off Road"
+          "Impossible Mission",
+          "Saboteur!",
+          "Infiltrator"
         ],
         "correctIndex": 0
       },
@@ -2916,10 +2916,10 @@
         "question": "Which C64 game is this?",
         "audio": "c64-summergames.mp3",
         "options": [
-          "Robocop",
-          "Pitfall II",
+          "Trailblazer",
+          "Daley Thompson's Olympic Challenge",
           "Summer Games",
-          "Uridium"
+          "Lightforce"
         ],
         "correctIndex": 2
       },
@@ -2927,10 +2927,10 @@
         "question": "Which C64 game is this?",
         "audio": "c64-superoffroad.mp3",
         "options": [
-          "Little Computer People",
-          "Back to the Future",
+          "Power Drift",
+          "Buggy Boy",
           "Super Off Road",
-          "Uridium"
+          "Out Run"
         ],
         "correctIndex": 2
       },
@@ -2938,10 +2938,10 @@
         "question": "Which C64 game is this?",
         "audio": "c64-superpipeline.mp3",
         "options": [
-          "Summer Games",
-          "Jet Set Willy",
+          "Bozo's Night Out",
+          "Seaside Special",
           "Super Pipeline",
-          "Spy vs Spy"
+          "Jammin"
         ],
         "correctIndex": 2
       },
@@ -2950,9 +2950,9 @@
         "audio": "c64-uridium.mp3",
         "options": [
           "Uridium",
-          "Pirates",
-          "Barry McGuigan World Championship Boxing",
-          "Little Computer People"
+          "Paradroid",
+          "R-Type",
+          "Katakis"
         ],
         "correctIndex": 0
       }
