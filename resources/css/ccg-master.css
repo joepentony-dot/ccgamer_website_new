@@ -2423,7 +2423,7 @@ html.ccg-perf-paused [data-ccg-wow] {
 
 .ccg-floating-nav__bar {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 10px;
     padding: 12px;
     border-radius: 999px;
@@ -2502,9 +2502,16 @@ html.ccg-has-floating-nav .ccg-main {
     }
 
     .ccg-floating-nav__bar {
-        gap: 8px;
-        padding: 10px;
+        gap: 6px;
+        padding: 8px;
         border-radius: 22px;
+    }
+
+    .ccg-floating-nav__btn {
+        min-height: 46px;
+        padding: 7px 4px;
+        font-size: 0.62rem;
+        letter-spacing: 0.08em;
     }
 }
 
