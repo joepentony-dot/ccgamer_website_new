@@ -210,6 +210,42 @@
           <p class="ccg-community-muted">Loading latest activity…</p>
         </div>
       </article>
+
+      <article class="ccg-community-card hub-card hub-card--full" id="ccg-public-comments-card">
+        <h2>Game Comments Explorer</h2>
+        <p class="ccg-community-muted">Browse every game discussion, or log in to post your own Omega takes.</p>
+
+        <form class="ccg-community-form ccg-comments-explorer__controls" id="ccg-comments-explorer-controls" autocomplete="off">
+          <label for="ccg-comments-game">Select game</label>
+          <input
+            type="search"
+            id="ccg-comments-game"
+            name="game"
+            list="ccg-comments-games-list"
+            placeholder="Type a game title..."
+            required
+            aria-describedby="ccg-comments-game-help"
+          />
+          <datalist id="ccg-comments-games-list"></datalist>
+          <p class="ccg-community-muted" id="ccg-comments-game-help">Games loaded from the live library index. Start typing title or slug.</p>
+        </form>
+
+        <details class="ccg-comments-panel" id="ccg-comments-panel" open>
+          <summary class="ccg-comments-panel__summary">
+            <span>Comments</span>
+            <span class="ccg-comments-panel__meta" id="ccg-comments-count">0 comments</span>
+          </summary>
+
+          <div class="ccg-comments-panel__body">
+            <div class="ccg-comments-post" id="ccg-comments-post"></div>
+            <div class="ccg-comments-feedback ccg-community-muted" id="ccg-comments-feedback" aria-live="polite"></div>
+            <div class="ccg-comment-list" id="ccg-public-comment-list"></div>
+            <div class="ccg-comments-actions">
+              <button type="button" class="ccg-community-btn ccg-community-btn--ghost" id="ccg-comments-load-more" hidden>Load more</button>
+            </div>
+          </div>
+        </details>
+      </article>
     </section>
   </main>
 
