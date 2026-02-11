@@ -52,6 +52,35 @@
     const message = byId('formMessage');
     const toggleBtn = byId('togglePassword');
     const passwordInput = byId('password');
+    let hasRedirected = false;
+
+    function getSafeReturnPath() {
+      const params = new URLSearchParams(window.location.search);
+      const returnTo = params.get('returnTo');
+
+      if (!returnTo || !returnTo.startsWith('/')) {
+        return '/';
+      }
+
+      const target = new URL(returnTo, window.location.origin);
+      const currentPath = `${window.location.pathname}${window.location.search}`;
+      const targetPath = `${target.pathname}${target.search}`;
+
+      if (targetPath === currentPath) {
+        return '/';
+      }
+
+      return returnTo;
+    }
+
+    function redirectAfterLogin() {
+      if (hasRedirected) {
+        return;
+      }
+
+      hasRedirected = true;
+      window.location.replace(getSafeReturnPath());
+    }
 
     attachPasswordToggle(toggleBtn, passwordInput);
     initAuthBadge();
@@ -74,6 +103,7 @@
       }
 
       setMessage(message, 'Login successful.', 'success');
+      redirectAfterLogin();
     });
   </script>
 </body>
