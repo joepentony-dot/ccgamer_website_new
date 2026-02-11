@@ -118,7 +118,7 @@
       || message.includes('auth');
   }
 
-  function commentCard(comment, currentUser, canModerate, badgeHtml) {
+  function commentCard(comment, currentUser, canModerate, badgeHtml, supporterLevel) {
     const profile = comment.profiles || {};
     const username = window.ccgCommunityAuth.esc(profile.username || 'Community member');
     const content = comment.is_deleted
@@ -132,6 +132,7 @@
       '    <div class="ccg-comment-card__identity">' +
       '      <a href="/community/profile.html?u=' + encodeURIComponent(profile.username || '') + '" class="ccg-comment-card__profile-link">@' + username + '</a>' +
       '      ' + (badgeHtml || '') +
+      '      ' + (supporterLevel && supporterLevel !== 'none' ? '<span class="ccg-supporter-flair ccg-supporter-flair--' + window.ccgCommunityAuth.esc(supporterLevel) + '">' + window.ccgCommunityAuth.esc(supporterLevel) + '</span>' : '') +
       '    </div>' +
       '    <time datetime="' + window.ccgCommunityAuth.esc(comment.created_at || '') + '">' + new Date(comment.created_at).toLocaleString() + '</time>' +
       '  </header>' +
@@ -139,6 +140,7 @@
       '  <div class="ccg-comment-card__actions">' +
       (own && !comment.is_deleted ? '<button type="button" data-action="edit">Edit</button>' : '') +
       (currentUser && !comment.is_deleted ? '<button type="button" data-action="report">Report</button>' : '') +
+      (currentUser && !comment.is_deleted ? '<button type="button" data-action="helpful">Helpful</button>' : '') +
       (canModerate && !comment.is_deleted ? '<button type="button" data-action="delete">Soft delete</button>' : '') +
       '  </div>' +
       '</article>';
@@ -265,6 +267,16 @@
     logCommentsLoaded(comments.length, slug);
     const userIds = Array.from(new Set(comments.map(function (comment) { return comment.user_id; }).filter(Boolean)));
     const badgeMap = {};
+    const supporterMap = {};
+
+    if (userIds.length) {
+      const supporterRes = await runQueryWithAuthRetry(function () {
+        return supabase.from('supporter_links').select('user_id,supporter_level').in('user_id', userIds);
+      });
+      (supporterRes.data || []).forEach(function (row) {
+        supporterMap[row.user_id] = row.supporter_level || 'none';
+      });
+    }
 
     if (userIds.length && window.ccgCommunityBadges) {
       const badgeResult = await runQueryWithAuthRetry(function () {
@@ -296,7 +308,7 @@
           const badgeHtml = compact.length && window.ccgCommunityBadges
             ? window.ccgCommunityBadges.renderBadges(compact, { className: 'ccg-badges ccg-badges--mini', emptyText: '' })
             : '';
-          return commentCard(comment, user, canModerate, badgeHtml);
+          return commentCard(comment, user, canModerate, badgeHtml, supporterMap[comment.user_id] || "none");
         }).join('')
         : '<p class="ccg-community-muted">No comments yet. Start the discussion.</p>') +
       '  </div>' +
@@ -402,6 +414,21 @@
           }
           btn.textContent = 'Reported';
           notify('Report submitted.', 'success');
+          return;
+        }
+
+        if (action === 'helpful') {
+          btn.disabled = true;
+          const { error: helpfulError } = await runQueryWithAuthRetry(function () {
+            return supabase.rpc('submit_helpful_vote', { p_comment_id: commentId });
+          });
+          if (helpfulError) {
+            notify(explainError(helpfulError, 'Unable to register helpful vote.'), 'error');
+            btn.disabled = false;
+            return;
+          }
+          btn.textContent = 'Helpful ✓';
+          notify('Helpful vote added (+REP for the author).', 'success');
           return;
         }
 

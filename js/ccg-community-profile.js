@@ -140,11 +140,13 @@
 
     const isOwnProfile = Boolean(context.authUser && context.authUser.id === targetProfile.id);
 
-    const [ratingsRes, commentsRes, badges, activity] = await Promise.all([
+    const [ratingsRes, commentsRes, badges, activity, overviewRes, supporterRes] = await Promise.all([
       supabase.from('game_ratings').select('id', { count: 'exact', head: true }).eq('user_id', targetProfile.id),
       supabase.from('game_comments').select('id', { count: 'exact', head: true }).eq('user_id', targetProfile.id),
       window.ccgCommunityBadges.fetchUserBadges(targetProfile.id),
-      fetchRecentComments(supabase, targetProfile.id, from, to)
+      fetchRecentComments(supabase, targetProfile.id, from, to),
+      supabase.from('community_member_overview').select('rep_points,rep_level,level_title,supporter_level,supporter_title,supporter_flair_key,profile_banner_key,early_access_enabled').eq('user_id', targetProfile.id).maybeSingle(),
+      supabase.from('supporter_links').select('eight_bit_title,profile_banner_key,supporter_frame_key,supporter_level,supporter_title').eq('user_id', targetProfile.id).maybeSingle()
     ]);
 
     const ratingsCount = ratingsRes.count || 0;
@@ -154,6 +156,15 @@
     const roleLabel = targetProfile.role || 'user';
     const bio = targetProfile.bio ? esc(targetProfile.bio) : 'No bio yet. This user is all gameplay, no fluff.';
     const authState = context.isAuthenticated ? 'Logged in' : 'Guest';
+    const overview = overviewRes && overviewRes.data ? overviewRes.data : {};
+    const supporter = supporterRes && supporterRes.data ? supporterRes.data : {};
+    const supporterLevel = supporter.supporter_level || overview.supporter_level || 'none';
+    const supporterTitle = supporter.supporter_title || overview.supporter_title || (supporterLevel !== 'none' ? ('Omega Supporter – ' + supporterLevel) : 'Community member');
+    const repPoints = Number(overview.rep_points || 0);
+    const repLevel = Number(overview.rep_level || 1);
+    const repTitle = overview.level_title || 'New Recruit';
+    const titleChip = supporter.eight_bit_title ? ('Title: ' + supporter.eight_bit_title) : repTitle;
+
 
     const avatar = targetProfile.avatar_url
       ? '<img src="' + esc(targetProfile.avatar_url) + '" alt="' + esc(displayName) + ' avatar" class="ccg-profile-avatar">'
@@ -177,6 +188,12 @@
       '        <span class="ccg-badge">Status: ' + esc(authState) + '</span>' +
       '      </div>' +
       '      <p class="ccg-community-muted">' + (isOwnProfile && context.authUser ? esc(context.authUser.email || '') : 'Public profile view') + '</p>' +
+      '      <div class="ccg-profile-chip-row">' +
+      '        <span class="ccg-profile-chip">REP ' + repPoints + '</span>' +
+      '        <span class="ccg-profile-chip">Level ' + repLevel + '</span>' +
+      '        <span class="ccg-profile-chip">' + esc(titleChip) + '</span>' +
+      '        ' + (supporterLevel !== 'none' ? ('<span class="ccg-supporter-flair ccg-supporter-flair--' + esc(supporterLevel) + '">' + esc(supporterTitle) + '</span>') : '') +
+      '      </div>' +
       '    </div>' +
       '  </div>' +
       '  <p class="ccg-profile-bio">' + bio + '</p>' +
@@ -184,7 +201,10 @@
       '    <div><strong>' + ratingsCount + '</strong><span>Total ratings</span></div>' +
       '    <div><strong>' + commentsCount + '</strong><span>Total comments</span></div>' +
       '    <div><strong>' + badges.length + '</strong><span>Badges earned</span></div>' +
+      '    <div><strong>' + repPoints + '</strong><span>CCG REP</span></div>' +
+      '    <div><strong>' + (supporterLevel === 'none' ? 'No' : 'Yes') + '</strong><span>Active supporter</span></div>' +
       '  </div>' +
+      '<section class="ccg-community-card"><h2>Supporter Perks</h2><p class="ccg-community-muted">Frame: ' + esc(supporter.supporter_frame_key || 'Default') + ' · Banner: ' + esc(supporter.profile_banner_key || overview.profile_banner_key || 'Standard') + ' · Early Access: ' + (overview.early_access_enabled ? 'Enabled' : 'Off') + '</p></section>' +
       (isOwnProfile
         ? ('<form id="ccg-profile-edit-form" class="ccg-community-form ccg-profile-edit-form">' +
            '  <label>Username<input type="text" name="username" required minlength="3" maxlength="24" value="' + esc(targetProfile.username || '') + '"></label>' +

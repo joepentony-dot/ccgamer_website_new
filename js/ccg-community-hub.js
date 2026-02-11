@@ -114,6 +114,10 @@
     setSectionState('ccg-hub-discussed', copy);
     setSectionState('ccg-hub-latest-activity', copy);
     setSectionState('ccg-hub-top-members', copy);
+    setSectionState('ccg-hub-hall-of-fame', copy);
+    setSectionState('ccg-hub-supporter-spotlight', copy);
+    setSectionState('ccg-hub-weekly-challenges', copy);
+    setSectionState('ccg-hub-supporter-lounge', copy);
   }
 
   function renderGameTiles(list, emptyText) {
@@ -161,6 +165,13 @@
         '  <div class="activity-row__body">' + actor + ' ' + details + '</div>' +
         '  <time datetime="' + esc(row.created_at || '') + '">' + esc(formatDate(row.created_at)) + '</time>' +
         '</li>';
+    }).join('') + '</ul>';
+  }
+
+  function renderSimpleList(rows, emptyText, formatter) {
+    if (!rows.length) return '<p class="ccg-community-muted">' + esc(emptyText) + '</p>';
+    return '<ul class="member-list">' + rows.map(function (row) {
+      return '<li class="member-row">' + formatter(row) + '</li>';
     }).join('') + '</ul>';
   }
 
@@ -375,7 +386,11 @@
       topRated: [],
       discussed: [],
       activity: [],
-      members: []
+      members: [],
+      hallOfFame: [],
+      supporterSpotlight: [],
+      weeklyChallenges: [],
+      supporterLounge: []
     };
 
     output.trending = rpcTrending.data && rpcTrending.data.length
@@ -418,6 +433,18 @@
         }
       }
     }
+
+    const [repRes, spotlightRes, challengeRes, loungeRes] = await Promise.all([
+      supabase.from('community_member_overview').select('user_id,username,rep_points,rep_level,supporter_level').order('rep_points', { ascending: false }).limit(8),
+      supabase.from('supporter_spotlight').select('user_id,reason,profiles(username)').order('created_at', { ascending: false }).limit(6),
+      supabase.from('challenges').select('id,title,description,is_supporter_only,end_at').eq('active', true).order('start_at', { ascending: false }).limit(6),
+      supabase.from('supporter_lounge_posts').select('id,title,body,is_supporter_only,created_at').order('created_at', { ascending: false }).limit(5)
+    ]);
+
+    output.hallOfFame = repRes.error ? [] : (repRes.data || []);
+    output.supporterSpotlight = spotlightRes.error ? [] : (spotlightRes.data || []);
+    output.weeklyChallenges = challengeRes.error ? [] : (challengeRes.data || []);
+    output.supporterLounge = loungeRes.error ? [] : (loungeRes.data || []);
 
     return output;
   }
@@ -876,6 +903,20 @@
       setSectionState('ccg-hub-discussed', renderGameTiles(data.discussed, 'No active discussions in the last 30 days.'));
       setSectionState('ccg-hub-latest-activity', renderActivityRows(data.activity));
       setSectionState('ccg-hub-top-members', renderMembers(data.members));
+      setSectionState('ccg-hub-hall-of-fame', renderSimpleList(data.hallOfFame, 'Hall of Fame is warming up.', function (row) {
+        return '<div class="member-row__main"><a class="member-row__name" href="' + profileLink(row.username) + '">@' + esc(row.username || 'user') + '</a><span class="member-row__points">' + Number(row.rep_points || 0) + ' REP</span></div>'
+          + '<div class="member-row__meta"><span>Level ' + Number(row.rep_level || 1) + '</span><span>' + esc(row.supporter_level || 'none') + '</span></div>';
+      }));
+      setSectionState('ccg-hub-supporter-spotlight', renderSimpleList(data.supporterSpotlight, 'No supporter spotlight selected yet.', function (row) {
+        const username = row.profiles && row.profiles.username ? row.profiles.username : 'supporter';
+        return '<div class="member-row__main"><a class="member-row__name" href="' + profileLink(username) + '">@' + esc(username) + '</a></div><div class="member-row__meta"><span>' + esc(row.reason || 'Featured for community impact') + '</span></div>';
+      }));
+      setSectionState('ccg-hub-weekly-challenges', renderSimpleList(data.weeklyChallenges, 'No active weekly challenges right now.', function (row) {
+        return '<div class="member-row__main"><strong>' + esc(row.title || 'Challenge') + '</strong><span class="member-row__points">' + (row.is_supporter_only ? 'Supporter only' : 'Open') + '</span></div><div class="member-row__meta"><span>' + esc(row.description || '') + '</span></div>';
+      }));
+      setSectionState('ccg-hub-supporter-lounge', renderSimpleList(data.supporterLounge, 'No lounge posts yet.', function (row) {
+        return '<div class="member-row__main"><strong>' + esc(row.title || 'Lounge update') + '</strong></div><div class="member-row__meta"><span>' + esc((row.body || '').slice(0, 140)) + '</span></div>';
+      }));
       await syncHubAuthCtas();
     } catch (_error) {
       if (!state.unavailableMessageShown) {
