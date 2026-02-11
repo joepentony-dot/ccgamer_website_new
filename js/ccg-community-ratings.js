@@ -25,6 +25,11 @@
     return code === '42P01' || code === 'PGRST205' || message.includes('relation') || message.includes('does not exist');
   }
 
+  function isServerError(error) {
+    const code = String(error && (error.status || error.code) || '');
+    return code === '500' || code === '502' || code === '503' || code === '504';
+  }
+
   function isAuthError(error) {
     const code = String(error && (error.status || error.code) || '');
     const message = String(error && error.message || '').toLowerCase();
@@ -36,6 +41,17 @@
       || message.includes('auth');
   }
 
+
+
+  function isNetworkError(error) {
+    const message = String(error && error.message || '').toLowerCase();
+    const code = String(error && (error.status || error.code) || '');
+    return code === '0' || message.includes('network') || message.includes('failed to fetch') || message.includes('load failed');
+  }
+
+  function logRating(scope, payload) {
+    console.info('[CCG-RATING] ' + scope, payload || '');
+  }
   async function refreshAuthSession(supabase) {
     try {
       await supabase.auth.refreshSession();
@@ -59,10 +75,12 @@
   function toUserMessage(error) {
     const code = String(error && error.code || '');
     const message = String(error && error.message || '').toLowerCase();
-    if (code === '401' || code === '403' || code === 'PGRST301' || message.includes('jwt') || message.includes('auth')) return 'Your session expired. Please log in again to save your rating.';
+    if (code === '401' || code === '403' || code === 'PGRST301' || message.includes('jwt') || message.includes('auth')) return 'Not logged in';
     if (code === '42501' || message.includes('row-level security') || message.includes('permission denied')) return 'You do not have permission to save this rating. Please try logging in again.';
-    if (isNotConfiguredError(error)) return 'Community features not configured yet.';
-    return error && error.message ? error.message : 'Unable to save your rating right now. Please try again.';
+    if (isNotConfiguredError(error)) return 'Server error';
+    if (isNetworkError(error)) return 'Network issue';
+    if (isServerError(error)) return 'Server error';
+    return error && error.message ? error.message : 'Server error';
   }
 
   function renderUnavailable(mount) {
@@ -117,7 +135,7 @@
     try {
       await window.ccgSupabase.waitForAuth();
     } catch (_error) {
-      mount.innerHTML = '<div class="ccg-community-card"><h3>Community Rating</h3><p class="ccg-community-muted">Ratings unavailable (auth error). Reload or re-login.</p></div>';
+      mount.innerHTML = '<div class="ccg-community-card"><h3>Community Rating</h3><p class="ccg-community-muted">Network issue</p></div>';
       return;
     }
 
@@ -132,7 +150,7 @@
       context = await window.ccgSupabase.getCurrentUserContext();
       supabase = await window.ccgSupabase.getClient();
     } catch (_error) {
-      mount.innerHTML = '<div class="ccg-community-card"><h3>Community Rating</h3><p class="ccg-community-muted">Ratings unavailable (auth error). Reload or re-login.</p></div>';
+      mount.innerHTML = '<div class="ccg-community-card"><h3>Community Rating</h3><p class="ccg-community-muted">Network issue</p></div>';
       return;
     }
 
@@ -147,7 +165,7 @@
     }
 
     if (summary.error) {
-      mount.innerHTML = '<div class="ccg-community-card"><h3>Community Rating</h3><p class="ccg-community-muted">Unable to load ratings right now.</p></div>';
+      mount.innerHTML = '<div class="ccg-community-card"><h3>Community Rating</h3><p class="ccg-community-muted">' + toUserMessage(summary.error) + '</p></div>';
       return;
     }
 
@@ -183,9 +201,12 @@
     const form = document.getElementById('ccg-rating-form');
     if (!form) return;
 
+    let isSubmitting = false;
+
     form.addEventListener('submit', async function (event) {
       event.preventDefault();
       const status = document.getElementById('ccg-rating-status');
+      if (isSubmitting) return;
       const rating = Number(new FormData(form).get('rating'));
       if (!Number.isInteger(rating) || rating < 1 || rating > 10) {
         status.textContent = 'Rating must be from 1 to 10.';
@@ -193,16 +214,18 @@
       }
 
       status.textContent = 'Saving…';
+      isSubmitting = true;
       try {
-        await window.ccgSupabase.waitForAuth();
-      } catch (_error) {
-        status.textContent = 'Your session expired. Please log in again to save your rating.';
-        window.ccgCommunityAuth.openAuthModal('signin');
-        return;
-      }
+        try {
+          await window.ccgSupabase.waitForAuth();
+        } catch (_error) {
+          status.textContent = 'Not logged in';
+          window.ccgCommunityAuth.openAuthModal('signin');
+          return;
+        }
 
-      let activeUser = null;
-      const authRes = await supabase.auth.getUser();
+        let activeUser = null;
+        const authRes = await supabase.auth.getUser();
       activeUser = authRes && authRes.data ? authRes.data.user : null;
       if (!activeUser || activeUser.id !== user.id) {
         const refreshed = await refreshAuthSession(supabase);
@@ -213,7 +236,7 @@
       }
 
       if (!activeUser || activeUser.id !== user.id) {
-        status.textContent = 'Your session expired. Please log in again to save your rating.';
+        status.textContent = 'Not logged in';
         window.ccgCommunityAuth.openAuthModal('signin');
         return;
       }
@@ -233,8 +256,12 @@
         await window.ccgCommunityBadges.awardEligibleBadge(activeUser.id);
       }
       status.textContent = 'Saved to your account.';
+      logRating('saved', { gameSlug: slug, userId: activeUser.id, rating: rating });
       window.dispatchEvent(new CustomEvent('ccg:rating-updated', { detail: { gameSlug: slug } }));
       render();
+      } finally {
+        isSubmitting = false;
+      }
     });
   }
 

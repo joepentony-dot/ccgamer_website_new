@@ -187,6 +187,13 @@
     justify-self: end !important;
 }
 
+.ccg-header .ccg-auth-slot {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
 @media (min-width: 1200px) {
     .ccg-header-inner {
         grid-template-columns: minmax(180px, 1fr) auto minmax(180px, 1fr) !important;

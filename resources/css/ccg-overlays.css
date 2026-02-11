@@ -210,15 +210,14 @@ html[data-ccg-page="home"] .ccg-bg-crt-overlay {
     display: none;
 }
 
-@media (min-width: 769px) {
-    .ccg-bg-crt-overlay {
-        opacity: 0;
-    }
+html:not([data-ccg-page="home"]) .ccg-bg-crt-overlay {
+    opacity: 0.08;
+    mix-blend-mode: normal;
 }
 
 @media (max-width: 768px) {
     .ccg-bg-crt-overlay {
-        opacity: 0.18;
+        opacity: 0.06;
         mix-blend-mode: normal;
     }
 }
@@ -295,7 +294,7 @@ html[data-ccg-page="home"] .ccg-page {
     }
 
     .ccg-bg-crt-overlay {
-        opacity: 0.24;
+        opacity: 0.08;
     }
 
     /* Further calm overlays on mobile for clarity */
@@ -308,7 +307,7 @@ html[data-ccg-page="home"] .ccg-page {
     }
 
     html:not([data-ccg-page="home"]) .ccg-bg-crt-overlay {
-        opacity: 0.26;
+        opacity: 0.08;
     }
 }
 

@@ -52,6 +52,24 @@
         }
       }
     }
+
+    const localKeys = ['ccg_username', 'ccg-user', 'ccg-auth-token', 'ccg-auth-refresh-token'];
+    localKeys.forEach(function (key) {
+      try {
+        storage.removeItem(key);
+      } catch {
+        // ignore storage issues
+      }
+    });
+  }
+
+  function clearAuthCookies() {
+    const cookies = document.cookie ? document.cookie.split(';') : [];
+    cookies.forEach(function (pair) {
+      const cookieName = pair.split('=')[0].trim();
+      if (!cookieName) return;
+      document.cookie = cookieName + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    });
   }
 
   function esc(str) {
@@ -325,8 +343,11 @@
     } finally {
       clearSupabaseStorage(window.localStorage, projectRef);
       clearSupabaseStorage(window.sessionStorage, projectRef);
+      clearAuthCookies();
       state.currentUser = null;
       state.currentProfile = null;
+      window.CCG_AUTH = { loggedIn: false, user: null, profile: null, session: null, username: '' };
+      window.dispatchEvent(new CustomEvent('ccg:auth-changed', { detail: { event: 'SIGNED_OUT', user: null, session: null } }));
     }
   }
 
