@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reset Password | CCG Auth</title>
+  <link rel="stylesheet" href="../resources/css/auth.css" />
+</head>
+<body>
+  <main class="auth-shell">
+    <div id="authStatusBadge" class="auth-badge" aria-live="polite"></div>
+
+    <section class="auth-card">
+      <h1>Reset Password</h1>
+      <p class="auth-subtitle">Set your new password after opening the reset email link.</p>
+
+      <form id="resetForm" novalidate>
+        <div class="auth-field">
+          <label for="password">New Password</label>
+          <div class="password-wrap">
+            <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" required />
+            <button type="button" id="togglePassword" class="password-toggle" aria-label="Show password"></button>
+          </div>
+        </div>
+
+        <div class="auth-field">
+          <label for="confirmPassword">Confirm New Password</label>
+          <div class="password-wrap">
+            <input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" required />
+            <button type="button" id="toggleConfirmPassword" class="password-toggle" aria-label="Show password"></button>
+          </div>
+        </div>
+
+        <div id="formMessage" class="auth-message" aria-live="polite"></div>
+
+        <button type="submit" class="auth-btn">Update Password</button>
+      </form>
+
+      <nav class="auth-links">
+        <a href="./login.html">Back to login</a>
+      </nav>
+    </section>
+  </main>
+
+  <script type="module">
+    import { updatePassword } from '../resources/js/auth/auth-core.js';
+    import { attachPasswordToggle, byId, setMessage } from '../resources/js/auth/ui-helpers.js';
+    import { initAuthBadge } from '../resources/js/auth/auth-status.js';
+
+    const form = byId('resetForm');
+    const message = byId('formMessage');
+
+    attachPasswordToggle(byId('togglePassword'), byId('password'));
+    attachPasswordToggle(byId('toggleConfirmPassword'), byId('confirmPassword'));
+    initAuthBadge();
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const password = byId('password').value;
+      const confirmPassword = byId('confirmPassword').value;
+
+      if (password !== confirmPassword) {
+        setMessage(message, 'Passwords do not match.', 'error');
+        return;
+      }
+
+      setMessage(message, 'Updating password...', 'info');
+
+      const { error } = await updatePassword(password);
+
+      if (error) {
+        setMessage(message, error.message, 'error');
+        return;
+      }
+
+      setMessage(message, 'Password updated successfully. You can now log in with your new password.', 'success');
+    });
+  </script>
+</body>
+</html>
