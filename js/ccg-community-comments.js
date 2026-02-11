@@ -5,6 +5,14 @@
      enforcing auth refresh, and surfacing failures
      instead of trapping the UI in "Retrying…".
      =============================================== */
+  const COMMENT_ENDPOINTS = {
+    commentsByGame: 'supabase:public.game_comments?select=*&game_slug=eq.<slug>',
+    postComment: 'supabase:public.game_comments (insert)',
+    latestActivity: 'supabase rpc latest_activity',
+    myActivity: 'supabase:public.game_comments?user_id=eq.<uid>',
+    badgeUnlocks: 'supabase:public.user_badges'
+  };
+
   const state = {
     initStarted: false,
     authReady: false,
@@ -25,6 +33,31 @@
 
   function logCommentsLoaded(count, slug) {
     console.info('[CCG COMMENTS] Loaded: ' + count + ' (' + slug + ')');
+  }
+
+
+  function normalizeGameKey(gameRef) {
+    if (!gameRef || typeof gameRef !== 'object') return '';
+    const slug = String(gameRef.slug || '').trim().toLowerCase();
+    const id = String(gameRef.id || '').trim().toLowerCase();
+    return slug || id;
+  }
+
+  function classifyStatusMessage(error, fallback) {
+    const status = Number(error && (error.status || error.code || error.statusCode));
+    if (status === 401) return 'Login required';
+    if (status === 403) return 'Permission denied';
+    if (status === 404) return 'Endpoint missing / not deployed';
+    if (status >= 500) return 'Server error';
+    return fallback || 'Server error';
+  }
+
+  function logEndpointFailure(endpoint, error) {
+    console.error('[CCG-COMMENTS] endpoint failure', {
+      endpoint: endpoint,
+      status: error && (error.status || error.code || error.statusCode) || 'unknown',
+      bodySnippet: String(error && (error.details || error.message || error.hint) || '').slice(0, 300)
+    });
   }
 
   function isServerError(error) {
@@ -255,10 +288,11 @@
     if (error) {
       logCommentError('load-comments', error, { slug: slug });
       if (isAuthError(error)) {
-        setLoginMessage('Not logged in');
+        setLoginMessage('Login required');
         return;
       }
-      mount.innerHTML = '<div class="ccg-community-card"><h3>Community Comments</h3><p class="ccg-community-muted">' + explainError(error, 'Server error') + '</p></div>';
+      logEndpointFailure(COMMENT_ENDPOINTS.commentsByGame, error);
+      mount.innerHTML = '<div class="ccg-community-card"><h3>Community Comments</h3><p class="ccg-community-muted">' + classifyStatusMessage(error, explainError(error, 'Server error')) + '</p></div>';
       scheduleRetry(isServerError(error) ? 3500 : 5000, 'load-error');
       return;
     }
@@ -361,6 +395,7 @@
         return supabase.from('game_comments').insert({
           user_id: liveContext.user.id,
           game_slug: slug,
+          game_key: normalizeGameKey({ slug: slug, id: state.activeGameId }),
           content: content
         });
       });
@@ -368,10 +403,11 @@
       if (insertError) {
         logCommentError('post-comment', insertError, { slug: slug });
         if (isAuthError(insertError)) {
-          status.textContent = 'Not logged in';
+          status.textContent = 'Login required';
           return;
         }
-        status.textContent = explainError(insertError, 'Server error');
+        logEndpointFailure(COMMENT_ENDPOINTS.postComment, insertError);
+        status.textContent = classifyStatusMessage(insertError, explainError(insertError, 'Server error'));
         notify(status.textContent, 'error');
         scheduleRetry(isServerError(insertError) ? 2000 : 3000, 'post-error');
         return;

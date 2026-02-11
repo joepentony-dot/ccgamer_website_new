@@ -10,6 +10,10 @@
 
   const COMMENT_PAGE_SIZE = 12;
   const GAME_CACHE_KEY = 'ccg-community-last-game';
+  const HUB_ENDPOINTS = {
+    gameLibrary: '/games/games.json',
+    comments: 'supabase:public.game_comments'
+  };
 
   const state = {
     unavailableMessageShown: false,
@@ -27,6 +31,31 @@
   function logHubError(scope, error, meta) {
     const payload = meta || {};
     console.error('[CCG-COMMUNITY-HUB] ' + scope, { error: error, meta: payload });
+  }
+
+  function normalizeGameKey(gameRef) {
+    if (!gameRef || typeof gameRef !== 'object') return '';
+    const slug = String(gameRef.slug || '').trim().toLowerCase();
+    const id = String(gameRef.id || '').trim().toLowerCase();
+    return slug || id;
+  }
+
+  function classifyErrorMessage(error, fallback) {
+    const status = Number(error && (error.status || error.code || error.statusCode));
+    if (status === 401) return 'Login required.';
+    if (status === 403) return 'Permission denied.';
+    if (status === 404) return 'Endpoint missing / not deployed.';
+    if (status >= 500) return 'Server error.';
+    return fallback || 'Unable to complete request.';
+  }
+
+  function logFetchFailure(endpoint, responseText, status, statusText) {
+    console.error('[CCG-COMMUNITY-HUB] Fetch failed', {
+      endpoint: endpoint,
+      status: status,
+      statusText: statusText,
+      bodySnippet: String(responseText || '').slice(0, 300)
+    });
   }
 
   function isAuthError(error) {
@@ -488,10 +517,14 @@
 
     const root = window.ccgGetSiteRoot ? window.ccgGetSiteRoot() : '/';
     const data = await runWithRetry(async function () {
-      const response = await fetch(root + 'games/games.json', { cache: 'no-store' });
+      const endpoint = root + 'games/games.json';
+      const response = await fetch(endpoint, { cache: 'no-store' });
       if (!response.ok) {
+        const bodySnippet = await response.text();
+        logFetchFailure(endpoint, bodySnippet, response.status, response.statusText);
         const httpError = new Error('Unable to load game list. HTTP ' + response.status);
         httpError.status = response.status;
+        httpError.endpoint = endpoint;
         throw httpError;
       }
       return response.json();
@@ -532,6 +565,10 @@
     }).join('');
 
     state.gamesLoaded = true;
+    console.info('[CCG-COMMUNITY-HUB] Games dropdown populated', {
+      endpoint: HUB_ENDPOINTS.gameLibrary,
+      count: normalized.length
+    });
   }
 
   async function ensureViewerContext() {
@@ -640,6 +677,7 @@
         const payload = {
           user_id: fresh.user.id,
           game_slug: state.selectedGame.slug,
+          game_key: normalizeGameKey(state.selectedGame),
           content: content
         };
 
@@ -753,13 +791,9 @@
     } catch (error) {
       logHubError('loadComments', error, { slug: state.selectedGame && state.selectedGame.slug, resetList: resetList });
       if (resetList) {
-        elements.listWrap.innerHTML = '<p class="ccg-community-muted">Comments are temporarily unavailable. Try again shortly.</p>';
+        elements.listWrap.innerHTML = '<p class="ccg-community-muted">' + esc(classifyErrorMessage(error, 'Comments are temporarily unavailable. Try again shortly.')) + '</p>';
       }
-      if (isAuthError(error)) {
-        setCommentsFeedback('Please log in again to load comments.', 'error');
-      } else {
-        setCommentsFeedback('Unable to load comments for this game.', 'error');
-      }
+      setCommentsFeedback(classifyErrorMessage(error, 'Unable to load comments for this game.'), 'error');
     } finally {
       state.commentsLoading = false;
     }
@@ -768,6 +802,7 @@
   async function selectGame(game, shouldFocusPanel) {
     if (!game) return;
     state.selectedGame = game;
+    const canonicalGameKey = normalizeGameKey(game);
     rememberGame(game);
     setCommentsFeedback('');
     updateCommentCount();
@@ -776,6 +811,7 @@
     if (elements.input) {
       elements.input.value = game.title + ' (' + game.system + ') — ' + game.slug;
     }
+    console.info('[CCG-COMMUNITY-HUB] Game selected in explorer', { slug: game.slug, id: game.id, canonicalGameKey: canonicalGameKey });
 
     if (shouldFocusPanel && elements.panel && !elements.panel.open) {
       elements.panel.open = true;
@@ -834,7 +870,12 @@
       }
 
       elements.input.addEventListener('change', function () {
-        trySelectFromInput(true);
+        const selected = trySelectFromInput(true);
+        if (!selected) return;
+        const game = readGameSelection(elements.input.value);
+        if (game) {
+          console.info('[CCG-COMMUNITY-HUB] Explorer selection changed', { slug: game.slug, id: game.id, canonicalGameKey: normalizeGameKey(game) });
+        }
       });
 
       elements.input.addEventListener('input', function () {

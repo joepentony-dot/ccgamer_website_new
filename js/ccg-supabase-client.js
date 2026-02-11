@@ -492,6 +492,14 @@
     return readinessState.checkPromise;
   }
 
+
+  function normalizeGameKey(gameRef) {
+    if (!gameRef || typeof gameRef !== 'object') return '';
+    const slug = String(gameRef.slug || gameRef.game_slug || '').trim().toLowerCase();
+    const id = String(gameRef.id || gameRef.game_id || '').trim().toLowerCase();
+    return slug || id;
+  }
+
   async function callRpcSafe(client, functionName, params) {
     if (!client || typeof client.rpc !== 'function') {
       return { data: null, error: new Error('Supabase client unavailable.'), missing: true };
@@ -535,4 +543,5 @@
   window.ccgSupabase.getCurrentUserContext = getCurrentUserContext;
   window.ccgSupabase.resolveAuthReadyContext = resolveAuthReadyContext;
   window.ccgSupabase.waitForSessionReady = waitForSessionReady;
+  window.ccgSupabase.normalizeGameKey = normalizeGameKey;
 })();
