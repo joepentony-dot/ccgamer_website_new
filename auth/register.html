@@ -40,6 +40,9 @@
     </section>
   </main>
 
+  <script src="../js/ccg-supabase-config.js" defer></script>
+  <script src="../js/ccg-supabase-client.js" defer></script>
+
   <script type="module">
     import { registerUser } from '../resources/js/auth/auth-core.js';
     import { attachPasswordToggle, byId, setMessage } from '../resources/js/auth/ui-helpers.js';
@@ -61,7 +64,10 @@
       const { data, error } = await registerUser(email, password);
 
       if (error) {
-        setMessage(message, error.message, 'error');
+        setMessage(message, error.message || 'Unable to create account right now.', 'error');
+        if (error.detail) {
+          console.error('[CCG-AUTH] register-ui', { category: error.category, detail: error.detail });
+        }
         return;
       }
 

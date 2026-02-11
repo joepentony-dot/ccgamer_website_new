@@ -40,6 +40,9 @@
     </section>
   </main>
 
+  <script src="../js/ccg-supabase-config.js" defer></script>
+  <script src="../js/ccg-supabase-client.js" defer></script>
+
   <script type="module">
     import { loginUser } from '../resources/js/auth/auth-core.js';
     import { attachPasswordToggle, byId, setMessage } from '../resources/js/auth/ui-helpers.js';
@@ -63,7 +66,10 @@
       const { error } = await loginUser(email, password);
 
       if (error) {
-        setMessage(message, error.message, 'error');
+        setMessage(message, error.message || 'Unable to login right now.', 'error');
+        if (error.detail) {
+          console.error('[CCG-AUTH] login-ui', { category: error.category, detail: error.detail });
+        }
         return;
       }
 

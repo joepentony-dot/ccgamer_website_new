@@ -139,6 +139,26 @@
     return 'Community services are temporarily unavailable. Please try again shortly.';
   }
 
+  function normalizeAuthError(error, context) {
+    const raw = String(error && error.message || 'Unknown auth error');
+    const lower = raw.toLowerCase();
+    const details = { context: context || 'unknown', detail: raw, code: error && error.code ? String(error.code) : '', status: error && error.status ? Number(error.status) : null };
+
+    let message = raw;
+    if (lower.includes('failed to fetch') || lower.includes('network') || lower.includes('load failed')) {
+      message = 'Network/CORS issue while contacting auth service. Please try again.';
+    } else if (lower.includes('invalid login credentials') || lower.includes('invalid_grant')) {
+      message = 'Invalid email or password.';
+    } else if (lower.includes('rate limit') || details.status === 429) {
+      message = 'Too many attempts. Please wait and try again.';
+    } else if (lower.includes('session') || lower.includes('token') || lower.includes('jwt')) {
+      message = 'Session error detected. Please sign in again.';
+    }
+
+    console.error('[CCG-AUTH] ' + details.context, details);
+    return message;
+  }
+
   async function safeGetClient() {
     try {
       return await window.ccgSupabase.getClient();
@@ -225,7 +245,7 @@
       const supabase = await safeGetClient();
       if (!supabase) return;
       const result = await supabase.auth.signInWithPassword({ email, password });
-      if (result.error) return setMessage(result.error.message, 'error');
+      if (result.error) return setMessage(normalizeAuthError(result.error, 'modal-signin'), 'error');
       setMessage('Welcome back!', 'success');
       closeModal();
       await refreshCurrentUser();
@@ -241,7 +261,7 @@
       const supabase = await safeGetClient();
       if (!supabase) return;
       const result = await supabase.auth.signUp({ email, password });
-      if (result.error) return setMessage(result.error.message, 'error');
+      if (result.error) return setMessage(normalizeAuthError(result.error, 'modal-signup'), 'error');
       setMessage('Account created. Check your email if confirmation is enabled.', 'success');
       toggleView('signin');
     });
