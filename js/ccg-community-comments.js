@@ -23,9 +23,27 @@
     console.error('[CCG-COMMENTS] ' + scope, { error: error, meta: meta || {} });
   }
 
+  function logCommentsLoaded(count, slug) {
+    console.info('[CCG COMMENTS] Loaded: ' + count + ' (' + slug + ')');
+  }
+
   function isServerError(error) {
     const code = String(error && (error.status || error.code) || '');
     return code === '500' || code === '502' || code === '503' || code === '504';
+  }
+
+  function isNetworkError(error) {
+    const message = String(error && error.message || '').toLowerCase();
+    const code = String(error && (error.status || error.code) || '');
+    return code === '0' || message.includes('network') || message.includes('failed to fetch') || message.includes('load failed');
+  }
+
+  function explainError(error, fallback) {
+    if (isAuthError(error)) return 'Not logged in';
+    if (isNetworkError(error)) return 'Network issue';
+    if (isServerError(error)) return 'Server error';
+    if (isNotConfiguredError(error)) return 'Server error';
+    return fallback || 'Server error';
   }
 
   function getMount() {
@@ -53,7 +71,7 @@
   function setFailureMessage(message) {
     const mount = getMount();
     if (!mount) return;
-    mount.innerHTML = '<div class="ccg-community-card"><h3>Community Comments</h3><p class="ccg-community-muted">' + (message || 'Comments unavailable (auth error). Reload or re-login.') + '</p></div>';
+    mount.innerHTML = '<div class="ccg-community-card"><h3>Community Comments</h3><p class="ccg-community-muted">' + (message || 'Not logged in') + '</p></div>';
   }
 
   function setLoginMessage(message) {
@@ -165,7 +183,7 @@
 
     if (state.retryCount >= state.maxRetries) {
       logCommentError('retry-limit-reached', new Error('Retry limit reached'), { reason: reason, retries: state.retryCount });
-      setFailureMessage('Comments temporarily unavailable. Please try again soon.');
+      setFailureMessage('Server error');
       return;
     }
 
@@ -191,7 +209,7 @@
     try {
       await window.ccgSupabase.waitForAuth();
     } catch (_error) {
-      setFailureMessage('Comments temporarily unavailable. Please try again soon.');
+      setFailureMessage('Network issue');
       return;
     }
 
@@ -201,7 +219,7 @@
       context = await window.ccgSupabase.getCurrentUserContext();
       supabase = await window.ccgSupabase.getClient();
     } catch (_error) {
-      setFailureMessage('Comments temporarily unavailable. Please try again soon.');
+      setFailureMessage('Server error');
       return;
     }
     const user = context.user;
@@ -220,7 +238,7 @@
     });
 
     if (error && isNotConfiguredError(error)) {
-      setFailureMessage('Comments temporarily unavailable. Please try again soon.');
+      setFailureMessage('Server error');
       scheduleRetry(3000, 'not-configured');
       return;
     }
@@ -228,15 +246,16 @@
     if (error) {
       logCommentError('load-comments', error, { slug: slug });
       if (isAuthError(error)) {
-        setLoginMessage('Log in to view comments.');
+        setLoginMessage('Not logged in');
         return;
       }
-      mount.innerHTML = '<div class="ccg-community-card"><h3>Community Comments</h3><p class="ccg-community-muted">Unable to load comments right now.</p></div>';
+      mount.innerHTML = '<div class="ccg-community-card"><h3>Community Comments</h3><p class="ccg-community-muted">' + explainError(error, 'Server error') + '</p></div>';
       scheduleRetry(isServerError(error) ? 3500 : 5000, 'load-error');
       return;
     }
 
     const comments = data || [];
+    logCommentsLoaded(comments.length, slug);
     const userIds = Array.from(new Set(comments.map(function (comment) { return comment.user_id; }).filter(Boolean)));
     const badgeMap = {};
 
@@ -297,12 +316,12 @@
         await window.ccgSupabase.waitForAuth();
         liveContext = await window.ccgSupabase.getCurrentUserContext();
       } catch (_error) {
-        status.textContent = 'Comments unavailable (auth error). Reload or re-login.';
+        status.textContent = 'Not logged in';
         return;
       }
 
       if (!liveContext || !liveContext.user) {
-        status.textContent = 'Log in to comment.';
+        status.textContent = 'Not logged in';
         window.ccgCommunityAuth.openAuthModal('signin');
         return;
       }
@@ -318,12 +337,10 @@
       if (insertError) {
         logCommentError('post-comment', insertError, { slug: slug });
         if (isAuthError(insertError)) {
-          status.textContent = 'Log in to comment.';
+          status.textContent = 'Not logged in';
           return;
         }
-        status.textContent = isNotConfiguredError(insertError)
-          ? 'Comments are still being prepared. Please retry in a moment.'
-          : 'Unable to post comment right now.';
+        status.textContent = explainError(insertError, 'Server error');
         scheduleRetry(isServerError(insertError) ? 2000 : 3000, 'post-error');
         return;
       }
