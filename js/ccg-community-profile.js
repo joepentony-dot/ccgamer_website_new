@@ -26,6 +26,24 @@
     return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
   }
 
+
+  function classifyStatusMessage(error, fallback) {
+    const status = Number(error && (error.status || error.code || error.statusCode));
+    if (status === 401) return 'Login required';
+    if (status === 403) return 'Permission denied';
+    if (status === 404) return 'Endpoint missing / not deployed';
+    if (status >= 500) return 'Server error';
+    return fallback || 'Server error';
+  }
+
+  function logEndpointFailure(endpoint, error) {
+    console.error('[CCG-PROFILE] endpoint failure', {
+      endpoint: endpoint,
+      status: error && (error.status || error.code || error.statusCode) || 'unknown',
+      bodySnippet: String(error && (error.details || error.message || error.hint) || '').slice(0, 300)
+    });
+  }
+
   function validateProfilePayload(payload) {
     if (!payload.username || payload.username.length < 3) return 'Username must be at least 3 characters.';
     if (!/^[A-Za-z0-9_-]+$/.test(payload.username)) return 'Username can only include letters, numbers, _ and -.';
@@ -68,11 +86,11 @@
       .range(from, to);
 
     if (result.error) {
-      console.error('[CCG-PROFILE] fetchRecentComments failed', result.error);
-      return { rows: [], total: 0 };
+      logEndpointFailure('supabase:public.game_comments?user_id=eq.<uid>', result.error);
+      return { rows: [], total: 0, error: result.error };
     }
 
-    return { rows: result.data || [], total: Number(result.count || 0) };
+    return { rows: result.data || [], total: Number(result.count || 0), error: null };
   }
 
   function renderCommentActivity(rows) {
@@ -148,6 +166,11 @@
       supabase.from('community_member_overview').select('rep_points,rep_level,level_title,supporter_level,supporter_title,supporter_flair_key,profile_banner_key,early_access_enabled').eq('user_id', targetProfile.id).maybeSingle(),
       supabase.from('supporter_links').select('eight_bit_title,profile_banner_key,supporter_frame_key,supporter_level,supporter_title').eq('user_id', targetProfile.id).maybeSingle()
     ]);
+
+    if (activity.error) {
+      mount.innerHTML = '<div class="ccg-community-card"><p>' + esc(classifyStatusMessage(activity.error, 'Unable to load activity right now.')) + '</p></div>';
+      return;
+    }
 
     const ratingsCount = ratingsRes.count || 0;
     const commentsCount = commentsRes.count || 0;

@@ -123,7 +123,7 @@
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 12px;
   padding: 0.7rem;
-  background: rgba(8, 14, 30, 0.78);
+  background: rgba(8, 14, 30, 0.9);
 }
 
 .ccg-comment-card__head { display: flex; justify-content: space-between; gap: 0.6rem; font-size: 0.88rem; }
@@ -537,6 +537,32 @@
   50% { text-shadow: 0 0 12px rgba(141, 239, 255, 0.45); }
 }
 
+
+.hub-card::before,
+.hub-card::after,
+.ccg-comments-panel::before,
+.ccg-comments-panel::after {
+  pointer-events: none;
+}
+
+.ccg-comments-explorer__controls,
+.ccg-comments-explorer__controls label,
+.ccg-comments-explorer__controls input,
+.ccg-comments-panel,
+.ccg-comments-panel__body,
+.ccg-comments-post,
+.ccg-comments-post form {
+  position: relative;
+  z-index: 3;
+}
+
+.ccg-community-form input,
+.ccg-community-form textarea,
+.ccg-community-form select {
+  position: relative;
+  z-index: 4;
+}
+
 /* OMEGA COMMUNITY V2 — comments explorer + profile uplift */
 .ccg-comments-explorer__controls {
   grid-template-columns: minmax(220px, 560px);
@@ -546,7 +572,7 @@
 .ccg-comments-panel {
   border: 1px solid rgba(var(--accent-rgb), 0.35);
   border-radius: 14px;
-  background: rgba(4, 14, 30, 0.72);
+  background: rgba(4, 14, 30, 0.88);
   overflow: hidden;
 }
 
