@@ -1316,7 +1316,7 @@
         const drawerPrimary = drawer?.querySelector("[data-ccg-drawer-primary]");
         const drawerSecondary = drawer?.querySelector("[data-ccg-drawer-secondary]");
         const drawerCloseEls = drawer?.querySelectorAll("[data-ccg-drawer-close]") || [];
-        const mobileMatch = typeof window.matchMedia === "function" ? window.matchMedia("(max-width: 960px)") : null;
+        const mobileMatch = typeof window.matchMedia === "function" ? window.matchMedia("(max-width: 1199px)") : null;
 
         const primaryList = nav?.querySelector("[data-ccg-nav-primary]");
         const secondaryList = nav?.querySelector("[data-ccg-nav-secondary]");
@@ -1327,7 +1327,7 @@
 
         if (!toggle || !nav || !primaryList || !moreWrap || !moreMenu) return;
 
-        const isMobileViewport = () => mobileMatch ? mobileMatch.matches : window.innerWidth <= 960;
+        const isMobileViewport = () => mobileMatch ? mobileMatch.matches : window.innerWidth <= 1199;
 
         const cloneLink = (link, extraClasses = []) => {
             const clone = link.cloneNode(true);

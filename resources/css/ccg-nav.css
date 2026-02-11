@@ -158,11 +158,6 @@
    ------------------------------------------------------------
    Shared centering contract for logo, navigation and socials.
 ============================================================ */
-.ccg-header-shell,
-.ccg-header {
-    width: 100%;
-}
-
 .ccg-header-inner {
     width: min(100% - clamp(20px, 3.6vw, 48px), 1320px) !important;
     max-width: 1320px !important;
@@ -192,13 +187,13 @@
     justify-self: end !important;
 }
 
-@media (min-width: 1181px) {
+@media (min-width: 1200px) {
     .ccg-header-inner {
-        grid-template-columns: 1fr auto 1fr !important;
+        grid-template-columns: minmax(180px, 1fr) auto minmax(180px, 1fr) !important;
         grid-template-areas:
-            "left brand right"
-            ". nav ."
-            ". socials ." !important;
+            "auth brand mode"
+            "nav nav nav"
+            "socials socials socials" !important;
         align-items: center !important;
         row-gap: clamp(10px, 1.2vw, 16px) !important;
     }
@@ -211,41 +206,36 @@
     .ccg-header .ccg-nav {
         grid-area: nav !important;
         justify-self: center !important;
-        width: max-content !important;
+        width: auto !important;
         max-width: 100% !important;
     }
 
     .ccg-header .ccg-header-actions {
-        grid-area: left / left / socials / right !important;
-        width: 100% !important;
-        display: grid !important;
-        grid-template-columns: 1fr auto 1fr !important;
-        grid-template-areas:
-            "auth . modehint"
-            "auth . mode"
-            ". socials ." !important;
-        align-items: center !important;
-        row-gap: clamp(10px, 1.1vw, 14px) !important;
-        column-gap: clamp(10px, 1.6vw, 20px) !important;
+        display: contents !important;
     }
 
     .ccg-header .ccg-auth-slot {
         grid-area: auth !important;
         justify-self: start !important;
+        min-height: 42px !important;
+        display: inline-flex !important;
+        align-items: center !important;
     }
 
     .ccg-header .ccg-mode-hint,
     .ccg-header .ccg-mode-toggle {
+        grid-area: mode !important;
         justify-self: end !important;
     }
 
     .ccg-header .ccg-mode-hint {
-        grid-area: modehint !important;
+        display: block !important;
+        min-height: 18px !important;
         align-self: end !important;
     }
 
     .ccg-header .ccg-mode-toggle {
-        grid-area: mode !important;
+        min-height: 40px !important;
         align-self: start !important;
     }
 
@@ -253,12 +243,50 @@
         grid-area: socials !important;
         justify-self: center !important;
         margin-inline: auto !important;
+        min-height: 38px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+    }
+}
+
+@media (max-width: 1199px) {
+    .ccg-nav-toggle {
+        display: inline-flex !important;
+    }
+
+    .ccg-header .ccg-nav__bar,
+    .ccg-header .ccg-nav__list--secondary,
+    .ccg-header .ccg-nav__more {
+        display: none !important;
+    }
+
+    .ccg-header .ccg-nav {
+        width: auto !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .ccg-nav-toggle {
+        display: none !important;
+    }
+
+    .ccg-header .ccg-nav__bar {
+        display: contents !important;
+    }
+
+    .ccg-header .ccg-nav__list--secondary {
+        display: flex !important;
+    }
+
+    .ccg-header .ccg-nav__more {
+        display: none !important;
     }
 }
 
 @media (max-width: 1099px) {
     .ccg-header-inner {
         grid-template-columns: minmax(0, 1fr) auto auto !important;
+        width: 100% !important;
     }
 }
 
