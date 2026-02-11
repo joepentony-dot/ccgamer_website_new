@@ -103,3 +103,63 @@ The CCG Admin Package Builder lives at `/admin/games-editor.html` and generates 
 - **“Invalid JSZip detected — export disabled”**: The JSZip CDN did not load. Refresh the page or verify network access.
 - **Missing assets warning**: Ensure thumbnail art is in `resources/images/thumbnails/all/` and 3D box art is in `resources/images/games/boxes-3d/`.
 - **ZIP download fails**: Check the Package Builder error modal for the stack trace and fix any referenced filenames.
+
+## Community + Supabase integration (Omega)
+
+### Supabase schema overview (public)
+
+Community pages are wired to the following active tables/views:
+
+- `comments`
+- `ratings`
+- `profiles`
+- `badge_definitions`
+- `user_badges`
+- `challenges`
+- `user_challenge_progress`
+- `community_rankings`
+
+### Required RLS policy baseline
+
+Recommended baseline:
+
+- **Public read** for: `comments`, `ratings`, `profiles`, `badge_definitions`, `challenges`, `community_rankings`.
+- **Authenticated insert/update** for: `comments`, `ratings`, `profiles` (own row only), `user_challenge_progress` (own row only).
+- **Authenticated read** for own/private progress rows where applicable.
+- `user_badges` should be readable for profile/community display and writable through controlled server/RPC flows.
+
+After SQL/policy changes, refresh PostgREST schema cache:
+
+```sql
+notify pgrst, 'reload schema';
+```
+
+### Auth redirect + callback URLs
+
+Configure Supabase Auth URLs to include:
+
+- Production site origin (`https://www.cheekycommodoregamer.co.uk`)
+- Community pages under `/community/`
+- Auth pages under `/auth/` (`login.html`, `register.html`, `forgot.html`, `reset.html`)
+
+Ensure both **Site URL** and **Additional Redirect URLs** are set consistently.
+
+### Login / reset flows
+
+- Login/register are handled by the site auth modal and `/auth/*.html` pages.
+- Password reset begins at `/auth/forgot.html` and completes at `/auth/reset.html`.
+- Community pages wait for auth/session readiness before attempting user-scoped writes.
+
+### Legacy table mapping (must stay consistent)
+
+- `game_comments` → `comments`
+- `game_ratings` → `ratings`
+- `achievements` (legacy frontend references) → `badge_definitions`
+- Deprecated: `_old_game_comments`, `_old_game_ratings` (do not reintroduce)
+
+### Troubleshooting
+
+- **PGRST205 / relation missing**: run schema cache refresh and verify table/view name matches production schema.
+- **403 / RLS violation**: confirm authenticated policy for INSERT/UPDATE and ownership checks.
+- **Empty UI with no errors**: verify relevant table has rows; empty states are expected when data has not been created yet.
+- **Auth write fails after long idle**: refresh session and retry.

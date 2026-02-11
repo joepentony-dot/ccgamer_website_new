@@ -101,14 +101,14 @@
 
   async function fetchRecentComments(supabase, userId, from, to) {
     const result = await supabase
-      .from('game_comments')
+      .from('comments')
       .select('id,game_slug,content,is_deleted,created_at', { count: 'exact' })
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .range(from, to);
 
     if (result.error) {
-      logEndpointFailure('supabase:public.game_comments?user_id=eq.<uid>', result.error);
+      logEndpointFailure('supabase:public.comments?user_id=eq.<uid>', result.error);
       return { rows: [], total: 0, error: result.error };
     }
 
@@ -145,7 +145,7 @@
 
     const readiness = await window.ccgSupabase.checkCommunityReadiness();
     if (!readiness.ready) {
-      mount.innerHTML = '<div class="ccg-community-card"><p>Community features not configured yet.</p></div>';
+      mount.innerHTML = '<div class="ccg-community-card"><p>Community profile service is temporarily unavailable.</p></div>';
       return;
     }
 
@@ -185,11 +185,11 @@
     const isOwnProfile = Boolean(context.authUser && context.authUser.id === targetProfile.id);
 
     const [ratingsRes, commentsRes, badges, activity, overviewRes, supporterRes] = await Promise.all([
-      supabase.from('game_ratings').select('id', { count: 'exact', head: true }).eq('user_id', targetProfile.id),
-      supabase.from('game_comments').select('id', { count: 'exact', head: true }).eq('user_id', targetProfile.id),
+      supabase.from('ratings').select('id', { count: 'exact', head: true }).eq('user_id', targetProfile.id),
+      supabase.from('comments').select('id', { count: 'exact', head: true }).eq('user_id', targetProfile.id),
       window.ccgCommunityBadges.fetchUserBadges(targetProfile.id),
       fetchRecentComments(supabase, targetProfile.id, from, to),
-      supabase.from('community_member_overview').select('rep_points,rep_level,level_title,supporter_level,supporter_title,supporter_flair_key,profile_banner_key,early_access_enabled').eq('user_id', targetProfile.id).maybeSingle(),
+      supabase.from('community_rankings').select('rep_points,rep_level,level_title,supporter_level,supporter_title,supporter_flair_key,profile_banner_key,early_access_enabled').eq('user_id', targetProfile.id).maybeSingle(),
       supabase.from('supporter_links').select('eight_bit_title,profile_banner_key,supporter_frame_key,supporter_level,supporter_title').eq('user_id', targetProfile.id).maybeSingle()
     ]);
 
@@ -328,7 +328,7 @@
     if (context.permissions.canModerate) {
       const { data: reports, error } = await supabase
         .from('comment_reports')
-        .select('id,reason,created_at,comment_id,game_comments(content,game_slug,is_deleted)')
+        .select('id,reason,created_at,comment_id,comments(content,game_slug,is_deleted)')
         .order('created_at', { ascending: false })
         .limit(100);
 
@@ -340,7 +340,7 @@
       }
 
       reportList.innerHTML = (reports || []).map(function (report) {
-        const comment = report.game_comments || {};
+        const comment = report.comments || {};
         return '' +
           '<article class="ccg-report-card" data-comment-id="' + report.comment_id + '">' +
           '  <p><strong>Game:</strong> ' + esc(comment.game_slug || 'Unknown') + '</p>' +
@@ -354,7 +354,7 @@
         button.addEventListener('click', async function () {
           const article = button.closest('.ccg-report-card');
           const commentId = Number(article.getAttribute('data-comment-id'));
-          const { error: deleteError } = await supabase.from('game_comments').update({ is_deleted: true, content: '[deleted]' }).eq('id', commentId);
+          const { error: deleteError } = await supabase.from('comments').update({ is_deleted: true, content: '[deleted]' }).eq('id', commentId);
           if (deleteError) {
             notify(deleteError.message || 'Unable to delete comment.', 'error');
             return;

@@ -1,6 +1,6 @@
 (function () {
   const ENDPOINTS = {
-    rankings: 'supabase:public.community_member_overview',
+    rankings: 'supabase:public.community_rankings',
     badges: 'supabase:public.badge_definitions',
     challenges: 'supabase:public.challenges'
   };
@@ -45,14 +45,14 @@
 
   async function loadRankingsRows(supabase) {
     const primary = await supabase
-      .from('community_member_overview')
+      .from('community_rankings')
       .select('user_id,username,rep_points,rep_level,level_title,supporter_level')
       .order('rep_points', { ascending: false })
       .limit(24);
 
     if (!primary.error) return primary.data || [];
 
-    const commentsRes = await supabase.from('game_comments').select('user_id');
+    const commentsRes = await supabase.from('comments').select('user_id');
     if (commentsRes.error) throw primary.error;
 
     const profilesRes = await supabase.from('profiles').select('id,username');
@@ -101,12 +101,12 @@
 
     if (!primary.error) return primary.data || [];
 
-    const fallback = await supabase.from('user_badges').select('badge_key,badge_code').limit(120);
+    const fallback = await supabase.from('user_badges').select('badge_key').limit(120);
     if (fallback.error) throw primary.error;
 
     const unique = new Map();
     (fallback.data || []).forEach(function (row) {
-      const key = row.badge_key || row.badge_code;
+      const key = row.badge_key || row.badge_key;
       if (!key || unique.has(key)) return;
       unique.set(key, {
         slug: key,

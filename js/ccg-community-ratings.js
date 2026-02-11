@@ -84,7 +84,7 @@
   }
 
   function renderUnavailable(mount) {
-    mount.innerHTML = '<div class="ccg-community-card"><h3>Community Rating</h3><p>Community features not configured yet.</p></div>';
+    mount.innerHTML = '<div class="ccg-community-card"><h3>Community Rating</h3><p>Community rating is temporarily unavailable.</p></div>';
   }
 
   function meterMarkup(averageValue, count) {
@@ -105,7 +105,7 @@
   }
 
   async function fetchRatingSummary(supabase, slug) {
-    const avgRes = await supabase.from('game_ratings').select('rating').eq('game_slug', slug);
+    const avgRes = await supabase.from('ratings').select('rating').eq('game_slug', slug);
     if (avgRes.error) return { error: avgRes.error };
 
     const rows = avgRes.data || [];
@@ -172,7 +172,7 @@
     let yourRating = '';
     if (user) {
       const yourRes = await runQueryWithAuthRetry(function () {
-        return supabase.from('game_ratings').select('rating').eq('game_slug', slug).eq('user_id', user.id).maybeSingle();
+        return supabase.from('ratings').select('rating').eq('game_slug', slug).eq('user_id', user.id).maybeSingle();
       }, supabase);
       if (yourRes.data && yourRes.data.rating) yourRating = String(yourRes.data.rating);
     }
@@ -243,7 +243,7 @@
 
       const { error } = await runQueryWithAuthRetry(function () {
         return supabase
-          .from('game_ratings')
+          .from('ratings')
           .upsert({ user_id: activeUser.id, game_slug: slug, rating: rating }, { onConflict: 'user_id,game_slug' });
       }, supabase);
 
