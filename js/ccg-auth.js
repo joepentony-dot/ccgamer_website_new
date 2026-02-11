@@ -87,11 +87,12 @@
     button.addEventListener('click', function (event) {
       event.preventDefault();
       const auth = window.ccgCommunityAuth;
-      if (auth && typeof auth.openAuthModal === 'function') {
-        auth.openAuthModal('signin');
+      if (auth && typeof auth.goToLogin === 'function') {
+        auth.goToLogin(window.location.pathname + window.location.search + window.location.hash);
         return;
       }
-      window.location.href = '/auth/login.html';
+      const returnTo = encodeURIComponent(window.location.pathname + window.location.search + window.location.hash);
+      window.location.href = '/auth/login.html?returnTo=' + returnTo;
     });
 
     button.dataset.ccgAuthBound = 'true';
