@@ -85,6 +85,44 @@
     el.dataset.type = type || 'info';
   }
 
+  function showToast(message, type) {
+    const text = String(message || '').trim();
+    if (!text) return;
+
+    const existing = document.getElementById('ccg-community-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'ccg-community-toast';
+    toast.className = 'ccg-community-toast';
+    toast.setAttribute('role', 'status');
+    toast.dataset.type = type || 'info';
+    toast.textContent = text;
+    document.body.appendChild(toast);
+
+    window.setTimeout(function () {
+      toast.classList.add('is-visible');
+    }, 10);
+
+    window.setTimeout(function () {
+      toast.classList.remove('is-visible');
+      window.setTimeout(function () {
+        if (toast.parentNode) toast.parentNode.removeChild(toast);
+      }, 220);
+    }, 3600);
+  }
+
+  function sanitizeUsername(raw, fallback) {
+    const source = String(raw || fallback || '').toLowerCase();
+    const cleaned = source
+      .replace(/[^a-z0-9_-]+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '')
+      .slice(0, 24);
+    if (cleaned.length >= 3) return cleaned;
+    return ('player-' + Math.random().toString(36).slice(2, 8)).slice(0, 24);
+  }
+
   function toggleView(view) {
     document.querySelectorAll('[data-ccg-auth-view]').forEach((panel) => {
       panel.hidden = panel.getAttribute('data-ccg-auth-view') !== view;
@@ -250,6 +288,39 @@
     return data || null;
   }
 
+  async function createFallbackProfile(user) {
+    if (!user || !user.id) return null;
+    const supabase = await safeGetClient();
+    if (!supabase) return null;
+
+    const fallbackUsername = sanitizeUsername(
+      user.user_metadata && user.user_metadata.username,
+      user.email ? user.email.split('@')[0] : user.id.slice(0, 8)
+    );
+
+    const payload = {
+      id: user.id,
+      username: fallbackUsername,
+      display_name: user.user_metadata && user.user_metadata.display_name
+        ? String(user.user_metadata.display_name).slice(0, 42)
+        : fallbackUsername,
+      bio: null,
+      avatar_url: user.user_metadata && user.user_metadata.avatar_url ? String(user.user_metadata.avatar_url) : null
+    };
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .upsert(payload, { onConflict: 'id' })
+      .select('id, username, avatar_url, role, created_at, display_name, bio')
+      .maybeSingle();
+
+    if (error) {
+      console.error('[CCG-AUTH] profile auto-create failed', error);
+      return null;
+    }
+    return data || payload;
+  }
+
   async function ensureProfile() {
     if (!state.currentUser) return null;
     const profile = await fetchProfile(state.currentUser.id);
@@ -271,7 +342,7 @@
 
       if (state.currentUser) {
         const profile = await fetchProfile(state.currentUser.id);
-        state.currentProfile = profile;
+        state.currentProfile = profile || await createFallbackProfile(state.currentUser);
         if (!profile || !profile.username) {
           openModal('username');
           setMessage('Welcome! Please choose your public username.');
@@ -291,7 +362,7 @@
         permissions: {
           canRate: Boolean(state.currentUser),
           canComment: Boolean(state.currentUser),
-          canModerate: role === 'admin' || role === 'mod'
+          canModerate: role === 'admin' || role === 'editor' || role === 'mod'
         }
       });
     })().finally(function () {
@@ -313,6 +384,7 @@
     }
 
     await window.ccgSupabase.waitForAuth();
+    await window.ccgSupabase.waitForSessionReady();
     await refreshCurrentUser();
   }
 
@@ -348,6 +420,7 @@
       state.currentProfile = null;
       window.CCG_AUTH = { loggedIn: false, user: null, profile: null, session: null, username: '' };
       window.dispatchEvent(new CustomEvent('ccg:auth-changed', { detail: { event: 'SIGNED_OUT', user: null, session: null } }));
+      showToast('You have been logged out.', 'success');
     }
   }
 
@@ -362,9 +435,10 @@
     getProfileReady: function () { return refreshCurrentUser().then(function () { return state.currentProfile; }); },
     isAdminOrMod: function () {
       const role = state.currentProfile && state.currentProfile.role;
-      return role === 'admin' || role === 'mod';
+      return role === 'admin' || role === 'editor' || role === 'mod';
     },
-    esc
+    esc,
+    showToast
   };
 
   document.addEventListener('DOMContentLoaded', function () {

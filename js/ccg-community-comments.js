@@ -74,6 +74,12 @@
     mount.innerHTML = '<div class="ccg-community-card"><h3>Community Comments</h3><p class="ccg-community-muted">' + (message || 'Not logged in') + '</p></div>';
   }
 
+  function notify(message, type) {
+    if (window.ccgCommunityAuth && typeof window.ccgCommunityAuth.showToast === 'function') {
+      window.ccgCommunityAuth.showToast(message, type || 'info');
+    }
+  }
+
   function setLoginMessage(message) {
     const mount = getMount();
     if (!mount) return;
@@ -223,7 +229,8 @@
       return;
     }
     const user = context.user;
-    const canModerate = context.permissions.canModerate;
+    const canModerate = Boolean(context.permissions && context.permissions.canModerate);
+    const canComment = Boolean(context.permissions && context.permissions.canComment);
     if (!user) {
       setDeferredMessage('Browsing comments as guest. Log in to join the discussion.');
     }
@@ -277,8 +284,9 @@
     mount.innerHTML = '' +
       '<div class="ccg-community-card">' +
       '  <h3>Community Comments</h3>' +
+      '  <p class="ccg-community-muted">Status: ' + (user ? ('Logged in as @' + window.ccgCommunityAuth.esc((context.profile && context.profile.username) || (window.CCG_AUTH && window.CCG_AUTH.username) || 'member')) : 'Guest (read-only)') + '</p>' +
       (user
-        ? '<form id="ccg-comment-form" class="ccg-community-form"><label>Add your comment<textarea name="content" required maxlength="600"></textarea></label><button type="submit" class="ccg-community-btn">Post comment</button><span id="ccg-comment-status" class="ccg-community-muted" aria-live="polite"></span></form>'
+        ? '<form id="ccg-comment-form" class="ccg-community-form"><label>Add your comment<textarea name="content" required maxlength="600"></textarea></label><button type="submit" class="ccg-community-btn"' + (canComment ? '' : ' disabled') + '>Post comment</button><span id="ccg-comment-status" class="ccg-community-muted" aria-live="polite"></span></form>'
         : '<p class="ccg-community-muted">Log in to post a comment.</p><p><button class="ccg-community-btn" id="ccg-login-to-comment" type="button">Log in</button></p>') +
       '  <div class="ccg-comment-list">' +
       (comments.length
@@ -309,6 +317,11 @@
       const status = document.getElementById('ccg-comment-status');
       const content = String(new FormData(form).get('content') || '').trim();
       if (!content) return;
+      if (!canComment) {
+        status.textContent = 'You do not have permission to post comments.';
+        notify(status.textContent, 'error');
+        return;
+      }
       status.textContent = 'Posting…';
 
       let liveContext = null;
@@ -323,6 +336,12 @@
       if (!liveContext || !liveContext.user) {
         status.textContent = 'Not logged in';
         window.ccgCommunityAuth.openAuthModal('signin');
+        return;
+      }
+
+      if (!liveContext.permissions || !liveContext.permissions.canComment) {
+        status.textContent = 'You do not have permission to post comments.';
+        notify(status.textContent, 'error');
         return;
       }
 
@@ -341,6 +360,7 @@
           return;
         }
         status.textContent = explainError(insertError, 'Server error');
+        notify(status.textContent, 'error');
         scheduleRetry(isServerError(insertError) ? 2000 : 3000, 'post-error');
         return;
       }
@@ -351,6 +371,7 @@
 
       form.reset();
       status.textContent = 'Posted.';
+      notify('Comment posted successfully.', 'success');
       window.dispatchEvent(new CustomEvent('ccg:comments-updated', { detail: { gameSlug: slug } }));
       runSafeInit('comment-posted');
     });
@@ -375,7 +396,12 @@
               reason: reason || null
             });
           });
-          if (!reportError) btn.textContent = 'Reported';
+          if (reportError) {
+            notify(explainError(reportError, 'Unable to submit report.'), 'error');
+            return;
+          }
+          btn.textContent = 'Reported';
+          notify('Report submitted.', 'success');
           return;
         }
 
@@ -383,17 +409,27 @@
           const currentText = card.querySelector('.ccg-comment-card__body').textContent || '';
           const updated = window.prompt('Edit your comment:', currentText);
           if (!updated || !updated.trim()) return;
-          await runQueryWithAuthRetry(function () {
+          const editResult = await runQueryWithAuthRetry(function () {
             return supabase.from('game_comments').update({ content: updated.trim() }).eq('id', commentId).eq('user_id', user.id);
           });
+          if (editResult.error) {
+            notify(explainError(editResult.error, 'Unable to update comment.'), 'error');
+            return;
+          }
+          notify('Comment updated.', 'success');
           runSafeInit('comment-edit');
           return;
         }
 
         if (action === 'delete' && canModerate) {
-          await runQueryWithAuthRetry(function () {
+          const deleteResult = await runQueryWithAuthRetry(function () {
             return supabase.from('game_comments').update({ is_deleted: true, content: '[deleted]' }).eq('id', commentId);
           });
+          if (deleteResult.error) {
+            notify(explainError(deleteResult.error, 'Unable to delete comment.'), 'error');
+            return;
+          }
+          notify('Comment removed.', 'success');
           runSafeInit('comment-delete');
         }
       });

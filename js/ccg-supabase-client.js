@@ -35,7 +35,8 @@
     contextReady: false,
     contextResolver: null,
     context: null,
-    redirectPending: false
+    redirectPending: false,
+    sessionReadyPromise: null
   });
 
   const authDebugState = window[AUTH_DEBUG_KEY] || (window[AUTH_DEBUG_KEY] = {
@@ -301,8 +302,35 @@
     return {
       canRate: true,
       canComment: true,
-      canModerate: role === 'admin' || role === 'mod'
+      canModerate: role === 'admin' || role === 'editor' || role === 'mod'
     };
+  }
+
+  async function waitForSessionReady(options) {
+    const timeoutMs = Number(options && options.timeoutMs) > 0 ? Number(options.timeoutMs) : 8000;
+    if (authReadyState.sessionReadyPromise) return authReadyState.sessionReadyPromise;
+
+    authReadyState.sessionReadyPromise = (async function () {
+      await waitForAuth();
+      if (authReadyState.contextReady && authReadyState.context) return authReadyState.context;
+
+      const contextPromise = window.CCG_AUTH_READY || Promise.resolve(null);
+      const timeoutPromise = new Promise(function (resolve) {
+        window.setTimeout(function () {
+          resolve(null);
+        }, timeoutMs);
+      });
+
+      const context = await Promise.race([contextPromise, timeoutPromise]);
+      if (context && typeof context === 'object') {
+        return context;
+      }
+      return getCurrentUserContext();
+    })().finally(function () {
+      authReadyState.sessionReadyPromise = null;
+    });
+
+    return authReadyState.sessionReadyPromise;
   }
 
   /* ===============================================
@@ -506,4 +534,5 @@
   window.ccgSupabase.isCommunityUnavailableError = isCommunityUnavailableError;
   window.ccgSupabase.getCurrentUserContext = getCurrentUserContext;
   window.ccgSupabase.resolveAuthReadyContext = resolveAuthReadyContext;
+  window.ccgSupabase.waitForSessionReady = waitForSessionReady;
 })();

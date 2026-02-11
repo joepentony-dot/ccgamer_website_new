@@ -13,6 +13,12 @@
     return String(value || '');
   }
 
+  function notify(message, type) {
+    if (window.ccgCommunityAuth && typeof window.ccgCommunityAuth.showToast === 'function') {
+      window.ccgCommunityAuth.showToast(message, type || 'info');
+    }
+  }
+
   function formatDate(value) {
     if (!value) return 'Unknown';
     const date = new Date(value);
@@ -20,27 +26,36 @@
     return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
   }
 
+  function validateProfilePayload(payload) {
+    if (!payload.username || payload.username.length < 3) return 'Username must be at least 3 characters.';
+    if (!/^[A-Za-z0-9_-]+$/.test(payload.username)) return 'Username can only include letters, numbers, _ and -.';
+    if (payload.display_name && payload.display_name.length > 42) return 'Display name is too long.';
+    if (payload.bio && payload.bio.length > 220) return 'Bio is too long.';
+    if (payload.avatar_url) {
+      try {
+        const url = new URL(payload.avatar_url);
+        if (!['https:', 'http:'].includes(url.protocol)) return 'Avatar URL must use http or https.';
+      } catch (_error) {
+        return 'Avatar URL is invalid.';
+      }
+    }
+    return '';
+  }
+
   async function loadViewerContext() {
-    const context = await window.ccgSupabase.getCurrentUserContext();
+    const context = await window.ccgSupabase.waitForSessionReady();
     const profile = window.ccgCommunityAuth.getProfile();
     return { authUser: context.user, authProfile: profile, permissions: context.permissions, isAuthenticated: context.isAuthenticated };
   }
 
   async function fetchPublicProfile(supabase, userRef) {
     if (!userRef) return null;
-    const byId = await supabase
-      .from('profiles')
-      .select('id,username,display_name,avatar_url,bio,role,created_at')
-      .eq('id', userRef)
-      .maybeSingle();
+    const fields = 'id,username,display_name,avatar_url,bio,role,created_at';
+
+    const byId = await supabase.from('profiles').select(fields).eq('id', userRef).maybeSingle();
     if (byId.data) return byId.data;
 
-    const byUsername = await supabase
-      .from('profiles')
-      .select('id,username,display_name,avatar_url,bio,role,created_at')
-      .eq('username', userRef)
-      .maybeSingle();
-
+    const byUsername = await supabase.from('profiles').select(fields).eq('username', userRef).maybeSingle();
     return byUsername.data || null;
   }
 
@@ -53,19 +68,15 @@
       .range(from, to);
 
     if (result.error) {
+      console.error('[CCG-PROFILE] fetchRecentComments failed', result.error);
       return { rows: [], total: 0 };
     }
 
-    return {
-      rows: result.data || [],
-      total: Number(result.count || 0)
-    };
+    return { rows: result.data || [], total: Number(result.count || 0) };
   }
 
   function renderCommentActivity(rows) {
-    if (!rows.length) {
-      return '<p class="ccg-community-muted">No comment activity yet.</p>';
-    }
+    if (!rows.length) return '<p class="ccg-community-muted">No comment activity yet.</p>';
 
     return '<ul class="ccg-profile-activity-list">' + rows.map(function (row) {
       return '' +
@@ -77,6 +88,13 @@
         '  <p class="ccg-profile-activity-item__text">' + (row.is_deleted ? '<em>Comment deleted</em>' : esc(row.content || '')) + '</p>' +
         '</li>';
     }).join('') + '</ul>';
+  }
+
+  function buildProfileHref(username, page) {
+    const params = new URLSearchParams(window.location.search);
+    if (username && params.get('u')) params.set('u', username);
+    params.set('page', String(page));
+    return '/community/profile.html?' + params.toString();
   }
 
   async function loadProfilePage() {
@@ -91,8 +109,17 @@
       return;
     }
 
-    const context = await loadViewerContext();
-    const supabase = await window.ccgSupabase.getClient();
+    let context;
+    let supabase;
+    try {
+      context = await loadViewerContext();
+      supabase = await window.ccgSupabase.getClient();
+    } catch (error) {
+      console.error('[CCG-PROFILE] unable to load auth context', error);
+      mount.innerHTML = '<div class="ccg-community-card"><p>Unable to load profile right now. Please refresh.</p></div>';
+      return;
+    }
+
     const queryUser = getQueryParam('u');
     const pageParam = Number(getQueryParam('page') || '1');
     const page = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
@@ -124,8 +151,9 @@
     const commentsCount = commentsRes.count || 0;
     const joined = formatDate(targetProfile.created_at);
     const displayName = targetProfile.display_name || targetProfile.username || 'Community member';
-    const roleLabel = targetProfile.role || 'member';
+    const roleLabel = targetProfile.role || 'user';
     const bio = targetProfile.bio ? esc(targetProfile.bio) : 'No bio yet. This user is all gameplay, no fluff.';
+    const authState = context.isAuthenticated ? 'Logged in' : 'Guest';
 
     const avatar = targetProfile.avatar_url
       ? '<img src="' + esc(targetProfile.avatar_url) + '" alt="' + esc(displayName) + ' avatar" class="ccg-profile-avatar">'
@@ -146,6 +174,7 @@
       '      <div class="ccg-profile-meta">' +
       '        <span class="ccg-badge">Role: ' + esc(roleLabel) + '</span>' +
       '        <span class="ccg-badge">Joined: ' + esc(joined) + '</span>' +
+      '        <span class="ccg-badge">Status: ' + esc(authState) + '</span>' +
       '      </div>' +
       '      <p class="ccg-community-muted">' + (isOwnProfile && context.authUser ? esc(context.authUser.email || '') : 'Public profile view') + '</p>' +
       '    </div>' +
@@ -197,6 +226,7 @@
         event.preventDefault();
         const status = document.getElementById('ccg-profile-status');
         status.textContent = 'Saving…';
+
         const formData = new FormData(event.currentTarget);
         const payload = {
           id: context.authUser.id,
@@ -205,22 +235,44 @@
           avatar_url: String(formData.get('avatar_url') || '').trim() || null,
           bio: String(formData.get('bio') || '').trim() || null
         };
-        const { error } = await supabase.from('profiles').upsert(payload, { onConflict: 'id' });
-        status.textContent = error ? error.message : 'Profile updated.';
-        if (!error) {
-          window.setTimeout(function () { window.location.reload(); }, 500);
+
+        const validationMessage = validateProfilePayload(payload);
+        if (validationMessage) {
+          status.textContent = validationMessage;
+          notify(validationMessage, 'error');
+          return;
         }
+
+        const { error } = await supabase.from('profiles').upsert(payload, { onConflict: 'id' });
+        if (error) {
+          console.error('[CCG-PROFILE] update failed', error);
+          status.textContent = error.message || 'Unable to update profile right now.';
+          notify(status.textContent, 'error');
+          return;
+        }
+
+        status.textContent = 'Profile updated.';
+        notify('Profile saved successfully.', 'success');
+        window.setTimeout(function () {
+          window.location.reload();
+        }, 400);
       });
     }
 
     if (context.permissions.canModerate) {
-      const { data: reports } = await supabase
+      const { data: reports, error } = await supabase
         .from('comment_reports')
         .select('id,reason,created_at,comment_id,game_comments(content,game_slug,is_deleted)')
         .order('created_at', { ascending: false })
         .limit(100);
 
       const reportList = document.getElementById('ccg-report-list');
+      if (error) {
+        console.error('[CCG-PROFILE] moderation list failed', error);
+        reportList.innerHTML = '<p class="ccg-community-muted">Unable to load moderation queue.</p>';
+        return;
+      }
+
       reportList.innerHTML = (reports || []).map(function (report) {
         const comment = report.game_comments || {};
         return '' +
@@ -236,21 +288,17 @@
         button.addEventListener('click', async function () {
           const article = button.closest('.ccg-report-card');
           const commentId = Number(article.getAttribute('data-comment-id'));
-          await supabase.from('game_comments').update({ is_deleted: true, content: '[deleted]' }).eq('id', commentId);
+          const { error: deleteError } = await supabase.from('game_comments').update({ is_deleted: true, content: '[deleted]' }).eq('id', commentId);
+          if (deleteError) {
+            notify(deleteError.message || 'Unable to delete comment.', 'error');
+            return;
+          }
           button.textContent = 'Deleted';
           button.disabled = true;
+          notify('Comment removed.', 'success');
         });
       });
     }
-  }
-
-  function buildProfileHref(username, page) {
-    const params = new URLSearchParams(window.location.search);
-    if (username && params.get('u')) {
-      params.set('u', username);
-    }
-    params.set('page', String(page));
-    return '/community/profile.html?' + params.toString();
   }
 
   document.addEventListener('DOMContentLoaded', loadProfilePage);
