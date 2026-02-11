@@ -112,6 +112,13 @@
     }, 3600);
   }
 
+  function redirectToLogin(returnTo) {
+    const target = new URL('/auth/login.html', window.location.origin);
+    const fallbackReturn = window.location.pathname + window.location.search + window.location.hash;
+    target.searchParams.set('returnTo', returnTo || fallbackReturn);
+    window.location.href = target.pathname + target.search;
+  }
+
   function sanitizeUsername(raw, fallback) {
     const source = String(raw || fallback || '').toLowerCase();
     const cleaned = source
@@ -376,6 +383,7 @@
         || null;
       window.ccgSupabase.resolveAuthReadyContext({
         user: state.currentUser,
+        profile: state.currentProfile,
         session,
         isAuthenticated: Boolean(state.currentUser),
         role,
@@ -411,7 +419,7 @@
   async function requireAuth() {
     await initAuth();
     if (!state.currentUser) {
-      openModal('signin');
+      redirectToLogin();
       return null;
     }
     if (!state.currentProfile || !state.currentProfile.username) {
@@ -447,6 +455,7 @@
   window.ccgCommunityAuth = {
     init: initAuth,
     openAuthModal: openModal,
+    goToLogin: redirectToLogin,
     closeAuthModal: closeModal,
     requireAuth,
     logout,

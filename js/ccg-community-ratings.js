@@ -52,6 +52,13 @@
   function logRating(scope, payload) {
     console.info('[CCG-RATING] ' + scope, payload || '');
   }
+  function routeToLogin() {
+    if (window.ccgCommunityAuth && typeof window.ccgCommunityAuth.goToLogin === 'function') {
+      window.ccgCommunityAuth.goToLogin(window.location.pathname + window.location.search + window.location.hash);
+      return;
+    }
+    window.location.href = '/auth/login.html?returnTo=' + encodeURIComponent(window.location.pathname + window.location.search + window.location.hash);
+  }
   async function refreshAuthSession(supabase) {
     try {
       await supabase.auth.refreshSession();
@@ -194,7 +201,7 @@
 
     if (!user) {
       const btn = document.getElementById('ccg-login-to-rate');
-      if (btn) btn.addEventListener('click', function () { window.ccgCommunityAuth.openAuthModal('signin'); });
+      if (btn) btn.addEventListener('click', function () { routeToLogin(); });
       return;
     }
 
@@ -220,7 +227,7 @@
           await window.ccgSupabase.waitForAuth();
         } catch (_error) {
           status.textContent = 'Not logged in';
-          window.ccgCommunityAuth.openAuthModal('signin');
+          routeToLogin();
           return;
         }
 
@@ -237,7 +244,7 @@
 
       if (!activeUser || activeUser.id !== user.id) {
         status.textContent = 'Not logged in';
-        window.ccgCommunityAuth.openAuthModal('signin');
+        routeToLogin();
         return;
       }
 

@@ -113,6 +113,30 @@
     }
   }
 
+  function routeToLogin() {
+    if (window.ccgCommunityAuth && typeof window.ccgCommunityAuth.goToLogin === 'function') {
+      window.ccgCommunityAuth.goToLogin(window.location.pathname + window.location.search + window.location.hash);
+      return;
+    }
+    window.location.href = '/auth/login.html?returnTo=' + encodeURIComponent(window.location.pathname + window.location.search + window.location.hash);
+  }
+
+  function defaultAvatarMarkup(name) {
+    const label = String(name || 'community-member').trim();
+    const initial = (label.charAt(0) || 'C').toUpperCase();
+    return '<span class="ccg-comment-card__avatar ccg-comment-card__avatar--fallback" aria-hidden="true">' + window.ccgCommunityAuth.esc(initial) + '</span>';
+  }
+
+  function resolveCommentIdentity(comment, context) {
+    const profile = comment.profiles || {};
+    const metadata = comment.user_metadata || {};
+    const handle = profile.handle || profile.username || profile.display_name || metadata.handle || metadata.name || 'community-member';
+    const avatarUrl = profile.avatar_url || null;
+    const own = Boolean(context && context.user && context.user.id === comment.user_id);
+    const canModerate = Boolean(context && context.permissions && context.permissions.canModerate);
+    return { handle: String(handle), avatarUrl: avatarUrl, own: own, canModerate: canModerate };
+  }
+
   function setLoginMessage(message) {
     const mount = getMount();
     if (!mount) return;
@@ -124,7 +148,7 @@
       '</div>';
     const loginBtn = document.getElementById('ccg-login-to-comment');
     if (loginBtn) loginBtn.addEventListener('click', function () {
-      window.ccgCommunityAuth.openAuthModal('signin');
+      routeToLogin();
     });
   }
 
@@ -151,19 +175,24 @@
       || message.includes('auth');
   }
 
-  function commentCard(comment, currentUser, canModerate, badgeHtml, supporterLevel) {
-    const profile = comment.profiles || {};
-    const username = window.ccgCommunityAuth.esc(profile.username || 'Community member');
+  function commentCard(comment, context, badgeHtml, supporterLevel, reportState) {
+    const identity = resolveCommentIdentity(comment, context);
+    const username = window.ccgCommunityAuth.esc(identity.handle);
     const content = comment.deleted
       ? '<em>This comment has been removed by moderation.</em>'
       : window.ccgCommunityAuth.esc(comment.body || '');
-    const own = currentUser && currentUser.id === comment.user_id;
+    const avatar = identity.avatarUrl
+      ? '<img src="' + window.ccgCommunityAuth.esc(identity.avatarUrl) + '" alt="' + username + ' avatar" class="ccg-comment-card__avatar">'
+      : defaultAvatarMarkup(identity.handle);
+    const canDelete = identity.own && !comment.deleted;
+    const reportDisabled = Boolean(reportState && reportState[comment.id]);
 
     return '' +
       '<article class="ccg-comment-card" data-comment-id="' + comment.id + '">' +
       '  <header class="ccg-comment-card__head">' +
       '    <div class="ccg-comment-card__identity">' +
-      '      <a href="/community/profile.html?u=' + encodeURIComponent(profile.username || '') + '" class="ccg-comment-card__profile-link">@' + username + '</a>' +
+      avatar +
+      '      <a href="/community/profile.html?u=' + encodeURIComponent(identity.handle || '') + '" class="ccg-comment-card__profile-link">@' + username + '</a>' +
       '      ' + (badgeHtml || '') +
       '      ' + (supporterLevel && supporterLevel !== 'none' ? '<span class="ccg-supporter-flair ccg-supporter-flair--' + window.ccgCommunityAuth.esc(supporterLevel) + '">' + window.ccgCommunityAuth.esc(supporterLevel) + '</span>' : '') +
       '    </div>' +
@@ -171,10 +200,10 @@
       '  </header>' +
       '  <p class="ccg-comment-card__body">' + content + '</p>' +
       '  <div class="ccg-comment-card__actions">' +
-      (own && !comment.deleted ? '<button type="button" data-action="edit">Edit</button>' : '') +
-      (currentUser && !comment.deleted ? '<button type="button" data-action="report">Report</button>' : '') +
-      (currentUser && !comment.deleted ? '<button type="button" data-action="helpful">Helpful</button>' : '') +
-      (canModerate && !comment.deleted ? '<button type="button" data-action="delete">Soft delete</button>' : '') +
+      (identity.own && !comment.deleted ? '<button type="button" data-action="edit">Edit</button>' : '') +
+      (canDelete ? '<button type="button" data-action="delete">Delete</button>' : '') +
+      (!identity.own && context.user && !comment.deleted ? '<button type="button" data-action="report"' + (reportDisabled ? ' disabled' : '') + '>' + (reportDisabled ? 'Reported' : 'Report') + '</button>' : '') +
+      (context.user && !comment.deleted ? '<button type="button" data-action="helpful">Helpful</button>' : '') +
       '  </div>' +
       '</article>';
   }
@@ -264,7 +293,6 @@
       return;
     }
     const user = context.user;
-    const canModerate = Boolean(context.permissions && context.permissions.canModerate);
     const canComment = Boolean(context.permissions && context.permissions.canComment);
     if (!user) {
       setDeferredMessage('Browsing comments as guest. Log in to join the discussion.');
@@ -273,7 +301,7 @@
     const { data, error } = await runQueryWithAuthRetry(function () {
       return supabase
         .from('comments')
-        .select('id,user_id,body,created_at')
+        .select('id,user_id,body,created_at,deleted')
         .eq('game_key', normalizeGameKey({ slug: slug, id: state.activeGameId }))
         .order('created_at', { ascending: false })
         .limit(100);
@@ -304,13 +332,14 @@
     const profileMap = {};
     if (userIds.length) {
       const profileRes = await runQueryWithAuthRetry(function () {
-        return supabase.from('profiles').select('id,username,avatar_url,role').in('id', userIds);
+        return supabase.from('profiles').select('id,username,handle,display_name,avatar_url,role').in('id', userIds);
       });
       (profileRes.data || []).forEach(function (row) { profileMap[row.id] = row; });
       comments.forEach(function (row) { row.profiles = profileMap[row.user_id] || {}; });
     }
     const badgeMap = {};
     const supporterMap = {};
+    const reportState = {};
 
     if (userIds.length) {
       const supporterRes = await runQueryWithAuthRetry(function () {
@@ -336,6 +365,19 @@
       });
     }
 
+    if (user && comments.length) {
+      const reportRes = await runQueryWithAuthRetry(function () {
+        return supabase
+          .from('comment_reports')
+          .select('comment_id')
+          .eq('reporter_user_id', user.id)
+          .in('comment_id', comments.map(function (comment) { return comment.id; }));
+      });
+      (reportRes.data || []).forEach(function (row) {
+        reportState[row.comment_id] = true;
+      });
+    }
+
     mount.innerHTML = '' +
       '<div class="ccg-community-card">' +
       '  <h3>Community Comments</h3>' +
@@ -351,7 +393,7 @@
           const badgeHtml = compact.length && window.ccgCommunityBadges
             ? window.ccgCommunityBadges.renderBadges(compact, { className: 'ccg-badges ccg-badges--mini', emptyText: '' })
             : '';
-          return commentCard(comment, user, canModerate, badgeHtml, supporterMap[comment.user_id] || "none");
+          return commentCard(comment, context, badgeHtml, supporterMap[comment.user_id] || 'none', reportState);
         }).join('')
         : '<p class="ccg-community-muted">No comments yet. Start the discussion.</p>') +
       '  </div>' +
@@ -360,7 +402,7 @@
     if (!user) {
       const loginBtn = document.getElementById('ccg-login-to-comment');
       if (loginBtn) loginBtn.addEventListener('click', function () {
-        window.ccgCommunityAuth.openAuthModal('signin');
+        routeToLogin();
       });
       resetRetries();
       return;
@@ -390,7 +432,7 @@
 
       if (!liveContext || !liveContext.user) {
         status.textContent = 'Not logged in';
-        window.ccgCommunityAuth.openAuthModal('signin');
+        routeToLogin();
         return;
       }
 
@@ -435,7 +477,7 @@
 
     const loginBtn = document.getElementById('ccg-login-to-comment');
     if (loginBtn) loginBtn.addEventListener('click', function () {
-      window.ccgCommunityAuth.openAuthModal('signin');
+      routeToLogin();
     });
 
     mount.querySelectorAll('.ccg-comment-card button').forEach(function (btn) {
@@ -450,13 +492,23 @@
             return supabase.from('comment_reports').insert({
               reporter_user_id: user.id,
               comment_id: commentId,
-              reason: reason || null
+              reason: reason || null,
+              page_type: 'game',
+              page_id: normalizeGameKey({ slug: slug, id: state.activeGameId }),
+              status: 'open'
             });
           });
           if (reportError) {
+            if (String(reportError.code || '') === '23505') {
+              btn.disabled = true;
+              btn.textContent = 'Reported';
+              notify('You already reported this comment.', 'info');
+              return;
+            }
             notify(explainError(reportError, 'Unable to submit report.'), 'error');
             return;
           }
+          btn.disabled = true;
           btn.textContent = 'Reported';
           notify('Report submitted.', 'success');
           return;
@@ -478,11 +530,25 @@
         }
 
         if (action === 'edit') {
-          const currentText = card.querySelector('.ccg-comment-card__body').textContent || '';
-          const updated = window.prompt('Edit your comment:', currentText);
-          if (!updated || !updated.trim()) return;
+          const bodyEl = card.querySelector('.ccg-comment-card__body');
+          if (!bodyEl) return;
+          const currentText = bodyEl.textContent || '';
+          bodyEl.innerHTML = '<textarea class="ccg-comment-inline-edit" maxlength="600">' + window.ccgCommunityAuth.esc(currentText) + '</textarea>' +
+            '<div class="ccg-comment-inline-actions"><button type="button" data-action="save-edit">Save</button><button type="button" data-action="cancel-edit">Cancel</button></div>';
+          return;
+        }
+
+        if (action === 'cancel-edit') {
+          runSafeInit('comment-edit-cancel');
+          return;
+        }
+
+        if (action === 'save-edit') {
+          const editor = card.querySelector('.ccg-comment-inline-edit');
+          const updated = String(editor && editor.value || '').trim();
+          if (!updated) return;
           const editResult = await runQueryWithAuthRetry(function () {
-            return supabase.from('comments').update({ body: updated.trim() }).eq('id', commentId).eq('user_id', user.id);
+            return supabase.from('comments').update({ body: updated, updated_at: new Date().toISOString() }).eq('id', commentId).eq('user_id', user.id);
           });
           if (editResult.error) {
             notify(explainError(editResult.error, 'Unable to update comment.'), 'error');
@@ -493,9 +559,10 @@
           return;
         }
 
-        if (action === 'delete' && canModerate) {
+        if (action === 'delete') {
+          if (!window.confirm('Delete your comment?')) return;
           const deleteResult = await runQueryWithAuthRetry(function () {
-            return supabase.from('comments').update({ deleted: true, body: '[deleted]' }).eq('id', commentId);
+            return supabase.from('comments').update({ deleted: true, body: '[deleted]', updated_at: new Date().toISOString() }).eq('id', commentId).eq('user_id', user.id);
           });
           if (deleteResult.error) {
             notify(explainError(deleteResult.error, 'Unable to delete comment.'), 'error');

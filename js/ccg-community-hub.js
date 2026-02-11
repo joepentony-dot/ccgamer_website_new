@@ -158,6 +158,24 @@
     return '/community/profile.html?u=' + encodeURIComponent(username || '');
   }
 
+  function routeToLogin() {
+    if (window.ccgCommunityAuth && typeof window.ccgCommunityAuth.goToLogin === 'function') {
+      window.ccgCommunityAuth.goToLogin(window.location.pathname + window.location.search + window.location.hash);
+      return;
+    }
+    window.location.href = '/auth/login.html?returnTo=' + encodeURIComponent(window.location.pathname + window.location.search + window.location.hash);
+  }
+
+  function resolveProfileIdentity(profile, userMetadata) {
+    const base = profile || {};
+    const metadata = userMetadata || {};
+    const handle = base.handle || base.username || base.display_name || metadata.handle || metadata.name || 'community-member';
+    return {
+      handle: String(handle),
+      avatar_url: base.avatar_url || null
+    };
+  }
+
   function setSectionState(id, html) {
     const mount = document.getElementById(id);
     if (!mount) return;
@@ -416,16 +434,17 @@
     const ids = Array.from(new Set(rows.map(function (row) { return row.user_id; }).filter(Boolean)));
     if (!ids.length) return rows;
 
-    const profilesRes = await supabase.from('profiles').select('id,username').in('id', ids);
+    const profilesRes = await supabase.from('profiles').select('id,username,handle,display_name,avatar_url').in('id', ids);
     if (profilesRes.error) return rows;
 
-    const usernameById = new Map((profilesRes.data || []).map(function (row) {
-      return [row.id, row.username || 'user'];
+    const profileById = new Map((profilesRes.data || []).map(function (row) {
+      return [row.id, row];
     }));
 
     return rows.map(function (row) {
-      const username = usernameById.get(row.user_id) || row.username || 'user';
-      return Object.assign({}, row, { username: username });
+      const profile = profileById.get(row.user_id) || null;
+      const identity = resolveProfileIdentity(profile, row.user_metadata);
+      return Object.assign({}, row, { username: identity.handle, profiles: Object.assign({}, profile, { username: identity.handle }) });
     });
   }
 
@@ -616,10 +635,11 @@
 
   function commentCard(comment, viewer) {
     const profile = comment.profiles || {};
-    const username = profile.username || 'community-member';
-    const avatar = profile.avatar_url
-      ? '<img src="' + esc(profile.avatar_url) + '" alt="' + esc(username) + ' avatar" class="ccg-comment-card__avatar">'
-      : '<span class="ccg-comment-card__avatar ccg-comment-card__avatar--fallback" aria-hidden="true">Ω</span>';
+    const identity = resolveProfileIdentity(profile, comment.user_metadata);
+    const username = identity.handle;
+    const avatar = identity.avatar_url
+      ? '<img src="' + esc(identity.avatar_url) + '" alt="' + esc(username) + ' avatar" class="ccg-comment-card__avatar">'
+      : '<span class="ccg-comment-card__avatar ccg-comment-card__avatar--fallback" aria-hidden="true">' + esc((username.charAt(0) || 'C').toUpperCase()) + '</span>';
 
     const own = viewer && viewer.user && viewer.user.id === comment.user_id;
     const text = comment.deleted
@@ -638,8 +658,10 @@
       '    </div>' +
       '  </header>' +
       '  <p class="ccg-comment-card__body">' + text + '</p>' +
-      (own && !comment.deleted
-        ? '<div class="ccg-comment-card__actions"><button type="button" data-action="edit">Edit</button><button type="button" data-action="delete">Delete</button></div>'
+      (!comment.deleted
+        ? '<div class="ccg-comment-card__actions">'
+          + (own ? '<button type="button" data-action="edit">Edit</button><button type="button" data-action="delete">Delete</button>' : '<button type="button" data-action="report">Report</button>')
+          + '</div>'
         : '') +
       '</article>';
   }
@@ -674,7 +696,7 @@
       const loginBtn = document.getElementById('ccg-comments-login');
       if (loginBtn) {
         loginBtn.addEventListener('click', function () {
-          window.ccgCommunityAuth.openAuthModal('signin');
+          routeToLogin();
         });
       }
       return;
@@ -773,11 +795,26 @@
           const supabase = await window.ccgSupabase.getClient();
           if (action === 'edit') {
             const existing = article.querySelector('.ccg-comment-card__body');
-            const next = window.prompt('Edit your comment:', existing ? existing.textContent : '');
-            if (!next || !next.trim()) return;
+            if (!existing) return;
+            const text = existing.textContent || '';
+            existing.innerHTML = '<textarea class="ccg-comment-inline-edit" maxlength="600">' + esc(text) + '</textarea>' +
+              '<div class="ccg-comment-inline-actions"><button type="button" data-action="save-edit">Save</button><button type="button" data-action="cancel-edit">Cancel</button></div>';
+            return;
+          }
+
+          if (action === 'cancel-edit') {
+            await loadComments(true);
+            return;
+          }
+
+          if (action === 'save-edit') {
+            const editor = article.querySelector('.ccg-comment-inline-edit');
+            const next = String(editor && editor.value || '').trim();
+            if (!next) return;
             const updatePayload = { updated_at: new Date().toISOString() };
-            updatePayload[state.commentTextColumn || 'body'] = next.trim();
-            await supabase.from('comments').update(updatePayload).eq('id', commentId).eq('user_id', viewer.user.id);
+            updatePayload[state.commentTextColumn || 'body'] = next;
+            const updateRes = await supabase.from('comments').update(updatePayload).eq('id', commentId).eq('user_id', viewer.user.id);
+            if (updateRes.error) throw updateRes.error;
           }
 
           if (action === 'delete') {
@@ -785,13 +822,25 @@
             if (!confirmed) return;
             const deletePayload = { updated_at: new Date().toISOString() };
             deletePayload[state.commentTextColumn || 'body'] = '[deleted]';
-            try {
-              deletePayload.deleted = true;
-              await supabase.from('comments').update(deletePayload).eq('id', commentId).eq('user_id', viewer.user.id);
-            } catch (deleteError) {
-              if (!isMissingColumnError(deleteError)) throw deleteError;
-              await supabase.from('comments').delete().eq('id', commentId).eq('user_id', viewer.user.id);
+            const deleteRes = await supabase.from('comments').update(Object.assign({ deleted: true }, deletePayload)).eq('id', commentId).eq('user_id', viewer.user.id);
+            if (deleteRes.error && !isMissingColumnError(deleteRes.error)) throw deleteRes.error;
+            if (deleteRes.error && isMissingColumnError(deleteRes.error)) {
+              const hardDeleteRes = await supabase.from('comments').delete().eq('id', commentId).eq('user_id', viewer.user.id);
+              if (hardDeleteRes.error) throw hardDeleteRes.error;
             }
+          }
+
+          if (action === 'report') {
+            const reason = window.prompt('Report reason (optional):', '');
+            const reportRes = await supabase.from('comment_reports').insert({
+              reporter_user_id: viewer.user.id,
+              comment_id: commentId,
+              reason: reason || null,
+              page_type: 'community',
+              page_id: normalizeGameKey(state.selectedGame),
+              status: 'open'
+            });
+            if (reportRes.error && String(reportRes.error.code || '') !== '23505') throw reportRes.error;
           }
 
           await loadComments(true);
@@ -828,7 +877,7 @@
           response = await runWithRetry(function () {
             return supabase
               .from('comments')
-              .select('id,user_id,' + columnName + ',created_at,game_key', { count: 'exact' })
+              .select('id,user_id,' + columnName + ',created_at,updated_at,deleted,game_key', { count: 'exact' })
               .eq('game_key', normalizeGameKey(state.selectedGame))
               .order('created_at', { ascending: false })
               .range(rangeStart, rangeEnd)
@@ -852,6 +901,16 @@
       updateCommentCount();
 
       const rows = response.data || [];
+      const userIds = Array.from(new Set(rows.map(function (row) { return row.user_id; }).filter(Boolean)));
+      if (userIds.length) {
+        const profileRes = await supabase.from('profiles').select('id,username,handle,display_name,avatar_url').in('id', userIds);
+        const byId = new Map((profileRes.data || []).map(function (row) { return [row.id, row]; }));
+        rows.forEach(function (row) {
+          const profile = byId.get(row.user_id) || {};
+          const identity = resolveProfileIdentity(profile, row.user_metadata);
+          row.profiles = Object.assign({}, profile, { username: identity.handle });
+        });
+      }
       if (resetList) {
         elements.listWrap.innerHTML = rows.length
           ? rows.map(function (row) { return commentCard(row, viewer); }).join('')
@@ -1122,7 +1181,7 @@
     const btn = document.getElementById('ccg-hub-login-btn');
     if (btn) {
       btn.addEventListener('click', function () {
-        window.ccgCommunityAuth.openAuthModal('signin');
+        routeToLogin();
       });
     }
   }

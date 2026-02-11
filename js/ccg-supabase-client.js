@@ -362,6 +362,7 @@
       const isAuthenticated = Boolean(user);
       return {
         user,
+        profile,
         session,
         isAuthenticated,
         role,
