@@ -47,7 +47,7 @@
       setMessage(message, 'Sending reset email...', 'info');
 
       const email = byId('email').value;
-      const redirectTo = `${window.location.origin}/auth/reset.html`;
+      const redirectTo = 'https://www.cheekycommodoregamer.co.uk/auth/reset.html';
 
       const { error } = await sendPasswordReset(email, redirectTo);
 

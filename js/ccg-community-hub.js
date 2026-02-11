@@ -45,10 +45,12 @@
   }
 
   function classifyErrorMessage(error, fallback) {
-    const status = Number(error && (error.status || error.code || error.statusCode));
+    const code = String(error && (error.code || '')).toUpperCase();
+    const status = Number(error && (error.status || error.statusCode || (Number.isFinite(Number(code)) ? Number(code) : NaN)));
     if (status === 401) return 'Login required.';
     if (status === 403) return 'Permission denied.';
     if (status === 404) return 'Endpoint missing / not deployed.';
+    if (code === 'PGRST205') return 'Missing table in schema cache (PGRST205).';
     if (status >= 500) return 'Server error.';
     return fallback || 'Unable to complete request.';
   }
@@ -579,13 +581,7 @@
       state.gameByKey.set((game.title + ' — ' + game.slug).toLowerCase(), game);
     });
 
-    const elements = getCommentElements();
-    if (!elements.list) return;
-    elements.list.innerHTML = normalized.map(function (game) {
-      const label = game.title + ' (' + game.system + ') — ' + game.slug;
-      return '<option value="' + esc(label) + '"></option>';
-    }).join('');
-
+    // Datalist intentionally disabled: custom typeahead UI is the single selector surface.
     state.gamesLoaded = true;
     console.info('[CCG-COMMUNITY-HUB] Games dropdown populated', {
       endpoint: HUB_ENDPOINTS.gameLibrary,

@@ -17,6 +17,22 @@
     const CSV_QUESTIONS_URL = '/data/questions.csv';
     const MIN_PACK_COUNT = 2;
 
+    const QUIZ_PACK_DISPLAY_NAME_MAP = Object.freeze({
+        '1': 'Game Questions',
+        '2': 'Picture Round',
+        '3': 'C64 SID Tunes 1',
+        '4': 'Amiga Music 1',
+        '5': 'Name That Composer',
+        '6': 'Game Box Hangman',
+        '7': 'C64 SID Tunes 2'
+    });
+
+    function mapPackDisplayName(id, fallbackName) {
+        const key = String(id || '').trim();
+        return QUIZ_PACK_DISPLAY_NAME_MAP[key] || fallbackName || 'Quiz Pack';
+    }
+
+
     let cachedSets = [];
     let localData = null;
     const questionCache = new Map();
@@ -135,7 +151,7 @@
                 if (!id) return;
                 packsById.set(String(id), {
                     id: String(id),
-                    name: row['Quiz Name'] || row['Name'] || `Pack ${id}`,
+                    name: mapPackDisplayName(id, row['Quiz Name'] || row['Name'] || `Pack ${id}`),
                     icon: row['Icon'] || '',
                     difficulty: row['Difficulty'] || row['Level'] || '',
                     description: row['Description'] || '',
@@ -151,7 +167,7 @@
                 if (!packsById.has(id)) {
                     packsById.set(id, {
                         id,
-                        name: `Pack ${id}`,
+                        name: mapPackDisplayName(id, `Pack ${id}`),
                         icon: '',
                         difficulty: '',
                         description: '',
@@ -323,7 +339,7 @@
 
                 return {
                     id: String(id),
-                    name: pack.name || pack.title || 'Quiz Pack',
+                    name: mapPackDisplayName(id, pack.name || pack.title || 'Quiz Pack'),
                     difficulty: pack.difficulty || 'Normal',
                     description: pack.description || pack.tagline || '',
                     icon: pack.icon || '',
@@ -406,7 +422,7 @@
         lastLoadContext = { source: 'local', status: 'loading', error: null, fallback: false };
 
         const local = normaliseLocalPacks(await fetchLocalData());
-        cachedSets = local;
+        cachedSets = local.slice().sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), undefined, { sensitivity: 'base' }));
 
         // Preserve fallback context from fetchLocalData while ensuring status is ready
         lastLoadContext = Object.assign({}, lastLoadContext, { status: 'ready' });
