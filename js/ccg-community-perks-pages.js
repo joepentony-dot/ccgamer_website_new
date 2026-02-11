@@ -35,25 +35,20 @@
   function memberCard(row) {
     return '<article class="ccg-community-card ccg-perks-card">'
       + '<h3>@' + esc(row.username || 'member') + '</h3>'
-      + '<p class="ccg-community-muted">REP ' + Number(row.rep_points || 0) + ' · Lvl ' + Number(row.rep_level || 1) + '</p>'
-      + '<p>' + esc(row.level_title || 'New Recruit') + '</p>'
-      + '<p class="ccg-supporter-flair ccg-supporter-flair--' + esc(row.supporter_level || 'none') + '">'
-      + (row.supporter_level && row.supporter_level !== 'none' ? ('Supporter: ' + esc(row.supporter_level)) : 'Community member')
+      + '<p class="ccg-community-muted">REP ' + Number(row.score || 0) + ' · Lvl ' + Number(1) + '</p>'
+      + '<p>' + esc('Community Member') + '</p>'
+      + '<p class="ccg-supporter-flair ccg-supporter-flair--' + esc('none') + '">'
+      + 'Community member'
       + '</p>'
       + '</article>';
   }
 
   async function loadRankingsRows(supabase) {
-    const primary = await supabase
-      .from('community_rankings')
-      .select('user_id,username,rep_points,rep_level,level_title,supporter_level')
-      .order('rep_points', { ascending: false })
-      .limit(24);
-
-    if (!primary.error) return primary.data || [];
-
     const commentsRes = await supabase.from('comments').select('user_id');
-    if (commentsRes.error) throw primary.error;
+    if (commentsRes.error) throw commentsRes.error;
+
+    const ratingsRes = await supabase.from('ratings').select('user_id');
+    if (ratingsRes.error) throw ratingsRes.error;
 
     const profilesRes = await supabase.from('profiles').select('id,username');
     if (profilesRes.error) throw profilesRes.error;
@@ -94,26 +89,26 @@
   async function loadBadgeRows(supabase) {
     const primary = await supabase
       .from('badge_definitions')
-      .select('slug,name,description,category,rarity')
+      .select('id,slug,name,description,rarity,rule_json')
       .eq('active', true)
-      .order('category', { ascending: true })
+      .order('name', { ascending: true })
       .limit(120);
 
     if (!primary.error) return primary.data || [];
 
-    const fallback = await supabase.from('user_badges').select('badge_key').limit(120);
+    const fallback = await supabase.from('user_badges').select('badge_code').limit(120);
     if (fallback.error) throw primary.error;
 
     const unique = new Map();
     (fallback.data || []).forEach(function (row) {
-      const key = row.badge_key || row.badge_key;
+      const key = row.badge_code;
       if (!key || unique.has(key)) return;
       unique.set(key, {
         slug: key,
-        name: key.replace(/[-_]/g, ' '),
+        name: String(key).replace(/[-_]/g, ' '),
         description: 'Community achievement badge.',
-        category: 'activity',
-        rarity: 'common'
+        rarity: 'common',
+        rule_json: {}
       });
     });
     return Array.from(unique.values());
@@ -126,7 +121,7 @@
       mount.innerHTML = rows.length ? rows.map(function (badge) {
         return '<article class="ccg-community-card ccg-perks-card">'
           + '<h3>' + esc(badge.name || badge.slug) + '</h3>'
-          + '<p class="ccg-community-muted">' + esc((badge.category || 'activity') + ' · ' + (badge.rarity || 'common')) + '</p>'
+          + '<p class="ccg-community-muted">' + esc((badge.rarity || 'common')) + '</p>'
           + '<p>' + esc(badge.description || '') + '</p>'
           + '</article>';
       }).join('') : '<section class="ccg-community-card"><p class="ccg-community-muted">Badge catalog is empty.</p></section>';
@@ -139,7 +134,7 @@
   async function loadChallengesRows(supabase) {
     const primary = await supabase
       .from('challenges')
-      .select('id,title,description,is_supporter_only,start_at,end_at,reward_json')
+      .select('id,title,description,supporter_only,start_at,end_at,reward_json,rules_json')
       .eq('active', true)
       .order('start_at', { ascending: false })
       .limit(32);
@@ -172,7 +167,7 @@
         const progress = progressById[challenge.id];
         return '<article class="ccg-community-card ccg-perks-card">'
           + '<h3>' + esc(challenge.title) + '</h3>'
-          + '<p class="ccg-community-muted">' + (challenge.is_supporter_only ? 'Supporter-only bonus lane' : 'Open challenge') + '</p>'
+          + '<p class="ccg-community-muted">' + (challenge.supporter_only ? 'Supporter-only bonus lane' : 'Open challenge') + '</p>'
           + '<p>' + esc(challenge.description || '') + '</p>'
           + '<p class="ccg-community-muted">Rewards: ' + esc(JSON.stringify(challenge.reward_json || {})) + '</p>'
           + '<p class="ccg-community-muted">Progress: ' + esc(progress ? JSON.stringify(progress.progress_json || {}) : 'Not started') + '</p>'

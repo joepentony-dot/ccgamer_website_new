@@ -160,8 +160,8 @@
 
     return '<div class="mini-game-tile-grid">' + list.map(function (item) {
       return '' +
-        '<a class="mini-game-tile" href="' + gameLink(item.game_slug) + '">' +
-        '  <h3 class="mini-game-tile__title">' + esc(item.game_slug || 'Unknown game') + '</h3>' +
+        '<a class="mini-game-tile" href="' + gameLink(item.game_key) + '">' +
+        '  <h3 class="mini-game-tile__title">' + esc(item.game_key || 'Unknown game') + '</h3>' +
         '  <dl class="mini-game-tile__stats">' +
         '    <div><dt>Avg</dt><dd>' + (Number(item.avg_rating || 0) ? Number(item.avg_rating).toFixed(2) : '—') + '</dd></div>' +
         '    <div><dt>Ratings</dt><dd>' + Number(item.rating_count || 0) + '</dd></div>' +
@@ -187,11 +187,11 @@
 
       let details = '';
       if (row.type === 'badge') {
-        details = 'earned <span class="ccg-badge ccg-badge--icon">🏆 ' + esc(row.badge_key || 'Badge') + '</span>';
+        details = 'earned <span class="ccg-badge ccg-badge--icon">🏆 ' + esc(row.badge_code || 'Badge') + '</span>';
       } else if (row.type === 'rating') {
-        details = 'rated <a href="' + gameLink(row.game_slug) + '">' + esc(row.game_slug || 'a game') + '</a> · ' + Number(row.rating || 0) + '/10';
+        details = 'rated <a href="' + gameLink(row.game_key) + '">' + esc(row.game_key || 'a game') + '</a> · ' + Number(row.rating || 0) + '/10';
       } else {
-        details = 'commented on <a href="' + gameLink(row.game_slug) + '">' + esc(row.game_slug || 'a game') + '</a>';
+        details = 'commented on <a href="' + gameLink(row.game_key) + '">' + esc(row.game_key || 'a game') + '</a>';
       }
 
       return '' +
@@ -238,25 +238,25 @@
     const map = new Map();
 
     ratings.forEach(function (row) {
-      const slug = row.game_slug;
+      const slug = row.game_key;
       if (!slug) return;
-      const item = map.get(slug) || { game_slug: slug, rating_sum: 0, rating_count: 0, comment_count: 0 };
+      const item = map.get(slug) || { game_key: slug, rating_sum: 0, rating_count: 0, comment_count: 0 };
       item.rating_sum += Number(row.rating || 0);
       item.rating_count += 1;
       map.set(slug, item);
     });
 
     comments.forEach(function (row) {
-      const slug = row.game_slug;
+      const slug = row.game_key;
       if (!slug) return;
-      const item = map.get(slug) || { game_slug: slug, rating_sum: 0, rating_count: 0, comment_count: 0 };
+      const item = map.get(slug) || { game_key: slug, rating_sum: 0, rating_count: 0, comment_count: 0 };
       item.comment_count += 1;
       map.set(slug, item);
     });
 
     return Array.from(map.values()).map(function (item) {
       return {
-        game_slug: item.game_slug,
+        game_key: item.game_key,
         avg_rating: item.rating_count ? item.rating_sum / item.rating_count : 0,
         rating_count: item.rating_count,
         comment_count: item.comment_count,
@@ -268,7 +268,7 @@
   async function fallbackTopRated(supabase, minCount) {
     const response = await supabase
       .from('ratings')
-      .select('game_slug,rating')
+      .select('game_key,rating')
       .limit(8000);
 
     if (response.error) throw response.error;
@@ -286,7 +286,7 @@
   async function fallbackMostDiscussed(supabase, days) {
     const response = await supabase
       .from('comments')
-      .select('game_slug,created_at')
+      .select('game_key,created_at')
       .gte('created_at', nowMinusDays(days))
       .limit(8000);
 
@@ -300,8 +300,8 @@
 
   async function fallbackTrending(supabase, days) {
     const [ratingsRes, commentsRes] = await Promise.all([
-      supabase.from('ratings').select('game_slug,rating,created_at').gte('created_at', nowMinusDays(days)).limit(8000),
-      supabase.from('comments').select('game_slug,created_at').gte('created_at', nowMinusDays(days)).limit(8000)
+      supabase.from('ratings').select('game_key,rating,created_at').gte('created_at', nowMinusDays(days)).limit(8000),
+      supabase.from('comments').select('game_key,created_at').gte('created_at', nowMinusDays(days)).limit(8000)
     ]);
 
     if (ratingsRes.error) throw ratingsRes.error;
@@ -314,9 +314,9 @@
 
   async function fallbackLatestActivity(supabase) {
     const [ratingsRes, commentsRes, badgesRes] = await Promise.all([
-      supabase.from('ratings').select('user_id,game_slug,rating,created_at').order('created_at', { ascending: false }).limit(HUB_LIMITS.activity),
-      supabase.from('comments').select('user_id,game_slug,created_at').order('created_at', { ascending: false }).limit(HUB_LIMITS.activity),
-      supabase.from('user_badges').select('user_id,badge_key,awarded_at').order('awarded_at', { ascending: false }).limit(HUB_LIMITS.activity)
+      supabase.from('ratings').select('user_id,game_key,rating,created_at').order('created_at', { ascending: false }).limit(HUB_LIMITS.activity),
+      supabase.from('comments').select('user_id,game_key,created_at').order('created_at', { ascending: false }).limit(HUB_LIMITS.activity),
+      supabase.from('user_badges').select('user_id,badge_code,awarded_at').order('awarded_at', { ascending: false }).limit(HUB_LIMITS.activity)
     ]);
 
     if (ratingsRes.error) throw ratingsRes.error;
@@ -326,15 +326,15 @@
     const raw = [];
 
     (ratingsRes.data || []).forEach(function (row) {
-      raw.push({ type: 'rating', user_id: row.user_id, game_slug: row.game_slug, rating: row.rating, created_at: row.created_at });
+      raw.push({ type: 'rating', user_id: row.user_id, game_key: row.game_key, rating: row.rating, created_at: row.created_at });
     });
 
     (commentsRes.data || []).forEach(function (row) {
-      raw.push({ type: 'comment', user_id: row.user_id, game_slug: row.game_slug, created_at: row.created_at });
+      raw.push({ type: 'comment', user_id: row.user_id, game_key: row.game_key, created_at: row.created_at });
     });
 
     badgeRows.forEach(function (row) {
-      raw.push({ type: 'badge', user_id: row.user_id, badge_key: row.badge_key, created_at: row.awarded_at });
+      raw.push({ type: 'badge', user_id: row.user_id, badge_code: row.badge_code, created_at: row.awarded_at });
     });
 
     return raw
@@ -348,7 +348,7 @@
     const [ratingsRes, commentsRes, badgesRes] = await Promise.all([
       supabase.from('ratings').select('user_id,created_at').gte('created_at', since).limit(12000),
       supabase.from('comments').select('user_id,created_at').gte('created_at', since).limit(12000),
-      supabase.from('user_badges').select('user_id,badge_key,awarded_at').gte('awarded_at', since).limit(12000)
+      supabase.from('user_badges').select('user_id,badge_code,awarded_at').gte('awarded_at', since).limit(12000)
     ]);
 
     if (ratingsRes.error) throw ratingsRes.error;
@@ -381,7 +381,7 @@
         if (!item) return;
         item.badge_count += 1;
         item.points += 5;
-        if (row.badge_key) item.badges.push(row.badge_key);
+        if (row.badge_code) item.badges.push(row.badge_code);
       });
     }
 
@@ -408,13 +408,11 @@
   }
 
   async function fetchHubData(supabase) {
-    const [rpcTrending, rpcTopRated, rpcDiscussed, rpcMembers, rpcActivity] = await Promise.all([
-      window.ccgSupabase.callRpcSafe(supabase, 'trending_games', { days: 7 }),
-      window.ccgSupabase.callRpcSafe(supabase, 'top_rated_games', { min_count: HUB_LIMITS.minRatingCount }),
-      window.ccgSupabase.callRpcSafe(supabase, 'most_discussed_games', { days: 30 }),
-      window.ccgSupabase.callRpcSafe(supabase, 'top_members', { days: 30 }),
-      window.ccgSupabase.callRpcSafe(supabase, 'latest_activity', { row_limit: HUB_LIMITS.activity })
-    ]);
+    const rpcTrending = { data: [] };
+    const rpcTopRated = { data: [] };
+    const rpcDiscussed = { data: [] };
+    const rpcMembers = { data: [] };
+    const rpcActivity = { data: [] };
 
     const output = {
       trending: [],
@@ -454,13 +452,13 @@
     if (!rpcMembers.data || !rpcMembers.data.length) {
       const memberIds = output.members.map(function (row) { return row.user_id; }).filter(Boolean);
       if (memberIds.length) {
-        const badgesRes = await supabase.from('user_badges').select('user_id,badge_key').in('user_id', memberIds).limit(500);
+        const badgesRes = await supabase.from('user_badges').select('user_id,badge_code').in('user_id', memberIds).limit(500);
         if (!badgesRes.error) {
           const byUser = new Map();
           (badgesRes.data || []).forEach(function (row) {
-            if (!row.user_id || !row.badge_key) return;
+            if (!row.user_id || !row.badge_code) return;
             if (!byUser.has(row.user_id)) byUser.set(row.user_id, []);
-            byUser.get(row.user_id).push(row.badge_key);
+            byUser.get(row.user_id).push(row.badge_code);
           });
           output.members = output.members.map(function (row) {
             return Object.assign({}, row, { badges: byUser.get(row.user_id) || row.badges || [] });
@@ -470,10 +468,10 @@
     }
 
     const [repRes, spotlightRes, challengeRes, loungeRes] = await Promise.all([
-      supabase.from('community_rankings').select('user_id,username,rep_points,rep_level,supporter_level').order('rep_points', { ascending: false }).limit(8),
-      supabase.from('supporter_spotlight').select('user_id,reason,profiles(username)').order('created_at', { ascending: false }).limit(6),
-      supabase.from('challenges').select('id,title,description,is_supporter_only,end_at').eq('active', true).order('start_at', { ascending: false }).limit(6),
-      supabase.from('supporter_lounge_posts').select('id,title,body,is_supporter_only,created_at').order('created_at', { ascending: false }).limit(5)
+      Promise.resolve({ data: [] }),
+      Promise.resolve({ data: [] }),
+      supabase.from('challenges').select('id,title,description,supporter_only,end_at').eq('active', true).order('start_at', { ascending: false }).limit(6),
+      Promise.resolve({ data: [] })
     ]);
 
     output.hallOfFame = repRes.error ? [] : (repRes.data || []);
@@ -602,9 +600,9 @@
       : '<span class="ccg-comment-card__avatar ccg-comment-card__avatar--fallback" aria-hidden="true">Ω</span>';
 
     const own = viewer && viewer.user && viewer.user.id === comment.user_id;
-    const text = comment.is_deleted
+    const text = comment.deleted
       ? '<em>This comment was removed.</em>'
-      : esc(comment.content || '');
+      : esc(comment.body || '');
 
     return '' +
       '<article class="ccg-comment-card" data-comment-id="' + esc(comment.id) + '">' +
@@ -618,7 +616,7 @@
       '    </div>' +
       '  </header>' +
       '  <p class="ccg-comment-card__body">' + text + '</p>' +
-      (own && !comment.is_deleted
+      (own && !comment.deleted
         ? '<div class="ccg-comment-card__actions"><button type="button" data-action="edit">Edit</button><button type="button" data-action="delete">Delete</button></div>'
         : '') +
       '</article>';
@@ -694,7 +692,7 @@
 
         const payload = {
           user_id: fresh.user.id,
-          game_slug: state.selectedGame.slug,
+          game_key: state.selectedGame.slug,
           game_key: normalizeGameKey(state.selectedGame),
           content: content
         };
@@ -746,7 +744,7 @@
           if (action === 'delete') {
             const confirmed = window.confirm('Delete your comment?');
             if (!confirmed) return;
-            await supabase.from('comments').update({ is_deleted: true, content: '[deleted]', updated_at: new Date().toISOString() }).eq('id', commentId).eq('user_id', viewer.user.id);
+            await supabase.from('comments').update({ deleted: true, content: '[deleted]', updated_at: new Date().toISOString() }).eq('id', commentId).eq('user_id', viewer.user.id);
           }
 
           await loadComments(true);
@@ -778,8 +776,8 @@
       const response = await runWithRetry(function () {
         return supabase
           .from('comments')
-          .select('id,user_id,content,created_at,updated_at,is_deleted,game_slug,game_key,profiles(username,avatar_url)', { count: 'exact' })
-          .or('game_key.eq.' + normalizeGameKey(state.selectedGame) + ',game_slug.eq.' + state.selectedGame.slug)
+          .select('id,user_id,body,created_at,game_key', { count: 'exact' })
+          .eq('game_key', normalizeGameKey(state.selectedGame))
           .order('created_at', { ascending: false })
           .range(rangeStart, rangeEnd)
           .then(function (queryResponse) {
@@ -1044,7 +1042,7 @@
         return '<div class="member-row__main"><a class="member-row__name" href="' + profileLink(username) + '">@' + esc(username) + '</a></div><div class="member-row__meta"><span>' + esc(row.reason || 'Featured for community impact') + '</span></div>';
       }));
       setSectionState('ccg-hub-weekly-challenges', renderSimpleList(data.weeklyChallenges, 'No active weekly challenges right now.', function (row) {
-        return '<div class="member-row__main"><strong>' + esc(row.title || 'Challenge') + '</strong><span class="member-row__points">' + (row.is_supporter_only ? 'Supporter only' : 'Open') + '</span></div><div class="member-row__meta"><span>' + esc(row.description || '') + '</span></div>';
+        return '<div class="member-row__main"><strong>' + esc(row.title || 'Challenge') + '</strong><span class="member-row__points">' + (row.supporter_only ? 'Supporter only' : 'Open') + '</span></div><div class="member-row__meta"><span>' + esc(row.description || '') + '</span></div>';
       }));
       setSectionState('ccg-hub-supporter-lounge', renderSimpleList(data.supporterLounge, 'No lounge posts yet.', function (row) {
         return '<div class="member-row__main"><strong>' + esc(row.title || 'Lounge update') + '</strong></div><div class="member-row__meta"><span>' + esc((row.body || '').slice(0, 140)) + '</span></div>';

@@ -6,7 +6,7 @@
      instead of trapping the UI in "Retrying…".
      =============================================== */
   const COMMENT_ENDPOINTS = {
-    commentsByGame: 'supabase:public.comments?select=*&game_slug=eq.<slug>',
+    commentsByGame: 'supabase:public.comments?select=*&game_key=eq.<slug>',
     postComment: 'supabase:public.comments (insert)',
     latestActivity: 'supabase rpc latest_activity',
     myActivity: 'supabase:public.comments?user_id=eq.<uid>',
@@ -154,9 +154,9 @@
   function commentCard(comment, currentUser, canModerate, badgeHtml, supporterLevel) {
     const profile = comment.profiles || {};
     const username = window.ccgCommunityAuth.esc(profile.username || 'Community member');
-    const content = comment.is_deleted
+    const content = comment.deleted
       ? '<em>This comment has been removed by moderation.</em>'
-      : window.ccgCommunityAuth.esc(comment.content || '');
+      : window.ccgCommunityAuth.esc(comment.body || '');
     const own = currentUser && currentUser.id === comment.user_id;
 
     return '' +
@@ -171,10 +171,10 @@
       '  </header>' +
       '  <p class="ccg-comment-card__body">' + content + '</p>' +
       '  <div class="ccg-comment-card__actions">' +
-      (own && !comment.is_deleted ? '<button type="button" data-action="edit">Edit</button>' : '') +
-      (currentUser && !comment.is_deleted ? '<button type="button" data-action="report">Report</button>' : '') +
-      (currentUser && !comment.is_deleted ? '<button type="button" data-action="helpful">Helpful</button>' : '') +
-      (canModerate && !comment.is_deleted ? '<button type="button" data-action="delete">Soft delete</button>' : '') +
+      (own && !comment.deleted ? '<button type="button" data-action="edit">Edit</button>' : '') +
+      (currentUser && !comment.deleted ? '<button type="button" data-action="report">Report</button>' : '') +
+      (currentUser && !comment.deleted ? '<button type="button" data-action="helpful">Helpful</button>' : '') +
+      (canModerate && !comment.deleted ? '<button type="button" data-action="delete">Soft delete</button>' : '') +
       '  </div>' +
       '</article>';
   }
@@ -273,8 +273,8 @@
     const { data, error } = await runQueryWithAuthRetry(function () {
       return supabase
         .from('comments')
-        .select('id,user_id,content,is_deleted,created_at,updated_at,profiles(username,avatar_url,role)')
-        .or('game_key.eq.' + normalizeGameKey({ slug: slug, id: state.activeGameId }) + ',game_slug.eq.' + slug)
+        .select('id,user_id,body,created_at')
+        .eq('game_key', normalizeGameKey({ slug: slug, id: state.activeGameId }))
         .order('created_at', { ascending: false })
         .limit(100);
     });
@@ -297,9 +297,18 @@
       return;
     }
 
-    const comments = data || [];
+    const comments = (data || []).map(function (row) { return Object.assign({ deleted: false }, row); });
     logCommentsLoaded(comments.length, slug);
+
     const userIds = Array.from(new Set(comments.map(function (comment) { return comment.user_id; }).filter(Boolean)));
+    const profileMap = {};
+    if (userIds.length) {
+      const profileRes = await runQueryWithAuthRetry(function () {
+        return supabase.from('profiles').select('id,username,avatar_url,role').in('id', userIds);
+      });
+      (profileRes.data || []).forEach(function (row) { profileMap[row.id] = row; });
+      comments.forEach(function (row) { row.profiles = profileMap[row.user_id] || {}; });
+    }
     const badgeMap = {};
     const supporterMap = {};
 
@@ -316,7 +325,7 @@
       const badgeResult = await runQueryWithAuthRetry(function () {
         return supabase
           .from('user_badges')
-          .select('user_id,badge_key,awarded_at')
+          .select('user_id,badge_code,awarded_at')
           .in('user_id', userIds);
       });
       const badgeRows = badgeResult.data || [];
@@ -396,7 +405,7 @@
           user_id: liveContext.user.id,
           game_slug: slug,
           game_key: normalizeGameKey({ slug: slug, id: state.activeGameId }),
-          content: content
+          body: content
         });
       });
 
@@ -473,7 +482,7 @@
           const updated = window.prompt('Edit your comment:', currentText);
           if (!updated || !updated.trim()) return;
           const editResult = await runQueryWithAuthRetry(function () {
-            return supabase.from('comments').update({ content: updated.trim() }).eq('id', commentId).eq('user_id', user.id);
+            return supabase.from('comments').update({ body: updated.trim() }).eq('id', commentId).eq('user_id', user.id);
           });
           if (editResult.error) {
             notify(explainError(editResult.error, 'Unable to update comment.'), 'error');
@@ -486,7 +495,7 @@
 
         if (action === 'delete' && canModerate) {
           const deleteResult = await runQueryWithAuthRetry(function () {
-            return supabase.from('comments').update({ is_deleted: true, content: '[deleted]' }).eq('id', commentId);
+            return supabase.from('comments').update({ deleted: true, body: '[deleted]' }).eq('id', commentId);
           });
           if (deleteResult.error) {
             notify(explainError(deleteResult.error, 'Unable to delete comment.'), 'error');
