@@ -1875,8 +1875,10 @@ function setupFooterSignatureRotator() {
         const pageType = root?.getAttribute("data-ccg-page") || "";
         const path = window.location.pathname || "";
         const isTargetPage = pageType === "home"
+            || pageType.includes("games-index")
             || pageType.includes("genre")
             || pageType.includes("collection")
+            || /\/games\/(index\.html)?$/.test(path)
             || path.includes("/games/genres/")
             || path.includes("/games/collections/");
 
