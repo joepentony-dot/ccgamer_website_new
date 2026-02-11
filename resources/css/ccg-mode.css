@@ -327,6 +327,18 @@ body[data-ccg-mode] .ccg-mode-toggle__pill {
     overflow: visible;
 }
 
+html[data-ccg-page="home"] body[data-ccg-mode] .ccg-header-inner,
+html[data-ccg-page="home"] body[data-ccg-mode] .ccg-header-actions {
+    overflow: clip;
+}
+
+@supports not (overflow: clip) {
+    html[data-ccg-page="home"] body[data-ccg-mode] .ccg-header-inner,
+    html[data-ccg-page="home"] body[data-ccg-mode] .ccg-header-actions {
+        overflow: hidden;
+    }
+}
+
 /* ============================================================
    MODE TOGGLE — NEON WOW PILL
 ============================================================ */
