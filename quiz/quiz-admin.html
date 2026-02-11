@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz Admin Editor</title>
+  <link rel="stylesheet" href="css/quiz-admin.css" />
+</head>
+<body>
+  <main class="admin-shell">
+    <header class="admin-header">
+      <h1>CCG Quiz Admin Editor</h1>
+      <p>Static browser editor for <code>quiz-data.json</code>. No server writes are made.</p>
+    </header>
+
+    <section class="admin-toolbar">
+      <button id="admin-load-default" type="button">Load quiz-data.json</button>
+      <label class="file-label">
+        Import JSON
+        <input id="admin-import-json" type="file" accept="application/json,.json" />
+      </label>
+      <button id="admin-backup-json" type="button">Backup JSON</button>
+      <button id="admin-download-json" type="button">Download JSON</button>
+      <button id="admin-validate-json" type="button">Validate</button>
+    </section>
+
+    <section id="admin-messages" class="admin-messages" aria-live="polite"></section>
+
+    <datalist id="admin-audio-files"></datalist>
+
+    <section class="admin-grid">
+      <aside class="admin-pane admin-packs">
+        <div class="pane-head">
+          <h2>Packs</h2>
+          <button id="admin-add-pack" type="button">+ Add Pack</button>
+        </div>
+        <ul id="admin-pack-list" class="pack-list"></ul>
+      </aside>
+
+      <section class="admin-pane admin-editor">
+        <div class="pane-head">
+          <h2 id="admin-pack-title">Select a pack</h2>
+          <button id="admin-add-question" type="button" disabled>+ Add Question</button>
+        </div>
+
+        <form id="admin-pack-form" class="pack-form" autocomplete="off">
+          <label>Pack ID <input id="pack-id" type="number" /></label>
+          <label>Slug <input id="pack-slug" type="text" /></label>
+          <label>Title <input id="pack-title" type="text" /></label>
+          <label>Name (legacy) <input id="pack-name" type="text" /></label>
+          <label>Type
+            <select id="pack-type">
+              <option value="multiple-choice">multiple-choice</option>
+              <option value="hangman">hangman</option>
+            </select>
+          </label>
+          <label>Question Count <input id="pack-count" type="number" min="0" /></label>
+          <label>Enabled <input id="pack-enabled" type="checkbox" /></label>
+          <label>External Href <input id="pack-href" type="text" placeholder="pack-6.html" /></label>
+          <label>Audio Base Path <input id="pack-audio-base" type="text" placeholder="audio/quiz_7/" /></label>
+          <div class="pack-actions">
+            <button id="admin-save-pack" type="button">Save Pack</button>
+            <button id="admin-delete-pack" type="button" class="danger">Delete Pack</button>
+          </div>
+        </form>
+
+        <div class="questions-wrap">
+          <h3>Questions</h3>
+          <ol id="admin-question-list" class="question-list"></ol>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="js/quiz-admin.js"></script>
+</body>
+</html>

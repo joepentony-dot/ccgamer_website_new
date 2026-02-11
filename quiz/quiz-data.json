@@ -1,9 +1,17 @@
 {
   "packs": [
     {
-      "id": "1",
+      "id": 1,
+      "slug": "commodore-quiz",
+      "title": "Commodore Quiz",
       "name": "Commodore Quiz",
+      "type": "multiple-choice",
       "difficulty": "Medium",
+      "description": "",
+      "icon": "\ud83e\udde0\u2753",
+      "questionCount": 20,
+      "enabled": true,
+      "config": {},
       "questions": [
         {
           "question": "C64 Ghostbusters coder with David Crane",
@@ -225,14 +233,20 @@
           "correctIndex": 3,
           "id": "1-20"
         }
-      ],
-      "icon": "\ud83e\udde0\u2753",
-      "questionCount": 20
+      ]
     },
     {
-      "id": "2",
+      "id": 2,
+      "slug": "guess-which-game",
+      "title": "Guess Which Game",
       "name": "Guess Which Game",
+      "type": "multiple-choice",
       "difficulty": "Medium",
+      "description": "",
+      "icon": "\ud83d\udc41\ufe0f\ud83d\uddbc\ufe0f",
+      "questionCount": 20,
+      "enabled": true,
+      "config": {},
       "questions": [
         {
           "question": "Which Game Is This",
@@ -474,14 +488,20 @@
           "imageUrl": "images/quiz/wizball-02.png",
           "id": "2-20"
         }
-      ],
-      "icon": "\ud83d\udc41\ufe0f\ud83d\uddbc\ufe0f",
-      "questionCount": 20
+      ]
     },
     {
-      "id": "3",
+      "id": 3,
+      "slug": "commodore-64-sid",
+      "title": "Commodore 64 SID",
       "name": "Commodore 64 SID",
+      "type": "multiple-choice",
       "difficulty": "Medium",
+      "description": "",
+      "icon": "\ud83c\udfb5\ud83d\udd79\ufe0f",
+      "questionCount": 20,
+      "enabled": true,
+      "config": {},
       "questions": [
         {
           "question": "Name That Game",
@@ -723,14 +743,20 @@
           "audioUrl": "audio/quiz/sid-hawkeye.mp3",
           "id": "3-20"
         }
-      ],
-      "icon": "\ud83c\udfb5\ud83d\udd79\ufe0f",
-      "questionCount": 20
+      ]
     },
     {
-      "id": "4",
+      "id": 4,
+      "slug": "amiga-music",
+      "title": "Amiga Music",
       "name": "Amiga Music",
+      "type": "multiple-choice",
       "difficulty": "Medium",
+      "description": "",
+      "icon": "\ud83c\udfb5\ud83d\udcbe",
+      "questionCount": 20,
+      "enabled": true,
+      "config": {},
       "questions": [
         {
           "question": "Name That Game",
@@ -972,14 +998,20 @@
           "audioUrl": "audio/quiz/amiga-gods.mp3",
           "id": "4-20"
         }
-      ],
-      "icon": "\ud83c\udfb5\ud83d\udcbe",
-      "questionCount": 20
+      ]
     },
     {
-      "id": "5",
+      "id": 5,
+      "slug": "sid-chip-wizards",
+      "title": "SID Chip Wizards",
       "name": "SID Chip Wizards",
+      "type": "multiple-choice",
       "difficulty": "Medium",
+      "description": "",
+      "icon": "\ud83c\udfb5",
+      "questionCount": 20,
+      "enabled": true,
+      "config": {},
       "questions": [
         {
           "question": "Which Legend Is This",
@@ -1241,9 +1273,1689 @@
           "gameName": "Crazy Comets",
           "id": "5-20"
         }
-      ],
-      "icon": "\ud83c\udfb5",
-      "questionCount": 20
+      ]
+    },
+    {
+      "id": 6,
+      "slug": "game-box-hangman",
+      "title": "Game Box Hangman",
+      "name": "Game Box Hangman",
+      "type": "hangman",
+      "questionCount": 0,
+      "enabled": true,
+      "externalHref": "pack-6.html",
+      "config": {
+        "launchMode": "external-page"
+      }
+    },
+    {
+      "id": 7,
+      "slug": "c64-music",
+      "title": "C64 Music",
+      "name": "C64 Music",
+      "type": "multiple-choice",
+      "questionCount": 20,
+      "enabled": true,
+      "config": {
+        "audioBasePath": "audio/quiz_7/"
+      },
+      "questions": [
+        {
+          "question": "Which C64 game is this?",
+          "audio": "c64-backtothefuture.mp3",
+          "options": [
+            "Skool Daze",
+            "Cauldron",
+            "Back to the Future",
+            "Summer Games"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "question": "Which C64 game is this?",
+          "audio": "c64-barbarian.mp3",
+          "options": [
+            "Boulder Dash",
+            "Jet Set Willy",
+            "Creatures",
+            "Barbarian"
+          ],
+          "correctIndex": 3
+        },
+        {
+          "question": "Which C64 game is this?",
+          "audio": "c64-barymcguigan.mp3",
+          "options": [
+            "Boulder Dash",
+            "Skool Daze",
+            "Barry McGuigan World Championship Boxing",
+            "Back to the Future"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "question": "Which C64 game is this?",
+          "audio": "c64-boulderdash.mp3",
+          "options": [
+            "Boulder Dash",
+            "Cauldron",
+            "Little Computer People",
+            "Barbarian"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "question": "Which C64 game is this?",
+          "audio": "c64-cauldron.mp3",
+          "options": [
+            "Spy vs Spy",
+            "Back to the Future",
+            "Barry McGuigan World Championship Boxing",
+            "Cauldron"
+          ],
+          "correctIndex": 3
+        },
+        {
+          "question": "Which C64 game is this?",
+          "audio": "c64-creatures.mp3",
+          "options": [
+            "Cauldron",
+            "Super Pipeline",
+            "Creatures",
+            "Son of Blagger"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "question": "Which C64 game is this?",
+          "audio": "c64-decathlon.mp3",
+          "options": [
+            "Decathlon",
+            "Super Off Road",
+            "Robocop",
+            "Summer Games"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "question": "Which C64 game is this?",
+          "audio": "c64-jetsetwilly.mp3",
+          "options": [
+            "Jet Set Willy",
+            "Creatures",
+            "The Last Ninja",
+            "Spy vs Spy"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "question": "Which C64 game is this?",
+          "audio": "c64-lastninja.mp3",
+          "options": [
+            "The Last Ninja",
+            "Decathlon",
+            "Jet Set Willy",
+            "Little Computer People"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "question": "Which C64 game is this?",
+          "audio": "c64-littlecomputerpeople.mp3",
+          "options": [
+            "Little Computer People",
+            "Boulder Dash",
+            "Pirates",
+            "Creatures"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "question": "Which C64 game is this?",
+          "audio": "c64-pirates.mp3",
+          "options": [
+            "Jet Set Willy",
+            "The Last Ninja",
+            "Cauldron",
+            "Pirates"
+          ],
+          "correctIndex": 3
+        },
+        {
+          "question": "Which C64 game is this?",
+          "audio": "c64-pitfall2.mp3",
+          "options": [
+            "The Last Ninja",
+            "Pitfall II",
+            "Robocop",
+            "Creatures"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Which C64 game is this?",
+          "audio": "c64-robocop.mp3",
+          "options": [
+            "Cauldron",
+            "Uridium",
+            "Robocop",
+            "Barbarian"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "question": "Which C64 game is this?",
+          "audio": "c64-skooldaze.mp3",
+          "options": [
+            "The Last Ninja",
+            "Creatures",
+            "Pirates",
+            "Skool Daze"
+          ],
+          "correctIndex": 3
+        },
+        {
+          "question": "Which C64 game is this?",
+          "audio": "c64-sonofblagger.mp3",
+          "options": [
+            "Super Off Road",
+            "Pirates",
+            "Son of Blagger",
+            "Summer Games"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "question": "Which C64 game is this?",
+          "audio": "c64-spyvsspy.mp3",
+          "options": [
+            "Spy vs Spy",
+            "Cauldron",
+            "Boulder Dash",
+            "Super Off Road"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "question": "Which C64 game is this?",
+          "audio": "c64-summergames.mp3",
+          "options": [
+            "Robocop",
+            "Pitfall II",
+            "Summer Games",
+            "Uridium"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "question": "Which C64 game is this?",
+          "audio": "c64-superoffroad.mp3",
+          "options": [
+            "Little Computer People",
+            "Back to the Future",
+            "Super Off Road",
+            "Uridium"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "question": "Which C64 game is this?",
+          "audio": "c64-superpipeline.mp3",
+          "options": [
+            "Summer Games",
+            "Jet Set Willy",
+            "Super Pipeline",
+            "Spy vs Spy"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "question": "Which C64 game is this?",
+          "audio": "c64-uridium.mp3",
+          "options": [
+            "Uridium",
+            "Pirates",
+            "Barry McGuigan World Championship Boxing",
+            "Little Computer People"
+          ],
+          "correctIndex": 0
+        }
+      ]
     }
-  ]
+  ],
+  "questions": {
+    "1": [
+      {
+        "question": "C64 Ghostbusters coder with David Crane",
+        "options": [
+          "Troy Lyndon",
+          "John Twiddy",
+          "Adam Bellin",
+          "Chris Butler"
+        ],
+        "correctIndex": 2,
+        "id": "1-1"
+      },
+      {
+        "question": "Kernkraft 400 sample from Lazy Jones screen",
+        "options": [
+          "Res-Q",
+          "Laser Jones",
+          "Star Dust",
+          "Wild Wafers"
+        ],
+        "correctIndex": 2,
+        "id": "1-2"
+      },
+      {
+        "question": "Paradroid droid with disruptor",
+        "options": [
+          "476",
+          "833",
+          "614",
+          "711"
+        ],
+        "correctIndex": 3,
+        "id": "1-3"
+      },
+      {
+        "question": "Stavros Fasoulas birth country",
+        "options": [
+          "Norway",
+          "Sweden",
+          "Denmark",
+          "Finland"
+        ],
+        "correctIndex": 3,
+        "id": "1-4"
+      },
+      {
+        "question": "Crystal Castles hero",
+        "options": [
+          "Brave Bobby",
+          "Bentley Bear",
+          "Clyde Ratcliffe",
+          "Monty Mole"
+        ],
+        "correctIndex": 1,
+        "id": "1-5"
+      },
+      {
+        "question": "Headus & Footus game",
+        "options": [
+          "Mayhem In Monsterland",
+          "Creatures 2",
+          "Bubble Bobble",
+          "Head Over Heels"
+        ],
+        "correctIndex": 3,
+        "id": "1-6"
+      },
+      {
+        "question": "Bungeling Empire publisher",
+        "options": [
+          "Electronic Arts",
+          "Br\u00f8derbund",
+          "Melbourne House",
+          "Accolade"
+        ],
+        "correctIndex": 1,
+        "id": "1-7"
+      },
+      {
+        "question": "Wizball cat name before Catellite",
+        "options": [
+          "Fudge",
+          "Nifta",
+          "Sputnik",
+          "Zark"
+        ],
+        "correctIndex": 1,
+        "id": "1-8"
+      },
+      {
+        "question": "Double Dragon brothers",
+        "options": [
+          "Rizer & Bill",
+          "Cody & Guy",
+          "Bub & Bob",
+          "Billy & Jimmy"
+        ],
+        "correctIndex": 3,
+        "id": "1-9"
+      },
+      {
+        "question": "Cannon Fodder first three",
+        "options": [
+          "Jim, Dave, Petey",
+          "Jopps, Frank, Joseph",
+          "Stoo, Dave, Larry",
+          "Jools, Jops, Stoo"
+        ],
+        "correctIndex": 3,
+        "id": "1-10"
+      },
+      {
+        "question": "Original Gauntlet character",
+        "options": [
+          "Alizon",
+          "Thunar",
+          "Questor",
+          "Storm Axe"
+        ],
+        "correctIndex": 2,
+        "id": "1-11"
+      },
+      {
+        "question": "H.E.R.O. stands for",
+        "options": [
+          "Healthcare Emergency",
+          "Hazard Evaluation",
+          "Humanitarian Emergency",
+          "Helicopter Rescue"
+        ],
+        "correctIndex": 3,
+        "id": "1-12"
+      },
+      {
+        "question": "Llamasoft founder 'Yak'",
+        "options": [
+          "Jeff Minter",
+          "Tim Stamper",
+          "Tony Crowther",
+          "Richard Darling"
+        ],
+        "correctIndex": 0,
+        "id": "1-13"
+      },
+      {
+        "question": "First Ocean Loader game",
+        "options": [
+          "Green Beret",
+          "Rambo",
+          "Daley Decathlon",
+          "Platoon"
+        ],
+        "correctIndex": 2,
+        "id": "1-14"
+      },
+      {
+        "question": "C64 Friday the 13th publisher",
+        "options": [
+          "Domark",
+          "Ocean",
+          "Firebird",
+          "Activision"
+        ],
+        "correctIndex": 0,
+        "id": "1-15"
+      },
+      {
+        "question": "Geoff Crammond 3D racer",
+        "options": [
+          "Buggy Boy",
+          "Super Off Road",
+          "Power Drift",
+          "Stunt Car Racer"
+        ],
+        "correctIndex": 3,
+        "id": "1-16"
+      },
+      {
+        "question": "What does Guybrush use to stop ghost LeChuck?",
+        "options": [
+          "Grog",
+          "Rum",
+          "Root beer",
+          "Seawater"
+        ],
+        "correctIndex": 2,
+        "id": "1-17"
+      },
+      {
+        "question": "Master of Magic: escape item",
+        "options": [
+          "Amulet of Immortality",
+          "Kingdom of Creatures",
+          "Rescue Daughter",
+          "Magic Scroll"
+        ],
+        "correctIndex": 0,
+        "id": "1-18"
+      },
+      {
+        "question": "Jet Set Willy start room",
+        "options": [
+          "Master Bedroom",
+          "Top Landing",
+          "The Bathroom",
+          "Front Door"
+        ],
+        "correctIndex": 2,
+        "id": "1-19"
+      },
+      {
+        "question": "Yie Ar Kung-Fu hero",
+        "options": [
+          "Buchu",
+          "Tonfun",
+          "Blues",
+          "Oolong"
+        ],
+        "correctIndex": 3,
+        "id": "1-20"
+      }
+    ],
+    "2": [
+      {
+        "question": "Which Game Is This",
+        "options": [
+          "Wizard\u2019s Crown",
+          "Archon",
+          "Battle Chess",
+          "Conquest of the New World"
+        ],
+        "correctIndex": 1,
+        "imageUrl": "images/quiz/archon-03.png",
+        "id": "2-1"
+      },
+      {
+        "question": "Which Game Is This",
+        "options": [
+          "Spelunker",
+          "Rick Dangerous",
+          "Bruce Lee",
+          "Kung-Fu Master"
+        ],
+        "correctIndex": 2,
+        "imageUrl": "images/quiz/bruce-lee-03.png",
+        "id": "2-2"
+      },
+      {
+        "question": "Which Game Is This",
+        "options": [
+          "Bubble Bobble",
+          "Joust",
+          "Snow Bros",
+          "Rodland"
+        ],
+        "correctIndex": 0,
+        "imageUrl": "images/quiz/bubble-bobble-04.png",
+        "id": "2-3"
+      },
+      {
+        "question": "Which Game Is This",
+        "options": [
+          "Defender Of The Crown",
+          "Barbarian",
+          "Champions of Krynn",
+          "King\u2019s Bounty"
+        ],
+        "correctIndex": 0,
+        "imageUrl": "images/quiz/defender-of-the-crown-07.png",
+        "id": "2-4"
+      },
+      {
+        "question": "Which Game Is This",
+        "options": [
+          "Frontier",
+          "Mercenary",
+          "Trade Wars",
+          "Elite"
+        ],
+        "correctIndex": 3,
+        "imageUrl": "images/quiz/elite-04.png",
+        "id": "2-5"
+      },
+      {
+        "question": "Which Game Is This",
+        "options": [
+          "Gary Linekers Superstar",
+          "International Soccer",
+          "Emlyn Hughes",
+          "Kick Off"
+        ],
+        "correctIndex": 2,
+        "imageUrl": "images/quiz/emlyn-hughes-international-soccer-04.png",
+        "id": "2-6"
+      },
+      {
+        "question": "Which Game Is This",
+        "options": [
+          "Bangkok Knights",
+          "Yie Ar Kung-Fu",
+          "Way of the Exploding Fist",
+          "IK+"
+        ],
+        "correctIndex": 3,
+        "imageUrl": "images/quiz/ik-plus-03.png",
+        "id": "2-7"
+      },
+      {
+        "question": "Which Game Is This",
+        "options": [
+          "Hero Of The Golden Talisman",
+          "Montezuma\u2019s Revenge",
+          "Impossible Mission",
+          "The Last Ninja"
+        ],
+        "correctIndex": 2,
+        "imageUrl": "images/quiz/impossible-mission-02.png",
+        "id": "2-8"
+      },
+      {
+        "question": "Which Game Is This",
+        "options": [
+          "Last Ninja",
+          "Shinobi",
+          "Shadow Dancer",
+          "Ninja Rabbits"
+        ],
+        "correctIndex": 0,
+        "imageUrl": "images/quiz/last-ninja-03.png",
+        "id": "2-9"
+      },
+      {
+        "question": "Which Game Is This",
+        "options": [
+          "M.U.L.E",
+          "Stellar Conquest",
+          "The Seven Cities of Gold",
+          "Outpost"
+        ],
+        "correctIndex": 0,
+        "imageUrl": "images/quiz/m-u-l-e-03.png",
+        "id": "2-10"
+      },
+      {
+        "question": "Which Game Is This",
+        "options": [
+          "Zak McKracken",
+          "Leisure Suit Larry",
+          "The Pawn",
+          "Maniac Mansion"
+        ],
+        "correctIndex": 3,
+        "imageUrl": "images/quiz/maniac-mansion-03.png",
+        "id": "2-11"
+      },
+      {
+        "question": "Which Game Is This",
+        "options": [
+          "Robotron",
+          "Paradroid",
+          "Mutant Zone",
+          "Cybernoid"
+        ],
+        "correctIndex": 1,
+        "imageUrl": "images/quiz/paradroid-06.png",
+        "id": "2-12"
+      },
+      {
+        "question": "Which Game Is This",
+        "options": [
+          "Project Firestart",
+          "The Eidolon",
+          "Psi-5 Trading Company",
+          "Forbidden Forest"
+        ],
+        "correctIndex": 0,
+        "imageUrl": "images/quiz/project-firestart-05.png",
+        "id": "2-13"
+      },
+      {
+        "question": "Which Game Is This",
+        "options": [
+          "Choplifter",
+          "Raid on Bungeling Bay",
+          "Airwolf",
+          "Gunship"
+        ],
+        "correctIndex": 1,
+        "imageUrl": "images/quiz/raid-on-bungeling-bay-03.png",
+        "id": "2-14"
+      },
+      {
+        "question": "Which Game Is This",
+        "options": [
+          "R-Type",
+          "Exolon",
+          "Turrican",
+          "Wizball"
+        ],
+        "correctIndex": 2,
+        "imageUrl": "images/quiz/turrican-03.png",
+        "id": "2-15"
+      },
+      {
+        "question": "Which Game Is This",
+        "options": [
+          "Usagi Yojimbo",
+          "Shinobi",
+          "Ninja Rabbits",
+          "Shadow of the Beast"
+        ],
+        "correctIndex": 0,
+        "imageUrl": "images/quiz/usagi-yojimbo-05.png",
+        "id": "2-16"
+      },
+      {
+        "question": "Which Game Is This",
+        "options": [
+          "Skiing",
+          "Winter Challenge",
+          "Slalom",
+          "Winter Games"
+        ],
+        "correctIndex": 3,
+        "imageUrl": "images/quiz/winter-games-04.png",
+        "id": "2-17"
+      },
+      {
+        "question": "Which Game Is This",
+        "options": [
+          "Blackwyche",
+          "Wizard",
+          "The Sentinel",
+          "Atic Atac"
+        ],
+        "correctIndex": 1,
+        "imageUrl": "images/quiz/wizard-electronic-arts-03.png",
+        "id": "2-18"
+      },
+      {
+        "question": "Which Game Is This",
+        "options": [
+          "Exile",
+          "Gorf",
+          "Wizard of Wor",
+          "Robotron"
+        ],
+        "correctIndex": 2,
+        "imageUrl": "images/quiz/wizard-of-wor-04.png",
+        "id": "2-19"
+      },
+      {
+        "question": "Which Game Is This",
+        "options": [
+          "Uridium",
+          "Delta",
+          "Sanxion",
+          "Wizball"
+        ],
+        "correctIndex": 3,
+        "imageUrl": "images/quiz/wizball-02.png",
+        "id": "2-20"
+      }
+    ],
+    "3": [
+      {
+        "question": "Name That Game",
+        "options": [
+          "Monty On The Run",
+          "Son Of Blagger",
+          "Manic Miner",
+          "Jet Set Willy"
+        ],
+        "correctIndex": 0,
+        "audioUrl": "audio/quiz/sid-monty-on-the-run.mp3",
+        "id": "3-1"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Trap Door",
+          "Firelord",
+          "Dan Dare",
+          "Stormlord"
+        ],
+        "correctIndex": 2,
+        "audioUrl": "audio/quiz/sid-dan-dare-pilot-of-the-future.mp3",
+        "id": "3-2"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Heartland",
+          "Pentagram",
+          "Feud",
+          "Shadow of the Beast"
+        ],
+        "correctIndex": 0,
+        "audioUrl": "audio/quiz/sid-heartland.mp3",
+        "id": "3-3"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Thrust",
+          "Arkanoid",
+          "Joe Blade",
+          "Kane"
+        ],
+        "correctIndex": 1,
+        "audioUrl": "audio/quiz/sid-arkanoid.mp3",
+        "id": "3-4"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Skate Or Die",
+          "720\u00b0",
+          "California Games",
+          "Hypersports"
+        ],
+        "correctIndex": 0,
+        "audioUrl": "audio/quiz/sid-skate-or-die.mp3",
+        "id": "3-5"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Ikari Warriors",
+          "Who Dares Wins",
+          "Commando",
+          "Green Beret"
+        ],
+        "correctIndex": 3,
+        "audioUrl": "audio/quiz/sid-green-beret.mp3",
+        "id": "3-6"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Robin Of The Wood",
+          "Sabre Wulf",
+          "The Legend of Blacksilver",
+          "Staff of Karnath"
+        ],
+        "correctIndex": 0,
+        "audioUrl": "audio/quiz/sid-robin-of-the-wood.mp3",
+        "id": "3-7"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "R-Type",
+          "Delta",
+          "Cybernoid II",
+          "Armalyte"
+        ],
+        "correctIndex": 2,
+        "audioUrl": "audio/quiz/sid-cybernoid-ii.mp3",
+        "id": "3-8"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Flash Gordon",
+          "Ghostbusters II",
+          "Barbarian II",
+          "Gauntlet"
+        ],
+        "correctIndex": 0,
+        "audioUrl": "audio/quiz/sid-flash-gordon.mp3",
+        "id": "3-9"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Frak",
+          "Thing On A Spring",
+          "Buggy Boy",
+          "Thing Bounces Back"
+        ],
+        "correctIndex": 1,
+        "audioUrl": "audio/quiz/sid-thing-on-a-spring.mp3",
+        "id": "3-10"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Commando",
+          "Predator",
+          "Platoon",
+          "Rambo II: First Blood Part 2"
+        ],
+        "correctIndex": 3,
+        "audioUrl": "audio/quiz/sid-rambo-first-blood-part-ii.mp3",
+        "id": "3-11"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Parallax",
+          "Wizball",
+          "Mayhem in Monsterland",
+          "Chimera"
+        ],
+        "correctIndex": 1,
+        "audioUrl": "audio/quiz/sid-wizball.mp3",
+        "id": "3-12"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Turbo Out Run",
+          "Out Run",
+          "Pitstop II",
+          "Chase HQ"
+        ],
+        "correctIndex": 0,
+        "audioUrl": "audio/quiz/sid-turbo-outrun.mp3",
+        "id": "3-13"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Fist II",
+          "The Way of the Exploding Fist",
+          "International Karate",
+          "Barbarian"
+        ],
+        "correctIndex": 0,
+        "audioUrl": "audio/quiz/sid-fist-ii-the-legend-continues.mp3",
+        "id": "3-14"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Impossible Mission",
+          "One Man And His Droid",
+          "Auf Wiedersehen Monty",
+          "Bounder"
+        ],
+        "correctIndex": 2,
+        "audioUrl": "audio/quiz/sid-auf-wiedersehen-monty.mp3",
+        "id": "3-15"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Lightforce",
+          "Delta",
+          "Sanxion",
+          "Armalyte"
+        ],
+        "correctIndex": 2,
+        "audioUrl": "audio/quiz/sid-sanxion.mp3",
+        "id": "3-16"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Yie Ar Kung Fu",
+          "IK+",
+          "The Way of the Tiger",
+          "Kung Fu Master"
+        ],
+        "correctIndex": 0,
+        "audioUrl": "audio/quiz/sid-yie-ar-kung-fu.mp3",
+        "id": "3-17"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Spindizzy",
+          "Master Of Magic",
+          "The Staff of Karnath",
+          "Times of Lore"
+        ],
+        "correctIndex": 1,
+        "audioUrl": "audio/quiz/sid-master-of-magic.mp3",
+        "id": "3-18"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Commando",
+          "Ikari Warriors",
+          "Gryzor",
+          "Fernandez Must Die"
+        ],
+        "correctIndex": 0,
+        "audioUrl": "audio/quiz/sid-commando.mp3",
+        "id": "3-19"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Hawkeye",
+          "Turrican",
+          "Flimbo\u2019s Quest",
+          "Hunter\u2019s Moon"
+        ],
+        "correctIndex": 0,
+        "audioUrl": "audio/quiz/sid-hawkeye.mp3",
+        "id": "3-20"
+      }
+    ],
+    "4": [
+      {
+        "question": "Name That Game",
+        "options": [
+          "R-Type",
+          "Alien Breed",
+          "Project-X",
+          "Smash TV"
+        ],
+        "correctIndex": 1,
+        "audioUrl": "audio/quiz/amiga-alienbreed.mp3",
+        "id": "4-1"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Oddworld: Abes Oddysee",
+          "Rick Dangerous",
+          "Dreamweb",
+          "Another World"
+        ],
+        "correctIndex": 3,
+        "audioUrl": "audio/quiz/amiga-anotherworld.mp3",
+        "id": "4-2"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Day Of The Tentacle",
+          "The Dig",
+          "Beneath A Steel Sky",
+          "Simon The Sorcerer"
+        ],
+        "correctIndex": 2,
+        "audioUrl": "audio/quiz/amiga-beneathasteelsky.mp3",
+        "id": "4-3"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Rainbow Islands",
+          "Parasol Stars",
+          "Bubble Bobble",
+          "The New Zealand Story"
+        ],
+        "correctIndex": 2,
+        "audioUrl": "audio/quiz/amiga-bubblebobble.mp3",
+        "id": "4-4"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Cannon Fodder",
+          "Lost Patrol",
+          "Escape from Colditz",
+          "B-17 Flying Fortress"
+        ],
+        "correctIndex": 0,
+        "audioUrl": "audio/quiz/amiga-cannonfodder.mp3",
+        "id": "4-5"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Populous II",
+          "Dune",
+          "Civilization",
+          "North & South"
+        ],
+        "correctIndex": 1,
+        "audioUrl": "audio/quiz/amiga-dune.mp3",
+        "id": "4-6"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Bomb Jack",
+          "Fire 'N Ice",
+          "Pengo",
+          "Dyna Blaster"
+        ],
+        "correctIndex": 3,
+        "audioUrl": "audio/quiz/amiga-dynablaster.mp3",
+        "id": "4-7"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "B.A.T. II",
+          "Flashback",
+          "Rick Dangerous 2",
+          "Prince Of Persia"
+        ],
+        "correctIndex": 1,
+        "audioUrl": "audio/quiz/amiga-flashback.mp3",
+        "id": "4-8"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Desert Strike",
+          "Rocket Ranger",
+          "It Came From The Desert",
+          "UFO: Enemy Unknown"
+        ],
+        "correctIndex": 2,
+        "audioUrl": "audio/quiz/amiga-itcamefromthedesert.mp3",
+        "id": "4-9"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "The Humans",
+          "Pushover",
+          "Lemmings",
+          "Fury of the Furries"
+        ],
+        "correctIndex": 2,
+        "audioUrl": "audio/quiz/amiga-lemmings.mp3",
+        "id": "4-10"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Maniac Mansion",
+          "Zak McKracken",
+          "Loom",
+          "Their Finest Hour"
+        ],
+        "correctIndex": 0,
+        "audioUrl": "audio/quiz/amiga-maniacmansion.mp3",
+        "id": "4-11"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "King's Quest",
+          "Valhalla",
+          "Defender of the Crown",
+          "Mega Lo Mania"
+        ],
+        "correctIndex": 3,
+        "audioUrl": "audio/quiz/amiga-megalomania.mp3",
+        "id": "4-12"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "HeroQuest",
+          "Sword of Sodan",
+          "Cadaver: The Pay Off",
+          "Moonstone"
+        ],
+        "correctIndex": 3,
+        "audioUrl": "audio/quiz/amiga-moonstone.mp3",
+        "id": "4-13"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Goal!",
+          "Sensible Soccer",
+          "Kick Off 2",
+          "MicroProse Soccer"
+        ],
+        "correctIndex": 1,
+        "audioUrl": "audio/quiz/amiga-sensiblesoccer.mp3",
+        "id": "4-14"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Caesar",
+          "Colonization",
+          "The Settlers",
+          "Railroad Tycoon"
+        ],
+        "correctIndex": 2,
+        "audioUrl": "audio/quiz/amiga-settlers.mp3",
+        "id": "4-15"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "4D Sports Boxing",
+          "Speedball 2",
+          "Cyberball",
+          "Brutal Sports Football"
+        ],
+        "correctIndex": 1,
+        "audioUrl": "audio/quiz/amiga-speedball2.mp3",
+        "id": "4-16"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Supercars 2",
+          "Micro Machines",
+          "Super Sprint",
+          "Test Drive II: The Duel"
+        ],
+        "correctIndex": 0,
+        "audioUrl": "audio/quiz/amiga-supercars2.mp3",
+        "id": "4-17"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Syndicate",
+          "Laser Squad",
+          "Shadowrun",
+          "UFO: Enemy Unknown"
+        ],
+        "correctIndex": 0,
+        "audioUrl": "audio/quiz/amiga-syndicate.mp3",
+        "id": "4-18"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Vroom",
+          "Badlands",
+          "Lotus Turbo Challenge 2",
+          "Out Run"
+        ],
+        "correctIndex": 2,
+        "audioUrl": "audio/quiz/amiga-turbochallenge2.mp3",
+        "id": "4-19"
+      },
+      {
+        "question": "Name That Game",
+        "options": [
+          "Silkworm",
+          "Xenon 2",
+          "R-Type",
+          "Gods"
+        ],
+        "correctIndex": 3,
+        "audioUrl": "audio/quiz/amiga-gods.mp3",
+        "id": "4-20"
+      }
+    ],
+    "5": [
+      {
+        "question": "Which Legend Is This",
+        "options": [
+          "Rob Hubbard",
+          "Martin Galway",
+          "Jeroen Tel",
+          "David Whittaker"
+        ],
+        "correctIndex": 3,
+        "audioUrl": "audio/quiz/whittaker-Knight_Games-01_cut_Whittaker.mp3",
+        "gameName": "Knight Games",
+        "id": "5-1"
+      },
+      {
+        "question": "Which Legend Is This",
+        "options": [
+          "Rob Hubbard",
+          "Martin Galway",
+          "Jeroen Tel",
+          "David Whittaker"
+        ],
+        "correctIndex": 2,
+        "audioUrl": "audio/quiz/jeroentel-Super_Monaco_Grand_Prix-01_jeroentel.mp3",
+        "gameName": "Super Monaco Grand Prix",
+        "id": "5-2"
+      },
+      {
+        "question": "Which Legend Is This",
+        "options": [
+          "Rob Hubbard",
+          "Martin Galway",
+          "Jeroen Tel",
+          "David Whittaker"
+        ],
+        "correctIndex": 0,
+        "audioUrl": "audio/quiz/hubbard-Monty_on_the_Run-01_cut_robhubbard.mp3",
+        "gameName": "Monty on the Run",
+        "id": "5-3"
+      },
+      {
+        "question": "Which Legend Is This",
+        "options": [
+          "Rob Hubbard",
+          "Martin Galway",
+          "Jeroen Tel",
+          "David Whittaker"
+        ],
+        "correctIndex": 2,
+        "audioUrl": "audio/quiz/jeroentel-Myth-01_jeroentel.mp3",
+        "gameName": "Myth",
+        "id": "5-4"
+      },
+      {
+        "question": "Which Legend Is This",
+        "options": [
+          "Rob Hubbard",
+          "Martin Galway",
+          "Jeroen Tel",
+          "David Whittaker"
+        ],
+        "correctIndex": 1,
+        "audioUrl": "audio/quiz/galway-Yie_Ar_Kung_Fu-12_galway.mp3",
+        "gameName": "Yie Ar Kung Fu",
+        "id": "5-5"
+      },
+      {
+        "question": "Which Legend Is This",
+        "options": [
+          "Rob Hubbard",
+          "Martin Galway",
+          "Jeroen Tel",
+          "David Whittaker"
+        ],
+        "correctIndex": 0,
+        "audioUrl": "audio/quiz/hubbard-Action_Biker-01_cut_robhubbard.mp3",
+        "gameName": "Action Biker",
+        "id": "5-6"
+      },
+      {
+        "question": "Which Legend Is This",
+        "options": [
+          "Rob Hubbard",
+          "Martin Galway",
+          "Jeroen Tel",
+          "David Whittaker"
+        ],
+        "correctIndex": 3,
+        "audioUrl": "audio/quiz/whittaker-Max_Headroom-01_cut_Whittaker.mp3",
+        "gameName": "Max Headroom",
+        "id": "5-7"
+      },
+      {
+        "question": "Which Legend Is This",
+        "options": [
+          "Rob Hubbard",
+          "Martin Galway",
+          "Jeroen Tel",
+          "David Whittaker"
+        ],
+        "correctIndex": 2,
+        "audioUrl": "audio/quiz/jeroentel-Hawkeye-01_jeroentel.mp3",
+        "gameName": "Hawkeye",
+        "id": "5-8"
+      },
+      {
+        "question": "Which Legend Is This",
+        "options": [
+          "Rob Hubbard",
+          "Martin Galway",
+          "Jeroen Tel",
+          "David Whittaker"
+        ],
+        "correctIndex": 0,
+        "audioUrl": "audio/quiz/hubbard-5_Title_Tunes-01_cut_robhubbard.mp3",
+        "gameName": "Train Robbers",
+        "id": "5-9"
+      },
+      {
+        "question": "Which Legend Is This",
+        "options": [
+          "Rob Hubbard",
+          "Martin Galway",
+          "Jeroen Tel",
+          "David Whittaker"
+        ],
+        "correctIndex": 2,
+        "audioUrl": "audio/quiz/jeroentel-Turbo_Outrun-01_jeroentel.mp3",
+        "gameName": "Turbo Outrun",
+        "id": "5-10"
+      },
+      {
+        "question": "Which Legend Is This",
+        "options": [
+          "Rob Hubbard",
+          "Martin Galway",
+          "Jeroen Tel",
+          "David Whittaker"
+        ],
+        "correctIndex": 1,
+        "audioUrl": "audio/quiz/galway-Mikie-01_cut_galway.mp3",
+        "gameName": "Mikie",
+        "id": "5-11"
+      },
+      {
+        "question": "Which Legend Is This",
+        "options": [
+          "Rob Hubbard",
+          "Martin Galway",
+          "Jeroen Tel",
+          "David Whittaker"
+        ],
+        "correctIndex": 0,
+        "audioUrl": "audio/quiz/hubbard-Flash_Gordon-01_cut_robhubbard.mp3",
+        "gameName": "Flash Gordon",
+        "id": "5-12"
+      },
+      {
+        "question": "Which Legend Is This",
+        "options": [
+          "Rob Hubbard",
+          "Martin Galway",
+          "Jeroen Tel",
+          "David Whittaker"
+        ],
+        "correctIndex": 3,
+        "audioUrl": "audio/quiz/whittaker-Lazy_Jones-01_Whittaker.mp3",
+        "gameName": "Lazy Jones",
+        "id": "5-13"
+      },
+      {
+        "question": "Which Legend Is This",
+        "options": [
+          "Rob Hubbard",
+          "Martin Galway",
+          "Jeroen Tel",
+          "David Whittaker"
+        ],
+        "correctIndex": 2,
+        "audioUrl": "audio/quiz/jeroentel-Supremacy-01_jeroentel.mp3",
+        "gameName": "Supremacy",
+        "id": "5-14"
+      },
+      {
+        "question": "Which Legend Is This",
+        "options": [
+          "Rob Hubbard",
+          "Martin Galway",
+          "Jeroen Tel",
+          "David Whittaker"
+        ],
+        "correctIndex": 1,
+        "audioUrl": "audio/quiz/galway-TIMESOFLORE_cut_galway.mp3",
+        "gameName": "Times Of Lore",
+        "id": "5-15"
+      },
+      {
+        "question": "Which Legend Is This",
+        "options": [
+          "Rob Hubbard",
+          "Martin Galway",
+          "Jeroen Tel",
+          "David Whittaker"
+        ],
+        "correctIndex": 0,
+        "audioUrl": "audio/quiz/hubbard-Bangkok_Knights_cut_robhubbard.mp3",
+        "gameName": "Bangkok Knights",
+        "id": "5-16"
+      },
+      {
+        "question": "Which Legend Is This",
+        "options": [
+          "Rob Hubbard",
+          "Martin Galway",
+          "Jeroen Tel",
+          "David Whittaker"
+        ],
+        "correctIndex": 2,
+        "audioUrl": "audio/quiz/jeroentel-Golden_Axe-01_jeroentel.mp3",
+        "gameName": "Golden Axe",
+        "id": "5-17"
+      },
+      {
+        "question": "Which Legend Is This",
+        "options": [
+          "Rob Hubbard",
+          "Martin Galway",
+          "Jeroen Tel",
+          "David Whittaker"
+        ],
+        "correctIndex": 1,
+        "audioUrl": "audio/quiz/galway-Daley_Thompsons_Decathlon-01_cut_galway.mp3",
+        "gameName": "Decathlon",
+        "id": "5-18"
+      },
+      {
+        "question": "Which Legend Is This",
+        "options": [
+          "Rob Hubbard",
+          "Martin Galway",
+          "Jeroen Tel",
+          "David Whittaker"
+        ],
+        "correctIndex": 1,
+        "audioUrl": "audio/quiz/galway-Neverending_Story_cut_galway.mp3",
+        "gameName": "Neverending Story",
+        "id": "5-19"
+      },
+      {
+        "question": "Which Legend Is This",
+        "options": [
+          "Rob Hubbard",
+          "Martin Galway",
+          "Jeroen Tel",
+          "David Whittaker"
+        ],
+        "correctIndex": 0,
+        "audioUrl": "audio/quiz/hubbard-Crazy_Comets-01_cut_robhubbard.mp3",
+        "gameName": "Crazy Comets",
+        "id": "5-20"
+      }
+    ],
+    "6": [],
+    "7": [
+      {
+        "question": "Which C64 game is this?",
+        "audio": "c64-backtothefuture.mp3",
+        "options": [
+          "Skool Daze",
+          "Cauldron",
+          "Back to the Future",
+          "Summer Games"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "question": "Which C64 game is this?",
+        "audio": "c64-barbarian.mp3",
+        "options": [
+          "Boulder Dash",
+          "Jet Set Willy",
+          "Creatures",
+          "Barbarian"
+        ],
+        "correctIndex": 3
+      },
+      {
+        "question": "Which C64 game is this?",
+        "audio": "c64-barymcguigan.mp3",
+        "options": [
+          "Boulder Dash",
+          "Skool Daze",
+          "Barry McGuigan World Championship Boxing",
+          "Back to the Future"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "question": "Which C64 game is this?",
+        "audio": "c64-boulderdash.mp3",
+        "options": [
+          "Boulder Dash",
+          "Cauldron",
+          "Little Computer People",
+          "Barbarian"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "Which C64 game is this?",
+        "audio": "c64-cauldron.mp3",
+        "options": [
+          "Spy vs Spy",
+          "Back to the Future",
+          "Barry McGuigan World Championship Boxing",
+          "Cauldron"
+        ],
+        "correctIndex": 3
+      },
+      {
+        "question": "Which C64 game is this?",
+        "audio": "c64-creatures.mp3",
+        "options": [
+          "Cauldron",
+          "Super Pipeline",
+          "Creatures",
+          "Son of Blagger"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "question": "Which C64 game is this?",
+        "audio": "c64-decathlon.mp3",
+        "options": [
+          "Decathlon",
+          "Super Off Road",
+          "Robocop",
+          "Summer Games"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "Which C64 game is this?",
+        "audio": "c64-jetsetwilly.mp3",
+        "options": [
+          "Jet Set Willy",
+          "Creatures",
+          "The Last Ninja",
+          "Spy vs Spy"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "Which C64 game is this?",
+        "audio": "c64-lastninja.mp3",
+        "options": [
+          "The Last Ninja",
+          "Decathlon",
+          "Jet Set Willy",
+          "Little Computer People"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "Which C64 game is this?",
+        "audio": "c64-littlecomputerpeople.mp3",
+        "options": [
+          "Little Computer People",
+          "Boulder Dash",
+          "Pirates",
+          "Creatures"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "Which C64 game is this?",
+        "audio": "c64-pirates.mp3",
+        "options": [
+          "Jet Set Willy",
+          "The Last Ninja",
+          "Cauldron",
+          "Pirates"
+        ],
+        "correctIndex": 3
+      },
+      {
+        "question": "Which C64 game is this?",
+        "audio": "c64-pitfall2.mp3",
+        "options": [
+          "The Last Ninja",
+          "Pitfall II",
+          "Robocop",
+          "Creatures"
+        ],
+        "correctIndex": 1
+      },
+      {
+        "question": "Which C64 game is this?",
+        "audio": "c64-robocop.mp3",
+        "options": [
+          "Cauldron",
+          "Uridium",
+          "Robocop",
+          "Barbarian"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "question": "Which C64 game is this?",
+        "audio": "c64-skooldaze.mp3",
+        "options": [
+          "The Last Ninja",
+          "Creatures",
+          "Pirates",
+          "Skool Daze"
+        ],
+        "correctIndex": 3
+      },
+      {
+        "question": "Which C64 game is this?",
+        "audio": "c64-sonofblagger.mp3",
+        "options": [
+          "Super Off Road",
+          "Pirates",
+          "Son of Blagger",
+          "Summer Games"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "question": "Which C64 game is this?",
+        "audio": "c64-spyvsspy.mp3",
+        "options": [
+          "Spy vs Spy",
+          "Cauldron",
+          "Boulder Dash",
+          "Super Off Road"
+        ],
+        "correctIndex": 0
+      },
+      {
+        "question": "Which C64 game is this?",
+        "audio": "c64-summergames.mp3",
+        "options": [
+          "Robocop",
+          "Pitfall II",
+          "Summer Games",
+          "Uridium"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "question": "Which C64 game is this?",
+        "audio": "c64-superoffroad.mp3",
+        "options": [
+          "Little Computer People",
+          "Back to the Future",
+          "Super Off Road",
+          "Uridium"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "question": "Which C64 game is this?",
+        "audio": "c64-superpipeline.mp3",
+        "options": [
+          "Summer Games",
+          "Jet Set Willy",
+          "Super Pipeline",
+          "Spy vs Spy"
+        ],
+        "correctIndex": 2
+      },
+      {
+        "question": "Which C64 game is this?",
+        "audio": "c64-uridium.mp3",
+        "options": [
+          "Uridium",
+          "Pirates",
+          "Barry McGuigan World Championship Boxing",
+          "Little Computer People"
+        ],
+        "correctIndex": 0
+      }
+    ]
+  }
 }
