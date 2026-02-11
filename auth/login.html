@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login | CCG Auth</title>
+  <link rel="stylesheet" href="../resources/css/auth.css" />
+</head>
+<body>
+  <main class="auth-shell">
+    <div id="authStatusBadge" class="auth-badge" aria-live="polite"></div>
+
+    <section class="auth-card">
+      <h1>Login</h1>
+      <p class="auth-subtitle">Access your account with email and password.</p>
+
+      <form id="loginForm" novalidate>
+        <div class="auth-field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" required />
+        </div>
+
+        <div class="auth-field">
+          <label for="password">Password</label>
+          <div class="password-wrap">
+            <input id="password" name="password" type="password" autocomplete="current-password" required />
+            <button type="button" id="togglePassword" class="password-toggle" aria-label="Show password"></button>
+          </div>
+        </div>
+
+        <div id="formMessage" class="auth-message" aria-live="polite"></div>
+
+        <button type="submit" class="auth-btn">Log In</button>
+      </form>
+
+      <nav class="auth-links">
+        <a href="./register.html">Create account</a>
+        <a href="./forgot.html">Forgot password?</a>
+      </nav>
+    </section>
+  </main>
+
+  <script type="module">
+    import { loginUser } from '../resources/js/auth/auth-core.js';
+    import { attachPasswordToggle, byId, setMessage } from '../resources/js/auth/ui-helpers.js';
+    import { initAuthBadge } from '../resources/js/auth/auth-status.js';
+
+    const form = byId('loginForm');
+    const message = byId('formMessage');
+    const toggleBtn = byId('togglePassword');
+    const passwordInput = byId('password');
+
+    attachPasswordToggle(toggleBtn, passwordInput);
+    initAuthBadge();
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      setMessage(message, 'Signing in...', 'info');
+
+      const email = byId('email').value;
+      const password = byId('password').value;
+
+      const { error } = await loginUser(email, password);
+
+      if (error) {
+        setMessage(message, error.message, 'error');
+        return;
+      }
+
+      setMessage(message, 'Login successful.', 'success');
+    });
+  </script>
+</body>
+</html>
