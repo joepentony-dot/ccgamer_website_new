@@ -25,7 +25,11 @@
     commentsTotal: 0,
     commentsLoading: false,
     viewerContext: null,
-    explorerInitialized: false
+    explorerInitialized: false,
+    suggestionState: {
+      items: [],
+      highlighted: -1
+    }
   };
 
   function logHubError(scope, error, meta) {
@@ -499,9 +503,27 @@
   }
 
   function readGameSelection(inputValue) {
-    const key = String(inputValue || '').trim().toLowerCase();
+    const raw = String(inputValue || '').trim();
+    const key = raw.toLowerCase();
     if (!key) return null;
-    return state.gameByKey.get(key) || null;
+    if (state.gameByKey.has(key)) return state.gameByKey.get(key) || null;
+
+    const exact = state.games.find(function (game) {
+      const label = (game.title + ' (' + game.system + ') — ' + game.slug).toLowerCase();
+      return label === key || game.title.toLowerCase() === key || game.slug.toLowerCase() === key;
+    });
+    return exact || null;
+  }
+
+  function filterGameSuggestions(query) {
+    const key = String(query || '').trim().toLowerCase();
+    if (!key) return state.games.slice(0, 12);
+    return state.games.filter(function (game) {
+      const title = game.title.toLowerCase();
+      const slug = game.slug.toLowerCase();
+      const system = game.system.toLowerCase();
+      return title.includes(key) || slug.includes(key) || system.includes(key);
+    }).slice(0, 12);
   }
 
   function rememberGame(game) {
@@ -694,7 +716,7 @@
         await loadComments(true);
         window.dispatchEvent(new CustomEvent('ccg:comments-updated', { detail: { gameSlug: state.selectedGame.slug } }));
       } catch (_error) {
-        setCommentsFeedback('Unable to post comment right now.', 'error');
+        setCommentsFeedback(classifyErrorMessage(_error, 'Unable to post comment right now.'), 'error');
       } finally {
         if (submitBtn) {
           submitBtn.disabled = false;
@@ -760,8 +782,8 @@
       const response = await runWithRetry(function () {
         return supabase
           .from('game_comments')
-          .select('id,user_id,content,created_at,updated_at,is_deleted,profiles(username,avatar_url)', { count: 'exact' })
-          .eq('game_slug', state.selectedGame.slug)
+          .select('id,user_id,content,created_at,updated_at,is_deleted,game_slug,game_key,profiles(username,avatar_url)', { count: 'exact' })
+          .or('game_key.eq.' + normalizeGameKey(state.selectedGame) + ',game_slug.eq.' + state.selectedGame.slug)
           .order('created_at', { ascending: false })
           .range(rangeStart, rangeEnd)
           .then(function (queryResponse) {
@@ -852,6 +874,46 @@
       state.explorerInitialized = true;
       elements.listWrap.innerHTML = renderCommentSkeletons(4);
 
+      const suggestionList = document.createElement('ul');
+      suggestionList.className = 'ccg-comments-suggestion-list';
+      suggestionList.id = 'ccg-comments-suggestion-list';
+      suggestionList.hidden = true;
+      suggestionList.setAttribute('role', 'listbox');
+      controls.appendChild(suggestionList);
+
+      function closeSuggestions() {
+        suggestionList.hidden = true;
+        suggestionList.innerHTML = '';
+        state.suggestionState.items = [];
+        state.suggestionState.highlighted = -1;
+      }
+
+      function renderSuggestions(query) {
+        const matches = filterGameSuggestions(query);
+        state.suggestionState.items = matches;
+        state.suggestionState.highlighted = -1;
+        if (!matches.length) {
+          suggestionList.hidden = false;
+          suggestionList.innerHTML = '<li class="ccg-comments-suggestion-list__empty">No matching games found.</li>';
+          return;
+        }
+        suggestionList.hidden = false;
+        suggestionList.innerHTML = matches.map(function (game, index) {
+          const label = game.title + ' (' + game.system + ') — ' + game.slug;
+          return '<li role="option" data-index="' + index + '" class="ccg-comments-suggestion-list__item">' + esc(label) + '</li>';
+        }).join('');
+        suggestionList.querySelectorAll('.ccg-comments-suggestion-list__item').forEach(function (item) {
+          item.addEventListener('mousedown', function (event) {
+            event.preventDefault();
+            const idx = Number(item.getAttribute('data-index'));
+            const pick = state.suggestionState.items[idx];
+            if (!pick) return;
+            selectGame(pick, true);
+            closeSuggestions();
+          });
+        });
+      }
+
       controls.addEventListener('submit', function (event) {
         event.preventDefault();
         const game = readGameSelection(elements.input.value);
@@ -880,14 +942,47 @@
 
       elements.input.addEventListener('input', function () {
         const game = readGameSelection(elements.input.value);
+        renderSuggestions(elements.input.value);
         if (game) {
           setCommentsFeedback('Ready: ' + game.title + ' selected.', 'success');
         }
       });
 
+      elements.input.addEventListener('focus', function () {
+        renderSuggestions(elements.input.value);
+      });
+
+      document.addEventListener('click', function (event) {
+        if (!controls.contains(event.target)) closeSuggestions();
+      });
+
       elements.input.addEventListener('keydown', function (event) {
+        const items = suggestionList.querySelectorAll('.ccg-comments-suggestion-list__item');
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+          if (suggestionList.hidden) renderSuggestions(elements.input.value);
+          if (!items.length) return;
+          event.preventDefault();
+          const delta = event.key === 'ArrowDown' ? 1 : -1;
+          const next = (state.suggestionState.highlighted + delta + items.length) % items.length;
+          state.suggestionState.highlighted = next;
+          items.forEach(function (item, idx) {
+            item.classList.toggle('is-active', idx === next);
+          });
+          const selected = state.suggestionState.items[next];
+          if (selected) elements.input.value = selected.title + ' (' + selected.system + ') — ' + selected.slug;
+          return;
+        }
+
+        if (event.key === 'Escape') {
+          closeSuggestions();
+          return;
+        }
+
         if (event.key !== 'Enter') return;
-        if (trySelectFromInput(true)) return;
+        if (trySelectFromInput(true)) {
+          closeSuggestions();
+          return;
+        }
         setCommentsFeedback('Select a valid game from the list first.', 'error');
       });
 

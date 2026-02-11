@@ -913,3 +913,73 @@
   font-size: 0.8rem;
   background: rgba(6, 20, 45, 0.6);
 }
+
+/* OMEGA FIX: stronger readability + no parent opacity fade */
+.ccg-community-card,
+.hub-card,
+.ccg-comments-panel,
+.ccg-profile-activity-item,
+.activity-row,
+.member-row,
+.mini-game-tile {
+  background: rgba(5, 15, 25, 0.9);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 1;
+}
+
+.ccg-community-card h1,
+.ccg-community-card h2,
+.ccg-community-card h3,
+.ccg-community-card p,
+.ccg-community-card li,
+.ccg-community-card label,
+.ccg-community-card span,
+.ccg-community-muted {
+  color: #dff6ff;
+}
+
+.ccg-comments-explorer__controls {
+  position: relative;
+}
+
+.ccg-comments-suggestion-list {
+  list-style: none;
+  margin: -0.4rem 0 0;
+  padding: 0.35rem;
+  border: 1px solid rgba(116, 230, 255, 0.42);
+  border-radius: 10px;
+  background: rgba(5, 15, 25, 0.96);
+  max-height: 280px;
+  overflow: auto;
+  z-index: 20;
+}
+
+.ccg-comments-suggestion-list__item,
+.ccg-comments-suggestion-list__empty {
+  padding: 0.45rem 0.55rem;
+  border-radius: 8px;
+  color: #dff6ff;
+}
+
+.ccg-comments-suggestion-list__item {
+  cursor: pointer;
+}
+
+.ccg-comments-suggestion-list__item:hover,
+.ccg-comments-suggestion-list__item.is-active {
+  background: rgba(72, 229, 255, 0.22);
+}
+
+/* mobile artifact guard: disable decorative pseudo blocks on narrow widths */
+@media (max-width: 820px) {
+  .ccg-community-layout--hub > .ccg-community-card:first-child::before,
+  .ccg-community-layout--hub > .ccg-community-card:first-child::after,
+  .hub-card::before,
+  .hub-card::after,
+  .ccg-comments-panel::before,
+  .ccg-comments-panel::after {
+    content: none !important;
+    display: none !important;
+  }
+}

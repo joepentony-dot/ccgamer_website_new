@@ -274,13 +274,13 @@
       return supabase
         .from('game_comments')
         .select('id,user_id,content,is_deleted,created_at,updated_at,profiles(username,avatar_url,role)')
-        .eq('game_slug', slug)
+        .or('game_key.eq.' + normalizeGameKey({ slug: slug, id: state.activeGameId }) + ',game_slug.eq.' + slug)
         .order('created_at', { ascending: false })
         .limit(100);
     });
 
     if (error && isNotConfiguredError(error)) {
-      setFailureMessage('Server error');
+      setFailureMessage('Endpoint missing / not deployed');
       scheduleRetry(3000, 'not-configured');
       return;
     }
@@ -432,7 +432,7 @@
     mount.querySelectorAll('.ccg-comment-card button').forEach(function (btn) {
       btn.addEventListener('click', async function () {
         const card = btn.closest('.ccg-comment-card');
-        const commentId = Number(card.getAttribute('data-comment-id'));
+        const commentId = String(card.getAttribute('data-comment-id') || '');
         const action = btn.getAttribute('data-action');
 
         if (action === 'report') {
