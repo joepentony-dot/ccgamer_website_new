@@ -3071,11 +3071,11 @@ html[data-ccg-mode="amiga"] .home-bottom-cta__actions .home-cta-main:focus-visib
     }
 
     .home-support-cta {
-        margin: 14px auto 8px;
+        margin: 14px auto 2px;
     }
 
     .ccg-main--home + .ccg-omega-divider {
-        margin: 4px auto;
+        margin: 0 auto;
     }
 
     .home-cta-btn--collections {
@@ -3105,7 +3105,7 @@ html[data-ccg-mode="amiga"] .home-bottom-cta__actions .home-cta-main:focus-visib
     }
 
     html[data-ccg-page="home"] .ccg-footer {
-        margin-top: 8px;
+        margin-top: 4px;
         padding-bottom: calc(72px + env(safe-area-inset-bottom));
     }
 
