@@ -102,7 +102,7 @@
   async function fetchRecentComments(supabase, userId, from, to) {
     const result = await supabase
       .from('comments')
-      .select('id,game_slug,content,is_deleted,created_at', { count: 'exact' })
+      .select('id,game_key,body,created_at', { count: 'exact' })
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .range(from, to);
@@ -112,7 +112,7 @@
       return { rows: [], total: 0, error: result.error };
     }
 
-    return { rows: result.data || [], total: Number(result.count || 0), error: null };
+    return { rows: (result.data || []).map(function (row) { return Object.assign({ deleted: false }, row); }), total: Number(result.count || 0), error: null };
   }
 
   function renderCommentActivity(rows) {
@@ -122,10 +122,10 @@
       return '' +
         '<li class="ccg-profile-activity-item">' +
         '  <div class="ccg-profile-activity-item__main">' +
-        '    <a href="/games/' + encodeURIComponent(row.game_slug || '') + '/" class="ccg-profile-activity-item__game">' + esc(row.game_slug || 'unknown-game') + '</a>' +
+        '    <a href="/games/' + encodeURIComponent(row.game_key || '') + '/" class="ccg-profile-activity-item__game">' + esc(row.game_key || 'unknown-game') + '</a>' +
         '    <time datetime="' + esc(row.created_at || '') + '">' + esc(formatDate(row.created_at)) + '</time>' +
         '  </div>' +
-        '  <p class="ccg-profile-activity-item__text">' + (row.is_deleted ? '<em>Comment deleted</em>' : esc(row.content || '')) + '</p>' +
+        '  <p class="ccg-profile-activity-item__text">' + (row.deleted ? '<em>Comment deleted</em>' : esc(row.body || '')) + '</p>' +
         '</li>';
     }).join('') + '</ul>';
   }
@@ -328,7 +328,7 @@
     if (context.permissions.canModerate) {
       const { data: reports, error } = await supabase
         .from('comment_reports')
-        .select('id,reason,created_at,comment_id,comments(content,game_slug,is_deleted)')
+        .select('id,reason,created_at,comment_id,comments(body,game_key)')
         .order('created_at', { ascending: false })
         .limit(100);
 
@@ -343,8 +343,8 @@
         const comment = report.comments || {};
         return '' +
           '<article class="ccg-report-card" data-comment-id="' + report.comment_id + '">' +
-          '  <p><strong>Game:</strong> ' + esc(comment.game_slug || 'Unknown') + '</p>' +
-          '  <p><strong>Comment:</strong> ' + esc(comment.content || '[deleted]') + '</p>' +
+          '  <p><strong>Game:</strong> ' + esc(comment.game_key || 'Unknown') + '</p>' +
+          '  <p><strong>Comment:</strong> ' + esc(comment.body || '[deleted]') + '</p>' +
           '  <p><strong>Reason:</strong> ' + esc(report.reason || 'No reason provided') + '</p>' +
           '  <button class="ccg-community-btn" type="button" data-mod-action="delete">Soft delete comment</button>' +
           '</article>';
@@ -354,7 +354,7 @@
         button.addEventListener('click', async function () {
           const article = button.closest('.ccg-report-card');
           const commentId = Number(article.getAttribute('data-comment-id'));
-          const { error: deleteError } = await supabase.from('comments').update({ is_deleted: true, content: '[deleted]' }).eq('id', commentId);
+          const { error: deleteError } = await supabase.from('comments').update({ deleted: true, body: '[deleted]' }).eq('id', commentId);
           if (deleteError) {
             notify(deleteError.message || 'Unable to delete comment.', 'error');
             return;

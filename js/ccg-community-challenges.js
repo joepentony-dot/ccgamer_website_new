@@ -33,7 +33,7 @@
 
       const challengesRes = await supabase
         .from('challenges')
-        .select('id,title,description,is_supporter_only,start_at,end_at,reward_json,active')
+        .select('id,title,description,supporter_only,start_at,end_at,reward_json,active')
         .eq('active', true)
         .order('start_at', { ascending: false })
         .limit(32);
@@ -69,7 +69,7 @@
         return ''
           + '<article class="ccg-community-card ccg-perks-card">'
           + '<h3>' + esc(challenge.title || 'Challenge') + '</h3>'
-          + '<p class="ccg-community-muted">' + (challenge.is_supporter_only ? 'Supporter-only bonus lane' : 'Open challenge') + '</p>'
+          + '<p class="ccg-community-muted">' + (challenge.supporter_only ? 'Supporter-only bonus lane' : 'Open challenge') + '</p>'
           + '<p>' + esc(challenge.description || '') + '</p>'
           + '<p class="ccg-community-muted">Rewards: ' + esc(JSON.stringify(challenge.reward_json || {})) + '</p>'
           + '<p class="ccg-community-muted">Progress: ' + esc(progressLabel(progress)) + '</p>'
@@ -77,7 +77,7 @@
       }).join('');
     } catch (error) {
       console.error('[CCG-CHALLENGES] unexpected failure', error);
-      renderState(mount, 'Challenge board is temporarily unavailable.');
+      renderState(mount, 'Challenge board is currently unavailable.');
     }
   }
 

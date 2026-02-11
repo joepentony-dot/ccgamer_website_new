@@ -32,7 +32,7 @@
     const supabase = await window.ccgSupabase.getClient();
     const { data, error } = await supabase
       .from('user_badges')
-      .select('badge_key,awarded_at')
+      .select('badge_code,awarded_at')
       .eq('user_id', userId)
       .order('awarded_at', { ascending: false });
 
@@ -49,7 +49,7 @@
     }
 
     return '<div class="' + esc(className) + '">' + badges.map(function (badge) {
-      const code = String(badge.badge_key || '').trim();
+      const code = String(badge.badge_code || '').trim();
       const meta = getBadgeMeta(code);
       const awardedAt = badge.awarded_at ? new Date(badge.awarded_at).toLocaleDateString() : 'Unknown date';
       return '' +
