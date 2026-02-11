@@ -794,20 +794,41 @@
             btn.type = "button";
             btn.className = "ccg-btn ccg-btn--secondary quiz-pack-btn";
             btn.dataset.packId = set.id;
+            if (set.type === "hangman" || set.externalHref) {
+                btn.dataset.packExternal = set.slug || set.id;
+                btn.dataset.packLabel = set.name;
+                btn.dataset.packHref = set.externalHref || "pack-6.html";
+            }
             const count = typeof set.questionCount === "number"
                 ? set.questionCount
                 : (Array.isArray(set.questions) ? set.questions.length : 0);
-            btn.textContent = count ? `${set.name} (${count} Qs)` : set.name;
-            btn.addEventListener("click", () => {
-                quizState.currentSetId = set.id;
-                quizState.currentSetUrl = null;
-                quizState.currentSetLabel = null;
-                setActivePackButton(set.id);
-                updateSelectedPackLabel();
-                updateStartButtonState();
-                playClickSfx();
-                maybeRevealStartButton();
-            });
+            const isExternal = set.type === "hangman" || Boolean(set.externalHref);
+            btn.textContent = (!isExternal && count) ? `${set.name} (${count} Qs)` : set.name;
+
+            if (isExternal) {
+                btn.addEventListener("click", () => {
+                    const packHref = set.externalHref || "pack-6.html";
+                    quizState.currentSetId = set.id;
+                    quizState.currentSetUrl = packHref;
+                    quizState.currentSetLabel = set.name;
+                    setActivePackButton(set.id);
+                    updateSelectedPackLabel();
+                    updateStartButtonState();
+                    playClickSfx();
+                    maybeRevealStartButton();
+                });
+            } else {
+                btn.addEventListener("click", () => {
+                    quizState.currentSetId = set.id;
+                    quizState.currentSetUrl = null;
+                    quizState.currentSetLabel = null;
+                    setActivePackButton(set.id);
+                    updateSelectedPackLabel();
+                    updateStartButtonState();
+                    playClickSfx();
+                    maybeRevealStartButton();
+                });
+            }
             container.appendChild(btn);
         });
 
