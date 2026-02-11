@@ -12,7 +12,7 @@
   const GAME_CACHE_KEY = 'ccg-community-last-game';
   const HUB_ENDPOINTS = {
     gameLibrary: '/games/games.json',
-    comments: 'supabase:public.game_comments'
+    comments: 'supabase:public.comments'
   };
 
   const state = {
@@ -50,7 +50,7 @@
     if (status === 401) return 'Login required.';
     if (status === 403) return 'Permission denied.';
     if (status === 404) return 'Endpoint missing / not deployed.';
-    if (code === 'PGRST205') return 'Missing table in schema cache (PGRST205).';
+    if (code === 'PGRST205') return 'Community data is syncing. Please retry shortly.';
     if (status >= 500) return 'Server error.';
     return fallback || 'Unable to complete request.';
   }
@@ -267,7 +267,7 @@
 
   async function fallbackTopRated(supabase, minCount) {
     const response = await supabase
-      .from('game_ratings')
+      .from('ratings')
       .select('game_slug,rating')
       .limit(8000);
 
@@ -285,7 +285,7 @@
 
   async function fallbackMostDiscussed(supabase, days) {
     const response = await supabase
-      .from('game_comments')
+      .from('comments')
       .select('game_slug,created_at')
       .gte('created_at', nowMinusDays(days))
       .limit(8000);
@@ -300,8 +300,8 @@
 
   async function fallbackTrending(supabase, days) {
     const [ratingsRes, commentsRes] = await Promise.all([
-      supabase.from('game_ratings').select('game_slug,rating,created_at').gte('created_at', nowMinusDays(days)).limit(8000),
-      supabase.from('game_comments').select('game_slug,created_at').gte('created_at', nowMinusDays(days)).limit(8000)
+      supabase.from('ratings').select('game_slug,rating,created_at').gte('created_at', nowMinusDays(days)).limit(8000),
+      supabase.from('comments').select('game_slug,created_at').gte('created_at', nowMinusDays(days)).limit(8000)
     ]);
 
     if (ratingsRes.error) throw ratingsRes.error;
@@ -314,8 +314,8 @@
 
   async function fallbackLatestActivity(supabase) {
     const [ratingsRes, commentsRes, badgesRes] = await Promise.all([
-      supabase.from('game_ratings').select('user_id,game_slug,rating,created_at').order('created_at', { ascending: false }).limit(HUB_LIMITS.activity),
-      supabase.from('game_comments').select('user_id,game_slug,created_at').order('created_at', { ascending: false }).limit(HUB_LIMITS.activity),
+      supabase.from('ratings').select('user_id,game_slug,rating,created_at').order('created_at', { ascending: false }).limit(HUB_LIMITS.activity),
+      supabase.from('comments').select('user_id,game_slug,created_at').order('created_at', { ascending: false }).limit(HUB_LIMITS.activity),
       supabase.from('user_badges').select('user_id,badge_key,awarded_at').order('awarded_at', { ascending: false }).limit(HUB_LIMITS.activity)
     ]);
 
@@ -346,8 +346,8 @@
   async function fallbackTopMembers(supabase, days) {
     const since = nowMinusDays(days);
     const [ratingsRes, commentsRes, badgesRes] = await Promise.all([
-      supabase.from('game_ratings').select('user_id,created_at').gte('created_at', since).limit(12000),
-      supabase.from('game_comments').select('user_id,created_at').gte('created_at', since).limit(12000),
+      supabase.from('ratings').select('user_id,created_at').gte('created_at', since).limit(12000),
+      supabase.from('comments').select('user_id,created_at').gte('created_at', since).limit(12000),
       supabase.from('user_badges').select('user_id,badge_key,awarded_at').gte('awarded_at', since).limit(12000)
     ]);
 
@@ -470,7 +470,7 @@
     }
 
     const [repRes, spotlightRes, challengeRes, loungeRes] = await Promise.all([
-      supabase.from('community_member_overview').select('user_id,username,rep_points,rep_level,supporter_level').order('rep_points', { ascending: false }).limit(8),
+      supabase.from('community_rankings').select('user_id,username,rep_points,rep_level,supporter_level').order('rep_points', { ascending: false }).limit(8),
       supabase.from('supporter_spotlight').select('user_id,reason,profiles(username)').order('created_at', { ascending: false }).limit(6),
       supabase.from('challenges').select('id,title,description,is_supporter_only,end_at').eq('active', true).order('start_at', { ascending: false }).limit(6),
       supabase.from('supporter_lounge_posts').select('id,title,body,is_supporter_only,created_at').order('created_at', { ascending: false }).limit(5)
@@ -700,7 +700,7 @@
         };
 
         const result = await runWithRetry(function () {
-          return supabase.from('game_comments').insert(payload).then(function (response) {
+          return supabase.from('comments').insert(payload).then(function (response) {
             if (response.error) throw response.error;
             return response;
           });
@@ -740,13 +740,13 @@
             const existing = article.querySelector('.ccg-comment-card__body');
             const next = window.prompt('Edit your comment:', existing ? existing.textContent : '');
             if (!next || !next.trim()) return;
-            await supabase.from('game_comments').update({ content: next.trim(), updated_at: new Date().toISOString() }).eq('id', commentId).eq('user_id', viewer.user.id);
+            await supabase.from('comments').update({ content: next.trim(), updated_at: new Date().toISOString() }).eq('id', commentId).eq('user_id', viewer.user.id);
           }
 
           if (action === 'delete') {
             const confirmed = window.confirm('Delete your comment?');
             if (!confirmed) return;
-            await supabase.from('game_comments').update({ is_deleted: true, content: '[deleted]', updated_at: new Date().toISOString() }).eq('id', commentId).eq('user_id', viewer.user.id);
+            await supabase.from('comments').update({ is_deleted: true, content: '[deleted]', updated_at: new Date().toISOString() }).eq('id', commentId).eq('user_id', viewer.user.id);
           }
 
           await loadComments(true);
@@ -777,7 +777,7 @@
 
       const response = await runWithRetry(function () {
         return supabase
-          .from('game_comments')
+          .from('comments')
           .select('id,user_id,content,created_at,updated_at,is_deleted,game_slug,game_key,profiles(username,avatar_url)', { count: 'exact' })
           .or('game_key.eq.' + normalizeGameKey(state.selectedGame) + ',game_slug.eq.' + state.selectedGame.slug)
           .order('created_at', { ascending: false })
@@ -1021,7 +1021,7 @@
   async function renderHub() {
     const readiness = await window.ccgSupabase.checkCommunityReadiness();
     if (!readiness.ready) {
-      renderUnavailableSections('Community live feed is not configured yet. You can still browse profile pages and hub links.');
+      renderUnavailableSections('Community live feed is warming up. Please check back in a moment.');
       return;
     }
 

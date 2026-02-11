@@ -461,8 +461,9 @@
         const headers = { apikey: key, Authorization: 'Bearer ' + key, Accept: 'application/json' };
         const endpoints = [
           'profiles?select=id&limit=1',
-          'game_ratings?select=id&limit=1',
-          'game_comments?select=id&limit=1'
+          'ratings?select=id&limit=1',
+          'comments?select=id&limit=1',
+          'badge_definitions?select=id&limit=1'
         ];
 
         const checks = await Promise.all(endpoints.map((endpoint) => fetch(base + endpoint, { method: 'GET', headers })));
@@ -470,14 +471,14 @@
           readinessState.checked = true;
           readinessState.available = false;
           readinessState.reason = 'not_configured';
-          warnCommunityOnce('CCG community tables are not configured yet. Disabling community data fetches.');
+          warnCommunityOnce('CCG community data endpoints are temporarily unavailable.');
           return { ready: false, reason: readinessState.reason };
         }
       } catch (_error) {
         readinessState.checked = true;
         readinessState.available = false;
         readinessState.reason = 'unavailable';
-        warnCommunityOnce('CCG community tables are not configured yet. Disabling community data fetches.');
+        warnCommunityOnce('CCG community data endpoints are temporarily unavailable.');
         return { ready: false, reason: readinessState.reason };
       }
 

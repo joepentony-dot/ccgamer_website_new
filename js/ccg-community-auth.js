@@ -136,7 +136,7 @@
   }
 
   function communityUnavailableMessage() {
-    return 'Community features not configured yet.';
+    return 'Community services are temporarily unavailable. Please try again shortly.';
   }
 
   async function safeGetClient() {

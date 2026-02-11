@@ -6,10 +6,10 @@
      instead of trapping the UI in "Retrying…".
      =============================================== */
   const COMMENT_ENDPOINTS = {
-    commentsByGame: 'supabase:public.game_comments?select=*&game_slug=eq.<slug>',
-    postComment: 'supabase:public.game_comments (insert)',
+    commentsByGame: 'supabase:public.comments?select=*&game_slug=eq.<slug>',
+    postComment: 'supabase:public.comments (insert)',
     latestActivity: 'supabase rpc latest_activity',
-    myActivity: 'supabase:public.game_comments?user_id=eq.<uid>',
+    myActivity: 'supabase:public.comments?user_id=eq.<uid>',
     badgeUnlocks: 'supabase:public.user_badges'
   };
 
@@ -272,7 +272,7 @@
 
     const { data, error } = await runQueryWithAuthRetry(function () {
       return supabase
-        .from('game_comments')
+        .from('comments')
         .select('id,user_id,content,is_deleted,created_at,updated_at,profiles(username,avatar_url,role)')
         .or('game_key.eq.' + normalizeGameKey({ slug: slug, id: state.activeGameId }) + ',game_slug.eq.' + slug)
         .order('created_at', { ascending: false })
@@ -316,7 +316,7 @@
       const badgeResult = await runQueryWithAuthRetry(function () {
         return supabase
           .from('user_badges')
-          .select('user_id,badge_code,awarded_at')
+          .select('user_id,badge_key,awarded_at')
           .in('user_id', userIds);
       });
       const badgeRows = badgeResult.data || [];
@@ -392,7 +392,7 @@
       }
 
       const { error: insertError } = await runQueryWithAuthRetry(function () {
-        return supabase.from('game_comments').insert({
+        return supabase.from('comments').insert({
           user_id: liveContext.user.id,
           game_slug: slug,
           game_key: normalizeGameKey({ slug: slug, id: state.activeGameId }),
@@ -473,7 +473,7 @@
           const updated = window.prompt('Edit your comment:', currentText);
           if (!updated || !updated.trim()) return;
           const editResult = await runQueryWithAuthRetry(function () {
-            return supabase.from('game_comments').update({ content: updated.trim() }).eq('id', commentId).eq('user_id', user.id);
+            return supabase.from('comments').update({ content: updated.trim() }).eq('id', commentId).eq('user_id', user.id);
           });
           if (editResult.error) {
             notify(explainError(editResult.error, 'Unable to update comment.'), 'error');
@@ -486,7 +486,7 @@
 
         if (action === 'delete' && canModerate) {
           const deleteResult = await runQueryWithAuthRetry(function () {
-            return supabase.from('game_comments').update({ is_deleted: true, content: '[deleted]' }).eq('id', commentId);
+            return supabase.from('comments').update({ is_deleted: true, content: '[deleted]' }).eq('id', commentId);
           });
           if (deleteResult.error) {
             notify(explainError(deleteResult.error, 'Unable to delete comment.'), 'error');
