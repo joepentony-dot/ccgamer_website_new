@@ -1,0 +1,13 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "Running CCG regression prevention..."
+
+# Run discovery grep
+DIFF=$(grep -E "btn|button|cta|pill|nav-link" -R ./ -n)
+if echo "$DIFF" | grep -E "border-radius:[^0px]" ; then
+  echo "❌ Failed pre-push: rounded UI style present!"
+  exit 1
+fi
+
+echo "No regressions detected. Ready to push."

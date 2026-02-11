@@ -37,7 +37,7 @@ button.ccg-btn {
     gap: 8px;
 
     padding: 10px 18px;
-    border-radius: 14px;
+    border-radius: 0 !important;
 
     font-family: var(--ccg-font-main);
     font-size: 0.78rem;
@@ -56,7 +56,9 @@ button.ccg-btn {
 
     border: 1px solid rgba(255,255,255,0.14);
 
-    box-shadow: var(--ccg-btn-shadow);
+    box-shadow: none;
+    filter: none !important;
+    backdrop-filter: none !important;
 
     transition:
         transform 0.3s var(--ccg-ease-out),
@@ -169,10 +171,8 @@ body[data-ccg-mode="c64"] .ccg-btn--primary {
             rgba(0,0,0,0.7)
         );
     border-color: rgba(0, 220, 255, 0.8);
-    box-shadow:
-        0 12px 24px rgba(0,0,0,0.85),
-        0 0 30px rgba(0, 220, 255, 0.65),
-        inset 0 0 14px rgba(0, 220, 255, 0.35);
+    box-shadow: none;
+    filter: var(--btn-glow) !important;
 }
 
 body[data-ccg-mode="c64"] .ccg-btn--secondary {
@@ -183,9 +183,8 @@ body[data-ccg-mode="c64"] .ccg-btn--secondary {
             rgba(0,0,0,0.6)
         );
     border-color: rgba(0, 220, 255, 0.55);
-    box-shadow:
-        0 8px 18px rgba(0,0,0,0.75),
-        0 0 20px rgba(0, 220, 255, 0.4);
+    box-shadow: none;
+    filter: var(--btn-glow) !important;
 }
 
 body[data-ccg-mode="amiga"] .ccg-btn--primary {
@@ -196,10 +195,8 @@ body[data-ccg-mode="amiga"] .ccg-btn--primary {
             rgba(12, 14, 22, 0.82)
         );
     border-color: rgba(148, 170, 200, 0.65);
-    box-shadow:
-        0 10px 22px rgba(0,0,0,0.85),
-        0 0 20px rgba(92, 127, 163, 0.35),
-        inset 0 0 12px rgba(180, 198, 222, 0.25);
+    box-shadow: none;
+    filter: var(--btn-glow) !important;
 }
 
 body[data-ccg-mode="amiga"] .ccg-btn--secondary {
@@ -210,9 +207,43 @@ body[data-ccg-mode="amiga"] .ccg-btn--secondary {
             rgba(8, 10, 18, 0.75)
         );
     border-color: rgba(148, 170, 200, 0.45);
-    box-shadow:
-        0 8px 18px rgba(0,0,0,0.75),
-        0 0 16px rgba(92, 127, 163, 0.28);
+    box-shadow: none;
+    filter: var(--btn-glow) !important;
+}
+
+/* OMEGA CONTRACT CLASS PARITY */
+.ccg-btn-primary,
+.ccg-btn-secondary,
+.ccg-btn-nav,
+.ccg-btn-auth,
+.ccg-btn-dropdown {
+    border-radius: 0 !important;
+    filter: none !important;
+    backdrop-filter: none !important;
+}
+
+.ccg-btn-primary { background-color: var(--btn-bg); border: 2px solid var(--btn-border); }
+.ccg-btn-secondary,
+.ccg-btn-nav,
+.ccg-btn-auth,
+.ccg-btn-dropdown {
+    background-color: color-mix(in srgb, var(--btn-bg) 72%, #000 28%);
+    border: 2px solid var(--btn-border);
+}
+
+.ccg-btn-primary:hover,
+.ccg-btn-secondary:hover,
+.ccg-btn-nav:hover,
+.ccg-btn-auth:hover,
+.ccg-btn-dropdown:hover {
+    background-color: var(--btn-hover);
+}
+
+/* Prevent local overrides */
+*:not(.ccg-btn):not(.ccg-button) {
+    border-radius: unset !important;
+    filter: unset !important;
+    backdrop-filter: unset !important;
 }
 
 /* ============================================================

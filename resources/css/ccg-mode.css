@@ -759,3 +759,42 @@ html[data-ccg-mode="amiga"] .ccg-card {
             0 0 16px rgba(255,140,220,0.25);
     }
 }
+
+/* ============================================================
+   OMEGA UI CONTRACT TOKENS
+============================================================ */
+:root[data-mode="c64"],
+:root[data-ccg-mode="c64"] {
+    --btn-bg: #02aaff;
+    --btn-border: #01a1e0;
+    --btn-hover: #19beff;
+    --btn-glow: drop-shadow(0 0 8px rgba(0,170,255,0.7));
+}
+
+:root[data-mode="amiga"],
+:root[data-ccg-mode="amiga"] {
+    --btn-bg: #666;
+    --btn-border: #444;
+    --btn-hover: #888;
+    --btn-glow: none;
+}
+
+.ccg-button,
+.ccg-btn {
+    background-color: var(--btn-bg);
+    border: 2px solid var(--btn-border);
+    filter: var(--btn-glow) !important;
+    border-radius: 0 !important;
+    transition: all 0.15s ease-in-out;
+}
+
+.ccg-button:hover,
+.ccg-btn:hover {
+    background-color: var(--btn-hover);
+}
+
+.game-card .btn,
+.game-card .button {
+    border-radius: 0 !important;
+    filter: none !important;
+}

@@ -1,0 +1,22 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "Running CCG UI Contract Checks..."
+
+# Ensure no new rounded button styles
+if git diff --cached --name-only | grep -E "\.css$"; then
+  if git diff --cached | grep -E "border-radius:[^0px]" ; then
+    echo "❌ Rounded button style detected! All buttons must be square!"
+    exit 1
+  fi
+fi
+
+# Ensure required CSS imports remain unchanged
+if git diff --cached --name-only | grep -E "\.html$"; then
+  if git diff --cached | grep -E "ccg-nav.css|ccg-buttons.css|ccg-mode.css" >/dev/null; then
+    echo "‼ Nav/Buttons/Mode shared import change detected: please review"
+    exit 1
+  fi
+fi
+
+echo "UI Contract checks passed!"
