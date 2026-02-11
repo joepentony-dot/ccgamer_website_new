@@ -9,6 +9,7 @@
   };
 
   const COMMENT_PAGE_SIZE = 12;
+  const COMMENT_TEXT_COLUMNS = ['body', 'content'];
   const GAME_CACHE_KEY = 'ccg-community-last-game';
   const HUB_ENDPOINTS = {
     gameLibrary: '/games/games.json',
@@ -26,6 +27,7 @@
     commentsLoading: false,
     viewerContext: null,
     explorerInitialized: false,
+    commentTextColumn: null,
     suggestionState: {
       items: [],
       highlighted: -1
@@ -62,6 +64,26 @@
       statusText: statusText,
       bodySnippet: String(responseText || '').slice(0, 300)
     });
+  }
+
+  function isMissingColumnError(error) {
+    const code = String(error && error.code || '').toUpperCase();
+    const message = String(error && error.message || '').toLowerCase();
+    return code === '42703' || code === 'PGRST204' || message.includes('column') && message.includes('does not exist');
+  }
+
+  function getCommentText(comment) {
+    if (!comment || typeof comment !== 'object') return '';
+    if (typeof comment.body === 'string' && comment.body.length) return comment.body;
+    if (typeof comment.content === 'string' && comment.content.length) return comment.content;
+    return '';
+  }
+
+  function getCommentColumnCandidates() {
+    if (state.commentTextColumn) return [state.commentTextColumn].concat(COMMENT_TEXT_COLUMNS.filter(function (column) {
+      return column !== state.commentTextColumn;
+    }));
+    return COMMENT_TEXT_COLUMNS.slice();
   }
 
   function isAuthError(error) {
@@ -602,7 +624,7 @@
     const own = viewer && viewer.user && viewer.user.id === comment.user_id;
     const text = comment.deleted
       ? '<em>This comment was removed.</em>'
-      : esc(comment.body || '');
+      : esc(getCommentText(comment));
 
     return '' +
       '<article class="ccg-comment-card" data-comment-id="' + esc(comment.id) + '">' +
@@ -690,19 +712,34 @@
           return;
         }
 
-        const payload = {
-          user_id: fresh.user.id,
-          game_key: state.selectedGame.slug,
-          game_key: normalizeGameKey(state.selectedGame),
-          content: content
-        };
+        const normalizedGameKey = normalizeGameKey(state.selectedGame);
+        let result = null;
+        let insertError = null;
 
-        const result = await runWithRetry(function () {
-          return supabase.from('comments').insert(payload).then(function (response) {
-            if (response.error) throw response.error;
-            return response;
-          });
-        }, { label: 'post-comment' });
+        for (const columnName of getCommentColumnCandidates()) {
+          const payload = {
+            user_id: fresh.user.id,
+            game_key: normalizedGameKey
+          };
+          payload[columnName] = content;
+
+          try {
+            result = await runWithRetry(function () {
+              return supabase.from('comments').insert(payload).then(function (response) {
+                if (response.error) throw response.error;
+                return response;
+              });
+            }, { label: 'post-comment' });
+            state.commentTextColumn = columnName;
+            insertError = null;
+            break;
+          } catch (error) {
+            insertError = error;
+            if (!isMissingColumnError(error)) break;
+          }
+        }
+
+        if (insertError) throw insertError;
         if (result.error) throw result.error;
 
         form.reset();
@@ -738,13 +775,23 @@
             const existing = article.querySelector('.ccg-comment-card__body');
             const next = window.prompt('Edit your comment:', existing ? existing.textContent : '');
             if (!next || !next.trim()) return;
-            await supabase.from('comments').update({ content: next.trim(), updated_at: new Date().toISOString() }).eq('id', commentId).eq('user_id', viewer.user.id);
+            const updatePayload = { updated_at: new Date().toISOString() };
+            updatePayload[state.commentTextColumn || 'body'] = next.trim();
+            await supabase.from('comments').update(updatePayload).eq('id', commentId).eq('user_id', viewer.user.id);
           }
 
           if (action === 'delete') {
             const confirmed = window.confirm('Delete your comment?');
             if (!confirmed) return;
-            await supabase.from('comments').update({ deleted: true, content: '[deleted]', updated_at: new Date().toISOString() }).eq('id', commentId).eq('user_id', viewer.user.id);
+            const deletePayload = { updated_at: new Date().toISOString() };
+            deletePayload[state.commentTextColumn || 'body'] = '[deleted]';
+            try {
+              deletePayload.deleted = true;
+              await supabase.from('comments').update(deletePayload).eq('id', commentId).eq('user_id', viewer.user.id);
+            } catch (deleteError) {
+              if (!isMissingColumnError(deleteError)) throw deleteError;
+              await supabase.from('comments').delete().eq('id', commentId).eq('user_id', viewer.user.id);
+            }
           }
 
           await loadComments(true);
@@ -773,18 +820,33 @@
       const viewer = await ensureViewerContext();
       renderPostComposer(viewer);
 
-      const response = await runWithRetry(function () {
-        return supabase
-          .from('comments')
-          .select('id,user_id,body,created_at,game_key', { count: 'exact' })
-          .eq('game_key', normalizeGameKey(state.selectedGame))
-          .order('created_at', { ascending: false })
-          .range(rangeStart, rangeEnd)
-          .then(function (queryResponse) {
-            if (queryResponse.error) throw queryResponse.error;
-            return queryResponse;
-          });
-      }, { label: 'load-comments' });
+      let response = null;
+      let loadError = null;
+
+      for (const columnName of getCommentColumnCandidates()) {
+        try {
+          response = await runWithRetry(function () {
+            return supabase
+              .from('comments')
+              .select('id,user_id,' + columnName + ',created_at,game_key', { count: 'exact' })
+              .eq('game_key', normalizeGameKey(state.selectedGame))
+              .order('created_at', { ascending: false })
+              .range(rangeStart, rangeEnd)
+              .then(function (queryResponse) {
+                if (queryResponse.error) throw queryResponse.error;
+                return queryResponse;
+              });
+          }, { label: 'load-comments' });
+          state.commentTextColumn = columnName;
+          loadError = null;
+          break;
+        } catch (error) {
+          loadError = error;
+          if (!isMissingColumnError(error)) break;
+        }
+      }
+
+      if (loadError) throw loadError;
 
       state.commentsTotal = Number(response.count || 0);
       updateCommentCount();
