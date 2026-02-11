@@ -94,6 +94,12 @@
     return globalState.loadPromise;
   }
 
+  function logSupabaseDebug(scope, payload) {
+    try {
+      console.info('[CCG-SUPABASE-DEBUG] ' + scope, payload);
+    } catch (_error) {}
+  }
+
   async function getClient() {
     const url = normalizeSupabaseUrl(window.CCG_SUPABASE_URL);
     const key = window.CCG_SUPABASE_ANON_KEY;
@@ -101,6 +107,12 @@
 
     if (!url || !key) throw new Error('Missing Supabase config. Update /js/ccg-supabase-config.js first.');
     if (window.CCG_SUPABASE_URL !== url) window.CCG_SUPABASE_URL = url;
+
+    let supabaseHostname = 'invalid-url';
+    try {
+      supabaseHostname = new URL(url).hostname;
+    } catch (_error) {}
+    logSupabaseDebug('client-config', { hostname: supabaseHostname });
 
     await loadSupabaseLibrary();
 
@@ -365,6 +377,10 @@
           throw new Error('Invalid auth context.');
         }
         resolveAuthReadyContext(context);
+        logSupabaseDebug('auth-context', {
+          userId: context.user ? context.user.id : null,
+          hasAccessToken: Boolean(context.session && context.session.access_token)
+        });
         return context;
       } catch (error) {
         lastError = error;
