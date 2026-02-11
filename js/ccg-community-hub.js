@@ -8,8 +8,20 @@
     minRatingCount: 5
   };
 
+  const COMMENT_PAGE_SIZE = 12;
+  const GAME_CACHE_KEY = 'ccg-community-last-game';
+
   const state = {
-    unavailableMessageShown: false
+    unavailableMessageShown: false,
+    gamesLoaded: false,
+    games: [],
+    gameByKey: new Map(),
+    selectedGame: null,
+    commentsOffset: 0,
+    commentsTotal: 0,
+    commentsLoading: false,
+    viewerContext: null,
+    explorerInitialized: false
   };
 
   function esc(value) {
@@ -162,13 +174,17 @@
         avg_rating: item.rating_count ? item.rating_sum / item.rating_count : 0,
         rating_count: item.rating_count,
         comment_count: item.comment_count,
-        score: item.rating_count + (item.comment_count * 2) + (item.rating_count ? (item.rating_sum / item.rating_count) : 0)
+        score: item.comment_count * 2 + (item.rating_count ? (item.rating_sum / item.rating_count) : 0)
       };
     });
   }
 
   async function fallbackTopRated(supabase, minCount) {
-    const response = await supabase.from('game_ratings').select('game_slug,rating').limit(8000);
+    const response = await supabase
+      .from('game_ratings')
+      .select('game_slug,rating')
+      .limit(8000);
+
     if (response.error) throw response.error;
 
     const grouped = aggregateByGame(response.data || [], []);
@@ -366,6 +382,391 @@
     return output;
   }
 
+  function getCommentElements() {
+    return {
+      input: document.getElementById('ccg-comments-game'),
+      list: document.getElementById('ccg-comments-games-list'),
+      panel: document.getElementById('ccg-comments-panel'),
+      postWrap: document.getElementById('ccg-comments-post'),
+      count: document.getElementById('ccg-comments-count'),
+      feedback: document.getElementById('ccg-comments-feedback'),
+      listWrap: document.getElementById('ccg-public-comment-list'),
+      loadMore: document.getElementById('ccg-comments-load-more')
+    };
+  }
+
+  function setCommentsFeedback(text, type) {
+    const elements = getCommentElements();
+    if (!elements.feedback) return;
+    elements.feedback.textContent = text || '';
+    elements.feedback.dataset.type = type || 'info';
+  }
+
+  function readGameSelection(inputValue) {
+    const key = String(inputValue || '').trim().toLowerCase();
+    if (!key) return null;
+    return state.gameByKey.get(key) || null;
+  }
+
+  function rememberGame(game) {
+    try {
+      localStorage.setItem(GAME_CACHE_KEY, game.slug);
+    } catch (_error) {
+      // ignore storage errors
+    }
+  }
+
+  async function loadGamesForExplorer() {
+    if (state.gamesLoaded) return;
+
+    const root = window.ccgGetSiteRoot ? window.ccgGetSiteRoot() : '/';
+    const response = await fetch(root + 'games/games.json', { cache: 'no-store' });
+    if (!response.ok) throw new Error('Unable to load game list.');
+
+    const data = await response.json();
+    const rows = Array.isArray(data) ? data : [];
+
+    const normalized = rows.map(function (game, idx) {
+      const title = String(game.title || game.sorttitle || '').trim();
+      const slug = String(game.slug || game.id || '').trim();
+      if (!title || !slug) return null;
+      return {
+        slug: slug,
+        title: title,
+        id: String(game.id || slug),
+        system: String(game.system || 'Unknown')
+      };
+    }).filter(Boolean);
+
+    normalized.sort(function (a, b) {
+      return a.title.localeCompare(b.title);
+    });
+
+    state.games = normalized;
+    state.gameByKey = new Map();
+
+    normalized.forEach(function (game) {
+      state.gameByKey.set(game.title.toLowerCase(), game);
+      state.gameByKey.set(game.slug.toLowerCase(), game);
+      state.gameByKey.set((game.title + ' (' + game.system + ')').toLowerCase(), game);
+      state.gameByKey.set((game.title + ' — ' + game.slug).toLowerCase(), game);
+    });
+
+    const elements = getCommentElements();
+    if (!elements.list) return;
+    elements.list.innerHTML = normalized.map(function (game) {
+      const label = game.title + ' (' + game.system + ') — ' + game.slug;
+      return '<option value="' + esc(label) + '"></option>';
+    }).join('');
+
+    state.gamesLoaded = true;
+  }
+
+  async function ensureViewerContext() {
+    state.viewerContext = await window.ccgSupabase.getCurrentUserContext();
+    return state.viewerContext;
+  }
+
+  function commentCard(comment, viewer) {
+    const profile = comment.profiles || {};
+    const username = profile.username || 'community-member';
+    const avatar = profile.avatar_url
+      ? '<img src="' + esc(profile.avatar_url) + '" alt="' + esc(username) + ' avatar" class="ccg-comment-card__avatar">'
+      : '<span class="ccg-comment-card__avatar ccg-comment-card__avatar--fallback" aria-hidden="true">Ω</span>';
+
+    const own = viewer && viewer.user && viewer.user.id === comment.user_id;
+    const text = comment.is_deleted
+      ? '<em>This comment was removed.</em>'
+      : esc(comment.content || '');
+
+    return '' +
+      '<article class="ccg-comment-card" data-comment-id="' + esc(comment.id) + '">' +
+      '  <header class="ccg-comment-card__head">' +
+      '    <div class="ccg-comment-card__identity">' +
+      avatar +
+      '      <div>' +
+      '        <a href="' + profileLink(username) + '" class="ccg-comment-card__profile-link">@' + esc(username) + '</a>' +
+      '        <time datetime="' + esc(comment.created_at || '') + '">' + esc(formatDate(comment.created_at)) + '</time>' +
+      '      </div>' +
+      '    </div>' +
+      '  </header>' +
+      '  <p class="ccg-comment-card__body">' + text + '</p>' +
+      (own && !comment.is_deleted
+        ? '<div class="ccg-comment-card__actions"><button type="button" data-action="edit">Edit</button><button type="button" data-action="delete">Delete</button></div>'
+        : '') +
+      '</article>';
+  }
+
+  function renderCommentSkeletons(count) {
+    const skeletonCount = count || 4;
+    let output = '';
+    for (let i = 0; i < skeletonCount; i += 1) {
+      output += '<article class="ccg-comment-card ccg-comment-card--skeleton"><div class="ccg-comment-skeleton-line"></div><div class="ccg-comment-skeleton-line ccg-comment-skeleton-line--short"></div><div class="ccg-comment-skeleton-block"></div></article>';
+    }
+    return output;
+  }
+
+  function updateCommentCount() {
+    const elements = getCommentElements();
+    if (!elements.count) return;
+    const label = state.commentsTotal === 1 ? '1 comment' : state.commentsTotal + ' comments';
+    elements.count.textContent = label;
+  }
+
+  function renderPostComposer(viewer) {
+    const elements = getCommentElements();
+    if (!elements.postWrap) return;
+
+    if (!viewer || !viewer.isAuthenticated) {
+      elements.postWrap.innerHTML = '' +
+        '<div class="ccg-comments-login-cta">' +
+        '  <p class="ccg-community-muted">Log in to comment on this game.</p>' +
+        '  <button type="button" class="ccg-community-btn" id="ccg-comments-login">Join / Log in</button>' +
+        '</div>';
+      const loginBtn = document.getElementById('ccg-comments-login');
+      if (loginBtn) {
+        loginBtn.addEventListener('click', function () {
+          window.ccgCommunityAuth.openAuthModal('signin');
+        });
+      }
+      return;
+    }
+
+    elements.postWrap.innerHTML = '' +
+      '<form class="ccg-community-form" id="ccg-comments-post-form">' +
+      '  <label for="ccg-comments-content">Add your comment</label>' +
+      '  <textarea id="ccg-comments-content" name="content" maxlength="600" required placeholder="Share your nostalgia, tips, or hidden secrets..."></textarea>' +
+      '  <button type="submit" class="ccg-community-btn" id="ccg-comments-submit">Post comment</button>' +
+      '</form>';
+
+    const form = document.getElementById('ccg-comments-post-form');
+    if (!form) return;
+
+    form.addEventListener('submit', async function (event) {
+      event.preventDefault();
+      if (!state.selectedGame) return;
+
+      const submitBtn = document.getElementById('ccg-comments-submit');
+      const content = String(new FormData(form).get('content') || '').trim();
+      if (!content) return;
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Posting…';
+      }
+      setCommentsFeedback('Posting your comment…');
+
+      try {
+        const supabase = await window.ccgSupabase.getClient();
+        const fresh = await ensureViewerContext();
+        if (!fresh || !fresh.user) {
+          setCommentsFeedback('Please sign in before posting.', 'error');
+          return;
+        }
+
+        const payload = {
+          user_id: fresh.user.id,
+          game_slug: state.selectedGame.slug,
+          content: content
+        };
+
+        const result = await supabase.from('game_comments').insert(payload);
+        if (result.error) throw result.error;
+
+        form.reset();
+        setCommentsFeedback('Comment posted.', 'success');
+        await loadComments(true);
+        window.dispatchEvent(new CustomEvent('ccg:comments-updated', { detail: { gameSlug: state.selectedGame.slug } }));
+      } catch (_error) {
+        setCommentsFeedback('Unable to post comment right now.', 'error');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Post comment';
+        }
+      }
+    });
+  }
+
+  async function attachCommentActions(viewer) {
+    const listWrap = document.getElementById('ccg-public-comment-list');
+    if (!listWrap || !viewer || !viewer.user) return;
+
+    listWrap.querySelectorAll('.ccg-comment-card__actions button').forEach(function (button) {
+      button.addEventListener('click', async function () {
+        const article = button.closest('.ccg-comment-card');
+        if (!article) return;
+        const commentId = article.getAttribute('data-comment-id');
+        const action = button.getAttribute('data-action');
+        if (!commentId || !action) return;
+
+        try {
+          const supabase = await window.ccgSupabase.getClient();
+          if (action === 'edit') {
+            const existing = article.querySelector('.ccg-comment-card__body');
+            const next = window.prompt('Edit your comment:', existing ? existing.textContent : '');
+            if (!next || !next.trim()) return;
+            await supabase.from('game_comments').update({ content: next.trim(), updated_at: new Date().toISOString() }).eq('id', commentId).eq('user_id', viewer.user.id);
+          }
+
+          if (action === 'delete') {
+            const confirmed = window.confirm('Delete your comment?');
+            if (!confirmed) return;
+            await supabase.from('game_comments').update({ is_deleted: true, content: '[deleted]', updated_at: new Date().toISOString() }).eq('id', commentId).eq('user_id', viewer.user.id);
+          }
+
+          await loadComments(true);
+        } catch (_error) {
+          setCommentsFeedback('Unable to update this comment.', 'error');
+        }
+      });
+    });
+  }
+
+  async function loadComments(resetList) {
+    const elements = getCommentElements();
+    if (!elements.listWrap || !state.selectedGame || state.commentsLoading) return;
+
+    state.commentsLoading = true;
+    if (resetList) {
+      state.commentsOffset = 0;
+      elements.listWrap.innerHTML = renderCommentSkeletons(5);
+    }
+
+    const rangeStart = state.commentsOffset;
+    const rangeEnd = state.commentsOffset + COMMENT_PAGE_SIZE - 1;
+
+    try {
+      const supabase = await window.ccgSupabase.getClient();
+      const viewer = await ensureViewerContext();
+      renderPostComposer(viewer);
+
+      const response = await supabase
+        .from('game_comments')
+        .select('id,user_id,content,created_at,updated_at,is_deleted,profiles(username,avatar_url)', { count: 'exact' })
+        .eq('game_slug', state.selectedGame.slug)
+        .order('created_at', { ascending: false })
+        .range(rangeStart, rangeEnd);
+
+      if (response.error) throw response.error;
+
+      state.commentsTotal = Number(response.count || 0);
+      updateCommentCount();
+
+      const rows = response.data || [];
+      if (resetList) {
+        elements.listWrap.innerHTML = rows.length
+          ? rows.map(function (row) { return commentCard(row, viewer); }).join('')
+          : '<p class="ccg-community-muted">No comments yet. Be the first to launch this discussion.</p>';
+      } else {
+        elements.listWrap.insertAdjacentHTML('beforeend', rows.map(function (row) { return commentCard(row, viewer); }).join(''));
+      }
+
+      state.commentsOffset += rows.length;
+      elements.loadMore.hidden = state.commentsOffset >= state.commentsTotal;
+      elements.loadMore.disabled = false;
+      elements.loadMore.textContent = 'Load more';
+
+      await attachCommentActions(viewer);
+    } catch (_error) {
+      if (resetList) {
+        elements.listWrap.innerHTML = '<p class="ccg-community-muted">Comments are temporarily unavailable. Try again shortly.</p>';
+      }
+      setCommentsFeedback('Unable to load comments for this game.', 'error');
+    } finally {
+      state.commentsLoading = false;
+    }
+  }
+
+  async function selectGame(game, shouldFocusPanel) {
+    if (!game) return;
+    state.selectedGame = game;
+    rememberGame(game);
+    setCommentsFeedback('');
+    updateCommentCount();
+
+    const elements = getCommentElements();
+    if (elements.input) {
+      elements.input.value = game.title + ' (' + game.system + ') — ' + game.slug;
+    }
+
+    if (shouldFocusPanel && elements.panel && !elements.panel.open) {
+      elements.panel.open = true;
+    }
+
+    await loadComments(true);
+  }
+
+  function pickInitialGame() {
+    const fromStorage = (function () {
+      try {
+        return localStorage.getItem(GAME_CACHE_KEY);
+      } catch (_error) {
+        return '';
+      }
+    })();
+
+    const preferred = fromStorage ? state.gameByKey.get(fromStorage.toLowerCase()) : null;
+    return preferred || state.games[0] || null;
+  }
+
+  async function initCommentsExplorer() {
+    const controls = document.getElementById('ccg-comments-explorer-controls');
+    if (!controls) return;
+
+    try {
+      await loadGamesForExplorer();
+    } catch (_error) {
+      setCommentsFeedback('Unable to load game list.', 'error');
+      return;
+    }
+
+    const elements = getCommentElements();
+    if (!elements.listWrap || !elements.input || !elements.loadMore) return;
+
+    if (!state.explorerInitialized) {
+      state.explorerInitialized = true;
+      elements.listWrap.innerHTML = renderCommentSkeletons(4);
+
+      controls.addEventListener('submit', function (event) {
+        event.preventDefault();
+        const game = readGameSelection(elements.input.value);
+        if (!game) {
+          setCommentsFeedback('Select a valid game from the list first.', 'error');
+          return;
+        }
+        selectGame(game, true);
+      });
+
+      elements.input.addEventListener('change', function () {
+        const game = readGameSelection(elements.input.value);
+        if (game) {
+          selectGame(game, true);
+        }
+      });
+
+      elements.loadMore.addEventListener('click', function () {
+        elements.loadMore.disabled = true;
+        elements.loadMore.textContent = 'Loading…';
+        loadComments(false);
+      });
+
+      const initial = pickInitialGame();
+      if (initial) {
+        await selectGame(initial, false);
+      } else {
+        elements.listWrap.innerHTML = '<p class="ccg-community-muted">No games available yet.</p>';
+      }
+      return;
+    }
+
+    const viewer = await ensureViewerContext();
+    renderPostComposer(viewer);
+    if (state.selectedGame) {
+      loadComments(true);
+    }
+  }
+
   async function syncHubAuthCtas() {
     const loginBtn = document.getElementById('ccg-hub-login-btn');
     const profileBtn = document.querySelector('a[href="/community/profile.html"]');
@@ -419,9 +820,18 @@
   document.addEventListener('DOMContentLoaded', function () {
     wireActions();
     renderHub();
+    initCommentsExplorer();
     syncHubAuthCtas();
-    window.addEventListener('ccg:auth-ready', renderHub);
-    window.addEventListener('ccg:auth-changed', renderHub);
+    window.addEventListener('ccg:auth-ready', function () {
+      state.viewerContext = null;
+      renderHub();
+      initCommentsExplorer();
+    });
+    window.addEventListener('ccg:auth-changed', function () {
+      state.viewerContext = null;
+      renderHub();
+      initCommentsExplorer();
+    });
     window.addEventListener('ccg:rating-updated', renderHub);
   });
 })();

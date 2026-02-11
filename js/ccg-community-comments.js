@@ -195,9 +195,7 @@
     const user = context.user;
     const canModerate = context.permissions.canModerate;
     if (!user) {
-      setLoginMessage('Log in to view comments.');
-      resetRetries();
-      return;
+      setDeferredMessage('Browsing comments as guest. Log in to join the discussion.');
     }
 
     const { data, error } = await runQueryWithAuthRetry(function () {
@@ -247,7 +245,9 @@
     mount.innerHTML = '' +
       '<div class="ccg-community-card">' +
       '  <h3>Community Comments</h3>' +
-      '<form id="ccg-comment-form" class="ccg-community-form"><label>Add your comment<textarea name="content" required maxlength="600"></textarea></label><button type="submit" class="ccg-community-btn">Post comment</button><span id="ccg-comment-status" class="ccg-community-muted" aria-live="polite"></span></form>' +
+      (user
+        ? '<form id="ccg-comment-form" class="ccg-community-form"><label>Add your comment<textarea name="content" required maxlength="600"></textarea></label><button type="submit" class="ccg-community-btn">Post comment</button><span id="ccg-comment-status" class="ccg-community-muted" aria-live="polite"></span></form>'
+        : '<p class="ccg-community-muted">Log in to post a comment.</p><p><button class="ccg-community-btn" id="ccg-login-to-comment" type="button">Log in</button></p>') +
       '  <div class="ccg-comment-list">' +
       (comments.length
         ? comments.map(function (comment) {
@@ -272,7 +272,7 @@
     }
 
     const form = document.getElementById('ccg-comment-form');
-    form.addEventListener('submit', async function (event) {
+    if (form) form.addEventListener('submit', async function (event) {
       event.preventDefault();
       const status = document.getElementById('ccg-comment-status');
       const content = String(new FormData(form).get('content') || '').trim();
@@ -322,6 +322,11 @@
       status.textContent = 'Posted.';
       window.dispatchEvent(new CustomEvent('ccg:comments-updated', { detail: { gameSlug: slug } }));
       runSafeInit('comment-posted');
+    });
+
+    const loginBtn = document.getElementById('ccg-login-to-comment');
+    if (loginBtn) loginBtn.addEventListener('click', function () {
+      window.ccgCommunityAuth.openAuthModal('signin');
     });
 
     mount.querySelectorAll('.ccg-comment-card button').forEach(function (btn) {
