@@ -18,6 +18,7 @@ export const AUTH_CONFIG = Object.freeze({
   defaultRedirectAfterLogin: '/admin/dashboard.html',
   loginPage: '/admin/login.html',
   postLogoutRedirect: '/admin/login.html',
+  passwordResetRedirect: 'https://www.cheekycommodoregamer.co.uk/auth/reset.html',
   refreshMarginMs: 60_000,
   sessionCheckIntervalMs: 30_000,
   hydrationTimeoutMs: 2000
