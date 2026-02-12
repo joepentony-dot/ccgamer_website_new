@@ -2050,7 +2050,7 @@ function setupFooterSignatureRotator() {
             lastStepAt = 0;
         };
 
-        const targetPath = "/admin/login.html";
+        const targetPath = "/auth/login.html?returnTo=/admin/dashboard.html";
 
         document.addEventListener("keydown", event => {
             // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
@@ -2088,17 +2088,7 @@ function setupFooterSignatureRotator() {
 
             resetSequence();
 
-            fetch(targetPath, {
-                method: "GET",
-                credentials: "same-origin",
-                cache: "no-store",
-            }).then(response => {
-                if (response && response.ok) {
-                    window.location.assign(targetPath);
-                }
-            }).catch(() => {
-                // Fail silently.
-            });
+            window.location.assign(targetPath);
         }, { passive: true });
     }
     // === End Secret Admin Access ===

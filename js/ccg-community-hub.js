@@ -434,7 +434,7 @@
     const ids = Array.from(new Set(rows.map(function (row) { return row.user_id; }).filter(Boolean)));
     if (!ids.length) return rows;
 
-    const profilesRes = await supabase.from('profiles').select('id,username,handle,display_name,avatar_url').in('id', ids);
+    const profilesRes = await supabase.from('profiles').select('id,username,display_name,avatar_url').in('id', ids);
     if (profilesRes.error) return rows;
 
     const profileById = new Map((profilesRes.data || []).map(function (row) {
@@ -877,7 +877,7 @@
           response = await runWithRetry(function () {
             return supabase
               .from('comments')
-              .select('id,user_id,' + columnName + ',created_at,updated_at,deleted,game_key', { count: 'exact' })
+              .select('id,user_id,' + columnName + ',created_at,updated_at,deleted,page_type,page_id,game_key', { count: 'exact' })
               .eq('game_key', normalizeGameKey(state.selectedGame))
               .order('created_at', { ascending: false })
               .range(rangeStart, rangeEnd)
@@ -900,10 +900,15 @@
       state.commentsTotal = Number(response.count || 0);
       updateCommentCount();
 
-      const rows = response.data || [];
+      const rows = (response.data || []).map(function (row) {
+        return Object.assign({}, row, {
+          page_type: row.page_type || 'game',
+          page_id: row.page_id || row.game_key || normalizeGameKey(state.selectedGame)
+        });
+      });
       const userIds = Array.from(new Set(rows.map(function (row) { return row.user_id; }).filter(Boolean)));
       if (userIds.length) {
-        const profileRes = await supabase.from('profiles').select('id,username,handle,display_name,avatar_url').in('id', userIds);
+        const profileRes = await supabase.from('profiles').select('id,username,display_name,avatar_url').in('id', userIds);
         const byId = new Map((profileRes.data || []).map(function (row) { return [row.id, row]; }));
         rows.forEach(function (row) {
           const profile = byId.get(row.user_id) || {};

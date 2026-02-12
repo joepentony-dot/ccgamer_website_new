@@ -301,7 +301,7 @@
     const { data, error } = await runQueryWithAuthRetry(function () {
       return supabase
         .from('comments')
-        .select('id,user_id,body,created_at,deleted')
+        .select('id,user_id,body,created_at,updated_at,deleted,page_type,page_id,game_key')
         .eq('game_key', normalizeGameKey({ slug: slug, id: state.activeGameId }))
         .order('created_at', { ascending: false })
         .limit(100);
@@ -325,14 +325,17 @@
       return;
     }
 
-    const comments = (data || []).map(function (row) { return Object.assign({ deleted: false }, row); });
+    const comments = (data || []).map(function (row) {
+      const resolvedPageId = row.page_id || row.game_key || normalizeGameKey({ slug: slug, id: state.activeGameId });
+      return Object.assign({ deleted: false, page_type: row.page_type || 'game', page_id: resolvedPageId }, row);
+    });
     logCommentsLoaded(comments.length, slug);
 
     const userIds = Array.from(new Set(comments.map(function (comment) { return comment.user_id; }).filter(Boolean)));
     const profileMap = {};
     if (userIds.length) {
       const profileRes = await runQueryWithAuthRetry(function () {
-        return supabase.from('profiles').select('id,username,handle,display_name,avatar_url,role').in('id', userIds);
+        return supabase.from('profiles').select('id,username,display_name,avatar_url').in('id', userIds);
       });
       (profileRes.data || []).forEach(function (row) { profileMap[row.id] = row; });
       comments.forEach(function (row) { row.profiles = profileMap[row.user_id] || {}; });
@@ -342,12 +345,24 @@
     const reportState = {};
 
     if (userIds.length) {
-      const supporterRes = await runQueryWithAuthRetry(function () {
-        return supabase.from('supporter_links').select('user_id,supporter_level').in('user_id', userIds);
-      });
-      (supporterRes.data || []).forEach(function (row) {
-        supporterMap[row.user_id] = row.supporter_level || 'none';
-      });
+      try {
+        const supporterRes = await runQueryWithAuthRetry(function () {
+          return supabase.from('supporter_links').select('user_id,supporter_level').in('user_id', userIds);
+        });
+        if (supporterRes && supporterRes.error && Number(supporterRes.error.status || supporterRes.error.code) === 404) {
+          console.warn('supporter_links not available', supporterRes.error);
+        } else {
+          (supporterRes && supporterRes.data || []).forEach(function (row) {
+            supporterMap[row.user_id] = row.supporter_level || 'none';
+          });
+        }
+      } catch (error) {
+        if (Number(error && (error.status || error.code)) === 404) {
+          console.warn('supporter_links not available', error);
+        } else {
+          throw error;
+        }
+      }
     }
 
     if (userIds.length && window.ccgCommunityBadges) {
@@ -447,6 +462,8 @@
           user_id: liveContext.user.id,
           game_slug: slug,
           game_key: normalizeGameKey({ slug: slug, id: state.activeGameId }),
+          page_type: 'game',
+          page_id: normalizeGameKey({ slug: slug, id: state.activeGameId }),
           body: content
         });
       });

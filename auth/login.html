@@ -44,7 +44,7 @@
   <script src="../js/ccg-supabase-client.js" defer></script>
 
   <script type="module">
-    import { loginUser } from '../resources/js/auth/auth-core.js';
+    import { getCurrentUser, loginUser } from '../resources/js/auth/auth-core.js';
     import { attachPasswordToggle, byId, setMessage } from '../resources/js/auth/ui-helpers.js';
     import { initAuthBadge } from '../resources/js/auth/auth-status.js';
 
@@ -79,11 +79,29 @@
       }
 
       hasRedirected = true;
-      window.location.replace(getSafeReturnPath());
+      const params = new URLSearchParams(window.location.search);
+      const returnTo = params.get('returnTo');
+      if (returnTo && returnTo.startsWith('/')) {
+        window.location.replace(getSafeReturnPath());
+      } else {
+        window.location.replace('/');
+      }
+    }
+
+    async function redirectIfAlreadyAuthenticated() {
+      try {
+        const currentUser = await getCurrentUser();
+        if (currentUser) {
+          redirectAfterLogin();
+        }
+      } catch (_error) {
+        // Silent fallback: user can still login manually.
+      }
     }
 
     attachPasswordToggle(toggleBtn, passwordInput);
     initAuthBadge();
+    redirectIfAlreadyAuthenticated();
 
     form.addEventListener('submit', async (event) => {
       event.preventDefault();

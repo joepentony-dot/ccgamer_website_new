@@ -25,9 +25,16 @@
     return li;
   }
 
+  function hasCommunityLink(list) {
+    return Array.from(list.querySelectorAll('a')).some((link) => {
+      const href = String(link.getAttribute('href') || '').toLowerCase();
+      return href.includes('community/index.html') || href === '/community/' || href === '/community/index.html';
+    });
+  }
+
   function injectGlobalCommunityLink() {
     document.querySelectorAll('[data-ccg-nav-secondary]').forEach((list) => {
-      if (list.querySelector('.ccg-community-nav-item--community')) return;
+      if (list.querySelector('.ccg-community-nav-item--community') || hasCommunityLink(list)) return;
       const firstLink = list.querySelector('a');
       const prefix = detectPrefixFromHref(firstLink ? firstLink.getAttribute('href') : '');
       list.insertBefore(buildNavItem(prefix, COMMUNITY_LINKS[0]), list.firstChild);
