@@ -162,6 +162,12 @@
 
 .ccg-badge__icon { color: #ffb8ff; text-shadow: 0 0 8px rgba(255, 117, 240, 0.78); }
 
+.ccg-badge--icon-only { padding: 0.15rem 0.35rem; min-width: 1.6rem; text-align: center; }
+.ccg-badge-common { border-color: rgba(164, 195, 210, 0.8); background: rgba(40, 70, 88, 0.45); }
+.ccg-badge-rare { border-color: rgba(87, 172, 255, 0.9); background: rgba(29, 58, 126, 0.45); }
+.ccg-badge-epic { border-color: rgba(182, 106, 255, 0.95); background: rgba(82, 30, 122, 0.5); }
+.ccg-badge-legendary { border-color: rgba(255, 198, 72, 0.98); background: rgba(122, 81, 14, 0.55); }
+
 .ccg-profile-header {
   display: flex;
   gap: 0.9rem;

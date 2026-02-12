@@ -164,6 +164,17 @@
       || message.includes('not found');
   }
 
+  async function fetchUserBadges(userId, supabaseClient) {
+    if (!userId) return [];
+    const supabase = supabaseClient || await window.ccgSupabase.getClient();
+    const { data: userBadges } = await supabase
+      .from('user_badges')
+      .select('badge_id, badges(name, icon, category, rarity, points)')
+      .eq('user_id', userId);
+
+    return userBadges || [];
+  }
+
   function isAuthError(error) {
     const code = String(error && (error.status || error.code) || '');
     const message = String(error && error.message || '').toLowerCase();
@@ -366,17 +377,11 @@
     }
 
     if (userIds.length && window.ccgCommunityBadges) {
-      const badgeResult = await runQueryWithAuthRetry(function () {
-        return supabase
-          .from('user_badges')
-          .select('user_id,badge_code,awarded_at')
-          .in('user_id', userIds);
-      });
-      const badgeRows = badgeResult.data || [];
-
-      badgeRows.forEach(function (row) {
-        if (!badgeMap[row.user_id]) badgeMap[row.user_id] = [];
-        badgeMap[row.user_id].push(row);
+      const badgeGroups = await Promise.all(userIds.map(function (id) {
+        return fetchUserBadges(id, supabase).then(function (rows) { return { userId: id, rows: rows }; });
+      }));
+      badgeGroups.forEach(function (group) {
+        badgeMap[group.userId] = group.rows || [];
       });
     }
 
@@ -481,8 +486,8 @@
         return;
       }
 
-      if (window.ccgCommunityBadges && typeof window.ccgCommunityBadges.awardEligibleBadge === 'function') {
-        await window.ccgCommunityBadges.awardEligibleBadge(user.id);
+      if (window.ccgCommunityBadges && typeof window.ccgCommunityBadges.awardCommentBadges === 'function') {
+        await window.ccgCommunityBadges.awardCommentBadges(liveContext.user.id);
       }
 
       form.reset();

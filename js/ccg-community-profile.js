@@ -78,6 +78,17 @@
   }
 
 
+  async function fetchUserBadges(userId, supabaseClient) {
+    if (!userId) return [];
+    const supabase = supabaseClient || await window.ccgSupabase.getClient();
+    const { data: userBadges } = await supabase
+      .from('user_badges')
+      .select('badge_id, badges(name, icon, category, rarity, points)')
+      .eq('user_id', userId);
+
+    return userBadges || [];
+  }
+
   async function safeSupporterLinkLookup(supabase, userId) {
     try {
       const result = await supabase
@@ -208,7 +219,7 @@
     const [ratingsRes, commentsRes, badges, activity, overviewRes, supporterRes] = await Promise.all([
       supabase.from('ratings').select('id', { count: 'exact', head: true }).eq('user_id', targetProfile.id),
       supabase.from('comments').select('id', { count: 'exact', head: true }).eq('user_id', targetProfile.id),
-      window.ccgCommunityBadges.fetchUserBadges(targetProfile.id),
+      fetchUserBadges(targetProfile.id, supabase),
       fetchRecentComments(supabase, targetProfile.id, from, to),
       supabase.from('community_rankings').select('rep_points,rep_level,level_title,supporter_level,supporter_title,supporter_flair_key,profile_banner_key,early_access_enabled').eq('user_id', targetProfile.id).maybeSingle(),
       safeSupporterLinkLookup(supabase, targetProfile.id)
