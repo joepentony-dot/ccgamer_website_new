@@ -128,6 +128,17 @@
     };
   }
 
+  function getRatingPanel() {
+    return document.getElementById('ccg-community-rating-panel');
+  }
+
+  function updateRatingMeta(averageValue, count) {
+    const meta = document.getElementById('ccg-rating-summary-meta');
+    if (!meta) return;
+    if (!count) { meta.textContent = 'No ratings yet'; return; }
+    meta.textContent = Number(averageValue || 0).toFixed(1) + '/10 · ' + count + ' ratings';
+  }
+
   async function render() {
     const mount = document.getElementById('ccg-community-rating');
     if (!mount) return;
@@ -175,6 +186,8 @@
       mount.innerHTML = '<div class="ccg-community-card"><h3>Community Rating</h3><p class="ccg-community-muted">' + toUserMessage(summary.error) + '</p></div>';
       return;
     }
+
+    updateRatingMeta(summary.averageValue, summary.count);
 
     let yourRating = '';
     if (user) {
@@ -273,9 +286,18 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
-    render();
-    window.addEventListener('ccg:auth-ready', render);
-    window.addEventListener('ccg:auth-changed', render);
-    window.addEventListener('ccg:rating-updated', render);
+    const panel = getRatingPanel();
+    if (panel) {
+      panel.addEventListener('toggle', function () {
+        if (panel.open) render();
+      });
+      if (panel.open) render();
+    } else {
+      render();
+    }
+
+    window.addEventListener('ccg:auth-ready', function () { if (!panel || panel.open) render(); });
+    window.addEventListener('ccg:auth-changed', function () { if (!panel || panel.open) render(); });
+    window.addEventListener('ccg:rating-updated', function () { if (!panel || panel.open) render(); });
   });
 })();

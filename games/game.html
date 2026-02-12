@@ -350,12 +350,28 @@
             </div>
         </section>
 
-        <section class="game-section">
-            <div id="ccg-community-rating"></div>
+        <section class="game-section game-section--community">
+            <details class="ccg-comments-panel" id="ccg-community-rating-panel">
+                <summary class="ccg-comments-panel__summary">
+                    <span>Community Rating</span>
+                    <span class="ccg-comments-panel__meta" id="ccg-rating-summary-meta">Closed by default</span>
+                </summary>
+                <div class="ccg-comments-panel__body">
+                    <div id="ccg-community-rating"></div>
+                </div>
+            </details>
         </section>
 
-        <section class="game-section">
-            <div id="ccg-community-comments"></div>
+        <section class="game-section game-section--community">
+            <details class="ccg-comments-panel" id="ccg-community-comments-panel">
+                <summary class="ccg-comments-panel__summary">
+                    <span>User Comments</span>
+                    <span class="ccg-comments-panel__meta" id="ccg-comments-summary-meta">0 comments</span>
+                </summary>
+                <div class="ccg-comments-panel__body">
+                    <div id="ccg-community-comments"></div>
+                </div>
+            </details>
         </section>
 
         <div class="game-quick-actions" data-game-quick-actions hidden>
