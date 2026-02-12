@@ -4,6 +4,17 @@
      Prevents endless retry loop by validating auth
      and refreshing sessions before rating writes.
      =============================================== */
+
+  function ratingsEnabled() {
+    return Boolean(window.CCG_COMMUNITY_FLAGS?.COMMUNITY_RATINGS_ENABLED);
+  }
+
+  function renderRatingsDisabled() {
+    const mount = document.getElementById('ccg-community-rating');
+    if (!mount) return;
+    mount.innerHTML = '<div class="ccg-community-card"><h3>Community Rating</h3><p class="ccg-community-muted">Ratings are currently disabled.</p></div>';
+  }
+
   function getGameSlug() {
     const params = new URLSearchParams(window.location.search);
     const fromQuery = params.get('id');
@@ -283,6 +294,10 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
+    if (!ratingsEnabled()) {
+      renderRatingsDisabled();
+      return;
+    }
     const panel = getRatingPanel();
     if (panel) {
       panel.addEventListener('toggle', function () {

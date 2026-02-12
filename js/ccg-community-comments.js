@@ -25,6 +25,17 @@
 
 
 
+  function commentsEnabled() {
+    return Boolean(window.CCG_COMMUNITY_FLAGS?.COMMUNITY_COMMENTS_ENABLED);
+  }
+
+  function renderCommentsDisabled() {
+    const mount = getMount();
+    if (!mount) return;
+    mount.innerHTML = '<div class="ccg-community-card"><h3>User Comments</h3><p class="ccg-community-muted">Comments are currently disabled.</p></div>';
+  }
+
+
   function logCommentError(scope, error, meta) {
     console.error('[CCG-COMMENTS] ' + scope, { error: error, meta: meta || {} });
   }
@@ -601,6 +612,11 @@
   }
 
   function init() {
+    if (!commentsEnabled()) {
+      renderCommentsDisabled();
+      return;
+    }
+
     if (state.initStarted) return;
     state.initStarted = true;
 

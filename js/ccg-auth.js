@@ -125,7 +125,7 @@
     if (auth.loggedIn) {
       const username = auth.username || 'member';
       slot.innerHTML = '' +
-        '<span class="ccg-btn ccg-btn-auth" id="ccg-auth-identity">Logged in as @' + username + '</span>' +
+        '<a class="ccg-btn ccg-btn-auth" id="ccg-auth-identity" href="/community/profile.html">@' + username + '</a>' +
         '<button type="button" class="ccg-btn ccg-btn-auth" id="ccg-auth-logout">Logout</button>';
       bindLogout(slot.querySelector('#ccg-auth-logout'));
       return;

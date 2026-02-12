@@ -64,7 +64,14 @@
       const { data, error } = await registerUser(email, password);
 
       if (error) {
-        setMessage(message, error.message || 'Unable to create account right now.', 'error');
+        const duplicate = error.category === 'duplicate_email';
+        if (duplicate) {
+          message.innerHTML = 'Already registered. <a href="./forgot.html">Reset your password</a>.';
+          message.classList.remove('is-success', 'is-info');
+          message.classList.add('is-error');
+        } else {
+          setMessage(message, error.message || 'Unable to create account right now.', 'error');
+        }
         if (error.detail) {
           console.error('[CCG-AUTH] register-ui', { category: error.category, detail: error.detail });
         }
