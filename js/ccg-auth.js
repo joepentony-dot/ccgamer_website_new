@@ -1,7 +1,6 @@
 (function () {
   'use strict';
 
-  const PROFILE_URL = '/community/profile.html';
   const AUTH_EVENT = 'ccg:auth-state';
 
   const state = {
@@ -126,7 +125,7 @@
     if (auth.loggedIn) {
       const username = auth.username || 'member';
       slot.innerHTML = '' +
-        '<a href="' + PROFILE_URL + '" class="ccg-btn ccg-btn-auth" id="ccg-auth-profile-link">@' + username + '</a>' +
+        '<span class="ccg-btn ccg-btn-auth" id="ccg-auth-identity">Logged in as @' + username + '</span>' +
         '<button type="button" class="ccg-btn ccg-btn-auth" id="ccg-auth-logout">Logout</button>';
       bindLogout(slot.querySelector('#ccg-auth-logout'));
       return;

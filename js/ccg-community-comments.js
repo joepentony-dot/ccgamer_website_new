@@ -8,9 +8,7 @@
   const COMMENT_ENDPOINTS = {
     commentsByGame: 'supabase:public.comments?select=*&game_key=eq.<slug>',
     postComment: 'supabase:public.comments (insert)',
-    latestActivity: 'supabase rpc latest_activity',
-    myActivity: 'supabase:public.comments?user_id=eq.<uid>',
-    badgeUnlocks: 'supabase:public.user_badges'
+    myActivity: 'supabase:public.comments?user_id=eq.<uid>'
   };
 
   const state = {
@@ -121,12 +119,6 @@
     window.location.href = '/auth/login.html?returnTo=' + encodeURIComponent(window.location.pathname + window.location.search + window.location.hash);
   }
 
-  function defaultAvatarMarkup(name) {
-    const label = String(name || 'community-member').trim();
-    const initial = (label.charAt(0) || 'C').toUpperCase();
-    return '<span class="ccg-comment-card__avatar ccg-comment-card__avatar--fallback" aria-hidden="true">' + window.ccgCommunityAuth.esc(initial) + '</span>';
-  }
-
   function resolveCommentIdentity(comment, context) {
     const profile = comment.profiles || {};
     const metadata = comment.user_metadata || {};
@@ -164,13 +156,6 @@
       || message.includes('not found');
   }
 
-  async function fetchUserBadges(userId, supabaseClient) {
-    if (window.ccgCommunityBadges && typeof window.ccgCommunityBadges.fetchUserBadges === 'function') {
-      return window.ccgCommunityBadges.fetchUserBadges(userId, supabaseClient);
-    }
-    return [];
-  }
-
   function isAuthError(error) {
     const code = String(error && (error.status || error.code) || '');
     const message = String(error && error.message || '').toLowerCase();
@@ -182,15 +167,12 @@
       || message.includes('auth');
   }
 
-  function commentCard(comment, context, badgeHtml, supporterLevel, reportState) {
+  function commentCard(comment, context, reportState) {
     const identity = resolveCommentIdentity(comment, context);
     const username = window.ccgCommunityAuth.esc(identity.handle);
     const content = comment.deleted
       ? '<em>This comment has been removed by moderation.</em>'
       : window.ccgCommunityAuth.esc(comment.body || '');
-    const avatar = identity.avatarUrl
-      ? '<img src="' + window.ccgCommunityAuth.esc(identity.avatarUrl) + '" alt="' + username + ' avatar" class="ccg-comment-card__avatar">'
-      : defaultAvatarMarkup(identity.handle);
     const canDelete = identity.own && !comment.deleted;
     const reportDisabled = Boolean(reportState && reportState[comment.id]);
 
@@ -198,10 +180,7 @@
       '<article class="ccg-comment-card" data-comment-id="' + comment.id + '">' +
       '  <header class="ccg-comment-card__head">' +
       '    <div class="ccg-comment-card__identity">' +
-      avatar +
-      '      <a href="/community/profile.html?u=' + encodeURIComponent(identity.handle || '') + '" class="ccg-comment-card__profile-link">@' + username + '</a>' +
-      '      ' + (badgeHtml || '') +
-      '      ' + (supporterLevel && supporterLevel !== 'none' ? '<span class="ccg-supporter-flair ccg-supporter-flair--' + window.ccgCommunityAuth.esc(supporterLevel) + '">' + window.ccgCommunityAuth.esc(supporterLevel) + '</span>' : '') +
+      '      <span class="ccg-comment-card__profile-link">@' + username + '</span>' +
       '    </div>' +
       '    <time datetime="' + window.ccgCommunityAuth.esc(comment.created_at || '') + '">' + new Date(comment.created_at).toLocaleString() + '</time>' +
       '  </header>' +
@@ -340,45 +319,14 @@
 
     const userIds = Array.from(new Set(comments.map(function (comment) { return comment.user_id; }).filter(Boolean)));
     const profileMap = {};
-    if (userIds.length) {
-      const profileRes = await runQueryWithAuthRetry(function () {
-        return supabase.from('profiles').select('id,username,display_name,avatar_url').in('id', userIds);
-      });
-      (profileRes.data || []).forEach(function (row) { profileMap[row.id] = row; });
-      comments.forEach(function (row) { row.profiles = profileMap[row.user_id] || {}; });
-    }
-    const badgeMap = {};
-    const supporterMap = {};
     const reportState = {};
 
     if (userIds.length) {
-      try {
-        const supporterRes = await runQueryWithAuthRetry(function () {
-          return supabase.from('supporter_links').select('user_id,supporter_level').in('user_id', userIds);
-        });
-        if (supporterRes && supporterRes.error && Number(supporterRes.error.status || supporterRes.error.code) === 404) {
-          console.warn('supporter_links not available', supporterRes.error);
-        } else {
-          (supporterRes && supporterRes.data || []).forEach(function (row) {
-            supporterMap[row.user_id] = row.supporter_level || 'none';
-          });
-        }
-      } catch (error) {
-        if (Number(error && (error.status || error.code)) === 404) {
-          console.warn('supporter_links not available', error);
-        } else {
-          throw error;
-        }
-      }
-    }
-
-    if (userIds.length && window.ccgCommunityBadges) {
-      const badgeGroups = await Promise.all(userIds.map(function (id) {
-        return fetchUserBadges(id, supabase).then(function (rows) { return { userId: id, rows: rows }; });
-      }));
-      badgeGroups.forEach(function (group) {
-        badgeMap[group.userId] = group.rows || [];
+      const profileRes = await runQueryWithAuthRetry(function () {
+        return supabase.from('profiles').select('id,username,display_name').in('id', userIds);
       });
+      (profileRes.data || []).forEach(function (row) { profileMap[row.id] = row; });
+      comments.forEach(function (row) { row.profiles = profileMap[row.user_id] || {}; });
     }
 
     if (user && comments.length) {
@@ -404,12 +352,7 @@
       '  <div class="ccg-comment-list">' +
       (comments.length
         ? comments.map(function (comment) {
-          const badges = badgeMap[comment.user_id] || [];
-          const compact = badges.slice(0, 2);
-          const badgeHtml = compact.length && window.ccgCommunityBadges
-            ? window.ccgCommunityBadges.renderBadges(compact, { className: 'ccg-badges ccg-badges--mini', emptyText: '' })
-            : '';
-          return commentCard(comment, context, badgeHtml, supporterMap[comment.user_id] || 'none', reportState);
+          return commentCard(comment, context, reportState);
         }).join('')
         : '<p class="ccg-community-muted">No comments yet. Start the discussion.</p>') +
       '  </div>' +
@@ -480,10 +423,6 @@
         notify(status.textContent, 'error');
         scheduleRetry(isServerError(insertError) ? 2000 : 3000, 'post-error');
         return;
-      }
-
-      if (window.ccgCommunityBadges && typeof window.ccgCommunityBadges.awardCommentBadges === 'function') {
-        await window.ccgCommunityBadges.awardCommentBadges(liveContext.user.id);
       }
 
       form.reset();
