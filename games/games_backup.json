@@ -3971,7 +3971,7 @@
     "_ccg_enforced": false,
     "_ccg_migrated": false
   },
-   {
+  {
     "system": "C64",
     "id": "brian_bloodaxe",
     "slug": "brian-bloodaxe",
@@ -3984,7 +3984,7 @@
     "collections": [],
     "videoid": "pxU5N277UHw",
     "thumbnail": "resources/images/thumbnails/all/brian_bloodaxe.jpg",
-    "pdf": "https://drive.google.com/file/d/1C7tiP2pNgw429VuAAJdSBLwnZAL9bLEP/view?usp=drive_link",
+    "pdf": "https://drive.google.com/file/d/1C7tiP2pNgw429VuAAJdSBLwnZAL9bLEP/view?usp=drive_linkhttps://drive.google.com/file/d/1C7tiP2pNgw429VuAAJdSBLwnZAL9bLEP/view?usp=drive_link",
     "disk": [
       "https://drive.google.com/file/d/1IDIGiCU5GB7rJ4-iGggK_NVpcXN4oQ5x/view?usp=drive_link"
     ],
@@ -4106,6 +4106,40 @@
     "developer": "",
     "_ccg_enforced": false,
     "_ccg_migrated": false
+  },
+  {
+  "system": "AMIGA",
+  "id": "brutal_sports_football",
+  "slug": "brutal-sports-football",
+  "title": "Brutal Sports Football",
+  "sorttitle": "Brutal Sports Football",
+  "year": 1993,
+  "genres": ["sports"],
+  "collections": ["bpjs"],
+  "videoid": "Uqcw6K-BeRM",
+  "thumbnail": "resources/images/thumbnails/all/brutal_sports_football.png",
+  "pdf": "https://drive.google.com/file/d/1FATJ5eiuI7rT51ZNGsCtej9X_tpZma4R/view?usp=drive_link",
+  "disk": [
+    "https://drive.google.com/file/d/1wgrPpbO32RuqFhqCW7b0tfA4-FZK99Al/view?usp=drive_link"
+  ],
+  "lemon": [
+    "https://www.lemonamiga.com/game/brutal-sports-series-football"
+  ],
+  "description": "Brutal Sports Football is a fast, violent futuristic football game where mutant teams battle on a side-scrolling pitch. Score goals, smash opponents, and use power-ups to win through skill, strategy, or sheer brutality.",
+  "ccg_rating": 9,
+  "ccg_rating_reason": "No other football game lets you win by knocking half the other team unconscious — fists, weapons, flying limbs, total chaos, and somehow it’s still brilliantly playable. Absolute carnage, every match.",
+  "credits": {
+    "publisher": ["Millennium"],
+    "producer": "Tony Love",
+    "coder": ["Alistair Mann","Colin Hughes","Peter Jefferies"],
+    "graphics": ["Tony Hager"],
+    "musician": ["Richard Joseph"],
+    "re_releaser": [],
+    "developer": "Teque Software"
+  },
+  "developer": "Teque Software",
+  "_ccg_enforced": false,
+  "_ccg_migrated": false
   },
   {
     "system": "C64",
@@ -23135,10 +23169,10 @@
   },
   {
     "system": "C64",
-    "id": "smash_t_5",
-    "slug": "smash-t-5",
-    "title": "Smash T.V.",
-    "sorttitle": "Smash T.V.",
+    "id": "smash_tv",
+    "slug": "smash-tv",
+    "title": "Smash TV",
+    "sorttitle": "Smash TV",
     "year": 1992,
     "genres": [
       "arcade"
@@ -25688,7 +25722,7 @@
     "id": "the_wombles",
     "slug": "the-wombles",
     "title": "The Wombles",
-    "sorttitle": "Wombles",
+    "sorttitle": "The Wombles",
     "year": 1990,
     "genres": [
       "miscellaneous",

@@ -11943,6 +11943,40 @@
     "_ccg_migrated": false
   },
   {
+  "system": "C64",
+  "id": "the_hitchhikers_guide_to_the_galaxy",
+  "slug": "the-hitchhikers-guide-to-the-galaxy",
+  "title": "The Hitchhikers Guide To The Galaxy",
+  "sorttitle": "Hitchhikers Guide To The Galaxy",
+  "year": 1984,
+  "genres": ["adventure"],
+  "collections": [],
+  "videoid": "qY0cR8RFXi4",
+  "thumbnail": "resources/images/thumbnails/all/the_hitchhikers_guide_to_the_galaxy.jpg",
+  "pdf": "https://drive.google.com/file/d/1C6ECip1rBibxIwe3TwZ8cNsTgpClZpAT/view?usp=drive_link",
+  "disk": [
+    "https://drive.google.com/file/d/1CSaXU9_g9P286R501SJcu-IW3HxF_pwy/view?usp=drive_link"
+  ],
+  "lemon": [
+    "https://www.lemon64.com/game/hitchhikers-guide-to-the-galaxy"
+  ],
+  "description": "Released by Infocom in 1984 for the Commodore 64, The Hitchhiker's Guide to the Galaxy is a notoriously difficult and brilliantly satirical text adventure designed by Douglas Adams and Steve Meretzky.",
+  "ccg_rating": 7,
+  "ccg_rating_reason": "Difficult, but rewarding once you make progress!",
+  "credits": {
+    "publisher": ["Infocom"],
+    "producer": "",
+    "coder": ["Douglas Adams", "Steve Meretzky"],
+    "graphics": ["Steve Cross"],
+    "musician": [],
+    "re_releaser": [],
+    "developer": ""
+  },
+  "developer": "Infocom",
+  "_ccg_enforced": false,
+  "_ccg_migrated": false
+  },
+  {
     "system": "C64",
     "id": "hollywood_or_bust",
     "slug": "hollywood-or-bust",
