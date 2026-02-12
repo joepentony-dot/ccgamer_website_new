@@ -45,7 +45,6 @@ const DEFAULT_STATIC_PATHS = [
   'games/genres/strategy-games.html',
   'games/index.html',
   'quiz/index.html',
-  'quiz/quiz-leaderboard.html',
   'quiz/quiz.html',
   'viewer/manual.html',
 ];

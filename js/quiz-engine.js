@@ -6,7 +6,6 @@
 // Talks to quiz-loader.js (global helpers):
 //   - loadQuizSets(cb)
 //   - loadQuizQuestions(setId, cb)
-//   - saveQuizScore(payload, cb)
 //   - trackQuizEvent(eventName, data)
 //
 // Adds:
@@ -14,7 +13,6 @@
 //   * SID-bar ambient visualiser control
 //   * Web Audio SFX (no external audio files)
 //   * SFX toggle with localStorage persistence
-//   * Best-score-per-set storage for leaderboard highlight
 //   * Omega FX classes for correct / wrong answers
 //
 // FIXES:
@@ -29,7 +27,6 @@
     // STATE
     // --------------------------------------------------
     const SFX_STORAGE_KEY = "ccg_quiz_sfx_enabled";
-    const BEST_SCORE_STORAGE_KEY = "ccg_quiz_best_scores";
 
     const quizState = {
         sets: [],
@@ -226,29 +223,6 @@
         } catch {}
     }
 
-    function loadBestScoresMap() {
-        try {
-            const raw = localStorage.getItem(BEST_SCORE_STORAGE_KEY);
-            if (!raw) return {};
-            const parsed = JSON.parse(raw);
-            return parsed && typeof parsed === "object" ? parsed : {};
-        } catch {
-            return {};
-        }
-    }
-
-    function saveBestScore(setId, score) {
-        const map = loadBestScoresMap();
-        const id = String(setId);
-        const existing = typeof map[id] === "number" ? map[id] : 0;
-
-        if (score > existing) {
-            map[id] = score;
-            try {
-                localStorage.setItem(BEST_SCORE_STORAGE_KEY, JSON.stringify(map));
-            } catch {}
-        }
-    }
 
     // --------------------------------------------------
     // SID BAR VISUAL FX
@@ -597,7 +571,6 @@
         setSidBarsIntensity(0.6);
         renderScoreSummary();
 
-        saveBestScore(quizState.currentSetId, quizState.score);
 
         track("quiz_finished", {
             setId: quizState.currentSetId,
@@ -677,26 +650,6 @@
         requestAnimationFrame(tick);
     }
 
-    function handleSaveScore() {
-        const nameInput = qs("#quiz-name-input");
-        const name = (nameInput?.value || "").trim() || "Anonymous";
-
-        const total = quizState.questions.length;
-        const duration = Math.round((performance.now() - quizState._startTime) / 1000);
-        const percent = total ? Math.round((quizState.score / total) * 100) : 0;
-
-        window.saveQuizScore(
-            {
-                name,
-                setId: quizState.currentSetId,
-                score: quizState.score,
-                total,
-                duration,
-                percent
-            },
-            (success) => track("score_saved", { success })
-        );
-    }
 
     // --------------------------------------------------
     // FLOW INIT
@@ -739,10 +692,6 @@
     function initQuiz() {
         qs("#quiz-start-btn")?.addEventListener("click", startQuiz);
         qs("#quiz-quit-btn")?.addEventListener("click", quitQuiz);
-        qs("#quiz-save-btn")?.addEventListener("click", () => {
-            playClickSfx();
-            handleSaveScore();
-        });
         qs("#quiz-restart-btn")?.addEventListener("click", restartQuiz);
 
         requestQuizSets();
