@@ -2009,13 +2009,44 @@ function initScreenshotModalEnhancements() {
    META
 ============================================================ */
 
+function resolveSeoPublisher(game) {
+    const publisher = resolveCreditValue(game, "publisher");
+    if (publisher) return publisher;
+
+    const developer = resolveCreditValue(game, "developer") || String(game?.developer || "").trim();
+    return developer;
+}
+
+function buildSeoDescription(game, fallbackTitle) {
+    const baseTitle = fallbackTitle || "This game";
+    const year = String(game?.year || "").trim();
+    const publisher = resolveSeoPublisher(game);
+
+    const introParts = [];
+    if (year) introParts.push(`${baseTitle} (${year})`);
+    else introParts.push(baseTitle);
+    if (publisher) introParts.push(`from ${publisher}`);
+
+    const strippedDescription = String(game?.description || "")
+        .replace(/<[^>]*>/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+
+    const hook = strippedDescription
+        ? strippedDescription.slice(0, 95)
+        : "retro gameplay, screenshots, reviews and Commodore history.";
+
+    const description = `${introParts.join(" ")} — ${hook}`;
+    return description.slice(0, 160);
+}
+
 function updateMeta(game) {
-    const title = `${resolveCanonicalGameTitle(game)} | Cheeky Commodore Gamer`;
+    const gameTitle = resolveCanonicalGameTitle(game);
+    const platform = String(game?.system || "Commodore 64").trim();
+    const title = `${gameTitle} – ${platform} | Review, Screens & History`;
     document.title = title;
 
-    const desc = game.description
-        ? game.description.replace(/<[^>]*>/g, "").slice(0, 160)
-        : `Play ${resolveCanonicalGameTitle(game) || "this"} classic Commodore 64 game online.`;
+    const desc = buildSeoDescription(game, gameTitle);
 
     const metaDesc = document.querySelector("meta[name='description']");
     if (metaDesc) metaDesc.setAttribute("content", desc);
@@ -2024,6 +2055,11 @@ function updateMeta(game) {
     const canonicalUrl = canonicalPath
         ? new URL(canonicalPath, "https://www.cheekycommodoregamer.co.uk").toString()
         : "https://www.cheekycommodoregamer.co.uk/games/";
+
+    const imagePath = String(game?.thumbnail || "").trim();
+    const imageUrl = imagePath
+        ? new URL(imagePath.replace(/^\/+/, ""), "https://www.cheekycommodoregamer.co.uk/").toString()
+        : "";
 
     const canonicalLink = document.getElementById("game-canonical");
     if (canonicalLink) canonicalLink.setAttribute("href", canonicalUrl);
@@ -2037,25 +2073,37 @@ function updateMeta(game) {
     const ogUrl = document.getElementById("game-og-url");
     if (ogUrl) ogUrl.setAttribute("content", canonicalUrl);
 
+    const ogImage = document.getElementById("game-og-image");
+    if (ogImage && imageUrl) ogImage.setAttribute("content", imageUrl);
+
     const twitterTitle = document.getElementById("game-twitter-title");
     if (twitterTitle) twitterTitle.setAttribute("content", title);
 
     const twitterDesc = document.getElementById("game-twitter-description");
     if (twitterDesc) twitterDesc.setAttribute("content", desc);
 
+    const twitterImage = document.getElementById("game-twitter-image");
+    if (twitterImage && imageUrl) twitterImage.setAttribute("content", imageUrl);
+
     const jsonLd = document.getElementById("game-jsonld");
     if (jsonLd) {
+        const publisher = resolveSeoPublisher(game);
         const schema = {
             "@context": "https://schema.org",
             "@type": "VideoGame",
-            "name": resolveCanonicalGameTitle(game),
+            "name": gameTitle,
             "url": canonicalUrl,
-            "description": desc
+            "description": desc,
+            "author": {
+                "@type": "Organization",
+                "name": "Cheeky Commodore Gamer"
+            }
         };
 
         if (game.year) schema.datePublished = String(game.year);
-        if (game.system) schema.gamePlatform = String(game.system);
-        if (game.developer) schema.publisher = { "@type": "Organization", "name": String(game.developer) };
+        if (platform) schema.gamePlatform = platform;
+        if (publisher) schema.publisher = { "@type": "Organization", "name": publisher };
+        if (imageUrl) schema.image = imageUrl;
 
         jsonLd.textContent = JSON.stringify(schema);
     }

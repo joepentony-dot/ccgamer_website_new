@@ -201,6 +201,20 @@ function resolveStaticPath(relPath) {
     };
   }
 
+  if (normalized === 'home.html') {
+    return {
+      locPath: '',
+      filePath: path.join(repoRoot, normalized),
+    };
+  }
+
+  if (normalized.endsWith('/index.html')) {
+    return {
+      locPath: normalized.slice(0, -'index.html'.length),
+      filePath: path.join(repoRoot, normalized),
+    };
+  }
+
   return {
     locPath: normalized,
     filePath: path.join(repoRoot, normalized),
@@ -285,7 +299,7 @@ function generateGameSitemap(siteUrl, games) {
 function generateStaticSitemap(siteUrl) {
   const warnings = [];
   const staticPaths = loadStaticPaths(warnings);
-  const entries = [];
+  const entriesByLoc = new Map();
 
   for (const relPath of staticPaths) {
     const resolved = resolveStaticPath(relPath);
@@ -295,13 +309,24 @@ function generateStaticSitemap(siteUrl) {
     }
 
     const loc = resolved.locPath ? `${siteUrl}/${resolved.locPath}` : `${siteUrl}/`;
-    entries.push({
+    const nextEntry = {
       loc,
       lastmod: getGitLastMod(resolved.filePath),
       filePath: resolved.filePath,
-    });
+    };
+
+    if (!entriesByLoc.has(loc)) {
+      entriesByLoc.set(loc, nextEntry);
+      continue;
+    }
+
+    const existing = entriesByLoc.get(loc);
+    if (nextEntry.lastmod > existing.lastmod) {
+      entriesByLoc.set(loc, nextEntry);
+    }
   }
 
+  const entries = [...entriesByLoc.values()];
   entries.sort((a, b) => a.loc.localeCompare(b.loc));
 
   const urlEntries = entries.map((entry) => buildUrlEntry(entry.loc, entry.lastmod));
