@@ -113,10 +113,26 @@
   }
 
   function redirectToLogin(returnTo) {
+    if (isPublicAuthRoute()) {
+      return;
+    }
     const target = new URL('/auth/login.html', window.location.origin);
     const fallbackReturn = window.location.pathname + window.location.search + window.location.hash;
     target.searchParams.set('returnTo', returnTo || fallbackReturn);
     window.location.href = target.pathname + target.search;
+  }
+
+  function isPublicAuthRoute(pathname) {
+    const path = String(pathname || window.location.pathname || '/').toLowerCase();
+    const normalized = path.endsWith('/') ? path.slice(0, -1) : path;
+    const publicAuthRoutes = new Set([
+      '/auth/login.html',
+      '/auth/register.html',
+      '/auth/forgot.html',
+      '/auth/reset.html'
+    ]);
+
+    return normalized.startsWith('/auth/') || publicAuthRoutes.has(normalized);
   }
 
   function sanitizeUsername(raw, fallback) {
@@ -417,6 +433,9 @@
   }
 
   async function requireAuth() {
+    if (isPublicAuthRoute()) {
+      return null;
+    }
     await initAuth();
     if (!state.currentUser) {
       redirectToLogin();
