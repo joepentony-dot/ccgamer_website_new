@@ -26,14 +26,36 @@
       const supabase = await window.ccgSupabase.getClient();
       const context = await window.ccgSupabase.getCurrentUserContext();
 
+
+      async function safeSupporterSelect(selectBuilder) {
+        try {
+          const result = await selectBuilder();
+          if (result && result.error && Number(result.error.status || result.error.code) === 404) {
+            console.warn('supporter_links not available', result.error);
+            return { data: [] };
+          }
+          return result;
+        } catch (error) {
+          if (Number(error && (error.status || error.code)) === 404) {
+            console.warn('supporter_links not available', error);
+            return { data: [] };
+          }
+          throw error;
+        }
+      }
+
       if (!context || !context.permissions || !context.permissions.canModerate) {
         status.textContent = 'You do not have permission to access this page.';
         return;
       }
 
       const [linksRes, pendingYoutubeRes, challengesRes] = await Promise.all([
-        supabase.from('supporter_links').select('user_id,patreon_status,patreon_tier,youtube_member_status,youtube_manual_status,supporter_level').order('last_sync', { ascending: false }).limit(50),
-        supabase.from('supporter_links').select('user_id,youtube_channel_id,youtube_manual_code,youtube_manual_requested_at').eq('youtube_manual_status', 'pending').limit(50),
+        safeSupporterSelect(function () {
+          return supabase.from('supporter_links').select('user_id,patreon_status,patreon_tier,youtube_member_status,youtube_manual_status,supporter_level').order('last_sync', { ascending: false }).limit(50);
+        }),
+        safeSupporterSelect(function () {
+          return supabase.from('supporter_links').select('user_id,youtube_channel_id,youtube_manual_code,youtube_manual_requested_at').eq('youtube_manual_status', 'pending').limit(50);
+        }),
         supabase.from('challenges').select('id,title,active,is_supporter_only,start_at,end_at').order('start_at', { ascending: false }).limit(20)
       ]);
 

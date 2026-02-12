@@ -68,13 +68,35 @@
 
   async function fetchPublicProfile(supabase, userRef) {
     if (!userRef) return null;
-    const fields = 'id,username,display_name,avatar_url,bio,role,created_at';
+    const fields = 'id,username,display_name,avatar_url';
 
     const byId = await supabase.from('profiles').select(fields).eq('id', userRef).maybeSingle();
     if (byId.data) return byId.data;
 
     const byUsername = await supabase.from('profiles').select(fields).eq('username', userRef).maybeSingle();
     return byUsername.data || null;
+  }
+
+
+  async function safeSupporterLinkLookup(supabase, userId) {
+    try {
+      const result = await supabase
+        .from('supporter_links')
+        .select('eight_bit_title,profile_banner_key,supporter_frame_key,supporter_level,supporter_title')
+        .eq('user_id', userId)
+        .maybeSingle();
+      if (result && result.error && Number(result.error.status || result.error.code) === 404) {
+        console.warn('supporter_links not available', result.error);
+        return { data: null, error: null };
+      }
+      return result;
+    } catch (error) {
+      if (Number(error && (error.status || error.code)) === 404) {
+        console.warn('supporter_links not available', error);
+        return { data: null, error: null };
+      }
+      throw error;
+    }
   }
 
   async function ensureOwnProfileRow(supabase, authUser, authProfile) {
@@ -87,11 +109,10 @@
       id: authUser.id,
       username: fallbackUsername,
       display_name: authUser.user_metadata && authUser.user_metadata.full_name ? String(authUser.user_metadata.full_name).slice(0, 42) : null,
-      avatar_url: authUser.user_metadata && authUser.user_metadata.avatar_url ? String(authUser.user_metadata.avatar_url) : null,
-      role: 'member'
+      avatar_url: authUser.user_metadata && authUser.user_metadata.avatar_url ? String(authUser.user_metadata.avatar_url) : null
     };
 
-    const upsertRes = await supabase.from('profiles').upsert(payload, { onConflict: 'id' }).select('id,username,display_name,avatar_url,bio,role,created_at').maybeSingle();
+    const upsertRes = await supabase.from('profiles').upsert(payload, { onConflict: 'id' }).select('id,username,display_name,avatar_url').maybeSingle();
     if (upsertRes.error) {
       console.error('[CCG-PROFILE] ensureOwnProfileRow failed', upsertRes.error);
       return null;
@@ -190,16 +211,16 @@
       window.ccgCommunityBadges.fetchUserBadges(targetProfile.id),
       fetchRecentComments(supabase, targetProfile.id, from, to),
       supabase.from('community_rankings').select('rep_points,rep_level,level_title,supporter_level,supporter_title,supporter_flair_key,profile_banner_key,early_access_enabled').eq('user_id', targetProfile.id).maybeSingle(),
-      supabase.from('supporter_links').select('eight_bit_title,profile_banner_key,supporter_frame_key,supporter_level,supporter_title').eq('user_id', targetProfile.id).maybeSingle()
+      safeSupporterLinkLookup(supabase, targetProfile.id)
     ]);
 
     const activityErrorMessage = activity.error ? classifyStatusMessage(activity.error, 'Unable to load activity right now.') : '';
 
     const ratingsCount = ratingsRes.count || 0;
     const commentsCount = commentsRes.count || 0;
-    const joined = formatDate(targetProfile.created_at);
+    const joined = formatDate((context.authUser && context.authUser.created_at) || targetProfile.created_at);
     const displayName = targetProfile.display_name || targetProfile.username || 'Community member';
-    const roleLabel = targetProfile.role || 'user';
+    const roleLabel = 'user';
     const bio = targetProfile.bio ? esc(targetProfile.bio) : 'No bio yet. This user is all gameplay, no fluff.';
     const authState = context.isAuthenticated ? 'Logged in' : 'Guest';
     const overview = overviewRes && overviewRes.data ? overviewRes.data : {};
