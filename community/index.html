@@ -163,106 +163,47 @@
 
     <section class="ccg-community-card">
       <h1>CCG Community Hub</h1>
-      <p>Your live feed for rankings, supporter perks, weekly challenges, and high-energy retro community momentum.</p>
+      <p>Your community base for player cards, badges, rankings, and lightweight activity tracking.</p>
       <div class="ccg-community-auth__actions">
         <a class="ccg-community-btn" href="/community/profile.html">My player card</a>
-        <a class="ccg-community-btn ccg-community-btn--ghost" href="/community/challenges.html">Weekly challenges</a>
-      </div>
-      <div class="ccg-seo-links" aria-label="Community quick links">
-        <a href="/community/rankings.html">Rankings</a>
-        <a href="/community/badges.html">Badges</a>
-        <a href="/community/challenges.html">Challenges</a>
-        <a href="/community/profile.html">Profile</a>
+        <a class="ccg-community-btn ccg-community-btn--ghost" href="/community/badges.html">Browse badges</a>
+        <a class="ccg-community-btn ccg-community-btn--ghost" href="/community/rankings.html">View rankings</a>
       </div>
     </section>
 
-    <section class="hub-grid" aria-label="Community live modules">
+    <section class="hub-grid" aria-label="Community modules">
       <article class="ccg-community-card hub-card">
-        <h2>Hall of Fame</h2>
-        <p class="ccg-community-muted">Top REP this month with fair supporter bonuses only.</p>
-        <div id="ccg-hub-hall-of-fame" class="hub-section-body" aria-live="polite">
-          <p class="ccg-community-muted">Loading Hall of Fame…</p>
-        </div>
+        <h2>Player Card</h2>
+        <p class="ccg-community-muted">Manage your profile, REP, and visible community identity.</p>
+        <p><a class="ccg-community-btn" href="/community/profile.html">Open profile</a></p>
       </article>
 
       <article class="ccg-community-card hub-card">
-        <h2>Supporter Spotlight</h2>
-        <p class="ccg-community-muted">Featured supporters rotating every month.</p>
-        <div id="ccg-hub-supporter-spotlight" class="hub-section-body" aria-live="polite">
-          <p class="ccg-community-muted">Loading spotlight…</p>
-        </div>
+        <h2>Badges</h2>
+        <p class="ccg-community-muted">Data-driven badge unlocks displayed on player cards, profiles, and comments.</p>
+        <p><a class="ccg-community-btn" href="/community/badges.html">Open badges</a></p>
       </article>
 
       <article class="ccg-community-card hub-card">
-        <h2>Trending Now</h2>
-        <p class="ccg-community-muted">Weighted activity from ratings + comments in the last 7 days.</p>
-        <div id="ccg-hub-trending" class="hub-section-body" aria-live="polite">
-          <p class="ccg-community-muted">Loading trending games…</p>
-        </div>
-      </article>
-
-      <article class="ccg-community-card hub-card">
-        <h2>Top Members</h2>
-        <p class="ccg-community-muted">Live REP and level progression leaderboard.</p>
-        <div id="ccg-hub-top-members" class="hub-section-body" aria-live="polite">
-          <p class="ccg-community-muted">Loading member leaderboard…</p>
-        </div>
+        <h2>Rankings</h2>
+        <p class="ccg-community-muted">Check live REP and leaderboard positioning.</p>
+        <p><a class="ccg-community-btn" href="/community/rankings.html">Open rankings</a></p>
       </article>
 
       <article class="ccg-community-card hub-card hub-card--full">
-        <h2>Weekly Challenges</h2>
-        <p class="ccg-community-muted">Supporters unlock extra mission lanes and bonus cosmetics.</p>
-        <div id="ccg-hub-weekly-challenges" class="hub-section-body" aria-live="polite">
-          <p class="ccg-community-muted">Loading weekly challenge board…</p>
-        </div>
-      </article>
-
-      <article class="ccg-community-card hub-card hub-card--full">
-        <h2>Supporter Lounge</h2>
-        <p class="ccg-community-muted">Behind-the-scenes updates and supporter-only feed posts.</p>
-        <div id="ccg-hub-supporter-lounge" class="hub-section-body" aria-live="polite">
-          <p class="ccg-community-muted">Loading supporter lounge…</p>
-        </div>
-      </article>
-
-      <article class="ccg-community-card hub-card hub-card--full">
-        <h2>Latest Activity</h2>
-        <p class="ccg-community-muted">Newest ratings, comments, and badge unlocks from across the community.</p>
-        <div id="ccg-hub-latest-activity" class="hub-section-body" aria-live="polite">
-          <p class="ccg-community-muted">Loading latest activity…</p>
-        </div>
-      </article>
-
-      <article class="ccg-community-card hub-card hub-card--full" id="ccg-public-comments-card">
-        <h2>Game Comments Explorer</h2>
-        <p class="ccg-community-muted">Browse every game discussion, or log in to post your own Omega takes.</p>
-
-        <form class="ccg-community-form ccg-comments-explorer__controls" id="ccg-comments-explorer-controls" autocomplete="off">
-          <label for="ccg-comments-game">Select game</label>
-          <input
-            type="text"
-            id="ccg-comments-game"
-            name="game"
-            placeholder="Type a game title..."
-            required
-            aria-describedby="ccg-comments-game-help"
-          />
-          <p class="ccg-community-muted" id="ccg-comments-game-help">Start typing to search by title/system/slug, then select one suggestion.</p>
-        </form>
-
-        <details class="ccg-comments-panel" id="ccg-comments-panel" open>
-          <summary class="ccg-comments-panel__summary">
-            <span>Comments</span>
-            <span class="ccg-comments-panel__meta" id="ccg-comments-count">0 comments</span>
-          </summary>
-
+        <details class="ccg-comments-panel">
+          <summary class="ccg-comments-panel__summary"><span>Supporter Lounge</span><span class="ccg-comments-panel__meta">Placeholder</span></summary>
           <div class="ccg-comments-panel__body">
-            <div class="ccg-comments-post" id="ccg-comments-post"></div>
-            <div class="ccg-comments-feedback ccg-community-muted" id="ccg-comments-feedback" aria-live="polite"></div>
-            <div class="ccg-comment-list" id="ccg-public-comment-list"></div>
-            <div class="ccg-comments-actions">
-              <button type="button" class="ccg-community-btn ccg-community-btn--ghost" id="ccg-comments-load-more" hidden>Load more</button>
-            </div>
+            <p class="ccg-community-muted">Supporter Lounge returns in a future phase with dedicated feed tools.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="ccg-community-card hub-card hub-card--full">
+        <details class="ccg-comments-panel">
+          <summary class="ccg-comments-panel__summary"><span>Community Activity</span><span class="ccg-comments-panel__meta">Optional</span></summary>
+          <div class="ccg-comments-panel__body">
+            <p class="ccg-community-muted">Activity stream is intentionally collapsed for faster first paint.</p>
           </div>
         </details>
       </article>
@@ -280,8 +221,7 @@
   <script src="/js/ccg-community-auth.js" defer></script>
   <script src="/js/ccg-community-ui.js" defer></script>
   <script src="/js/ccg-community-badges.js" defer></script>
-  <script src="/js/ccg-community-hub.js" defer></script>
-  <script src="/resources/js/ccg-nav-scroll-indicator.js" defer></script>
+    <script src="/resources/js/ccg-nav-scroll-indicator.js" defer></script>
 
 <script src="/js/ccg-nav.js" defer></script>
 <script src="/js/ccg-auth.js" defer></script>

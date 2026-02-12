@@ -145,14 +145,10 @@
   }
 
   async function fetchUserBadges(userId, supabaseClient) {
-    if (!userId) return [];
-    const supabase = supabaseClient || await window.ccgSupabase.getClient();
-    const { data: userBadges } = await supabase
-      .from('user_badges')
-      .select('badge_id, badges(name, icon, category, rarity, points)')
-      .eq('user_id', userId);
-
-    return userBadges || [];
+    if (window.ccgCommunityBadges && typeof window.ccgCommunityBadges.fetchUserBadges === 'function') {
+      return window.ccgCommunityBadges.fetchUserBadges(userId, supabaseClient);
+    }
+    return [];
   }
 
   function nowMinusDays(days) {

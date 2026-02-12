@@ -98,13 +98,13 @@
   function setDeferredMessage(message) {
     const mount = getMount();
     if (!mount) return;
-    mount.innerHTML = '<div class="ccg-community-card"><h3>Community Comments</h3><p class="ccg-community-muted">' + (message || 'Preparing comments…') + '</p></div>';
+    mount.innerHTML = '<div class="ccg-community-card"><h3>User Comments</h3><p class="ccg-community-muted">' + (message || 'Preparing comments…') + '</p></div>';
   }
 
   function setFailureMessage(message) {
     const mount = getMount();
     if (!mount) return;
-    mount.innerHTML = '<div class="ccg-community-card"><h3>Community Comments</h3><p class="ccg-community-muted">' + (message || 'Not logged in') + '</p></div>';
+    mount.innerHTML = '<div class="ccg-community-card"><h3>User Comments</h3><p class="ccg-community-muted">' + (message || 'Not logged in') + '</p></div>';
   }
 
   function notify(message, type) {
@@ -142,7 +142,7 @@
     if (!mount) return;
     mount.innerHTML = '' +
       '<div class="ccg-community-card">' +
-      '  <h3>Community Comments</h3>' +
+      '  <h3>User Comments</h3>' +
       '  <p class="ccg-community-muted">' + (message || 'Log in to view comments.') + '</p>' +
       '  <p><button class="ccg-community-btn" id="ccg-login-to-comment" type="button">Log in</button></p>' +
       '</div>';
@@ -165,14 +165,10 @@
   }
 
   async function fetchUserBadges(userId, supabaseClient) {
-    if (!userId) return [];
-    const supabase = supabaseClient || await window.ccgSupabase.getClient();
-    const { data: userBadges } = await supabase
-      .from('user_badges')
-      .select('badge_id, badges(name, icon, category, rarity, points)')
-      .eq('user_id', userId);
-
-    return userBadges || [];
+    if (window.ccgCommunityBadges && typeof window.ccgCommunityBadges.fetchUserBadges === 'function') {
+      return window.ccgCommunityBadges.fetchUserBadges(userId, supabaseClient);
+    }
+    return [];
   }
 
   function isAuthError(error) {
@@ -331,7 +327,7 @@
         return;
       }
       logEndpointFailure(COMMENT_ENDPOINTS.commentsByGame, error);
-      mount.innerHTML = '<div class="ccg-community-card"><h3>Community Comments</h3><p class="ccg-community-muted">' + classifyStatusMessage(error, explainError(error, 'Server error')) + '</p></div>';
+      mount.innerHTML = '<div class="ccg-community-card"><h3>User Comments</h3><p class="ccg-community-muted">' + classifyStatusMessage(error, explainError(error, 'Server error')) + '</p></div>';
       scheduleRetry(isServerError(error) ? 3500 : 5000, 'load-error');
       return;
     }
@@ -400,7 +396,7 @@
 
     mount.innerHTML = '' +
       '<div class="ccg-community-card">' +
-      '  <h3>Community Comments</h3>' +
+      '  <h3>User Comments</h3>' +
       '  <p class="ccg-community-muted">Status: ' + (user ? ('Logged in as @' + window.ccgCommunityAuth.esc((context.profile && context.profile.username) || (window.CCG_AUTH && window.CCG_AUTH.username) || 'member')) : 'Guest (read-only)') + '</p>' +
       (user
         ? '<form id="ccg-comment-form" class="ccg-community-form"><label>Add your comment<textarea name="content" required maxlength="600"></textarea></label><button type="submit" class="ccg-community-btn"' + (canComment ? '' : ' disabled') + '>Post comment</button><span id="ccg-comment-status" class="ccg-community-muted" aria-live="polite"></span></form>'
@@ -642,26 +638,62 @@
     if (detail.gameSlug) state.activeSlug = String(detail.gameSlug);
     if (detail.gameId !== undefined && detail.gameId !== null) state.activeGameId = String(detail.gameId);
     state.lastGameEventAt = Date.now();
-    runSafeInit('game-loaded');
+    const panel = getCommentsPanel();
+    if (!panel || panel.open) runSafeInit('game-loaded');
+  }
+
+  function getCommentsPanel() {
+    return document.getElementById('ccg-community-comments-panel');
+  }
+
+  async function refreshSummaryCount() {
+    const meta = document.getElementById('ccg-comments-summary-meta');
+    if (!meta || !window.ccgSupabase) return;
+    const game = getGameContext();
+    if (!game.slug) return;
+    try {
+      const supabase = await window.ccgSupabase.getClient();
+      const countRes = await supabase.from('comments').select('id', { count: 'exact', head: true }).eq('game_key', normalizeGameKey({ slug: game.slug, id: game.gameId }));
+      if (!countRes.error) {
+        const count = Number(countRes.count || 0);
+        meta.textContent = count === 1 ? '1 comment' : count + ' comments';
+      }
+    } catch (_error) {}
   }
 
   function init() {
     if (state.initStarted) return;
     state.initStarted = true;
 
-    runSafeInit('dom-ready');
+    const panel = getCommentsPanel();
+    refreshSummaryCount();
+
+    if (panel) {
+      panel.addEventListener('toggle', function () {
+        if (panel.open) {
+          runSafeInit('panel-open');
+        }
+      });
+      if (panel.open) runSafeInit('dom-ready-open');
+    } else {
+      runSafeInit('dom-ready');
+    }
 
     window.addEventListener('ccg:auth-ready', function () {
       state.authReady = true;
-      runSafeInit('auth-ready');
+      if (!panel || panel.open) runSafeInit('auth-ready');
     });
     window.addEventListener('ccg:auth-changed', function () {
       state.authReady = true;
-      runSafeInit('auth-changed');
+      if (!panel || panel.open) runSafeInit('auth-changed');
     });
-    window.addEventListener('ccg:game-loaded', onGameLoaded);
+    window.addEventListener('ccg:game-loaded', function (event) {
+      onGameLoaded(event);
+      refreshSummaryCount();
+    });
     window.addEventListener('ccg:comments-updated', function () {
-      runSafeInit('comments-updated');
+      refreshSummaryCount();
+      if (!panel || panel.open) runSafeInit('comments-updated');
     });
   }
 
