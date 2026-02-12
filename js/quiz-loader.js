@@ -3,8 +3,6 @@
    ------------------------------------------------------------
    • Loads packs + questions from local quiz/quiz-data.json
    • Exposes global callbacks consumed by quiz-engine.js
-   • Adds live pack/question counts and recent score recap
-   • Saves scores to LocalStorage
    • Silent visitor/game tracking (best-effort)
    ============================================================ */
 
@@ -12,7 +10,6 @@
     'use strict';
 
     const DATA_URL = './quiz-data.json';
-    const SCORE_KEY = 'ccg_quiz_local_scores';
     const CSV_SETS_URL = '/data/quiz_sets.csv';
     const CSV_QUESTIONS_URL = '/data/questions.csv';
     const MIN_PACK_COUNT = 2;
@@ -210,61 +207,6 @@
     }
 
     function bestEffortPost() {}
-
-    /* --------------------------------------------------------
-       LOCAL SCORE STORAGE
-    -------------------------------------------------------- */
-    function loadSavedScores() {
-        try {
-            const raw = localStorage.getItem(SCORE_KEY);
-            if (!raw) return [];
-            const parsed = JSON.parse(raw);
-            return Array.isArray(parsed) ? parsed : [];
-        } catch (err) {
-            console.warn('[Quiz] Unable to read saved scores', err);
-            return [];
-        }
-    }
-
-    function saveScores(list) {
-        try {
-            localStorage.setItem(SCORE_KEY, JSON.stringify(list));
-        } catch (err) {
-            console.warn('[Quiz] Unable to persist scores', err);
-        }
-    }
-
-    function addLocalScore(payload) {
-        const scores = loadSavedScores();
-        const safe = Object.assign({ time: Date.now() }, payload || {});
-        scores.unshift(safe);
-        saveScores(scores.slice(0, 12));
-        renderRecentScores(scores);
-    }
-
-    function renderRecentScores(list) {
-        const container = document.querySelector('[data-quiz-recent-scores]');
-        if (!container) return;
-
-        container.innerHTML = '';
-        const scores = list.slice(0, 5);
-
-        if (!scores.length) {
-            container.innerHTML = '<li class="quiz-recent-empty">No local scores yet. Finish a quiz to populate this list.</li>';
-            return;
-        }
-
-        scores.forEach(entry => {
-            const li = document.createElement('li');
-            li.className = 'quiz-recent-item';
-            li.innerHTML = `
-                <span class="quiz-recent-name">${entry.name || 'Anonymous'}</span>
-                <span class="quiz-recent-pack">${entry.setId || entry.set || 'Pack'}</span>
-                <span class="quiz-recent-score">${entry.score || 0} pts</span>
-            `;
-            container.appendChild(li);
-        });
-    }
 
     /* --------------------------------------------------------
        LOCAL FALLBACK DATA
@@ -479,20 +421,6 @@
         if (typeof cb === 'function') cb(questions);
     };
 
-    window.saveQuizScore = async function saveQuizScore(payload, cb) {
-        // payload expected from quiz-engine:
-        // { setId, name, score, total, duration, percent, ... }
-        const safePayload = Object.assign({}, payload || {});
-        const setId = safePayload.setId || safePayload.set;
-        safePayload.setId = setId;
-
-        // Always keep a local record (recent runs) for UX/testing
-        addLocalScore(safePayload);
-
-        // Remote save removed; acknowledge immediately after local save
-        if (typeof cb === 'function') cb(true);
-        return true;
-    };
 
     window.trackQuizEvent = function trackQuizEvent(name, data) {
         if (name === 'quiz_start') {
@@ -513,8 +441,6 @@
        INIT
     -------------------------------------------------------- */
     function initQuizBadges() {
-        const savedScores = loadSavedScores();
-        renderRecentScores(savedScores);
 
         window.loadQuizSets(() => {
             renderPackStatus(cachedSets);

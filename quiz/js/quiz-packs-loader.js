@@ -4,14 +4,12 @@
    • Loads packs + questions from quiz-data.json
    • Supports legacy pack.questions and unified questions map
    • Preserves global callbacks consumed by quiz-engine.js
-   • Keeps local recent-score behavior
    ============================================================ */
 
 (function () {
     'use strict';
 
     const DATA_URL = './quiz-data.json';
-    const SCORE_KEY = 'ccg_quiz_local_scores';
 
     let cachedSets = [];
     let localData = null;
@@ -32,57 +30,6 @@
         return Math.min(Math.max(idx, 0), length - 1);
     }
 
-    function loadSavedScores() {
-        try {
-            const raw = localStorage.getItem(SCORE_KEY);
-            if (!raw) return [];
-            const parsed = JSON.parse(raw);
-            return Array.isArray(parsed) ? parsed : [];
-        } catch (err) {
-            console.warn('[Quiz] Unable to read saved scores', err);
-            return [];
-        }
-    }
-
-    function saveScores(list) {
-        try {
-            localStorage.setItem(SCORE_KEY, JSON.stringify(list));
-        } catch (err) {
-            console.warn('[Quiz] Unable to persist scores', err);
-        }
-    }
-
-    function addLocalScore(payload) {
-        const scores = loadSavedScores();
-        const safe = Object.assign({ time: Date.now() }, payload || {});
-        scores.unshift(safe);
-        saveScores(scores.slice(0, 12));
-        renderRecentScores(scores);
-    }
-
-    function renderRecentScores(list) {
-        const container = document.querySelector('[data-quiz-recent-scores]');
-        if (!container) return;
-
-        container.innerHTML = '';
-        const scores = list.slice(0, 5);
-
-        if (!scores.length) {
-            container.innerHTML = '<li class="quiz-recent-empty">No local scores yet. Finish a quiz to populate this list.</li>';
-            return;
-        }
-
-        scores.forEach((entry) => {
-            const li = document.createElement('li');
-            li.className = 'quiz-recent-item';
-            li.innerHTML = `
-                <span class="quiz-recent-name">${entry.name || 'Anonymous'}</span>
-                <span class="quiz-recent-pack">${entry.setId || entry.set || 'Pack'}</span>
-                <span class="quiz-recent-score">${entry.score || 0} pts</span>
-            `;
-            container.appendChild(li);
-        });
-    }
 
     async function fetchLocalData() {
         if (localData) return localData;
@@ -298,16 +245,6 @@
         if (typeof cb === 'function') cb(questions);
     };
 
-    window.saveQuizScore = async function saveQuizScore(payload, cb) {
-        const safePayload = Object.assign({}, payload || {});
-        const setId = safePayload.setId || safePayload.set;
-        safePayload.setId = setId;
-
-        addLocalScore(safePayload);
-
-        if (typeof cb === 'function') cb(true);
-        return true;
-    };
 
     window.trackQuizEvent = function trackQuizEvent(name, data) {
         if (name === 'quiz_start') {
@@ -322,7 +259,6 @@
     };
 
     function initQuizBadges() {
-        renderRecentScores(loadSavedScores());
         window.loadQuizSets(() => {
             renderPackStatus(cachedSets);
         });

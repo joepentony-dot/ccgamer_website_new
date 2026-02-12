@@ -1,3 +1,6 @@
+// Community ratings feature removed.
+// Compatibility shim retained to avoid merge conflicts on branches
+// that still reference this script.
 (function () {
   /* ===============================================
      OMEGA COMMUNITY AUTH LOCK
