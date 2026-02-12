@@ -144,6 +144,17 @@
     return date.toLocaleString();
   }
 
+  async function fetchUserBadges(userId, supabaseClient) {
+    if (!userId) return [];
+    const supabase = supabaseClient || await window.ccgSupabase.getClient();
+    const { data: userBadges } = await supabase
+      .from('user_badges')
+      .select('badge_id, badges(name, icon, category, rarity, points)')
+      .eq('user_id', userId);
+
+    return userBadges || [];
+  }
+
   function nowMinusDays(days) {
     const date = new Date();
     date.setDate(date.getDate() - days);
@@ -227,7 +238,7 @@
 
       let details = '';
       if (row.type === 'badge') {
-        details = 'earned <span class="ccg-badge ccg-badge--icon">🏆 ' + esc(row.badge_code || 'Badge') + '</span>';
+        details = 'earned <span class="ccg-badge ccg-badge--icon">🏆 ' + esc((row.badges && row.badges.name) || 'Badge') + '</span>';
       } else if (row.type === 'rating') {
         details = 'rated <a href="' + gameLink(row.game_key) + '">' + esc(row.game_key || 'a game') + '</a> · ' + Number(row.rating || 0) + '/10';
       } else {
@@ -254,22 +265,25 @@
     if (!rows.length) return '<p class="ccg-community-muted">Top members are still warming up.</p>';
 
     return '<ul class="member-list">' + rows.map(function (row) {
+      const avatarUrl = row.profiles && row.profiles.avatar_url ? String(row.profiles.avatar_url) : '';
+      const avatar = avatarUrl
+        ? '<img src="' + esc(avatarUrl) + '" alt="' + esc(row.username || 'user') + ' avatar" class="ccg-comment-card__avatar">'
+        : '<span class="ccg-comment-card__avatar ccg-comment-card__avatar--fallback" aria-hidden="true">' + esc(String(row.username || 'U').charAt(0).toUpperCase()) + '</span>' ;
       return '' +
         '<li class="member-row">' +
         '  <div class="member-row__main">' +
+        avatar +
         '    <a href="' + profileLink(row.username) + '" class="member-row__name">@' + esc(row.username || 'user') + '</a>' +
-        '    <span class="member-row__points">' + Number(row.points || 0) + ' pts</span>' +
+        '    <span class="member-row__points">' + Number(row.total_points || row.points || 0) + ' pts</span>' +
         '  </div>' +
         '  <div class="member-row__meta">' +
         '    <span>' + Number(row.comment_count || 0) + ' comments</span>' +
         '    <span>' + Number(row.rating_count || 0) + ' ratings</span>' +
         '    <span>' + Number(row.badge_count || 0) + ' badges</span>' +
         '  </div>' +
-        (row.badges && row.badges.length
-          ? '<div class="ccg-badges ccg-badges--mini">' + row.badges.slice(0, 5).map(function (badge) {
-            return '<span class="ccg-badge">' + esc(badge) + '</span>';
-          }).join('') + '</div>'
-          : '') +
+        (window.ccgCommunityBadges
+          ? window.ccgCommunityBadges.renderBadgeIcons(row.badges || [], 5)
+          : '<span class="ccg-community-muted">No badges yet</span>') +
         '</li>';
     }).join('') + '</ul>';
   }
@@ -356,7 +370,7 @@
     const [ratingsRes, commentsRes, badgesRes] = await Promise.all([
       supabase.from('ratings').select('user_id,game_key,rating,created_at').order('created_at', { ascending: false }).limit(HUB_LIMITS.activity),
       supabase.from('comments').select('user_id,game_key,created_at').order('created_at', { ascending: false }).limit(HUB_LIMITS.activity),
-      supabase.from('user_badges').select('user_id,badge_code,awarded_at').order('awarded_at', { ascending: false }).limit(HUB_LIMITS.activity)
+      supabase.from('user_badges').select('user_id,badge_id,awarded_at,badges(name,slug,icon,category,rarity,points)').order('awarded_at', { ascending: false }).limit(HUB_LIMITS.activity)
     ]);
 
     if (ratingsRes.error) throw ratingsRes.error;
@@ -374,7 +388,7 @@
     });
 
     badgeRows.forEach(function (row) {
-      raw.push({ type: 'badge', user_id: row.user_id, badge_code: row.badge_code, created_at: row.awarded_at });
+      raw.push({ type: 'badge', user_id: row.user_id, badges: row.badges || null, created_at: row.awarded_at });
     });
 
     return raw
@@ -383,51 +397,23 @@
       .slice(0, HUB_LIMITS.activity);
   }
 
-  async function fallbackTopMembers(supabase, days) {
-    const since = nowMinusDays(days);
-    const [ratingsRes, commentsRes, badgesRes] = await Promise.all([
-      supabase.from('ratings').select('user_id,created_at').gte('created_at', since).limit(12000),
-      supabase.from('comments').select('user_id,created_at').gte('created_at', since).limit(12000),
-      supabase.from('user_badges').select('user_id,badge_code,awarded_at').gte('awarded_at', since).limit(12000)
-    ]);
+  async function fallbackTopMembers(supabase) {
+    const pointsRes = await supabase
+      .from('user_points')
+      .select('user_id,total_points,profiles(display_name,avatar_url,username)')
+      .order('total_points', { ascending: false })
+      .limit(HUB_LIMITS.members);
 
-    if (ratingsRes.error) throw ratingsRes.error;
-    if (commentsRes.error) throw commentsRes.error;
+    if (pointsRes.error) throw pointsRes.error;
 
-    const map = new Map();
-    function upsert(userId) {
-      if (!userId) return null;
-      if (!map.has(userId)) map.set(userId, { user_id: userId, rating_count: 0, comment_count: 0, badge_count: 0, points: 0, badges: [] });
-      return map.get(userId);
-    }
-
-    (ratingsRes.data || []).forEach(function (row) {
-      const item = upsert(row.user_id);
-      if (!item) return;
-      item.rating_count += 1;
-      item.points += 1;
+    return (pointsRes.data || []).map(function (row) {
+      return {
+        user_id: row.user_id,
+        total_points: Number(row.total_points || 0),
+        points: Number(row.total_points || 0),
+        profiles: row.profiles || {}
+      };
     });
-
-    (commentsRes.data || []).forEach(function (row) {
-      const item = upsert(row.user_id);
-      if (!item) return;
-      item.comment_count += 1;
-      item.points += 2;
-    });
-
-    if (!badgesRes.error) {
-      (badgesRes.data || []).forEach(function (row) {
-        const item = upsert(row.user_id);
-        if (!item) return;
-        item.badge_count += 1;
-        item.points += 5;
-        if (row.badge_code) item.badges.push(row.badge_code);
-      });
-    }
-
-    return Array.from(map.values())
-      .sort(function (a, b) { return b.points - a.points; })
-      .slice(0, HUB_LIMITS.members);
   }
 
   async function mapUsernames(supabase, rows) {
@@ -485,7 +471,7 @@
 
     output.members = rpcMembers.data && rpcMembers.data.length
       ? rpcMembers.data.slice(0, HUB_LIMITS.members)
-      : await fallbackTopMembers(supabase, 30);
+      : await fallbackTopMembers(supabase);
 
     output.activity = await mapUsernames(supabase, output.activity);
     output.members = await mapUsernames(supabase, output.members);
@@ -493,18 +479,16 @@
     if (!rpcMembers.data || !rpcMembers.data.length) {
       const memberIds = output.members.map(function (row) { return row.user_id; }).filter(Boolean);
       if (memberIds.length) {
-        const badgesRes = await supabase.from('user_badges').select('user_id,badge_code').in('user_id', memberIds).limit(500);
-        if (!badgesRes.error) {
-          const byUser = new Map();
-          (badgesRes.data || []).forEach(function (row) {
-            if (!row.user_id || !row.badge_code) return;
-            if (!byUser.has(row.user_id)) byUser.set(row.user_id, []);
-            byUser.get(row.user_id).push(row.badge_code);
-          });
-          output.members = output.members.map(function (row) {
-            return Object.assign({}, row, { badges: byUser.get(row.user_id) || row.badges || [] });
-          });
-        }
+        const byUser = new Map();
+        const badgeGroups = await Promise.all(memberIds.map(function (id) {
+          return fetchUserBadges(id, supabase).then(function (rows) { return { userId: id, rows: rows }; });
+        }));
+        badgeGroups.forEach(function (group) {
+          byUser.set(group.userId, group.rows || []);
+        });
+        output.members = output.members.map(function (row) {
+          return Object.assign({}, row, { badges: byUser.get(row.user_id) || row.badges || [] });
+        });
       }
     }
 
@@ -633,7 +617,7 @@
     return state.viewerContext;
   }
 
-  function commentCard(comment, viewer) {
+  function commentCard(comment, viewer, badges) {
     const profile = comment.profiles || {};
     const identity = resolveProfileIdentity(profile, comment.user_metadata);
     const username = identity.handle;
@@ -653,6 +637,7 @@
       avatar +
       '      <div>' +
       '        <a href="' + profileLink(username) + '" class="ccg-comment-card__profile-link">@' + esc(username) + '</a>' +
+      '        ' + (window.ccgCommunityBadges ? window.ccgCommunityBadges.renderBadgeIcons(badges || [], 3) : '') +
       '        <time datetime="' + esc(comment.created_at || '') + '">' + esc(formatDate(comment.created_at)) + '</time>' +
       '      </div>' +
       '    </div>' +
@@ -910,18 +895,26 @@
       if (userIds.length) {
         const profileRes = await supabase.from('profiles').select('id,username,display_name,avatar_url').in('id', userIds);
         const byId = new Map((profileRes.data || []).map(function (row) { return [row.id, row]; }));
+        const badgesByUser = new Map();
+        const badgeGroups = await Promise.all(userIds.map(function (id) {
+          return fetchUserBadges(id, supabase).then(function (rows) { return { userId: id, rows: rows }; });
+        }));
+        badgeGroups.forEach(function (group) {
+          badgesByUser.set(group.userId, group.rows || []);
+        });
         rows.forEach(function (row) {
           const profile = byId.get(row.user_id) || {};
           const identity = resolveProfileIdentity(profile, row.user_metadata);
           row.profiles = Object.assign({}, profile, { username: identity.handle });
+          row.badges = badgesByUser.get(row.user_id) || [];
         });
       }
       if (resetList) {
         elements.listWrap.innerHTML = rows.length
-          ? rows.map(function (row) { return commentCard(row, viewer); }).join('')
+          ? rows.map(function (row) { return commentCard(row, viewer, row.badges || []); }).join('')
           : '<p class="ccg-community-muted">No comments yet. Be the first to launch this discussion.</p>';
       } else {
-        elements.listWrap.insertAdjacentHTML('beforeend', rows.map(function (row) { return commentCard(row, viewer); }).join(''));
+        elements.listWrap.insertAdjacentHTML('beforeend', rows.map(function (row) { return commentCard(row, viewer, row.badges || []); }).join(''));
       }
 
       state.commentsOffset += rows.length;
