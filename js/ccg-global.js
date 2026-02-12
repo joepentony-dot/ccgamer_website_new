@@ -1406,6 +1406,16 @@
             document.body?.classList.toggle("ccg-body--locked", locked);
         };
 
+        const syncNavContainerVisibility = () => {
+            if (!isMobileViewport()) {
+                nav.style.removeProperty("display");
+                return;
+            }
+
+            const shouldShowFallback = nav.classList.contains("ccg-nav--mobile-fallback");
+            nav.style.display = shouldShowFallback ? "" : "none";
+        };
+
         const closeNav = () => {
             isNavOpen = false;
             header.classList.remove("ccg-header--nav-open");
@@ -1430,6 +1440,7 @@
             if (!isMobileViewport()) {
                 closeNav();
                 closeMore();
+                syncNavContainerVisibility();
                 return;
             }
 
@@ -1437,6 +1448,7 @@
 
             const hasDrawerLinks = drawerPrimary?.querySelector(".ccg-nav__link") || drawerSecondary?.querySelector(".ccg-nav__link");
             nav.classList.toggle("ccg-nav--mobile-fallback", !hasDrawerLinks);
+            syncNavContainerVisibility();
         };
 
         toggle.addEventListener("click", () => {

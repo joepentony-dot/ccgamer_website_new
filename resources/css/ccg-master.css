@@ -1192,6 +1192,10 @@ html:not([data-ccg-page="home"]) .ccg-nav__more {
     overscroll-behavior: none;
 }
 
+.ccg-nav:empty {
+    display: none !important;
+}
+
 .ccg-nav::before {
     content: "";
     position: absolute;
@@ -1866,6 +1870,19 @@ html:not([data-ccg-page="home"]) .ccg-nav__more {
         justify-content: center;
         flex-wrap: wrap;
         gap: 10px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .ccg-nav {
+        padding: 0 !important;
+        border: 0 !important;
+        min-height: 0 !important;
+        min-width: 0 !important;
+    }
+
+    .ccg-nav.ccg-nav--hydrated:not(.ccg-nav--mobile-fallback) {
+        display: none !important;
     }
 }
 
