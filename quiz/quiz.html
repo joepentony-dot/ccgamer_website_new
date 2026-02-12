@@ -29,7 +29,7 @@
 
     <title>CCG Trivia League | Cheeky Commodore Gamer</title>
     <meta name="description"
-          content="Play the Cheeky Commodore Gamer trivia quiz sets and climb the live leaderboard. C64 and Amiga retro trivia with a competitive edge." />
+          content="Play the Cheeky Commodore Gamer trivia quiz sets with C64 and Amiga retro questions." />
 
     <link rel="icon" href="../favicon.ico" />
 
@@ -203,7 +203,7 @@
                         <p class="ccg-hero-kicker">CCG Trivia League</p>
                         <h1 class="ccg-hero-title">Test Your Retro Knowledge</h1>
                         <p class="ccg-section-subtitle">
-                            Choose a quiz pack, answer before the clock expires and submit your score to compete for leaderboard glory.
+                            Choose a quiz pack, answer before the clock expires, and see your final score summary.
                         </p>
 
                         <article id="quiz-intro-panel" class="quiz-panel quiz-panel--intro">
@@ -212,7 +212,7 @@
                                 <li>Select a quiz pack from the dropdown.</li>
                                 <li>Hit <strong>Start Quiz</strong> when you’re ready.</li>
                                 <li>Answer each question before the timer runs out.</li>
-                                <li>Save your score to the leaderboard.</li>
+                                <li>Review your score breakdown at the end.</li>
                             </ol>
                             <p class="quiz-note">Pro tip: turn on SFX for extra SID flavour.</p>
                         </article>
@@ -246,10 +246,6 @@
                                     SFX: On
                                 </button>
 
-                                <a href="quiz-leaderboard.html"
-                                   class="ccg-btn ccg-btn--secondary">
-                                    View Leaderboard
-                                </a>
 
                             </div>
                         </div>
@@ -371,33 +367,15 @@
                             </div>
                         </div>
 
-                        <div class="quiz-score-name">
-                            <label for="quiz-name-input" class="quiz-name-label">
-                                Enter your name for the leaderboard:
-                            </label>
-                            <input id="quiz-name-input"
-                                   class="quiz-name-input"
-                                   type="text"
-                                   maxlength="24"
-                                   placeholder="Cheeky Commodore Gamer" />
-                        </div>
 
                         <div class="quiz-score-actions">
 
-                            <button id="quiz-save-btn"
-                                    class="ccg-btn ccg-btn--primary">
-                                Save to Leaderboard
-                            </button>
 
                             <button id="quiz-restart-btn"
                                     class="ccg-btn ccg-btn--secondary">
                                 Play Again
                             </button>
 
-                            <a href="quiz-leaderboard.html"
-                               class="ccg-btn ccg-btn--ghost">
-                                View Leaderboard
-                            </a>
 
                         </div>
                     </article>
@@ -418,14 +396,6 @@
                                 <strong class="quiz-meta-value" data-quiz-question-count>0</strong>
                             </div>
                         </div>
-                    </article>
-
-                    <article class="quiz-panel quiz-panel--meta">
-                        <h3 class="ccg-section-title">Recent Local Runs</h3>
-                        <p class="ccg-body-text">Saved in your browser for quick replays and testing.</p>
-                        <ul class="quiz-recent-list" data-quiz-recent-scores>
-                            <li class="quiz-recent-empty">No local scores yet.</li>
-                        </ul>
                     </article>
                 </div>
             </section>

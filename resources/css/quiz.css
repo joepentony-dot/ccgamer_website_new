@@ -640,70 +640,7 @@ body.quiz-focus.quiz-focus-pulse .quiz-panel--active {
     margin-top: 8px;
 }
 
-.quiz-recent-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 10px;
-}
 
-.quiz-recent-item,
-.quiz-recent-empty {
-    padding: 12px 14px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(0,0,0,0.64));
-    border: 1px solid rgba(255,255,255,0.14);
-    display: grid;
-    grid-template-columns: 1.2fr 1fr auto;
-    gap: 8px;
-    align-items: center;
-}
-
-.quiz-pack-status {
-    margin-top: 8px;
-    font-size: 0.9rem;
-    letter-spacing: 0.04em;
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.18);
-    background: linear-gradient(135deg, rgba(0,0,0,0.84), rgba(var(--accent-rgb),0.18));
-    box-shadow: 0 10px 24px rgba(0,0,0,0.55);
-    color: var(--text-light);
-}
-
-.quiz-pack-status[data-state="loading"] {
-    border-color: rgba(var(--accent-rgb), 0.55);
-    color: #fdfdfe;
-    text-shadow: 0 0 10px rgba(var(--accent-rgb), 0.45);
-}
-
-.quiz-pack-status[data-state="error"] {
-    border-color: rgba(var(--ccg-danger-rgb), 0.7);
-    background: linear-gradient(135deg, rgba(40,0,0,0.9), rgba(0,0,0,0.85));
-    color: #ffe9e9;
-}
-
-.quiz-pack-status[data-state="ready"] {
-    border-color: rgba(var(--ccg-success-rgb), 0.65);
-    background: linear-gradient(135deg, rgba(0,0,0,0.86), rgba(var(--ccg-success-rgb), 0.18));
-}
-
-.quiz-recent-name { font-weight: 700; }
-.quiz-recent-pack { color: var(--ccg-text-soft); }
-.quiz-recent-score { text-align: right; }
-
-.lb-status-note {
-    margin-bottom: 12px;
-    padding: 12px 14px;
-    border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.14);
-    background: linear-gradient(135deg, rgba(0,0,0,0.86), rgba(var(--accent-rgb),0.16));
-    color: var(--text-light);
-}
-
-.lb-status-note[data-tone="warning"] { border-color: rgba(var(--ccg-warning-rgb),0.7); }
-.lb-status-note[data-tone="error"] { border-color: rgba(var(--ccg-danger-rgb),0.7); background: linear-gradient(135deg, rgba(40,0,0,0.9), rgba(0,0,0,0.85)); }
 
 /* ============================================================
    MOBILE RHYTHM — PRIMARY
