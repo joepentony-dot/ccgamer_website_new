@@ -11,8 +11,7 @@
     ['Home', 'https://www.cheekycommodoregamer.co.uk/home.html'],
     ['Browse Games', 'https://www.cheekycommodoregamer.co.uk/games/index.html'],
     ['Browse by Genre', 'https://www.cheekycommodoregamer.co.uk/games/genres/index.html'],
-    ['Collections', 'https://www.cheekycommodoregamer.co.uk/games/collections/index.html'],
-    ['Community', 'https://www.cheekycommodoregamer.co.uk/community/index.html']
+    ['Collections', 'https://www.cheekycommodoregamer.co.uk/games/collections/index.html']
   ];
 
   const NAV_SECONDARY = [
