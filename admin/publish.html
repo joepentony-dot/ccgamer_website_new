@@ -89,6 +89,15 @@ node scripts/generate-sitemaps.js</pre>
           <label><input type="checkbox" data-step-toggle="7" /> Mark complete</label>
           <p class="omega-step-warning" data-step-warning="7" hidden>Warning: always perform post-publish verification.</p>
         </article>
+
+        <article class="omega-step" data-step="8">
+          <h2>Step 8 — Trigger new game email (optional)</h2>
+          <p>After publishing a brand-new game, send one notification blast to opted-in members.</p>
+          <button class="ccg-btn ccg-btn--ghost" id="sendNewGameNotificationBtn" type="button">Send new game notification</button>
+          <p id="sendNewGameNotificationStatus" class="admin-status-inline" aria-live="polite"></p>
+          <label><input type="checkbox" data-step-toggle="8" /> Mark complete</label>
+          <p class="omega-step-warning" data-step-warning="8" hidden>Warning: only trigger once per new game publish.</p>
+        </article>
       </div>
     </section>
   </main>
