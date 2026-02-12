@@ -90,7 +90,8 @@
 
     async function redirectIfAlreadyAuthenticated() {
       try {
-        const currentUser = await getCurrentUser();
+        const result = await getCurrentUser();
+        const currentUser = result?.data?.user ?? null;
         if (currentUser) {
           redirectAfterLogin();
         }
