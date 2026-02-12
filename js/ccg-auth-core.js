@@ -24,6 +24,9 @@ function buildErrorInfo(error, context) {
   } else if (lower.includes('email not confirmed')) {
     category = 'credentials';
     userMessage = 'Please confirm your email before logging in.';
+  } else if (lower.includes('already registered') || lower.includes('user already registered')) {
+    category = 'duplicate_email';
+    userMessage = 'This email is already registered. Use Forgot password to reset your password.';
   } else if (lower.includes('rate limit') || status === 429) {
     category = 'rate_limit';
     userMessage = 'Too many attempts. Please wait and try again.';
@@ -95,10 +98,13 @@ async function ensureProfileBootstrap(user) {
         .insert({
           id: user.id,
           username: fallbackUsername,
+          display_name: fallbackUsername,
           role: 'user',
           points: 0,
           bio: '',
-          avatar_url: ''
+          avatar_url: '',
+          newsletter_opt_in: false,
+          notify_new_games_opt_in: false
         });
 
       if (inserted.error) {

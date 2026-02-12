@@ -1,0 +1,58 @@
+.auth-shell {
+  max-width: 760px;
+}
+
+.profile-list {
+  display: grid;
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.profile-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding-bottom: 8px;
+}
+
+.profile-row strong {
+  color: #9ad4ff;
+}
+
+.profile-avatar {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(154, 212, 255, 0.4);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.profile-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.profile-actions .auth-btn {
+  width: auto;
+  min-width: 160px;
+}
+
+.pref-grid {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.pref-grid label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.unsub-wrap {
+  margin-top: 16px;
+}
