@@ -27,9 +27,12 @@
 
     <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/quiz/">
 
-    <title>CCG Trivia League | Cheeky Commodore Gamer</title>
+    <title>C64 Quiz Challenge | Cheeky Commodore Gamer</title>
     <meta name="description"
-          content="Play the Cheeky Commodore Gamer trivia quiz sets with C64 and Amiga retro questions." />
+          content="Test your C64 quiz knowledge with Cheeky Commodore Gamer's retro trivia packs." />
+    <meta property="og:title" content="C64 Quiz Challenge | Cheeky Commodore Gamer" />
+    <meta property="og:description" content="Test your C64 quiz knowledge with Cheeky Commodore Gamer's retro trivia packs." />
+    <meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/quiz/" />
 
     <link rel="icon" href="../favicon.ico" />
 
@@ -397,6 +400,31 @@
                             </div>
                         </div>
                     </article>
+
+                    <section class="quiz-panel quiz-panel--meta quiz-share" data-quiz-share>
+                        <h3 class="ccg-section-title">Share this quiz</h3>
+                        <p class="ccg-body-text">Challenge a mate and see who knows the C64 best.</p>
+
+                        <div class="quiz-share-actions">
+                            <a class="ccg-btn ccg-btn--share" data-quiz-share-x target="_blank" rel="noopener" aria-label="Share this quiz on X">
+                                <span class="ccg-btn__icon" aria-hidden="true">𝕏</span>
+                                <span class="ccg-btn__label">X</span>
+                            </a>
+                            <a class="ccg-btn ccg-btn--share" data-quiz-share-facebook target="_blank" rel="noopener" aria-label="Share this quiz on Facebook">
+                                <span class="ccg-btn__icon" aria-hidden="true">f</span>
+                                <span class="ccg-btn__label">Facebook</span>
+                            </a>
+                            <a class="ccg-btn ccg-btn--share" data-quiz-share-whatsapp target="_blank" rel="noopener" aria-label="Share this quiz on WhatsApp">
+                                <span class="ccg-btn__icon" aria-hidden="true">💬</span>
+                                <span class="ccg-btn__label">WhatsApp</span>
+                            </a>
+                            <button class="ccg-btn ccg-btn--share" type="button" data-quiz-share-copy aria-label="Copy quiz link">
+                                <span class="ccg-btn__icon" aria-hidden="true">🔗</span>
+                                <span class="ccg-btn__label">Copy Link</span>
+                            </button>
+                        </div>
+                        <span class="game-share__status" data-quiz-share-status role="status" aria-live="polite"></span>
+                    </section>
                 </div>
             </section>
 
@@ -426,6 +454,7 @@
     <script src="../js/ccg-mode-engine.js" defer></script>
     <script src="js/quiz-packs-loader.js" defer></script>
     <script src="../js/quiz-engine.js" defer></script>
+    <script src="../resources/js/quiz-share.js" defer></script>
     <script src="../resources/js/ccg-performance.js" defer></script>
     <script src="../resources/js/quiz-ui-fixes.js" defer></script>
 
