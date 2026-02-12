@@ -138,7 +138,7 @@
   {
     "system": "C64",
     "id": "accolade_s_comics",
-    "slug": "accolade-s-comics",
+    "slug": "accolades-comics",
     "title": "Accolade's Comics",
     "sorttitle": "Accolade's Comics",
     "year": 1987,
@@ -3847,7 +3847,7 @@
   {
     "system": "C64",
     "id": "bozo_s_night_out",
-    "slug": "bozo-s-night-out",
+    "slug": "bozos-night-out",
     "title": "Bozo's Night Out",
     "sorttitle": "Bozo's Night Out",
     "year": 1984,
@@ -4108,38 +4108,52 @@
     "_ccg_migrated": false
   },
   {
-  "system": "AMIGA",
-  "id": "brutal_sports_football",
-  "slug": "brutal-sports-football",
-  "title": "Brutal Sports Football",
-  "sorttitle": "Brutal Sports Football",
-  "year": 1993,
-  "genres": ["sports"],
-  "collections": ["bpjs"],
-  "videoid": "Uqcw6K-BeRM",
-  "thumbnail": "resources/images/thumbnails/all/brutal_sports_football.png",
-  "pdf": "https://drive.google.com/file/d/1FATJ5eiuI7rT51ZNGsCtej9X_tpZma4R/view?usp=drive_link",
-  "disk": [
-    "https://drive.google.com/file/d/1wgrPpbO32RuqFhqCW7b0tfA4-FZK99Al/view?usp=drive_link"
-  ],
-  "lemon": [
-    "https://www.lemonamiga.com/game/brutal-sports-series-football"
-  ],
-  "description": "Brutal Sports Football is a fast, violent futuristic football game where mutant teams battle on a side-scrolling pitch. Score goals, smash opponents, and use power-ups to win through skill, strategy, or sheer brutality.",
-  "ccg_rating": 9,
-  "ccg_rating_reason": "No other football game lets you win by knocking half the other team unconscious — fists, weapons, flying limbs, total chaos, and somehow it’s still brilliantly playable. Absolute carnage, every match.",
-  "credits": {
-    "publisher": ["Millennium"],
-    "producer": "Tony Love",
-    "coder": ["Alistair Mann","Colin Hughes","Peter Jefferies"],
-    "graphics": ["Tony Hager"],
-    "musician": ["Richard Joseph"],
-    "re_releaser": [],
-    "developer": "Teque Software"
-  },
-  "developer": "Teque Software",
-  "_ccg_enforced": false,
-  "_ccg_migrated": false
+    "system": "AMIGA",
+    "id": "brutal_sports_football",
+    "slug": "brutal-sports-football",
+    "title": "Brutal Sports Football",
+    "sorttitle": "Brutal Sports Football",
+    "year": 1993,
+    "genres": [
+      "sports"
+    ],
+    "collections": [
+      "bpjs"
+    ],
+    "videoid": "Uqcw6K-BeRM",
+    "thumbnail": "resources/images/thumbnails/all/brutal_sports_football.png",
+    "pdf": "https://drive.google.com/file/d/1FATJ5eiuI7rT51ZNGsCtej9X_tpZma4R/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1wgrPpbO32RuqFhqCW7b0tfA4-FZK99Al/view?usp=drive_link"
+    ],
+    "lemon": [
+      "https://www.lemonamiga.com/game/brutal-sports-series-football"
+    ],
+    "description": "Brutal Sports Football is a fast, violent futuristic football game where mutant teams battle on a side-scrolling pitch. Score goals, smash opponents, and use power-ups to win through skill, strategy, or sheer brutality.",
+    "ccg_rating": 9,
+    "ccg_rating_reason": "No other football game lets you win by knocking half the other team unconscious — fists, weapons, flying limbs, total chaos, and somehow it’s still brilliantly playable. Absolute carnage, every match.",
+    "credits": {
+      "publisher": [
+        "Millennium"
+      ],
+      "producer": "Tony Love",
+      "coder": [
+        "Alistair Mann",
+        "Colin Hughes",
+        "Peter Jefferies"
+      ],
+      "graphics": [
+        "Tony Hager"
+      ],
+      "musician": [
+        "Richard Joseph"
+      ],
+      "re_releaser": [],
+      "developer": "Teque Software"
+    },
+    "developer": "Teque Software",
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
   },
   {
     "system": "C64",
@@ -6356,7 +6370,7 @@
   {
     "system": "C64",
     "id": "dan_dare_2_mekon_s_revenge",
-    "slug": "dan-dare-2-mekon-s-revenge",
+    "slug": "dan-dare-2-mekons-revenge",
     "title": "Dan Dare II: Mekon's Revenge",
     "sorttitle": "Dan Dare 2",
     "year": 1988,
@@ -6615,7 +6629,7 @@
   {
     "system": "C64",
     "id": "daley_thompson_s_decathlon",
-    "slug": "daley-thompson-s-decathlon",
+    "slug": "daley-thompsons-decathlon",
     "title": "Daley Thompson's Decathlon",
     "sorttitle": "Decathlon",
     "year": 1984,
@@ -7154,7 +7168,7 @@
   {
     "system": "C64",
     "id": "the_dolphin_s_rune",
-    "slug": "the-dolphin-s-rune",
+    "slug": "the-dolphins-rune",
     "title": "The Dolphin's Rune",
     "sorttitle": "Dolphin's Rune",
     "year": 1985,
@@ -7199,7 +7213,7 @@
   {
     "system": "C64",
     "id": "donald_duck_s_playground",
-    "slug": "donald-duck-s-playground",
+    "slug": "donald-ducks-playground",
     "title": "Donald Duck's Playground",
     "sorttitle": "Donald Duck's Playground",
     "year": 1984,
@@ -7530,7 +7544,7 @@
   {
     "system": "C64",
     "id": "dragon_s_lair",
-    "slug": "dragon-s-lair",
+    "slug": "dragons-lair",
     "title": "Dragon's Lair",
     "sorttitle": "Dragon's Lair 1",
     "year": 1986,
@@ -8291,7 +8305,7 @@
   {
     "system": "C64",
     "id": "everyone_s_a_wally",
-    "slug": "everyone-s-a-wally",
+    "slug": "everyones-a-wally",
     "title": "Everyone's A Wally",
     "sorttitle": "Everyone's A Wally",
     "year": 1985,
@@ -8690,7 +8704,7 @@
   {
     "system": "C64",
     "id": "fiendish_freddy_s_big_top_o_fun",
-    "slug": "fiendish-freddy-s-big-top-o-fun",
+    "slug": "fiendish-freddys-big-top-o-fun",
     "title": "Fiendish Freddy's Big Top O' Fun",
     "sorttitle": "Fiendish Freddy's Big Top O' Fun",
     "year": 1990,
@@ -9156,7 +9170,7 @@
   {
     "system": "C64",
     "id": "flimbo_s_quest",
-    "slug": "flimbo-s-quest",
+    "slug": "flimbos-quest",
     "title": "Flimbo's Quest",
     "sorttitle": "Flimbo's Quest",
     "year": 1990,
@@ -10787,7 +10801,7 @@
   {
     "system": "C64",
     "id": "granny_s_garden",
-    "slug": "granny-s-garden",
+    "slug": "grannys-garden",
     "title": "Granny's Garden",
     "sorttitle": "Granny's Garden",
     "year": 1987,
@@ -10965,7 +10979,7 @@
   {
     "system": "C64",
     "id": "gribbly_s_day_out",
-    "slug": "gribbly-s-day-out",
+    "slug": "gribblys-day-out",
     "title": "Gribbly's Day Out",
     "sorttitle": "Gribbly's Day Out",
     "year": 1985,
@@ -11683,7 +11697,7 @@
   {
     "system": "C64",
     "id": "henry_s_house",
-    "slug": "henry-s-house",
+    "slug": "henrys-house",
     "title": "Henry's House",
     "sorttitle": "Henry's House",
     "year": 1984,
@@ -11723,7 +11737,7 @@
   {
     "system": "C64",
     "id": "herbert_s_dummy_run",
-    "slug": "herbert-s-dummy-run",
+    "slug": "herberts-dummy-run",
     "title": "Herbert's Dummy Run",
     "sorttitle": "Herbert's Dummy Run",
     "year": 1985,
@@ -11943,38 +11957,47 @@
     "_ccg_migrated": false
   },
   {
-  "system": "C64",
-  "id": "the_hitchhikers_guide_to_the_galaxy",
-  "slug": "the-hitchhikers-guide-to-the-galaxy",
-  "title": "The Hitchhikers Guide To The Galaxy",
-  "sorttitle": "Hitchhikers Guide To The Galaxy",
-  "year": 1984,
-  "genres": ["adventure"],
-  "collections": [],
-  "videoid": "qY0cR8RFXi4",
-  "thumbnail": "resources/images/thumbnails/all/the_hitchhikers_guide_to_the_galaxy.jpg",
-  "pdf": "https://drive.google.com/file/d/1C6ECip1rBibxIwe3TwZ8cNsTgpClZpAT/view?usp=drive_link",
-  "disk": [
-    "https://drive.google.com/file/d/1CSaXU9_g9P286R501SJcu-IW3HxF_pwy/view?usp=drive_link"
-  ],
-  "lemon": [
-    "https://www.lemon64.com/game/hitchhikers-guide-to-the-galaxy"
-  ],
-  "description": "Released by Infocom in 1984 for the Commodore 64, The Hitchhiker's Guide to the Galaxy is a notoriously difficult and brilliantly satirical text adventure designed by Douglas Adams and Steve Meretzky.",
-  "ccg_rating": 7,
-  "ccg_rating_reason": "Difficult, but rewarding once you make progress!",
-  "credits": {
-    "publisher": ["Infocom"],
-    "producer": "",
-    "coder": ["Douglas Adams", "Steve Meretzky"],
-    "graphics": ["Steve Cross"],
-    "musician": [],
-    "re_releaser": [],
-    "developer": ""
-  },
-  "developer": "Infocom",
-  "_ccg_enforced": false,
-  "_ccg_migrated": false
+    "system": "C64",
+    "id": "the_hitchhikers_guide_to_the_galaxy",
+    "slug": "the-hitchhikers-guide-to-the-galaxy",
+    "title": "The Hitchhikers Guide To The Galaxy",
+    "sorttitle": "Hitchhikers Guide To The Galaxy",
+    "year": 1984,
+    "genres": [
+      "adventure"
+    ],
+    "collections": [],
+    "videoid": "qY0cR8RFXi4",
+    "thumbnail": "resources/images/thumbnails/all/the_hitchhikers_guide_to_the_galaxy.jpg",
+    "pdf": "https://drive.google.com/file/d/1C6ECip1rBibxIwe3TwZ8cNsTgpClZpAT/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1CSaXU9_g9P286R501SJcu-IW3HxF_pwy/view?usp=drive_link"
+    ],
+    "lemon": [
+      "https://www.lemon64.com/game/hitchhikers-guide-to-the-galaxy"
+    ],
+    "description": "Released by Infocom in 1984 for the Commodore 64, The Hitchhiker's Guide to the Galaxy is a notoriously difficult and brilliantly satirical text adventure designed by Douglas Adams and Steve Meretzky.",
+    "ccg_rating": 7,
+    "ccg_rating_reason": "Difficult, but rewarding once you make progress!",
+    "credits": {
+      "publisher": [
+        "Infocom"
+      ],
+      "producer": "",
+      "coder": [
+        "Douglas Adams",
+        "Steve Meretzky"
+      ],
+      "graphics": [
+        "Steve Cross"
+      ],
+      "musician": [],
+      "re_releaser": [],
+      "developer": ""
+    },
+    "developer": "Infocom",
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
   },
   {
     "system": "C64",
@@ -12375,7 +12398,7 @@
   {
     "system": "C64",
     "id": "hunchback_2_quasimodo_s_revenge",
-    "slug": "hunchback-2-quasimodo-s-revenge",
+    "slug": "hunchback-2-quasimodos-revenge",
     "title": "Hunchback 2",
     "sorttitle": "Hunchback II: Quasimodo's Revenge",
     "year": 1985,
@@ -13230,7 +13253,7 @@
   {
     "system": "C64",
     "id": "into_the_eagle_s_nest",
-    "slug": "into-the-eagle-s-nest",
+    "slug": "into-the-eagles-nest",
     "title": "Into The Eagle's Nest",
     "sorttitle": "Into The Eagle's Nest",
     "year": 1987,
@@ -14308,7 +14331,7 @@
   {
     "system": "C64",
     "id": "king_s_bounty",
-    "slug": "king-s-bounty",
+    "slug": "kings-bounty",
     "title": "King's Bounty",
     "sorttitle": "King's Bounty",
     "year": 1990,
@@ -15903,7 +15926,7 @@
   {
     "system": "C64",
     "id": "maria_s_christmas_box",
-    "slug": "maria-s-christmas-box",
+    "slug": "marias-christmas-box",
     "title": "Maria's Christmas Box",
     "sorttitle": "Maria's Christmas Box",
     "year": 1988,
@@ -16398,7 +16421,7 @@
   {
     "system": "C64",
     "id": "mike_read_s_computer_pop_quiz",
-    "slug": "mike-read-s-computer-pop-quiz",
+    "slug": "mike-reads-computer-pop-quiz",
     "title": "Mike Read's Computer Pop Quiz",
     "sorttitle": "Mike Read's Computer Pop Quiz",
     "year": 1988,
@@ -16629,7 +16652,7 @@
   {
     "system": "AMIGA",
     "id": "monkey_island_2_lechuck_s_revenge",
-    "slug": "monkey-island-2-lechuck-s-revenge",
+    "slug": "monkey-island-2-lechucks-revenge",
     "title": "Monkey Island 2: Lechuck'S Revenge",
     "sorttitle": "Monkey Island 2: Lechuck'S Revenge",
     "year": 1992,
@@ -16688,7 +16711,7 @@
   {
     "system": "C64",
     "id": "montezuma_s_revenge",
-    "slug": "montezuma-s-revenge",
+    "slug": "montezumas-revenge",
     "title": "Montezuma's Revenge",
     "sorttitle": "Montezuma's Revenge",
     "year": 1984,
@@ -16868,7 +16891,7 @@
   {
     "system": "C64",
     "id": "mountie_mick_s_death_ride",
-    "slug": "mountie-mick-s-death-ride",
+    "slug": "mountie-micks-death-ride",
     "title": "Mountie Mick's Death Ride",
     "sorttitle": "Mountie Mick's Death Ride",
     "year": 1987,
@@ -18565,7 +18588,7 @@
   {
     "system": "C64",
     "id": "sid_meier_s_pirates",
-    "slug": "sid-meier-s-pirates",
+    "slug": "sid-meiers-pirates",
     "title": "Sid Meier's Pirates!",
     "sorttitle": "Pirates",
     "year": 1987,
@@ -20881,7 +20904,7 @@
   {
     "system": "AMIGA",
     "id": "robinson_s_requiem",
-    "slug": "robinson-s-requiem",
+    "slug": "robinsons-requiem",
     "title": "Robinson's Requiem",
     "sorttitle": "Robinson'S Requiem",
     "year": 1994,
@@ -21762,7 +21785,7 @@
   {
     "system": "AMIGA",
     "id": "santa_s_xmas_caper",
-    "slug": "santa-s-xmas-caper",
+    "slug": "santas-xmas-caper",
     "title": "Santa's Xmas Caper",
     "sorttitle": "Santa's Xmas Caper",
     "year": 1992,
@@ -22439,7 +22462,7 @@
   {
     "system": "C64",
     "id": "shao_lin_s_road",
-    "slug": "shao-lin-s-road",
+    "slug": "shao-lins-road",
     "title": "Shao-Lin's Road",
     "sorttitle": "Shao-Lin's Road",
     "year": 1986,
