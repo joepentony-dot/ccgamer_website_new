@@ -327,24 +327,74 @@ function attemptBlobDownload(blob, filename) {
   if (!(blob instanceof Blob)) {
     throw new Error('Download failed: ZIP blob is missing. Build the package again.');
   }
-  const url = window.URL.createObjectURL(blob);
-  try {
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    link.rel = 'noopener';
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    return true;
-  } finally {
-    window.setTimeout(() => window.URL.revokeObjectURL(url), 1200);
-  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  return true;
 }
 
 function setRetryDownloadVisible(visible) {
   if (!el.actions.retryDownload) return;
   el.actions.retryDownload.hidden = !visible;
+}
+
+function setDownloadBundleEnabled(enabled) {
+  const downloadBtn = document.querySelector('[data-action="download-bundle"]');
+  if (!downloadBtn) return;
+  downloadBtn.disabled = !enabled;
+  if (enabled) {
+    downloadBtn.classList.remove('is-disabled');
+  } else {
+    downloadBtn.classList.add('is-disabled');
+  }
+}
+
+function getBlockingValidationIssues() {
+  const blocking = [];
+  const title = String(state.draft?.title || '').trim();
+  const slug = String(state.draft?.slug || '').trim();
+  const id = String(state.draft?.id || '').trim();
+  const system = String(state.draft?.system || '').trim();
+  const year = String(state.draft?.year || '').trim();
+  const genres = Array.isArray(state.draft?.genres) ? state.draft.genres : [];
+  const rating = Number(state.draft?.ccgRating);
+
+  if (!title) blocking.push('title');
+  if (!slug) blocking.push('slug');
+  if (!id) blocking.push('id');
+  if (!system) blocking.push('system');
+  if (!year) blocking.push('year');
+  if (!genres.length) blocking.push('genres');
+  if (!rating || Number.isNaN(rating)) blocking.push('ccgRating');
+
+  const originalSlug = state.editing?.slug || '';
+  const originalId = state.editing?.id || '';
+  if (slug && slug !== originalSlug && state.slugSet.has(slug)) blocking.push('duplicateSlug');
+  if (id && id !== originalId && state.idSet.has(id)) blocking.push('duplicateId');
+
+  return blocking;
+}
+
+function hasBlockingValidationIssues() {
+  return getBlockingValidationIssues().length > 0 || hasBlockingLibraryErrors();
+}
+
+function addWarning(message) {
+  if (!message) return;
+  if (!Array.isArray(state.validation.warnings)) state.validation.warnings = [];
+  if (!state.validation.warnings.includes(message)) {
+    state.validation.warnings.push(message);
+  }
+  if (!Array.isArray(state.export.warnings)) state.export.warnings = [];
+  if (!state.export.warnings.includes(message)) {
+    state.export.warnings.push(message);
+    renderExportWarnings(state.export.warnings);
+  }
 }
 
 function setExportDisabled(disabled, reason = '') {
@@ -358,10 +408,13 @@ function setExportDisabled(disabled, reason = '') {
     setExportStateLabel('Ready', 'ready');
   }
 
-  ['generateOutput', 'downloadBundle', 'buildPackage'].forEach((key) => {
+  ['generateOutput', 'buildPackage'].forEach((key) => {
     const node = el.actions[key];
     if (node) node.disabled = disabled || !state.auth.canWrite;
   });
+  if (disabled || !state.outputs) {
+    setDownloadBundleEnabled(false);
+  }
   updateStatusIndicators();
 }
 
@@ -753,6 +806,12 @@ function updateMediaPreview(key, src) {
   };
   img.onerror = () => {
     card.classList.add('is-error');
+    if (key === 'thumbnail') {
+      img.src = '/resources/images/placeholder.png';
+      addWarning('Thumbnail not found locally. Will not bundle.');
+      if (status) status.textContent = 'Preview fallback loaded (asset missing locally).';
+      return;
+    }
     if (status) status.textContent = 'Preview failed. Check filename or path.';
   };
   img.src = `/${src}`.replace(/(?<!:)\/\//g, '/');
@@ -923,7 +982,7 @@ function resetWizard() {
   evaluateStepStatus();
   updateProgress();
   markDirty(false);
-  if (el.actions.downloadBundle) el.actions.downloadBundle.disabled = true;
+  setDownloadBundleEnabled(false);
   if (el.exportNote) el.exportNote.hidden = true;
   resetExportSteps();
   renderExportWarnings([]);
@@ -1192,7 +1251,6 @@ function focusField(fieldName) {
 
 function renderValidation() {
   const { errors, warnings, fieldErrors } = state.validation;
-  const libraryErrors = hasBlockingLibraryErrors();
   if (el.validation.status) {
     if (!state.validation.ran) {
       el.validation.status.textContent = 'Validation pending.';
@@ -1235,11 +1293,12 @@ function renderValidation() {
 
   renderFieldErrors(fieldErrors || {});
 
+  const exportBlocked = hasBlockingValidationIssues();
   if (el.actions.generateOutput) {
-    el.actions.generateOutput.disabled = errors.length > 0 || libraryErrors || !state.auth.canWrite || state.export.disabled;
+    el.actions.generateOutput.disabled = exportBlocked || !state.auth.canWrite || state.export.disabled;
   }
   if (el.actions.buildPackage) {
-    el.actions.buildPackage.disabled = errors.length > 0 || libraryErrors || !state.auth.canWrite || state.export.disabled;
+    el.actions.buildPackage.disabled = exportBlocked || !state.auth.canWrite || state.export.disabled;
   }
 
   updateStatusIndicators();
@@ -2030,7 +2089,7 @@ async function buildPackage({ autoDownload = true } = {}) {
   setExportStepStatus('build', 'success', '✓ ZIP ready');
 
   if (autoDownload) {
-    const downloadName = `omega-game-${entry.slug}.zip`;
+    const downloadName = `${entry.slug}-package.zip`;
     try {
       attemptBlobDownload(blob, downloadName);
     } catch (downloadError) {
@@ -2043,6 +2102,11 @@ async function buildPackage({ autoDownload = true } = {}) {
   }
 
   if (el.exportNote) el.exportNote.hidden = false;
+  const downloadBtn = document.querySelector('[data-action="download-bundle"]');
+  if (downloadBtn) {
+    downloadBtn.disabled = false;
+    downloadBtn.classList.remove('is-disabled');
+  }
   if (!el.exportError?.textContent) setExportStateLabel('Complete', 'success');
   return blob;
 }
@@ -2087,7 +2151,7 @@ async function runPackageBuild({ autoDownload = true, forceRebuild = false } = {
     try {
       setExportPanelError('');
       setRetryDownloadVisible(false);
-      attemptBlobDownload(window.__ccgLastZipBlob, `omega-game-${state.outputs.entry.slug}.zip`);
+      attemptBlobDownload(window.__ccgLastZipBlob, `${state.outputs.entry.slug}-package.zip`);
       setExportStateLabel('Complete', 'success');
       return window.__ccgLastZipBlob;
     } catch (error) {
@@ -2342,14 +2406,12 @@ function bindEvents() {
     if (!state.auth.canWrite) return;
     validateDraft();
     renderValidation();
-    if (state.validation.errors.length || hasBlockingLibraryErrors()) return;
+    if (hasBlockingValidationIssues()) return;
     state.outputs = buildOutputs();
     window.__ccgLastZipBlob = null;
     setRetryDownloadVisible(false);
     renderOutputs();
-    if (el.actions.downloadBundle) {
-      el.actions.downloadBundle.disabled = state.export.disabled;
-    }
+    setDownloadBundleEnabled(!state.export.disabled);
     updateStatusIndicators();
   });
 
@@ -2357,7 +2419,7 @@ function bindEvents() {
     if (!state.auth.canWrite) return;
     validateDraft();
     renderValidation();
-    if (state.validation.errors.length || hasBlockingLibraryErrors()) return;
+    if (hasBlockingValidationIssues()) return;
     await runPackageBuild();
   });
 
@@ -2368,7 +2430,7 @@ function bindEvents() {
     }
     try {
       setExportPanelError('');
-      attemptBlobDownload(window.__ccgLastZipBlob, `omega-game-${state.outputs.entry.slug}.zip`);
+      attemptBlobDownload(window.__ccgLastZipBlob, `${state.outputs.entry.slug}-package.zip`);
       setRetryDownloadVisible(false);
       setExportStateLabel('Complete', 'success');
     } catch (error) {
@@ -2383,7 +2445,7 @@ function bindEvents() {
     if (!state.auth.canWrite) return;
     validateDraft();
     renderValidation();
-    if (state.validation.errors.length || hasBlockingLibraryErrors()) {
+    if (hasBlockingValidationIssues()) {
       goToStep(5);
       return;
     }
@@ -2391,9 +2453,7 @@ function bindEvents() {
     window.__ccgLastZipBlob = null;
     setRetryDownloadVisible(false);
     renderOutputs();
-    if (el.actions.downloadBundle) {
-      el.actions.downloadBundle.disabled = state.export.disabled;
-    }
+    setDownloadBundleEnabled(!state.export.disabled);
     goToStep(6);
     await runPackageBuild();
   });
@@ -2497,7 +2557,7 @@ async function downloadFlatPageZip() {
   if (!state.outputs) {
     validateDraft();
     renderValidation();
-    if (state.validation.errors.length || hasBlockingLibraryErrors()) {
+    if (hasBlockingValidationIssues()) {
       goToStep(5);
       return;
     }
@@ -2505,9 +2565,7 @@ async function downloadFlatPageZip() {
     window.__ccgLastZipBlob = null;
     setRetryDownloadVisible(false);
     renderOutputs();
-    if (el.actions.downloadBundle) {
-      el.actions.downloadBundle.disabled = state.export.disabled;
-    }
+    setDownloadBundleEnabled(!state.export.disabled);
     updateStatusIndicators();
   }
 

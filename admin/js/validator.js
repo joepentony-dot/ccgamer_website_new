@@ -184,8 +184,7 @@ export function validateWizardDraft(draft, context = {}) {
   }
 
   if (!draft.thumbnailFile && !draft.thumbnailOverride) {
-    missing.push('Thumbnail');
-    fieldErrors.thumbnailFile = 'Thumbnail filename is required.';
+    warnings.push('Thumbnail not set. Export will continue without bundling a thumbnail image.');
   }
 
   if (draft.thumbnailFile && !isValidFilename(draft.thumbnailFile)) {
