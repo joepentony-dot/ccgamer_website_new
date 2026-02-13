@@ -1,92 +1,167 @@
-(function () {
-  const DASHBOARD_PATH = '/admin/dashboard.html';
-  const CLIENT_TIMEOUT_MS = 8000;
-  const POLL_INTERVAL_MS = 100;
+import { AUTH_CONFIG } from './config.js?v=20260207-01';
+import {
+  login,
+  sendPasswordReset,
+  waitForAuthReady,
+  getAuthContext
+} from './auth.js?v=20260207-01';
 
-  function setMessage(text, state) {
-    const messageEl = document.querySelector('[data-message]');
-    if (!messageEl) return;
-    messageEl.textContent = text;
-    if (state) messageEl.dataset.state = state;
+const LOG = '[CCG-LOGIN]';
+const log = (...a) => console.log(LOG, ...a);
+const warn = (...a) => console.warn(LOG, ...a);
+const error = (...a) => console.error(LOG, ...a);
+
+function $(sel) {
+  return document.querySelector(sel);
+}
+
+const form = $('[data-login-form]') || $('form');
+const emailInput = $('[data-email-input]') || $('input[type="email"]');
+const passwordInput = $('[data-password-input]') || $('input[type="password"]');
+const loginButton = $('[data-login-button]') || (form ? form.querySelector('button[type="submit"]') : null);
+const resetButton = $('[data-reset-button]') || $('button[data-action="reset"]');
+const messageBox = $('[data-message]') || $('[data-admin-status]');
+
+function setMessage(msg, state = 'info') {
+  if (!messageBox) return;
+  messageBox.textContent = msg;
+  messageBox.dataset.state = state;
+}
+
+function setLoading(on) {
+  if (loginButton) loginButton.disabled = !!on;
+  if (resetButton) resetButton.disabled = !!on;
+  if (loginButton) loginButton.textContent = on ? 'Signing in…' : 'Sign in';
+}
+
+function showReasonMessage() {
+  const reason = new URLSearchParams(window.location.search).get('reason');
+  if (!reason) return;
+
+  if (reason === 'forbidden' || reason === 'unauthorised' || reason === 'unauthorized') {
+    setMessage('Signed in, but not authorised for admin access.', 'error');
+    return;
   }
-
-  async function waitForClient() {
-    const startedAt = Date.now();
-
-    while (Date.now() - startedAt < CLIENT_TIMEOUT_MS) {
-      try {
-        if (window.ccgSupabase && typeof window.ccgSupabase.getClient === 'function') {
-          const client = await window.ccgSupabase.getClient();
-          if (client) return client;
-        }
-
-        if (window.supabase && window.supabase.auth) {
-          return window.supabase;
-        }
-
-        if (window.__ccgSupabaseClient && window.__ccgSupabaseClient.auth) {
-          return window.__ccgSupabaseClient;
-        }
-      } catch (_error) {
-        // keep polling until timeout
-      }
-
-      await new Promise(function (resolve) {
-        setTimeout(resolve, POLL_INTERVAL_MS);
-      });
-    }
-
-    throw new Error('Supabase client missing. Please refresh and try again.');
+  if (reason === 'expired') {
+    setMessage('Session expired. Please sign in again.', 'info');
+    return;
   }
-
-  async function redirectIfAuthenticated(supabase) {
-    const { data, error } = await supabase.auth.getSession();
-    if (error) {
-      setMessage(error.message || 'Unable to verify session.', 'error');
-      return false;
-    }
-
-    if (data && data.session) {
-      window.location.replace(DASHBOARD_PATH);
-      return true;
-    }
-
-    return false;
+  if (reason === 'signed_out') {
+    setMessage('Signed out.', 'info');
+    return;
   }
-
-  function bindLoginSubmit(form, supabase) {
-    form.addEventListener('submit', async function (event) {
-      event.preventDefault();
-
-      const emailInput = form.querySelector('[data-email-input]');
-      const passwordInput = form.querySelector('[data-password-input]');
-      const email = String(emailInput && emailInput.value || '').trim();
-      const password = String(passwordInput && passwordInput.value || '');
-
-      setMessage('Signing in…', 'info');
-
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-      if (error) {
-        setMessage(error.message || 'Unable to sign in.', 'error');
-        return;
-      }
-
-      window.location.replace(DASHBOARD_PATH);
-    });
+  if (reason === 'unauthenticated') {
+    setMessage('Please sign in to continue.', 'info');
   }
+}
 
-  document.addEventListener('DOMContentLoaded', async function () {
-    const form = document.querySelector('[data-login-form]');
-    if (!form) return;
-
+async function waitForSupabaseClient({ timeoutMs = 8000, intervalMs = 150 } = {}) {
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
     try {
-      const supabase = await waitForClient();
-      const redirected = await redirectIfAuthenticated(supabase);
-      if (redirected) return;
-      bindLoginSubmit(form, supabase);
-    } catch (error) {
-      setMessage((error && error.message) || 'Supabase client missing. Please refresh and try again.', 'error');
+      if (window.ccgSupabase && typeof window.ccgSupabase.getClient === 'function') {
+        const client = await window.ccgSupabase.getClient();
+        if (client && client.auth) return client;
+      }
+      if (window.supabase && window.supabase.auth) return window.supabase;
+      if (window.__ccgSupabaseClient && window.__ccgSupabaseClient.auth) return window.__ccgSupabaseClient;
+    } catch (_) {
+      // keep polling
     }
-  });
-})();
+    await new Promise((r) => setTimeout(r, intervalMs));
+  }
+  return null;
+}
+
+async function redirectIfSessionExists() {
+  setMessage('Checking session…', 'info');
+
+  const sb = await waitForSupabaseClient();
+  if (!sb) {
+    warn('Supabase client missing.');
+    setMessage('Supabase client missing. Please refresh and try again.', 'error');
+    return;
+  }
+
+  await waitForAuthReady();
+
+  const ctx = await getAuthContext();
+  if (ctx?.session?.user?.id) {
+    log('Session exists → redirecting to dashboard');
+    setMessage('Session detected. Redirecting to dashboard…', 'info');
+    window.location.replace(AUTH_CONFIG.defaultRedirectAfterLogin || '/admin/dashboard.html');
+    return;
+  }
+
+  setMessage('Enter your credentials to continue.', 'info');
+}
+
+async function handleLogin(evt) {
+  try {
+    evt?.preventDefault?.();
+    evt?.stopPropagation?.();
+  } catch (_) {}
+
+  setLoading(true);
+  setMessage('Authenticating…', 'info');
+
+  try {
+    const email = String(emailInput?.value || '').trim();
+    const pass = String(passwordInput?.value || '');
+
+    if (!email || !pass) {
+      setMessage('Enter email + password.', 'error');
+      return;
+    }
+
+    const { user } = await login(email, pass);
+    if (!user?.id) {
+      setMessage('Login failed. Please try again.', 'error');
+      return;
+    }
+
+    setMessage('Login successful. Loading dashboard…', 'success');
+    window.location.replace(AUTH_CONFIG.defaultRedirectAfterLogin || '/admin/dashboard.html');
+  } catch (e) {
+    error('Login failed', e);
+    setMessage(e?.message || 'Login failed. Check credentials and try again.', 'error');
+  } finally {
+    setLoading(false);
+  }
+}
+
+async function handleReset(evt) {
+  try {
+    evt?.preventDefault?.();
+    evt?.stopPropagation?.();
+  } catch (_) {}
+
+  const email = String(emailInput?.value || '').trim();
+  if (!email) {
+    setMessage('Enter your email first.', 'error');
+    return;
+  }
+
+  setLoading(true);
+  setMessage('Sending reset email…', 'info');
+
+  try {
+    await sendPasswordReset(email);
+    setMessage('Reset email sent. Check your inbox.', 'success');
+  } catch (e) {
+    error('Reset failed', e);
+    setMessage(e?.message || 'Unable to send reset email.', 'error');
+  } finally {
+    setLoading(false);
+  }
+}
+
+// Boot
+log('Initialising login page');
+showReasonMessage();
+
+if (form) form.addEventListener('submit', handleLogin);
+if (loginButton) loginButton.addEventListener('click', handleLogin);
+if (resetButton) resetButton.addEventListener('click', handleReset);
+
+redirectIfSessionExists();

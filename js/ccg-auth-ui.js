@@ -1,21 +1,22 @@
 (function () {
   const BOUND_ATTR = 'dataLogoutBound';
 
-  async function getSupabaseClient() {
-    if (window.ccgSupabase && typeof window.ccgSupabase.getClient === 'function') {
-      try {
-        const client = await window.ccgSupabase.getClient();
-        if (client) return client;
-      } catch (_error) {
-        // fall through to global aliases
-      }
-    }
-
-    return window.supabase || window.__ccgSupabaseClient || null;
-  }
-
   function getLogoutTargets() {
     return Array.from(document.querySelectorAll('[data-logout], #logout, .logout, #ccg-auth-logout'));
+  }
+
+  function getReturnTo() {
+    return window.location.pathname + window.location.search + window.location.hash;
+  }
+
+  async function getSupabaseClient() {
+    try {
+      if (window.ccgSupabase && typeof window.ccgSupabase.getClient === 'function') {
+        const c = await window.ccgSupabase.getClient();
+        if (c && c.auth) return c;
+      }
+    } catch (_) {}
+    return window.supabase || window.__ccgSupabaseClient || null;
   }
 
   async function handleLogoutClick(event) {
@@ -29,19 +30,21 @@
 
     await supabase.auth.signOut();
 
+    // Admin logout -> admin login
     if (window.location.pathname.startsWith('/admin/')) {
       window.location.replace('/admin/login.html?reason=signed_out');
       return;
     }
 
-    const returnTo = encodeURIComponent(window.location.pathname + window.location.search + window.location.hash);
-    window.location.replace('/auth/login.html?reason=signed_out&returnTo=' + returnTo);
+    // Public pages: stay on the same page, but refresh so header updates cleanly.
+    // (If you prefer redirect to /auth/login.html, swap this behaviour.)
+    window.location.replace(getReturnTo());
   }
 
   function bindLogout() {
     getLogoutTargets().forEach((element) => {
-      if (element[BOUND_ATTR] === 'true') return;
-      element[BOUND_ATTR] = 'true';
+      if (!element || element.getAttribute(BOUND_ATTR) === 'true') return;
+      element.setAttribute(BOUND_ATTR, 'true');
       element.addEventListener('click', handleLogoutClick);
     });
   }
