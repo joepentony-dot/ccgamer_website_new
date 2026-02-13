@@ -1,5 +1,5 @@
 import { ADMIN_BUILD_ID } from './build.js';
-import { AUTH_CONFIG } from './config.js?v=20260207-01';
+import { AUTH_CONFIG, OWNER_EMAILS } from './config.js?v=20260207-01';
 import {
   AUTH_STATE,
   bindSessionInvalidation,
@@ -12,6 +12,10 @@ import {
 import { clearRoleCache, fetchUserRole } from './roles.js?v=20260207-01';
 
 console.info('[CCG-AUTH] guard.js loaded', ADMIN_BUILD_ID);
+
+if (window.location.pathname.endsWith('/login.html')) {
+  console.info('[CCG-AUTH] guard bypass on login page');
+}
 
 const IS_LOGIN_PAGE = window.location.pathname.endsWith('/login.html');
 
@@ -87,6 +91,14 @@ export async function ensureRole(allowedRoles = []) {
 
   if (authState === AUTH_STATE.AUTHENTICATED_LIMITED) {
     return { session: context.session || session, role: null, authState };
+  }
+
+  const email = String(context?.user?.email || '').toLowerCase();
+  const isOwner = Array.isArray(OWNER_EMAILS)
+    && OWNER_EMAILS.map((entry) => String(entry).toLowerCase()).includes(email);
+
+  if (isOwner) {
+    return { session: context.session || session, role: 'superadmin' };
   }
 
   let role = String(context?.role || '').toLowerCase();
