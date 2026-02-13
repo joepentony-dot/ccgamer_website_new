@@ -2118,6 +2118,8 @@ body[data-ccg-mode="amiga"] {
 }
 
 .related-carousel {
+    --related-card-size: clamp(176px, 22vw, 210px);
+    --related-gap: 14px;
     position: relative;
     display: block;
 }
@@ -2128,7 +2130,7 @@ body[data-ccg-mode="amiga"] {
     border-radius: 14px;
     border: 1px solid var(--ccg-border);
     background: rgba(255,255,255,0.02);
-    padding: 10px 46px;
+    padding: 10px 52px;
     scroll-behavior: smooth;
     scrollbar-width: thin;
     overscroll-behavior-x: contain;
@@ -2137,21 +2139,33 @@ body[data-ccg-mode="amiga"] {
     -webkit-overflow-scrolling: touch;
     max-width: 100%;
     box-sizing: border-box;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 52px;
 }
 
 .related-carousel__track {
     display: flex;
-    gap: 14px;
+    gap: var(--related-gap);
     padding: 4px 4px 10px;
     width: max-content;
     min-width: 100%;
 }
 
 .related-carousel .related-card {
-    flex: 0 0 clamp(150px, 22vw, 200px);
-    max-width: clamp(150px, 22vw, 200px);
-    display: grid;
+    flex: 0 0 var(--related-card-size);
+    max-width: var(--related-card-size);
+    display: flex;
+    flex-direction: column;
     gap: 8px;
+    text-decoration: none;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    border: 1px solid rgba(var(--accent-rgb), 0.2);
+    border-radius: 14px;
+    padding: 8px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(7, 11, 28, 0.9) 100%);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(var(--accent-rgb), 0.08);
+    transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
 }
 
 .related-carousel .related-card img {
@@ -2159,17 +2173,54 @@ body[data-ccg-mode="amiga"] {
     height: auto;
     aspect-ratio: 3 / 4;
     object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid rgba(var(--accent-rgb), 0.22);
 }
 
-.related-carousel .related-card span {
-    min-height: 2.6em;
-    line-height: 1.3;
+.related-card__title {
+    min-height: 2.4em;
+    line-height: 1.25;
     font-weight: 600;
     color: var(--text-light);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+.related-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.related-card__tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(var(--accent-rgb), 0.34);
+    border-radius: 999px;
+    padding: 3px 8px;
+    font-size: 0.68rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: rgba(233, 244, 255, 0.92);
+    background: rgba(9, 16, 36, 0.72);
+    white-space: nowrap;
+}
+
+.related-card__tag--reason {
+    border-color: rgba(var(--accent-rgb), 0.55);
+    background: rgba(var(--accent-rgb), 0.18);
+    color: #e7f7ff;
+}
+
+.related-carousel .related-card:hover,
+.related-carousel .related-card:focus-visible {
+    transform: translateY(-2px);
+    border-color: rgba(var(--accent-rgb), 0.55);
+    box-shadow: 0 22px 36px rgba(0, 0, 0, 0.58), 0 0 16px rgba(var(--accent-rgb), 0.3);
+    outline: none;
 }
 
 .related-carousel__viewport::-webkit-scrollbar {
@@ -2182,10 +2233,10 @@ body[data-ccg-mode="amiga"] {
 }
 
 .related-carousel__nav {
-    width: 44px;
-    height: 44px;
-    min-width: 44px;
-    min-height: 44px;
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    min-height: 50px;
     border-radius: 50%;
     border: 1px solid var(--ccg-border);
     background: rgba(0,0,0,0.35);
@@ -2194,7 +2245,7 @@ body[data-ccg-mode="amiga"] {
     display: grid;
     place-items: center;
     position: absolute;
-    top: calc(50% - 22px);
+    top: calc(50% - 25px);
     transform: none !important;
     z-index: 4;
     cursor: pointer;
@@ -2205,11 +2256,19 @@ body[data-ccg-mode="amiga"] {
     transition: box-shadow 140ms ease, opacity 140ms ease, filter 140ms ease, border-color 140ms ease;
 }
 
+.related-carousel__nav[disabled],
+.related-carousel__nav[aria-disabled="true"] {
+    opacity: 0.34;
+    filter: saturate(0.6);
+    cursor: default;
+    pointer-events: none;
+    box-shadow: none;
+}
+
 .related-carousel__nav--prev { left: 10px; }
 
 .related-carousel__nav--next { right: 10px; }
 
-.related-carousel__nav:hover,
 .related-carousel__nav:focus-visible {
     border-color: rgba(var(--accent-rgb), 0.8);
     box-shadow: 0 16px 32px rgba(0,0,0,0.6), 0 0 14px rgba(var(--accent-rgb),0.4);
@@ -2219,12 +2278,22 @@ body[data-ccg-mode="amiga"] {
     outline: none;
 }
 
-.related-carousel__nav:active {
-    transform: none !important;
-    border-color: rgba(var(--accent-rgb), 0.95);
-    box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.5), 0 12px 24px rgba(0,0,0,0.55);
-    filter: brightness(1.12);
-    opacity: 0.94;
+@media (hover: hover) and (pointer: fine) {
+    .related-carousel__nav:hover {
+        border-color: rgba(var(--accent-rgb), 0.8);
+        box-shadow: 0 16px 32px rgba(0,0,0,0.6), 0 0 14px rgba(var(--accent-rgb),0.4);
+        filter: brightness(1.06);
+        opacity: 1;
+        transform: none !important;
+    }
+
+    .related-carousel__nav:active {
+        transform: scale(0.97) !important;
+        border-color: rgba(var(--accent-rgb), 0.95);
+        box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.5), 0 12px 24px rgba(0,0,0,0.55);
+        filter: brightness(1.12);
+        opacity: 0.94;
+    }
 }
 
 .related-grid {
@@ -2574,6 +2643,7 @@ body[data-ccg-mode="amiga"] {
 
     .ccg-page--single-game .related-carousel__viewport {
         padding: 10px 18px;
+        scroll-padding-inline: 18px;
     }
 }
 
@@ -2616,6 +2686,7 @@ body[data-ccg-mode="amiga"] {
 
     .ccg-page--single-game .related-carousel__viewport {
         padding: 10px 12px;
+        scroll-padding-inline: 12px;
     }
 }
 
@@ -2676,7 +2747,12 @@ body[data-ccg-mode="amiga"] {
         overflow: visible;
     }
 
-    .related-carousel .related-card span {
+    .related-carousel {
+        --related-card-size: min(82vw, 310px);
+        --related-gap: 12px;
+    }
+
+    .related-carousel .related-card .related-card__title {
         /* Mobile clip fix: base rule clamps titles with overflow hidden; remove clamp to show full text. */
         font-size: clamp(0.85rem, 3.6vw, 1rem);
         line-height: 1.35;
