@@ -681,13 +681,21 @@ function idMatchesSlug(record = {}) {
 
 
 function syncIdentityFields() {
+  // Verification checklist:
+  // ☑ Typing Title auto-updates Slug + ID
+  // ☑ Clearing Title clears Slug + ID
+  // ☑ Locking Slug stops updates
+  // ☑ Unlocking Slug re-syncs immediately
+  // ☑ No legacy JS touching identity fields
   if (!state.draft) return;
   const canonicalSlug = generateSlug(state.draft.title);
   if (!state.slugLocked) {
     state.draft.slug = canonicalSlug;
+    console.info('[CCG-IDENTITY] slug synced', { slug: state.draft.slug, canonicalSlug });
   }
   if (!state.idLocked) {
-    state.draft.id = state.draft.slug;
+    state.draft.id = String(state.draft.slug || '').trim();
+    console.info('[CCG-IDENTITY] id synced', { id: state.draft.id, slug: state.draft.slug });
   }
 }
 
@@ -996,6 +1004,7 @@ function loadDraft() {
   try {
     const parsed = JSON.parse(raw);
     state.step = Math.min(Math.max(parsed.step || 1, 1), MAX_STEP);
+    // Locks default false unless explicitly saved true in draft payload.
     state.slugLocked = parsed.slugLocked === true;
     state.idLocked = parsed.idLocked === true;
     state.draft = { ...defaultDraft(), ...(parsed.draft || {}) };
@@ -1184,6 +1193,7 @@ function draftFromGame(game) {
 
 function setEditMode(game, index) {
   state.mode = 'edit';
+  // Edit mode always starts unlocked (explicit-lock only semantics).
   state.slugLocked = false;
   state.idLocked = false;
   state.editing = { slug: game.slug, id: game.id, index };
@@ -2313,7 +2323,7 @@ function handleFieldInput(event) {
 
   if (name === 'title') {
     syncIdentityFields();
-    console.info('[CCG-IDENTITY] title → sync', {
+    console.info('[CCG-IDENTITY] title changed', {
       title: state.draft.title,
       slug: state.draft.slug,
       id: state.draft.id,
@@ -2352,7 +2362,7 @@ function bindIdentityWiring() {
     const onTitleChange = () => {
       state.draft.title = titleInput.value;
       syncIdentityFields();
-      console.info('[CCG-IDENTITY] title → sync', {
+      console.info('[CCG-IDENTITY] title changed', {
         title: state.draft.title,
         slug: state.draft.slug,
         id: state.draft.id,
@@ -2388,10 +2398,6 @@ function bindIdentityWiring() {
   if (slugInput) {
     const onSlugInput = (event) => {
       state.draft.slug = slugInput.value;
-      if (event.type === 'input') {
-        state.slugLocked = true;
-        if (slugLockToggle) slugLockToggle.checked = true;
-      }
       if (!state.idLocked) {
         state.draft.id = state.draft.slug;
       }
@@ -2412,10 +2418,6 @@ function bindIdentityWiring() {
   if (idInput) {
     const onIdInput = (event) => {
       state.draft.id = idInput.value;
-      if (event.type === 'input') {
-        state.idLocked = true;
-        if (idLockToggle) idLockToggle.checked = true;
-      }
       normalizeDraft();
       updateIdentityDomFromDraft();
       updatePreviewFields();
@@ -2468,6 +2470,8 @@ function toggleOverrideField(targetKey) {
 function setSlugLock(locked) {
   state.slugLocked = locked;
   if (!locked) {
+    state.draft.slug = generateSlug(state.draft.title);
+    console.info('[CCG-IDENTITY] slug synced', { slug: state.draft.slug, source: 'title-unlock' });
     syncIdentityFields();
   }
   normalizeDraft();
@@ -2481,6 +2485,8 @@ function setSlugLock(locked) {
 function setIdLock(locked) {
   state.idLocked = locked;
   if (!locked) {
+    state.draft.id = String(state.draft.slug || '').trim();
+    console.info('[CCG-IDENTITY] id synced', { id: state.draft.id, source: 'slug-unlock' });
     syncIdentityFields();
   }
   normalizeDraft();

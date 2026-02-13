@@ -32,31 +32,19 @@
     return typeof event.key === 'string' && event.key.length === 1;
   };
 
-  const shouldBypassProtection = (event) => {
-    if (!event || !window.ccgIsAdminContext || !window.ccgIsAdminContext()) return false;
-    const pathname = window.location?.pathname || '';
-    if (!pathname.includes('/admin/games-editor.html')) return false;
-    if (!window.ccgIsGameEditorIdentityTarget || !window.ccgIsGameEditorIdentityTarget(event.target)) return false;
-    return true;
+  const stopGlobalHotkeys = (event) => {
+    if (!(event instanceof KeyboardEvent)) return;
+    if (!window.ccgIsAdminContext || !window.ccgIsAdminContext()) return;
+    if (!window.ccgIsEditableTarget || !window.ccgIsEditableTarget(event.target)) return;
+    if (!isPrintableKey(event)) return;
+
+    // Only isolation behavior: do not mutate values for title/slug/id or any other input.
+    event.stopPropagation();
   };
 
-  const isAdminEditableEvent = (event) => {
-    if (!(event instanceof KeyboardEvent)) return false;
-    if (!window.ccgIsAdminContext || !window.ccgIsAdminContext()) return false;
-    if (!window.ccgIsEditableTarget || !window.ccgIsEditableTarget(event.target)) return false;
-    return isPrintableKey(event);
-  };
-
-  if (!Event.prototype.__ccgAdminInputShield) {
-    const originalPreventDefault = Event.prototype.preventDefault;
-    Event.prototype.preventDefault = function patchedPreventDefault(...args) {
-      if (shouldBypassProtection(this) || isAdminEditableEvent(this)) {
-        return;
-      }
-      return originalPreventDefault.apply(this, args);
-    };
-    Event.prototype.__ccgAdminInputShield = true;
-  }
+  ['keydown', 'keypress', 'keyup'].forEach((eventType) => {
+    document.addEventListener(eventType, stopGlobalHotkeys, true);
+  });
 
   const applyAdminContext = () => {
     window.CCG_CONTEXT = 'admin';
