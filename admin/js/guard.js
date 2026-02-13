@@ -2,11 +2,11 @@ import { ADMIN_BUILD_ID } from './build.js';
 import { AUTH_CONFIG } from './config.js?v=20260207-01';
 import {
   AUTH_STATE,
-  authReady,
   bindSessionInvalidation,
   getAuthContext,
   refreshSessionIfNeeded,
-  resolveAuthState
+  resolveAuthState,
+  waitForAuthReady
 } from './auth.js?v=20260207-01';
 import { clearRoleCache, fetchUserRole } from './roles.js?v=20260207-01';
 
@@ -51,8 +51,9 @@ export async function ensureAuthenticated({ redirectTo = AUTH_CONFIG.loginPage }
     return null;
   }
 
-  const readyState = await authReady;
-  const context = readyState?.context || (await getAuthContext());
+  await waitForAuthReady();
+
+  const context = await getAuthContext();
   const authState = resolveAuthState(context?.session || null, context?.profile || null);
   renderAuthStatus(authState);
 
@@ -122,7 +123,7 @@ export async function startAccessMonitor({ onSessionInvalidated } = {}) {
     return;
   }
 
-  await authReady;
+  await waitForAuthReady();
 
   bindSessionInvalidation({
     onSignedOut: () => {
