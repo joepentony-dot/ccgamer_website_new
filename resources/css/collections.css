@@ -408,3 +408,61 @@ body.amiga-mode .ccg-page--collections-index {
     animation: none !important;
     opacity: 1 !important;
 }
+
+/* =========================================================
+   OMEGA HEADER SYSTEM
+   Applies to ALL Collection & Genre headers
+========================================================= */
+
+.ccg-page--collections-index .ccg-hero-inner--collections {
+    position: relative;
+    padding: 28px 32px;
+    border-radius: 14px;
+    background: var(--omega-panel-bg, linear-gradient(135deg, rgba(10, 30, 45, 0.85), rgba(20, 55, 75, 0.85)));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--omega-panel-border, rgba(120, 220, 255, 0.25));
+    box-shadow: 0 0 24px var(--omega-panel-glow, rgba(0, 180, 255, 0.15)), inset 0 0 0.5px rgba(255,255,255,0.15);
+    overflow: hidden;
+}
+
+.ccg-page--collections-index .ccg-hero-inner--collections::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, rgba(255,255,255,0.06), transparent 60%);
+    pointer-events: none;
+}
+
+.ccg-page--collections-index .ccg-hero-inner--collections .ccg-hero-title {
+    margin: 0;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: none;
+    font-size: clamp(2.2rem, 3.5vw, 3.2rem);
+    color: var(--omega-header-text, #e9fbff);
+    text-shadow: 0 0 6px var(--omega-glow-inner, rgba(64, 220, 255, 0.9)), 0 0 18px var(--omega-glow-mid, rgba(32, 180, 255, 0.6)), 0 0 42px var(--omega-glow-outer, rgba(0, 120, 255, 0.35));
+    animation: omegaHeaderEnter 600ms ease-out both, omegaGlowPulse 10s ease-in-out infinite;
+}
+
+.ccg-page--collections-index .ccg-hero-inner--collections .ccg-hero-tagline {
+    margin-top: 10px;
+    max-width: 900px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--omega-subtext, rgba(200, 235, 245, 0.85));
+    letter-spacing: 0.03em;
+    text-shadow: none;
+}
+
+@media (max-width: 768px) {
+    .ccg-page--collections-index .ccg-hero-inner--collections {
+        padding: 22px 20px;
+    }
+
+    .ccg-page--collections-index .ccg-hero-inner--collections .ccg-hero-title {
+        font-size: 2rem;
+    }
+}
