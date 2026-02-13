@@ -1,5 +1,5 @@
 import { AUTH_CONFIG } from './config.js?v=admin-stable-20260207';
-import { getAuthContext, redirectWithGuard, waitForAuthReady } from './auth.js?v=admin-stable-20260207';
+import { AUTH_STATE, getAuthContext, redirectWithGuard, resolveAuthState, waitForAuthReady } from './auth.js?v=admin-stable-20260207';
 import { fetchGamesJson } from './games-api.js?v=admin-stable-20260207';
 import { startAccessMonitor } from './guard.js?v=admin-stable-20260207';
 import { initAdminNav } from './admin-nav.js?v=admin-stable-20260207';
@@ -13,6 +13,17 @@ const exportField = document.querySelector('[data-admin-export-status]');
 const envField = document.querySelector('[data-admin-env-status]');
 
 const ALLOWED_ROLES = ['superadmin', 'admin', 'editor'];
+
+function disableLimitedActions() {
+  document.querySelectorAll('.admin-tool-nav a').forEach((link) => {
+    const href = String(link.getAttribute('href') || '');
+    if (href.includes('games-editor') || href.includes('publish')) {
+      link.classList.add('is-disabled');
+      link.setAttribute('aria-disabled', 'true');
+      link.addEventListener('click', (event) => event.preventDefault());
+    }
+  });
+}
 
 function setStatus(text, state = 'info') {
   statusField.textContent = text;
@@ -43,15 +54,15 @@ async function bootstrap() {
     if (!context?.isAuthenticated || !context?.user) {
       emailField.textContent = 'Guest';
       roleField.textContent = 'guest';
-      setStatus('Session: guest', 'info');
+      setStatus('Please sign in to continue.', 'info');
       redirectWithGuard(AUTH_CONFIG.loginPage, 'unauthenticated');
       return;
     }
 
-    let role = context.role || 'unknown';
+    let role = context.role || null;
     const email = context.user.email || 'unknown';
 
-    if (context.user?.id && ['unknown', 'member', 'none'].includes(String(role).toLowerCase())) {
+    if (context.user?.id && !role) {
       try {
         role = await fetchUserRole({ userId: context.user.id, force: true });
       } catch (error) {
@@ -59,12 +70,25 @@ async function bootstrap() {
       }
     }
 
-    emailField.textContent = email;
-    roleField.textContent = role;
-    setStatus(`Session: signed in as ${email}`, 'success');
+    const profile = { role: role || null };
+    const authState = resolveAuthState(context.session || null, profile);
 
-    if (!ALLOWED_ROLES.includes(String(role).toLowerCase())) {
-      setStatus('Session: signed in (role not permitted)', 'error');
+    emailField.textContent = email;
+    roleField.textContent = role || 'limited';
+
+    if (authState === AUTH_STATE.AUTHENTICATED) {
+      setStatus('Signed in as Admin', 'success');
+    } else if (authState === AUTH_STATE.AUTHENTICATED_LIMITED) {
+      setStatus('Signed in (limited admin access)', 'info');
+      disableLimitedActions();
+    } else if (authState === AUTH_STATE.UNAUTHORISED) {
+      setStatus('Access denied', 'error');
+      redirectWithGuard(AUTH_CONFIG.loginPage, 'forbidden');
+      return;
+    }
+
+    if (role && !ALLOWED_ROLES.includes(String(role).toLowerCase()) && authState !== AUTH_STATE.AUTHENTICATED_LIMITED) {
+      setStatus('Access denied', 'error');
       redirectWithGuard(AUTH_CONFIG.loginPage, 'forbidden');
       return;
     }
@@ -76,7 +100,11 @@ async function bootstrap() {
     loadField.textContent = `Last load success: ${now}`;
     localStorage.setItem('omegaAdminLastLoadSuccess', now);
 
-    setStatus('Access granted. CCG Admin systems online.', 'success');
+    if (authState === AUTH_STATE.AUTHENTICATED) {
+      setStatus('Signed in as Admin', 'success');
+    } else if (authState === AUTH_STATE.AUTHENTICATED_LIMITED) {
+      setStatus('Signed in (limited admin access)', 'info');
+    }
   } catch (error) {
     loadField.textContent = `Last load error: ${error.message || 'unknown'}`;
     setStatus(error.message || 'Unable to validate admin access.', 'error');
