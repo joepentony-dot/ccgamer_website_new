@@ -761,6 +761,7 @@ function updateFormFromDraft() {
     const name = field.dataset.field;
     if (!name || !(name in state.draft)) return;
     if (field.type === 'checkbox') return;
+    if (field === document.activeElement) return;
     field.value = state.draft[name] ?? '';
   });
 
@@ -774,6 +775,46 @@ function updateFormFromDraft() {
   if (el.locks.slug) el.locks.slug.checked = state.slugLocked;
   if (el.locks.id) el.locks.id.checked = state.idLocked;
   if (el.ratingRange) el.ratingRange.value = state.draft.ccgRating || 1;
+}
+
+function findIdentityInput(fieldName) {
+  const selectors = {
+    title: [
+      '[data-field="title"]',
+      '#title',
+      '#game-title',
+      'input[name="title"]',
+      '[data-step="1"] .form-grid input[type="text"]'
+    ],
+    slug: ['[data-field="slug"]', '#slug', 'input[name="slug"]'],
+    id: ['[data-field="id"]', '#id', '#game-id', 'input[name="id"]']
+  };
+  const candidates = selectors[fieldName] || [];
+  for (const selector of candidates) {
+    const found = document.querySelector(selector);
+    if (found instanceof HTMLInputElement) {
+      return found;
+    }
+  }
+  return null;
+}
+
+function updateIdentityDomFromDraft() {
+  const titleInput = findIdentityInput('title');
+  const slugInput = findIdentityInput('slug');
+  const idInput = findIdentityInput('id');
+
+  if (titleInput && titleInput !== document.activeElement) {
+    titleInput.value = state.draft.title ?? '';
+  }
+  if (slugInput && slugInput !== document.activeElement) {
+    slugInput.value = state.draft.slug ?? '';
+  }
+  if (idInput && idInput !== document.activeElement) {
+    idInput.value = state.draft.id ?? '';
+  }
+  if (el.locks.slug) el.locks.slug.checked = state.slugLocked;
+  if (el.locks.id) el.locks.id.checked = state.idLocked;
 }
 
 function buildMetaDescription(draft, entry) {
@@ -2269,6 +2310,22 @@ function handleFieldInput(event) {
 
   if (name === 'title') {
     syncIdentityFields();
+    console.info('[CCG-IDENTITY] title → sync', {
+      title: state.draft.title,
+      slug: state.draft.slug,
+      id: state.draft.id,
+      slugLocked: state.slugLocked,
+      idLocked: state.idLocked
+    });
+    normalizeDraft();
+    updateIdentityDomFromDraft();
+    updatePreviewFields();
+    state.validation.ran = false;
+    updateStatusIndicators();
+    evaluateStepStatus();
+    markDirty(true);
+    scheduleAutoSave();
+    return;
   }
 
   normalizeDraft();
@@ -2279,6 +2336,96 @@ function handleFieldInput(event) {
   evaluateStepStatus();
   markDirty(true);
   scheduleAutoSave();
+}
+
+function bindIdentityWiring() {
+  const titleInput = findIdentityInput('title');
+  const slugInput = findIdentityInput('slug');
+  const idInput = findIdentityInput('id');
+  const slugLockToggle = el.locks.slug || document.querySelector('[data-lock-toggle="slug"]');
+  const idLockToggle = el.locks.id || document.querySelector('[data-lock-toggle="id"]');
+
+  if (titleInput) {
+    const onTitleChange = () => {
+      state.draft.title = titleInput.value;
+      syncIdentityFields();
+      console.info('[CCG-IDENTITY] title → sync', {
+        title: state.draft.title,
+        slug: state.draft.slug,
+        id: state.draft.id,
+        slugLocked: state.slugLocked,
+        idLocked: state.idLocked
+      });
+      normalizeDraft();
+      updateIdentityDomFromDraft();
+      updatePreviewFields();
+      state.validation.ran = false;
+      updateStatusIndicators();
+      evaluateStepStatus();
+      markDirty(true);
+      scheduleAutoSave();
+    };
+
+    titleInput.addEventListener('input', onTitleChange);
+    titleInput.addEventListener('change', onTitleChange);
+  }
+
+  if (slugLockToggle) {
+    slugLockToggle.addEventListener('change', (event) => {
+      setSlugLock(event.target.checked);
+    });
+  }
+
+  if (idLockToggle) {
+    idLockToggle.addEventListener('change', (event) => {
+      setIdLock(event.target.checked);
+    });
+  }
+
+  if (slugInput) {
+    const onSlugInput = (event) => {
+      state.draft.slug = slugInput.value;
+      if (event.type === 'input') {
+        state.slugLocked = true;
+        if (slugLockToggle) slugLockToggle.checked = true;
+      }
+      if (!state.idLocked) {
+        state.draft.id = state.draft.slug;
+      }
+      normalizeDraft();
+      updateIdentityDomFromDraft();
+      updatePreviewFields();
+      state.validation.ran = false;
+      updateStatusIndicators();
+      evaluateStepStatus();
+      markDirty(true);
+      scheduleAutoSave();
+    };
+
+    slugInput.addEventListener('input', onSlugInput);
+    slugInput.addEventListener('change', onSlugInput);
+  }
+
+  if (idInput) {
+    const onIdInput = (event) => {
+      state.draft.id = idInput.value;
+      if (event.type === 'input') {
+        state.idLocked = true;
+        if (idLockToggle) idLockToggle.checked = true;
+      }
+      normalizeDraft();
+      updateIdentityDomFromDraft();
+      updatePreviewFields();
+      state.validation.ran = false;
+      updateStatusIndicators();
+      evaluateStepStatus();
+      markDirty(true);
+      scheduleAutoSave();
+    };
+
+    idInput.addEventListener('input', onIdInput);
+    idInput.addEventListener('change', onIdInput);
+  }
 }
 
 function handleGenreChange(event) {
@@ -2374,6 +2521,7 @@ function goToStep(nextStep) {
 
 function bindEvents() {
   el.fields.forEach((field) => {
+    if (['title', 'slug', 'id'].includes(field.dataset.field || '')) return;
     field.addEventListener('input', handleFieldInput);
     field.addEventListener('change', handleFieldInput);
   });
@@ -2419,14 +2567,6 @@ function bindEvents() {
       setErrorIndicator('');
       goToStep(target);
     });
-  });
-
-  el.locks.slug?.addEventListener('change', (event) => {
-    setSlugLock(event.target.checked);
-  });
-
-  el.locks.id?.addEventListener('change', (event) => {
-    setIdLock(event.target.checked);
   });
 
   el.actions.saveDraft?.addEventListener('click', () => {
@@ -2673,6 +2813,8 @@ async function boot() {
   setReadOnly(true);
   await loadLibrary();
 
+  state.slugLocked = false;
+  state.idLocked = false;
   if (el.locks.slug) el.locks.slug.checked = false;
   if (el.locks.id) el.locks.id.checked = false;
 
@@ -2684,6 +2826,7 @@ async function boot() {
   updateProgress();
   showDraftBanner();
   bindEvents();
+  bindIdentityWiring();
   window.CCGGameBuilder = { loadGameById, loadGameBySlug, downloadFlatPageZip };
   window.ccgRegenerateGameStubs = downloadFlatPageZip;
   window.downloadFlatPageZip = downloadFlatPageZip;
