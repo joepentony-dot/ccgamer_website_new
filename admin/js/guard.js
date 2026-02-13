@@ -13,6 +13,10 @@ import { clearRoleCache, fetchUserRole } from './roles.js?v=20260207-01';
 
 console.info('[CCG-AUTH] guard.js loaded', ADMIN_BUILD_ID);
 
+if (window.location.pathname.endsWith('/login.html')) {
+  console.info('[CCG-AUTH] guard bypass on login page');
+}
+
 const IS_LOGIN_PAGE = window.location.pathname.endsWith('/login.html');
 
 async function waitForClient({ timeout = 8000, interval = 120 } = {}) {
