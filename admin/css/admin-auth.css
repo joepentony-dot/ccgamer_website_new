@@ -133,6 +133,13 @@
   color: var(--admin-text);
 }
 
+.admin-tool-nav a.is-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+
 @media (max-width: 640px) {
   .admin-auth-wrap,
   .admin-dashboard-wrap {
