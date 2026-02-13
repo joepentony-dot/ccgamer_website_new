@@ -117,7 +117,6 @@ function syncGlobalAuthState(context = null, error = null) {
     context: resolvedContext,
     error: error || resolvedContext?.error || null
   };
-  window.__ccgSession = resolvedSession;
 }
 
 function dispatchAuthReady(context) {

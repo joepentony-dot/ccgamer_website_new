@@ -1,9 +1,10 @@
 import { AUTH_CONFIG } from './config.js?v=admin-stable-20260207';
 import {
+  authReady,
   login,
   redirectWithGuard,
-  restoreSession,
-  sendPasswordReset
+  sendPasswordReset,
+  waitForAuthReady
 } from './auth.js?v=admin-stable-20260207';
 import { fetchUserRole } from './roles.js?v=admin-stable-20260207';
 import { initAdminNav } from './admin-nav.js?v=admin-stable-20260207';
@@ -97,10 +98,6 @@ function setLoading(isLoading) {
   if (loginButton) loginButton.textContent = isLoading ? 'Signing in…' : 'Sign in';
 }
 
-function showLoginForm() {
-  setLoading(false);
-}
-
 function showReasonMessage() {
   const reason = new URLSearchParams(window.location.search).get('reason');
   if (!reason) return;
@@ -123,14 +120,13 @@ function showReasonMessage() {
 async function redirectIfSessionExists() {
   try {
     const session = await restoreSession();
-    if (session) {
-      console.info('[CCG-LOGIN] Session restored, redirecting');
-      setMessage('Session detected. Redirecting to dashboard…', 'info');
-      window.location.replace('/admin/dashboard.html');
-      return;
+    if (session?.user?.id) {
+      console.info('[CCG-LOGIN] Session exists; deferring to guard');
+      setMessage('Session detected. Verifying access…', 'info');
+    } else {
+      log('No existing session found.');
     }
-
-    showLoginForm();
+    log('No existing session found.');
   } catch (e) {
     error('Session handoff failed', e);
     setMessage(e?.message || 'Unable to check session state.', 'error');
@@ -231,5 +227,4 @@ if (resetButton) {
 
 // Always init nav + login message/session redirect checks
 initAdminNav({ pageLabel: 'Login', active: 'dashboard' });
-showReasonMessage();
 redirectIfSessionExists();
