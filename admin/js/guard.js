@@ -6,7 +6,8 @@ import {
   getAuthContext,
   refreshSessionIfNeeded,
   resolveAuthState,
-  waitForAuthReady
+  waitForAuthReady,
+  authReady
 } from './auth.js?v=20260207-01';
 import { clearRoleCache, fetchUserRole } from './roles.js?v=20260207-01';
 
@@ -24,9 +25,7 @@ function renderAuthStatus(state) {
   const statusNode = document.querySelector('[data-admin-status]');
   if (!statusNode) return;
 
-  if (state === AUTH_STATE.AUTHENTICATED || state === AUTH_STATE.AUTHENTICATED_LIMITED) {
-    return;
-  }
+  if (state === AUTH_STATE.AUTHENTICATED || state === AUTH_STATE.AUTHENTICATED_LIMITED) return;
 
   if (state === AUTH_STATE.AUTHENTICATING) {
     statusNode.textContent = 'Restoring session…';
@@ -47,9 +46,7 @@ function renderAuthStatus(state) {
 }
 
 export async function ensureAuthenticated({ redirectTo = AUTH_CONFIG.loginPage } = {}) {
-  if (IS_LOGIN_PAGE) {
-    return null;
-  }
+  if (IS_LOGIN_PAGE) return null;
 
   await waitForAuthReady();
 
@@ -71,9 +68,7 @@ export async function ensureAuthenticated({ redirectTo = AUTH_CONFIG.loginPage }
 
   const session = window.__ccgSession;
   if (session === null) {
-    const url = new URL(redirectTo, window.location.origin);
-    url.searchParams.set('reason', 'unauthenticated');
-    window.location.replace(url.toString());
+    redirect(redirectTo, 'unauthenticated');
     return null;
   }
 
@@ -81,14 +76,15 @@ export async function ensureAuthenticated({ redirectTo = AUTH_CONFIG.loginPage }
 }
 
 export async function ensureRole(allowedRoles = []) {
+  if (IS_LOGIN_PAGE) return null;
+
   await authReady;
   const session = await ensureAuthenticated();
-  if (!session) {
-    return null;
-  }
+  if (!session) return null;
 
   const context = await getAuthContext();
   const authState = resolveAuthState(context?.session || null, context?.profile || null);
+
   if (authState === AUTH_STATE.AUTHENTICATED_LIMITED) {
     return { session: context.session || session, role: null, authState };
   }
@@ -118,18 +114,14 @@ export async function ensureRole(allowedRoles = []) {
 }
 
 export async function startAccessMonitor({ onSessionInvalidated } = {}) {
-  if (IS_LOGIN_PAGE) {
-    return;
-  }
+  if (IS_LOGIN_PAGE) return;
 
   await waitForAuthReady();
 
   bindSessionInvalidation({
     onSignedOut: () => {
       clearRoleCache();
-      if (typeof onSessionInvalidated === 'function') {
-        onSessionInvalidated();
-      }
+      if (typeof onSessionInvalidated === 'function') onSessionInvalidated();
       redirect(AUTH_CONFIG.loginPage, 'signed_out');
     }
   });

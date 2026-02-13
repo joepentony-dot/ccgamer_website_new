@@ -5,7 +5,6 @@
   <meta name="ccg-context" content="admin" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Input safety (OK on login) -->
   <script src="/admin/js/input-harden.js?v=20260207-01"></script>
   <script src="/admin/js/admin-input-firewall.js?v=20260207-01"></script>
 
@@ -13,12 +12,9 @@
   <meta name="robots" content="noindex,nofollow" />
   <link rel="icon" href="../favicon.ico" />
 
-  <!-- Core site styles -->
   <link href="../resources/css/ccg-master.css?v=20260207-01" rel="stylesheet" />
   <link href="../resources/css/ccg-mode.css?v=20260207-01" rel="stylesheet" />
   <link href="../resources/css/ccg-effects.css?v=20260207-01" rel="stylesheet" />
-
-  <!-- Admin styles -->
   <link href="./css/admin-auth.css?v=20260207-01" rel="stylesheet" />
   <link href="../resources/css/ccg-admin.css?v=20260207-01" rel="stylesheet" />
 </head>
@@ -38,47 +34,30 @@
 
       <form data-login-form novalidate>
         <label for="admin-email">Email</label>
-        <input
-          id="admin-email"
-          data-email-input
-          type="email"
-          autocomplete="email"
-          required
-        />
+        <input id="admin-email" data-email-input type="email" autocomplete="email" required />
 
         <label for="admin-password">Password</label>
-        <input
-          id="admin-password"
-          data-password-input
-          type="password"
-          autocomplete="current-password"
-          required
-        />
+        <input id="admin-password" data-password-input type="password" autocomplete="current-password" required />
 
-        <button class="ccg-btn ccg-btn--primary" data-login-button type="submit">
-          Sign in
-        </button>
-
-        <button class="ccg-btn ccg-btn--ghost" data-reset-button type="button">
-          Reset password
-        </button>
+        <button class="ccg-btn ccg-btn--primary" data-login-button type="submit">Sign in</button>
+        <button class="ccg-btn ccg-btn--ghost" data-reset-button type="button">Reset password</button>
       </form>
 
-      <p class="admin-auth-message" data-message data-state="info">
-        Enter your credentials to continue.
-      </p>
+      <p class="admin-auth-message" data-message data-state="info">Enter your credentials to continue.</p>
+      <p class="admin-auth-message" data-admin-status data-state="info" style="margin-top:10px;"></p>
     </section>
   </main>
 
-  <!-- ========================= -->
-  <!--  LOGIN SCRIPT STACK ONLY  -->
-  <!-- ========================= -->
-
+  <!-- IMPORTANT:
+       Load Supabase bootstrap FIRST (no defer), then admin auth modules.
+       Also: DO NOT load /admin/js/guard.js on the login page (prevents forbidden loops). -->
   <script src="/js/ccg-supabase-config.js?v=20260207-01"></script>
   <script src="/js/ccg-supabase-client.js?v=20260207-01"></script>
-  <script src="/admin/js/login.js?v=20260207-01"></script>
-  <script src="/js/ccg-auth-ui.js?v=20260207-01"></script>
-  <script src="/admin/js/input-fix.js?v=20260207-01"></script>
 
+  <script type="module" src="/admin/js/config.js?v=20260207-01"></script>
+  <script type="module" src="/admin/js/auth.js?v=20260207-01"></script>
+  <script type="module" src="/admin/js/login.js?v=20260207-01"></script>
+
+  <script src="/admin/js/input-fix.js?v=20260207-01"></script>
 </body>
 </html>
