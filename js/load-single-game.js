@@ -2451,7 +2451,9 @@ function renderRelatedGames(game) {
     if (!container || !section) return;
     if (container.dataset.relatedFor === String(game?.id || "")) return;
 
-    const result = buildRelatedMatches(game, 12);
+    const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+    const desiredCount = isDesktop ? 10 : 12;
+    const result = buildRelatedMatches(game, desiredCount);
     const items = result.items;
 
     if (!items.length) {

@@ -2269,7 +2269,6 @@ body[data-ccg-mode="amiga"] {
 
 .related-carousel__nav--next { right: 10px; }
 
-.related-carousel__nav:hover,
 .related-carousel__nav:focus-visible {
     border-color: rgba(var(--accent-rgb), 0.8);
     box-shadow: 0 16px 32px rgba(0,0,0,0.6), 0 0 14px rgba(var(--accent-rgb),0.4);
@@ -2279,12 +2278,22 @@ body[data-ccg-mode="amiga"] {
     outline: none;
 }
 
-.related-carousel__nav:active {
-    transform: none !important;
-    border-color: rgba(var(--accent-rgb), 0.95);
-    box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.5), 0 12px 24px rgba(0,0,0,0.55);
-    filter: brightness(1.12);
-    opacity: 0.94;
+@media (hover: hover) and (pointer: fine) {
+    .related-carousel__nav:hover {
+        border-color: rgba(var(--accent-rgb), 0.8);
+        box-shadow: 0 16px 32px rgba(0,0,0,0.6), 0 0 14px rgba(var(--accent-rgb),0.4);
+        filter: brightness(1.06);
+        opacity: 1;
+        transform: none !important;
+    }
+
+    .related-carousel__nav:active {
+        transform: scale(0.97) !important;
+        border-color: rgba(var(--accent-rgb), 0.95);
+        box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.5), 0 12px 24px rgba(0,0,0,0.55);
+        filter: brightness(1.12);
+        opacity: 0.94;
+    }
 }
 
 .related-grid {
