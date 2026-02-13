@@ -72,7 +72,7 @@
       </button>
       <button type="button" data-step-jump="3">
         <span class="step-index">3</span>
-        <span class="step-label">Metadata</span>
+        <span class="step-label">Content</span>
         <span class="step-state" aria-hidden="true"></span>
       </button>
       <button type="button" data-step-jump="4">
@@ -82,12 +82,12 @@
       </button>
       <button type="button" data-step-jump="5">
         <span class="step-index">5</span>
-        <span class="step-label">Validation</span>
+        <span class="step-label">Checks</span>
         <span class="step-state" aria-hidden="true"></span>
       </button>
       <button type="button" data-step-jump="6">
         <span class="step-index">6</span>
-        <span class="step-label">Package</span>
+        <span class="step-label">Preview & ZIP</span>
         <span class="step-state" aria-hidden="true"></span>
       </button>
     </nav>
@@ -247,7 +247,7 @@
     <section class="admin-info-card" data-step="3" hidden>
       <div class="step-header">
         <div>
-          <h2>Step 3 · Metadata & Ratings</h2>
+          <h2>Step 3 · Content & Media</h2>
           <p>Capture genres, ratings, and credits so the entry matches games.json.</p>
         </div>
         <div class="omega-required-box">
@@ -405,6 +405,7 @@
       </div>
       <div class="control-row">
         <button class="ccg-btn ccg-btn--ghost" type="button" data-action="run-validation">Run validation</button>
+        <button class="ccg-btn ccg-btn--ghost" type="button" data-action="run-checks">Run checks</button>
       </div>
       <div class="validation-panel" data-validation-panel>
         <div>
@@ -428,12 +429,18 @@
       <div class="admin-info-card" data-library-validation-summary>
         <p data-library-validation-status>Library validation pending.</p>
       </div>
+      <div class="validation-panel" data-insertion-panel>
+        <div>
+          <h3>Insertion preview (sorted)</h3>
+          <pre data-insertion-preview>Run checks to preview insertion context.</pre>
+        </div>
+      </div>
     </section>
 
     <section class="admin-info-card" data-step="6" hidden>
       <div class="step-header">
         <div>
-          <h2>Step 6 · Package Builder</h2>
+          <h2>Step 6 · Preview & Build ZIP</h2>
           <p>Preview the output files and generate the ZIP bundle. Export is blocked until validation passes.</p>
         </div>
         <div class="omega-required-box">
@@ -489,7 +496,7 @@
       </div>
       <h3>games.json preview (new entry)</h3>
       <pre data-preview="game-json"></pre>
-      <h3>SEO stub HTML preview</h3>
+      <h3>SEO folder page HTML preview</h3>
       <pre data-preview="stub-html"></pre>
       <h3>Flat SEO HTML preview</h3>
       <pre data-preview="flat-html"></pre>
@@ -499,7 +506,7 @@
       <pre data-preview="metadata-json"></pre>
       <h3>Assets manifest preview</h3>
       <pre data-preview="manifest-json"></pre>
-      <h3>README preview</h3>
+      <h3>Build report preview</h3>
       <pre data-preview="readme"></pre>
     </section>
 

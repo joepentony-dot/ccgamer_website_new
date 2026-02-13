@@ -426,3 +426,19 @@
     grid-template-columns: 1fr;
   }
 }
+
+.wizard-stepper {
+  position: sticky;
+  top: 12px;
+  z-index: 5;
+}
+
+[data-insertion-preview] {
+  min-height: 160px;
+  margin: 0;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  overflow: auto;
+}
