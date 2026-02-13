@@ -118,6 +118,7 @@
 
     const configHash = url + '::' + key;
     if (window.__ccgSupabaseClient && window.__ccgSupabaseConfigHash === configHash) {
+      window.supabase = window.__ccgSupabaseClient;
       globalState.client = window.__ccgSupabaseClient;
       globalState.configHash = configHash;
       return window.__ccgSupabaseClient;
@@ -140,8 +141,10 @@
 
       const client = window.supabase.createClient(url, key, { auth: authOptions });
 
+      window.supabase = client;
       window.__ccgSupabaseClient = client;
       window.__ccgSupabaseConfigHash = configHash;
+      console.info('[CCG-SUPABASE] client ready');
       return client;
     }).then((client) => {
       globalState.client = client;
