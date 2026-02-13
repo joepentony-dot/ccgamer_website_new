@@ -1,8 +1,8 @@
 import { AUTH_CONFIG } from './config.js?v=admin-stable-20260207';
 import {
+  authReady,
   login,
   redirectWithGuard,
-  restoreSession,
   sendPasswordReset,
   waitForAuthReady
 } from './auth.js?v=admin-stable-20260207';
@@ -129,7 +129,7 @@ async function redirectIfSessionExists() {
     }
     log('No existing session found.');
   } catch (e) {
-    error('Session restore failed', e);
+    error('Session handoff failed', e);
     setMessage(e?.message || 'Unable to check session state.', 'error');
   }
 }

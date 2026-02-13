@@ -80,6 +80,7 @@ let _authBarrierContext = null;
 let _authHydrationPromise = null;
 let _authHydrationResolve = null;
 let _authHydrationReady = false;
+let _bootstrapAuthPromise = null;
 
 function markAuthHydrated(session) {
   if (_authHydrationReady) return;
@@ -106,6 +107,17 @@ function waitForAuthHydration(timeoutMs) {
   ]);
 }
 
+function syncGlobalAuthState(context = null, error = null) {
+  const resolvedContext = context || _lastContext || _authBarrierContext || null;
+  const resolvedSession = resolvedContext?.session || _authBarrierSession || null;
+
+  window.__ccgAuthState = {
+    session: resolvedSession,
+    context: resolvedContext,
+    error: error || resolvedContext?.error || null
+  };
+}
+
 function dispatchAuthReady(context) {
   try {
     window.dispatchEvent(
@@ -122,6 +134,7 @@ function dispatchAuthReady(context) {
   } catch (_) {
     // no-op
   }
+  syncGlobalAuthState(context, context?.error || null);
 }
 
 function applyWindowAuthState(context) {
@@ -409,6 +422,31 @@ export async function waitForAuthReady() {
 
   return _authBarrierPromise;
 }
+
+
+export async function bootstrapAuth() {
+  if (_bootstrapAuthPromise) return _bootstrapAuthPromise;
+
+  _bootstrapAuthPromise = (async () => {
+    try {
+      await waitForAuthReady();
+      const context = _lastContext || _authBarrierContext || buildContextFromSession(_authBarrierSession || null, null);
+      syncGlobalAuthState(context, null);
+      return window.__ccgAuthState;
+    } catch (error) {
+      const context = buildContextFromSession(null, error);
+      syncGlobalAuthState(context, error);
+      return window.__ccgAuthState;
+    }
+  })();
+
+  return _bootstrapAuthPromise;
+}
+
+export const authReady = (async () => {
+  await bootstrapAuth();
+  return window.__ccgAuthState;
+})();
 
 export async function getAuthContext() {
   await waitForAuthReady();

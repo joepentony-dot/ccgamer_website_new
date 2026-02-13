@@ -82,7 +82,7 @@ export async function ensureAuthenticated({ redirectTo = AUTH_CONFIG.loginPage }
 }
 
 export async function ensureRole(allowedRoles = []) {
-  await waitForAuthReady();
+  await authReady;
   const session = await ensureAuthenticated();
   if (!session) {
     return null;
