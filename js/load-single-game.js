@@ -2262,110 +2262,221 @@ function buildSuggestedGames(game, limit = 10) {
    RELATED GAMES (SG-E5)
 ============================================================ */
 
+function getDeterministicSeed(value) {
+    const raw = String(value || "ccg");
+    let hash = 0;
+    for (let index = 0; index < raw.length; index += 1) {
+        hash = ((hash << 5) - hash) + raw.charCodeAt(index);
+        hash |= 0;
+    }
+    return Math.abs(hash) || 1;
+}
+
+function deterministicScore(candidate, seed) {
+    const key = String(candidate?.id || candidate?.slug || candidate?.title || "");
+    const base = getDeterministicSeed(key);
+    const mixed = (base ^ seed) >>> 0;
+    return mixed / 4294967295;
+}
+
 function buildRelatedMatches(game, limit = 12) {
-    const candidates = [];
+    const candidates = CCG_SINGLE_ALL_GAMES.filter(candidate => candidate && candidate.id !== game?.id);
     const used = new Set();
-
-    CCG_SINGLE_ALL_GAMES.forEach(candidate => {
-        if (!candidate || candidate.id === game?.id) return;
-        candidates.push(candidate);
-    });
-
-    const developerTokens = resolveDeveloperCandidates(game);
-    const publisherTokens = resolvePublisherCandidates(game);
-    const genreTokens = resolveGenreCandidates(game);
-    const collectionTokens = resolveCollectionCandidates(game);
-    const year = resolveYearValue(game);
-
     const matches = [];
-    let matchType = "suggested";
 
-    const addGroup = (type, filter) => {
+    const currentPublisher = normaliseTokenValue(resolveCreditValue(game, "publisher"));
+    const currentGenre = resolvePrimaryGenre(game);
+    const currentPlatform = normaliseTokenValue(game?.system || "");
+    const seed = getDeterministicSeed(game?.id || game?.slug || game?.title || "ccg");
+
+    const addGroup = (reason, filter) => {
         if (matches.length >= limit) return;
-        const group = candidates.filter(filter).sort(compareCandidatesByScore);
-        if (group.length && matchType === "suggested") {
-            matchType = type;
-        }
-        group.forEach(candidate => {
-            if (matches.length >= limit) return;
-            if (used.has(candidate.id)) return;
-            used.add(candidate.id);
-            matches.push(candidate);
-        });
+        candidates
+            .filter(candidate => !used.has(candidate.id) && filter(candidate))
+            .sort(compareCandidatesByScore)
+            .forEach(candidate => {
+                if (matches.length >= limit) return;
+                used.add(candidate.id);
+                matches.push({
+                    game: candidate,
+                    reason
+                });
+            });
     };
 
-    if (developerTokens.length) {
-        addGroup("developer", candidate => hasTokenMatch(developerTokens, resolveDeveloperCandidates(candidate)));
+    if (currentPublisher) {
+        addGroup("publisher", candidate => normaliseTokenValue(resolveCreditValue(candidate, "publisher")) === currentPublisher);
     }
 
-    if (publisherTokens.length) {
-        addGroup("publisher", candidate => hasTokenMatch(publisherTokens, resolvePublisherCandidates(candidate)));
+    if (matches.length < limit && currentGenre) {
+        addGroup("genre", candidate => resolvePrimaryGenre(candidate) === currentGenre);
     }
 
-    if (genreTokens.length) {
-        addGroup("genre", candidate => hasTokenMatch(genreTokens, resolveGenreCandidates(candidate)));
-    }
-
-    if (year !== null) {
-        addGroup("year", candidate => resolveYearValue(candidate) === year);
-    }
-
-    if (collectionTokens.length) {
-        addGroup("collection", candidate => hasTokenMatch(collectionTokens, resolveCollectionCandidates(candidate)));
+    if (matches.length < limit && currentPlatform) {
+        addGroup("platform", candidate => normaliseTokenValue(candidate?.system || "") === currentPlatform);
     }
 
     if (matches.length < limit) {
-        addGroup("suggested", () => true);
+        candidates
+            .filter(candidate => !used.has(candidate.id))
+            .sort((a, b) => {
+                const diff = deterministicScore(a, seed) - deterministicScore(b, seed);
+                if (diff !== 0) return diff;
+                return compareCandidatesByScore(a, b);
+            })
+            .forEach(candidate => {
+                if (matches.length >= limit) return;
+                used.add(candidate.id);
+                matches.push({
+                    game: candidate,
+                    reason: "other"
+                });
+            });
     }
 
     return {
         items: matches.slice(0, limit),
-        matchType
+        publisher: resolveCreditValue(game, "publisher"),
+        genre: resolvePrimaryGenre(game),
+        hasGenreFallback: matches.some(item => item.reason === "genre")
     };
 }
 
-function resolveRelatedCopy(matchType, game) {
-    const developer = resolveCreditValue(game, "developer");
+function resolveRelatedCopy(game, result) {
     const publisher = resolveCreditValue(game, "publisher");
-    const primaryGenre = resolvePrimaryGenre(game);
-    const year = resolveYearValue(game);
-    const collection = resolveCollections(game)[0] || "";
-    const genreLabel = primaryGenre
-        ? primaryGenre.replace(/\b\w/g, char => char.toUpperCase())
+    const genreLabel = result.genre
+        ? result.genre.replace(/\b\w/g, char => char.toUpperCase())
+        : "";
+    const suffix = result.hasGenreFallback && genreLabel
+        ? ` — Other ${genreLabel} Games`
         : "";
 
-    switch (matchType) {
-        case "developer":
-            return {
-                kicker: "RELATED BY DEVELOPER",
-                title: developer ? `More From ${developer}` : "More From The Same Developer"
-            };
-        case "publisher":
-            return {
-                kicker: "RELATED BY PUBLISHER",
-                title: publisher ? `More From ${publisher}` : "More From The Same Publisher"
-            };
-        case "genre":
-            return {
-                kicker: "GENRE CONNECTIONS",
-                title: genreLabel ? `More ${genreLabel} Adventures` : "More In The Same Genre"
-            };
-        case "year":
-            return {
-                kicker: "SAME ERA SPOTLIGHT",
-                title: year ? `Games From ${year}` : "More From The Same Year"
-            };
-        case "collection":
-            return {
-                kicker: "COLLECTION PICKS",
-                title: collection ? `More From ${collection}` : "More From The Same Collection"
-            };
-        default:
-            return {
-                kicker: "SUGGESTED GAMES",
-                title: "More Games You Should Try"
-            };
+    return {
+        kicker: "RELATED BY PUBLISHER + GENRE",
+        title: publisher
+            ? `More from ${publisher} & Similar Titles${suffix}`
+            : `More from this Publisher & Similar Titles${suffix}`
+    };
+}
+
+function renderRelatedCardMeta(relGame, reason, currentPublisher) {
+    const meta = document.createElement("div");
+    meta.className = "related-card__meta";
+
+    const genre = resolvePrimaryGenre(relGame);
+    if (genre) {
+        const genreTag = document.createElement("span");
+        genreTag.className = "related-card__tag";
+        genreTag.textContent = genre.replace(/\b\w/g, char => char.toUpperCase());
+        meta.appendChild(genreTag);
     }
+
+    const platform = String(relGame?.system || "C64").trim();
+    const year = resolveYearValue(relGame);
+    if (platform || year) {
+        const platformTag = document.createElement("span");
+        platformTag.className = "related-card__tag";
+        platformTag.textContent = [platform, year].filter(Boolean).join(" • ");
+        meta.appendChild(platformTag);
+    }
+
+    const publisher = resolveCreditValue(relGame, "publisher");
+    if (publisher && normaliseTokenValue(publisher) === normaliseTokenValue(currentPublisher)) {
+        const publisherTag = document.createElement("span");
+        publisherTag.className = "related-card__tag";
+        publisherTag.textContent = publisher;
+        meta.appendChild(publisherTag);
+    }
+
+    if (reason === "publisher" || reason === "genre") {
+        const reasonTag = document.createElement("span");
+        reasonTag.className = "related-card__tag related-card__tag--reason";
+        reasonTag.textContent = reason === "publisher" ? "Same Publisher" : "Same Genre";
+        reasonTag.title = reason === "publisher"
+            ? "Matched by exact publisher"
+            : "Matched by genre fallback";
+        meta.appendChild(reasonTag);
+    }
+
+    return meta;
+}
+
+function resolveRelatedStep(scrollEl) {
+    const firstCard = scrollEl.querySelector(".related-card");
+    if (!firstCard) return Math.max(220, scrollEl.clientWidth * 0.8);
+
+    const cards = scrollEl.querySelectorAll(".related-card");
+    if (cards.length > 1) {
+        const firstRect = cards[0].getBoundingClientRect();
+        const secondRect = cards[1].getBoundingClientRect();
+        const delta = Math.round(secondRect.left - firstRect.left);
+        if (delta > 0) return delta;
+    }
+
+    const track = scrollEl.querySelector(".related-carousel__track") || scrollEl;
+    const styles = window.getComputedStyle(track);
+    const gap = parseFloat(styles.columnGap || styles.gap || "0") || 0;
+    return Math.round(firstCard.getBoundingClientRect().width + gap);
+}
+
+function alignScrollToCard(scrollEl, direction) {
+    const step = resolveRelatedStep(scrollEl);
+    const maxScroll = Math.max(0, scrollEl.scrollWidth - scrollEl.clientWidth);
+    const target = Math.max(0, Math.min(maxScroll, scrollEl.scrollLeft + (direction * step)));
+    // One-card step on both desktop and mobile; mobile snapping remains controlled by CSS scroll-snap.
+    scrollEl.scrollTo({ left: target, behavior: "smooth" });
+}
+
+function getRelatedCarouselParts() {
+    const track = document.getElementById("relatedGamesTrack");
+    const carousel = track ? track.closest(".related-carousel") : null;
+    const prevBtn = carousel ? carousel.querySelector(".related-carousel__nav--prev") : null;
+    const nextBtn = carousel ? carousel.querySelector(".related-carousel__nav--next") : null;
+    const viewport = carousel ? carousel.querySelector(".related-carousel__viewport") : null;
+    return { track, carousel, prevBtn, nextBtn, viewport };
+}
+
+function updateRelatedButtons(scrollEl, prevBtn, nextBtn) {
+    const maxScroll = Math.max(0, scrollEl.scrollWidth - scrollEl.clientWidth);
+    const atStart = scrollEl.scrollLeft <= 8;
+    const atEnd = scrollEl.scrollLeft >= maxScroll - 8;
+
+    prevBtn.disabled = atStart;
+    nextBtn.disabled = atEnd;
+    prevBtn.setAttribute("aria-disabled", String(atStart));
+    nextBtn.setAttribute("aria-disabled", String(atEnd));
+}
+
+function bindRelatedCarousel() {
+    const { track, prevBtn, nextBtn, viewport } = getRelatedCarouselParts();
+    const scrollEl = viewport || track;
+    if (!track || !scrollEl || !prevBtn || !nextBtn) return;
+    if (track.dataset.carouselBound === "true") return;
+    track.dataset.carouselBound = "true";
+
+    const refresh = () => requestAnimationFrame(() => updateRelatedButtons(scrollEl, prevBtn, nextBtn));
+
+    prevBtn.addEventListener("click", event => {
+        event.preventDefault();
+        event.stopPropagation();
+        alignScrollToCard(scrollEl, -1);
+    });
+
+    nextBtn.addEventListener("click", event => {
+        event.preventDefault();
+        event.stopPropagation();
+        alignScrollToCard(scrollEl, 1);
+    });
+
+    [prevBtn, nextBtn].forEach(button => {
+        button.addEventListener("touchstart", event => {
+            event.stopPropagation();
+        }, { passive: true });
+        button.addEventListener("dragstart", event => event.preventDefault());
+    });
+
+    scrollEl.addEventListener("scroll", refresh, { passive: true });
+    window.addEventListener("resize", refresh);
 }
 
 function observeRelatedSection(section) {
@@ -2397,7 +2508,10 @@ function renderRelatedGames(game) {
     if (!container || !section) return;
     if (container.dataset.relatedFor === String(game?.id || "")) return;
 
-    const result = buildRelatedMatches(game, 12);
+    // Desktop target is 10 cards; mobile keeps existing higher density behavior.
+    const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+    const desiredCount = isDesktop ? 10 : 12;
+    const result = buildRelatedMatches(game, desiredCount);
     const items = result.items;
 
     if (!items.length) {
@@ -2408,92 +2522,52 @@ function renderRelatedGames(game) {
 
     container.innerHTML = "";
 
-    const copy = resolveRelatedCopy(result.matchType, game);
+    const copy = resolveRelatedCopy(game, result);
     if (kicker) kicker.textContent = copy.kicker;
     if (titleEl) titleEl.textContent = copy.title;
 
-    items.forEach(rel => {
+    items.forEach(item => {
+        const rel = item.game;
         const card = document.createElement("a");
         card.className = "related-card";
         card.href = resolvePrettyGameUrl(rel);
+        card.setAttribute("aria-label", `View ${rel.title || "game"}`);
 
         const img = document.createElement("img");
         img.src = resolveGameThumb(rel.thumbnail || rel.thumb || rel.cover);
         img.alt = rel.title || "Game";
+        img.loading = "lazy";
+        img.decoding = "async";
 
         const title = document.createElement("span");
+        title.className = "related-card__title";
         title.textContent = rel.title || "Unknown";
 
         card.appendChild(img);
         card.appendChild(title);
+        card.appendChild(renderRelatedCardMeta(rel, item.reason, result.publisher));
         container.appendChild(card);
     });
 
     container.dataset.relatedFor = String(game?.id || "");
     section.hidden = false;
+    bindRelatedCarousel();
+    initRelatedCarousel();
     observeRelatedSection(section);
 }
 
 function initRelatedCarousel() {
-    const track = document.getElementById("relatedGamesTrack");
-    const carousel = track ? track.closest(".related-carousel") : null;
-    const prevBtn = carousel ? carousel.querySelector(".related-carousel__nav--prev") : null;
-    const nextBtn = carousel ? carousel.querySelector(".related-carousel__nav--next") : null;
-    const viewport = carousel ? carousel.querySelector(".related-carousel__viewport") : null;
+    const { track, prevBtn, nextBtn, viewport } = getRelatedCarouselParts();
     const scrollEl = viewport || track;
 
     if (!track || !scrollEl || !prevBtn || !nextBtn) return;
-    if (track.dataset.carouselReady === "true") return;
-    track.dataset.carouselReady = "true";
-
     scrollEl.style.overflowX = "auto";
     scrollEl.style.overflowY = "hidden";
     scrollEl.style.scrollBehavior = "smooth";
     scrollEl.style.touchAction = "pan-x";
     scrollEl.style.webkitOverflowScrolling = "touch";
 
-    const updateButtons = () => {
-        const maxScroll = Math.max(0, scrollEl.scrollWidth - scrollEl.clientWidth);
-        const atStart = scrollEl.scrollLeft <= 1;
-        const atEnd = scrollEl.scrollLeft >= maxScroll - 1;
-
-        prevBtn.disabled = atStart;
-        nextBtn.disabled = atEnd;
-        prevBtn.setAttribute("aria-disabled", String(atStart));
-        nextBtn.setAttribute("aria-disabled", String(atEnd));
-    };
-
-    const handleScroll = (direction) => {
-        const step = Math.max(scrollEl.clientWidth * 0.8, 220);
-        scrollEl.scrollBy({ left: direction * step, behavior: "smooth" });
-    };
-
-    const bindArrow = (button, direction) => {
-        button.addEventListener("click", (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            handleScroll(direction);
-        });
-
-        button.addEventListener("touchstart", (event) => {
-            event.stopPropagation();
-        }, { passive: true });
-
-        button.addEventListener("dragstart", (event) => {
-            event.preventDefault();
-        });
-    };
-
-    bindArrow(prevBtn, -1);
-    bindArrow(nextBtn, 1);
-
-    scrollEl.addEventListener("scroll", updateButtons, { passive: true });
-    window.addEventListener("resize", updateButtons);
-    window.addEventListener("load", updateButtons);
-
-    const refreshButtons = () => {
-        requestAnimationFrame(updateButtons);
-    };
+    const refreshButtons = () => requestAnimationFrame(() => updateRelatedButtons(scrollEl, prevBtn, nextBtn));
 
     track.querySelectorAll("img").forEach(img => {
         if (img.complete) return;
@@ -2501,7 +2575,7 @@ function initRelatedCarousel() {
         img.addEventListener("error", refreshButtons, { once: true });
     });
 
-    updateButtons();
+    updateRelatedButtons(scrollEl, prevBtn, nextBtn);
 }
 
 
