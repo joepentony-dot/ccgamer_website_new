@@ -1,4 +1,9 @@
 (function () {
+  const IS_ADMIN_PATH = window.location.pathname.startsWith('/admin/');
+  if (IS_ADMIN_PATH) {
+    console.info('[CCG-AUTH] Public auth guard disabled on admin path');
+  }
+
   const state = {
     initialized: false,
     currentUser: null,
@@ -113,6 +118,10 @@
   }
 
   function redirectToLogin(returnTo) {
+    if (IS_ADMIN_PATH) {
+      // Admin pages are governed by admin/js/guard.js only
+      return;
+    }
     if (isPublicAuthRoute()) {
       return;
     }

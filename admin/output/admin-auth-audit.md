@@ -1,0 +1,259 @@
+# Admin Auth Audit
+
+## Phase 0 (Before Fix)
+
+### 1) admin/*.html script audit
+- `admin/admin-backup.html`
+  - L4: `/admin/js/admin-input-firewall.js`
+  - L57: `../js/ccg-mobile-lite.js`
+  - L624: `../js/ccg-mode-engine.js`
+  - L625: `../js/ccg-global.js`
+  - L626: `https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js`
+  - L627: `./admin.js`
+- `admin/admin.html`
+  - L7: `/admin/js/input-harden.js?v=admin-stable-20260207`
+  - L8: `/admin/js/admin-input-firewall.js?v=admin-stable-20260207`
+  - L50: `../js/ccg-mobile-lite.js?v=admin-stable-20260207`
+  - L921: `../js/ccg-mode-engine.js?v=admin-stable-20260207`
+  - L922: `../js/ccg-global.js?v=admin-stable-20260207`
+  - L923: `/admin/js/config.js?v=admin-stable-20260207`
+  - L924: `/js/ccg-supabase-config.js?v=admin-stable-20260207`
+  - L925: `/js/ccg-supabase-client.js?v=admin-stable-20260207`
+  - L926: `/admin/js/auth.js?v=admin-stable-20260207`
+  - L927: `/admin/js/guard.js?v=admin-stable-20260207`
+  - L928: `https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js`
+  - L929: `./admin.js?v=admin-stable-20260207`
+  - L935: `/admin/js/input-fix.js?v=admin-stable-20260207`
+- `admin/asset-manager.html`
+  - L4: `/admin/js/input-harden.js?v=admin-stable-20260207`
+  - L5: `/admin/js/admin-input-firewall.js?v=admin-stable-20260207`
+  - L139: `/admin/js/config.js?v=admin-stable-20260207`
+  - L140: `/js/ccg-supabase-config.js?v=admin-stable-20260207`
+  - L141: `/js/ccg-supabase-client.js?v=admin-stable-20260207`
+  - L142: `/admin/js/auth.js?v=admin-stable-20260207`
+  - L143: `/admin/js/guard.js?v=admin-stable-20260207`
+  - L144: `/admin/js/asset-manager.js?v=admin-stable-20260207`
+- `admin/dashboard.html`
+  - L7: `/admin/js/input-harden.js?v=admin-stable-20260207`
+  - L8: `/admin/js/admin-input-firewall.js?v=admin-stable-20260207`
+  - L76: `/admin/js/config.js?v=admin-stable-20260207`
+  - L77: `/js/ccg-supabase-config.js?v=admin-stable-20260207`
+  - L78: `/js/ccg-supabase-client.js?v=admin-stable-20260207`
+  - L79: `/admin/js/auth.js?v=admin-stable-20260207`
+  - L80: `/admin/js/guard.js?v=admin-stable-20260207`
+  - L81: `/admin/js/dashboard.js?v=admin-stable-20260207`
+  - L82: `/admin/js/input-fix.js?v=admin-stable-20260207`
+- `admin/games-editor.html`
+  - L7: `/admin/js/input-harden.js?v=admin-stable-20260207`
+  - L8: `/admin/js/admin-input-firewall.js?v=admin-stable-20260207`
+  - L532: `/admin/js/config.js?v=admin-stable-20260207`
+  - L533: `/js/ccg-supabase-config.js?v=admin-stable-20260207`
+  - L534: `/js/ccg-supabase-client.js?v=admin-stable-20260207`
+  - L535: `/admin/js/auth.js?v=admin-stable-20260207`
+  - L536: `/admin/js/guard.js?v=admin-stable-20260207`
+  - L537: `https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js`
+  - L538: `/admin/js/games-editor.js?v=admin-stable-20260207`
+  - L539: `/admin/js/input-fix.js?v=admin-stable-20260207`
+- `admin/help.html`
+  - L4: `/admin/js/admin-input-firewall.js`
+- `admin/login.html`
+  - L8: `/admin/js/input-harden.js?v=20260207-01`
+  - L9: `/admin/js/admin-input-firewall.js?v=20260207-01`
+  - L54: `/js/ccg-supabase-config.js?v=20260207-01`
+  - L55: `/js/ccg-supabase-client.js?v=20260207-01`
+  - L57: `/admin/js/config.js?v=20260207-01`
+  - L58: `/admin/js/auth.js?v=20260207-01`
+  - L59: `/admin/js/login.js?v=20260207-01`
+  - L61: `/admin/js/input-fix.js?v=20260207-01`
+- `admin/publish.html`
+  - L7: `/admin/js/input-harden.js?v=admin-stable-20260207`
+  - L8: `/admin/js/admin-input-firewall.js?v=admin-stable-20260207`
+  - L105: `/admin/js/config.js?v=admin-stable-20260207`
+  - L106: `/js/ccg-supabase-config.js?v=admin-stable-20260207`
+  - L107: `/js/ccg-supabase-client.js?v=admin-stable-20260207`
+  - L108: `/admin/js/auth.js?v=admin-stable-20260207`
+  - L109: `/admin/js/guard.js?v=admin-stable-20260207`
+  - L110: `/admin/js/publish.js?v=admin-stable-20260207`
+  - L111: `/admin/js/input-fix.js?v=admin-stable-20260207`
+- `admin/quiz-manager.html`
+  - L7: `/admin/js/input-harden.js?v=admin-stable-20260207`
+  - L8: `/admin/js/admin-input-firewall.js?v=admin-stable-20260207`
+  - L307: `../js/ccg-mobile-lite.js?v=admin-stable-20260207`
+  - L472: `/admin/js/config.js?v=admin-stable-20260207`
+  - L473: `/js/ccg-supabase-config.js?v=admin-stable-20260207`
+  - L474: `/js/ccg-supabase-client.js?v=admin-stable-20260207`
+  - L475: `/admin/js/auth.js?v=admin-stable-20260207`
+  - L476: `/admin/js/guard.js?v=admin-stable-20260207`
+  - L1191: `../js/nav.js?v=admin-stable-20260207`
+  - L1192: `../js/mode-toggle.js?v=admin-stable-20260207`
+- `admin/supporter-perks.html`
+  - L20: `/js/ccg-supabase-config.js`
+  - L21: `/js/ccg-supabase-client.js`
+- ❌ `admin/login.html` loads `guard.js`:
+  - L53: `Also: DO NOT load /admin/js/guard.js on the login page (prevents forbidden loops). -->`
+
+### 2) Syntax risk quick-check (`node --check`) for admin/js/*.js
+- ✅ `admin/js/admin-input-firewall.js`
+- ✅ `admin/js/admin-nav.js`
+- ✅ `admin/js/asset-manager-api.js`
+- ✅ `admin/js/asset-manager.js`
+- ✅ `admin/js/auth-failsafe.js`
+- ✅ `admin/js/auth-health.js`
+- ✅ `admin/js/auth.js`
+- ✅ `admin/js/build.js`
+- ✅ `admin/js/config.js`
+- ✅ `admin/js/dashboard.js`
+- ✅ `admin/js/games-api.js`
+- ✅ `admin/js/games-editor.js`
+- ✅ `admin/js/guard.js`
+- ✅ `admin/js/input-fix.js`
+- ✅ `admin/js/input-harden.js`
+- ✅ `admin/js/login.js`
+- ✅ `admin/js/publish.js`
+- ✅ `admin/js/roles.js`
+- ✅ `admin/js/validator.js`
+
+### 3) Redirects to `/admin/login.html?reason=forbidden` (or equivalent reason="forbidden")
+- `admin/js/dashboard.js:L86` `redirectWithGuard(AUTH_CONFIG.loginPage, 'forbidden');`
+- `admin/js/dashboard.js:L92` `redirectWithGuard(AUTH_CONFIG.loginPage, 'forbidden');`
+- `admin/js/guard.js:L104` `redirect(AUTH_CONFIG.loginPage, 'forbidden');`
+- `admin/js/guard.js:L109` `redirect(AUTH_CONFIG.loginPage, 'forbidden');`
+
+### 4) Owner email references and role gating locations
+- `admin/js/config.js:L13` `export const OWNER_EMAIL = 'admin@cheekycommodoregamer.co.uk';`
+- `admin/js/guard.js:L12` `import { clearRoleCache, fetchUserRole } from './roles.js?v=20260207-01';`
+- `admin/js/guard.js:L78` `export async function ensureRole(allowedRoles = []) {`
+- `admin/js/guard.js:L96` `const fetchedRole = await fetchUserRole({ userId: context.user.id, force: true });`
+- `admin/js/guard.js:L104` `redirect(AUTH_CONFIG.loginPage, 'forbidden');`
+- `admin/js/guard.js:L109` `redirect(AUTH_CONFIG.loginPage, 'forbidden');`
+- `admin/js/roles.js:L46` `export async function fetchUserRole({ userId, force = false }) {`
+- `admin/js/roles.js:L60` `.from('user_roles')`
+- `admin/js/login.js:L41` `if (reason === 'forbidden' || reason === 'unauthorised' || reason === 'unauthorized') {`
+
+## Phase 4 (After Fix)
+
+- ✅ `admin/login.html` does NOT load `guard.js`.
+- ✅ ensureRole check: imports OWNER_EMAILS.
+- ✅ ensureRole check: owner email extraction.
+- ✅ ensureRole check: owner bypass return.
+- ✅ ensureRole check: login page exempt.
+
+### Additional scope audit: `/js/*.js` auth/logout bindings
+- `js/admin-tools.js`
+  - L1247: `await waitForAuthReady();`
+- `js/ccg-auth-core.js`
+  - L1: `const AUTH_LOG_PREFIX = '[CCG-AUTH]';`
+  - L13: `let userMessage = 'Authentication failed. Please try again.';`
+  - L17: `userMessage = 'Unexpected authentication error. Please try again.';`
+  - L20: `userMessage = 'Network/CORS issue while contacting auth service. Please retry in a moment.';`
+  - L21: `} else if (lower.includes('invalid login credentials') || lower.includes('invalid_grant')) {`
+  - L50: `console.error(`${AUTH_LOG_PREFIX} ${context}`, info);`
+  - L70: `throw new Error('Supabase auth core not initialized. Ensure /js/ccg-supabase-config.js and /js/ccg-supabase-client.js load first.');`
+  - L90: `console.warn(`${AUTH_LOG_PREFIX} profile-check`, existing.error);`
+  - L111: `console.warn(`${AUTH_LOG_PREFIX} profile-insert`, inserted.error);`
+  - L115: `console.warn(`${AUTH_LOG_PREFIX} profile-bootstrap`, error);`
+  - L144: `const result = await supabase.auth.signUp({ email: safeEmail, password: safePassword });`
+  - L154: `export async function loginUser(email, password) {`
+- `js/ccg-auth-ui.js`
+  - L2: `const BOUND_ATTR = 'dataLogoutBound';`
+  - L4: `function getLogoutTargets() {`
+  - L5: `return Array.from(document.querySelectorAll('[data-logout], #logout, .logout, #ccg-auth-logout'));`
+  - L16: `if (c && c.auth) return c;`
+  - L22: `async function handleLogoutClick(event) {`
+  - L26: `if (!supabase || !supabase.auth || typeof supabase.auth.signOut !== 'function') {`
+  - L27: `console.warn('[CCG-AUTH-UI] Supabase client missing for logout');`
+  - L31: `await supabase.auth.signOut();`
+  - L33: `// Admin logout -> admin login`
+  - L35: `window.location.replace('/admin/login.html?reason=signed_out');`
+  - L40: `// (If you prefer redirect to /auth/login.html, swap this behaviour.)`
+  - L44: `function bindLogout() {`
+- `js/ccg-auth.js`
+  - L4: `const AUTH_EVENT = 'ccg:auth-state';`
+  - L22: `function setGlobalAuth(user, profile, session) {`
+  - L25: `window.CCG_AUTH = {`
+  - L41: `const message = loggedIn ? '[CCG AUTH] Logged in as: ' + (username || user.id) : '[CCG AUTH] No session';`
+  - L44: `window.dispatchEvent(new CustomEvent(AUTH_EVENT, { detail: window.CCG_AUTH }));`
+  - L45: `return window.CCG_AUTH;`
+  - L48: `async function resolveAuthState() {`
+  - L63: `if (!user && window.ccgCommunityAuth && typeof window.ccgCommunityAuth.getUser === 'function') {`
+  - L64: `user = window.ccgCommunityAuth.getUser();`
+  - L67: `if (window.ccgCommunityAuth && typeof window.ccgCommunityAuth.getProfile === 'function') {`
+  - L68: `profile = window.ccgCommunityAuth.getProfile();`
+  - L71: `if (!profile && user && window.ccgCommunityAuth && typeof window.ccgCommunityAuth.getProfileReady === 'function') {`
+- `js/ccg-community-auth.js`
+  - L56: `const localKeys = ['ccg_username', 'ccg-user', 'ccg-auth-token', 'ccg-auth-refresh-token'];`
+  - L66: `function clearAuthCookies() {`
+  - L82: `const el = document.getElementById('ccg-auth-message');`
+  - L115: `function redirectToLogin(returnTo) {`
+  - L116: `if (isPublicAuthRoute()) {`
+  - L119: `const target = new URL('/auth/login.html', window.location.origin);`
+  - L125: `function isPublicAuthRoute(pathname) {`
+  - L128: `const publicAuthRoutes = new Set([`
+  - L129: `'/auth/login.html',`
+  - L130: `'/auth/register.html',`
+  - L131: `'/auth/forgot.html',`
+  - L132: `'/auth/reset.html'`
+- `js/ccg-community-comments.js`
+  - L6: `OMEGA COMMUNITY AUTH LOCK`
+  - L8: `enforcing auth refresh, and surfacing failures`
+  - L19: `authReady: false,`
+  - L60: `if (status === 401) return 'Login required';`
+  - L87: `if (isAuthError(error)) return 'Not logged in';`
+  - L123: `if (window.ccgCommunityAuth && typeof window.ccgCommunityAuth.showToast === 'function') {`
+  - L124: `window.ccgCommunityAuth.showToast(message, type || 'info');`
+  - L128: `function routeToLogin() {`
+  - L129: `if (window.ccgCommunityAuth && typeof window.ccgCommunityAuth.goToLogin === 'function') {`
+  - L130: `window.ccgCommunityAuth.goToLogin(window.location.pathname + window.location.search + window.location.hash);`
+  - L133: `window.location.href = '/auth/login.html?returnTo=' + encodeURIComponent(window.location.pathname + window.location.search + window.location.hash);`
+  - L146: `function setLoginMessage(message) {`
+- `js/ccg-community-ratings.js`
+  - L6: `OMEGA COMMUNITY AUTH LOCK`
+  - L7: `Prevents endless retry loop by validating auth`
+  - L47: `function isAuthError(error) {`
+  - L55: `|| message.includes('auth');`
+  - L69: `function routeToLogin() {`
+  - L70: `if (window.ccgCommunityAuth && typeof window.ccgCommunityAuth.goToLogin === 'function') {`
+  - L71: `window.ccgCommunityAuth.goToLogin(window.location.pathname + window.location.search + window.location.hash);`
+  - L74: `window.location.href = '/auth/login.html?returnTo=' + encodeURIComponent(window.location.pathname + window.location.search + window.location.hash);`
+  - L76: `async function refreshAuthSession(supabase) {`
+  - L78: `await supabase.auth.refreshSession();`
+  - L85: `async function runQueryWithAuthRetry(runQuery, supabase) {`
+  - L87: `if (!result || !result.error || !isAuthError(result.error)) {`
+- `js/ccg-global.js`
+  - L2065: `const targetPath = "/auth/login.html?returnTo=/admin/dashboard.html";`
+  - L2371: `Authorization: `Bearer ${GOATCOUNTER_API_TOKEN}`,`
+- `js/ccg-supabase-client.js`
+  - L6: `const AUTH_READY_KEY = '__ccgAuthReadyState';`
+  - L7: `const AUTH_DEBUG_KEY = '__ccgAuthDebugState';`
+  - L24: `const authReadyState = window[AUTH_READY_KEY] || (window[AUTH_READY_KEY] = {`
+  - L29: `authBootstrapped: false,`
+  - L32: `lastAuthEventKey: '',`
+  - L34: `lastAuthEvent: 'BOOT',`
+  - L42: `const authDebugState = window[AUTH_DEBUG_KEY] || (window[AUTH_DEBUG_KEY] = {`
+  - L134: `const authOptions = {`
+  - L140: `if (storageKey) authOptions.storageKey = storageKey;`
+  - L142: `const client = window.supabase.createClient(url, key, { auth: authOptions });`
+  - L161: `function emitAuthReady(force) {`
+  - L162: `if (authReadyState.readyEventDispatched && !force) return;`
+- `js/ccg-user-ratings.js`
+  - L21: `signOut: noop,`
+- `js/load-single-game.js`
+  - L2097: `"author": {`
+
+## Final Loop Fix — Public Auth Isolation on /admin paths
+
+### Public auth files gated with `IS_ADMIN_PATH`
+- ✅ `js/ccg-global.js` top-level admin-path guard present.
+- ✅ `js/ccg-community-auth.js` top-level admin-path guard present.
+- ✅ `js/ccg-community-comments.js` top-level admin-path guard present.
+- ✅ `js/ccg-community-ratings.js` top-level admin-path guard present.
+
+### Redirect short-circuit checks
+- ✅ `js/ccg-community-auth.js` redirectToLogin short-circuits on admin path.
+- ✅ `js/ccg-community-comments.js` routeToLogin short-circuits on admin path.
+- ✅ `js/ccg-community-ratings.js` routeToLogin short-circuits on admin path.
+- ✅ `js/ccg-global.js` secret admin access login redirect short-circuits on admin path.
+
+### Confirmation
+- ✅ Public auth redirect functions are now no-op on `/admin/*`, so admin routing is governed by `admin/js/guard.js` only.
+- ⚠️ Browser runtime login-loop verification (interactive sign-in/refresh/navigation) not executed in this non-interactive audit; code-path checks above confirm redirect suppression logic is in place.
