@@ -390,6 +390,9 @@ function getBlockingValidationIssues() {
   if (slug && slug !== originalSlug && state.slugSet.has(slug)) blocking.push('duplicateSlug');
   if (id && id !== originalId && state.idSet.has(id)) blocking.push('duplicateId');
 
+  const identityMismatchError = getIdentityMismatchError();
+  if (identityMismatchError) blocking.push('identityMismatch');
+
   return blocking;
 }
 
@@ -552,34 +555,14 @@ function defaultDraft() {
   };
 }
 
-function slugify(value) {
-  return String(value || '')
+function generateSlug(title) {
+  return String(title || '')
     .toLowerCase()
+    .trim()
+    .replace(/['"]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .replace(/--+/g, '-');
-}
-
-function generateUniqueSlug(base, existing) {
-  if (!base) return '';
-  let slug = base;
-  let counter = 2;
-  while (existing.has(slug)) {
-    slug = `${base}-${counter}`;
-    counter += 1;
-  }
-  return slug;
-}
-
-function generateUniqueId(base, existing) {
-  if (!base) return '';
-  let id = base;
-  let counter = 2;
-  while (existing.has(id)) {
-    id = `${base}_${counter}`;
-    counter += 1;
-  }
-  return id;
 }
 
 function listFromText(value) {
@@ -690,7 +673,30 @@ function idMatchesSlug(record = {}) {
   const slug = String(record.slug || '').trim();
   const id = String(record.id || '').trim();
   if (!slug || !id) return false;
-  return slug.replace(/-/g, '_') === id;
+  return slug === id;
+}
+
+
+function syncIdentityFields() {
+  if (!state.draft) return;
+  const canonicalSlug = generateSlug(state.draft.title);
+  if (!state.slugLocked) {
+    state.draft.slug = canonicalSlug;
+  }
+  if (!state.idLocked) {
+    state.draft.id = state.draft.slug;
+  }
+}
+
+function getIdentityMismatchError() {
+  const canonicalSlug = generateSlug(state.draft?.title);
+  const slug = String(state.draft?.slug || '').trim();
+  const id = String(state.draft?.id || '').trim();
+  if (!canonicalSlug || !slug || !id) return '';
+  if (id !== canonicalSlug || slug !== id) {
+    return 'Slug and Game ID must match the game title. Unlock fields or correct title.';
+  }
+  return '';
 }
 
 async function safeFetch(url, options) {
@@ -713,15 +719,7 @@ function normalizeDraft() {
 
   draft.title = String(draft.title ?? '');
 
-  if (!state.slugLocked) {
-    const baseSlug = slugify(draft.title);
-    draft.slug = generateUniqueSlug(baseSlug, state.slugSet);
-  }
-
-  if (!state.idLocked) {
-    const baseId = slugify(draft.title).replace(/-/g, '_');
-    draft.id = generateUniqueId(baseId, state.idSet);
-  }
+  syncIdentityFields();
 
   draft.system = String(draft.system || '');
   draft.year = String(draft.year || '');
@@ -954,8 +952,8 @@ function loadDraft() {
   try {
     const parsed = JSON.parse(raw);
     state.step = Math.min(Math.max(parsed.step || 1, 1), MAX_STEP);
-    state.slugLocked = Boolean(parsed.slugLocked);
-    state.idLocked = Boolean(parsed.idLocked);
+    state.slugLocked = parsed.slugLocked === true;
+    state.idLocked = parsed.idLocked === true;
     state.draft = { ...defaultDraft(), ...(parsed.draft || {}) };
     state.lastSavedAt = parsed.savedAt || null;
     state.mode = parsed.mode || 'new';
@@ -1142,6 +1140,8 @@ function draftFromGame(game) {
 
 function setEditMode(game, index) {
   state.mode = 'edit';
+  state.slugLocked = false;
+  state.idLocked = false;
   state.editing = { slug: game.slug, id: game.id, index };
   updateUniquenessSets();
   updateStatusIndicators();
@@ -1305,6 +1305,10 @@ function renderValidation() {
       })),
       ...additionalErrors.map((message) => ({ field: '', message }))
     ];
+    const identityMismatchError = getIdentityMismatchError();
+    if (identityMismatchError && !items.some((item) => item.message === identityMismatchError)) {
+      items.push({ field: '', message: identityMismatchError });
+    }
     el.validation.errors.innerHTML = items.length
       ? items
         .map((item) => {
@@ -1903,17 +1907,25 @@ function sortLibraryRecords(records = []) {
         numeric: true
       });
       if (titleCompare !== 0) return titleCompare;
-      const slugCompare = String(a.record?.slug || '').toLowerCase().localeCompare(String(b.record?.slug || '').toLowerCase(), 'en', {
-        sensitivity: 'base',
-        numeric: true
-      });
-      if (slugCompare !== 0) return slugCompare;
       return a.index - b.index;
     })
     .map((item) => item.record);
 }
 
+function assertNoDuplicateIds(records = []) {
+  const seen = new Set();
+  records.forEach((record) => {
+    const id = String(record?.id || '').trim();
+    if (!id) return;
+    if (seen.has(id)) {
+      throw new Error(`games.json duplicate id detected: "${id}".`);
+    }
+    seen.add(id);
+  });
+}
+
 function assertLibrarySorted(records = []) {
+
   for (let index = 1; index < records.length; index += 1) {
     const prev = getSortKey(records[index - 1]);
     const current = getSortKey(records[index]);
@@ -1934,6 +1946,7 @@ function applyEntryToLibrary(entry) {
   }
 
   const sortedLibrary = sortLibraryRecords(updatedLibrary);
+  assertNoDuplicateIds(sortedLibrary);
   assertLibrarySorted(sortedLibrary);
 
   updateGamesLibrary(sortedLibrary, 'wizard');
@@ -1963,6 +1976,11 @@ function getPackageFilename(slug) {
 }
 
 async function buildOutputs() {
+  const identityMismatchError = getIdentityMismatchError();
+  if (identityMismatchError) {
+    throw new Error(identityMismatchError);
+  }
+
   const entry = buildGameRecord();
   const updatedLibrary = applyEntryToLibrary(entry);
   assertLibrarySorted(updatedLibrary);
@@ -2247,26 +2265,10 @@ function handleFieldInput(event) {
   const name = target.dataset.field;
   if (!name) return;
 
-  if (name === 'slug' && !state.slugLocked) {
-    state.slugLocked = Boolean(target.value);
-    if (el.locks.slug) el.locks.slug.checked = state.slugLocked;
-  }
-
-  if (name === 'id' && !state.idLocked) {
-    state.idLocked = Boolean(target.value);
-    if (el.locks.id) el.locks.id.checked = state.idLocked;
-  }
-
   state.draft[name] = target.value;
 
-  if (name === 'title' && !state.slugLocked) {
-    const baseSlug = slugify(state.draft.title);
-    state.draft.slug = generateUniqueSlug(baseSlug, state.slugSet);
-  }
-
-  if (name === 'title' && !state.idLocked) {
-    const baseId = slugify(state.draft.title).replace(/-/g, '_');
-    state.draft.id = generateUniqueId(baseId, state.idSet);
+  if (name === 'title') {
+    syncIdentityFields();
   }
 
   normalizeDraft();
@@ -2316,8 +2318,7 @@ function toggleOverrideField(targetKey) {
 function setSlugLock(locked) {
   state.slugLocked = locked;
   if (!locked) {
-    const baseSlug = slugify(state.draft.title);
-    state.draft.slug = generateUniqueSlug(baseSlug, state.slugSet);
+    syncIdentityFields();
   }
   normalizeDraft();
   updateFormFromDraft();
@@ -2330,8 +2331,7 @@ function setSlugLock(locked) {
 function setIdLock(locked) {
   state.idLocked = locked;
   if (!locked) {
-    const baseId = slugify(state.draft.title).replace(/-/g, '_');
-    state.draft.id = generateUniqueId(baseId, state.idSet);
+    syncIdentityFields();
   }
   normalizeDraft();
   updateFormFromDraft();
@@ -2672,6 +2672,9 @@ async function boot() {
 
   setReadOnly(true);
   await loadLibrary();
+
+  if (el.locks.slug) el.locks.slug.checked = false;
+  if (el.locks.id) el.locks.id.checked = false;
 
   loadDraft();
   normalizeDraft();
