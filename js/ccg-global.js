@@ -1,3 +1,8 @@
+const IS_ADMIN_PATH = window.location.pathname.startsWith('/admin/');
+if (IS_ADMIN_PATH) {
+    console.info('[CCG-AUTH] Public auth guard disabled on admin path');
+}
+
 /* ==========================================================
    CCG GLOBAL SCRIPT — CORE UI (NAV + WOW)
    ----------------------------------------------------------
@@ -2100,6 +2105,10 @@ function setupFooterSignatureRotator() {
 
             resetSequence();
 
+            if (IS_ADMIN_PATH) {
+                // Admin pages are governed by admin/js/guard.js only
+                return;
+            }
             window.location.assign(targetPath);
         }, { passive: true });
     }

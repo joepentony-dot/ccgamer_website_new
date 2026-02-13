@@ -1,5 +1,4 @@
-import { AUTH_CONFIG } from './config.js?v=admin-stable-20260207';
-import { getAuthContext, logout, redirectWithGuard, waitForAuthReady } from './auth.js?v=admin-stable-20260207';
+import { getAuthContext, waitForAuthReady } from './auth.js?v=admin-stable-20260207';
 
 function escapeHtml(value) {
   return String(value || '').replace(/[&<>"']/g, (char) => ({
@@ -9,6 +8,16 @@ function escapeHtml(value) {
     '"': '&quot;',
     "'": '&#39;'
   }[char]));
+}
+
+
+function ensureSharedLogoutBinding() {
+  if (document.querySelector('script[data-ccg-auth-ui]')) return;
+  const script = document.createElement('script');
+  script.src = '/js/ccg-auth-ui.js';
+  script.defer = true;
+  script.dataset.ccgAuthUi = 'true';
+  document.head.appendChild(script);
 }
 
 export async function initAdminNav({ pageLabel = 'Dashboard', active = 'dashboard' } = {}) {
@@ -34,11 +43,11 @@ export async function initAdminNav({ pageLabel = 'Dashboard', active = 'dashboar
   `;
 
   host.prepend(shell);
+  ensureSharedLogoutBinding();
   const activeLink = shell.querySelector(`[data-nav="${active}"]`);
   if (activeLink) activeLink.classList.add('is-active');
 
   const sessionNode = shell.querySelector('[data-admin-session]');
-
 
   try {
     await waitForAuthReady();

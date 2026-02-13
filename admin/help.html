@@ -3,6 +3,7 @@
 <head>
   <script src="/admin/js/admin-input-firewall.js"></script>
   <meta charset="UTF-8" />
+  <meta name="ccg-context" content="admin" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CCG Admin Help</title>
   <meta name="robots" content="noindex,nofollow" />
@@ -52,6 +53,7 @@
       <p>Legacy admin pages are still available for reference but are deprecated. Use Dashboard, Editor, Publish, and Help as the primary CMS flow.</p>
     </section>
   </main>
+  <!-- ADMIN AUTH ISOLATION: do not include /js/ccg-global.js or /js/ccg-community-*.js on admin pages. -->
   <script type="module">
     import { initAdminNav } from '/admin/js/admin-nav.js';
     initAdminNav({ pageLabel: 'Help', active: 'help' });

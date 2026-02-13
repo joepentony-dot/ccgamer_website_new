@@ -1,5 +1,5 @@
 import { ADMIN_BUILD_ID } from './build.js';
-import { AUTH_CONFIG } from './config.js?v=20260207-01';
+import { AUTH_CONFIG, OWNER_EMAILS } from './config.js?v=20260207-01';
 import {
   AUTH_STATE,
   bindSessionInvalidation,
@@ -15,9 +15,26 @@ console.info('[CCG-AUTH] guard.js loaded', ADMIN_BUILD_ID);
 
 const IS_LOGIN_PAGE = window.location.pathname.endsWith('/login.html');
 
-function redirect(path, reason) {
+async function waitForClient({ timeout = 8000, interval = 120 } = {}) {
+  const started = Date.now();
+  while (Date.now() - started < timeout) {
+    try {
+      if (window.ccgSupabase && typeof window.ccgSupabase.getClient === 'function') {
+        const client = await window.ccgSupabase.getClient();
+        if (client && client.auth) return client;
+      }
+      const fallback = window.__ccgSupabaseClient || window.supabase;
+      if (fallback && fallback.auth) return fallback;
+    } catch (_error) {
+      // keep polling until timeout
+    }
+    await new Promise((resolve) => window.setTimeout(resolve, interval));
+  }
+  return null;
+}
+
+function redirect(path) {
   const url = new URL(path, window.location.origin);
-  if (reason) url.searchParams.set('reason', reason);
   window.location.replace(url.toString());
 }
 
@@ -45,48 +62,64 @@ function renderAuthStatus(state) {
   }
 }
 
+(async () => {
+  if (IS_LOGIN_PAGE) return;
+
+  const client = await waitForClient({ timeout: 8000 });
+  if (!client || !client.auth || typeof client.auth.getSession !== 'function') {
+    console.warn('[CCG-AUTH] Supabase client not ready; guard bootstrap skipped');
+    return;
+  }
+
+  const result = await client.auth.getSession();
+  const session = result?.data?.session || null;
+
+  if (!session?.user) {
+    location.replace('/admin/login.html');
+  }
+})();
+
 export async function ensureAuthenticated({ redirectTo = AUTH_CONFIG.loginPage } = {}) {
   if (IS_LOGIN_PAGE) return null;
 
   await waitForAuthReady();
-
-  const context = await getAuthContext();
-  const authState = resolveAuthState(context?.session || null, context?.profile || null);
-  renderAuthStatus(authState);
-
-  if (authState === AUTH_STATE.AUTHENTICATING) {
-    console.info('[CCG-AUTH] Waiting for session to stabilise');
-    return null;
-  }
-
-  if (authState === AUTH_STATE.NO_SESSION) {
-    redirect(redirectTo, 'unauthenticated');
-    return null;
-  }
-
   await authReady;
 
-  const session = window.__ccgSession;
-  if (session === null) {
-    redirect(redirectTo, 'unauthenticated');
+  const client = await waitForClient({ timeout: 8000 });
+  const result = client?.auth?.getSession ? await client.auth.getSession() : null;
+  const liveSession = result?.data?.session || window.__ccgSession || null;
+
+  const context = await getAuthContext();
+  const authState = resolveAuthState(context?.session || liveSession || null, context?.profile || null);
+  renderAuthStatus(authState);
+
+  if (!liveSession?.user) {
+    redirect(redirectTo);
     return null;
   }
 
-  return session;
+  return liveSession;
 }
 
 export async function ensureRole(allowedRoles = []) {
   if (IS_LOGIN_PAGE) return null;
 
-  await authReady;
   const session = await ensureAuthenticated();
   if (!session) return null;
 
   const context = await getAuthContext();
-  const authState = resolveAuthState(context?.session || null, context?.profile || null);
+  const authState = resolveAuthState(context?.session || session || null, context?.profile || null);
 
   if (authState === AUTH_STATE.AUTHENTICATED_LIMITED) {
     return { session: context.session || session, role: null, authState };
+  }
+
+  const email = String(context?.user?.email || '').toLowerCase();
+  const isOwner = Array.isArray(OWNER_EMAILS)
+    && OWNER_EMAILS.map((entry) => String(entry).toLowerCase()).includes(email);
+
+  if (isOwner) {
+    return { session: context.session || session, role: 'superadmin' };
   }
 
   let role = String(context?.role || '').toLowerCase();
@@ -101,12 +134,12 @@ export async function ensureRole(allowedRoles = []) {
   }
 
   if (!context?.isAuthenticated || !role) {
-    redirect(AUTH_CONFIG.loginPage, 'forbidden');
+    redirect(AUTH_CONFIG.loginPage);
     return null;
   }
 
   if (allowedRoles.length > 0 && !allowedRoles.includes(role)) {
-    redirect(AUTH_CONFIG.loginPage, 'forbidden');
+    redirect(AUTH_CONFIG.loginPage);
     return null;
   }
 
@@ -122,7 +155,7 @@ export async function startAccessMonitor({ onSessionInvalidated } = {}) {
     onSignedOut: () => {
       clearRoleCache();
       if (typeof onSessionInvalidated === 'function') onSessionInvalidated();
-      redirect(AUTH_CONFIG.loginPage, 'signed_out');
+      redirect(AUTH_CONFIG.loginPage);
     }
   });
 
@@ -131,12 +164,12 @@ export async function startAccessMonitor({ onSessionInvalidated } = {}) {
       const session = await refreshSessionIfNeeded();
       if (!session) {
         clearRoleCache();
-        redirect(AUTH_CONFIG.loginPage, 'expired');
+        redirect(AUTH_CONFIG.loginPage);
       }
     } catch (error) {
       console.error('[CCG-AUTH] Session refresh failed.', error);
       clearRoleCache();
-      redirect(AUTH_CONFIG.loginPage, 'refresh_failed');
+      redirect(AUTH_CONFIG.loginPage);
     }
   }, AUTH_CONFIG.sessionCheckIntervalMs);
 }

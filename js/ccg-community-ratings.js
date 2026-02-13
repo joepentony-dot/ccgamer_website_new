@@ -2,6 +2,11 @@
 // Compatibility shim retained to avoid merge conflicts on branches
 // that still reference this script.
 (function () {
+  const IS_ADMIN_PATH = window.location.pathname.startsWith('/admin/');
+  if (IS_ADMIN_PATH) {
+    console.info('[CCG-AUTH] Public auth guard disabled on admin path');
+  }
+
   /* ===============================================
      OMEGA COMMUNITY AUTH LOCK
      Prevents endless retry loop by validating auth
@@ -67,6 +72,10 @@
     console.info('[CCG-RATING] ' + scope, payload || '');
   }
   function routeToLogin() {
+    if (IS_ADMIN_PATH) {
+      // Admin pages are governed by admin/js/guard.js only
+      return;
+    }
     if (window.ccgCommunityAuth && typeof window.ccgCommunityAuth.goToLogin === 'function') {
       window.ccgCommunityAuth.goToLogin(window.location.pathname + window.location.search + window.location.hash);
       return;
