@@ -1,16 +1,14 @@
 import { initAdminNav } from './admin-nav.js?v=admin-stable-20260207';
 import { getAuthContext, waitForAuthReady } from './auth.js?v=admin-stable-20260207';
-import { buildGamePageHtml, buildStubStructure, loadGamesLibrary, updateGamesLibrary } from './games-api.js?v=admin-stable-20260207';
+import { loadGamesLibrary, updateGamesLibrary } from './games-api.js?v=admin-stable-20260207';
 import { fetchUserRole } from './roles.js?v=admin-stable-20260207';
-import { validateExportOutputs, validateLibraryIdentifiers, validateWizardDraft } from './validator.js?v=admin-stable-20260207';
+import { validateExportOutputs, validateWizardDraft } from './validator.js?v=admin-stable-20260207';
 
-/*
- * Audit Summary (Phase 0)
- * Updated files: admin/games-editor.html, admin/js/games-editor.js, resources/css/ccg-admin-games-editor.css.
- * Canonical games.json URL used by admin + public flows: /games/games.json.
- * SEO folder page template in this wizard: /games/{slug}/index.html redirect stub to /games/game.html?id={id}, plus flat /games/{slug}.html.
- * Enforced sort rule for generated UPDATED-games.json: title (case-insensitive), then slug (case-insensitive) for ties.
- */
+/* PHASE 0 AUDIT SUMMARY
+- Canonical games.json location: "/games/games.json"
+- SEO folder page behavior: generates /games/{slug}/index.html with metadata
+- Sort strategy: alphabetical title (case-insensitive) then slug (case-insensitive)
+*/
 
 const SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
 const STORAGE_KEY = 'omegaGameBuilderDraftV1';
@@ -319,18 +317,23 @@ function setChecklistItemState(item, status = 'blocked') {
   item.textContent = `${label}${suffix}`;
 }
 
-function renderExportChecklist(outputs = state.outputs, missingAssets = state.export.missingAssets || []) {
+function renderExportChecklist(outputs = state.outputs) {
   if (!el.exportChecklist) return;
   const hasOutput = (value) => typeof value === 'string' ? Boolean(value.trim()) : Boolean(value);
-  setChecklistItemState(el.exportChecklist.gamesJson, hasOutput(outputs?.gamesJson) ? 'ready' : 'blocked');
-  setChecklistItemState(el.exportChecklist.stub, hasOutput(outputs?.stubHtml) ? 'ready' : 'blocked');
-  setChecklistItemState(el.exportChecklist.flat, hasOutput(outputs?.flatHtml) ? 'ready' : 'blocked');
-  setChecklistItemState(el.exportChecklist.sitemap, hasOutput(outputs?.sitemapFragment) ? 'ready' : 'blocked');
-  if (!outputs) {
-    setChecklistItemState(el.exportChecklist.assets, 'blocked');
-  } else {
-    setChecklistItemState(el.exportChecklist.assets, missingAssets.length ? 'warning' : 'ready');
-  }
+  const assetsToBundle = Array.isArray(outputs?.assetsToBundle) ? outputs.assetsToBundle : [];
+  const checklist = {
+    gamesJson: hasOutput(outputs?.gamesJson),
+    stub: hasOutput(outputs?.stubHtml),
+    flat: hasOutput(outputs?.flatHtml),
+    sitemap: hasOutput(outputs?.sitemapFragment),
+    assets: assetsToBundle.length > 0
+  };
+
+  setChecklistItemState(el.exportChecklist.gamesJson, checklist.gamesJson ? 'ready' : 'blocked');
+  setChecklistItemState(el.exportChecklist.stub, checklist.stub ? 'ready' : 'blocked');
+  setChecklistItemState(el.exportChecklist.flat, checklist.flat ? 'ready' : 'blocked');
+  setChecklistItemState(el.exportChecklist.sitemap, checklist.sitemap ? 'ready' : 'blocked');
+  setChecklistItemState(el.exportChecklist.assets, checklist.assets ? 'ready' : 'blocked');
 }
 
 function attemptBlobDownload(blob, filename) {
@@ -391,7 +394,7 @@ function getBlockingValidationIssues() {
 }
 
 function hasBlockingValidationIssues() {
-  return getBlockingValidationIssues().length > 0 || hasBlockingLibraryErrors();
+  return getBlockingValidationIssues().length > 0 || (state.validation?.errors?.length || 0) > 0;
 }
 
 function addWarning(message) {
@@ -653,48 +656,41 @@ function buildAssetPath({ filename, override, base }) {
   return `${base}${filename}`;
 }
 
-function normalizeAssetName(slug, ext = 'jpg') {
-  return `${slug}.${ext}`;
-}
-
 function normalizeAssetPath(assetPath, slug) {
   if (!assetPath) return { path: '', filename: '', warnings: [] };
   if (/^https?:/i.test(assetPath)) {
-    return { path: assetPath, filename: '', warnings: [], isRemote: true };
+    return { path: assetPath, filename: assetPath.split('/').pop() || '', warnings: [], isRemote: true };
   }
 
   const normalized = assetPath.replace(/^\/+/, '');
   const segments = normalized.split('/');
   const originalFilename = segments.pop() || '';
   if (!originalFilename) return { path: normalized, filename: '', warnings: [] };
-
-  const extMatch = originalFilename.match(/\.([^.]+)$/);
-  const ext = extMatch ? extMatch[1] : '';
-  const base = extMatch ? originalFilename.slice(0, -(ext.length + 1)) : originalFilename;
-  const warnings = [];
-  let nextBase = base;
-
-  if (base.includes('_')) {
-    nextBase = base.replace(/_/g, '-');
-    warnings.push(`Rewrote ${originalFilename} → ${nextBase}${ext ? `.${ext}` : ''}`);
-  }
-
-  if (slug) {
-    const targetName = normalizeAssetName(slug, ext || 'jpg');
-    if (`${nextBase}${ext ? `.${ext}` : ''}` !== targetName) {
-      warnings.push(`Normalized filename to ${targetName}`);
-      nextBase = slug;
-    }
-  }
-
-  const resolvedExt = ext || (slug ? 'jpg' : '');
-  const normalizedFilename = resolvedExt ? `${nextBase}.${resolvedExt}` : nextBase;
   return {
-    path: [...segments, normalizedFilename].join('/'),
-    filename: normalizedFilename,
-    warnings,
+    path: [...segments, originalFilename].join('/'),
+    filename: originalFilename,
+    warnings: [],
     originalFilename
   };
+}
+
+function locateAsset(path) {
+  try {
+    const url = new URL(path, location.origin);
+    if (url.origin !== location.origin) return Promise.resolve(null);
+    return fetch(url.href, { method: 'HEAD' })
+      .then((res) => (res.ok ? url.href : null))
+      .catch(() => null);
+  } catch {
+    return null;
+  }
+}
+
+function idMatchesSlug(record = {}) {
+  const slug = String(record.slug || '').trim();
+  const id = String(record.id || '').trim();
+  if (!slug || !id) return false;
+  return slug.replace(/-/g, '_') === id;
 }
 
 async function safeFetch(url, options) {
@@ -810,21 +806,34 @@ function updateMediaPreview(key, src) {
     return;
   }
 
-  img.onload = () => {
-    card.classList.remove('is-error');
-    if (status) status.textContent = 'Preview loaded.';
-  };
-  img.onerror = () => {
-    card.classList.add('is-error');
-    if (key === 'thumbnail') {
-      img.src = '/resources/images/placeholder.png';
-      addWarning('Thumbnail not found locally. Will not bundle.');
-      if (status) status.textContent = 'Preview fallback loaded (asset missing locally).';
-      return;
-    }
-    if (status) status.textContent = 'Preview failed. Check filename or path.';
-  };
-  img.src = `/${src}`.replace(/(?<!:)\/\//g, '/');
+  locateAsset(`/${src}`)
+    .then((confirmed) => {
+      if (!confirmed) {
+        card.classList.add('is-error');
+        if (key === 'thumbnail') {
+          if (status) status.textContent = 'Thumbnail not found locally.';
+          addWarning('Thumbnail warning: local file not found, so it will not be bundled.');
+        } else if (status) {
+          status.textContent = 'Preview failed. Check filename or path.';
+        }
+        img.removeAttribute('src');
+        return;
+      }
+
+      img.onload = () => {
+        card.classList.remove('is-error');
+        if (status) status.textContent = 'Preview loaded.';
+      };
+      img.onerror = () => {
+        card.classList.add('is-error');
+        if (status) status.textContent = 'Preview failed. Check filename or path.';
+      };
+      img.src = confirmed;
+    })
+    .catch(() => {
+      card.classList.add('is-error');
+      if (status) status.textContent = 'Preview check failed.';
+    });
 }
 
 function updatePreviewFields() {
@@ -883,10 +892,9 @@ function updateStatusIndicators() {
   }
 
   if (el.validationIndicator) {
-    const libraryErrors = state.libraryValidation?.errors?.length || 0;
-    if (!state.validation.ran && !state.libraryValidation.ran) {
+    if (!state.validation.ran) {
       el.validationIndicator.textContent = 'Validation: Pending';
-    } else if (state.validation.errors.length || libraryErrors) {
+    } else if (state.validation.errors.length) {
       el.validationIndicator.textContent = 'Validation: FAIL';
     } else {
       el.validationIndicator.textContent = 'Validation: OK';
@@ -997,7 +1005,7 @@ function resetWizard() {
   resetExportSteps();
   renderExportWarnings([]);
   renderMissingAssets([]);
-  renderExportChecklist(state.outputs, []);
+  renderExportChecklist(state.outputs);
   setExportPanelError('');
   setExportStateLabel('Ready');
   setDownloadButtonState(false);
@@ -1213,31 +1221,43 @@ function validateDraft() {
 }
 
 function hasBlockingLibraryErrors() {
-  return Boolean(state.libraryValidation?.errors?.length);
+  return false;
 }
 
 function renderLibraryValidation() {
-  const { errors } = state.libraryValidation || { errors: [] };
+  const infos = state.libraryValidation?.infos || [];
   if (el.libraryValidation.status) {
     if (!state.libraryValidation.ran) {
-      el.libraryValidation.status.textContent = 'Library validation pending.';
-    } else if (errors.length) {
-      el.libraryValidation.status.textContent = `Library validation failed with ${errors.length} issue(s).`;
+      el.libraryValidation.status.textContent = 'Legacy library scan pending.';
+    } else if (infos.length) {
+      el.libraryValidation.status.textContent = `ℹ️ Legacy library notice — no action required (${infos.length} item(s)).`;
     } else {
-      el.libraryValidation.status.textContent = 'Library validation passed. No ID/slug issues detected.';
+      el.libraryValidation.status.textContent = 'No legacy library notices.';
     }
   }
 
   if (el.libraryValidation.errors) {
-    el.libraryValidation.errors.innerHTML = errors.length
-      ? errors.map((message) => `<li class="is-error">${escapeHtml(message)}</li>`).join('')
-      : '<li>No library issues detected.</li>';
+    el.libraryValidation.errors.innerHTML = infos.length
+      ? infos.map((message) => `<li class="is-warning">ℹ️ ${escapeHtml(message)}</li>`).join('')
+      : '<li>ℹ️ Legacy library notice — no action required.</li>';
   }
 }
 
 function runLibraryValidation() {
-  const result = validateLibraryIdentifiers(state.library);
-  state.libraryValidation = { ...result, ran: true, valid: result.valid };
+  const infos = [];
+  (Array.isArray(state.library) ? state.library : []).forEach((game) => {
+    if (!idMatchesSlug(game)) {
+      infos.push(`${game?.title || game?.slug || game?.id || 'Untitled'} uses legacy id`);
+    }
+  });
+
+  state.libraryValidation = {
+    errors: [],
+    warnings: infos,
+    infos,
+    ran: true,
+    valid: true
+  };
   renderLibraryValidation();
   renderValidation();
   updateStatusIndicators();
@@ -1266,8 +1286,8 @@ function renderValidation() {
       el.validation.status.textContent = 'Validation pending.';
     } else {
       el.validation.status.textContent = errors.length
-        ? `Validation failed with ${errors.length} error(s).`
-        : 'Validation passed. Ready to build.';
+        ? 'Validation: FAIL — fix the following before export:'
+        : 'Validation: PASS — ready to build.';
     }
   }
 
@@ -1428,31 +1448,25 @@ function buildManifestJson(entry) {
   return JSON.stringify(manifest, null, 2);
 }
 
-function buildBuildReport(entry, insertionContext = {}) {
+function buildBuildReport(entry, insertionContext = {}, assetSummary = {}) {
   return [
-    '# CCG Game Builder Build Report',
+    '# BUILD REPORT',
+    '',
+    `New entry inserted between:`,
+    `- ${insertionContext.before || '(start of file)'}`,
+    `- ${insertionContext.after || '(end of file)'}`,
+    '',
+    'Asset bundle status:',
+    `- thumbnail: ${assetSummary.thumbnail || 'not found'}`,
+    `- 3D box: ${assetSummary.box3d || 'not found'}`,
+    `- manual: ${assetSummary.manual || 'not found'}`,
     '',
     `Slug: ${entry.slug}`,
     `ID: ${entry.id}`,
     '',
-    '## Files Generated',
+    'Included pages:',
     `- /games/${entry.slug}/index.html`,
-    `- /games/${entry.slug}.html`,
-    `- /admin/output/${entry.slug}/UPDATED-games.json`,
-    `- /admin/output/${entry.slug}/BUILD-REPORT.md`,
-    '- /sitemap-fragment.xml',
-    '',
-    '## Sort + Insert',
-    `- Inserted index: ${typeof insertionContext.index === 'number' ? insertionContext.index : 'n/a'}`,
-    `- Before: ${insertionContext.before || '(start of file)'}`,
-    `- After: ${insertionContext.after || '(end of file)'}`,
-    '',
-    '## Checks Passed',
-    '- Required fields present',
-    '- Slug/id uniqueness validated against loaded games.json',
-    '- Canonical URL + meta tags rendered in generated SEO folder page',
-    '',
-    'Do not publish if validation fails in the wizard.'
+    `- /games/${entry.slug}.html`
   ].join('\n');
 }
 
@@ -1948,7 +1962,7 @@ function getPackageFilename(slug) {
   return `ccg-game-package__${slug}__${day}.zip`;
 }
 
-function buildOutputs() {
+async function buildOutputs() {
   const entry = buildGameRecord();
   const updatedLibrary = applyEntryToLibrary(entry);
   assertLibrarySorted(updatedLibrary);
@@ -1962,7 +1976,13 @@ function buildOutputs() {
   const sitemapFragment = buildSitemapFragment(state.draft);
   const metadataJson = buildMetadataJson(entry);
   const manifestJson = buildManifestJson(entry);
-  const readme = buildBuildReport(entry, insertionContext);
+  const assetChecks = await collectBundleableAssets(entry);
+  const assetSummary = {
+    thumbnail: assetChecks.find((item) => item.key === "thumbnail")?.found ? "found" : "not found",
+    box3d: assetChecks.find((item) => item.key === "box3d")?.found ? "found" : "not found",
+    manual: assetChecks.find((item) => item.key === "manual")?.found ? "found" : "not found"
+  };
+  const readme = buildBuildReport(entry, insertionContext, assetSummary);
 
   return {
     entry,
@@ -1973,53 +1993,62 @@ function buildOutputs() {
     metadataJson,
     manifestJson,
     readme,
-    insertionContext
+    insertionContext,
+    assetChecks,
+    assetsToBundle: assetChecks.filter((item) => item.found)
   };
 }
 
-function buildStubMeta(entry, assetStatus) {
-  return {
-    entry,
-    draft: state.draft,
-    mode: state.mode,
-    assetStatus,
-    generatedAt: new Date().toISOString()
-  };
-}
+async function collectBundleableAssets(entry) {
+  const checks = [
+    { key: 'thumbnail', label: 'Thumbnail', path: entry.thumbnail, targetFolder: 'assets/images' },
+    { key: 'box3d', label: '3D box', path: state.draft.box3d, targetFolder: 'assets/images' },
+    { key: 'manual', label: 'PDF/manual', path: entry.pdf, targetFolder: 'assets/docs' }
+  ];
 
-async function addAssetToZip({ stubRoot, assetPath, targetFolder, missingAssets, warnings, slug, label }) {
-  if (!assetPath) return;
-
-  const normalized = normalizeAssetPath(assetPath, slug);
-  if (normalized.isRemote) {
-    missingAssets.push({ path: assetPath, reason: 'remote-url', display: `${label}: ${assetPath}` });
-    return;
-  }
-
-  normalized.warnings.forEach((warning) => {
-    warnings.push(`${label}: ${warning}`);
+  (Array.isArray(entry.disk) ? entry.disk : []).forEach((diskPath, index) => {
+    checks.push({
+      key: `disk-${index + 1}`,
+      label: `Disk image ${index + 1}`,
+      path: diskPath,
+      targetFolder: 'assets/disks'
+    });
   });
 
-  const filename = normalized.filename;
-  if (!filename) return;
-
-  const blob = await safeFetch(`/${normalized.path}`, { cache: 'no-store' });
-  if (!blob) {
-    missingAssets.push({
-      path: normalized.path,
-      reason: 'missing',
-      display: `${label}: ${normalized.path}`
+  const resolved = [];
+  for (const check of checks) {
+    if (!check.path) {
+      resolved.push({ ...check, found: false, reason: 'not-set', normalizedPath: '' });
+      continue;
+    }
+    const normalized = normalizeAssetPath(check.path, entry.slug);
+    const confirmed = await locateAsset(`/${normalized.path}`);
+    resolved.push({
+      ...check,
+      found: Boolean(confirmed),
+      reason: confirmed ? 'found' : 'not-found',
+      normalizedPath: normalized.path,
+      filename: normalized.filename,
+      confirmedUrl: confirmed || ''
     });
-    return;
   }
 
-  const folder = getFolder(stubRoot, targetFolder);
-  folder.file(filename, blob);
+  return resolved;
+}
+
+async function addAssetToZip({ zip, descriptor, missingAssets }) {
+  if (!descriptor?.found || !descriptor.confirmedUrl) return;
+  const blob = await safeFetch(descriptor.confirmedUrl, { cache: 'no-store' });
+  if (!blob) {
+    missingAssets.push({ path: descriptor.normalizedPath, reason: 'missing-after-head', display: `${descriptor.label}: ${descriptor.normalizedPath}` });
+    return;
+  }
+  getFolder(zip, descriptor.targetFolder).file(descriptor.filename || descriptor.key, blob);
 }
 
 async function buildPackage({ autoDownload = true } = {}) {
   if (!state.outputs) {
-    state.outputs = buildOutputs();
+    state.outputs = await buildOutputs();
     window.__ccgLastZipBlob = null;
     setRetryDownloadVisible(false);
     renderOutputs();
@@ -2042,7 +2071,7 @@ async function buildPackage({ autoDownload = true } = {}) {
   setExportStateLabel('Building ZIP…', 'active');
   renderExportWarnings([]);
   renderMissingAssets([]);
-  renderExportChecklist(state.outputs, []);
+  renderExportChecklist(state.outputs);
 
   const zip = new window.JSZip();
   const entry = state.outputs.entry;
@@ -2052,7 +2081,8 @@ async function buildPackage({ autoDownload = true } = {}) {
   setExportStepStatus('build', 'active', 'Building ZIP…');
   setExportStepStatus('metadata', 'active', 'Metadata · in progress');
 
-  zip.file(`admin/output/${entry.slug}/UPDATED-games.json`, `${state.outputs.gamesJson}\n`);
+  zip.file('UPDATED-games.json', `${state.outputs.gamesJson}\n`);
+  zip.file('games.json', `${state.outputs.gamesJson}\n`);
   const flatPages = buildFlatGamePages(state.library);
   const gamesFolder = getFolder(zip, 'games');
   flatPages.pages.forEach((page) => {
@@ -2063,54 +2093,31 @@ async function buildPackage({ autoDownload = true } = {}) {
   }
   getFolder(zip, `games/${entry.slug}`).file('index.html', state.outputs.stubHtml);
   zip.file(`games/${entry.slug}.html`, state.outputs.flatHtml);
-  zip.file('sitemap-fragment.xml', state.outputs.sitemapFragment);
+  if (state.outputs.sitemapFragment) {
+    zip.file('sitemap-fragment.xml', state.outputs.sitemapFragment);
+  }
   zip.file(`admin/output/${entry.slug}/manifest.json`, state.outputs.manifestJson);
   zip.file(`admin/output/${entry.slug}/metadata.json`, state.outputs.metadataJson);
-  zip.file(`admin/output/${entry.slug}/BUILD-REPORT.md`, state.outputs.readme);
+  zip.file('BUILD-REPORT.md', state.outputs.readme);
   setExportStepStatus('metadata', 'success', '✓ Metadata');
-
-  const stubMeta = buildStubMeta(entry, { missingAssets });
-  const stub = buildStubStructure({ slug: entry.slug, meta: stubMeta });
-  const stubRoot = getFolder(zip, stub.root);
-  stub.folders.forEach((folder) => getFolder(stubRoot, folder));
-  stubRoot.file('meta.json', stub.metaJson);
-  stubRoot.file('BUILD-REPORT.md', state.outputs.readme);
-  stubRoot.file('manifest.json', state.outputs.manifestJson);
-
   setExportStepStatus('images', 'active', 'Images · in progress');
-  await addAssetToZip({
-    stubRoot,
-    assetPath: entry.thumbnail,
-    targetFolder: 'screenshots',
-    missingAssets,
-    warnings: exportWarnings,
-    slug: entry.slug,
-    label: 'Thumbnail'
-  });
-  await addAssetToZip({
-    stubRoot,
-    assetPath: state.draft.box3d,
-    targetFolder: 'box',
-    missingAssets,
-    warnings: exportWarnings,
-    slug: entry.slug,
-    label: '3D box'
-  });
-  await addAssetToZip({
-    stubRoot,
-    assetPath: entry.pdf,
-    targetFolder: 'docs',
-    missingAssets,
-    warnings: exportWarnings,
-    slug: '',
-    label: 'PDF/manual'
-  });
+  const assetChecks = Array.isArray(state.outputs.assetChecks) ? state.outputs.assetChecks : [];
+  for (const descriptor of assetChecks) {
+    if (!descriptor.found && descriptor.path) {
+      missingAssets.push({
+        path: descriptor.normalizedPath || descriptor.path,
+        reason: descriptor.reason,
+        display: `${descriptor.label}: ${descriptor.normalizedPath || descriptor.path}`
+      });
+      continue;
+    }
+    await addAssetToZip({ zip, descriptor, missingAssets });
+  }
 
   if (missingAssets.length) {
     const report = missingAssets
       .map((asset) => `${asset.path} (${asset.reason})`)
       .join('\n');
-    getFolder(stubRoot, 'docs').file('missing-assets.txt', `${report}\n`);
     zip.file('missing-assets.txt', `${report}\n`);
     setExportStepStatus('images', 'warning', `⚠ Images · ${missingAssets.length} missing`);
     setErrorIndicator('Some assets could not be packaged. Check missing-assets.txt.');
@@ -2124,7 +2131,7 @@ async function buildPackage({ autoDownload = true } = {}) {
   state.export.warnings = exportWarnings;
   renderExportWarnings(exportWarnings);
   renderMissingAssets(missingAssets);
-  renderExportChecklist(state.outputs, missingAssets);
+  renderExportChecklist(state.outputs);
 
   const blob = await zip.generateAsync({ type: 'blob' });
   window.__ccgLastZipBlob = blob; // cache for manual + browser-safe download
@@ -2474,7 +2481,7 @@ function bindEvents() {
     validateDraft();
     renderValidation();
     if (hasBlockingValidationIssues()) return;
-    state.outputs = buildOutputs();
+    state.outputs = await buildOutputs();
     window.__ccgLastZipBlob = null;
     setRetryDownloadVisible(false);
     renderOutputs();
@@ -2516,7 +2523,7 @@ function bindEvents() {
       goToStep(5);
       return;
     }
-    state.outputs = buildOutputs();
+    state.outputs = await buildOutputs();
     window.__ccgLastZipBlob = null;
     setRetryDownloadVisible(false);
     renderOutputs();
@@ -2559,8 +2566,8 @@ async function loadLibrary() {
       state.schema = buildSchemaMap(data);
       updateUniquenessSets();
       runLibraryValidation();
-      const issueCount = state.libraryValidation.errors.length;
-      const issueLabel = issueCount ? ` · Issues: ${issueCount}` : '';
+      const noticeCount = (state.libraryValidation.infos || []).length;
+      const issueLabel = noticeCount ? ` · Legacy notices: ${noticeCount}` : '';
       setLibraryIndicator(`Library: Loaded (${data.length})${issueLabel}`);
       renderSystemOptions();
       renderGenres();
@@ -2628,7 +2635,7 @@ async function downloadFlatPageZip() {
       goToStep(5);
       return;
     }
-    state.outputs = buildOutputs();
+    state.outputs = await buildOutputs();
     window.__ccgLastZipBlob = null;
     setRetryDownloadVisible(false);
     renderOutputs();
@@ -2648,7 +2655,7 @@ async function boot() {
   resetExportSteps();
   renderExportWarnings([]);
   renderMissingAssets([]);
-  renderExportChecklist(state.outputs, []);
+  renderExportChecklist(state.outputs);
   setExportPanelError('');
   setExportStateLabel('Ready');
 

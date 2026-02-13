@@ -405,7 +405,7 @@
       </div>
       <div class="control-row">
         <button class="ccg-btn ccg-btn--ghost" type="button" data-action="run-validation">Run validation</button>
-        <button class="ccg-btn ccg-btn--ghost" type="button" data-action="run-checks">Run checks</button>
+        <button class="ccg-btn ccg-btn--primary primary" type="button" id="btnRunChecks" data-action="run-checks">Run Checks</button>
       </div>
       <div class="validation-panel" data-validation-panel>
         <div>
@@ -419,7 +419,7 @@
       </div>
       <div class="validation-panel" data-library-validation-panel>
         <div>
-          <h3>Library ID/Slug Issues (games.json)</h3>
+          <h3>Legacy library notices (info only)</h3>
           <ul data-library-validation-errors></ul>
         </div>
       </div>
@@ -454,7 +454,7 @@
         </div>
       </div>
       <div class="control-row">
-        <button class="ccg-btn ccg-btn--primary" type="button" data-action="generate-output">Generate files</button>
+        <button class="ccg-btn ccg-btn--primary primary" type="button" id="btnBuildZip" data-action="generate-output">Build ZIP</button>
         <button class="ccg-btn ccg-btn--ghost" type="button" data-action="download-bundle" disabled>Download bundle</button>
         <button class="ccg-btn ccg-btn--ghost" type="button" data-action="retry-download" hidden>Click to download again</button>
       </div>
@@ -510,10 +510,10 @@
       <pre data-preview="readme"></pre>
     </section>
 
-    <footer class="wizard-footer">
+    <footer class="wizard-footer wizard-actions">
       <div class="wizard-footer__actions">
         <button class="ccg-btn ccg-btn--ghost" type="button" data-action="prev-step">Back</button>
-        <button class="ccg-btn ccg-btn--primary" type="button" data-action="next-step">Next</button>
+        <button class="ccg-btn ccg-btn--primary primary" type="button" id="btnNext" data-action="next-step">Next</button>
       </div>
       <p class="wizard-footer__status">Step <span data-step-counter>1</span> of 6</p>
     </footer>
