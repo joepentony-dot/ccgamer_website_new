@@ -67,18 +67,17 @@ export async function ensureAuthenticated({ redirectTo = AUTH_CONFIG.loginPage }
     return null;
   }
 
-  try {
-    const session = await refreshSessionIfNeeded();
-    if (!session) {
-      redirect(redirectTo, 'expired');
-      return null;
-    }
-    return session;
-  } catch (error) {
-    console.error('[CCG-AUTH] Unable to refresh session.', error);
-    redirect(redirectTo, 'expired');
+  await authReady;
+
+  const session = window.__ccgSession;
+  if (session === null) {
+    const url = new URL(redirectTo, window.location.origin);
+    url.searchParams.set('reason', 'unauthenticated');
+    window.location.replace(url.toString());
     return null;
   }
+
+  return session;
 }
 
 export async function ensureRole(allowedRoles = []) {

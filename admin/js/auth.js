@@ -68,6 +68,7 @@ window.CCG_AUTH_READY = false;
 window.CCG_AUTH_LOGGED_IN = false;
 window.CCG_AUTH_ROLE = 'none';
 window.CCG_AUTH_ERROR = null;
+window.__ccgSession = window.__ccgSession || null;
 
 let _supabase = null;
 let _lastContext = null;
@@ -462,13 +463,11 @@ export async function getAuthContext() {
 }
 
 export async function restoreSession() {
-  await waitForAuthReady();
-  if (_authBarrierReady) return _authBarrierSession;
-
   const supabase = await ensureSupabaseClient();
   const { data, error } = await supabase.auth.getSession();
   if (error) throw new Error(error.message || 'Unable to restore session.');
-  return data?.session || null;
+  window.__ccgSession = data?.session || null;
+  return window.__ccgSession;
 }
 
 export async function refreshSessionIfNeeded() {
@@ -564,11 +563,14 @@ export async function logout() {
   if (error) throw new Error(error.message || 'Logout failed.');
 
   _lastContext = null;
+  _authBarrierSession = null;
+  window.__ccgSession = null;
 
   const context = buildContextFromSession(null, null);
   applyWindowAuthState(context);
   dispatchAuthReady(context);
 
+  window.location.replace('/admin/login.html');
   return true;
 }
 
@@ -578,6 +580,25 @@ export function requireAuthOrThrow(message = 'You must be signed in to do that.'
 
 export async function getSupabaseClient() {
   return ensureSupabaseClient();
+}
+
+function bindLogoutButtons() {
+  document.querySelectorAll('[data-logout]').forEach((button) => {
+    if (button.dataset.logoutBound === 'true') return;
+    button.dataset.logoutBound = 'true';
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      logout().catch((error) => {
+        err('Logout failed.', error);
+      });
+    });
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bindLogoutButtons, { once: true });
+} else {
+  bindLogoutButtons();
 }
 
 export function getAuthDiagnostics() {

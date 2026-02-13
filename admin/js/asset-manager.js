@@ -1,5 +1,4 @@
-import { logout, redirectWithGuard } from './auth.js?v=admin-stable-20260207';
-import { APP_PATHS, AUTH_CONFIG } from './config.js?v=admin-stable-20260207';
+import { APP_PATHS } from './config.js?v=admin-stable-20260207';
 import { buildStubStructure } from './games-api.js?v=admin-stable-20260207';
 import { ensureRole, startAccessMonitor } from './guard.js?v=admin-stable-20260207';
 import { createSnapshot, getHealthReport, scanAssets, uploadAssets } from './asset-manager-api.js?v=admin-stable-20260207';
@@ -41,7 +40,7 @@ const els = {
   backupSnapshot: document.querySelector('[data-backup-snapshot]'),
   restoreHint: document.querySelector('[data-restore-hint]'),
   healthReport: document.querySelector('[data-health-report]'),
-  logoutButton: document.querySelector('[data-logout-button]')
+  logoutButton: document.querySelector('[data-logout]')
 };
 
 function slugify(value) {
@@ -249,10 +248,6 @@ function wireButtons() {
     ].join('\n');
   });
 
-  els.logoutButton?.addEventListener('click', async () => {
-    await logout();
-    redirectWithGuard(AUTH_CONFIG.loginPage, 'signed_out');
-  });
 }
 
 async function wireGameLinking() {

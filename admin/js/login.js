@@ -119,7 +119,6 @@ function showReasonMessage() {
 
 async function redirectIfSessionExists() {
   try {
-    await waitForAuthReady();
     const session = await restoreSession();
     if (session?.user?.id) {
       console.info('[CCG-LOGIN] Session exists; deferring to guard');
@@ -131,6 +130,7 @@ async function redirectIfSessionExists() {
   } catch (e) {
     error('Session handoff failed', e);
     setMessage(e?.message || 'Unable to check session state.', 'error');
+    showLoginForm();
   }
 }
 
@@ -158,8 +158,6 @@ async function handleLogin(evt) {
       log('Signed in. Fetching role…', user.id);
       await fetchUserRole({ userId: user.id, force: true });
     }
-
-    await waitForAuthReady();
 
     setMessage('Login successful. Redirecting to dashboard…', 'success');
     redirectWithGuard(AUTH_CONFIG.defaultRedirectAfterLogin, 'signed_in');
