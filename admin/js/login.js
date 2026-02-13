@@ -103,8 +103,8 @@ async function redirectIfSessionExists() {
     await waitForAuthReady();
     const session = await restoreSession();
     if (session?.user?.id) {
-      log('Existing session detected. Redirecting.');
-      redirectWithGuard(AUTH_CONFIG.defaultRedirectAfterLogin, 'already_authenticated');
+      console.info('[CCG-LOGIN] Session exists; deferring to guard');
+      setMessage('Session detected. Verifying access…', 'info');
     } else {
       log('No existing session found.');
     }
