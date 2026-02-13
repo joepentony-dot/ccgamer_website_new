@@ -97,13 +97,35 @@
     button.dataset.ccgAuthBound = 'true';
   }
 
+  async function getSupabaseClient() {
+    if (window.ccgSupabase && typeof window.ccgSupabase.getClient === 'function') {
+      try {
+        const client = await window.ccgSupabase.getClient();
+        if (client) return client;
+      } catch (_error) {
+        // fall through
+      }
+    }
+
+    return window.supabase || window.__ccgSupabaseClient || null;
+  }
+
   function bindLogout(button) {
     if (!button || button.dataset.ccgAuthBound === 'true') return;
     button.addEventListener('click', async function (event) {
       event.preventDefault();
-      if (!window.ccgCommunityAuth || typeof window.ccgCommunityAuth.logout !== 'function') return;
-      await window.ccgCommunityAuth.logout();
+
+      if (window.ccgCommunityAuth && typeof window.ccgCommunityAuth.logout === 'function') {
+        await window.ccgCommunityAuth.logout();
+      } else {
+        const supabase = await getSupabaseClient();
+        if (supabase && supabase.auth && typeof supabase.auth.signOut === 'function') {
+          await supabase.auth.signOut();
+        }
+      }
+
       await resolveAuthState();
+      renderHeaderAuth();
     });
     button.dataset.ccgAuthBound = 'true';
   }
@@ -126,7 +148,7 @@
       const username = auth.username || 'member';
       slot.innerHTML = '' +
         '<a class="ccg-btn ccg-btn-auth" id="ccg-auth-identity" href="/community/profile.html">@' + username + '</a>' +
-        '<button type="button" class="ccg-btn ccg-btn-auth" id="ccg-auth-logout">Logout</button>';
+        '<button type="button" class="ccg-btn ccg-btn-auth" id="ccg-auth-logout" data-logout>Logout</button>';
       bindLogout(slot.querySelector('#ccg-auth-logout'));
       return;
     }
