@@ -67,7 +67,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function getHomeDataModules() {
     return [
-        { name: "Footer stats", fn: updateFooterStats },
         { name: "Featured highlights", fn: renderFeaturedHighlights },
         { name: "Featured spotlight", fn: renderFeaturedSpotlight },
         { name: "Featured videos", fn: renderFeaturedVideos },
@@ -568,25 +567,6 @@ async function loadGamesForHome() {
         setFetchStatus("games.json", "failed", error);
         throw error;
     }
-}
-
-function updateFooterStats() {
-    const stats = document.querySelector("[data-ccg-footer-stats]");
-    if (!stats) return;
-
-    const totalGames = CCG_HOME_ALL_GAMES.length;
-    if (!totalGames) {
-        stats.hidden = true;
-        return;
-    }
-
-    const totalVideos = CCG_HOME_ALL_GAMES.filter(game => game.videoid).length;
-    const gamesEl = stats.querySelector("[data-ccg-stat-games]");
-    const videosEl = stats.querySelector("[data-ccg-stat-videos]");
-
-    if (gamesEl) gamesEl.textContent = `${totalGames.toLocaleString()} Games`;
-    if (videosEl) videosEl.textContent = `${totalVideos.toLocaleString()} Videos`;
-    stats.hidden = false;
 }
 
 /* ============================================================
