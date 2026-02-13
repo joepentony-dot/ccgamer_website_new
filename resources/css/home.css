@@ -2883,6 +2883,22 @@ html[data-ccg-mode="amiga"] .home-bottom-cta__actions .home-cta-main:focus-visib
     transition: filter 240ms ease;
 }
 
+/* Default: desktop view shows full text */
+.home-collections .collections-short {
+    display: none;
+}
+
+/* Show short label on narrow screens */
+@media only screen and (max-width: 768px) {
+    .home-collections .collections-full {
+        display: none;
+    }
+
+    .home-collections .collections-short {
+        display: inline;
+    }
+}
+
 /* DESKTOP HOVER — ENERGY LIFT (SAFE) */
 @media (hover: hover) and (pointer: fine) {
     .home-featured-videos .home-video-card:hover {
